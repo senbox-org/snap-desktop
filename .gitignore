@@ -1,12 +1,11 @@
-*.class
+# Maven output
+target
 
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
+# IntelliJ IDEA project files
+.idea
+*.iml
+*.ipr
+*.ims
 
-# Package Files #
-*.jar
-*.war
-*.ear
-
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+# JVM crash reports
 hs_err_pid*
