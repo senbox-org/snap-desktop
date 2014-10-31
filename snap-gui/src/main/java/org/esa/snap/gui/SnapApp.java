@@ -22,6 +22,7 @@ import java.util.concurrent.Callable;
  *
  * @author Norman Fomferra
  */
+@SuppressWarnings("UnusedDeclaration")
 public class SnapApp {
 
     private static SnapApp instance;
@@ -87,6 +88,10 @@ public class SnapApp {
 
         @Override
         public Boolean call() {
+            Frame mainWindow = getInstance().getMainWindow();
+            if (mainWindow == null || !mainWindow.isShowing()) {
+                return true;
+            }
             System.out.println(">>> " + getClass() + " called");
             ActionListener actionListener = (ActionEvent e) -> {
                 System.out.println(">>> " + getClass() + " action called");
@@ -104,7 +109,7 @@ public class SnapApp {
                     DialogDescriptor.YES_NO_CANCEL_OPTION,
                     null,
                     actionListener);
-            Dialog dialog = DialogDisplayer.getDefault().createDialog(dialogDescriptor, getInstance().getMainWindow());
+            Dialog dialog = DialogDisplayer.getDefault().createDialog(dialogDescriptor, mainWindow);
             dialog.setVisible(true);
             Object value = dialogDescriptor.getValue();
             return !new Integer(2).equals(value);
