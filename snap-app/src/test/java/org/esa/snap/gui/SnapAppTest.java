@@ -6,10 +6,10 @@ import org.netbeans.junit.NbTestCase;
 
 import java.util.logging.Level;
 
-public class ApplicationTest extends NbTestCase {
+public class SnapAppTest extends NbTestCase {
 
     public static Test suite() {
-        return NbModuleSuite.createConfiguration(ApplicationTest.class).
+        return NbModuleSuite.createConfiguration(SnapAppTest.class).
                 gui(false).
                 failOnMessage(Level.WARNING). // works at least in RELEASE71
                 failOnException(Level.INFO).
@@ -18,7 +18,7 @@ public class ApplicationTest extends NbTestCase {
                 suite(); // RELEASE71+, else use NbModuleSuite.create(NbModuleSuite.createConfiguration(...))
     }
 
-    public ApplicationTest(String n) {
+    public SnapAppTest(String n) {
         super(n);
     }
 
