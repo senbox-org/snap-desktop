@@ -1,18 +1,45 @@
 package org.esa.snap.gui;
 
+import org.openide.DialogDescriptor;
+import org.openide.DialogDisplayer;
 import org.openide.modules.OnStart;
 import org.openide.modules.OnStop;
 import org.openide.windows.OnShowing;
+import org.openide.windows.WindowManager;
 
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+import java.awt.Dialog;
 import java.awt.EventQueue;
+import java.awt.Frame;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.concurrent.Callable;
 
 /**
+ * The central SNAP application class (dummy).
+ *
  * @author Norman Fomferra
- * @see
  */
 public class SnapApp {
 
+    private static SnapApp instance;
+
+    protected SnapApp() {
+    }
+
+    public static SnapApp getInstance() {
+        return instance;
+    }
+
+    protected static void setInstance(SnapApp instance) {
+        SnapApp.instance = instance;
+    }
+
+    public Frame getMainWindow() {
+        return WindowManager.getDefault().getMainWindow();
+    }
 
     /**
      * {@code @OnStart}: {@code Runnable}s defined by various modules are invoked in parallel and as soon
@@ -25,6 +52,7 @@ public class SnapApp {
         @Override
         public void run() {
             System.out.println(">>> " + getClass() + " called");
+            setInstance(new SnapApp());
         }
     }
 
@@ -56,21 +84,41 @@ public class SnapApp {
      */
     @OnStop
     public static class MaybeStopOp implements Callable {
-        
+
         @Override
         public Boolean call() {
             System.out.println(">>> " + getClass() + " called");
-            return true;
+            ActionListener actionListener = (ActionEvent e) -> {
+                System.out.println(">>> " + getClass() + " action called");
+                // do something useful;
+            };
+            JLabel label = new JLabel("<html>SNAP found some cached <b>bazoo files</b> in your <b>gnarz folder</b>.<br>" +
+                                      "Should they be rectified now?");
+            JPanel panel = new JPanel();
+            panel.setBorder(new EmptyBorder(10, 10, 10, 10));
+            panel.add(label);
+            DialogDescriptor dialogDescriptor = new DialogDescriptor(
+                    panel,
+                    "Confirm",
+                    true,
+                    DialogDescriptor.YES_NO_CANCEL_OPTION,
+                    null,
+                    actionListener);
+            Dialog dialog = DialogDisplayer.getDefault().createDialog(dialogDescriptor, getInstance().getMainWindow());
+            dialog.setVisible(true);
+            Object value = dialogDescriptor.getValue();
+            return !new Integer(2).equals(value);
         }
     }
 
     @OnStop
     public static class StopOp implements Runnable {
-        
+
         @Override
         public void run() {
             System.out.println(">>> " + getClass() + " called");
             // do some cleanup
+            setInstance(null);
         }
     }
 }
