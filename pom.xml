@@ -21,6 +21,7 @@
         <module>snap-app</module>
         <module>snap-branding</module>
         <module>snap-gui</module>
+        <module>snap-launcher</module>
     </modules>
 
     <repositories>
