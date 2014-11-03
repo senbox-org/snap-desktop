@@ -41,6 +41,17 @@ import java.util.logging.Logger;
  * </pre>
  * where the options are the same as for the native launcher.
  * The current working directory must be the target deployment directory, {@code $appmodule/target/$app}.
+ * <p/>
+ * The Launcher takes care of any changed code in all the source modules. So, In IntelliJ IDEA we can hit CTRL+F9
+ * and then run/debug the Launcher.
+ *
+ * This is enabled for all modules which are
+ * <ul>
+ *  <li>(a) found in the applications target cluster (e.g. modules with {@code nbm} packaging) and </li>
+ *  <li>(b) have a valid target/classes output directory.</li>
+ * </ul>
+ * We may later want to be able to further configure this default behaviour. See code for how the current
+ * strategy is implemented.
  *
  * @author Norman Fomferra
  */
