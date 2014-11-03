@@ -38,6 +38,21 @@
             <name>NetBeans</name>
             <url>http://bits.netbeans.org/nexus/content/groups/netbeans/</url>
         </repository>
+
+        <repository>
+            <id>snap-repo-public</id>
+            <name>Public Maven Repository for SNAP</name>
+            <url>http://nexus.senbox.net/nexus/content/repositories/public/</url>
+            <releases>
+                <enabled>true</enabled>
+                <checksumPolicy>warn</checksumPolicy>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <checksumPolicy>warn</checksumPolicy>
+            </snapshots>
+        </repository>
+
     </repositories>
 
     <build>
