@@ -1,4 +1,4 @@
-package org.esa.snap.gui;
+package org.esa.snap.nbexec;
 
 import java.io.File;
 import java.io.FileReader;
@@ -21,15 +21,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.logging.Logger;
 
 /**
- * A plain Java NetBeans Platform launcher.
+ * A plain Java NetBeans Platform launcher which mimics the core functionality of the NB's native launcher
+ * {@code nbexec}. Can be used for easy debugging of NB Platform applications when using the NB IDE is not
+ * an option.
  * <p/>
- * <i>IMPORTANT NOTE: This launcher may only be used with IDEs other than the NetBeans IDE. It only implements a
- * subset of the functionality the native NetBeans launcher provides. For example, you cannot update plugins
- * and then let the application restart itself.<br/>
+ * <i>IMPORTANT NOTE: This launcher only implements a subset of the functionality the native NetBeans
+ * launcher {@code nbexec} provides. For example, you cannot update plugins and then let the application
+ * restart itself.<br/>
  * The recommended way to run/debug applications build on the NetBeans platform is either using the NetBeans
- * Maven plugin (nbm) or using the NetBeans IDE.
+ * Maven plugin (via {@code nbm:run-platform}) or directly using the NetBeans IDE.
  * </i>
  * <p/>
  * Usage:
@@ -94,6 +97,7 @@ public class Launcher {
         }
 
         if (defaultUserDir == null) {
+            // From nbexec:
             /*
             if ("Darwin".equals(System.getProperty("os.name"))) {
                 defaultUserDir = getVar("default_mac_userdir");
@@ -101,6 +105,7 @@ public class Launcher {
                 defaultUserDir = getVar("default_userdir");
             }
             */
+            // .. but not used here because our default is the nbm standard location
             if (defaultUserDir == null) {
                 defaultUserDir = path(deploymentDir, "..", "userdir");
             }
@@ -160,8 +165,8 @@ public class Launcher {
         setPropIfNotSet("netbeans.logger.console", "true");
         setPropIfNotSet("com.apple.mrj.application.apple.menu.about.name", brandingToken);
 
-        List<String> remainingArgs = extractJavaOptions(argList);
-        List<String> remainingDefaultOptions = extractJavaOptions(defaultOptionList);
+        List<String> remainingDefaultOptions = extractJavaOptions(defaultOptionList, false);
+        List<String> remainingArgs = extractJavaOptions(argList, true);
 
         setPatchModules(deploymentDir, appDir);
 
@@ -178,7 +183,7 @@ public class Launcher {
         runMain(classPathList, newArgList);
     }
 
-    private List<String> extractJavaOptions(List<String> defaultOptionList) {
+    private List<String> extractJavaOptions(List<String> defaultOptionList, boolean fail) {
         List<String> remainingDefaultOptions = new ArrayList<>();
         for (String option : defaultOptionList) {
             if (option.startsWith("-J")) {
@@ -189,7 +194,11 @@ public class Launcher {
                         setPropIfNotSet(kv.substring(0, i), kv.substring(i + 1));
                     }
                 } else {
-                    System.err.printf("WARNING: %s: option '%s' will be ignored, because the JVM is already running%n", getClass(), option);
+                    String msg = String.format("configured option '%s' will be ignored, because the JVM is already running", option);
+                    if (fail) {
+                        throw new IllegalArgumentException(msg);
+                    }
+                    warn(msg);
                 }
             } else {
                 remainingDefaultOptions.add(option);
@@ -202,13 +211,14 @@ public class Launcher {
      * scan appDir for modules and set system property netbeans.patches.<module>=<module-classes-dir> for each module
      */
     private void setPatchModules(String deploymentDir, String appDir) {
-        String appModulesDir = path(appDir, "modules");
-        File[] moduleJars = new File(path(appModulesDir)).listFiles(file -> file.getName().toLowerCase().endsWith(".jar"));
+        String modulesDir = path(appDir, "modules");
+        File[] moduleJars = new File(path(modulesDir)).listFiles(file -> file.getName().toLowerCase().endsWith(".jar"));
         List<String> moduleNames = new ArrayList<>();
         if (moduleJars != null) {
             for (File moduleJar : moduleJars) {
                 String moduleFileName = moduleJar.getName();
                 String moduleName = moduleFileName.substring(0, moduleFileName.length() - 4);
+                info("candidate patch-providing module in development: " + moduleName);
                 moduleNames.add(moduleName);
             }
         }
@@ -219,6 +229,7 @@ public class Launcher {
                 String classesDir = path(projectDir.getPath(), "target", "classes");
                 if (exists(classesDir)) {
                     String artifactName = projectDir.getName();
+                    //info("checking if artifact '"+artifactName+"' has output directory " + classesDir);
                     moduleNames.stream().filter(moduleName -> moduleName.endsWith(artifactName)).forEach(moduleName -> {
                         String propertyName = "netbeans.patches." + moduleName.replace("-", ".");
                         setPropIfNotSet(propertyName, classesDir);
@@ -289,6 +300,7 @@ public class Launcher {
                     try {
                         URL url = file.toURI().toURL();
                         classPathList.add(url);
+                        info("added to application classpath: " + file);
                     } catch (MalformedURLException e) {
                         throw new IllegalStateException(e);
                     }
@@ -303,9 +315,13 @@ public class Launcher {
         }
     }
 
-    private void setPropIfNotSet(String propertyName, String propertyValue) {
-        if (System.getProperty(propertyName) == null) {
-            System.setProperty(propertyName, propertyValue);
+    private void setPropIfNotSet(String name, String value) {
+        String oldValue = System.getProperty(name);
+        if (oldValue == null) {
+            info("setting system property: " + name + " = " + value);
+            System.setProperty(name, value);
+        } else {
+            warn("not overriding existing system property: " + name + " = " + oldValue + "(new value: " + value + ")");
         }
     }
 
@@ -359,10 +375,11 @@ public class Launcher {
         return null;
     }
 
-    private void loadConf(String etc) {
+    private void loadConf(String path) {
+        info("reading configuration from " + path);
         try {
             Properties properties = new Properties();
-            try (FileReader reader = new FileReader(etc)) {
+            try (FileReader reader = new FileReader(path)) {
                 properties.load(reader);
             }
             Set<String> propertyNames = properties.stringPropertyNames();
@@ -373,6 +390,14 @@ public class Launcher {
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
+    }
+
+    private void info(String msg) {
+        System.out.printf("INFO: %s: %s%n", getClass(), msg);
+    }
+
+    private void warn(String msg) {
+        System.err.printf("WARNING: %s: %s%n", getClass(), msg);
     }
 
     private static String resolveString(String text, Map<String, String> variables) {
@@ -394,6 +419,4 @@ public class Launcher {
     private static String basename(String deploymentDir) {
         return Paths.get(deploymentDir).getFileName().toString();
     }
-
-
 }

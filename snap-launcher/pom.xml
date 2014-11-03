@@ -1,21 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>org.esa.snap</groupId>
-        <artifactId>snaptop</artifactId>
-        <version>2.0-SNAPSHOT</version>
-    </parent>
-
-    <artifactId>snap-launcher</artifactId>
+    <groupId>org.esa.snap</groupId>
+    <artifactId>nbexec</artifactId>
     <packaging>jar</packaging>
-    
-    <name>SNAP Desktop Launcher</name>
-    <description>SNAP plain Java launcher for development in IDEs other than NB</description>
-    
+    <version>2.0-SNAPSHOT</version>
+
+    <name>Java NetBeans Launcher</name>
+    <description>Plain Java launcher for NetBeans Platform development in IDEs other than NetBeans IDE</description>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-    
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.2</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>
