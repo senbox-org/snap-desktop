@@ -27,17 +27,25 @@
         <module>snap-rgb-reader</module>
     </modules>
 
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+        </dependency>
+    </dependencies>
+
     <repositories>
         <!--
         Repository hosting NetBeans modules, especially APIs.
         Versions are based on IDE releases, e.g.: RELEASE691
         To create your own repository, use: nbm:populate-repository
         -->
-        <repository>
-            <id>netbeans</id>
-            <name>NetBeans</name>
-            <url>http://bits.netbeans.org/nexus/content/groups/netbeans/</url>
-        </repository>
+        <!--<repository>-->
+            <!--<id>netbeans</id>-->
+            <!--<name>NetBeans</name>-->
+            <!--<url>http://bits.netbeans.org/nexus/content/groups/netbeans/</url>-->
+        <!--</repository>-->
 
         <repository>
             <id>snap-repo-public</id>
