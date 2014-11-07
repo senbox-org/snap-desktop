@@ -18,12 +18,12 @@
     </properties>
 
     <modules>
-        <module>snap-app</module>
+        <module>snap-nb-app</module>
         <module>snap-branding</module>
         <module>snap-gui</module>
-        <module>snap-launcher</module>
+        <module>nbexec</module>
         <!-- dummies -->
-        <module>snap-core</module>
+        <module>snap-nb-core</module>
         <module>snap-rgb-reader</module>
     </modules>
 

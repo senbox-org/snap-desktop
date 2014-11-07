@@ -8,7 +8,7 @@
         <version>2.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>snap-core</artifactId>
+    <artifactId>snap-nb-core</artifactId>
     <name>SNAP Core API (Dummy)</name>
     <packaging>nbm</packaging>
 
