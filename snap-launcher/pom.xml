@@ -6,7 +6,7 @@
     <groupId>org.esa.snap</groupId>
     <artifactId>nbexec</artifactId>
     <packaging>jar</packaging>
-    <version>2.0-SNAPSHOT</version>
+    <version>2.0.0-SNAPSHOT</version>
 
     <name>Java NetBeans Launcher</name>
     <description>Plain Java launcher for NetBeans Platform development in IDEs other than NetBeans IDE</description>
