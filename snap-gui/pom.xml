@@ -99,7 +99,7 @@
         <!-- SNAP dependencies -->
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>snap-nb-core</artifactId>
+            <artifactId>snap-dummy-api</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

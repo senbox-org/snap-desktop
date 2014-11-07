@@ -42,7 +42,7 @@ import java.text.SimpleDateFormat;
         mode = "explorer",
         openAtStartup = true)
 @ActionID(category = "Window", id = "org.snap.gui.ProductExplorerTopComponent")
-@ActionReference(path = "Menu/Window", position = -1000)
+@ActionReference(path = "Menu/View/Tool Windows", position = 0)
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_ProductExplorerAction",
         preferredID = "ProductExplorerTopComponent"

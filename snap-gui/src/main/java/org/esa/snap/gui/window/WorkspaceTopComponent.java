@@ -49,7 +49,7 @@ import java.util.Map;
         mode = "editor",
         openAtStartup = true)
 @ActionID(category = "Window", id = "org.snap.gui.WorkspaceTopComponent")
-@ActionReference(path = "Menu/Window", position = -1000)
+@ActionReference(path = "Menu/View/Tool Windows", position = 0)
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_WorkspaceTopComponent",
         preferredID = "WorkspaceTopComponent"
@@ -218,7 +218,7 @@ public class WorkspaceTopComponent extends TopComponent implements InternalFrame
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
         Action action = tabActions.get(actionEvent.getActionCommand());
-        if (action != null ) {
+        if (action != null) {
             action.actionPerformed(actionEvent);
         }
     }

@@ -8,7 +8,7 @@
         <version>2.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>snap-nb-app</artifactId>
+    <artifactId>snap-application</artifactId>
     <packaging>nbm-application</packaging>
 
     <name>SNAP Desktop NB Application</name>
@@ -50,17 +50,17 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>snap-nb-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>snap-rgb-reader</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>snap-gui</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>snap-dummy-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>snap-dummy-impl</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

@@ -25,7 +25,7 @@ import org.openide.util.NbBundle.Messages;
 )
 @TopComponent.Registration(mode = "explorer", openAtStartup = true)
 @ActionID(category = "Window", id = "org.snap.gui.ImageNavigatorTopComponent")
-@ActionReference(path = "Menu/Window", position = -1000)
+@ActionReference(path = "Menu/View/Tool Windows", position = 0)
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_ImageNavigatorAction",
         preferredID = "ImageNavigatorTopComponent"
