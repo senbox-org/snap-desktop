@@ -9,7 +9,7 @@
     <version>2.0.0-SNAPSHOT</version>
 
     <name>Java NetBeans Launcher</name>
-    <description>Plain Java launcher for NetBeans Platform development in IDEs other than NetBeans IDE</description>
+    <description>Plain Java launcher for NetBeans Platform (Maven) development in IDEs other than NetBeans IDE</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

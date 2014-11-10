@@ -21,11 +21,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.logging.Logger;
 
 /**
  * A plain Java NetBeans Platform launcher which mimics the core functionality of the NB's native launcher
- * {@code nbexec}. Can be used for easy debugging of NB Platform applications when using the NB IDE is not
+ * {@code nbexec}. Can be used for easy debugging of NB Platform (Maven) applications when using the NB IDE is not
  * an option.
  * <p/>
  * <i>IMPORTANT NOTE: This launcher only implements a subset of the functionality the native NetBeans
@@ -54,6 +53,7 @@ import java.util.logging.Logger;
  * strategy is implemented.
  *
  * @author Norman Fomferra
+ * @version 1.0
  */
 public class Launcher {
 
@@ -234,13 +234,19 @@ public class Launcher {
             }
         }
 
+        // check - generify: "../../.." refers to a Maven specific directory layout
         File[] projectDirs = new File(path(deploymentDir, "..", "..", "..")).listFiles(file -> file.isDirectory() && !file.getName().startsWith("."));
         if (projectDirs != null) {
             for (File projectDir : projectDirs) {
+                // check - generify: "target/classes" is a Maven specific output path
                 String classesDir = path(projectDir.getPath(), "target", "classes");
                 if (exists(classesDir)) {
                     String artifactName = projectDir.getName();
                     //info("checking if artifact '"+artifactName+"' has output directory " + classesDir);
+
+                    // check - generify: we assume that
+                    //    <project-dir>/<module-dir>  --> <cluster-dir>/modules/<module-dir>.jar
+                    // but this pattern is specific to the NB Maven Plugin
                     moduleNames.stream().filter(moduleName -> moduleName.endsWith(artifactName)).forEach(moduleName -> {
                         String propertyName = "netbeans.patches." + moduleName.replace("-", ".");
                         setPropIfNotSet(propertyName, classesDir);
