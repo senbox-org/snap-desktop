@@ -5,14 +5,15 @@
  */
 package org.esa.snap.gui.action;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.List;
+import org.esa.beam.framework.datamodel.Product;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle.Messages;
-import org.esa.snap.core.Product;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
 
 @ActionID(
         category = "Edit",
@@ -34,7 +35,7 @@ public final class MergeProductsAction implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent ev) {
         for (Product product : context) {
-            // TODO use product
+            System.out.println("product = " + product.getName());
         }
     }
 }

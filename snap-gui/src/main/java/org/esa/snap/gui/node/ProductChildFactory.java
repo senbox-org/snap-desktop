@@ -5,18 +5,18 @@
  */
 package org.esa.snap.gui.node;
 
-import java.awt.image.BufferedImage;
-import java.beans.IntrospectionException;
-import java.util.ArrayList;
-import java.util.List;
+import org.esa.beam.framework.datamodel.Product;
 import org.openide.nodes.ChildFactory;
 import org.openide.nodes.Node;
 import org.openide.util.Exceptions;
-import org.esa.snap.core.Band;
-import org.esa.snap.core.Product;
+
+import java.beans.IntrospectionException;
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class ProductChildFactory extends ChildFactory<Product> {
-    
+
     final static ProductChildFactory instance = new ProductChildFactory();
 
     List<Product> products;
@@ -24,12 +24,12 @@ public class ProductChildFactory extends ChildFactory<Product> {
     public static ProductChildFactory getInstance() {
         return instance;
     }
-        
+
 
     private ProductChildFactory() {
-        products = new ArrayList<Product>();
+        products = new ArrayList<>();
     }
-    
+
     public void addProduct(Product product) {
         products.add(product);
         refresh(true);
@@ -38,13 +38,13 @@ public class ProductChildFactory extends ChildFactory<Product> {
     @Override
     protected boolean createKeys(List<Product> list) {
         list.addAll(products);
-        Product p1 = new Product("Product_1",
-                new Band("Band_A", new BufferedImage(800, 600, BufferedImage.TYPE_4BYTE_ABGR)),
-                new Band("Band_B", new BufferedImage(800, 600, BufferedImage.TYPE_4BYTE_ABGR)));
-        Product p2 = new Product("Product_2",
-                new Band("Band_1", new BufferedImage(640, 400, BufferedImage.TYPE_4BYTE_ABGR)),
-                new Band("Band_2", new BufferedImage(640, 400, BufferedImage.TYPE_4BYTE_ABGR)),
-                new Band("Band_3", new BufferedImage(640, 400, BufferedImage.TYPE_4BYTE_ABGR)));
+        Product p1 = new Product("Product_1", "Type_1", 800, 600);
+        p1.addBand("Band_A", "X*X - Y*Y");
+        p1.addBand("Band_B", "2*X*Y");
+        Product p2 = new Product("Product_2", "Type_2", 640, 400);
+        p2.addBand("Band_1", "cos(X/100)-sin(Y/100)");
+        p2.addBand("Band_2", "sin(X/100)+cos(Y/100)");
+        p2.addBand("Band_3", "cos(X/100)*cos(Y/100)");
         list.add(p1);
         list.add(p2);
         return true;

@@ -5,9 +5,9 @@
  */
 package org.esa.snap.gui.action;
 
-import org.esa.snap.core.Product;
-import org.esa.snap.core.io.ProductReader;
-import org.esa.snap.core.io.ProductReaderSpi;
+import org.esa.beam.framework.dataio.ProductReader;
+import org.esa.beam.framework.dataio.ProductReaderPlugIn;
+import org.esa.beam.framework.datamodel.Product;
 import org.esa.snap.gui.node.ProductChildFactory;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -21,13 +21,12 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.ServiceLoader;
 import java.util.prefs.Preferences;
 
 /**
- *
  * @author Norman
  */
 @ActionID(
@@ -56,14 +55,13 @@ public final class OpenProductAction extends AbstractAction /*implements Present
     @Override
     public void actionPerformed(ActionEvent e) {
 
-        Iterator<ProductReaderSpi> iterator = ServiceLoader.load(ProductReaderSpi.class).iterator();
+        ServiceLoader<ProductReaderPlugIn> serviceLoader = ServiceLoader.load(ProductReaderPlugIn.class);
         List<FileFilter> filters = new ArrayList<>();
-        while ( iterator.hasNext()) {
-            ProductReaderSpi readerSpi = iterator.next();
-            filters.add(new FileNameExtFilter(readerSpi));
+        for (ProductReaderPlugIn plugIn : serviceLoader) {
+            filters.add(new FileNameExtFilter(plugIn));
         }
         if (filters.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "No importers found!");
+            JOptionPane.showMessageDialog(null, "No reader found!");
             return;
         }
 
@@ -109,13 +107,13 @@ public final class OpenProductAction extends AbstractAction /*implements Present
         if (currentDirectory != null) {
             preferences.put("lastDir", currentDirectory.toString());
         }
-        
-        ProductReaderSpi serviceProvider = ((FileNameExtFilter) fc.getFileFilter()).getServiceProvider();
+
+        ProductReaderPlugIn serviceProvider = ((FileNameExtFilter) fc.getFileFilter()).getServiceProvider();
         List<IOException> problems = new ArrayList<>();
         for (File file : files) {
-            ProductReader pr = serviceProvider.createProductReader(file, null);
+            ProductReader pr = serviceProvider.createReaderInstance();
             try {
-                Product product = pr.readProduct();
+                Product product = pr.readProductNodes(file, null);
                 ProductChildFactory.getInstance().addProduct(product);
             } catch (IOException problem) {
                 problems.add(problem);
@@ -124,7 +122,7 @@ public final class OpenProductAction extends AbstractAction /*implements Present
 
         if (!problems.isEmpty()) {
             StringBuilder problemsMessage = new StringBuilder();
-            problemsMessage.append("<html>").append(problems.size()).append(" problem(s) occurred:<br/>").toString();
+            problemsMessage.append("<html>").append(problems.size()).append(" problem(s) occurred:<br/>");
             for (IOException problem : problems) {
                 problemsMessage.append(String.format("<b>  %s</b>%s<br/>", problem.getClass().getSimpleName(), problem.getMessage()));
             }
@@ -134,22 +132,22 @@ public final class OpenProductAction extends AbstractAction /*implements Present
 
     private static class FileNameExtFilter extends FileFilter {
 
-        private final ProductReaderSpi serviceProvider;
+        private final ProductReaderPlugIn serviceProvider;
 
-        public FileNameExtFilter(ProductReaderSpi serviceProvider) {
+        public FileNameExtFilter(ProductReaderPlugIn serviceProvider) {
             this.serviceProvider = serviceProvider;
         }
 
-        public ProductReaderSpi getServiceProvider() {
+        public ProductReaderPlugIn getServiceProvider() {
             return serviceProvider;
-        }                
+        }
 
         @Override
         public boolean accept(File f) {
             if (f.isFile()) {
-                List<String> extensions = serviceProvider.getFileExtensions();
+                String[] extensions = serviceProvider.getDefaultFileExtensions();
                 for (String ext : extensions) {
-                    if (f.getName().toLowerCase().endsWith("." + ext.toLowerCase())) {
+                    if (f.getName().toLowerCase().endsWith(ext.toLowerCase())) {
                         return true;
                     }
                 }
@@ -159,7 +157,7 @@ public final class OpenProductAction extends AbstractAction /*implements Present
 
         @Override
         public String getDescription() {
-            return serviceProvider.getDescription();
+            return serviceProvider.getDescription(Locale.ENGLISH);
         }
     }
 }

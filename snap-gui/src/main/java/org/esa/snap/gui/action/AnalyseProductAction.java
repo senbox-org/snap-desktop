@@ -5,16 +5,16 @@
  */
 package org.esa.snap.gui.action;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import javax.swing.JOptionPane;
+import org.esa.beam.framework.datamodel.Product;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
-import org.esa.snap.core.Product;
+
+import javax.swing.JOptionPane;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
- *
  * @author Norman
  */
 @ActionID(

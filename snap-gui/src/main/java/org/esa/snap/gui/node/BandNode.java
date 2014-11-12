@@ -5,7 +5,7 @@
  */
 package org.esa.snap.gui.node;
 
-import org.esa.snap.core.Band;
+import org.esa.beam.framework.datamodel.Band;
 import org.esa.snap.gui.view.BandImagePanel;
 import org.esa.snap.gui.window.WorkspaceTopComponent;
 import org.openide.nodes.BeanNode;
@@ -28,7 +28,7 @@ public class BandNode extends BeanNode<Band> {
     public BandNode(Band band) throws IntrospectionException {
         super(band, Children.LEAF, Lookups.singleton(band));
         setDisplayName(band.getName());
-        setShortDescription(Bundle.MSG_IMG_SIZE() + band.getData().getWidth() + " x " + band.getData().getHeight());
+        setShortDescription(Bundle.MSG_IMG_SIZE() + band.getRasterWidth() + " x " + band.getRasterHeight());
         //setIconBaseWithExtension("org/fully/qualified/name/myicon.png");
     }
 
@@ -57,7 +57,8 @@ public class BandNode extends BeanNode<Band> {
             topComponent.open();
             */
 
-            WorkspaceTopComponent.getInstance().addComponent(getBean().getName(), new JScrollPane(new BandImagePanel(getBean())));
+            WorkspaceTopComponent.getInstance().addComponent(getBean().getName(),
+                                                             new JScrollPane(new BandImagePanel(getBean())));
         }
     }
 }

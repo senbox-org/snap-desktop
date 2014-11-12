@@ -22,9 +22,6 @@
         <module>snap-branding</module>
         <module>snap-gui</module>
         <module>nbexec</module>
-        <!-- dummies -->
-        <module>snap-dummy-api</module>
-        <module>snap-dummy-impl</module>
     </modules>
 
     <dependencies>

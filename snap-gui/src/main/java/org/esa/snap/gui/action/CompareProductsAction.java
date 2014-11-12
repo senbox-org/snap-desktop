@@ -5,18 +5,23 @@
  */
 package org.esa.snap.gui.action;
 
-import java.awt.event.ActionEvent;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.JOptionPane;
+import org.esa.beam.framework.datamodel.Product;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
-import org.openide.util.*;
-import org.esa.snap.core.Product;
+import org.openide.util.ContextAwareAction;
+import org.openide.util.Lookup;
+import org.openide.util.LookupEvent;
+import org.openide.util.LookupListener;
+import org.openide.util.Utilities;
+import org.openide.util.WeakListeners;
+
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JOptionPane;
+import java.awt.event.ActionEvent;
 
 /**
- *
  * @author Norman
  */
 @ActionID(

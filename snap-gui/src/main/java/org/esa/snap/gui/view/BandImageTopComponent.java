@@ -5,7 +5,7 @@
  */
 package org.esa.snap.gui.view;
 
-import org.esa.snap.core.Band;
+import org.esa.beam.framework.datamodel.Band;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.lookup.Lookups;
 import org.openide.windows.TopComponent;

@@ -7,11 +7,12 @@ package org.esa.snap.gui.node;
 
 import java.beans.IntrospectionException;
 import javax.swing.Action;
+
+import org.esa.beam.framework.datamodel.Product;
 import org.openide.nodes.BeanNode;
 import org.openide.nodes.Children;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.lookup.Lookups;
-import org.esa.snap.core.Product;
 
 /**
  *
@@ -23,7 +24,7 @@ public class ProductNode extends BeanNode<Product> {
     public ProductNode(Product product) throws IntrospectionException {
         super(product, Children.create(new BandChildFactory(product), true), Lookups.singleton(product));
         setDisplayName(product.getName());
-        setShortDescription(Bundle.MSG_NUM_BANDS() + product.getBandCount());
+        setShortDescription(Bundle.MSG_NUM_BANDS() + product.getNumBands());
         //setIconBaseWithExtension("org/fully/qualified/name/myicon.png");
     }
 

@@ -5,13 +5,15 @@
  */
 package org.esa.snap.gui.node;
 
-import java.beans.IntrospectionException;
-import java.util.List;
+import org.esa.beam.framework.datamodel.Band;
+import org.esa.beam.framework.datamodel.Product;
 import org.openide.nodes.ChildFactory;
 import org.openide.nodes.Node;
 import org.openide.util.Exceptions;
-import org.esa.snap.core.Band;
-import org.esa.snap.core.Product;
+
+import java.beans.IntrospectionException;
+import java.util.Arrays;
+import java.util.List;
 
 public class BandChildFactory extends ChildFactory<Band> {
 
@@ -23,7 +25,7 @@ public class BandChildFactory extends ChildFactory<Band> {
 
     @Override
     protected boolean createKeys(List<Band> list) {
-        list.addAll(product.getBands());
+        list.addAll(Arrays.asList(product.getBands()));
         return true;
     }
 

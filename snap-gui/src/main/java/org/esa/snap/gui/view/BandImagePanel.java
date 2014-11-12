@@ -1,16 +1,16 @@
 package org.esa.snap.gui.view;
 
-import org.esa.snap.core.Band;
+import org.esa.beam.framework.datamodel.Band;
+import org.esa.beam.framework.datamodel.RasterDataNode;
+import org.esa.beam.jai.ImageManager;
 
 import javax.swing.JPanel;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
+import java.awt.image.RenderedImage;
 
-/**
- * Created by Norman on 08.07.2014.
- */
 public class BandImagePanel extends JPanel {
     private Band band;
 
@@ -24,14 +24,15 @@ public class BandImagePanel extends JPanel {
         super.paintComponent(g);
         if (band != null) {
             Graphics2D graphics2D = (Graphics2D) g;
-            graphics2D.drawRenderedImage(band.getData(), new AffineTransform());
+            RenderedImage image = ImageManager.getInstance().createColoredBandImage(new RasterDataNode[]{band}, null, 0);
+            graphics2D.drawRenderedImage(image, new AffineTransform());
         }
     }
 
     @Override
     public Dimension getPreferredSize() {
         if (band != null) {
-            return new Dimension(band.getData().getWidth(), band.getData().getHeight());
+            return new Dimension(band.getRasterWidth(), band.getRasterHeight());
         } else {
             return super.getPreferredSize();
         }
