@@ -5,6 +5,9 @@
  */
 package org.esa.snap.gui.window;
 
+import org.esa.beam.framework.datamodel.RasterDataNode;
+import org.esa.beam.framework.ui.UIUtils;
+import org.esa.beam.framework.ui.product.ProductSceneView;
 import org.netbeans.swing.tabcontrol.DefaultTabDataModel;
 import org.netbeans.swing.tabcontrol.TabData;
 import org.netbeans.swing.tabcontrol.TabDisplayer;
@@ -24,16 +27,19 @@ import javax.swing.JInternalFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyVetoException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -188,7 +194,21 @@ public class WorkspaceTopComponent extends TopComponent implements InternalFrame
         return tabToFrameMap.get(tabbedContainer.getModel().getTab(tabIndex));
     }
 
-    public void addComponent(String title, JComponent component) {
+    public List<Editor<ProductSceneView>> findImageEditors(RasterDataNode band) {
+        ArrayList<Editor<ProductSceneView>> list = new ArrayList<>();
+        JInternalFrame[] frames = desktopPane.getAllFrames();
+        for (JInternalFrame frame : frames) {
+            if (frame.getContentPane() instanceof ProductSceneView) {
+                ProductSceneView view = (ProductSceneView) frame.getContentPane();
+                if (view.getRaster() == band) {
+                    list.add(new Editor<>(frame));
+                }
+            }
+        }
+        return list;
+    }
+
+    public <T extends Container> Editor<T> addComponent(String title, T component) {
         int index = tabCount++;
         JInternalFrame internalFrame = new JInternalFrame(title, true, true, true, true);
         JComponent tabComponent = new JPanel();
@@ -207,12 +227,14 @@ public class WorkspaceTopComponent extends TopComponent implements InternalFrame
         desktopPane.add(internalFrame);
 
         internalFrame.addInternalFrameListener(this);
+
         internalFrame.setVisible(true);
         try {
             internalFrame.setSelected(true);
         } catch (PropertyVetoException e) {
             e.printStackTrace();
         }
+        return new Editor(internalFrame);
     }
 
     @Override
@@ -317,6 +339,10 @@ public class WorkspaceTopComponent extends TopComponent implements InternalFrame
         }
     }
 
+    public String getUniqueEditorTitle(String titleBase) {
+        return UIUtils.getUniqueFrameTitle(desktopPane.getAllFrames(), titleBase);
+    }
+
     private class MyWinsysInfoForTabbedContainer extends WinsysInfoForTabbedContainer {
         @Override
         public Object getOrientation(Component comp) {
@@ -344,5 +370,88 @@ public class WorkspaceTopComponent extends TopComponent implements InternalFrame
         }
 
         public abstract void tabActionPerformed(TabActionEvent e);
+    }
+
+    public class Editor<T extends Container> {
+        private final JInternalFrame internalFrame;
+
+        Editor(JInternalFrame internalFrame) {
+            this.internalFrame = internalFrame;
+        }
+
+        // Add more internalFrame property accessors here
+
+        public void setTitle(String title) {
+            internalFrame.setTitle(title);
+        }
+
+        public T getComponent() {
+            return (T) this.internalFrame.getContentPane();
+        }
+
+        public void addListener(EditorListener editorListener) {
+            final Editor<T> editor = this;
+            internalFrame.addInternalFrameListener(new InternalFrameAdapter() {
+                @Override
+                public void internalFrameActivated(InternalFrameEvent e) {
+                    editorListener.editorActivated(editor);
+                }
+
+                @Override
+                public void internalFrameDeactivated(InternalFrameEvent e) {
+                    editorListener.editorDeactivated(editor);
+                }
+
+                @Override
+                public void internalFrameClosing(InternalFrameEvent e) {
+                    editorListener.editorClosing(editor);
+                }
+
+                @Override
+                public void internalFrameClosed(InternalFrameEvent e) {
+                    editorListener.editorClosed(editor);
+                }
+            });
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            return this == o || o instanceof Editor && internalFrame == ((Editor) o).internalFrame;
+        }
+
+        @Override
+        public int hashCode() {
+            return internalFrame.hashCode();
+        }
+
+    }
+
+    public interface EditorListener<T extends Container> {
+        void editorActivated(Editor<T> editor);
+
+        void editorDeactivated(Editor<T> editor);
+
+        boolean editorClosing(Editor<T> editor);
+
+        void editorClosed(Editor<T> editor);
+    }
+
+    public static class EditorAdapter<T extends Container> implements EditorListener<T> {
+        @Override
+        public void editorActivated(Editor<T> editor) {
+        }
+
+        @Override
+        public void editorDeactivated(Editor<T> editor) {
+        }
+
+        @Override
+        public boolean editorClosing(Editor<T> editor) {
+            return true;
+        }
+
+        @Override
+        public void editorClosed(Editor<T> editor) {
+        }
     }
 }

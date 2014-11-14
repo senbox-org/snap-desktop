@@ -1,6 +1,5 @@
 package org.esa.snap.gui.view;
 
-import org.esa.beam.framework.datamodel.Band;
 import org.esa.beam.framework.datamodel.RasterDataNode;
 import org.esa.beam.jai.ImageManager;
 
@@ -12,9 +11,9 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.RenderedImage;
 
 public class BandImagePanel extends JPanel {
-    private Band band;
+    private RasterDataNode band;
 
-    public BandImagePanel(Band band) {
+    public BandImagePanel(RasterDataNode band) {
         this.band = band;
     }
 

@@ -1,13 +1,27 @@
 package org.esa.snap.gui;
 
+import org.esa.beam.framework.datamodel.ProductNode;
+import org.esa.beam.util.PropertyMap;
+import org.esa.snap.gui.compat.CompatiblePropertyMap;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
+import org.openide.NotifyDescriptor;
+import org.openide.awt.NotificationDisplayer;
+import org.openide.awt.StatusDisplayer;
+import org.openide.modules.ModuleInfo;
+import org.openide.modules.Modules;
 import org.openide.modules.OnStart;
 import org.openide.modules.OnStop;
+import org.openide.util.NbBundle;
+import org.openide.util.NbPreferences;
+import org.openide.util.Utilities;
 import org.openide.windows.OnShowing;
 import org.openide.windows.WindowManager;
 
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import java.awt.Dialog;
@@ -16,6 +30,9 @@ import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.concurrent.Callable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.prefs.Preferences;
 
 /**
  * The central SNAP application class (dummy).
@@ -26,6 +43,7 @@ import java.util.concurrent.Callable;
 public class SnapApp {
 
     private static SnapApp instance;
+    static Logger LOG;
 
     protected SnapApp() {
     }
@@ -38,8 +56,80 @@ public class SnapApp {
         SnapApp.instance = instance;
     }
 
-    public Frame getMainWindow() {
+    public Frame getMainFrame() {
         return WindowManager.getDefault().getMainWindow();
+    }
+
+    public ProductNode getSelectedProductNode() {
+        return Utilities.actionsGlobalContext().lookup(ProductNode.class);
+    }
+
+    public void setStatusBarMessage(String message) {
+        StatusDisplayer.getDefault().setStatusText(message);
+    }
+
+    public String getInstanceName() {
+        return NbBundle.getBundle("org.netbeans.core.ui.Bundle").getString("LBL_ProductInformation");
+    }
+
+    public void showOutOfMemoryErrorDialog(String message) {
+        showErrorDialog("Out of Memory", message);
+    }
+
+    public void showErrorDialog(String title, String message) {
+        NotifyDescriptor nd = new NotifyDescriptor(message,
+                                                   title,
+                                                   JOptionPane.OK_OPTION,
+                                                   NotifyDescriptor.ERROR_MESSAGE,
+                                                   null,
+                                                   null);
+        DialogDisplayer.getDefault().notify(nd);
+
+        ImageIcon icon = new ImageIcon(getClass().getResource("icons/tango/32x32/status/dialog-error.png"));
+        JLabel balloonDetails = new JLabel(message);
+        JButton popupDetails = new JButton("Call ESA");
+        NotificationDisplayer.getDefault().notify(title,
+                                                  icon,
+                                                  balloonDetails,
+                                                  popupDetails,
+                                                  NotificationDisplayer.Priority.HIGH,
+                                                  NotificationDisplayer.Category.ERROR);
+    }
+
+    /**
+     * @return The user's application preferences.
+     */
+    public Preferences getPreferences() {
+        return NbPreferences.forModule(getClass());
+    }
+
+    /**
+     * @deprecated this is for compatibility only, use #getPreferences()
+     * @return The user's application preferences.
+     */
+    @Deprecated
+    public PropertyMap getCompatiblePreferences() {
+        return new CompatiblePropertyMap(NbPreferences.forModule(getClass()));
+    }
+
+    public Logger getLogger() {
+        if (LOG == null) {
+            ModuleInfo moduleInfo = Modules.getDefault().ownerOf(getClass());
+            LOG = Logger.getLogger(moduleInfo.getCodeNameBase());
+        }
+        return LOG;
+    }
+
+    @Deprecated
+    public void updateState() {
+    }
+
+    public void handleError(String message, Throwable t) {
+        if (t != null) {
+            t.printStackTrace();
+        }
+        showErrorDialog(getInstanceName() + " - Error", message);
+        getLogger().log(Level.SEVERE, message, t);
     }
 
     /**
@@ -76,9 +166,9 @@ public class SnapApp {
      * {@code @OnStop}: Annotation that can be applied to {@code Runnable} or {@code Callable<Boolean>}
      * subclasses with default constructor which will be invoked during shutdown sequence or when the
      * module is being shutdown.
-     * <p/>
+     * <p>
      * First of all call {@code Callable}s are consulted to allow or deny proceeding with the shutdown.
-     * <p/>
+     * <p>
      * If the shutdown is approved, all {@code Runnable}s registered are acknowledged and can perform the shutdown
      * cleanup. The {@code Runnable}s are invoked in parallel. It is guaranteed their execution is finished before
      * the shutdown sequence is over.
@@ -88,7 +178,7 @@ public class SnapApp {
 
         @Override
         public Boolean call() {
-            Frame mainWindow = getInstance().getMainWindow();
+            Frame mainWindow = getInstance().getMainFrame();
             if (mainWindow == null || !mainWindow.isShowing()) {
                 return true;
             }

@@ -6,17 +6,13 @@
 package org.esa.snap.gui.node;
 
 import org.esa.beam.framework.datamodel.Band;
-import org.esa.snap.gui.view.BandImagePanel;
-import org.esa.snap.gui.window.WorkspaceTopComponent;
+import org.esa.snap.gui.action.OpenBandImageAction;
 import org.openide.nodes.BeanNode;
 import org.openide.nodes.Children;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.lookup.Lookups;
 
-import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.JScrollPane;
-import java.awt.event.ActionEvent;
 import java.beans.IntrospectionException;
 
 /**
@@ -34,31 +30,12 @@ public class BandNode extends BeanNode<Band> {
 
     @Override
     public Action[] getActions(boolean context) {
-        return new Action[]{new OpenBandImageAction()};
+        return new Action[]{new OpenBandImageAction(this.getBean())};
     }
 
     @Override
     public Action getPreferredAction() {
-        return new OpenBandImageAction();
+        return new OpenBandImageAction(this.getBean());
     }
 
-    private class OpenBandImageAction extends AbstractAction {
-
-        private OpenBandImageAction() {
-            super("Open Band Image");
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            /*
-            Mode editor = WindowManager.getDefault().findMode("editor");
-            BandImageTopComponent topComponent = new BandImageTopComponent(getBean());
-            editor.dockInto(topComponent);
-            topComponent.open();
-            */
-
-            WorkspaceTopComponent.getInstance().addComponent(getBean().getName(),
-                                                             new JScrollPane(new BandImagePanel(getBean())));
-        }
-    }
 }
