@@ -1,0 +1,39 @@
+package org.esa.snap.tango;
+
+import javax.swing.Icon;
+
+/**
+ * @author Norman Fomferra
+ */
+@SuppressWarnings("UnusedDeclaration")
+public final class TangoIcons {
+
+    public enum Res {
+        R16("16x16"),
+        R22("22x22"),
+        R32("32x32");
+
+        private final String name;
+
+        Res(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String toString() {
+            return name;
+        }
+    }
+
+    public final static Res R16 = Res.R16;
+    public final static Res R22 = Res.R22;
+    public final static Res R32 = Res.R32;
+
+${code}
+
+    private TangoIcons() {}
+
+    private static Icon getIcon(String name, Res res) {
+        return null;
+    }
+}
