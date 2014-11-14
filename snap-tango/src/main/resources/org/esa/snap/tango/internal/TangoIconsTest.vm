@@ -10,9 +10,8 @@ import static org.junit.Assert.assertNotNull;
 public class TangoIconsTest {
 
     @Test
-    public void testClass() {
+    public void testAll() {
 
 ${code}
-
     }
 }

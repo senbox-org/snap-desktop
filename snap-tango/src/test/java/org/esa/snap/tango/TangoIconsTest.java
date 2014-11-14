@@ -10,7 +10,8 @@ import static org.junit.Assert.assertNotNull;
 public class TangoIconsTest {
 
     @Test
-    public void testClass() {
+    public void testAll() {
+
         assertNotNull(TangoIcons.actions_address_book_new(TangoIcons.R16));
         assertNotNull(TangoIcons.actions_address_book_new(TangoIcons.R22));
         assertNotNull(TangoIcons.actions_address_book_new(TangoIcons.R32));
@@ -870,5 +871,7 @@ public class TangoIconsTest {
         assertNotNull(TangoIcons.status_weather_storm(TangoIcons.R16));
         assertNotNull(TangoIcons.status_weather_storm(TangoIcons.R22));
         assertNotNull(TangoIcons.status_weather_storm(TangoIcons.R32));
+
+
     }
 }

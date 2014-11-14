@@ -1,6 +1,10 @@
 package org.esa.snap.tango;
 
-import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+
 
 /**
  * @author Norman Fomferra
@@ -43,7 +47,7 @@ ${code}
     private TangoIcons() {
     }
 
-    private static Icon getIcon(String name, Res res) {
+    private static ImageIcon getIcon(String name, Res res) {
         Map<String, ImageIcon> m = map.get(res);
         ImageIcon imageIcon = m.get(name);
         if (imageIcon == null) {
