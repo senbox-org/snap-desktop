@@ -31,9 +31,30 @@ public final class TangoIcons {
 
 ${code}
 
-    private TangoIcons() {}
+    private static Map<Res, Map<String, ImageIcon>> map;
+
+    static {
+        map = new HashMap<>();
+        map.put(R16, new HashMap<>());
+        map.put(R22, new HashMap<>());
+        map.put(R32, new HashMap<>());
+    }
+
+    private TangoIcons() {
+    }
 
     private static Icon getIcon(String name, Res res) {
-        return null;
+        Map<String, ImageIcon> m = map.get(res);
+        ImageIcon imageIcon = m.get(name);
+        if (imageIcon == null) {
+            String resourceName = "/tango/" + res + "/" + name;
+            URL resourceUrl = TangoIcons.class.getResource(resourceName);
+            if (resourceUrl == null) {
+                throw new IllegalArgumentException("Resource not found: \"" + resourceName + "\"");
+            }
+            imageIcon = new ImageIcon(resourceUrl);
+            m.put(name, imageIcon);
+        }
+        return imageIcon;
     }
 }

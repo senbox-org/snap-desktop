@@ -44,7 +44,7 @@ public class Generator {
             for (File iconFile : iconFiles) {
                 String fileName = iconFile.getName();
                 String methodName = dirName.toLowerCase() + "_" + fileName.substring(0, fileName.length() - 4).replace("-", "_");
-                mainCode.append(String.format("    public static Icon %s(Res res) { return getIcon(\"%s\", res); }\n", methodName, fileName));
+                mainCode.append(String.format("    public static Icon %s(Res res) { return getIcon(\"%s/%s\", res); }\n", methodName, dirName, fileName));
                 testCode.append(String.format("        assertNotNull(TangoIcons.%s(TangoIcons.R16));\n", methodName));
                 testCode.append(String.format("        assertNotNull(TangoIcons.%s(TangoIcons.R22));\n", methodName));
                 testCode.append(String.format("        assertNotNull(TangoIcons.%s(TangoIcons.R32));\n", methodName));
