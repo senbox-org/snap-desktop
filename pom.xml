@@ -21,6 +21,7 @@
         <module>snap-application</module>
         <module>snap-branding</module>
         <module>snap-gui</module>
+        <module>snap-tango</module>
         <module>nbexec</module>
     </modules>
 
