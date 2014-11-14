@@ -3,6 +3,7 @@ package org.esa.snap.gui;
 import org.esa.beam.framework.datamodel.ProductNode;
 import org.esa.beam.util.PropertyMap;
 import org.esa.snap.gui.compat.CompatiblePropertyMap;
+import org.esa.snap.tango.TangoIcons;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
@@ -85,7 +86,7 @@ public class SnapApp {
                                                    null);
         DialogDisplayer.getDefault().notify(nd);
 
-        ImageIcon icon = new ImageIcon(getClass().getResource("icons/tango/32x32/status/dialog-error.png"));
+        ImageIcon icon = TangoIcons.status_dialog_error(TangoIcons.Res.R22);
         JLabel balloonDetails = new JLabel(message);
         JButton popupDetails = new JButton("Call ESA");
         NotificationDisplayer.getDefault().notify(title,
