@@ -386,6 +386,11 @@ public class WorkspaceTopComponent extends TopComponent implements InternalFrame
         public abstract void tabActionPerformed(TabActionEvent e);
     }
 
+    /**
+     * todo: make the API compatible or adaptible to the
+     * <a href="http://bits.netbeans.org/8.0/javadoc/org-netbeans-core-multiview/index.html?overview-summary.html">org.netbeans.core.spi.multiview.MultiViewElement</a>.
+     * @param <T> The editor component type.
+     */
     @SuppressWarnings("unchecked")
     public class Editor<T extends Container> {
         private final JInternalFrame internalFrame;
