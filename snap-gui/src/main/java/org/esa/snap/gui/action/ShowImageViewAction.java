@@ -162,7 +162,7 @@ public class ShowImageViewAction extends AbstractAction {
                 sceneImage = new ProductSceneImage(raster, view);
             } else {
                 sceneImage = new ProductSceneImage(raster,
-                                                   null, //SnapApp.getInstance().getPreferences(),
+                                                   SnapApp.getInstance().getCompatiblePreferences(),
                                                    SubProgressMonitor.create(pm, 1));
             }
             sceneImage.initVectorDataCollectionLayer();
