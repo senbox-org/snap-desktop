@@ -40,6 +40,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyVetoException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,6 +69,7 @@ public class WorkspaceTopComponent extends TopComponent implements InternalFrame
 
     private TabbedContainer tabbedContainer;
     private JDesktopPane desktopPane;
+    private final Map<JInternalFrame, Editor> frameToEditorMap;
     private final Map<TabData, JInternalFrame> tabToFrameMap;
     private final Map<JInternalFrame, TabData> frameToTabMap;
     private final Map<String, Action> tabActions;
@@ -75,6 +77,7 @@ public class WorkspaceTopComponent extends TopComponent implements InternalFrame
     private static WorkspaceTopComponent instance;
 
     public WorkspaceTopComponent() {
+        frameToEditorMap = new HashMap<>();
         frameToTabMap = new HashMap<>();
         tabToFrameMap = new HashMap<>();
         tabActions = new HashMap<>();
@@ -196,12 +199,14 @@ public class WorkspaceTopComponent extends TopComponent implements InternalFrame
 
     public List<Editor<ProductSceneView>> findImageEditors(RasterDataNode band) {
         ArrayList<Editor<ProductSceneView>> list = new ArrayList<>();
-        JInternalFrame[] frames = desktopPane.getAllFrames();
-        for (JInternalFrame frame : frames) {
-            if (frame.getContentPane() instanceof ProductSceneView) {
-                ProductSceneView view = (ProductSceneView) frame.getContentPane();
+        Collection<Editor> editors = frameToEditorMap.values();
+        for (Editor editor : editors) {
+            Container component = editor.getComponent();
+            if (component instanceof ProductSceneView) {
+                ProductSceneView view = (ProductSceneView) component;
                 if (view.getRaster() == band) {
-                    list.add(new Editor<>(frame));
+                    //noinspection unchecked
+                    list.add(editor);
                 }
             }
         }
@@ -211,11 +216,15 @@ public class WorkspaceTopComponent extends TopComponent implements InternalFrame
     public <T extends Container> Editor<T> addComponent(String title, T component) {
         int index = tabCount++;
         JInternalFrame internalFrame = new JInternalFrame(title, true, true, true, true);
-        JComponent tabComponent = new JPanel();
-        tabComponent.setPreferredSize(new Dimension(-1, 2));
-        //JComponent tabComponent = new JLabel("Tab + " + index);
-        TabData tabData = new TabData(tabComponent, null, title, "Tab + " + index);
 
+        // Note: The following dummyComponent with preferred size (-1, 2) allows for using the tabbedContainer as
+        // a *thin*, empty tabbed bar on top of the desktopPane.
+        JComponent dummyComponent = new JPanel();
+        dummyComponent.setPreferredSize(new Dimension(-1, 2));
+        TabData tabData = new TabData(dummyComponent, null, title, "Tab + " + index);
+
+        Editor editor = new Editor(internalFrame);
+        frameToEditorMap.put(internalFrame, editor);
         frameToTabMap.put(internalFrame, tabData);
         tabToFrameMap.put(tabData, internalFrame);
 
@@ -234,7 +243,9 @@ public class WorkspaceTopComponent extends TopComponent implements InternalFrame
         } catch (PropertyVetoException e) {
             e.printStackTrace();
         }
-        return new Editor(internalFrame);
+
+        //noinspection unchecked
+        return editor;
     }
 
     @Override
@@ -306,6 +317,7 @@ public class WorkspaceTopComponent extends TopComponent implements InternalFrame
         tabbedContainer.removeActionListener(this);
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     void writeProperties(java.util.Properties p) {
         // better to version settings since initial version as advocated at
         // http://wiki.apidesign.org/wiki/PropertyFiles
@@ -313,6 +325,7 @@ public class WorkspaceTopComponent extends TopComponent implements InternalFrame
         //  store your settings
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     void readProperties(java.util.Properties p) {
         String version = p.getProperty("version");
         // read your settings according to their version
@@ -320,6 +333,7 @@ public class WorkspaceTopComponent extends TopComponent implements InternalFrame
 
     private void closeWindow(JInternalFrame internalFrame, boolean removeTab) {
         internalFrame.removeInternalFrameListener(this);
+        frameToEditorMap.remove(internalFrame);
         TabData tabData = frameToTabMap.get(internalFrame);
         if (tabData != null) {
             if (removeTab) {
@@ -372,6 +386,7 @@ public class WorkspaceTopComponent extends TopComponent implements InternalFrame
         public abstract void tabActionPerformed(TabActionEvent e);
     }
 
+    @SuppressWarnings("unchecked")
     public class Editor<T extends Container> {
         private final JInternalFrame internalFrame;
 
