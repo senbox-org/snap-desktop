@@ -1,7 +1,9 @@
 package org.esa.snap.gui;
 
+import com.bc.ceres.jai.operator.ReinterpretDescriptor;
 import org.esa.beam.framework.datamodel.ProductNode;
 import org.esa.beam.util.PropertyMap;
+import org.esa.beam.util.SystemUtils;
 import org.esa.snap.gui.compat.CompatiblePropertyMap;
 import org.esa.snap.tango.TangoIcons;
 import org.openide.DialogDescriptor;
@@ -19,6 +21,8 @@ import org.openide.util.Utilities;
 import org.openide.windows.OnShowing;
 import org.openide.windows.WindowManager;
 
+import javax.media.jai.JAI;
+import javax.media.jai.OperationRegistry;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -30,6 +34,10 @@ import java.awt.EventQueue;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintStream;
+import java.text.MessageFormat;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -43,8 +51,9 @@ import java.util.prefs.Preferences;
 @SuppressWarnings("UnusedDeclaration")
 public class SnapApp {
 
+    private final static Logger LOG = Logger.getLogger("org.esa.snap.gui");
+
     private static SnapApp instance;
-    static Logger LOG;
 
     protected SnapApp() {
     }
@@ -86,7 +95,7 @@ public class SnapApp {
                                                    null);
         DialogDisplayer.getDefault().notify(nd);
 
-        ImageIcon icon = TangoIcons.status_dialog_error(TangoIcons.Res.R22);
+        ImageIcon icon = TangoIcons.status_dialog_error(TangoIcons.Res.R16);
         JLabel balloonDetails = new JLabel(message);
         JButton popupDetails = new JButton("Call ESA");
         NotificationDisplayer.getDefault().notify(title,
@@ -105,22 +114,21 @@ public class SnapApp {
     }
 
     /**
-     * @deprecated this is for compatibility only, use #getPreferences()
      * @return The user's application preferences.
+     * @deprecated this is for compatibility only, use #getPreferences()
      */
     @Deprecated
     public PropertyMap getCompatiblePreferences() {
-        return new CompatiblePropertyMap(NbPreferences.forModule(getClass()));
+        return new CompatiblePropertyMap(getPreferences());
     }
 
     public Logger getLogger() {
-        if (LOG == null) {
-            ModuleInfo moduleInfo = Modules.getDefault().ownerOf(getClass());
-            LOG = Logger.getLogger(moduleInfo.getCodeNameBase());
-        }
         return LOG;
     }
 
+    /**
+     * @deprecated Should be superfluous now. Kept for compatibility issues only. Remove ASAP and before 2.0 release.
+     */
     @Deprecated
     public void updateState() {
     }
@@ -144,7 +152,9 @@ public class SnapApp {
         @Override
         public void run() {
             System.out.println(">>> " + getClass() + " called");
-            setInstance(new SnapApp());
+            SnapApp snapApp = new SnapApp();
+            setInstance(snapApp);
+            initJAI();
         }
     }
 
@@ -189,7 +199,7 @@ public class SnapApp {
                 // do something useful;
             };
             JLabel label = new JLabel("<html>SNAP found some cached <b>bazoo files</b> in your <b>gnarz folder</b>.<br>" +
-                                      "Should they be rectified now?");
+                                              "Should they be rectified now?");
             JPanel panel = new JPanel();
             panel.setBorder(new EmptyBorder(10, 10, 10, 10));
             panel.add(label);
@@ -217,4 +227,44 @@ public class SnapApp {
             setInstance(null);
         }
     }
+
+    private static void initJAI() {
+        // Disable native libraries for JAI:
+        // This suppresses ugly (and harmless) JAI error messages saying that a JAI is going to
+        // continue in pure Java mode.
+        System.setProperty("com.sun.media.jai.disableMediaLib", "true");
+
+        // Set JAI tile scheduler parallelism
+        int processorCount = Runtime.getRuntime().availableProcessors();
+        int parallelism = Integer.getInteger("snap.jai.parallelism", processorCount);
+        JAI.getDefaultInstance().getTileScheduler().setParallelism(parallelism);
+        LOG.info(MessageFormat.format("JAI tile scheduler parallelism set to {0}", parallelism));
+
+        // Load JAI registry files
+        loadJaiRegistryFile(JAI.class, "/META-INF/javax.media.jai.registryFile.jai");
+        loadJaiRegistryFile(ReinterpretDescriptor.class, "/META-INF/registryFile.jai");
+    }
+
+    private static void loadJaiRegistryFile(Class<?> cls, String jaiRegistryPath) {
+        // Must use a new operation registry in order to register JAI operators defined in Ceres and BEAM
+        OperationRegistry operationRegistry = OperationRegistry.getThreadSafeOperationRegistry();
+        InputStream is = cls.getResourceAsStream(jaiRegistryPath);
+        if (is != null) {
+            // Suppress ugly (and harmless) JAI error messages saying that a descriptor is already registered.
+            final PrintStream oldErr = System.err;
+            try {
+                //setSystemErr(new PrintStream(new ByteArrayOutputStream()));
+                operationRegistry.updateFromStream(is);
+                operationRegistry.registerServices(cls.getClassLoader());
+                JAI.getDefaultInstance().setOperationRegistry(operationRegistry);
+            } catch (IOException e) {
+                LOG.log(Level.SEVERE, MessageFormat.format("Error loading {0}: {1}", jaiRegistryPath, e.getMessage()), e);
+            } finally {
+                //setSystemErr(oldErr);
+            }
+        } else {
+            LOG.warning(MessageFormat.format("{0} not found", jaiRegistryPath));
+        }
+    }
+
 }
