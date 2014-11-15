@@ -39,7 +39,7 @@ public class OpenBandImageAction extends AbstractAction {
         editor.dockInto(topComponent);
         topComponent.open();
         */
-        WorkspaceTopComponent.getInstance().addComponent(band.getName(),
-                                                         new JScrollPane(new BandImagePanel(band)));
+        WorkspaceTopComponent.getInstance().addEditorComponent(band.getName(),
+                                                               new JScrollPane(new BandImagePanel(band)));
     }
 }

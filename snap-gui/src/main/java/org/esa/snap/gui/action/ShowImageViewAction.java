@@ -122,7 +122,7 @@ public class ShowImageViewAction extends AbstractAction {
         final String title = getUniqueEditorTitle(selectedProductNode);
         final Icon icon = null; // UIUtils.loadImageIcon("icons/RsBandAsSwath16.gif");
         //final JInternalFrame internalFrame = SnapApp.getInstance().createInternalFrame(title, icon, view, getHelpId(), true);
-        WorkspaceTopComponent.Editor<ProductSceneView> editor = WorkspaceTopComponent.getInstance().addComponent(title, view);
+        WorkspaceTopComponent.Editor<ProductSceneView> editor = WorkspaceTopComponent.getInstance().addEditorComponent(title, view);
 
         final ProductNodeListenerAdapter pnl = new ProductNodeListenerAdapter() {
             @Override

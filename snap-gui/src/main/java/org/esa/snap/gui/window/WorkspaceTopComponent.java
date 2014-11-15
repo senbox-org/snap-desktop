@@ -213,7 +213,7 @@ public class WorkspaceTopComponent extends TopComponent implements InternalFrame
         return list;
     }
 
-    public <T extends Container> Editor<T> addComponent(String title, T component) {
+    public <T extends Container> Editor<T> addEditorComponent(String title, T component) {
         int index = tabCount++;
         JInternalFrame internalFrame = new JInternalFrame(title, true, true, true, true);
 
