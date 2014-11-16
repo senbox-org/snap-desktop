@@ -94,7 +94,7 @@ public class ShowImageViewAction extends AbstractAction {
                 SnapApp.getInstance().setStatusBarMessage("");
                 try {
                     ProductSceneView view = new ProductSceneView(get());
-                    openInternalFrame(view);
+                    openDocumentWindow(view);
                 } catch (OutOfMemoryError ignored) {
                     SnapApp.getInstance().showOutOfMemoryErrorDialog("Failed to open image view.");
                 } catch (Exception e) {
@@ -106,11 +106,11 @@ public class ShowImageViewAction extends AbstractAction {
         worker.execute();
     }
 
-    public WorkspaceTopComponent.Editor<ProductSceneView> openInternalFrame(final ProductSceneView view) {
-        return openInternalFrame(view, true);
+    public WorkspaceTopComponent.Editor<ProductSceneView> openDocumentWindow(final ProductSceneView view) {
+        return openDocumentWindow(view, true);
     }
 
-    public WorkspaceTopComponent.Editor<ProductSceneView> openInternalFrame(final ProductSceneView view, boolean configureByPreferences) {
+    public WorkspaceTopComponent.Editor<ProductSceneView> openDocumentWindow(final ProductSceneView view, boolean configureByPreferences) {
         final RasterDataNode selectedProductNode = view.getRaster();
         //view.setCommandUIFactory(snapApp.getCommandUIFactory());
         if (configureByPreferences) {

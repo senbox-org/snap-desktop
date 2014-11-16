@@ -17,14 +17,16 @@ import org.netbeans.swing.tabcontrol.event.TabActionEvent;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.util.NbBundle.Messages;
+import org.openide.windows.Mode;
 import org.openide.windows.TopComponent;
+import org.openide.windows.WindowManager;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
-import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.event.InternalFrameAdapter;
@@ -44,51 +46,49 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Norman
  */
 @TopComponent.Description(
         preferredID = "WorkspaceTopComponent",
-        persistenceType = TopComponent.PERSISTENCE_ALWAYS
+        persistenceType = TopComponent.PERSISTENCE_NEVER
 )
 @TopComponent.Registration(
         mode = "editor",
         openAtStartup = true)
-@ActionID(category = "Window", id = "org.snap.gui.WorkspaceTopComponent")
+@ActionID(category = "Window", id = "org.esa.snap.gui.window.WorkspaceTopComponent")
 @ActionReference(path = "Menu/View/Tool Windows", position = 0)
 @TopComponent.OpenActionRegistration(
-        displayName = "#CTL_WorkspaceTopComponent",
+        displayName = "Workspace Window",
         preferredID = "WorkspaceTopComponent"
 )
-@Messages({"CTL_WorkspaceTopComponentAction=Workspace Window",
-                  "CTL_WorkspaceTopComponent=Workspace",
-                  "HINT_WorkspaceTopComponent=This is a Workspace window",
-          })
-public class WorkspaceTopComponent extends TopComponent implements InternalFrameListener, ActionListener {
+public class WorkspaceTopComponent extends TopComponent {
+
+    private static WorkspaceTopComponent instance;
 
     private TabbedContainer tabbedContainer;
     private JDesktopPane desktopPane;
+
     private final Map<JInternalFrame, Editor> frameToEditorMap;
     private final Map<TabData, JInternalFrame> tabToFrameMap;
     private final Map<JInternalFrame, TabData> frameToTabMap;
-    private final Map<String, Action> tabActions;
+    private final ActionListener tabActionListener;
+    private final InternalFrameListener internalFrameListener;
     private int tabCount;
-    private static WorkspaceTopComponent instance;
 
     public WorkspaceTopComponent() {
+        instance = this;
         frameToEditorMap = new HashMap<>();
         frameToTabMap = new HashMap<>();
         tabToFrameMap = new HashMap<>();
-        tabActions = new HashMap<>();
+        tabActionListener = new TabActionListener();
+        internalFrameListener = new InternalFrameListenerImpl();
         initComponents();
-        setName(Bundle.CTL_WorkspaceTopComponent());
-        setToolTipText(Bundle.HINT_WorkspaceTopComponent());
-        instance = this;
-    }
-
-    public static WorkspaceTopComponent getInstance() {
-        return instance;
+        setName("Workspace");
+        setToolTipText("Provides an internal desktop for document windows");
+        putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.TRUE);
     }
 
     private void initComponents() {
@@ -99,8 +99,6 @@ public class WorkspaceTopComponent extends TopComponent implements InternalFrame
                                               TabbedContainer.TYPE_EDITOR,
                                               WinsysInfoForTabbedContainer.getDefault(new MyWinsysInfoForTabbedContainer()));
 
-        //TabData tabData = new TabData(new JPanel(), null, "Dummy Tab", "Dummy Tab");
-        //tabbedContainer.getModel().addTab(0, tabData);
         tabbedContainer.setVisible(false);
 
         desktopPane = new JDesktopPane();
@@ -108,93 +106,14 @@ public class WorkspaceTopComponent extends TopComponent implements InternalFrame
 
         add(tabbedContainer, BorderLayout.NORTH);
         add(desktopPane, BorderLayout.CENTER);
-
-        initTabActions();
     }
 
-    private void initTabActions() {
-        addTabAction(new TabAction("close") {
-            @Override
-            public void tabActionPerformed(TabActionEvent actionEvent) {
-                // Note: the tab UI is already removed, but the tabData is still in the model. NetBeans will remove it later.
-                int tabIndex = actionEvent.getTabIndex();
-                JInternalFrame internalFrame = getInternalFrame(tabIndex);
-                if (internalFrame != null) {
-                    closeWindow(internalFrame, false);
-                }
-            }
-        });
-        addTabAction(new TabAction("select") {
-            @Override
-            public void tabActionPerformed(TabActionEvent actionEvent) {
-                int tabIndex = actionEvent.getTabIndex();
-                JInternalFrame internalFrame = getInternalFrame(tabIndex);
-                if (internalFrame != null) {
-                    try {
-                        if (internalFrame.isIcon()) {
-                            internalFrame.setIcon(false);
-                        }
-                        internalFrame.setSelected(true);
-                    } catch (PropertyVetoException e) {
-                        // ok
-                    }
-                }
-            }
-        });
-        addTabAction(new TabAction("maximize") {
-            @Override
-            public void tabActionPerformed(TabActionEvent actionEvent) {
-                int tabIndex = actionEvent.getTabIndex();
-                JInternalFrame internalFrame = getInternalFrame(tabIndex);
-                if (internalFrame != null) {
-                    try {
-                        internalFrame.setMaximum(!internalFrame.isMaximum());
-                    } catch (PropertyVetoException e) {
-                        // ok
-                    }
-                }
-            }
-        });
-        addTabAction(new TabAction("popup") {
-            @Override
-            public void tabActionPerformed(TabActionEvent actionEvent) {
-
-                int tabIndex = actionEvent.getTabIndex();
-                System.out.println("tabIndex = " + tabIndex);
-
-                JPopupMenu popupMenu = new JPopupMenu();
-                if (tabIndex >= 0) {
-                    popupMenu.add(new JMenuItem("Close"));
-                    popupMenu.add(new JMenuItem("Close All"));
-                    popupMenu.add(new JMenuItem("Close Others"));
-                    popupMenu.addSeparator();
-                    popupMenu.add(new JMenuItem("Maximize"));
-                    popupMenu.addSeparator();
-                    popupMenu.add(new JMenuItem("Clone"));
-                    popupMenu.addSeparator();
-                    popupMenu.add(new JMenuItem("Tile Evenly"));
-                    popupMenu.add(new JMenuItem("Tile Horizontally"));
-                    popupMenu.add(new JMenuItem("Tile Vertically"));
-                } else {
-                    popupMenu.add(new JMenuItem("Close All"));
-                    popupMenu.addSeparator();
-                    popupMenu.add(new JMenuItem("Tile Evenly"));
-                    popupMenu.add(new JMenuItem("Tile Horizontally"));
-                    popupMenu.add(new JMenuItem("Tile Vertically"));
-                }
-
-                popupMenu.show(tabbedContainer, actionEvent.getMouseEvent().getX(), actionEvent.getMouseEvent().getY());
-            }
-        });
+    public static WorkspaceTopComponent getInstance() {
+        return instance;
     }
 
-    private void addTabAction(Action action) {
-        tabActions.put((String) action.getValue(Action.ACTION_COMMAND_KEY), action);
-    }
-
-
-    private JInternalFrame getInternalFrame(int tabIndex) {
-        return tabToFrameMap.get(tabbedContainer.getModel().getTab(tabIndex));
+    public String getUniqueEditorTitle(String titleBase) {
+        return UIUtils.getUniqueFrameTitle(desktopPane.getAllFrames(), titleBase);
     }
 
     public List<Editor<ProductSceneView>> findImageEditors(RasterDataNode band) {
@@ -235,7 +154,7 @@ public class WorkspaceTopComponent extends TopComponent implements InternalFrame
         tabbedContainer.setVisible(true);
         desktopPane.add(internalFrame);
 
-        internalFrame.addInternalFrameListener(this);
+        internalFrame.addInternalFrameListener(internalFrameListener);
 
         internalFrame.setVisible(true);
         try {
@@ -249,72 +168,13 @@ public class WorkspaceTopComponent extends TopComponent implements InternalFrame
     }
 
     @Override
-    public void actionPerformed(ActionEvent actionEvent) {
-        Action action = tabActions.get(actionEvent.getActionCommand());
-        if (action != null) {
-            action.actionPerformed(actionEvent);
-        }
-    }
-
-    @Override
-    public void internalFrameOpened(InternalFrameEvent e) {
-        tabbedContainer.updateUI();
-    }
-
-    @Override
-    public void internalFrameClosing(InternalFrameEvent e) {
-        // do nothing
-    }
-
-    @Override
-    public void internalFrameClosed(InternalFrameEvent e) {
-        JInternalFrame internalFrame = e.getInternalFrame();
-        if (frameToTabMap.containsKey(internalFrame)) {
-            closeWindow(internalFrame, true);
-        }
-        tabbedContainer.updateUI();
-    }
-
-    @Override
-    public void internalFrameIconified(InternalFrameEvent e) {
-        tabbedContainer.updateUI();
-    }
-
-    @Override
-    public void internalFrameDeiconified(InternalFrameEvent e) {
-        tabbedContainer.updateUI();
-    }
-
-    @Override
-    public void internalFrameActivated(InternalFrameEvent e) {
-
-        JInternalFrame internalFrame = e.getInternalFrame();
-        TabData selectedTab = frameToTabMap.get(internalFrame);
-
-        List<TabData> tabs = tabbedContainer.getModel().getTabs();
-        for (int i = 0; i < tabs.size(); i++) {
-            TabData tab = tabs.get(i);
-            if (tab == selectedTab && tabbedContainer.getSelectionModel().getSelectedIndex() != i) {
-                tabbedContainer.getSelectionModel().setSelectedIndex(i);
-                break;
-            }
-        }
-        tabbedContainer.updateUI();
-    }
-
-    @Override
-    public void internalFrameDeactivated(InternalFrameEvent e) {
-        tabbedContainer.updateUI();
-    }
-
-    @Override
     public void componentOpened() {
-        tabbedContainer.addActionListener(this);
+        tabbedContainer.addActionListener(tabActionListener);
     }
 
     @Override
     public void componentClosed() {
-        tabbedContainer.removeActionListener(this);
+        tabbedContainer.removeActionListener(tabActionListener);
     }
 
     @SuppressWarnings("UnusedDeclaration")
@@ -331,8 +191,27 @@ public class WorkspaceTopComponent extends TopComponent implements InternalFrame
         // read your settings according to their version
     }
 
-    private void closeWindow(JInternalFrame internalFrame, boolean removeTab) {
-        internalFrame.removeInternalFrameListener(this);
+    /**
+     * Gets extra actions for moving a given document window to a workspace.
+     *
+     * @param topComponent The document window.
+     * @return The extra actions.
+     */
+    public Action[] getExtraWorkspaceActions(TopComponent topComponent) {
+        return new Action[]{
+                new FloatIntoWorkspaceAction(topComponent),
+                new FloatGroupIntoWorkspaceAction(topComponent)
+        };
+    }
+
+    private Container closeInternalFrame(JInternalFrame internalFrame) {
+        return closeInternalFrame(internalFrame, true);
+    }
+
+    private Container closeInternalFrame(JInternalFrame internalFrame, boolean removeTab) {
+        internalFrame.removeInternalFrameListener(internalFrameListener);
+        Container contentPane = internalFrame.getContentPane();
+        internalFrame.setContentPane(new JPanel());
         frameToEditorMap.remove(internalFrame);
         TabData tabData = frameToTabMap.get(internalFrame);
         if (tabData != null) {
@@ -351,27 +230,145 @@ public class WorkspaceTopComponent extends TopComponent implements InternalFrame
         if (desktopPane.getComponentCount() == 0) {
             tabbedContainer.setVisible(false);
         }
+
+        return contentPane;
     }
 
-    public String getUniqueEditorTitle(String titleBase) {
-        return UIUtils.getUniqueFrameTitle(desktopPane.getAllFrames(), titleBase);
+    private TopComponent moveInternalFrameToEditorMode(JInternalFrame internalFrame) {
+        Container container = closeInternalFrame(internalFrame, true);
+        TopComponent topComponent = null;
+        if (container instanceof TopComponent) {
+            topComponent = (TopComponent) container;
+        } else if (container instanceof ProductSceneView) {
+            ProductSceneView psv = (ProductSceneView) container;
+            topComponent = new ProductNodeTopComponent(psv.getVisibleProductNode(), container);
+        }
+
+        if (topComponent != null) {
+            Mode mode = WindowManager.getDefault().findMode("editor");
+            mode.dockInto(topComponent);
+            if (!topComponent.isOpened()) {
+                topComponent.open();
+            }
+        }
+
+        return topComponent;
     }
 
-    private class MyWinsysInfoForTabbedContainer extends WinsysInfoForTabbedContainer {
-        @Override
-        public Object getOrientation(Component comp) {
-            return TabDisplayer.ORIENTATION_CENTER;
+    private JInternalFrame getInternalFrame(int tabIndex) {
+        return tabToFrameMap.get(tabbedContainer.getModel().getTab(tabIndex));
+    }
+
+    /**
+     * Used to listen to actions invoked on the tabbedContainer
+     */
+    private class TabActionListener implements ActionListener {
+        private final Map<String, Action> tabActions;
+
+        private TabActionListener() {
+            tabActions = new HashMap<>();
+            initTabActions();
         }
 
         @Override
-        public boolean inMaximizedMode(Component comp) {
-            JInternalFrame internalFrame = desktopPane.getSelectedFrame();
-            return internalFrame != null && internalFrame.isMaximum();
+        public void actionPerformed(ActionEvent actionEvent) {
+            Action action = tabActions.get(actionEvent.getActionCommand());
+            if (action != null) {
+                action.actionPerformed(actionEvent);
+            }
         }
+
+        private void initTabActions() {
+            addTabAction(new TabAction("close") {
+                @Override
+                public void tabActionPerformed(TabActionEvent actionEvent) {
+                    // Note: the tab UI is already removed, but the tabData is still in the model. NetBeans will remove it later.
+                    int tabIndex = actionEvent.getTabIndex();
+                    JInternalFrame internalFrame = getInternalFrame(tabIndex);
+                    if (internalFrame != null) {
+                        closeInternalFrame(internalFrame, false);
+                    }
+                }
+            });
+            addTabAction(new TabAction("select") {
+                @Override
+                public void tabActionPerformed(TabActionEvent actionEvent) {
+                    int tabIndex = actionEvent.getTabIndex();
+                    JInternalFrame internalFrame = getInternalFrame(tabIndex);
+                    if (internalFrame != null) {
+                        try {
+                            if (internalFrame.isIcon()) {
+                                internalFrame.setIcon(false);
+                            }
+                            internalFrame.setSelected(true);
+                        } catch (PropertyVetoException e) {
+                            // ok
+                        }
+                    }
+                }
+            });
+            addTabAction(new TabAction("maximize") {
+                @Override
+                public void tabActionPerformed(TabActionEvent actionEvent) {
+                    int tabIndex = actionEvent.getTabIndex();
+                    new MaximizeWindowAction(tabIndex).actionPerformed(actionEvent);
+                }
+            });
+            addTabAction(new TabAction("popup") {
+                @Override
+                public void tabActionPerformed(TabActionEvent actionEvent) {
+
+                    int tabCount = tabbedContainer.getTabCount();
+                    if (tabCount == 0) {
+                        return;
+                    }
+
+                    int tabIndex = actionEvent.getTabIndex();
+                    //System.out.println("tabIndex = " + tabIndex);
+
+                    JPopupMenu popupMenu = new JPopupMenu();
+                    if (tabIndex >= 0) {
+                        popupMenu.add(new CloseWindowAction(tabIndex));
+                    }
+                    if (tabCount > 1) {
+                        popupMenu.add(new CloseAllWindowsAction());
+                    }
+                    if (tabIndex >= 0 && tabCount > 1) {
+                        popupMenu.add(new CloseOtherWindowsAction(tabIndex));
+                    }
+                    if (tabIndex >= 0 || tabCount > 1) {
+                        popupMenu.addSeparator();
+                        if (tabIndex >= 0) {
+                            popupMenu.add(new MaximizeWindowAction(tabIndex));
+                            popupMenu.add(new DockInWorkspaceAction(tabIndex));
+                        }
+                        if (tabCount > 1) {
+                            popupMenu.add(new DockAllInWorkspaceAction());
+                        }
+                    }
+                    if (tabIndex >= 0) {
+                        popupMenu.addSeparator();
+                        popupMenu.add(new CloneWindowAction(tabIndex));
+                    }
+                    if (tabCount > 1) {
+                        popupMenu.addSeparator();
+                        popupMenu.add(new TileEvenlyAction());
+                        popupMenu.add(new TileHorizontallyAction());
+                        popupMenu.add(new TileVerticallyAction());
+                    }
+                    popupMenu.show(tabbedContainer, actionEvent.getMouseEvent().getX(), actionEvent.getMouseEvent().getY());
+                }
+            });
+        }
+
+        private void addTabAction(Action action) {
+            tabActions.put((String) action.getValue(Action.ACTION_COMMAND_KEY), action);
+        }
+
     }
 
-    abstract class TabAction extends AbstractAction {
-        protected TabAction(String name) {
+    private abstract class TabAction extends AbstractAction {
+        private TabAction(String name) {
             super(name);
             putValue(Action.ACTION_COMMAND_KEY, name);
         }
@@ -387,8 +384,25 @@ public class WorkspaceTopComponent extends TopComponent implements InternalFrame
     }
 
     /**
+     * Allows telling the tabbedContainer if a tab component is maximized.
+     */
+    private class MyWinsysInfoForTabbedContainer extends WinsysInfoForTabbedContainer {
+        @Override
+        public Object getOrientation(Component comp) {
+            return TabDisplayer.ORIENTATION_CENTER;
+        }
+
+        @Override
+        public boolean inMaximizedMode(Component comp) {
+            JInternalFrame internalFrame = desktopPane.getSelectedFrame();
+            return internalFrame != null && internalFrame.isMaximum();
+        }
+    }
+
+    /**
      * todo: make the API compatible or adaptible to the
      * <a href="http://bits.netbeans.org/8.0/javadoc/org-netbeans-core-multiview/index.html?overview-summary.html">org.netbeans.core.spi.multiview.MultiViewElement</a>.
+     *
      * @param <T> The editor component type.
      */
     @SuppressWarnings("unchecked")
@@ -472,6 +486,301 @@ public class WorkspaceTopComponent extends TopComponent implements InternalFrame
 
         @Override
         public void editorClosed(Editor<T> editor) {
+        }
+    }
+
+    private class CloseWindowAction extends AbstractAction {
+        private final int tabIndex;
+
+        public CloseWindowAction(int tabIndex) {
+            super("Close");
+            this.tabIndex = tabIndex;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            TabData tab = tabbedContainer.getModel().getTab(tabIndex);
+            JInternalFrame internalFrame = tabToFrameMap.get(tab);
+            closeInternalFrame(internalFrame);
+        }
+    }
+
+    private class CloseAllWindowsAction extends AbstractAction {
+
+        public CloseAllWindowsAction() {
+            super("Close All");
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            // todo - implement me!
+            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), "Not implemented yet.");
+        }
+    }
+
+    private class CloseOtherWindowsAction extends AbstractAction {
+        private final int tabIndex;
+
+        public CloseOtherWindowsAction(int tabIndex) {
+            super("Close Others");
+            this.tabIndex = tabIndex;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            // todo - implement me!
+            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), "Not implemented yet. (tabIndex=" + tabIndex + ")");
+        }
+    }
+
+    private class CloneWindowAction extends AbstractAction {
+        private final int tabIndex;
+
+        public CloneWindowAction(int tabIndex) {
+            super("Close Others");
+            this.tabIndex = tabIndex;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            // todo - implement me!
+            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), "Not implemented yet. (tabIndex=" + tabIndex + ")");
+        }
+    }
+
+    private class MaximizeWindowAction extends AbstractAction {
+        private final int tabIndex;
+
+        public MaximizeWindowAction(int tabIndex) {
+            super("Maximise");
+            this.tabIndex = tabIndex;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            TabData tab = tabbedContainer.getModel().getTab(tabIndex);
+            JInternalFrame internalFrame = tabToFrameMap.get(tab);
+            try {
+                internalFrame.setMaximum(true);
+            } catch (PropertyVetoException e1) {
+                // ok
+            }
+        }
+    }
+
+    private class TileEvenlyAction extends AbstractAction {
+        public TileEvenlyAction() {
+            super("Tile Evenly");
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            int desktopWidth = desktopPane.getWidth();
+            int desktopHeight = desktopPane.getHeight();
+            int windowCount = frameToTabMap.size();
+
+            double bestDeltaValue = Double.POSITIVE_INFINITY;
+            int bestHorCount = -1;
+            int bestVerCount = -1;
+            for (int verCount = 1; verCount <= windowCount; verCount++) {
+                for (int horCount = 1; horCount <= windowCount; horCount++) {
+                    if (horCount * verCount >= windowCount && horCount * verCount <= 2 * windowCount) {
+                        double deltaRatio = Math.abs(1.0 - verCount / (double) horCount);
+                        double deltaCount = Math.abs(1.0 - (horCount * verCount) / ((double) windowCount));
+                        double deltaValue = deltaRatio + deltaCount;
+                        if (deltaValue < bestDeltaValue) {
+                            bestDeltaValue = deltaValue;
+                            bestHorCount = horCount;
+                            bestVerCount = verCount;
+                        }
+                    }
+                }
+            }
+
+            int windowWidth = desktopWidth / bestHorCount;
+            int windowHeight = desktopHeight / bestVerCount;
+
+            List<TabData> tabs = tabbedContainer.getModel().getTabs();
+            int windowIndex = 0;
+            for (int j = 0; j < bestVerCount; j++) {
+                for (int i = 0; i < bestHorCount; i++) {
+                    if (windowIndex < windowCount) {
+                        TabData tabData = tabs.get(windowIndex);
+                        JInternalFrame internalFrame = tabToFrameMap.get(tabData);
+                        internalFrame.setBounds(i * windowWidth, j * windowHeight, windowWidth, windowHeight);
+                    }
+                    windowIndex++;
+                }
+            }
+        }
+    }
+
+    private class TileHorizontallyAction extends AbstractAction {
+        public TileHorizontallyAction() {
+            super("Tile Horizontally");
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            int desktopWidth = desktopPane.getWidth();
+            int desktopHeight = desktopPane.getHeight();
+            int windowCount = frameToTabMap.size();
+            int windowWidth = desktopWidth / windowCount;
+            List<TabData> tabs = tabbedContainer.getModel().getTabs();
+            for (int windowIndex = 0; windowIndex < windowCount; windowIndex++) {
+                TabData tabData = tabs.get(windowIndex);
+                JInternalFrame internalFrame = tabToFrameMap.get(tabData);
+                internalFrame.setBounds(windowIndex * windowWidth, 0, windowWidth, desktopHeight);
+            }
+        }
+    }
+
+    private class TileVerticallyAction extends AbstractAction {
+        public TileVerticallyAction() {
+            super("Tile Vertically");
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            int desktopWidth = desktopPane.getWidth();
+            int desktopHeight = desktopPane.getHeight();
+            int windowCount = frameToTabMap.size();
+            int windowHeight = desktopHeight / windowCount;
+            List<TabData> tabs = tabbedContainer.getModel().getTabs();
+            for (int windowIndex = 0; windowIndex < windowCount; windowIndex++) {
+                TabData tabData = tabs.get(windowIndex);
+                JInternalFrame internalFrame = tabToFrameMap.get(tabData);
+                internalFrame.setBounds(0, windowIndex * windowHeight, desktopWidth, windowHeight);
+            }
+        }
+    }
+
+    private class DockAllInWorkspaceAction extends AbstractAction {
+        public DockAllInWorkspaceAction() {
+            super("Dock All");
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            Set<JInternalFrame> internalFrameSet = frameToEditorMap.keySet();
+            JInternalFrame[] internalFrames = internalFrameSet.toArray(new JInternalFrame[internalFrameSet.size()]);
+            TopComponent topComponent = null;
+            for (JInternalFrame internalFrame : internalFrames) {
+                topComponent = moveInternalFrameToEditorMode(internalFrame);
+            }
+            if (topComponent != null) {
+                topComponent.requestActive();
+            }
+        }
+    }
+
+    private class DockInWorkspaceAction extends AbstractAction {
+        private int tabIndex;
+
+        public DockInWorkspaceAction(int tabIndex) {
+            super("Dock");
+            this.tabIndex = tabIndex;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            TabData tabData = tabbedContainer.getModel().getTab(tabIndex);
+            JInternalFrame internalFrame = tabToFrameMap.get(tabData);
+            TopComponent topComponent = moveInternalFrameToEditorMode(internalFrame);
+            if (topComponent != null) {
+                topComponent.requestActive();
+            }
+        }
+    }
+
+    private class FloatIntoWorkspaceAction extends AbstractAction {
+        private TopComponent window;
+
+        public FloatIntoWorkspaceAction(TopComponent window) {
+            super("Float into Workspace");
+            this.window = window;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            window.close();
+            addEditorComponent(window.getDisplayName(), window);
+        }
+    }
+
+    private class FloatGroupIntoWorkspaceAction extends AbstractAction {
+        private TopComponent window;
+
+        public FloatGroupIntoWorkspaceAction(TopComponent window) {
+            super("Float Group into Workspace");
+            this.window = window;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            Mode mode = WindowManager.getDefault().findMode(window);
+            if (mode != null) {
+                TopComponent[] topComponents = WindowManager.getDefault().getOpenedTopComponents(mode);
+                for (TopComponent topComponent : topComponents) {
+                    if (!(topComponent instanceof WorkspaceTopComponent)) {
+                        topComponent.close();
+                        addEditorComponent(topComponent.getDisplayName(), topComponent);
+                    }
+                }
+            }
+        }
+    }
+
+    private class InternalFrameListenerImpl implements InternalFrameListener {
+        @Override
+        public void internalFrameOpened(InternalFrameEvent e) {
+            tabbedContainer.updateUI();
+        }
+
+        @Override
+        public void internalFrameClosing(InternalFrameEvent e) {
+            // do nothing
+        }
+
+        @Override
+        public void internalFrameClosed(InternalFrameEvent e) {
+            JInternalFrame internalFrame = e.getInternalFrame();
+            if (frameToTabMap.containsKey(internalFrame)) {
+                closeInternalFrame(internalFrame);
+            }
+            tabbedContainer.updateUI();
+        }
+
+        @Override
+        public void internalFrameIconified(InternalFrameEvent e) {
+            tabbedContainer.updateUI();
+        }
+
+        @Override
+        public void internalFrameDeiconified(InternalFrameEvent e) {
+            tabbedContainer.updateUI();
+        }
+
+        @Override
+        public void internalFrameActivated(InternalFrameEvent e) {
+
+            JInternalFrame internalFrame = e.getInternalFrame();
+            TabData selectedTab = frameToTabMap.get(internalFrame);
+
+            List<TabData> tabs = tabbedContainer.getModel().getTabs();
+            for (int i = 0; i < tabs.size(); i++) {
+                TabData tab = tabs.get(i);
+                if (tab == selectedTab && tabbedContainer.getSelectionModel().getSelectedIndex() != i) {
+                    tabbedContainer.getSelectionModel().setSelectedIndex(i);
+                    break;
+                }
+            }
+            tabbedContainer.updateUI();
+        }
+
+        @Override
+        public void internalFrameDeactivated(InternalFrameEvent e) {
+            tabbedContainer.updateUI();
         }
     }
 }

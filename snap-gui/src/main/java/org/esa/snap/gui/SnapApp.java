@@ -3,7 +3,6 @@ package org.esa.snap.gui;
 import com.bc.ceres.jai.operator.ReinterpretDescriptor;
 import org.esa.beam.framework.datamodel.ProductNode;
 import org.esa.beam.util.PropertyMap;
-import org.esa.beam.util.SystemUtils;
 import org.esa.snap.gui.compat.CompatiblePropertyMap;
 import org.esa.snap.tango.TangoIcons;
 import org.openide.DialogDescriptor;
@@ -11,8 +10,6 @@ import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.awt.NotificationDisplayer;
 import org.openide.awt.StatusDisplayer;
-import org.openide.modules.ModuleInfo;
-import org.openide.modules.Modules;
 import org.openide.modules.OnStart;
 import org.openide.modules.OnStop;
 import org.openide.util.NbBundle;
@@ -34,6 +31,7 @@ import java.awt.EventQueue;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -152,8 +150,7 @@ public class SnapApp {
         @Override
         public void run() {
             System.out.println(">>> " + getClass() + " called");
-            SnapApp snapApp = new SnapApp();
-            setInstance(snapApp);
+            setInstance(new SnapApp());
             initJAI();
         }
     }
@@ -194,10 +191,7 @@ public class SnapApp {
                 return true;
             }
             System.out.println(">>> " + getClass() + " called");
-            ActionListener actionListener = (ActionEvent e) -> {
-                System.out.println(">>> " + getClass() + " action called");
-                // do something useful;
-            };
+            ActionListener actionListener = (ActionEvent e) -> System.out.println(">>> " + getClass() + " action called");
             JLabel label = new JLabel("<html>SNAP found some cached <b>bazoo files</b> in your <b>gnarz folder</b>.<br>" +
                                               "Should they be rectified now?");
             JPanel panel = new JPanel();
@@ -240,27 +234,29 @@ public class SnapApp {
         JAI.getDefaultInstance().getTileScheduler().setParallelism(parallelism);
         LOG.info(MessageFormat.format("JAI tile scheduler parallelism set to {0}", parallelism));
 
-        // Load JAI registry files
-        loadJaiRegistryFile(JAI.class, "/META-INF/javax.media.jai.registryFile.jai");
+        // Load JAI registry files.
+        // For some reason registry file loading must be done in this order: first our own, then JAI's descriptors (nf)
         loadJaiRegistryFile(ReinterpretDescriptor.class, "/META-INF/registryFile.jai");
+        loadJaiRegistryFile(JAI.class, "/META-INF/javax.media.jai.registryFile.jai");
     }
 
     private static void loadJaiRegistryFile(Class<?> cls, String jaiRegistryPath) {
+        LOG.info("Reading JAI registry file from " + jaiRegistryPath);
         // Must use a new operation registry in order to register JAI operators defined in Ceres and BEAM
         OperationRegistry operationRegistry = OperationRegistry.getThreadSafeOperationRegistry();
         InputStream is = cls.getResourceAsStream(jaiRegistryPath);
         if (is != null) {
-            // Suppress ugly (and harmless) JAI error messages saying that a descriptor is already registered.
             final PrintStream oldErr = System.err;
             try {
-                //setSystemErr(new PrintStream(new ByteArrayOutputStream()));
+                // Suppress annoying and harmless JAI error messages saying that a descriptor is already registered.
+                System.setErr(new PrintStream(new ByteArrayOutputStream()));
                 operationRegistry.updateFromStream(is);
                 operationRegistry.registerServices(cls.getClassLoader());
                 JAI.getDefaultInstance().setOperationRegistry(operationRegistry);
             } catch (IOException e) {
                 LOG.log(Level.SEVERE, MessageFormat.format("Error loading {0}: {1}", jaiRegistryPath, e.getMessage()), e);
             } finally {
-                //setSystemErr(oldErr);
+                System.setErr(oldErr);
             }
         } else {
             LOG.warning(MessageFormat.format("{0} not found", jaiRegistryPath));
