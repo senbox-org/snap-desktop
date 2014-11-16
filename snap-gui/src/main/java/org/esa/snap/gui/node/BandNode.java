@@ -6,7 +6,7 @@
 package org.esa.snap.gui.node;
 
 import org.esa.beam.framework.datamodel.Band;
-import org.esa.snap.gui.action.OpenBandImageAction;
+import org.esa.snap.gui.action.ShowImageViewAction;
 import org.openide.nodes.BeanNode;
 import org.openide.nodes.Children;
 import org.openide.util.NbBundle.Messages;
@@ -30,12 +30,12 @@ public class BandNode extends BeanNode<Band> {
 
     @Override
     public Action[] getActions(boolean context) {
-        return new Action[]{new OpenBandImageAction(this.getBean())};
+        return new Action[]{new ShowImageViewAction(this.getBean())};
     }
 
     @Override
     public Action getPreferredAction() {
-        return new OpenBandImageAction(this.getBean());
+        return new ShowImageViewAction(this.getBean());
     }
 
 }
