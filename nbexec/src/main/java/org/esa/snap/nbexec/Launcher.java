@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -26,28 +27,31 @@ import java.util.Set;
  * A plain Java NetBeans Platform launcher which mimics the core functionality of the NB's native launcher
  * {@code nbexec}. Can be used for easy debugging of NB Platform (Maven) applications when using the NB IDE is not
  * an option.
- * <p/>
+ * <p>
  * <i>IMPORTANT NOTE: This launcher only implements a subset of the functionality the native NetBeans
  * launcher {@code nbexec} provides. For example, you cannot update plugins and then let the application
  * restart itself.<br/>
  * The recommended way to run/debug applications build on the NetBeans platform is either using the NetBeans
  * Maven plugin (via {@code nbm:run-platform}) or directly using the NetBeans IDE.
  * </i>
- * <p/>
+ * <p>
  * Usage:
  * <pre>
- *    Launcher [--branding &lt;app&gt;] [--userdir &lt;userdir&gt;] [--cachedir &lt;cachedir&gt;] &lt;args&gt;
+ *    Launcher {--rootdir &lt;rootdir&gt;} [--branding &lt;app&gt;] [--userdir &lt;userdir&gt;] [--cachedir &lt;cachedir&gt;] &lt;args&gt;
  * </pre>
- * where the options are the same as for the native launcher.
+ * where the {@code branding}, {@code userdir}, and {@code cachedir} options are the same as for the native launcher.
  * The current working directory must be the target deployment directory, {@code $appmodule/target/$app}.
- * <p/>
- * The Launcher takes care of any changed code in all the source modules. So, In IntelliJ IDEA we can hit CTRL+F9
+ * <p>
+ * The Launcher takes care of any changed code in all the source modules contained in the given
+ * {@code rootdir} directories (Maven packaging {@code pom}), always including the source module directory which
+ * includes the application module, namely {@code $appmodule/../../..}<br/>
+ * So, In IntelliJ IDEA we can hit CTRL+F9
  * and then run/debug the Launcher.
- *
+ * <p>
  * This is enabled for all modules which are
  * <ul>
- *  <li>(a) found in the applications target cluster (e.g. modules with {@code nbm} packaging) and </li>
- *  <li>(b) have a valid target/classes output directory.</li>
+ * <li>(a) found in the applications target cluster (e.g. modules with {@code nbm} packaging) and </li>
+ * <li>(b) have a valid target/classes output directory.</li>
  * </ul>
  * We may later want to be able to further configure this default behaviour. See code for how the current
  * strategy is implemented.
@@ -75,9 +79,13 @@ public class Launcher {
         String appName = basename(deploymentDir);
 
         LinkedList<String> argList = new LinkedList<>(Arrays.asList(args));
-        String brandingToken = getArg(argList, "--branding");
-        String userDir = getArg(argList, "--userdir");
-        String cacheDir = getArg(argList, "--cachedir");
+        String brandingToken = parseArg(argList, "--branding");
+        String userDir = parseArg(argList, "--userdir");
+        String cacheDir = parseArg(argList, "--cachedir");
+
+        // Collect project dirs.
+        // Default is "../../.." which refers to a Maven specific directory layout.
+        Set<File> rootDirs = parseRootDirs(argList);
 
         variables.putAll(System.getenv());
         setVarIfNotSet("APPNAME", appName);
@@ -102,9 +110,9 @@ public class Launcher {
         String defaultCacheDir = null;
         if (defaultOptions != null) {
             defaultOptionList = parseOptions(defaultOptions);
-            defaultBrandingToken = getArg(defaultOptionList, "--branding");
-            defaultUserDir = getArg(defaultOptionList, "--userdir");
-            defaultCacheDir = getArg(defaultOptionList, "--cachdir");
+            defaultBrandingToken = parseArg(defaultOptionList, "--branding");
+            defaultUserDir = parseArg(defaultOptionList, "--userdir");
+            defaultCacheDir = parseArg(defaultOptionList, "--cachedir");
         }
 
         if (defaultUserDir == null) {
@@ -176,10 +184,10 @@ public class Launcher {
         setPropIfNotSet("netbeans.logger.console", "true");
         setPropIfNotSet("com.apple.mrj.application.apple.menu.about.name", brandingToken);
 
-        List<String> remainingDefaultOptions = extractJavaOptions(defaultOptionList, false);
-        List<String> remainingArgs = extractJavaOptions(argList, true);
+        List<String> remainingDefaultOptions = parseJavaOptions(defaultOptionList, false);
+        List<String> remainingArgs = parseJavaOptions(argList, true);
 
-        setPatchModules(deploymentDir, appDir);
+        setPatchModules(appDir, rootDirs);
 
         List<String> newArgList = new ArrayList<>();
         newArgList.add("--branding");
@@ -194,7 +202,27 @@ public class Launcher {
         runMain(classPathList, newArgList);
     }
 
-    private List<String> extractJavaOptions(List<String> defaultOptionList, boolean fail) {
+    private Set<File> parseRootDirs(LinkedList<String> argList) {
+        try {
+            Set<File> rootDirs = new HashSet<>();
+            rootDirs.add(new File("../../..").getCanonicalFile());
+            while (true) {
+                String rootDirPath = parseArg(argList, "--rootdir");
+                if (rootDirPath != null) {
+                    rootDirs.add(new File(rootDirPath).getCanonicalFile());
+                } else {
+                    break;
+                }
+            }
+            return rootDirs;
+        } catch (IOException e) {
+            System.err.println("ERROR: " + e.getMessage());
+            System.exit(1);
+            return null;
+        }
+    }
+
+    private List<String> parseJavaOptions(List<String> defaultOptionList, boolean fail) {
         List<String> remainingDefaultOptions = new ArrayList<>();
         for (String option : defaultOptionList) {
             if (option.startsWith("-J")) {
@@ -221,7 +249,7 @@ public class Launcher {
     /*
      * scan appDir for modules and set system property netbeans.patches.<module>=<module-classes-dir> for each module
      */
-    private void setPatchModules(String deploymentDir, String appDir) {
+    private void setPatchModules(String appDir, Set<File> rootDirs) {
         String modulesDir = path(appDir, "modules");
         File[] moduleJars = new File(path(modulesDir)).listFiles(file -> file.getName().toLowerCase().endsWith(".jar"));
         List<String> moduleNames = new ArrayList<>();
@@ -234,24 +262,30 @@ public class Launcher {
             }
         }
 
-        // check - generify: "../../.." refers to a Maven specific directory layout
-        File[] projectDirs = new File(path(deploymentDir, "..", "..", "..")).listFiles(file -> file.isDirectory() && !file.getName().startsWith("."));
-        if (projectDirs != null) {
-            for (File projectDir : projectDirs) {
-                // check - generify: "target/classes" is a Maven specific output path
-                String classesDir = path(projectDir.getPath(), "target", "classes");
-                if (exists(classesDir)) {
-                    String artifactName = projectDir.getName();
-                    //info("checking if artifact '"+artifactName+"' has output directory " + classesDir);
+        List<File> projectDirList = new ArrayList<>();
+        for (File rootDir : rootDirs) {
+            File[] projectDirs = rootDir.listFiles(file -> file.isDirectory() && !file.getName().startsWith("."));
+            if (projectDirs != null) {
+                projectDirList.addAll(Arrays.asList(projectDirs));
+            }
+        }
 
-                    // check - generify: we assume that
-                    //    <project-dir>/<module-dir>  --> <cluster-dir>/modules/<module-dir>.jar
-                    // but this pattern is specific to the NB Maven Plugin
-                    moduleNames.stream().filter(moduleName -> moduleName.endsWith(artifactName)).forEach(moduleName -> {
-                        String propertyName = "netbeans.patches." + moduleName.replace("-", ".");
-                        setPropIfNotSet(propertyName, classesDir);
-                    });
-                }
+        for (File projectDir : projectDirList) {
+            info("checking '"+projectDir+"'");
+
+            // check - generify: "target/classes" is a Maven specific output path
+            String classesDir = path(projectDir.getPath(), "target", "classes");
+            if (exists(classesDir)) {
+                String artifactName = projectDir.getName();
+                info("checking if artifact '"+artifactName+"' has output directory " + classesDir);
+
+                // check - generify: we assume that
+                //    <project-dir>/<module-dir>  --> <cluster-dir>/modules/<module-dir>.jar
+                // but this pattern is specific to the NB Maven Plugin
+                moduleNames.stream().filter(moduleName -> moduleName.endsWith(artifactName)).forEach(moduleName -> {
+                    String propertyName = "netbeans.patches." + moduleName.replace("-", ".");
+                    setPropIfNotSet(propertyName, classesDir);
+                });
             }
         }
     }
@@ -373,7 +407,7 @@ public class Launcher {
         return new File(path).exists();
     }
 
-    private String getArg(List<String> argList, String name) {
+    private String parseArg(List<String> argList, String name) {
         String value = null;
         int i = argList.indexOf(name);
         if (i >= 0 && i + 1 < argList.size()) {
