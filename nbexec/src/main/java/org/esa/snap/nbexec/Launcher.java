@@ -228,9 +228,14 @@ public class Launcher {
     private void processRoot(String rootDirPath, Set<Root> rootDirs) throws IOException {
         int wcPos = rootDirPath.indexOf("$");
         if (wcPos >= 0) {
-            rootDirs.add(new Root(new File(rootDirPath.substring(0, wcPos)).getCanonicalFile(),rootDirPath.substring(wcPos+1)));
+            String subPath = rootDirPath.substring(wcPos + 1);
+            subPath = subPath.replace('/', File.separatorChar);
+            if (subPath.startsWith(File.separator)) {
+                subPath = subPath.substring(1);
+            }
+            rootDirs.add(new Root(new File(rootDirPath.substring(0, wcPos)).getCanonicalFile(), subPath));
         } else {
-            throw new IllegalArgumentException("rootdir must contain a single wildcard '$'");
+            throw new IllegalArgumentException("module root must contain a single wildcard '$'");
         }
     }
 
@@ -258,6 +263,8 @@ public class Launcher {
         return remainingDefaultOptions;
     }
 
+    int patchCount = 0;
+
     /*
      * scan appDir for modules and set system property netbeans.patches.<module>=<module-classes-dir> for each module
      */
@@ -275,6 +282,7 @@ public class Launcher {
         }
 
         for (Root root : roots) {
+            patchCount = 0;
             File[] projectDirs = root.dir.listFiles(file -> file.isDirectory() && !file.getName().startsWith("."));
             if (projectDirs != null) {
                 for (File projectDir : projectDirs) {
@@ -304,20 +312,29 @@ public class Launcher {
 
                         // 1. module names that end with artifact name
                         moduleNames.stream().filter(moduleName -> moduleName.endsWith(artifactName)).forEach(moduleName -> {
-                            String propertyName = "netbeans.patches." + moduleName.replace("-", ".");
-                            setPropIfNotSet(propertyName, classesDir.getPath());
+                            addPatch(moduleName, classesDir);
                         });
 
                         // 2. module names that don't end with artifact name, but contain artifact name
                         moduleNames.stream().filter(moduleName -> !moduleName.endsWith(artifactName) && moduleName.contains(artifactName)).forEach(moduleName -> {
-                            String propertyName = "netbeans.patches." + moduleName.replace("-", ".");
-                            setPropIfNotSet(propertyName, classesDir.getPath());
+                            addPatch(moduleName, classesDir);
                         });
                     }
                 }
             }
+            if (patchCount == 0) {
+                warn("no module patches found for module root " + root);
+            } else {
+                info(patchCount + " module patch(es) found for module root " + root);
+            }
         }
 
+    }
+
+    private void addPatch(String moduleName, File classesDir) {
+        String propertyName = "netbeans.patches." + moduleName.replace("-", ".");
+        setPropIfNotSet(propertyName, classesDir.getPath());
+        patchCount++;
     }
 
     private List<String> parseOptions(String defaultOptions) {
@@ -507,7 +524,19 @@ public class Launcher {
 
         private Root(File dir, String subPath) {
             this.dir = dir;
-            this.subPath = subPath;
+            String s = subPath.replace('/', File.separatorChar);
+            if (s.startsWith(File.separator)) {
+                s = s.substring(1);
+            }
+            this.subPath = s;
+        }
+
+        @Override
+        public String toString() {
+            if (subPath.isEmpty()) {
+                return dir + File.separator + "$";
+            }
+            return dir + File.separator + "$" + File.separator + subPath;
         }
 
         @Override
