@@ -5,6 +5,7 @@
  */
 package org.esa.snap.gui.window;
 
+import org.esa.beam.framework.datamodel.ProductNode;
 import org.esa.beam.framework.datamodel.RasterDataNode;
 import org.esa.beam.framework.ui.UIUtils;
 import org.esa.beam.framework.ui.product.ProductSceneView;
@@ -16,7 +17,11 @@ import org.netbeans.swing.tabcontrol.WinsysInfoForTabbedContainer;
 import org.netbeans.swing.tabcontrol.event.TabActionEvent;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.util.Lookup;
 import org.openide.util.NbBundle.Messages;
+import org.openide.util.lookup.AbstractLookup;
+import org.openide.util.lookup.InstanceContent;
+import org.openide.util.lookup.Lookups;
 import org.openide.windows.Mode;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
@@ -43,6 +48,7 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,18 +74,21 @@ public class WorkspaceTopComponent extends TopComponent {
 
     private static WorkspaceTopComponent instance;
 
-    private TabbedContainer tabbedContainer;
-    private JDesktopPane desktopPane;
-
+    private final InstanceContent content = new InstanceContent();
     private final Map<JInternalFrame, Editor> frameToEditorMap;
     private final Map<TabData, JInternalFrame> tabToFrameMap;
     private final Map<JInternalFrame, TabData> frameToTabMap;
     private final ActionListener tabActionListener;
     private final InternalFrameListener internalFrameListener;
+
+    private TabbedContainer tabbedContainer;
+    private JDesktopPane desktopPane;
+
     private int tabCount;
 
     public WorkspaceTopComponent() {
         instance = this;
+        associateLookup(new AbstractLookup(content));
         frameToEditorMap = new HashMap<>();
         frameToTabMap = new HashMap<>();
         tabToFrameMap = new HashMap<>();
@@ -197,6 +206,36 @@ public class WorkspaceTopComponent extends TopComponent {
     @Override
     public void componentClosed() {
         tabbedContainer.removeActionListener(tabActionListener);
+    }
+
+    @Override
+    protected void componentActivated() {
+        JInternalFrame internalFrame;
+        // Make sure that activation states of tabbedContainer and desktopPane are synchronized
+        int tabIndex = tabbedContainer.getSelectionModel().getSelectedIndex();
+        if (tabIndex >= 0) {
+            TabData tab = tabbedContainer.getModel().getTab(tabIndex);
+            internalFrame = tabToFrameMap.get(tab);
+            if (!internalFrame.isSelected()) {
+                try {
+                    internalFrame.setSelected(true);
+                } catch (PropertyVetoException e) {
+                    // ok
+                }
+            }
+        } else {
+            internalFrame = desktopPane.getSelectedFrame();
+            if (internalFrame != null) {
+                TabData tab = frameToTabMap.get(internalFrame);
+                tabIndex = tabbedContainer.getModel().indexOf(tab);
+                if (tabIndex >= 0) {
+                    tabbedContainer.getSelectionModel().setSelectedIndex(tabIndex);
+                }
+            }
+        }
+        if (internalFrame != null) {
+            internalFrame.requestFocusInWindow();
+        }
     }
 
     @SuppressWarnings("UnusedDeclaration")
@@ -798,6 +837,17 @@ public class WorkspaceTopComponent extends TopComponent {
                 }
             }
             tabbedContainer.updateUI();
+
+            // see https://platform.netbeans.org/tutorials/nbm-selection-1.html
+            Container contentPane = internalFrame.getContentPane();
+            if (contentPane instanceof TopComponent) {
+                Lookup lookup = ((TopComponent) contentPane).getLookup();
+                Collection<? extends ProductNode> productNodes = lookup.lookupAll(ProductNode.class);
+                WorkspaceTopComponent.this.content.set(productNodes, null);
+            } else if (contentPane instanceof ProductSceneView) {
+                ProductNode productNode = ((ProductSceneView) contentPane).getVisibleProductNode();
+                WorkspaceTopComponent.this.content.set(Collections.singleton(productNode), null);
+            }
         }
 
         @Override

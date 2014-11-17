@@ -15,7 +15,6 @@ import org.openide.explorer.view.BeanTreeView;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
-import org.openide.util.NbBundle.Messages;
 import org.openide.windows.IOProvider;
 import org.openide.windows.InputOutput;
 import org.openide.windows.TopComponent;
@@ -31,7 +30,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
 /**
- *
  * @author Norman
  */
 @TopComponent.Description(
@@ -40,26 +38,24 @@ import java.text.SimpleDateFormat;
 )
 @TopComponent.Registration(
         mode = "explorer",
-        openAtStartup = true)
+        openAtStartup = true,
+        position = 1)
 @ActionID(category = "Window", id = "org.snap.gui.ProductExplorerTopComponent")
 @ActionReference(path = "Menu/View/Tool Windows", position = 0)
 @TopComponent.OpenActionRegistration(
-        displayName = "#CTL_ProductExplorerAction",
+        displayName = "Product Explorer",
         preferredID = "ProductExplorerTopComponent"
 )
-@Messages({
-    "CTL_ProductExplorerAction=Product Explorer",
-    "CTL_ProductExplorerTopComponent=Product Explorer",
-    "HINT_ProductExplorerTopComponent=This is a Product Explorer window",
-    "CTL_RootDisplayName=Active products",})
 public class ProductExplorerTopComponent extends TopComponent implements ExplorerManager.Provider {
 
     private final ExplorerManager manager = new ExplorerManager();
 
     public ProductExplorerTopComponent() {
         initComponents();
-        setName(Bundle.CTL_ProductExplorerTopComponent());
-        setToolTipText(Bundle.HINT_ProductExplorerTopComponent());
+        setName("Product Explorer");
+        setToolTipText("Lists all open products");
+        putClientProperty(TopComponent.PROP_MAXIMIZATION_DISABLED, Boolean.TRUE);
+        putClientProperty(TopComponent.PROP_KEEP_PREFERRED_SIZE_WHEN_SLIDED_IN, Boolean.TRUE);
     }
 
     private void initComponents() {
@@ -77,14 +73,14 @@ public class ProductExplorerTopComponent extends TopComponent implements Explore
                 String pressedKey = KeyEvent.getKeyText(e.getKeyCode());
                 //Put a message in the status bar:
                 StatusDisplayer.getDefault().setStatusText(selectedNode
-                        + " is being pressed by the " + pressedKey + " key!");
+                                                                   + " is being pressed by the " + pressedKey + " key!");
             }
         });
         add(new BeanTreeView(), BorderLayout.CENTER);
         // 2. Create a node hierarchy:
         Children productChildren = Children.create(ProductChildFactory.getInstance(), true);
         Node rootNode = new AbstractNode(productChildren);
-        rootNode.setDisplayName(Bundle.CTL_RootDisplayName());
+        rootNode.setDisplayName("Open products");
         // 3. Set the root of the node hierarchy on the ExplorerManager:
         manager.setRootContext(rootNode);
 
@@ -96,11 +92,11 @@ public class ProductExplorerTopComponent extends TopComponent implements Explore
         associateLookup(ExplorerUtils.createLookup(manager, map));
 
         final InputOutput io = IOProvider.getDefault().getIO("Selected Nodes", true);
-        
+
         manager.addPropertyChangeListener(new PropertyChangeListener() {
-            
+
             final DateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
-            
+
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
                 if (evt.getPropertyName().equals("selectedNodes")) {

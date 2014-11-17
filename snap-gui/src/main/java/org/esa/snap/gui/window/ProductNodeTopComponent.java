@@ -6,6 +6,7 @@
 package org.esa.snap.gui.window;
 
 import org.esa.beam.framework.datamodel.ProductNode;
+import org.openide.nodes.Node;
 import org.openide.util.lookup.Lookups;
 import org.openide.windows.Mode;
 import org.openide.windows.TopComponent;
@@ -19,6 +20,9 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
+ * See https://blogs.oracle.com/geertjan/entry/opening_a_topcomponent_per_node
+ * See https://blogs.oracle.com/geertjan/entry/loosely_coupled_open_action
+ * See https://blogs.oracle.com/geertjan/entry/loosely_coupled_open_action_part
  * @author Norman
  */
 @TopComponent.Description(
@@ -40,6 +44,7 @@ public class ProductNodeTopComponent extends TopComponent {
         setName(productNode.getName());
         setDisplayName(productNode.getName());
         setToolTipText(productNode.getProduct().getName() + " - " + productNode.getName());
+        setActivatedNodes(new Node[] {});
     }
 
     private void initComponents() {
