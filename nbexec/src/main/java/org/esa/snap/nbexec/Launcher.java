@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -37,14 +38,15 @@ import java.util.Set;
  * <p>
  * Usage:
  * <pre>
- *    Launcher {--rootdir &lt;rootdir&gt;} [--branding &lt;app&gt;] [--userdir &lt;userdir&gt;] [--cachedir &lt;cachedir&gt;] &lt;args&gt;
+ *    Launcher {--root &lt;root&gt;} [--branding &lt;app&gt;] [--userdir &lt;userdir&gt;] [--cachedir &lt;cachedir&gt;] &lt;args&gt;
  * </pre>
  * where the {@code branding}, {@code userdir}, and {@code cachedir} options are the same as for the native launcher.
  * The current working directory must be the target deployment directory, {@code $appmodule/target/$app}.
  * <p>
- * The Launcher takes care of any changed code in all the source modules contained in the given
- * {@code rootdir} directories (Maven packaging {@code pom}), always including the source module directory which
- * includes the application module, namely {@code $appmodule/../../..}<br/>
+ * The Launcher takes care of any changed code in all modules contained in a module <i>root</i> indicated by the given
+ * {@code root} options. Every root must contain a single wildcard ($). The module root which
+ * includes the application module, namely {@code $appmodule/../../../$/target/classes}<br/> is always included.
+ * <p/>
  * So, In IntelliJ IDEA we can hit CTRL+F9
  * and then run/debug the Launcher.
  * <p>
@@ -85,7 +87,7 @@ public class Launcher {
 
         // Collect project dirs.
         // Default is "../../.." which refers to a Maven specific directory layout.
-        Set<File> rootDirs = parseRootDirs(argList);
+        Set<Root> rootDirs = parseRoots(argList);
 
         variables.putAll(System.getenv());
         setVarIfNotSet("APPNAME", appName);
@@ -202,14 +204,15 @@ public class Launcher {
         runMain(classPathList, newArgList);
     }
 
-    private Set<File> parseRootDirs(LinkedList<String> argList) {
+    private Set<Root> parseRoots(LinkedList<String> argList) {
         try {
-            Set<File> rootDirs = new HashSet<>();
-            rootDirs.add(new File("../../..").getCanonicalFile());
+            Set<Root> rootDirs = new LinkedHashSet<>();
+            // Add Maven-specific output directory for application module
+            processRoot("../../../$/target/classes", rootDirs);
             while (true) {
-                String rootDirPath = parseArg(argList, "--rootdir");
+                String rootDirPath = parseArg(argList, "--root");
                 if (rootDirPath != null) {
-                    rootDirs.add(new File(rootDirPath).getCanonicalFile());
+                    processRoot(rootDirPath, rootDirs);
                 } else {
                     break;
                 }
@@ -219,6 +222,15 @@ public class Launcher {
             System.err.println("ERROR: " + e.getMessage());
             System.exit(1);
             return null;
+        }
+    }
+
+    private void processRoot(String rootDirPath, Set<Root> rootDirs) throws IOException {
+        int wcPos = rootDirPath.indexOf("$");
+        if (wcPos >= 0) {
+            rootDirs.add(new Root(new File(rootDirPath.substring(0, wcPos)).getCanonicalFile(),rootDirPath.substring(wcPos+1)));
+        } else {
+            throw new IllegalArgumentException("rootdir must contain a single wildcard '$'");
         }
     }
 
@@ -249,7 +261,7 @@ public class Launcher {
     /*
      * scan appDir for modules and set system property netbeans.patches.<module>=<module-classes-dir> for each module
      */
-    private void setPatchModules(String appDir, Set<File> rootDirs) {
+    private void setPatchModules(String appDir, Set<Root> roots) {
         String modulesDir = path(appDir, "modules");
         File[] moduleJars = new File(path(modulesDir)).listFiles(file -> file.getName().toLowerCase().endsWith(".jar"));
         List<String> moduleNames = new ArrayList<>();
@@ -262,32 +274,50 @@ public class Launcher {
             }
         }
 
-        List<File> projectDirList = new ArrayList<>();
-        for (File rootDir : rootDirs) {
-            File[] projectDirs = rootDir.listFiles(file -> file.isDirectory() && !file.getName().startsWith("."));
+        for (Root root : roots) {
+            File[] projectDirs = root.dir.listFiles(file -> file.isDirectory() && !file.getName().startsWith("."));
             if (projectDirs != null) {
-                projectDirList.addAll(Arrays.asList(projectDirs));
+                for (File projectDir : projectDirs) {
+                    //info("checking '" + projectDir + "'");
+
+                    // check - generify: "target/classes" is a Maven specific output path
+                    File classesDir = new File(projectDir, root.subPath);
+                    if (classesDir.isDirectory()) {
+                        String projectDirName = projectDir.getName();
+                        // determine version pos
+                        int versionPos = -1;
+                        for (int i = 0; i < projectDirName.length() - 1; i++) {
+                            if (projectDirName.charAt(i) == '-' && Character.isDigit(projectDirName.charAt(i + 1))) {
+                                versionPos = i;
+                                break;
+                            }
+                        }
+
+                        // strip version part
+                        String artifactName = versionPos > 0 ?  projectDirName.substring(0, versionPos) : projectDirName;
+
+                        //info("checking if artifact '" + artifactName + "' has output directory " + classesDir);
+
+                        // check - generify: we assume that
+                        //    <project-dir>/<module-dir>  --> <cluster-dir>/modules/<module-dir>.jar
+                        // but this pattern is specific to the NB Maven Plugin
+
+                        // 1. module names that end with artifact name
+                        moduleNames.stream().filter(moduleName -> moduleName.endsWith(artifactName)).forEach(moduleName -> {
+                            String propertyName = "netbeans.patches." + moduleName.replace("-", ".");
+                            setPropIfNotSet(propertyName, classesDir.getPath());
+                        });
+
+                        // 2. module names that don't end with artifact name, but contain artifact name
+                        moduleNames.stream().filter(moduleName -> !moduleName.endsWith(artifactName) && moduleName.contains(artifactName)).forEach(moduleName -> {
+                            String propertyName = "netbeans.patches." + moduleName.replace("-", ".");
+                            setPropIfNotSet(propertyName, classesDir.getPath());
+                        });
+                    }
+                }
             }
         }
 
-        for (File projectDir : projectDirList) {
-            info("checking '"+projectDir+"'");
-
-            // check - generify: "target/classes" is a Maven specific output path
-            String classesDir = path(projectDir.getPath(), "target", "classes");
-            if (exists(classesDir)) {
-                String artifactName = projectDir.getName();
-                info("checking if artifact '"+artifactName+"' has output directory " + classesDir);
-
-                // check - generify: we assume that
-                //    <project-dir>/<module-dir>  --> <cluster-dir>/modules/<module-dir>.jar
-                // but this pattern is specific to the NB Maven Plugin
-                moduleNames.stream().filter(moduleName -> moduleName.endsWith(artifactName)).forEach(moduleName -> {
-                    String propertyName = "netbeans.patches." + moduleName.replace("-", ".");
-                    setPropIfNotSet(propertyName, classesDir);
-                });
-            }
-        }
     }
 
     private List<String> parseOptions(String defaultOptions) {
@@ -470,4 +500,32 @@ public class Launcher {
     private static String basename(String deploymentDir) {
         return Paths.get(deploymentDir).getFileName().toString();
     }
+
+    private class Root {
+        final File dir;
+        final String subPath;
+
+        private Root(File dir, String subPath) {
+            this.dir = dir;
+            this.subPath = subPath;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Root root = (Root) o;
+            return dir.equals(root.dir) && subPath.equals(root.subPath);
+
+        }
+
+        @Override
+        public int hashCode() {
+            int result = dir.hashCode();
+            result = 31 * result + subPath.hashCode();
+            return result;
+        }
+    }
+
+
 }
