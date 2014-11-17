@@ -167,6 +167,28 @@ public class WorkspaceTopComponent extends TopComponent {
         return editor;
     }
 
+
+    // CHECKME: How does NB Platform use this method? What is its use?
+    @Override
+    public SubComponent[] getSubComponents() {
+        ActionListener activator = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println(">> subComponent activated: e = " + e);
+            }
+        };
+        SubComponent[] subComponents = new SubComponent[tabbedContainer.getTabCount()];
+        for (int i = 0; i < subComponents.length; i++) {
+            TabData tab = tabbedContainer.getModel().getTab(i);
+            JInternalFrame internalFrame = tabToFrameMap.get(tab);
+            subComponents[i] = new SubComponent(internalFrame.getTitle(),
+                                                internalFrame.getToolTipText(),
+                                                activator,
+                                                internalFrame.isSelected());
+        }
+        return subComponents;
+    }
+
     @Override
     public void componentOpened() {
         tabbedContainer.addActionListener(tabActionListener);
