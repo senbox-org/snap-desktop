@@ -489,8 +489,7 @@ public class WorkspaceTopComponent extends TopComponent {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            // todo - implement me!
-            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), "Not implemented yet.");
+            new CloseOtherWindowsAction(-1).actionPerformed(e);
         }
     }
 
@@ -504,8 +503,14 @@ public class WorkspaceTopComponent extends TopComponent {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            // todo - implement me!
-            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), "Not implemented yet. (tabIndex=" + tabIndex + ")");
+            TabData tab = tabbedContainer.getModel().getTab(tabIndex);
+            JInternalFrame selectedInternalFrame = tabToFrameMap.get(tab);
+            JInternalFrame[] internalFrames = frameToTabMap.keySet().toArray(new JInternalFrame[0]);
+            for (JInternalFrame internalFrame : internalFrames) {
+                if (internalFrame != selectedInternalFrame) {
+                    closeInternalFrame(internalFrame);
+                }
+            }
         }
     }
 
