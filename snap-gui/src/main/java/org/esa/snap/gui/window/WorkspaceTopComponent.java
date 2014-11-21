@@ -5,10 +5,6 @@
  */
 package org.esa.snap.gui.window;
 
-import org.esa.beam.framework.datamodel.ProductNode;
-import org.esa.beam.framework.datamodel.RasterDataNode;
-import org.esa.beam.framework.ui.UIUtils;
-import org.esa.beam.framework.ui.product.ProductSceneView;
 import org.netbeans.swing.tabcontrol.DefaultTabDataModel;
 import org.netbeans.swing.tabcontrol.TabData;
 import org.netbeans.swing.tabcontrol.TabDisplayer;
@@ -17,11 +13,8 @@ import org.netbeans.swing.tabcontrol.WinsysInfoForTabbedContainer;
 import org.netbeans.swing.tabcontrol.event.TabActionEvent;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
-import org.openide.util.Lookup;
-import org.openide.util.NbBundle.Messages;
 import org.openide.util.lookup.AbstractLookup;
 import org.openide.util.lookup.InstanceContent;
-import org.openide.util.lookup.Lookups;
 import org.openide.windows.Mode;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
@@ -34,21 +27,17 @@ import javax.swing.JInternalFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
-import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyVetoException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,10 +61,10 @@ import java.util.Set;
 )
 public class WorkspaceTopComponent extends TopComponent {
 
+    // todo - remove me
     private static WorkspaceTopComponent instance;
 
     private final InstanceContent content = new InstanceContent();
-    private final Map<JInternalFrame, Editor> frameToEditorMap;
     private final Map<TabData, JInternalFrame> tabToFrameMap;
     private final Map<JInternalFrame, TabData> frameToTabMap;
     private final ActionListener tabActionListener;
@@ -89,7 +78,6 @@ public class WorkspaceTopComponent extends TopComponent {
     public WorkspaceTopComponent() {
         instance = this;
         associateLookup(new AbstractLookup(content));
-        frameToEditorMap = new HashMap<>();
         frameToTabMap = new HashMap<>();
         tabToFrameMap = new HashMap<>();
         tabActionListener = new TabActionListener();
@@ -117,46 +105,40 @@ public class WorkspaceTopComponent extends TopComponent {
         add(desktopPane, BorderLayout.CENTER);
     }
 
+    // todo - remove me
     public static WorkspaceTopComponent getInstance() {
         return instance;
     }
 
-    public String getUniqueEditorTitle(String titleBase) {
-        return UIUtils.getUniqueFrameTitle(desktopPane.getAllFrames(), titleBase);
-    }
-
-    public List<Editor<ProductSceneView>> findImageEditors(RasterDataNode band) {
-        ArrayList<Editor<ProductSceneView>> list = new ArrayList<>();
-        Collection<Editor> editors = frameToEditorMap.values();
-        for (Editor editor : editors) {
-            Container component = editor.getComponent();
-            if (component instanceof ProductSceneView) {
-                ProductSceneView view = (ProductSceneView) component;
-                if (view.getRaster() == band) {
-                    //noinspection unchecked
-                    list.add(editor);
-                }
-            }
+    public List<TopComponent> getContainedTopComponents() {
+        List<TabData> tabs = tabbedContainer.getModel().getTabs();
+        List<TopComponent> topComponents = new ArrayList<>();
+        for (TabData tab : tabs) {
+            JInternalFrame internalFrame = tabToFrameMap.get(tab);
+            topComponents.add(getTopComponent(internalFrame));
         }
-        return list;
+        return topComponents;
     }
 
-    public <T extends Container> Editor<T> addEditorComponent(String title, T component) {
+    public void addWindow(TopComponent topComponent) {
+
+        if (topComponent.isOpened()) {
+            topComponent.close();
+        }
+
         int index = tabCount++;
-        JInternalFrame internalFrame = new JInternalFrame(title, true, true, true, true);
+        JInternalFrame internalFrame = new JInternalFrame(topComponent.getDisplayName(), true, true, true, true);
 
         // Note: The following dummyComponent with preferred size (-1, 2) allows for using the tabbedContainer as
         // a *thin*, empty tabbed bar on top of the desktopPane.
         JComponent dummyComponent = new JPanel();
         dummyComponent.setPreferredSize(new Dimension(-1, 2));
-        TabData tabData = new TabData(dummyComponent, null, title, "Tab + " + index);
+        TabData tabData = new TabData(dummyComponent, null, topComponent.getDisplayName(), "Tab + " + index);
 
-        Editor editor = new Editor(internalFrame);
-        frameToEditorMap.put(internalFrame, editor);
         frameToTabMap.put(internalFrame, tabData);
         tabToFrameMap.put(tabData, internalFrame);
 
-        internalFrame.setContentPane(component);
+        internalFrame.setContentPane(topComponent);
         internalFrame.setBounds(new Rectangle(tabCount * 24, tabCount * 24, 400, 400));
 
         tabbedContainer.getModel().addTab(tabbedContainer.getModel().size(), tabData);
@@ -171,9 +153,6 @@ public class WorkspaceTopComponent extends TopComponent {
         } catch (PropertyVetoException e) {
             e.printStackTrace();
         }
-
-        //noinspection unchecked
-        return editor;
     }
 
 
@@ -265,15 +244,14 @@ public class WorkspaceTopComponent extends TopComponent {
         };
     }
 
-    private Container closeInternalFrame(JInternalFrame internalFrame) {
+    private TopComponent closeInternalFrame(JInternalFrame internalFrame) {
         return closeInternalFrame(internalFrame, true);
     }
 
-    private Container closeInternalFrame(JInternalFrame internalFrame, boolean removeTab) {
+    private TopComponent closeInternalFrame(JInternalFrame internalFrame, boolean removeTab) {
         internalFrame.removeInternalFrameListener(internalFrameListener);
-        Container contentPane = internalFrame.getContentPane();
+        TopComponent topComponent = getTopComponent(internalFrame);
         internalFrame.setContentPane(new JPanel());
-        frameToEditorMap.remove(internalFrame);
         TabData tabData = frameToTabMap.get(internalFrame);
         if (tabData != null) {
             if (removeTab) {
@@ -292,25 +270,20 @@ public class WorkspaceTopComponent extends TopComponent {
             tabbedContainer.setVisible(false);
         }
 
-        return contentPane;
+        return topComponent;
     }
 
-    private TopComponent moveInternalFrameToEditorMode(JInternalFrame internalFrame) {
-        Container container = closeInternalFrame(internalFrame, true);
-        TopComponent topComponent = null;
-        if (container instanceof TopComponent) {
-            topComponent = (TopComponent) container;
-        } else if (container instanceof ProductSceneView) {
-            ProductSceneView psv = (ProductSceneView) container;
-            topComponent = new ProductNodeTopComponent(psv.getVisibleProductNode(), container);
-        }
+    private TopComponent getTopComponent(JInternalFrame internalFrame) {
+        return (TopComponent) internalFrame.getContentPane();
+    }
 
-        if (topComponent != null) {
-            Mode mode = WindowManager.getDefault().findMode("editor");
-            mode.dockInto(topComponent);
-            if (!topComponent.isOpened()) {
-                topComponent.open();
-            }
+    private TopComponent dockInternalFrame(JInternalFrame internalFrame) {
+        TopComponent topComponent = closeInternalFrame(internalFrame, true);
+
+        Mode mode = WindowManager.getDefault().findMode("editor");
+        mode.dockInto(topComponent);
+        if (!topComponent.isOpened()) {
+            topComponent.open();
         }
 
         return topComponent;
@@ -457,96 +430,6 @@ public class WorkspaceTopComponent extends TopComponent {
         public boolean inMaximizedMode(Component comp) {
             JInternalFrame internalFrame = desktopPane.getSelectedFrame();
             return internalFrame != null && internalFrame.isMaximum();
-        }
-    }
-
-    /**
-     * todo: make the API compatible or adaptible to the
-     * <a href="http://bits.netbeans.org/8.0/javadoc/org-netbeans-core-multiview/index.html?overview-summary.html">org.netbeans.core.spi.multiview.MultiViewElement</a>.
-     *
-     * @param <T> The editor component type.
-     */
-    @SuppressWarnings("unchecked")
-    public class Editor<T extends Container> {
-        private final JInternalFrame internalFrame;
-
-        Editor(JInternalFrame internalFrame) {
-            this.internalFrame = internalFrame;
-        }
-
-        // Add more internalFrame property accessors here
-
-        public void setTitle(String title) {
-            internalFrame.setTitle(title);
-        }
-
-        public T getComponent() {
-            return (T) this.internalFrame.getContentPane();
-        }
-
-        public void addListener(EditorListener editorListener) {
-            final Editor<T> editor = this;
-            internalFrame.addInternalFrameListener(new InternalFrameAdapter() {
-                @Override
-                public void internalFrameActivated(InternalFrameEvent e) {
-                    editorListener.editorActivated(editor);
-                }
-
-                @Override
-                public void internalFrameDeactivated(InternalFrameEvent e) {
-                    editorListener.editorDeactivated(editor);
-                }
-
-                @Override
-                public void internalFrameClosing(InternalFrameEvent e) {
-                    editorListener.editorClosing(editor);
-                }
-
-                @Override
-                public void internalFrameClosed(InternalFrameEvent e) {
-                    editorListener.editorClosed(editor);
-                }
-            });
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            return this == o || o instanceof Editor && internalFrame == ((Editor) o).internalFrame;
-        }
-
-        @Override
-        public int hashCode() {
-            return internalFrame.hashCode();
-        }
-
-    }
-
-    public interface EditorListener<T extends Container> {
-        void editorActivated(Editor<T> editor);
-
-        void editorDeactivated(Editor<T> editor);
-
-        boolean editorClosing(Editor<T> editor);
-
-        void editorClosed(Editor<T> editor);
-    }
-
-    public static class EditorAdapter<T extends Container> implements EditorListener<T> {
-        @Override
-        public void editorActivated(Editor<T> editor) {
-        }
-
-        @Override
-        public void editorDeactivated(Editor<T> editor) {
-        }
-
-        @Override
-        public boolean editorClosing(Editor<T> editor) {
-            return true;
-        }
-
-        @Override
-        public void editorClosed(Editor<T> editor) {
         }
     }
 
@@ -723,11 +606,11 @@ public class WorkspaceTopComponent extends TopComponent {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            Set<JInternalFrame> internalFrameSet = frameToEditorMap.keySet();
+            Set<JInternalFrame> internalFrameSet = frameToTabMap.keySet();
             JInternalFrame[] internalFrames = internalFrameSet.toArray(new JInternalFrame[internalFrameSet.size()]);
             TopComponent topComponent = null;
             for (JInternalFrame internalFrame : internalFrames) {
-                topComponent = moveInternalFrameToEditorMode(internalFrame);
+                topComponent = dockInternalFrame(internalFrame);
             }
             if (topComponent != null) {
                 topComponent.requestActive();
@@ -747,7 +630,7 @@ public class WorkspaceTopComponent extends TopComponent {
         public void actionPerformed(ActionEvent e) {
             TabData tabData = tabbedContainer.getModel().getTab(tabIndex);
             JInternalFrame internalFrame = tabToFrameMap.get(tabData);
-            TopComponent topComponent = moveInternalFrameToEditorMode(internalFrame);
+            TopComponent topComponent = dockInternalFrame(internalFrame);
             if (topComponent != null) {
                 topComponent.requestActive();
             }
@@ -765,7 +648,7 @@ public class WorkspaceTopComponent extends TopComponent {
         @Override
         public void actionPerformed(ActionEvent e) {
             window.close();
-            addEditorComponent(window.getDisplayName(), window);
+            addWindow(window);
         }
     }
 
@@ -784,8 +667,7 @@ public class WorkspaceTopComponent extends TopComponent {
                 TopComponent[] topComponents = WindowManager.getDefault().getOpenedTopComponents(mode);
                 for (TopComponent topComponent : topComponents) {
                     if (!(topComponent instanceof WorkspaceTopComponent)) {
-                        topComponent.close();
-                        addEditorComponent(topComponent.getDisplayName(), topComponent);
+                        addWindow(topComponent);
                     }
                 }
             }
@@ -796,6 +678,12 @@ public class WorkspaceTopComponent extends TopComponent {
         @Override
         public void internalFrameOpened(InternalFrameEvent e) {
             tabbedContainer.updateUI();
+
+            TopComponent topComponent = getTopComponent(e.getInternalFrame());
+            if (topComponent instanceof DocumentWindow) {
+                DocumentWindow dw = (DocumentWindow) topComponent;
+                dw.componentActivated();
+            }
         }
 
         @Override
@@ -810,23 +698,40 @@ public class WorkspaceTopComponent extends TopComponent {
                 closeInternalFrame(internalFrame);
             }
             tabbedContainer.updateUI();
+
+            TopComponent topComponent = getTopComponent(e.getInternalFrame());
+            if (topComponent instanceof DocumentWindow) {
+                DocumentWindow dw = (DocumentWindow) topComponent;
+                dw.componentClosed();
+            }
         }
 
         @Override
         public void internalFrameIconified(InternalFrameEvent e) {
             tabbedContainer.updateUI();
+
+            TopComponent topComponent = getTopComponent(e.getInternalFrame());
+            if (topComponent instanceof DocumentWindow) {
+                DocumentWindow dw = (DocumentWindow) topComponent;
+                dw.componentHidden();
+            }
         }
 
         @Override
         public void internalFrameDeiconified(InternalFrameEvent e) {
             tabbedContainer.updateUI();
+
+            TopComponent topComponent = getTopComponent(e.getInternalFrame());
+            if (topComponent instanceof DocumentWindow) {
+                DocumentWindow dw = (DocumentWindow) topComponent;
+                dw.componentShowing();
+            }
         }
 
         @Override
         public void internalFrameActivated(InternalFrameEvent e) {
 
-            JInternalFrame internalFrame = e.getInternalFrame();
-            TabData selectedTab = frameToTabMap.get(internalFrame);
+            TabData selectedTab = frameToTabMap.get(e.getInternalFrame());
 
             List<TabData> tabs = tabbedContainer.getModel().getTabs();
             for (int i = 0; i < tabs.size(); i++) {
@@ -839,20 +744,25 @@ public class WorkspaceTopComponent extends TopComponent {
             tabbedContainer.updateUI();
 
             // see https://platform.netbeans.org/tutorials/nbm-selection-1.html
-            Container contentPane = internalFrame.getContentPane();
-            if (contentPane instanceof TopComponent) {
-                Lookup lookup = ((TopComponent) contentPane).getLookup();
-                Collection<? extends ProductNode> productNodes = lookup.lookupAll(ProductNode.class);
-                WorkspaceTopComponent.this.content.set(productNodes, null);
-            } else if (contentPane instanceof ProductSceneView) {
-                ProductNode productNode = ((ProductSceneView) contentPane).getVisibleProductNode();
-                WorkspaceTopComponent.this.content.set(Collections.singleton(productNode), null);
+            TopComponent topComponent = getTopComponent(e.getInternalFrame());
+            WorkspaceTopComponent.this.content.set(topComponent.getLookup().lookupAll(Object.class), null);
+
+            if (topComponent instanceof DocumentWindow) {
+                DocumentWindow dw = (DocumentWindow) topComponent;
+                dw.componentActivated();
             }
+
         }
 
         @Override
         public void internalFrameDeactivated(InternalFrameEvent e) {
             tabbedContainer.updateUI();
+
+            TopComponent topComponent = getTopComponent(e.getInternalFrame());
+            if (topComponent instanceof DocumentWindow) {
+                DocumentWindow dw = (DocumentWindow) topComponent;
+                dw.componentDeactivated();
+            }
         }
     }
 }

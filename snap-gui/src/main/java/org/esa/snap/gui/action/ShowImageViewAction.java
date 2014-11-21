@@ -18,27 +18,27 @@ package org.esa.snap.gui.action;
 import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.core.SubProgressMonitor;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
-import org.esa.beam.framework.datamodel.Product;
-import org.esa.beam.framework.datamodel.ProductNode;
-import org.esa.beam.framework.datamodel.ProductNodeEvent;
-import org.esa.beam.framework.datamodel.ProductNodeListenerAdapter;
 import org.esa.beam.framework.datamodel.RasterDataNode;
 import org.esa.beam.framework.ui.UIUtils;
 import org.esa.beam.framework.ui.product.ProductSceneImage;
 import org.esa.beam.framework.ui.product.ProductSceneView;
 import org.esa.beam.util.Debug;
 import org.esa.snap.gui.SnapApp;
+import org.esa.snap.gui.window.ProductSceneViewWindow;
 import org.esa.snap.gui.window.WorkspaceTopComponent;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
+import org.openide.windows.TopComponent;
 
 import javax.swing.AbstractAction;
-import javax.swing.Icon;
 import javax.swing.SwingWorker;
+import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 
 @ActionID(
@@ -106,47 +106,24 @@ public class ShowImageViewAction extends AbstractAction {
         worker.execute();
     }
 
-    public WorkspaceTopComponent.Editor<ProductSceneView> openDocumentWindow(final ProductSceneView view) {
+    public ProductSceneViewWindow openDocumentWindow(final ProductSceneView view) {
         return openDocumentWindow(view, true);
     }
 
-    public WorkspaceTopComponent.Editor<ProductSceneView> openDocumentWindow(final ProductSceneView view, boolean configureByPreferences) {
+    public ProductSceneViewWindow openDocumentWindow(final ProductSceneView view, boolean configureByPreferences) {
         final RasterDataNode selectedProductNode = view.getRaster();
         //view.setCommandUIFactory(snapApp.getCommandUIFactory());
         if (configureByPreferences) {
             view.setLayerProperties(SnapApp.getInstance().getCompatiblePreferences());
         }
-
-        final Product product = selectedProductNode.getProduct();
-
-        final String title = getUniqueEditorTitle(selectedProductNode);
-        final Icon icon = null; // UIUtils.loadImageIcon("icons/RsBandAsSwath16.gif");
-        //final JInternalFrame internalFrame = SnapApp.getInstance().createInternalFrame(title, icon, view, getHelpId(), true);
-        WorkspaceTopComponent.Editor<ProductSceneView> editor = WorkspaceTopComponent.getInstance().addEditorComponent(title, view);
-
-        final ProductNodeListenerAdapter pnl = new ProductNodeListenerAdapter() {
-            @Override
-            public void nodeChanged(final ProductNodeEvent event) {
-                if (event.getSourceNode() == selectedProductNode &&
-                    event.getPropertyName().equalsIgnoreCase(ProductNode.PROPERTY_NAME_NAME)) {
-                    editor.setTitle(getUniqueEditorTitle(selectedProductNode));
-                }
-            }
-        };
-        product.addProductNodeListener(pnl);
-
-        WorkspaceTopComponent.EditorAdapter<ProductSceneView> el = new WorkspaceTopComponent.EditorAdapter<ProductSceneView>() {
-            @Override
-            public void editorClosed(WorkspaceTopComponent.Editor<ProductSceneView> editor) {
-                product.removeProductNodeListener(pnl);
-            }
-        };
-        editor.addListener(el);
-        return editor;
-    }
-
-    private String getUniqueEditorTitle(final RasterDataNode raster) {
-        return WorkspaceTopComponent.getInstance().getUniqueEditorTitle(raster.getDisplayName());
+        //Product product = selectedProductNode.getProduct();
+        //String title = getUniqueEditorTitle(selectedProductNode);
+        //Icon icon = UIUtils.loadImageIcon("icons/RsBandAsSwath16.gif");
+        //JInternalFrame internalFrame = SnapApp.getInstance().createInternalFrame(title, icon, view, getHelpId(), true);
+        ProductSceneViewWindow productSceneViewWindow = new ProductSceneViewWindow(selectedProductNode, view);
+        productSceneViewWindow.setDisplayName(getUniqueEditorTitle(selectedProductNode.getDisplayName()));
+        WorkspaceTopComponent.getInstance().addWindow(productSceneViewWindow);
+        return productSceneViewWindow;
     }
 
     protected ProductSceneImage createProductSceneImage(final RasterDataNode raster, ProgressMonitor pm) {
@@ -155,10 +132,10 @@ public class ShowImageViewAction extends AbstractAction {
 
         try {
             pm.beginTask("Creating image...", 1);
-            List<WorkspaceTopComponent.Editor<ProductSceneView>> imageEditors = WorkspaceTopComponent.getInstance().findImageEditors(raster);
+
+            ProductSceneView view = getProductSceneView(raster);
             ProductSceneImage sceneImage;
-            if (!imageEditors.isEmpty()) {
-                ProductSceneView view = imageEditors.get(0).getComponent();
+            if (view != null) {
                 sceneImage = new ProductSceneImage(raster, view);
             } else {
                 sceneImage = new ProductSceneImage(raster,
@@ -173,4 +150,69 @@ public class ShowImageViewAction extends AbstractAction {
         }
 
     }
+
+
+    public interface WindowVisitor<T> {
+        T visit(TopComponent topComponent);
+    }
+
+    public static <T> List<T> visitOpenWindows(WindowVisitor<T> visitor) {
+        List<T> result = new ArrayList<>();
+        T element;
+        Set<TopComponent> topComponents = TopComponent.getRegistry().getOpened();
+        for (TopComponent topComponent : topComponents) {
+            element = visitor.visit(topComponent);
+            if (element != null) {
+                result.add(element);
+            }
+            if (topComponent instanceof WorkspaceTopComponent) {
+                WorkspaceTopComponent workspaceTopComponent = (WorkspaceTopComponent) topComponent;
+                List<TopComponent> containedWindows = workspaceTopComponent.getContainedTopComponents();
+                for (TopComponent containedWindow : containedWindows) {
+                    element = visitor.visit(containedWindow);
+                    if (element != null) {
+                        result.add(element);
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    public static String getUniqueEditorTitle(String titleBase) {
+
+        List<String> titles = visitOpenWindows(TopComponent::getDisplayName);
+
+        if (titles.isEmpty()) {
+            return titleBase;
+        }
+
+        if (!titles.contains(titleBase)) {
+            return titleBase;
+        }
+
+        for (int i = 2; ;i++)  {
+            final String title = String.format("%s (%d)", titleBase, i);
+            if (!titles.contains(titleBase)) {
+                return title;
+            }
+        }
+    }
+
+    public ProductSceneView getProductSceneView(RasterDataNode raster) {
+        List<ProductSceneView> list = visitOpenWindows(topComponent -> {
+            if (topComponent instanceof ProductSceneViewWindow) {
+                ProductSceneViewWindow window = (ProductSceneViewWindow) topComponent;
+                if (window.getDocument() == raster) {
+                    Container container = window.getView();
+                    if (container instanceof ProductSceneView) {
+                        return (ProductSceneView) container;
+                    }
+                }
+            }
+            return null;
+        });
+        return list.isEmpty() ? null : list.get(0);
+    }
+
 }
