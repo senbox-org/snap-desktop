@@ -9,7 +9,6 @@ import org.esa.beam.framework.datamodel.ProductNode;
 import org.esa.beam.framework.datamodel.ProductNodeEvent;
 import org.esa.beam.framework.datamodel.ProductNodeListenerAdapter;
 import org.openide.nodes.Node;
-import org.openide.windows.TopComponent;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -17,12 +16,6 @@ import java.awt.Container;
 /**
  * @author Norman
  */
-@TopComponent.Description(
-        preferredID = "ProductNodeTopComponent",
-        persistenceType = TopComponent.PERSISTENCE_NEVER)
-@TopComponent.Registration(
-        mode = "editor",
-        openAtStartup = false)
 public class ProductSceneViewWindow extends DocumentWindow<ProductNode> {
 
     private final Container view;
@@ -36,7 +29,6 @@ public class ProductSceneViewWindow extends DocumentWindow<ProductNode> {
         setName(productNode.getName());
         setDisplayName(productNode.getName());
         setToolTipText(productNode.getProduct().getName() + " - " + productNode.getName());
-        setActivatedNodes(new Node[] {});
     }
 
     public Container getView() {
@@ -62,7 +54,7 @@ public class ProductSceneViewWindow extends DocumentWindow<ProductNode> {
         @Override
         public void nodeChanged(final ProductNodeEvent event) {
             if (event.getSourceNode() == getDocument() &&
-                event.getPropertyName().equalsIgnoreCase(ProductNode.PROPERTY_NAME_NAME)) {
+                    event.getPropertyName().equalsIgnoreCase(ProductNode.PROPERTY_NAME_NAME)) {
                 setDisplayName(getDocument().getName());
             }
         }
