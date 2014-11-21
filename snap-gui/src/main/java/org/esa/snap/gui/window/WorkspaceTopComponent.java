@@ -251,7 +251,6 @@ public class WorkspaceTopComponent extends TopComponent {
     private TopComponent closeInternalFrame(JInternalFrame internalFrame, boolean removeTab) {
         internalFrame.removeInternalFrameListener(internalFrameListener);
         TopComponent topComponent = getTopComponent(internalFrame);
-        internalFrame.setContentPane(new JPanel());
         TabData tabData = frameToTabMap.get(internalFrame);
         if (tabData != null) {
             if (removeTab) {
@@ -269,6 +268,8 @@ public class WorkspaceTopComponent extends TopComponent {
         if (desktopPane.getComponentCount() == 0) {
             tabbedContainer.setVisible(false);
         }
+
+        internalFrame.setContentPane(new JPanel());
 
         return topComponent;
     }
@@ -730,20 +731,22 @@ public class WorkspaceTopComponent extends TopComponent {
 
         @Override
         public void internalFrameActivated(InternalFrameEvent e) {
-
+            // Synchronise tab selection state, if not already done
             TabData selectedTab = frameToTabMap.get(e.getInternalFrame());
-
+            int selectedTabIndex = tabbedContainer.getSelectionModel().getSelectedIndex();
             List<TabData> tabs = tabbedContainer.getModel().getTabs();
             for (int i = 0; i < tabs.size(); i++) {
                 TabData tab = tabs.get(i);
-                if (tab == selectedTab && tabbedContainer.getSelectionModel().getSelectedIndex() != i) {
+                if (tab == selectedTab && selectedTabIndex != i) {
                     tabbedContainer.getSelectionModel().setSelectedIndex(i);
                     break;
                 }
             }
             tabbedContainer.updateUI();
 
-            // see https://platform.netbeans.org/tutorials/nbm-selection-1.html
+            // Publish lookup contents of selected frame to parent window
+            // todo - add listener to frame lookup so that any change in the frame's lookup is propagated to parent window
+            // See https://platform.netbeans.org/tutorials/nbm-selection-1.html
             TopComponent topComponent = getTopComponent(e.getInternalFrame());
             WorkspaceTopComponent.this.content.set(topComponent.getLookup().lookupAll(Object.class), null);
 
@@ -751,7 +754,6 @@ public class WorkspaceTopComponent extends TopComponent {
                 DocumentWindow dw = (DocumentWindow) topComponent;
                 dw.componentActivated();
             }
-
         }
 
         @Override
