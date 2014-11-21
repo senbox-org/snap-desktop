@@ -194,7 +194,7 @@ public class ShowImageViewAction extends AbstractAction {
 
         for (int i = 2; ;i++)  {
             final String title = String.format("%s (%d)", titleBase, i);
-            if (!titles.contains(titleBase)) {
+            if (!titles.contains(title)) {
                 return title;
             }
         }
