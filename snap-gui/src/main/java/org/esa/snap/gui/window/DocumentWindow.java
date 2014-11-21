@@ -46,7 +46,6 @@ public class DocumentWindow<T> extends TopComponent {
     public DocumentWindow(T document) {
         this.document = document;
         this.content = new InstanceContent();
-        content.add(document);
         associateLookup(new ProxyLookup(Lookups.fixed(document), new AbstractLookup(content)));
     }
 
