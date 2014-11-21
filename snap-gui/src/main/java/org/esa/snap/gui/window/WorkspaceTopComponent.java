@@ -32,6 +32,7 @@ import javax.swing.event.InternalFrameListener;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -47,7 +48,7 @@ import java.util.Set;
  * @author Norman
  */
 @TopComponent.Description(
-        preferredID = "WorkspaceTopComponent",
+        preferredID = "org.esa.snap.gui.window.WorkspaceTopComponent",
         persistenceType = TopComponent.PERSISTENCE_NEVER
 )
 @TopComponent.Registration(
@@ -61,8 +62,7 @@ import java.util.Set;
 )
 public class WorkspaceTopComponent extends TopComponent {
 
-    // todo - remove me
-    private static WorkspaceTopComponent instance;
+    public final static String ID = WorkspaceTopComponent.class.getName();
 
     private final InstanceContent content = new InstanceContent();
     private final Map<TabData, JInternalFrame> tabToFrameMap;
@@ -76,7 +76,6 @@ public class WorkspaceTopComponent extends TopComponent {
     private int tabCount;
 
     public WorkspaceTopComponent() {
-        instance = this;
         associateLookup(new AbstractLookup(content));
         frameToTabMap = new HashMap<>();
         tabToFrameMap = new HashMap<>();
@@ -105,9 +104,33 @@ public class WorkspaceTopComponent extends TopComponent {
         add(desktopPane, BorderLayout.CENTER);
     }
 
-    // todo - remove me
-    public static WorkspaceTopComponent getInstance() {
-        return instance;
+    public static WorkspaceTopComponent getDefault() {
+        Set<TopComponent> opened = WindowManager.getDefault().getRegistry().getOpened();
+        for (TopComponent topComponent : opened) {
+            if (topComponent instanceof WorkspaceTopComponent) {
+                return (WorkspaceTopComponent) topComponent;
+            }
+        }
+        TopComponent topComponent = WindowManager.getDefault().findTopComponent(ID);
+        if (topComponent instanceof WorkspaceTopComponent) {
+            WorkspaceTopComponent workspaceTopComponent = (WorkspaceTopComponent) topComponent;
+            workspaceTopComponent.open();
+            return workspaceTopComponent;
+        }
+        WorkspaceTopComponent workspaceTopComponent = new WorkspaceTopComponent();
+        workspaceTopComponent.open();
+        return workspaceTopComponent;
+    }
+
+    public static WorkspaceTopComponent get(TopComponent topComponent) {
+        Container parent = topComponent.getParent();
+        while (parent != null) {
+            if (parent instanceof WorkspaceTopComponent) {
+                return (WorkspaceTopComponent) parent;
+            }
+            parent = parent.getParent();
+        }
+        return null;
     }
 
     public List<TopComponent> getContainedTopComponents() {

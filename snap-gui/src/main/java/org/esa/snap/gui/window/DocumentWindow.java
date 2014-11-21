@@ -59,10 +59,15 @@ public class DocumentWindow<T> extends TopComponent {
 
     @Override
     public Action[] getActions() {
-        ArrayList<Action> actions = new ArrayList<>(Arrays.asList(super.getActions()));
-        actions.add(null);
-        actions.addAll(Arrays.asList(WorkspaceTopComponent.getInstance().getExtraWorkspaceActions(this)));
-        return actions.toArray(new Action[actions.size()]);
+        WorkspaceTopComponent workspaceTopComponent = WorkspaceTopComponent.get(this);
+        Action[] baseActions = super.getActions();
+        if (workspaceTopComponent != null) {
+            ArrayList<Action> actions = new ArrayList<>(Arrays.asList(baseActions));
+            actions.add(null);
+            actions.addAll(Arrays.asList(workspaceTopComponent.getExtraWorkspaceActions(this)));
+            return actions.toArray(new Action[actions.size()]);
+        }
+        return baseActions;
     }
 
     @Override

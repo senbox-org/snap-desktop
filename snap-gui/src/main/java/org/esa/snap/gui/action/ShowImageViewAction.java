@@ -122,7 +122,8 @@ public class ShowImageViewAction extends AbstractAction {
         //JInternalFrame internalFrame = SnapApp.getInstance().createInternalFrame(title, icon, view, getHelpId(), true);
         ProductSceneViewWindow productSceneViewWindow = new ProductSceneViewWindow(selectedProductNode, view);
         productSceneViewWindow.setDisplayName(getUniqueEditorTitle(selectedProductNode.getDisplayName()));
-        WorkspaceTopComponent.getInstance().addWindow(productSceneViewWindow);
+
+        WorkspaceTopComponent.getDefault().addWindow(productSceneViewWindow);
         return productSceneViewWindow;
     }
 
