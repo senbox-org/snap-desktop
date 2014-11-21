@@ -716,10 +716,9 @@ public class WorkspaceTopComponent extends TopComponent {
         public void internalFrameOpened(InternalFrameEvent e) {
             tabbedContainer.updateUI();
 
-            TopComponent topComponent = getTopComponent(e.getInternalFrame());
-            if (topComponent instanceof DocumentWindow) {
-                DocumentWindow dw = (DocumentWindow) topComponent;
-                dw.componentActivated();
+            DocumentWindow dw = getDocumentWindow(e);
+            if (dw != null) {
+                dw.componentOpened();
             }
         }
 
@@ -736,32 +735,9 @@ public class WorkspaceTopComponent extends TopComponent {
             }
             tabbedContainer.updateUI();
 
-            TopComponent topComponent = getTopComponent(e.getInternalFrame());
-            if (topComponent instanceof DocumentWindow) {
-                DocumentWindow dw = (DocumentWindow) topComponent;
+            DocumentWindow dw = getDocumentWindow(e);
+            if (dw != null) {
                 dw.componentClosed();
-            }
-        }
-
-        @Override
-        public void internalFrameIconified(InternalFrameEvent e) {
-            tabbedContainer.updateUI();
-
-            TopComponent topComponent = getTopComponent(e.getInternalFrame());
-            if (topComponent instanceof DocumentWindow) {
-                DocumentWindow dw = (DocumentWindow) topComponent;
-                dw.componentHidden();
-            }
-        }
-
-        @Override
-        public void internalFrameDeiconified(InternalFrameEvent e) {
-            tabbedContainer.updateUI();
-
-            TopComponent topComponent = getTopComponent(e.getInternalFrame());
-            if (topComponent instanceof DocumentWindow) {
-                DocumentWindow dw = (DocumentWindow) topComponent;
-                dw.componentShowing();
             }
         }
 
@@ -786,8 +762,8 @@ public class WorkspaceTopComponent extends TopComponent {
             TopComponent topComponent = getTopComponent(e.getInternalFrame());
             WorkspaceTopComponent.this.content.set(topComponent.getLookup().lookupAll(Object.class), null);
 
-            if (topComponent instanceof DocumentWindow) {
-                DocumentWindow dw = (DocumentWindow) topComponent;
+            DocumentWindow dw = getDocumentWindow(e);
+            if (dw != null) {
                 dw.componentActivated();
             }
         }
@@ -796,11 +772,38 @@ public class WorkspaceTopComponent extends TopComponent {
         public void internalFrameDeactivated(InternalFrameEvent e) {
             tabbedContainer.updateUI();
 
-            TopComponent topComponent = getTopComponent(e.getInternalFrame());
-            if (topComponent instanceof DocumentWindow) {
-                DocumentWindow dw = (DocumentWindow) topComponent;
+            DocumentWindow dw = getDocumentWindow(e);
+            if (dw != null) {
                 dw.componentDeactivated();
             }
+        }
+
+        @Override
+        public void internalFrameIconified(InternalFrameEvent e) {
+            tabbedContainer.updateUI();
+
+            DocumentWindow dw = getDocumentWindow(e);
+            if (dw != null) {
+                dw.componentHidden();
+            }
+        }
+
+        @Override
+        public void internalFrameDeiconified(InternalFrameEvent e) {
+            tabbedContainer.updateUI();
+
+            DocumentWindow dw = getDocumentWindow(e);
+            if (dw != null) {
+                dw.componentShowing();
+            }
+        }
+
+        private DocumentWindow getDocumentWindow(InternalFrameEvent e) {
+            TopComponent topComponent = getTopComponent(e.getInternalFrame());
+            if (topComponent instanceof DocumentWindow) {
+                return (DocumentWindow) topComponent;
+            }
+            return null;
         }
     }
 }
