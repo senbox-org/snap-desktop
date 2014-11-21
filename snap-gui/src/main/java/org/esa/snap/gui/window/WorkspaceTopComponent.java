@@ -5,6 +5,7 @@
  */
 package org.esa.snap.gui.window;
 
+import org.esa.beam.util.math.DoubleList;
 import org.netbeans.swing.tabcontrol.DefaultTabDataModel;
 import org.netbeans.swing.tabcontrol.TabData;
 import org.netbeans.swing.tabcontrol.TabDisplayer;
@@ -42,13 +43,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 /**
  * @author Norman
  */
 @TopComponent.Description(
-        preferredID = "org.esa.snap.gui.window.WorkspaceTopComponent",
+        preferredID = "WorkspaceTopComponent",
         persistenceType = TopComponent.PERSISTENCE_NEVER
 )
 @TopComponent.Registration(
@@ -62,11 +64,12 @@ import java.util.Set;
 )
 public class WorkspaceTopComponent extends TopComponent {
 
-    public final static String ID = WorkspaceTopComponent.class.getName();
+    public final static String ID = WorkspaceTopComponent.class.getSimpleName();
 
     private final InstanceContent content = new InstanceContent();
     private final Map<TabData, JInternalFrame> tabToFrameMap;
     private final Map<JInternalFrame, TabData> frameToTabMap;
+    private final Map<Object, Rectangle> idToBoundsMap;
     private final ActionListener tabActionListener;
     private final InternalFrameListener internalFrameListener;
 
@@ -79,6 +82,7 @@ public class WorkspaceTopComponent extends TopComponent {
         associateLookup(new AbstractLookup(content));
         frameToTabMap = new HashMap<>();
         tabToFrameMap = new HashMap<>();
+        idToBoundsMap = new HashMap<>();
         tabActionListener = new TabActionListener();
         internalFrameListener = new InternalFrameListenerImpl();
         initComponents();
@@ -162,7 +166,13 @@ public class WorkspaceTopComponent extends TopComponent {
         tabToFrameMap.put(tabData, internalFrame);
 
         internalFrame.setContentPane(topComponent);
-        internalFrame.setBounds(new Rectangle(tabCount * 24, tabCount * 24, 400, 400));
+
+        Object internalFrameID = getInternalFrameID(topComponent);
+        Rectangle bounds = idToBoundsMap.get(internalFrameID);
+        if (bounds == null) {
+            bounds = new Rectangle(tabCount * 24, tabCount * 24, 400, 400);
+        }
+        internalFrame.setBounds(bounds);
 
         tabbedContainer.getModel().addTab(tabbedContainer.getModel().size(), tabData);
         tabbedContainer.setVisible(true);
@@ -176,6 +186,15 @@ public class WorkspaceTopComponent extends TopComponent {
         } catch (PropertyVetoException e) {
             e.printStackTrace();
         }
+    }
+
+    private Object getInternalFrameID(TopComponent topComponent) {
+        Object internalFrameID = topComponent.getClientProperty("internalFrameID");
+        if (internalFrameID == null) {
+            internalFrameID = "IF" + Long.toHexString(new Random().nextLong());
+            topComponent.putClientProperty("internalFrameID", internalFrameID);
+        }
+        return internalFrameID;
     }
 
     // CHECKME: How does NB Platform use this method? What is its use?
@@ -263,12 +282,12 @@ public class WorkspaceTopComponent extends TopComponent {
     }
 
     /**
-     * Gets extra actions for moving a given document window to a workspace.
+     * Gets extra actions, e.g. for floating a docked window or group into a workspace.
      *
      * @param topComponent The document window.
      * @return The extra actions.
      */
-    public Action[] getExtraWorkspaceActions(TopComponent topComponent) {
+    public static Action[] getExtraActions(TopComponent topComponent) {
         return new Action[]{
                 new FloatIntoWorkspaceAction(topComponent),
                 new FloatGroupIntoWorkspaceAction(topComponent)
@@ -282,6 +301,10 @@ public class WorkspaceTopComponent extends TopComponent {
     private TopComponent closeInternalFrame(JInternalFrame internalFrame, boolean removeTab) {
         internalFrame.removeInternalFrameListener(internalFrameListener);
         TopComponent topComponent = getTopComponent(internalFrame);
+
+        Object internalFrameID = getInternalFrameID(topComponent);
+        idToBoundsMap.put(internalFrameID, new Rectangle(internalFrame.getBounds()));
+
         TabData tabData = frameToTabMap.get(internalFrame);
         if (tabData != null) {
             if (removeTab) {
@@ -293,14 +316,15 @@ public class WorkspaceTopComponent extends TopComponent {
             tabToFrameMap.remove(tabData);
         }
         frameToTabMap.remove(internalFrame);
+
         internalFrame.dispose();
         desktopPane.remove(internalFrame);
-
         if (desktopPane.getComponentCount() == 0) {
             tabbedContainer.setVisible(false);
         }
 
-        internalFrame.setContentPane(new JPanel());
+        // make sure the topComponent's parent is not the internalFrame which we just closed
+        internalFrame.setContentPane(new TopComponent());
 
         return topComponent;
     }
@@ -674,7 +698,7 @@ public class WorkspaceTopComponent extends TopComponent {
         }
     }
 
-    private class FloatIntoWorkspaceAction extends AbstractAction {
+    public static class FloatIntoWorkspaceAction extends AbstractAction {
         private TopComponent window;
 
         public FloatIntoWorkspaceAction(TopComponent window) {
@@ -684,12 +708,12 @@ public class WorkspaceTopComponent extends TopComponent {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            window.close();
-            addWindow(window);
+            WorkspaceTopComponent workspaceTopComponent = WorkspaceTopComponent.getDefault();
+            workspaceTopComponent.addWindow(window);
         }
     }
 
-    private class FloatGroupIntoWorkspaceAction extends AbstractAction {
+    public static class FloatGroupIntoWorkspaceAction extends AbstractAction {
         private TopComponent window;
 
         public FloatGroupIntoWorkspaceAction(TopComponent window) {
@@ -699,12 +723,13 @@ public class WorkspaceTopComponent extends TopComponent {
 
         @Override
         public void actionPerformed(ActionEvent e) {
+            WorkspaceTopComponent workspaceTopComponent = WorkspaceTopComponent.getDefault();
             Mode mode = WindowManager.getDefault().findMode(window);
             if (mode != null) {
                 TopComponent[] topComponents = WindowManager.getDefault().getOpenedTopComponents(mode);
                 for (TopComponent topComponent : topComponents) {
                     if (!(topComponent instanceof WorkspaceTopComponent)) {
-                        addWindow(topComponent);
+                        workspaceTopComponent.addWindow(topComponent);
                     }
                 }
             }
