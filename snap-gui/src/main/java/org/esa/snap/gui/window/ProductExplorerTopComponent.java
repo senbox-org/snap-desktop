@@ -91,8 +91,7 @@ public class ProductExplorerTopComponent extends TopComponent implements Explore
         map.put("delete", ExplorerUtils.actionDelete(manager, true)); // or false
         associateLookup(ExplorerUtils.createLookup(manager, map));
 
-        final InputOutput io = IOProvider.getDefault().getIO("Selected Nodes", true);
-
+        final InputOutput io = IOProvider.getDefault().getIO("Explorer Selection", true);
         manager.addPropertyChangeListener(new PropertyChangeListener() {
 
             final DateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
