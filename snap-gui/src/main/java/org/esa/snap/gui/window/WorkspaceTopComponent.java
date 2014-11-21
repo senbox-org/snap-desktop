@@ -155,24 +155,32 @@ public class WorkspaceTopComponent extends TopComponent {
         }
     }
 
-
     // CHECKME: How does NB Platform use this method? What is its use?
+    // See https://netbeans.org/bugzilla/show_bug.cgi?id=209051
     @Override
     public SubComponent[] getSubComponents() {
-        ActionListener activator = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println(">> subComponent activated: e = " + e);
+        Map<Object, JInternalFrame> internalFrameMap = new HashMap<>();
+        SubComponent[] subComponents = new SubComponent[tabbedContainer.getTabCount()];
+        ActionListener activator = actionEvent -> {
+            JInternalFrame internalFrame = internalFrameMap.get(actionEvent.getSource());
+            try {
+                internalFrame.setSelected(true);
+                internalFrame.requestFocus();
+            } catch (PropertyVetoException e1) {
+                // ok
             }
         };
-        SubComponent[] subComponents = new SubComponent[tabbedContainer.getTabCount()];
         for (int i = 0; i < subComponents.length; i++) {
             TabData tab = tabbedContainer.getModel().getTab(i);
             JInternalFrame internalFrame = tabToFrameMap.get(tab);
-            subComponents[i] = new SubComponent(internalFrame.getTitle(),
-                                                internalFrame.getToolTipText(),
-                                                activator,
-                                                internalFrame.isSelected());
+            SubComponent subComponent = new SubComponent(internalFrame.getTitle(),
+                                                         internalFrame.getToolTipText(),
+                                                         activator,
+                                                         internalFrame.isSelected(),
+                                                         getTopComponent(internalFrame).getLookup(),
+                                                         internalFrame.isShowing());
+            internalFrameMap.put(subComponent, internalFrame);
+            subComponents[i] = subComponent;
         }
         return subComponents;
     }
