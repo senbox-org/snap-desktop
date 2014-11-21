@@ -12,10 +12,16 @@ import org.openide.awt.NotificationDisplayer;
 import org.openide.awt.StatusDisplayer;
 import org.openide.modules.OnStart;
 import org.openide.modules.OnStop;
+import org.openide.util.Lookup;
+import org.openide.util.LookupEvent;
+import org.openide.util.LookupListener;
 import org.openide.util.NbBundle;
 import org.openide.util.NbPreferences;
 import org.openide.util.Utilities;
+import org.openide.windows.IOProvider;
+import org.openide.windows.InputOutput;
 import org.openide.windows.OnShowing;
+import org.openide.windows.OutputWriter;
 import org.openide.windows.WindowManager;
 
 import javax.media.jai.JAI;
@@ -27,7 +33,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import java.awt.Dialog;
-import java.awt.EventQueue;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -35,7 +40,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.text.DateFormat;
 import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -160,13 +167,26 @@ public class SnapApp {
      * system is shown. The {@code Runnable}s are invoked in AWT event dispatch thread one by one
      */
     @OnShowing
-    public static class ShowingOp implements Runnable {
+    public static class ShowingOp implements Runnable, LookupListener {
+        private final DateFormat FORMAT = new SimpleDateFormat("HH:mm:ss");
+        private Lookup.Result<Object> selectionResult;
+        private OutputWriter writer;
 
         @Override
         public void run() {
-            assert EventQueue.isDispatchThread();
-            System.out.println(">>> " + getClass() + " called");
-            // do something visual
+            selectionResult = Utilities.actionsGlobalContext().lookupResult(Object.class);
+            selectionResult.addLookupListener(this);
+            InputOutput io = IOProvider.getDefault().getIO("Global Selection", true);
+            writer = io.getOut();
+        }
+
+        @Override
+        public void resultChanged(LookupEvent lookupEvent) {
+            String timeStamp = FORMAT.format(System.currentTimeMillis());
+            writer.println(String.format("%s: selection changed:", timeStamp));
+            for (Object selection : selectionResult.allInstances()) {
+                writer.println(String.format("  type %s: %s", selection.getClass().getName(), selection));
+            }
         }
     }
 
