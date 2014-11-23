@@ -29,16 +29,14 @@ import org.esa.snap.gui.window.WorkspaceTopComponent;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
-import org.openide.windows.TopComponent;
+import org.openide.util.ImageUtilities;
 
 import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.SwingWorker;
-import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 
 @ActionID(
@@ -46,7 +44,8 @@ import java.util.Set;
         id = "org.snap.gui.action.ShowImageViewAction"
 )
 @ActionRegistration(
-        displayName = "Show Image View"
+        displayName = "Show Image View",
+        iconBase = "org/esa/snap/gui/icons/RsBandAsSwath16.gif"
 )
 @ActionReference(path = "Menu/View", position = 149)
 
@@ -54,7 +53,7 @@ import java.util.Set;
  * This action opens an image view of the currently selected raster.
  *
  * @author Marco Peters
- * @version $Revision$ $Date$
+ * @author Norman Fomferra
  */
 public class ShowImageViewAction extends AbstractAction {
 
@@ -62,6 +61,7 @@ public class ShowImageViewAction extends AbstractAction {
 
     public ShowImageViewAction(RasterDataNode band) {
         this.band = band;
+        putValue(Action.LARGE_ICON_KEY, ImageUtilities.loadImageIcon("org/esa/snap/gui/icons/RsBandAsSwath24.gif", false));
     }
 
     @Override
@@ -111,17 +111,10 @@ public class ShowImageViewAction extends AbstractAction {
     }
 
     public ProductSceneViewWindow openDocumentWindow(final ProductSceneView view, boolean configureByPreferences) {
-        final RasterDataNode selectedProductNode = view.getRaster();
-        //view.setCommandUIFactory(snapApp.getCommandUIFactory());
         if (configureByPreferences) {
             view.setLayerProperties(SnapApp.getInstance().getCompatiblePreferences());
         }
-        //Product product = selectedProductNode.getProduct();
-        //String title = getUniqueEditorTitle(selectedProductNode);
-        //Icon icon = UIUtils.loadImageIcon("icons/RsBandAsSwath16.gif");
-        //JInternalFrame internalFrame = SnapApp.getInstance().createInternalFrame(title, icon, view, getHelpId(), true);
-        ProductSceneViewWindow productSceneViewWindow = new ProductSceneViewWindow(selectedProductNode, view);
-        productSceneViewWindow.setDisplayName(getUniqueEditorTitle(selectedProductNode.getDisplayName()));
+        ProductSceneViewWindow productSceneViewWindow = new ProductSceneViewWindow(view);
 
         WorkspaceTopComponent.getDefault().addWindow(productSceneViewWindow);
         return productSceneViewWindow;
@@ -152,68 +145,16 @@ public class ShowImageViewAction extends AbstractAction {
 
     }
 
-
-    public interface WindowVisitor<T> {
-        T visit(TopComponent topComponent);
-    }
-
-    public static <T> List<T> visitOpenWindows(WindowVisitor<T> visitor) {
-        List<T> result = new ArrayList<>();
-        T element;
-        Set<TopComponent> topComponents = TopComponent.getRegistry().getOpened();
-        for (TopComponent topComponent : topComponents) {
-            element = visitor.visit(topComponent);
-            if (element != null) {
-                result.add(element);
-            }
-            if (topComponent instanceof WorkspaceTopComponent) {
-                WorkspaceTopComponent workspaceTopComponent = (WorkspaceTopComponent) topComponent;
-                List<TopComponent> containedWindows = workspaceTopComponent.getContainedTopComponents();
-                for (TopComponent containedWindow : containedWindows) {
-                    element = visitor.visit(containedWindow);
-                    if (element != null) {
-                        result.add(element);
-                    }
-                }
-            }
-        }
-        return result;
-    }
-
-    public static String getUniqueEditorTitle(String titleBase) {
-
-        List<String> titles = visitOpenWindows(TopComponent::getDisplayName);
-
-        if (titles.isEmpty()) {
-            return titleBase;
-        }
-
-        if (!titles.contains(titleBase)) {
-            return titleBase;
-        }
-
-        for (int i = 2; ;i++)  {
-            final String title = String.format("%s (%d)", titleBase, i);
-            if (!titles.contains(title)) {
-                return title;
-            }
-        }
-    }
-
     public ProductSceneView getProductSceneView(RasterDataNode raster) {
-        List<ProductSceneView> list = visitOpenWindows(topComponent -> {
+        List<ProductSceneView> list = WorkspaceTopComponent.visitOpenWindows(topComponent -> {
             if (topComponent instanceof ProductSceneViewWindow) {
                 ProductSceneViewWindow window = (ProductSceneViewWindow) topComponent;
                 if (window.getDocument() == raster) {
-                    Container container = window.getView();
-                    if (container instanceof ProductSceneView) {
-                        return (ProductSceneView) container;
-                    }
+                    return window.getView();
                 }
             }
             return null;
         });
         return list.isEmpty() ? null : list.get(0);
     }
-
 }

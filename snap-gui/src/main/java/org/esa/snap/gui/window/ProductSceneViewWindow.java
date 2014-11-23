@@ -8,30 +8,32 @@ package org.esa.snap.gui.window;
 import org.esa.beam.framework.datamodel.ProductNode;
 import org.esa.beam.framework.datamodel.ProductNodeEvent;
 import org.esa.beam.framework.datamodel.ProductNodeListenerAdapter;
-import org.openide.nodes.Node;
+import org.esa.beam.framework.ui.product.ProductSceneView;
+import org.openide.util.ImageUtilities;
 
 import java.awt.BorderLayout;
-import java.awt.Container;
 
 /**
+ * A document window which displays images
  * @author Norman
  */
 public class ProductSceneViewWindow extends DocumentWindow<ProductNode> {
 
-    private final Container view;
+    private final ProductSceneView view;
     private final ProductNodeListenerAdapter nodeRenameHandler;
 
-    public ProductSceneViewWindow(ProductNode productNode, Container view) {
-        super(productNode);
+    public ProductSceneViewWindow(ProductSceneView view) {
+        super(view.getRaster());
         this.view = view;
         this.nodeRenameHandler = new NodeRenameHandler();
         initComponents();
-        setName(productNode.getName());
-        setDisplayName(productNode.getName());
-        setToolTipText(productNode.getProduct().getName() + " - " + productNode.getName());
+        setName(view.getRaster().getName());
+        setDisplayName(getUniqueEditorTitle(view.getRaster().getName()));
+        setToolTipText(view.getRaster().getProduct().getName() + " - " + view.getRaster().getName());
+        setIcon(ImageUtilities.loadImage("org/esa/snap/gui/icons/RsBandAsSwath16.gif"));
     }
 
-    public Container getView() {
+    public ProductSceneView getView() {
         return view;
     }
 
@@ -43,6 +45,16 @@ public class ProductSceneViewWindow extends DocumentWindow<ProductNode> {
     @Override
     protected void componentClosed() {
         getDocument().getProduct().removeProductNodeListener(nodeRenameHandler);
+    }
+
+    @Override
+    protected void componentActivated() {
+        getContent().add(view);
+    }
+
+    @Override
+    protected void componentDeactivated() {
+        getContent().remove(view);
     }
 
     private void initComponents() {

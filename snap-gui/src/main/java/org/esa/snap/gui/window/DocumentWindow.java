@@ -26,15 +26,15 @@ import java.util.List;
  * A {@code TopComponent} designed to serve as an editor for a "document" object.
  * When added to a {@link WorkspaceTopComponent} its
  * <ol>
- *     <li>{@link #componentOpened()}/{@link #componentClosed()} method will be called if the corresponding internal frame is activated/deactivated;</li>
- *     <li>{@link #componentActivated()}/{@link #componentDeactivated()} method will be called if the corresponding internal frame is activated/deactivated;</li>
- *     <li>{@link #componentShowing()}/{@link #componentHidden()} method will be called if the corresponding internal frame is iconified/deiconified.</li>
+ * <li>{@link #componentOpened()}/{@link #componentClosed()} method will be called if the corresponding internal frame is activated/deactivated;</li>
+ * <li>{@link #componentActivated()}/{@link #componentDeactivated()} method will be called if the corresponding internal frame is activated/deactivated;</li>
+ * <li>{@link #componentShowing()}/{@link #componentHidden()} method will be called if the corresponding internal frame is iconified/deiconified.</li>
  * </ol>
- * <p/>
+ * <p>
  * Document windows keep a constant reference to the document object which it exposes through the window's lookup.
  * Overrides may use the {@link #getContent() content} to alter the objects in the exposed lookup,
  * however, the document object will always remain in it.
- * <p/>
+ * <p>
  *
  * @author Norman
  */
@@ -100,4 +100,36 @@ public class DocumentWindow<T> extends TopComponent {
     @Override
     protected void componentDeactivated() {
     }
+
+    @Override
+    public int getPersistenceType() {
+        return PERSISTENCE_NEVER;
+    }
+
+    /**
+     * Gets a unique window title.
+     *
+     * @param titleBase The title base.
+     * @return A unique window title.
+     */
+    public static String getUniqueEditorTitle(String titleBase) {
+
+        List<String> titles = WorkspaceTopComponent.visitOpenWindows(TopComponent::getDisplayName);
+
+        if (titles.isEmpty()) {
+            return titleBase;
+        }
+
+        if (!titles.contains(titleBase)) {
+            return titleBase;
+        }
+
+        for (int i = 2; ; i++) {
+            final String title = String.format("%s (%d)", titleBase, i);
+            if (!titles.contains(title)) {
+                return title;
+            }
+        }
+    }
+
 }

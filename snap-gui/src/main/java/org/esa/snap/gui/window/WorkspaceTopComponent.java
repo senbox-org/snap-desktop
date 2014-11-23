@@ -5,7 +5,6 @@
  */
 package org.esa.snap.gui.window;
 
-import org.esa.beam.util.math.DoubleList;
 import org.netbeans.swing.tabcontrol.DefaultTabDataModel;
 import org.netbeans.swing.tabcontrol.TabData;
 import org.netbeans.swing.tabcontrol.TabDisplayer;
@@ -265,6 +264,33 @@ public class WorkspaceTopComponent extends TopComponent {
         if (internalFrame != null) {
             internalFrame.requestFocusInWindow();
         }
+    }
+
+    public interface WindowVisitor<T> {
+        T visit(TopComponent topComponent);
+    }
+
+    public static <T> List<T> visitOpenWindows(WindowVisitor<T> visitor) {
+        List<T> result = new ArrayList<>();
+        T element;
+        Set<TopComponent> topComponents = TopComponent.getRegistry().getOpened();
+        for (TopComponent topComponent : topComponents) {
+            element = visitor.visit(topComponent);
+            if (element != null) {
+                result.add(element);
+            }
+            if (topComponent instanceof WorkspaceTopComponent) {
+                WorkspaceTopComponent workspaceTopComponent = (WorkspaceTopComponent) topComponent;
+                List<TopComponent> containedWindows = workspaceTopComponent.getContainedTopComponents();
+                for (TopComponent containedWindow : containedWindows) {
+                    element = visitor.visit(containedWindow);
+                    if (element != null) {
+                        result.add(element);
+                    }
+                }
+            }
+        }
+        return result;
     }
 
     @SuppressWarnings("UnusedDeclaration")
@@ -529,7 +555,8 @@ public class WorkspaceTopComponent extends TopComponent {
         public void actionPerformed(ActionEvent e) {
             TabData tab = tabbedContainer.getModel().getTab(tabIndex);
             JInternalFrame selectedInternalFrame = tabToFrameMap.get(tab);
-            JInternalFrame[] internalFrames = frameToTabMap.keySet().toArray(new JInternalFrame[0]);
+            Set<JInternalFrame> internalFrameSet = frameToTabMap.keySet();
+            JInternalFrame[] internalFrames = internalFrameSet.toArray(new JInternalFrame[internalFrameSet.size()]);
             for (JInternalFrame internalFrame : internalFrames) {
                 if (internalFrame != selectedInternalFrame) {
                     closeInternalFrame(internalFrame);
@@ -739,6 +766,8 @@ public class WorkspaceTopComponent extends TopComponent {
     private class InternalFrameListenerImpl implements InternalFrameListener {
         @Override
         public void internalFrameOpened(InternalFrameEvent e) {
+            System.out.println("internalFrameOpened: e = " + e);
+
             tabbedContainer.updateUI();
 
             DocumentWindow dw = getDocumentWindow(e);
@@ -754,6 +783,7 @@ public class WorkspaceTopComponent extends TopComponent {
 
         @Override
         public void internalFrameClosed(InternalFrameEvent e) {
+            System.out.println("internalFrameClosed: e = " + e);
             JInternalFrame internalFrame = e.getInternalFrame();
             if (frameToTabMap.containsKey(internalFrame)) {
                 closeInternalFrame(internalFrame);
@@ -768,8 +798,11 @@ public class WorkspaceTopComponent extends TopComponent {
 
         @Override
         public void internalFrameActivated(InternalFrameEvent e) {
+            System.out.println("internalFrameActivated: e = " + e);
+
             // Synchronise tab selection state, if not already done
-            TabData selectedTab = frameToTabMap.get(e.getInternalFrame());
+            JInternalFrame internalFrame = e.getInternalFrame();
+            TabData selectedTab = frameToTabMap.get(internalFrame);
             int selectedTabIndex = tabbedContainer.getSelectionModel().getSelectedIndex();
             List<TabData> tabs = tabbedContainer.getModel().getTabs();
             for (int i = 0; i < tabs.size(); i++) {
@@ -781,26 +814,25 @@ public class WorkspaceTopComponent extends TopComponent {
             }
             tabbedContainer.updateUI();
 
-            // Publish lookup contents of selected frame to parent window
-            // todo - add listener to frame lookup so that any change in the frame's lookup is propagated to parent window
-            // See https://platform.netbeans.org/tutorials/nbm-selection-1.html
-            TopComponent topComponent = getTopComponent(e.getInternalFrame());
-            WorkspaceTopComponent.this.content.set(topComponent.getLookup().lookupAll(Object.class), null);
-
             DocumentWindow dw = getDocumentWindow(e);
             if (dw != null) {
                 dw.componentActivated();
             }
+
+            transferLookupContents(internalFrame);
         }
 
         @Override
         public void internalFrameDeactivated(InternalFrameEvent e) {
+            System.out.println("internalFrameDeactivated: e = " + e);
             tabbedContainer.updateUI();
 
             DocumentWindow dw = getDocumentWindow(e);
             if (dw != null) {
                 dw.componentDeactivated();
             }
+
+            transferLookupContents(e.getInternalFrame());
         }
 
         @Override
@@ -830,5 +862,13 @@ public class WorkspaceTopComponent extends TopComponent {
             }
             return null;
         }
+    }
+
+    private void transferLookupContents(JInternalFrame internalFrame) {
+        // Publish lookup contents of selected frame to parent window
+        // todo - add listener to frame lookup so that any change in the frame's lookup is propagated to parent window
+        // See https://platform.netbeans.org/tutorials/nbm-selection-1.html
+        TopComponent topComponent = getTopComponent(internalFrame);
+        this.content.set(topComponent.getLookup().lookupAll(Object.class), null);
     }
 }

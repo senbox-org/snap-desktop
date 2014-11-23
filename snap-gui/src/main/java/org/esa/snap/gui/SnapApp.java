@@ -1,7 +1,9 @@
 package org.esa.snap.gui;
 
 import com.bc.ceres.jai.operator.ReinterpretDescriptor;
+import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.datamodel.ProductNode;
+import org.esa.beam.framework.ui.product.ProductSceneView;
 import org.esa.beam.util.PropertyMap;
 import org.esa.snap.gui.compat.CompatiblePropertyMap;
 import org.esa.snap.tango.TangoIcons;
@@ -18,6 +20,7 @@ import org.openide.util.LookupListener;
 import org.openide.util.NbBundle;
 import org.openide.util.NbPreferences;
 import org.openide.util.Utilities;
+import org.openide.util.WeakListeners;
 import org.openide.windows.IOProvider;
 import org.openide.windows.InputOutput;
 import org.openide.windows.OnShowing;
@@ -146,6 +149,27 @@ public class SnapApp {
         getLogger().log(Level.SEVERE, message, t);
     }
 
+    public ProductSceneView getSelectedProductSceneView() {
+        // todo implement me
+        return null;
+    }
+
+    public int showQuestionDialog(String dialogTitle, String text, boolean askAgain, String preferencesKey) {
+        // todo implement me
+        return 0;
+    }
+
+    public Product getSelectedProduct() {
+        // todo implement me
+        return null;
+    }
+
+    public void showInfoDialog(String message, String preferencesKey) {
+        // todo implement me
+    }
+
+    private static GlobalSelectionLogger globalSelectionLogger;
+
     /**
      * {@code @OnStart}: {@code Runnable}s defined by various modules are invoked in parallel and as soon
      * as possible. It is guaranteed that execution of all {@code runnable}s is finished
@@ -159,6 +183,8 @@ public class SnapApp {
             System.out.println(">>> " + getClass() + " called");
             setInstance(new SnapApp());
             initJAI();
+
+            globalSelectionLogger = new GlobalSelectionLogger();
         }
     }
 
@@ -167,26 +193,11 @@ public class SnapApp {
      * system is shown. The {@code Runnable}s are invoked in AWT event dispatch thread one by one
      */
     @OnShowing
-    public static class ShowingOp implements Runnable, LookupListener {
-        private final DateFormat FORMAT = new SimpleDateFormat("HH:mm:ss");
-        private Lookup.Result<Object> selectionResult;
-        private OutputWriter writer;
+    public static class ShowingOp implements Runnable {
 
         @Override
         public void run() {
-            selectionResult = Utilities.actionsGlobalContext().lookupResult(Object.class);
-            selectionResult.addLookupListener(this);
-            InputOutput io = IOProvider.getDefault().getIO("Global Selection", true);
-            writer = io.getOut();
-        }
-
-        @Override
-        public void resultChanged(LookupEvent lookupEvent) {
-            String timeStamp = FORMAT.format(System.currentTimeMillis());
-            writer.println(String.format("%s: selection changed:", timeStamp));
-            for (Object selection : selectionResult.allInstances()) {
-                writer.println(String.format("  type %s: %s", selection.getClass().getName(), selection));
-            }
+            System.out.println(">>> " + getClass() + " called");
         }
     }
 
@@ -239,6 +250,8 @@ public class SnapApp {
             System.out.println(">>> " + getClass() + " called");
             // do some cleanup
             setInstance(null);
+
+            globalSelectionLogger = null;
         }
     }
 
@@ -283,4 +296,26 @@ public class SnapApp {
         }
     }
 
+
+    private static class GlobalSelectionLogger implements LookupListener {
+        private final DateFormat FORMAT = new SimpleDateFormat("HH:mm:ss");
+        private final Lookup.Result<Object> selectionResult;
+        private final OutputWriter writer;
+
+        private GlobalSelectionLogger() {
+            InputOutput io = IOProvider.getDefault().getIO("Global Selection", true);
+            writer = io.getOut();
+            selectionResult = Utilities.actionsGlobalContext().lookupResult(Object.class);
+            selectionResult.addLookupListener(WeakListeners.create(LookupListener.class, this, selectionResult));
+        }
+
+        @Override
+        public void resultChanged(LookupEvent lookupEvent) {
+            String timeStamp = FORMAT.format(System.currentTimeMillis());
+            writer.println(String.format("%s: selection changed:", timeStamp));
+            for (Object selection : selectionResult.allInstances()) {
+                writer.println(String.format("  type %s: %s", selection.getClass().getName(), selection));
+            }
+        }
+    }
 }
