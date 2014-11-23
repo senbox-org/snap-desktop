@@ -1,12 +1,13 @@
 package org.esa.snap.tango;
 
+import org.openide.util.ImageUtilities;
+
 import javax.swing.ImageIcon;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 
 
 /**
+ * This class has been automatically generated.
+ *
  * @author Norman Fomferra
  */
 @SuppressWarnings("UnusedDeclaration")
@@ -250,30 +251,11 @@ public final class TangoIcons {
     public static ImageIcon status_weather_storm(Res res) { return getIcon("status/weather-storm.png", res); }
 
 
-    private static Map<Res, Map<String, ImageIcon>> map;
-
-    static {
-        map = new HashMap<>();
-        map.put(R16, new HashMap<>());
-        map.put(R22, new HashMap<>());
-        map.put(R32, new HashMap<>());
-    }
-
     private TangoIcons() {
     }
 
     private static ImageIcon getIcon(String name, Res res) {
-        Map<String, ImageIcon> m = map.get(res);
-        ImageIcon imageIcon = m.get(name);
-        if (imageIcon == null) {
-            String resourceName = "/tango/" + res + "/" + name;
-            URL resourceUrl = TangoIcons.class.getResource(resourceName);
-            if (resourceUrl == null) {
-                throw new IllegalArgumentException("Resource not found: \"" + resourceName + "\"");
-            }
-            imageIcon = new ImageIcon(resourceUrl);
-            m.put(name, imageIcon);
-        }
-        return imageIcon;
+        String resourceName = "tango/" + res + "/" + name;
+        return ImageUtilities.loadImageIcon(resourceName, false);
     }
 }

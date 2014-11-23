@@ -36,7 +36,7 @@ public class CodeGenerator {
 
         File[] subDirs = dir16.listFiles(File::isDirectory);
         for (File subDir : subDirs) {
-            System.out.println("subDir = " + subDir);
+            //System.out.println("subDir = " + subDir);
             File[] iconFiles = subDir.listFiles(pathname -> pathname.isFile() && pathname.getName().endsWith(".png"));
             String dirName = subDir.getName();
             for (File iconFile : iconFiles) {
@@ -54,6 +54,8 @@ public class CodeGenerator {
         testTemplate = testTemplate.replace("${code}", testCode.toString());
 
         Files.write(mainClassFile, mainTemplate.getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
+        System.out.println("Written " + mainClassFile);
         Files.write(testClassFile, testTemplate.getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
+        System.out.println("Written " + testClassFile);
     }
 }
