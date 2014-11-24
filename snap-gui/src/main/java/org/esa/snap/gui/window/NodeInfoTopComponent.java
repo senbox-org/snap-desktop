@@ -11,6 +11,7 @@ import org.openide.awt.ActionReference;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
+import org.openide.util.NbBundle;
 import org.openide.util.Utilities;
 import org.openide.windows.TopComponent;
 
@@ -22,7 +23,7 @@ import java.awt.BorderLayout;
 import java.util.Collection;
 
 /**
- * Top component which displays infos abiout selected node(s).
+ * Experimental top component which displays infos about selected node(s).
  */
 @TopComponent.Description(
         preferredID = "NodeInfoTopComponent",
@@ -33,9 +34,13 @@ import java.util.Collection;
 @ActionID(category = "Window", id = "org.esa.snap.gui.window.NodeInfoTopComponent")
 @ActionReference(path = "Menu/View/Tool Windows", position = 0)
 @TopComponent.OpenActionRegistration(
-        displayName = "Node Info",
+        displayName = "#CTL_NodeInfoTopComponentName",
         preferredID = "NodeInfoTopComponent"
 )
+@NbBundle.Messages({
+                           "CTL_NodeInfoTopComponentName=Node Info",
+                           "CTL_NodeInfoTopComponentDescription=Displays info about active node(s)",
+                   })
 public final class NodeInfoTopComponent extends TopComponent implements LookupListener {
 
     private JLabel infoLabel;
@@ -44,8 +49,8 @@ public final class NodeInfoTopComponent extends TopComponent implements LookupLi
 
     public NodeInfoTopComponent() {
         initComponents();
-        setName("Node Info");
-        setToolTipText("Displays info about active node(s)");
+        setName(Bundle.CTL_NodeInfoTopComponentName());
+        setToolTipText(Bundle.CTL_NodeInfoTopComponentDescription());
         putClientProperty(TopComponent.PROP_MAXIMIZATION_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_KEEP_PREFERRED_SIZE_WHEN_SLIDED_IN, Boolean.TRUE);
     }
@@ -62,7 +67,7 @@ public final class NodeInfoTopComponent extends TopComponent implements LookupLi
     public void resultChanged(LookupEvent lookupEvent) {
         Collection<? extends ProductNode> nodes = result.allInstances();
         if (!nodes.isEmpty()) {
-            String[][] data =  new String[nodes.size()][2];
+            String[][] data = new String[nodes.size()][2];
             int i = 0;
             for (ProductNode allNode : nodes) {
                 data[i][0] = allNode.getName();

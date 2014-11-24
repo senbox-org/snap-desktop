@@ -16,6 +16,7 @@ import org.openide.awt.ActionReference;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
+import org.openide.util.NbBundle;
 import org.openide.util.WeakListeners;
 import org.openide.util.lookup.ProxyLookup;
 import org.openide.windows.Mode;
@@ -59,9 +60,13 @@ import java.util.Set;
 @ActionID(category = "Window", id = "org.esa.snap.gui.window.WorkspaceTopComponent")
 @ActionReference(path = "Menu/View/Tool Windows", position = 0)
 @TopComponent.OpenActionRegistration(
-        displayName = "Workspace Window",
+        displayName = "#CTL_WorkspaceTopComponentNameBase",
         preferredID = "WorkspaceTopComponent"
 )
+@NbBundle.Messages({
+                           "CTL_WorkspaceTopComponentNameBase=Workspace",
+                           "CTL_WorkspaceTopComponentDescription=Provides an internal desktop for document windows",
+          })
 public class WorkspaceTopComponent extends TopComponent {
 
     public final static String ID = WorkspaceTopComponent.class.getSimpleName();
@@ -79,16 +84,16 @@ public class WorkspaceTopComponent extends TopComponent {
     private int tabCount;
 
     public WorkspaceTopComponent() {
-        lookup = new FrameProxyLookup();
-        associateLookup(lookup);
         frameToTabMap = new HashMap<>();
         tabToFrameMap = new HashMap<>();
         idToBoundsMap = new HashMap<>();
         tabActionListener = new TabActionListener();
         internalFrameListener = new InternalFrameListenerImpl();
+        lookup = new FrameProxyLookup();
+        associateLookup(lookup);
         initComponents();
-        setName("Workspace");
-        setToolTipText("Provides an internal desktop for document windows");
+        setName(Bundle.CTL_WorkspaceTopComponentNameBase());
+        setToolTipText(Bundle.CTL_WorkspaceTopComponentDescription());
         putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.TRUE);
     }
 

@@ -30,6 +30,7 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.ImageUtilities;
+import org.openide.util.NbBundle;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -38,23 +39,22 @@ import java.awt.event.ActionEvent;
 import java.text.MessageFormat;
 import java.util.List;
 
-
-@ActionID(
-        category = "View",
-        id = "org.snap.gui.action.ShowImageViewAction"
-)
-@ActionRegistration(
-        displayName = "Show Image View",
-        iconBase = "org/esa/snap/gui/icons/RsBandAsSwath16.gif"
-)
-@ActionReference(path = "Menu/View", position = 149)
-
 /**
  * This action opens an image view of the currently selected raster.
  *
  * @author Marco Peters
  * @author Norman Fomferra
  */
+@ActionID(
+        category = "View",
+        id = "org.esa.snap.gui.action.ShowImageViewAction"
+)
+@ActionRegistration(
+        displayName = "#CTL_ShowImageViewActionName",
+        iconBase = "org/esa/snap/gui/icons/RsBandAsSwath16.gif"
+)
+@ActionReference(path = "Menu/View", position = 149)
+@NbBundle.Messages("CTL_ShowImageViewActionName=Show Image View")
 public class ShowImageViewAction extends AbstractAction {
 
     RasterDataNode band;

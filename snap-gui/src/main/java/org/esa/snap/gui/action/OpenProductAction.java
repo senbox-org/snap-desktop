@@ -12,6 +12,7 @@ import org.esa.snap.gui.node.ProductChildFactory;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
+import org.openide.util.NbBundle;
 
 import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
@@ -31,17 +32,20 @@ import java.util.prefs.Preferences;
  */
 @ActionID(
         category = "File",
-        id = "org.snap.gui.OpenProductAction"
+        id = "org.esa.snap.gui.action.OpenProductAction"
 )
 @ActionRegistration(
-        displayName = "Open Product",
-        lazy = true,
-        menuText = "Open Product..."
+        displayName = "#CTL_ShowImageViewActionName",
+        menuText = "#CTL_ShowImageViewActionMenuText"
 )
 @ActionReference(
         path = "Menu/File",
         position = 0
 )
+@NbBundle.Messages({
+                           "CTL_ShowImageViewActionName=Open Product",
+                           "CTL_ShowImageViewActionMenuText=Open Product..."
+                   })
 public final class OpenProductAction extends AbstractAction /*implements Presenter.Toolbar*/ {
     /*
      @Override
