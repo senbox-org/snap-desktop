@@ -41,6 +41,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyVetoException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -305,6 +306,22 @@ public class WorkspaceTopComponent extends TopComponent {
     void readProperties(java.util.Properties p) {
         String version = p.getProperty("version");
         // read your settings according to their version
+    }
+
+    @Override
+    public Action[] getActions() {
+        Action[] actions = super.getActions();
+        if (tabbedContainer.getTabCount() > 0) {
+            ArrayList<Action> actionList = new ArrayList<>(Arrays.asList(actions));
+            if (!actionList.isEmpty()) {
+                actionList.add(null);
+            }
+            actionList.add(new TileEvenlyAction());
+            actionList.add(new TileHorizontallyAction());
+            actionList.add(new TileVerticallyAction());
+            actions = actionList.toArray(new Action[actionList.size()]);
+        }
+        return actions;
     }
 
     /**
@@ -591,6 +608,8 @@ public class WorkspaceTopComponent extends TopComponent {
         }
     }
 
+    // todo - add tile actions also to WorkspaceTopComponent
+
     private class TileEvenlyAction extends AbstractAction {
         public TileEvenlyAction() {
             super("Tile Evenly");
@@ -813,11 +832,10 @@ public class WorkspaceTopComponent extends TopComponent {
             // Publish lookup contents of selected frame to parent window
             TopComponent topComponent = getTopComponent(internalFrame);
             lookup.setLookup(topComponent.getLookup());
-            /*
-            Lookup.Result<Object> objectResult = topComponent.getLookup().lookupResult(Object.class);
-            WorkspaceTopComponent.this.content.set(objectResult.allInstances(), null);
-            objectResult.addLookupListener(WeakListeners.create(LookupListener.class, internalFrameLookupListener, objectResult));
-            */
+
+            if (WorkspaceTopComponent.this != WindowManager.getDefault().getRegistry().getActivated()) {
+                WorkspaceTopComponent.this.requestActive();
+            }
         }
 
         @Override
@@ -861,13 +879,6 @@ public class WorkspaceTopComponent extends TopComponent {
             return null;
         }
 
-    }
-
-    private class InternalFrameLookupListener implements LookupListener {
-        @Override
-        public void resultChanged(LookupEvent ev) {
-
-        }
     }
 
     private class Frame implements LookupListener {
