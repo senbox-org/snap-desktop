@@ -35,26 +35,18 @@ import java.util.prefs.Preferences;
         id = "org.esa.snap.gui.action.OpenProductAction"
 )
 @ActionRegistration(
-        displayName = "#CTL_ShowImageViewActionName",
-        menuText = "#CTL_ShowImageViewActionMenuText"
+        displayName = "#CTL_OpenProductActionName",
+        menuText = "#CTL_OpenProductActionMenuText"
 )
 @ActionReference(
         path = "Menu/File",
         position = 0
 )
 @NbBundle.Messages({
-                           "CTL_ShowImageViewActionName=Open Product",
-                           "CTL_ShowImageViewActionMenuText=Open Product..."
+                           "CTL_OpenProductActionName=Open Product",
+                           "CTL_OpenProductActionMenuText=Open Product..."
                    })
-public final class OpenProductAction extends AbstractAction /*implements Presenter.Toolbar*/ {
-    /*
-     @Override
-     public Component getToolbarPresenter() {
-     JPanel panel = new JPanel();
-     // define a panel here, which will be added to the toolbar
-     return panel;
-     }
-     */
+public final class OpenProductAction extends AbstractAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -69,20 +61,6 @@ public final class OpenProductAction extends AbstractAction /*implements Present
             return;
         }
 
-/*
-        Lookup lookup = Lookups.forPath("Snap/ProductReaders");
-        Collection<? extends ProductReaderSpi> serviceProviders = lookup.lookupAll(ProductReaderSpi.class);
-
-        if (serviceProviders.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "No importers found!");
-            return;
-        }
-
-        List<FileFilter> filters = new ArrayList<>(serviceProviders.size());
-        for (ProductReaderSpi serviceProvider : serviceProviders) {
-            filters.add(new FileNameExtFilter(serviceProvider));
-        }
-*/
         Preferences preferences = Preferences.userNodeForPackage(getClass());
 
         JFileChooser fc = new JFileChooser(new File(preferences.get("lastDir", ".")));
