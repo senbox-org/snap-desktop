@@ -32,7 +32,7 @@ import java.util.List;
  * </ol>
  * <p>
  * Document windows keep a constant reference to the document object which it exposes through the window's lookup.
- * Overrides may use the {@link #getContent() content} to alter the objects in the exposed lookup,
+ * Overrides may use the {@link #getDynamicContent() content} to alter the objects in the exposed lookup,
  * however, the document object will always remain in it.
  * <p>
  *
@@ -41,20 +41,20 @@ import java.util.List;
 public class DocumentWindow<T> extends TopComponent {
 
     private final T document;
-    private final InstanceContent content;
+    private final InstanceContent dynamicContent;
 
     public DocumentWindow(T document) {
         this.document = document;
-        this.content = new InstanceContent();
-        associateLookup(new ProxyLookup(Lookups.fixed(document), new AbstractLookup(content)));
+        this.dynamicContent = new InstanceContent();
+        associateLookup(new ProxyLookup(Lookups.fixed(document), new AbstractLookup(dynamicContent)));
     }
 
     public T getDocument() {
         return document;
     }
 
-    protected InstanceContent getContent() {
-        return content;
+    protected InstanceContent getDynamicContent() {
+        return dynamicContent;
     }
 
     @Override

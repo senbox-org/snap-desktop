@@ -49,12 +49,12 @@ public class ProductSceneViewWindow extends DocumentWindow<ProductNode> {
 
     @Override
     protected void componentActivated() {
-        getContent().add(view);
+        getDynamicContent().add(view);
     }
 
     @Override
     protected void componentDeactivated() {
-        getContent().remove(view);
+        getDynamicContent().remove(view);
     }
 
     private void initComponents() {
