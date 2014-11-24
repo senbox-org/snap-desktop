@@ -17,8 +17,7 @@ import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
 import org.openide.util.WeakListeners;
-import org.openide.util.lookup.AbstractLookup;
-import org.openide.util.lookup.InstanceContent;
+import org.openide.util.lookup.ProxyLookup;
 import org.openide.windows.Mode;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
@@ -67,13 +66,12 @@ public class WorkspaceTopComponent extends TopComponent {
 
     public final static String ID = WorkspaceTopComponent.class.getSimpleName();
 
-    private final InstanceContent content = new InstanceContent();
     private final Map<TabData, JInternalFrame> tabToFrameMap;
     private final Map<JInternalFrame, TabData> frameToTabMap;
     private final Map<Object, Rectangle> idToBoundsMap;
     private final ActionListener tabActionListener;
     private final InternalFrameListener internalFrameListener;
-    private final LookupListener internalFrameLookupListener;
+    private final FrameProxyLookup lookup;
 
     private TabbedContainer tabbedContainer;
     private JDesktopPane desktopPane;
@@ -81,13 +79,13 @@ public class WorkspaceTopComponent extends TopComponent {
     private int tabCount;
 
     public WorkspaceTopComponent() {
-        associateLookup(new AbstractLookup(content));
+        lookup = new FrameProxyLookup();
+        associateLookup(lookup);
         frameToTabMap = new HashMap<>();
         tabToFrameMap = new HashMap<>();
         idToBoundsMap = new HashMap<>();
         tabActionListener = new TabActionListener();
         internalFrameListener = new InternalFrameListenerImpl();
-        internalFrameLookupListener = new InternalFrameLookupListener();
         initComponents();
         setName("Workspace");
         setToolTipText("Provides an internal desktop for document windows");
@@ -370,6 +368,12 @@ public class WorkspaceTopComponent extends TopComponent {
 
     private JInternalFrame getInternalFrame(int tabIndex) {
         return tabToFrameMap.get(tabbedContainer.getModel().getTab(tabIndex));
+    }
+
+    private static class FrameProxyLookup extends ProxyLookup {
+        void setLookup(Lookup lookup) {
+            setLookups(lookup);
+        }
     }
 
     /**
@@ -803,10 +807,12 @@ public class WorkspaceTopComponent extends TopComponent {
 
             // Publish lookup contents of selected frame to parent window
             TopComponent topComponent = getTopComponent(internalFrame);
+            lookup.setLookup(topComponent.getLookup());
+            /*
             Lookup.Result<Object> objectResult = topComponent.getLookup().lookupResult(Object.class);
             WorkspaceTopComponent.this.content.set(objectResult.allInstances(), null);
-
             objectResult.addLookupListener(WeakListeners.create(LookupListener.class, internalFrameLookupListener, objectResult));
+            */
         }
 
         @Override
@@ -818,6 +824,8 @@ public class WorkspaceTopComponent extends TopComponent {
             if (dw != null) {
                 dw.componentDeactivated();
             }
+
+            lookup.setLookup(Lookup.EMPTY);
         }
 
         @Override
