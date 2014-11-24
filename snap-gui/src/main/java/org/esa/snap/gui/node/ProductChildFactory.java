@@ -38,10 +38,10 @@ public class ProductChildFactory extends ChildFactory<Product> {
     @Override
     protected boolean createKeys(List<Product> list) {
         list.addAll(products);
-        Product p1 = new Product("Product_1", "Type_1", 800, 600);
+        Product p1 = new Product("Product_1", "Type_1", 2048, 1024);
         p1.addBand("Band_A", "X*X - Y*Y");
         p1.addBand("Band_B", "2*X*Y");
-        Product p2 = new Product("Product_2", "Type_2", 640, 400);
+        Product p2 = new Product("Product_2", "Type_2", 1024, 2048);
         p2.addBand("Band_1", "cos(X/100)-sin(Y/100)");
         p2.addBand("Band_2", "sin(X/100)+cos(Y/100)");
         p2.addBand("Band_3", "cos(X/100)*cos(Y/100)");
