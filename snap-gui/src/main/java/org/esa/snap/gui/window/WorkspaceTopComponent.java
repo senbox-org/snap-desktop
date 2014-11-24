@@ -13,6 +13,10 @@ import org.netbeans.swing.tabcontrol.WinsysInfoForTabbedContainer;
 import org.netbeans.swing.tabcontrol.event.TabActionEvent;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.util.Lookup;
+import org.openide.util.LookupEvent;
+import org.openide.util.LookupListener;
+import org.openide.util.WeakListeners;
 import org.openide.util.lookup.AbstractLookup;
 import org.openide.util.lookup.InstanceContent;
 import org.openide.windows.Mode;
@@ -31,7 +35,6 @@ import javax.swing.event.InternalFrameListener;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -70,6 +73,7 @@ public class WorkspaceTopComponent extends TopComponent {
     private final Map<Object, Rectangle> idToBoundsMap;
     private final ActionListener tabActionListener;
     private final InternalFrameListener internalFrameListener;
+    private final LookupListener internalFrameLookupListener;
 
     private TabbedContainer tabbedContainer;
     private JDesktopPane desktopPane;
@@ -83,6 +87,7 @@ public class WorkspaceTopComponent extends TopComponent {
         idToBoundsMap = new HashMap<>();
         tabActionListener = new TabActionListener();
         internalFrameListener = new InternalFrameListenerImpl();
+        internalFrameLookupListener = new InternalFrameLookupListener();
         initComponents();
         setName("Workspace");
         setToolTipText("Provides an internal desktop for document windows");
@@ -107,6 +112,10 @@ public class WorkspaceTopComponent extends TopComponent {
     }
 
     public static WorkspaceTopComponent getDefault() {
+        TopComponent activatedTopComponent = WindowManager.getDefault().getRegistry().getActivated();
+        if (activatedTopComponent instanceof WorkspaceTopComponent) {
+            return (WorkspaceTopComponent) activatedTopComponent;
+        }
         Set<TopComponent> opened = WindowManager.getDefault().getRegistry().getOpened();
         for (TopComponent topComponent : opened) {
             if (topComponent instanceof WorkspaceTopComponent) {
@@ -124,18 +133,7 @@ public class WorkspaceTopComponent extends TopComponent {
         return workspaceTopComponent;
     }
 
-    public static WorkspaceTopComponent get(TopComponent topComponent) {
-        Container parent = topComponent.getParent();
-        while (parent != null) {
-            if (parent instanceof WorkspaceTopComponent) {
-                return (WorkspaceTopComponent) parent;
-            }
-            parent = parent.getParent();
-        }
-        return null;
-    }
-
-    public List<TopComponent> getContainedTopComponents() {
+    public List<TopComponent> getTopComponents() {
         List<TabData> tabs = tabbedContainer.getModel().getTabs();
         List<TopComponent> topComponents = new ArrayList<>();
         for (TabData tab : tabs) {
@@ -145,7 +143,7 @@ public class WorkspaceTopComponent extends TopComponent {
         return topComponents;
     }
 
-    public void addWindow(TopComponent topComponent) {
+    public void addTopComponent(TopComponent topComponent) {
 
         if (topComponent.isOpened()) {
             topComponent.close();
@@ -280,7 +278,7 @@ public class WorkspaceTopComponent extends TopComponent {
             }
             if (topComponent instanceof WorkspaceTopComponent) {
                 WorkspaceTopComponent workspaceTopComponent = (WorkspaceTopComponent) topComponent;
-                List<TopComponent> containedWindows = workspaceTopComponent.getContainedTopComponents();
+                List<TopComponent> containedWindows = workspaceTopComponent.getTopComponents();
                 for (TopComponent containedWindow : containedWindows) {
                     element = visitor.visit(containedWindow);
                     if (element != null) {
@@ -720,7 +718,7 @@ public class WorkspaceTopComponent extends TopComponent {
         @Override
         public void actionPerformed(ActionEvent e) {
             WorkspaceTopComponent workspaceTopComponent = WorkspaceTopComponent.getDefault();
-            workspaceTopComponent.addWindow(window);
+            workspaceTopComponent.addTopComponent(window);
         }
     }
 
@@ -740,7 +738,7 @@ public class WorkspaceTopComponent extends TopComponent {
                 TopComponent[] topComponents = WindowManager.getDefault().getOpenedTopComponents(mode);
                 for (TopComponent topComponent : topComponents) {
                     if (!(topComponent instanceof WorkspaceTopComponent)) {
-                        workspaceTopComponent.addWindow(topComponent);
+                        workspaceTopComponent.addTopComponent(topComponent);
                     }
                 }
             }
@@ -803,7 +801,12 @@ public class WorkspaceTopComponent extends TopComponent {
                 dw.componentActivated();
             }
 
-            transferLookupContents(internalFrame);
+            // Publish lookup contents of selected frame to parent window
+            TopComponent topComponent = getTopComponent(internalFrame);
+            Lookup.Result<Object> objectResult = topComponent.getLookup().lookupResult(Object.class);
+            WorkspaceTopComponent.this.content.set(objectResult.allInstances(), null);
+
+            objectResult.addLookupListener(WeakListeners.create(LookupListener.class, internalFrameLookupListener, objectResult));
         }
 
         @Override
@@ -815,8 +818,6 @@ public class WorkspaceTopComponent extends TopComponent {
             if (dw != null) {
                 dw.componentDeactivated();
             }
-
-            transferLookupContents(e.getInternalFrame());
         }
 
         @Override
@@ -846,13 +847,41 @@ public class WorkspaceTopComponent extends TopComponent {
             }
             return null;
         }
+
     }
 
-    private void transferLookupContents(JInternalFrame internalFrame) {
-        // Publish lookup contents of selected frame to parent window
-        // todo - add listener to frame lookup so that any change in the frame's lookup is propagated to parent window
-        // See https://platform.netbeans.org/tutorials/nbm-selection-1.html
-        TopComponent topComponent = getTopComponent(internalFrame);
-        this.content.set(topComponent.getLookup().lookupAll(Object.class), null);
+    private class InternalFrameLookupListener implements LookupListener {
+        @Override
+        public void resultChanged(LookupEvent ev) {
+
+        }
+    }
+
+    private class Frame implements LookupListener {
+        final TabData tab;
+        final JInternalFrame frame;
+        final TopComponent topComponent;
+        Lookup.Result<Object> lookupResult;
+
+        private Frame(TabData tab, JInternalFrame frame, TopComponent topComponent) {
+            this.tab = tab;
+            this.frame = frame;
+            this.topComponent = topComponent;
+        }
+
+        void observeLookup() {
+            lookupResult = topComponent.getLookup().lookupResult(Object.class);
+            lookupResult.addLookupListener(WeakListeners.create(LookupListener.class, this, lookupResult));
+        }
+
+        void releaseLookup() {
+            lookupResult.removeLookupListener(this);
+            lookupResult = null;
+        }
+
+        @Override
+        public void resultChanged(LookupEvent ev) {
+
+        }
     }
 }
