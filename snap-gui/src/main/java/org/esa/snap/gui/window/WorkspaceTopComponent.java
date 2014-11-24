@@ -608,8 +608,6 @@ public class WorkspaceTopComponent extends TopComponent {
         }
     }
 
-    // todo - add tile actions also to WorkspaceTopComponent
-
     private class TileEvenlyAction extends AbstractAction {
         public TileEvenlyAction() {
             super("Tile Evenly");
