@@ -24,12 +24,14 @@ import org.esa.beam.framework.ui.product.ProductSceneImage;
 import org.esa.beam.framework.ui.product.ProductSceneView;
 import org.esa.beam.util.Debug;
 import org.esa.snap.gui.SnapApp;
+import org.esa.snap.gui.util.WindowUtilities;
 import org.esa.snap.gui.window.ProductSceneViewWindow;
 import org.esa.snap.gui.window.WorkspaceTopComponent;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.ImageUtilities;
+import org.openide.util.NbBundle;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -38,23 +40,22 @@ import java.awt.event.ActionEvent;
 import java.text.MessageFormat;
 import java.util.List;
 
-
-@ActionID(
-        category = "View",
-        id = "org.snap.gui.action.ShowImageViewAction"
-)
-@ActionRegistration(
-        displayName = "Show Image View",
-        iconBase = "org/esa/snap/gui/icons/RsBandAsSwath16.gif"
-)
-@ActionReference(path = "Menu/View", position = 149)
-
 /**
  * This action opens an image view of the currently selected raster.
  *
  * @author Marco Peters
  * @author Norman Fomferra
  */
+@ActionID(
+        category = "View",
+        id = "org.esa.snap.gui.action.ShowImageViewAction"
+)
+@ActionRegistration(
+        displayName = "#CTL_ShowImageViewActionName",
+        iconBase = "org/esa/snap/gui/icons/RsBandAsSwath16.gif"
+)
+@ActionReference(path = "Menu/View", position = 149)
+@NbBundle.Messages("CTL_ShowImageViewActionName=Show Image View")
 public class ShowImageViewAction extends AbstractAction {
 
     RasterDataNode band;
@@ -146,7 +147,7 @@ public class ShowImageViewAction extends AbstractAction {
     }
 
     public ProductSceneView getProductSceneView(RasterDataNode raster) {
-        List<ProductSceneView> list = WorkspaceTopComponent.visitOpenWindows(topComponent -> {
+        List<ProductSceneView> list = WindowUtilities.visitOpen(topComponent -> {
             if (topComponent instanceof ProductSceneViewWindow) {
                 ProductSceneViewWindow window = (ProductSceneViewWindow) topComponent;
                 if (window.getDocument() == raster) {

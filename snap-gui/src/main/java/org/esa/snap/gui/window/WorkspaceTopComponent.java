@@ -14,17 +14,14 @@ import org.netbeans.swing.tabcontrol.event.TabActionEvent;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.util.Lookup;
-import org.openide.util.LookupEvent;
-import org.openide.util.LookupListener;
-import org.openide.util.WeakListeners;
-import org.openide.util.lookup.AbstractLookup;
-import org.openide.util.lookup.InstanceContent;
+import org.openide.util.lookup.ProxyLookup;
 import org.openide.windows.Mode;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
@@ -36,16 +33,22 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+
+import static org.openide.util.NbBundle.Messages;
 
 /**
  * @author Norman
@@ -60,37 +63,40 @@ import java.util.Set;
 @ActionID(category = "Window", id = "org.esa.snap.gui.window.WorkspaceTopComponent")
 @ActionReference(path = "Menu/View/Tool Windows", position = 0)
 @TopComponent.OpenActionRegistration(
-        displayName = "Workspace Window",
+        displayName = "#CTL_WorkspaceTopComponentNameBase",
         preferredID = "WorkspaceTopComponent"
 )
+@Messages({
+                           "CTL_WorkspaceTopComponentNameBase=Workspace",
+                           "CTL_WorkspaceTopComponentDescription=Provides an internal desktop for document windows",
+          })
 public class WorkspaceTopComponent extends TopComponent {
 
     public final static String ID = WorkspaceTopComponent.class.getSimpleName();
 
-    private final InstanceContent content = new InstanceContent();
     private final Map<TabData, JInternalFrame> tabToFrameMap;
     private final Map<JInternalFrame, TabData> frameToTabMap;
     private final Map<Object, Rectangle> idToBoundsMap;
     private final ActionListener tabActionListener;
     private final InternalFrameListener internalFrameListener;
-    private final LookupListener internalFrameLookupListener;
+    private final PropertyChangeListener propertyChangeListener;
+    private final FrameProxyLookup lookup;
 
     private TabbedContainer tabbedContainer;
     private JDesktopPane desktopPane;
 
-    private int tabCount;
-
     public WorkspaceTopComponent() {
-        associateLookup(new AbstractLookup(content));
         frameToTabMap = new HashMap<>();
         tabToFrameMap = new HashMap<>();
         idToBoundsMap = new HashMap<>();
         tabActionListener = new TabActionListener();
-        internalFrameListener = new InternalFrameListenerImpl();
-        internalFrameLookupListener = new InternalFrameLookupListener();
+        internalFrameListener = new MyInternalFrameListener();
+        propertyChangeListener = new MyPropertyChangeListener();
+        lookup = new FrameProxyLookup();
+        associateLookup(lookup);
         initComponents();
-        setName("Workspace");
-        setToolTipText("Provides an internal desktop for document windows");
+        setName(Bundle.CTL_WorkspaceTopComponentNameBase());
+        setToolTipText(Bundle.CTL_WorkspaceTopComponentDescription());
         putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.TRUE);
     }
 
@@ -143,20 +149,45 @@ public class WorkspaceTopComponent extends TopComponent {
         return topComponents;
     }
 
+    /**
+     * Adds a window to this workspace window. If the window already exists, it will be activated.
+     *
+     * @param topComponent The window to add.
+     */
     public void addTopComponent(TopComponent topComponent) {
 
+        // If the window already exists, activate it and return.
+        List<TabData> tabs = tabbedContainer.getModel().getTabs();
+        for (TabData tab : tabs) {
+            JInternalFrame internalFrame = tabToFrameMap.get(tab);
+            if (topComponent == getTopComponent(internalFrame)) {
+                try {
+                    internalFrame.setSelected(true);
+                } catch (PropertyVetoException e) {
+                    // ok
+                }
+                return;
+            }
+        }
+
+        // Make sure, topComponent is closed and not controlled by NB's WindowManager
         if (topComponent.isOpened()) {
             topComponent.close();
         }
 
-        int index = tabCount++;
         JInternalFrame internalFrame = new JInternalFrame(topComponent.getDisplayName(), true, true, true, true);
+        Image iconImage = topComponent.getIcon();
+        ImageIcon imageIcon = null;
+        if (iconImage != null) {
+            imageIcon = new ImageIcon(iconImage);
+            internalFrame.setFrameIcon(imageIcon);
+        }
 
         // Note: The following dummyComponent with preferred size (-1, 2) allows for using the tabbedContainer as
         // a *thin*, empty tabbed bar on top of the desktopPane.
         JComponent dummyComponent = new JPanel();
         dummyComponent.setPreferredSize(new Dimension(-1, 2));
-        TabData tabData = new TabData(dummyComponent, null, topComponent.getDisplayName(), "Tab + " + index);
+        TabData tabData = new TabData(dummyComponent, imageIcon, topComponent.getDisplayName(), null);
 
         frameToTabMap.put(internalFrame, tabData);
         tabToFrameMap.put(tabData, internalFrame);
@@ -166,7 +197,8 @@ public class WorkspaceTopComponent extends TopComponent {
         Object internalFrameID = getInternalFrameID(topComponent);
         Rectangle bounds = idToBoundsMap.get(internalFrameID);
         if (bounds == null) {
-            bounds = new Rectangle(tabCount * 24, tabCount * 24, 400, 400);
+            int count = frameToTabMap.size() % 5;
+            bounds = new Rectangle(count * 24, count * 24, 400, 400);
         }
         internalFrame.setBounds(bounds);
 
@@ -182,15 +214,8 @@ public class WorkspaceTopComponent extends TopComponent {
         } catch (PropertyVetoException e) {
             e.printStackTrace();
         }
-    }
 
-    private Object getInternalFrameID(TopComponent topComponent) {
-        Object internalFrameID = topComponent.getClientProperty("internalFrameID");
-        if (internalFrameID == null) {
-            internalFrameID = "IF" + Long.toHexString(new Random().nextLong());
-            topComponent.putClientProperty("internalFrameID", internalFrameID);
-        }
-        return internalFrameID;
+        topComponent.addPropertyChangeListener(propertyChangeListener);
     }
 
     // CHECKME: How does NB Platform use this method? What is its use?
@@ -224,12 +249,12 @@ public class WorkspaceTopComponent extends TopComponent {
     }
 
     @Override
-    public void componentOpened() {
+    protected void componentOpened() {
         tabbedContainer.addActionListener(tabActionListener);
     }
 
     @Override
-    public void componentClosed() {
+    protected void componentClosed() {
         tabbedContainer.removeActionListener(tabActionListener);
     }
 
@@ -263,33 +288,6 @@ public class WorkspaceTopComponent extends TopComponent {
         }
     }
 
-    public interface WindowVisitor<T> {
-        T visit(TopComponent topComponent);
-    }
-
-    public static <T> List<T> visitOpenWindows(WindowVisitor<T> visitor) {
-        List<T> result = new ArrayList<>();
-        T element;
-        Set<TopComponent> topComponents = TopComponent.getRegistry().getOpened();
-        for (TopComponent topComponent : topComponents) {
-            element = visitor.visit(topComponent);
-            if (element != null) {
-                result.add(element);
-            }
-            if (topComponent instanceof WorkspaceTopComponent) {
-                WorkspaceTopComponent workspaceTopComponent = (WorkspaceTopComponent) topComponent;
-                List<TopComponent> containedWindows = workspaceTopComponent.getTopComponents();
-                for (TopComponent containedWindow : containedWindows) {
-                    element = visitor.visit(containedWindow);
-                    if (element != null) {
-                        result.add(element);
-                    }
-                }
-            }
-        }
-        return result;
-    }
-
     @SuppressWarnings("UnusedDeclaration")
     void writeProperties(java.util.Properties p) {
         // better to version settings since initial version as advocated at
@@ -302,6 +300,27 @@ public class WorkspaceTopComponent extends TopComponent {
     void readProperties(java.util.Properties p) {
         String version = p.getProperty("version");
         // read your settings according to their version
+    }
+
+    /**
+     * Adds various "tile window" actions to the standrd set of actions.
+     *
+     * @return Array of actions for this component.
+     */
+    @Override
+    public Action[] getActions() {
+        Action[] actions = super.getActions();
+        if (tabbedContainer.getTabCount() > 0) {
+            ArrayList<Action> actionList = new ArrayList<>(Arrays.asList(actions));
+            if (!actionList.isEmpty()) {
+                actionList.add(null);
+            }
+            actionList.add(new TileEvenlyAction());
+            actionList.add(new TileHorizontallyAction());
+            actionList.add(new TileVerticallyAction());
+            actions = actionList.toArray(new Action[actionList.size()]);
+        }
+        return actions;
     }
 
     /**
@@ -324,6 +343,7 @@ public class WorkspaceTopComponent extends TopComponent {
     private TopComponent closeInternalFrame(JInternalFrame internalFrame, boolean removeTab) {
         internalFrame.removeInternalFrameListener(internalFrameListener);
         TopComponent topComponent = getTopComponent(internalFrame);
+        topComponent.removePropertyChangeListener(propertyChangeListener);
 
         Object internalFrameID = getInternalFrameID(topComponent);
         idToBoundsMap.put(internalFrameID, new Rectangle(internalFrame.getBounds()));
@@ -352,10 +372,6 @@ public class WorkspaceTopComponent extends TopComponent {
         return topComponent;
     }
 
-    private TopComponent getTopComponent(JInternalFrame internalFrame) {
-        return (TopComponent) internalFrame.getContentPane();
-    }
-
     private TopComponent dockInternalFrame(JInternalFrame internalFrame) {
         TopComponent topComponent = closeInternalFrame(internalFrame, true);
 
@@ -368,8 +384,30 @@ public class WorkspaceTopComponent extends TopComponent {
         return topComponent;
     }
 
+    private TopComponent getTopComponent(JInternalFrame internalFrame) {
+        return (TopComponent) internalFrame.getContentPane();
+    }
+
+    private JInternalFrame getInternalFrame(TopComponent topComponent) {
+        for (JInternalFrame internalFrame : frameToTabMap.keySet()) {
+            if (topComponent == getTopComponent(internalFrame)) {
+                return internalFrame;
+            }
+        }
+        return null;
+    }
+
     private JInternalFrame getInternalFrame(int tabIndex) {
         return tabToFrameMap.get(tabbedContainer.getModel().getTab(tabIndex));
+    }
+
+    private Object getInternalFrameID(TopComponent topComponent) {
+        Object internalFrameID = topComponent.getClientProperty("internalFrameID");
+        if (internalFrameID == null) {
+            internalFrameID = "IF" + Long.toHexString(new Random().nextLong());
+            topComponent.putClientProperty("internalFrameID", internalFrameID);
+        }
+        return internalFrameID;
     }
 
     /**
@@ -496,27 +534,12 @@ public class WorkspaceTopComponent extends TopComponent {
         public abstract void tabActionPerformed(TabActionEvent e);
     }
 
-    /**
-     * Allows telling the tabbedContainer if a tab component is maximized.
-     */
-    private class MyWinsysInfoForTabbedContainer extends WinsysInfoForTabbedContainer {
-        @Override
-        public Object getOrientation(Component comp) {
-            return TabDisplayer.ORIENTATION_CENTER;
-        }
-
-        @Override
-        public boolean inMaximizedMode(Component comp) {
-            JInternalFrame internalFrame = desktopPane.getSelectedFrame();
-            return internalFrame != null && internalFrame.isMaximum();
-        }
-    }
-
+    @Messages("CTL_CloseWindowActionName=Close")
     private class CloseWindowAction extends AbstractAction {
         private final int tabIndex;
 
         public CloseWindowAction(int tabIndex) {
-            super("Close");
+            super(Bundle.CTL_CloseWindowActionName());
             this.tabIndex = tabIndex;
         }
 
@@ -528,10 +551,11 @@ public class WorkspaceTopComponent extends TopComponent {
         }
     }
 
+    @Messages("CTL_CloseAllWindowsActionName=Close All")
     private class CloseAllWindowsAction extends AbstractAction {
 
         public CloseAllWindowsAction() {
-            super("Close All");
+            super(Bundle.CTL_CloseAllWindowsActionName());
         }
 
         @Override
@@ -540,11 +564,12 @@ public class WorkspaceTopComponent extends TopComponent {
         }
     }
 
+    @Messages("CTL_CloseOtherWindowsActionName=Close Others")
     private class CloseOtherWindowsAction extends AbstractAction {
         private final int tabIndex;
 
         public CloseOtherWindowsAction(int tabIndex) {
-            super("Close Others");
+            super(Bundle.CTL_CloseOtherWindowsActionName());
             this.tabIndex = tabIndex;
         }
 
@@ -562,11 +587,12 @@ public class WorkspaceTopComponent extends TopComponent {
         }
     }
 
+    @Messages("CTL_MaximizeWindowActionName=Maximise")
     private class MaximizeWindowAction extends AbstractAction {
         private final int tabIndex;
 
         public MaximizeWindowAction(int tabIndex) {
-            super("Maximise");
+            super(Bundle.CTL_MaximizeWindowActionName());
             this.tabIndex = tabIndex;
         }
 
@@ -582,9 +608,10 @@ public class WorkspaceTopComponent extends TopComponent {
         }
     }
 
+    @Messages("CTL_TileEvenlyActionName=Tile Evenly")
     private class TileEvenlyAction extends AbstractAction {
         public TileEvenlyAction() {
-            super("Tile Evenly");
+            super(Bundle.CTL_TileEvenlyActionName());
         }
 
         @Override
@@ -629,9 +656,10 @@ public class WorkspaceTopComponent extends TopComponent {
         }
     }
 
+    @Messages("CTL_TileHorizontallyActionName=Tile Horizontally")
     private class TileHorizontallyAction extends AbstractAction {
         public TileHorizontallyAction() {
-            super("Tile Horizontally");
+            super(Bundle.CTL_TileHorizontallyActionName());
         }
 
         @Override
@@ -649,9 +677,10 @@ public class WorkspaceTopComponent extends TopComponent {
         }
     }
 
+    @Messages("CTL_TileVerticallyActionName=Tile Vertically")
     private class TileVerticallyAction extends AbstractAction {
         public TileVerticallyAction() {
-            super("Tile Vertically");
+            super(Bundle.CTL_TileVerticallyActionName());
         }
 
         @Override
@@ -669,9 +698,10 @@ public class WorkspaceTopComponent extends TopComponent {
         }
     }
 
+    @Messages("CTL_DockAllInWorkspaceActionName=Dock All")
     private class DockAllInWorkspaceAction extends AbstractAction {
         public DockAllInWorkspaceAction() {
-            super("Dock All");
+            super(Bundle.CTL_DockAllInWorkspaceActionName());
         }
 
         @Override
@@ -688,11 +718,12 @@ public class WorkspaceTopComponent extends TopComponent {
         }
     }
 
+    @Messages("CTL_DockInWorkspaceActionName=Dock")
     private class DockInWorkspaceAction extends AbstractAction {
         private int tabIndex;
 
         public DockInWorkspaceAction(int tabIndex) {
-            super("Dock");
+            super(Bundle.CTL_DockInWorkspaceActionName());
             this.tabIndex = tabIndex;
         }
 
@@ -707,11 +738,12 @@ public class WorkspaceTopComponent extends TopComponent {
         }
     }
 
+    @Messages("CTL_FloatIntoWorkspaceActionName=Float into Workspace")
     public static class FloatIntoWorkspaceAction extends AbstractAction {
         private TopComponent window;
 
         public FloatIntoWorkspaceAction(TopComponent window) {
-            super("Float into Workspace");
+            super(Bundle.CTL_FloatIntoWorkspaceActionName());
             this.window = window;
         }
 
@@ -722,11 +754,12 @@ public class WorkspaceTopComponent extends TopComponent {
         }
     }
 
+    @Messages("CTL_FloatGroupIntoWorkspaceActionName=Float Group into Workspace")
     public static class FloatGroupIntoWorkspaceAction extends AbstractAction {
         private TopComponent window;
 
         public FloatGroupIntoWorkspaceAction(TopComponent window) {
-            super("Float Group into Workspace");
+            super(Bundle.CTL_FloatGroupIntoWorkspaceActionName());
             this.window = window;
         }
 
@@ -745,7 +778,13 @@ public class WorkspaceTopComponent extends TopComponent {
         }
     }
 
-    private class InternalFrameListenerImpl implements InternalFrameListener {
+    private static class FrameProxyLookup extends ProxyLookup {
+        void setLookup(Lookup lookup) {
+            setLookups(lookup);
+        }
+    }
+
+    private class MyInternalFrameListener implements InternalFrameListener {
         @Override
         public void internalFrameOpened(InternalFrameEvent e) {
             System.out.println("internalFrameOpened: e = " + e);
@@ -803,10 +842,11 @@ public class WorkspaceTopComponent extends TopComponent {
 
             // Publish lookup contents of selected frame to parent window
             TopComponent topComponent = getTopComponent(internalFrame);
-            Lookup.Result<Object> objectResult = topComponent.getLookup().lookupResult(Object.class);
-            WorkspaceTopComponent.this.content.set(objectResult.allInstances(), null);
+            lookup.setLookup(topComponent.getLookup());
 
-            objectResult.addLookupListener(WeakListeners.create(LookupListener.class, internalFrameLookupListener, objectResult));
+            if (WorkspaceTopComponent.this != WindowManager.getDefault().getRegistry().getActivated()) {
+                WorkspaceTopComponent.this.requestActive();
+            }
         }
 
         @Override
@@ -818,6 +858,8 @@ public class WorkspaceTopComponent extends TopComponent {
             if (dw != null) {
                 dw.componentDeactivated();
             }
+
+            lookup.setLookup(Lookup.EMPTY);
         }
 
         @Override
@@ -850,38 +892,37 @@ public class WorkspaceTopComponent extends TopComponent {
 
     }
 
-    private class InternalFrameLookupListener implements LookupListener {
+    /**
+     * Allows telling the tabbedContainer if a tab component is maximized.
+     */
+    private class MyWinsysInfoForTabbedContainer extends WinsysInfoForTabbedContainer {
         @Override
-        public void resultChanged(LookupEvent ev) {
+        public Object getOrientation(Component comp) {
+            return TabDisplayer.ORIENTATION_CENTER;
+        }
 
+        @Override
+        public boolean inMaximizedMode(Component comp) {
+            JInternalFrame internalFrame = desktopPane.getSelectedFrame();
+            return internalFrame != null && internalFrame.isMaximum();
         }
     }
 
-    private class Frame implements LookupListener {
-        final TabData tab;
-        final JInternalFrame frame;
-        final TopComponent topComponent;
-        Lookup.Result<Object> lookupResult;
-
-        private Frame(TabData tab, JInternalFrame frame, TopComponent topComponent) {
-            this.tab = tab;
-            this.frame = frame;
-            this.topComponent = topComponent;
-        }
-
-        void observeLookup() {
-            lookupResult = topComponent.getLookup().lookupResult(Object.class);
-            lookupResult.addLookupListener(WeakListeners.create(LookupListener.class, this, lookupResult));
-        }
-
-        void releaseLookup() {
-            lookupResult.removeLookupListener(this);
-            lookupResult = null;
-        }
-
+    private class MyPropertyChangeListener implements PropertyChangeListener {
         @Override
-        public void resultChanged(LookupEvent ev) {
-
+        public void propertyChange(PropertyChangeEvent event) {
+            TopComponent source = (TopComponent) event.getSource();
+            JInternalFrame frame = getInternalFrame(source);
+            if ("icon".equals(event.getPropertyName())) {
+                Image icon = source.getIcon();
+                if (icon != null) {
+                    frame.setFrameIcon(new ImageIcon(icon));
+                } else {
+                    frame.setFrameIcon(null);
+                }
+            } else if ("displayName".equals(event.getPropertyName())) {
+                frame.setTitle(source.getDisplayName());
+            }
         }
     }
 }

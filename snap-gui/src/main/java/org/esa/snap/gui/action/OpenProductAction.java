@@ -12,6 +12,7 @@ import org.esa.snap.gui.node.ProductChildFactory;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
+import org.openide.util.NbBundle;
 
 import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
@@ -31,26 +32,21 @@ import java.util.prefs.Preferences;
  */
 @ActionID(
         category = "File",
-        id = "org.snap.gui.OpenProductAction"
+        id = "org.esa.snap.gui.action.OpenProductAction"
 )
 @ActionRegistration(
-        displayName = "Open Product",
-        lazy = true,
-        menuText = "Open Product..."
+        displayName = "#CTL_OpenProductActionName",
+        menuText = "#CTL_OpenProductActionMenuText"
 )
 @ActionReference(
         path = "Menu/File",
         position = 0
 )
-public final class OpenProductAction extends AbstractAction /*implements Presenter.Toolbar*/ {
-    /*
-     @Override
-     public Component getToolbarPresenter() {
-     JPanel panel = new JPanel();
-     // define a panel here, which will be added to the toolbar
-     return panel;
-     }
-     */
+@NbBundle.Messages({
+                           "CTL_OpenProductActionName=Open Product",
+                           "CTL_OpenProductActionMenuText=Open Product..."
+                   })
+public final class OpenProductAction extends AbstractAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -65,20 +61,6 @@ public final class OpenProductAction extends AbstractAction /*implements Present
             return;
         }
 
-/*
-        Lookup lookup = Lookups.forPath("Snap/ProductReaders");
-        Collection<? extends ProductReaderSpi> serviceProviders = lookup.lookupAll(ProductReaderSpi.class);
-
-        if (serviceProviders.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "No importers found!");
-            return;
-        }
-
-        List<FileFilter> filters = new ArrayList<>(serviceProviders.size());
-        for (ProductReaderSpi serviceProvider : serviceProviders) {
-            filters.add(new FileNameExtFilter(serviceProvider));
-        }
-*/
         Preferences preferences = Preferences.userNodeForPackage(getClass());
 
         JFileChooser fc = new JFileChooser(new File(preferences.get("lastDir", ".")));
