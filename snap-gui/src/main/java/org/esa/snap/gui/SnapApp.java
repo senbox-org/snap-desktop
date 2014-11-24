@@ -5,7 +5,7 @@ import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.datamodel.ProductNode;
 import org.esa.beam.framework.ui.product.ProductSceneView;
 import org.esa.beam.util.PropertyMap;
-import org.esa.snap.gui.compat.CompatiblePropertyMap;
+import org.esa.snap.gui.util.CompatiblePropertyMap;
 import org.esa.snap.tango.TangoIcons;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
@@ -135,7 +135,7 @@ public class SnapApp {
     }
 
     /**
-     * @deprecated Should be superfluous now. Kept for compatibility issues only. Remove ASAP and before 2.0 release.
+     * @deprecated Should be superfluous now. Kept for compatibility reasons only. Remove ASAP and latest before 2.0 release.
      */
     @Deprecated
     public void updateState() {

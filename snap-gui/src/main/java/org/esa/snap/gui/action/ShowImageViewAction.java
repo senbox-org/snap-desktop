@@ -24,6 +24,7 @@ import org.esa.beam.framework.ui.product.ProductSceneImage;
 import org.esa.beam.framework.ui.product.ProductSceneView;
 import org.esa.beam.util.Debug;
 import org.esa.snap.gui.SnapApp;
+import org.esa.snap.gui.util.WindowUtilities;
 import org.esa.snap.gui.window.ProductSceneViewWindow;
 import org.esa.snap.gui.window.WorkspaceTopComponent;
 import org.openide.awt.ActionID;
@@ -146,7 +147,7 @@ public class ShowImageViewAction extends AbstractAction {
     }
 
     public ProductSceneView getProductSceneView(RasterDataNode raster) {
-        List<ProductSceneView> list = WorkspaceTopComponent.visitOpenWindows(topComponent -> {
+        List<ProductSceneView> list = WindowUtilities.visitOpen(topComponent -> {
             if (topComponent instanceof ProductSceneViewWindow) {
                 ProductSceneViewWindow window = (ProductSceneViewWindow) topComponent;
                 if (window.getDocument() == raster) {

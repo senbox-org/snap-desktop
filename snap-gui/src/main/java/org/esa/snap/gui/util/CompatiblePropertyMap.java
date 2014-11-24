@@ -1,4 +1,4 @@
-package org.esa.snap.gui.compat;
+package org.esa.snap.gui.util;
 
 import com.bc.ceres.core.Assert;
 import org.esa.beam.util.PropertyMap;
@@ -10,9 +10,12 @@ import java.util.prefs.PreferenceChangeListener;
 import java.util.prefs.Preferences;
 
 /**
+ * Only use this in cases where you need an old-style {@code PropertyMap}.
+ * Actually, don't use this class.
+ *
  * @author Norman
  * @author Marco
- * @deprecated by default, since this class shall be replaced by direct usage of java.util.prefs.Preferences
+ * @deprecated By default, since this class shall be replaced by direct usage of {@code java.util.prefs.Preferences},
  */
 @Deprecated
 public class CompatiblePropertyMap extends PropertyMap {

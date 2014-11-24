@@ -9,6 +9,7 @@ import org.esa.beam.framework.datamodel.ProductNode;
 import org.esa.beam.framework.datamodel.ProductNodeEvent;
 import org.esa.beam.framework.datamodel.ProductNodeListenerAdapter;
 import org.esa.beam.framework.ui.product.ProductSceneView;
+import org.esa.snap.gui.util.WindowUtilities;
 import org.openide.util.ImageUtilities;
 
 import java.awt.BorderLayout;
@@ -28,7 +29,7 @@ public class ProductSceneViewWindow extends DocumentWindow<ProductNode> {
         this.nodeRenameHandler = new NodeRenameHandler();
         initComponents();
         setName(view.getRaster().getName());
-        setDisplayName(getUniqueEditorTitle(view.getRaster().getName()));
+        setDisplayName(WindowUtilities.getUniqueTitle(view.getRaster().getName(), ProductSceneViewWindow.class));
         setToolTipText(view.getRaster().getProduct().getName() + " - " + view.getRaster().getName());
         setIcon(ImageUtilities.loadImage("org/esa/snap/gui/icons/RsBandAsSwath16.gif"));
     }

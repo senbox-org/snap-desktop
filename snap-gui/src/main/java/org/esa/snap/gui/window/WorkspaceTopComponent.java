@@ -288,33 +288,6 @@ public class WorkspaceTopComponent extends TopComponent {
         }
     }
 
-    public interface WindowVisitor<T> {
-        T visit(TopComponent topComponent);
-    }
-
-    public static <T> List<T> visitOpenWindows(WindowVisitor<T> visitor) {
-        List<T> result = new ArrayList<>();
-        T element;
-        Set<TopComponent> topComponents = TopComponent.getRegistry().getOpened();
-        for (TopComponent topComponent : topComponents) {
-            element = visitor.visit(topComponent);
-            if (element != null) {
-                result.add(element);
-            }
-            if (topComponent instanceof WorkspaceTopComponent) {
-                WorkspaceTopComponent workspaceTopComponent = (WorkspaceTopComponent) topComponent;
-                List<TopComponent> containedWindows = workspaceTopComponent.getTopComponents();
-                for (TopComponent containedWindow : containedWindows) {
-                    element = visitor.visit(containedWindow);
-                    if (element != null) {
-                        result.add(element);
-                    }
-                }
-            }
-        }
-        return result;
-    }
-
     @SuppressWarnings("UnusedDeclaration")
     void writeProperties(java.util.Properties p) {
         // better to version settings since initial version as advocated at

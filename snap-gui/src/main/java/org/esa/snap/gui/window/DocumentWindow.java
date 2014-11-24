@@ -106,30 +106,4 @@ public class DocumentWindow<T> extends TopComponent {
         return PERSISTENCE_NEVER;
     }
 
-    /**
-     * Gets a unique window title.
-     *
-     * @param titleBase The title base.
-     * @return A unique window title.
-     */
-    public static String getUniqueEditorTitle(String titleBase) {
-
-        List<String> titles = WorkspaceTopComponent.visitOpenWindows(TopComponent::getDisplayName);
-
-        if (titles.isEmpty()) {
-            return titleBase;
-        }
-
-        if (!titles.contains(titleBase)) {
-            return titleBase;
-        }
-
-        for (int i = 2; ; i++) {
-            final String title = String.format("%s (%d)", titleBase, i);
-            if (!titles.contains(title)) {
-                return title;
-            }
-        }
-    }
-
 }
