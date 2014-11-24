@@ -24,7 +24,6 @@ import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.event.InternalFrameEvent;
@@ -462,10 +461,10 @@ public class WorkspaceTopComponent extends TopComponent {
                             popupMenu.add(new DockAllInWorkspaceAction());
                         }
                     }
-                    if (tabIndex >= 0) {
-                        popupMenu.addSeparator();
-                        popupMenu.add(new CloneWindowAction(tabIndex));
-                    }
+                    //if (tabIndex >= 0) {
+                    //    popupMenu.addSeparator();
+                    //    popupMenu.add(new CloneWindowAction(tabIndex));
+                    //}
                     if (tabCount > 1) {
                         popupMenu.addSeparator();
                         popupMenu.add(new TileEvenlyAction());
@@ -562,21 +561,6 @@ public class WorkspaceTopComponent extends TopComponent {
                     closeInternalFrame(internalFrame);
                 }
             }
-        }
-    }
-
-    private class CloneWindowAction extends AbstractAction {
-        private final int tabIndex;
-
-        public CloneWindowAction(int tabIndex) {
-            super("Close Others");
-            this.tabIndex = tabIndex;
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            // todo - implement me!
-            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), "Not implemented yet. (tabIndex=" + tabIndex + ")");
         }
     }
 
