@@ -31,10 +31,12 @@ import javax.media.jai.JAI;
 import javax.media.jai.OperationRegistry;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import java.awt.BorderLayout;
 import java.awt.Dialog;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
@@ -50,6 +52,8 @@ import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
+
+import static org.openide.util.NbBundle.Messages;
 
 /**
  * The central SNAP application class (dummy).
@@ -84,6 +88,15 @@ public class SnapApp {
 
     public void setStatusBarMessage(String message) {
         StatusDisplayer.getDefault().setStatusText(message);
+    }
+
+    /**
+     * @return The (display) name of this application.
+     * @deprecated use {@link #getInstanceName()}
+     */
+    @Deprecated
+    public String getAppName() {
+        return getInstanceName();
     }
 
     public String getInstanceName() {
@@ -149,23 +162,98 @@ public class SnapApp {
         getLogger().log(Level.SEVERE, message, t);
     }
 
-    public ProductSceneView getSelectedProductSceneView() {
-        // todo implement me
-        return null;
-    }
-
-    public int showQuestionDialog(String dialogTitle, String text, boolean askAgain, String preferencesKey) {
-        // todo implement me
-        return 0;
-    }
-
     public Product getSelectedProduct() {
-        // todo implement me
+        ProductSceneView productSceneView = getSelectedProductSceneView();
+        if (productSceneView != null) {
+            return productSceneView.getProduct();
+        }
+        ProductNode productNode = Utilities.actionsGlobalContext().lookup(ProductNode.class);
+        if (productNode != null) {
+            return productNode.getProduct();
+        }
         return null;
     }
 
-    public void showInfoDialog(String message, String preferencesKey) {
-        // todo implement me
+    public ProductSceneView getSelectedProductSceneView() {
+        return Utilities.actionsGlobalContext().lookup(ProductSceneView.class);
+    }
+
+    @Messages("LBL_Question=Question")
+    public int showQuestionDialog(String message, String preferencesKey) {
+        return showQuestionDialog("Question", message, preferencesKey); /*I18N*/
+    }
+
+    public int showQuestionDialog(String title, String message, String preferencesKey) {
+        return showQuestionDialog(title, message, false, preferencesKey);
+    }
+
+    @Messages("LBL_QuestionRemember=Remember my decision and don't ask again.")
+    public int showQuestionDialog(String title, String message, boolean allowCancel, String preferencesKey) {
+        Object result;
+        boolean storeResult;
+        if (preferencesKey != null) {
+            String decision = getPreferences().get(preferencesKey + ".confirmed", "");
+            if (decision.equals("yes")) {
+                return JOptionPane.YES_OPTION;
+            } else if (decision.equals("no")) {
+                return JOptionPane.NO_OPTION;
+            }
+            JPanel panel = new JPanel(new BorderLayout(4, 4));
+            panel.add(new JLabel(message), BorderLayout.CENTER);
+            JCheckBox decisionCheckBox = new JCheckBox("Remember my decision and don't ask again.", false);
+            panel.add(decisionCheckBox, BorderLayout.SOUTH);
+            NotifyDescriptor d = new NotifyDescriptor.Confirmation(panel, getInstanceName() + " - " + title, allowCancel ? NotifyDescriptor.YES_NO_CANCEL_OPTION : NotifyDescriptor.YES_NO_OPTION);
+            result = DialogDisplayer.getDefault().notify(d);
+            storeResult = decisionCheckBox.isSelected();
+        } else {
+            NotifyDescriptor d = new NotifyDescriptor.Confirmation(message, getInstanceName() + " - " + title, allowCancel ? NotifyDescriptor.YES_NO_CANCEL_OPTION : NotifyDescriptor.YES_NO_OPTION);
+            result = DialogDisplayer.getDefault().notify(d);
+            storeResult = false;
+        }
+        if (NotifyDescriptor.YES_OPTION.equals(result)) {
+            if (storeResult) {
+                getPreferences().put(preferencesKey + ".confirmed", "yes");
+            }
+            return JOptionPane.YES_OPTION;
+        } else if (NotifyDescriptor.NO_OPTION.equals(result)) {
+            if (storeResult) {
+                getPreferences().put(preferencesKey + ".confirmed", "no");
+            }
+            return JOptionPane.NO_OPTION;
+        } else {
+            return JOptionPane.CANCEL_OPTION;
+        }
+    }
+
+    @Messages("LBL_Information=Information")
+    public final void showInfoDialog(String message, String preferencesKey) {
+        showInfoDialog("Information", message, preferencesKey);
+    }
+
+    public final void showInfoDialog(String title, String message, String preferencesKey) {
+        showMessageDialog(title, message, JOptionPane.INFORMATION_MESSAGE, preferencesKey);
+    }
+
+    public final void showMessageDialog(String title, String message, int messageType, String preferencesKey) {
+        if (preferencesKey != null) {
+            String decision = getPreferences().get(preferencesKey + ".dontShow", "");
+            if (decision.equals("true")) {
+                return;
+            }
+            JPanel panel = new JPanel(new BorderLayout(4, 4));
+            panel.add(new JLabel(message), BorderLayout.CENTER);
+            JCheckBox dontShowCheckBox = new JCheckBox("Don't show this message anymore.", false);
+            panel.add(dontShowCheckBox, BorderLayout.SOUTH);
+            NotifyDescriptor d = new NotifyDescriptor(panel, getInstanceName() + " - " + title, NotifyDescriptor.DEFAULT_OPTION, messageType, null, null);
+            DialogDisplayer.getDefault().notify(d);
+            boolean storeResult = dontShowCheckBox.isSelected();
+            if (storeResult) {
+                getPreferences().put(preferencesKey + ".dontShow", "true");
+            }
+        } else {
+            NotifyDescriptor d = new NotifyDescriptor(message, getInstanceName() + " - " + title, NotifyDescriptor.DEFAULT_OPTION, messageType, null, null);
+            DialogDisplayer.getDefault().notify(d);
+        }
     }
 
     private static GlobalSelectionLogger globalSelectionLogger;
@@ -224,7 +312,7 @@ public class SnapApp {
             System.out.println(">>> " + getClass() + " called");
             ActionListener actionListener = (ActionEvent e) -> System.out.println(">>> " + getClass() + " action called");
             JLabel label = new JLabel("<html>SNAP found some cached <b>bazoo files</b> in your <b>gnarz folder</b>.<br>" +
-                                              "Should they be rectified now?");
+                                      "Should they be rectified now?");
             JPanel panel = new JPanel();
             panel.setBorder(new EmptyBorder(10, 10, 10, 10));
             panel.add(label);
