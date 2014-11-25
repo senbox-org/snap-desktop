@@ -5,12 +5,14 @@
  */
 package org.esa.snap.gui.window;
 
+import org.esa.snap.gui.util.WindowUtilities;
 import org.netbeans.swing.tabcontrol.DefaultTabDataModel;
 import org.netbeans.swing.tabcontrol.TabData;
 import org.netbeans.swing.tabcontrol.TabDisplayer;
 import org.netbeans.swing.tabcontrol.TabbedContainer;
 import org.netbeans.swing.tabcontrol.WinsysInfoForTabbedContainer;
 import org.netbeans.swing.tabcontrol.event.TabActionEvent;
+import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.awt.ActionID;
@@ -27,8 +29,12 @@ import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 import java.awt.BorderLayout;
@@ -49,6 +55,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.Vector;
+import java.util.stream.Collectors;
 
 import static org.openide.util.NbBundle.Messages;
 
@@ -69,8 +77,8 @@ import static org.openide.util.NbBundle.Messages;
         preferredID = "WorkspaceTopComponent"
 )
 @Messages({
-                           "CTL_WorkspaceTopComponentNameBase=Workspace",
-                           "CTL_WorkspaceTopComponentDescription=Provides an internal desktop for document windows",
+                  "CTL_WorkspaceTopComponentNameBase=Workspace",
+                  "CTL_WorkspaceTopComponentDescription=Provides an internal desktop for document windows",
           })
 public class WorkspaceTopComponent extends TopComponent {
 
@@ -104,7 +112,7 @@ public class WorkspaceTopComponent extends TopComponent {
         setName(displayName);
         setDisplayName(displayName);
         setToolTipText(Bundle.CTL_WorkspaceTopComponentDescription());
-        putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.TRUE);
+        //putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.TRUE);
     }
 
     private void initComponents() {
@@ -122,30 +130,6 @@ public class WorkspaceTopComponent extends TopComponent {
 
         add(tabbedContainer, BorderLayout.NORTH);
         add(desktopPane, BorderLayout.CENTER);
-    }
-
-    /** @deprecated use {@link org.esa.snap.gui.util.WindowUtilities#getShowingWorkspace()} instead */
-    @Deprecated
-    public static WorkspaceTopComponent getDefault() {
-        TopComponent activatedTopComponent = WindowManager.getDefault().getRegistry().getActivated();
-        if (activatedTopComponent instanceof WorkspaceTopComponent) {
-            return (WorkspaceTopComponent) activatedTopComponent;
-        }
-        Set<TopComponent> opened = WindowManager.getDefault().getRegistry().getOpened();
-        for (TopComponent topComponent : opened) {
-            if (topComponent instanceof WorkspaceTopComponent) {
-                return (WorkspaceTopComponent) topComponent;
-            }
-        }
-        TopComponent topComponent = WindowManager.getDefault().findTopComponent(ID);
-        if (topComponent instanceof WorkspaceTopComponent) {
-            WorkspaceTopComponent workspaceTopComponent = (WorkspaceTopComponent) topComponent;
-            workspaceTopComponent.open();
-            return workspaceTopComponent;
-        }
-        WorkspaceTopComponent workspaceTopComponent = new WorkspaceTopComponent();
-        workspaceTopComponent.open();
-        return workspaceTopComponent;
     }
 
     public List<TopComponent> getTopComponents() {
@@ -179,7 +163,7 @@ public class WorkspaceTopComponent extends TopComponent {
             }
         }
 
-        // Make sure, topComponent is closed and not controlled by NB's WindowManager
+        // Make sure, topComponent is closed and not any longer controlled by NB's WindowManager
         if (topComponent.isOpened()) {
             topComponent.close();
         }
@@ -192,10 +176,11 @@ public class WorkspaceTopComponent extends TopComponent {
             internalFrame.setFrameIcon(imageIcon);
         }
 
-        // Note: The following dummyComponent with preferred size (-1, 2) allows for using the tabbedContainer as
+        // Note: The following dummyComponent with preferred size (-1, 4) allows for using the tabbedContainer as
         // a *thin*, empty tabbed bar on top of the desktopPane.
         JComponent dummyComponent = new JPanel();
-        dummyComponent.setPreferredSize(new Dimension(-1, 2));
+        dummyComponent.setPreferredSize(new Dimension(-1, 4));
+        //dummyComponent.setSize(new Dimension(-1, 4));
         TabData tabData = new TabData(dummyComponent, imageIcon, topComponent.getDisplayName(), null);
 
         frameToTabMap.put(internalFrame, tabData);
@@ -221,7 +206,7 @@ public class WorkspaceTopComponent extends TopComponent {
         try {
             internalFrame.setSelected(true);
         } catch (PropertyVetoException e) {
-            e.printStackTrace();
+            // ok
         }
 
         topComponent.addPropertyChangeListener(propertyChangeListener);
@@ -237,10 +222,10 @@ public class WorkspaceTopComponent extends TopComponent {
             JInternalFrame internalFrame = internalFrameMap.get(actionEvent.getSource());
             try {
                 internalFrame.setSelected(true);
-                internalFrame.requestFocus();
             } catch (PropertyVetoException e1) {
                 // ok
             }
+            internalFrame.requestFocusInWindow();
         };
         for (int i = 0; i < subComponents.length; i++) {
             TabData tab = tabbedContainer.getModel().getTab(i);
@@ -319,20 +304,19 @@ public class WorkspaceTopComponent extends TopComponent {
     @Override
     public Action[] getActions() {
         Action[] actions = super.getActions();
+        ArrayList<Action> actionList = new ArrayList<>();
+        actionList.add(new RenameWorkspaceAction());
+        if (actions.length > 0) {
+            actionList.add(null);
+            actionList.addAll(Arrays.asList(actions));
+        }
         if (tabbedContainer.getTabCount() > 0) {
-            ArrayList<Action> actionList = new ArrayList<>();
-            actionList.add(new RenameAction());
-            if (actions.length > 0) {
-                actionList.add(null);
-                actionList.addAll(Arrays.asList(actions));
-            }
             actionList.add(null);
             actionList.add(new TileEvenlyAction());
             actionList.add(new TileHorizontallyAction());
             actionList.add(new TileVerticallyAction());
-            actions = actionList.toArray(new Action[actionList.size()]);
         }
-        return actions;
+        return actionList.toArray(new Action[actionList.size()]);
     }
 
     /**
@@ -547,9 +531,9 @@ public class WorkspaceTopComponent extends TopComponent {
     }
 
     @Messages("CTL_RenameActionName=Rename")
-    private class RenameAction extends AbstractAction {
+    private class RenameWorkspaceAction extends AbstractAction {
 
-        public RenameAction() {
+        public RenameWorkspaceAction() {
             super(Bundle.CTL_RenameActionName());
         }
 
@@ -768,7 +752,11 @@ public class WorkspaceTopComponent extends TopComponent {
         }
     }
 
-    @Messages("CTL_FloatIntoWorkspaceActionName=Float into Workspace")
+    @Messages({
+                      "CTL_FloatIntoWorkspaceActionName=Float into Workspace",
+                      "LBL_FloatIntoWorkspaceActionName=Workspaces:",
+                      "CTL_FloatIntoWorkspaceActionTitle=Select Workspace",
+              })
     public static class FloatIntoWorkspaceAction extends AbstractAction {
         private TopComponent window;
 
@@ -779,8 +767,47 @@ public class WorkspaceTopComponent extends TopComponent {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            WorkspaceTopComponent workspaceTopComponent = WorkspaceTopComponent.getDefault();
-            workspaceTopComponent.addTopComponent(window);
+            WorkspaceTopComponent workspaceTopComponent = promptForWorkspaces();
+            if (workspaceTopComponent != null) {
+                workspaceTopComponent.requestActive();
+                workspaceTopComponent.addTopComponent(window);
+            }
+        }
+
+        static WorkspaceTopComponent promptForWorkspaces() {
+            List<WorkspaceTopComponent> workspaces = WindowUtilities.findOpen(WorkspaceTopComponent.class);
+            WorkspaceTopComponent workspaceTopComponent = null;
+            if (workspaces.size() == 1) {
+                workspaceTopComponent = workspaces.get(0);
+            } else if (workspaces.size() > 1) {
+                List<String> displayNames = workspaces.stream()
+                        .map(WorkspaceTopComponent::getDisplayName)
+                        .collect(Collectors.toList());
+                JPanel panel = new JPanel(new BorderLayout(2, 2));
+                panel.setBorder(new EmptyBorder(8, 8, 8, 8));
+                panel.add(new JLabel(Bundle.LBL_FloatIntoWorkspaceActionName()), BorderLayout.NORTH);
+                JList<Object> listComponent = new JList<>(new Vector<>(displayNames));
+                listComponent.setVisibleRowCount(6);
+                listComponent.setSelectedIndex(0);
+                panel.add(new JScrollPane(listComponent));
+                DialogDescriptor dd = new DialogDescriptor(panel, Bundle.CTL_FloatIntoWorkspaceActionTitle());
+                DialogDisplayer.getDefault().createDialog(dd).setVisible(true);
+                Object result = dd.getValue();
+                if (DialogDescriptor.OK_OPTION.equals(result)) {
+                    int selectedIndex = listComponent.getSelectedIndex();
+                    if (selectedIndex < 0) {
+                        selectedIndex = 0;
+                    }
+                    workspaceTopComponent = workspaces.get(selectedIndex);
+                }
+            } else {
+                TopComponent topComponent = WindowManager.getDefault().findTopComponent(ID);
+                if (topComponent instanceof WorkspaceTopComponent) {
+                    workspaceTopComponent = (WorkspaceTopComponent) topComponent;
+                    workspaceTopComponent.open();
+                }
+            }
+            return workspaceTopComponent;
         }
     }
 
@@ -795,13 +822,16 @@ public class WorkspaceTopComponent extends TopComponent {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            WorkspaceTopComponent workspaceTopComponent = WorkspaceTopComponent.getDefault();
-            Mode mode = WindowManager.getDefault().findMode(window);
-            if (mode != null) {
-                TopComponent[] topComponents = WindowManager.getDefault().getOpenedTopComponents(mode);
-                for (TopComponent topComponent : topComponents) {
-                    if (!(topComponent instanceof WorkspaceTopComponent)) {
-                        workspaceTopComponent.addTopComponent(topComponent);
+            WorkspaceTopComponent workspaceTopComponent = FloatIntoWorkspaceAction.promptForWorkspaces();
+            if (workspaceTopComponent != null) {
+                workspaceTopComponent.requestActive();
+                Mode mode = WindowManager.getDefault().findMode(window);
+                if (mode != null) {
+                    TopComponent[] topComponents = WindowManager.getDefault().getOpenedTopComponents(mode);
+                    for (TopComponent topComponent : topComponents) {
+                        if (!(topComponent instanceof WorkspaceTopComponent)) {
+                            workspaceTopComponent.addTopComponent(topComponent);
+                        }
                     }
                 }
             }
