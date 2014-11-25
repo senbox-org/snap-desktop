@@ -69,6 +69,10 @@ public class WindowUtilities {
         }
     }
 
+    public static <T extends TopComponent> List<T> findOpen(Class<T> windowType) {
+        return visitOpen(topComponent -> (T) topComponent, windowType);
+    }
+
     public static <T> List<T> visitOpen(Visitor<T> visitor) {
         return visitOpen(visitor, TopComponent.class);
     }
