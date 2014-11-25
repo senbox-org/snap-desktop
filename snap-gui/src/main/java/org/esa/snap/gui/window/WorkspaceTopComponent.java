@@ -147,6 +147,7 @@ public class WorkspaceTopComponent extends TopComponent {
      *
      * @param topComponent The window to add.
      */
+    @Messages("CTL_WorkspaceTopComponentFrameUnnamed=Unnamed")
     public void addTopComponent(TopComponent topComponent) {
 
         // If the window already exists, activate it and return.
@@ -168,7 +169,12 @@ public class WorkspaceTopComponent extends TopComponent {
             topComponent.close();
         }
 
-        JInternalFrame internalFrame = new JInternalFrame(topComponent.getDisplayName(), true, true, true, true);
+        String displayName = topComponent.getDisplayName();
+        if (displayName == null) {
+            displayName = Bundle.CTL_WorkspaceTopComponentFrameUnnamed();
+        }
+
+        JInternalFrame internalFrame = new JInternalFrame(displayName, true, true, true, true);
         Image iconImage = topComponent.getIcon();
         ImageIcon imageIcon = null;
         if (iconImage != null) {
@@ -181,7 +187,7 @@ public class WorkspaceTopComponent extends TopComponent {
         JComponent dummyComponent = new JPanel();
         dummyComponent.setPreferredSize(new Dimension(-1, 4));
         //dummyComponent.setSize(new Dimension(-1, 4));
-        TabData tabData = new TabData(dummyComponent, imageIcon, topComponent.getDisplayName(), null);
+        TabData tabData = new TabData(dummyComponent, imageIcon, displayName, null);
 
         frameToTabMap.put(internalFrame, tabData);
         tabToFrameMap.put(tabData, internalFrame);
