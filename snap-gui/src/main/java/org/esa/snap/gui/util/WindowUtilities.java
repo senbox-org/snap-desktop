@@ -1,6 +1,5 @@
 package org.esa.snap.gui.util;
 
-import org.esa.snap.gui.window.WorkspaceTopComponent;
 import org.openide.windows.Mode;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
