@@ -25,7 +25,7 @@ public class ProductNode extends BeanNode<Product> {
         super(product, Children.create(new BandChildFactory(product), true), Lookups.singleton(product));
         setDisplayName(product.getName());
         setShortDescription(Bundle.MSG_NUM_BANDS() + product.getNumBands());
-        //setIconBaseWithExtension("org/fully/qualified/name/myicon.png");
+        setIconBaseWithExtension("org/esa/snap/gui/icons/RsProduct16.gif");
     }
 
     @Override
@@ -41,4 +41,32 @@ public class ProductNode extends BeanNode<Product> {
         //when the user double-clicks on the node:
         return super.getPreferredAction();
     }
+
+    /*
+    @Override
+    public NewType[] getNewTypes() {
+        return new NewType[] {
+                new NewType() {
+                    @Override
+                    public String getName() {
+                        return "Band from Band Maths";
+                    }
+
+                    @Override
+                    public void create() throws IOException {
+                    }
+                },
+                new NewType() {
+                    @Override
+                    public String getName() {
+                        return "Band from Filter Kernel";
+                    }
+
+                    @Override
+                    public void create() throws IOException {
+                    }
+                }
+        };
+    }
+    */
 }

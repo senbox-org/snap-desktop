@@ -81,7 +81,8 @@ public class ProductExplorerTopComponent extends TopComponent implements Explore
                                                                    + " is being pressed by the " + pressedKey + " key!");
             }
         });
-        add(new BeanTreeView(), BorderLayout.CENTER);
+        treeView.setRootVisible(false);
+        add(treeView, BorderLayout.CENTER);
         // 2. Create a node hierarchy:
         Children productChildren = Children.create(ProductChildFactory.getInstance(), true);
         Node rootNode = new AbstractNode(productChildren);

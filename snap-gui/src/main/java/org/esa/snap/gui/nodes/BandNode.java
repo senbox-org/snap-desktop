@@ -25,7 +25,7 @@ public class BandNode extends BeanNode<Band> {
         super(band, Children.LEAF, Lookups.singleton(band));
         setDisplayName(band.getName());
         setShortDescription(Bundle.MSG_IMG_SIZE() + band.getRasterWidth() + " x " + band.getRasterHeight());
-        //setIconBaseWithExtension("org/fully/qualified/name/myicon.png");
+        setIconBaseWithExtension("org/esa/snap/gui/icons/RsBandAsSwath16.gif");
     }
 
     @Override
