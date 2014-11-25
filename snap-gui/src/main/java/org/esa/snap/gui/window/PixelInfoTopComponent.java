@@ -11,7 +11,6 @@ import org.esa.beam.framework.ui.product.ProductSceneView;
 import org.esa.snap.gui.util.CollapsibleItemsPanel;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
-import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
@@ -35,7 +34,10 @@ import java.util.Collection;
         iconBase = "org/esa/snap/gui/icons/PixelInfo16.png",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
-@TopComponent.Registration(mode = "explorer", openAtStartup = true, position = 3)
+@TopComponent.Registration(mode = "explorer",
+                           openAtStartup = true,
+                           position = 3
+)
 @ActionID(category = "Window", id = "org.esa.snap.gui.window.PixelInfoTopComponent")
 @ActionReference(path = "Menu/View/Tool Windows", position = 0)
 @TopComponent.OpenActionRegistration(
@@ -58,7 +60,6 @@ public final class PixelInfoTopComponent extends TopComponent implements LookupL
         initComponents();
         setName(Bundle.CTL_PixelInfoTopComponentName());
         setToolTipText(Bundle.CTL_PixelInfoTopComponentDescription());
-        setIcon(ImageUtilities.loadImage("org/esa/snap/gui/icons/PixelInfo24.png", false));
         putClientProperty(TopComponent.PROP_MAXIMIZATION_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_KEEP_PREFERRED_SIZE_WHEN_SLIDED_IN, Boolean.TRUE);
         pixelPositionListener = new MyPixelPositionListener();
