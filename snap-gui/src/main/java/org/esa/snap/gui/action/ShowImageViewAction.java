@@ -117,7 +117,7 @@ public class ShowImageViewAction extends AbstractAction {
         }
         ProductSceneViewWindow productSceneViewWindow = new ProductSceneViewWindow(view);
 
-        WorkspaceTopComponent.getDefault().addTopComponent(productSceneViewWindow);
+        WindowUtilities.openDocumentWindow(productSceneViewWindow);
         return productSceneViewWindow;
     }
 

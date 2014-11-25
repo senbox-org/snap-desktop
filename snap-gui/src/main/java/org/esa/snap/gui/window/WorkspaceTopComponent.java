@@ -117,6 +117,8 @@ public class WorkspaceTopComponent extends TopComponent {
         add(desktopPane, BorderLayout.CENTER);
     }
 
+    /** @deprecated use {@link org.esa.snap.gui.util.WindowUtilities#getShowingWorkspace()} instead */
+    @Deprecated
     public static WorkspaceTopComponent getDefault() {
         TopComponent activatedTopComponent = WindowManager.getDefault().getRegistry().getActivated();
         if (activatedTopComponent instanceof WorkspaceTopComponent) {

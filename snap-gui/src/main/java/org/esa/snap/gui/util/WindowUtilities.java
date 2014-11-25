@@ -1,7 +1,9 @@
 package org.esa.snap.gui.util;
 
 import org.esa.snap.gui.window.WorkspaceTopComponent;
+import org.openide.windows.Mode;
 import org.openide.windows.TopComponent;
+import org.openide.windows.WindowManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,6 +15,33 @@ import java.util.List;
  * @author Norman Fomferra
  */
 public class WindowUtilities {
+
+    public static boolean openDocumentWindow(TopComponent documentWindow) {
+        WorkspaceTopComponent workspaceTopComponent = getShowingWorkspace();
+        if (workspaceTopComponent != null) {
+            workspaceTopComponent.addTopComponent(documentWindow);
+            return true;
+        }
+        Mode editor = WindowManager.getDefault().findMode("editor");
+        if (editor.dockInto(documentWindow)) {
+            documentWindow.open();
+            documentWindow.requestActive();
+            return true;
+        }
+        return false;
+    }
+
+    public static WorkspaceTopComponent getShowingWorkspace() {
+        TopComponent activated = WindowManager.getDefault().getRegistry().getActivated();
+        if (activated instanceof WorkspaceTopComponent) {
+            return (WorkspaceTopComponent) activated;
+        }
+        List<WorkspaceTopComponent> showingWorkspaces = visitOpen(topComponent -> topComponent instanceof WorkspaceTopComponent && topComponent.isShowing() ? (WorkspaceTopComponent) topComponent : null);
+        if (!showingWorkspaces.isEmpty()) {
+            return showingWorkspaces.get(0);
+        }
+        return null;
+    }
 
     /**
      * Gets a unique window title.
