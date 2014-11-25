@@ -18,8 +18,8 @@ import org.openide.util.NbBundle.Messages;
 import org.openide.windows.Mode;
 import org.openide.windows.WindowManager;
 
+import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 @ActionID(
         category = "Window",
@@ -40,7 +40,7 @@ import java.awt.event.ActionListener;
                   "LBL_NewWorkspaceActionName=Name:",
                   "VAL_NewWorkspaceActionValue=Workspace"
           })
-public final class NewWorkspaceAction implements ActionListener {
+public final class NewWorkspaceAction extends AbstractAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
