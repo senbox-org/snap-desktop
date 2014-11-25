@@ -11,6 +11,8 @@ import org.netbeans.swing.tabcontrol.TabDisplayer;
 import org.netbeans.swing.tabcontrol.TabbedContainer;
 import org.netbeans.swing.tabcontrol.WinsysInfoForTabbedContainer;
 import org.netbeans.swing.tabcontrol.event.TabActionEvent;
+import org.openide.DialogDisplayer;
+import org.openide.NotifyDescriptor;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.util.Lookup;
@@ -55,7 +57,7 @@ import static org.openide.util.NbBundle.Messages;
  */
 @TopComponent.Description(
         preferredID = "WorkspaceTopComponent",
-        persistenceType = TopComponent.PERSISTENCE_NEVER
+        persistenceType = TopComponent.PERSISTENCE_ONLY_OPENED
 )
 @TopComponent.Registration(
         mode = "editor",
@@ -86,6 +88,10 @@ public class WorkspaceTopComponent extends TopComponent {
     private JDesktopPane desktopPane;
 
     public WorkspaceTopComponent() {
+        this(Bundle.CTL_WorkspaceTopComponentNameBase());
+    }
+
+    public WorkspaceTopComponent(String displayName) {
         frameToTabMap = new HashMap<>();
         tabToFrameMap = new HashMap<>();
         idToBoundsMap = new HashMap<>();
@@ -95,7 +101,8 @@ public class WorkspaceTopComponent extends TopComponent {
         lookup = new FrameProxyLookup();
         associateLookup(lookup);
         initComponents();
-        setName(Bundle.CTL_WorkspaceTopComponentNameBase());
+        setName(displayName);
+        setDisplayName(displayName);
         setToolTipText(Bundle.CTL_WorkspaceTopComponentDescription());
         putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.TRUE);
     }
@@ -313,10 +320,13 @@ public class WorkspaceTopComponent extends TopComponent {
     public Action[] getActions() {
         Action[] actions = super.getActions();
         if (tabbedContainer.getTabCount() > 0) {
-            ArrayList<Action> actionList = new ArrayList<>(Arrays.asList(actions));
-            if (!actionList.isEmpty()) {
+            ArrayList<Action> actionList = new ArrayList<>();
+            actionList.add(new RenameAction());
+            if (actions.length > 0) {
                 actionList.add(null);
+                actionList.addAll(Arrays.asList(actions));
             }
+            actionList.add(null);
             actionList.add(new TileEvenlyAction());
             actionList.add(new TileHorizontallyAction());
             actionList.add(new TileVerticallyAction());
@@ -493,10 +503,10 @@ public class WorkspaceTopComponent extends TopComponent {
                         popupMenu.addSeparator();
                         if (tabIndex >= 0) {
                             popupMenu.add(new MaximizeWindowAction(tabIndex));
-                            popupMenu.add(new DockInWorkspaceAction(tabIndex));
+                            popupMenu.add(new DockAction(tabIndex));
                         }
                         if (tabCount > 1) {
-                            popupMenu.add(new DockAllInWorkspaceAction());
+                            popupMenu.add(new DockGroupAction());
                         }
                     }
                     //if (tabIndex >= 0) {
@@ -534,6 +544,24 @@ public class WorkspaceTopComponent extends TopComponent {
         }
 
         public abstract void tabActionPerformed(TabActionEvent e);
+    }
+
+    @Messages("CTL_RenameActionName=Rename")
+    private class RenameAction extends AbstractAction {
+
+        public RenameAction() {
+            super(Bundle.CTL_RenameActionName());
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            NotifyDescriptor.InputLine d = new NotifyDescriptor.InputLine("Name:", "Rename Workspace");
+            d.setInputText(WorkspaceTopComponent.this.getDisplayName());
+            Object result = DialogDisplayer.getDefault().notify(d);
+            if (NotifyDescriptor.OK_OPTION.equals(result)) {
+                WorkspaceTopComponent.this.setDisplayName(d.getInputText());
+            }
+        }
     }
 
     @Messages("CTL_CloseWindowActionName=Close")
@@ -700,10 +728,30 @@ public class WorkspaceTopComponent extends TopComponent {
         }
     }
 
-    @Messages("CTL_DockAllInWorkspaceActionName=Dock All")
-    private class DockAllInWorkspaceAction extends AbstractAction {
-        public DockAllInWorkspaceAction() {
-            super(Bundle.CTL_DockAllInWorkspaceActionName());
+    @Messages("CTL_DockActionName=Dock")
+    private class DockAction extends AbstractAction {
+        private int tabIndex;
+
+        public DockAction(int tabIndex) {
+            super(Bundle.CTL_DockActionName());
+            this.tabIndex = tabIndex;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            TabData tabData = tabbedContainer.getModel().getTab(tabIndex);
+            JInternalFrame internalFrame = tabToFrameMap.get(tabData);
+            TopComponent topComponent = dockInternalFrame(internalFrame);
+            if (topComponent != null) {
+                topComponent.requestActive();
+            }
+        }
+    }
+
+    @Messages("CTL_DockGroupActionName=Dock Group")
+    private class DockGroupAction extends AbstractAction {
+        public DockGroupAction() {
+            super(Bundle.CTL_DockGroupActionName());
         }
 
         @Override
@@ -714,26 +762,6 @@ public class WorkspaceTopComponent extends TopComponent {
             for (JInternalFrame internalFrame : internalFrames) {
                 topComponent = dockInternalFrame(internalFrame);
             }
-            if (topComponent != null) {
-                topComponent.requestActive();
-            }
-        }
-    }
-
-    @Messages("CTL_DockInWorkspaceActionName=Dock")
-    private class DockInWorkspaceAction extends AbstractAction {
-        private int tabIndex;
-
-        public DockInWorkspaceAction(int tabIndex) {
-            super(Bundle.CTL_DockInWorkspaceActionName());
-            this.tabIndex = tabIndex;
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            TabData tabData = tabbedContainer.getModel().getTab(tabIndex);
-            JInternalFrame internalFrame = tabToFrameMap.get(tabData);
-            TopComponent topComponent = dockInternalFrame(internalFrame);
             if (topComponent != null) {
                 topComponent.requestActive();
             }
