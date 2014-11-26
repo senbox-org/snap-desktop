@@ -8,7 +8,7 @@ package org.esa.snap.gui.actions.file;
 import org.esa.beam.framework.dataio.ProductReader;
 import org.esa.beam.framework.dataio.ProductReaderPlugIn;
 import org.esa.beam.framework.datamodel.Product;
-import org.esa.snap.gui.nodes.ProductChildFactory;
+import org.esa.snap.gui.nodes.PNodeFactory;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
@@ -96,7 +96,7 @@ public final class OpenProductAction extends AbstractAction {
             ProductReader pr = serviceProvider.createReaderInstance();
             try {
                 Product product = pr.readProductNodes(file, null);
-                ProductChildFactory.getInstance().addProduct(product);
+                PNodeFactory.getInstance().addProduct(product);
             } catch (IOException problem) {
                 problems.add(problem);
             }

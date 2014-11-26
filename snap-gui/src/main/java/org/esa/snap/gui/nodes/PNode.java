@@ -8,23 +8,21 @@ package org.esa.snap.gui.nodes;
 import org.esa.beam.framework.datamodel.Product;
 import org.openide.nodes.BeanNode;
 import org.openide.nodes.Children;
-import org.openide.util.NbBundle.Messages;
 import org.openide.util.lookup.Lookups;
 
 import javax.swing.Action;
 import java.beans.IntrospectionException;
 
 /**
- *
+ * A product node.
  * @author Norman
  */
-public class ProductNode extends BeanNode<Product> {
+public class PNode extends BeanNode<Product> {
 
-    @Messages("MSG_NUM_BANDS=#Bands: ")
-    public ProductNode(Product product) throws IntrospectionException {
-        super(product, Children.create(new BandChildFactory(product), true), Lookups.singleton(product));
+    public PNode(Product product) throws IntrospectionException {
+        super(product, Children.create(new GroupChildFactory(product), true), Lookups.singleton(product));
         setDisplayName(product.getName());
-        setShortDescription(Bundle.MSG_NUM_BANDS() + product.getNumBands());
+        setShortDescription(product.getDescription());
         setIconBaseWithExtension("org/esa/snap/gui/icons/RsProduct16.gif");
     }
 
