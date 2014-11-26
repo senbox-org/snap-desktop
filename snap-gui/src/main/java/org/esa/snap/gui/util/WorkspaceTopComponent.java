@@ -38,7 +38,6 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Image;
@@ -127,7 +126,6 @@ public class WorkspaceTopComponent extends TopComponent {
         tabbedContainer.setVisible(false);
 
         desktopPane = new JDesktopPane();
-        desktopPane.setBackground(new Color(16, 12, 123));
 
         add(tabbedContainer, BorderLayout.NORTH);
         add(desktopPane, BorderLayout.CENTER);
