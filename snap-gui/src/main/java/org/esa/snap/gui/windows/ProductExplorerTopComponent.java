@@ -29,6 +29,7 @@ import java.beans.PropertyChangeListener;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.logging.Logger;
 
 /**
  * @author Norman
@@ -52,6 +53,8 @@ import java.util.Arrays;
                            "CTL_ProductExplorerTopComponentDescription=Lists all open products",
                    })
 public class ProductExplorerTopComponent extends TopComponent implements ExplorerManager.Provider {
+
+    private static final Logger LOG = Logger.getLogger(ProductExplorerTopComponent.class.getName());
 
     private final ExplorerManager explorerManager = new ExplorerManager();
 
@@ -105,7 +108,7 @@ public class ProductExplorerTopComponent extends TopComponent implements Explore
     @Override
     public UndoRedo getUndoRedo() {
         Node[] activatedNodes = getActivatedNodes();
-        System.out.println(">>> " + getClass() + "#getUndoRedo: activatedNodes = " + Arrays.toString(activatedNodes));
+        LOG.info("getUndoRedo: activatedNodes = " + Arrays.toString(activatedNodes));
         return super.getUndoRedo();
     }
 

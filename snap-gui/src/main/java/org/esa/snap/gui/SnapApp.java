@@ -63,7 +63,7 @@ import static org.openide.util.NbBundle.Messages;
 @SuppressWarnings("UnusedDeclaration")
 public class SnapApp {
 
-    private final static Logger LOG = Logger.getLogger("org.esa.snap.gui");
+    private final static Logger LOG = Logger.getLogger(SnapApp.class.getName());
 
     private static SnapApp instance;
 
@@ -268,7 +268,7 @@ public class SnapApp {
 
         @Override
         public void run() {
-            System.out.println(">>> " + getClass() + " called");
+            LOG.info(">>> " + getClass() + " called");
             setInstance(new SnapApp());
             initJAI();
 
@@ -285,7 +285,7 @@ public class SnapApp {
 
         @Override
         public void run() {
-            System.out.println(">>> " + getClass() + " called");
+            LOG.info(getClass() + " called");
         }
     }
 
@@ -309,8 +309,8 @@ public class SnapApp {
             if (mainWindow == null || !mainWindow.isShowing()) {
                 return true;
             }
-            System.out.println(">>> " + getClass() + " called");
-            ActionListener actionListener = (ActionEvent e) -> System.out.println(">>> " + getClass() + " action called");
+            LOG.info(">>> " + getClass() + " called");
+            ActionListener actionListener = (ActionEvent e) -> LOG.info(">>> " + getClass() + " action called");
             JLabel label = new JLabel("<html>SNAP found some cached <b>bazoo files</b> in your <b>gnarz folder</b>.<br>" +
                                       "Should they be rectified now?");
             JPanel panel = new JPanel();
@@ -335,7 +335,7 @@ public class SnapApp {
 
         @Override
         public void run() {
-            System.out.println(">>> " + getClass() + " called");
+            LOG.info(">>> " + getClass() + " called");
             // do some cleanup
             setInstance(null);
 
@@ -353,7 +353,7 @@ public class SnapApp {
         int processorCount = Runtime.getRuntime().availableProcessors();
         int parallelism = Integer.getInteger("snap.jai.parallelism", processorCount);
         JAI.getDefaultInstance().getTileScheduler().setParallelism(parallelism);
-        LOG.info(MessageFormat.format("JAI tile scheduler parallelism set to {0}", parallelism));
+        LOG.info(MessageFormat.format(">>> JAI tile scheduler parallelism set to {0}", parallelism));
 
         // Load JAI registry files.
         // For some reason registry file loading must be done in this order: first our own, then JAI's descriptors (nf)

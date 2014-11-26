@@ -39,6 +39,7 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.logging.Logger;
 
 /**
  * Tool actions are used to interact with a {@link com.bc.ceres.swing.figure.FigureEditor FigureEditor},
@@ -59,6 +60,8 @@ public abstract class ToolAction extends AbstractAction
         implements ContextAwareAction, LookupListener, Presenter.Toolbar, Presenter.Menu, Presenter.Popup {
 
     public static final String INTERACTOR_KEY = "interactor";
+
+    private static final Logger LOG = Logger.getLogger(ToolAction.class.getName());
 
     private final InteractorListener interactorListener;
     private final Lookup lookup;
@@ -171,7 +174,7 @@ public abstract class ToolAction extends AbstractAction
     }
 
     private void onSelectionStateChanged() {
-        System.out.printf(">> %s#onSelectionStateChanged: selected = %s, interactor = %s%n", getClass().getName(), isSelected(), getInteractor());
+        LOG.info(String.format(">>> %s#onSelectionStateChanged: selected = %s, interactor = %s%n", getClass().getName(), isSelected(), getInteractor()));
         ProductSceneView productSceneView = getProductSceneView();
         if (productSceneView != null && isSelected()) {
             Interactor oldInteractor = productSceneView.getFigureEditor().getInteractor();
@@ -191,7 +194,7 @@ public abstract class ToolAction extends AbstractAction
 
         @Override
         public void interactorActivated(Interactor interactor) {
-            System.out.printf(">> %s#interactorActivated: interactor = %s%n", getClass().getName(), interactor);
+            LOG.info(String.format(">>> %s#interactorActivated: interactor = %s%n", getClass().getName(), interactor));
             if (interactor == getInteractor() && !isSelected()) {
                 setSelected(true);
             }
@@ -199,7 +202,7 @@ public abstract class ToolAction extends AbstractAction
 
         @Override
         public void interactorDeactivated(Interactor interactor) {
-            System.out.printf(">> %s#interactorDeactivated: interactor = %s%n", getClass().getName(), interactor);
+            LOG.info(String.format(">>> %s#interactorDeactivated: interactor = %s%n", getClass().getName(), interactor));
             if (interactor == getInteractor() && isSelected()) {
                 setSelected(false);
             }

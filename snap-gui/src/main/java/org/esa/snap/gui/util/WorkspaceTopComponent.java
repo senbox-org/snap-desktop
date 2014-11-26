@@ -55,6 +55,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.Vector;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static org.openide.util.NbBundle.Messages;
@@ -84,6 +85,8 @@ import static org.openide.util.NbBundle.Messages;
 public class WorkspaceTopComponent extends TopComponent {
 
     public final static String ID = WorkspaceTopComponent.class.getSimpleName();
+
+    private static final Logger LOG = Logger.getLogger(WorkspaceTopComponent.class.getName());
 
     private final Map<TabData, JInternalFrame> tabToFrameMap;
     private final Map<JInternalFrame, TabData> frameToTabMap;
@@ -859,7 +862,7 @@ public class WorkspaceTopComponent extends TopComponent {
     private class MyInternalFrameListener implements InternalFrameListener {
         @Override
         public void internalFrameOpened(InternalFrameEvent e) {
-            System.out.println("internalFrameOpened: e = " + e);
+            LOG.info("internalFrameOpened: e = " + e);
 
             tabbedContainer.updateUI();
 
@@ -871,12 +874,13 @@ public class WorkspaceTopComponent extends TopComponent {
 
         @Override
         public void internalFrameClosing(InternalFrameEvent e) {
+            LOG.info("internalFrameClosing: e = " + e);
             // do nothing
         }
 
         @Override
         public void internalFrameClosed(InternalFrameEvent e) {
-            System.out.println("internalFrameClosed: e = " + e);
+            LOG.info("internalFrameClosed: e = " + e);
             JInternalFrame internalFrame = e.getInternalFrame();
             if (frameToTabMap.containsKey(internalFrame)) {
                 closeInternalFrame(internalFrame);
@@ -891,7 +895,7 @@ public class WorkspaceTopComponent extends TopComponent {
 
         @Override
         public void internalFrameActivated(InternalFrameEvent e) {
-            System.out.println("internalFrameActivated: e = " + e);
+            LOG.info("internalFrameActivated: e = " + e);
 
             // Synchronise tab selection state, if not already done
             JInternalFrame internalFrame = e.getInternalFrame();
@@ -923,7 +927,7 @@ public class WorkspaceTopComponent extends TopComponent {
 
         @Override
         public void internalFrameDeactivated(InternalFrameEvent e) {
-            System.out.println("internalFrameDeactivated: e = " + e);
+            LOG.info("internalFrameDeactivated: e = " + e);
             tabbedContainer.updateUI();
 
             DocumentTopComponent dw = getDocumentWindow(e);
@@ -936,6 +940,7 @@ public class WorkspaceTopComponent extends TopComponent {
 
         @Override
         public void internalFrameIconified(InternalFrameEvent e) {
+            LOG.info("internalFrameIconified: e = " + e);
             tabbedContainer.updateUI();
 
             DocumentTopComponent dw = getDocumentWindow(e);
@@ -946,6 +951,7 @@ public class WorkspaceTopComponent extends TopComponent {
 
         @Override
         public void internalFrameDeiconified(InternalFrameEvent e) {
+            LOG.info("internalFrameDeiconified: e = " + e);
             tabbedContainer.updateUI();
 
             DocumentTopComponent dw = getDocumentWindow(e);
