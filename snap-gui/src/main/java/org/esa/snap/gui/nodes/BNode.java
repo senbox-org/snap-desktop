@@ -7,15 +7,13 @@ package org.esa.snap.gui.nodes;
 
 import org.esa.beam.framework.datamodel.Band;
 import org.esa.snap.gui.actions.file.OpenImageViewAction;
-import org.openide.nodes.BeanNode;
-import org.openide.nodes.Children;
-import org.openide.util.NbBundle.Messages;
-import org.openide.util.lookup.Lookups;
 
 import javax.swing.Action;
 import java.beans.IntrospectionException;
 
 /**
+ * A node that represents a {@link org.esa.beam.framework.datamodel.Band} (=B).
+ *
  * @author Norman
  */
 public class BNode extends PNLeafNode<Band> {

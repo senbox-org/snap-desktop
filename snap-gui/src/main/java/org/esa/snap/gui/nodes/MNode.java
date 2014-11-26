@@ -12,13 +12,16 @@ import javax.swing.Action;
 import java.beans.IntrospectionException;
 
 /**
+ * A node that represents a {@link org.esa.beam.framework.datamodel.Mask} (=M).
+ *
  * @author Norman
  */
 public class MNode extends PNLeafNode<Mask> {
 
     public MNode(Mask mask) throws IntrospectionException {
         super(mask);
-        //setIconBaseWithExtension("org/esa/snap/gui/icons/RsBandAsSwath16.gif");
+        // todo
+        //setIconBaseWithExtension("org/esa/snap/gui/icons/xxx.gif");
     }
 
     @Override

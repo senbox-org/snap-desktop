@@ -13,30 +13,33 @@ import java.util.List;
 
 
 /**
- * A {@link org.esa.beam.framework.datamodel.ProductNodeGroup} (PNG) child factory.
+ * A child factory for nodes that represent groups in a {@link org.esa.beam.framework.datamodel.Product}.
+ *
+ * @author Norman
  */
-class GroupChildFactory extends ChildFactory<Group> {
+class PChildFactory extends ChildFactory<Group> {
 
     private final Product product;
 
-    GroupChildFactory(Product product) {
+    PChildFactory(Product product) {
         this.product = product;
     }
 
     @Override
     protected boolean createKeys(List<Group> list) {
+        list.add(new MetadataGroup(product.getMetadataRoot()));
         if (product.getIndexCodingGroup().getNodeCount() > 0)
-            list.add(new Group("Index Codings", new PNChildFactory.IC(product.getIndexCodingGroup())));
+            list.add(new PNGGroup.IC(product.getIndexCodingGroup()));
         if (product.getFlagCodingGroup().getNodeCount() > 0)
-            list.add(new Group("Flag Codings", new PNChildFactory.FC(product.getFlagCodingGroup())));
+            list.add(new PNGGroup.FC(product.getFlagCodingGroup()));
         if (product.getVectorDataGroup().getNodeCount() > 0)
-            list.add(new Group("Vector Data", new PNChildFactory.VDN(product.getVectorDataGroup())));
+            list.add(new PNGGroup.VDN(product.getVectorDataGroup()));
         if (product.getTiePointGridGroup().getNodeCount() > 0)
-            list.add(new Group("Tie-Point Grids", new PNChildFactory.TPG(product.getTiePointGridGroup())));
+            list.add(new PNGGroup.TPG(product.getTiePointGridGroup()));
         if (product.getBandGroup().getNodeCount() > 0)
-            list.add(new Group("Bands", new PNChildFactory.B(product.getBandGroup())));
+            list.add(new PNGGroup.B(product.getBandGroup()));
         if (product.getMaskGroup().getNodeCount() > 0)
-            list.add(new Group("Masks", new PNChildFactory.M(product.getMaskGroup())));
+            list.add(new PNGGroup.M(product.getMaskGroup()));
         return true;
     }
 

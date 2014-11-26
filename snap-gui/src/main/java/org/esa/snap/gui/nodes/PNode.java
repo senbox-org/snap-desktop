@@ -14,13 +14,14 @@ import javax.swing.Action;
 import java.beans.IntrospectionException;
 
 /**
- * A product node.
+ * A node that represents a {@link org.esa.beam.framework.datamodel.Product} (=P).
+ *
  * @author Norman
  */
 public class PNode extends BeanNode<Product> {
 
     public PNode(Product product) throws IntrospectionException {
-        super(product, Children.create(new GroupChildFactory(product), true), Lookups.singleton(product));
+        super(product, Children.create(new PChildFactory(product), true), Lookups.singleton(product));
         setDisplayName(product.getName());
         setShortDescription(product.getDescription());
         setIconBaseWithExtension("org/esa/snap/gui/icons/RsProduct16.gif");

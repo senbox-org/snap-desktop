@@ -12,13 +12,16 @@ import javax.swing.Action;
 import java.beans.IntrospectionException;
 
 /**
+ * A node that represents a {@link org.esa.beam.framework.datamodel.TiePointGrid} (=TPG).
+ *
  * @author Norman
  */
 public class TPGNode extends PNLeafNode<TiePointGrid> {
 
     public TPGNode(TiePointGrid tiePointGrid) throws IntrospectionException {
         super(tiePointGrid);
-        //setIconBaseWithExtension("org/esa/snap/gui/icons/RsBandAsSwath16.gif");
+        // todo
+        //setIconBaseWithExtension("org/esa/snap/gui/icons/xxx.gif");
     }
 
     @Override

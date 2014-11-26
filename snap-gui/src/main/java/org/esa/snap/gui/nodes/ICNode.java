@@ -6,17 +6,19 @@
 package org.esa.snap.gui.nodes;
 
 import org.esa.beam.framework.datamodel.IndexCoding;
-import org.esa.beam.framework.datamodel.VectorDataNode;
 
 import java.beans.IntrospectionException;
 
 /**
+ * A node that represents an {@link org.esa.beam.framework.datamodel.IndexCoding} (=IC).
+ *
  * @author Norman
  */
 public class ICNode extends PNLeafNode<IndexCoding> {
 
     public ICNode(IndexCoding indexCoding) throws IntrospectionException {
         super(indexCoding);
-        //setIconBaseWithExtension("org/esa/snap/gui/icons/RsBandAsSwath16.gif");
+        // todo
+        //setIconBaseWithExtension("org/esa/snap/gui/icons/xxx.gif");
     }
 }

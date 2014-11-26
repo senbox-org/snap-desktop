@@ -5,16 +5,16 @@
  */
 package org.esa.snap.gui.nodes;
 
+import org.esa.beam.framework.datamodel.ProductNode;
+import org.openide.nodes.ChildFactory;
+
 /**
+ * A group object serves as a key for {@link GroupNode}s and is a child factory for nodes
+ * representing {@link ProductNode}s.
+ *
  * @author Norman
  */
-class Group {
+abstract class Group<T extends ProductNode> extends ChildFactory<T> {
 
-    final String displayName;
-    final PNChildFactory childFactory;
-
-    Group(String displayName, PNChildFactory childFactory) {
-        this.displayName = displayName;
-        this.childFactory = childFactory;
-    }
+    public abstract String getDisplayName();
 }

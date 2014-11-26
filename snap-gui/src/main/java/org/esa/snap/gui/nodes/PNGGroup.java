@@ -13,7 +13,6 @@ import org.esa.beam.framework.datamodel.ProductNode;
 import org.esa.beam.framework.datamodel.ProductNodeGroup;
 import org.esa.beam.framework.datamodel.TiePointGrid;
 import org.esa.beam.framework.datamodel.VectorDataNode;
-import org.openide.nodes.ChildFactory;
 import org.openide.nodes.Node;
 import org.openide.util.Exceptions;
 
@@ -22,19 +21,23 @@ import java.util.List;
 
 
 /**
- * A {@link org.esa.beam.framework.datamodel.ProductNodeGroup} (PNG) child factory.
- * @param <T> The product node type.
+ * A group that represents a {@link org.esa.beam.framework.datamodel.ProductNodeGroup} (=PNG).
+ *
+ * @author Norman
  */
-public abstract class PNChildFactory<T extends ProductNode> extends ChildFactory<T> {
+abstract class PNGGroup<T extends ProductNode> extends Group<T> {
 
-    final ProductNodeGroup<T> group;
+    private final String displayName;
+    private final ProductNodeGroup<T> group;
 
-    private PNChildFactory(ProductNodeGroup<T> group) {
+    protected PNGGroup(String displayName, ProductNodeGroup<T> group) {
+        this.displayName = displayName;
         this.group = group;
     }
 
-    public ProductNodeGroup<T> getGroup() {
-        return group;
+    @Override
+    public String getDisplayName() {
+        return displayName;
     }
 
     @Override
@@ -58,9 +61,9 @@ public abstract class PNChildFactory<T extends ProductNode> extends ChildFactory
 
     protected abstract Node createPNNode(T key) throws IntrospectionException;
 
-    public static class B extends PNChildFactory<Band> {
+    public static class B extends PNGGroup<Band> {
         public B(ProductNodeGroup<Band> group) {
-            super(group);
+            super("Bands", group);
         }
 
         @Override
@@ -69,9 +72,9 @@ public abstract class PNChildFactory<T extends ProductNode> extends ChildFactory
         }
     }
 
-    public static class TPG extends PNChildFactory<TiePointGrid> {
+    public static class TPG extends PNGGroup<TiePointGrid> {
         public TPG(ProductNodeGroup<TiePointGrid> group) {
-            super(group);
+            super("Tie-Point Grids", group);
         }
 
         @Override
@@ -80,9 +83,9 @@ public abstract class PNChildFactory<T extends ProductNode> extends ChildFactory
         }
     }
 
-    public static class VDN extends PNChildFactory<VectorDataNode> {
+    public static class VDN extends PNGGroup<VectorDataNode> {
         public VDN(ProductNodeGroup<VectorDataNode> group) {
-            super(group);
+            super("Vector Data", group);
         }
 
         @Override
@@ -91,9 +94,9 @@ public abstract class PNChildFactory<T extends ProductNode> extends ChildFactory
         }
     }
 
-    public static class M extends PNChildFactory<Mask> {
+    public static class M extends PNGGroup<Mask> {
         public M(ProductNodeGroup<Mask> group) {
-            super(group);
+            super("Masks", group);
         }
 
         @Override
@@ -102,9 +105,9 @@ public abstract class PNChildFactory<T extends ProductNode> extends ChildFactory
         }
     }
 
-    public static class FC extends PNChildFactory<FlagCoding> {
+    public static class FC extends PNGGroup<FlagCoding> {
         public FC(ProductNodeGroup<FlagCoding> group) {
-            super(group);
+            super("Flag Codings", group);
         }
 
         @Override
@@ -113,9 +116,9 @@ public abstract class PNChildFactory<T extends ProductNode> extends ChildFactory
         }
     }
 
-    public static class IC extends PNChildFactory<IndexCoding> {
+    public static class IC extends PNGGroup<IndexCoding> {
         public IC(ProductNodeGroup<IndexCoding> group) {
-            super(group);
+            super("Index Codings", group);
         }
 
         @Override

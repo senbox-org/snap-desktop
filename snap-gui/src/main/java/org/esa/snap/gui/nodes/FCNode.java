@@ -6,17 +6,19 @@
 package org.esa.snap.gui.nodes;
 
 import org.esa.beam.framework.datamodel.FlagCoding;
-import org.esa.beam.framework.datamodel.IndexCoding;
 
 import java.beans.IntrospectionException;
 
 /**
+ * A node that represents a {@link org.esa.beam.framework.datamodel.FlagCoding} (=FC).
+ *
  * @author Norman
  */
 public class FCNode extends PNLeafNode<FlagCoding> {
 
     public FCNode(FlagCoding flagCoding) throws IntrospectionException {
         super(flagCoding);
-        //setIconBaseWithExtension("org/esa/snap/gui/icons/RsBandAsSwath16.gif");
+        // todo
+        //setIconBaseWithExtension("org/esa/snap/gui/icons/xxx.gif");
     }
 }

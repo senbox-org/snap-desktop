@@ -6,6 +6,7 @@
 package org.esa.snap.gui.windows;
 
 import org.esa.snap.gui.nodes.PNodeFactory;
+import org.esa.snap.gui.util.TestProducts;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.StatusDisplayer;
@@ -84,7 +85,9 @@ public class ProductExplorerTopComponent extends TopComponent implements Explore
         treeView.setRootVisible(false);
         add(treeView, BorderLayout.CENTER);
         // 2. Create a node hierarchy:
-        Children productChildren = Children.create(PNodeFactory.getInstance(), true);
+        PNodeFactory instance = PNodeFactory.getInstance();
+        instance.addProducts(TestProducts.createProducts());
+        Children productChildren = Children.create(instance, true);
         Node rootNode = new AbstractNode(productChildren);
         rootNode.setDisplayName("Open products");
         // 3. Set the root of the node hierarchy on the ExplorerManager:
