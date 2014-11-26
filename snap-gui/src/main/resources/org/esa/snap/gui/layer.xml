@@ -8,8 +8,7 @@
                 <attr name="enabled" boolvalue="true" />
                 <attr name="instanceCreate" methodvalue="org.netbeans.modules.autoupdate.updateprovider.AutoupdateCatalogFactory.createUpdateProvider" />
                 <attr name="instanceOf" stringvalue="org.netbeans.spi.autoupdate.UpdateProvider" />
-                <!--  This URL needs to be adapted to the actual Update Center -->
-                <attr name="url" urlvalue="http://marcop-pc:8080/updatecenter/snap-engine/updates.xml" />
+                <attr name="url" urlvalue="http://www.senbox.net/snap/test_uc/snap-engine/updates.xml.gz" />
             </file>
         </folder>
     </folder>
