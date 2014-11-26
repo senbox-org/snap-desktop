@@ -19,9 +19,16 @@ import java.beans.IntrospectionException;
  */
 public class PNLeafNode<T extends ProductNode> extends BeanNode<T> {
 
+    private final T productNode;
+
     public PNLeafNode(T productNode) throws IntrospectionException {
         super(productNode, Children.LEAF, Lookups.singleton(productNode));
+        this.productNode = productNode;
         setDisplayName(productNode.getDisplayName());
         setShortDescription(productNode.getDescription());
+    }
+
+    public T getProductNode() {
+        return productNode;
     }
 }

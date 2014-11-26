@@ -9,7 +9,7 @@ import org.esa.snap.gui.nodes.PNodeFactory;
 import org.esa.snap.gui.util.TestProducts;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
-import org.openide.awt.StatusDisplayer;
+import org.openide.awt.UndoRedo;
 import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.ExplorerUtils;
 import org.openide.explorer.view.BeanTreeView;
@@ -24,12 +24,11 @@ import org.openide.windows.TopComponent;
 import javax.swing.ActionMap;
 import javax.swing.text.DefaultEditorKit;
 import java.awt.BorderLayout;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 
 /**
  * @author Norman
@@ -54,7 +53,7 @@ import java.text.SimpleDateFormat;
                    })
 public class ProductExplorerTopComponent extends TopComponent implements ExplorerManager.Provider {
 
-    private final ExplorerManager manager = new ExplorerManager();
+    private final ExplorerManager explorerManager = new ExplorerManager();
 
     public ProductExplorerTopComponent() {
         initComponents();
@@ -68,40 +67,25 @@ public class ProductExplorerTopComponent extends TopComponent implements Explore
         setLayout(new BorderLayout());
         // 1. Add an explorer view, in this case BeanTreeView:
         final BeanTreeView treeView = new BeanTreeView();
-        treeView.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                //Find the ExplorerManager for this explorer view:
-                ExplorerManager mgr = ExplorerManager.find(treeView);
-                //Get the selected node from the ExplorerManager:
-                String selectedNode = mgr.getSelectedNodes()[0].getDisplayName();
-                //Get the pressed key from the event:
-                String pressedKey = KeyEvent.getKeyText(e.getKeyCode());
-                //Put a message in the status bar:
-                StatusDisplayer.getDefault().setStatusText(selectedNode
-                                                                   + " is being pressed by the " + pressedKey + " key!");
-            }
-        });
         treeView.setRootVisible(false);
         add(treeView, BorderLayout.CENTER);
         // 2. Create a node hierarchy:
-        PNodeFactory instance = PNodeFactory.getInstance();
-        instance.addProducts(TestProducts.createProducts());
-        Children productChildren = Children.create(instance, true);
+        PNodeFactory.getInstance().addProducts(TestProducts.createProducts());
+        Children productChildren = Children.create(PNodeFactory.getInstance(), true);
         Node rootNode = new AbstractNode(productChildren);
         rootNode.setDisplayName("Open products");
         // 3. Set the root of the node hierarchy on the ExplorerManager:
-        manager.setRootContext(rootNode);
+        explorerManager.setRootContext(rootNode);
 
         ActionMap map = this.getActionMap();
-        map.put(DefaultEditorKit.copyAction, ExplorerUtils.actionCopy(manager));
-        map.put(DefaultEditorKit.cutAction, ExplorerUtils.actionCut(manager));
-        map.put(DefaultEditorKit.pasteAction, ExplorerUtils.actionPaste(manager));
-        map.put("delete", ExplorerUtils.actionDelete(manager, true)); // or false
-        associateLookup(ExplorerUtils.createLookup(manager, map));
+        map.put(DefaultEditorKit.copyAction, ExplorerUtils.actionCopy(explorerManager));
+        map.put(DefaultEditorKit.cutAction, ExplorerUtils.actionCut(explorerManager));
+        map.put(DefaultEditorKit.pasteAction, ExplorerUtils.actionPaste(explorerManager));
+        map.put("delete", ExplorerUtils.actionDelete(explorerManager, true));
+        associateLookup(ExplorerUtils.createLookup(explorerManager, map));
 
         final InputOutput io = IOProvider.getDefault().getIO("Explorer Selection", true);
-        manager.addPropertyChangeListener(new PropertyChangeListener() {
+        explorerManager.addPropertyChangeListener(new PropertyChangeListener() {
 
             final DateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
 
@@ -119,8 +103,15 @@ public class ProductExplorerTopComponent extends TopComponent implements Explore
     }
 
     @Override
+    public UndoRedo getUndoRedo() {
+        Node[] activatedNodes = getActivatedNodes();
+        System.out.println(">>> " + getClass() + "#getUndoRedo: activatedNodes = " + Arrays.toString(activatedNodes));
+        return super.getUndoRedo();
+    }
+
+    @Override
     public ExplorerManager getExplorerManager() {
-        return manager;
+        return explorerManager;
     }
 
     @Override

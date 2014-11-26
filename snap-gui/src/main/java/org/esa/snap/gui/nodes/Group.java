@@ -14,7 +14,7 @@ import org.openide.nodes.ChildFactory;
  *
  * @author Norman
  */
-abstract class Group<T extends ProductNode> extends ChildFactory<T> {
+abstract class Group<T extends ProductNode> extends ChildFactory.Detachable<T> {
 
     public abstract String getDisplayName();
 }

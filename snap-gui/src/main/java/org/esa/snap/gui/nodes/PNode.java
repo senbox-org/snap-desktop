@@ -6,6 +6,7 @@
 package org.esa.snap.gui.nodes;
 
 import org.esa.beam.framework.datamodel.Product;
+import org.openide.awt.UndoRedo;
 import org.openide.nodes.BeanNode;
 import org.openide.nodes.Children;
 import org.openide.util.lookup.Lookups;
@@ -15,16 +16,29 @@ import java.beans.IntrospectionException;
 
 /**
  * A node that represents a {@link org.esa.beam.framework.datamodel.Product} (=P).
+ * Every {@code PNode} holds a dedicated undo/redo context.
  *
  * @author Norman
  */
-public class PNode extends BeanNode<Product> {
+public class PNode extends BeanNode<Product> implements UndoRedo.Provider {
+
+    private final UndoRedo undoRedo;
 
     public PNode(Product product) throws IntrospectionException {
-        super(product, Children.create(new PChildFactory(product), true), Lookups.singleton(product));
+        this(product, new UndoRedo.Manager());
+    }
+
+    public PNode(Product product, UndoRedo undoRedo) throws IntrospectionException {
+        super(product, Children.create(new PChildFactory(product), true), Lookups.fixed(product, undoRedo));
+        this.undoRedo = undoRedo;
         setDisplayName(product.getName());
         setShortDescription(product.getDescription());
         setIconBaseWithExtension("org/esa/snap/gui/icons/RsProduct16.gif");
+    }
+
+    @Override
+    public UndoRedo getUndoRedo() {
+        return undoRedo;
     }
 
     @Override
@@ -48,7 +62,7 @@ public class PNode extends BeanNode<Product> {
                 new NewType() {
                     @Override
                     public String getName() {
-                        return "Band from Band Maths";
+                        return "Calculated Band";
                     }
 
                     @Override
@@ -58,7 +72,7 @@ public class PNode extends BeanNode<Product> {
                 new NewType() {
                     @Override
                     public String getName() {
-                        return "Band from Filter Kernel";
+                        return "Filtered Band";
                     }
 
                     @Override

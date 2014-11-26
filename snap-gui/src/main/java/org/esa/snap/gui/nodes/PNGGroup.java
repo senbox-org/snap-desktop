@@ -14,9 +14,14 @@ import org.esa.beam.framework.datamodel.ProductNodeGroup;
 import org.esa.beam.framework.datamodel.TiePointGrid;
 import org.esa.beam.framework.datamodel.VectorDataNode;
 import org.openide.nodes.Node;
+import org.openide.nodes.NodeEvent;
+import org.openide.nodes.NodeListener;
+import org.openide.nodes.NodeMemberEvent;
+import org.openide.nodes.NodeReorderEvent;
 import org.openide.util.Exceptions;
 
 import java.beans.IntrospectionException;
+import java.beans.PropertyChangeEvent;
 import java.util.List;
 
 
@@ -25,7 +30,7 @@ import java.util.List;
  *
  * @author Norman
  */
-abstract class PNGGroup<T extends ProductNode> extends Group<T> {
+abstract class PNGGroup<T extends ProductNode> extends Group<T> implements NodeListener {
 
     private final String displayName;
     private final ProductNodeGroup<T> group;
@@ -52,14 +57,39 @@ abstract class PNGGroup<T extends ProductNode> extends Group<T> {
     @Override
     protected Node createNodeForKey(T key) {
         try {
-            return createPNNode(key);
+            Node node = createPNLeafNode(key);
+            node.addNodeListener(this);
+            return node;
         } catch (IntrospectionException e) {
             Exceptions.printStackTrace(e);
             return null;
         }
     }
 
-    protected abstract Node createPNNode(T key) throws IntrospectionException;
+    protected abstract PNLeafNode createPNLeafNode(T key) throws IntrospectionException;
+
+    @Override
+    public void childrenAdded(NodeMemberEvent ev) {
+    }
+
+    @Override
+    public void childrenRemoved(NodeMemberEvent ev) {
+    }
+
+    @Override
+    public void childrenReordered(NodeReorderEvent ev) {
+    }
+
+    @Override
+    public void nodeDestroyed(NodeEvent ev) {
+        PNLeafNode node = (PNLeafNode) ev.getNode();
+        group.remove((T) node.getProductNode());
+        refresh(true);
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+    }
 
     public static class B extends PNGGroup<Band> {
         public B(ProductNodeGroup<Band> group) {
@@ -67,9 +97,10 @@ abstract class PNGGroup<T extends ProductNode> extends Group<T> {
         }
 
         @Override
-        protected Node createPNNode(Band key) throws IntrospectionException {
+        protected PNLeafNode createPNLeafNode(Band key) throws IntrospectionException {
             return new BNode(key);
         }
+
     }
 
     public static class TPG extends PNGGroup<TiePointGrid> {
@@ -78,7 +109,7 @@ abstract class PNGGroup<T extends ProductNode> extends Group<T> {
         }
 
         @Override
-        protected Node createPNNode(TiePointGrid key) throws IntrospectionException {
+        protected PNLeafNode createPNLeafNode(TiePointGrid key) throws IntrospectionException {
             return new TPGNode(key);
         }
     }
@@ -89,7 +120,7 @@ abstract class PNGGroup<T extends ProductNode> extends Group<T> {
         }
 
         @Override
-        protected Node createPNNode(VectorDataNode key) throws IntrospectionException {
+        protected PNLeafNode createPNLeafNode(VectorDataNode key) throws IntrospectionException {
             return new VDNNode(key);
         }
     }
@@ -100,7 +131,7 @@ abstract class PNGGroup<T extends ProductNode> extends Group<T> {
         }
 
         @Override
-        protected Node createPNNode(Mask key) throws IntrospectionException {
+        protected PNLeafNode createPNLeafNode(Mask key) throws IntrospectionException {
             return new MNode(key);
         }
     }
@@ -111,7 +142,7 @@ abstract class PNGGroup<T extends ProductNode> extends Group<T> {
         }
 
         @Override
-        protected Node createPNNode(FlagCoding key) throws IntrospectionException {
+        protected PNLeafNode createPNLeafNode(FlagCoding key) throws IntrospectionException {
             return new FCNode(key);
         }
     }
@@ -122,7 +153,7 @@ abstract class PNGGroup<T extends ProductNode> extends Group<T> {
         }
 
         @Override
-        protected Node createPNNode(IndexCoding key) throws IntrospectionException {
+        protected PNLeafNode createPNLeafNode(IndexCoding key) throws IntrospectionException {
             return new ICNode(key);
         }
     }
