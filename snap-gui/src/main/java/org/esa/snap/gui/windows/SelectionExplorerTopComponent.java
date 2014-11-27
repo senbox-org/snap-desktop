@@ -70,7 +70,7 @@ public final class SelectionExplorerTopComponent extends TopComponent implements
             Object[][] data = new Object[selectedObjects.size()][3];
             int i = 0;
             for (Object selectedObject : selectedObjects) {
-                data[i][0] = i;
+                data[i][0] = i + 1;
                 data[i][1] = selectedObject.getClass().getSimpleName();
                 data[i][2] = String.valueOf(selectedObject);
                 i++;
