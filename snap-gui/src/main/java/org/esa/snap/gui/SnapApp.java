@@ -14,17 +14,10 @@ import org.openide.awt.NotificationDisplayer;
 import org.openide.awt.StatusDisplayer;
 import org.openide.modules.OnStart;
 import org.openide.modules.OnStop;
-import org.openide.util.Lookup;
-import org.openide.util.LookupEvent;
-import org.openide.util.LookupListener;
 import org.openide.util.NbBundle;
 import org.openide.util.NbPreferences;
 import org.openide.util.Utilities;
-import org.openide.util.WeakListeners;
-import org.openide.windows.IOProvider;
-import org.openide.windows.InputOutput;
 import org.openide.windows.OnShowing;
-import org.openide.windows.OutputWriter;
 import org.openide.windows.WindowManager;
 
 import javax.media.jai.JAI;
@@ -45,9 +38,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
-import java.text.DateFormat;
 import java.text.MessageFormat;
-import java.text.SimpleDateFormat;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -256,8 +247,6 @@ public class SnapApp {
         }
     }
 
-    private static GlobalSelectionLogger globalSelectionLogger;
-
     /**
      * {@code @OnStart}: {@code Runnable}s defined by various modules are invoked in parallel and as soon
      * as possible. It is guaranteed that execution of all {@code runnable}s is finished
@@ -271,8 +260,7 @@ public class SnapApp {
             LOG.info(">>> " + getClass() + " called");
             setInstance(new SnapApp());
             initJAI();
-
-            globalSelectionLogger = new GlobalSelectionLogger();
+            WindowManager.getDefault().setRole("developer");
         }
     }
 
@@ -312,7 +300,7 @@ public class SnapApp {
             LOG.info(">>> " + getClass() + " called");
             ActionListener actionListener = (ActionEvent e) -> LOG.info(">>> " + getClass() + " action called");
             JLabel label = new JLabel("<html>SNAP found some cached <b>bazoo files</b> in your <b>gnarz folder</b>.<br>" +
-                                      "Should they be rectified now?");
+                                              "Should they be rectified now?");
             JPanel panel = new JPanel();
             panel.setBorder(new EmptyBorder(10, 10, 10, 10));
             panel.add(label);
@@ -338,8 +326,6 @@ public class SnapApp {
             LOG.info(">>> " + getClass() + " called");
             // do some cleanup
             setInstance(null);
-
-            globalSelectionLogger = null;
         }
     }
 
@@ -381,29 +367,6 @@ public class SnapApp {
             }
         } else {
             LOG.warning(MessageFormat.format("{0} not found", jaiRegistryPath));
-        }
-    }
-
-
-    private static class GlobalSelectionLogger implements LookupListener {
-        private final DateFormat FORMAT = new SimpleDateFormat("HH:mm:ss");
-        private final Lookup.Result<Object> selectionResult;
-        private final OutputWriter writer;
-
-        private GlobalSelectionLogger() {
-            InputOutput io = IOProvider.getDefault().getIO("Global Selection", true);
-            writer = io.getOut();
-            selectionResult = Utilities.actionsGlobalContext().lookupResult(Object.class);
-            selectionResult.addLookupListener(WeakListeners.create(LookupListener.class, this, selectionResult));
-        }
-
-        @Override
-        public void resultChanged(LookupEvent lookupEvent) {
-            String timeStamp = FORMAT.format(System.currentTimeMillis());
-            writer.println(String.format("%s: selection changed:", timeStamp));
-            for (Object selection : selectionResult.allInstances()) {
-                writer.println(String.format("  type %s: %s", selection.getClass().getName(), selection));
-            }
         }
     }
 }
