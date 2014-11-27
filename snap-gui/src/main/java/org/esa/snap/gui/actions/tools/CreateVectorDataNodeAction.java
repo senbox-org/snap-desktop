@@ -128,11 +128,13 @@ public class CreateVectorDataNodeAction extends AbstractAction {
         undoManager.addEdit(new AbstractUndoableEdit(){
             @Override
             public void undo() {
+                super.undo();
                 product.getVectorDataGroup().remove(vectorDataNode);
             }
 
             @Override
             public void redo() {
+                super.redo();
                 product.getVectorDataGroup().add(vectorDataNode);
                 selectVectorDataLayer(vectorDataNode);
             }
