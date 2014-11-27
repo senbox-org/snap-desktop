@@ -6,6 +6,7 @@
 package org.esa.snap.gui.nodes;
 
 import org.esa.beam.framework.datamodel.FlagCoding;
+import org.openide.awt.UndoRedo;
 
 import java.beans.IntrospectionException;
 
@@ -16,8 +17,8 @@ import java.beans.IntrospectionException;
  */
 public class FCNode extends PNLeafNode<FlagCoding> {
 
-    public FCNode(FlagCoding flagCoding) throws IntrospectionException {
-        super(flagCoding);
+    public FCNode(FlagCoding flagCoding, UndoRedo undoRedo) throws IntrospectionException {
+        super(flagCoding, undoRedo);
         // todo
         //setIconBaseWithExtension("org/esa/snap/gui/icons/xxx.gif");
     }

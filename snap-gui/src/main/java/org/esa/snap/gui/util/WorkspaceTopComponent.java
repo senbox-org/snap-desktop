@@ -17,6 +17,7 @@ import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.awt.UndoRedo;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ProxyLookup;
 import org.openide.windows.Mode;
@@ -132,6 +133,23 @@ public class WorkspaceTopComponent extends TopComponent {
 
         add(tabbedContainer, BorderLayout.NORTH);
         add(desktopPane, BorderLayout.CENTER);
+    }
+
+    @Override
+    public UndoRedo getUndoRedo() {
+        TopComponent topComponent = getActiveTopComponent();
+        if (topComponent != null) {
+            return topComponent.getUndoRedo();
+        }
+        return super.getUndoRedo();
+    }
+
+    /**
+     * @return The currently active window.
+     */
+    public TopComponent getActiveTopComponent() {
+        JInternalFrame selectedFrame = desktopPane.getSelectedFrame();
+        return selectedFrame != null ? getTopComponent(selectedFrame) : null;
     }
 
     /**

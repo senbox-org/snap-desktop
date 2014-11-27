@@ -6,6 +6,7 @@
 package org.esa.snap.gui.nodes;
 
 import org.esa.beam.framework.datamodel.MetadataElement;
+import org.openide.awt.UndoRedo;
 
 import java.beans.IntrospectionException;
 
@@ -16,8 +17,8 @@ import java.beans.IntrospectionException;
  */
 public class MENode extends PNLeafNode<MetadataElement> {
 
-    public MENode(MetadataElement element) throws IntrospectionException {
-        super(element);
+    public MENode(MetadataElement element, UndoRedo undoRedo) throws IntrospectionException {
+        super(element, undoRedo);
         setIconBaseWithExtension("org/esa/snap/gui/icons/RsMetaData16.gif");
     }
 }

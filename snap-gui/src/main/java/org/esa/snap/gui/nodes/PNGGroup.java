@@ -13,6 +13,7 @@ import org.esa.beam.framework.datamodel.ProductNode;
 import org.esa.beam.framework.datamodel.ProductNodeGroup;
 import org.esa.beam.framework.datamodel.TiePointGrid;
 import org.esa.beam.framework.datamodel.VectorDataNode;
+import org.openide.awt.UndoRedo;
 import org.openide.nodes.Node;
 import org.openide.nodes.NodeEvent;
 import org.openide.nodes.NodeListener;
@@ -34,10 +35,17 @@ abstract class PNGGroup<T extends ProductNode> extends Group<T> implements NodeL
 
     private final String displayName;
     private final ProductNodeGroup<T> group;
+    private final UndoRedo undoRedo;
 
-    protected PNGGroup(String displayName, ProductNodeGroup<T> group) {
+    protected PNGGroup(String displayName, ProductNodeGroup<T> group, UndoRedo undoRedo) {
         this.displayName = displayName;
         this.group = group;
+        this.undoRedo = undoRedo;
+    }
+
+    @Override
+    public UndoRedo getUndoRedo() {
+        return undoRedo;
     }
 
     @Override
@@ -92,69 +100,69 @@ abstract class PNGGroup<T extends ProductNode> extends Group<T> implements NodeL
     }
 
     public static class B extends PNGGroup<Band> {
-        public B(ProductNodeGroup<Band> group) {
-            super("Bands", group);
+        public B(ProductNodeGroup<Band> group, UndoRedo undoRedo) {
+            super("Bands", group, undoRedo);
         }
 
         @Override
         protected PNLeafNode createPNLeafNode(Band key) throws IntrospectionException {
-            return new BNode(key);
+            return new BNode(key, getUndoRedo());
         }
 
     }
 
     public static class TPG extends PNGGroup<TiePointGrid> {
-        public TPG(ProductNodeGroup<TiePointGrid> group) {
-            super("Tie-Point Grids", group);
+        public TPG(ProductNodeGroup<TiePointGrid> group, UndoRedo undoRedo) {
+            super("Tie-Point Grids", group, undoRedo);
         }
 
         @Override
         protected PNLeafNode createPNLeafNode(TiePointGrid key) throws IntrospectionException {
-            return new TPGNode(key);
+            return new TPGNode(key, getUndoRedo());
         }
     }
 
     public static class VDN extends PNGGroup<VectorDataNode> {
-        public VDN(ProductNodeGroup<VectorDataNode> group) {
-            super("Vector Data", group);
+        public VDN(ProductNodeGroup<VectorDataNode> group, UndoRedo undoRedo) {
+            super("Vector Data", group, undoRedo);
         }
 
         @Override
         protected PNLeafNode createPNLeafNode(VectorDataNode key) throws IntrospectionException {
-            return new VDNNode(key);
+            return new VDNNode(key, getUndoRedo());
         }
     }
 
     public static class M extends PNGGroup<Mask> {
-        public M(ProductNodeGroup<Mask> group) {
-            super("Masks", group);
+        public M(ProductNodeGroup<Mask> group, UndoRedo undoRedo) {
+            super("Masks", group, undoRedo);
         }
 
         @Override
         protected PNLeafNode createPNLeafNode(Mask key) throws IntrospectionException {
-            return new MNode(key);
+            return new MNode(key, getUndoRedo());
         }
     }
 
     public static class FC extends PNGGroup<FlagCoding> {
-        public FC(ProductNodeGroup<FlagCoding> group) {
-            super("Flag Codings", group);
+        public FC(ProductNodeGroup<FlagCoding> group, UndoRedo undoRedo) {
+            super("Flag Codings", group, undoRedo);
         }
 
         @Override
         protected PNLeafNode createPNLeafNode(FlagCoding key) throws IntrospectionException {
-            return new FCNode(key);
+            return new FCNode(key, getUndoRedo());
         }
     }
 
     public static class IC extends PNGGroup<IndexCoding> {
-        public IC(ProductNodeGroup<IndexCoding> group) {
-            super("Index Codings", group);
+        public IC(ProductNodeGroup<IndexCoding> group, UndoRedo undoRedo) {
+            super("Index Codings", group, undoRedo);
         }
 
         @Override
         protected PNLeafNode createPNLeafNode(IndexCoding key) throws IntrospectionException {
-            return new ICNode(key);
+            return new ICNode(key, getUndoRedo());
         }
     }
 }

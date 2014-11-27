@@ -6,6 +6,7 @@
 package org.esa.snap.gui.nodes;
 
 import org.esa.beam.framework.datamodel.Product;
+import org.openide.awt.UndoRedo;
 import org.openide.nodes.ChildFactory;
 import org.openide.nodes.Node;
 
@@ -20,26 +21,28 @@ import java.util.List;
 class PChildFactory extends ChildFactory<Group> {
 
     private final Product product;
+    private UndoRedo undoRedo;
 
-    PChildFactory(Product product) {
+    PChildFactory(Product product, UndoRedo undoRedo) {
         this.product = product;
+        this.undoRedo = undoRedo;
     }
 
     @Override
     protected boolean createKeys(List<Group> list) {
-        list.add(new MetadataGroup(product.getMetadataRoot()));
+        list.add(new MetadataGroup(product.getMetadataRoot(), undoRedo));
         if (product.getIndexCodingGroup().getNodeCount() > 0)
-            list.add(new PNGGroup.IC(product.getIndexCodingGroup()));
+            list.add(new PNGGroup.IC(product.getIndexCodingGroup(), undoRedo));
         if (product.getFlagCodingGroup().getNodeCount() > 0)
-            list.add(new PNGGroup.FC(product.getFlagCodingGroup()));
+            list.add(new PNGGroup.FC(product.getFlagCodingGroup(), undoRedo));
         if (product.getVectorDataGroup().getNodeCount() > 0)
-            list.add(new PNGGroup.VDN(product.getVectorDataGroup()));
+            list.add(new PNGGroup.VDN(product.getVectorDataGroup(), undoRedo));
         if (product.getTiePointGridGroup().getNodeCount() > 0)
-            list.add(new PNGGroup.TPG(product.getTiePointGridGroup()));
+            list.add(new PNGGroup.TPG(product.getTiePointGridGroup(), undoRedo));
         if (product.getBandGroup().getNodeCount() > 0)
-            list.add(new PNGGroup.B(product.getBandGroup()));
+            list.add(new PNGGroup.B(product.getBandGroup(), undoRedo));
         if (product.getMaskGroup().getNodeCount() > 0)
-            list.add(new PNGGroup.M(product.getMaskGroup()));
+            list.add(new PNGGroup.M(product.getMaskGroup(), undoRedo));
         return true;
     }
 

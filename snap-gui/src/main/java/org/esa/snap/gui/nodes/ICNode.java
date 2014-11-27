@@ -6,6 +6,7 @@
 package org.esa.snap.gui.nodes;
 
 import org.esa.beam.framework.datamodel.IndexCoding;
+import org.openide.awt.UndoRedo;
 
 import java.beans.IntrospectionException;
 
@@ -16,8 +17,8 @@ import java.beans.IntrospectionException;
  */
 public class ICNode extends PNLeafNode<IndexCoding> {
 
-    public ICNode(IndexCoding indexCoding) throws IntrospectionException {
-        super(indexCoding);
+    public ICNode(IndexCoding indexCoding, UndoRedo undoRedo) throws IntrospectionException {
+        super(indexCoding, undoRedo);
         // todo
         //setIconBaseWithExtension("org/esa/snap/gui/icons/xxx.gif");
     }

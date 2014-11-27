@@ -6,6 +6,7 @@
 package org.esa.snap.gui.nodes;
 
 import org.esa.beam.framework.datamodel.MetadataElement;
+import org.openide.awt.UndoRedo;
 import org.openide.nodes.Node;
 import org.openide.util.Exceptions;
 
@@ -21,9 +22,16 @@ import java.util.List;
 class MetadataGroup extends Group<MetadataElement> {
 
     private final MetadataElement root;
+    private UndoRedo undoRedo;
 
-    MetadataGroup(MetadataElement root) {
+    MetadataGroup(MetadataElement root, UndoRedo undoRedo) {
         this.root = root;
+        this.undoRedo = undoRedo;
+    }
+
+    @Override
+    public UndoRedo getUndoRedo() {
+        return undoRedo;
     }
 
     @Override
@@ -40,7 +48,7 @@ class MetadataGroup extends Group<MetadataElement> {
     @Override
     protected Node createNodeForKey(MetadataElement key) {
         try {
-            return new MENode(key);
+            return new MENode(key, getUndoRedo());
         } catch (IntrospectionException e) {
             Exceptions.printStackTrace(e);
             return null;

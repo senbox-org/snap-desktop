@@ -10,6 +10,7 @@ import org.esa.snap.gui.actions.file.OpenImageViewAction;
 import org.openide.actions.CopyAction;
 import org.openide.actions.CutAction;
 import org.openide.actions.DeleteAction;
+import org.openide.awt.UndoRedo;
 import org.openide.util.actions.SystemAction;
 
 import javax.swing.Action;
@@ -24,8 +25,8 @@ import java.io.IOException;
  */
 public class BNode extends PNLeafNode<Band> {
 
-    public BNode(Band band) throws IntrospectionException {
-        super(band);
+    public BNode(Band band, UndoRedo undoRedo) throws IntrospectionException {
+        super(band, undoRedo);
         setIconBaseWithExtension("org/esa/snap/gui/icons/RsBandAsSwath16.gif");
     }
 

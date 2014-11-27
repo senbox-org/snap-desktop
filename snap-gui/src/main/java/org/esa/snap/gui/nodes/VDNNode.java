@@ -6,6 +6,7 @@
 package org.esa.snap.gui.nodes;
 
 import org.esa.beam.framework.datamodel.VectorDataNode;
+import org.openide.awt.UndoRedo;
 
 import java.beans.IntrospectionException;
 
@@ -16,8 +17,8 @@ import java.beans.IntrospectionException;
  */
 public class VDNNode extends PNLeafNode<VectorDataNode> {
 
-    public VDNNode(VectorDataNode vectorDataNode) throws IntrospectionException {
-        super(vectorDataNode);
+    public VDNNode(VectorDataNode vectorDataNode, UndoRedo undoRedo) throws IntrospectionException {
+        super(vectorDataNode, undoRedo);
         // todo
         //setIconBaseWithExtension("org/esa/snap/gui/icons/xxx.gif");
     }

@@ -18,16 +18,19 @@ package org.esa.snap.gui.actions.file;
 import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.core.SubProgressMonitor;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
+import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.datamodel.RasterDataNode;
 import org.esa.beam.framework.ui.UIUtils;
 import org.esa.beam.framework.ui.product.ProductSceneImage;
 import org.esa.beam.framework.ui.product.ProductSceneView;
 import org.esa.beam.util.Debug;
 import org.esa.snap.gui.SnapApp;
+import org.esa.snap.gui.nodes.PNodeFactory;
 import org.esa.snap.gui.util.WindowUtilities;
 import org.esa.snap.gui.windows.ProductSceneViewTopComponent;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionRegistration;
+import org.openide.awt.UndoRedo;
 import org.openide.util.ImageUtilities;
 import org.openide.util.NbBundle;
 
@@ -93,7 +96,9 @@ public class OpenImageViewAction extends AbstractAction {
                 UIUtils.setRootFrameDefaultCursor(SnapApp.getInstance().getMainFrame());
                 SnapApp.getInstance().setStatusBarMessage("");
                 try {
-                    ProductSceneView view = new ProductSceneView(get());
+                    ProductSceneImage sceneImage = get();
+                    UndoRedo.Manager undoManager = PNodeFactory.getInstance().getUndoManager(sceneImage.getProduct());
+                    ProductSceneView view = new ProductSceneView(sceneImage, undoManager);
                     openDocumentWindow(view);
                 } catch (OutOfMemoryError ignored) {
                     SnapApp.getInstance().showOutOfMemoryErrorDialog("Failed to open image view.");
@@ -114,7 +119,9 @@ public class OpenImageViewAction extends AbstractAction {
         if (configureByPreferences) {
             view.setLayerProperties(SnapApp.getInstance().getCompatiblePreferences());
         }
-        ProductSceneViewTopComponent productSceneViewWindow = new ProductSceneViewTopComponent(view);
+
+        UndoRedo.Manager undoManager = PNodeFactory.getInstance().getUndoManager(view.getProduct());
+        ProductSceneViewTopComponent productSceneViewWindow = new ProductSceneViewTopComponent(view, undoManager);
 
         WindowUtilities.openDocumentWindow(productSceneViewWindow);
         return productSceneViewWindow;

@@ -7,6 +7,7 @@ package org.esa.snap.gui.nodes;
 
 import org.esa.beam.framework.datamodel.Mask;
 import org.esa.snap.gui.actions.file.OpenImageViewAction;
+import org.openide.awt.UndoRedo;
 
 import javax.swing.Action;
 import java.beans.IntrospectionException;
@@ -18,8 +19,8 @@ import java.beans.IntrospectionException;
  */
 public class MNode extends PNLeafNode<Mask> {
 
-    public MNode(Mask mask) throws IntrospectionException {
-        super(mask);
+    public MNode(Mask mask, UndoRedo undoRedo) throws IntrospectionException {
+        super(mask, undoRedo);
         // todo
         //setIconBaseWithExtension("org/esa/snap/gui/icons/xxx.gif");
     }

@@ -7,6 +7,7 @@ package org.esa.snap.gui.nodes;
 
 import org.esa.beam.framework.datamodel.TiePointGrid;
 import org.esa.snap.gui.actions.file.OpenImageViewAction;
+import org.openide.awt.UndoRedo;
 
 import javax.swing.Action;
 import java.beans.IntrospectionException;
@@ -18,8 +19,8 @@ import java.beans.IntrospectionException;
  */
 public class TPGNode extends PNLeafNode<TiePointGrid> {
 
-    public TPGNode(TiePointGrid tiePointGrid) throws IntrospectionException {
-        super(tiePointGrid);
+    public TPGNode(TiePointGrid tiePointGrid, UndoRedo undoRedo) throws IntrospectionException {
+        super(tiePointGrid, undoRedo);
         // todo
         //setIconBaseWithExtension("org/esa/snap/gui/icons/xxx.gif");
     }

@@ -22,14 +22,10 @@ import java.beans.IntrospectionException;
  */
 public class PNode extends BeanNode<Product> implements UndoRedo.Provider {
 
-    private final UndoRedo undoRedo;
+    private final UndoRedo.Manager undoRedo;
 
-    public PNode(Product product) throws IntrospectionException {
-        this(product, new UndoRedo.Manager());
-    }
-
-    public PNode(Product product, UndoRedo undoRedo) throws IntrospectionException {
-        super(product, Children.create(new PChildFactory(product), true), Lookups.fixed(product, undoRedo));
+    public PNode(Product product, UndoRedo.Manager undoRedo) throws IntrospectionException {
+        super(product, Children.create(new PChildFactory(product, undoRedo), false), Lookups.fixed(product));
         this.undoRedo = undoRedo;
         setDisplayName(product.getName());
         setShortDescription(product.getDescription());

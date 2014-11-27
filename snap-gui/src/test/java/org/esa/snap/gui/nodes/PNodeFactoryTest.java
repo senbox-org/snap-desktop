@@ -3,6 +3,7 @@ package org.esa.snap.gui.nodes;
 import org.esa.beam.framework.datamodel.Product;
 import org.esa.snap.gui.util.TestProducts;
 import org.junit.Test;
+import org.openide.awt.UndoRedo;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
 
@@ -28,16 +29,26 @@ public class PNodeFactoryTest {
         Product product = list.get(0);
         assertSame(product1, product);
 
-        Node productNode = nodeFactory.createNodeForKey(product);
-        assertNotNull(productNode);
-        assertEquals("Product_1", productNode.getDisplayName());
+        Node pNode = nodeFactory.createNodeForKey(product);
+        assertTrue(pNode instanceof UndoRedo.Provider);
+        assertEquals("Product_1", pNode.getDisplayName());
 
-        Children children = productNode.getChildren();
+        Children children = pNode.getChildren();
         assertNotNull(children);
 
         Node[] groupNodes = children.getNodes();
         assertNotNull(groupNodes);
-        // todo - why groupNodes.length==1 ?
-        //assertEquals(1, groupNodes.length);
+        assertEquals(5, groupNodes.length);
+        Node mdGroupNode = groupNodes[0];
+        assertEquals("Metadata", mdGroupNode.getDisplayName());
+        assertEquals("Vector Data", groupNodes[1].getDisplayName());
+        assertEquals("Tie-Point Grids", groupNodes[2].getDisplayName());
+        assertEquals("Bands", groupNodes[3].getDisplayName());
+        assertEquals("Masks", groupNodes[4].getDisplayName());
+//        assertEquals("Flag-Codings", groupNodes[2].getDisplayName());
+//        assertEquals("Index-Codings", groupNodes[3].getDisplayName());
+
+        assertTrue(mdGroupNode instanceof UndoRedo.Provider);
+
     }
 }
