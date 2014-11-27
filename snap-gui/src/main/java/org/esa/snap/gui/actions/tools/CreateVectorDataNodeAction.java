@@ -33,17 +33,20 @@ import org.esa.beam.framework.ui.product.ProductSceneView;
 import org.esa.beam.framework.ui.product.VectorDataLayerFilterFactory;
 import org.esa.beam.jai.ImageManager;
 import org.esa.snap.gui.SnapApp;
+import org.esa.snap.gui.nodes.PNodeFactory;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
+import org.openide.awt.UndoRedo;
 import org.openide.util.ImageUtilities;
 import org.openide.util.NbBundle.Messages;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JPanel;
+import javax.swing.undo.AbstractUndoableEdit;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.text.MessageFormat;
@@ -84,30 +87,24 @@ public class CreateVectorDataNodeAction extends AbstractAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (SnapApp.getInstance().getSelectedProduct() != null) {
-            run();
-        }
-    }
-
-    public VectorDataNode run() {
         Product product = SnapApp.getInstance().getSelectedProduct();
-        DialogData dialogData = new DialogData(product.getVectorDataGroup());
-        PropertySet propertySet = PropertyContainer.createObjectBacked(dialogData);
-        propertySet.getDescriptor("name").setNotNull(true);
-        propertySet.getDescriptor("name").setNotEmpty(true);
-        propertySet.getDescriptor("name").setValidator(new NameValidator(product));
-        propertySet.getDescriptor("description").setNotNull(true);
+        if (product != null) {
+            DialogData dialogData = new DialogData(product.getVectorDataGroup());
+            PropertySet propertySet = PropertyContainer.createObjectBacked(dialogData);
+            propertySet.getDescriptor("name").setNotNull(true);
+            propertySet.getDescriptor("name").setNotEmpty(true);
+            propertySet.getDescriptor("name").setValidator(new NameValidator(product));
+            propertySet.getDescriptor("description").setNotNull(true);
 
-        final PropertyPane propertyPane = new PropertyPane(propertySet);
-        JPanel panel = propertyPane.createPanel();
-        panel.setPreferredSize(new Dimension(400, 100));
-        ModalDialog dialog = new MyModalDialog(propertyPane);
-        dialog.setContent(panel);
-        int i = dialog.show();
-        if (i == ModalDialog.ID_OK) {
-            return createDefaultVectorDataNode(product, dialogData.name, dialogData.description);
-        } else {
-            return null;
+            final PropertyPane propertyPane = new PropertyPane(propertySet);
+            JPanel panel = propertyPane.createPanel();
+            panel.setPreferredSize(new Dimension(400, 100));
+            ModalDialog dialog = new MyModalDialog(propertyPane);
+            dialog.setContent(panel);
+            int i = dialog.show();
+            if (i == ModalDialog.ID_OK) {
+                createDefaultVectorDataNode(product, dialogData.name, dialogData.description);
+            }
         }
     }
 
@@ -125,21 +122,47 @@ public class CreateVectorDataNodeAction extends AbstractAction {
         product.getVectorDataGroup().add(vectorDataNode);
         vectorDataNode.getPlacemarkGroup();
 
+        selectVectorDataLayer(vectorDataNode);
+
+        UndoRedo.Manager undoManager = PNodeFactory.getInstance().getUndoManager(product);
+        undoManager.addEdit(new AbstractUndoableEdit(){
+            @Override
+            public void undo() {
+                product.getVectorDataGroup().remove(vectorDataNode);
+            }
+
+            @Override
+            public void redo() {
+                product.getVectorDataGroup().add(vectorDataNode);
+                selectVectorDataLayer(vectorDataNode);
+            }
+
+            @Override
+            public String getPresentationName() {
+                return "Insert Vector Data Container";
+            }
+        });
+
+        return vectorDataNode;
+    }
+
+    private static void selectVectorDataLayer(VectorDataNode vectorDataNode) {
         final ProductSceneView sceneView = SnapApp.getInstance().getSelectedProductSceneView();
         if (sceneView != null) {
+            sceneView.getSelectedLayer();
             // todo find new solution
             //SnapApp.getInstance().getProductTree().expand(vectorDataNode);
+
             sceneView.selectVectorDataLayer(vectorDataNode);
 
             final LayerFilter nodeFilter = VectorDataLayerFilterFactory.createNodeFilter(vectorDataNode);
-            Layer vectorDataLayer = LayerUtils.getChildLayer(sceneView.getRootLayer(),
-                                                             LayerUtils.SEARCH_DEEP,
-                                                             nodeFilter);
-            if (vectorDataLayer != null) {
-                vectorDataLayer.setVisible(true);
+            Layer newSelectedLayer = LayerUtils.getChildLayer(sceneView.getRootLayer(),
+                                                              LayerUtils.SEARCH_DEEP,
+                                                              nodeFilter);
+            if (newSelectedLayer != null) {
+                newSelectedLayer.setVisible(true);
             }
         }
-        return vectorDataNode;
     }
 
     public static String getDefaultVectorDataNodeName() {
