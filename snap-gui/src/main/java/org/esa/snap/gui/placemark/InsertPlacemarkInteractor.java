@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 Brockmann Consult GmbH (info@brockmann-consult.de)
+ * Copyright (C) 2014 Brockmann Consult GmbH (info@brockmann-consult.de)
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -20,10 +20,12 @@ import com.bc.ceres.swing.figure.FigureEditorInteractor;
 import org.esa.beam.framework.datamodel.PixelPos;
 import org.esa.beam.framework.datamodel.Placemark;
 import org.esa.beam.framework.datamodel.PlacemarkDescriptor;
-import org.esa.beam.framework.datamodel.PlacemarkGroup;
 import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.ui.product.ProductSceneView;
+import org.esa.snap.gui.nodes.PNodeFactory;
+import org.openide.awt.UndoRedo;
 
+import javax.swing.undo.AbstractUndoableEdit;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Cursor;
@@ -31,7 +33,11 @@ import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 
-
+/**
+ * Interactor fort inserting pins and GCPs.
+ *
+ * @author Norman Fomferra
+ */
 public abstract class InsertPlacemarkInteractor extends FigureEditorInteractor {
 
     private final PlacemarkDescriptor placemarkDescriptor;
@@ -40,7 +46,7 @@ public abstract class InsertPlacemarkInteractor extends FigureEditorInteractor {
 
     protected InsertPlacemarkInteractor(PlacemarkDescriptor placemarkDescriptor) {
         this.placemarkDescriptor = placemarkDescriptor;
-        this.cursor = createCursor(placemarkDescriptor);
+        this.cursor = createCursor();
     }
 
     @Override
@@ -62,7 +68,7 @@ public abstract class InsertPlacemarkInteractor extends FigureEditorInteractor {
         if (started) {
             ProductSceneView sceneView = getProductSceneView(event);
             if (sceneView != null) {
-                sceneView.selectVectorDataLayer(getPlacemarkGroup(sceneView.getProduct()).getVectorDataNode());
+                sceneView.selectVectorDataLayer(placemarkDescriptor.getPlacemarkGroup(sceneView.getProduct()).getVectorDataNode());
                 if (isSingleButton1Click(event)) {
                     insertPlacemark(sceneView);
                 }
@@ -82,14 +88,30 @@ public abstract class InsertPlacemarkInteractor extends FigureEditorInteractor {
         final Placemark newPlacemark = Placemark.createPointPlacemark(placemarkDescriptor, name, label, "", pixelPos, null,
                                                                       product.getGeoCoding());
 
-        getPlacemarkGroup(product).add(newPlacemark);
+        placemarkDescriptor.getPlacemarkGroup(product).add(newPlacemark);
+
+        UndoRedo.Manager undoManager = PNodeFactory.getInstance().getUndoManager(product);
+        undoManager.addEdit(new AbstractUndoableEdit() {
+            @Override
+            public void undo() {
+                super.undo();
+                placemarkDescriptor.getPlacemarkGroup(product).remove(newPlacemark);
+            }
+
+            @Override
+            public void redo() {
+                super.redo();
+                placemarkDescriptor.getPlacemarkGroup(product).add(newPlacemark);
+            }
+
+            @Override
+            public String getPresentationName() {
+                return "Insert " + placemarkDescriptor.getRoleLabel();
+            }
+        });
     }
 
-    private PlacemarkGroup getPlacemarkGroup(Product product) {
-        return placemarkDescriptor.getPlacemarkGroup(product);
-    }
-
-    private static Cursor createCursor(PlacemarkDescriptor placemarkDescriptor) {
+    private Cursor createCursor() {
         final Image cursorImage = placemarkDescriptor.getCursorImage();
         if (cursorImage == null) {
             return Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR);
