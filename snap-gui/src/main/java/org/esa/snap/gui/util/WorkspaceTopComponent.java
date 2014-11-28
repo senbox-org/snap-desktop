@@ -5,6 +5,7 @@
  */
 package org.esa.snap.gui.util;
 
+import com.bc.ceres.core.Assert;
 import org.esa.snap.gui.actions.window.NewWorkspaceAction;
 import org.netbeans.swing.tabcontrol.DefaultTabDataModel;
 import org.netbeans.swing.tabcontrol.TabData;
@@ -1018,6 +1019,12 @@ public class WorkspaceTopComponent extends TopComponent {
                 }
             } else if ("displayName".equals(event.getPropertyName())) {
                 frame.setTitle(source.getDisplayName());
+                TabData tabData = frameToTabMap.get(frame);
+                Assert.notNull(tabData);
+                int i = tabbedContainer.getModel().indexOf(tabData);
+                if (i >= 0) {
+                    tabbedContainer.getModel().setText(i, source.getDisplayName());
+                }
             }
         }
     }
