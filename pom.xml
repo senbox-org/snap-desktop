@@ -15,6 +15,7 @@
         <brandingToken>snap</brandingToken>
         <snap.version>${project.version}</snap.version>
         <netbeans.version>RELEASE801</netbeans.version>
+        <junit.version>4.11</junit.version>
     </properties>
 
     <modules>
@@ -25,13 +26,16 @@
         <module>nbexec</module>
     </modules>
 
-    <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.11</version>
-        </dependency>
-    </dependencies>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <repositories>
         <!--
