@@ -119,7 +119,6 @@ public class WorkspaceTopComponent extends TopComponent {
         setName(displayName);
         setDisplayName(displayName);
         setToolTipText(Bundle.CTL_WorkspaceTopComponentDescription());
-        //putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.TRUE);
     }
 
     private void initComponents() {
@@ -268,7 +267,6 @@ public class WorkspaceTopComponent extends TopComponent {
     public Action[] getActions() {
         Action[] actions = super.getActions();
         ArrayList<Action> actionList = new ArrayList<>();
-        actionList.add(new NewWorkspaceAction());
         actionList.add(new RenameWorkspaceAction());
         if (actions.length > 0) {
             actionList.add(null);
