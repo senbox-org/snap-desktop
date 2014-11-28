@@ -16,6 +16,7 @@ import org.esa.beam.framework.datamodel.ProductNodeListenerAdapter;
 import org.esa.beam.framework.datamodel.RasterDataNode;
 import org.esa.beam.framework.datamodel.TiePointGrid;
 import org.esa.beam.framework.ui.product.ProductSceneView;
+import org.esa.snap.gui.actions.edit.DeselectAllAction;
 import org.esa.snap.gui.nodes.BNode;
 import org.esa.snap.gui.nodes.MNode;
 import org.esa.snap.gui.nodes.TPGNode;
@@ -25,13 +26,14 @@ import org.openide.awt.UndoRedo;
 import org.openide.nodes.Node;
 import org.openide.util.Exceptions;
 import org.openide.util.ImageUtilities;
+import org.openide.windows.WindowManager;
 
+import javax.swing.*;
 import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.Transferable;
+import java.awt.event.ActionEvent;
 import java.beans.IntrospectionException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.logging.Logger;
 
 /**
@@ -54,6 +56,7 @@ public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNo
         this.view = view;
         this.undoRedo = undoRedo;
         this.nodeRenameHandler = new NodeRenameHandler();
+        this.selection = Selection.EMPTY;
         initComponents();
         RasterDataNode raster = view.getRaster();
         setName(raster.getName());
@@ -61,6 +64,8 @@ public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNo
         setToolTipText(raster.getProduct().getName() + " - " + raster.getName());
         setIcon(ImageUtilities.loadImage("org/esa/snap/gui/icons/RsBandAsSwath16.gif"));
 
+        // todo - this is ugly and not wanted (nf), the node will either passed in or we'll have
+        // a central node factory, e.g. via an ExtensionObject
         Node node = null;
         try {
             if (raster instanceof Mask) {
@@ -116,7 +121,7 @@ public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNo
     @Override
     protected void componentDeactivated() {
         view.getFigureEditor().getSelectionContext().removeSelectionChangeListener(this);
-        setSelection(null);
+        setSelection(Selection.EMPTY);
         getDynamicContent().remove(view);
     }
 
@@ -126,30 +131,82 @@ public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNo
     }
 
     private void setSelection(Selection newSelection) {
-        // todo - something is still wrong here!
-        LOG.info(">>> setSelection: newSelection = " + newSelection);
         Selection oldSelection = this.selection;
-        LOG.info(">>> setSelection: oldSelection = " + oldSelection);
-        Set<Object> oldSet = oldSelection != null ? new HashSet<>(Arrays.asList(oldSelection.getSelectedValues())) : Collections.emptySet();
-        Set<Object> newSet = newSelection != null ? new HashSet<>(Arrays.asList(newSelection.getSelectedValues())) : Collections.emptySet();
-        Set<Object> tmpSet = new HashSet<>(oldSet);
-        oldSet.removeAll(newSet);
-        newSet.removeAll(tmpSet);
-        for (Object o : oldSet) {
-            LOG.info(">>> setSelection: removing o = " + o);
-            getDynamicContent().remove(o);
-        }
-        for (Object o : newSet) {
-            LOG.info(">>> setSelection: adding o = " + o);
-            getDynamicContent().add(o);
-        }
-        if (oldSelection != null && oldSelection != Selection.EMPTY) {
-            getDynamicContent().remove(oldSelection);
-        }
-        if (newSelection != null && newSelection != Selection.EMPTY) {
+        getDynamicContent().remove(oldSelection);
+        if (!newSelection.isEmpty()) {
+            this.selection = newSelection.clone();
             getDynamicContent().add(newSelection);
         }
-        this.selection = newSelection;
+
+        updateActionMap(newSelection);
+    }
+
+    private void updateActionMap(Selection newSelection) {
+        ActionMap actionMap = getActionMap();
+        actionMap.put("select-all", new SelectAllAction());
+        if (!newSelection.isEmpty()) {
+            actionMap.put("cut-to-clipboard", new CutAction());
+            actionMap.put("copy-to-clipboard", new CopyAction());
+            actionMap.put("paste-to-clipboard", new PasteAction());
+            actionMap.put("delete", new DeleteAction());
+            actionMap.put("deselect-all", new DeselectAllAction());
+        } else {
+            actionMap.remove("cut-to-clipboard");
+            actionMap.remove("copy-to-clipboard");
+            actionMap.remove("paste-to-clipboard");
+            actionMap.remove("delete");
+            actionMap.remove("deselect-all");
+        }
+        getDynamicContent().remove(actionMap);
+        getDynamicContent().add(actionMap);
+    }
+
+    private class CutAction extends AbstractAction {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            Selection selection = getLookup().lookup(Selection.class);
+            if (selection != null && !selection.isEmpty()) {
+                Transferable transferable = view.getFigureEditor().getFigureSelection().createTransferable(false);
+                Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                clipboard.setContents(transferable, selection);
+                view.getFigureEditor().deleteSelection();
+            }
+        }
+    }
+
+    private class CopyAction extends AbstractAction {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            Selection selection = getLookup().lookup(Selection.class);
+            if (selection != null && !selection.isEmpty()) {
+                Transferable transferable = view.getFigureEditor().getFigureSelection().createTransferable(false);
+                Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                clipboard.setContents(transferable, selection);
+            }
+        }
+    }
+
+    private class PasteAction extends AbstractAction {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+            Transferable contents = clipboard.getContents(view);
+            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), "Paste: " + contents);
+        }
+    }
+
+    private class DeleteAction extends AbstractAction {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            view.getFigureEditor().deleteSelection();
+        }
+    }
+
+    private class SelectAllAction extends AbstractAction {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            view.getFigureEditor().selectAll();
+        }
     }
 
     private class NodeRenameHandler extends ProductNodeListenerAdapter {
