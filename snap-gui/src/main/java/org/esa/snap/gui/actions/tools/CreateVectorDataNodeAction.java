@@ -121,43 +121,25 @@ public class CreateVectorDataNodeAction extends AbstractAction {
         vectorDataNode.setDescription(description);
         product.getVectorDataGroup().add(vectorDataNode);
         vectorDataNode.getPlacemarkGroup();
-
-        selectVectorDataLayer(vectorDataNode);
+        String oldLayerId = selectVectorDataLayer(vectorDataNode);
 
         UndoRedo.Manager undoManager = PNodeFactory.getInstance().getUndoManager(product);
-        undoManager.addEdit(new AbstractUndoableEdit(){
-            @Override
-            public void undo() {
-                super.undo();
-                product.getVectorDataGroup().remove(vectorDataNode);
-            }
-
-            @Override
-            public void redo() {
-                super.redo();
-                product.getVectorDataGroup().add(vectorDataNode);
-                selectVectorDataLayer(vectorDataNode);
-            }
-
-            @Override
-            public String getPresentationName() {
-                return "Insert Vector Data Container";
-            }
-        });
+        undoManager.addEdit(new MyUndoableEdit(product, vectorDataNode, oldLayerId));
 
         return vectorDataNode;
     }
 
-    private static void selectVectorDataLayer(VectorDataNode vectorDataNode) {
-        final ProductSceneView sceneView = SnapApp.getInstance().getSelectedProductSceneView();
+    private static String selectVectorDataLayer(VectorDataNode vectorDataNode) {
+        Layer oldLayer = null;
+        ProductSceneView sceneView = SnapApp.getInstance().getSelectedProductSceneView();
         if (sceneView != null) {
-            sceneView.getSelectedLayer();
+            oldLayer = sceneView.getSelectedLayer();
             // todo find new solution
             //SnapApp.getInstance().getProductTree().expand(vectorDataNode);
 
             sceneView.selectVectorDataLayer(vectorDataNode);
 
-            final LayerFilter nodeFilter = VectorDataLayerFilterFactory.createNodeFilter(vectorDataNode);
+            LayerFilter nodeFilter = VectorDataLayerFilterFactory.createNodeFilter(vectorDataNode);
             Layer newSelectedLayer = LayerUtils.getChildLayer(sceneView.getRootLayer(),
                                                               LayerUtils.SEARCH_DEEP,
                                                               nodeFilter);
@@ -165,11 +147,23 @@ public class CreateVectorDataNodeAction extends AbstractAction {
                 newSelectedLayer.setVisible(true);
             }
         }
+        return oldLayer != null ? oldLayer.getId() : null;
     }
 
     public static String getDefaultVectorDataNodeName() {
         //return VisatActivator.getInstance().getModuleContext().getRuntimeConfig().getContextProperty(KEY_VECTOR_DATA_INITIAL_NAME, "geometry");
         return "geometry";
+    }
+
+    private static String getSelectedLayerId() {
+        ProductSceneView sceneView = SnapApp.getInstance().getSelectedProductSceneView();
+        if (sceneView != null) {
+            Layer selectedLayer = sceneView.getSelectedLayer();
+            if (selectedLayer != null) {
+                return selectedLayer.getId();
+            }
+        }
+        return null;
     }
 
     private static class NameValidator implements Validator {
@@ -226,5 +220,50 @@ public class CreateVectorDataNodeAction extends AbstractAction {
         }
     }
 
+
+    private static class MyUndoableEdit extends AbstractUndoableEdit {
+        private final Product product;
+        private final VectorDataNode vectorDataNode;
+        private String oldLayerId;
+
+        public MyUndoableEdit(Product product, VectorDataNode vectorDataNode, String oldLayerId) {
+            this.product = product;
+            this.vectorDataNode = vectorDataNode;
+            this.oldLayerId = oldLayerId;
+        }
+
+        @Override
+        public void undo() {
+            super.undo();
+            product.getVectorDataGroup().remove(vectorDataNode);
+            setSelectedLayer(oldLayerId);
+        }
+
+        @Override
+        public void redo() {
+            super.redo();
+            oldLayerId = getSelectedLayerId();
+            product.getVectorDataGroup().add(vectorDataNode);
+            selectVectorDataLayer(vectorDataNode);
+        }
+
+        @Override
+        public String getPresentationName() {
+            return "Insert Vector Data Container";
+        }
+
+        private void setSelectedLayer(String layerId) {
+            if (layerId != null) {
+                ProductSceneView sceneView = SnapApp.getInstance().getSelectedProductSceneView();
+                if (sceneView != null) {
+                    Layer layer = LayerUtils.getChildLayerById(sceneView.getRootLayer(), layerId);
+                    if (layer != null) {
+                        sceneView.setSelectedLayer(layer);
+                    }
+                }
+            }
+        }
+
+    }
 
 }
