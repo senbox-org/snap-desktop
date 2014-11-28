@@ -19,6 +19,7 @@ import org.openide.NotifyDescriptor;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.UndoRedo;
+import org.openide.nodes.Node;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ProxyLookup;
 import org.openide.windows.Mode;
@@ -935,9 +936,11 @@ public class WorkspaceTopComponent extends TopComponent {
                 dw.componentActivated();
             }
 
-            // Publish lookup contents of selected frame to parent window
             TopComponent topComponent = getTopComponent(internalFrame);
+            // Publish lookup contents of selected frame to parent window
             lookup.setLookup(topComponent.getLookup());
+            // Publish activated nodes, if any
+            setActivatedNodes(topComponent.getActivatedNodes());
 
             if (WorkspaceTopComponent.this != WindowManager.getDefault().getRegistry().getActivated()) {
                 WorkspaceTopComponent.this.requestActive();
