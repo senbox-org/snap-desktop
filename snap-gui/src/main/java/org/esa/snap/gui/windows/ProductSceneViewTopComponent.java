@@ -16,7 +16,6 @@ import org.esa.beam.framework.datamodel.ProductNodeListenerAdapter;
 import org.esa.beam.framework.datamodel.RasterDataNode;
 import org.esa.beam.framework.datamodel.TiePointGrid;
 import org.esa.beam.framework.ui.product.ProductSceneView;
-import org.esa.snap.gui.actions.edit.DeselectAllAction;
 import org.esa.snap.gui.nodes.BNode;
 import org.esa.snap.gui.nodes.MNode;
 import org.esa.snap.gui.nodes.TPGNode;
@@ -206,6 +205,13 @@ public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNo
         @Override
         public void actionPerformed(ActionEvent e) {
             view.getFigureEditor().selectAll();
+        }
+    }
+
+    private class DeselectAllAction extends AbstractAction {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            view.getFigureEditor().setSelection(Selection.EMPTY);
         }
     }
 
