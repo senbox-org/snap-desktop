@@ -8,31 +8,26 @@ package org.esa.snap.gui.windows;
 import com.bc.ceres.swing.selection.Selection;
 import com.bc.ceres.swing.selection.SelectionChangeEvent;
 import com.bc.ceres.swing.selection.SelectionChangeListener;
-import org.esa.beam.framework.datamodel.Band;
-import org.esa.beam.framework.datamodel.Mask;
 import org.esa.beam.framework.datamodel.ProductNode;
 import org.esa.beam.framework.datamodel.ProductNodeEvent;
 import org.esa.beam.framework.datamodel.ProductNodeListenerAdapter;
 import org.esa.beam.framework.datamodel.RasterDataNode;
-import org.esa.beam.framework.datamodel.TiePointGrid;
 import org.esa.beam.framework.ui.product.ProductSceneView;
-import org.esa.snap.gui.nodes.BNode;
-import org.esa.snap.gui.nodes.MNode;
-import org.esa.snap.gui.nodes.TPGNode;
 import org.esa.snap.gui.util.DocumentTopComponent;
 import org.esa.snap.gui.util.WindowUtilities;
 import org.openide.awt.UndoRedo;
-import org.openide.nodes.Node;
 import org.openide.util.Exceptions;
 import org.openide.util.ImageUtilities;
 import org.openide.windows.WindowManager;
 
 import javax.swing.*;
+import javax.swing.text.DefaultEditorKit;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
-import java.beans.IntrospectionException;
+import java.io.IOException;
 import java.util.logging.Logger;
 
 /**
@@ -62,8 +57,8 @@ public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNo
         setDisplayName(WindowUtilities.getUniqueTitle(raster.getName(), ProductSceneViewTopComponent.class));
         setToolTipText(raster.getProduct().getName() + " - " + raster.getName());
         setIcon(ImageUtilities.loadImage("org/esa/snap/gui/icons/RsBandAsSwath16.gif"));
-
-        // todo - this is ugly and not wanted (nf), the node will either passed in or we'll have
+/*
+        // checkme - this is ugly and not wanted (nf), the node will either passed in or we'll have
         // a central node factory, e.g. via an ExtensionObject
         Node node = null;
         try {
@@ -80,6 +75,7 @@ public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNo
         if (node != null) {
             setActivatedNodes(new Node[]{node});
         }
+*/
     }
 
     @Override
@@ -143,16 +139,16 @@ public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNo
     private void updateActionMap(Selection newSelection) {
         ActionMap actionMap = getActionMap();
         actionMap.put("select-all", new SelectAllAction());
+
+        actionMap.put(DefaultEditorKit.pasteAction, new PasteAction());
         if (!newSelection.isEmpty()) {
-            actionMap.put("cut-to-clipboard", new CutAction());
-            actionMap.put("copy-to-clipboard", new CopyAction());
-            actionMap.put("paste-to-clipboard", new PasteAction());
+            actionMap.put(DefaultEditorKit.cutAction, new CutAction());
+            actionMap.put(DefaultEditorKit.copyAction, new CopyAction());
             actionMap.put("delete", new DeleteAction());
             actionMap.put("deselect-all", new DeselectAllAction());
         } else {
-            actionMap.remove("cut-to-clipboard");
-            actionMap.remove("copy-to-clipboard");
-            actionMap.remove("paste-to-clipboard");
+            actionMap.remove(DefaultEditorKit.cutAction);
+            actionMap.remove(DefaultEditorKit.copyAction);
             actionMap.remove("delete");
             actionMap.remove("deselect-all");
         }
@@ -165,10 +161,11 @@ public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNo
         public void actionPerformed(ActionEvent e) {
             Selection selection = getLookup().lookup(Selection.class);
             if (selection != null && !selection.isEmpty()) {
-                Transferable transferable = view.getFigureEditor().getFigureSelection().createTransferable(false);
                 Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                Transferable transferable = view.getFigureEditor().getFigureSelection().createTransferable(false);
                 clipboard.setContents(transferable, selection);
                 view.getFigureEditor().deleteSelection();
+                //JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), "Cut: " + transferable);
             }
         }
     }
@@ -178,9 +175,12 @@ public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNo
         public void actionPerformed(ActionEvent e) {
             Selection selection = getLookup().lookup(Selection.class);
             if (selection != null && !selection.isEmpty()) {
-                Transferable transferable = view.getFigureEditor().getFigureSelection().createTransferable(false);
                 Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                // todo - when we copy we actually don't clone the SimpleFeature. Then, if we paste, two figures refer
+                // to the same SimpleFeature.
+                Transferable transferable = view.getFigureEditor().getFigureSelection().createTransferable(true);
                 clipboard.setContents(transferable, selection);
+                //JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), "Copy: " + transferable);
             }
         }
     }
@@ -190,7 +190,13 @@ public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNo
         public void actionPerformed(ActionEvent e) {
             Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
             Transferable contents = clipboard.getContents(view);
-            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), "Paste: " + contents);
+            //JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), "Paste: " + contents);
+
+            try {
+                view.getSelectionContext().insert(contents);
+            } catch (IOException | UnsupportedFlavorException ex) {
+                Exceptions.printStackTrace(ex);
+            }
         }
     }
 
