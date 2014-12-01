@@ -7,6 +7,7 @@ package org.esa.snap.gui.actions.edit;
 
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle;
@@ -20,17 +21,18 @@ import org.openide.util.actions.CallbackSystemAction;
         id = "org.esa.snap.gui.actions.edit.SelectAllAction"
 )
 @ActionRegistration(
-        displayName = "#CTL_SelectAllActionName"
-        //, key = "D-A"
+        displayName = "#CTL_SelectAllActionName",
+        lazy = false
 )
-@ActionReference(
-        path = "Menu/Edit",
-        position = 10000
-)
+@ActionReferences({
+    @ActionReference(path = "Menu/Edit", position = 10000),
+    @ActionReference(path = "Shortcuts", name = "D-A")
+})
 @NbBundle.Messages({
-        "CTL_SelectAllActionName=Select &All"
+    "CTL_SelectAllActionName=Select &All"
 })
 public final class SelectAllAction extends CallbackSystemAction {
+
     public SelectAllAction() {
     }
 

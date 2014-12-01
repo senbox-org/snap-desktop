@@ -7,6 +7,7 @@ package org.esa.snap.gui.actions.edit;
 
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle;
@@ -20,13 +21,13 @@ import org.openide.util.actions.CallbackSystemAction;
         id = "org.esa.snap.gui.actions.edit.DeselectAllAction"
 )
 @ActionRegistration(
-        displayName = "#CTL_DeselectAllActionName"
-        //,key = "D-D"
+        displayName = "#CTL_DeselectAllActionName",
+        lazy = false
 )
-@ActionReference(
-        path = "Menu/Edit",
-        position = 10001
-)
+@ActionReferences({
+        @ActionReference(path = "Menu/Edit", position = 10001),
+        @ActionReference(path = "Shortcuts", name = "D-D")
+})
 @NbBundle.Messages({
         "CTL_DeselectAllActionName=&Deselect All"
 })
