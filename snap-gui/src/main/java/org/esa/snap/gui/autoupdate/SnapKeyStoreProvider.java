@@ -1,9 +1,10 @@
-package org.esa.snap.gui;
+package org.esa.snap.gui.autoupdate;
 
 import java.io.InputStream;
 import java.security.KeyStore;
 import java.util.logging.Level;
 
+import org.esa.snap.gui.SnapApp;
 import org.netbeans.spi.autoupdate.KeyStoreProvider;
 
 @org.openide.util.lookup.ServiceProvider(service = org.netbeans.spi.autoupdate.KeyStoreProvider.class)
