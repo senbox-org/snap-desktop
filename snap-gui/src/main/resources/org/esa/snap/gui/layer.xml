@@ -53,4 +53,12 @@
             <file name="org-openide-actions-ReplaceAction.shadow_hidden"/>
         </folder>
     </folder>
+    <folder name="Toolbars">
+        <folder name="QuickSearch">
+            <file name="org-netbeans-modules-quicksearch-QuickSearchAction.shadow">
+                <attr name="originalFile"
+                      stringvalue="Actions/Edit/org-netbeans-modules-quicksearch-QuickSearchAction.instance"/>
+            </file>
+        </folder>
+    </folder>
 </filesystem>
