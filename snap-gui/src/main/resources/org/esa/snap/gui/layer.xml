@@ -47,4 +47,10 @@
                   stringvalue="Actions/Edit/org-openide-actions-DeleteAction.instance"/>
         </file>
     </folder>
+    <folder name="Menu">
+        <folder name="Edit">
+            <file name="org-openide-actions-FindAction.shadow_hidden"/>
+            <file name="org-openide-actions-ReplaceAction.shadow_hidden"/>
+        </folder>
+    </folder>
 </filesystem>
