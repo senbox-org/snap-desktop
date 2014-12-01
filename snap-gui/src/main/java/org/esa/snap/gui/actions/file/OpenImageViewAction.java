@@ -18,7 +18,6 @@ package org.esa.snap.gui.actions.file;
 import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.core.SubProgressMonitor;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
-import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.datamodel.RasterDataNode;
 import org.esa.beam.framework.ui.UIUtils;
 import org.esa.beam.framework.ui.product.ProductSceneImage;
@@ -34,9 +33,7 @@ import org.openide.awt.UndoRedo;
 import org.openide.util.ImageUtilities;
 import org.openide.util.NbBundle;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.SwingWorker;
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.text.MessageFormat;
 import java.util.List;
@@ -153,14 +150,13 @@ public class OpenImageViewAction extends AbstractAction {
     }
 
     public ProductSceneView getProductSceneView(RasterDataNode raster) {
-        List<ProductSceneView> list = WindowUtilities.visitOpen(topComponent -> {
-            if (topComponent instanceof ProductSceneViewTopComponent) {
-                ProductSceneViewTopComponent window = (ProductSceneViewTopComponent) topComponent;
-                if (window.getDocument() == raster) {
-                    return window.getView();
+        List<ProductSceneView> list = WindowUtilities.collectOpen(ProductSceneViewTopComponent.class, new WindowUtilities.Collector<ProductSceneViewTopComponent, ProductSceneView>() {
+            @Override
+            public void collect(ProductSceneViewTopComponent topComponent, List<ProductSceneView> list) {
+                if (raster == topComponent.getView().getRaster()) {
+                    list.add(topComponent.getView());
                 }
             }
-            return null;
         });
         return list.isEmpty() ? null : list.get(0);
     }

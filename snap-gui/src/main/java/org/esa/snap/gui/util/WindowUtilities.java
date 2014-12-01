@@ -4,9 +4,16 @@ import org.openide.windows.Mode;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.EventListener;
+import java.util.EventObject;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Various window utilities.
@@ -14,6 +21,24 @@ import java.util.List;
  * @author Norman Fomferra
  */
 public class WindowUtilities {
+
+    final static Map<Listener, PropertyChangeListener> listenerMap = new LinkedHashMap<>();
+
+    public static Listener[] getListeners() {
+        Set<Listener> listeners = listenerMap.keySet();
+        return listeners.toArray(new Listener[listeners.size()]);
+    }
+
+    public static void addListener(Listener listener) {
+        MyPropertyChangeListener pcl = new MyPropertyChangeListener(listener);
+        listenerMap.put(listener, pcl);
+        WindowManager.getDefault().getRegistry().addPropertyChangeListener(pcl);
+    }
+
+    public static void removeListener(Listener listener) {
+        PropertyChangeListener pcl = listenerMap.remove(listener);
+        WindowManager.getDefault().getRegistry().removePropertyChangeListener(pcl);
+    }
 
     public static boolean openDocumentWindow(TopComponent documentWindow) {
         WorkspaceTopComponent workspaceTopComponent = getShowingWorkspace();
@@ -35,7 +60,14 @@ public class WindowUtilities {
         if (activated instanceof WorkspaceTopComponent) {
             return (WorkspaceTopComponent) activated;
         }
-        List<WorkspaceTopComponent> showingWorkspaces = visitOpen(topComponent -> topComponent instanceof WorkspaceTopComponent && topComponent.isShowing() ? (WorkspaceTopComponent) topComponent : null);
+        List<WorkspaceTopComponent> showingWorkspaces = collectOpen(WorkspaceTopComponent.class, new Collector<WorkspaceTopComponent, WorkspaceTopComponent>() {
+            @Override
+            public void collect(WorkspaceTopComponent topComponent, List<WorkspaceTopComponent> list) {
+                if (topComponent.isShowing()) {
+                    list.add(topComponent);
+                }
+            }
+        });
         if (!showingWorkspaces.isEmpty()) {
             return showingWorkspaces.get(0);
         }
@@ -50,7 +82,7 @@ public class WindowUtilities {
      * @return A unique window title.
      */
     public static String getUniqueTitle(String titleBase, Class<? extends TopComponent> windowType) {
-        List<String> titles = visitOpen(TopComponent::getDisplayName, windowType);
+        List<String> titles = collectOpen(windowType, (topComponent, list) -> list.add(topComponent.getDisplayName()));
 
         if (titles.isEmpty()) {
             return titleBase;
@@ -68,47 +100,124 @@ public class WindowUtilities {
         }
     }
 
-    public static <T extends TopComponent> List<T> findOpen(Class<T> windowType) {
-        return visitOpen(topComponent -> (T) topComponent, windowType);
+    public static <W extends TopComponent> List<W> findOpen(Class<W> windowType) {
+        return collectOpen(windowType, new Converter<W, W>() {
+            @Override
+            protected W convert(W topComponent) {
+                return topComponent;
+            }
+        });
     }
 
-    public static <T> List<T> visitOpen(Visitor<T> visitor) {
-        return visitOpen(visitor, TopComponent.class);
+    public static <W extends TopComponent, L> List<L> collectOpen(Collector<W, L> collector) {
+        return collectOpen(null, collector);
     }
 
-    public static <T> List<T> visitOpen(Visitor<T> visitor, Class<? extends TopComponent> windowType) {
-        List<T> result = new ArrayList<>();
-        visitMany(TopComponent.getRegistry().getOpened(), windowType, visitor, result);
+    public static <W extends TopComponent, L> List<L> collectOpen(Class<W> windowType, Collector<W, L> collector) {
+        List<L> result = new ArrayList<>();
+        visitMany(TopComponent.getRegistry().getOpened(), windowType, collector, result);
         return result;
     }
 
-    private static <T> void visitMany(Collection<TopComponent> topComponents,
-                                      Class<? extends TopComponent> type,
-                                      Visitor<T> visitor,
-                                      List<T> result) {
+    private static <W extends TopComponent, L> void visitMany(Collection<TopComponent> topComponents,
+                                                              Class<W> type,
+                                                              Collector<W, L> collector,
+                                                              List<L> result) {
         for (TopComponent topComponent : topComponents) {
-            visitOne(topComponent, type, visitor, result);
+            visitOne(topComponent, type, collector, result);
             if (topComponent instanceof WorkspaceTopComponent) {
                 WorkspaceTopComponent workspaceTopComponent = (WorkspaceTopComponent) topComponent;
                 List<TopComponent> containedWindows = workspaceTopComponent.getTopComponents();
-                visitMany(containedWindows, type, visitor, result);
+                visitMany(containedWindows, type, collector, result);
             }
         }
     }
 
-    private static <T> void visitOne(TopComponent topComponent,
-                                     Class<? extends TopComponent> type,
-                                     Visitor<T> visitor,
-                                     List<T> result) {
+    private static <W extends TopComponent, L> void visitOne(TopComponent topComponent,
+                                                             Class<W> type,
+                                                             Collector<W, L> collector,
+                                                             List<L> result) {
         if (type.isAssignableFrom(topComponent.getClass())) {
-            T element = visitor.visit(topComponent);
-            if (element != null) {
-                result.add(element);
-            }
+            collector.collect((W) topComponent, result);
         }
     }
 
-    public interface Visitor<T> {
-        T visit(TopComponent topComponent);
+    public interface Collector<W extends TopComponent, L> {
+        void collect(W topComponent, List<L> list);
+    }
+
+    public static abstract class Converter<W extends TopComponent, L> implements Collector<W, L> {
+        @Override
+        public void collect(W topComponent, List<L> list) {
+            list.add(convert(topComponent));
+        }
+
+        protected abstract L convert(W topComponent);
+    }
+
+    /**
+     * An <code>Event</code> that adds support for
+     * <code>TopComponent</code> objects as the event source.
+     */
+    public static class Event extends EventObject {
+        public Event(TopComponent source) {
+            super(source);
+        }
+
+        public TopComponent getTopComponent() {
+            return getSource() instanceof TopComponent ? (TopComponent) getSource() : null;
+        }
+    }
+
+    /**
+     * The listener interface for receiving window events.
+     * This class is functionally equivalent to the WindowListener class
+     * in the AWT.
+     *
+     * @see java.awt.event.WindowListener
+     */
+    public interface Listener extends EventListener {
+        /**
+         * Invoked when a window has been opened.
+         */
+        public void windowOpened(Event e);
+
+        /**
+         * Invoked when an window has been closed.
+         */
+        public void windowClosed(Event e);
+
+        /**
+         * Invoked when an window is activated.
+         */
+        public void windowActivated(Event e);
+
+        /**
+         * Invoked when an window is de-activated.
+         */
+        public void windowDeactivated(Event e);
+
+    }
+
+    private static class MyPropertyChangeListener implements PropertyChangeListener {
+        private final Listener listener;
+
+        public MyPropertyChangeListener(Listener listener) {
+            this.listener = listener;
+        }
+
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+            if ("activated".equals(evt.getPropertyName())) {
+                if (evt.getOldValue() != null) {
+                    listener.windowDeactivated(new Event((TopComponent) evt.getOldValue()));
+                }
+                listener.windowActivated(new Event((TopComponent) evt.getNewValue()));
+            } else if ("tcOpen".equals(evt.getPropertyName())) {
+                listener.windowOpened(new Event((TopComponent) evt.getNewValue()));
+            } else if ("tcClose".equals(evt.getPropertyName())) {
+                listener.windowClosed(new Event((TopComponent) evt.getNewValue()));
+            }
+        }
     }
 }
