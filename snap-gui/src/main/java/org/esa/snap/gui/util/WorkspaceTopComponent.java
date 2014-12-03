@@ -319,6 +319,17 @@ public class WorkspaceTopComponent extends TopComponent {
     @Override
     protected void componentClosed() {
         tabbedContainer.removeActionListener(tabActionListener);
+        // todo - close all child top components, call child.componentClosed()
+    }
+
+    @Override
+    protected void componentShowing() {
+        // todo - call child.componentShowing()
+    }
+
+    @Override
+    protected void componentHidden() {
+        // todo - call child.componentHidden()
     }
 
     @Override
@@ -349,6 +360,11 @@ public class WorkspaceTopComponent extends TopComponent {
         if (internalFrame != null) {
             internalFrame.requestFocusInWindow();
         }
+    }
+
+    @Override
+    protected void componentDeactivated() {
+        // todo - deactivate internal frame, call child.componentDeactivated()
     }
 
     @SuppressWarnings("UnusedDeclaration")
