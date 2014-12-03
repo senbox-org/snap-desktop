@@ -297,7 +297,7 @@ public class NavigationTopComponent extends TopComponent {
         // navigation window with the information of the currently activated
         // product scene view.
         //
-        WindowUtilities.addListener(new NavigationIFL());
+        WindowUtilities.addListener(new NavigationWL());
     }
 
     public ProductSceneView getCurrentView() {
@@ -637,7 +637,7 @@ public class NavigationTopComponent extends TopComponent {
         };
     }
 
-    private class NavigationIFL implements WindowUtilities.Listener {
+    private class NavigationWL implements WindowUtilities.Listener {
 
         @Override
         public void windowOpened(WindowUtilities.Event e) {
@@ -688,7 +688,8 @@ public class NavigationTopComponent extends TopComponent {
                     ProductSceneView view = ((ProductSceneViewTopComponent) topComponent).getView();
                     setCurrentView(view);
                 } else {
-                    setCurrentView(null);
+                    // todo
+                    //setCurrentView(null);
                 }
             }
         }
