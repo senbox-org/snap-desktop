@@ -65,7 +65,7 @@ import static java.lang.Math.round;
         iconBase = "org/esa/snap/gui/icons/Navigation16.gif",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
-@TopComponent.Registration(mode = "explorer",
+@TopComponent.Registration(mode = "navigation",
         openAtStartup = true,
         position = 4
 )
