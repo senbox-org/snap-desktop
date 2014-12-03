@@ -8,12 +8,14 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.EventListener;
 import java.util.EventObject;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Various window utilities.
@@ -38,6 +40,23 @@ public class WindowUtilities {
     public static void removeListener(Listener listener) {
         PropertyChangeListener pcl = listenerMap.remove(listener);
         WindowManager.getDefault().getRegistry().removePropertyChangeListener(pcl);
+    }
+
+    public static List<TopComponent> findOpenEditorWindows() {
+        return findOpenEditorWindows((win1, win2) -> (win1.getDisplayName() != null ? win1.getDisplayName() : "").compareTo(win2.getDisplayName()));
+    }
+
+    public static List<TopComponent> findOpenEditorWindows(Comparator<TopComponent> comparator) {
+        ArrayList<TopComponent> editorWindows = new ArrayList<>();
+        Set<TopComponent> openedWindows = WindowManager.getDefault().getRegistry().getOpened();
+        editorWindows.addAll(openedWindows
+                                     .stream()
+                                     .filter(topComponent -> WindowManager.getDefault().isEditorTopComponent(topComponent))
+                                     .collect(Collectors.toList()));
+        if (comparator != null) {
+            editorWindows.sort(comparator);
+        }
+        return editorWindows;
     }
 
     public static boolean openDocumentWindow(TopComponent documentWindow) {
