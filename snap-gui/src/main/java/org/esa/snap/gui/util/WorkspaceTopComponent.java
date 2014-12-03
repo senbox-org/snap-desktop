@@ -21,6 +21,7 @@ import org.openide.awt.ActionReference;
 import org.openide.awt.UndoRedo;
 import org.openide.nodes.Node;
 import org.openide.util.Lookup;
+import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
 import org.openide.windows.Mode;
 import org.openide.windows.TopComponent;
@@ -85,7 +86,7 @@ import static org.openide.util.NbBundle.Messages;
                   "CTL_WorkspaceTopComponentNameBase=Workspace",
                   "CTL_WorkspaceTopComponentDescription=Provides an internal desktop for document windows",
           })
-public class WorkspaceTopComponent extends TopComponent {
+public class WorkspaceTopComponent extends TopComponent implements Tileable {
 
     public final static String ID = WorkspaceTopComponent.class.getSimpleName();
 
@@ -114,7 +115,7 @@ public class WorkspaceTopComponent extends TopComponent {
         internalFrameListener = new MyInternalFrameListener();
         propertyChangeListener = new MyPropertyChangeListener();
         lookup = new FrameProxyLookup();
-        associateLookup(lookup);
+        associateLookup(new ProxyLookup(Lookups.fixed(this), lookup));
         initComponents();
         setName(displayName);
         setDisplayName(displayName);
@@ -453,6 +454,30 @@ public class WorkspaceTopComponent extends TopComponent {
             topComponent.putClientProperty("internalFrameID", internalFrameID);
         }
         return internalFrameID;
+    }
+
+    @Override
+    public boolean canTile() {
+        return true;
+    }
+
+    @Override
+    public void tileEvenly() {
+        new TileEvenlyAction().actionPerformed(null);
+    }
+
+    @Override
+    public void tileHorizontally() {
+        new TileHorizontallyAction().actionPerformed(null);
+    }
+
+    @Override
+    public void tileVertically() {
+        new TileVerticallyAction().actionPerformed(null);
+    }
+
+    @Override
+    public void tileSingle() {
     }
 
     /**

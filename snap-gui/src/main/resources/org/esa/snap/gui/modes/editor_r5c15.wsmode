@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mode version="2.4">
+    <name unique="editor_r5c15"/>
+    <kind type="editor"/>
+    <state type="joined"/>
+    <constraints>
+        <path orientation="vertical" number="5" weight="0.5"/>
+        <path orientation="horizontal" number="15" weight="0.5"/>
+    </constraints>
+    <bounds x="0" y="0" width="400" height="400"/>
+    <frame state="0"/>
+    <empty-behavior permanent="true"/>
+</mode>
