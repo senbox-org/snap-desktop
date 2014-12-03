@@ -209,14 +209,24 @@ public class WindowUtilities {
         @Override
         public void propertyChange(PropertyChangeEvent evt) {
             if ("activated".equals(evt.getPropertyName())) {
-                if (evt.getOldValue() != null) {
+                Object oldValue = evt.getOldValue();
+                if (oldValue instanceof TopComponent) {
                     listener.windowDeactivated(new Event((TopComponent) evt.getOldValue()));
                 }
-                listener.windowActivated(new Event((TopComponent) evt.getNewValue()));
+                Object newValue = evt.getNewValue();
+                if (newValue instanceof TopComponent) {
+                    listener.windowActivated(new Event((TopComponent) newValue));
+                }
             } else if ("tcOpen".equals(evt.getPropertyName())) {
-                listener.windowOpened(new Event((TopComponent) evt.getNewValue()));
+                Object newValue = evt.getNewValue();
+                if (newValue instanceof TopComponent) {
+                    listener.windowOpened(new Event((TopComponent) newValue));
+                }
             } else if ("tcClose".equals(evt.getPropertyName())) {
-                listener.windowClosed(new Event((TopComponent) evt.getNewValue()));
+                Object newValue = evt.getNewValue();
+                if (newValue instanceof TopComponent) {
+                    listener.windowClosed(new Event((TopComponent) evt.getNewValue()));
+                }
             }
         }
     }
