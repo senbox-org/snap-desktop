@@ -489,6 +489,7 @@ public class WorkspaceTopComponent extends TopComponent implements Tileable {
 
     @Override
     public void tileSingle() {
+        new TileSingleAction().actionPerformed(null);
     }
 
 
@@ -794,6 +795,25 @@ public class WorkspaceTopComponent extends TopComponent implements Tileable {
                 TabData tabData = tabs.get(windowIndex);
                 JInternalFrame internalFrame = tabToFrameMap.get(tabData);
                 internalFrame.setBounds(0, windowIndex * windowHeight, desktopWidth, windowHeight);
+            }
+        }
+    }
+
+    @Messages("CTL_TileSingleActionName=Tile Single")
+    private class TileSingleAction extends AbstractAction {
+        public TileSingleAction() {
+            super(Bundle.CTL_TileSingleActionName());
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            JInternalFrame[] internalFrames = desktopPane.getAllFrames();
+            for (JInternalFrame internalFrame : internalFrames) {
+                try {
+                    internalFrame.setMaximum(true);
+                } catch (PropertyVetoException e1) {
+                    // ok
+                }
             }
         }
     }
