@@ -97,24 +97,24 @@ public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNo
     }
 
     @Override
-    protected void componentOpened() {
+    public void componentOpened() {
         getDocument().getProduct().addProductNodeListener(nodeRenameHandler);
     }
 
     @Override
-    protected void componentClosed() {
+    public void componentClosed() {
         getDocument().getProduct().removeProductNodeListener(nodeRenameHandler);
     }
 
     @Override
-    protected void componentActivated() {
+    public void componentActivated() {
         getDynamicContent().add(view);
         setSelection(view.getFigureEditor().getSelectionContext().getSelection());
         view.getFigureEditor().getSelectionContext().addSelectionChangeListener(this);
     }
 
     @Override
-    protected void componentDeactivated() {
+    public void componentDeactivated() {
         view.getFigureEditor().getSelectionContext().removeSelectionChangeListener(this);
         setSelection(Selection.EMPTY);
         getDynamicContent().remove(view);

@@ -13,7 +13,7 @@ import org.openide.windows.Mode;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
 
-import javax.swing.Action;
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -38,7 +38,7 @@ import java.util.List;
  *
  * @author Norman
  */
-public class DocumentTopComponent<T> extends TopComponent {
+public class DocumentTopComponent<T> extends TopComponent implements NotifiableComponent {
 
     private final T document;
     private final InstanceContent dynamicContent;
@@ -78,27 +78,27 @@ public class DocumentTopComponent<T> extends TopComponent {
     }
 
     @Override
-    protected void componentOpened() {
+    public void componentOpened() {
     }
 
     @Override
-    protected void componentClosed() {
+    public void componentClosed() {
     }
 
     @Override
-    protected void componentShowing() {
+    public void componentShowing() {
     }
 
     @Override
-    protected void componentHidden() {
+    public void componentHidden() {
     }
 
     @Override
-    protected void componentActivated() {
+    public void componentActivated() {
     }
 
     @Override
-    protected void componentDeactivated() {
+    public void componentDeactivated() {
     }
 
     @Override
