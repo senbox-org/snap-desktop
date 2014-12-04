@@ -43,7 +43,11 @@ public class WindowUtilities {
     }
 
     public static List<TopComponent> findOpenEditorWindows() {
-        return findOpenEditorWindows((win1, win2) -> (win1.getDisplayName() != null ? win1.getDisplayName() : "").compareTo(win2.getDisplayName()));
+        return findOpenEditorWindows((win1, win2) -> {
+            String name1 = win1.getDisplayName();
+            String name2 = win2.getDisplayName();
+            return (name1 != null ? name1 : "").compareTo(name2 != null ? name2 : "");
+        });
     }
 
     public static List<TopComponent> findOpenEditorWindows(Comparator<TopComponent> comparator) {
