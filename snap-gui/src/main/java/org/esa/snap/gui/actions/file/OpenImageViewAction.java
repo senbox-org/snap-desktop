@@ -27,9 +27,7 @@ import org.esa.snap.gui.SnapApp;
 import org.esa.snap.gui.nodes.PNodeFactory;
 import org.esa.snap.gui.util.WindowUtilities;
 import org.esa.snap.gui.windows.ProductSceneViewTopComponent;
-import org.openide.awt.ActionID;
-import org.openide.awt.ActionRegistration;
-import org.openide.awt.UndoRedo;
+import org.openide.awt.*;
 import org.openide.util.ImageUtilities;
 import org.openide.util.NbBundle;
 
@@ -52,7 +50,11 @@ import java.util.List;
         displayName = "#CTL_OpenImageViewActionName",
         iconBase = "org/esa/snap/gui/icons/RsBandAsSwath16.gif"
 )
-//@ActionReference(path = "Menu/File", position = 149)
+@ActionReferences({
+        //@ActionReference(path = "Menu/File", position = 149),
+        @ActionReference(path = "Context/Product/Band", position = 100),
+        @ActionReference(path = "Context/Product/TPGrid", position = 100)
+})
 @NbBundle.Messages("CTL_OpenImageViewActionName=Open in Image View")
 public class OpenImageViewAction extends AbstractAction {
 

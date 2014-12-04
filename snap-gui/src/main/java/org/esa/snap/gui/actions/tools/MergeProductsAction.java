@@ -25,7 +25,7 @@ import java.util.List;
 @ActionRegistration(
         displayName = "#CTL_MergeProductsAction"
 )
-@ActionReference(path = "Menu/Tools", position = 150, separatorAfter = 175)
+@ActionReference(path = "Menu/Tools", position = 200, separatorAfter = 250)
 @Messages("CTL_MergeProductsAction=Merge Products")
 public final class MergeProductsAction implements ActionListener {
 
