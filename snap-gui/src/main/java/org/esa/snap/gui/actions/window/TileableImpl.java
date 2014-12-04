@@ -10,7 +10,7 @@ import org.openide.windows.TopComponent;
 import java.util.List;
 
 /**
- * Default Tileable implementation.
+ * Default Tileable implementation which arranges all global editor windows in tiles.
  *
  * @author Norman Fomferra
  */
@@ -22,7 +22,7 @@ class TileableImpl implements Tileable {
 
     @Override
     public boolean canTile() {
-        return true;
+        return WindowUtilities.countOpenEditorWindows() >= 2;
     }
 
     @Override
@@ -110,6 +110,7 @@ class TileableImpl implements Tileable {
         int windowCount = editorWindows.size();
         int tiledCount = tiler.tile(editorWindows);
 
+        // Re-activate previously activated window, if any.
         if (selectedWindow != null) {
             selectedWindow.requestActive();
         }

@@ -15,10 +15,11 @@
  */
 package org.esa.snap.gui.actions.window;
 
-import org.esa.snap.gui.util.Tileable;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
+import org.openide.util.ImageUtilities;
+import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
 import org.openide.util.Utilities;
 
@@ -40,17 +41,28 @@ import java.awt.event.ActionEvent;
 )
 @ActionRegistration(
         displayName = "#CTL_TileHorizontallyActionName",
-        iconBase = "org/esa/snap/gui/icons/TileHorizontally22.png"
+        lazy = false
 )
 @NbBundle.Messages("CTL_TileHorizontallyActionName=Tile Horizontally")
-public class TileHorizontallyAction extends AbstractAction {
+public class TileHorizontallyAction extends TileAction {
+
+    public TileHorizontallyAction() {
+        this(Utilities.actionsGlobalContext());
+    }
+
+    public TileHorizontallyAction(Lookup actionContext) {
+        super(actionContext);
+        putValue(NAME, Bundle.CTL_TileHorizontallyActionName());
+        putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/gui/icons/TileHorizontally22.png", false));
+    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        Tileable tileable = Utilities.actionsGlobalContext().lookup(Tileable.class);
-        if (tileable == null) {
-            tileable = new TileableImpl();
-        }
-        tileable.tileHorizontally();
+        getTileable().tileHorizontally();
+    }
+
+    @Override
+    public Action createContextAwareInstance(Lookup actionContext) {
+        return new TileHorizontallyAction(actionContext);
     }
 }

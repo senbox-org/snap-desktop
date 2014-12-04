@@ -469,7 +469,7 @@ public class WorkspaceTopComponent extends TopComponent implements Tileable {
 
     @Override
     public boolean canTile() {
-        return true;
+        return frameToTabMap.size() >= 2;
     }
 
     @Override

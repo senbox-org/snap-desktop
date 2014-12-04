@@ -15,10 +15,11 @@
  */
 package org.esa.snap.gui.actions.window;
 
-import org.esa.snap.gui.util.Tileable;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
+import org.openide.util.ImageUtilities;
+import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
 import org.openide.util.Utilities;
 
@@ -40,17 +41,28 @@ import java.awt.event.ActionEvent;
 )
 @ActionRegistration(
         displayName = "#CTL_TileVerticallyActionName",
-        iconBase = "org/esa/snap/gui/icons/TileVertically22.png"
+        lazy = false
 )
 @NbBundle.Messages("CTL_TileVerticallyActionName=Tile Vertically")
-public class TileVerticallyAction extends AbstractAction {
+public class TileVerticallyAction extends TileAction {
+
+    public TileVerticallyAction() {
+        this(Utilities.actionsGlobalContext());
+    }
+
+    public TileVerticallyAction(Lookup actionContext) {
+        super(actionContext);
+        putValue(NAME, Bundle.CTL_TileVerticallyActionName());
+        putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/gui/icons/TileVertically22.png", false));
+    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        Tileable tileable = Utilities.actionsGlobalContext().lookup(Tileable.class);
-        if (tileable == null) {
-            tileable = new TileableImpl();
-        }
-        tileable.tileVertically();
+        getTileable().tileVertically();
+    }
+
+    @Override
+    public Action createContextAwareInstance(Lookup actionContext) {
+        return new TileVerticallyAction(actionContext);
     }
 }

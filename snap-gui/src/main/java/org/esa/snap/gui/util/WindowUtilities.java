@@ -42,6 +42,18 @@ public class WindowUtilities {
         WindowManager.getDefault().getRegistry().removePropertyChangeListener(pcl);
     }
 
+    public static int countOpenEditorWindows() {
+        int count = 0;
+        WindowManager wm = WindowManager.getDefault();
+        Set<TopComponent> opened = wm.getRegistry().getOpened();
+        for (TopComponent openedWindow : opened) {
+            if (wm.isEditorTopComponent(openedWindow)) {
+                count++;
+            }
+        }
+        return count;
+    }
+
     public static List<TopComponent> findOpenEditorWindows() {
         return findOpenEditorWindows((win1, win2) -> {
             String name1 = win1.getDisplayName();

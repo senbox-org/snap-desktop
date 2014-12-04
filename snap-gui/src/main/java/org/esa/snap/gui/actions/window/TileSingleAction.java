@@ -15,10 +15,11 @@
  */
 package org.esa.snap.gui.actions.window;
 
-import org.esa.snap.gui.util.Tileable;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
+import org.openide.util.ImageUtilities;
+import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
 import org.openide.util.Utilities;
 
@@ -40,17 +41,29 @@ import java.awt.event.ActionEvent;
 )
 @ActionRegistration(
         displayName = "#CTL_TileSingleActionName",
-        iconBase = "org/esa/snap/gui/icons/TileSingle22.png"
+        iconBase = "org/esa/snap/gui/icons/TileSingle22.png",
+        lazy = false
 )
 @NbBundle.Messages("CTL_TileSingleActionName=Tile Single")
-public class TileSingleAction extends AbstractAction {
+public class TileSingleAction extends TileAction {
+
+    public TileSingleAction() {
+        this(Utilities.actionsGlobalContext());
+    }
+
+    public TileSingleAction(Lookup actionContext) {
+        super(actionContext);
+        putValue(NAME, Bundle.CTL_TileSingleActionName());
+        putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/gui/icons/TileSingle22.png", false));
+    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        Tileable tileable = Utilities.actionsGlobalContext().lookup(Tileable.class);
-        if (tileable == null) {
-            tileable = new TileableImpl();
-        }
-        tileable.tileSingle();
+        getTileable().tileSingle();
+    }
+
+    @Override
+    public Action createContextAwareInstance(Lookup actionContext) {
+        return new TileSingleAction(actionContext);
     }
 }

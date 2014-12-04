@@ -15,10 +15,11 @@
  */
 package org.esa.snap.gui.actions.window;
 
-import org.esa.snap.gui.util.Tileable;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
+import org.openide.util.ImageUtilities;
+import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
 import org.openide.util.Utilities;
 
@@ -40,17 +41,28 @@ import java.awt.event.ActionEvent;
 )
 @ActionRegistration(
         displayName = "#CTL_TileEvenlyActionName",
-        iconBase = "org/esa/snap/gui/icons/TileEvenly22.png"
+        lazy = false
 )
 @NbBundle.Messages("CTL_TileEvenlyActionName=Tile Evenly")
-public class TileEvenlyAction extends AbstractAction {
+public class TileEvenlyAction extends TileAction {
+
+    public TileEvenlyAction() {
+        this(Utilities.actionsGlobalContext());
+    }
+
+    public TileEvenlyAction(Lookup actionContext) {
+        super(actionContext);
+        putValue(NAME, Bundle.CTL_TileEvenlyActionName());
+        putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/gui/icons/TileEvenly22.png", false));
+    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        Tileable tileable = Utilities.actionsGlobalContext().lookup(Tileable.class);
-        if (tileable == null) {
-            tileable = new TileableImpl();
-        }
-        tileable.tileEvenly();
+        getTileable().tileEvenly();
+    }
+
+    @Override
+    public Action createContextAwareInstance(Lookup actionContext) {
+        return new TileEvenlyAction(actionContext);
     }
 }
