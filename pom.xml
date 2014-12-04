@@ -77,7 +77,7 @@
                         <brandingToken>${brandingToken}</brandingToken>
                         <cluster>${brandingToken}</cluster>
                         <useOSGiDependencies>false</useOSGiDependencies>
-                        <additionalArguments>--locale en_GB -J-Xmx4G -J-Dsun.java2d.noddraw=true -J-Dsun.awt.nopixfmt=true</additionalArguments>
+                        <additionalArguments>--locale en_GB -J-Xmx4G -J-Dsun.java2d.noddraw=true -J-Dsun.awt.nopixfmt=true -J-Dsun.java2d.dpiaware=false</additionalArguments>
                     </configuration>
                 </plugin>
                 <plugin>
