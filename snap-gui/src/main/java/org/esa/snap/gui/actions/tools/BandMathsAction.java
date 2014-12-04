@@ -31,7 +31,7 @@ import java.util.Properties;
 
 @ActionID(
         category = "Tools",
-        id = "org.esa.snap.gui.action.BandMathsAction"
+        id = "org.esa.snap.gui.actions.tools.BandMathsAction"
 )
 @ActionRegistration(
         displayName = "#CTL_BandMathsActionText",
