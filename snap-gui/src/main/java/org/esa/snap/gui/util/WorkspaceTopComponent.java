@@ -6,8 +6,6 @@
 package org.esa.snap.gui.util;
 
 import com.bc.ceres.core.Assert;
-import com.sun.java.swing.plaf.windows.WindowsGraphicsUtils;
-import org.esa.snap.gui.actions.window.NewWorkspaceAction;
 import org.netbeans.swing.tabcontrol.DefaultTabDataModel;
 import org.netbeans.swing.tabcontrol.TabData;
 import org.netbeans.swing.tabcontrol.TabDisplayer;
@@ -18,9 +16,7 @@ import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.awt.ActionID;
-import org.openide.awt.ActionReference;
 import org.openide.awt.UndoRedo;
-import org.openide.nodes.Node;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
@@ -28,31 +24,16 @@ import org.openide.windows.Mode;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.ImageIcon;
-import javax.swing.JComponent;
-import javax.swing.JDesktopPane;
-import javax.swing.JInternalFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Image;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -88,9 +69,9 @@ import static org.openide.util.NbBundle.Messages;
         preferredID = "WorkspaceTopComponent"
 )
 @Messages({
-                  "CTL_WorkspaceTopComponentNameBase=Workspace",
-                  "CTL_WorkspaceTopComponentDescription=Provides an internal desktop for document windows",
-          })
+        "CTL_WorkspaceTopComponentNameBase=Workspace",
+        "CTL_WorkspaceTopComponentDescription=Provides an internal desktop for document windows",
+})
 public class WorkspaceTopComponent extends TopComponent implements Tileable {
 
     public final static String ID = WorkspaceTopComponent.class.getSimpleName();
@@ -173,6 +154,32 @@ public class WorkspaceTopComponent extends TopComponent implements Tileable {
         }
         return topComponents;
     }
+
+    @Override
+    public boolean canTile() {
+        return frameToTabMap.size() >= 2;
+    }
+
+    @Override
+    public void tileEvenly() {
+        new TileEvenlyAction().actionPerformed(null);
+    }
+
+    @Override
+    public void tileHorizontally() {
+        new TileHorizontallyAction().actionPerformed(null);
+    }
+
+    @Override
+    public void tileVertically() {
+        new TileVerticallyAction().actionPerformed(null);
+    }
+
+    @Override
+    public void tileSingle() {
+        new TileSingleAction().actionPerformed(null);
+    }
+
 
     /**
      * Adds a window to this workspace window. The method actually "floats" the window as an internal frame into an
@@ -326,7 +333,43 @@ public class WorkspaceTopComponent extends TopComponent implements Tileable {
     protected void componentClosed() {
         tabbedContainer.removeActionListener(tabActionListener);
         for (JInternalFrame internalFrame : desktopPane.getAllFrames()) {
-            NotifiableComponent.get(getTopComponent(internalFrame)).componentClosed();
+            internalFrame.dispose();
+        }
+    }
+
+   @Override
+    protected void componentActivated() {
+        JInternalFrame selectedFrame = desktopPane.getSelectedFrame();
+
+        if (selectedFrame != null) {
+            TabData tab = frameToTabMap.get(selectedFrame);
+            int tabIndex = tabbedContainer.getModel().indexOf(tab);
+            if (tabIndex >= 0) {
+                tabbedContainer.getSelectionModel().setSelectedIndex(tabIndex);
+            }
+            selectedFrame.requestFocusInWindow();
+            notifyActivated(getTopComponent(selectedFrame));
+        } else {
+            int tabIndex = tabbedContainer.getSelectionModel().getSelectedIndex();
+            if (tabIndex >= 0) {
+                TabData tab = tabbedContainer.getModel().getTab(tabIndex);
+                selectedFrame = tabToFrameMap.get(tab);
+                if (!selectedFrame.isSelected()) {
+                    try {
+                        selectedFrame.setSelected(true);
+                    } catch (PropertyVetoException e) {
+                        // ok
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    protected void componentDeactivated() {
+        JInternalFrame selectedFrame = desktopPane.getSelectedFrame();
+        if (selectedFrame != null) {
+            notifyDeactivated(getTopComponent(selectedFrame));
         }
     }
 
@@ -341,45 +384,6 @@ public class WorkspaceTopComponent extends TopComponent implements Tileable {
     protected void componentHidden() {
         for (JInternalFrame internalFrame : desktopPane.getAllFrames()) {
             NotifiableComponent.get(getTopComponent(internalFrame)).componentHidden();
-        }
-    }
-
-    @Override
-    protected void componentActivated() {
-        JInternalFrame selectedFrame;
-        // Make sure that activation states of tabbedContainer and desktopPane are synchronized
-        int tabIndex = tabbedContainer.getSelectionModel().getSelectedIndex();
-        if (tabIndex >= 0) {
-            TabData tab = tabbedContainer.getModel().getTab(tabIndex);
-            selectedFrame = tabToFrameMap.get(tab);
-            if (!selectedFrame.isSelected()) {
-                try {
-                    selectedFrame.setSelected(true);
-                } catch (PropertyVetoException e) {
-                    // ok
-                }
-            }
-        } else {
-            selectedFrame = desktopPane.getSelectedFrame();
-            if (selectedFrame != null) {
-                TabData tab = frameToTabMap.get(selectedFrame);
-                tabIndex = tabbedContainer.getModel().indexOf(tab);
-                if (tabIndex >= 0) {
-                    tabbedContainer.getSelectionModel().setSelectedIndex(tabIndex);
-                }
-            }
-        }
-        if (selectedFrame != null) {
-            selectedFrame.requestFocusInWindow();
-            NotifiableComponent.get(getTopComponent(selectedFrame)).componentActivated();
-        }
-    }
-
-    @Override
-    protected void componentDeactivated() {
-        JInternalFrame selectedFrame = desktopPane.getSelectedFrame();
-        if (selectedFrame != null) {
-            NotifiableComponent.get(getTopComponent(selectedFrame)).componentDeactivated();
         }
     }
 
@@ -471,31 +475,45 @@ public class WorkspaceTopComponent extends TopComponent implements Tileable {
         return internalFrameID;
     }
 
-    @Override
-    public boolean canTile() {
-        return frameToTabMap.size() >= 2;
+    private void notifyOpened(TopComponent topComponent) {
+        NotifiableComponent.get(topComponent).componentOpened();
+
+        WindowUtilities.Event event = new WindowUtilities.Event(topComponent);
+        WindowUtilities.Listener[] listeners = WindowUtilities.getListeners();
+        for (WindowUtilities.Listener listener : listeners) {
+            listener.windowOpened(event);
+        }
     }
 
-    @Override
-    public void tileEvenly() {
-        new TileEvenlyAction().actionPerformed(null);
+    private void notifyClosed(TopComponent topComponent) {
+        NotifiableComponent.get(topComponent).componentClosed();
+
+        WindowUtilities.Event event = new WindowUtilities.Event(topComponent);
+        WindowUtilities.Listener[] listeners = WindowUtilities.getListeners();
+        for (WindowUtilities.Listener listener : listeners) {
+            listener.windowClosed(event);
+        }
     }
 
-    @Override
-    public void tileHorizontally() {
-        new TileHorizontallyAction().actionPerformed(null);
+    private void notifyActivated(TopComponent topComponent) {
+        NotifiableComponent.get(topComponent).componentActivated();
+
+        WindowUtilities.Event event = new WindowUtilities.Event(topComponent);
+        WindowUtilities.Listener[] listeners = WindowUtilities.getListeners();
+        for (WindowUtilities.Listener listener : listeners) {
+            listener.windowActivated(event);
+        }
     }
 
-    @Override
-    public void tileVertically() {
-        new TileVerticallyAction().actionPerformed(null);
-    }
+    private void notifyDeactivated(TopComponent topComponent) {
+        NotifiableComponent.get(topComponent).componentDeactivated();
 
-    @Override
-    public void tileSingle() {
-        new TileSingleAction().actionPerformed(null);
+        WindowUtilities.Event event = new WindowUtilities.Event(topComponent);
+        WindowUtilities.Listener[] listeners = WindowUtilities.getListeners();
+        for (WindowUtilities.Listener listener : listeners) {
+            listener.windowDeactivated(event);
+        }
     }
-
 
     /**
      * Used to listen to actions invoked on the tabbedContainer
@@ -847,10 +865,10 @@ public class WorkspaceTopComponent extends TopComponent implements Tileable {
     }
 
     @Messages({
-                      "CTL_FloatIntoWorkspaceActionName=Float into Workspace",
-                      "LBL_FloatIntoWorkspaceActionName=Workspaces:",
-                      "CTL_FloatIntoWorkspaceActionTitle=Select Workspace",
-              })
+            "CTL_FloatIntoWorkspaceActionName=Float into Workspace",
+            "LBL_FloatIntoWorkspaceActionName=Workspaces:",
+            "CTL_FloatIntoWorkspaceActionTitle=Select Workspace",
+    })
     public static class FloatIntoWorkspaceAction extends AbstractAction {
         private TopComponent window;
 
@@ -945,14 +963,7 @@ public class WorkspaceTopComponent extends TopComponent implements Tileable {
 
             tabbedContainer.updateUI();
 
-            TopComponent topComponent = getTopComponent(e.getInternalFrame());
-            NotifiableComponent.get(topComponent).componentOpened();
-
-            WindowUtilities.Event event = new WindowUtilities.Event(topComponent);
-            WindowUtilities.Listener[] listeners = WindowUtilities.getListeners();
-            for (WindowUtilities.Listener listener : listeners) {
-                listener.windowOpened(event);
-            }
+            notifyOpened(getTopComponent(e.getInternalFrame()));
         }
 
         @Override
@@ -971,14 +982,7 @@ public class WorkspaceTopComponent extends TopComponent implements Tileable {
             }
             tabbedContainer.updateUI();
 
-            TopComponent topComponent = getTopComponent(internalFrame);
-            NotifiableComponent.get(topComponent).componentClosed();
-
-            WindowUtilities.Event event = new WindowUtilities.Event(topComponent);
-            WindowUtilities.Listener[] listeners = WindowUtilities.getListeners();
-            for (WindowUtilities.Listener listener : listeners) {
-                listener.windowClosed(event);
-            }
+            notifyClosed(getTopComponent(internalFrame));
         }
 
         @Override
@@ -1012,13 +1016,7 @@ public class WorkspaceTopComponent extends TopComponent implements Tileable {
                 WorkspaceTopComponent.this.requestActive();
             }
 
-            NotifiableComponent.get(topComponent).componentActivated();
-
-            WindowUtilities.Event event = new WindowUtilities.Event(topComponent);
-            WindowUtilities.Listener[] listeners = WindowUtilities.getListeners();
-            for (WindowUtilities.Listener listener : listeners) {
-                listener.windowActivated(event);
-            }
+            notifyActivated(topComponent);
         }
 
         @Override
@@ -1029,14 +1027,7 @@ public class WorkspaceTopComponent extends TopComponent implements Tileable {
 
             lookup.setLookup(Lookup.EMPTY);
 
-            TopComponent topComponent = getTopComponent(e.getInternalFrame());
-            NotifiableComponent.get(topComponent).componentDeactivated();
-
-            WindowUtilities.Event event = new WindowUtilities.Event(topComponent);
-            WindowUtilities.Listener[] listeners = WindowUtilities.getListeners();
-            for (WindowUtilities.Listener listener : listeners) {
-                listener.windowDeactivated(event);
-            }
+            notifyDeactivated(getTopComponent(e.getInternalFrame()));
         }
 
         @Override
