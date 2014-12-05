@@ -36,12 +36,15 @@ import org.esa.snap.gui.nav.NavigationCanvas;
 import org.esa.snap.gui.util.WindowUtilities;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
 import javax.swing.*;
 import javax.swing.text.NumberFormatter;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.geom.Rectangle2D;
@@ -167,6 +170,19 @@ public class NavigationTopComponent extends TopComponent {
         AbstractButton helpButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon("icons/Help22.png"), false);
         helpButton.setToolTipText("Help."); /*I18N*/
         helpButton.setName("helpButton");
+        helpButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // TODO: Invoke help system, maybe extract common SNAP (context) Help action
+                // see http://bits.netbeans.org/dev/javadoc/org-netbeans-modules-javahelp/org/netbeans/api/javahelp/Help.html
+                /*
+                Help help = Lookup.getDefault().lookup(Help.class);
+                if (help != null) {
+                    help.showHelp(getHelpCtx());
+                }
+                */
+            }
+        });
 
 
         final JPanel eastPane = GridBagUtils.createPanel();
@@ -282,14 +298,6 @@ public class NavigationTopComponent extends TopComponent {
 
         setPreferredSize(new Dimension(320, 320));
 
-        // TODO @HelpSys
-        /*
-        if (getDescriptor().getHelpId() != null) {
-            HelpSys.enableHelpOnButton(helpButton, getDescriptor().getHelpId());
-            HelpSys.enableHelpKey(mainPane, getDescriptor().getHelpId());
-        }
-        */
-
         setCurrentView(SnapApp.getInstance().getSelectedProductSceneView());
 
         updateState();
@@ -326,6 +334,11 @@ public class NavigationTopComponent extends TopComponent {
         }
     }
 
+    @Override
+    public HelpCtx getHelpCtx() {
+        // TODO: Make sure help page is available for ID
+        return new HelpCtx("showNavigationWnd");
+    }
 
     NavigationCanvas createNavigationCanvas() {
         return new NavigationCanvas(this);
