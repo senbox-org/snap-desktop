@@ -37,10 +37,10 @@ import java.util.Collection;
 public abstract class TileAction extends AbstractAction implements ContextAwareAction, LookupListener, PropertyChangeListener {
 
     private Lookup.Result<Tileable> tileableResult;
-    private final TileableImpl defaultTileable;
+    private final Tileable defaultTileable;
 
     protected TileAction(Lookup actionContext) {
-        defaultTileable = new TileableImpl();
+        defaultTileable = Tileable.getDefault();
         tileableResult = actionContext.lookupResult(Tileable.class);
         tileableResult.addLookupListener(WeakListeners.create(LookupListener.class, this, tileableResult));
         TopComponent.Registry registry = WindowManager.getDefault().getRegistry();

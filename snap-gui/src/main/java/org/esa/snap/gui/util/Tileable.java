@@ -15,4 +15,8 @@ public interface Tileable {
     void tileVertically();
 
     void tileSingle();
+
+    static Tileable getDefault() {
+        return new TileableImpl();
+    }
 }

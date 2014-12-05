@@ -7,6 +7,7 @@ import org.openide.windows.WindowManager;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.EventListener;
@@ -23,6 +24,8 @@ import java.util.stream.Collectors;
  * @author Norman Fomferra
  */
 public class WindowUtilities {
+
+    static final String EDITOR_MODE_NAME_FORMAT = "editor_r%dc%d";
 
     final static Map<Listener, PropertyChangeListener> listenerMap = new LinkedHashMap<>();
 
@@ -41,6 +44,29 @@ public class WindowUtilities {
         PropertyChangeListener pcl = listenerMap.remove(listener);
         WindowManager.getDefault().getRegistry().removePropertyChangeListener(pcl);
     }
+
+
+    public static boolean openInEditorMode(int rowIndex, int colIndex, TopComponent editorWindow) {
+        String modeName = String.format(EDITOR_MODE_NAME_FORMAT, rowIndex, colIndex);
+        return openInEditorMode(modeName, editorWindow);
+    }
+
+    public static boolean openInEditorMode(String modeName, TopComponent editorWindow) {
+        Mode editorMode = WindowManager.getDefault().findMode(modeName);
+        if (editorMode != null) {
+            if (!Arrays.asList(editorMode.getTopComponents()).contains(editorWindow)) {
+                if (editorMode.dockInto(editorWindow)) {
+                    editorWindow.open();
+                    return true;
+                }
+            } else {
+                editorWindow.open();
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     public static int countOpenEditorWindows() {
         int count = 0;
@@ -175,6 +201,27 @@ public class WindowUtilities {
         if (type.isAssignableFrom(topComponent.getClass())) {
             collector.collect((W) topComponent, result);
         }
+    }
+
+    public static int[] getBestSubdivisionIntoSquares(int windowCount, int maxRowCount, int maxColCount) {
+        double bestDeltaValue = Double.POSITIVE_INFINITY;
+        int bestRowCount = -1;
+        int bestColCount = -1;
+        for (int rowCount = 1; rowCount <= Math.max(windowCount, maxRowCount); rowCount++) {
+            for (int colCount = 1; colCount <= Math.max(windowCount, maxColCount); colCount++) {
+                if (colCount * rowCount >= windowCount && colCount * rowCount <= 2 * windowCount) {
+                    double deltaRatio = Math.abs(1.0 - rowCount / (double) colCount);
+                    double deltaCount = Math.abs(1.0 - (colCount * rowCount) / ((double) windowCount));
+                    double deltaValue = deltaRatio + deltaCount;
+                    if (deltaValue < bestDeltaValue) {
+                        bestDeltaValue = deltaValue;
+                        bestRowCount = rowCount;
+                        bestColCount = colCount;
+                    }
+                }
+            }
+        }
+        return new int[]{bestRowCount, bestColCount};
     }
 
     public interface Collector<W extends TopComponent, L> {

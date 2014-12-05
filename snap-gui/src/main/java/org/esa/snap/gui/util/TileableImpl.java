@@ -1,7 +1,5 @@
-package org.esa.snap.gui.actions.window;
+package org.esa.snap.gui.util;
 
-import org.esa.snap.gui.util.Tileable;
-import org.esa.snap.gui.util.WindowUtilities;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.util.NbBundle;
@@ -29,7 +27,7 @@ class TileableImpl implements Tileable {
     public void tileEvenly() {
         tile(editorWindows -> {
             int windowCount = editorWindows.size();
-            int[] result = ModeUtilities.getBestSubdivisionIntoSquares(windowCount, 16, 16);
+            int[] result = WindowUtilities.getBestSubdivisionIntoSquares(windowCount, 16, 16);
             int rowCount = result[0];
             int colCount = result[1];
             int windowIndex = 0;
@@ -37,7 +35,7 @@ class TileableImpl implements Tileable {
                 for (int colIndex = 0; colIndex < colCount; colIndex++) {
                     if (windowIndex < windowCount) {
                         TopComponent editorWindow = editorWindows.get(windowIndex);
-                        if (ModeUtilities.openInEditorMode(rowIndex, colIndex, editorWindow)) {
+                        if (WindowUtilities.openInEditorMode(rowIndex, colIndex, editorWindow)) {
                             windowIndex++;
                         }
                     }
@@ -56,7 +54,7 @@ class TileableImpl implements Tileable {
             for (int colIndex = 0; colIndex < colCount; colIndex++) {
                 if (windowIndex < windowCount) {
                     TopComponent editorWindow = editorWindows.get(windowIndex);
-                    if (ModeUtilities.openInEditorMode(0, colIndex, editorWindow)) {
+                    if (WindowUtilities.openInEditorMode(0, colIndex, editorWindow)) {
                         windowIndex++;
                     }
                 }
@@ -74,7 +72,7 @@ class TileableImpl implements Tileable {
             for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
                 if (windowIndex < windowCount) {
                     TopComponent editorWindow = editorWindows.get(windowIndex);
-                    if (ModeUtilities.openInEditorMode(rowIndex, 0, editorWindow)) {
+                    if (WindowUtilities.openInEditorMode(rowIndex, 0, editorWindow)) {
                         windowIndex++;
                     }
                 }
@@ -88,7 +86,7 @@ class TileableImpl implements Tileable {
         tile(editorWindows -> {
             int windowIndex = 0;
             for (TopComponent editorWindow : editorWindows) {
-                if (ModeUtilities.openInEditorMode("editor", editorWindow)) {
+                if (WindowUtilities.openInEditorMode("editor", editorWindow)) {
                     windowIndex++;
                 }
             }
