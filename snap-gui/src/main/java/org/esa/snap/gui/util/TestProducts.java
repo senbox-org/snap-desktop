@@ -46,12 +46,12 @@ public class TestProducts {
         return product;
     }
 
-    private static float[] createRandomPoints(int n) {
+    private static double[] createRandomPoints(int n) {
         Random random = new Random();
-        float[] floats = new float[n];
-        for (int i = 0; i < floats.length; i++) {
-            floats[i] = (float) random.nextGaussian();
+        double[] pnts = new double[n];
+        for (int i = 0; i < pnts.length; i++) {
+            pnts[i] = random.nextGaussian();
         }
-        return floats;
+        return pnts;
     }
 }
