@@ -20,6 +20,7 @@ import com.bc.ceres.swing.figure.interactions.ZoomInteractor;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
+import org.openide.util.HelpCtx;
 import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle.Messages;
@@ -52,8 +53,11 @@ public class ZoomToolAction extends ToolAction {
         putValue(NAME, Bundle.CTL_ZoomToolActionText());
         putValue(SHORT_DESCRIPTION, Bundle.CTL_ZoomToolActionDescription());
         putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/gui/icons/ZoomTool24.gif", false));
-        putValue("helpId", "zoomTool");
-        putValue("context", "image");
     }
 
+    @Override
+    public HelpCtx getHelpCtx() {
+        // TODO: Make sure help page is available for ID
+        return new HelpCtx("zoomTool");
+    }
 }

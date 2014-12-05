@@ -21,6 +21,7 @@ import com.bc.ceres.swing.figure.interactions.InsertPolylineFigureInteractor;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
+import org.openide.util.HelpCtx;
 import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle.Messages;
@@ -52,13 +53,14 @@ public class DrawPolylineToolAction extends ToolAction {
         putValue(NAME, Bundle.CTL_DrawPolylineToolActionText());
         putValue(SHORT_DESCRIPTION, Bundle.CTL_DrawPolylineToolActionDescription());
         putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/gui/icons/DrawPolylineTool24.gif", false));
-
-        putValue("helpId", "drawPolylineTool");
-        putValue("context", "image");
-
         Interactor interactor = new InsertPolylineFigureInteractor();
         interactor.addListener(new InsertFigureInteractorInterceptor());
         setInteractor(interactor);
     }
 
+    @Override
+    public HelpCtx getHelpCtx() {
+        // TODO: Make sure help page is available for ID
+        return new HelpCtx("drawPolylineTool");
+    }
 }

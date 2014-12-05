@@ -21,6 +21,7 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
+import org.openide.util.HelpCtx;
 import org.openide.util.ImageUtilities;
 import org.openide.util.NbBundle.Messages;
 
@@ -64,16 +65,18 @@ import java.util.Properties;
         "CTL_BandMathsActionText=Create Band from Math Expression...",
         "CTL_BandMathsActionPopupText=Create Band from Math Expression..."
 })
-public class BandMathsAction extends AbstractAction {
+public class BandMathsAction extends AbstractAction implements HelpCtx.Provider {
 
     public BandMathsAction() {
         putValue(Action.SHORT_DESCRIPTION, "Create a new band using an arbitrary mathematical expression");
         putValue(Action.SMALL_ICON, ImageUtilities.loadImageIcon("icons/BAritmethic16.gif", false));
         putValue(Action.LARGE_ICON_KEY, ImageUtilities.loadImageIcon("icons/BAritmethic24.gif", false));
+    }
 
-        // TODO process following action properties correctly
-        putValue("helpId", "bandArithmetic");
-        putValue("context", "image,band,tiePointGrid");
+    @Override
+    public HelpCtx getHelpCtx() {
+        // TODO: Make sure help page is available for ID
+        return new HelpCtx("bandArithmetic");
     }
 
     @Override

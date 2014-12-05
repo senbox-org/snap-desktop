@@ -40,6 +40,7 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
 import org.openide.awt.UndoRedo;
+import org.openide.util.HelpCtx;
 import org.openide.util.ImageUtilities;
 import org.openide.util.NbBundle.Messages;
 
@@ -68,7 +69,7 @@ import java.text.MessageFormat;
                   "CTL_CreateVectorDataNodeActionText=Create Vector Data Container...",
                   "CTL_CreateVectorDataNodeActionPopupText=Create Vector Data Container..."
           })
-public class CreateVectorDataNodeAction extends AbstractAction {
+public class CreateVectorDataNodeAction extends AbstractAction implements HelpCtx.Provider {
     private static final String DIALOG_TITLE = "New Vector Data Container";
     //private static final String KEY_VECTOR_DATA_INITIAL_NAME = "geometry.initialName";
 
@@ -80,9 +81,12 @@ public class CreateVectorDataNodeAction extends AbstractAction {
         putValue(Action.SHORT_DESCRIPTION, "Create a new vector data container for drawing line and polygons.");
         putValue(Action.SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/gui/icons/NewVectorDataNode16.gif", false));
         putValue(Action.LARGE_ICON_KEY, ImageUtilities.loadImageIcon("org/esa/snap/gui/icons/NewVectorDataNode24.gif", false));
-        //putValue("placeAfter", "detachPixelGeoCoding");
-        putValue("helpId", "createVectorDataNode");
-        putValue("context", "product");
+    }
+
+    @Override
+    public HelpCtx getHelpCtx() {
+        // TODO: Make sure help page is available for ID
+        return new HelpCtx("createVectorDataNode");
     }
 
     @Override

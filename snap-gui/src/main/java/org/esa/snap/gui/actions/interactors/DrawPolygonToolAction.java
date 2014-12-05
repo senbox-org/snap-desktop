@@ -21,6 +21,7 @@ import com.bc.ceres.swing.figure.interactions.InsertPolygonFigureInteractor;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
+import org.openide.util.HelpCtx;
 import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle.Messages;
@@ -52,12 +53,14 @@ public class DrawPolygonToolAction extends ToolAction {
         putValue(NAME, Bundle.CTL_DrawPolygonToolActionText());
         putValue(SHORT_DESCRIPTION, Bundle.CTL_DrawPolygonToolActionDescription());
         putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/gui/icons/DrawPolygonTool24.gif", false));
-
-        putValue("helpId", "drawPolygonTool");
-        putValue("context", "image");
-
         Interactor interactor = new InsertPolygonFigureInteractor();
         interactor.addListener(new InsertFigureInteractorInterceptor());
         setInteractor(interactor);
+    }
+
+    @Override
+    public HelpCtx getHelpCtx() {
+        // TODO: Make sure help page is available for ID
+        return new HelpCtx("drawPolygonTool");
     }
 }

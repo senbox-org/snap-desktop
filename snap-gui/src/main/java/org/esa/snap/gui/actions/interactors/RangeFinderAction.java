@@ -19,6 +19,7 @@ package org.esa.snap.gui.actions.interactors;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
+import org.openide.util.HelpCtx;
 import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle.Messages;
@@ -51,7 +52,12 @@ public class RangeFinderAction extends ToolAction {
         putValue(NAME, Bundle.CTL_RangeFinderActionText());
         putValue(SHORT_DESCRIPTION, Bundle.CTL_RangeFinderActionDescription());
         putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/gui/icons/RangeFinder24.gif", false));
-        putValue("helpId", "rangeFinder");
-        putValue("context", "image");
     }
+
+    @Override
+    public HelpCtx getHelpCtx() {
+        // TODO: Make sure help page is available for ID
+        return new HelpCtx("rangeFinder");
+    }
+
 }
