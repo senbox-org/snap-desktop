@@ -6,6 +6,7 @@
 package org.esa.snap.gui.util;
 
 import com.bc.ceres.core.Assert;
+import com.sun.java.swing.plaf.windows.WindowsGraphicsUtils;
 import org.esa.snap.gui.actions.window.NewWorkspaceAction;
 import org.netbeans.swing.tabcontrol.DefaultTabDataModel;
 import org.netbeans.swing.tabcontrol.TabData;
@@ -724,23 +725,9 @@ public class WorkspaceTopComponent extends TopComponent implements Tileable {
             int desktopHeight = desktopPane.getHeight();
             int windowCount = frameToTabMap.size();
 
-            double bestDeltaValue = Double.POSITIVE_INFINITY;
-            int bestHorCount = -1;
-            int bestVerCount = -1;
-            for (int verCount = 1; verCount <= windowCount; verCount++) {
-                for (int horCount = 1; horCount <= windowCount; horCount++) {
-                    if (horCount * verCount >= windowCount && horCount * verCount <= 2 * windowCount) {
-                        double deltaRatio = Math.abs(1.0 - verCount / (double) horCount);
-                        double deltaCount = Math.abs(1.0 - (horCount * verCount) / ((double) windowCount));
-                        double deltaValue = deltaRatio + deltaCount;
-                        if (deltaValue < bestDeltaValue) {
-                            bestDeltaValue = deltaValue;
-                            bestHorCount = horCount;
-                            bestVerCount = verCount;
-                        }
-                    }
-                }
-            }
+            int[] betRowCol = WindowUtilities.getBestSubdivisionIntoSquares(windowCount, -1, -1);
+            int bestHorCount = betRowCol[1];
+            int bestVerCount = betRowCol[0];
 
             int windowWidth = desktopWidth / bestHorCount;
             int windowHeight = desktopHeight / bestVerCount;
@@ -810,13 +797,11 @@ public class WorkspaceTopComponent extends TopComponent implements Tileable {
 
         @Override
         public void actionPerformed(ActionEvent e) {
+            int desktopWidth = desktopPane.getWidth();
+            int desktopHeight = desktopPane.getHeight();
             JInternalFrame[] internalFrames = desktopPane.getAllFrames();
             for (JInternalFrame internalFrame : internalFrames) {
-                try {
-                    internalFrame.setMaximum(true);
-                } catch (PropertyVetoException e1) {
-                    // ok
-                }
+                internalFrame.setBounds(0, 0, desktopWidth, desktopHeight);
             }
         }
     }
