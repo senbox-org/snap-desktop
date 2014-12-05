@@ -76,9 +76,12 @@ import static org.openide.util.NbBundle.Messages;
 )
 @TopComponent.Registration(
         mode = "editor",
-        openAtStartup = true)
-@ActionID(category = "Window", id = "org.esa.snap.gui.window.WorkspaceTopComponent")
-@ActionReference(path = "Menu/Window/Tool Windows", position = 0)
+        openAtStartup = false
+)
+@ActionID(
+        category = "Window",
+        id = "org.esa.snap.gui.window.WorkspaceTopComponent"
+)
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_WorkspaceTopComponentNameBase",
         preferredID = "WorkspaceTopComponent"
