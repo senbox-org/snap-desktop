@@ -4,18 +4,21 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
-import org.openide.util.NbBundle;
+import org.openide.util.NbBundle.Messages;
 
 /**
+ * Global selection actions (action keys).
+ *
  * @author Norman
  */
-@NbBundle.Messages({
+@Messages({
         "CTL_SelectAllActionName=Select &All",
         "CTL_DeselectAllActionName=&Deselect All"
 })
 public interface SelectionActions {
+
     /**
-     * @author Norman
+     * The "select-all" action key.
      */
     @ActionID(
             category = "Edit",
@@ -30,6 +33,9 @@ public interface SelectionActions {
     })
     String SELECT_ALL = "select-all";
 
+    /**
+     * The "deselect-all" action key.
+     */
     @ActionID(
             category = "Edit",
             id = "org.esa.snap.gui.actions.edit.DeselectAllAction"
