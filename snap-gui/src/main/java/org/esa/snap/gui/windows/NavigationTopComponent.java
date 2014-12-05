@@ -65,9 +65,10 @@ import static java.lang.Math.round;
         iconBase = "org/esa/snap/gui/icons/Navigation16.gif",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
-@TopComponent.Registration(mode = "navigation",
+@TopComponent.Registration(
+        mode = "navigator",
         openAtStartup = true,
-        position = 4
+        position = 0
 )
 @ActionID(category = "Window", id = "org.esa.snap.gui.window.NavigationTopComponent")
 @ActionReference(path = "Menu/Window/Tool Windows", position = 0)

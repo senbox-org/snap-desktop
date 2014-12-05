@@ -128,6 +128,7 @@
 
     <folder name="Windows2" >
         <folder name="Modes" >
+            <file name="navigator.wsmode" url="modes/navigator.wsmode" />
             <file name="editor_r0c0.wsmode" url="modes/editor_r0c0.wsmode" />
             <file name="editor_r0c1.wsmode" url="modes/editor_r0c1.wsmode" />
             <file name="editor_r0c2.wsmode" url="modes/editor_r0c2.wsmode" />
