@@ -98,7 +98,6 @@ class TileableImpl implements Tileable {
         TopComponent selectedWindow = TopComponent.getRegistry().getActivated();
 
         List<TopComponent> editorWindows = WindowUtilities.findOpenEditorWindows();
-        System.out.println("TileableImpl: " + editorWindows.size() + " window(s) to tile");
         if (editorWindows.size() < 2) {
             NotifyDescriptor.Message message = new NotifyDescriptor.Message(Bundle.MSG_TileableImplNothingToDo());
             DialogDisplayer.getDefault().notify(message);
