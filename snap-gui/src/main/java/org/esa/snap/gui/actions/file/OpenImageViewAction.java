@@ -76,13 +76,14 @@ public class OpenImageViewAction extends AbstractAction {
                                                            SnapApp.getInstance().getInstanceName(),
                                                            band.getName());
 
+        ProductSceneView existingView = getProductSceneView(band);
         SwingWorker worker = new ProgressMonitorSwingWorker<ProductSceneImage, Object>(SnapApp.getInstance().getMainFrame(),
                                                                                        progressMonitorTitle) {
 
             @Override
             protected ProductSceneImage doInBackground(ProgressMonitor pm) throws Exception {
                 try {
-                    return createProductSceneImage(band, pm);
+                    return createProductSceneImage(band, existingView, pm);
                 } finally {
                     if (pm.isCanceled()) {
                         band.unloadRasterData();
@@ -126,17 +127,16 @@ public class OpenImageViewAction extends AbstractAction {
         return productSceneViewWindow;
     }
 
-    protected ProductSceneImage createProductSceneImage(final RasterDataNode raster, ProgressMonitor pm) {
+    protected ProductSceneImage createProductSceneImage(final RasterDataNode raster, ProductSceneView existingView, ProgressMonitor pm) {
         Debug.assertNotNull(raster);
         Debug.assertNotNull(pm);
 
         try {
             pm.beginTask("Creating image...", 1);
 
-            ProductSceneView view = getProductSceneView(raster);
             ProductSceneImage sceneImage;
-            if (view != null) {
-                sceneImage = new ProductSceneImage(raster, view);
+            if (existingView != null) {
+                sceneImage = new ProductSceneImage(raster, existingView);
             } else {
                 sceneImage = new ProductSceneImage(raster,
                                                    SnapApp.getInstance().getCompatiblePreferences(),
