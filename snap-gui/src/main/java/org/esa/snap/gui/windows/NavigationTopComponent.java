@@ -30,6 +30,7 @@ import org.esa.beam.framework.ui.UIUtils;
 import org.esa.beam.framework.ui.product.ProductSceneView;
 import org.esa.beam.framework.ui.tool.ToolButtonFactory;
 import org.esa.beam.util.math.MathUtils;
+import org.esa.snap.gui.actions.help.HelpAction;
 import org.esa.snap.gui.actions.view.SyncImageCursorsAction;
 import org.esa.snap.gui.actions.view.SyncImageViewsAction;
 import org.esa.snap.gui.nav.NavigationCanvas;
@@ -94,6 +95,8 @@ public class NavigationTopComponent extends TopComponent implements LookupListen
 
     private static final int MIN_SLIDER_VALUE = -100;
     private static final int MAX_SLIDER_VALUE = +100;
+    // TODO: Make sure help page is available for ID
+    private static final String HELP_ID = "showNavigationWnd";
 
     private LayerCanvasModelChangeHandler layerCanvasModelChangeChangeHandler;
     private ProductNodeListener productNodeChangeHandler;
@@ -161,20 +164,8 @@ public class NavigationTopComponent extends TopComponent implements LookupListen
         syncCursorButton.setName("syncCursorButton");
         syncCursorButton.setText(null);
 
-        AbstractButton helpButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon("icons/Help22.png"), false);
-        helpButton.setToolTipText("Help."); /*I18N*/
+        AbstractButton helpButton = ToolButtonFactory.createButton(new HelpAction(this), false);
         helpButton.setName("helpButton");
-        helpButton.addActionListener(e -> {
-            // TODO: Invoke help system, maybe extract common SNAP (context) Help action
-            // see http://bits.netbeans.org/dev/javadoc/org-netbeans-modules-javahelp/org/netbeans/api/javahelp/Help.html
-            /*
-            Help help = Lookup.getDefault().lookup(Help.class);
-            if (help != null) {
-                help.showHelp(getHelpCtx());
-            }
-            */
-        });
-
 
         final JPanel eastPane = GridBagUtils.createPanel();
         final GridBagConstraints gbc = new GridBagConstraints();
@@ -329,8 +320,7 @@ public class NavigationTopComponent extends TopComponent implements LookupListen
 
     @Override
     public HelpCtx getHelpCtx() {
-        // TODO: Make sure help page is available for ID
-        return new HelpCtx("showNavigationWnd");
+        return new HelpCtx(HELP_ID);
     }
 
     NavigationCanvas createNavigationCanvas() {
