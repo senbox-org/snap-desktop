@@ -23,6 +23,15 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>nbm-maven-plugin</artifactId>
+                <configuration>
+                    <moduleDependencies>
+                        <!-- Following impl. dependency is required by class org.esa.snap.gui.SnapGlobalActionContext -->
+                        <dependency>
+                            <id>org.netbeans.api:org-openide-windows</id>
+                            <type>impl</type>
+                        </dependency>
+                    </moduleDependencies>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
