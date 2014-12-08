@@ -227,10 +227,10 @@ public class WorkspaceTopComponent extends TopComponent implements Tileable {
         JComponent dummyComponent = new JPanel();
         dummyComponent.setPreferredSize(new Dimension(-1, 4));
         //dummyComponent.setSize(new Dimension(-1, 4));
-        TabData tabData = new TabData(dummyComponent, imageIcon, displayName, null);
+        TabData tab = new TabData(dummyComponent, imageIcon, displayName, null);
 
-        frameToTabMap.put(internalFrame, tabData);
-        tabToFrameMap.put(tabData, internalFrame);
+        frameToTabMap.put(internalFrame, tab);
+        tabToFrameMap.put(tab, internalFrame);
 
         internalFrame.setContentPane(topComponent);
 
@@ -242,7 +242,7 @@ public class WorkspaceTopComponent extends TopComponent implements Tileable {
         }
         internalFrame.setBounds(bounds);
 
-        tabbedContainer.getModel().addTab(tabbedContainer.getModel().size(), tabData);
+        tabbedContainer.getModel().addTab(tabbedContainer.getModel().size(), tab);
         tabbedContainer.setVisible(true);
         desktopPane.add(internalFrame);
 
@@ -413,15 +413,15 @@ public class WorkspaceTopComponent extends TopComponent implements Tileable {
         Object internalFrameID = getInternalFrameID(topComponent);
         idToBoundsMap.put(internalFrameID, new Rectangle(internalFrame.getBounds()));
 
-        TabData tabData = frameToTabMap.get(internalFrame);
-        if (tabData != null) {
+        TabData tab = frameToTabMap.get(internalFrame);
+        if (tab != null) {
             if (removeTab) {
-                int tabIndex = tabbedContainer.getModel().indexOf(tabData);
+                int tabIndex = tabbedContainer.getModel().indexOf(tab);
                 if (tabIndex >= 0) {
                     tabbedContainer.getModel().removeTab(tabIndex);
                 }
             }
-            tabToFrameMap.remove(tabData);
+            tabToFrameMap.remove(tab);
         }
         frameToTabMap.remove(internalFrame);
 
@@ -463,7 +463,8 @@ public class WorkspaceTopComponent extends TopComponent implements Tileable {
     }
 
     private JInternalFrame getInternalFrame(int tabIndex) {
-        return tabToFrameMap.get(tabbedContainer.getModel().getTab(tabIndex));
+        TabData tab = tabbedContainer.getModel().getTab(tabIndex);
+        return tabToFrameMap.get(tab);
     }
 
     private Object getInternalFrameID(TopComponent topComponent) {
@@ -755,8 +756,8 @@ public class WorkspaceTopComponent extends TopComponent implements Tileable {
             for (int j = 0; j < bestVerCount; j++) {
                 for (int i = 0; i < bestHorCount; i++) {
                     if (windowIndex < windowCount) {
-                        TabData tabData = tabs.get(windowIndex);
-                        JInternalFrame internalFrame = tabToFrameMap.get(tabData);
+                        TabData tab = tabs.get(windowIndex);
+                        JInternalFrame internalFrame = tabToFrameMap.get(tab);
                         internalFrame.setBounds(i * windowWidth, j * windowHeight, windowWidth, windowHeight);
                     }
                     windowIndex++;
@@ -779,8 +780,8 @@ public class WorkspaceTopComponent extends TopComponent implements Tileable {
             int windowWidth = desktopWidth / windowCount;
             List<TabData> tabs = tabbedContainer.getModel().getTabs();
             for (int windowIndex = 0; windowIndex < windowCount; windowIndex++) {
-                TabData tabData = tabs.get(windowIndex);
-                JInternalFrame internalFrame = tabToFrameMap.get(tabData);
+                TabData tab = tabs.get(windowIndex);
+                JInternalFrame internalFrame = tabToFrameMap.get(tab);
                 internalFrame.setBounds(windowIndex * windowWidth, 0, windowWidth, desktopHeight);
             }
         }
@@ -800,8 +801,8 @@ public class WorkspaceTopComponent extends TopComponent implements Tileable {
             int windowHeight = desktopHeight / windowCount;
             List<TabData> tabs = tabbedContainer.getModel().getTabs();
             for (int windowIndex = 0; windowIndex < windowCount; windowIndex++) {
-                TabData tabData = tabs.get(windowIndex);
-                JInternalFrame internalFrame = tabToFrameMap.get(tabData);
+                TabData tab = tabs.get(windowIndex);
+                JInternalFrame internalFrame = tabToFrameMap.get(tab);
                 internalFrame.setBounds(0, windowIndex * windowHeight, desktopWidth, windowHeight);
             }
         }
@@ -835,8 +836,8 @@ public class WorkspaceTopComponent extends TopComponent implements Tileable {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            TabData tabData = tabbedContainer.getModel().getTab(tabIndex);
-            JInternalFrame internalFrame = tabToFrameMap.get(tabData);
+            TabData tab = tabbedContainer.getModel().getTab(tabIndex);
+            JInternalFrame internalFrame = tabToFrameMap.get(tab);
             TopComponent topComponent = dockInternalFrame(internalFrame);
             if (topComponent != null) {
                 topComponent.requestActive();
@@ -1079,13 +1080,27 @@ public class WorkspaceTopComponent extends TopComponent implements Tileable {
                 } else {
                     frame.setFrameIcon(null);
                 }
-            } else if ("displayName".equals(event.getPropertyName())) {
-                frame.setTitle(source.getDisplayName());
-                TabData tabData = frameToTabMap.get(frame);
-                Assert.notNull(tabData);
-                int i = tabbedContainer.getModel().indexOf(tabData);
+
+                TabData tab = frameToTabMap.get(frame);
+                Assert.notNull(tab);
+                int i = tabbedContainer.getModel().indexOf(tab);
                 if (i >= 0) {
-                    tabbedContainer.getModel().setText(i, source.getDisplayName());
+                    if (icon != null) {
+                        tabbedContainer.getModel().setIcon(i, new ImageIcon(icon));
+                    } else {
+                        tabbedContainer.getModel().setIcon(i, null);
+                    }
+                }
+            } else if ("displayName".equals(event.getPropertyName())) {
+                String displayName = source.getDisplayName();
+
+                frame.setTitle(displayName);
+
+                TabData tab = frameToTabMap.get(frame);
+                Assert.notNull(tab);
+                int i = tabbedContainer.getModel().indexOf(tab);
+                if (i >= 0) {
+                    tabbedContainer.getModel().setText(i, displayName);
                 }
             }
         }
