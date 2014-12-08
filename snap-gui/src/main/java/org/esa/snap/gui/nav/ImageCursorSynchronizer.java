@@ -22,63 +22,74 @@ import org.esa.beam.framework.datamodel.GeoPos;
 import org.esa.beam.framework.datamodel.PixelPos;
 import org.esa.beam.framework.ui.PixelPositionListener;
 import org.esa.beam.framework.ui.product.ProductSceneView;
+import org.esa.snap.gui.SnapApp;
+import org.esa.snap.gui.actions.view.SyncImageCursorsAction;
 import org.esa.snap.gui.util.WindowUtilities;
 import org.esa.snap.gui.windows.ProductSceneViewTopComponent;
+import org.openide.util.WeakListeners;
+import org.openide.windows.OnShowing;
 import org.openide.windows.TopComponent;
 
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.WeakHashMap;
+import java.util.prefs.PreferenceChangeEvent;
+import java.util.prefs.PreferenceChangeListener;
+import java.util.prefs.Preferences;
 
-public class CursorSynchronizer {
+/**
+ * @author Marco Peters, Norman Fomferra
+ */
+@OnShowing
+public class ImageCursorSynchronizer implements Runnable, PreferenceChangeListener {
 
+    public static final String PROPERTY_KEY_AUTO_SYNC_CURSORS = SyncImageCursorsAction.PREFERENCE_KEY;
     private static final GeoPos INVALID_GEO_POS = new GeoPos(Float.NaN, Float.NaN);
 
-    private final Map<ProductSceneView, CursorOverlay> psvOverlayMap;
-    private final Map<ProductSceneView, ViewPPL> viewPplMap;
+    private Map<ProductSceneView, ImageCursorOverlay> psvOverlayMap;
+    private Map<ProductSceneView, MyPixelPositionListener> viewPplMap;
     private PsvListUpdater psvOverlayMapUpdater;
-    private boolean enabled;
 
-    public CursorSynchronizer() {
-        psvOverlayMap = new HashMap<>();
-        viewPplMap = new HashMap<>();
+    @Override
+    public void run() {
+        psvOverlayMap = new WeakHashMap<>();
+        viewPplMap = new WeakHashMap<>();
         psvOverlayMapUpdater = new PsvListUpdater();
-        enabled = false;
+
+        Preferences preferences = SnapApp.getInstance().getPreferences();
+        preferences.addPreferenceChangeListener(WeakListeners.create(PreferenceChangeListener.class, this, preferences));
     }
 
-    public boolean isEnabled() {
-        return enabled;
+    private boolean isActive() {
+        return SnapApp.getInstance().getPreferences().getBoolean(PROPERTY_KEY_AUTO_SYNC_CURSORS, false);
     }
 
-    public void setEnabled(boolean enabled) {
-        if (this.enabled != enabled) {
-            if (enabled) {
+    @Override
+    public void preferenceChange(PreferenceChangeEvent evt) {
+        if (PROPERTY_KEY_AUTO_SYNC_CURSORS.equals(evt.getKey())) {
+            if (isActive()) {
                 initPsvOverlayMap();
                 WindowUtilities.addListener(psvOverlayMapUpdater);
             } else {
                 WindowUtilities.removeListener(psvOverlayMapUpdater);
                 clearPsvOverlayMap();
             }
-            this.enabled = enabled;
         }
-    }
-
-    public void updateCursorOverlays(GeoPos geoPos) {
-        updateCursorOverlays(geoPos, null);
     }
 
     public void updateCursorOverlays(GeoPos geoPos, ProductSceneView sourceView) {
-        if (!isEnabled()) {
+        if (!isActive()) {
             return;
         }
-        for (Map.Entry<ProductSceneView, CursorOverlay> entry : psvOverlayMap.entrySet()) {
+        for (Map.Entry<ProductSceneView, ImageCursorOverlay> entry : psvOverlayMap.entrySet()) {
             final ProductSceneView view = entry.getKey();
-            CursorOverlay overlay = entry.getValue();
+            ImageCursorOverlay overlay = entry.getValue();
             if (overlay == null) {
                 if (view != sourceView) {
-                    overlay = new CursorOverlay(view, geoPos);
+                    overlay = new ImageCursorOverlay(view, geoPos);
                     psvOverlayMap.put(view, overlay);
                     view.getLayerCanvas().addOverlay(overlay);
                 }
@@ -95,7 +106,7 @@ public class CursorSynchronizer {
     }
 
     private void initPsvOverlayMap() {
-        java.util.List<ProductSceneView> productSceneViews = WindowUtilities.collectOpen(ProductSceneViewTopComponent.class, new WindowUtilities.Converter<ProductSceneViewTopComponent, ProductSceneView>() {
+        List<ProductSceneView> productSceneViews = WindowUtilities.collectOpen(ProductSceneViewTopComponent.class, new WindowUtilities.Converter<ProductSceneViewTopComponent, ProductSceneView>() {
             @Override
             protected ProductSceneView convert(ProductSceneViewTopComponent topComponent) {
                 return topComponent.getView();
@@ -107,7 +118,7 @@ public class CursorSynchronizer {
     }
 
     private void clearPsvOverlayMap() {
-        for (Map.Entry<ProductSceneView, CursorOverlay> entry : psvOverlayMap.entrySet()) {
+        for (Map.Entry<ProductSceneView, ImageCursorOverlay> entry : psvOverlayMap.entrySet()) {
             final ProductSceneView view = entry.getKey();
             removePPL(view);
             view.getLayerCanvas().removeOverlay(entry.getValue());
@@ -119,16 +130,15 @@ public class CursorSynchronizer {
         GeoCoding geoCoding = view.getProduct().getGeoCoding();
         if (geoCoding != null && geoCoding.canGetPixelPos()) {
             psvOverlayMap.put(view, null);
-            ViewPPL ppl = new ViewPPL(view);
+            MyPixelPositionListener ppl = new MyPixelPositionListener(view);
             viewPplMap.put(view, ppl);
             view.addPixelPositionListener(ppl);
         }
     }
 
     private void removePPL(ProductSceneView view) {
-        GeoCoding geoCoding = view.getProduct().getGeoCoding();
-        if (geoCoding != null && geoCoding.canGetPixelPos()) {
-            ViewPPL ppl = viewPplMap.get(view);
+        MyPixelPositionListener ppl = viewPplMap.get(view);
+        if (ppl != null) {
             viewPplMap.remove(view);
             view.removePixelPositionListener(ppl);
         }
@@ -163,11 +173,11 @@ public class CursorSynchronizer {
         }
     }
 
-    private class ViewPPL implements PixelPositionListener {
+    private class MyPixelPositionListener implements PixelPositionListener {
 
         private final ProductSceneView view;
 
-        private ViewPPL(ProductSceneView view) {
+        private MyPixelPositionListener(ProductSceneView view) {
             this.view = view;
         }
 

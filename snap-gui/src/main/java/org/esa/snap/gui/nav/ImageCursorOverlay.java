@@ -32,10 +32,9 @@ import java.awt.geom.Rectangle2D;
 
 /**
  * @author Marco Peters
- * @version $ Revision $ Date $
  * @since BEAM 4.6
  */
-class CursorOverlay implements LayerCanvas.Overlay {
+class ImageCursorOverlay implements LayerCanvas.Overlay {
 
     private static final int MAX_CROSSHAIR_SIZE = 20;
 
@@ -44,7 +43,7 @@ class CursorOverlay implements LayerCanvas.Overlay {
     private BasicStroke cursorStroke;
     private Color cursorColor;
 
-    CursorOverlay(ProductSceneView sceneView, GeoPos geoPos) {
+    ImageCursorOverlay(ProductSceneView sceneView, GeoPos geoPos) {
         this.sceneView = sceneView;
         geoPosition = geoPos;
         cursorStroke = new BasicStroke(1F);
