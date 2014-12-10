@@ -14,7 +14,7 @@
     <properties>
         <brandingToken>snap</brandingToken>
         <snap.version>${project.version}</snap.version>
-        <netbeans.version>RELEASE801</netbeans.version>
+        <netbeans.version>RELEASE802</netbeans.version>
         <junit.version>4.11</junit.version>
     </properties>
 
