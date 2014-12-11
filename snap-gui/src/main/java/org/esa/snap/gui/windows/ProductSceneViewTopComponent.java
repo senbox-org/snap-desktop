@@ -69,11 +69,11 @@ public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNo
 
         selectedBorder = UIManager.getBorder(getClass().getName() + ".selectedBorder");
         if (selectedBorder == null) {
-            selectedBorder = new LineBorder(Color.ORANGE, 1);
+            selectedBorder = new LineBorder(Color.ORANGE, 3);
         }
         unselectedBorder = UIManager.getBorder(getClass().getName() + ".unselectedBorder");
         if (unselectedBorder == null) {
-            unselectedBorder = new LineBorder(Color.GRAY, 1);
+            unselectedBorder = new LineBorder(Color.GRAY, 3);
         }
 
 /*
@@ -122,7 +122,7 @@ public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNo
         getDocument().getProduct().addProductNodeListener(nodeRenameHandler);
         productSceneViewResult = Utilities.actionsGlobalContext().lookupResult(ProductSceneView.class);
         productSceneViewResult.addLookupListener(this);
-        updateSelectedState();
+        //updateSelectedState();
     }
 
     @Override
@@ -137,7 +137,7 @@ public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNo
         SnapGlobalActionContext.getInstance().put("view", getView());
         setSelection(getView().getFigureEditor().getSelectionContext().getSelection());
         getView().getFigureEditor().getSelectionContext().addSelectionChangeListener(this);
-        updateSelectedState();
+        //updateSelectedState();
         //LOG.info(">> componentActivated: " + title);
     }
 
@@ -146,18 +146,30 @@ public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNo
         getView().getFigureEditor().getSelectionContext().removeSelectionChangeListener(this);
         setSelection(Selection.EMPTY);
         //LOG.info(">> componentDeactivated: " + title);
-        updateSelectedState();
+        //updateSelectedState();
     }
 
     @Override
     public void componentShowing() {
         SnapGlobalActionContext.getInstance().put("view", getView());
-        updateSelectedState();
+        //updateSelectedState();
     }
 
     @Override
     public void componentHidden() {
         SnapGlobalActionContext.getInstance().remove("view");
+        //updateSelectedState();
+    }
+
+    @Override
+    public void componentSelected() {
+        super.componentSelected();
+        updateSelectedState();
+    }
+
+    @Override
+    public void componentDeselected() {
+        super.componentDeselected();
         updateSelectedState();
     }
 

@@ -17,6 +17,7 @@ import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 
 // See https://blogs.oracle.com/geertjan/entry/opening_a_topcomponent_per_node
 // See https://blogs.oracle.com/geertjan/entry/loosely_coupled_open_action
@@ -36,9 +37,10 @@ import java.util.List;
  * however, the document object will always remain in it.
  * <p>
  *
- * @author Norman
+ * @author Norman Fomferra
  */
-public class DocumentTopComponent<T> extends TopComponent implements NotifiableComponent {
+public class DocumentTopComponent<T> extends TopComponent implements DocumentWindow, NotifiableComponent {
+    private static final Logger LOG = Logger.getLogger(DocumentTopComponent.class.getName());
 
     private final T document;
     private final InstanceContent dynamicContent;
@@ -49,12 +51,33 @@ public class DocumentTopComponent<T> extends TopComponent implements NotifiableC
         associateLookup(new ProxyLookup(Lookups.fixed(document), new AbstractLookup(dynamicContent)));
     }
 
+    protected InstanceContent getDynamicContent() {
+        return dynamicContent;
+    }
+
+    @Override
     public T getDocument() {
         return document;
     }
 
-    protected InstanceContent getDynamicContent() {
-        return dynamicContent;
+    @Override
+    public TopComponent getTopComponent() {
+        return this;
+    }
+
+    @Override
+    public boolean isSelected() {
+        return DocumentWindowManager.getDefault().getSelectedDocumentWindow() == this;
+    }
+
+    @Override
+    public void requestSelected() {
+        if (isOpened()) {
+            requestActive();
+        } else {
+            requestVisible();
+            DocumentWindowManager.getDefault().requestSelected(this);
+        }
     }
 
     @Override
@@ -77,28 +100,62 @@ public class DocumentTopComponent<T> extends TopComponent implements NotifiableC
         return Arrays.asList(WindowManager.getDefault().findMode("editor"));
     }
 
+    /**
+     * Called when this component opened for the first time or after being closed.
+     */
     @Override
     public void componentOpened() {
     }
 
+    /**
+     * Called when this component was closed.
+     */
     @Override
     public void componentClosed() {
     }
 
+    /**
+     * Called when this component is about to be shown.
+     */
     @Override
     public void componentShowing() {
     }
 
+    /**
+     * Called when this component was hidden.
+     */
     @Override
     public void componentHidden() {
     }
 
+    /**
+     * Called when this component is activated.
+     */
     @Override
     public void componentActivated() {
     }
 
+    /**
+     * Called when this component is deactivated.
+     */
     @Override
     public void componentDeactivated() {
+    }
+
+    /**
+     * Called when this component was selected.
+     */
+    @Override
+    public void componentSelected() {
+        LOG.info(">> componentSelected");
+    }
+
+    /**
+     * Called when this component was deselected.
+     */
+    @Override
+    public void componentDeselected() {
+        LOG.info(">> componentDeselected");
     }
 
     @Override

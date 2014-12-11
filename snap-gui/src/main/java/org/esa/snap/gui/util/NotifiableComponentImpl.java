@@ -50,7 +50,7 @@ class NotifiableComponentImpl implements NotifiableComponent {
         try {
             topComponent.getClass().getMethod(name).invoke(topComponent);
         } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            Logger.getLogger(WorkspaceTopComponent.class.getName()).warning(e.getMessage());
+            Logger.getLogger(NotifiableComponentImpl.class.getName()).warning(e.getMessage());
         }
     }
 }

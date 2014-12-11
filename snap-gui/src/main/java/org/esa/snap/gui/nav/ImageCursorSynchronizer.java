@@ -24,6 +24,7 @@ import org.esa.beam.framework.ui.PixelPositionListener;
 import org.esa.beam.framework.ui.product.ProductSceneView;
 import org.esa.snap.gui.SnapApp;
 import org.esa.snap.gui.actions.view.SyncImageCursorsAction;
+import org.esa.snap.gui.util.DocumentWindowManager;
 import org.esa.snap.gui.util.WindowUtilities;
 import org.esa.snap.gui.windows.ProductSceneViewTopComponent;
 import org.openide.util.WeakListeners;
@@ -72,9 +73,9 @@ public class ImageCursorSynchronizer implements Runnable, PreferenceChangeListen
         if (PROPERTY_KEY_AUTO_SYNC_CURSORS.equals(evt.getKey())) {
             if (isActive()) {
                 initPsvOverlayMap();
-                WindowUtilities.addListener(psvOverlayMapUpdater);
+                DocumentWindowManager.getDefault().addListener(psvOverlayMapUpdater);
             } else {
-                WindowUtilities.removeListener(psvOverlayMapUpdater);
+                DocumentWindowManager.getDefault().removeListener(psvOverlayMapUpdater);
                 clearPsvOverlayMap();
             }
         }
@@ -144,11 +145,11 @@ public class ImageCursorSynchronizer implements Runnable, PreferenceChangeListen
         }
     }
 
-    private class PsvListUpdater implements WindowUtilities.Listener {
+    private class PsvListUpdater implements DocumentWindowManager.Listener {
 
         @Override
-        public void windowOpened(WindowUtilities.Event e) {
-            TopComponent topComponent = e.getTopComponent();
+        public void windowOpened(DocumentWindowManager.Event e) {
+            TopComponent topComponent = e.getDocumentWindow().getTopComponent();
             if (topComponent instanceof ProductSceneViewTopComponent) {
                 ProductSceneView view = ((ProductSceneViewTopComponent) topComponent).getView();
                 addPPL(view);
@@ -156,8 +157,8 @@ public class ImageCursorSynchronizer implements Runnable, PreferenceChangeListen
         }
 
         @Override
-        public void windowClosed(WindowUtilities.Event e) {
-            TopComponent topComponent = e.getTopComponent();
+        public void windowClosed(DocumentWindowManager.Event e) {
+            TopComponent topComponent = e.getDocumentWindow().getTopComponent();
             if (topComponent instanceof ProductSceneViewTopComponent) {
                 ProductSceneView view = ((ProductSceneViewTopComponent) topComponent).getView();
                 removePPL(view);
@@ -165,11 +166,11 @@ public class ImageCursorSynchronizer implements Runnable, PreferenceChangeListen
         }
 
         @Override
-        public void windowActivated(WindowUtilities.Event e) {
+        public void windowActivated(DocumentWindowManager.Event e) {
         }
 
         @Override
-        public void windowDeactivated(WindowUtilities.Event e) {
+        public void windowDeactivated(DocumentWindowManager.Event e) {
         }
     }
 
