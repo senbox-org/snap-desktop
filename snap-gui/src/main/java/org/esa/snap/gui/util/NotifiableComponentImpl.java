@@ -6,9 +6,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Logger;
 
 /**
- * Implementation based on reflection.
+ * Implementation of a {@link NotifiableComponent} based on reflection.
  *
- * @author Norman
+ * @author Norman Fomferra
  */
 class NotifiableComponentImpl implements NotifiableComponent {
     private final TopComponent topComponent;
