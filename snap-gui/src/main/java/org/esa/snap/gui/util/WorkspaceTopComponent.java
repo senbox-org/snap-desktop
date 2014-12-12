@@ -50,7 +50,8 @@ import static org.openide.util.NbBundle.Messages;
 /**
  * A top-level window which hosts an internal desktop in which other windows can be floated as internal frames.
  *
- * @author Norman
+ * @author Norman Fomferra
+ * @since 2.0
  */
 @TopComponent.Description(
         preferredID = "WorkspaceTopComponent",
@@ -479,41 +480,62 @@ public class WorkspaceTopComponent extends TopComponent implements Tileable {
     private void notifyOpened(TopComponent topComponent) {
         NotifiableComponent.get(topComponent).componentOpened();
 
-        WindowUtilities.Event event = new WindowUtilities.Event(topComponent);
-        WindowUtilities.Listener[] listeners = WindowUtilities.getListeners();
-        for (WindowUtilities.Listener listener : listeners) {
-            listener.windowOpened(event);
+        if (topComponent instanceof DocumentWindow) {
+            DocumentWindowManager.Event event = new DocumentWindowManager.Event((DocumentWindow) topComponent);
+            DocumentWindowManager.Listener[] listeners = DocumentWindowManager.getDefault().getListeners();
+            for (DocumentWindowManager.Listener listener : listeners) {
+                listener.windowOpened(event);
+            }
         }
     }
 
     private void notifyClosed(TopComponent topComponent) {
         NotifiableComponent.get(topComponent).componentClosed();
 
-        WindowUtilities.Event event = new WindowUtilities.Event(topComponent);
-        WindowUtilities.Listener[] listeners = WindowUtilities.getListeners();
-        for (WindowUtilities.Listener listener : listeners) {
-            listener.windowClosed(event);
+        if (topComponent instanceof DocumentWindow) {
+            DocumentWindowManager.Event event = new DocumentWindowManager.Event((DocumentWindow) topComponent);
+            DocumentWindowManager.Listener[] listeners = DocumentWindowManager.getDefault().getListeners();
+            for (DocumentWindowManager.Listener listener : listeners) {
+                listener.windowClosed(event);
+            }
         }
     }
 
     private void notifyActivated(TopComponent topComponent) {
         NotifiableComponent.get(topComponent).componentActivated();
 
-        WindowUtilities.Event event = new WindowUtilities.Event(topComponent);
-        WindowUtilities.Listener[] listeners = WindowUtilities.getListeners();
-        for (WindowUtilities.Listener listener : listeners) {
-            listener.windowActivated(event);
+        if (topComponent instanceof DocumentWindow) {
+            DocumentWindowManager.Event event = new DocumentWindowManager.Event((DocumentWindow) topComponent);
+            DocumentWindowManager.Listener[] listeners = DocumentWindowManager.getDefault().getListeners();
+            for (DocumentWindowManager.Listener listener : listeners) {
+                listener.windowActivated(event);
+            }
         }
     }
 
     private void notifyDeactivated(TopComponent topComponent) {
         NotifiableComponent.get(topComponent).componentDeactivated();
 
-        WindowUtilities.Event event = new WindowUtilities.Event(topComponent);
-        WindowUtilities.Listener[] listeners = WindowUtilities.getListeners();
-        for (WindowUtilities.Listener listener : listeners) {
-            listener.windowDeactivated(event);
+        if (topComponent instanceof DocumentWindow) {
+            DocumentWindowManager.Event event = new DocumentWindowManager.Event((DocumentWindow) topComponent);
+            DocumentWindowManager.Listener[] listeners = DocumentWindowManager.getDefault().getListeners();
+            for (DocumentWindowManager.Listener listener : listeners) {
+                listener.windowDeactivated(event);
+            }
         }
+    }
+
+    public boolean requestActiveTopComponent(TopComponent topComponent) {
+        JInternalFrame internalFrame = getInternalFrame(topComponent);
+        if (internalFrame != null) {
+            try {
+                internalFrame.setSelected(true);
+                return true;
+            } catch (PropertyVetoException e) {
+                // fail
+            }
+        }
+        return false;
     }
 
     /**
@@ -960,7 +982,7 @@ public class WorkspaceTopComponent extends TopComponent implements Tileable {
     private class MyInternalFrameListener implements InternalFrameListener {
         @Override
         public void internalFrameOpened(InternalFrameEvent e) {
-            LOG.fine("internalFrameOpened: e = " + e);
+            //LOG.fine("internalFrameOpened: e = " + e);
 
             tabbedContainer.updateUI();
 
@@ -969,13 +991,13 @@ public class WorkspaceTopComponent extends TopComponent implements Tileable {
 
         @Override
         public void internalFrameClosing(InternalFrameEvent e) {
-            LOG.fine("internalFrameClosing: e = " + e);
+            //LOG.fine("internalFrameClosing: e = " + e);
             // do nothing
         }
 
         @Override
         public void internalFrameClosed(InternalFrameEvent e) {
-            LOG.fine("internalFrameClosed: e = " + e);
+            //LOG.fine("internalFrameClosed: e = " + e);
 
             JInternalFrame internalFrame = e.getInternalFrame();
             if (frameToTabMap.containsKey(internalFrame)) {
@@ -988,7 +1010,7 @@ public class WorkspaceTopComponent extends TopComponent implements Tileable {
 
         @Override
         public void internalFrameActivated(InternalFrameEvent e) {
-            LOG.fine("internalFrameActivated: e = " + e);
+            //LOG.fine("internalFrameActivated: e = " + e);
 
             // Synchronise tab selection state, if not already done
             JInternalFrame internalFrame = e.getInternalFrame();
@@ -1022,7 +1044,7 @@ public class WorkspaceTopComponent extends TopComponent implements Tileable {
 
         @Override
         public void internalFrameDeactivated(InternalFrameEvent e) {
-            LOG.fine("internalFrameDeactivated: e = " + e);
+            //LOG.fine("internalFrameDeactivated: e = " + e);
 
             tabbedContainer.updateUI();
 
@@ -1033,7 +1055,7 @@ public class WorkspaceTopComponent extends TopComponent implements Tileable {
 
         @Override
         public void internalFrameIconified(InternalFrameEvent e) {
-            LOG.fine("internalFrameIconified: e = " + e);
+            //LOG.fine("internalFrameIconified: e = " + e);
 
             tabbedContainer.updateUI();
 
@@ -1043,7 +1065,7 @@ public class WorkspaceTopComponent extends TopComponent implements Tileable {
 
         @Override
         public void internalFrameDeiconified(InternalFrameEvent e) {
-            LOG.fine("internalFrameDeiconified: e = " + e);
+            //LOG.fine("internalFrameDeiconified: e = " + e);
 
             tabbedContainer.updateUI();
 

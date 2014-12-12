@@ -1,5 +1,6 @@
 package org.esa.snap.gui.util;
 
+import org.openide.modules.OnStart;
 import org.openide.util.Lookup;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
@@ -10,10 +11,13 @@ import java.util.EventListener;
 import java.util.EventObject;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 /**
+ * Manages global opening, closing, and selection of {@link DocumentWindow}s.
+ *
  * @author Norman Fomferra
  * @since 2.0
  */
@@ -94,8 +98,15 @@ public class DocumentWindowManager {
     }
 
     public void requestSelected(DocumentWindow documentWindow) {
-        // todo: find open WorkspaceTopComponents, look if they contain the topComponent.
-        // If so, activate WorkspaceTopComponents and make sure the topComponent's internal frame is selected.
+        TopComponent topComponent = documentWindow.getTopComponent();
+        List<WorkspaceTopComponent> showingWorkspaces = WindowUtilities.findShowingWorkspaces();
+        for (WorkspaceTopComponent showingWorkspace : showingWorkspaces) {
+            if (showingWorkspace.getTopComponents().contains(topComponent)) {
+                showingWorkspace.requestActiveTopComponent(topComponent);
+                return;
+            }
+        }
+        topComponent.requestActive();
     }
 
     /**
@@ -154,7 +165,7 @@ public class DocumentWindowManager {
 
         @Override
         public void propertyChange(PropertyChangeEvent evt) {
-            if ("activated".equals(evt.getPropertyName())) {
+            if (TopComponent.Registry.PROP_ACTIVATED.equals(evt.getPropertyName())) {
                 Object oldValue = evt.getOldValue();
                 if (oldValue instanceof DocumentWindow) {
                     delegatee.windowDeactivated(new Event((DocumentWindow) evt.getOldValue()));
@@ -163,12 +174,12 @@ public class DocumentWindowManager {
                 if (newValue instanceof DocumentWindow) {
                     delegatee.windowActivated(new Event((DocumentWindow) newValue));
                 }
-            } else if ("tcOpen".equals(evt.getPropertyName())) {
+            } else if (TopComponent.Registry.PROP_TC_OPENED.equals(evt.getPropertyName())) {
                 Object newValue = evt.getNewValue();
                 if (newValue instanceof DocumentWindow) {
                     delegatee.windowOpened(new Event((DocumentWindow) newValue));
                 }
-            } else if ("tcClose".equals(evt.getPropertyName())) {
+            } else if (TopComponent.Registry.PROP_TC_CLOSED.equals(evt.getPropertyName())) {
                 Object newValue = evt.getNewValue();
                 if (newValue instanceof DocumentWindow) {
                     delegatee.windowClosed(new Event((DocumentWindow) evt.getNewValue()));
@@ -207,4 +218,16 @@ public class DocumentWindowManager {
 
         }
     }
+
+    /**
+     * Makes sure DocumentWindowManager can start listening to window events from the beginning.
+     */
+    @OnStart
+    public static class Starter implements Runnable {
+        @Override
+        public void run() {
+            getDefault();
+        }
+    }
+
 }
