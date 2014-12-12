@@ -22,6 +22,7 @@ import com.bc.ceres.binding.PropertyContainer;
 import com.bc.ceres.binding.PropertyDescriptor;
 import com.bc.ceres.binding.ValidationException;
 import com.bc.ceres.binding.Validator;
+import com.bc.ceres.binding.ValueSet;
 import com.bc.ceres.core.Assert;
 import com.bc.ceres.swing.binding.BindingContext;
 import org.esa.beam.util.StringUtils;
@@ -31,13 +32,15 @@ import org.openide.util.Lookup;
 import org.openide.util.NbPreferences;
 
 import javax.swing.JComponent;
+import javax.swing.JPanel;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.lang.reflect.Field;
 import java.util.prefs.Preferences;
 
 /**
- * todo - write documentation
+ * Abstract superclass for preferences pages. Subclasses need to be annotated with either
+ * {@link OptionsPanelController.TopLevelRegistration} or {@link OptionsPanelController.SubRegistration}.
  *
  * @author thomas
  */
@@ -48,7 +51,27 @@ public abstract class DefaultConfigController extends OptionsPanelController {
     private BindingContext bindingContext;
     private Object originalState;
 
-    protected abstract Object createBean();
+    /**
+     * Create a bean object instance that holds all parameters. The parameters need to annotated with
+     * {@link ConfigProperty}. Clients that want to maintain properties need to overwrite this method.
+     *
+     * @return A bean object instance.
+     */
+    protected Object createBean() {
+        return new Object();
+    }
+
+    /**
+     * Create a panel that allows the user to set the parameters in the given {@link BindingContext}. Clients that want
+     * to create their own panel representation on the given properties need to overwrite this method.
+     *
+     * @param context    The {@link BindingContext} for the panel.
+     * @return           A JPanel instance for the given {@link BindingContext}. If <code>null</code>, a default panel
+     *                   will be used.
+     */
+    protected JPanel createPanel(BindingContext context) {
+        return null;
+    };
 
     @Override
     public void update() {
@@ -183,6 +206,7 @@ public abstract class DefaultConfigController extends OptionsPanelController {
                 }
                 String label = annotation.label();
                 String key = annotation.key();
+                String[] valueSet = annotation.valueSet();
                 Validator validator = createValidator(annotation.validatorClass());
                 Assert.state(StringUtils.isNotNullAndNotEmpty(label),
                              "Label of field '" + field.getName() + "' must not be null or empty.");
@@ -191,10 +215,13 @@ public abstract class DefaultConfigController extends OptionsPanelController {
                 valueDescriptor.setAttribute("key", key);
                 valueDescriptor.setAttribute("displayName", label);
                 valueDescriptor.setAttribute("propertyValidator", validator);
+                if (valueSet.length > 0) {
+                    valueDescriptor.setValueSet(new ValueSet(valueSet));
+                }
                 return valueDescriptor;
             }
         }));
-        panel = new PreferencesPanel(bindingContext);
+        panel = new PreferencesPanel(createPanel(bindingContext), bindingContext);
     }
 
     private Validator createValidator(Class<? extends Validator> validatorClass) {

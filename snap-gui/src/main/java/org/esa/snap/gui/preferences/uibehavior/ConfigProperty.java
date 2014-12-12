@@ -45,6 +45,11 @@ public @interface ConfigProperty {
     String key();
 
     /**
+     * @return The set of allowed values.
+     */
+    String[] valueSet() default {};
+
+    /**
      * @return The validator class.
      */
     Class<? extends Validator> validatorClass() default NullValidator.class;

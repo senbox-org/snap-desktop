@@ -16,6 +16,7 @@
 
 package org.esa.snap.gui.preferences.uibehavior;
 
+import org.esa.beam.util.SystemUtils;
 import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.HelpCtx;
 
@@ -61,16 +62,15 @@ public final class LoggingPanelController extends DefaultConfigController {
         @ConfigProperty(label = "Log filename prefix", key = PROPERTY_KEY_APP_LOG_PREFIX)
         String logPrefix;
 
-        @ConfigProperty(label = "Log level", key = PROPERTY_KEY_APP_LOG_LEVEL)
-        boolean logLevel;
-
         @ConfigProperty(label = "Echo log output (effective only with console)", key = PROPERTY_KEY_APP_LOG_ECHO)
         boolean logEcho;
 
         @ConfigProperty(label = "Log extra debugging information", key = PROPERTY_KEY_APP_LOG_DEBUG)
         boolean logDebug;
 
+        @ConfigProperty(label = "Log level", key = PROPERTY_KEY_APP_LOG_LEVEL, valueSet = {SystemUtils.LLS_DEBUG,
+                SystemUtils.LLS_INFO, SystemUtils.LLS_ERROR, SystemUtils.LLS_WARNING})
+        String logLevel;
 
     }
-
 }

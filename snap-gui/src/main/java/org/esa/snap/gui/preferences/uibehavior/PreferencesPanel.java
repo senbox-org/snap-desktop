@@ -36,7 +36,8 @@ class PreferencesPanel {
     private JPanel panel;
     private boolean changed = false;
 
-    PreferencesPanel(BindingContext bindingContext) {
+    PreferencesPanel(JPanel panel, BindingContext bindingContext) {
+        this.panel = panel;
         this.bindingContext = bindingContext;
         for (Property property : bindingContext.getPropertySet().getProperties()) {
             property.addPropertyChangeListener(evt -> {
