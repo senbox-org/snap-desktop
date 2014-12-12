@@ -93,7 +93,7 @@ public class DocumentWindowManager {
         }
     }
 
-    public void requestSelected(DocumentTopComponent topComponent) {
+    public void requestSelected(DocumentWindow documentWindow) {
         // todo: find open WorkspaceTopComponents, look if they contain the topComponent.
         // If so, activate WorkspaceTopComponents and make sure the topComponent's internal frame is selected.
     }
