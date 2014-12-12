@@ -26,7 +26,7 @@ import java.awt.event.ActionListener;
 @ActionRegistration(
         displayName = "Analyse Product"
 )
-@ActionReference(path = "Menu/Tools", position = 0)
+@ActionReference(path = "Menu/Tools", position = 100)
 public class AnalyseProductAction implements ActionListener {
 
     Product context;

@@ -21,6 +21,7 @@ import com.bc.ceres.swing.figure.interactions.InsertEllipseFigureInteractor;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
+import org.openide.util.HelpCtx;
 import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle.Messages;
@@ -53,11 +54,14 @@ public class DrawEllipseToolAction extends ToolAction {
         putValue(NAME, Bundle.CTL_DrawEllipseToolActionText());
         putValue(SHORT_DESCRIPTION, Bundle.CTL_DrawEllipseToolActionDescription());
         putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/gui/icons/DrawEllipseTool24.gif", false));
-        putValue("helpId", "drawEllipseTool");
-        putValue("context", "image");
-
         Interactor interactor = new InsertEllipseFigureInteractor();
         interactor.addListener(new InsertFigureInteractorInterceptor());
         setInteractor(interactor);
+    }
+
+    @Override
+    public HelpCtx getHelpCtx() {
+        // TODO: Make sure help page is available for ID
+        return new HelpCtx("drawEllipseTool");
     }
 }

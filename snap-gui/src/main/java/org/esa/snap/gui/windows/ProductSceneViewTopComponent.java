@@ -11,16 +11,22 @@ import com.bc.ceres.swing.selection.SelectionChangeListener;
 import org.esa.beam.framework.datamodel.ProductNode;
 import org.esa.beam.framework.datamodel.ProductNodeEvent;
 import org.esa.beam.framework.datamodel.ProductNodeListenerAdapter;
-import org.esa.beam.framework.datamodel.RasterDataNode;
 import org.esa.beam.framework.ui.product.ProductSceneView;
+import org.esa.snap.gui.SnapGlobalActionContext;
 import org.esa.snap.gui.util.DocumentTopComponent;
 import org.esa.snap.gui.util.WindowUtilities;
 import org.openide.awt.UndoRedo;
 import org.openide.util.Exceptions;
 import org.openide.util.ImageUtilities;
-import org.openide.windows.WindowManager;
+import org.openide.util.Lookup;
+import org.openide.util.LookupEvent;
+import org.openide.util.LookupListener;
+import org.openide.util.Utilities;
 
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 import javax.swing.text.DefaultEditorKit;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
@@ -36,14 +42,19 @@ import java.util.logging.Logger;
  * @author Norman
  */
 public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNode>
-        implements UndoRedo.Provider, SelectionChangeListener {
+        implements UndoRedo.Provider, SelectionChangeListener, LookupListener {
 
     private static final Logger LOG = Logger.getLogger(ProductSceneViewTopComponent.class.getName());
+    private static final Border NO_BORDER = new EmptyBorder(0, 0, 0, 0);
+    private static int counter;
 
     private final ProductSceneView view;
     private UndoRedo undoRedo;
     private final ProductNodeListenerAdapter nodeRenameHandler;
     private Selection selection;
+    private Lookup.Result<ProductSceneView> productSceneViewResult;
+    private Border unselectedBorder;
+    private Border selectedBorder;
 
     public ProductSceneViewTopComponent(ProductSceneView view, UndoRedo undoRedo) {
         super(view.getRaster());
@@ -51,12 +62,20 @@ public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNo
         this.undoRedo = undoRedo;
         this.nodeRenameHandler = new NodeRenameHandler();
         this.selection = Selection.EMPTY;
-        initComponents();
-        RasterDataNode raster = view.getRaster();
-        setName(raster.getName());
-        setDisplayName(WindowUtilities.getUniqueTitle(raster.getName(), ProductSceneViewTopComponent.class));
-        setToolTipText(raster.getProduct().getName() + " - " + raster.getName());
+        setName(getClass().getSimpleName() + "_" + (++counter));
+        setToolTipText(view.getRaster().getDescription());
         setIcon(ImageUtilities.loadImage("org/esa/snap/gui/icons/RsBandAsSwath16.gif"));
+        updateDisplayName();
+
+        selectedBorder = UIManager.getBorder(getClass().getName() + ".selectedBorder");
+        if (selectedBorder == null) {
+            selectedBorder = new LineBorder(Color.ORANGE, 3);
+        }
+        unselectedBorder = UIManager.getBorder(getClass().getName() + ".unselectedBorder");
+        if (unselectedBorder == null) {
+            unselectedBorder = new LineBorder(Color.GRAY, 3);
+        }
+
 /*
         // checkme - this is ugly and not wanted (nf), the node will either passed in or we'll have
         // a central node factory, e.g. via an ExtensionObject
@@ -76,15 +95,17 @@ public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNo
             setActivatedNodes(new Node[]{node});
         }
 */
+        initComponents();
+    }
+
+    @Override
+    public void resultChanged(LookupEvent ev) {
+        updateSelectedState();
     }
 
     @Override
     public UndoRedo getUndoRedo() {
         return undoRedo;
-    }
-
-    public ProductSceneView getView() {
-        return view;
     }
 
     @Override
@@ -97,32 +118,90 @@ public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNo
     }
 
     @Override
-    protected void componentOpened() {
+    public void componentOpened() {
         getDocument().getProduct().addProductNodeListener(nodeRenameHandler);
+        productSceneViewResult = Utilities.actionsGlobalContext().lookupResult(ProductSceneView.class);
+        productSceneViewResult.addLookupListener(this);
+        //updateSelectedState();
     }
 
     @Override
-    protected void componentClosed() {
+    public void componentClosed() {
+        productSceneViewResult.removeLookupListener(this);
         getDocument().getProduct().removeProductNodeListener(nodeRenameHandler);
+        SnapGlobalActionContext.getInstance().remove("view");
     }
 
     @Override
-    protected void componentActivated() {
-        getDynamicContent().add(view);
-        setSelection(view.getFigureEditor().getSelectionContext().getSelection());
-        view.getFigureEditor().getSelectionContext().addSelectionChangeListener(this);
+    public void componentActivated() {
+        SnapGlobalActionContext.getInstance().put("view", getView());
+        setSelection(getView().getFigureEditor().getSelectionContext().getSelection());
+        getView().getFigureEditor().getSelectionContext().addSelectionChangeListener(this);
+        //updateSelectedState();
+        //LOG.info(">> componentActivated: " + title);
     }
 
     @Override
-    protected void componentDeactivated() {
-        view.getFigureEditor().getSelectionContext().removeSelectionChangeListener(this);
+    public void componentDeactivated() {
+        getView().getFigureEditor().getSelectionContext().removeSelectionChangeListener(this);
         setSelection(Selection.EMPTY);
-        getDynamicContent().remove(view);
+        //LOG.info(">> componentDeactivated: " + title);
+        //updateSelectedState();
+    }
+
+    @Override
+    public void componentShowing() {
+        SnapGlobalActionContext.getInstance().put("view", getView());
+        //updateSelectedState();
+    }
+
+    @Override
+    public void componentHidden() {
+        SnapGlobalActionContext.getInstance().remove("view");
+        //updateSelectedState();
+    }
+
+    @Override
+    public void componentSelected() {
+        super.componentSelected();
+        updateSelectedState();
+    }
+
+    @Override
+    public void componentDeselected() {
+        super.componentDeselected();
+        updateSelectedState();
+    }
+
+    public ProductSceneView getView() {
+        return view;
     }
 
     private void initComponents() {
         setLayout(new BorderLayout());
-        add(view, BorderLayout.CENTER);
+        add(getView(), BorderLayout.CENTER);
+    }
+
+    private void updateDisplayName() {
+        setDisplayName(WindowUtilities.getUniqueTitle(getDocument().getName(), ProductSceneViewTopComponent.class));
+    }
+
+    private void updateSelectedState() {
+        boolean selected = Utilities.actionsGlobalContext().lookup(ProductSceneView.class) == getView();
+        Border border = getBorder();
+        if (unselectedBorder == NO_BORDER) {
+            unselectedBorder = border;
+        }
+        if (selected) {
+            if (border != selectedBorder) {
+                unselectedBorder = border;
+                setBorder(selectedBorder);
+            }
+        } else {
+            if (border != unselectedBorder) {
+                setBorder(unselectedBorder);
+            }
+        }
     }
 
     private void setSelection(Selection newSelection) {
@@ -132,14 +211,12 @@ public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNo
             this.selection = newSelection.clone();
             getDynamicContent().add(newSelection);
         }
-
         updateActionMap(newSelection);
     }
 
     private void updateActionMap(Selection newSelection) {
         ActionMap actionMap = getActionMap();
         actionMap.put("select-all", new SelectAllAction());
-
         actionMap.put(DefaultEditorKit.pasteAction, new PasteAction());
         if (!newSelection.isEmpty()) {
             actionMap.put(DefaultEditorKit.cutAction, new CutAction());
@@ -162,9 +239,9 @@ public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNo
             Selection selection = getLookup().lookup(Selection.class);
             if (selection != null && !selection.isEmpty()) {
                 Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-                Transferable transferable = view.getFigureEditor().getFigureSelection().createTransferable(false);
+                Transferable transferable = getView().getFigureEditor().getFigureSelection().createTransferable(false);
                 clipboard.setContents(transferable, selection);
-                view.getFigureEditor().deleteSelection();
+                getView().getFigureEditor().deleteSelection();
                 //JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), "Cut: " + transferable);
             }
         }
@@ -176,9 +253,9 @@ public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNo
             Selection selection = getLookup().lookup(Selection.class);
             if (selection != null && !selection.isEmpty()) {
                 Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-                // todo - when we copy we actually don't clone the SimpleFeature. Then, if we paste, two figures refer
+                // todo - when we copy, we actually don't clone the SimpleFeature. Then, if we paste, two figures refer
                 // to the same SimpleFeature.
-                Transferable transferable = view.getFigureEditor().getFigureSelection().createTransferable(true);
+                Transferable transferable = getView().getFigureEditor().getFigureSelection().createTransferable(true);
                 clipboard.setContents(transferable, selection);
                 //JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), "Copy: " + transferable);
             }
@@ -189,11 +266,11 @@ public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNo
         @Override
         public void actionPerformed(ActionEvent e) {
             Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-            Transferable contents = clipboard.getContents(view);
+            Transferable contents = clipboard.getContents(getView());
             //JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), "Paste: " + contents);
 
             try {
-                view.getSelectionContext().insert(contents);
+                getView().getSelectionContext().insert(contents);
             } catch (IOException | UnsupportedFlavorException ex) {
                 Exceptions.printStackTrace(ex);
             }
@@ -203,21 +280,21 @@ public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNo
     private class DeleteAction extends AbstractAction {
         @Override
         public void actionPerformed(ActionEvent e) {
-            view.getFigureEditor().deleteSelection();
+            getView().getFigureEditor().deleteSelection();
         }
     }
 
     private class SelectAllAction extends AbstractAction {
         @Override
         public void actionPerformed(ActionEvent e) {
-            view.getFigureEditor().selectAll();
+            getView().getFigureEditor().selectAll();
         }
     }
 
     private class DeselectAllAction extends AbstractAction {
         @Override
         public void actionPerformed(ActionEvent e) {
-            view.getFigureEditor().setSelection(Selection.EMPTY);
+            getView().getFigureEditor().setSelection(Selection.EMPTY);
         }
     }
 
@@ -226,8 +303,9 @@ public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNo
         public void nodeChanged(final ProductNodeEvent event) {
             if (event.getSourceNode() == getDocument() &&
                     event.getPropertyName().equalsIgnoreCase(ProductNode.PROPERTY_NAME_NAME)) {
-                setDisplayName(getDocument().getName());
+                updateDisplayName();
             }
         }
     }
+
 }

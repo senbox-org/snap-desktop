@@ -20,6 +20,7 @@ import org.esa.snap.gui.magicwand.MagicWandInteractor;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
+import org.openide.util.HelpCtx;
 import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle.Messages;
@@ -51,7 +52,12 @@ public class MagicWandToolAction extends ToolAction {
         putValue(NAME, Bundle.CTL_MagicWandToolActionText());
         putValue(SHORT_DESCRIPTION, Bundle.CTL_MagicWandToolActionDescription());
         putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/gui/icons/MagicWand22.png", false));
-        putValue("helpId", "magicWandTool");
-        putValue("context", "image");
     }
+
+    @Override
+    public HelpCtx getHelpCtx() {
+        // TODO: Make sure help page is available for ID
+        return new HelpCtx("magicWandTool");
+    }
+
 }

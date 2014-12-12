@@ -21,6 +21,7 @@ import com.bc.ceres.swing.figure.interactions.InsertLineFigureInteractor;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
+import org.openide.util.HelpCtx;
 import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle.Messages;
@@ -52,11 +53,14 @@ public class DrawLineToolAction extends ToolAction {
         putValue(NAME, Bundle.CTL_DrawLineToolActionText());
         putValue(SHORT_DESCRIPTION, Bundle.CTL_DrawLineToolActionDescription());
         putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/gui/icons/DrawLineTool24.gif", false));
-        putValue("helpId", "drawLineTool");
-        putValue("context", "image");
-
         Interactor interactor = new InsertLineFigureInteractor();
         interactor.addListener(new InsertFigureInteractorInterceptor());
         setInteractor(interactor);
+    }
+
+    @Override
+    public HelpCtx getHelpCtx() {
+        // TODO: Make sure help page is available for ID
+        return new HelpCtx("drawLineTool");
     }
 }

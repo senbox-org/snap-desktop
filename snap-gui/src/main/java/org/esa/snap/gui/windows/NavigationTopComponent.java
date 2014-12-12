@@ -30,13 +30,20 @@ import org.esa.beam.framework.ui.UIUtils;
 import org.esa.beam.framework.ui.product.ProductSceneView;
 import org.esa.beam.framework.ui.tool.ToolButtonFactory;
 import org.esa.beam.util.math.MathUtils;
-import org.esa.snap.gui.SnapApp;
-import org.esa.snap.gui.nav.CursorSynchronizer;
+import org.esa.snap.gui.actions.help.HelpAction;
+import org.esa.snap.gui.actions.view.SyncImageCursorsAction;
+import org.esa.snap.gui.actions.view.SyncImageViewsAction;
 import org.esa.snap.gui.nav.NavigationCanvas;
 import org.esa.snap.gui.util.WindowUtilities;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.util.HelpCtx;
+import org.openide.util.Lookup;
+import org.openide.util.LookupEvent;
+import org.openide.util.LookupListener;
 import org.openide.util.NbBundle;
+import org.openide.util.Utilities;
+import org.openide.util.WeakListeners;
 import org.openide.windows.TopComponent;
 
 import javax.swing.*;
@@ -49,7 +56,6 @@ import java.beans.PropertyChangeEvent;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
-import java.util.prefs.Preferences;
 
 import static java.lang.Math.abs;
 import static java.lang.Math.floor;
@@ -65,9 +71,10 @@ import static java.lang.Math.round;
         iconBase = "org/esa/snap/gui/icons/Navigation16.gif",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
-@TopComponent.Registration(mode = "explorer",
+@TopComponent.Registration(
+        mode = "navigator",
         openAtStartup = true,
-        position = 4
+        position = 0
 )
 @ActionID(category = "Window", id = "org.esa.snap.gui.window.NavigationTopComponent")
 @ActionReference(path = "Menu/Window/Tool Windows", position = 0)
@@ -82,16 +89,14 @@ import static java.lang.Math.round;
 /**
  * A window which displays product spectra.
  */
-public class NavigationTopComponent extends TopComponent {
-    /**
-     * Preferences key for automatically showing navigation
-     */
-    public static final String PROPERTY_KEY_AUTO_SHOW_NAVIGATION = "visat.autoshownavigation.enabled";
+public class NavigationTopComponent extends TopComponent implements LookupListener {
 
     public static final String ID = NavigationTopComponent.class.getName();
 
     private static final int MIN_SLIDER_VALUE = -100;
     private static final int MAX_SLIDER_VALUE = +100;
+    // TODO: Make sure help page is available for ID
+    private static final String HELP_ID = "showNavigationWnd";
 
     private LayerCanvasModelChangeHandler layerCanvasModelChangeChangeHandler;
     private ProductNodeListener productNodeChangeHandler;
@@ -115,18 +120,16 @@ public class NavigationTopComponent extends TopComponent {
     private final Color positiveRotationAngleBackground = new Color(221, 255, 221); //#ddffdd
     private final Color negativeRotationAngleBackground = new Color(255, 221, 221); //#ffdddd
     private JSpinner rotationAngleSpinner;
-    private CursorSynchronizer cursorSynchronizer;
-
-    private boolean debug;
 
     public NavigationTopComponent() {
         initComponent();
+        Lookup.Result<ProductSceneView> productSceneViewResult = Utilities.actionsGlobalContext().lookupResult(ProductSceneView.class);
+        productSceneViewResult.addLookupListener(WeakListeners.create(LookupListener.class, this, productSceneViewResult));
     }
 
     public void initComponent() {
         layerCanvasModelChangeChangeHandler = new LayerCanvasModelChangeHandler();
         productNodeChangeHandler = createProductNodeListener();
-        cursorSynchronizer = new CursorSynchronizer();
 
         final DecimalFormatSymbols decimalFormatSymbols = new DecimalFormatSymbols(Locale.ENGLISH);
         scaleFormat = new DecimalFormat("#####.##", decimalFormatSymbols);
@@ -153,20 +156,16 @@ public class NavigationTopComponent extends TopComponent {
         zoomAllButton.setToolTipText("Zoom all."); /*I18N*/
         zoomAllButton.addActionListener(e -> zoomAll());
 
-        syncViewsButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon("icons/SyncViews24.png"), true);
-        syncViewsButton.setToolTipText("Synchronise compatible product views."); /*I18N*/
+        syncViewsButton = ToolButtonFactory.createButton(new SyncImageViewsAction(), true);
         syncViewsButton.setName("syncViewsButton");
-        syncViewsButton.addActionListener(e -> maybeSynchronizeCompatibleProductViews());
+        syncViewsButton.setText(null);
 
-        syncCursorButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon("icons/SyncCursor24.png"), true);
-        syncCursorButton.setToolTipText("Synchronise cursor position."); /*I18N*/
+        syncCursorButton = ToolButtonFactory.createButton(new SyncImageCursorsAction(), true);
         syncCursorButton.setName("syncCursorButton");
-        syncCursorButton.addActionListener(e -> cursorSynchronizer.setEnabled(syncCursorButton.isSelected()));
+        syncCursorButton.setText(null);
 
-        AbstractButton helpButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon("icons/Help22.png"), false);
-        helpButton.setToolTipText("Help."); /*I18N*/
+        AbstractButton helpButton = ToolButtonFactory.createButton(new HelpAction(this), false);
         helpButton.setName("helpButton");
-
 
         final JPanel eastPane = GridBagUtils.createPanel();
         final GridBagConstraints gbc = new GridBagConstraints();
@@ -281,23 +280,17 @@ public class NavigationTopComponent extends TopComponent {
 
         setPreferredSize(new Dimension(320, 320));
 
-        // TODO @HelpSys
-        /*
-        if (getDescriptor().getHelpId() != null) {
-            HelpSys.enableHelpOnButton(helpButton, getDescriptor().getHelpId());
-            HelpSys.enableHelpKey(mainPane, getDescriptor().getHelpId());
-        }
-        */
-
-        setCurrentView(SnapApp.getInstance().getSelectedProductSceneView());
-
+        updateCurrentView();
         updateState();
+    }
 
-        // Add an internal frame listener to VISAT so that we can update our
-        // navigation window with the information of the currently activated
-        // product scene view.
-        //
-        WindowUtilities.addListener(new NavigationWL());
+    @Override
+    public void resultChanged(LookupEvent ev) {
+        updateCurrentView();
+    }
+
+    private void updateCurrentView() {
+        setCurrentView(Utilities.actionsGlobalContext().lookup(ProductSceneView.class));
     }
 
     public ProductSceneView getCurrentView() {
@@ -325,6 +318,10 @@ public class NavigationTopComponent extends TopComponent {
         }
     }
 
+    @Override
+    public HelpCtx getHelpCtx() {
+        return new HelpCtx(HELP_ID);
+    }
 
     NavigationCanvas createNavigationCanvas() {
         return new NavigationCanvas(this);
@@ -473,19 +470,7 @@ public class NavigationTopComponent extends TopComponent {
         double s2 = zoomSlider.getMaximum();
         double v1 = (sv - s1) / (s2 - s1);
         double v2 = f1 + v1 * (f2 - f1);
-        double zf = exp2(v2);
-
-        if (debug) {
-            System.out.println("NavigationToolView.sliderValueToZoomFactor:");
-            System.out.println("  sv = " + sv);
-            System.out.println("  f1 = " + f1);
-            System.out.println("  f2 = " + f2);
-            System.out.println("  v1 = " + v1);
-            System.out.println("  v2 = " + v2);
-            System.out.println("  zf = " + zf);
-        }
-
-        return zf;
+        return exp2(v2);
     }
 
     /**
@@ -500,19 +485,7 @@ public class NavigationTopComponent extends TopComponent {
         double s2 = zoomSlider.getMaximum();
         double v2 = log2(zf);
         double v1 = max(0.0, min(1.0, (v2 - f1) / (f2 - f1)));
-        int sv = (int) round((s1 + v1 * (s2 - s1)));
-
-        if (debug) {
-            System.out.println("NavigationToolView.zoomFactorToSliderValue:");
-            System.out.println("  zf = " + zf);
-            System.out.println("  f1 = " + f1);
-            System.out.println("  f2 = " + f2);
-            System.out.println("  v2 = " + v2);
-            System.out.println("  v1 = " + v1);
-            System.out.println("  sv = " + sv);
-        }
-
-        return sv;
+        return (int) ((s1 + v1 * (s2 - s1)) + 0.5);
     }
 
     private void updateState() {
@@ -531,11 +504,11 @@ public class NavigationTopComponent extends TopComponent {
     }
 
     private void updateTitle() {
-        if (currentView != null) {
-            if (currentView.isRGB()) {
-                setDisplayName(Bundle.CTL_NavigationTopComponentName() + " - " + currentView.getProduct().getProductRefString() + " RGB");
+        if (getCurrentView() != null) {
+            if (getCurrentView().isRGB()) {
+                setDisplayName(Bundle.CTL_NavigationTopComponentName() + " - " + getCurrentView().getProduct().getProductRefString() + " RGB");
             } else {
-                setDisplayName(Bundle.CTL_NavigationTopComponentName() + " - " + currentView.getRaster().getDisplayName());
+                setDisplayName(Bundle.CTL_NavigationTopComponentName() + " - " + getCurrentView().getRaster().getDisplayName());
             }
         } else {
             setDisplayName(Bundle.CTL_NavigationTopComponentName());
@@ -628,8 +601,8 @@ public class NavigationTopComponent extends TopComponent {
             public void nodeChanged(final ProductNodeEvent event) {
                 if (event.getPropertyName().equalsIgnoreCase(Product.PROPERTY_NAME_NAME)) {
                     final ProductNode sourceNode = event.getSourceNode();
-                    if ((currentView.isRGB() && sourceNode == currentView.getProduct())
-                            || sourceNode == currentView.getRaster()) {
+                    if ((getCurrentView().isRGB() && sourceNode == getCurrentView().getProduct())
+                            || sourceNode == getCurrentView().getRaster()) {
                         updateTitle();
                     }
                 }
@@ -637,67 +610,6 @@ public class NavigationTopComponent extends TopComponent {
         };
     }
 
-    private class NavigationWL implements WindowUtilities.Listener {
-
-        @Override
-        public void windowOpened(WindowUtilities.Event e) {
-            TopComponent topComponent = e.getTopComponent();
-            if (topComponent instanceof ProductSceneViewTopComponent) {
-                ProductSceneView newSceneView = ((ProductSceneViewTopComponent) topComponent).getView();
-
-                Preferences preferences = SnapApp.getInstance().getPreferences();
-                final boolean showWindow = preferences.getBoolean(PROPERTY_KEY_AUTO_SHOW_NAVIGATION, true);
-                if (showWindow) {
-                    NavigationTopComponent.this.open();
-                }
-
-                if (syncViewsButton.isSelected()) {
-                    java.util.List<ProductSceneViewTopComponent> topComponents = WindowUtilities.findOpen(ProductSceneViewTopComponent.class);
-                    for (ProductSceneViewTopComponent productSceneViewTopComponent : topComponents) {
-                        ProductSceneView oldSceneView = productSceneViewTopComponent.getView();
-                        if (oldSceneView != newSceneView) {
-                            boolean done = oldSceneView.synchronizeViewportIfPossible(newSceneView);
-                            if (done) {
-                                newSceneView.getLayerCanvas().setInitiallyZoomingAll(false);
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        @Override
-        public void windowClosed(WindowUtilities.Event e) {
-            if (isShowing()) {
-                TopComponent topComponent = e.getTopComponent();
-                if (topComponent instanceof ProductSceneViewTopComponent) {
-                    ProductSceneView view = ((ProductSceneViewTopComponent) topComponent).getView();
-                    if (getCurrentView() == view) {
-                        setCurrentView(null);
-                    }
-                }
-            }
-        }
-
-        @Override
-        public void windowActivated(WindowUtilities.Event e) {
-            if (isShowing()) {
-                TopComponent topComponent = e.getTopComponent();
-                if (topComponent instanceof ProductSceneViewTopComponent) {
-                    ProductSceneView view = ((ProductSceneViewTopComponent) topComponent).getView();
-                    setCurrentView(view);
-                } else {
-                    // todo
-                    //setCurrentView(null);
-                }
-            }
-        }
-
-        @Override
-        public void windowDeactivated(WindowUtilities.Event e) {
-        }
-    }
 
     private class LayerCanvasModelChangeHandler implements LayerCanvasModel.ChangeListener {
 
@@ -720,7 +632,6 @@ public class NavigationTopComponent extends TopComponent {
         @Override
         public void handleViewportChanged(Viewport viewport, boolean orientationChanged) {
             updateValues();
-            maybeSynchronizeCompatibleProductViews();
         }
     }
 }

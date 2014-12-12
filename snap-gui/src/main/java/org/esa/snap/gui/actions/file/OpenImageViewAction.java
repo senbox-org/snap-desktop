@@ -27,9 +27,7 @@ import org.esa.snap.gui.SnapApp;
 import org.esa.snap.gui.nodes.PNodeFactory;
 import org.esa.snap.gui.util.WindowUtilities;
 import org.esa.snap.gui.windows.ProductSceneViewTopComponent;
-import org.openide.awt.ActionID;
-import org.openide.awt.ActionRegistration;
-import org.openide.awt.UndoRedo;
+import org.openide.awt.*;
 import org.openide.util.ImageUtilities;
 import org.openide.util.NbBundle;
 
@@ -52,7 +50,11 @@ import java.util.List;
         displayName = "#CTL_OpenImageViewActionName",
         iconBase = "org/esa/snap/gui/icons/RsBandAsSwath16.gif"
 )
-//@ActionReference(path = "Menu/File", position = 149)
+@ActionReferences({
+        //@ActionReference(path = "Menu/File", position = 149),
+        @ActionReference(path = "Context/Product/Band", position = 100),
+        @ActionReference(path = "Context/Product/TPGrid", position = 100)
+})
 @NbBundle.Messages("CTL_OpenImageViewActionName=Open in Image View")
 public class OpenImageViewAction extends AbstractAction {
 
@@ -74,13 +76,14 @@ public class OpenImageViewAction extends AbstractAction {
                                                            SnapApp.getInstance().getInstanceName(),
                                                            band.getName());
 
+        ProductSceneView existingView = getProductSceneView(band);
         SwingWorker worker = new ProgressMonitorSwingWorker<ProductSceneImage, Object>(SnapApp.getInstance().getMainFrame(),
                                                                                        progressMonitorTitle) {
 
             @Override
             protected ProductSceneImage doInBackground(ProgressMonitor pm) throws Exception {
                 try {
-                    return createProductSceneImage(band, pm);
+                    return createProductSceneImage(band, existingView, pm);
                 } finally {
                     if (pm.isCanceled()) {
                         band.unloadRasterData();
@@ -124,17 +127,16 @@ public class OpenImageViewAction extends AbstractAction {
         return productSceneViewWindow;
     }
 
-    protected ProductSceneImage createProductSceneImage(final RasterDataNode raster, ProgressMonitor pm) {
+    protected ProductSceneImage createProductSceneImage(final RasterDataNode raster, ProductSceneView existingView, ProgressMonitor pm) {
         Debug.assertNotNull(raster);
         Debug.assertNotNull(pm);
 
         try {
             pm.beginTask("Creating image...", 1);
 
-            ProductSceneView view = getProductSceneView(raster);
             ProductSceneImage sceneImage;
-            if (view != null) {
-                sceneImage = new ProductSceneImage(raster, view);
+            if (existingView != null) {
+                sceneImage = new ProductSceneImage(raster, existingView);
             } else {
                 sceneImage = new ProductSceneImage(raster,
                                                    SnapApp.getInstance().getCompatiblePreferences(),

@@ -21,6 +21,7 @@ import com.bc.ceres.swing.figure.interactions.SelectionInteractor;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
+import org.openide.util.HelpCtx;
 import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle.Messages;
@@ -53,10 +54,15 @@ public class SelectToolAction extends ToolAction {
         putValue(NAME, Bundle.CTL_SelectToolActionText());
         putValue(SHORT_DESCRIPTION, Bundle.CTL_SelectToolActionDescription());
         putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/gui/icons/SelectTool24.gif", false));
-        putValue("helpId", "selectTool");
 
         Interactor interactor = new SelectionInteractor();
         interactor.addListener(new SelectionInteractorInterceptor());
         setInteractor(interactor);
+    }
+
+    @Override
+    public HelpCtx getHelpCtx() {
+        // TODO: Make sure help page is available for ID
+        return new HelpCtx("selectTool");
     }
 }

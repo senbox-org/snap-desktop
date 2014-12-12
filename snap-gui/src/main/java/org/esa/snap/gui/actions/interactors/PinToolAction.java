@@ -20,6 +20,7 @@ import org.esa.snap.gui.placemark.InsertPinInteractor;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
+import org.openide.util.HelpCtx;
 import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle.Messages;
@@ -52,6 +53,11 @@ public class PinToolAction extends ToolAction {
         putValue(NAME, Bundle.CTL_PinToolActionText());
         putValue(SHORT_DESCRIPTION, Bundle.CTL_PinToolActionDescription());
         putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/gui/icons/PinTool24.gif", false));
-        putValue("helpId", "pinTool");
+    }
+
+    @Override
+    public HelpCtx getHelpCtx() {
+        // TODO: Make sure help page is available for ID
+        return new HelpCtx("pinTool");
     }
 }

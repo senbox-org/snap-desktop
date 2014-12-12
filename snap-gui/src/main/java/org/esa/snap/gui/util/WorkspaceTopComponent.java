@@ -6,7 +6,6 @@
 package org.esa.snap.gui.util;
 
 import com.bc.ceres.core.Assert;
-import org.esa.snap.gui.actions.window.NewWorkspaceAction;
 import org.netbeans.swing.tabcontrol.DefaultTabDataModel;
 import org.netbeans.swing.tabcontrol.TabData;
 import org.netbeans.swing.tabcontrol.TabDisplayer;
@@ -17,34 +16,19 @@ import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.awt.ActionID;
-import org.openide.awt.ActionReference;
 import org.openide.awt.UndoRedo;
-import org.openide.nodes.Node;
 import org.openide.util.Lookup;
+import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
 import org.openide.windows.Mode;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.ImageIcon;
-import javax.swing.JComponent;
-import javax.swing.JDesktopPane;
-import javax.swing.JInternalFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Image;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -74,18 +58,21 @@ import static org.openide.util.NbBundle.Messages;
 )
 @TopComponent.Registration(
         mode = "editor",
-        openAtStartup = true)
-@ActionID(category = "Window", id = "org.esa.snap.gui.window.WorkspaceTopComponent")
-@ActionReference(path = "Menu/Window/Tool Windows", position = 0)
+        openAtStartup = false
+)
+@ActionID(
+        category = "Window",
+        id = "org.esa.snap.gui.window.WorkspaceTopComponent"
+)
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_WorkspaceTopComponentNameBase",
         preferredID = "WorkspaceTopComponent"
 )
 @Messages({
-                  "CTL_WorkspaceTopComponentNameBase=Workspace",
-                  "CTL_WorkspaceTopComponentDescription=Provides an internal desktop for document windows",
-          })
-public class WorkspaceTopComponent extends TopComponent {
+        "CTL_WorkspaceTopComponentNameBase=Workspace",
+        "CTL_WorkspaceTopComponentDescription=Provides an internal desktop for document windows",
+})
+public class WorkspaceTopComponent extends TopComponent implements Tileable {
 
     public final static String ID = WorkspaceTopComponent.class.getSimpleName();
 
@@ -114,7 +101,7 @@ public class WorkspaceTopComponent extends TopComponent {
         internalFrameListener = new MyInternalFrameListener();
         propertyChangeListener = new MyPropertyChangeListener();
         lookup = new FrameProxyLookup();
-        associateLookup(lookup);
+        associateLookup(new ProxyLookup(Lookups.fixed(this), lookup));
         initComponents();
         setName(displayName);
         setDisplayName(displayName);
@@ -168,6 +155,32 @@ public class WorkspaceTopComponent extends TopComponent {
         return topComponents;
     }
 
+    @Override
+    public boolean canTile() {
+        return frameToTabMap.size() >= 2;
+    }
+
+    @Override
+    public void tileEvenly() {
+        new TileEvenlyAction().actionPerformed(null);
+    }
+
+    @Override
+    public void tileHorizontally() {
+        new TileHorizontallyAction().actionPerformed(null);
+    }
+
+    @Override
+    public void tileVertically() {
+        new TileVerticallyAction().actionPerformed(null);
+    }
+
+    @Override
+    public void tileSingle() {
+        new TileSingleAction().actionPerformed(null);
+    }
+
+
     /**
      * Adds a window to this workspace window. The method actually "floats" the window as an internal frame into an
      * internal desktop pane. If the window already exists, it's internal frame will be activated.
@@ -214,10 +227,10 @@ public class WorkspaceTopComponent extends TopComponent {
         JComponent dummyComponent = new JPanel();
         dummyComponent.setPreferredSize(new Dimension(-1, 4));
         //dummyComponent.setSize(new Dimension(-1, 4));
-        TabData tabData = new TabData(dummyComponent, imageIcon, displayName, null);
+        TabData tab = new TabData(dummyComponent, imageIcon, displayName, null);
 
-        frameToTabMap.put(internalFrame, tabData);
-        tabToFrameMap.put(tabData, internalFrame);
+        frameToTabMap.put(internalFrame, tab);
+        tabToFrameMap.put(tab, internalFrame);
 
         internalFrame.setContentPane(topComponent);
 
@@ -229,7 +242,7 @@ public class WorkspaceTopComponent extends TopComponent {
         }
         internalFrame.setBounds(bounds);
 
-        tabbedContainer.getModel().addTab(tabbedContainer.getModel().size(), tabData);
+        tabbedContainer.getModel().addTab(tabbedContainer.getModel().size(), tab);
         tabbedContainer.setVisible(true);
         desktopPane.add(internalFrame);
 
@@ -319,52 +332,59 @@ public class WorkspaceTopComponent extends TopComponent {
     @Override
     protected void componentClosed() {
         tabbedContainer.removeActionListener(tabActionListener);
-        // todo - close all child top components, call child.componentClosed()
-    }
-
-    @Override
-    protected void componentShowing() {
-        // todo - call child.componentShowing()
-    }
-
-    @Override
-    protected void componentHidden() {
-        // todo - call child.componentHidden()
-    }
-
-    @Override
-    protected void componentActivated() {
-        JInternalFrame internalFrame;
-        // Make sure that activation states of tabbedContainer and desktopPane are synchronized
-        int tabIndex = tabbedContainer.getSelectionModel().getSelectedIndex();
-        if (tabIndex >= 0) {
-            TabData tab = tabbedContainer.getModel().getTab(tabIndex);
-            internalFrame = tabToFrameMap.get(tab);
-            if (!internalFrame.isSelected()) {
-                try {
-                    internalFrame.setSelected(true);
-                } catch (PropertyVetoException e) {
-                    // ok
-                }
-            }
-        } else {
-            internalFrame = desktopPane.getSelectedFrame();
-            if (internalFrame != null) {
-                TabData tab = frameToTabMap.get(internalFrame);
-                tabIndex = tabbedContainer.getModel().indexOf(tab);
-                if (tabIndex >= 0) {
-                    tabbedContainer.getSelectionModel().setSelectedIndex(tabIndex);
-                }
-            }
+        for (JInternalFrame internalFrame : desktopPane.getAllFrames()) {
+            internalFrame.dispose();
         }
-        if (internalFrame != null) {
-            internalFrame.requestFocusInWindow();
+    }
+
+   @Override
+    protected void componentActivated() {
+        JInternalFrame selectedFrame = desktopPane.getSelectedFrame();
+
+        if (selectedFrame != null) {
+            TabData tab = frameToTabMap.get(selectedFrame);
+            int tabIndex = tabbedContainer.getModel().indexOf(tab);
+            if (tabIndex >= 0) {
+                tabbedContainer.getSelectionModel().setSelectedIndex(tabIndex);
+            }
+            selectedFrame.requestFocusInWindow();
+            notifyActivated(getTopComponent(selectedFrame));
+        } else {
+            int tabIndex = tabbedContainer.getSelectionModel().getSelectedIndex();
+            if (tabIndex >= 0) {
+                TabData tab = tabbedContainer.getModel().getTab(tabIndex);
+                selectedFrame = tabToFrameMap.get(tab);
+                if (!selectedFrame.isSelected()) {
+                    try {
+                        selectedFrame.setSelected(true);
+                    } catch (PropertyVetoException e) {
+                        // ok
+                    }
+                }
+            }
         }
     }
 
     @Override
     protected void componentDeactivated() {
-        // todo - deactivate internal frame, call child.componentDeactivated()
+        JInternalFrame selectedFrame = desktopPane.getSelectedFrame();
+        if (selectedFrame != null) {
+            notifyDeactivated(getTopComponent(selectedFrame));
+        }
+    }
+
+    @Override
+    protected void componentShowing() {
+        for (JInternalFrame internalFrame : desktopPane.getAllFrames()) {
+            NotifiableComponent.get(getTopComponent(internalFrame)).componentShowing();
+        }
+    }
+
+    @Override
+    protected void componentHidden() {
+        for (JInternalFrame internalFrame : desktopPane.getAllFrames()) {
+            NotifiableComponent.get(getTopComponent(internalFrame)).componentHidden();
+        }
     }
 
     @SuppressWarnings("UnusedDeclaration")
@@ -393,15 +413,15 @@ public class WorkspaceTopComponent extends TopComponent {
         Object internalFrameID = getInternalFrameID(topComponent);
         idToBoundsMap.put(internalFrameID, new Rectangle(internalFrame.getBounds()));
 
-        TabData tabData = frameToTabMap.get(internalFrame);
-        if (tabData != null) {
+        TabData tab = frameToTabMap.get(internalFrame);
+        if (tab != null) {
             if (removeTab) {
-                int tabIndex = tabbedContainer.getModel().indexOf(tabData);
+                int tabIndex = tabbedContainer.getModel().indexOf(tab);
                 if (tabIndex >= 0) {
                     tabbedContainer.getModel().removeTab(tabIndex);
                 }
             }
-            tabToFrameMap.remove(tabData);
+            tabToFrameMap.remove(tab);
         }
         frameToTabMap.remove(internalFrame);
 
@@ -443,7 +463,8 @@ public class WorkspaceTopComponent extends TopComponent {
     }
 
     private JInternalFrame getInternalFrame(int tabIndex) {
-        return tabToFrameMap.get(tabbedContainer.getModel().getTab(tabIndex));
+        TabData tab = tabbedContainer.getModel().getTab(tabIndex);
+        return tabToFrameMap.get(tab);
     }
 
     private Object getInternalFrameID(TopComponent topComponent) {
@@ -453,6 +474,46 @@ public class WorkspaceTopComponent extends TopComponent {
             topComponent.putClientProperty("internalFrameID", internalFrameID);
         }
         return internalFrameID;
+    }
+
+    private void notifyOpened(TopComponent topComponent) {
+        NotifiableComponent.get(topComponent).componentOpened();
+
+        WindowUtilities.Event event = new WindowUtilities.Event(topComponent);
+        WindowUtilities.Listener[] listeners = WindowUtilities.getListeners();
+        for (WindowUtilities.Listener listener : listeners) {
+            listener.windowOpened(event);
+        }
+    }
+
+    private void notifyClosed(TopComponent topComponent) {
+        NotifiableComponent.get(topComponent).componentClosed();
+
+        WindowUtilities.Event event = new WindowUtilities.Event(topComponent);
+        WindowUtilities.Listener[] listeners = WindowUtilities.getListeners();
+        for (WindowUtilities.Listener listener : listeners) {
+            listener.windowClosed(event);
+        }
+    }
+
+    private void notifyActivated(TopComponent topComponent) {
+        NotifiableComponent.get(topComponent).componentActivated();
+
+        WindowUtilities.Event event = new WindowUtilities.Event(topComponent);
+        WindowUtilities.Listener[] listeners = WindowUtilities.getListeners();
+        for (WindowUtilities.Listener listener : listeners) {
+            listener.windowActivated(event);
+        }
+    }
+
+    private void notifyDeactivated(TopComponent topComponent) {
+        NotifiableComponent.get(topComponent).componentDeactivated();
+
+        WindowUtilities.Event event = new WindowUtilities.Event(topComponent);
+        WindowUtilities.Listener[] listeners = WindowUtilities.getListeners();
+        for (WindowUtilities.Listener listener : listeners) {
+            listener.windowDeactivated(event);
+        }
     }
 
     /**
@@ -683,23 +744,9 @@ public class WorkspaceTopComponent extends TopComponent {
             int desktopHeight = desktopPane.getHeight();
             int windowCount = frameToTabMap.size();
 
-            double bestDeltaValue = Double.POSITIVE_INFINITY;
-            int bestHorCount = -1;
-            int bestVerCount = -1;
-            for (int verCount = 1; verCount <= windowCount; verCount++) {
-                for (int horCount = 1; horCount <= windowCount; horCount++) {
-                    if (horCount * verCount >= windowCount && horCount * verCount <= 2 * windowCount) {
-                        double deltaRatio = Math.abs(1.0 - verCount / (double) horCount);
-                        double deltaCount = Math.abs(1.0 - (horCount * verCount) / ((double) windowCount));
-                        double deltaValue = deltaRatio + deltaCount;
-                        if (deltaValue < bestDeltaValue) {
-                            bestDeltaValue = deltaValue;
-                            bestHorCount = horCount;
-                            bestVerCount = verCount;
-                        }
-                    }
-                }
-            }
+            int[] betRowCol = WindowUtilities.getBestSubdivisionIntoSquares(windowCount, -1, -1);
+            int bestHorCount = betRowCol[1];
+            int bestVerCount = betRowCol[0];
 
             int windowWidth = desktopWidth / bestHorCount;
             int windowHeight = desktopHeight / bestVerCount;
@@ -709,8 +756,8 @@ public class WorkspaceTopComponent extends TopComponent {
             for (int j = 0; j < bestVerCount; j++) {
                 for (int i = 0; i < bestHorCount; i++) {
                     if (windowIndex < windowCount) {
-                        TabData tabData = tabs.get(windowIndex);
-                        JInternalFrame internalFrame = tabToFrameMap.get(tabData);
+                        TabData tab = tabs.get(windowIndex);
+                        JInternalFrame internalFrame = tabToFrameMap.get(tab);
                         internalFrame.setBounds(i * windowWidth, j * windowHeight, windowWidth, windowHeight);
                     }
                     windowIndex++;
@@ -733,8 +780,8 @@ public class WorkspaceTopComponent extends TopComponent {
             int windowWidth = desktopWidth / windowCount;
             List<TabData> tabs = tabbedContainer.getModel().getTabs();
             for (int windowIndex = 0; windowIndex < windowCount; windowIndex++) {
-                TabData tabData = tabs.get(windowIndex);
-                JInternalFrame internalFrame = tabToFrameMap.get(tabData);
+                TabData tab = tabs.get(windowIndex);
+                JInternalFrame internalFrame = tabToFrameMap.get(tab);
                 internalFrame.setBounds(windowIndex * windowWidth, 0, windowWidth, desktopHeight);
             }
         }
@@ -754,9 +801,26 @@ public class WorkspaceTopComponent extends TopComponent {
             int windowHeight = desktopHeight / windowCount;
             List<TabData> tabs = tabbedContainer.getModel().getTabs();
             for (int windowIndex = 0; windowIndex < windowCount; windowIndex++) {
-                TabData tabData = tabs.get(windowIndex);
-                JInternalFrame internalFrame = tabToFrameMap.get(tabData);
+                TabData tab = tabs.get(windowIndex);
+                JInternalFrame internalFrame = tabToFrameMap.get(tab);
                 internalFrame.setBounds(0, windowIndex * windowHeight, desktopWidth, windowHeight);
+            }
+        }
+    }
+
+    @Messages("CTL_TileSingleActionName=Tile Single")
+    private class TileSingleAction extends AbstractAction {
+        public TileSingleAction() {
+            super(Bundle.CTL_TileSingleActionName());
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            int desktopWidth = desktopPane.getWidth();
+            int desktopHeight = desktopPane.getHeight();
+            JInternalFrame[] internalFrames = desktopPane.getAllFrames();
+            for (JInternalFrame internalFrame : internalFrames) {
+                internalFrame.setBounds(0, 0, desktopWidth, desktopHeight);
             }
         }
     }
@@ -772,8 +836,8 @@ public class WorkspaceTopComponent extends TopComponent {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            TabData tabData = tabbedContainer.getModel().getTab(tabIndex);
-            JInternalFrame internalFrame = tabToFrameMap.get(tabData);
+            TabData tab = tabbedContainer.getModel().getTab(tabIndex);
+            JInternalFrame internalFrame = tabToFrameMap.get(tab);
             TopComponent topComponent = dockInternalFrame(internalFrame);
             if (topComponent != null) {
                 topComponent.requestActive();
@@ -802,10 +866,10 @@ public class WorkspaceTopComponent extends TopComponent {
     }
 
     @Messages({
-                      "CTL_FloatIntoWorkspaceActionName=Float into Workspace",
-                      "LBL_FloatIntoWorkspaceActionName=Workspaces:",
-                      "CTL_FloatIntoWorkspaceActionTitle=Select Workspace",
-              })
+            "CTL_FloatIntoWorkspaceActionName=Float into Workspace",
+            "LBL_FloatIntoWorkspaceActionName=Workspaces:",
+            "CTL_FloatIntoWorkspaceActionTitle=Select Workspace",
+    })
     public static class FloatIntoWorkspaceAction extends AbstractAction {
         private TopComponent window;
 
@@ -896,31 +960,22 @@ public class WorkspaceTopComponent extends TopComponent {
     private class MyInternalFrameListener implements InternalFrameListener {
         @Override
         public void internalFrameOpened(InternalFrameEvent e) {
-            LOG.info("internalFrameOpened: e = " + e);
+            LOG.fine("internalFrameOpened: e = " + e);
 
             tabbedContainer.updateUI();
 
-            DocumentTopComponent documentWindow = getDocumentWindow(e);
-            if (documentWindow != null) {
-                documentWindow.componentOpened();
-            }
-
-            WindowUtilities.Event event = new WindowUtilities.Event(getTopComponent(e.getInternalFrame()));
-            WindowUtilities.Listener[] listeners = WindowUtilities.getListeners();
-            for (WindowUtilities.Listener listener : listeners) {
-                listener.windowOpened(event);
-            }
+            notifyOpened(getTopComponent(e.getInternalFrame()));
         }
 
         @Override
         public void internalFrameClosing(InternalFrameEvent e) {
-            LOG.info("internalFrameClosing: e = " + e);
+            LOG.fine("internalFrameClosing: e = " + e);
             // do nothing
         }
 
         @Override
         public void internalFrameClosed(InternalFrameEvent e) {
-            LOG.info("internalFrameClosed: e = " + e);
+            LOG.fine("internalFrameClosed: e = " + e);
 
             JInternalFrame internalFrame = e.getInternalFrame();
             if (frameToTabMap.containsKey(internalFrame)) {
@@ -928,21 +983,12 @@ public class WorkspaceTopComponent extends TopComponent {
             }
             tabbedContainer.updateUI();
 
-            DocumentTopComponent documentWindow = getDocumentWindow(e);
-            if (documentWindow != null) {
-                documentWindow.componentClosed();
-            }
-
-            WindowUtilities.Event event = new WindowUtilities.Event(getTopComponent(internalFrame));
-            WindowUtilities.Listener[] listeners = WindowUtilities.getListeners();
-            for (WindowUtilities.Listener listener : listeners) {
-                listener.windowClosed(event);
-            }
+            notifyClosed(getTopComponent(internalFrame));
         }
 
         @Override
         public void internalFrameActivated(InternalFrameEvent e) {
-            LOG.info("internalFrameActivated: e = " + e);
+            LOG.fine("internalFrameActivated: e = " + e);
 
             // Synchronise tab selection state, if not already done
             JInternalFrame internalFrame = e.getInternalFrame();
@@ -956,79 +1002,53 @@ public class WorkspaceTopComponent extends TopComponent {
                     break;
                 }
             }
+
             tabbedContainer.updateUI();
 
             TopComponent topComponent = getTopComponent(internalFrame);
+
             // Publish lookup contents of selected frame to parent window
             lookup.setLookup(topComponent.getLookup());
             // Publish activated nodes, if any
             setActivatedNodes(topComponent.getActivatedNodes());
 
+            // May not really be required
             if (WorkspaceTopComponent.this != WindowManager.getDefault().getRegistry().getActivated()) {
                 WorkspaceTopComponent.this.requestActive();
             }
 
-            DocumentTopComponent documentWindow = getDocumentWindow(e);
-            if (documentWindow != null) {
-                documentWindow.componentActivated();
-            }
-
-            WindowUtilities.Event event = new WindowUtilities.Event(topComponent);
-            WindowUtilities.Listener[] listeners = WindowUtilities.getListeners();
-            for (WindowUtilities.Listener listener : listeners) {
-                listener.windowActivated(event);
-            }
+            notifyActivated(topComponent);
         }
 
         @Override
         public void internalFrameDeactivated(InternalFrameEvent e) {
-            LOG.info("internalFrameDeactivated: e = " + e);
+            LOG.fine("internalFrameDeactivated: e = " + e);
 
             tabbedContainer.updateUI();
+
             lookup.setLookup(Lookup.EMPTY);
 
-            DocumentTopComponent documentWindow = getDocumentWindow(e);
-            if (documentWindow != null) {
-                documentWindow.componentDeactivated();
-            }
-
-            WindowUtilities.Event event = new WindowUtilities.Event(getTopComponent(e.getInternalFrame()));
-            WindowUtilities.Listener[] listeners = WindowUtilities.getListeners();
-            for (WindowUtilities.Listener listener : listeners) {
-                listener.windowDeactivated(event);
-            }
+            notifyDeactivated(getTopComponent(e.getInternalFrame()));
         }
 
         @Override
         public void internalFrameIconified(InternalFrameEvent e) {
-            LOG.info("internalFrameIconified: e = " + e);
+            LOG.fine("internalFrameIconified: e = " + e);
 
             tabbedContainer.updateUI();
 
-            DocumentTopComponent documentWindow = getDocumentWindow(e);
-            if (documentWindow != null) {
-                documentWindow.componentHidden();
-            }
+            TopComponent topComponent = getTopComponent(e.getInternalFrame());
+            NotifiableComponent.get(topComponent).componentHidden();
         }
 
         @Override
         public void internalFrameDeiconified(InternalFrameEvent e) {
-            LOG.info("internalFrameDeiconified: e = " + e);
+            LOG.fine("internalFrameDeiconified: e = " + e);
 
             tabbedContainer.updateUI();
 
-            DocumentTopComponent documentWindow = getDocumentWindow(e);
-            if (documentWindow != null) {
-                documentWindow.componentShowing();
-            }
-        }
-
-        private DocumentTopComponent getDocumentWindow(InternalFrameEvent e) {
             TopComponent topComponent = getTopComponent(e.getInternalFrame());
-            if (topComponent instanceof DocumentTopComponent) {
-                return (DocumentTopComponent) topComponent;
-            }
-            return null;
+            NotifiableComponent.get(topComponent).componentShowing();
         }
     }
 
@@ -1060,13 +1080,27 @@ public class WorkspaceTopComponent extends TopComponent {
                 } else {
                     frame.setFrameIcon(null);
                 }
-            } else if ("displayName".equals(event.getPropertyName())) {
-                frame.setTitle(source.getDisplayName());
-                TabData tabData = frameToTabMap.get(frame);
-                Assert.notNull(tabData);
-                int i = tabbedContainer.getModel().indexOf(tabData);
+
+                TabData tab = frameToTabMap.get(frame);
+                Assert.notNull(tab);
+                int i = tabbedContainer.getModel().indexOf(tab);
                 if (i >= 0) {
-                    tabbedContainer.getModel().setText(i, source.getDisplayName());
+                    if (icon != null) {
+                        tabbedContainer.getModel().setIcon(i, new ImageIcon(icon));
+                    } else {
+                        tabbedContainer.getModel().setIcon(i, null);
+                    }
+                }
+            } else if ("displayName".equals(event.getPropertyName())) {
+                String displayName = source.getDisplayName();
+
+                frame.setTitle(displayName);
+
+                TabData tab = frameToTabMap.get(frame);
+                Assert.notNull(tab);
+                int i = tabbedContainer.getModel().indexOf(tab);
+                if (i >= 0) {
+                    tabbedContainer.getModel().setText(i, displayName);
                 }
             }
         }

@@ -14,6 +14,7 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
+import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.Mode;
 import org.openide.windows.WindowManager;
@@ -41,7 +42,7 @@ import java.awt.event.ActionEvent;
                   "LBL_NewWorkspaceActionName=Name:",
                   "VAL_NewWorkspaceActionValue=Workspace"
           })
-public final class NewWorkspaceAction extends AbstractAction {
+public final class NewWorkspaceAction extends AbstractAction implements HelpCtx.Provider {
 
     public NewWorkspaceAction() {
         putValue(NAME, Bundle.CTL_NewWorkspaceActionName());
@@ -63,5 +64,11 @@ public final class NewWorkspaceAction extends AbstractAction {
             workspaceTopComponent.open();
             workspaceTopComponent.requestActive();
         }
+    }
+
+    @Override
+    public HelpCtx getHelpCtx() {
+        // TODO: Make sure help page is available for ID
+        return new HelpCtx("newWorkspace");
     }
 }

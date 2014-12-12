@@ -23,6 +23,7 @@ import com.bc.ceres.swing.figure.interactions.NullInteractor;
 import org.esa.beam.framework.ui.product.ProductSceneView;
 import org.esa.beam.util.Guardian;
 import org.openide.util.ContextAwareAction;
+import org.openide.util.HelpCtx;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
@@ -57,7 +58,7 @@ import java.util.logging.Logger;
  * @author Norman Fomferra
  */
 public abstract class ToolAction extends AbstractAction
-        implements ContextAwareAction, LookupListener, Presenter.Toolbar, Presenter.Menu, Presenter.Popup {
+        implements ContextAwareAction, LookupListener, Presenter.Toolbar, Presenter.Menu, Presenter.Popup, HelpCtx.Provider {
 
     public static final String INTERACTOR_KEY = "interactor";
 
@@ -174,7 +175,7 @@ public abstract class ToolAction extends AbstractAction
     }
 
     private void onSelectionStateChanged() {
-        LOG.info(String.format(">>> %s#onSelectionStateChanged: selected = %s, interactor = %s%n", getClass().getName(), isSelected(), getInteractor()));
+        LOG.fine(String.format(">>> %s#onSelectionStateChanged: selected = %s, interactor = %s%n", getClass().getName(), isSelected(), getInteractor()));
         ProductSceneView productSceneView = getProductSceneView();
         if (productSceneView != null && isSelected()) {
             Interactor oldInteractor = productSceneView.getFigureEditor().getInteractor();
@@ -194,7 +195,7 @@ public abstract class ToolAction extends AbstractAction
 
         @Override
         public void interactorActivated(Interactor interactor) {
-            LOG.info(String.format(">>> %s#interactorActivated: interactor = %s%n", getClass().getName(), interactor));
+            LOG.fine(String.format(">>> %s#interactorActivated: interactor = %s%n", getClass().getName(), interactor));
             if (interactor == getInteractor() && !isSelected()) {
                 setSelected(true);
             }
@@ -202,7 +203,7 @@ public abstract class ToolAction extends AbstractAction
 
         @Override
         public void interactorDeactivated(Interactor interactor) {
-            LOG.info(String.format(">>> %s#interactorDeactivated: interactor = %s%n", getClass().getName(), interactor));
+            LOG.fine(String.format(">>> %s#interactorDeactivated: interactor = %s%n", getClass().getName(), interactor));
             if (interactor == getInteractor() && isSelected()) {
                 setSelected(false);
             }

@@ -7,13 +7,16 @@ import org.openide.windows.WindowManager;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.EventListener;
 import java.util.EventObject;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Various window utilities.
@@ -21,6 +24,8 @@ import java.util.Set;
  * @author Norman Fomferra
  */
 public class WindowUtilities {
+
+    static final String EDITOR_MODE_NAME_FORMAT = "editor_r%dc%d";
 
     final static Map<Listener, PropertyChangeListener> listenerMap = new LinkedHashMap<>();
 
@@ -38,6 +43,62 @@ public class WindowUtilities {
     public static void removeListener(Listener listener) {
         PropertyChangeListener pcl = listenerMap.remove(listener);
         WindowManager.getDefault().getRegistry().removePropertyChangeListener(pcl);
+    }
+
+
+    public static boolean openInEditorMode(int rowIndex, int colIndex, TopComponent editorWindow) {
+        String modeName = String.format(EDITOR_MODE_NAME_FORMAT, rowIndex, colIndex);
+        return openInEditorMode(modeName, editorWindow);
+    }
+
+    public static boolean openInEditorMode(String modeName, TopComponent editorWindow) {
+        Mode editorMode = WindowManager.getDefault().findMode(modeName);
+        if (editorMode != null) {
+            if (!Arrays.asList(editorMode.getTopComponents()).contains(editorWindow)) {
+                if (editorMode.dockInto(editorWindow)) {
+                    editorWindow.open();
+                    return true;
+                }
+            } else {
+                editorWindow.open();
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    public static int countOpenEditorWindows() {
+        int count = 0;
+        WindowManager wm = WindowManager.getDefault();
+        Set<TopComponent> opened = wm.getRegistry().getOpened();
+        for (TopComponent openedWindow : opened) {
+            if (wm.isEditorTopComponent(openedWindow)) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    public static List<TopComponent> findOpenEditorWindows() {
+        return findOpenEditorWindows((win1, win2) -> {
+            String name1 = win1.getDisplayName();
+            String name2 = win2.getDisplayName();
+            return (name1 != null ? name1 : "").compareTo(name2 != null ? name2 : "");
+        });
+    }
+
+    public static List<TopComponent> findOpenEditorWindows(Comparator<TopComponent> comparator) {
+        ArrayList<TopComponent> editorWindows = new ArrayList<>();
+        Set<TopComponent> openedWindows = WindowManager.getDefault().getRegistry().getOpened();
+        editorWindows.addAll(openedWindows
+                                     .stream()
+                                     .filter(topComponent -> WindowManager.getDefault().isEditorTopComponent(topComponent))
+                                     .collect(Collectors.toList()));
+        if (comparator != null) {
+            editorWindows.sort(comparator);
+        }
+        return editorWindows;
     }
 
     public static boolean openDocumentWindow(TopComponent documentWindow) {
@@ -142,6 +203,27 @@ public class WindowUtilities {
         }
     }
 
+    public static int[] getBestSubdivisionIntoSquares(int windowCount, int maxRowCount, int maxColCount) {
+        double bestDeltaValue = Double.POSITIVE_INFINITY;
+        int bestRowCount = -1;
+        int bestColCount = -1;
+        for (int rowCount = 1; rowCount <= Math.max(windowCount, maxRowCount); rowCount++) {
+            for (int colCount = 1; colCount <= Math.max(windowCount, maxColCount); colCount++) {
+                if (colCount * rowCount >= windowCount && colCount * rowCount <= 2 * windowCount) {
+                    double deltaRatio = Math.abs(1.0 - rowCount / (double) colCount);
+                    double deltaCount = Math.abs(1.0 - (colCount * rowCount) / ((double) windowCount));
+                    double deltaValue = deltaRatio + deltaCount;
+                    if (deltaValue < bestDeltaValue) {
+                        bestDeltaValue = deltaValue;
+                        bestRowCount = rowCount;
+                        bestColCount = colCount;
+                    }
+                }
+            }
+        }
+        return new int[]{bestRowCount, bestColCount};
+    }
+
     public interface Collector<W extends TopComponent, L> {
         void collect(W topComponent, List<L> list);
     }
@@ -209,14 +291,24 @@ public class WindowUtilities {
         @Override
         public void propertyChange(PropertyChangeEvent evt) {
             if ("activated".equals(evt.getPropertyName())) {
-                if (evt.getOldValue() != null) {
+                Object oldValue = evt.getOldValue();
+                if (oldValue instanceof TopComponent) {
                     listener.windowDeactivated(new Event((TopComponent) evt.getOldValue()));
                 }
-                listener.windowActivated(new Event((TopComponent) evt.getNewValue()));
+                Object newValue = evt.getNewValue();
+                if (newValue instanceof TopComponent) {
+                    listener.windowActivated(new Event((TopComponent) newValue));
+                }
             } else if ("tcOpen".equals(evt.getPropertyName())) {
-                listener.windowOpened(new Event((TopComponent) evt.getNewValue()));
+                Object newValue = evt.getNewValue();
+                if (newValue instanceof TopComponent) {
+                    listener.windowOpened(new Event((TopComponent) newValue));
+                }
             } else if ("tcClose".equals(evt.getPropertyName())) {
-                listener.windowClosed(new Event((TopComponent) evt.getNewValue()));
+                Object newValue = evt.getNewValue();
+                if (newValue instanceof TopComponent) {
+                    listener.windowClosed(new Event((TopComponent) evt.getNewValue()));
+                }
             }
         }
     }

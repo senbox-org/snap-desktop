@@ -20,6 +20,7 @@ import org.esa.snap.gui.placemark.InsertGcpInteractor;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
+import org.openide.util.HelpCtx;
 import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle.Messages;
@@ -54,7 +55,12 @@ public class GcpToolAction extends ToolAction {
         putValue(NAME, Bundle.CTL_GcpToolActionText());
         putValue(SHORT_DESCRIPTION, Bundle.CTL_GcpToolActionDescription());
         putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/gui/icons/GcpTool24.gif", false));
-        putValue("helpId", "gcpTool");
+    }
+
+    @Override
+    public HelpCtx getHelpCtx() {
+        // TODO: Make sure help page is available for ID
+        return new HelpCtx("gcpTool");
     }
 
     @Override
