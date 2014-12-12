@@ -74,12 +74,9 @@ public class CollapsibleItemsPanel extends JComponent {
             button.setHorizontalAlignment(SwingConstants.LEFT);
             button.setBorder(new EmptyBorder(2, 4, 2, 4));
             button.setIcon(expIcon);
-            button.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    item.getComponent().setVisible(!button.isSelected());
-                    button.setIcon(button.isSelected() ? colIcon : expIcon);
-                }
+            button.addActionListener(e -> {
+                item.getComponent().setVisible(!button.isSelected());
+                button.setIcon(button.isSelected() ? colIcon : expIcon);
             });
 
             add(panel);
