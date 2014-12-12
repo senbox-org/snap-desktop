@@ -26,7 +26,7 @@ import org.openide.util.actions.CallbackSystemAction;
 )
 @ActionReferences({
     @ActionReference(path = "Menu/Edit", position = 10000),
-    @ActionReference(path = "Shortcuts", name = "D-A")
+    @ActionReference(path = "Shortcuts", name = "D-A", id = @ActionID(id="", category=""))
 })
 @NbBundle.Messages({
     "CTL_SelectAllActionName=Select &All"

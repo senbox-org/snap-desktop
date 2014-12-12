@@ -1,0 +1,76 @@
+/*
+ * Copyright (C) 2011 Brockmann Consult GmbH (info@brockmann-consult.de)
+ * 
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option)
+ * any later version.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
+ * 
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, see http://www.gnu.org/licenses/
+ */
+
+package org.esa.snap.gui.preferences.uibehavior;
+
+import org.netbeans.spi.options.OptionsPanelController;
+import org.openide.util.HelpCtx;
+
+/**
+ * The top-level controller for logging preferences.
+ *
+ * @author thomas
+ */
+@org.openide.util.NbBundle.Messages({
+        "Options_DisplayName_Logging=Logging",
+        "Options_Keywords_Logging=Logging, Logger, Log"
+})
+@OptionsPanelController.TopLevelRegistration(
+        categoryName = "#Options_DisplayName_Logging",
+        iconBase = "org/esa/snap/gui/icons/Logging32.gif",
+        keywords = "#Options_Keywords_Logging",
+        keywordsCategory = "Logging",
+        id = "Logging")
+public final class LoggingPanelController extends DefaultConfigController {
+
+    public static final String PROPERTY_KEY_APP_LOG_ENABLED = "app.log.enabled";
+    public static final String PROPERTY_KEY_APP_LOG_PREFIX = "app.log.prefix";
+    public static final String PROPERTY_KEY_APP_LOG_LEVEL = "app.log.level";
+    public static final String PROPERTY_KEY_APP_LOG_ECHO = "app.log.echo";
+    public static final String PROPERTY_KEY_APP_LOG_DEBUG = "app.debug.enabled";
+
+    @Override
+    protected Object createBean() {
+        return new LoggingBean();
+    }
+
+    @Override
+    public HelpCtx getHelpCtx() {
+        return new HelpCtx("logging");
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    static class LoggingBean {
+
+        @ConfigProperty(label = "Enable logging", key = PROPERTY_KEY_APP_LOG_ENABLED)
+        boolean logEnabled;
+
+        @ConfigProperty(label = "Log filename prefix", key = PROPERTY_KEY_APP_LOG_PREFIX)
+        String logPrefix;
+
+        @ConfigProperty(label = "Log level", key = PROPERTY_KEY_APP_LOG_LEVEL)
+        boolean logLevel;
+
+        @ConfigProperty(label = "Echo log output (effective only with console)", key = PROPERTY_KEY_APP_LOG_ECHO)
+        boolean logEcho;
+
+        @ConfigProperty(label = "Log extra debugging information", key = PROPERTY_KEY_APP_LOG_DEBUG)
+        boolean logDebug;
+
+
+    }
+
+}
