@@ -1,6 +1,5 @@
-package org.esa.snap.gui;
+package org.esa.snap.gui.util;
 
-import org.esa.snap.gui.util.ContextGlobalExtender;
 import org.netbeans.modules.openide.windows.GlobalActionContextImpl;
 import org.openide.util.ContextGlobalProvider;
 import org.openide.util.Lookup;
@@ -8,39 +7,41 @@ import org.openide.util.lookup.AbstractLookup;
 import org.openide.util.lookup.InstanceContent;
 import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
-import org.openide.util.lookup.ServiceProvider;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 
 /**
- * This class proxies the original ContextGlobalProvider and ensures that a set
- * of additional objects remain in the GlobalContext regardless of the TopComponent
- * selection.
+ * Default implementation of a {@link ContextGlobalExtender} which is also a {@link ContextGlobalProvider}.
+ * <p/>
+ * In order to register {@link ContextGlobalProvider} service use the following code:
+ * <pre>
+ *     &#64;ServiceProvider(
+ *         service = ContextGlobalProvider.class,
+ *         supersedes = "org.netbeans.modules.openide.windows.GlobalActionContextImpl"
+ *     )
+ *     public class MyGlobalActionContextImpl extends ContextGlobalExtenderImpl {
+ *     }
+ * </pre>
  *
- * @see ContextGlobalProvider
- * @see GlobalActionContextImpl
+ * @see org.openide.util.ContextGlobalProvider
+ * @see org.netbeans.modules.openide.windows.GlobalActionContextImpl
+ * @author Norman Fomferra
+ * @since 2.0
  */
-@ServiceProvider(
-        service = ContextGlobalProvider.class,
-        supersedes = "org.netbeans.modules.openide.windows.GlobalActionContextImpl"
-)
-public class SnapGlobalActionContext implements ContextGlobalProvider, ContextGlobalExtender {
+public class ContextGlobalExtenderImpl implements ContextGlobalProvider, ContextGlobalExtender {
 
-    private static SnapGlobalActionContext instance;
+    private static final Logger LOG = Logger.getLogger(ContextGlobalExtenderImpl.class.getName());
+
     private Lookup proxyLookup;
     private final InstanceContent constantContent;
     private final Map<Object, Object> constantInstances;
 
-    public SnapGlobalActionContext() {
-        instance = this;
+    public ContextGlobalExtenderImpl() {
         constantContent = new InstanceContent();
         constantInstances = new LinkedHashMap<>();
-    }
-
-    public static SnapGlobalActionContext getInstance() {
-        return instance;
     }
 
     @Override
@@ -50,11 +51,18 @@ public class SnapGlobalActionContext implements ContextGlobalProvider, ContextGl
 
     @Override
     public synchronized Object put(Object key, Object value) {
-        Object oldValue = constantInstances.put(key, value);
-        if (oldValue != null) {
-            constantContent.remove(oldValue);
+        if (value == null) {
+            return remove(key);
         }
-        constantContent.add(value);
+        Object oldValue = constantInstances.get(key);
+        if (oldValue != value) {
+            constantInstances.put(key, value);
+            if (oldValue != null) {
+                constantContent.remove(oldValue);
+            }
+            constantContent.add(value);
+            LOG.info("added: key = " + key + ", value = " + value + ", oldValue = " + oldValue);
+        }
         return oldValue;
     }
 
@@ -64,6 +72,7 @@ public class SnapGlobalActionContext implements ContextGlobalProvider, ContextGl
         if (oldValue != null) {
             constantContent.remove(oldValue);
         }
+        LOG.info("removed: key = " + key + ", oldValue = " + oldValue);
         return oldValue;
     }
 
