@@ -25,6 +25,7 @@ import org.esa.beam.framework.ui.product.ProductSceneView;
 import org.esa.beam.util.Debug;
 import org.esa.snap.gui.SnapApp;
 import org.esa.snap.gui.nodes.PNodeFactory;
+import org.esa.snap.gui.util.DocumentWindowManager;
 import org.esa.snap.gui.util.WindowUtilities;
 import org.esa.snap.gui.windows.ProductSceneViewTopComponent;
 import org.openide.awt.*;
@@ -123,7 +124,9 @@ public class OpenImageViewAction extends AbstractAction {
         UndoRedo.Manager undoManager = PNodeFactory.getInstance().getUndoManager(view.getProduct());
         ProductSceneViewTopComponent productSceneViewWindow = new ProductSceneViewTopComponent(view, undoManager);
 
-        WindowUtilities.openDocumentWindow(productSceneViewWindow);
+        DocumentWindowManager.getDefault().openDocumentWindow(productSceneViewWindow);
+        productSceneViewWindow.requestSelected();
+
         return productSceneViewWindow;
     }
 

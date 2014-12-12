@@ -107,22 +107,6 @@ public class WindowUtilities {
         return editorWindows;
     }
 
-    public static boolean openDocumentWindow(TopComponent documentWindow) {
-        WorkspaceTopComponent workspaceTopComponent = findShowingWorkspace();
-        if (workspaceTopComponent != null) {
-            workspaceTopComponent.addTopComponent(documentWindow);
-            return true;
-        }
-        Mode editor = WindowManager.getDefault().findMode("editor");
-        if (editor.dockInto(documentWindow)) {
-            documentWindow.open();
-            // todo - check if we really need to activate it. We should request its selected state only
-            documentWindow.requestActive();
-            return true;
-        }
-        return false;
-    }
-
     public static WorkspaceTopComponent findShowingWorkspace() {
         TopComponent activated = WindowManager.getDefault().getRegistry().getActivated();
         if (activated instanceof WorkspaceTopComponent) {

@@ -9,14 +9,11 @@ import org.openide.util.lookup.AbstractLookup;
 import org.openide.util.lookup.InstanceContent;
 import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
-import org.openide.windows.Mode;
 import org.openide.windows.TopComponent;
-import org.openide.windows.WindowManager;
 
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.logging.Logger;
 
 // See https://blogs.oracle.com/geertjan/entry/opening_a_topcomponent_per_node
@@ -31,11 +28,11 @@ import java.util.logging.Logger;
  * <li>{@link #componentActivated()}/{@link #componentDeactivated()} method will be called if the corresponding internal frame is activated/deactivated;</li>
  * <li>{@link #componentShowing()}/{@link #componentHidden()} method will be called if the corresponding internal frame is iconified/deiconified.</li>
  * </ol>
- * <p>
+ * <p/>
  * Document windows keep a constant reference to the document object which it exposes through the window's lookup.
  * Overrides may use the {@link #getDynamicContent() content} to alter the objects in the exposed lookup,
  * however, the document object will always remain in it.
- * <p>
+ * <p/>
  *
  * @author Norman Fomferra
  */
@@ -56,17 +53,17 @@ public class DocumentTopComponent<T> extends TopComponent implements DocumentWin
     }
 
     @Override
-    public T getDocument() {
+    public final T getDocument() {
         return document;
     }
 
     @Override
-    public TopComponent getTopComponent() {
+    public final TopComponent getTopComponent() {
         return this;
     }
 
     @Override
-    public boolean isSelected() {
+    public final boolean isSelected() {
         return DocumentWindowManager.getDefault().getSelectedDocumentWindow() == this;
     }
 
@@ -96,8 +93,8 @@ public class DocumentTopComponent<T> extends TopComponent implements DocumentWin
     }
 
     @Override
-    public List<Mode> availableModes(List<Mode> modes) {
-        return Arrays.asList(WindowManager.getDefault().findMode("editor"));
+    public int getPersistenceType() {
+        return PERSISTENCE_NEVER;
     }
 
     /**
@@ -144,23 +141,29 @@ public class DocumentTopComponent<T> extends TopComponent implements DocumentWin
 
     /**
      * Called when this component was selected.
+     *
+     * Default implementation simply calls {@link #updateSelectedState}.
      */
     @Override
     public void componentSelected() {
-        LOG.info(">> componentSelected");
+        updateSelectedState();
     }
 
     /**
      * Called when this component was deselected.
+     *
+     * Default implementation simply calls {@link #updateSelectedState}.
      */
     @Override
     public void componentDeselected() {
-        LOG.info(">> componentDeselected");
+        updateSelectedState();
     }
 
-    @Override
-    public int getPersistenceType() {
-        return PERSISTENCE_NEVER;
+    /**
+     * Does anything that indicates the selected state of this component. The default implementation
+     * simply calls {@link #repaint()}.
+     */
+    protected void updateSelectedState() {
+        repaint();
     }
-
 }

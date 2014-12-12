@@ -2,6 +2,7 @@ package org.esa.snap.gui.util;
 
 import org.openide.modules.OnStart;
 import org.openide.util.Lookup;
+import org.openide.windows.Mode;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
 
@@ -60,20 +61,19 @@ public class DocumentWindowManager {
                 });
     }
 
-    public final Listener[] getListeners() {
-        Set<Listener> listeners = listenerMap.keySet();
-        return listeners.toArray(new Listener[listeners.size()]);
-    }
-
-    public final void addListener(Listener listener) {
-        RegistryPropertyChangeDelegate pcl = new RegistryPropertyChangeDelegate(listener);
-        listenerMap.put(listener, pcl);
-        WindowManager.getDefault().getRegistry().addPropertyChangeListener(pcl);
-    }
-
-    public final void removeListener(Listener listener) {
-        PropertyChangeListener pcl = listenerMap.remove(listener);
-        WindowManager.getDefault().getRegistry().removePropertyChangeListener(pcl);
+    public boolean openDocumentWindow(DocumentWindow documentWindow) {
+        TopComponent topComponent = documentWindow.getTopComponent();
+        WorkspaceTopComponent workspaceTopComponent = WindowUtilities.findShowingWorkspace();
+        if (workspaceTopComponent != null) {
+            workspaceTopComponent.addTopComponent(topComponent);
+            return true;
+        }
+        Mode editor = WindowManager.getDefault().findMode("editor");
+        if (editor.dockInto(topComponent)) {
+            topComponent.open();
+            return true;
+        }
+        return false;
     }
 
     public DocumentWindow getSelectedDocumentWindow() {
@@ -107,6 +107,22 @@ public class DocumentWindowManager {
             }
         }
         topComponent.requestActive();
+    }
+
+    public final Listener[] getListeners() {
+        Set<Listener> listeners = listenerMap.keySet();
+        return listeners.toArray(new Listener[listeners.size()]);
+    }
+
+    public final void addListener(Listener listener) {
+        RegistryPropertyChangeDelegate pcl = new RegistryPropertyChangeDelegate(listener);
+        listenerMap.put(listener, pcl);
+        WindowManager.getDefault().getRegistry().addPropertyChangeListener(pcl);
+    }
+
+    public final void removeListener(Listener listener) {
+        PropertyChangeListener pcl = listenerMap.remove(listener);
+        WindowManager.getDefault().getRegistry().removePropertyChangeListener(pcl);
     }
 
     /**
@@ -202,7 +218,7 @@ public class DocumentWindowManager {
             DocumentWindow documentWindow = e.getDocumentWindow();
             if (documentWindow != null) {
                 openDocumentWindows.remove(documentWindow);
-                if (documentWindow == selectedDocumentWindow) {
+                if (selectedDocumentWindow == documentWindow) {
                     setSelectedDocumentWindow(null);
                 }
             }
@@ -215,7 +231,6 @@ public class DocumentWindowManager {
 
         @Override
         public void windowDeactivated(Event e) {
-
         }
     }
 

@@ -18,15 +18,10 @@ import org.esa.snap.gui.util.WindowUtilities;
 import org.openide.awt.UndoRedo;
 import org.openide.util.Exceptions;
 import org.openide.util.ImageUtilities;
-import org.openide.util.Lookup;
-import org.openide.util.LookupEvent;
-import org.openide.util.LookupListener;
 import org.openide.util.Utilities;
 
 import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
+import javax.swing.plaf.LayerUI;
 import javax.swing.text.DefaultEditorKit;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
@@ -45,16 +40,12 @@ public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNo
         implements UndoRedo.Provider, SelectionChangeListener {
 
     private static final Logger LOG = Logger.getLogger(ProductSceneViewTopComponent.class.getName());
-    private static final Border NO_BORDER = new EmptyBorder(0, 0, 0, 0);
     private static int counter;
 
     private final ProductSceneView view;
     private UndoRedo undoRedo;
     private final ProductNodeListenerAdapter nodeRenameHandler;
     private Selection selection;
-    private Lookup.Result<ProductSceneView> productSceneViewResult;
-    private Border unselectedBorder;
-    private Border selectedBorder;
 
     public ProductSceneViewTopComponent(ProductSceneView view, UndoRedo undoRedo) {
         super(view.getRaster());
@@ -66,15 +57,6 @@ public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNo
         setToolTipText(view.getRaster().getDescription());
         setIcon(ImageUtilities.loadImage("org/esa/snap/gui/icons/RsBandAsSwath16.gif"));
         updateDisplayName();
-
-        selectedBorder = UIManager.getBorder(getClass().getName() + ".selectedBorder");
-        if (selectedBorder == null) {
-            selectedBorder = new LineBorder(Color.ORANGE, 3);
-        }
-        unselectedBorder = UIManager.getBorder(getClass().getName() + ".unselectedBorder");
-        if (unselectedBorder == null) {
-            unselectedBorder = new LineBorder(Color.GRAY, 3);
-        }
 
 /*
         // checkme - this is ugly and not wanted (nf), the node will either passed in or we'll have
@@ -95,7 +77,12 @@ public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNo
             setActivatedNodes(new Node[]{node});
         }
 */
-        initComponents();
+        setLayout(new BorderLayout());
+        add(new JLayer<>(this.view, new ProductSceneViewLayerUI()), BorderLayout.CENTER);
+    }
+
+    public ProductSceneView getView() {
+        return view;
     }
 
     @Override
@@ -122,16 +109,14 @@ public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNo
     public void componentClosed() {
         LOG.info(">> componentClosed");
         getDocument().getProduct().removeProductNodeListener(nodeRenameHandler);
-
-        ContextGlobalExtender contextGlobalExtender = Utilities.actionsGlobalContext().lookup(ContextGlobalExtender.class);
-        if (contextGlobalExtender != null) {
-            contextGlobalExtender.remove("view");
-        }
     }
 
     @Override
-    public void componentActivated() {
-        LOG.info(">> componentActivated");
+    public void componentSelected() {
+        LOG.info(">> componentSelected");
+
+        updateSelectedState();
+
         ContextGlobalExtender contextGlobalExtender = Utilities.actionsGlobalContext().lookup(ContextGlobalExtender.class);
         if (contextGlobalExtender != null) {
             contextGlobalExtender.put("view", getView());
@@ -142,70 +127,40 @@ public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNo
     }
 
     @Override
-    public void componentDeactivated() {
-        LOG.info(">> componentDeactivated");
+    public void componentDeselected() {
+        LOG.info(">> componentDeselected");
+
+        updateSelectedState();
+
         getView().getFigureEditor().getSelectionContext().removeSelectionChangeListener(this);
         setSelection(Selection.EMPTY);
-    }
 
-    @Override
-    public void componentShowing() {
-        LOG.info(">> componentShowing");
-        ContextGlobalExtender contextGlobalExtender = Utilities.actionsGlobalContext().lookup(ContextGlobalExtender.class);
-        if (contextGlobalExtender != null) {
-            contextGlobalExtender.put("view", getView());
-        }
-    }
-
-    @Override
-    public void componentHidden() {
-        LOG.info(">> componentHidden");
         ContextGlobalExtender contextGlobalExtender = Utilities.actionsGlobalContext().lookup(ContextGlobalExtender.class);
         if (contextGlobalExtender != null) {
             contextGlobalExtender.remove("view");
         }
     }
 
-    @Override
-    public void componentSelected() {
-        LOG.info(">> componentSelected");
-        updateSelectedState();
-    }
+    private class ProductSceneViewLayerUI extends LayerUI<ProductSceneView> {
+        @Override
+        public void paint(Graphics g, JComponent c) {
+            super.paint(g, c);
 
-    @Override
-    public void componentDeselected() {
-        LOG.info(">> componentDeselected");
-        updateSelectedState();
-    }
+            if (isSelected()) {
+                final int N = 6;
+                final int A = 220;
+                final Color C = new Color(255, 213, 79);
 
-    public ProductSceneView getView() {
-        return view;
-    }
-
-    private void initComponents() {
-        setLayout(new BorderLayout());
-        add(getView(), BorderLayout.CENTER);
+                for (int i = 0; i < N; i++) {
+                    g.setColor(new Color(C.getRed(), C.getGreen(), C.getBlue(), A - i * A / N));
+                    g.drawRect(i, i, getWidth() - 2 * i, getHeight() - 2 * i);
+                }
+            }
+        }
     }
 
     private void updateDisplayName() {
         setDisplayName(WindowUtilities.getUniqueTitle(getDocument().getName(), ProductSceneViewTopComponent.class));
-    }
-
-    private void updateSelectedState() {
-        Border border = getBorder();
-        if (unselectedBorder == NO_BORDER) {
-            unselectedBorder = border;
-        }
-        if (isSelected()) {
-            if (border != selectedBorder) {
-                unselectedBorder = border;
-                setBorder(selectedBorder);
-            }
-        } else {
-            if (border != unselectedBorder) {
-                setBorder(unselectedBorder);
-            }
-        }
     }
 
     private void setSelection(Selection newSelection) {
@@ -311,5 +266,4 @@ public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNo
             }
         }
     }
-
 }
