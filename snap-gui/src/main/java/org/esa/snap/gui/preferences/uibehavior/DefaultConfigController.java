@@ -16,12 +16,13 @@
 
 package org.esa.snap.gui.preferences.uibehavior;
 
-import com.bc.ceres.binding.DefaultPropertyDescriptorFactory;
 import com.bc.ceres.binding.Property;
 import com.bc.ceres.binding.PropertyContainer;
 import com.bc.ceres.binding.PropertyDescriptor;
+import com.bc.ceres.binding.PropertyDescriptorFactory;
 import com.bc.ceres.binding.ValidationException;
 import com.bc.ceres.binding.Validator;
+import com.bc.ceres.binding.ValueRange;
 import com.bc.ceres.binding.ValueSet;
 import com.bc.ceres.core.Assert;
 import com.bc.ceres.swing.binding.BindingContext;
@@ -82,14 +83,16 @@ public abstract class DefaultConfigController extends OptionsPanelController {
     @Override
     public void applyChanges() {
         panel.setChanged(false);
-        this.originalState = null;
+        originalState = null;
     }
 
     @Override
     public void cancel() {
         panel.setChanged(false);
-        restoreOriginalState();
-        this.originalState = null;
+        if (originalState != null) {
+            restoreOriginalState();
+        }
+        originalState = null;
     }
 
     @Override
@@ -139,9 +142,9 @@ public abstract class DefaultConfigController extends OptionsPanelController {
 
     private void setOriginalState() {
         if (originalState == null) {
-            this.originalState = createBean();
+            originalState = createBean();
             for (Property property : bindingContext.getPropertySet().getProperties()) {
-                String key = property.getDescriptor().getAttribute("key").toString();
+                String key = property.getName();
                 for (Field field : originalState.getClass().getDeclaredFields()) {
                     if (field.getAnnotation(ConfigProperty.class).key().equals(key)) {
                         try {
@@ -161,11 +164,8 @@ public abstract class DefaultConfigController extends OptionsPanelController {
             for (Field origField : originalState.getClass().getDeclaredFields()) {
                 String key = origField.getAnnotation(ConfigProperty.class).key();
                 Object value = origField.get(originalState);
-                for (Property property : bindingContext.getPropertySet().getProperties()) {
-                    if (property.getDescriptor().getAttribute("key").equals(key)) {
-                        property.setValue(value);
-                    }
-                }
+                Property property = bindingContext.getPropertySet().getProperty(key);
+                property.setValue(value);
             }
             bindingContext.adjustComponents();
         } catch (IllegalAccessException e) {
@@ -193,11 +193,9 @@ public abstract class DefaultConfigController extends OptionsPanelController {
     }
 
     private void setupPanel(Object bean) {
-        bindingContext = new BindingContext(PropertyContainer.createObjectBacked(bean, new DefaultPropertyDescriptorFactory() {
+        bindingContext = new BindingContext(PropertyContainer.createObjectBacked(bean, new PropertyDescriptorFactory() {
             @Override
             public PropertyDescriptor createValueDescriptor(Field field) {
-                PropertyDescriptor valueDescriptor = super.createValueDescriptor(field);
-
                 Class<ConfigProperty> annotationClass = ConfigProperty.class;
                 ConfigProperty annotation = field.getAnnotation(annotationClass);
                 if (annotation == null) {
@@ -207,16 +205,25 @@ public abstract class DefaultConfigController extends OptionsPanelController {
                 String label = annotation.label();
                 String key = annotation.key();
                 String[] valueSet = annotation.valueSet();
+                String valueRange = annotation.interval();
                 Validator validator = createValidator(annotation.validatorClass());
                 Assert.state(StringUtils.isNotNullAndNotEmpty(label),
                              "Label of field '" + field.getName() + "' must not be null or empty.");
                 Assert.state(StringUtils.isNotNullAndNotEmpty(key),
                              "Key of field '" + field.getName() + "' must not be null or empty.");
+                boolean isDeprecated = field.getAnnotation(Deprecated.class) != null;
+
+                PropertyDescriptor valueDescriptor = new PropertyDescriptor(key, field.getType());
+                valueDescriptor.setDeprecated(isDeprecated);
                 valueDescriptor.setAttribute("key", key);
                 valueDescriptor.setAttribute("displayName", label);
                 valueDescriptor.setAttribute("propertyValidator", validator);
+
                 if (valueSet.length > 0) {
                     valueDescriptor.setValueSet(new ValueSet(valueSet));
+                }
+                if (StringUtils.isNotNullAndNotEmpty(valueRange)) {
+                    valueDescriptor.setValueRange(ValueRange.parseValueRange(valueRange));
                 }
                 return valueDescriptor;
             }

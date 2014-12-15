@@ -50,6 +50,13 @@ public @interface ConfigProperty {
     String[] valueSet() default {};
 
     /**
+     * Gets the valid interval for numeric parameters, e.g. {@code "[10,20)"}: in the range 10 (inclusive) to 20 (exclusive).
+     *
+     * @return The valid interval. Defaults to empty string (= not set).
+     */
+    String interval() default "";
+
+    /**
      * @return The validator class.
      */
     Class<? extends Validator> validatorClass() default NullValidator.class;
