@@ -148,6 +148,7 @@ public abstract class DefaultConfigController extends OptionsPanelController {
                 for (Field field : originalState.getClass().getDeclaredFields()) {
                     if (field.getAnnotation(ConfigProperty.class).key().equals(key)) {
                         try {
+                            field.setAccessible(true);
                             field.set(originalState, property.getValue());
                         } catch (IllegalAccessException e) {
                             throw new IllegalStateException(e);
@@ -163,6 +164,7 @@ public abstract class DefaultConfigController extends OptionsPanelController {
         try {
             for (Field origField : originalState.getClass().getDeclaredFields()) {
                 String key = origField.getAnnotation(ConfigProperty.class).key();
+                origField.setAccessible(true);
                 Object value = origField.get(originalState);
                 Property property = bindingContext.getPropertySet().getProperty(key);
                 property.setValue(value);
