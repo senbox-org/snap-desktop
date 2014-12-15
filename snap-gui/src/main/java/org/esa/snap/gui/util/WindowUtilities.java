@@ -4,70 +4,66 @@ import org.openide.windows.Mode;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.EventListener;
-import java.util.EventObject;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Various window utilities.
+ * Various NetBeans window system utilities.
  *
  * @author Norman Fomferra
+ * @since 2.0
  */
 public class WindowUtilities {
-
+    static final int MAX_ROW_COUNT = 16;
+    static final int MAX_COL_COUNT = 16;
     static final String EDITOR_MODE_NAME_FORMAT = "editor_r%dc%d";
 
-    final static Map<Listener, PropertyChangeListener> listenerMap = new LinkedHashMap<>();
-
-    public static Listener[] getListeners() {
-        Set<Listener> listeners = listenerMap.keySet();
-        return listeners.toArray(new Listener[listeners.size()]);
-    }
-
-    public static void addListener(Listener listener) {
-        MyPropertyChangeListener pcl = new MyPropertyChangeListener(listener);
-        listenerMap.put(listener, pcl);
-        WindowManager.getDefault().getRegistry().addPropertyChangeListener(pcl);
-    }
-
-    public static void removeListener(Listener listener) {
-        PropertyChangeListener pcl = listenerMap.remove(listener);
-        WindowManager.getDefault().getRegistry().removePropertyChangeListener(pcl);
-    }
-
-
-    public static boolean openInEditorMode(int rowIndex, int colIndex, TopComponent editorWindow) {
+    /**
+     * Opens a top component in a mode of kind "editor" at the given row and column.
+     *
+     * @param topComponent The top component to open.
+     * @param rowIndex     The row index.
+     * @param colIndex     The column index.
+     * @return {@code true} on success.
+     */
+    public static boolean openInEditorMode(TopComponent topComponent, int rowIndex, int colIndex) {
         String modeName = String.format(EDITOR_MODE_NAME_FORMAT, rowIndex, colIndex);
-        return openInEditorMode(modeName, editorWindow);
+        return openInMode(topComponent, modeName);
     }
 
-    public static boolean openInEditorMode(String modeName, TopComponent editorWindow) {
-        Mode editorMode = WindowManager.getDefault().findMode(modeName);
-        if (editorMode != null) {
-            if (!Arrays.asList(editorMode.getTopComponents()).contains(editorWindow)) {
-                if (editorMode.dockInto(editorWindow)) {
-                    editorWindow.open();
+    /**
+     * Opens a top component in the given mode.
+     *
+     * @param topComponent The top component to open.
+     * @param modeName     The mode's name.
+     * @return {@code true} on success.
+     */
+    public static boolean openInMode(TopComponent topComponent, String modeName) {
+        Mode mode = WindowManager.getDefault().findMode(modeName);
+        if (mode != null) {
+            if (!Arrays.asList(mode.getTopComponents()).contains(topComponent)) {
+                if (mode.dockInto(topComponent)) {
+                    topComponent.open();
                     return true;
                 }
             } else {
-                editorWindow.open();
+                topComponent.open();
                 return true;
             }
         }
         return false;
     }
 
-
+    /**
+     * Counts the currently opened top components in modes of kind "editor".
+     *
+     * @return The number of currently opened top components in modes of kind "editor"
+     */
     public static int countOpenEditorWindows() {
         int count = 0;
         WindowManager wm = WindowManager.getDefault();
@@ -80,6 +76,11 @@ public class WindowUtilities {
         return count;
     }
 
+    /**
+     * Finds all opened top components in modes of kind "editor" ordered by display name.
+     *
+     * @return The list of opened top components.
+     */
     public static List<TopComponent> findOpenEditorWindows() {
         return findOpenEditorWindows((win1, win2) -> {
             String name1 = win1.getDisplayName();
@@ -88,6 +89,11 @@ public class WindowUtilities {
         });
     }
 
+    /**
+     * Finds all opened top components in modes of kind "editor" using the given comparator.
+     *
+     * @return The list of opened top components.
+     */
     public static List<TopComponent> findOpenEditorWindows(Comparator<TopComponent> comparator) {
         ArrayList<TopComponent> editorWindows = new ArrayList<>();
         Set<TopComponent> openedWindows = WindowManager.getDefault().getRegistry().getOpened();
@@ -101,38 +107,27 @@ public class WindowUtilities {
         return editorWindows;
     }
 
-    public static boolean openDocumentWindow(TopComponent documentWindow) {
-        WorkspaceTopComponent workspaceTopComponent = getShowingWorkspace();
-        if (workspaceTopComponent != null) {
-            workspaceTopComponent.addTopComponent(documentWindow);
-            return true;
-        }
-        Mode editor = WindowManager.getDefault().findMode("editor");
-        if (editor.dockInto(documentWindow)) {
-            documentWindow.open();
-            documentWindow.requestActive();
-            return true;
-        }
-        return false;
-    }
-
-    public static WorkspaceTopComponent getShowingWorkspace() {
+    public static WorkspaceTopComponent findShowingWorkspace() {
         TopComponent activated = WindowManager.getDefault().getRegistry().getActivated();
         if (activated instanceof WorkspaceTopComponent) {
             return (WorkspaceTopComponent) activated;
         }
-        List<WorkspaceTopComponent> showingWorkspaces = collectOpen(WorkspaceTopComponent.class, new Collector<WorkspaceTopComponent, WorkspaceTopComponent>() {
-            @Override
-            public void collect(WorkspaceTopComponent topComponent, List<WorkspaceTopComponent> list) {
-                if (topComponent.isShowing()) {
-                    list.add(topComponent);
-                }
-            }
-        });
+        List<WorkspaceTopComponent> showingWorkspaces = findShowingWorkspaces();
         if (!showingWorkspaces.isEmpty()) {
             return showingWorkspaces.get(0);
         }
         return null;
+    }
+
+    public static List<WorkspaceTopComponent> findShowingWorkspaces() {
+        return collectOpen(WorkspaceTopComponent.class, new Collector<WorkspaceTopComponent, WorkspaceTopComponent>() {
+                @Override
+                public void collect(WorkspaceTopComponent topComponent, List<WorkspaceTopComponent> list) {
+                    if (topComponent.isShowing()) {
+                        list.add(topComponent);
+                    }
+                }
+            });
     }
 
     /**
@@ -235,81 +230,5 @@ public class WindowUtilities {
         }
 
         protected abstract L convert(W topComponent);
-    }
-
-    /**
-     * An <code>Event</code> that adds support for
-     * <code>TopComponent</code> objects as the event source.
-     */
-    public static class Event extends EventObject {
-        public Event(TopComponent source) {
-            super(source);
-        }
-
-        public TopComponent getTopComponent() {
-            return getSource() instanceof TopComponent ? (TopComponent) getSource() : null;
-        }
-    }
-
-    /**
-     * The listener interface for receiving window events.
-     * This class is functionally equivalent to the WindowListener class
-     * in the AWT.
-     *
-     * @see java.awt.event.WindowListener
-     */
-    public interface Listener extends EventListener {
-        /**
-         * Invoked when a window has been opened.
-         */
-        public void windowOpened(Event e);
-
-        /**
-         * Invoked when an window has been closed.
-         */
-        public void windowClosed(Event e);
-
-        /**
-         * Invoked when an window is activated.
-         */
-        public void windowActivated(Event e);
-
-        /**
-         * Invoked when an window is de-activated.
-         */
-        public void windowDeactivated(Event e);
-
-    }
-
-    private static class MyPropertyChangeListener implements PropertyChangeListener {
-        private final Listener listener;
-
-        public MyPropertyChangeListener(Listener listener) {
-            this.listener = listener;
-        }
-
-        @Override
-        public void propertyChange(PropertyChangeEvent evt) {
-            if ("activated".equals(evt.getPropertyName())) {
-                Object oldValue = evt.getOldValue();
-                if (oldValue instanceof TopComponent) {
-                    listener.windowDeactivated(new Event((TopComponent) evt.getOldValue()));
-                }
-                Object newValue = evt.getNewValue();
-                if (newValue instanceof TopComponent) {
-                    listener.windowActivated(new Event((TopComponent) newValue));
-                }
-            } else if ("tcOpen".equals(evt.getPropertyName())) {
-                Object newValue = evt.getNewValue();
-                if (newValue instanceof TopComponent) {
-                    listener.windowOpened(new Event((TopComponent) newValue));
-                }
-            } else if ("tcClose".equals(evt.getPropertyName())) {
-                Object newValue = evt.getNewValue();
-                if (newValue instanceof TopComponent) {
-                    listener.windowClosed(new Event((TopComponent) evt.getNewValue()));
-                }
-            }
-        }
     }
 }

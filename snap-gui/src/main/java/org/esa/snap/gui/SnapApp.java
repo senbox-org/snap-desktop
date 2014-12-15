@@ -6,6 +6,7 @@ import org.esa.beam.framework.datamodel.ProductNode;
 import org.esa.beam.framework.ui.product.ProductSceneView;
 import org.esa.beam.util.PropertyMap;
 import org.esa.snap.gui.util.CompatiblePropertyMap;
+import org.esa.snap.gui.util.ContextGlobalExtenderImpl;
 import org.esa.snap.tango.TangoIcons;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
@@ -14,24 +15,19 @@ import org.openide.awt.NotificationDisplayer;
 import org.openide.awt.StatusDisplayer;
 import org.openide.modules.OnStart;
 import org.openide.modules.OnStop;
+import org.openide.util.ContextGlobalProvider;
 import org.openide.util.NbBundle;
 import org.openide.util.NbPreferences;
 import org.openide.util.Utilities;
+import org.openide.util.lookup.ServiceProvider;
 import org.openide.windows.OnShowing;
 import org.openide.windows.WindowManager;
 
 import javax.media.jai.JAI;
 import javax.media.jai.OperationRegistry;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import java.awt.BorderLayout;
-import java.awt.Dialog;
-import java.awt.Frame;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.ByteArrayOutputStream;
@@ -50,6 +46,7 @@ import static org.openide.util.NbBundle.Messages;
  * The central SNAP application class (dummy).
  *
  * @author Norman Fomferra
+ * @since 2.0
  */
 @SuppressWarnings("UnusedDeclaration")
 public class SnapApp {
@@ -368,5 +365,19 @@ public class SnapApp {
         } else {
             LOG.warning(MessageFormat.format("{0} not found", jaiRegistryPath));
         }
+    }
+
+    /**
+     * This class proxies the original ContextGlobalProvider and ensures that a set
+     * of additional objects remain in the GlobalContext regardless of the TopComponent
+     * selection.
+     *
+     * @see org.esa.snap.gui.util.ContextGlobalExtenderImpl
+     */
+    @ServiceProvider(
+            service = ContextGlobalProvider.class,
+            supersedes = "org.netbeans.modules.openide.windows.GlobalActionContextImpl"
+    )
+    public static class ActionContextExtender extends ContextGlobalExtenderImpl {
     }
 }

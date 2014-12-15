@@ -12,21 +12,16 @@ import org.esa.beam.framework.datamodel.ProductNode;
 import org.esa.beam.framework.datamodel.ProductNodeEvent;
 import org.esa.beam.framework.datamodel.ProductNodeListenerAdapter;
 import org.esa.beam.framework.ui.product.ProductSceneView;
-import org.esa.snap.gui.SnapGlobalActionContext;
+import org.esa.snap.gui.util.ContextGlobalExtender;
 import org.esa.snap.gui.util.DocumentTopComponent;
 import org.esa.snap.gui.util.WindowUtilities;
 import org.openide.awt.UndoRedo;
 import org.openide.util.Exceptions;
 import org.openide.util.ImageUtilities;
-import org.openide.util.Lookup;
-import org.openide.util.LookupEvent;
-import org.openide.util.LookupListener;
 import org.openide.util.Utilities;
 
 import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
+import javax.swing.plaf.LayerUI;
 import javax.swing.text.DefaultEditorKit;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
@@ -37,24 +32,20 @@ import java.io.IOException;
 import java.util.logging.Logger;
 
 /**
- * A document window which displays images
+ * A document window which displays images.
  *
- * @author Norman
+ * @author Norman Fomferra
  */
 public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNode>
-        implements UndoRedo.Provider, SelectionChangeListener, LookupListener {
+        implements UndoRedo.Provider, SelectionChangeListener {
 
     private static final Logger LOG = Logger.getLogger(ProductSceneViewTopComponent.class.getName());
-    private static final Border NO_BORDER = new EmptyBorder(0, 0, 0, 0);
     private static int counter;
 
     private final ProductSceneView view;
     private UndoRedo undoRedo;
     private final ProductNodeListenerAdapter nodeRenameHandler;
     private Selection selection;
-    private Lookup.Result<ProductSceneView> productSceneViewResult;
-    private Border unselectedBorder;
-    private Border selectedBorder;
 
     public ProductSceneViewTopComponent(ProductSceneView view, UndoRedo undoRedo) {
         super(view.getRaster());
@@ -66,15 +57,6 @@ public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNo
         setToolTipText(view.getRaster().getDescription());
         setIcon(ImageUtilities.loadImage("org/esa/snap/gui/icons/RsBandAsSwath16.gif"));
         updateDisplayName();
-
-        selectedBorder = UIManager.getBorder(getClass().getName() + ".selectedBorder");
-        if (selectedBorder == null) {
-            selectedBorder = new LineBorder(Color.ORANGE, 3);
-        }
-        unselectedBorder = UIManager.getBorder(getClass().getName() + ".unselectedBorder");
-        if (unselectedBorder == null) {
-            unselectedBorder = new LineBorder(Color.GRAY, 3);
-        }
 
 /*
         // checkme - this is ugly and not wanted (nf), the node will either passed in or we'll have
@@ -95,12 +77,12 @@ public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNo
             setActivatedNodes(new Node[]{node});
         }
 */
-        initComponents();
+        setLayout(new BorderLayout());
+        add(new JLayer<>(this.view, new ProductSceneViewLayerUI()), BorderLayout.CENTER);
     }
 
-    @Override
-    public void resultChanged(LookupEvent ev) {
-        updateSelectedState();
+    public ProductSceneView getView() {
+        return view;
     }
 
     @Override
@@ -119,89 +101,66 @@ public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNo
 
     @Override
     public void componentOpened() {
+        LOG.info(">> componentOpened");
         getDocument().getProduct().addProductNodeListener(nodeRenameHandler);
-        productSceneViewResult = Utilities.actionsGlobalContext().lookupResult(ProductSceneView.class);
-        productSceneViewResult.addLookupListener(this);
-        //updateSelectedState();
     }
 
     @Override
     public void componentClosed() {
-        productSceneViewResult.removeLookupListener(this);
+        LOG.info(">> componentClosed");
         getDocument().getProduct().removeProductNodeListener(nodeRenameHandler);
-        SnapGlobalActionContext.getInstance().remove("view");
-    }
-
-    @Override
-    public void componentActivated() {
-        SnapGlobalActionContext.getInstance().put("view", getView());
-        setSelection(getView().getFigureEditor().getSelectionContext().getSelection());
-        getView().getFigureEditor().getSelectionContext().addSelectionChangeListener(this);
-        //updateSelectedState();
-        //LOG.info(">> componentActivated: " + title);
-    }
-
-    @Override
-    public void componentDeactivated() {
-        getView().getFigureEditor().getSelectionContext().removeSelectionChangeListener(this);
-        setSelection(Selection.EMPTY);
-        //LOG.info(">> componentDeactivated: " + title);
-        //updateSelectedState();
-    }
-
-    @Override
-    public void componentShowing() {
-        SnapGlobalActionContext.getInstance().put("view", getView());
-        //updateSelectedState();
-    }
-
-    @Override
-    public void componentHidden() {
-        SnapGlobalActionContext.getInstance().remove("view");
-        //updateSelectedState();
     }
 
     @Override
     public void componentSelected() {
-        super.componentSelected();
+        LOG.info(">> componentSelected");
+
         updateSelectedState();
+
+        ContextGlobalExtender contextGlobalExtender = Utilities.actionsGlobalContext().lookup(ContextGlobalExtender.class);
+        if (contextGlobalExtender != null) {
+            contextGlobalExtender.put("view", getView());
+        }
+
+        setSelection(getView().getFigureEditor().getSelectionContext().getSelection());
+        getView().getFigureEditor().getSelectionContext().addSelectionChangeListener(this);
     }
 
     @Override
     public void componentDeselected() {
-        super.componentDeselected();
+        LOG.info(">> componentDeselected");
+
         updateSelectedState();
+
+        getView().getFigureEditor().getSelectionContext().removeSelectionChangeListener(this);
+        setSelection(Selection.EMPTY);
+
+        ContextGlobalExtender contextGlobalExtender = Utilities.actionsGlobalContext().lookup(ContextGlobalExtender.class);
+        if (contextGlobalExtender != null) {
+            contextGlobalExtender.remove("view");
+        }
     }
 
-    public ProductSceneView getView() {
-        return view;
-    }
+    private class ProductSceneViewLayerUI extends LayerUI<ProductSceneView> {
+        @Override
+        public void paint(Graphics g, JComponent c) {
+            super.paint(g, c);
 
-    private void initComponents() {
-        setLayout(new BorderLayout());
-        add(getView(), BorderLayout.CENTER);
+            if (isSelected()) {
+                final int N = 6;
+                final int A = 220;
+                final Color C = new Color(255, 213, 79);
+
+                for (int i = 0; i < N; i++) {
+                    g.setColor(new Color(C.getRed(), C.getGreen(), C.getBlue(), A - i * A / N));
+                    g.drawRect(i, i, getWidth() - 2 * i, getHeight() - 2 * i);
+                }
+            }
+        }
     }
 
     private void updateDisplayName() {
         setDisplayName(WindowUtilities.getUniqueTitle(getDocument().getName(), ProductSceneViewTopComponent.class));
-    }
-
-    private void updateSelectedState() {
-        boolean selected = Utilities.actionsGlobalContext().lookup(ProductSceneView.class) == getView();
-        Border border = getBorder();
-        if (unselectedBorder == NO_BORDER) {
-            unselectedBorder = border;
-        }
-        if (selected) {
-            if (border != selectedBorder) {
-                unselectedBorder = border;
-                setBorder(selectedBorder);
-            }
-        } else {
-            if (border != unselectedBorder) {
-                setBorder(unselectedBorder);
-            }
-        }
     }
 
     private void setSelection(Selection newSelection) {
@@ -307,5 +266,4 @@ public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNo
             }
         }
     }
-
 }

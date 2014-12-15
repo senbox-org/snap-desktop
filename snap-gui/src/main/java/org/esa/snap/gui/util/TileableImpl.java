@@ -11,6 +11,7 @@ import java.util.List;
  * Default Tileable implementation which arranges all global editor windows in tiles.
  *
  * @author Norman Fomferra
+ * @since 2.0
  */
 @NbBundle.Messages({
         "MSG_TileableImplNothingToDo=Nothing to do.",
@@ -35,7 +36,7 @@ class TileableImpl implements Tileable {
                 for (int colIndex = 0; colIndex < colCount; colIndex++) {
                     if (windowIndex < windowCount) {
                         TopComponent editorWindow = editorWindows.get(windowIndex);
-                        if (WindowUtilities.openInEditorMode(rowIndex, colIndex, editorWindow)) {
+                        if (WindowUtilities.openInEditorMode(editorWindow, rowIndex, colIndex)) {
                             windowIndex++;
                         }
                     }
@@ -54,7 +55,7 @@ class TileableImpl implements Tileable {
             for (int colIndex = 0; colIndex < colCount; colIndex++) {
                 if (windowIndex < windowCount) {
                     TopComponent editorWindow = editorWindows.get(windowIndex);
-                    if (WindowUtilities.openInEditorMode(0, colIndex, editorWindow)) {
+                    if (WindowUtilities.openInEditorMode(editorWindow, 0, colIndex)) {
                         windowIndex++;
                     }
                 }
@@ -72,7 +73,7 @@ class TileableImpl implements Tileable {
             for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
                 if (windowIndex < windowCount) {
                     TopComponent editorWindow = editorWindows.get(windowIndex);
-                    if (WindowUtilities.openInEditorMode(rowIndex, 0, editorWindow)) {
+                    if (WindowUtilities.openInEditorMode(editorWindow, rowIndex, 0)) {
                         windowIndex++;
                     }
                 }
@@ -86,7 +87,7 @@ class TileableImpl implements Tileable {
         tile(editorWindows -> {
             int windowIndex = 0;
             for (TopComponent editorWindow : editorWindows) {
-                if (WindowUtilities.openInEditorMode("editor", editorWindow)) {
+                if (WindowUtilities.openInMode(editorWindow, "editor")) {
                     windowIndex++;
                 }
             }

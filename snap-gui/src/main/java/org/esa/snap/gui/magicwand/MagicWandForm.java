@@ -143,16 +143,16 @@ class MagicWandForm {
         stGroup.add(stButton1);
         stGroup.add(stButton2);
         stGroup.add(stButton3);
-        stButton1.setToolTipText("<html>Pixel inclusion test is performed<br>" +
+        stButton1.setToolTipText("<html>Pixel similarity comparison is performed<br>" +
                                          "on the sums of subsequent band values");
-        stButton2.setToolTipText("<html>Pixel inclusion test is performed<br>" +
-                                         "on the original band values");
-        stButton3.setToolTipText("<html>Pixel inclusion test is performed<br>" +
+        stButton2.setToolTipText("<html>Pixel similarity comparison is performed<br>" +
+                                         "on the original or normalised band values");
+        stButton3.setToolTipText("<html>Pixel similarity comparison is performed<br>" +
                                          "on the differences of subsequent band values");
         bindingContext.bind("spectrumTransform", stGroup);
         bindingContext.addPropertyChangeListener("spectrumTransform", evt -> interactor.getModel().fireModelChanged(true));
 
-        JLabel ptLabel = new JLabel("Inclusion/exclusion test:");
+        JLabel ptLabel = new JLabel("Similarity metric:");
         JRadioButton ptButton1 = new JRadioButton("Distance");
         JRadioButton ptButton2 = new JRadioButton("Average");
         JRadioButton ptButton3 = new JRadioButton("Min-Max");

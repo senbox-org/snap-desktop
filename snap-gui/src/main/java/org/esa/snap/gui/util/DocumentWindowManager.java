@@ -1,6 +1,8 @@
 package org.esa.snap.gui.util;
 
+import org.openide.modules.OnStart;
 import org.openide.util.Lookup;
+import org.openide.windows.Mode;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
 
@@ -10,10 +12,13 @@ import java.util.EventListener;
 import java.util.EventObject;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 /**
+ * Manages global opening, closing, and selection of {@link DocumentWindow}s.
+ *
  * @author Norman Fomferra
  * @since 2.0
  */
@@ -56,20 +61,19 @@ public class DocumentWindowManager {
                 });
     }
 
-    public final Listener[] getListeners() {
-        Set<Listener> listeners = listenerMap.keySet();
-        return listeners.toArray(new Listener[listeners.size()]);
-    }
-
-    public final void addListener(Listener listener) {
-        RegistryPropertyChangeDelegate pcl = new RegistryPropertyChangeDelegate(listener);
-        listenerMap.put(listener, pcl);
-        WindowManager.getDefault().getRegistry().addPropertyChangeListener(pcl);
-    }
-
-    public final void removeListener(Listener listener) {
-        PropertyChangeListener pcl = listenerMap.remove(listener);
-        WindowManager.getDefault().getRegistry().removePropertyChangeListener(pcl);
+    public boolean openDocumentWindow(DocumentWindow documentWindow) {
+        TopComponent topComponent = documentWindow.getTopComponent();
+        WorkspaceTopComponent workspaceTopComponent = WindowUtilities.findShowingWorkspace();
+        if (workspaceTopComponent != null) {
+            workspaceTopComponent.addTopComponent(topComponent);
+            return true;
+        }
+        Mode editor = WindowManager.getDefault().findMode("editor");
+        if (editor.dockInto(topComponent)) {
+            topComponent.open();
+            return true;
+        }
+        return false;
     }
 
     public DocumentWindow getSelectedDocumentWindow() {
@@ -93,9 +97,32 @@ public class DocumentWindowManager {
         }
     }
 
-    public void requestSelected(DocumentTopComponent topComponent) {
-        // todo: find open WorkspaceTopComponents, look if they contain the topComponent.
-        // If so, activate WorkspaceTopComponents and make sure the topComponent's internal frame is selected.
+    public void requestSelected(DocumentWindow documentWindow) {
+        TopComponent topComponent = documentWindow.getTopComponent();
+        List<WorkspaceTopComponent> showingWorkspaces = WindowUtilities.findShowingWorkspaces();
+        for (WorkspaceTopComponent showingWorkspace : showingWorkspaces) {
+            if (showingWorkspace.getTopComponents().contains(topComponent)) {
+                showingWorkspace.requestActiveTopComponent(topComponent);
+                return;
+            }
+        }
+        topComponent.requestActive();
+    }
+
+    public final Listener[] getListeners() {
+        Set<Listener> listeners = listenerMap.keySet();
+        return listeners.toArray(new Listener[listeners.size()]);
+    }
+
+    public final void addListener(Listener listener) {
+        RegistryPropertyChangeDelegate pcl = new RegistryPropertyChangeDelegate(listener);
+        listenerMap.put(listener, pcl);
+        WindowManager.getDefault().getRegistry().addPropertyChangeListener(pcl);
+    }
+
+    public final void removeListener(Listener listener) {
+        PropertyChangeListener pcl = listenerMap.remove(listener);
+        WindowManager.getDefault().getRegistry().removePropertyChangeListener(pcl);
     }
 
     /**
@@ -154,7 +181,7 @@ public class DocumentWindowManager {
 
         @Override
         public void propertyChange(PropertyChangeEvent evt) {
-            if ("activated".equals(evt.getPropertyName())) {
+            if (TopComponent.Registry.PROP_ACTIVATED.equals(evt.getPropertyName())) {
                 Object oldValue = evt.getOldValue();
                 if (oldValue instanceof DocumentWindow) {
                     delegatee.windowDeactivated(new Event((DocumentWindow) evt.getOldValue()));
@@ -163,12 +190,12 @@ public class DocumentWindowManager {
                 if (newValue instanceof DocumentWindow) {
                     delegatee.windowActivated(new Event((DocumentWindow) newValue));
                 }
-            } else if ("tcOpen".equals(evt.getPropertyName())) {
+            } else if (TopComponent.Registry.PROP_TC_OPENED.equals(evt.getPropertyName())) {
                 Object newValue = evt.getNewValue();
                 if (newValue instanceof DocumentWindow) {
                     delegatee.windowOpened(new Event((DocumentWindow) newValue));
                 }
-            } else if ("tcClose".equals(evt.getPropertyName())) {
+            } else if (TopComponent.Registry.PROP_TC_CLOSED.equals(evt.getPropertyName())) {
                 Object newValue = evt.getNewValue();
                 if (newValue instanceof DocumentWindow) {
                     delegatee.windowClosed(new Event((DocumentWindow) evt.getNewValue()));
@@ -191,7 +218,7 @@ public class DocumentWindowManager {
             DocumentWindow documentWindow = e.getDocumentWindow();
             if (documentWindow != null) {
                 openDocumentWindows.remove(documentWindow);
-                if (documentWindow == selectedDocumentWindow) {
+                if (selectedDocumentWindow == documentWindow) {
                     setSelectedDocumentWindow(null);
                 }
             }
@@ -204,7 +231,18 @@ public class DocumentWindowManager {
 
         @Override
         public void windowDeactivated(Event e) {
-
         }
     }
+
+    /**
+     * Makes sure DocumentWindowManager can start listening to window events from the beginning.
+     */
+    @OnStart
+    public static class Starter implements Runnable {
+        @Override
+        public void run() {
+            getDefault();
+        }
+    }
+
 }
