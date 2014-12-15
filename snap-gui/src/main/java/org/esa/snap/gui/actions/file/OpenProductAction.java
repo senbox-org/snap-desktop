@@ -14,6 +14,7 @@ import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle;
 
+import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -25,6 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.ServiceLoader;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 /**
@@ -38,15 +41,14 @@ import java.util.prefs.Preferences;
         displayName = "#CTL_OpenProductActionName",
         menuText = "#CTL_OpenProductActionMenuText"
 )
-@ActionReference(
-        path = "Menu/File",
-        position = 0
-)
+@ActionReference(path = "Menu/File", position = 0)
 @NbBundle.Messages({
-                           "CTL_OpenProductActionName=Open Product",
-                           "CTL_OpenProductActionMenuText=Open Product..."
-                   })
+        "CTL_OpenProductActionName=Open Product",
+        "CTL_OpenProductActionMenuText=Open Product..."
+})
 public final class OpenProductAction extends AbstractAction {
+
+    private static final Logger LOGGER = Logger.getLogger(OpenProductAction.class.getName());
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -106,7 +108,8 @@ public final class OpenProductAction extends AbstractAction {
             StringBuilder problemsMessage = new StringBuilder();
             problemsMessage.append("<html>").append(problems.size()).append(" problem(s) occurred:<br/>");
             for (IOException problem : problems) {
-                problemsMessage.append(String.format("<b>  %s</b>%s<br/>", problem.getClass().getSimpleName(), problem.getMessage()));
+                LOGGER.log(Level.SEVERE, problem.getMessage(), problem);
+                problemsMessage.append(String.format("<b>  %s</b>: %s<br/>", problem.getClass().getSimpleName(), problem.getMessage()));
             }
             JOptionPane.showMessageDialog(null, problemsMessage.toString());
         }
