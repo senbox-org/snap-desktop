@@ -14,7 +14,7 @@
  * with this program; if not, see http://www.gnu.org/licenses/
  */
 
-package org.esa.snap.gui.preferences.uibehavior;
+package org.esa.snap.gui.preferences;
 
 import com.bc.ceres.binding.Property;
 import com.bc.ceres.binding.ValidationException;
@@ -25,13 +25,12 @@ import com.bc.ceres.binding.Validator;
 *
 * @author thomas
 */
-public class PositiveIntValidator implements Validator {
+public class NotNullAndNotEmptyValidator implements Validator {
 
     @Override
     public void validateValue(Property property, Object value) throws ValidationException {
-        Integer intValue = (Integer) value;
-        if (intValue < 0) {
-            throw new ValidationException("Value of property '" + property.getName() + "' must be positive.");
+        if (value == null || value.toString().equals("")) {
+            throw new ValidationException("Value of property '" + property.getName() + "' must not be null or empty.");
         }
     }
 }

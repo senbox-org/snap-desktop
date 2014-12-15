@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2013 Brockmann Consult GmbH (info@brockmann-consult.de)
- *
+ * Copyright (C) 2011 Brockmann Consult GmbH (info@brockmann-consult.de)
+ * 
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option)
@@ -9,33 +9,29 @@
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, see http://www.gnu.org/licenses/
  */
+
 package org.esa.snap.gui.preferences;
 
-import javax.swing.JLabel;
+import com.bc.ceres.binding.Property;
+import com.bc.ceres.binding.ValidationException;
+import com.bc.ceres.binding.Validator;
 
 /**
- * @author Thomas Storm
- */
-public class SnapOptionsPanel extends javax.swing.JPanel {
-
-    private final SnapOptionsPanelController controller;
-
-    SnapOptionsPanel(SnapOptionsPanelController controller) {
-        this.controller = controller;
-        init();
-    }
-
-    private void init() {
-        add(new JLabel("test"));
-    }
+* TODO fill out or delete
+*
+* @author thomas
+*/
+public class PositiveIntValidator implements Validator {
 
     @Override
-    public void repaint() {
-        System.out.println("SnapOptionsPanel.repaint");
-        super.repaint();
+    public void validateValue(Property property, Object value) throws ValidationException {
+        Integer intValue = (Integer) value;
+        if (intValue < 0) {
+            throw new ValidationException("Value of property '" + property.getName() + "' must be positive.");
+        }
     }
 }

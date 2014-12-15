@@ -14,6 +14,6 @@
                                             "OptionsCategory_Keywords_SNAP=sentinel, application, platform",
                                             "OptionsCategory_Keywords_SNAP_Prefs=keywordCategory"
                                     })
-package org.esa.snap.gui.preferences.uibehavior;
+package org.esa.snap.gui.preferences;
 
 import org.netbeans.spi.options.OptionsPanelController;

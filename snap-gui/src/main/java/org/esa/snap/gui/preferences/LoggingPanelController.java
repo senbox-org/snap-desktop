@@ -14,7 +14,7 @@
  * with this program; if not, see http://www.gnu.org/licenses/
  */
 
-package org.esa.snap.gui.preferences.uibehavior;
+package org.esa.snap.gui.preferences;
 
 import org.esa.beam.util.SystemUtils;
 import org.netbeans.spi.options.OptionsPanelController;
