@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, see http://www.gnu.org/licenses/
  */
-package org.esa.snap.gui.actions.window;
+package org.esa.snap.netbeans.tile;
 
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -27,42 +27,44 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 
 /**
- * The "Tile Vertically" action.
+ * The "Un-Tile" action.
  *
  * @author Norman Fomferra
+ * @since 1.0
  */
 @ActionID(
         category = "Window",
-        id = "org.esa.snap.gui.actions.window.TileVerticallyAction"
+        id = "org.esa.snap.netbeans.tile.TileSingleAction"
 )
 @ActionReference(
         path = "Toolbars/Window",
-        position = 10
+        position = 30
 )
 @ActionRegistration(
-        displayName = "#CTL_TileVerticallyActionName",
+        displayName = "#CTL_TileSingleActionName",
         lazy = false
 )
-@NbBundle.Messages("CTL_TileVerticallyActionName=Tile Vertically")
-public class TileVerticallyAction extends TileAction {
+@NbBundle.Messages("CTL_TileSingleActionName=Tile Single")
+public class TileSingleAction extends TileAction {
 
-    public TileVerticallyAction() {
+    @SuppressWarnings("UnusedDeclaration")
+    public TileSingleAction() {
         this(Utilities.actionsGlobalContext());
     }
 
-    public TileVerticallyAction(Lookup actionContext) {
+    public TileSingleAction(Lookup actionContext) {
         super(actionContext);
-        putValue(NAME, Bundle.CTL_TileVerticallyActionName());
-        putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/gui/icons/TileVertically22.png", false));
+        putValue(NAME, Bundle.CTL_TileSingleActionName());
+        putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/netbeans/tile/icons/TileSingle20.png", false));
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        getTileable().tileVertically();
+        getTileable().tileSingle();
     }
 
     @Override
     public Action createContextAwareInstance(Lookup actionContext) {
-        return new TileVerticallyAction(actionContext);
+        return new TileSingleAction(actionContext);
     }
 }

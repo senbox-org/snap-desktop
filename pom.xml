@@ -24,6 +24,7 @@
         <module>snap-gui</module>
         <module>snap-tango</module>
         <module>nbexec</module>
+        <module>tiled-editors</module>
     </modules>
 
     <dependencyManagement>

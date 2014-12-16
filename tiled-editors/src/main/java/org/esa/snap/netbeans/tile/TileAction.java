@@ -13,9 +13,8 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, see http://www.gnu.org/licenses/
  */
-package org.esa.snap.gui.actions.window;
+package org.esa.snap.netbeans.tile;
 
-import org.esa.snap.gui.util.Tileable;
 import org.openide.util.ContextAwareAction;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
@@ -30,9 +29,13 @@ import java.beans.PropertyChangeListener;
 import java.util.Collection;
 
 /**
- * The abstract base class for actions that tile windows.
+ * The abstract base class for actions that can arrange editor windows in tiles.
+ * Uses either a {@link Tileable} looked-up from the global
+ * or, if there is no such, uses the default from {@link Tileable#getDefault()}.
+ * The action's enablement is based on the return value of {@link Tileable#canTile()}.
  *
  * @author Norman Fomferra
+ * @since 1.0
  */
 public abstract class TileAction extends AbstractAction implements ContextAwareAction, LookupListener, PropertyChangeListener {
 
@@ -48,19 +51,6 @@ public abstract class TileAction extends AbstractAction implements ContextAwareA
         updateState();
     }
 
-    protected Tileable getTileable() {
-        Collection<? extends Tileable> tileables = tileableResult.allInstances();
-        if (!tileables.isEmpty()) {
-            return tileables.toArray(new Tileable[tileables.size()])[0];
-        } else {
-            return defaultTileable;
-        }
-    }
-
-    private void updateState() {
-        setEnabled(getTileable().canTile());
-    }
-
     @Override
     public void resultChanged(LookupEvent ev) {
         updateState();
@@ -74,5 +64,18 @@ public abstract class TileAction extends AbstractAction implements ContextAwareA
         if (windowCountChanged) {
             updateState();
         }
+    }
+
+    protected Tileable getTileable() {
+        Collection<? extends Tileable> tileables = tileableResult.allInstances();
+        if (!tileables.isEmpty()) {
+            return tileables.iterator().next();
+        } else {
+            return defaultTileable;
+        }
+    }
+
+    private void updateState() {
+        setEnabled(getTileable().canTile());
     }
 }

@@ -1,4 +1,19 @@
-package org.esa.snap.gui.util;
+/*
+ * Copyright (C) 2014 Brockmann Consult GmbH (info@brockmann-consult.de)
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option)
+ * any later version.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, see http://www.gnu.org/licenses/
+ */
+package org.esa.snap.netbeans.tile;
 
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
@@ -11,7 +26,7 @@ import java.util.List;
  * Default Tileable implementation which arranges all global editor windows in tiles.
  *
  * @author Norman Fomferra
- * @since 2.0
+ * @since 1.0
  */
 @NbBundle.Messages({
         "MSG_TileableImplNothingToDo=Nothing to do.",
@@ -21,14 +36,14 @@ class TileableImpl implements Tileable {
 
     @Override
     public boolean canTile() {
-        return WindowUtilities.countOpenEditorWindows() >= 2;
+        return TileUtilities.countOpenEditorWindows() >= 2;
     }
 
     @Override
     public void tileEvenly() {
         tile(editorWindows -> {
             int windowCount = editorWindows.size();
-            int[] result = WindowUtilities.getBestSubdivisionIntoSquares(windowCount, 16, 16);
+            int[] result = TileUtilities.computeMatrixSizeForEqualAreaTiling(windowCount);
             int rowCount = result[0];
             int colCount = result[1];
             int windowIndex = 0;
@@ -36,7 +51,7 @@ class TileableImpl implements Tileable {
                 for (int colIndex = 0; colIndex < colCount; colIndex++) {
                     if (windowIndex < windowCount) {
                         TopComponent editorWindow = editorWindows.get(windowIndex);
-                        if (WindowUtilities.openInEditorMode(editorWindow, rowIndex, colIndex)) {
+                        if (TileUtilities.openInEditorMode(editorWindow, rowIndex, colIndex)) {
                             windowIndex++;
                         }
                     }
@@ -55,7 +70,7 @@ class TileableImpl implements Tileable {
             for (int colIndex = 0; colIndex < colCount; colIndex++) {
                 if (windowIndex < windowCount) {
                     TopComponent editorWindow = editorWindows.get(windowIndex);
-                    if (WindowUtilities.openInEditorMode(editorWindow, 0, colIndex)) {
+                    if (TileUtilities.openInEditorMode(editorWindow, 0, colIndex)) {
                         windowIndex++;
                     }
                 }
@@ -73,7 +88,7 @@ class TileableImpl implements Tileable {
             for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
                 if (windowIndex < windowCount) {
                     TopComponent editorWindow = editorWindows.get(windowIndex);
-                    if (WindowUtilities.openInEditorMode(editorWindow, rowIndex, 0)) {
+                    if (TileUtilities.openInEditorMode(editorWindow, rowIndex, 0)) {
                         windowIndex++;
                     }
                 }
@@ -87,7 +102,7 @@ class TileableImpl implements Tileable {
         tile(editorWindows -> {
             int windowIndex = 0;
             for (TopComponent editorWindow : editorWindows) {
-                if (WindowUtilities.openInMode(editorWindow, "editor")) {
+                if (TileUtilities.openInMode(editorWindow, "editor")) {
                     windowIndex++;
                 }
             }
@@ -98,22 +113,22 @@ class TileableImpl implements Tileable {
     private void tile(Tiler tiler) {
         TopComponent selectedWindow = TopComponent.getRegistry().getActivated();
 
-        List<TopComponent> editorWindows = WindowUtilities.findOpenEditorWindows();
+        List<TopComponent> editorWindows = TileUtilities.findOpenEditorWindows();
         if (editorWindows.size() < 2) {
             NotifyDescriptor.Message message = new NotifyDescriptor.Message(Bundle.MSG_TileableImplNothingToDo());
             DialogDisplayer.getDefault().notify(message);
             return;
         }
 
-        int windowCount = editorWindows.size();
-        int tiledCount = tiler.tile(editorWindows);
+        int totalWindowCount = editorWindows.size();
+        int tiledWindowCount = tiler.tile(editorWindows);
 
         // Re-activate previously activated window, if any.
         if (selectedWindow != null) {
             selectedWindow.requestActive();
         }
 
-        if (tiledCount < windowCount) {
+        if (tiledWindowCount < totalWindowCount) {
             NotifyDescriptor.Message message = new NotifyDescriptor.Message(Bundle.MSG_TileableImplNotComplete());
             DialogDisplayer.getDefault().notify(message);
         }

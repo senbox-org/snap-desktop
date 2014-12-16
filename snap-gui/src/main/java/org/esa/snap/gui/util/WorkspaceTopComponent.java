@@ -6,6 +6,7 @@
 package org.esa.snap.gui.util;
 
 import com.bc.ceres.core.Assert;
+import org.esa.snap.netbeans.tile.Tileable;
 import org.netbeans.swing.tabcontrol.DefaultTabDataModel;
 import org.netbeans.swing.tabcontrol.TabData;
 import org.netbeans.swing.tabcontrol.TabDisplayer;

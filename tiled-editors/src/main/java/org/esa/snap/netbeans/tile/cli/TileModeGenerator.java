@@ -1,4 +1,21 @@
-package org.esa.snap.gui.util;
+/*
+ * Copyright (C) 2014 Brockmann Consult GmbH (info@brockmann-consult.de)
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option)
+ * any later version.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, see http://www.gnu.org/licenses/
+ */
+package org.esa.snap.netbeans.tile.cli;
+
+import org.esa.snap.netbeans.tile.TileUtilities;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -6,10 +23,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-class EditorModeGenerator {
+/**
+ * CLI tool to generate the editor tile mode files into directory ./modes.
+ * Will also output the required layer.xml content to stdout.
+ *
+ * @author Norman Fomferra
+ */
+public class TileModeGenerator {
 
-    private static final int N = 16;
-    private static final String TEMPLATE = "" +
+    private static final String MODE_XML_TEMPLATE = "" +
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
             "<mode version=\"2.4\">\n" +
             "    <name unique=\"$NAME\"/>\n" +
@@ -29,19 +51,22 @@ class EditorModeGenerator {
         // Generate wsmode files into ./modes
         new File("modes").mkdir();
         List<String> modeNames = new ArrayList<>();
-        for (int row = 0; row < N; row++) {
-            for (int col = 0; col < N; col++) {
-                String modeName = String.format(WindowUtilities.EDITOR_MODE_NAME_FORMAT, row, col);
+        for (int row = 0; row < TileUtilities.MAX_TILE_ROW_COUNT; row++) {
+            for (int col = 0; col < TileUtilities.MAX_TILE_COLUMN_COUNT; col++) {
+                String modeName = String.format(TileUtilities.EDITOR_MODE_NAME_FORMAT, row, col);
                 modeNames.add(modeName);
 
                 File modeFile = new File(new File("modes"), modeName + ".wsmode");
                 try (FileWriter fileWriter = new FileWriter(modeFile)) {
-                    fileWriter.write(TEMPLATE.replace("$NAME", modeName).replace("$COL", col + "").replace("$ROW", row + ""));
+                    fileWriter.write(MODE_XML_TEMPLATE
+                                             .replace("$NAME", modeName)
+                                             .replace("$COL", col + "")
+                                             .replace("$ROW", row + ""));
                 }
             }
         }
 
-        // Output entries to pasted into 'layer.xml'
+        // Output entries to be pasted into your 'layer.xml'
         System.out.println("<folder name=\"Windows2\" >\n"
                                    + "    <folder name=\"Modes\" >");
         for (String modeName : modeNames) {

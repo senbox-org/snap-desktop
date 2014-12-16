@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, see http://www.gnu.org/licenses/
  */
-package org.esa.snap.gui.actions.window;
+package org.esa.snap.netbeans.tile;
 
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -30,10 +30,11 @@ import java.awt.event.ActionEvent;
  * The "Tile Horizontally" action.
  *
  * @author Norman Fomferra
+ * @since 1.0
  */
 @ActionID(
         category = "Window",
-        id = "org.esa.snap.gui.actions.window.TileHorizontallyAction"
+        id = "org.esa.snap.netbeans.tile.TileHorizontallyAction"
 )
 @ActionReference(
         path = "Toolbars/Window",
@@ -46,6 +47,7 @@ import java.awt.event.ActionEvent;
 @NbBundle.Messages("CTL_TileHorizontallyActionName=Tile Horizontally")
 public class TileHorizontallyAction extends TileAction {
 
+    @SuppressWarnings("UnusedDeclaration")
     public TileHorizontallyAction() {
         this(Utilities.actionsGlobalContext());
     }
@@ -53,7 +55,7 @@ public class TileHorizontallyAction extends TileAction {
     public TileHorizontallyAction(Lookup actionContext) {
         super(actionContext);
         putValue(NAME, Bundle.CTL_TileHorizontallyActionName());
-        putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/gui/icons/TileHorizontally22.png", false));
+        putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/netbeans/tile/icons/TileHorizontally20.png", false));
     }
 
     @Override

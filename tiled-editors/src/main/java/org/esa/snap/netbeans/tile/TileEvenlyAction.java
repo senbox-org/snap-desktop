@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, see http://www.gnu.org/licenses/
  */
-package org.esa.snap.gui.actions.window;
+package org.esa.snap.netbeans.tile;
 
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -27,43 +27,44 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 
 /**
- * The "Un-Tile" action.
+ * The "Tile Evenly" action.
  *
  * @author Norman Fomferra
+ * @since 1.0
  */
 @ActionID(
         category = "Window",
-        id = "org.esa.snap.gui.actions.window.TileSingleAction"
+        id = "org.esa.snap.netbeans.tile.TileEvenlyAction"
 )
 @ActionReference(
         path = "Toolbars/Window",
-        position = 30
+        position = 20
 )
 @ActionRegistration(
-        displayName = "#CTL_TileSingleActionName",
-        iconBase = "org/esa/snap/gui/icons/TileSingle22.png",
+        displayName = "#CTL_TileEvenlyActionName",
         lazy = false
 )
-@NbBundle.Messages("CTL_TileSingleActionName=Tile Single")
-public class TileSingleAction extends TileAction {
+@NbBundle.Messages("CTL_TileEvenlyActionName=Tile Evenly")
+public class TileEvenlyAction extends TileAction {
 
-    public TileSingleAction() {
+    @SuppressWarnings("UnusedDeclaration")
+    public TileEvenlyAction() {
         this(Utilities.actionsGlobalContext());
     }
 
-    public TileSingleAction(Lookup actionContext) {
+    public TileEvenlyAction(Lookup actionContext) {
         super(actionContext);
-        putValue(NAME, Bundle.CTL_TileSingleActionName());
-        putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/gui/icons/TileSingle22.png", false));
+        putValue(NAME, Bundle.CTL_TileEvenlyActionName());
+        putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/netbeans/tile/icons/TileEvenly20.png", false));
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        getTileable().tileSingle();
+        getTileable().tileEvenly();
     }
 
     @Override
     public Action createContextAwareInstance(Lookup actionContext) {
-        return new TileSingleAction(actionContext);
+        return new TileEvenlyAction(actionContext);
     }
 }
