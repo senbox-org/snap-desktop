@@ -1,4 +1,4 @@
-package org.esa.snap.gui.util;
+package org.esa.snap.netbeans.docwin;
 
 import org.openide.modules.OnStart;
 import org.openide.util.Lookup;
@@ -244,5 +244,4 @@ public class DocumentWindowManager {
             getDefault();
         }
     }
-
 }

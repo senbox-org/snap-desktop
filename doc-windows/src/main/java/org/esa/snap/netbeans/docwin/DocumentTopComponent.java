@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.esa.snap.gui.util;
+package org.esa.snap.netbeans.docwin;
 
 import org.openide.util.lookup.AbstractLookup;
 import org.openide.util.lookup.InstanceContent;
@@ -16,13 +16,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.logging.Logger;
 
-// See https://blogs.oracle.com/geertjan/entry/opening_a_topcomponent_per_node
-// See https://blogs.oracle.com/geertjan/entry/loosely_coupled_open_action
-// See https://blogs.oracle.com/geertjan/entry/loosely_coupled_open_action_part
 
 /**
  * A {@code TopComponent} designed to serve as an editor for a "document" object.
- * When added to a {@link WorkspaceTopComponent} its
+ * In contrast to a "normal" {@code TopComponent}, a {@code DocumentTopComponent}
+ * retains a selected state even after component deactivation. It can also be undocked/floated
+ * into a {@link WorkspaceTopComponent} and thereby undergo the usual {@code TopComponent} lifecyle as
+ * indicated by the various notification methods given by the interface {@link NotifiableComponent}:
  * <ol>
  * <li>{@link #componentOpened()}/{@link #componentClosed()} method will be called if the corresponding internal frame is activated/deactivated;</li>
  * <li>{@link #componentActivated()}/{@link #componentDeactivated()} method will be called if the corresponding internal frame is activated/deactivated;</li>
@@ -32,9 +32,9 @@ import java.util.logging.Logger;
  * Document windows keep a constant reference to the document object which it exposes through the window's lookup.
  * Overrides may use the {@link #getDynamicContent() content} to alter the objects in the exposed lookup,
  * however, the document object will always remain in it.
- * <p/>
  *
  * @author Norman Fomferra
+ * @since 1.0
  */
 public class DocumentTopComponent<T> extends TopComponent implements DocumentWindow, NotifiableComponent {
     private static final Logger LOG = Logger.getLogger(DocumentTopComponent.class.getName());

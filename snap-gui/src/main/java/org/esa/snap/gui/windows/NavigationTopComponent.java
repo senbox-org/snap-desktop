@@ -34,7 +34,7 @@ import org.esa.snap.gui.actions.help.HelpAction;
 import org.esa.snap.gui.actions.view.SyncImageCursorsAction;
 import org.esa.snap.gui.actions.view.SyncImageViewsAction;
 import org.esa.snap.gui.nav.NavigationCanvas;
-import org.esa.snap.gui.util.WindowUtilities;
+import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.util.HelpCtx;

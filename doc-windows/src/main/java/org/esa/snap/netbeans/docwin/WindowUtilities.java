@@ -1,111 +1,20 @@
-package org.esa.snap.gui.util;
+package org.esa.snap.netbeans.docwin;
 
-import org.openide.windows.Mode;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Various NetBeans window system utilities.
  *
  * @author Norman Fomferra
- * @since 2.0
+ * @since 1.0
  */
 public class WindowUtilities {
-    static final int MAX_ROW_COUNT = 16;
-    static final int MAX_COL_COUNT = 16;
-    static final String EDITOR_MODE_NAME_FORMAT = "editor_r%dc%d";
 
-    /**
-     * Opens a top component in a mode of kind "editor" at the given row and column.
-     *
-     * @param topComponent The top component to open.
-     * @param rowIndex     The row index.
-     * @param colIndex     The column index.
-     * @return {@code true} on success.
-     */
-    public static boolean openInEditorMode(TopComponent topComponent, int rowIndex, int colIndex) {
-        String modeName = String.format(EDITOR_MODE_NAME_FORMAT, rowIndex, colIndex);
-        return openInMode(topComponent, modeName);
-    }
-
-    /**
-     * Opens a top component in the given mode.
-     *
-     * @param topComponent The top component to open.
-     * @param modeName     The mode's name.
-     * @return {@code true} on success.
-     */
-    public static boolean openInMode(TopComponent topComponent, String modeName) {
-        Mode mode = WindowManager.getDefault().findMode(modeName);
-        if (mode != null) {
-            if (!Arrays.asList(mode.getTopComponents()).contains(topComponent)) {
-                if (mode.dockInto(topComponent)) {
-                    topComponent.open();
-                    return true;
-                }
-            } else {
-                topComponent.open();
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Counts the currently opened top components in modes of kind "editor".
-     *
-     * @return The number of currently opened top components in modes of kind "editor"
-     */
-    public static int countOpenEditorWindows() {
-        int count = 0;
-        WindowManager wm = WindowManager.getDefault();
-        Set<TopComponent> opened = wm.getRegistry().getOpened();
-        for (TopComponent openedWindow : opened) {
-            if (wm.isEditorTopComponent(openedWindow)) {
-                count++;
-            }
-        }
-        return count;
-    }
-
-    /**
-     * Finds all opened top components in modes of kind "editor" ordered by display name.
-     *
-     * @return The list of opened top components.
-     */
-    public static List<TopComponent> findOpenEditorWindows() {
-        return findOpenEditorWindows((win1, win2) -> {
-            String name1 = win1.getDisplayName();
-            String name2 = win2.getDisplayName();
-            return (name1 != null ? name1 : "").compareTo(name2 != null ? name2 : "");
-        });
-    }
-
-    /**
-     * Finds all opened top components in modes of kind "editor" using the given comparator.
-     *
-     * @return The list of opened top components.
-     */
-    public static List<TopComponent> findOpenEditorWindows(Comparator<TopComponent> comparator) {
-        ArrayList<TopComponent> editorWindows = new ArrayList<>();
-        Set<TopComponent> openedWindows = WindowManager.getDefault().getRegistry().getOpened();
-        editorWindows.addAll(openedWindows
-                                     .stream()
-                                     .filter(topComponent -> WindowManager.getDefault().isEditorTopComponent(topComponent))
-                                     .collect(Collectors.toList()));
-        if (comparator != null) {
-            editorWindows.sort(comparator);
-        }
-        return editorWindows;
-    }
 
     public static WorkspaceTopComponent findShowingWorkspace() {
         TopComponent activated = WindowManager.getDefault().getRegistry().getActivated();
@@ -163,10 +72,6 @@ public class WindowUtilities {
                 return topComponent;
             }
         });
-    }
-
-    public static <W extends TopComponent, L> List<L> collectOpen(Collector<W, L> collector) {
-        return collectOpen(null, collector);
     }
 
     public static <W extends TopComponent, L> List<L> collectOpen(Class<W> windowType, Collector<W, L> collector) {

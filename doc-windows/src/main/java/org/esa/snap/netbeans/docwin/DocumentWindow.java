@@ -1,4 +1,4 @@
-package org.esa.snap.gui.util;
+package org.esa.snap.netbeans.docwin;
 
 import org.openide.windows.TopComponent;
 
@@ -18,6 +18,7 @@ import org.openide.windows.TopComponent;
  * {@link #isSelected() selected} one.
  *
  * @author Norman Fomferra
+ * @since 1.0
  */
 public interface DocumentWindow<T> extends NotifiableComponent {
     /**

@@ -6,7 +6,7 @@ import com.bc.ceres.grender.Viewport;
 import org.esa.beam.framework.ui.product.ProductSceneView;
 import org.esa.snap.gui.SnapApp;
 import org.esa.snap.gui.actions.view.SyncImageViewsAction;
-import org.esa.snap.gui.util.WindowUtilities;
+import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.gui.windows.ProductSceneViewTopComponent;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;

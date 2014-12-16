@@ -1,4 +1,4 @@
-package org.esa.snap.gui.util;
+package org.esa.snap.netbeans.docwin;
 
 import org.openide.windows.TopComponent;
 
@@ -9,6 +9,7 @@ import java.util.logging.Logger;
  * Implementation of a {@link NotifiableComponent} based on reflection.
  *
  * @author Norman Fomferra
+ * @since 1.0
  */
 class NotifiableComponentImpl implements NotifiableComponent {
     private final TopComponent topComponent;

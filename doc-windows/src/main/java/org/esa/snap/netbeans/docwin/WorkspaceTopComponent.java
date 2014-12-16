@@ -3,9 +3,8 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.esa.snap.gui.util;
+package org.esa.snap.netbeans.docwin;
 
-import com.bc.ceres.core.Assert;
 import org.esa.snap.netbeans.tile.Tileable;
 import org.netbeans.swing.tabcontrol.DefaultTabDataModel;
 import org.netbeans.swing.tabcontrol.TabData;
@@ -52,7 +51,7 @@ import static org.openide.util.NbBundle.Messages;
  * A top-level window which hosts an internal desktop in which other windows can be floated as internal frames.
  *
  * @author Norman Fomferra
- * @since 2.0
+ * @since 1.0
  */
 @TopComponent.Description(
         preferredID = "WorkspaceTopComponent",
@@ -339,7 +338,7 @@ public class WorkspaceTopComponent extends TopComponent implements Tileable {
         }
     }
 
-   @Override
+    @Override
     protected void componentActivated() {
         JInternalFrame selectedFrame = desktopPane.getSelectedFrame();
 
@@ -1105,7 +1104,7 @@ public class WorkspaceTopComponent extends TopComponent implements Tileable {
                 }
 
                 TabData tab = frameToTabMap.get(frame);
-                Assert.notNull(tab);
+                assert tab != null;
                 int i = tabbedContainer.getModel().indexOf(tab);
                 if (i >= 0) {
                     if (icon != null) {
@@ -1120,7 +1119,7 @@ public class WorkspaceTopComponent extends TopComponent implements Tileable {
                 frame.setTitle(displayName);
 
                 TabData tab = frameToTabMap.get(frame);
-                Assert.notNull(tab);
+                assert tab != null;
                 int i = tabbedContainer.getModel().indexOf(tab);
                 if (i >= 0) {
                     tabbedContainer.getModel().setText(i, displayName);

@@ -25,6 +25,7 @@
         <module>snap-tango</module>
         <module>nbexec</module>
         <module>tiled-editors</module>
+        <module>doc-windows</module>
     </modules>
 
     <dependencyManagement>

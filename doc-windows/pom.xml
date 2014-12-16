@@ -9,11 +9,12 @@
     </properties>
 
     <groupId>org.esa.snap.netbeans</groupId>
-    <artifactId>tiled-editors</artifactId>
+    <artifactId>doc-windows</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>nbm</packaging>
-    <description>Provides editor window tiling for NetBeans Platform applications. New actions allow
-        to arrange editor windows in various layouts: tile horizontally, vertically, evenly.
+    <description>Provides "document windows" for NetBeans Platform applications. Document windows are TopComponents which
+    retain a selected state even after deactivation and can be undocked/floated into a special workspace TopComponent. 
+    The latter is based on JDesktopPane and JInternalFrame.
     </description>
     <organization>
         <name>Brockmann Consult GmbH</name>
@@ -46,9 +47,9 @@
                     <author>Norman Fomferra, Brockmann Consult GmbH</author>
                     <licenseName>GPL 3</licenseName>
                     <licenseFile>LICENSE.txt</licenseFile>
-                    <codeNameBase>org.esa.snap.netbeans.tile</codeNameBase>
+                    <codeNameBase>org.esa.snap.netbeans.docwin</codeNameBase>
                     <publicPackages>
-                        <package>org.esa.snap.netbeans.tile</package>
+                        <package>org.esa.snap.netbeans.docwin</package>
                     </publicPackages>
                     <requiresRestart>false</requiresRestart>
                 </configuration>
@@ -118,6 +119,17 @@
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-filesystems</artifactId>
             <version>${netbeans.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-netbeans-swing-tabcontrol</artifactId>
+            <version>${netbeans.version}</version>
+        </dependency>
+        <!-- Other SNAP NetBeans Goodies -->
+        <dependency>
+            <groupId>org.esa.snap.netbeans</groupId>
+            <artifactId>tiled-editors</artifactId>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>

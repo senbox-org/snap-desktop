@@ -4,7 +4,7 @@ import com.bc.ceres.glayer.support.ImageLayer;
 import com.bc.ceres.glayer.swing.LayerCanvas;
 import org.esa.beam.framework.ui.PixelPositionListener;
 import org.esa.snap.gui.SnapApp;
-import org.esa.snap.gui.util.DocumentWindowManager;
+import org.esa.snap.netbeans.docwin.DocumentWindowManager;
 import org.esa.snap.gui.windows.ProductSceneViewTopComponent;
 import org.openide.awt.StatusLineElementProvider;
 import org.openide.util.lookup.ServiceProvider;
