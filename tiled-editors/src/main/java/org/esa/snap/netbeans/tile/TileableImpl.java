@@ -44,12 +44,10 @@ class TileableImpl implements Tileable {
     public void tileEvenly() {
         tile(editorWindows -> {
             int windowCount = editorWindows.size();
-            Dimension result = TileUtilities.computeMatrixSizeForEqualAreaTiling(windowCount);
-            int colCount = result.width;
-            int rowCount = result.height;
+            Dimension matrixSize = TileUtilities.computeMatrixSizeForEqualAreaTiling(windowCount);
             int windowIndex = 0;
-            for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
-                for (int colIndex = 0; colIndex < colCount; colIndex++) {
+            for (int rowIndex = 0; rowIndex < matrixSize.height; rowIndex++) {
+                for (int colIndex = 0; colIndex < matrixSize.width; colIndex++) {
                     if (windowIndex < windowCount) {
                         TopComponent editorWindow = editorWindows.get(windowIndex);
                         if (TileUtilities.openInEditorMode(editorWindow, rowIndex, colIndex)) {
