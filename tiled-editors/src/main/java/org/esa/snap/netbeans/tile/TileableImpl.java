@@ -20,6 +20,7 @@ import org.openide.NotifyDescriptor;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
+import java.awt.*;
 import java.util.List;
 
 /**
@@ -43,9 +44,9 @@ class TileableImpl implements Tileable {
     public void tileEvenly() {
         tile(editorWindows -> {
             int windowCount = editorWindows.size();
-            int[] result = TileUtilities.computeMatrixSizeForEqualAreaTiling(windowCount);
-            int rowCount = result[0];
-            int colCount = result[1];
+            Dimension result = TileUtilities.computeMatrixSizeForEqualAreaTiling(windowCount);
+            int colCount = result.width;
+            int rowCount = result.height;
             int windowIndex = 0;
             for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
                 for (int colIndex = 0; colIndex < colCount; colIndex++) {

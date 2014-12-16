@@ -19,6 +19,7 @@ import org.openide.windows.Mode;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -124,13 +125,13 @@ public class TileUtilities {
     }
 
     /**
-     * Finds the best matching #rows x #columns matrix of equal-area squares
+     * Finds the best matching matrix of equal-area squares
      * given a fixed number of window areas.
      *
      * @param windowCount Number of window areas.
-     * @return Array of integers {#rows, #columns}.
+     * @return Matrix size, where width=#columns, and height=#rows.
      */
-    public static int[] computeMatrixSizeForEqualAreaTiling(int windowCount) {
+    public static Dimension computeMatrixSizeForEqualAreaTiling(int windowCount) {
         double minDeltaValue = Double.POSITIVE_INFINITY;
         int bestRowCount = -1;
         int bestColCount = -1;
@@ -151,6 +152,6 @@ public class TileUtilities {
                 }
             }
         }
-        return new int[]{bestRowCount, bestColCount};
+        return new Dimension(bestColCount, bestRowCount);
     }
 }
