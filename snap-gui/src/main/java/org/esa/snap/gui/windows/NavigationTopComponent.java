@@ -449,13 +449,12 @@ public class NavigationTopComponent extends TopComponent implements LookupListen
         if (currentView == null) {
             return;
         }
-        java.util.List<ProductSceneViewTopComponent> topComponents = WindowUtilities.findOpen(ProductSceneViewTopComponent.class);
-        for (ProductSceneViewTopComponent productSceneViewTopComponent : topComponents) {
+        WindowUtilities.getOpened(ProductSceneViewTopComponent.class).forEach(productSceneViewTopComponent -> {
             final ProductSceneView view = productSceneViewTopComponent.getView();
             if (view != currentView) {
                 currentView.synchronizeViewportIfPossible(view);
             }
-        }
+        });
     }
 
     /**

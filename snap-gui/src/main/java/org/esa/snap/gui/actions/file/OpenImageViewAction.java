@@ -35,7 +35,6 @@ import org.openide.util.NbBundle;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.text.MessageFormat;
-import java.util.List;
 
 /**
  * This action opens an image view of the currently selected raster.
@@ -155,14 +154,10 @@ public class OpenImageViewAction extends AbstractAction {
     }
 
     public ProductSceneView getProductSceneView(RasterDataNode raster) {
-        List<ProductSceneView> list = WindowUtilities.collectOpen(ProductSceneViewTopComponent.class, new WindowUtilities.Collector<ProductSceneViewTopComponent, ProductSceneView>() {
-            @Override
-            public void collect(ProductSceneViewTopComponent topComponent, List<ProductSceneView> list) {
-                if (raster == topComponent.getView().getRaster()) {
-                    list.add(topComponent.getView());
-                }
-            }
-        });
-        return list.isEmpty() ? null : list.get(0);
+        return WindowUtilities.getOpened(ProductSceneViewTopComponent.class)
+                .filter(topComponent -> raster == topComponent.getView().getRaster())
+                .map(ProductSceneViewTopComponent::getView)
+                .findFirst()
+                .orElse(null);
     }
 }

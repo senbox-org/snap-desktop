@@ -124,11 +124,11 @@ public class PixelPosStatusLineElementProvider
     }
 
     @Override
-    public void windowActivated(DocumentWindowManager.Event e) {
+    public void windowSelected(DocumentWindowManager.Event e) {
     }
 
     @Override
-    public void windowDeactivated(DocumentWindowManager.Event e) {
+    public void windowDeselected(DocumentWindowManager.Event e) {
     }
 
     private void updateSettings() {

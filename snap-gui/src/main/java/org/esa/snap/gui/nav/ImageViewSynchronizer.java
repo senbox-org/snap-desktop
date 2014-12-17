@@ -6,8 +6,8 @@ import com.bc.ceres.grender.Viewport;
 import org.esa.beam.framework.ui.product.ProductSceneView;
 import org.esa.snap.gui.SnapApp;
 import org.esa.snap.gui.actions.view.SyncImageViewsAction;
-import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.gui.windows.ProductSceneViewTopComponent;
+import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
@@ -17,7 +17,6 @@ import org.openide.windows.OnShowing;
 
 import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeEvent;
-import java.util.List;
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
 import java.util.prefs.Preferences;
@@ -85,13 +84,12 @@ public class ImageViewSynchronizer implements Runnable, PreferenceChangeListener
 
     private void syncImageViews(ProductSceneView currentSceneView) {
         if (isActive()) {
-            List<ProductSceneViewTopComponent> topComponents = WindowUtilities.findOpen(ProductSceneViewTopComponent.class);
-            for (ProductSceneViewTopComponent topComponent : topComponents) {
+            WindowUtilities.getOpened(ProductSceneViewTopComponent.class).forEach(topComponent -> {
                 ProductSceneView oldSceneView = topComponent.getView();
                 if (oldSceneView != currentSceneView) {
                     currentSceneView.synchronizeViewportIfPossible(oldSceneView);
                 }
-            }
+            });
         }
     }
 

@@ -5,6 +5,7 @@
  */
 package org.esa.snap.netbeans.docwin;
 
+import org.esa.snap.netbeans.tile.TileUtilities;
 import org.esa.snap.netbeans.tile.Tileable;
 import org.netbeans.swing.tabcontrol.DefaultTabDataModel;
 import org.netbeans.swing.tabcontrol.TabData;
@@ -73,7 +74,7 @@ import static org.openide.util.NbBundle.Messages;
         "CTL_WorkspaceTopComponentNameBase=Workspace",
         "CTL_WorkspaceTopComponentDescription=Provides an internal desktop for document windows",
 })
-public class WorkspaceTopComponent extends TopComponent implements Tileable {
+public class WorkspaceTopComponent extends TopComponent implements WindowContainer<TopComponent>, Tileable {
 
     public final static String ID = WorkspaceTopComponent.class.getSimpleName();
 
@@ -109,6 +110,22 @@ public class WorkspaceTopComponent extends TopComponent implements Tileable {
         setToolTipText(Bundle.CTL_WorkspaceTopComponentDescription());
     }
 
+    public static WorkspaceTopComponent findShowingInstance() {
+        TopComponent activated = WindowManager.getDefault().getRegistry().getActivated();
+        if (activated instanceof WorkspaceTopComponent) {
+            return (WorkspaceTopComponent) activated;
+        }
+        List<WorkspaceTopComponent> showingWorkspaces = findShowingInstances();
+        if (!showingWorkspaces.isEmpty()) {
+            return showingWorkspaces.get(0);
+        }
+        return null;
+    }
+
+    public static List<WorkspaceTopComponent> findShowingInstances() {
+        return WindowUtilities.getOpened(WorkspaceTopComponent.class).filter(Component::isShowing).collect(Collectors.toList());
+    }
+
     private void initComponents() {
         setLayout(new BorderLayout());
 
@@ -131,6 +148,16 @@ public class WorkspaceTopComponent extends TopComponent implements Tileable {
             return topComponent.getUndoRedo();
         }
         return super.getUndoRedo();
+    }
+
+    @Override
+    public TopComponent getSelectedWindow() {
+        return getActiveTopComponent();
+    }
+
+    @Override
+    public List<TopComponent> getOpenedWindows() {
+        return getTopComponents();
     }
 
     /**
@@ -479,50 +506,27 @@ public class WorkspaceTopComponent extends TopComponent implements Tileable {
 
     private void notifyOpened(TopComponent topComponent) {
         NotifiableComponent.get(topComponent).componentOpened();
-
         if (topComponent instanceof DocumentWindow) {
-            DocumentWindowManager.Event event = new DocumentWindowManager.Event((DocumentWindow) topComponent);
-            DocumentWindowManager.Listener[] listeners = DocumentWindowManager.getDefault().getListeners();
-            for (DocumentWindowManager.Listener listener : listeners) {
-                listener.windowOpened(event);
-            }
+            DocumentWindowManager.getDefault().addOpenedWindow((DocumentWindow) topComponent);
         }
     }
 
     private void notifyClosed(TopComponent topComponent) {
         NotifiableComponent.get(topComponent).componentClosed();
-
         if (topComponent instanceof DocumentWindow) {
-            DocumentWindowManager.Event event = new DocumentWindowManager.Event((DocumentWindow) topComponent);
-            DocumentWindowManager.Listener[] listeners = DocumentWindowManager.getDefault().getListeners();
-            for (DocumentWindowManager.Listener listener : listeners) {
-                listener.windowClosed(event);
-            }
+            DocumentWindowManager.getDefault().removeOpenedWindow((DocumentWindow) topComponent);
         }
     }
 
     private void notifyActivated(TopComponent topComponent) {
         NotifiableComponent.get(topComponent).componentActivated();
-
         if (topComponent instanceof DocumentWindow) {
-            DocumentWindowManager.Event event = new DocumentWindowManager.Event((DocumentWindow) topComponent);
-            DocumentWindowManager.Listener[] listeners = DocumentWindowManager.getDefault().getListeners();
-            for (DocumentWindowManager.Listener listener : listeners) {
-                listener.windowActivated(event);
-            }
+            DocumentWindowManager.getDefault().setSelectedWindow((DocumentWindow) topComponent);
         }
     }
 
     private void notifyDeactivated(TopComponent topComponent) {
         NotifiableComponent.get(topComponent).componentDeactivated();
-
-        if (topComponent instanceof DocumentWindow) {
-            DocumentWindowManager.Event event = new DocumentWindowManager.Event((DocumentWindow) topComponent);
-            DocumentWindowManager.Listener[] listeners = DocumentWindowManager.getDefault().getListeners();
-            for (DocumentWindowManager.Listener listener : listeners) {
-                listener.windowDeactivated(event);
-            }
-        }
     }
 
     public boolean requestActiveTopComponent(TopComponent topComponent) {
@@ -766,17 +770,15 @@ public class WorkspaceTopComponent extends TopComponent implements Tileable {
             int desktopHeight = desktopPane.getHeight();
             int windowCount = frameToTabMap.size();
 
-            int[] betRowCol = WindowUtilities.getBestSubdivisionIntoSquares(windowCount, -1, -1);
-            int bestHorCount = betRowCol[1];
-            int bestVerCount = betRowCol[0];
+            Dimension matrixSize = TileUtilities.computeMatrixSizeForEqualAreaTiling(windowCount);
 
-            int windowWidth = desktopWidth / bestHorCount;
-            int windowHeight = desktopHeight / bestVerCount;
+            int windowWidth = desktopWidth / matrixSize.width;
+            int windowHeight = desktopHeight / matrixSize.height;
 
             List<TabData> tabs = tabbedContainer.getModel().getTabs();
             int windowIndex = 0;
-            for (int j = 0; j < bestVerCount; j++) {
-                for (int i = 0; i < bestHorCount; i++) {
+            for (int j = 0; j < matrixSize.height; j++) {
+                for (int i = 0; i < matrixSize.width; i++) {
                     if (windowIndex < windowCount) {
                         TabData tab = tabs.get(windowIndex);
                         JInternalFrame internalFrame = tabToFrameMap.get(tab);
@@ -910,7 +912,7 @@ public class WorkspaceTopComponent extends TopComponent implements Tileable {
         }
 
         static WorkspaceTopComponent promptForWorkspaces() {
-            List<WorkspaceTopComponent> workspaces = WindowUtilities.findOpen(WorkspaceTopComponent.class);
+            List<WorkspaceTopComponent> workspaces = WindowUtilities.getOpened(WorkspaceTopComponent.class).collect(Collectors.toList());
             WorkspaceTopComponent workspaceTopComponent = null;
             if (workspaces.size() == 1) {
                 workspaceTopComponent = workspaces.get(0);

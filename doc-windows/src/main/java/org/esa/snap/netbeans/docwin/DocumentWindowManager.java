@@ -8,12 +8,12 @@ import org.openide.windows.WindowManager;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
 import java.util.EventListener;
 import java.util.EventObject;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -22,9 +22,9 @@ import java.util.Set;
  * @author Norman Fomferra
  * @since 2.0
  */
-public class DocumentWindowManager {
+public class DocumentWindowManager implements WindowContainer<DocumentWindow> {
     private static DocumentWindowManager defaultInstance;
-    private final Map<Listener, PropertyChangeListener> listenerMap;
+    private final List<Listener> listeners;
     private final Set<DocumentWindow> openDocumentWindows;
     private DocumentWindow selectedDocumentWindow;
 
@@ -41,10 +41,10 @@ public class DocumentWindowManager {
     }
 
     protected DocumentWindowManager() {
-        listenerMap = new LinkedHashMap<>();
+        listeners = new LinkedList<>();
         openDocumentWindows = new LinkedHashSet<>();
         captureCurrentState();
-        addListener(new DocumentWindowTracker());
+        WindowManager.getDefault().getRegistry().addPropertyChangeListener(new RegistryPropertyChangeDelegate());
     }
 
     private void captureCurrentState() {
@@ -61,9 +61,19 @@ public class DocumentWindowManager {
                 });
     }
 
+    @Override
+    public DocumentWindow getSelectedWindow() {
+        return selectedDocumentWindow;
+    }
+
+    @Override
+    public List<DocumentWindow> getOpenedWindows() {
+        return new ArrayList<>(openDocumentWindows);
+    }
+
     public boolean openDocumentWindow(DocumentWindow documentWindow) {
         TopComponent topComponent = documentWindow.getTopComponent();
-        WorkspaceTopComponent workspaceTopComponent = WindowUtilities.findShowingWorkspace();
+        WorkspaceTopComponent workspaceTopComponent = WorkspaceTopComponent.findShowingInstance();
         if (workspaceTopComponent != null) {
             workspaceTopComponent.addTopComponent(topComponent);
             return true;
@@ -76,30 +86,9 @@ public class DocumentWindowManager {
         return false;
     }
 
-    public DocumentWindow getSelectedDocumentWindow() {
-        return selectedDocumentWindow;
-    }
-
-    public Set<DocumentWindow> getOpenDocumentWindows() {
-        return new LinkedHashSet<>(openDocumentWindows);
-    }
-
-    private void setSelectedDocumentWindow(DocumentWindow newValue) {
-        DocumentWindow oldValue = this.selectedDocumentWindow;
-        if (oldValue != newValue) {
-            this.selectedDocumentWindow = newValue;
-            if (oldValue != null) {
-                oldValue.componentDeselected();
-            }
-            if (newValue != null) {
-                newValue.componentSelected();
-            }
-        }
-    }
-
     public void requestSelected(DocumentWindow documentWindow) {
         TopComponent topComponent = documentWindow.getTopComponent();
-        List<WorkspaceTopComponent> showingWorkspaces = WindowUtilities.findShowingWorkspaces();
+        List<WorkspaceTopComponent> showingWorkspaces = WorkspaceTopComponent.findShowingInstances();
         for (WorkspaceTopComponent showingWorkspace : showingWorkspaces) {
             if (showingWorkspace.getTopComponents().contains(topComponent)) {
                 showingWorkspace.requestActiveTopComponent(topComponent);
@@ -110,24 +99,68 @@ public class DocumentWindowManager {
     }
 
     public final Listener[] getListeners() {
-        Set<Listener> listeners = listenerMap.keySet();
         return listeners.toArray(new Listener[listeners.size()]);
     }
 
     public final void addListener(Listener listener) {
-        RegistryPropertyChangeDelegate pcl = new RegistryPropertyChangeDelegate(listener);
-        listenerMap.put(listener, pcl);
-        WindowManager.getDefault().getRegistry().addPropertyChangeListener(pcl);
+        if (!listeners.contains(listener)) {
+            listeners.add(listener);
+        }
     }
 
     public final void removeListener(Listener listener) {
-        PropertyChangeListener pcl = listenerMap.remove(listener);
-        WindowManager.getDefault().getRegistry().removePropertyChangeListener(pcl);
+        listeners.remove(listener);
+    }
+
+    void addOpenedWindow(DocumentWindow documentWindow) {
+        if (openDocumentWindows.add(documentWindow)) {
+            Event event = new Event(documentWindow);
+            Listener[] listeners = getListeners();
+            for (Listener listener : listeners) {
+                listener.windowOpened(event);
+            }
+        }
+    }
+
+    void removeOpenedWindow(DocumentWindow documentWindow) {
+        if (openDocumentWindows.remove(documentWindow)) {
+            if (getSelectedWindow() == documentWindow) {
+                setSelectedWindow(null);
+            }
+            Event event = new Event(documentWindow);
+            Listener[] listeners = getListeners();
+            for (Listener listener : listeners) {
+                listener.windowClosed(event);
+            }
+        }
+    }
+
+    void setSelectedWindow(DocumentWindow newValue) {
+        DocumentWindow oldValue = this.selectedDocumentWindow;
+        if (oldValue != newValue) {
+            this.selectedDocumentWindow = newValue;
+            if (oldValue != null) {
+                oldValue.componentDeselected();
+                Event event = new Event(oldValue);
+                Listener[] listeners = getListeners();
+                for (Listener listener : listeners) {
+                    listener.windowDeselected(event);
+                }
+            }
+            if (newValue != null) {
+                newValue.componentSelected();
+                Event event = new Event(newValue);
+                Listener[] listeners = getListeners();
+                for (Listener listener : listeners) {
+                    listener.windowSelected(event);
+                }
+            }
+        }
     }
 
     /**
-     * An <code>Event</code> that adds support for
-     * <code>DocumentWindow</code> objects as the event source.
+     * An {@code Event} that adds support for
+     * {@code DocumentWindow} objects as the event source.
      */
     public static final class Event extends EventObject {
         private final DocumentWindow documentWindow;
@@ -153,86 +186,47 @@ public class DocumentWindowManager {
         /**
          * Invoked when a document window has been opened.
          */
-        public void windowOpened(Event e);
+        void windowOpened(Event e);
 
         /**
          * Invoked when a document window has been closed.
          */
-        public void windowClosed(Event e);
+        void windowClosed(Event e);
 
         /**
-         * Invoked when a document window is activated.
+         * Invoked when a document window has been selected.
          */
-        public void windowActivated(Event e);
+        void windowSelected(Event e);
 
         /**
-         * Invoked when a document window is de-activated.
+         * Invoked when a document window has been de-selected.
          */
-        public void windowDeactivated(Event e);
-
+        void windowDeselected(Event e);
     }
 
-    private static class RegistryPropertyChangeDelegate implements PropertyChangeListener {
-        private final Listener delegatee;
-
-        public RegistryPropertyChangeDelegate(Listener delegatee) {
-            this.delegatee = delegatee;
-        }
+    private class RegistryPropertyChangeDelegate implements PropertyChangeListener {
 
         @Override
         public void propertyChange(PropertyChangeEvent evt) {
             if (TopComponent.Registry.PROP_ACTIVATED.equals(evt.getPropertyName())) {
-                Object oldValue = evt.getOldValue();
-                if (oldValue instanceof DocumentWindow) {
-                    delegatee.windowDeactivated(new Event((DocumentWindow) evt.getOldValue()));
-                }
                 Object newValue = evt.getNewValue();
                 if (newValue instanceof DocumentWindow) {
-                    delegatee.windowActivated(new Event((DocumentWindow) newValue));
+                    setSelectedWindow((DocumentWindow) newValue);
                 }
             } else if (TopComponent.Registry.PROP_TC_OPENED.equals(evt.getPropertyName())) {
                 Object newValue = evt.getNewValue();
                 if (newValue instanceof DocumentWindow) {
-                    delegatee.windowOpened(new Event((DocumentWindow) newValue));
+                    addOpenedWindow((DocumentWindow) newValue);
                 }
             } else if (TopComponent.Registry.PROP_TC_CLOSED.equals(evt.getPropertyName())) {
                 Object newValue = evt.getNewValue();
                 if (newValue instanceof DocumentWindow) {
-                    delegatee.windowClosed(new Event((DocumentWindow) evt.getNewValue()));
+                    removeOpenedWindow((DocumentWindow) newValue);
                 }
             }
         }
     }
 
-    private class DocumentWindowTracker implements Listener {
-        @Override
-        public void windowOpened(Event e) {
-            DocumentWindow documentWindow = e.getDocumentWindow();
-            if (documentWindow != null) {
-                openDocumentWindows.add(documentWindow);
-            }
-        }
-
-        @Override
-        public void windowClosed(Event e) {
-            DocumentWindow documentWindow = e.getDocumentWindow();
-            if (documentWindow != null) {
-                openDocumentWindows.remove(documentWindow);
-                if (selectedDocumentWindow == documentWindow) {
-                    setSelectedDocumentWindow(null);
-                }
-            }
-        }
-
-        @Override
-        public void windowActivated(Event e) {
-            setSelectedDocumentWindow(e.getDocumentWindow());
-        }
-
-        @Override
-        public void windowDeactivated(Event e) {
-        }
-    }
 
     /**
      * Makes sure DocumentWindowManager can start listening to window events from the beginning.

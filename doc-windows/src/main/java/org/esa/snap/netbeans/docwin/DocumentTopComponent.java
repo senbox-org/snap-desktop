@@ -28,7 +28,7 @@ import java.util.logging.Logger;
  * <li>{@link #componentActivated()}/{@link #componentDeactivated()} method will be called if the corresponding internal frame is activated/deactivated;</li>
  * <li>{@link #componentShowing()}/{@link #componentHidden()} method will be called if the corresponding internal frame is iconified/deiconified.</li>
  * </ol>
- * <p/>
+ * <p>
  * Document windows keep a constant reference to the document object which it exposes through the window's lookup.
  * Overrides may use the {@link #getDynamicContent() content} to alter the objects in the exposed lookup,
  * however, the document object will always remain in it.
@@ -64,7 +64,7 @@ public class DocumentTopComponent<T> extends TopComponent implements DocumentWin
 
     @Override
     public final boolean isSelected() {
-        return DocumentWindowManager.getDefault().getSelectedDocumentWindow() == this;
+        return DocumentWindowManager.getDefault().getSelectedWindow() == this;
     }
 
     @Override
@@ -141,7 +141,7 @@ public class DocumentTopComponent<T> extends TopComponent implements DocumentWin
 
     /**
      * Called when this component was selected.
-     *
+     * <p>
      * Default implementation simply calls {@link #updateSelectedState}.
      */
     @Override
@@ -151,7 +151,7 @@ public class DocumentTopComponent<T> extends TopComponent implements DocumentWin
 
     /**
      * Called when this component was deselected.
-     *
+     * <p>
      * Default implementation simply calls {@link #updateSelectedState}.
      */
     @Override
