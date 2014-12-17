@@ -35,7 +35,7 @@ import java.util.prefs.Preferences;
  */
 @ActionID(
         category = "File",
-        id = "org.esa.snap.gui.action.OpenProductAction"
+        id = "org.esa.snap.gui.actions.file.OpenProductAction"
 )
 @ActionRegistration(
         displayName = "#CTL_OpenProductActionName",
