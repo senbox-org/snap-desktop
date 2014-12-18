@@ -123,7 +123,7 @@ public class OpenImageViewAction extends AbstractAction {
         UndoRedo.Manager undoManager = PNodeFactory.getInstance().getUndoManager(view.getProduct());
         ProductSceneViewTopComponent productSceneViewWindow = new ProductSceneViewTopComponent(view, undoManager);
 
-        DocumentWindowManager.getDefault().openDocumentWindow(productSceneViewWindow);
+        DocumentWindowManager.getDefault().openWindow(productSceneViewWindow);
         productSceneViewWindow.requestSelected();
 
         return productSceneViewWindow;

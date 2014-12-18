@@ -5,7 +5,6 @@
  */
 package org.esa.snap.gui.actions.file;
 
-import org.esa.snap.gui.SnapApp;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
@@ -15,7 +14,10 @@ import org.openide.util.actions.Presenter;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.util.prefs.Preferences;
+import java.io.File;
+import java.util.List;
+
+import static org.esa.snap.gui.actions.file.OpenProductAction.getRecentProductPaths;
 
 /**
  * @author Norman
@@ -26,24 +28,38 @@ import java.util.prefs.Preferences;
 )
 @ActionRegistration(
         displayName = "#CTL_ReopenProductActionName",
-        menuText = "#CTL_ReopenProductActionMenuText"
+        menuText = "#CTL_ReopenProductActionMenuText",
+        lazy = false
 )
-@ActionReference(path = "Menu/File", position = 1)
+@ActionReference(path = "Menu/File", position = 20)
 @NbBundle.Messages({
         "CTL_ReopenProductActionName=Reopen Product",
-        "CTL_ReopenProductActionMenuText=Reopen Product"
+        "CTL_ReopenProductActionMenuText=Reopen Product",
+        "CTL_ClearListActionMenuText=Clear List"
 })
 public final class ReopenProductAction extends AbstractAction implements Presenter.Toolbar, Presenter.Menu, Presenter.Popup {
 
     @Override
     public JMenuItem getMenuPresenter() {
+
+        List<File> openedFiles = OpenProductAction.getOpenedProductFiles();
+        List<String> pathList = getRecentProductPaths().get();
+
+        // Add "open recent product file" actions
         JMenu menu = new JMenu(Bundle.CTL_ReopenProductActionMenuText());
-        Preferences preferences = SnapApp.getInstance().getPreferences();
-        // todo - extract last open files from preferences
-        String[] paths = {"a.nc", "b.nc", "c.nc"};
-        for (String path : paths) {
-            JMenuItem menuItem = new JMenuItem(path);
-            menuItem.addActionListener(e -> open(path));
+        pathList.forEach(path -> {
+            if (!openedFiles.contains(new File(path))) {
+                JMenuItem menuItem = new JMenuItem(path);
+                menuItem.addActionListener(e -> OpenProductAction.openProductFile(null, new File(path)));
+                menu.add(menuItem);
+            }
+        });
+
+        // Add "Clear List" action
+        if (menu.getComponentCount() > 0) {
+            menu.addSeparator();
+            JMenuItem menuItem = new JMenuItem(Bundle.CTL_ClearListActionMenuText());
+            menuItem.addActionListener(e -> getRecentProductPaths().clear());
             menu.add(menuItem);
         }
         return menu;
@@ -62,9 +78,5 @@ public final class ReopenProductAction extends AbstractAction implements Present
     @Override
     public void actionPerformed(ActionEvent e) {
         // do nothing
-    }
-
-    private void open(String path) {
-        System.out.println("open: path = " + path);
     }
 }

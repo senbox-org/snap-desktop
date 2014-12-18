@@ -51,4 +51,10 @@ public interface DocumentWindow<T> extends NotifiableComponent {
      * Called when this component was deselected.
      */
     void componentDeselected();
+
+    /**
+     * Called when the document is about to be closed.
+     * Usually this method closes this window and releases associated resources.
+     */
+    void documentClosing();
 }

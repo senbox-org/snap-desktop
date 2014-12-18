@@ -141,6 +141,13 @@ public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNo
         }
     }
 
+    @Override
+    public void documentClosing() {
+        super.documentClosing();
+        getView().disposeLayers();
+        getView().dispose();
+    }
+
     private class ProductSceneViewLayerUI extends LayerUI<ProductSceneView> {
         @Override
         public void paint(Graphics g, JComponent c) {

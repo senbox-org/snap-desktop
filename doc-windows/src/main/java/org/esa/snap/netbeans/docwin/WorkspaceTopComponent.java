@@ -210,7 +210,7 @@ public class WorkspaceTopComponent extends TopComponent implements WindowContain
 
 
     /**
-     * Adds a window to this workspace window. The method actually "floats" the window as an internal frame into an
+     * Adds an internal window to this workspace window. The method actually "floats" the window as an internal frame into an
      * internal desktop pane. If the window already exists, it's internal frame will be activated.
      *
      * @param topComponent The window to add.
@@ -284,6 +284,17 @@ public class WorkspaceTopComponent extends TopComponent implements WindowContain
         }
 
         topComponent.addPropertyChangeListener(propertyChangeListener);
+    }
+
+    /**
+     * Removes an internal window from this workspace window and closes the associated internal frame.
+     *
+     * @param topComponent The window to be removed.
+     * @return {@code true} on success
+     */
+    public boolean removeTopComponent(TopComponent topComponent) {
+        JInternalFrame internalFrame = getInternalFrame(topComponent);
+        return internalFrame != null && closeInternalFrame(internalFrame) == topComponent;
     }
 
     /**

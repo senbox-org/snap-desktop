@@ -160,6 +160,16 @@ public class DocumentTopComponent<T> extends TopComponent implements DocumentWin
     }
 
     /**
+     * Called when the document is about to be closed.
+     * The default implementation makes an attempt to close this window by
+     * calling {@code DocumentWindowManager.getDefault().closeWindow(this)}.
+     */
+    @Override
+    public void documentClosing() {
+        DocumentWindowManager.getDefault().closeWindow(this);
+    }
+
+    /**
      * Does anything that indicates the selected state of this component. The default implementation
      * simply calls {@link #repaint()}.
      */

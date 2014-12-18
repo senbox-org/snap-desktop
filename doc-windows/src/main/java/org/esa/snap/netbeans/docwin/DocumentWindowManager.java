@@ -14,7 +14,9 @@ import java.util.EventObject;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
 
 /**
  * Manages global opening, closing, and selection of {@link DocumentWindow}s.
@@ -71,7 +73,7 @@ public class DocumentWindowManager implements WindowContainer<DocumentWindow> {
         return new ArrayList<>(openDocumentWindows);
     }
 
-    public boolean openDocumentWindow(DocumentWindow documentWindow) {
+    public boolean openWindow(DocumentWindow documentWindow) {
         TopComponent topComponent = documentWindow.getTopComponent();
         WorkspaceTopComponent workspaceTopComponent = WorkspaceTopComponent.findShowingInstance();
         if (workspaceTopComponent != null) {
@@ -84,6 +86,17 @@ public class DocumentWindowManager implements WindowContainer<DocumentWindow> {
             return true;
         }
         return false;
+    }
+
+    public boolean closeWindow(DocumentWindow documentWindow) {
+        Optional<WorkspaceTopComponent> anyWorkspace = WindowUtilities
+                .getOpened(WorkspaceTopComponent.class)
+                .filter(tc -> tc.getTopComponents().contains(documentWindow.getTopComponent())).findAny();
+        if (anyWorkspace.isPresent()) {
+            return anyWorkspace.get().removeTopComponent(documentWindow.getTopComponent());
+        } else {
+            return documentWindow.getTopComponent().close();
+        }
     }
 
     public void requestSelected(DocumentWindow documentWindow) {
