@@ -166,11 +166,6 @@ public class SnapApp {
         return Utilities.actionsGlobalContext().lookup(ProductSceneView.class);
     }
 
-    @Messages("LBL_Question=Question")
-    public int showQuestionDialog(String message, String preferencesKey) {
-        return showQuestionDialog("Question", message, preferencesKey); /*I18N*/
-    }
-
     public int showQuestionDialog(String title, String message, String preferencesKey) {
         return showQuestionDialog(title, message, false, preferencesKey);
     }

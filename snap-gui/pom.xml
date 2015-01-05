@@ -129,6 +129,17 @@
             <artifactId>org-netbeans-swing-tabcontrol</artifactId>
             <version>${netbeans.version}</version>
         </dependency>
+        <!-- SNAP NetBeans Goodies -->
+        <dependency>
+            <groupId>org.esa.snap.netbeans</groupId>
+            <artifactId>tiled-editors</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.esa.snap.netbeans</groupId>
+            <artifactId>doc-windows</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
         <!-- SNAP dependencies -->
         <dependency>
             <groupId>${project.groupId}</groupId>

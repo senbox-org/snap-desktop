@@ -24,8 +24,8 @@ import org.esa.beam.framework.ui.PixelPositionListener;
 import org.esa.beam.framework.ui.product.ProductSceneView;
 import org.esa.snap.gui.SnapApp;
 import org.esa.snap.gui.actions.view.SyncImageCursorsAction;
-import org.esa.snap.gui.util.DocumentWindowManager;
-import org.esa.snap.gui.util.WindowUtilities;
+import org.esa.snap.netbeans.docwin.DocumentWindowManager;
+import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.gui.windows.ProductSceneViewTopComponent;
 import org.openide.util.WeakListeners;
 import org.openide.windows.OnShowing;
@@ -34,7 +34,6 @@ import org.openide.windows.TopComponent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
-import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.prefs.PreferenceChangeEvent;
@@ -107,15 +106,9 @@ public class ImageCursorSynchronizer implements Runnable, PreferenceChangeListen
     }
 
     private void initPsvOverlayMap() {
-        List<ProductSceneView> productSceneViews = WindowUtilities.collectOpen(ProductSceneViewTopComponent.class, new WindowUtilities.Converter<ProductSceneViewTopComponent, ProductSceneView>() {
-            @Override
-            protected ProductSceneView convert(ProductSceneViewTopComponent topComponent) {
-                return topComponent.getView();
-            }
-        });
-        for (ProductSceneView productSceneView : productSceneViews) {
-            addPPL(productSceneView);
-        }
+        WindowUtilities.getOpened(ProductSceneViewTopComponent.class)
+                .map(ProductSceneViewTopComponent::getView)
+                .forEach(this::addPPL);
     }
 
     private void clearPsvOverlayMap() {
@@ -166,11 +159,11 @@ public class ImageCursorSynchronizer implements Runnable, PreferenceChangeListen
         }
 
         @Override
-        public void windowActivated(DocumentWindowManager.Event e) {
+        public void windowSelected(DocumentWindowManager.Event e) {
         }
 
         @Override
-        public void windowDeactivated(DocumentWindowManager.Event e) {
+        public void windowDeselected(DocumentWindowManager.Event e) {
         }
     }
 

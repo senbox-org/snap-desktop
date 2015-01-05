@@ -13,8 +13,8 @@ import org.esa.beam.framework.datamodel.ProductNodeEvent;
 import org.esa.beam.framework.datamodel.ProductNodeListenerAdapter;
 import org.esa.beam.framework.ui.product.ProductSceneView;
 import org.esa.snap.gui.util.ContextGlobalExtender;
-import org.esa.snap.gui.util.DocumentTopComponent;
-import org.esa.snap.gui.util.WindowUtilities;
+import org.esa.snap.netbeans.docwin.DocumentTopComponent;
+import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.openide.awt.UndoRedo;
 import org.openide.util.Exceptions;
 import org.openide.util.ImageUtilities;
@@ -139,6 +139,13 @@ public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNo
         if (contextGlobalExtender != null) {
             contextGlobalExtender.remove("view");
         }
+    }
+
+    @Override
+    public void documentClosing() {
+        super.documentClosing();
+        getView().disposeLayers();
+        getView().dispose();
     }
 
     private class ProductSceneViewLayerUI extends LayerUI<ProductSceneView> {

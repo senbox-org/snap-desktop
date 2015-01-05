@@ -14,6 +14,7 @@ import org.openide.util.Exceptions;
 import java.beans.IntrospectionException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +40,10 @@ public class PNodeFactory extends ChildFactory<Product> {
         undoManagerMap = new HashMap<>();
     }
 
+    public List<Product> getOpenedProducts() {
+        return new ArrayList<>(productList);
+    }
+
     public void addProduct(Product newProduct) {
         productList.add(newProduct);
         refresh(true);
@@ -46,6 +51,16 @@ public class PNodeFactory extends ChildFactory<Product> {
 
     public void addProducts(Product... newProducts) {
         productList.addAll(Arrays.asList(newProducts));
+        refresh(true);
+    }
+
+    public void removeProduct(Product oldProduct) {
+        productList.remove(oldProduct);
+        refresh(true);
+    }
+
+    public void removeProducts(Product... oldProducts) {
+        productList.removeAll(Arrays.asList(oldProducts));
         refresh(true);
     }
 
@@ -81,4 +96,5 @@ public class PNodeFactory extends ChildFactory<Product> {
         }
         return node;
     }
+
 }

@@ -34,7 +34,7 @@ import org.esa.snap.gui.actions.help.HelpAction;
 import org.esa.snap.gui.actions.view.SyncImageCursorsAction;
 import org.esa.snap.gui.actions.view.SyncImageViewsAction;
 import org.esa.snap.gui.nav.NavigationCanvas;
-import org.esa.snap.gui.util.WindowUtilities;
+import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.util.HelpCtx;
@@ -449,13 +449,12 @@ public class NavigationTopComponent extends TopComponent implements LookupListen
         if (currentView == null) {
             return;
         }
-        java.util.List<ProductSceneViewTopComponent> topComponents = WindowUtilities.findOpen(ProductSceneViewTopComponent.class);
-        for (ProductSceneViewTopComponent productSceneViewTopComponent : topComponents) {
+        WindowUtilities.getOpened(ProductSceneViewTopComponent.class).forEach(productSceneViewTopComponent -> {
             final ProductSceneView view = productSceneViewTopComponent.getView();
             if (view != currentView) {
                 currentView.synchronizeViewportIfPossible(view);
             }
-        }
+        });
     }
 
     /**

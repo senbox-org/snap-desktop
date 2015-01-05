@@ -6,8 +6,8 @@
 package org.esa.snap.gui.actions.window;
 
 import com.bc.ceres.core.Assert;
-import org.esa.snap.gui.util.WorkspaceTopComponent;
-import org.esa.snap.gui.util.WindowUtilities;
+import org.esa.snap.netbeans.docwin.WorkspaceTopComponent;
+import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.awt.ActionID;

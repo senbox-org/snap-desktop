@@ -25,8 +25,8 @@ import org.esa.beam.framework.ui.product.ProductSceneView;
 import org.esa.beam.util.Debug;
 import org.esa.snap.gui.SnapApp;
 import org.esa.snap.gui.nodes.PNodeFactory;
-import org.esa.snap.gui.util.DocumentWindowManager;
-import org.esa.snap.gui.util.WindowUtilities;
+import org.esa.snap.netbeans.docwin.DocumentWindowManager;
+import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.gui.windows.ProductSceneViewTopComponent;
 import org.openide.awt.*;
 import org.openide.util.ImageUtilities;
@@ -35,7 +35,6 @@ import org.openide.util.NbBundle;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.text.MessageFormat;
-import java.util.List;
 
 /**
  * This action opens an image view of the currently selected raster.
@@ -124,7 +123,7 @@ public class OpenImageViewAction extends AbstractAction {
         UndoRedo.Manager undoManager = PNodeFactory.getInstance().getUndoManager(view.getProduct());
         ProductSceneViewTopComponent productSceneViewWindow = new ProductSceneViewTopComponent(view, undoManager);
 
-        DocumentWindowManager.getDefault().openDocumentWindow(productSceneViewWindow);
+        DocumentWindowManager.getDefault().openWindow(productSceneViewWindow);
         productSceneViewWindow.requestSelected();
 
         return productSceneViewWindow;
@@ -155,14 +154,10 @@ public class OpenImageViewAction extends AbstractAction {
     }
 
     public ProductSceneView getProductSceneView(RasterDataNode raster) {
-        List<ProductSceneView> list = WindowUtilities.collectOpen(ProductSceneViewTopComponent.class, new WindowUtilities.Collector<ProductSceneViewTopComponent, ProductSceneView>() {
-            @Override
-            public void collect(ProductSceneViewTopComponent topComponent, List<ProductSceneView> list) {
-                if (raster == topComponent.getView().getRaster()) {
-                    list.add(topComponent.getView());
-                }
-            }
-        });
-        return list.isEmpty() ? null : list.get(0);
+        return WindowUtilities.getOpened(ProductSceneViewTopComponent.class)
+                .filter(topComponent -> raster == topComponent.getView().getRaster())
+                .map(ProductSceneViewTopComponent::getView)
+                .findFirst()
+                .orElse(null);
     }
 }

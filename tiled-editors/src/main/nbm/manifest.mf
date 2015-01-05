@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+AutoUpdate-Essential-Module: true
+AutoUpdate-Show-In-Client: false
+OpenIDE-Module-Layer: org/esa/snap/netbeans/tile/layer.xml
