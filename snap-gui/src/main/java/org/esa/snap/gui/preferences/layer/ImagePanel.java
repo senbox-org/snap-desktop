@@ -37,7 +37,7 @@ import java.awt.Insets;
 import static org.esa.snap.gui.preferences.PreferenceUtils.*;
 
 /**
- * The first sub-panel of the layer preferences, handling general properties.
+ * The second sub-panel of the layer preferences, handling image properties.
  *
  * @author thomas
  */
