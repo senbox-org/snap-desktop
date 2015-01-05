@@ -17,7 +17,6 @@
 package org.esa.snap.gui.preferences.layer;
 
 import com.bc.ceres.binding.Property;
-import com.bc.ceres.binding.ValidationException;
 import com.bc.ceres.glayer.support.ImageLayer;
 import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
@@ -26,19 +25,16 @@ import org.esa.beam.framework.ui.product.ProductSceneView;
 import org.esa.snap.gui.preferences.ConfigProperty;
 import org.esa.snap.gui.preferences.DefaultConfigController;
 import org.netbeans.spi.options.OptionsPanelController;
-import org.openide.awt.ColorComboBox;
 import org.openide.util.HelpCtx;
 
 import javax.swing.Box;
 import javax.swing.JComponent;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.event.ListDataEvent;
-import javax.swing.event.ListDataListener;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Insets;
+
+import static org.esa.snap.gui.preferences.PreferenceUtils.*;
 
 /**
  * The first sub-panel of the layer preferences, handling general properties.
@@ -147,39 +143,6 @@ public final class ImagePanel extends DefaultConfigController {
         parent.add(pageUI, BorderLayout.CENTER);
         parent.add(Box.createHorizontalStrut(100), BorderLayout.EAST);
         return parent;
-    }
-
-    private static JComponent[] createColorComponents(Property colorProperty) {
-        JComponent[] components = new JComponent[2];
-        components[0] = new JLabel(colorProperty.getDescriptor().getDisplayName() + ":");
-        components[1] = createColorCombobox(colorProperty);
-        return components;
-    }
-
-    private static ColorComboBox createColorCombobox(final Property property) {
-        ColorComboBox colorComboBox = new ColorComboBox();
-        colorComboBox.setSelectedColor(property.getValue());
-        colorComboBox.getModel().addListDataListener(new ListDataListener() {
-            @Override
-            public void intervalAdded(ListDataEvent e) {
-            }
-
-            @Override
-            public void intervalRemoved(ListDataEvent e) {
-            }
-
-            @Override
-            public void contentsChanged(ListDataEvent e) {
-                try {
-                    property.setValue(colorComboBox.getSelectedColor());
-                } catch (ValidationException e1) {
-//                  very basic exception handling because exception is not expected to be thrown
-                    e1.printStackTrace();
-                }
-            }
-        });
-        colorComboBox.setPreferredSize(new Dimension(colorComboBox.getWidth(), 25));
-        return colorComboBox;
     }
 
     @Override

@@ -32,10 +32,7 @@ import org.openide.util.Lookup;
 import org.openide.util.NbPreferences;
 
 import javax.swing.JComponent;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import java.awt.Color;
-import java.awt.Font;
 import java.beans.PropertyChangeListener;
 import java.lang.reflect.Field;
 import java.util.prefs.Preferences;
@@ -67,9 +64,10 @@ public abstract class DefaultConfigController extends OptionsPanelController {
      * Create a panel that allows the user to set the parameters in the given {@link BindingContext}. Clients that want
      * to create their own panel representation on the given properties need to overwrite this method.
      *
-     * @param context    The {@link BindingContext} for the panel.
-     * @return           A JPanel instance for the given {@link BindingContext}. If <code>null</code>, a default panel
-     *                   will be used.
+     * @param context The {@link BindingContext} for the panel.
+     *
+     * @return A JPanel instance for the given {@link BindingContext}. If <code>null</code>, a default panel
+     * will be used.
      */
     protected JPanel createPanel(BindingContext context) {
         return null;
@@ -181,7 +179,9 @@ public abstract class DefaultConfigController extends OptionsPanelController {
     private void setupChangeListeners() {
         for (Property property : bindingContext.getPropertySet().getProperties()) {
             property.addPropertyChangeListener(evt -> {
-                preferences.put(property.getDescriptor().getAttribute("key").toString(), evt.getNewValue().toString());
+                String key = property.getDescriptor().getAttribute("key").toString();
+                String value = evt.getNewValue().toString();
+                preferences.put(key, value);
             });
         }
     }
@@ -236,15 +236,6 @@ public abstract class DefaultConfigController extends OptionsPanelController {
             throw new IllegalStateException(e);
         }
         return validator;
-    }
-
-    protected static void addNote(JPanel pageUI, String text) {
-        JLabel note = new JLabel(text);
-        if (note.getFont() != null) {
-            note.setFont(note.getFont().deriveFont(Font.ITALIC));
-        }
-        note.setForeground(new Color(0, 0, 92));
-        pageUI.add(note);
     }
 
 }

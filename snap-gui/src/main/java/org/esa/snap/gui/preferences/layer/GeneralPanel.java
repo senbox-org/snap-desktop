@@ -31,6 +31,7 @@ import javax.swing.JPanel;
 import java.awt.Insets;
 
 import static com.bc.ceres.swing.TableLayout.*;
+import static org.esa.snap.gui.preferences.PreferenceUtils.*;
 
 /**
  * The first sub-panel of the layer preferences, handling general properties.
