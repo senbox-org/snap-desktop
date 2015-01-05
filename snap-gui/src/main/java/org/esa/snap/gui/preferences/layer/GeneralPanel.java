@@ -26,12 +26,8 @@ import org.esa.snap.gui.preferences.DefaultConfigController;
 import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.HelpCtx;
 
-import javax.swing.BorderFactory;
 import javax.swing.JComponent;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import java.awt.Color;
-import java.awt.Font;
 import java.awt.Insets;
 
 import static com.bc.ceres.swing.TableLayout.*;
@@ -83,24 +79,13 @@ public final class GeneralPanel extends DefaultConfigController {
 
         tableLayout.setRowPadding(1, new Insets(10, 80, 10, 4));
         pageUI.add(antiAliasingComponents[0]);
-        addNote(pageUI);
+        addNote(pageUI, "Note: For best performance turn anti-aliasing off.");
         pageUI.add(showNavigationControlComponents[0]);
         pageUI.add(showScrollBarsComponents[0]);
         pageUI.add(tableLayout.createVerticalSpacer());
 
         return pageUI;
     }
-
-    private static void addNote(JPanel pageUI) {
-        JLabel note = new JLabel("Note: For best performance turn anti-aliasing off.");
-        if (note.getFont() != null) {
-            note.setFont(note.getFont().deriveFont(Font.ITALIC));
-        }
-        note.setForeground(new Color(0, 0, 92));
-        note.setBorder(BorderFactory.createEmptyBorder(0, 22, 0, 0));// indentation
-        pageUI.add(note);
-    }
-
 
     @SuppressWarnings("UnusedDeclaration")
     static class GeneralLayerBean {

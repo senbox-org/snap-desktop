@@ -19,7 +19,6 @@ package org.esa.snap.gui.preferences;
 import com.bc.ceres.binding.Property;
 import com.bc.ceres.binding.PropertyContainer;
 import com.bc.ceres.binding.PropertyDescriptor;
-import com.bc.ceres.binding.PropertyDescriptorFactory;
 import com.bc.ceres.binding.ValidationException;
 import com.bc.ceres.binding.Validator;
 import com.bc.ceres.binding.ValueRange;
@@ -33,8 +32,10 @@ import org.openide.util.Lookup;
 import org.openide.util.NbPreferences;
 
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
-import java.beans.PropertyChangeEvent;
+import java.awt.Color;
+import java.awt.Font;
 import java.beans.PropertyChangeListener;
 import java.lang.reflect.Field;
 import java.util.prefs.Preferences;
@@ -72,7 +73,7 @@ public abstract class DefaultConfigController extends OptionsPanelController {
      */
     protected JPanel createPanel(BindingContext context) {
         return null;
-    };
+    }
 
     @Override
     public void update() {
@@ -179,11 +180,8 @@ public abstract class DefaultConfigController extends OptionsPanelController {
 
     private void setupChangeListeners() {
         for (Property property : bindingContext.getPropertySet().getProperties()) {
-            property.addPropertyChangeListener(new PropertyChangeListener() {
-                @Override
-                public void propertyChange(PropertyChangeEvent evt) {
-                    preferences.put(property.getDescriptor().getAttribute("key").toString(), evt.getNewValue().toString());
-                }
+            property.addPropertyChangeListener(evt -> {
+                preferences.put(property.getDescriptor().getAttribute("key").toString(), evt.getNewValue().toString());
             });
         }
     }
@@ -195,40 +193,37 @@ public abstract class DefaultConfigController extends OptionsPanelController {
     }
 
     private void setupPanel(Object bean) {
-        bindingContext = new BindingContext(PropertyContainer.createObjectBacked(bean, new PropertyDescriptorFactory() {
-            @Override
-            public PropertyDescriptor createValueDescriptor(Field field) {
-                Class<ConfigProperty> annotationClass = ConfigProperty.class;
-                ConfigProperty annotation = field.getAnnotation(annotationClass);
-                if (annotation == null) {
-                    throw new IllegalStateException("Field '" + field.getName() + "' must be annotated with '" +
-                                                    annotationClass.getSimpleName() + "'.");
-                }
-                String label = annotation.label();
-                String key = annotation.key();
-                String[] valueSet = annotation.valueSet();
-                String valueRange = annotation.interval();
-                Validator validator = createValidator(annotation.validatorClass());
-                Assert.state(StringUtils.isNotNullAndNotEmpty(label),
-                             "Label of field '" + field.getName() + "' must not be null or empty.");
-                Assert.state(StringUtils.isNotNullAndNotEmpty(key),
-                             "Key of field '" + field.getName() + "' must not be null or empty.");
-                boolean isDeprecated = field.getAnnotation(Deprecated.class) != null;
-
-                PropertyDescriptor valueDescriptor = new PropertyDescriptor(key, field.getType());
-                valueDescriptor.setDeprecated(isDeprecated);
-                valueDescriptor.setAttribute("key", key);
-                valueDescriptor.setAttribute("displayName", label);
-                valueDescriptor.setAttribute("propertyValidator", validator);
-
-                if (valueSet.length > 0) {
-                    valueDescriptor.setValueSet(new ValueSet(valueSet));
-                }
-                if (StringUtils.isNotNullAndNotEmpty(valueRange)) {
-                    valueDescriptor.setValueRange(ValueRange.parseValueRange(valueRange));
-                }
-                return valueDescriptor;
+        bindingContext = new BindingContext(PropertyContainer.createObjectBacked(bean, field -> {
+            Class<ConfigProperty> annotationClass = ConfigProperty.class;
+            ConfigProperty annotation = field.getAnnotation(annotationClass);
+            if (annotation == null) {
+                throw new IllegalStateException("Field '" + field.getName() + "' must be annotated with '" +
+                                                annotationClass.getSimpleName() + "'.");
             }
+            String label = annotation.label();
+            String key = annotation.key();
+            String[] valueSet = annotation.valueSet();
+            String valueRange = annotation.interval();
+            Validator validator = createValidator(annotation.validatorClass());
+            Assert.state(StringUtils.isNotNullAndNotEmpty(label),
+                         "Label of field '" + field.getName() + "' must not be null or empty.");
+            Assert.state(StringUtils.isNotNullAndNotEmpty(key),
+                         "Key of field '" + field.getName() + "' must not be null or empty.");
+            boolean isDeprecated = field.getAnnotation(Deprecated.class) != null;
+
+            PropertyDescriptor valueDescriptor = new PropertyDescriptor(key, field.getType());
+            valueDescriptor.setDeprecated(isDeprecated);
+            valueDescriptor.setAttribute("key", key);
+            valueDescriptor.setAttribute("displayName", label);
+            valueDescriptor.setAttribute("propertyValidator", validator);
+
+            if (valueSet.length > 0) {
+                valueDescriptor.setValueSet(new ValueSet(valueSet));
+            }
+            if (StringUtils.isNotNullAndNotEmpty(valueRange)) {
+                valueDescriptor.setValueRange(ValueRange.parseValueRange(valueRange));
+            }
+            return valueDescriptor;
         }));
         panel = new PreferencesPanel(createPanel(bindingContext), bindingContext);
     }
@@ -241,6 +236,15 @@ public abstract class DefaultConfigController extends OptionsPanelController {
             throw new IllegalStateException(e);
         }
         return validator;
+    }
+
+    protected static void addNote(JPanel pageUI, String text) {
+        JLabel note = new JLabel(text);
+        if (note.getFont() != null) {
+            note.setFont(note.getFont().deriveFont(Font.ITALIC));
+        }
+        note.setForeground(new Color(0, 0, 92));
+        pageUI.add(note);
     }
 
 }
