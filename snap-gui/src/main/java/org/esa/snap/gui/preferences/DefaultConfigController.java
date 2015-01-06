@@ -73,6 +73,19 @@ public abstract class DefaultConfigController extends OptionsPanelController {
         return null;
     }
 
+    /**
+     * Configure the passed binding context. This is intended to be used to create <code>enablements</code> in order to
+     * add dependencies between property states. The default implementation does nothing.
+     *
+     * @param context The {@link BindingContext} to configure.
+     *
+     * @see com.bc.ceres.swing.binding.Enablement
+     * @see com.bc.ceres.swing.binding.BindingContext#bindEnabledState(String, boolean, com.bc.ceres.swing.binding.Enablement.Condition)
+     * @see com.bc.ceres.swing.binding.BindingContext#bindEnabledState(String, boolean, String, Object)
+     */
+    protected void configure(BindingContext context) {
+    }
+
     @Override
     public void update() {
         // Called when the panel is visited, so used to store the original state.
@@ -137,6 +150,7 @@ public abstract class DefaultConfigController extends OptionsPanelController {
         setupPanel(createBean());
         initiallyFillPreferences();
         setupChangeListeners();
+        configure(bindingContext);
     }
 
     private void setOriginalState() {

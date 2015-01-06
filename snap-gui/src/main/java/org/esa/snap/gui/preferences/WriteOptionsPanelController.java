@@ -16,8 +16,14 @@
 
 package org.esa.snap.gui.preferences;
 
+import com.bc.ceres.binding.ValidationException;
+import com.bc.ceres.swing.binding.BindingContext;
+import com.bc.ceres.swing.binding.Enablement;
 import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.HelpCtx;
+
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 /**
  * Panel for write options.
@@ -71,6 +77,30 @@ public final class WriteOptionsPanelController extends DefaultConfigController {
 
     protected Object createBean() {
         return new WriteOptionsBean();
+    }
+
+    @Override
+    protected void configure(BindingContext context) {
+        Enablement enablement = context.bindEnabledState(PROPERTY_KEY_SAVE_PRODUCT_ANNOTATIONS, false, new Enablement.Condition() {
+            @Override
+            public boolean evaluate(BindingContext bindingContext) {
+                return !((Boolean) bindingContext.getPropertySet().getProperty(PROPERTY_KEY_SAVE_PRODUCT_HEADERS).getValue());
+            }
+        });
+        context.getPropertySet().getProperty(PROPERTY_KEY_SAVE_PRODUCT_HEADERS).addPropertyChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                enablement.apply();
+                if (!((Boolean) evt.getNewValue())) {
+                    try {
+                        context.getPropertySet().getProperty(PROPERTY_KEY_SAVE_PRODUCT_ANNOTATIONS).setValue(false);
+                    } catch (ValidationException e) {
+//                      very basic exception handling because exception is not expected to be thrown
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
     }
 
     @Override
