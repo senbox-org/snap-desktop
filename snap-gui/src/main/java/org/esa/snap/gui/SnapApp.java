@@ -1,18 +1,29 @@
 package org.esa.snap.gui;
 
+import com.bc.ceres.core.*;
 import com.bc.ceres.jai.operator.ReinterpretDescriptor;
+import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
 import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.datamodel.ProductNode;
+import org.esa.beam.framework.datamodel.RasterDataNode;
+import org.esa.beam.framework.ui.UIUtils;
+import org.esa.beam.framework.ui.product.ProductSceneImage;
 import org.esa.beam.framework.ui.product.ProductSceneView;
+import org.esa.beam.util.Debug;
 import org.esa.beam.util.PropertyMap;
+import org.esa.snap.gui.nodes.PNodeFactory;
 import org.esa.snap.gui.util.CompatiblePropertyMap;
 import org.esa.snap.gui.util.ContextGlobalExtenderImpl;
+import org.esa.snap.gui.windows.ProductSceneViewTopComponent;
+import org.esa.snap.netbeans.docwin.DocumentWindowManager;
+import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.tango.TangoIcons;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.awt.NotificationDisplayer;
 import org.openide.awt.StatusDisplayer;
+import org.openide.awt.UndoRedo;
 import org.openide.modules.OnStart;
 import org.openide.modules.OnStop;
 import org.openide.util.ContextGlobalProvider;
@@ -164,6 +175,48 @@ public class SnapApp {
 
     public ProductSceneView getSelectedProductSceneView() {
         return Utilities.actionsGlobalContext().lookup(ProductSceneView.class);
+    }
+
+    public void openProductSceneView(final RasterDataNode raster) {
+        setStatusBarMessage("Opening image view...");
+
+        UIUtils.setRootFrameWaitCursor(getMainFrame());
+
+        String progressMonitorTitle = MessageFormat.format("{0} - Creating image for ''{1}''",
+                                                           getInstanceName(),
+                                                           raster.getName());
+
+        ProductSceneView existingView = getProductSceneView(raster);
+        SwingWorker worker = new ProgressMonitorSwingWorker<ProductSceneImage, Object>(getMainFrame(), progressMonitorTitle) {
+
+            @Override
+            protected ProductSceneImage doInBackground(com.bc.ceres.core.ProgressMonitor pm) throws Exception {
+                try {
+                    return createProductSceneImage(raster, existingView, pm);
+                } finally {
+                    if (pm.isCanceled()) {
+                        raster.unloadRasterData();
+                    }
+                }
+            }
+
+            @Override
+            public void done() {
+                UIUtils.setRootFrameDefaultCursor(getMainFrame());
+                setStatusBarMessage("");
+                try {
+                    ProductSceneImage sceneImage = get();
+                    UndoRedo.Manager undoManager = PNodeFactory.getInstance().getUndoManager(sceneImage.getProduct());
+                    ProductSceneView view = new ProductSceneView(sceneImage, undoManager);
+                    openDocumentWindow(view);
+                } catch (OutOfMemoryError ignored) {
+                    showOutOfMemoryErrorDialog("Failed to open image view.");
+                } catch (Exception e) {
+                    handleError(MessageFormat.format("Failed to open image view.\n\n{0}", e.getMessage()), e);
+                }
+            }
+        };
+        worker.execute();
     }
 
     public int showQuestionDialog(String title, String message, String preferencesKey) {
@@ -360,6 +413,56 @@ public class SnapApp {
         } else {
             LOG.warning(MessageFormat.format("{0} not found", jaiRegistryPath));
         }
+    }
+
+    private ProductSceneViewTopComponent openDocumentWindow(final ProductSceneView view) {
+        return openDocumentWindow(view, true);
+    }
+
+    private ProductSceneViewTopComponent openDocumentWindow(final ProductSceneView view, boolean configureByPreferences) {
+        if (configureByPreferences) {
+            view.setLayerProperties(getCompatiblePreferences());
+        }
+
+        UndoRedo.Manager undoManager = PNodeFactory.getInstance().getUndoManager(view.getProduct());
+        ProductSceneViewTopComponent productSceneViewWindow = new ProductSceneViewTopComponent(view, undoManager);
+
+        DocumentWindowManager.getDefault().openWindow(productSceneViewWindow);
+        productSceneViewWindow.requestSelected();
+
+        return productSceneViewWindow;
+    }
+
+    private ProductSceneImage createProductSceneImage(final RasterDataNode raster, ProductSceneView existingView, com.bc.ceres.core.ProgressMonitor pm) {
+        Debug.assertNotNull(raster);
+        Debug.assertNotNull(pm);
+
+        try {
+            pm.beginTask("Creating image...", 1);
+
+            ProductSceneImage sceneImage;
+            if (existingView != null) {
+                sceneImage = new ProductSceneImage(raster, existingView);
+            } else {
+                sceneImage = new ProductSceneImage(raster,
+                                                   getCompatiblePreferences(),
+                                                   SubProgressMonitor.create(pm, 1));
+            }
+            sceneImage.initVectorDataCollectionLayer();
+            sceneImage.initMaskCollectionLayer();
+            return sceneImage;
+        } finally {
+            pm.done();
+        }
+
+    }
+
+    private ProductSceneView getProductSceneView(RasterDataNode raster) {
+        return WindowUtilities.getOpened(ProductSceneViewTopComponent.class)
+                .filter(topComponent -> raster == topComponent.getView().getRaster())
+                .map(ProductSceneViewTopComponent::getView)
+                .findFirst()
+                .orElse(null);
     }
 
     /**

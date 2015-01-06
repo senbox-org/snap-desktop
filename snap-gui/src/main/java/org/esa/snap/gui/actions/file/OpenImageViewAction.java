@@ -58,106 +58,17 @@ import java.text.MessageFormat;
 @NbBundle.Messages("CTL_OpenImageViewActionName=Open in Image View")
 public class OpenImageViewAction extends AbstractAction {
 
-    RasterDataNode band;
+    RasterDataNode raster;
 
-    public OpenImageViewAction(RasterDataNode band) {
-        this.band = band;
+    public OpenImageViewAction(RasterDataNode rasterDataNode) {
+        this.raster = rasterDataNode;
         putValue(Action.NAME, Bundle.CTL_OpenImageViewActionName());
         putValue(Action.LARGE_ICON_KEY, ImageUtilities.loadImageIcon("org/esa/snap/gui/icons/RsBandAsSwath24.gif", false));
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        SnapApp.getInstance().setStatusBarMessage("Opening image view...");
-
-        UIUtils.setRootFrameWaitCursor(SnapApp.getInstance().getMainFrame());
-
-        String progressMonitorTitle = MessageFormat.format("{0} - Creating image for ''{1}''",
-                                                           SnapApp.getInstance().getInstanceName(),
-                                                           band.getName());
-
-        ProductSceneView existingView = getProductSceneView(band);
-        SwingWorker worker = new ProgressMonitorSwingWorker<ProductSceneImage, Object>(SnapApp.getInstance().getMainFrame(),
-                                                                                       progressMonitorTitle) {
-
-            @Override
-            protected ProductSceneImage doInBackground(ProgressMonitor pm) throws Exception {
-                try {
-                    return createProductSceneImage(band, existingView, pm);
-                } finally {
-                    if (pm.isCanceled()) {
-                        band.unloadRasterData();
-                    }
-                }
-            }
-
-            @Override
-            public void done() {
-                UIUtils.setRootFrameDefaultCursor(SnapApp.getInstance().getMainFrame());
-                SnapApp.getInstance().setStatusBarMessage("");
-                try {
-                    ProductSceneImage sceneImage = get();
-                    UndoRedo.Manager undoManager = PNodeFactory.getInstance().getUndoManager(sceneImage.getProduct());
-                    ProductSceneView view = new ProductSceneView(sceneImage, undoManager);
-                    openDocumentWindow(view);
-                } catch (OutOfMemoryError ignored) {
-                    SnapApp.getInstance().showOutOfMemoryErrorDialog("Failed to open image view.");
-                } catch (Exception e) {
-                    SnapApp.getInstance().handleError(
-                            MessageFormat.format("Failed to open image view.\n\n{0}", e.getMessage()), e);
-                }
-            }
-        };
-        worker.execute();
+        SnapApp.getInstance().openProductSceneView(raster);
     }
 
-    public ProductSceneViewTopComponent openDocumentWindow(final ProductSceneView view) {
-        return openDocumentWindow(view, true);
-    }
-
-    public ProductSceneViewTopComponent openDocumentWindow(final ProductSceneView view, boolean configureByPreferences) {
-        if (configureByPreferences) {
-            view.setLayerProperties(SnapApp.getInstance().getCompatiblePreferences());
-        }
-
-        UndoRedo.Manager undoManager = PNodeFactory.getInstance().getUndoManager(view.getProduct());
-        ProductSceneViewTopComponent productSceneViewWindow = new ProductSceneViewTopComponent(view, undoManager);
-
-        DocumentWindowManager.getDefault().openWindow(productSceneViewWindow);
-        productSceneViewWindow.requestSelected();
-
-        return productSceneViewWindow;
-    }
-
-    protected ProductSceneImage createProductSceneImage(final RasterDataNode raster, ProductSceneView existingView, ProgressMonitor pm) {
-        Debug.assertNotNull(raster);
-        Debug.assertNotNull(pm);
-
-        try {
-            pm.beginTask("Creating image...", 1);
-
-            ProductSceneImage sceneImage;
-            if (existingView != null) {
-                sceneImage = new ProductSceneImage(raster, existingView);
-            } else {
-                sceneImage = new ProductSceneImage(raster,
-                                                   SnapApp.getInstance().getCompatiblePreferences(),
-                                                   SubProgressMonitor.create(pm, 1));
-            }
-            sceneImage.initVectorDataCollectionLayer();
-            sceneImage.initMaskCollectionLayer();
-            return sceneImage;
-        } finally {
-            pm.done();
-        }
-
-    }
-
-    public ProductSceneView getProductSceneView(RasterDataNode raster) {
-        return WindowUtilities.getOpened(ProductSceneViewTopComponent.class)
-                .filter(topComponent -> raster == topComponent.getView().getRaster())
-                .map(ProductSceneViewTopComponent::getView)
-                .findFirst()
-                .orElse(null);
-    }
 }
