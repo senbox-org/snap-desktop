@@ -20,6 +20,7 @@ import com.bc.ceres.binding.Property;
 import com.bc.ceres.glayer.support.ImageLayer;
 import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
+import com.bc.ceres.swing.binding.Enablement;
 import com.bc.ceres.swing.binding.PropertyEditorRegistry;
 import org.esa.beam.framework.ui.product.ProductSceneView;
 import org.esa.snap.gui.preferences.ConfigProperty;
@@ -84,6 +85,8 @@ public final class ImagePanel extends DefaultConfigController {
      * Preferences key for pixel border color
      */
     public static final String PROPERTY_KEY_PIXEL_BORDER_COLOR = "pixel.border.color";
+    private JComponent[] imageBorderColorComponents;
+    private JComponent[] pixelBorderColorComponents;
 
     protected Object createBean() {
         return new ImageLayerBean();
@@ -116,10 +119,10 @@ public final class ImagePanel extends DefaultConfigController {
         JComponent[] backgroundColorComponents = createColorComponents(backgroundColor);
         JComponent[] showImageBorderComponents = registry.findPropertyEditor(showImageBorder.getDescriptor()).createComponents(showImageBorder.getDescriptor(), context);
         JComponent[] imageBorderSizeComponents = registry.findPropertyEditor(imageBorderSize.getDescriptor()).createComponents(imageBorderSize.getDescriptor(), context);
-        JComponent[] imageBorderColorComponents = createColorComponents(imageBorderColor);
+        imageBorderColorComponents = createColorComponents(imageBorderColor);
         JComponent[] showPixelBorderComponents = registry.findPropertyEditor(showPixelBorder.getDescriptor()).createComponents(showPixelBorder.getDescriptor(), context);
         JComponent[] pixelBorderSizeComponents = registry.findPropertyEditor(pixelBorderSize.getDescriptor()).createComponents(pixelBorderSize.getDescriptor(), context);
-        JComponent[] pixelBorderColorComponents = createColorComponents(pixelBorderColor);
+        pixelBorderColorComponents = createColorComponents(pixelBorderColor);
 
         pageUI.add(tileCacheCapacityComponents[1]);
         pageUI.add(tileCacheCapacityComponents[0]);
@@ -143,6 +146,29 @@ public final class ImagePanel extends DefaultConfigController {
         parent.add(pageUI, BorderLayout.CENTER);
         parent.add(Box.createHorizontalStrut(100), BorderLayout.EAST);
         return parent;
+    }
+
+    @Override
+    protected void configure(BindingContext context) {
+        Enablement enablementImageBorderSize = context.bindEnabledState(PROPERTY_KEY_IMAGE_BORDER_SIZE, false, PROPERTY_KEY_IMAGE_BORDER_SHOWN, false);
+        context.getPropertySet().getProperty(PROPERTY_KEY_IMAGE_BORDER_SHOWN).addPropertyChangeListener(evt -> {
+            enablementImageBorderSize.apply();
+            for (JComponent imageBorderColorComponent : imageBorderColorComponents) {
+                imageBorderColorComponent.setEnabled(((Boolean) evt.getNewValue()));
+            }
+        });
+
+        Enablement enablementPixelBorderSize = context.bindEnabledState(PROPERTY_KEY_PIXEL_BORDER_SIZE, false, PROPERTY_KEY_PIXEL_BORDER_SHOWN, false);
+        context.getPropertySet().getProperty(PROPERTY_KEY_PIXEL_BORDER_SHOWN).addPropertyChangeListener(evt -> {
+            enablementPixelBorderSize.apply();
+            for (JComponent pixelBorderColorComponent : pixelBorderColorComponents) {
+                pixelBorderColorComponent.setEnabled(((Boolean) evt.getNewValue()));
+            }
+        });
+
+        for (JComponent imageBorderColorComponent : imageBorderColorComponents) {
+            imageBorderColorComponent.setEnabled(ImageLayer.DEFAULT_BORDER_SHOWN);
+        }
     }
 
     @Override
