@@ -19,6 +19,7 @@ package org.esa.snap.gui.preferences.layer;
 import com.bc.ceres.binding.Property;
 import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
+import com.bc.ceres.swing.binding.Enablement;
 import com.bc.ceres.swing.binding.PropertyEditorRegistry;
 import org.esa.beam.glayer.GraticuleLayerType;
 import org.esa.snap.gui.preferences.ConfigProperty;
@@ -51,6 +52,9 @@ import static org.esa.snap.gui.preferences.PreferenceUtils.*;
         keywordsCategory = "Layer",
         id = "LayerGraticule")
 public final class GraticulePanel extends DefaultConfigController {
+
+    private JComponent[] textFgColorComponents;
+    private JComponent[] textBgColorComponents;
 
     protected Object createBean() {
         return new MaskBean();
@@ -90,8 +94,8 @@ public final class GraticulePanel extends DefaultConfigController {
         JComponent[] lineWidthComponents = registry.findPropertyEditor(lineWidth.getDescriptor()).createComponents(lineWidth.getDescriptor(), context);
         JComponent[] lineTransparencyComponents = registry.findPropertyEditor(lineTransparency.getDescriptor()).createComponents(lineTransparency.getDescriptor(), context);
         JComponent[] showTextLabelsComponents = registry.findPropertyEditor(showTextLabels.getDescriptor()).createComponents(showTextLabels.getDescriptor(), context);
-        JComponent[] textFgColorComponents = PreferenceUtils.createColorComponents(textFgColor);
-        JComponent[] textBgColorComponents = PreferenceUtils.createColorComponents(textBgColor);
+        textFgColorComponents = PreferenceUtils.createColorComponents(textFgColor);
+        textBgColorComponents = PreferenceUtils.createColorComponents(textBgColor);
         JComponent[] textBgTransparencyComponents = registry.findPropertyEditor(textBgTransparency.getDescriptor()).createComponents(textBgTransparency.getDescriptor(), context);
 
         pageUI.add(computeLatLonStepsComponents[0]);
@@ -123,6 +127,42 @@ public final class GraticulePanel extends DefaultConfigController {
         parent.add(pageUI, BorderLayout.CENTER);
         parent.add(Box.createHorizontalStrut(100), BorderLayout.EAST);
         return parent;
+    }
+
+    @Override
+    protected void configure(BindingContext context) {
+        Enablement enablementAvgGridSize = context.bindEnabledState(GraticuleLayerType.PROPERTY_NAME_RES_PIXELS, true,
+                                                                    GraticuleLayerType.PROPERTY_NAME_RES_AUTO, true);
+        Enablement enablementLatStep = context.bindEnabledState(GraticuleLayerType.PROPERTY_NAME_RES_LAT, true,
+                                                                GraticuleLayerType.PROPERTY_NAME_RES_AUTO, false);
+        Enablement enablementLonStep = context.bindEnabledState(GraticuleLayerType.PROPERTY_NAME_RES_LON, true,
+                                                                GraticuleLayerType.PROPERTY_NAME_RES_AUTO, false);
+
+        context.getPropertySet().getProperty(GraticuleLayerType.PROPERTY_NAME_RES_AUTO).addPropertyChangeListener(evt -> {
+            enablementAvgGridSize.apply();
+            enablementLatStep.apply();
+            enablementLonStep.apply();
+        });
+
+        Enablement enablementTextBgTransparency = context.bindEnabledState(GraticuleLayerType.PROPERTY_NAME_TEXT_BG_TRANSPARENCY, true,
+                                                                           GraticuleLayerType.PROPERTY_NAME_TEXT_ENABLED, true);
+
+        context.getPropertySet().getProperty(GraticuleLayerType.PROPERTY_NAME_TEXT_ENABLED).addPropertyChangeListener(evt -> {
+            enablementTextBgTransparency.apply();
+            for (JComponent component : textFgColorComponents) {
+                component.setEnabled(((Boolean) evt.getNewValue()));
+            }
+            for (JComponent component : textBgColorComponents) {
+                component.setEnabled(((Boolean) evt.getNewValue()));
+            }
+        });
+
+        for (JComponent component : textFgColorComponents) {
+            component.setEnabled(context.getPropertySet().getProperty(GraticuleLayerType.PROPERTY_NAME_TEXT_ENABLED).getValue());
+        }
+        for (JComponent component : textBgColorComponents) {
+            component.setEnabled(context.getPropertySet().getProperty(GraticuleLayerType.PROPERTY_NAME_TEXT_ENABLED).getValue());
+        }
     }
 
     @Override
