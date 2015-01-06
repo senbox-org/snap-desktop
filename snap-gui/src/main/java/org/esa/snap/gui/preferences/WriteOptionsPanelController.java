@@ -95,8 +95,7 @@ public final class WriteOptionsPanelController extends DefaultConfigController {
                     try {
                         context.getPropertySet().getProperty(PROPERTY_KEY_SAVE_PRODUCT_ANNOTATIONS).setValue(false);
                     } catch (ValidationException e) {
-//                      very basic exception handling because exception is not expected to be thrown
-                        e.printStackTrace();
+                        e.printStackTrace(); // very basic exception handling because exception is not expected to be thrown
                     }
                 }
             }

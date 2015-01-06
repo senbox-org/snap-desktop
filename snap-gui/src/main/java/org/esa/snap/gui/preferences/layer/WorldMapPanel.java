@@ -104,8 +104,7 @@ public final class WorldMapPanel extends DefaultConfigController {
             try {
                 property.setValue(box.getSelectedItem().toString());
             } catch (ValidationException e1) {
-//                  very basic exception handling because exception is not expected to be thrown
-                e1.printStackTrace();
+                e1.printStackTrace(); // very basic exception handling because exception is not expected to be thrown
             }
         });
         DefaultComboBoxModel<WorldMapLayerType> model = new DefaultComboBoxModel<>(worldMapLayerTypes.toArray(new WorldMapLayerType[worldMapLayerTypes.size()]));

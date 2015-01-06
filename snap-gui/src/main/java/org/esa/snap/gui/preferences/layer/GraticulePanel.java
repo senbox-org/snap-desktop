@@ -158,10 +158,10 @@ public final class GraticulePanel extends DefaultConfigController {
         });
 
         for (JComponent component : textFgColorComponents) {
-            component.setEnabled(context.getPropertySet().getProperty(GraticuleLayerType.PROPERTY_NAME_TEXT_ENABLED).getValue());
+            component.setEnabled(true);
         }
         for (JComponent component : textBgColorComponents) {
-            component.setEnabled(context.getPropertySet().getProperty(GraticuleLayerType.PROPERTY_NAME_TEXT_ENABLED).getValue());
+            component.setEnabled(true);
         }
     }
 

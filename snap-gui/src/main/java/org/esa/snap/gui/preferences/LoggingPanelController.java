@@ -16,6 +16,10 @@
 
 package org.esa.snap.gui.preferences;
 
+import com.bc.ceres.binding.Property;
+import com.bc.ceres.binding.ValidationException;
+import com.bc.ceres.swing.binding.BindingContext;
+import com.bc.ceres.swing.binding.Enablement;
 import org.esa.beam.util.SystemUtils;
 import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.HelpCtx;
@@ -49,6 +53,45 @@ public final class LoggingPanelController extends DefaultConfigController {
     }
 
     @Override
+    protected void configure(BindingContext context) {
+        Enablement enablementLogPrefix = context.bindEnabledState(PROPERTY_KEY_APP_LOG_PREFIX, true,
+                                                                  PROPERTY_KEY_APP_LOG_ENABLED, true);
+        Enablement enablementLogEcho = context.bindEnabledState(PROPERTY_KEY_APP_LOG_ECHO, true,
+                                                                PROPERTY_KEY_APP_LOG_ENABLED, true);
+        Enablement enablementLogDebug = context.bindEnabledState(PROPERTY_KEY_APP_LOG_DEBUG, true,
+                                                                 PROPERTY_KEY_APP_LOG_ENABLED, true);
+        // always disabled
+        context.bindEnabledState(PROPERTY_KEY_APP_LOG_LEVEL, false, new Enablement.Condition() {
+            @Override
+            public boolean evaluate(BindingContext bindingContext) {
+                return true;
+            }
+        }).apply();
+
+
+        context.getPropertySet().getProperty(PROPERTY_KEY_APP_LOG_ENABLED).addPropertyChangeListener(evt -> {
+            enablementLogPrefix.apply();
+            enablementLogEcho.apply();
+            enablementLogDebug.apply();
+        });
+
+        context.getPropertySet().getProperty(PROPERTY_KEY_APP_LOG_DEBUG).addPropertyChangeListener(evt -> {
+            Property logLevelProperty = context.getPropertySet().getProperty(PROPERTY_KEY_APP_LOG_LEVEL);
+            boolean isLogDebug = (Boolean) evt.getNewValue();
+            try {
+                if (isLogDebug) {
+                    logLevelProperty.setValue(SystemUtils.LLS_DEBUG);
+                } else {
+                    logLevelProperty.setValue(SystemUtils.LLS_INFO);
+                }
+            } catch (ValidationException e) {
+                e.printStackTrace(); // very basic exception handling because exception is not expected to be thrown
+            }
+        });
+
+    }
+
+    @Override
     public HelpCtx getHelpCtx() {
         return new HelpCtx("logging");
     }
@@ -70,7 +113,7 @@ public final class LoggingPanelController extends DefaultConfigController {
 
         @ConfigProperty(label = "Log level", key = PROPERTY_KEY_APP_LOG_LEVEL, valueSet = {SystemUtils.LLS_DEBUG,
                 SystemUtils.LLS_INFO, SystemUtils.LLS_ERROR, SystemUtils.LLS_WARNING})
-        String logLevel;
+        String logLevel = SystemUtils.LLS_INFO;
 
     }
 }

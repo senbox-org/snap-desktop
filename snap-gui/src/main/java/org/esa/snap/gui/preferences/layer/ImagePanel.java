@@ -167,7 +167,7 @@ public final class ImagePanel extends DefaultConfigController {
         });
 
         for (JComponent imageBorderColorComponent : imageBorderColorComponents) {
-            imageBorderColorComponent.setEnabled(context.getPropertySet().getProperty(PROPERTY_KEY_PIXEL_BORDER_SHOWN).getValue());
+            imageBorderColorComponent.setEnabled(ImageLayer.DEFAULT_PIXEL_BORDER_SHOWN);
         }
     }
 

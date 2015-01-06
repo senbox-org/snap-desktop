@@ -69,8 +69,7 @@ public class PreferenceUtils {
                 try {
                     property.setValue(colorComboBox.getSelectedColor());
                 } catch (ValidationException e1) {
-//                  very basic exception handling because exception is not expected to be thrown
-                    e1.printStackTrace();
+                    e1.printStackTrace(); // very basic exception handling because exception is not expected to be thrown
                 }
             }
         });

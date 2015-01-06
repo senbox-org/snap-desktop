@@ -150,6 +150,7 @@ public abstract class DefaultConfigController extends OptionsPanelController {
         setupPanel(createBean());
         initiallyFillPreferences();
         setupChangeListeners();
+        panel.getComponent(); // trigger component initialisation
         configure(bindingContext);
     }
 
