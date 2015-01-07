@@ -193,8 +193,6 @@ public class BandMathsDialog extends ModalDialog {
     }
 
     private void makeUI() {
-        StopWatch stopWatch = new StopWatch();
-        stopWatch.start();
         JButton editExpressionButton = new JButton("Edit Expression...");
         editExpressionButton.setName("editExpressionButton");
         editExpressionButton.addActionListener(createEditExpressionButtonListener());
@@ -270,7 +268,6 @@ public class BandMathsDialog extends ModalDialog {
                                 "insets.top=10, weightx=1, weighty=1, gridwidth=3, fill=BOTH, anchor=WEST");
 
         setContent(panel);
-        stopWatch.stopAndTrace("MakeUI in BandMathsDialog");
     }
 
     private JComponent[] createComponents(String propertyName, Class<? extends PropertyEditor> editorClass) {
