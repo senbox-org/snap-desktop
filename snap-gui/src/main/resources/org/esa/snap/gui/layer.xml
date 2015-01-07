@@ -24,6 +24,22 @@
 
     <folder name="Context">
         <folder name="Product">
+            <folder name="Product">
+                <file name="org-openide-actions-PropertiesAction.shadow">
+                    <attr name="originalFile"
+                          stringvalue="Actions/System/org-openide-actions-PropertiesAction.instance"/>
+                    <attr name="position" intvalue="0"/>
+                </file>
+                <file name="org-openide-actions-CopyAction-separatorBefore.instance">
+                    <attr name="instanceCreate" newvalue="javax.swing.JSeparator"/>
+                    <attr name="position" intvalue="500"/>
+                </file>
+                <file name="org-openide-actions-CopyAction.shadow">
+                    <attr name="originalFile"
+                          stringvalue="Actions/Edit/org-openide-actions-CopyAction.instance"/>
+                    <attr name="position" intvalue="505"/>
+                </file>
+            </folder>
             <folder name="Band">
                 <file name="org-openide-actions-CopyAction-separatorBefore.instance">
                     <attr name="instanceCreate" newvalue="javax.swing.JSeparator"/>

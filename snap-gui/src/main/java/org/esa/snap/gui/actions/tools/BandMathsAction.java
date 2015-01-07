@@ -61,6 +61,10 @@ import java.util.List;
                 name = "D-M"
         ),
         @ActionReference(
+                path = "Context/Product/Product",
+                position = 200
+        ),
+        @ActionReference(
                 path = "Context/Product/Band",
                 position = 200
         ),

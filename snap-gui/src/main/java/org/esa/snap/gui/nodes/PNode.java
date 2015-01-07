@@ -9,10 +9,12 @@ import org.esa.beam.framework.datamodel.Product;
 import org.openide.awt.UndoRedo;
 import org.openide.nodes.BeanNode;
 import org.openide.nodes.Children;
+import org.openide.util.Utilities;
 import org.openide.util.lookup.Lookups;
 
 import javax.swing.Action;
 import java.beans.IntrospectionException;
+import java.util.ArrayList;
 
 /**
  * A node that represents a {@link org.esa.beam.framework.datamodel.Product} (=P).
@@ -39,9 +41,8 @@ public class PNode extends BeanNode<Product> implements UndoRedo.Provider {
 
     @Override
     public Action[] getActions(boolean context) {
-        //Define an array of actions here,
-        //which will appear on the right-click popup menu:
-        return super.getActions(context);
+        ArrayList<Action> actions = new ArrayList<>(Utilities.actionsForPath("Context/Product/Product"));
+        return actions.toArray(new Action[actions.size()]);
     }
 
     @Override
