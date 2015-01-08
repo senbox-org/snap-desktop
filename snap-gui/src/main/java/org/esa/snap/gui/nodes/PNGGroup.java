@@ -10,9 +10,7 @@ import org.esa.beam.framework.datamodel.FlagCoding;
 import org.esa.beam.framework.datamodel.IndexCoding;
 import org.esa.beam.framework.datamodel.Mask;
 import org.esa.beam.framework.datamodel.ProductNode;
-import org.esa.beam.framework.datamodel.ProductNodeEvent;
 import org.esa.beam.framework.datamodel.ProductNodeGroup;
-import org.esa.beam.framework.datamodel.ProductNodeListenerAdapter;
 import org.esa.beam.framework.datamodel.TiePointGrid;
 import org.esa.beam.framework.datamodel.VectorDataNode;
 import org.openide.awt.UndoRedo;
@@ -38,23 +36,11 @@ abstract class PNGGroup<T extends ProductNode> extends Group<T> implements NodeL
     private final String displayName;
     private final ProductNodeGroup<T> group;
     private final UndoRedo undoRedo;
-    private ProductNodeListenerAdapter nodeListener;
 
     protected PNGGroup(String displayName, ProductNodeGroup<T> group, UndoRedo undoRedo) {
         this.displayName = displayName;
         this.group = group;
         this.undoRedo = undoRedo;
-        nodeListener = new PNGProductNodeListenerAdapter();
-    }
-
-    @Override
-    protected void addNotify() {
-        group.getProduct().addProductNodeListener(nodeListener);
-    }
-
-    @Override
-    protected void removeNotify() {
-        group.getProduct().removeProductNodeListener(nodeListener);
     }
 
     @Override
@@ -186,20 +172,4 @@ abstract class PNGGroup<T extends ProductNode> extends Group<T> implements NodeL
         }
     }
 
-    private class PNGProductNodeListenerAdapter extends ProductNodeListenerAdapter {
-
-        @Override
-        public void nodeAdded(ProductNodeEvent event) {
-            if (event.getGroup() == group) {
-                refresh(true);
-            }
-        }
-
-        @Override
-        public void nodeRemoved(ProductNodeEvent event) {
-            if (event.getGroup() == group) {
-                refresh(true);
-            }
-        }
-    }
 }
