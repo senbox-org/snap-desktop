@@ -34,7 +34,7 @@ import java.awt.event.ActionEvent;
         displayName = "Compare Products",
         lazy = false
 )
-@ActionReference(path = "Menu/Tools", position = 150)
+@ActionReference(path = "Menu/Tools", position = 130)
 public class CompareProductsAction extends AbstractAction implements ContextAwareAction, LookupListener {
 
     private final Lookup.Result<Product> context;
