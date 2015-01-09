@@ -50,7 +50,10 @@ import org.esa.beam.util.Debug;
 import org.esa.beam.util.Guardian;
 import org.esa.beam.util.StopWatch;
 import org.esa.snap.gui.SnapApp;
+import org.esa.snap.gui.actions.file.OpenImageViewAction;
+import org.openide.awt.Actions;
 
+import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -164,7 +167,7 @@ public class BandMathsDialog extends ModalDialog {
         hide();
         band.setModified(true);
         if (snapApp.getPreferences().getBoolean(PROPERTY_KEY_AUTO_SHOW_NEW_BANDS, true)) {
-            snapApp.openProductSceneView(band);
+            new OpenImageViewAction(band).openProductSceneView();
         }
     }
 
