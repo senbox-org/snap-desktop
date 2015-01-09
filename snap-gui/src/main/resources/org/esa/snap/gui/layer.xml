@@ -134,6 +134,9 @@
             <file name="org-openide-actions-FindAction.shadow_hidden"/>
             <file name="org-openide-actions-ReplaceAction.shadow_hidden"/>
         </folder>
+        <folder name="Tools">
+            <file name="org-netbeans-modules-templates-actions-TemplatesAction.shadow_hidden"/>
+        </folder>
     </folder>
     <folder name="Toolbars">
         <folder name="QuickSearch">
