@@ -23,7 +23,7 @@ import java.util.List;
  *
  * @author Norman
  */
-public class PNode extends BeanNode<Product> implements UndoRedo.Provider {
+class PNode extends BeanNode<Product> implements UndoRedo.Provider {
 
     private final UndoRedo.Manager undoRedo;
 

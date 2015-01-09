@@ -21,7 +21,7 @@ import java.util.List;
 class PChildFactory extends ChildFactory<Group> {
 
     private final Product product;
-    private UndoRedo undoRedo;
+    private final UndoRedo undoRedo;
 
     PChildFactory(Product product, UndoRedo undoRedo) {
         this.product = product;

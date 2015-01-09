@@ -107,7 +107,7 @@ abstract class PNGGroup<T extends ProductNode> extends Group<T> implements NodeL
 
         @Override
         protected PNLeafNode createPNLeafNode(Band key) throws IntrospectionException {
-            return new BNode(key, getUndoRedo());
+            return new PNLeafNode.B(key, getUndoRedo());
         }
 
     }
@@ -120,7 +120,7 @@ abstract class PNGGroup<T extends ProductNode> extends Group<T> implements NodeL
 
         @Override
         protected PNLeafNode createPNLeafNode(TiePointGrid key) throws IntrospectionException {
-            return new TPGNode(key, getUndoRedo());
+            return new PNLeafNode.TPG(key, getUndoRedo());
         }
     }
 
@@ -132,7 +132,7 @@ abstract class PNGGroup<T extends ProductNode> extends Group<T> implements NodeL
 
         @Override
         protected PNLeafNode createPNLeafNode(VectorDataNode key) throws IntrospectionException {
-            return new VDNNode(key, getUndoRedo());
+            return new PNLeafNode.VDN(key, getUndoRedo());
         }
     }
 
@@ -144,7 +144,7 @@ abstract class PNGGroup<T extends ProductNode> extends Group<T> implements NodeL
 
         @Override
         protected PNLeafNode createPNLeafNode(Mask key) throws IntrospectionException {
-            return new MNode(key, getUndoRedo());
+            return new PNLeafNode.M(key, getUndoRedo());
         }
     }
 
@@ -156,7 +156,7 @@ abstract class PNGGroup<T extends ProductNode> extends Group<T> implements NodeL
 
         @Override
         protected PNLeafNode createPNLeafNode(FlagCoding key) throws IntrospectionException {
-            return new FCNode(key, getUndoRedo());
+            return new PNLeafNode.FC(key, getUndoRedo());
         }
     }
 
@@ -168,7 +168,7 @@ abstract class PNGGroup<T extends ProductNode> extends Group<T> implements NodeL
 
         @Override
         protected PNLeafNode createPNLeafNode(IndexCoding key) throws IntrospectionException {
-            return new ICNode(key, getUndoRedo());
+            return new PNLeafNode.IC(key, getUndoRedo());
         }
     }
 

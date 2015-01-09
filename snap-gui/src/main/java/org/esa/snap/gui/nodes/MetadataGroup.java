@@ -22,7 +22,7 @@ import java.util.List;
 class MetadataGroup extends Group<MetadataElement> {
 
     private final MetadataElement root;
-    private UndoRedo undoRedo;
+    private final UndoRedo undoRedo;
 
     MetadataGroup(MetadataElement root, UndoRedo undoRedo) {
         this.root = root;
@@ -48,7 +48,7 @@ class MetadataGroup extends Group<MetadataElement> {
     @Override
     protected Node createNodeForKey(MetadataElement key) {
         try {
-            return new MENode(key, getUndoRedo());
+            return new PNLeafNode.ME(key, getUndoRedo());
         } catch (IntrospectionException e) {
             Exceptions.printStackTrace(e);
             return null;
