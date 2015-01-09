@@ -6,6 +6,9 @@
 package org.esa.snap.gui.nodes;
 
 import org.esa.beam.framework.datamodel.Product;
+import org.esa.beam.framework.datamodel.ProductNode;
+import org.esa.beam.framework.datamodel.ProductNodeEvent;
+import org.esa.beam.framework.datamodel.ProductNodeListener;
 import org.openide.awt.UndoRedo;
 import org.openide.nodes.ChildFactory;
 import org.openide.nodes.Node;
@@ -30,6 +33,7 @@ public class PNodeFactory extends ChildFactory<Product> {
 
     private final List<Product> productList;
     private final Map<Product, UndoRedo.Manager> undoManagerMap;
+    private final MyProductNodeListener productNodeListener;
 
     public static PNodeFactory getInstance() {
         return instance;
@@ -38,6 +42,7 @@ public class PNodeFactory extends ChildFactory<Product> {
     PNodeFactory() {
         productList = new ArrayList<>();
         undoManagerMap = new HashMap<>();
+        productNodeListener = new MyProductNodeListener();
     }
 
     public List<Product> getOpenedProducts() {
@@ -46,21 +51,29 @@ public class PNodeFactory extends ChildFactory<Product> {
 
     public void addProduct(Product newProduct) {
         productList.add(newProduct);
+        newProduct.addProductNodeListener(productNodeListener);
         refresh(true);
     }
 
     public void addProducts(Product... newProducts) {
         productList.addAll(Arrays.asList(newProducts));
+        for (Product newProduct : newProducts) {
+            newProduct.addProductNodeListener(productNodeListener);
+        }
         refresh(true);
     }
 
     public void removeProduct(Product oldProduct) {
         productList.remove(oldProduct);
+        oldProduct.removeProductNodeListener(productNodeListener);
         refresh(true);
     }
 
     public void removeProducts(Product... oldProducts) {
         productList.removeAll(Arrays.asList(oldProducts));
+        for (Product oldProduct : oldProducts) {
+            oldProduct.removeProductNodeListener(productNodeListener);
+        }
         refresh(true);
     }
 
@@ -97,4 +110,25 @@ public class PNodeFactory extends ChildFactory<Product> {
         return node;
     }
 
+    private static class MyProductNodeListener implements ProductNodeListener {
+        @Override
+        public void nodeChanged(ProductNodeEvent event) {
+
+        }
+
+        @Override
+        public void nodeDataChanged(ProductNodeEvent event) {
+
+        }
+
+        @Override
+        public void nodeAdded(ProductNodeEvent event) {
+
+        }
+
+        @Override
+        public void nodeRemoved(ProductNodeEvent event) {
+
+        }
+    }
 }
