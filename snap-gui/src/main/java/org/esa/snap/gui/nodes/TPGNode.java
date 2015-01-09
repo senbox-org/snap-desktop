@@ -18,6 +18,7 @@ import org.openide.util.actions.SystemAction;
 import javax.swing.Action;
 import java.beans.IntrospectionException;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A node that represents a {@link org.esa.beam.framework.datamodel.TiePointGrid} (=TPG).
@@ -34,7 +35,7 @@ public class TPGNode extends PNLeafNode<TiePointGrid> {
 
     @Override
     public Action[] getActions(boolean context) {
-        ArrayList<Action> actions = new ArrayList<>(Utilities.actionsForPath("Context/Product/TPGrid"));
+        List<? extends Action> actions = Utilities.actionsForPath("Context/Product/TPGrid");
         return actions.toArray(new Action[actions.size()]);
 
     }

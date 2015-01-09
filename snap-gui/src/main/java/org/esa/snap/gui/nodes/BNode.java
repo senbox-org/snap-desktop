@@ -66,7 +66,7 @@ public class BNode extends PNLeafNode<Band> {
 
     @Override
     public Action[] getActions(boolean context) {
-        ArrayList<Action> actions = new ArrayList<>(Utilities.actionsForPath("Context/Product/Band"));
+        List<? extends Action> actions = Utilities.actionsForPath("Context/Product/Band");
         return actions.toArray(new Action[actions.size()]);
     }
 

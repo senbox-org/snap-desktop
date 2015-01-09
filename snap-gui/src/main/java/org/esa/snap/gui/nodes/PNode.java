@@ -15,6 +15,7 @@ import org.openide.util.lookup.Lookups;
 import javax.swing.Action;
 import java.beans.IntrospectionException;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A node that represents a {@link org.esa.beam.framework.datamodel.Product} (=P).
@@ -41,7 +42,7 @@ public class PNode extends BeanNode<Product> implements UndoRedo.Provider {
 
     @Override
     public Action[] getActions(boolean context) {
-        ArrayList<Action> actions = new ArrayList<>(Utilities.actionsForPath("Context/Product/Product"));
+        List<? extends Action> actions = Utilities.actionsForPath("Context/Product/Product");
         return actions.toArray(new Action[actions.size()]);
     }
 
