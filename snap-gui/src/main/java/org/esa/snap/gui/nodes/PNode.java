@@ -6,15 +6,15 @@
 package org.esa.snap.gui.nodes;
 
 import org.esa.beam.framework.datamodel.Product;
+import org.esa.beam.framework.datamodel.ProductNode;
 import org.openide.awt.UndoRedo;
-import org.openide.nodes.BeanNode;
-import org.openide.nodes.Children;
+import org.openide.nodes.Node;
 import org.openide.util.Utilities;
-import org.openide.util.lookup.Lookups;
 
-import javax.swing.Action;
-import java.beans.IntrospectionException;
+import javax.swing.*;
+import java.awt.event.ActionEvent;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -23,16 +23,38 @@ import java.util.List;
  *
  * @author Norman
  */
-class PNode extends BeanNode<Product> implements UndoRedo.Provider {
+class PNode extends PNNode<Product> {
 
+    private final PGroup group;
     private final UndoRedo.Manager undoRedo;
+    // todo - clean me up: this is an experimental property
+    boolean flattenRasterDataGroups;
 
-    public PNode(Product product, UndoRedo.Manager undoRedo) throws IntrospectionException {
-        super(product, Children.create(new PChildFactory(product, undoRedo), false), Lookups.fixed(product));
+    public PNode(Product product, UndoRedo.Manager undoRedo) {
+        this(product, new PGroup(), undoRedo);
+    }
+
+    private PNode(Product product, PGroup group, UndoRedo.Manager undoRedo) {
+        super(product, group);
+        this.group = group;
         this.undoRedo = undoRedo;
+        group.node = this;
         setDisplayName(product.getName());
         setShortDescription(product.getDescription());
         setIconBaseWithExtension("org/esa/snap/gui/icons/RsProduct16.gif");
+    }
+
+    public boolean getFlattenRasterDataGroups() {
+        return flattenRasterDataGroups;
+    }
+
+    public void setFlattenRasterDataGroups(boolean flattenRasterDataGroups) {
+        this.flattenRasterDataGroups = flattenRasterDataGroups;
+        group.refresh();
+    }
+
+    public Product getProduct() {
+        return getProductNode();
     }
 
     @Override
@@ -43,7 +65,16 @@ class PNode extends BeanNode<Product> implements UndoRedo.Provider {
     @Override
     public Action[] getActions(boolean context) {
         List<? extends Action> actions = Utilities.actionsForPath("Context/Product/Product");
-        return actions.toArray(new Action[actions.size()]);
+        ArrayList<Action> actions1 = new ArrayList<>(actions);
+        // todo - clean me up: this is experimental code
+        AbstractAction abstractAction = new AbstractAction("Toggle Grouping") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                setFlattenRasterDataGroups(!getFlattenRasterDataGroups());
+            }
+        };
+        actions1.add(abstractAction);
+        return actions1.toArray(new Action[actions1.size()]);
     }
 
     @Override
@@ -80,4 +111,56 @@ class PNode extends BeanNode<Product> implements UndoRedo.Provider {
         };
     }
     */
+
+    /**
+     * A child factory for nodes below a {@link PNode} that holds a {@link org.esa.beam.framework.datamodel.Product}.
+     *
+     * @author Norman
+     */
+    static class PGroup extends PNGroupBase<Object> {
+
+        PNode node;
+
+        @Override
+        protected boolean createKeys(List<Object> list) {
+            Product product = node.getProduct();
+            list.add(new PNGGroup.ME(product.getMetadataRoot().getElementGroup()));
+            if (product.getIndexCodingGroup().getNodeCount() > 0) {
+                list.add(new PNGGroup.IC(product.getIndexCodingGroup()));
+            }
+            if (product.getFlagCodingGroup().getNodeCount() > 0) {
+                list.add(new PNGGroup.FC(product.getFlagCodingGroup()));
+            }
+            if (product.getVectorDataGroup().getNodeCount() > 0) {
+                list.add(new PNGGroup.VDN(product.getVectorDataGroup()));
+            }
+
+            if (!node.getFlattenRasterDataGroups()) {
+                if (product.getTiePointGridGroup().getNodeCount() > 0) {
+                    list.add(new PNGGroup.TPG(product.getTiePointGridGroup()));
+                }
+                if (product.getBandGroup().getNodeCount() > 0) {
+                    list.add(new PNGGroup.B(product.getBandGroup()));
+                }
+                if (product.getMaskGroup().getNodeCount() > 0) {
+                    list.add(new PNGGroup.M(product.getMaskGroup()));
+                }
+            } else {
+                list.addAll(Arrays.asList(product.getTiePointGridGroup().toArray()));
+                list.addAll(Arrays.asList(product.getBandGroup().toArray()));
+                list.addAll(Arrays.asList(product.getMaskGroup().toArray()));
+            }
+
+            return true;
+        }
+
+        @Override
+        protected Node createNodeForKey(Object key) {
+            if (key instanceof ProductNode) {
+                return PNNode.create((ProductNode) key);
+            } else {
+                return new PNGroupNode((PNGGroup) key);
+            }
+        }
+    }
 }

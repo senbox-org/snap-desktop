@@ -7,17 +7,12 @@ package org.esa.snap.gui.nodes;
 
 import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.datamodel.ProductNode;
-import org.esa.beam.framework.datamodel.ProductNodeEvent;
 import org.esa.beam.framework.datamodel.ProductNodeListener;
 import org.openide.awt.UndoRedo;
-import org.openide.nodes.ChildFactory;
 import org.openide.nodes.Node;
-import org.openide.util.Exceptions;
 
-import java.beans.IntrospectionException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,13 +22,13 @@ import java.util.Map;
  *
  * @author Norman
  */
-public class PNodeFactory extends ChildFactory<Product> {
+public class PNodeFactory extends PNGroup<Product> {
 
     private final static PNodeFactory instance = new PNodeFactory();
 
     private final List<Product> productList;
     private final Map<Product, UndoRedo.Manager> undoManagerMap;
-    private final MyProductNodeListener productNodeListener;
+    private final Map<Product, ProductNodeListener> productNodeListenerMap;
 
     public static PNodeFactory getInstance() {
         return instance;
@@ -42,7 +37,12 @@ public class PNodeFactory extends ChildFactory<Product> {
     PNodeFactory() {
         productList = new ArrayList<>();
         undoManagerMap = new HashMap<>();
-        productNodeListener = new MyProductNodeListener();
+        productNodeListenerMap = new HashMap<>();
+    }
+
+    @Override
+    public String getDisplayName() {
+        return "Products";
     }
 
     public List<Product> getOpenedProducts() {
@@ -51,30 +51,39 @@ public class PNodeFactory extends ChildFactory<Product> {
 
     public void addProduct(Product newProduct) {
         productList.add(newProduct);
-        newProduct.addProductNodeListener(productNodeListener);
         refresh(true);
     }
 
     public void addProducts(Product... newProducts) {
         productList.addAll(Arrays.asList(newProducts));
-        for (Product newProduct : newProducts) {
-            newProduct.addProductNodeListener(productNodeListener);
-        }
         refresh(true);
     }
 
     public void removeProduct(Product oldProduct) {
         productList.remove(oldProduct);
-        oldProduct.removeProductNodeListener(productNodeListener);
+        uninstallListener(oldProduct);
         refresh(true);
     }
 
     public void removeProducts(Product... oldProducts) {
         productList.removeAll(Arrays.asList(oldProducts));
-        for (Product oldProduct : oldProducts) {
-            oldProduct.removeProductNodeListener(productNodeListener);
-        }
+        uninstallListener(oldProducts);
         refresh(true);
+    }
+
+    private void installListener(PNode node) {
+        Product newProduct = node.getProduct();
+        newProduct.addProductNodeListener(node);
+        productNodeListenerMap.put(newProduct, node);
+    }
+
+    private void uninstallListener(Product... oldProducts) {
+        for (Product oldProduct : oldProducts) {
+            ProductNodeListener productNodeListener = productNodeListenerMap.remove(oldProduct);
+            if (productNodeListener != null) {
+                oldProduct.removeProductNodeListener(productNodeListener);
+            }
+        }
     }
 
     public UndoRedo.Manager getUndoManager(Product product) {
@@ -93,42 +102,78 @@ public class PNodeFactory extends ChildFactory<Product> {
         if (undoManager == null) {
             undoManager = new UndoRedo.Manager();
 
-            // todo - remove test
+            /*
             // test, test
             undoManager.addEdit(new UndoableEditDummy());
             undoManager.addEdit(new UndoableEditDummy());
             undoManager.addEdit(new UndoableEditDummy());
+            */
 
             undoManagerMap.put(key, undoManager);
         }
-        PNode node = null;
-        try {
-            node = new PNode(key, undoManager);
-        } catch (IntrospectionException ex) {
-            Exceptions.printStackTrace(ex);
-        }
+        PNode node = new PNode(key, undoManager);
+        installListener(node);
         return node;
     }
 
-    private static class MyProductNodeListener implements ProductNodeListener {
-        @Override
-        public void nodeChanged(ProductNodeEvent event) {
+    /*
+    // test, test
+    static class UndoableEditDummy implements UndoableEdit {
+        String id = Long.toHexString(Double.doubleToRawLongBits( Math.random()));
 
+        @Override
+        public void undo() throws CannotUndoException {
+            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), "Undo: " + id);
         }
 
         @Override
-        public void nodeDataChanged(ProductNodeEvent event) {
-
+        public boolean canUndo() {
+            return true;
         }
 
         @Override
-        public void nodeAdded(ProductNodeEvent event) {
-
+        public void redo() throws CannotRedoException {
+            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), "Redo: " + id);
         }
 
         @Override
-        public void nodeRemoved(ProductNodeEvent event) {
+        public boolean canRedo() {
+            return true;
+        }
 
+        @Override
+        public void die() {
+        }
+
+        @Override
+        public boolean addEdit(UndoableEdit anEdit) {
+            return false;
+        }
+
+        @Override
+        public boolean replaceEdit(UndoableEdit anEdit) {
+            return false;
+        }
+
+        @Override
+        public boolean isSignificant() {
+            return true;
+        }
+
+        @Override
+        public String getPresentationName() {
+            return "Edit " + id;
+        }
+
+        @Override
+        public String getUndoPresentationName() {
+            return "Undo " + id;
+        }
+
+        @Override
+        public String getRedoPresentationName() {
+            return "Redo " + id;
         }
     }
+    */
 }
