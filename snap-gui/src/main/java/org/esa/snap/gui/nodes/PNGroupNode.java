@@ -5,10 +5,7 @@
  */
 package org.esa.snap.gui.nodes;
 
-import org.esa.beam.framework.datamodel.ProductNode;
 import org.esa.beam.framework.datamodel.ProductNodeEvent;
-import org.openide.awt.UndoRedo;
-import org.openide.nodes.Node;
 
 /**
  * A node that represents a group of some elements.
@@ -22,8 +19,7 @@ class PNGroupNode extends PNNodeBase {
     PNGroupNode(PNGroup group) {
         super(group);
         setDisplayName(group.getDisplayName());
-        // todo - set correct icon
-        //setIconBaseWithExtension("org/esa/snap/gui/icons/xxx.gif");
+        setIconBaseWithExtension("org/esa/snap/gui/icons/RsGroup16.gif");
         nodeSupport = PNNodeSupport.create(this, group);
     }
 

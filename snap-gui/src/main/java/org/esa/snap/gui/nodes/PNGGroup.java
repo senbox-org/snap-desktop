@@ -33,6 +33,7 @@ abstract class PNGGroup<T extends ProductNode> extends PNGroup<T> {
         Assert.notNull(group, "group");
         this.displayName = displayName;
         this.group = group;
+
     }
 
     @Override

@@ -85,7 +85,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
     @Override
     public PropertySet[] getPropertySets() {
         Sheet.Set set = new Sheet.Set();
-        set.put(new PropertySupport<String>("name", String.class, "Name", "Name", true, true) {
+        set.put(new PropertySupport.ReadWrite<String>("name", String.class, "Name", "Name of the element") {
             @Override
             public String getValue() {
                 return getProductNode().getName();
@@ -97,7 +97,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
                 // todo - add undoable edit
             }
         });
-        set.put(new PropertySupport<String>("description", String.class, "Description", "Description", true, true) {
+        set.put(new PropertySupport.ReadWrite<String>("description", String.class, "Description", "Short description of the element") {
             @Override
             public String getValue() {
                 return getProductNode().getDescription();
@@ -107,6 +107,12 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
             public void setValue(String val) {
                 getProductNode().setDescription(val);
                 // todo - add undoable edit
+            }
+        });
+        set.put(new PropertySupport.ReadOnly<Boolean>("modified", Boolean.class, "Modified", "Has the element been modified?") {
+            @Override
+            public Boolean getValue() {
+                return getProductNode().isModified();
             }
         });
         return new PropertySet[]{
@@ -166,8 +172,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
 
         public IC(IndexCoding indexCoding) {
             super(indexCoding);
-            // todo - set correct icon
-            //setIconBaseWithExtension("org/esa/snap/gui/icons/xxx.gif");
+            setIconBaseWithExtension("org/esa/snap/gui/icons/RsBandIndexes16.gif");
         }
 
         @Override
@@ -191,8 +196,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
 
         public FC(FlagCoding flagCoding) {
             super(flagCoding);
-            // todo - set correct icon
-            //setIconBaseWithExtension("org/esa/snap/gui/icons/xxx.gif");
+            setIconBaseWithExtension("org/esa/snap/gui/icons/RsBandFlags16.gif");
         }
 
         @Override
@@ -216,8 +220,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
 
         public VDN(VectorDataNode vectorDataNode) {
             super(vectorDataNode);
-            // todo - set correct icon
-            //setIconBaseWithExtension("org/esa/snap/gui/icons/xxx.gif");
+            setIconBaseWithExtension("org/esa/snap/gui/icons/RsVectorData16.gif");
         }
 
         @Override
@@ -245,8 +248,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
 
         public TPG(TiePointGrid tiePointGrid) {
             super(tiePointGrid);
-            // todo - set correct icon
-            //setIconBaseWithExtension("org/esa/snap/gui/icons/xxx.gif");
+            setIconBaseWithExtension("org/esa/snap/gui/icons/RsBandAsTiePoint16.gif");
         }
 
         @Override
@@ -282,8 +284,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
 
         public M(Mask mask) {
             super(mask);
-            // todo - set correct icon
-            //setIconBaseWithExtension("org/esa/snap/gui/icons/xxx.gif");
+            setIconBaseWithExtension("org/esa/snap/gui/icons/RsMask16.gif");
         }
 
         @Override
