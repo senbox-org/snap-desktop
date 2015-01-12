@@ -16,14 +16,13 @@ import org.esa.beam.framework.datamodel.TiePointGrid;
 import org.esa.beam.framework.datamodel.VectorDataNode;
 import org.esa.snap.gui.actions.file.OpenImageViewAction;
 import org.openide.awt.Actions;
-import org.openide.nodes.Children;
 import org.openide.nodes.Node;
 import org.openide.nodes.PropertySupport;
 import org.openide.nodes.Sheet;
 import org.openide.util.Utilities;
 import org.openide.util.lookup.Lookups;
 
-import javax.swing.*;
+import javax.swing.Action;
 import java.awt.datatransfer.Transferable;
 import java.io.IOException;
 import java.util.List;
