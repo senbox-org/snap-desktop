@@ -15,6 +15,7 @@ import org.esa.beam.framework.datamodel.ProductNode;
 import org.esa.beam.framework.datamodel.ProductNodeGroup;
 import org.esa.beam.framework.datamodel.TiePointGrid;
 import org.esa.beam.framework.datamodel.VectorDataNode;
+import org.openide.util.NbBundle;
 
 import java.util.List;
 
@@ -24,6 +25,15 @@ import java.util.List;
  *
  * @author Norman
  */
+@NbBundle.Messages({
+        "LBL_MetadataGroupName=Metadata",
+        "LBL_FlagCodingGroupName=Flag Codings",
+        "LBL_IndexCodingGroupName=Index Codings",
+        "LBL_VectorDataGroupName=Vector Data",
+        "LBL_TiePointGroupName=Tie-Point Grids",
+        "LBL_BandGroupName=Bands",
+        "LBL_MaskGroupName=Masks",
+})
 abstract class PNGGroup<T extends ProductNode> extends PNGroup<T> {
 
     private final String displayName;
@@ -69,7 +79,7 @@ abstract class PNGGroup<T extends ProductNode> extends PNGroup<T> {
     public static class B extends PNGGroup<Band> {
 
         public B(ProductNodeGroup<Band> group) {
-            super("Bands", group);
+            super(Bundle.LBL_BandGroupName(), group);
         }
 
         @Override
@@ -81,7 +91,7 @@ abstract class PNGGroup<T extends ProductNode> extends PNGroup<T> {
     public static class TPG extends PNGGroup<TiePointGrid> {
 
         public TPG(ProductNodeGroup<TiePointGrid> group) {
-            super("Tie-Point Grids", group);
+            super(Bundle.LBL_TiePointGroupName(), group);
         }
 
         @Override
@@ -93,7 +103,7 @@ abstract class PNGGroup<T extends ProductNode> extends PNGroup<T> {
     public static class VDN extends PNGGroup<VectorDataNode> {
 
         public VDN(ProductNodeGroup<VectorDataNode> group) {
-            super("Vector Data", group);
+            super(Bundle.LBL_VectorDataGroupName(), group);
         }
 
         @Override
@@ -105,7 +115,7 @@ abstract class PNGGroup<T extends ProductNode> extends PNGroup<T> {
     public static class M extends PNGGroup<Mask> {
 
         public M(ProductNodeGroup<Mask> group) {
-            super("Masks", group);
+            super(Bundle.LBL_MaskGroupName(), group);
         }
 
         @Override
@@ -117,7 +127,7 @@ abstract class PNGGroup<T extends ProductNode> extends PNGroup<T> {
     public static class FC extends PNGGroup<FlagCoding> {
 
         public FC(ProductNodeGroup<FlagCoding> group) {
-            super("Flag Codings", group);
+            super(Bundle.LBL_FlagCodingGroupName(), group);
         }
 
         @Override
@@ -129,7 +139,7 @@ abstract class PNGGroup<T extends ProductNode> extends PNGroup<T> {
     public static class IC extends PNGGroup<IndexCoding> {
 
         public IC(ProductNodeGroup<IndexCoding> group) {
-            super("Index Codings", group);
+            super(Bundle.LBL_IndexCodingGroupName(), group);
         }
 
         @Override
@@ -141,7 +151,7 @@ abstract class PNGGroup<T extends ProductNode> extends PNGroup<T> {
     public static class ME extends PNGGroup<MetadataElement> {
 
         public ME(ProductNodeGroup<MetadataElement> group) {
-            super("Metadata", group);
+            super(Bundle.LBL_MetadataGroupName(), group);
         }
 
         @Override
