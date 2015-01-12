@@ -10,6 +10,7 @@ import org.esa.beam.framework.datamodel.FlagCoding;
 import org.esa.beam.framework.datamodel.IndexCoding;
 import org.esa.beam.framework.datamodel.Mask;
 import org.esa.beam.framework.datamodel.MetadataElement;
+import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.datamodel.ProductNode;
 import org.esa.beam.framework.datamodel.ProductNodeEvent;
 import org.esa.beam.framework.datamodel.TiePointGrid;
@@ -93,6 +94,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
             @Override
             public void setValue(String val) {
                 getProductNode().setName(val);
+                // todo - add undoable edit
             }
         });
         set.put(new PropertySupport<String>("description", String.class, "Description", "Description", true, true) {
@@ -104,6 +106,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
             @Override
             public void setValue(String val) {
                 getProductNode().setDescription(val);
+                // todo - add undoable edit
             }
         });
         return new PropertySet[]{
@@ -225,7 +228,10 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
         @Override
         public void destroy() throws IOException {
             VectorDataNode productNode = getProductNode();
-            productNode.getProduct().getVectorDataGroup().remove(productNode);
+            Product product = productNode.getProduct();
+            // todo - add undoable edit
+            //PNodeFactory.getInstance().getUndoManager(product).addEdit(new UndoableEdit() {...});
+            product.getVectorDataGroup().remove(productNode);
         }
 
     }

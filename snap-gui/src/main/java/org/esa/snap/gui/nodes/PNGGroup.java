@@ -41,6 +41,18 @@ abstract class PNGGroup<T extends ProductNode> extends PNGroup<T> {
     }
 
     @Override
+    boolean isDirectChild(ProductNode productNode) {
+        int nodeCount = group.getNodeCount();
+        for (int i = 0; i < nodeCount; i++) {
+            if (group.get(i) == productNode) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    @Override
     protected boolean createKeys(List<T> list) {
         int nodeCount = group.getNodeCount();
         for (int i = 0; i < nodeCount; i++) {

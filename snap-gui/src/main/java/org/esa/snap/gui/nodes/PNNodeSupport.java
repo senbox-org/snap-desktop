@@ -69,17 +69,23 @@ abstract class PNNodeSupport implements ProductNodeListener {
 
         @Override
         public void nodeAdded(ProductNodeEvent event) {
-            refreshChildren(event.getSourceNode());
+            refreshChildrenAfterAdd(event.getSourceNode());
             delegateProductNodeEvent(l -> l.nodeAdded(event));
         }
 
         @Override
         public void nodeRemoved(ProductNodeEvent event) {
-            refreshChildren(event.getSourceNode());
+            refreshChildrenAfterRemove(event.getSourceNode());
             delegateProductNodeEvent(l -> l.nodeRemoved(event));
         }
 
-        private void refreshChildren(ProductNode productNode) {
+        private void refreshChildrenAfterAdd(ProductNode productNode) {
+            if (group.isDirectChild(productNode)) {
+                group.refresh();
+            }
+        }
+
+        private void refreshChildrenAfterRemove(ProductNode productNode) {
             if (node.isDirectChild(productNode)) {
                 group.refresh();
             }
