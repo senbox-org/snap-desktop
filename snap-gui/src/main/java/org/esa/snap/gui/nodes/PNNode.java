@@ -13,6 +13,7 @@ import org.esa.beam.framework.datamodel.MetadataElement;
 import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.datamodel.ProductNode;
 import org.esa.beam.framework.datamodel.ProductNodeEvent;
+import org.esa.beam.framework.datamodel.ProductNodeGroup;
 import org.esa.beam.framework.datamodel.TiePointGrid;
 import org.esa.beam.framework.datamodel.VectorDataNode;
 import org.esa.snap.gui.actions.file.OpenImageViewAction;
@@ -23,7 +24,7 @@ import org.openide.nodes.Sheet;
 import org.openide.util.Utilities;
 import org.openide.util.lookup.Lookups;
 
-import javax.swing.Action;
+import javax.swing.*;
 import java.awt.datatransfer.Transferable;
 import java.io.IOException;
 import java.util.List;
@@ -153,13 +154,18 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
 
         @Override
         public boolean canDestroy() {
-            return true;
+            return getProductNode().getParentElement() != null;
         }
 
         @Override
         public void destroy() throws IOException {
             MetadataElement productNode = getProductNode();
-            productNode.getParentElement().removeElement(productNode);
+            Product product = productNode.getProduct();
+            ProductNodeGroup<MetadataElement> group = productNode.getParentElement().getElementGroup();
+            int index = group.indexOf(productNode);
+            if (group.remove(productNode)) {
+                PNodeFactory.getInstance().getUndoManager(product).addEdit(new UndoableProductNodeDeletion<>(group, productNode, index));
+            }
         }
     }
 
@@ -183,7 +189,12 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
         @Override
         public void destroy() throws IOException {
             IndexCoding productNode = getProductNode();
-            productNode.getProduct().getIndexCodingGroup().remove(productNode);
+            Product product = productNode.getProduct();
+            ProductNodeGroup<IndexCoding> group = product.getIndexCodingGroup();
+            int index = group.indexOf(productNode);
+            if (group.remove(productNode)) {
+                PNodeFactory.getInstance().getUndoManager(product).addEdit(new UndoableProductNodeDeletion<>(group, productNode, index));
+            }
         }
     }
 
@@ -207,7 +218,12 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
         @Override
         public void destroy() throws IOException {
             FlagCoding productNode = getProductNode();
-            productNode.getProduct().getFlagCodingGroup().remove(productNode);
+            Product product = productNode.getProduct();
+            ProductNodeGroup<FlagCoding> group = product.getFlagCodingGroup();
+            int index = group.indexOf(productNode);
+            if (group.remove(productNode)) {
+                PNodeFactory.getInstance().getUndoManager(product).addEdit(new UndoableProductNodeDeletion<>(group, productNode, index));
+            }
         }
     }
 
@@ -232,9 +248,11 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
         public void destroy() throws IOException {
             VectorDataNode productNode = getProductNode();
             Product product = productNode.getProduct();
-            // todo - add undoable edit
-            //PNodeFactory.getInstance().getUndoManager(product).addEdit(new UndoableEdit() {...});
-            product.getVectorDataGroup().remove(productNode);
+            ProductNodeGroup<VectorDataNode> group = product.getVectorDataGroup();
+            int index = group.indexOf(productNode);
+            if (group.remove(productNode)) {
+                PNodeFactory.getInstance().getUndoManager(product).addEdit(new UndoableProductNodeDeletion<>(group, productNode, index));
+            }
         }
 
     }
@@ -259,7 +277,12 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
         @Override
         public void destroy() throws IOException {
             TiePointGrid productNode = getProductNode();
-            productNode.getProduct().getTiePointGridGroup().remove(productNode);
+            Product product = productNode.getProduct();
+            ProductNodeGroup<TiePointGrid> group = product.getTiePointGridGroup();
+            int index = group.indexOf(productNode);
+            if (group.remove(productNode)) {
+                PNodeFactory.getInstance().getUndoManager(product).addEdit(new UndoableProductNodeDeletion<>(group, productNode, index));
+            }
         }
 
         @Override
@@ -295,7 +318,12 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
         @Override
         public void destroy() throws IOException {
             Mask productNode = getProductNode();
-            productNode.getProduct().getMaskGroup().remove(productNode);
+            Product product = productNode.getProduct();
+            ProductNodeGroup<Mask> group = product.getMaskGroup();
+            int index = group.indexOf(productNode);
+            if (group.remove(productNode)) {
+                PNodeFactory.getInstance().getUndoManager(product).addEdit(new UndoableProductNodeDeletion<>(group, productNode, index));
+            }
         }
 
         @Override
@@ -329,7 +357,12 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
         @Override
         public void destroy() throws IOException {
             Band productNode = getProductNode();
-            productNode.getProduct().removeBand(productNode);
+            Product product = productNode.getProduct();
+            ProductNodeGroup<Band> group = product.getBandGroup();
+            int index = group.indexOf(productNode);
+            if (group.remove(productNode)) {
+                PNodeFactory.getInstance().getUndoManager(product).addEdit(new UndoableProductNodeDeletion<>(group, productNode, index));
+            }
         }
 
         @Override
@@ -363,4 +396,5 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
             return Actions.forID("File", "org.esa.snap.gui.actions.file.OpenImageViewAction");
         }
     }
+
 }
