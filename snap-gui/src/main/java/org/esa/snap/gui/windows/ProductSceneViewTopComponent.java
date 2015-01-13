@@ -50,7 +50,7 @@ public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNo
     public ProductSceneViewTopComponent(ProductSceneView view, UndoRedo undoRedo) {
         super(view.getRaster());
         this.view = view;
-        this.undoRedo = undoRedo;
+        this.undoRedo = undoRedo != null ? undoRedo : UndoRedo.NONE;
         this.nodeRenameHandler = new NodeRenameHandler();
         this.selection = Selection.EMPTY;
         setName(getClass().getSimpleName() + "_" + (++counter));
