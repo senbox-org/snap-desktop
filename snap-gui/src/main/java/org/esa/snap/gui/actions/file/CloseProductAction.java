@@ -8,7 +8,6 @@ package org.esa.snap.gui.actions.file;
 import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.datamodel.ProductNode;
 import org.esa.snap.gui.SnapApp;
-import org.esa.snap.gui.nodes.PNodeFactory;
 import org.esa.snap.netbeans.docwin.DocumentWindow;
 import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.openide.NotifyDescriptor;
@@ -29,6 +28,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * Action which closes a selected product.
+ *
  * @author Norman
  */
 @ActionID(
@@ -117,9 +118,9 @@ public final class CloseProductAction extends AbstractAction {
                             .filter(dw -> (dw.getDocument() instanceof ProductNode)
                                     && ((ProductNode) dw.getDocument()).getProduct() == product)
                             .forEach(DocumentWindow::documentClosing);
+                    SnapApp.getInstance().getProductManager().removeProduct(product);
                 }
 
-                PNodeFactory.getInstance().removeProducts(closeList.toArray(new Product[closeList.size()]));
                 closeList.forEach(Product::dispose);
             }
         };

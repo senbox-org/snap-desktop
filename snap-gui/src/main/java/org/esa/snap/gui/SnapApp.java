@@ -1,22 +1,19 @@
 package org.esa.snap.gui;
 
-import com.bc.ceres.core.*;
+import com.bc.ceres.core.ExtensionFactory;
+import com.bc.ceres.core.ExtensionManager;
 import com.bc.ceres.jai.operator.ReinterpretDescriptor;
-import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
+import com.vividsolutions.jts.util.Assert;
 import org.esa.beam.framework.datamodel.Product;
+import org.esa.beam.framework.datamodel.ProductManager;
 import org.esa.beam.framework.datamodel.ProductNode;
-import org.esa.beam.framework.datamodel.RasterDataNode;
-import org.esa.beam.framework.ui.UIUtils;
-import org.esa.beam.framework.ui.product.ProductSceneImage;
+import org.esa.beam.framework.datamodel.ProductNodeEvent;
+import org.esa.beam.framework.datamodel.ProductNodeListener;
+import org.esa.beam.framework.datamodel.ProductNodeListenerAdapter;
 import org.esa.beam.framework.ui.product.ProductSceneView;
-import org.esa.beam.util.Debug;
 import org.esa.beam.util.PropertyMap;
-import org.esa.snap.gui.nodes.PNodeFactory;
 import org.esa.snap.gui.util.CompatiblePropertyMap;
 import org.esa.snap.gui.util.ContextGlobalExtenderImpl;
-import org.esa.snap.gui.windows.ProductSceneViewTopComponent;
-import org.esa.snap.netbeans.docwin.DocumentWindowManager;
-import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.tango.TangoIcons;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
@@ -46,6 +43,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.text.MessageFormat;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -66,7 +65,41 @@ public class SnapApp {
 
     private static SnapApp instance;
 
+    private final ProductManager productManager;
+    private final ProductNodeListener productListener;
+    private final UndoManagerProvider undoManagerProvider;
+
     protected SnapApp() {
+        // Register a provider that delivers an UndoManager for a Product instance.
+        undoManagerProvider = new UndoManagerProvider();
+        ExtensionManager.getInstance().register(Product.class, undoManagerProvider);
+
+        productListener = new ProductNodeListenerAdapter() {
+            @Override
+            public void nodeChanged(final ProductNodeEvent event) {
+                ProductNode productNode = event.getSourceNode();
+                if (productNode != null) {
+                    if (productNode.getProduct() == getSelectedProduct()) {
+                        updateMainFrameTitle();
+                    }
+                }
+            }
+        };
+        productManager = new ProductManager();
+        // todo - check if we can solve title updates via global lookup
+        productManager.addListener(new ProductManager.Listener() {
+            @Override
+            public void productAdded(ProductManager.Event event) {
+                event.getProduct().addProductNodeListener(productListener);
+                undoManagerProvider.addManager(event.getProduct());
+            }
+
+            @Override
+            public void productRemoved(ProductManager.Event event) {
+                undoManagerProvider.removeManager(event.getProduct());
+                event.getProduct().removeProductNodeListener(productListener);
+            }
+        });
     }
 
     public static SnapApp getInstance() {
@@ -75,6 +108,10 @@ public class SnapApp {
 
     protected static void setInstance(SnapApp instance) {
         SnapApp.instance = instance;
+    }
+
+    public ProductManager getProductManager() {
+        return productManager;
     }
 
     public Frame getMainFrame() {
@@ -173,6 +210,34 @@ public class SnapApp {
         return null;
     }
 
+    private void updateMainFrameTitle() {
+        Product selectedProduct = getSelectedProduct();
+        ProductNode selectedProductNode = getSelectedProductNode();
+
+        String title;
+        if (selectedProduct == null) {
+            if (Utilities.isMac()) {
+                title = "[Empty]";
+            } else {
+                title = getInstanceName();
+            }
+        } else if (selectedProduct == selectedProductNode) {
+            if (Utilities.isMac()) {
+                title = selectedProduct.getDisplayName();
+            } else {
+                title = String.format("%s - %s", selectedProduct.getDisplayName(), getInstanceName());
+            }
+        } else {
+            if (Utilities.isMac()) {
+                title = String.format("%s [%s]", selectedProduct.getDisplayName(), selectedProductNode.getName());
+            } else {
+                title = String.format("%s [%s] - %s", selectedProduct.getDisplayName(), selectedProductNode.getName(), getInstanceName());
+            }
+        }
+
+        getMainFrame().setTitle(title);
+    }
+
     public ProductSceneView getSelectedProductSceneView() {
         return Utilities.actionsGlobalContext().lookup(ProductSceneView.class);
     }
@@ -249,6 +314,10 @@ public class SnapApp {
             NotifyDescriptor d = new NotifyDescriptor(message, getInstanceName() + " - " + title, NotifyDescriptor.DEFAULT_OPTION, messageType, null, null);
             DialogDisplayer.getDefault().notify(d);
         }
+    }
+
+    public static UndoRedo.Manager getUndoManager(Product product) {
+        return product.getExtension(UndoRedo.Manager.class);
     }
 
     /**
@@ -386,5 +455,32 @@ public class SnapApp {
             supersedes = "org.netbeans.modules.openide.windows.GlobalActionContextImpl"
     )
     public static class ActionContextExtender extends ContextGlobalExtenderImpl {
+    }
+
+    private static class UndoManagerProvider implements ExtensionFactory {
+        Map<Object, UndoRedo.Manager> undoManagers = new HashMap<>();
+
+        @Override
+        public Class<?>[] getExtensionTypes() {
+            return new Class<?>[]{UndoRedo.Manager.class};
+        }
+
+        @Override
+        public Object getExtension(Object object, Class<?> extensionType) {
+            return undoManagers.get(object);
+        }
+
+        void addManager(Object object) {
+            Assert.isTrue(!undoManagers.containsKey(object));
+            UndoRedo.Manager manager = new UndoRedo.Manager();
+            undoManagers.put(object, manager);
+        }
+
+        void removeManager(Object object) {
+            UndoRedo.Manager manager = undoManagers.remove(object);
+            if (manager != null) {
+                manager.die();
+            }
+        }
     }
 }

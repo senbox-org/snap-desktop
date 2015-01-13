@@ -7,12 +7,14 @@ package org.esa.snap.gui.nodes;
 
 import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.datamodel.ProductNode;
+import org.esa.snap.gui.SnapApp;
 import org.openide.awt.UndoRedo;
 import org.openide.nodes.Node;
 import org.openide.util.Utilities;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,19 +27,17 @@ import java.util.List;
  */
 class PNode extends PNNode<Product> {
 
-    private final PGroup group;
-    private final UndoRedo.Manager undoRedo;
+    private final PContent group;
     // todo - clean me up: this is an experimental property
     boolean flattenRasterDataGroups;
 
-    public PNode(Product product, UndoRedo.Manager undoRedo) {
-        this(product, new PGroup(), undoRedo);
+    public PNode(Product product) {
+        this(product, new PContent());
     }
 
-    private PNode(Product product, PGroup group, UndoRedo.Manager undoRedo) {
+    private PNode(Product product, PContent group) {
         super(product, group);
         this.group = group;
-        this.undoRedo = undoRedo;
         group.node = this;
         setDisplayName(product.getName());
         setShortDescription(product.getDescription());
@@ -59,7 +59,17 @@ class PNode extends PNNode<Product> {
 
     @Override
     public UndoRedo getUndoRedo() {
-        return undoRedo;
+        return SnapApp.getUndoManager(getProduct());
+    }
+
+    @Override
+    public boolean canDestroy() {
+        return true;
+    }
+
+    @Override
+    public void destroy() throws IOException {
+
     }
 
     @Override
@@ -117,7 +127,7 @@ class PNode extends PNNode<Product> {
      *
      * @author Norman
      */
-    static class PGroup extends PNGroupBase<Object> {
+    static class PContent extends PNGroupBase<Object> {
 
         PNode node;
 

@@ -11,7 +11,6 @@ import org.esa.beam.framework.dataio.ProductReaderPlugIn;
 import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.util.io.BeamFileFilter;
 import org.esa.snap.gui.SnapApp;
-import org.esa.snap.gui.nodes.PNodeFactory;
 import org.openide.NotifyDescriptor;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -61,7 +60,9 @@ public final class OpenProductAction extends AbstractAction {
     }
 
     static List<File> getOpenedProductFiles() {
-        return PNodeFactory.getInstance().getOpenedProducts().stream().map(Product::getFileLocation).collect(Collectors.toList());
+        return Arrays.stream(SnapApp.getInstance().getProductManager().getProducts())
+                .map(Product::getFileLocation)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -141,7 +142,7 @@ public final class OpenProductAction extends AbstractAction {
                     try {
                         Product product = formatName != null ? ProductIO.readProduct(file, formatName) : ProductIO.readProduct(file);
                         getRecentProductPaths().add(file.getPath());
-                        SwingUtilities.invokeLater(() -> PNodeFactory.getInstance().addProduct(product));
+                        SwingUtilities.invokeLater(() -> SnapApp.getInstance().getProductManager().addProduct(product));
                     } catch (IOException problem) {
                         problems.add(problem);
                     }

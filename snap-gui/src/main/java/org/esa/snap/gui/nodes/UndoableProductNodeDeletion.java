@@ -16,7 +16,7 @@ import javax.swing.undo.CannotUndoException;
  * @author Norman Fomferra
  */
 @NbBundle.Messages("LBL_UndoableProductNodeDeletionName=Delete ''{0}''")
-public class UndoableProductNodeDeletion<T extends ProductNode> extends AbstractUndoableEdit {
+class UndoableProductNodeDeletion<T extends ProductNode> extends AbstractUndoableEdit {
 
     private ProductNodeGroup<T> group;
     private T node;

@@ -33,7 +33,6 @@ import org.esa.beam.framework.ui.product.ProductSceneView;
 import org.esa.beam.framework.ui.product.VectorDataLayerFilterFactory;
 import org.esa.beam.jai.ImageManager;
 import org.esa.snap.gui.SnapApp;
-import org.esa.snap.gui.nodes.PNodeFactory;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.openide.awt.ActionID;
@@ -127,8 +126,10 @@ public class CreateVectorDataNodeAction extends AbstractAction implements HelpCt
         vectorDataNode.getPlacemarkGroup();
         String oldLayerId = selectVectorDataLayer(vectorDataNode);
 
-        UndoRedo.Manager undoManager = PNodeFactory.getInstance().getUndoManager(product);
-        undoManager.addEdit(new MyUndoableEdit(product, vectorDataNode, oldLayerId));
+        UndoRedo.Manager undoManager = SnapApp.getUndoManager(product);
+        if (undoManager != null) {
+            undoManager.addEdit(new UndoableVectorDataInsertion(product, vectorDataNode, oldLayerId));
+        }
 
         return vectorDataNode;
     }
@@ -225,12 +226,12 @@ public class CreateVectorDataNodeAction extends AbstractAction implements HelpCt
     }
 
 
-    private static class MyUndoableEdit extends AbstractUndoableEdit {
+    private static class UndoableVectorDataInsertion extends AbstractUndoableEdit {
         private final Product product;
         private final VectorDataNode vectorDataNode;
         private String oldLayerId;
 
-        public MyUndoableEdit(Product product, VectorDataNode vectorDataNode, String oldLayerId) {
+        public UndoableVectorDataInsertion(Product product, VectorDataNode vectorDataNode, String oldLayerId) {
             this.product = product;
             this.vectorDataNode = vectorDataNode;
             this.oldLayerId = oldLayerId;

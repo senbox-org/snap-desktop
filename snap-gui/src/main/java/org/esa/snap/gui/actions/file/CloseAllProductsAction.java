@@ -5,10 +5,7 @@
  */
 package org.esa.snap.gui.actions.file;
 
-import org.esa.beam.framework.datamodel.Product;
 import org.esa.snap.gui.SnapApp;
-import org.esa.snap.gui.nodes.PNodeFactory;
-import org.openide.NotifyDescriptor;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
@@ -16,16 +13,10 @@ import org.openide.util.NbBundle;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.io.IOException;
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
+ * Action which closes all opened products.
+ *
  * @author Norman
  */
 @ActionID(
@@ -46,8 +37,6 @@ public final class CloseAllProductsAction extends AbstractAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        List<Product> openedProducts = PNodeFactory.getInstance().getOpenedProducts();
-        CloseProductAction.closeProducts(openedProducts.toArray(new Product[openedProducts.size()]));
+        CloseProductAction.closeProducts(SnapApp.getInstance().getProductManager().getProducts());
     }
-
 }

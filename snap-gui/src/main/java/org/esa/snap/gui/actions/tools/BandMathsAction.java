@@ -20,7 +20,7 @@ import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.datamodel.ProductNode;
 import org.esa.beam.framework.datamodel.ProductNodeList;
 import org.esa.snap.gui.SnapApp;
-import org.esa.snap.gui.nodes.PNodeFactory;
+import org.esa.snap.gui.bandmaths.BandMathsDialog;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -33,13 +33,10 @@ import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.Utilities;
-import org.esa.snap.gui.bandmaths.BandMathsDialog;
 import org.openide.util.WeakListeners;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
+import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.util.List;
 
 @ActionID(
         category = "Tools",
@@ -87,6 +84,7 @@ public class BandMathsAction extends AbstractAction implements HelpCtx.Provider,
     public BandMathsAction() {
         this(Utilities.actionsGlobalContext());
     }
+
     public BandMathsAction(Lookup lookup) {
         super(Bundle.CTL_BandMathsActionText());
         this.lookup = lookup;
@@ -113,7 +111,7 @@ public class BandMathsAction extends AbstractAction implements HelpCtx.Provider,
         SnapApp snapApp = SnapApp.getInstance();
 
         final ProductNodeList<Product> products = new ProductNodeList<>();
-        List<Product> openedProducts = PNodeFactory.getInstance().getOpenedProducts();
+        Product[] openedProducts = SnapApp.getInstance().getProductManager().getProducts();
         for (ProductNode prodNode : openedProducts) {
             products.add(prodNode.getProduct());
         }

@@ -23,7 +23,6 @@ import org.esa.beam.framework.ui.product.ProductSceneImage;
 import org.esa.beam.framework.ui.product.ProductSceneView;
 import org.esa.beam.util.Debug;
 import org.esa.snap.gui.SnapApp;
-import org.esa.snap.gui.nodes.PNodeFactory;
 import org.esa.snap.gui.windows.ProductSceneViewTopComponent;
 import org.esa.snap.netbeans.docwin.DocumentWindowManager;
 import org.esa.snap.netbeans.docwin.WindowUtilities;
@@ -106,7 +105,7 @@ public class OpenImageViewAction extends AbstractAction {
                 snapApp.setStatusBarMessage("");
                 try {
                     ProductSceneImage sceneImage = get();
-                    UndoRedo.Manager undoManager = PNodeFactory.getInstance().getUndoManager(sceneImage.getProduct());
+                    UndoRedo.Manager undoManager = SnapApp.getUndoManager(sceneImage.getProduct());
                     ProductSceneView view = new ProductSceneView(sceneImage, undoManager);
                     openDocumentWindow(view);
                 } catch (OutOfMemoryError ignored) {
@@ -136,7 +135,7 @@ public class OpenImageViewAction extends AbstractAction {
             view.setLayerProperties(SnapApp.getInstance().getCompatiblePreferences());
         }
 
-        UndoRedo.Manager undoManager = PNodeFactory.getInstance().getUndoManager(view.getProduct());
+        UndoRedo.Manager undoManager = SnapApp.getUndoManager(view.getProduct());
         ProductSceneViewTopComponent productSceneViewWindow = new ProductSceneViewTopComponent(view, undoManager);
 
         DocumentWindowManager.getDefault().openWindow(productSceneViewWindow);

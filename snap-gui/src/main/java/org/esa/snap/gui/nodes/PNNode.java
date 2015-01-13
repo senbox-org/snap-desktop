@@ -16,8 +16,10 @@ import org.esa.beam.framework.datamodel.ProductNodeEvent;
 import org.esa.beam.framework.datamodel.ProductNodeGroup;
 import org.esa.beam.framework.datamodel.TiePointGrid;
 import org.esa.beam.framework.datamodel.VectorDataNode;
+import org.esa.snap.gui.SnapApp;
 import org.esa.snap.gui.actions.file.OpenImageViewAction;
 import org.openide.awt.Actions;
+import org.openide.awt.UndoRedo;
 import org.openide.nodes.Node;
 import org.openide.nodes.PropertySupport;
 import org.openide.nodes.Sheet;
@@ -140,6 +142,16 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
         throw new IllegalStateException("unhandled product node type: " + productNode.getClass() + " named '" + productNode.getName() + "'");
     }
 
+    static <T extends ProductNode> void deleteProductNode(Product product, ProductNodeGroup<T> group, T productNode) {
+        int index = group.indexOf(productNode);
+        if (group.remove(productNode)) {
+            UndoRedo.Manager manager = SnapApp.getUndoManager(product);
+            if (manager != null) {
+                manager.addEdit(new UndoableProductNodeDeletion<>(group, productNode, index));
+            }
+        }
+    }
+
     /**
      * A node that represents a {@link org.esa.beam.framework.datamodel.MetadataElement} (=ME).
      *
@@ -159,13 +171,9 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
 
         @Override
         public void destroy() throws IOException {
-            MetadataElement productNode = getProductNode();
-            Product product = productNode.getProduct();
-            ProductNodeGroup<MetadataElement> group = productNode.getParentElement().getElementGroup();
-            int index = group.indexOf(productNode);
-            if (group.remove(productNode)) {
-                PNodeFactory.getInstance().getUndoManager(product).addEdit(new UndoableProductNodeDeletion<>(group, productNode, index));
-            }
+            deleteProductNode(getProductNode().getProduct(),
+                              getProductNode().getParentElement().getElementGroup(),
+                              getProductNode());
         }
     }
 
@@ -188,13 +196,9 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
 
         @Override
         public void destroy() throws IOException {
-            IndexCoding productNode = getProductNode();
-            Product product = productNode.getProduct();
-            ProductNodeGroup<IndexCoding> group = product.getIndexCodingGroup();
-            int index = group.indexOf(productNode);
-            if (group.remove(productNode)) {
-                PNodeFactory.getInstance().getUndoManager(product).addEdit(new UndoableProductNodeDeletion<>(group, productNode, index));
-            }
+            deleteProductNode(getProductNode().getProduct(),
+                              getProductNode().getProduct().getIndexCodingGroup(),
+                              getProductNode());
         }
     }
 
@@ -217,13 +221,9 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
 
         @Override
         public void destroy() throws IOException {
-            FlagCoding productNode = getProductNode();
-            Product product = productNode.getProduct();
-            ProductNodeGroup<FlagCoding> group = product.getFlagCodingGroup();
-            int index = group.indexOf(productNode);
-            if (group.remove(productNode)) {
-                PNodeFactory.getInstance().getUndoManager(product).addEdit(new UndoableProductNodeDeletion<>(group, productNode, index));
-            }
+            deleteProductNode(getProductNode().getProduct(),
+                              getProductNode().getProduct().getFlagCodingGroup(),
+                              getProductNode());
         }
     }
 
@@ -246,13 +246,10 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
 
         @Override
         public void destroy() throws IOException {
-            VectorDataNode productNode = getProductNode();
-            Product product = productNode.getProduct();
-            ProductNodeGroup<VectorDataNode> group = product.getVectorDataGroup();
-            int index = group.indexOf(productNode);
-            if (group.remove(productNode)) {
-                PNodeFactory.getInstance().getUndoManager(product).addEdit(new UndoableProductNodeDeletion<>(group, productNode, index));
-            }
+            deleteProductNode(getProductNode().getProduct(),
+                              getProductNode().getProduct().getVectorDataGroup(),
+                              getProductNode());
+
         }
 
     }
@@ -276,13 +273,9 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
 
         @Override
         public void destroy() throws IOException {
-            TiePointGrid productNode = getProductNode();
-            Product product = productNode.getProduct();
-            ProductNodeGroup<TiePointGrid> group = product.getTiePointGridGroup();
-            int index = group.indexOf(productNode);
-            if (group.remove(productNode)) {
-                PNodeFactory.getInstance().getUndoManager(product).addEdit(new UndoableProductNodeDeletion<>(group, productNode, index));
-            }
+            deleteProductNode(getProductNode().getProduct(),
+                              getProductNode().getProduct().getTiePointGridGroup(),
+                              getProductNode());
         }
 
         @Override
@@ -317,13 +310,9 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
 
         @Override
         public void destroy() throws IOException {
-            Mask productNode = getProductNode();
-            Product product = productNode.getProduct();
-            ProductNodeGroup<Mask> group = product.getMaskGroup();
-            int index = group.indexOf(productNode);
-            if (group.remove(productNode)) {
-                PNodeFactory.getInstance().getUndoManager(product).addEdit(new UndoableProductNodeDeletion<>(group, productNode, index));
-            }
+            deleteProductNode(getProductNode().getProduct(),
+                              getProductNode().getProduct().getMaskGroup(),
+                              getProductNode());
         }
 
         @Override
@@ -356,13 +345,9 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
 
         @Override
         public void destroy() throws IOException {
-            Band productNode = getProductNode();
-            Product product = productNode.getProduct();
-            ProductNodeGroup<Band> group = product.getBandGroup();
-            int index = group.indexOf(productNode);
-            if (group.remove(productNode)) {
-                PNodeFactory.getInstance().getUndoManager(product).addEdit(new UndoableProductNodeDeletion<>(group, productNode, index));
-            }
+            deleteProductNode(getProductNode().getProduct(),
+                              getProductNode().getProduct().getBandGroup(),
+                              getProductNode());
         }
 
         @Override
