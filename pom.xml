@@ -80,6 +80,8 @@
                         <cluster>${brandingToken}</cluster>
                         <useOSGiDependencies>false</useOSGiDependencies>
                         <additionalArguments>--locale en_GB -J-Xmx4G -J-Dsun.java2d.noddraw=true -J-Dsun.awt.nopixfmt=true -J-Dsun.java2d.dpiaware=false</additionalArguments>
+                        <!-- additional arguments need to be added also to the default config file -->
+                        <etcConfFile>src/main/resources/defaultSnap.conf</etcConfFile>
                     </configuration>
                 </plugin>
                 <plugin>
