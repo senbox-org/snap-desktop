@@ -15,6 +15,7 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle;
+import org.openide.util.WeakSet;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -47,19 +48,20 @@ public final class CloseProductAction extends AbstractAction {
 
     private static final Logger LOG = Logger.getLogger(CloseProductAction.class.getName());
 
-    private final Product product;
+    private final WeakSet<Product> productSet;
 
-    public CloseProductAction(Product product) {
-        this.product = product;
+    public CloseProductAction(List<Product> products) {
+        productSet = new WeakSet<>();
+        productSet.addAll(products);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        closeProduct(product);
+        execute();
     }
 
-    static void closeProduct(Product product) {
-        closeProducts(product);
+    public void execute() {
+        closeProducts(productSet.toArray(new Product[productSet.size()]));
     }
 
     static void closeProducts(Product... products) {
@@ -73,7 +75,7 @@ public final class CloseProductAction extends AbstractAction {
             if (product.isModified()) {
                 int i = SnapApp.getDefault().showQuestionDialog(
                         Bundle.CTL_OpenProductActionName(),
-                        MessageFormat.format("Product '{0}' has been modified.\nDo you want to save it?", product.getName()), null);
+                        MessageFormat.format("Product ''{0}'' has been modified.\nDo you want to save it?", product.getName()), null);
                 if (NotifyDescriptor.YES_OPTION.equals(i)) {
                     saveList.add(product);
                 } else if (!NotifyDescriptor.NO_OPTION.equals(i)) {

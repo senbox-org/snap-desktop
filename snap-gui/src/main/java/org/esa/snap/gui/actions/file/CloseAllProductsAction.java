@@ -5,6 +5,7 @@
  */
 package org.esa.snap.gui.actions.file;
 
+import org.esa.beam.framework.datamodel.Product;
 import org.esa.snap.gui.SnapApp;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -13,6 +14,8 @@ import org.openide.util.NbBundle;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Action which closes all opened products.
@@ -37,6 +40,7 @@ public final class CloseAllProductsAction extends AbstractAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        CloseProductAction.closeProducts(SnapApp.getDefault().getProductManager().getProducts());
+        List<Product> products = Arrays.asList(SnapApp.getDefault().getProductManager().getProducts());
+        new CloseProductAction(products).actionPerformed(e);
     }
 }
