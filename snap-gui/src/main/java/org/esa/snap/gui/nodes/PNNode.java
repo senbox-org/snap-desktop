@@ -48,7 +48,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
     public PNNode(T productNode, PNGroupBase childFactory) {
         super(childFactory, Lookups.singleton(productNode));
         this.productNode = productNode;
-        setDisplayName(productNode.getDisplayName());
+        setDisplayName(productNode.getName());
         setShortDescription(productNode.getDescription());
         nodeSupport = PNNodeSupport.create(this, childFactory);
     }
@@ -61,7 +61,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
     public void nodeChanged(ProductNodeEvent event) {
         if (event.getSourceNode() == getProductNode()) {
             if (ProductNode.PROPERTY_NAME_NAME.equals(event.getPropertyName())) {
-                setDisplayName(getProductNode().getDisplayName());
+                setDisplayName(getProductNode().getName());
             }
             if (ProductNode.PROPERTY_NAME_DESCRIPTION.equals(event.getPropertyName())) {
                 setShortDescription(getProductNode().getDescription());
