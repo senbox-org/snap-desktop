@@ -8,9 +8,13 @@ package org.esa.snap.gui.nodes;
 import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.datamodel.ProductNode;
 import org.esa.snap.gui.SnapApp;
+import org.esa.snap.gui.actions.file.CloseProductAction;
+import org.openide.actions.NewAction;
 import org.openide.awt.UndoRedo;
 import org.openide.nodes.Node;
 import org.openide.util.Utilities;
+import org.openide.util.actions.SystemAction;
+import org.openide.util.datatransfer.NewType;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -69,7 +73,7 @@ class PNode extends PNNode<Product> {
 
     @Override
     public void destroy() throws IOException {
-
+        new CloseProductAction(Arrays.asList(getProduct())).execute();
     }
 
     @Override
