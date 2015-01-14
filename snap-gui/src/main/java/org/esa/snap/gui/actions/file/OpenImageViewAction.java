@@ -23,6 +23,7 @@ import org.esa.beam.framework.ui.product.ProductSceneImage;
 import org.esa.beam.framework.ui.product.ProductSceneView;
 import org.esa.beam.util.Debug;
 import org.esa.snap.gui.SnapApp;
+import org.esa.snap.gui.SnapDialogs;
 import org.esa.snap.gui.windows.ProductSceneViewTopComponent;
 import org.esa.snap.netbeans.docwin.DocumentWindowManager;
 import org.esa.snap.netbeans.docwin.WindowUtilities;
@@ -81,9 +82,7 @@ public class OpenImageViewAction extends AbstractAction {
 
         UIUtils.setRootFrameWaitCursor(snapApp.getMainFrame());
 
-        String progressMonitorTitle = MessageFormat.format("{0} - Creating image for ''{1}''",
-                                                           snapApp.getInstanceName(),
-                                                           raster.getName());
+        String progressMonitorTitle = MessageFormat.format("Creating image for ''{0}''", raster.getName());
 
         ProductSceneView existingView = getProductSceneView(raster);
         SwingWorker worker = new ProgressMonitorSwingWorker<ProductSceneImage, Object>(snapApp.getMainFrame(), progressMonitorTitle) {
@@ -101,6 +100,7 @@ public class OpenImageViewAction extends AbstractAction {
 
             @Override
             public void done() {
+
                 UIUtils.setRootFrameDefaultCursor(snapApp.getMainFrame());
                 snapApp.setStatusBarMessage("");
                 try {
@@ -109,10 +109,12 @@ public class OpenImageViewAction extends AbstractAction {
                     ProductSceneView view = new ProductSceneView(sceneImage, undoManager);
                     openDocumentWindow(view);
                 } catch (OutOfMemoryError ignored) {
-                    snapApp.showOutOfMemoryErrorDialog("Failed to open image view.");
+                    SnapDialogs.showOutOfMemoryErrorDialog("Run out of memory while opening an image view.");
                 } catch (Exception e) {
                     snapApp.handleError(MessageFormat.format("Failed to open image view.\n\n{0}", e.getMessage()), e);
                 }
+
+                throw new RuntimeException("Bääääh!");
             }
         };
         worker.execute();

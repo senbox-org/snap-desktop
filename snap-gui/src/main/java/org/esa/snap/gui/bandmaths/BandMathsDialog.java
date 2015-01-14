@@ -48,12 +48,10 @@ import org.esa.beam.framework.ui.ModalDialog;
 import org.esa.beam.framework.ui.product.ProductExpressionPane;
 import org.esa.beam.util.Debug;
 import org.esa.beam.util.Guardian;
-import org.esa.beam.util.StopWatch;
 import org.esa.snap.gui.SnapApp;
+import org.esa.snap.gui.SnapDialogs;
 import org.esa.snap.gui.actions.file.OpenImageViewAction;
-import org.openide.awt.Actions;
 
-import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -135,7 +133,7 @@ public class BandMathsDialog extends ModalDialog {
             validMaskExpression = BandArithmetic.getValidMaskExpression(getExpression(), products, defaultProductIndex, null);
         } catch (ParseException e) {
             String errorMessage = "The band could not be created.\nAn parse error occurred:\n" + e.getMessage();
-            snapApp.showErrorDialog("Error", errorMessage);
+            SnapDialogs.showErrorDialog("Error", errorMessage);
             hide();
             return;
         }
@@ -414,7 +412,7 @@ public class BandMathsDialog extends ModalDialog {
                     String message = "The entered maths expression references multiple products.\n"
                                      + "It will cause problems unless the session is restored as is.\n\n"
                                      + "Note: You can save the session from the file menu.";
-                    snapApp.showMessageDialog("Warning", message, JOptionPane.WARNING_MESSAGE, null);
+                    SnapDialogs.showMessageDialog("Warning", message, JOptionPane.WARNING_MESSAGE, null);
                 }
             }
         }

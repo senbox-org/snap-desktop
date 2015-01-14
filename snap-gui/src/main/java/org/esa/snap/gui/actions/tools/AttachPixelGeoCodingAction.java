@@ -33,6 +33,7 @@ import org.esa.beam.framework.ui.product.ProductExpressionPane;
 import org.esa.beam.util.ArrayUtils;
 import org.esa.beam.util.StringUtils;
 import org.esa.snap.gui.SnapApp;
+import org.esa.snap.gui.SnapDialogs;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
@@ -160,7 +161,7 @@ public class AttachPixelGeoCodingAction extends AbstractAction implements Contex
                                                         "of additional data into memory.\n\n" +
                                                         "Do you really want to continue?",
                                                         requiredMegas);
-            final int answer = snapApp.showQuestionDialog(dialogTitle, message, null);
+            final int answer = SnapDialogs.showQuestionDialog(dialogTitle, message, null);
             if (answer != JOptionPane.YES_OPTION) {
                 return;
             }
@@ -180,7 +181,7 @@ public class AttachPixelGeoCodingAction extends AbstractAction implements Contex
             public void done() {
                 try {
                     get();
-                    snapApp.showInfoDialog(dialogTitle, "Pixel geo-coding has been attached.", null);
+                    SnapDialogs.showInfoDialog(dialogTitle, "Pixel geo-coding has been attached.", null);
                 } catch (Exception e) {
                     Throwable cause = e;
                     if (e instanceof ExecutionException) {
@@ -190,7 +191,7 @@ public class AttachPixelGeoCodingAction extends AbstractAction implements Contex
                     if (cause instanceof IOException) {
                         msg = "An I/O error occurred:\n" + e.getMessage();
                     }
-                    snapApp.showErrorDialog(dialogTitle, msg);
+                    SnapDialogs.showErrorDialog(dialogTitle, msg);
                 } finally {
                     UIUtils.setRootFrameDefaultCursor(mainFrame);
                 }
@@ -255,9 +256,9 @@ public class AttachPixelGeoCodingAction extends AbstractAction implements Contex
             selectedLatBand = findBandName(latValue);
 
             if (selectedLatBand == null || selectedLonBand == null || Objects.equals(selectedLatBand, selectedLonBand)) {
-                SnapApp.getDefault().showMessageDialog(super.getJDialog().getTitle(),
-                                                        "You have to select two different bands for the Pixel Geo-Coding.",
-                                                        JOptionPane.WARNING_MESSAGE, null);
+                SnapDialogs.showMessageDialog(super.getJDialog().getTitle(),
+                                              "You have to select two different bands for the Pixel Geo-Coding.",
+                                              JOptionPane.WARNING_MESSAGE, null);
             } else {
                 super.onOK();
             }

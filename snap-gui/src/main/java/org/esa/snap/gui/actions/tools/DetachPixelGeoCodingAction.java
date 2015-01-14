@@ -27,6 +27,7 @@ import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.datamodel.ProductNode;
 import org.esa.beam.framework.ui.UIUtils;
 import org.esa.snap.gui.SnapApp;
+import org.esa.snap.gui.SnapDialogs;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
@@ -111,7 +112,6 @@ public class DetachPixelGeoCodingAction extends AbstractAction implements Contex
 
             @Override
             public void done() {
-                SnapApp snapApp = SnapApp.getDefault();
                 try {
                     Throwable value;
                     try {
@@ -121,12 +121,12 @@ public class DetachPixelGeoCodingAction extends AbstractAction implements Contex
                     }
                     String dialogTitle = Bundle.CTL_DetachPixelGeoCodingDialogTitle();
                     if (value != null) {
-                        snapApp.showErrorDialog(dialogTitle, "An internal error occurred:\n" + value.getMessage());
+                        SnapDialogs.showErrorDialog(dialogTitle, "An internal error occurred:\n" + value.getMessage());
                     } else {
-                        snapApp.showInfoDialog(dialogTitle, "Pixel geo-coding has been detached.", null);
+                        SnapDialogs.showInfoDialog(dialogTitle, "Pixel geo-coding has been detached.", null);
                     }
                 } finally {
-                    UIUtils.setRootFrameDefaultCursor(snapApp.getMainFrame());
+                    UIUtils.setRootFrameDefaultCursor(SnapApp.getDefault().getMainFrame());
                 }
             }
         };

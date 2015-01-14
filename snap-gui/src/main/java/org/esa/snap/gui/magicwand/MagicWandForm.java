@@ -13,6 +13,7 @@ import org.esa.beam.framework.ui.product.ProductSceneView;
 import org.esa.beam.framework.ui.tool.ToolButtonFactory;
 import org.esa.beam.util.io.FileUtils;
 import org.esa.snap.gui.SnapApp;
+import org.esa.snap.gui.SnapDialogs;
 import org.esa.snap.tango.TangoIcons;
 import org.openide.util.ImageUtilities;
 
@@ -449,14 +450,14 @@ class MagicWandForm {
     void showBandChooser() {
         final ProductSceneView view = SnapApp.getDefault().getSelectedProductSceneView();
         if (view == null) {
-            SnapApp.getDefault().showInfoDialog("Please select an image view first.", null);
+            SnapDialogs.showInfoDialog("Please select an image view first.", null);
             return;
         }
         Product product = view.getProduct();
 
         Band[] bands = product.getBands();
         if (bands.length == 0) {
-            SnapApp.getDefault().showInfoDialog("No bands in product.", null);
+            SnapDialogs.showInfoDialog("No bands in product.", null);
             return;
         }
 

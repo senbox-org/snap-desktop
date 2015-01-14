@@ -11,6 +11,7 @@ import org.esa.beam.framework.dataio.ProductReaderPlugIn;
 import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.util.io.BeamFileFilter;
 import org.esa.snap.gui.SnapApp;
+import org.esa.snap.gui.SnapDialogs;
 import org.openide.NotifyDescriptor;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -121,7 +122,7 @@ public final class OpenProductAction extends AbstractAction {
         List<File> fileList = new ArrayList<>(Arrays.asList(files));
         for (File file : files) {
             if (openedFiles.contains(file)) {
-                int i = SnapApp.getDefault().showQuestionDialog(
+                int i = SnapDialogs.showQuestionDialog(
                         Bundle.CTL_OpenProductActionName(),
                         MessageFormat.format("Product\n{0}\nis already opened.\nDo you want to open another instance?", file),
                         null);
@@ -165,7 +166,7 @@ public final class OpenProductAction extends AbstractAction {
                         LOG.log(Level.SEVERE, problem.getMessage(), problem);
                         problemsMessage.append(MessageFormat.format("<b>  {0}</b>: {1}<br/>", problem.getClass().getSimpleName(), problem.getMessage()));
                     }
-                    SnapApp.getDefault().showErrorDialog(Bundle.CTL_OpenProductActionName(), problemsMessage.toString());
+                    SnapDialogs.showErrorDialog(Bundle.CTL_OpenProductActionName(), problemsMessage.toString());
                 }
             }
         };

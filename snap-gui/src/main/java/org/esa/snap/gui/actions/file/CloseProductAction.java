@@ -8,6 +8,7 @@ package org.esa.snap.gui.actions.file;
 import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.datamodel.ProductNode;
 import org.esa.snap.gui.SnapApp;
+import org.esa.snap.gui.SnapDialogs;
 import org.esa.snap.netbeans.docwin.DocumentWindow;
 import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.openide.NotifyDescriptor;
@@ -73,7 +74,7 @@ public final class CloseProductAction extends AbstractAction {
 
         for (Product product : products) {
             if (product.isModified()) {
-                int i = SnapApp.getDefault().showQuestionDialog(
+                int i = SnapDialogs.showQuestionDialog(
                         Bundle.CTL_OpenProductActionName(),
                         MessageFormat.format("Product ''{0}'' has been modified.\nDo you want to save it?", product.getName()), null);
                 if (NotifyDescriptor.YES_OPTION.equals(i)) {
@@ -112,7 +113,7 @@ public final class CloseProductAction extends AbstractAction {
                         LOG.log(Level.SEVERE, problem.getMessage(), problem);
                         problemsMessage.append(MessageFormat.format("<b>  {0}</b>: {1}<br/>", problem.getClass().getSimpleName(), problem.getMessage()));
                     }
-                    SnapApp.getDefault().showErrorDialog(Bundle.CTL_OpenProductActionName(), problemsMessage.toString());
+                    SnapDialogs.showErrorDialog(Bundle.CTL_OpenProductActionName(), problemsMessage.toString());
                 }
 
                 for (Product product : closeList) {

@@ -6,26 +6,18 @@ import com.bc.ceres.jai.operator.ReinterpretDescriptor;
 import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.datamodel.ProductManager;
 import org.esa.beam.framework.datamodel.ProductNode;
-import org.esa.beam.framework.datamodel.ProductNodeEvent;
-import org.esa.beam.framework.datamodel.ProductNodeListener;
-import org.esa.beam.framework.datamodel.ProductNodeListenerAdapter;
 import org.esa.beam.framework.ui.product.ProductSceneView;
 import org.esa.beam.util.PropertyMap;
 import org.esa.snap.gui.util.CompatiblePropertyMap;
 import org.esa.snap.gui.util.ContextGlobalExtenderImpl;
-import org.esa.snap.tango.TangoIcons;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
-import org.openide.NotifyDescriptor;
-import org.openide.awt.NotificationDisplayer;
 import org.openide.awt.StatusDisplayer;
 import org.openide.awt.UndoRedo;
 import org.openide.modules.OnStart;
 import org.openide.modules.OnStop;
 import org.openide.util.ContextGlobalProvider;
 import org.openide.util.Lookup;
-import org.openide.util.LookupEvent;
-import org.openide.util.LookupListener;
 import org.openide.util.NbBundle;
 import org.openide.util.NbPreferences;
 import org.openide.util.Utilities;
@@ -52,8 +44,6 @@ import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
-
-import static org.openide.util.NbBundle.Messages;
 
 /**
  * The central SNAP application class.
@@ -132,31 +122,6 @@ public class SnapApp {
         return NbBundle.getBundle("org.netbeans.core.ui.Bundle").getString("LBL_ProductInformation");
     }
 
-    public void showOutOfMemoryErrorDialog(String message) {
-        showErrorDialog("Out of Memory", message);
-    }
-
-    public void showErrorDialog(String title, String message) {
-        // todo - finalize this code here
-        NotifyDescriptor nd = new NotifyDescriptor(message,
-                                                   title,
-                                                   JOptionPane.OK_OPTION,
-                                                   NotifyDescriptor.ERROR_MESSAGE,
-                                                   null,
-                                                   null);
-        DialogDisplayer.getDefault().notify(nd);
-
-        ImageIcon icon = TangoIcons.status_dialog_error(TangoIcons.Res.R16);
-        JLabel balloonDetails = new JLabel(message);
-        JButton popupDetails = new JButton("Call ESA");
-        NotificationDisplayer.getDefault().notify(title,
-                                                  icon,
-                                                  balloonDetails,
-                                                  popupDetails,
-                                                  NotificationDisplayer.Priority.HIGH,
-                                                  NotificationDisplayer.Category.ERROR);
-    }
-
     /**
      * @return The user's application preferences.
      */
@@ -177,19 +142,11 @@ public class SnapApp {
         return LOG;
     }
 
-    /**
-     * @deprecated Should be superfluous now. Kept for compatibility reasons only.
-     * todo - Remove ASAP and latest before 2.0 release.
-     */
-    @Deprecated
-    public void updateState() {
-    }
-
     public void handleError(String message, Throwable t) {
         if (t != null) {
             t.printStackTrace();
         }
-        showErrorDialog(getInstanceName() + " - Error", message);
+        SnapDialogs.showErrorDialog(getInstanceName() + " - Error", message);
         getLogger().log(Level.SEVERE, message, t);
     }
 
@@ -227,17 +184,21 @@ public class SnapApp {
             File fileLocation = selectedProduct.getFileLocation();
             String path = fileLocation != null ? fileLocation.getPath() : "not saved";
             if (Utilities.isMac()) {
-                title = String.format("%s - [%s]", selectedProduct.getName(), path);
+                title = String.format("%s - [%s]",
+                                      selectedProduct.getName(), path);
             } else {
-                title = String.format("%s - [%s] - %s", selectedProduct.getName(), path, getInstanceName());
+                title = String.format("%s - [%s] - %s",
+                                      selectedProduct.getName(), path, getInstanceName());
             }
         } else {
             File fileLocation = selectedProduct.getFileLocation();
             String path = fileLocation != null ? fileLocation.getPath() : "not saved";
             if (Utilities.isMac()) {
-                title = String.format("%s - [%s] - [%s]", selectedProduct.getName(), path, selectedProductNode.getName());
+                title = String.format("%s - [%s] - [%s]",
+                                      selectedProduct.getName(), path, selectedProductNode.getName());
             } else {
-                title = String.format("%s - [%s] - [%s] - %s", selectedProduct.getName(), path, selectedProductNode.getName(), getInstanceName());
+                title = String.format("%s - [%s] - [%s] - %s",
+                                      selectedProduct.getName(), path, selectedProductNode.getName(), getInstanceName());
             }
         }
 
@@ -252,79 +213,6 @@ public class SnapApp {
         return Utilities.actionsGlobalContext().lookup(ProductSceneView.class);
     }
 
-
-    public int showQuestionDialog(String title, String message, String preferencesKey) {
-        return showQuestionDialog(title, message, false, preferencesKey);
-    }
-
-    @Messages("LBL_QuestionRemember=Remember my decision and don't ask again.")
-    public int showQuestionDialog(String title, String message, boolean allowCancel, String preferencesKey) {
-        Object result;
-        boolean storeResult;
-        if (preferencesKey != null) {
-            String decision = getPreferences().get(preferencesKey + ".confirmed", "");
-            if (decision.equals("yes")) {
-                return JOptionPane.YES_OPTION;
-            } else if (decision.equals("no")) {
-                return JOptionPane.NO_OPTION;
-            }
-            JPanel panel = new JPanel(new BorderLayout(4, 4));
-            panel.add(new JLabel(message), BorderLayout.CENTER);
-            JCheckBox decisionCheckBox = new JCheckBox("Remember my decision and don't ask again.", false);
-            panel.add(decisionCheckBox, BorderLayout.SOUTH);
-            NotifyDescriptor d = new NotifyDescriptor.Confirmation(panel, getInstanceName() + " - " + title, allowCancel ? NotifyDescriptor.YES_NO_CANCEL_OPTION : NotifyDescriptor.YES_NO_OPTION);
-            result = DialogDisplayer.getDefault().notify(d);
-            storeResult = decisionCheckBox.isSelected();
-        } else {
-            NotifyDescriptor d = new NotifyDescriptor.Confirmation(message, getInstanceName() + " - " + title, allowCancel ? NotifyDescriptor.YES_NO_CANCEL_OPTION : NotifyDescriptor.YES_NO_OPTION);
-            result = DialogDisplayer.getDefault().notify(d);
-            storeResult = false;
-        }
-        if (NotifyDescriptor.YES_OPTION.equals(result)) {
-            if (storeResult) {
-                getPreferences().put(preferencesKey + ".confirmed", "yes");
-            }
-            return JOptionPane.YES_OPTION;
-        } else if (NotifyDescriptor.NO_OPTION.equals(result)) {
-            if (storeResult) {
-                getPreferences().put(preferencesKey + ".confirmed", "no");
-            }
-            return JOptionPane.NO_OPTION;
-        } else {
-            return JOptionPane.CANCEL_OPTION;
-        }
-    }
-
-    @Messages("LBL_Information=Information")
-    public void showInfoDialog(String message, String preferencesKey) {
-        showInfoDialog("Information", message, preferencesKey);
-    }
-
-    public void showInfoDialog(String title, String message, String preferencesKey) {
-        showMessageDialog(title, message, JOptionPane.INFORMATION_MESSAGE, preferencesKey);
-    }
-
-    public void showMessageDialog(String title, String message, int messageType, String preferencesKey) {
-        if (preferencesKey != null) {
-            String decision = getPreferences().get(preferencesKey + ".dontShow", "");
-            if (decision.equals("true")) {
-                return;
-            }
-            JPanel panel = new JPanel(new BorderLayout(4, 4));
-            panel.add(new JLabel(message), BorderLayout.CENTER);
-            JCheckBox dontShowCheckBox = new JCheckBox("Don't show this message anymore.", false);
-            panel.add(dontShowCheckBox, BorderLayout.SOUTH);
-            NotifyDescriptor d = new NotifyDescriptor(panel, getInstanceName() + " - " + title, NotifyDescriptor.DEFAULT_OPTION, messageType, null, null);
-            DialogDisplayer.getDefault().notify(d);
-            boolean storeResult = dontShowCheckBox.isSelected();
-            if (storeResult) {
-                getPreferences().put(preferencesKey + ".dontShow", "true");
-            }
-        } else {
-            NotifyDescriptor d = new NotifyDescriptor(message, getInstanceName() + " - " + title, NotifyDescriptor.DEFAULT_OPTION, messageType, null, null);
-            DialogDisplayer.getDefault().notify(d);
-        }
-    }
 
     public void onStart() {
         WindowManager.getDefault().setRole("developer");

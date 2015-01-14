@@ -31,14 +31,13 @@ import org.esa.beam.glayer.MaskLayerType;
 import org.esa.beam.jai.ImageManager;
 import org.esa.beam.util.io.FileUtils;
 import org.esa.snap.gui.SnapApp;
+import org.esa.snap.gui.SnapDialogs;
 
-import javax.swing.JDialog;
-import javax.swing.JOptionPane;
+import javax.swing.*;
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
-import java.awt.Point;
-import java.awt.Window;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
@@ -222,12 +221,12 @@ public class MagicWandInteractor extends ViewportInteractor implements MagicWand
 
     private boolean handleInvalidBandFilter(ProductSceneView view) {
         Product product = view.getProduct();
-        int resp = SnapApp.getDefault().showQuestionDialog(DIALOG_TITLE,
-                                                        "The currently selected band filter does not match\n" +
-                                                        "the bands of the selected data product.\n\n" +
-                                                        "Reset filter and use the ones of the selected product?",
-                                                        false,
-                                                        "visat.magicWandTool.resetFilter");
+        int resp = SnapDialogs.showQuestionDialog(DIALOG_TITLE,
+                                                  "The currently selected band filter does not match\n" +
+                                                          "the bands of the selected data product.\n\n" +
+                                                          "Reset filter and use the ones of the selected product?",
+                                                  false,
+                                                  "visat.magicWandTool.resetFilter");
         if (resp == JOptionPane.YES_OPTION) {
             model.setBandNames();
             return ensureBandNamesSet(view, product);
@@ -244,7 +243,7 @@ public class MagicWandInteractor extends ViewportInteractor implements MagicWand
             try {
                 ip = transform.inverseTransform(mp, null);
             } catch (NoninvertibleTransformException e) {
-                SnapApp.getDefault().showErrorDialog(DIALOG_TITLE, "A geographic transformation problem occurred:\n" + e.getMessage());
+                SnapDialogs.showErrorDialog(DIALOG_TITLE, "A geographic transformation problem occurred:\n" + e.getMessage());
                 return null;
             }
         } else {
@@ -254,9 +253,9 @@ public class MagicWandInteractor extends ViewportInteractor implements MagicWand
         final int pixelX = (int) ip.getX();
         final int pixelY = (int) ip.getY();
         if (pixelX < 0
-            || pixelY < 0
-            || pixelX >= product.getSceneRasterWidth()
-            || pixelY >= product.getSceneRasterHeight()) {
+                || pixelY < 0
+                || pixelX >= product.getSceneRasterWidth()
+                || pixelY >= product.getSceneRasterHeight()) {
             return null;
         }
 
@@ -272,7 +271,7 @@ public class MagicWandInteractor extends ViewportInteractor implements MagicWand
         }
         if (model.getBandCount() == 0) {
             // It's actually hard to get here, because we have a selected image view...
-            SnapApp.getDefault().showErrorDialog(DIALOG_TITLE, "No bands selected.");
+            SnapDialogs.showErrorDialog(DIALOG_TITLE, "No bands selected.");
             return false;
         }
         return true;
