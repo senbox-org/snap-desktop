@@ -90,7 +90,7 @@ public class CreateVectorDataNodeAction extends AbstractAction implements HelpCt
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        Product product = SnapApp.getInstance().getSelectedProduct();
+        Product product = SnapApp.getDefault().getSelectedProduct();
         if (product != null) {
             DialogData dialogData = new DialogData(product.getVectorDataGroup());
             PropertySet propertySet = PropertyContainer.createObjectBacked(dialogData);
@@ -126,7 +126,7 @@ public class CreateVectorDataNodeAction extends AbstractAction implements HelpCt
         vectorDataNode.getPlacemarkGroup();
         String oldLayerId = selectVectorDataLayer(vectorDataNode);
 
-        UndoRedo.Manager undoManager = SnapApp.getUndoManager(product);
+        UndoRedo.Manager undoManager = SnapApp.getDefault().getUndoManager(product);
         if (undoManager != null) {
             undoManager.addEdit(new UndoableVectorDataInsertion(product, vectorDataNode, oldLayerId));
         }
@@ -136,11 +136,11 @@ public class CreateVectorDataNodeAction extends AbstractAction implements HelpCt
 
     private static String selectVectorDataLayer(VectorDataNode vectorDataNode) {
         Layer oldLayer = null;
-        ProductSceneView sceneView = SnapApp.getInstance().getSelectedProductSceneView();
+        ProductSceneView sceneView = SnapApp.getDefault().getSelectedProductSceneView();
         if (sceneView != null) {
             oldLayer = sceneView.getSelectedLayer();
             // todo find new solution
-            //SnapApp.getInstance().getProductTree().expand(vectorDataNode);
+            //SnapApp.getDefault().getProductTree().expand(vectorDataNode);
 
             sceneView.selectVectorDataLayer(vectorDataNode);
 
@@ -156,12 +156,12 @@ public class CreateVectorDataNodeAction extends AbstractAction implements HelpCt
     }
 
     public static String getDefaultVectorDataNodeName() {
-        //return VisatActivator.getInstance().getModuleContext().getRuntimeConfig().getContextProperty(KEY_VECTOR_DATA_INITIAL_NAME, "geometry");
+        //return VisatActivator.getDefault().getModuleContext().getRuntimeConfig().getContextProperty(KEY_VECTOR_DATA_INITIAL_NAME, "geometry");
         return "geometry";
     }
 
     private static String getSelectedLayerId() {
-        ProductSceneView sceneView = SnapApp.getInstance().getSelectedProductSceneView();
+        ProductSceneView sceneView = SnapApp.getDefault().getSelectedProductSceneView();
         if (sceneView != null) {
             Layer selectedLayer = sceneView.getSelectedLayer();
             if (selectedLayer != null) {
@@ -193,7 +193,7 @@ public class CreateVectorDataNodeAction extends AbstractAction implements HelpCt
         private final PropertyPane propertyPane;
 
         private MyModalDialog(PropertyPane propertyPane) {
-            super(SnapApp.getInstance().getMainFrame(),
+            super(SnapApp.getDefault().getMainFrame(),
                   DIALOG_TITLE,
                   ModalDialog.ID_OK_CANCEL_HELP,
                   HELP_ID);
@@ -259,7 +259,7 @@ public class CreateVectorDataNodeAction extends AbstractAction implements HelpCt
 
         private void setSelectedLayer(String layerId) {
             if (layerId != null) {
-                ProductSceneView sceneView = SnapApp.getInstance().getSelectedProductSceneView();
+                ProductSceneView sceneView = SnapApp.getDefault().getSelectedProductSceneView();
                 if (sceneView != null) {
                     Layer layer = LayerUtils.getChildLayerById(sceneView.getRootLayer(), layerId);
                     if (layer != null) {

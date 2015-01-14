@@ -20,7 +20,6 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.SwingWorker;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import org.esa.beam.framework.datamodel.BasicPixelGeoCoding;
 import org.esa.beam.framework.datamodel.GeoCoding;
@@ -32,7 +31,6 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.ContextAwareAction;
-import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
@@ -113,7 +111,7 @@ public class DetachPixelGeoCodingAction extends AbstractAction implements Contex
 
             @Override
             public void done() {
-                SnapApp snapApp = SnapApp.getInstance();
+                SnapApp snapApp = SnapApp.getDefault();
                 try {
                     Throwable value;
                     try {
@@ -133,7 +131,7 @@ public class DetachPixelGeoCodingAction extends AbstractAction implements Contex
             }
         };
 
-        UIUtils.setRootFrameWaitCursor(SnapApp.getInstance().getMainFrame());
+        UIUtils.setRootFrameWaitCursor(SnapApp.getDefault().getMainFrame());
         swingWorker.execute();
     }
 

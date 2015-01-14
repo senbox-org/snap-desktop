@@ -37,6 +37,6 @@ public final class CloseAllProductsAction extends AbstractAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        CloseProductAction.closeProducts(SnapApp.getInstance().getProductManager().getProducts());
+        CloseProductAction.closeProducts(SnapApp.getDefault().getProductManager().getProducts());
     }
 }

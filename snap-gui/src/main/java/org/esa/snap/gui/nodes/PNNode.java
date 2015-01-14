@@ -145,7 +145,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
     static <T extends ProductNode> void deleteProductNode(Product product, ProductNodeGroup<T> group, T productNode) {
         int index = group.indexOf(productNode);
         if (group.remove(productNode)) {
-            UndoRedo.Manager manager = SnapApp.getUndoManager(product);
+            UndoRedo.Manager manager = SnapApp.getDefault().getUndoManager(product);
             if (manager != null) {
                 manager.addEdit(new UndoableProductNodeDeletion<>(group, productNode, index));
             }

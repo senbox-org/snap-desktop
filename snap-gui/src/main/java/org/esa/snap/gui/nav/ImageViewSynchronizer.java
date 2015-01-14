@@ -37,7 +37,7 @@ public class ImageViewSynchronizer implements Runnable, PreferenceChangeListener
 
         layerCanvasModelChangeHandler = new LayerCanvasModelChangeHandler();
 
-        Preferences preferences = SnapApp.getInstance().getPreferences();
+        Preferences preferences = SnapApp.getDefault().getPreferences();
         preferences.addPreferenceChangeListener(WeakListeners.create(PreferenceChangeListener.class, this, preferences));
 
         Lookup.Result<ProductSceneView> lookupResult = Utilities.actionsGlobalContext().lookupResult(ProductSceneView.class);
@@ -56,7 +56,7 @@ public class ImageViewSynchronizer implements Runnable, PreferenceChangeListener
     @Override
     public void resultChanged(LookupEvent ev) {
 
-        ProductSceneView newView = SnapApp.getInstance().getSelectedProductSceneView();
+        ProductSceneView newView = SnapApp.getDefault().getSelectedProductSceneView();
 
         if (lastView != newView) {
             final ProductSceneView oldView = lastView;
@@ -76,7 +76,7 @@ public class ImageViewSynchronizer implements Runnable, PreferenceChangeListener
     }
 
     private void syncImageViewsWithSelectedView() {
-        ProductSceneView currentSceneView = SnapApp.getInstance().getSelectedProductSceneView();
+        ProductSceneView currentSceneView = SnapApp.getDefault().getSelectedProductSceneView();
         if (currentSceneView != null) {
             syncImageViews(currentSceneView);
         }
@@ -94,7 +94,7 @@ public class ImageViewSynchronizer implements Runnable, PreferenceChangeListener
     }
 
     private boolean isActive() {
-        return SnapApp.getInstance().getPreferences().getBoolean(PROPERTY_KEY_AUTO_SYNC_VIEWS, false);
+        return SnapApp.getDefault().getPreferences().getBoolean(PROPERTY_KEY_AUTO_SYNC_VIEWS, false);
     }
 
     private class LayerCanvasModelChangeHandler implements LayerCanvasModel.ChangeListener {

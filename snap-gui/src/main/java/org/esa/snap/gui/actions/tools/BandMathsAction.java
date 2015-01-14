@@ -108,10 +108,10 @@ public class BandMathsAction extends AbstractAction implements HelpCtx.Provider,
 
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
-        SnapApp snapApp = SnapApp.getInstance();
+        SnapApp snapApp = SnapApp.getDefault();
 
         final ProductNodeList<Product> products = new ProductNodeList<>();
-        Product[] openedProducts = SnapApp.getInstance().getProductManager().getProducts();
+        Product[] openedProducts = SnapApp.getDefault().getProductManager().getProducts();
         for (ProductNode prodNode : openedProducts) {
             products.add(prodNode.getProduct());
         }

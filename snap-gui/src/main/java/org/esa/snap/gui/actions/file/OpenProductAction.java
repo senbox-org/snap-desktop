@@ -56,11 +56,11 @@ public final class OpenProductAction extends AbstractAction {
     private static final Logger LOG = Logger.getLogger(OpenProductAction.class.getName());
 
     static RecentPaths getRecentProductPaths() {
-        return new RecentPaths(SnapApp.getInstance().getPreferences(), PREFERENCES_KEY_RECENTLY_OPENED_PRODUCTS, true);
+        return new RecentPaths(SnapApp.getDefault().getPreferences(), PREFERENCES_KEY_RECENTLY_OPENED_PRODUCTS, true);
     }
 
     static List<File> getOpenedProductFiles() {
-        return Arrays.stream(SnapApp.getInstance().getProductManager().getProducts())
+        return Arrays.stream(SnapApp.getDefault().getProductManager().getProducts())
                 .map(Product::getFileLocation)
                 .collect(Collectors.toList());
     }
@@ -80,7 +80,7 @@ public final class OpenProductAction extends AbstractAction {
             return;
         }
 
-        Preferences preferences = SnapApp.getInstance().getPreferences();
+        Preferences preferences = SnapApp.getDefault().getPreferences();
 
         JFileChooser fc = new JFileChooser(new File(preferences.get(PREFERENCES_KEY_LAST_PRODUCT_DIR, ".")));
         fc.setDialogTitle(Bundle.CTL_OpenProductActionName());
@@ -121,7 +121,7 @@ public final class OpenProductAction extends AbstractAction {
         List<File> fileList = new ArrayList<>(Arrays.asList(files));
         for (File file : files) {
             if (openedFiles.contains(file)) {
-                int i = SnapApp.getInstance().showQuestionDialog(
+                int i = SnapApp.getDefault().showQuestionDialog(
                         Bundle.CTL_OpenProductActionName(),
                         MessageFormat.format("Product\n{0}\nis already opened.\nDo you want to open another instance?", file),
                         null);
@@ -142,7 +142,7 @@ public final class OpenProductAction extends AbstractAction {
                     try {
                         Product product = formatName != null ? ProductIO.readProduct(file, formatName) : ProductIO.readProduct(file);
                         getRecentProductPaths().add(file.getPath());
-                        SwingUtilities.invokeLater(() -> SnapApp.getInstance().getProductManager().addProduct(product));
+                        SwingUtilities.invokeLater(() -> SnapApp.getDefault().getProductManager().addProduct(product));
                     } catch (IOException problem) {
                         problems.add(problem);
                     }
@@ -165,7 +165,7 @@ public final class OpenProductAction extends AbstractAction {
                         LOG.log(Level.SEVERE, problem.getMessage(), problem);
                         problemsMessage.append(MessageFormat.format("<b>  {0}</b>: {1}<br/>", problem.getClass().getSimpleName(), problem.getMessage()));
                     }
-                    SnapApp.getInstance().showErrorDialog(Bundle.CTL_OpenProductActionName(), problemsMessage.toString());
+                    SnapApp.getDefault().showErrorDialog(Bundle.CTL_OpenProductActionName(), problemsMessage.toString());
                 }
             }
         };

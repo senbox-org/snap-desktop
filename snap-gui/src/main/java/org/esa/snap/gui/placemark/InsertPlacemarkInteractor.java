@@ -90,7 +90,7 @@ public abstract class InsertPlacemarkInteractor extends FigureEditorInteractor {
 
         placemarkDescriptor.getPlacemarkGroup(product).add(newPlacemark);
 
-        UndoRedo.Manager undoManager = SnapApp.getUndoManager(product);
+        UndoRedo.Manager undoManager = SnapApp.getDefault().getUndoManager(product);
         if (undoManager != null) {
             undoManager.addEdit(new UndoablePlacemarkInsertion(product, newPlacemark));
         }

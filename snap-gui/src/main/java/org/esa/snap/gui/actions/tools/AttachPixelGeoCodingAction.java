@@ -132,7 +132,7 @@ public class AttachPixelGeoCodingAction extends AbstractAction implements Contex
 
     private static void attachPixelGeoCoding(final Product product) {
 
-        final SnapApp snapApp = SnapApp.getInstance();
+        final SnapApp snapApp = SnapApp.getDefault();
         final Window mainFrame = snapApp.getMainFrame();
         String dialogTitle = Bundle.CTL_AttachPixelGeoCodingDialogTitle();
         final PixelGeoCodingSetupDialog setupDialog = new PixelGeoCodingSetupDialog(mainFrame,
@@ -255,7 +255,7 @@ public class AttachPixelGeoCodingAction extends AbstractAction implements Contex
             selectedLatBand = findBandName(latValue);
 
             if (selectedLatBand == null || selectedLonBand == null || Objects.equals(selectedLatBand, selectedLonBand)) {
-                SnapApp.getInstance().showMessageDialog(super.getJDialog().getTitle(),
+                SnapApp.getDefault().showMessageDialog(super.getJDialog().getTitle(),
                                                         "You have to select two different bands for the Pixel Geo-Coding.",
                                                         JOptionPane.WARNING_MESSAGE, null);
             } else {
@@ -347,7 +347,7 @@ public class AttachPixelGeoCodingAction extends AbstractAction implements Contex
         }
 
         private void invokeExpressionEditor() {
-            SnapApp snapApp = SnapApp.getInstance();
+            SnapApp snapApp = SnapApp.getDefault();
             final Window window = SwingUtilities.getWindowAncestor(snapApp.getMainFrame());
             final ExpressionPane pane = ProductExpressionPane.createBooleanExpressionPane(new Product[]{product},
                                                                                           product,

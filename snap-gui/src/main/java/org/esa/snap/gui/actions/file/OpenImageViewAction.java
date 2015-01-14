@@ -76,7 +76,7 @@ public class OpenImageViewAction extends AbstractAction {
     }
 
     public void openProductSceneView() {
-        SnapApp snapApp = SnapApp.getInstance();
+        SnapApp snapApp = SnapApp.getDefault();
         snapApp.setStatusBarMessage("Opening image view...");
 
         UIUtils.setRootFrameWaitCursor(snapApp.getMainFrame());
@@ -105,7 +105,7 @@ public class OpenImageViewAction extends AbstractAction {
                 snapApp.setStatusBarMessage("");
                 try {
                     ProductSceneImage sceneImage = get();
-                    UndoRedo.Manager undoManager = SnapApp.getUndoManager(sceneImage.getProduct());
+                    UndoRedo.Manager undoManager = SnapApp.getDefault().getUndoManager(sceneImage.getProduct());
                     ProductSceneView view = new ProductSceneView(sceneImage, undoManager);
                     openDocumentWindow(view);
                 } catch (OutOfMemoryError ignored) {
@@ -132,10 +132,10 @@ public class OpenImageViewAction extends AbstractAction {
 
     private ProductSceneViewTopComponent openDocumentWindow(final ProductSceneView view, boolean configureByPreferences) {
         if (configureByPreferences) {
-            view.setLayerProperties(SnapApp.getInstance().getCompatiblePreferences());
+            view.setLayerProperties(SnapApp.getDefault().getCompatiblePreferences());
         }
 
-        UndoRedo.Manager undoManager = SnapApp.getUndoManager(view.getProduct());
+        UndoRedo.Manager undoManager = SnapApp.getDefault().getUndoManager(view.getProduct());
         ProductSceneViewTopComponent productSceneViewWindow = new ProductSceneViewTopComponent(view, undoManager);
 
         DocumentWindowManager.getDefault().openWindow(productSceneViewWindow);
@@ -156,7 +156,7 @@ public class OpenImageViewAction extends AbstractAction {
                 sceneImage = new ProductSceneImage(raster, existingView);
             } else {
                 sceneImage = new ProductSceneImage(raster,
-                                                   SnapApp.getInstance().getCompatiblePreferences(),
+                                                   SnapApp.getDefault().getCompatiblePreferences(),
                                                    SubProgressMonitor.create(pm, 1));
             }
             sceneImage.initVectorDataCollectionLayer();

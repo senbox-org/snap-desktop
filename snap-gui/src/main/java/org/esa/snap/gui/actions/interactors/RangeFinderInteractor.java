@@ -181,7 +181,7 @@ class RangeFinderInteractor extends ViewportInteractor {
     private void showDetailsDialog(ProductSceneView view) {
         GeoCoding geoCoding = view.getProduct().getGeoCoding();
         if (geoCoding == null) {
-            JOptionPane.showMessageDialog(SnapApp.getInstance().getMainFrame(), "Product is not geo-coded.",
+            JOptionPane.showMessageDialog(SnapApp.getDefault().getMainFrame(), "Product is not geo-coded.",
                                           TITLE, JOptionPane.INFORMATION_MESSAGE);
             return;
         }
@@ -217,7 +217,7 @@ class RangeFinderInteractor extends ViewportInteractor {
         messagePane.add(new JLabel("Distance: " + distance + " +/- " + distanceError + " km"));
         messagePane.add(buttonPane, BorderLayout.SOUTH);
 
-        JOptionPane.showMessageDialog(SnapApp.getInstance().getMainFrame(), messagePane,
+        JOptionPane.showMessageDialog(SnapApp.getDefault().getMainFrame(), messagePane,
                                       TITLE,
                                       JOptionPane.INFORMATION_MESSAGE);
     }

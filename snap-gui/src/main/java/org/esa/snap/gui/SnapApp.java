@@ -3,7 +3,6 @@ package org.esa.snap.gui;
 import com.bc.ceres.core.ExtensionFactory;
 import com.bc.ceres.core.ExtensionManager;
 import com.bc.ceres.jai.operator.ReinterpretDescriptor;
-import com.vividsolutions.jts.util.Assert;
 import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.datamodel.ProductManager;
 import org.esa.beam.framework.datamodel.ProductNode;
@@ -24,6 +23,7 @@ import org.openide.awt.UndoRedo;
 import org.openide.modules.OnStart;
 import org.openide.modules.OnStop;
 import org.openide.util.ContextGlobalProvider;
+import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
 import org.openide.util.NbPreferences;
 import org.openide.util.Utilities;
@@ -53,26 +53,37 @@ import java.util.prefs.Preferences;
 import static org.openide.util.NbBundle.Messages;
 
 /**
- * The central SNAP application class (dummy).
+ * The central SNAP application class.
+ * <p>
+ * If you want to provide alter behaviour of this class, register your derived class as a service using
+ * <pre>
+ *     &#64;ServiceProvider(service = MoonApp.class, supersedes = "org.esa.snap.gui.SnapApp")
+ *     public class MoonApp extends SnapApp {
+ *         ...
+ *     }
+ * </pre>
  *
  * @author Norman Fomferra
  * @since 2.0
  */
+@ServiceProvider(service = SnapApp.class)
 @SuppressWarnings("UnusedDeclaration")
 public class SnapApp {
 
     private final static Logger LOG = Logger.getLogger(SnapApp.class.getName());
 
-    private static SnapApp instance;
-
     private final ProductManager productManager;
     private final ProductNodeListener productListener;
-    private final UndoManagerProvider undoManagerProvider;
 
-    protected SnapApp() {
-        // Register a provider that delivers an UndoManager for a Product instance.
-        undoManagerProvider = new UndoManagerProvider();
-        ExtensionManager.getInstance().register(Product.class, undoManagerProvider);
+    public static SnapApp getDefault() {
+        SnapApp instance = Lookup.getDefault().lookup(SnapApp.class);
+        if (instance == null) {
+            instance = new SnapApp();
+        }
+        return instance;
+    }
+
+    public SnapApp() {
 
         productListener = new ProductNodeListenerAdapter() {
             @Override
@@ -91,27 +102,27 @@ public class SnapApp {
             @Override
             public void productAdded(ProductManager.Event event) {
                 event.getProduct().addProductNodeListener(productListener);
-                undoManagerProvider.addManager(event.getProduct());
             }
 
             @Override
             public void productRemoved(ProductManager.Event event) {
-                undoManagerProvider.removeManager(event.getProduct());
                 event.getProduct().removeProductNodeListener(productListener);
             }
         });
-    }
 
-    public static SnapApp getInstance() {
-        return instance;
-    }
-
-    protected static void setInstance(SnapApp instance) {
-        SnapApp.instance = instance;
+        // Register a provider that delivers an UndoManager for a Product instance.
+        UndoManagerProvider undoManagerProvider = new UndoManagerProvider();
+        ExtensionManager.getInstance().register(Product.class, undoManagerProvider);
+        productManager.addListener(undoManagerProvider);
+        updateMainFrameTitle();
     }
 
     public ProductManager getProductManager() {
         return productManager;
+    }
+
+    public UndoRedo.Manager getUndoManager(Product product) {
+        return product.getExtension(UndoRedo.Manager.class);
     }
 
     public Frame getMainFrame() {
@@ -144,6 +155,7 @@ public class SnapApp {
     }
 
     public void showErrorDialog(String title, String message) {
+        // todo - finalize this code here
         NotifyDescriptor nd = new NotifyDescriptor(message,
                                                    title,
                                                    JOptionPane.OK_OPTION,
@@ -184,7 +196,8 @@ public class SnapApp {
     }
 
     /**
-     * @deprecated Should be superfluous now. Kept for compatibility reasons only. Remove ASAP and latest before 2.0 release.
+     * @deprecated Should be superfluous now. Kept for compatibility reasons only.
+     * todo - Remove ASAP and latest before 2.0 release.
      */
     @Deprecated
     public void updateState() {
@@ -286,15 +299,15 @@ public class SnapApp {
     }
 
     @Messages("LBL_Information=Information")
-    public final void showInfoDialog(String message, String preferencesKey) {
+    public void showInfoDialog(String message, String preferencesKey) {
         showInfoDialog("Information", message, preferencesKey);
     }
 
-    public final void showInfoDialog(String title, String message, String preferencesKey) {
+    public void showInfoDialog(String title, String message, String preferencesKey) {
         showMessageDialog(title, message, JOptionPane.INFORMATION_MESSAGE, preferencesKey);
     }
 
-    public final void showMessageDialog(String title, String message, int messageType, String preferencesKey) {
+    public void showMessageDialog(String title, String message, int messageType, String preferencesKey) {
         if (preferencesKey != null) {
             String decision = getPreferences().get(preferencesKey + ".dontShow", "");
             if (decision.equals("true")) {
@@ -316,8 +329,38 @@ public class SnapApp {
         }
     }
 
-    public static UndoRedo.Manager getUndoManager(Product product) {
-        return product.getExtension(UndoRedo.Manager.class);
+    public void onStart() {
+        WindowManager.getDefault().setRole("developer");
+    }
+
+    public void onShowing() {
+    }
+
+    public boolean onTryStop() {
+        Frame mainWindow = getDefault().getMainFrame();
+        if (mainWindow == null || !mainWindow.isShowing()) {
+            return true;
+        }
+        ActionListener actionListener = (ActionEvent e) -> LOG.info(">>> " + getClass() + " action called");
+        JLabel label = new JLabel("<html>SNAP found some cached <b>bazoo files</b> in your <b>gnarz folder</b>.<br>" +
+                                          "Should they be rectified now?");
+        JPanel panel = new JPanel();
+        panel.setBorder(new EmptyBorder(10, 10, 10, 10));
+        panel.add(label);
+        DialogDescriptor dialogDescriptor = new DialogDescriptor(
+                panel,
+                "Confirm",
+                true,
+                DialogDescriptor.YES_NO_CANCEL_OPTION,
+                null,
+                actionListener);
+        Dialog dialog = DialogDisplayer.getDefault().createDialog(dialogDescriptor, mainWindow);
+        dialog.setVisible(true);
+        Object value = dialogDescriptor.getValue();
+        return !new Integer(2).equals(value);
+    }
+
+    public void onStop() {
     }
 
     /**
@@ -330,10 +373,9 @@ public class SnapApp {
 
         @Override
         public void run() {
-            LOG.info(">>> " + getClass() + " called");
-            setInstance(new SnapApp());
+            LOG.fine(">>> " + getClass() + " called");
             initJAI();
-            WindowManager.getDefault().setRole("developer");
+            SnapApp.getDefault().onStart();
         }
     }
 
@@ -346,7 +388,8 @@ public class SnapApp {
 
         @Override
         public void run() {
-            LOG.info(getClass() + " called");
+            LOG.fine(getClass() + " called");
+            SnapApp.getDefault().onShowing();
         }
     }
 
@@ -366,28 +409,8 @@ public class SnapApp {
 
         @Override
         public Boolean call() {
-            Frame mainWindow = getInstance().getMainFrame();
-            if (mainWindow == null || !mainWindow.isShowing()) {
-                return true;
-            }
-            LOG.info(">>> " + getClass() + " called");
-            ActionListener actionListener = (ActionEvent e) -> LOG.info(">>> " + getClass() + " action called");
-            JLabel label = new JLabel("<html>SNAP found some cached <b>bazoo files</b> in your <b>gnarz folder</b>.<br>" +
-                                              "Should they be rectified now?");
-            JPanel panel = new JPanel();
-            panel.setBorder(new EmptyBorder(10, 10, 10, 10));
-            panel.add(label);
-            DialogDescriptor dialogDescriptor = new DialogDescriptor(
-                    panel,
-                    "Confirm",
-                    true,
-                    DialogDescriptor.YES_NO_CANCEL_OPTION,
-                    null,
-                    actionListener);
-            Dialog dialog = DialogDisplayer.getDefault().createDialog(dialogDescriptor, mainWindow);
-            dialog.setVisible(true);
-            Object value = dialogDescriptor.getValue();
-            return !new Integer(2).equals(value);
+            LOG.fine(">>> " + getClass() + " called");
+            return SnapApp.getDefault().onTryStop();
         }
     }
 
@@ -396,9 +419,8 @@ public class SnapApp {
 
         @Override
         public void run() {
-            LOG.info(">>> " + getClass() + " called");
-            // do some cleanup
-            setInstance(null);
+            LOG.fine(">>> " + getClass() + " called");
+            SnapApp.getDefault().onStop();
         }
     }
 
@@ -457,8 +479,11 @@ public class SnapApp {
     public static class ActionContextExtender extends ContextGlobalExtenderImpl {
     }
 
-    private static class UndoManagerProvider implements ExtensionFactory {
-        Map<Object, UndoRedo.Manager> undoManagers = new HashMap<>();
+    /**
+     * Associates objects with an undo manager.
+     */
+    private static class UndoManagerProvider implements ExtensionFactory, ProductManager.Listener {
+        private Map<Object, UndoRedo.Manager> undoManagers = new HashMap<>();
 
         @Override
         public Class<?>[] getExtensionTypes() {
@@ -470,14 +495,14 @@ public class SnapApp {
             return undoManagers.get(object);
         }
 
-        void addManager(Object object) {
-            Assert.isTrue(!undoManagers.containsKey(object));
-            UndoRedo.Manager manager = new UndoRedo.Manager();
-            undoManagers.put(object, manager);
+        @Override
+        public void productAdded(ProductManager.Event event) {
+            undoManagers.put(event.getProduct(), new UndoRedo.Manager());
         }
 
-        void removeManager(Object object) {
-            UndoRedo.Manager manager = undoManagers.remove(object);
+        @Override
+        public void productRemoved(ProductManager.Event event) {
+            UndoRedo.Manager manager = undoManagers.remove(event.getProduct());
             if (manager != null) {
                 manager.die();
             }

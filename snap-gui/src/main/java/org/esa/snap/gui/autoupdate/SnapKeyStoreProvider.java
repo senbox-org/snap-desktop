@@ -20,7 +20,7 @@ public final class SnapKeyStoreProvider implements KeyStoreProvider {
             keyStore.load(inputStream, null);
             return keyStore;
         } catch (Exception ex) {
-            SnapApp.getInstance().getLogger().log(Level.WARNING, ex.getMessage(), ex);
+            SnapApp.getDefault().getLogger().log(Level.WARNING, ex.getMessage(), ex);
         }
         return null;
     }

@@ -77,9 +77,9 @@ public class ProductExplorerTopComponent extends TopComponent implements Explore
         // 2. Create a node hierarchy:
         Product[] products = TestProducts.createProducts();
         for (Product product : products) {
-            SnapApp.getInstance().getProductManager().addProduct(product);
+            SnapApp.getDefault().getProductManager().addProduct(product);
         }
-        Node rootNode = new ProductGroupNode(SnapApp.getInstance().getProductManager());
+        Node rootNode = new ProductGroupNode(SnapApp.getDefault().getProductManager());
         // 3. Set the root of the node hierarchy on the ExplorerManager:
         explorerManager.setRootContext(rootNode);
 

@@ -59,7 +59,7 @@ class PNode extends PNNode<Product> {
 
     @Override
     public UndoRedo getUndoRedo() {
-        return SnapApp.getUndoManager(getProduct());
+        return SnapApp.getDefault().getUndoManager(getProduct());
     }
 
     @Override

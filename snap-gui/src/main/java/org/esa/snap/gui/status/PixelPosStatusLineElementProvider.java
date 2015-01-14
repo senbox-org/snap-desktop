@@ -46,7 +46,7 @@ public class PixelPosStatusLineElementProvider
 
     public PixelPosStatusLineElementProvider() {
         DocumentWindowManager.getDefault().addListener(this);
-        SnapApp.getInstance().getPreferences().addPreferenceChangeListener(this);
+        SnapApp.getDefault().getPreferences().addPreferenceChangeListener(this);
         updateSettings();
         label = new JLabel();
     }
@@ -132,7 +132,7 @@ public class PixelPosStatusLineElementProvider
     }
 
     private void updateSettings() {
-        final Preferences preferences = SnapApp.getInstance().getPreferences();
+        final Preferences preferences = SnapApp.getDefault().getPreferences();
         pixelOffsetY = preferences.getDouble(PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_Y,
                                              PROPERTY_DEFAULT_PIXEL_OFFSET_FOR_DISPLAY_X);
         pixelOffsetX = preferences.getDouble(PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_X,

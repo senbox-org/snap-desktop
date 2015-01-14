@@ -71,7 +71,7 @@ public final class CloseProductAction extends AbstractAction {
 
         for (Product product : products) {
             if (product.isModified()) {
-                int i = SnapApp.getInstance().showQuestionDialog(
+                int i = SnapApp.getDefault().showQuestionDialog(
                         Bundle.CTL_OpenProductActionName(),
                         MessageFormat.format("Product '{0}' has been modified.\nDo you want to save it?", product.getName()), null);
                 if (NotifyDescriptor.YES_OPTION.equals(i)) {
@@ -110,7 +110,7 @@ public final class CloseProductAction extends AbstractAction {
                         LOG.log(Level.SEVERE, problem.getMessage(), problem);
                         problemsMessage.append(MessageFormat.format("<b>  {0}</b>: {1}<br/>", problem.getClass().getSimpleName(), problem.getMessage()));
                     }
-                    SnapApp.getInstance().showErrorDialog(Bundle.CTL_OpenProductActionName(), problemsMessage.toString());
+                    SnapApp.getDefault().showErrorDialog(Bundle.CTL_OpenProductActionName(), problemsMessage.toString());
                 }
 
                 for (Product product : closeList) {
@@ -118,7 +118,7 @@ public final class CloseProductAction extends AbstractAction {
                             .filter(dw -> (dw.getDocument() instanceof ProductNode)
                                     && ((ProductNode) dw.getDocument()).getProduct() == product)
                             .forEach(DocumentWindow::documentClosing);
-                    SnapApp.getInstance().getProductManager().removeProduct(product);
+                    SnapApp.getDefault().getProductManager().removeProduct(product);
                 }
 
                 closeList.forEach(Product::dispose);
