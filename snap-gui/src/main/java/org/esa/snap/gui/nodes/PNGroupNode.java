@@ -6,6 +6,7 @@
 package org.esa.snap.gui.nodes;
 
 import org.esa.beam.framework.datamodel.ProductNodeEvent;
+import org.openide.util.lookup.Lookups;
 
 /**
  * A node that represents a group of some elements.
@@ -17,7 +18,7 @@ class PNGroupNode extends PNNodeBase {
     private final PNNodeSupport nodeSupport;
 
     PNGroupNode(PNGroup group) {
-        super(group);
+        super(group, Lookups.fixed(group.getProduct()));
         setDisplayName(group.getDisplayName());
         setIconBaseWithExtension("org/esa/snap/gui/icons/RsGroup16.gif");
         nodeSupport = PNNodeSupport.create(this, group);

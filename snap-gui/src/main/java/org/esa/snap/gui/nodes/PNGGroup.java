@@ -11,6 +11,7 @@ import org.esa.beam.framework.datamodel.FlagCoding;
 import org.esa.beam.framework.datamodel.IndexCoding;
 import org.esa.beam.framework.datamodel.Mask;
 import org.esa.beam.framework.datamodel.MetadataElement;
+import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.datamodel.ProductNode;
 import org.esa.beam.framework.datamodel.ProductNodeGroup;
 import org.esa.beam.framework.datamodel.TiePointGrid;
@@ -43,7 +44,11 @@ abstract class PNGGroup<T extends ProductNode> extends PNGroup<T> {
         Assert.notNull(group, "group");
         this.displayName = displayName;
         this.group = group;
+    }
 
+    @Override
+    public Product getProduct() {
+        return group.getProduct();
     }
 
     @Override

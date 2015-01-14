@@ -5,6 +5,7 @@
  */
 package org.esa.snap.gui.nodes;
 
+import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.datamodel.ProductNode;
 
 /**
@@ -14,6 +15,8 @@ import org.esa.beam.framework.datamodel.ProductNode;
  * @author Norman
  */
 abstract class PNGroup<T> extends PNGroupBase<T> {
+
+    public abstract Product getProduct();
 
     public abstract String getDisplayName();
 }
