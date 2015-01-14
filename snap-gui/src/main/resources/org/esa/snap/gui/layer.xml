@@ -133,12 +133,9 @@
 
     <folder name="Actions">
         <folder name="Window">
-            <file name="org-netbeans-core-io-ui-IOWindowAction.instance">
+<!--            <file name="org-netbeans-core-io-ui-IOWindowAction.instance">
                 <attr name="displayName" stringvalue="Log Output"/>
-            </file>
-            <file name="org-netbeans-core-windows-actions-CloseWindowAction.instance">
-                <attr name="displayName" stringvalue="Close Document"/>
-            </file>
+            </file>-->
             <file name="org-netbeans-core-windows-actions-NewTabGroupAction.instance_hidden"/>
             <file name="org-netbeans-core-windows-actions-CollapseTabGroupAction.instance_hidden"/>
         </folder>
@@ -168,7 +165,7 @@
             <folder name="Tool Windows">
                 <file name="org-netbeans-core-io-ui-IOWindowAction.shadow">
                     <attr name="originalFile" stringvalue="Actions/Window/org-netbeans-core-io-ui-IOWindowAction.instance"/>
-                    <attr name="position" intvalue="800"/>
+                    <attr name="position" intvalue="10000"/>
                 </file>
             </folder>
             <file name="SwitchToRecentDocumentAction.shadow_hidden"/>
