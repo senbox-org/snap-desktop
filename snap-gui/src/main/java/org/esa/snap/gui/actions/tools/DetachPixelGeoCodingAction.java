@@ -121,9 +121,9 @@ public class DetachPixelGeoCodingAction extends AbstractAction implements Contex
                     }
                     String dialogTitle = Bundle.CTL_DetachPixelGeoCodingDialogTitle();
                     if (value != null) {
-                        SnapDialogs.showErrorDialog(dialogTitle, "An internal error occurred:\n" + value.getMessage());
+                        SnapDialogs.showError(dialogTitle, "An internal error occurred:\n" + value.getMessage());
                     } else {
-                        SnapDialogs.showInfoDialog(dialogTitle, "Pixel geo-coding has been detached.", null);
+                        SnapDialogs.showInformation(dialogTitle, "Pixel geo-coding has been detached.", null);
                     }
                 } finally {
                     UIUtils.setRootFrameDefaultCursor(SnapApp.getDefault().getMainFrame());

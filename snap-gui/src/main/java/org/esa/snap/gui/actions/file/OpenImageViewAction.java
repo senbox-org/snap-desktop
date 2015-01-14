@@ -108,13 +108,9 @@ public class OpenImageViewAction extends AbstractAction {
                     UndoRedo.Manager undoManager = SnapApp.getDefault().getUndoManager(sceneImage.getProduct());
                     ProductSceneView view = new ProductSceneView(sceneImage, undoManager);
                     openDocumentWindow(view);
-                } catch (OutOfMemoryError ignored) {
-                    SnapDialogs.showOutOfMemoryErrorDialog("Run out of memory while opening an image view.");
                 } catch (Exception e) {
                     snapApp.handleError(MessageFormat.format("Failed to open image view.\n\n{0}", e.getMessage()), e);
                 }
-
-                throw new RuntimeException("Bääääh!");
             }
         };
         worker.execute();

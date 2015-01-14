@@ -146,7 +146,7 @@ public class SnapApp {
         if (t != null) {
             t.printStackTrace();
         }
-        SnapDialogs.showErrorDialog(getInstanceName() + " - Error", message);
+        SnapDialogs.showError(getInstanceName() + " - Error", message);
         getLogger().log(Level.SEVERE, message, t);
     }
 

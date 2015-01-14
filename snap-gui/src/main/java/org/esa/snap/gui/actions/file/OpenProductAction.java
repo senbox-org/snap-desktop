@@ -122,10 +122,11 @@ public final class OpenProductAction extends AbstractAction {
         List<File> fileList = new ArrayList<>(Arrays.asList(files));
         for (File file : files) {
             if (openedFiles.contains(file)) {
-                int i = SnapDialogs.showQuestionDialog(
-                        Bundle.CTL_OpenProductActionName(),
-                        MessageFormat.format("Product\n{0}\nis already opened.\nDo you want to open another instance?", file),
-                        null);
+                int i = SnapDialogs.requestDecision(Bundle.CTL_OpenProductActionName(),
+                                                    MessageFormat.format("Product\n{0}\n" +
+                                                                                 "is already opened.\n" +
+                                                                                 "Do you want to open another instance?", file),
+                                                    true, null);
                 if (NotifyDescriptor.NO_OPTION.equals(i)) {
                     fileList.remove(file);
                 } else if (!NotifyDescriptor.YES_OPTION.equals(i)) {
@@ -166,7 +167,7 @@ public final class OpenProductAction extends AbstractAction {
                         LOG.log(Level.SEVERE, problem.getMessage(), problem);
                         problemsMessage.append(MessageFormat.format("<b>  {0}</b>: {1}<br/>", problem.getClass().getSimpleName(), problem.getMessage()));
                     }
-                    SnapDialogs.showErrorDialog(Bundle.CTL_OpenProductActionName(), problemsMessage.toString());
+                    SnapDialogs.showError(Bundle.CTL_OpenProductActionName(), problemsMessage.toString());
                 }
             }
         };

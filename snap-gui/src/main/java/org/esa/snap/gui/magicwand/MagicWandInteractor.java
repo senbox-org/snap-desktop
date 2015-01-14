@@ -221,12 +221,12 @@ public class MagicWandInteractor extends ViewportInteractor implements MagicWand
 
     private boolean handleInvalidBandFilter(ProductSceneView view) {
         Product product = view.getProduct();
-        int resp = SnapDialogs.showQuestionDialog(DIALOG_TITLE,
-                                                  "The currently selected band filter does not match\n" +
-                                                          "the bands of the selected data product.\n\n" +
-                                                          "Reset filter and use the ones of the selected product?",
-                                                  false,
-                                                  "visat.magicWandTool.resetFilter");
+        int resp = SnapDialogs.requestDecision(DIALOG_TITLE,
+                                               "The currently selected band filter does not match\n" +
+                                                       "the bands of the selected data product.\n\n" +
+                                                       "Reset filter and use the ones of the selected product?",
+                                               false,
+                                               "reset_magic_wand_filter");
         if (resp == JOptionPane.YES_OPTION) {
             model.setBandNames();
             return ensureBandNamesSet(view, product);
@@ -243,7 +243,7 @@ public class MagicWandInteractor extends ViewportInteractor implements MagicWand
             try {
                 ip = transform.inverseTransform(mp, null);
             } catch (NoninvertibleTransformException e) {
-                SnapDialogs.showErrorDialog(DIALOG_TITLE, "A geographic transformation problem occurred:\n" + e.getMessage());
+                SnapDialogs.showError(DIALOG_TITLE, "A geographic transformation problem occurred:\n" + e.getMessage());
                 return null;
             }
         } else {
@@ -271,7 +271,7 @@ public class MagicWandInteractor extends ViewportInteractor implements MagicWand
         }
         if (model.getBandCount() == 0) {
             // It's actually hard to get here, because we have a selected image view...
-            SnapDialogs.showErrorDialog(DIALOG_TITLE, "No bands selected.");
+            SnapDialogs.showError(DIALOG_TITLE, "No bands selected.");
             return false;
         }
         return true;

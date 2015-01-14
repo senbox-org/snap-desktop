@@ -133,7 +133,7 @@ public class BandMathsDialog extends ModalDialog {
             validMaskExpression = BandArithmetic.getValidMaskExpression(getExpression(), products, defaultProductIndex, null);
         } catch (ParseException e) {
             String errorMessage = "The band could not be created.\nAn parse error occurred:\n" + e.getMessage();
-            SnapDialogs.showErrorDialog("Error", errorMessage);
+            SnapDialogs.showError("Error", errorMessage);
             hide();
             return;
         }
@@ -412,7 +412,7 @@ public class BandMathsDialog extends ModalDialog {
                     String message = "The entered maths expression references multiple products.\n"
                                      + "It will cause problems unless the session is restored as is.\n\n"
                                      + "Note: You can save the session from the file menu.";
-                    SnapDialogs.showMessageDialog("Warning", message, JOptionPane.WARNING_MESSAGE, null);
+                    SnapDialogs.showMessage("Warning", message, JOptionPane.WARNING_MESSAGE, null);
                 }
             }
         }

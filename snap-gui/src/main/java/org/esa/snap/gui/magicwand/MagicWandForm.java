@@ -450,14 +450,14 @@ class MagicWandForm {
     void showBandChooser() {
         final ProductSceneView view = SnapApp.getDefault().getSelectedProductSceneView();
         if (view == null) {
-            SnapDialogs.showInfoDialog("Please select an image view first.", null);
+            SnapDialogs.showInformation("Please select an image view first.", null);
             return;
         }
         Product product = view.getProduct();
 
         Band[] bands = product.getBands();
         if (bands.length == 0) {
-            SnapDialogs.showInfoDialog("No bands in product.", null);
+            SnapDialogs.showInformation("No bands in product.", null);
             return;
         }
 

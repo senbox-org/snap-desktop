@@ -161,7 +161,7 @@ public class AttachPixelGeoCodingAction extends AbstractAction implements Contex
                                                         "of additional data into memory.\n\n" +
                                                         "Do you really want to continue?",
                                                         requiredMegas);
-            final int answer = SnapDialogs.showQuestionDialog(dialogTitle, message, null);
+            final int answer = SnapDialogs.requestDecision(dialogTitle, message, false, "load_latlon_band_data");
             if (answer != JOptionPane.YES_OPTION) {
                 return;
             }
@@ -181,7 +181,7 @@ public class AttachPixelGeoCodingAction extends AbstractAction implements Contex
             public void done() {
                 try {
                     get();
-                    SnapDialogs.showInfoDialog(dialogTitle, "Pixel geo-coding has been attached.", null);
+                    SnapDialogs.showInformation(dialogTitle, "Pixel geo-coding has been attached.", null);
                 } catch (Exception e) {
                     Throwable cause = e;
                     if (e instanceof ExecutionException) {
@@ -191,7 +191,7 @@ public class AttachPixelGeoCodingAction extends AbstractAction implements Contex
                     if (cause instanceof IOException) {
                         msg = "An I/O error occurred:\n" + e.getMessage();
                     }
-                    SnapDialogs.showErrorDialog(dialogTitle, msg);
+                    SnapDialogs.showError(dialogTitle, msg);
                 } finally {
                     UIUtils.setRootFrameDefaultCursor(mainFrame);
                 }
@@ -256,9 +256,9 @@ public class AttachPixelGeoCodingAction extends AbstractAction implements Contex
             selectedLatBand = findBandName(latValue);
 
             if (selectedLatBand == null || selectedLonBand == null || Objects.equals(selectedLatBand, selectedLonBand)) {
-                SnapDialogs.showMessageDialog(super.getJDialog().getTitle(),
-                                              "You have to select two different bands for the Pixel Geo-Coding.",
-                                              JOptionPane.WARNING_MESSAGE, null);
+                SnapDialogs.showMessage(super.getJDialog().getTitle(),
+                                        "You have to select two different bands for the Pixel Geo-Coding.",
+                                        JOptionPane.WARNING_MESSAGE, null);
             } else {
                 super.onOK();
             }

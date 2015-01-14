@@ -74,9 +74,8 @@ public final class CloseProductAction extends AbstractAction {
 
         for (Product product : products) {
             if (product.isModified()) {
-                int i = SnapDialogs.showQuestionDialog(
-                        Bundle.CTL_OpenProductActionName(),
-                        MessageFormat.format("Product ''{0}'' has been modified.\nDo you want to save it?", product.getName()), null);
+                int i = SnapDialogs.requestDecision(Bundle.CTL_OpenProductActionName(),
+                        MessageFormat.format("Product ''{0}'' has been modified.\nDo you want to save it?", product.getName()), true, null);
                 if (NotifyDescriptor.YES_OPTION.equals(i)) {
                     saveList.add(product);
                 } else if (!NotifyDescriptor.NO_OPTION.equals(i)) {
@@ -113,7 +112,7 @@ public final class CloseProductAction extends AbstractAction {
                         LOG.log(Level.SEVERE, problem.getMessage(), problem);
                         problemsMessage.append(MessageFormat.format("<b>  {0}</b>: {1}<br/>", problem.getClass().getSimpleName(), problem.getMessage()));
                     }
-                    SnapDialogs.showErrorDialog(Bundle.CTL_OpenProductActionName(), problemsMessage.toString());
+                    SnapDialogs.showError(Bundle.CTL_OpenProductActionName(), problemsMessage.toString());
                 }
 
                 for (Product product : closeList) {

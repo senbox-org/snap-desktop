@@ -208,7 +208,7 @@ public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNo
                 Transferable transferable = getView().getFigureEditor().getFigureSelection().createTransferable(false);
                 clipboard.setContents(transferable, selection);
                 getView().getFigureEditor().deleteSelection();
-                //JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), "Cut: " + transferable);
+                //JOptionPane.showMessage(WindowManager.getDefault().getMainWindow(), "Cut: " + transferable);
             }
         }
     }
@@ -223,7 +223,7 @@ public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNo
                 // to the same SimpleFeature.
                 Transferable transferable = getView().getFigureEditor().getFigureSelection().createTransferable(true);
                 clipboard.setContents(transferable, selection);
-                //JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), "Copy: " + transferable);
+                //JOptionPane.showMessage(WindowManager.getDefault().getMainWindow(), "Copy: " + transferable);
             }
         }
     }
@@ -233,7 +233,7 @@ public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNo
         public void actionPerformed(ActionEvent e) {
             Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
             Transferable contents = clipboard.getContents(getView());
-            //JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), "Paste: " + contents);
+            //JOptionPane.showMessage(WindowManager.getDefault().getMainWindow(), "Paste: " + contents);
 
             try {
                 getView().getSelectionContext().insert(contents);
