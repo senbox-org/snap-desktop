@@ -24,6 +24,8 @@ import org.openide.modules.OnStart;
 import org.openide.modules.OnStop;
 import org.openide.util.ContextGlobalProvider;
 import org.openide.util.Lookup;
+import org.openide.util.LookupEvent;
+import org.openide.util.LookupListener;
 import org.openide.util.NbBundle;
 import org.openide.util.NbPreferences;
 import org.openide.util.Utilities;
@@ -39,6 +41,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -73,7 +76,6 @@ public class SnapApp {
     private final static Logger LOG = Logger.getLogger(SnapApp.class.getName());
 
     private final ProductManager productManager;
-    private final ProductNodeListener productListener;
 
     public static SnapApp getDefault() {
         SnapApp instance = Lookup.getDefault().lookup(SnapApp.class);
@@ -85,36 +87,16 @@ public class SnapApp {
 
     public SnapApp() {
 
-        productListener = new ProductNodeListenerAdapter() {
-            @Override
-            public void nodeChanged(final ProductNodeEvent event) {
-                ProductNode productNode = event.getSourceNode();
-                if (productNode != null) {
-                    if (productNode.getProduct() == getSelectedProduct()) {
-                        updateMainFrameTitle();
-                    }
-                }
-            }
-        };
         productManager = new ProductManager();
-        // todo - check if we can solve title updates via global lookup
-        productManager.addListener(new ProductManager.Listener() {
-            @Override
-            public void productAdded(ProductManager.Event event) {
-                event.getProduct().addProductNodeListener(productListener);
-            }
-
-            @Override
-            public void productRemoved(ProductManager.Event event) {
-                event.getProduct().removeProductNodeListener(productListener);
-            }
-        });
-
         // Register a provider that delivers an UndoManager for a Product instance.
         UndoManagerProvider undoManagerProvider = new UndoManagerProvider();
         ExtensionManager.getInstance().register(Product.class, undoManagerProvider);
         productManager.addListener(undoManagerProvider);
-        updateMainFrameTitle();
+
+        Lookup.Result<ProductNode> productNodeSelection = Utilities.actionsGlobalContext().lookupResult(ProductNode.class);
+        productNodeSelection.addLookupListener(ev -> {
+            updateMainFrameTitle();
+        });
     }
 
     public ProductManager getProductManager() {
@@ -223,32 +205,47 @@ public class SnapApp {
         return null;
     }
 
-    private void updateMainFrameTitle() {
-        Product selectedProduct = getSelectedProduct();
+    public String getMainFrameTitle() {
+
         ProductNode selectedProductNode = getSelectedProductNode();
+        Product selectedProduct = null;
+        if (selectedProductNode != null) {
+            selectedProduct = selectedProductNode.getProduct();
+            if (selectedProduct == null) {
+                selectedProduct = getSelectedProduct();
+            }
+        }
 
         String title;
         if (selectedProduct == null) {
             if (Utilities.isMac()) {
-                title = "[Empty]";
+                title = String.format("[%s]", "Empty");
             } else {
-                title = getInstanceName();
+                title = String.format("%s", getInstanceName());
             }
         } else if (selectedProduct == selectedProductNode) {
+            File fileLocation = selectedProduct.getFileLocation();
+            String path = fileLocation != null ? fileLocation.getPath() : "not saved";
             if (Utilities.isMac()) {
-                title = selectedProduct.getDisplayName();
+                title = String.format("%s - [%s]", selectedProduct.getName(), path);
             } else {
-                title = String.format("%s - %s", selectedProduct.getDisplayName(), getInstanceName());
+                title = String.format("%s - [%s] - %s", selectedProduct.getName(), path, getInstanceName());
             }
         } else {
+            File fileLocation = selectedProduct.getFileLocation();
+            String path = fileLocation != null ? fileLocation.getPath() : "not saved";
             if (Utilities.isMac()) {
-                title = String.format("%s [%s]", selectedProduct.getDisplayName(), selectedProductNode.getName());
+                title = String.format("%s - [%s] - [%s]", selectedProduct.getName(), path, selectedProductNode.getName());
             } else {
-                title = String.format("%s [%s] - %s", selectedProduct.getDisplayName(), selectedProductNode.getName(), getInstanceName());
+                title = String.format("%s - [%s] - [%s] - %s", selectedProduct.getName(), path, selectedProductNode.getName(), getInstanceName());
             }
         }
 
-        getMainFrame().setTitle(title);
+        return title;
+    }
+
+    private void updateMainFrameTitle() {
+        getMainFrame().setTitle(getMainFrameTitle());
     }
 
     public ProductSceneView getSelectedProductSceneView() {
@@ -334,6 +331,7 @@ public class SnapApp {
     }
 
     public void onShowing() {
+        updateMainFrameTitle();
     }
 
     public boolean onTryStop() {
