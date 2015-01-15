@@ -68,7 +68,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class BandMathsDialog extends ModalDialog {
+class BandMathsDialog extends ModalDialog {
 
     public static final String PROPERTY_KEY_AUTO_SHOW_NEW_BANDS = "snap.autoshowbands.enabled";
     public static final String PROPERTY_KEY_GEOLOCATION_EPS = "geolocation.eps";
