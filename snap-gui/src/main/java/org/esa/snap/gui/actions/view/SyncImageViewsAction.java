@@ -28,7 +28,7 @@ import org.openide.util.NbBundle;
         position = 1000
 )
 @NbBundle.Messages({
-        "CTL_SyncImageViewsActionName=Sync. Image Views",
+        "CTL_SyncImageViewsActionName=Synchronise Image Views",
         "CTL_SyncImageViewsActionToolTip=Synchronises cursor positions across multiple image views."
 })
 public final class SyncImageViewsAction extends BooleanPreferenceKeyAction {
