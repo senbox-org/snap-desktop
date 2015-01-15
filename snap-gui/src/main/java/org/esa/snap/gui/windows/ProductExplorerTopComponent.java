@@ -11,7 +11,6 @@ import org.esa.snap.gui.nodes.ProductGroupNode;
 import org.esa.snap.gui.util.TestProducts;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
-import org.openide.awt.UndoRedo;
 import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.ExplorerUtils;
 import org.openide.explorer.view.BeanTreeView;
@@ -28,7 +27,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.logging.Logger;
 
 /**
@@ -106,13 +104,6 @@ public class ProductExplorerTopComponent extends TopComponent implements Explore
                 }
             }
         });
-    }
-
-    @Override
-    public UndoRedo getUndoRedo() {
-        Node[] activatedNodes = getActivatedNodes();
-        LOG.info("getUndoRedo: activatedNodes = " + Arrays.toString(activatedNodes));
-        return super.getUndoRedo();
     }
 
     @Override
