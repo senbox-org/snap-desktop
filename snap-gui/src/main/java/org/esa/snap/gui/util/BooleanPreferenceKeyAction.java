@@ -17,6 +17,8 @@ import java.util.prefs.PreferenceChangeListener;
 import java.util.prefs.Preferences;
 
 /**
+ * An action which sets a boolean preference value.
+ *
  * @author Norman
  */
 public class BooleanPreferenceKeyAction extends AbstractAction
