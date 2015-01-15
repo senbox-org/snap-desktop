@@ -33,6 +33,10 @@ public class BooleanPreferenceKeyAction extends AbstractAction
         setSelected(getPreferenceValue());
     }
 
+    public String getPreferenceKey() {
+        return preferenceKey;
+    }
+
     public boolean isSelected() {
         return Boolean.TRUE.equals(getValue(SELECTED_KEY));
     }
@@ -67,16 +71,16 @@ public class BooleanPreferenceKeyAction extends AbstractAction
 
     @Override
     public void preferenceChange(PreferenceChangeEvent evt) {
-        if (preferenceKey.equals(evt.getKey())) {
+        if (getPreferenceKey().equals(evt.getKey())) {
             setSelected(getPreferenceValue());
         }
     }
 
     private boolean getPreferenceValue() {
-        return SnapApp.getDefault().getPreferences().getBoolean(preferenceKey, false);
+        return SnapApp.getDefault().getPreferences().getBoolean(getPreferenceKey(), false);
     }
 
     private void setPreferenceValue(boolean selected) {
-        SnapApp.getDefault().getPreferences().putBoolean(preferenceKey, selected);
+        SnapApp.getDefault().getPreferences().putBoolean(getPreferenceKey(), selected);
     }
 }
