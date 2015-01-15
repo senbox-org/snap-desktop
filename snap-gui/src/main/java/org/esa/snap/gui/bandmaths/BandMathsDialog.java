@@ -70,6 +70,7 @@ import java.util.Set;
 
 class BandMathsDialog extends ModalDialog {
 
+    // todo - where to place such general preferences? SnapApp?
     public static final String PROPERTY_KEY_AUTO_SHOW_NEW_BANDS = "snap.autoshowbands.enabled";
     public static final String PROPERTY_KEY_GEOLOCATION_EPS = "geolocation.eps";
     public static final double PROPERTY_DEFAULT_GEOLOCATION_EPS = 1.0e-4;
