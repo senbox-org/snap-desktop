@@ -18,18 +18,15 @@ import org.esa.beam.framework.datamodel.TiePointGrid;
 import org.esa.beam.framework.datamodel.VectorDataNode;
 import org.esa.snap.gui.SnapApp;
 import org.esa.snap.gui.actions.file.OpenImageViewAction;
-import org.openide.awt.Actions;
 import org.openide.awt.UndoRedo;
 import org.openide.nodes.Node;
 import org.openide.nodes.PropertySupport;
 import org.openide.nodes.Sheet;
-import org.openide.util.Utilities;
 import org.openide.util.lookup.Lookups;
 
 import javax.swing.*;
 import java.awt.datatransfer.Transferable;
 import java.io.IOException;
-import java.util.List;
 
 /**
  * A node that represents some {@link org.esa.beam.framework.datamodel.ProductNode} (=PN).
@@ -121,6 +118,12 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
         return new PropertySet[]{
                 set
         };
+    }
+
+    @Override
+    public Action[] getActions(boolean context) {
+        ProductNode productNode1 = getProductNode();
+        return PNNodeSupport.getContextActions(productNode1);
     }
 
     public static Node create(ProductNode productNode) {
@@ -250,9 +253,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
             deleteProductNode(getProductNode().getProduct(),
                               getProductNode().getProduct().getVectorDataGroup(),
                               getProductNode());
-
         }
-
     }
 
     /**
@@ -280,15 +281,8 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
         }
 
         @Override
-        public Action[] getActions(boolean context) {
-            List<? extends Action> actions = Utilities.actionsForPath("Context/Product/TPGrid");
-            return actions.toArray(new Action[actions.size()]);
-
-        }
-
-        @Override
         public Action getPreferredAction() {
-            return Actions.forID("File", "org.esa.snap.gui.actions.file.OpenImageViewAction");
+            return new OpenImageViewAction(this.getProductNode());
         }
     }
 
@@ -314,11 +308,6 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
             deleteProductNode(getProductNode().getProduct(),
                               getProductNode().getProduct().getMaskGroup(),
                               getProductNode());
-        }
-
-        @Override
-        public Action[] getActions(boolean context) {
-            return new Action[]{new OpenImageViewAction(this.getProductNode())};
         }
 
         @Override
@@ -372,15 +361,8 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
         }
 
         @Override
-        public Action[] getActions(boolean context) {
-            List<? extends Action> actions = Utilities.actionsForPath("Context/Product/Band");
-            return actions.toArray(new Action[actions.size()]);
-        }
-
-        @Override
         public Action getPreferredAction() {
-            return Actions.forID("File", "org.esa.snap.gui.actions.file.OpenImageViewAction");
+            return new OpenImageViewAction(this.getProductNode());
         }
     }
-
 }

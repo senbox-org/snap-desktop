@@ -22,87 +22,77 @@
         </folder>
     </folder>
 
+    <!--
+    SNAP context menu entries. These are looked up from the nodes representing our product data model.
+    -->
     <folder name="Context">
         <folder name="Product">
-            <folder name="Product">
+            <folder name="ProductNode">
+                <file name="org-openide-actions-CutAction-separatorBefore.instance">
+                    <attr name="instanceCreate" newvalue="javax.swing.JSeparator"/>
+                    <attr name="position" intvalue="500"/>
+                </file>
+                <file name="org-openide-actions-CutAction.shadow">
+                    <attr name="originalFile"
+                          stringvalue="Actions/Edit/org-openide-actions-CutAction.instance"/>
+                    <attr name="position" intvalue="510"/>
+                </file>
+                <file name="org-openide-actions-CopyAction.shadow">
+                    <attr name="originalFile"
+                          stringvalue="Actions/Edit/org-openide-actions-CopyAction.instance"/>
+                    <attr name="position" intvalue="520"/>
+                </file>
+                <file name="org-openide-actions-PasteAction.shadow">
+                    <attr name="originalFile"
+                          stringvalue="Actions/Edit/org-openide-actions-PasteAction.instance"/>
+                    <attr name="position" intvalue="530"/>
+                </file>
+                <file name="org-openide-actions-DeleteAction.shadow">
+                    <attr name="originalFile"
+                          stringvalue="Actions/Edit/org-openide-actions-DeleteAction.instance"/>
+                    <attr name="position" intvalue="540"/>
+                </file>
+                <file name="org-openide-actions-PropertiesAction-separatorBefore.instance">
+                    <attr name="instanceCreate" newvalue="javax.swing.JSeparator"/>
+                    <attr name="position" intvalue="700"/>
+                </file>
                 <file name="org-openide-actions-PropertiesAction.shadow">
                     <attr name="originalFile"
                           stringvalue="Actions/System/org-openide-actions-PropertiesAction.instance"/>
-                    <attr name="position" intvalue="0"/>
-                </file>
-                <file name="org-openide-actions-CopyAction-separatorBefore.instance">
-                    <attr name="instanceCreate" newvalue="javax.swing.JSeparator"/>
-                    <attr name="position" intvalue="500"/>
-                </file>
-                <file name="org-openide-actions-CopyAction.shadow">
-                    <attr name="originalFile"
-                          stringvalue="Actions/Edit/org-openide-actions-CopyAction.instance"/>
-                    <attr name="position" intvalue="505"/>
+                    <attr name="position" intvalue="710"/>
                 </file>
             </folder>
+
+            <folder name="Product">
+            </folder>
+
+            <folder name="MetadataElement">
+            </folder>
+
+            <folder name="MetadataAttribute">
+            </folder>
+
+            <folder name="VectorDataNode">
+            </folder>
+
+            <folder name="RasterDataNode">
+            </folder>
+
+            <folder name="TiePointGrid">
+            </folder>
+
+            <folder name="Mask">
+            </folder>
+
             <folder name="Band">
-                <file name="org-openide-actions-CopyAction-separatorBefore.instance">
-                    <attr name="instanceCreate" newvalue="javax.swing.JSeparator"/>
-                    <attr name="position" intvalue="500"/>
-                </file>
-                <file name="org-openide-actions-CopyAction.shadow">
-                    <attr name="originalFile"
-                          stringvalue="Actions/Edit/org-openide-actions-CopyAction.instance"/>
-                    <attr name="position" intvalue="505"/>
-                </file>
-                <file name="org-openide-actions-CutAction.shadow">
-                    <attr name="originalFile"
-                          stringvalue="Actions/Edit/org-openide-actions-CutAction.instance"/>
-                    <attr name="position" intvalue="510"/>
-                </file>
-                <!-- Check why CutAction-separatorAfter is not working -->
-                <!--<file name="org-openide-actions-CutAction-separatorAfter.instance">-->
-                <!--<attr name="instanceCreate" newvalue="javax.swing.JSeparator"/>-->
-                <!--<attr name="position" intvalue="510"/>-->
-                <!--</file>-->
-                <file name="org-openide-actions-DeleteAction-separatorBefore.instance">
-                    <attr name="instanceCreate" newvalue="javax.swing.JSeparator"/>
-                    <attr name="position" intvalue="515"/>
-                </file>
-                <file name="org-openide-actions-DeleteAction.shadow">
-                    <attr name="originalFile"
-                          stringvalue="Actions/Edit/org-openide-actions-DeleteAction.instance"/>
-                    <attr name="position" intvalue="520"/>
-                </file>
             </folder>
-            <folder name="TPGrid">
-                <file name="org-openide-actions-CopyAction-separatorBefore.instance">
-                    <attr name="instanceCreate" newvalue="javax.swing.JSeparator"/>
-                    <attr name="position" intvalue="500"/>
-                </file>
-                <file name="org-openide-actions-CopyAction.shadow">
-                    <attr name="originalFile"
-                          stringvalue="Actions/Edit/org-openide-actions-CopyAction.instance"/>
-                    <attr name="position" intvalue="505"/>
-                </file>
-                <file name="org-openide-actions-CutAction.shadow">
-                    <attr name="originalFile"
-                          stringvalue="Actions/Edit/org-openide-actions-CutAction.instance"/>
-                    <attr name="position" intvalue="510"/>
-                </file>
-                <!-- Check why CutAction-separatorAfter is not working -->
-                <!--<file name="org-openide-actions-CutAction-separatorAfter.instance">-->
-                <!--<attr name="instanceCreate" newvalue="javax.swing.JSeparator"/>-->
-                <!--<attr name="position" intvalue="510"/>-->
-                <!--</file>-->
-                <file name="org-openide-actions-DeleteAction-separatorBefore.instance">
-                    <attr name="instanceCreate" newvalue="javax.swing.JSeparator"/>
-                    <attr name="position" intvalue="515"/>
-                </file>
-                <file name="org-openide-actions-DeleteAction.shadow">
-                    <attr name="originalFile"
-                          stringvalue="Actions/Edit/org-openide-actions-DeleteAction.instance"/>
-                    <attr name="position" intvalue="520"/>
-                </file>
-            </folder>
+
         </folder>
     </folder>
 
+    <!--
+        Associate some system actions with default key bindings as this is not done by NetBeans automatically.
+    -->
     <folder name="Shortcuts">
         <file name="D-Z.shadow">
             <attr name="originalFile"
@@ -131,19 +121,23 @@
     </folder>
 
 
+    <!--
+    Hide some of NetBeans' standard window actions.
+    -->
     <folder name="Actions">
         <folder name="Window">
-<!--            <file name="org-netbeans-core-io-ui-IOWindowAction.instance">
-                <attr name="displayName" stringvalue="Log Output"/>
-            </file>-->
             <file name="org-netbeans-core-windows-actions-NewTabGroupAction.instance_hidden"/>
             <file name="org-netbeans-core-windows-actions-CollapseTabGroupAction.instance_hidden"/>
         </folder>
     </folder>
 
+    <!--
+    Hide and/or reorder some of NetBeans' standard menu entries.
+    -->
     <folder name="Menu">
         <folder name="File">
             <file name="org-netbeans-modules-print-action-PageSetupAction.shadow_hidden"/>
+            <!-- Enable, once we know how to print an image view, etc. -->
             <file name="org-netbeans-modules-print-action-PrintAction.shadow_hidden"/>
         </folder>
         <folder name="Edit">
@@ -181,7 +175,6 @@
                 <attr name="position" intvalue="20250"/>
             </file>
 
-
         </folder>
 
         <file name="Spacer.instance">
@@ -196,6 +189,11 @@
         </file>
 
     </folder>
+
+    <!--
+    The 'navigator' window mode is not present by default, so we add it for SNAP.
+    See http://wiki.netbeans.org/TaT_FixNavigatorModeInRCPApp.
+    -->
     <folder name="Windows2">
         <folder name="Modes">
             <file name="navigator.wsmode" url="modes/navigator.wsmode"/>

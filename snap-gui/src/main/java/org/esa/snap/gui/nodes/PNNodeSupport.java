@@ -11,7 +11,11 @@ import org.esa.beam.framework.datamodel.ProductNodeListener;
 import org.openide.awt.UndoRedo;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
+import org.openide.util.Utilities;
 
+import javax.swing.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 /**
@@ -47,6 +51,18 @@ abstract class PNNodeSupport implements ProductNodeListener {
         public void nodeRemoved(ProductNodeEvent event) {
         }
     };
+
+    static Action[] getContextActions(ProductNode productNode) {
+        ArrayList<Action> actionList = new ArrayList<>();
+        Class<?> type = productNode.getClass();
+        do {
+            List<? extends Action> actions = Utilities.actionsForPath("Context/Product/" + type.getSimpleName());
+            actionList.addAll(actions);
+            type = type.getSuperclass();
+        } while (type != null && ProductNode.class.isAssignableFrom(type));
+
+        return actionList.toArray(new Action[actionList.size()]);
+    }
 
     static class PNNodeSupportImpl extends PNNodeSupport {
         private final PNNodeBase node;

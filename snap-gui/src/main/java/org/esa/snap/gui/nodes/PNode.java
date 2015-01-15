@@ -9,19 +9,17 @@ import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.datamodel.ProductNode;
 import org.esa.snap.gui.SnapApp;
 import org.esa.snap.gui.actions.file.CloseProductAction;
-import org.openide.actions.NewAction;
 import org.openide.awt.UndoRedo;
 import org.openide.nodes.Node;
-import org.openide.util.Utilities;
-import org.openide.util.actions.SystemAction;
-import org.openide.util.datatransfer.NewType;
+import org.openide.util.WeakListeners;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.prefs.PreferenceChangeEvent;
+import java.util.prefs.PreferenceChangeListener;
+import java.util.prefs.Preferences;
 
 /**
  * A node that represents a {@link org.esa.beam.framework.datamodel.Product} (=P).
@@ -29,11 +27,9 @@ import java.util.List;
  *
  * @author Norman
  */
-class PNode extends PNNode<Product> {
+class PNode extends PNNode<Product> implements PreferenceChangeListener {
 
     private final PContent group;
-    // todo - clean me up: this is an experimental property
-    boolean flattenRasterDataGroups;
 
     public PNode(Product product) {
         this(product, new PContent());
@@ -46,15 +42,8 @@ class PNode extends PNNode<Product> {
         setDisplayName(product.getName());
         setShortDescription(product.getDescription());
         setIconBaseWithExtension("org/esa/snap/gui/icons/RsProduct16.gif");
-    }
-
-    public boolean getFlattenRasterDataGroups() {
-        return flattenRasterDataGroups;
-    }
-
-    public void setFlattenRasterDataGroups(boolean flattenRasterDataGroups) {
-        this.flattenRasterDataGroups = flattenRasterDataGroups;
-        group.refresh();
+        Preferences preferences = SnapApp.getDefault().getPreferences();
+        preferences.addPreferenceChangeListener(WeakListeners.create(PreferenceChangeListener.class, this, preferences));
     }
 
     public Product getProduct() {
@@ -78,17 +67,7 @@ class PNode extends PNNode<Product> {
 
     @Override
     public Action[] getActions(boolean context) {
-        List<? extends Action> actions = Utilities.actionsForPath("Context/Product/Product");
-        ArrayList<Action> actions1 = new ArrayList<>(actions);
-        // todo - clean me up: this is experimental code
-        AbstractAction abstractAction = new AbstractAction("Toggle Grouping") {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                setFlattenRasterDataGroups(!getFlattenRasterDataGroups());
-            }
-        };
-        actions1.add(abstractAction);
-        return actions1.toArray(new Action[actions1.size()]);
+        return PNNodeSupport.getContextActions(getProductNode());
     }
 
     @Override
@@ -96,6 +75,18 @@ class PNode extends PNNode<Product> {
         //Define the action that will be invoked
         //when the user double-clicks on the node:
         return super.getPreferredAction();
+    }
+
+    @Override
+    public void preferenceChange(PreferenceChangeEvent evt) {
+        String key = evt.getKey();
+        if (GroupByNodeTypeAction.PREFERENCE_KEY.equals(key)) {
+            group.refresh();
+        }
+    }
+
+    private boolean isGroupByNodeType() {
+        return SnapApp.getDefault().getPreferences().getBoolean(GroupByNodeTypeAction.PREFERENCE_KEY, true);
     }
 
     /*
@@ -138,18 +129,25 @@ class PNode extends PNNode<Product> {
         @Override
         protected boolean createKeys(List<Object> list) {
             Product product = node.getProduct();
-            list.add(new PNGGroup.ME(product.getMetadataRoot().getElementGroup()));
-            if (product.getIndexCodingGroup().getNodeCount() > 0) {
-                list.add(new PNGGroup.IC(product.getIndexCodingGroup()));
-            }
-            if (product.getFlagCodingGroup().getNodeCount() > 0) {
-                list.add(new PNGGroup.FC(product.getFlagCodingGroup()));
-            }
-            if (product.getVectorDataGroup().getNodeCount() > 0) {
-                list.add(new PNGGroup.VDN(product.getVectorDataGroup()));
-            }
-
-            if (!node.getFlattenRasterDataGroups()) {
+            if (node.isGroupByNodeType()) {
+                list.addAll(Arrays.asList(product.getMetadataRoot().getElementGroup().toArray()));
+                list.addAll(Arrays.asList(product.getIndexCodingGroup().toArray()));
+                list.addAll(Arrays.asList(product.getFlagCodingGroup().toArray()));
+                list.addAll(Arrays.asList(product.getVectorDataGroup().toArray()));
+                list.addAll(Arrays.asList(product.getTiePointGridGroup().toArray()));
+                list.addAll(Arrays.asList(product.getBandGroup().toArray()));
+                list.addAll(Arrays.asList(product.getMaskGroup().toArray()));
+            } else {
+                list.add(new PNGGroup.ME(product.getMetadataRoot().getElementGroup()));
+                if (product.getIndexCodingGroup().getNodeCount() > 0) {
+                    list.add(new PNGGroup.IC(product.getIndexCodingGroup()));
+                }
+                if (product.getFlagCodingGroup().getNodeCount() > 0) {
+                    list.add(new PNGGroup.FC(product.getFlagCodingGroup()));
+                }
+                if (product.getVectorDataGroup().getNodeCount() > 0) {
+                    list.add(new PNGGroup.VDN(product.getVectorDataGroup()));
+                }
                 if (product.getTiePointGridGroup().getNodeCount() > 0) {
                     list.add(new PNGGroup.TPG(product.getTiePointGridGroup()));
                 }
@@ -159,10 +157,6 @@ class PNode extends PNNode<Product> {
                 if (product.getMaskGroup().getNodeCount() > 0) {
                     list.add(new PNGGroup.M(product.getMaskGroup()));
                 }
-            } else {
-                list.addAll(Arrays.asList(product.getTiePointGridGroup().toArray()));
-                list.addAll(Arrays.asList(product.getBandGroup().toArray()));
-                list.addAll(Arrays.asList(product.getMaskGroup().toArray()));
             }
 
             return true;

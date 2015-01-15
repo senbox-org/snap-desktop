@@ -9,6 +9,7 @@ import com.bc.ceres.core.Assert;
 import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.datamodel.ProductManager;
 import org.esa.beam.framework.datamodel.ProductNodeListener;
+import org.esa.snap.gui.SnapApp;
 import org.openide.awt.UndoRedo;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
@@ -18,6 +19,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.prefs.Preferences;
 
 /**
  * A node that represents a {@link org.esa.beam.framework.datamodel.Product} (=P).

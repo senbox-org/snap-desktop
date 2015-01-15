@@ -56,9 +56,7 @@ import java.text.MessageFormat;
         iconBase = "org/esa/snap/gui/icons/RsBandAsSwath16.gif"
 )
 @ActionReferences({
-        //@ActionReference(path = "Menu/File", position = 149),
-        @ActionReference(path = "Context/Product/Band", position = 100),
-        @ActionReference(path = "Context/Product/TPGrid", position = 100)
+        @ActionReference(path = "Context/Product/RasterDataNode", position = 100),
 })
 @NbBundle.Messages("CTL_OpenImageViewActionName=Open in Image View")
 public class OpenImageViewAction extends AbstractAction {

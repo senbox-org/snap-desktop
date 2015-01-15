@@ -61,14 +61,10 @@ import java.awt.event.ActionEvent;
                 position = 200
         ),
         @ActionReference(
-                path = "Context/Product/Band",
+                path = "Context/Product/RasterDataNode",
                 position = 200
         ),
-        @ActionReference(
-                path = "Context/Product/TPGrid",
-                position = 200
-        )}
-)
+})
 @Messages({
         "ACT_MenuText=Create Band from Math Expression...",
         "ACT_ShortDescription=Create a new band using an arbitrary mathematical expression"
