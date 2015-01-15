@@ -227,8 +227,8 @@ public class CreateVectorDataNodeAction extends AbstractAction implements HelpCt
 
 
     private static class UndoableVectorDataInsertion extends AbstractUndoableEdit {
-        private final Product product;
-        private final VectorDataNode vectorDataNode;
+        private Product product;
+        private VectorDataNode vectorDataNode;
         private String oldLayerId;
 
         public UndoableVectorDataInsertion(Product product, VectorDataNode vectorDataNode, String oldLayerId) {
@@ -250,6 +250,13 @@ public class CreateVectorDataNodeAction extends AbstractAction implements HelpCt
             oldLayerId = getSelectedLayerId();
             product.getVectorDataGroup().add(vectorDataNode);
             selectVectorDataLayer(vectorDataNode);
+        }
+
+        @Override
+        public void die() {
+            super.die();
+            product = null;
+            vectorDataNode = null;
         }
 
         @Override
