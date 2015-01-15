@@ -12,6 +12,7 @@ import org.esa.beam.framework.datamodel.ProductNode;
 import org.esa.beam.framework.datamodel.ProductNodeEvent;
 import org.esa.beam.framework.datamodel.ProductNodeListenerAdapter;
 import org.esa.beam.framework.ui.product.ProductSceneView;
+import org.esa.snap.gui.actions.edit.SelectionActions;
 import org.esa.snap.gui.util.ContextGlobalExtender;
 import org.esa.snap.netbeans.docwin.DocumentTopComponent;
 import org.esa.snap.netbeans.docwin.WindowUtilities;
@@ -182,18 +183,18 @@ public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNo
 
     private void updateActionMap(Selection newSelection) {
         ActionMap actionMap = getActionMap();
-        actionMap.put("select-all", new SelectAllAction());
+        actionMap.put(SelectionActions.SELECT_ALL, new SelectAllAction());
         actionMap.put(DefaultEditorKit.pasteAction, new PasteAction());
         if (!newSelection.isEmpty()) {
             actionMap.put(DefaultEditorKit.cutAction, new CutAction());
             actionMap.put(DefaultEditorKit.copyAction, new CopyAction());
             actionMap.put("delete", new DeleteAction());
-            actionMap.put("deselect-all", new DeselectAllAction());
+            actionMap.put(SelectionActions.DESELECT_ALL, new DeselectAllAction());
         } else {
             actionMap.remove(DefaultEditorKit.cutAction);
             actionMap.remove(DefaultEditorKit.copyAction);
             actionMap.remove("delete");
-            actionMap.remove("deselect-all");
+            actionMap.remove(SelectionActions.DESELECT_ALL);
         }
         getDynamicContent().remove(actionMap);
         getDynamicContent().add(actionMap);
