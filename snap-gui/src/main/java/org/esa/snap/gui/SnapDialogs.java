@@ -20,7 +20,7 @@ import java.util.prefs.Preferences;
         "LBL_Information=Information",
         "LBL_Question=Question",
         "LBL_Message=Message",
-        "LBL_DoNotShowThisMessage=Don't show this message anymore." ,
+        "LBL_DoNotShowThisMessage=Don't show this message anymore.",
         "LBL_QuestionRemember=Remember my decision and don't ask again."
 })
 public class SnapDialogs {
@@ -31,14 +31,35 @@ public class SnapDialogs {
     private static final String PREF_VALUE_NO = "no";
     private static final String PREF_VALUE_TRUE = "true";
 
+    /**
+     * Displays a modal dialog with the provided information message text.
+     *
+     * @param message        The message text to be displayed.
+     * @param preferencesKey If not {@code null}, a checkbox is displayed, and if checked the dialog will not be displayed again which lets users store the answer
+     */
     public static void showInformation(String message, String preferencesKey) {
         showInformation(Bundle.LBL_Information(), message, preferencesKey);
     }
 
+    /**
+     * Displays a modal dialog with the provided information message text.
+     *
+     * @param title          The dialog title. May be {@code null}.
+     * @param message        The information message text to be displayed.
+     * @param preferencesKey If not {@code null}, a checkbox is displayed, and if checked the dialog will not be displayed again which lets users store the answer
+     */
     public static void showInformation(String title, String message, String preferencesKey) {
         showMessage(title, message, JOptionPane.INFORMATION_MESSAGE, preferencesKey);
     }
 
+    /**
+     * Displays a modal dialog with the provided message text.
+     *
+     * @param title          The dialog title. May be {@code null}.
+     * @param message        The message text to be displayed.
+     * @param messageType    The type of the message.
+     * @param preferencesKey If not {@code null}, a checkbox is displayed, and if checked the dialog will not be displayed again which lets users store the answer
+     */
     public static void showMessage(String title, String message, int messageType, String preferencesKey) {
         title = String.format("%s - %s", SnapApp.getDefault().getInstanceName(), title != null ? title : Bundle.LBL_Message());
         if (preferencesKey != null) {
@@ -65,9 +86,9 @@ public class SnapDialogs {
     /**
      * Displays a modal dialog which requests a decision from the user.
      *
-     * @param title The dialog title. May be {@code null}.
-     * @param message The question text to be displayed.
-     * @param allowCancel If {@code true}, the dialog also offers a cancel button.
+     * @param title          The dialog title. May be {@code null}.
+     * @param message        The question text to be displayed.
+     * @param allowCancel    If {@code true}, the dialog also offers a cancel button.
      * @param preferencesKey If not {@code null}, a checkbox is displayed, and if checked the dialog will not be displayed again which lets users store the answer
      * @return {@code JOptionPane.YES_OPTION}, {@code JOptionPane.NO_OPTION}, or {@code JOptionPane.CANCEL_OPTION}.
      */
@@ -110,6 +131,12 @@ public class SnapDialogs {
         }
     }
 
+    /**
+     * Displays a modal dialog with the provided error message text.
+     *
+     * @param title          The dialog title. May be {@code null}.
+     * @param message        The information message text to be displayed.
+     */
     public static void showError(String title, String message) {
         // todo - finalize this code here
         NotifyDescriptor nd = new NotifyDescriptor(message,
