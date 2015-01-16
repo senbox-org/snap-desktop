@@ -45,7 +45,7 @@ import java.awt.event.ActionEvent;
         displayName = "#ACT_MenuText",
         popupText = "#ACT_MenuText",
         iconBase = "org/esa/snap/gui/icons/BandMaths24.gif",
-        lazy = false
+        lazy = true
 )
 @ActionReferences({
         @ActionReference(
@@ -69,30 +69,17 @@ import java.awt.event.ActionEvent;
         "ACT_MenuText=Create Band from Math Expression...",
         "ACT_ShortDescription=Create a new band using an arbitrary mathematical expression"
 })
-public class BandMathsAction extends AbstractAction implements HelpCtx.Provider, ContextAwareAction, LookupListener {
+public class BandMathsAction extends AbstractAction implements HelpCtx.Provider {
 
     private static final String HELP_ID = "bandArithmetic";
-    private final Lookup lookup;
-    private final Lookup.Result<ProductNode> context;
+    private final Product product;
 
-    public BandMathsAction() {
-        this(Utilities.actionsGlobalContext());
-    }
-
-    public BandMathsAction(Lookup lookup) {
+    public BandMathsAction(ProductNode node) {
         super(Bundle.ACT_MenuText());
-        this.lookup = lookup;
+        product = node.getProduct();
         putValue(Action.SHORT_DESCRIPTION, Bundle.ACT_ShortDescription());
         putValue(Action.SMALL_ICON, ImageUtilities.loadImageIcon("icons/BandMaths16.gif", false));
         putValue(Action.LARGE_ICON_KEY, ImageUtilities.loadImageIcon("icons/BandMaths24.gif", false));
-        context = lookup.lookupResult(ProductNode.class);
-        context.addLookupListener(WeakListeners.create(LookupListener.class, this, lookup));
-        setEnableState();
-    }
-
-    @Override
-    public Action createContextAwareInstance(Lookup actionContext) {
-        return new BandMathsAction(actionContext);
     }
 
     @Override
@@ -110,22 +97,12 @@ public class BandMathsAction extends AbstractAction implements HelpCtx.Provider,
             products.add(prodNode.getProduct());
         }
 
-        Product currentProduct = lookup.lookup(ProductNode.class).getProduct();
         BandMathsDialog bandMathsDialog = new BandMathsDialog(snapApp,
-                                                              currentProduct,
+                                                              product,
                                                               products,
                                                               HELP_ID);
         bandMathsDialog.show();
 
-    }
-
-    @Override
-    public void resultChanged(LookupEvent ev) {
-        setEnableState();
-    }
-
-    private void setEnableState() {
-        setEnabled(!context.allInstances().isEmpty());
     }
 
 }
