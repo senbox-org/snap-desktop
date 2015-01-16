@@ -10,46 +10,55 @@ import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 
 /**
- * An undoable deletion of a {@code ProductNode}.
+ * An undoable insertion of a {@code ProductNode}.
  *
  * @param <T> The product node type.
  * @author Norman Fomferra
  */
 @NbBundle.Messages("LBL_UndoableProductNodeDeletionName=Delete ''{0}''")
-class UndoableProductNodeDeletion<T extends ProductNode> extends AbstractUndoableEdit {
+public class UndoableProductNodeDeletion<T extends ProductNode> extends AbstractUndoableEdit {
 
-    private ProductNodeGroup<T> group;
-    private T node;
-    private int index;
+    private ProductNodeGroup<T> productNodeGroup;
+    private T productNode;
+    private final int index;
 
-    public UndoableProductNodeDeletion(ProductNodeGroup<T> group, T node, int index) {
-        Assert.notNull(group, "group");
-        Assert.notNull(node, "node");
-        this.group = group;
-        this.node = node;
+    public UndoableProductNodeDeletion(ProductNodeGroup<T> productNodeGroup, T productNode, int index) {
+        Assert.notNull(productNodeGroup, "group");
+        Assert.notNull(productNode, "node");
+        this.productNodeGroup = productNodeGroup;
+        this.productNode = productNode;
         this.index = index;
+    }
+
+    public T getProductNode() {
+        return productNode;
     }
 
     @Override
     public String getPresentationName() {
-        return Bundle.LBL_UndoableProductNodeDeletionName(node.getName());
+        return Bundle.LBL_UndoableProductNodeDeletionName(productNode.getName());
     }
 
     @Override
     public void undo() throws CannotUndoException {
         super.undo();
-        group.add(index, node);
+        if (index < productNodeGroup.getNodeCount()) {
+            productNodeGroup.add(productNode);
+        } else {
+            productNodeGroup.add(index, productNode);
+        }
     }
 
     @Override
     public void redo() throws CannotRedoException {
         super.redo();
-        group.remove(node);
+        // todo - close all open document windows
+        productNodeGroup.remove(productNode);
     }
 
     @Override
     public void die() {
-        group = null;
-        node = null;
+        productNodeGroup = null;
+        productNode = null;
     }
 }
