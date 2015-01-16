@@ -33,6 +33,7 @@ import org.esa.beam.framework.ui.product.ProductSceneView;
 import org.esa.beam.framework.ui.product.VectorDataLayerFilterFactory;
 import org.esa.beam.jai.ImageManager;
 import org.esa.snap.gui.SnapApp;
+import org.esa.snap.gui.nodes.UndoableProductNodeInsertion;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.openide.awt.ActionID;
@@ -128,7 +129,7 @@ public class CreateVectorDataNodeAction extends AbstractAction implements HelpCt
 
         UndoRedo.Manager undoManager = SnapApp.getDefault().getUndoManager(product);
         if (undoManager != null) {
-            undoManager.addEdit(new UndoableVectorDataInsertion(product, vectorDataNode, oldLayerId));
+            undoManager.addEdit(new UndoableVectorDataNodeInsertion(product, vectorDataNode, oldLayerId));
         }
 
         return vectorDataNode;
@@ -158,17 +159,6 @@ public class CreateVectorDataNodeAction extends AbstractAction implements HelpCt
     public static String getDefaultVectorDataNodeName() {
         //return VisatActivator.getDefault().getModuleContext().getRuntimeConfig().getContextProperty(KEY_VECTOR_DATA_INITIAL_NAME, "geometry");
         return "geometry";
-    }
-
-    private static String getSelectedLayerId() {
-        ProductSceneView sceneView = SnapApp.getDefault().getSelectedProductSceneView();
-        if (sceneView != null) {
-            Layer selectedLayer = sceneView.getSelectedLayer();
-            if (selectedLayer != null) {
-                return selectedLayer.getId();
-            }
-        }
-        return null;
     }
 
     private static class NameValidator implements Validator {
@@ -226,42 +216,36 @@ public class CreateVectorDataNodeAction extends AbstractAction implements HelpCt
     }
 
 
-    private static class UndoableVectorDataInsertion extends AbstractUndoableEdit {
-        private Product product;
-        private VectorDataNode vectorDataNode;
+    private static class UndoableVectorDataNodeInsertion extends UndoableProductNodeInsertion<VectorDataNode> {
         private String oldLayerId;
 
-        public UndoableVectorDataInsertion(Product product, VectorDataNode vectorDataNode, String oldLayerId) {
-            this.product = product;
-            this.vectorDataNode = vectorDataNode;
+        public UndoableVectorDataNodeInsertion(Product product, VectorDataNode vectorDataNode, String oldLayerId) {
+            super(product.getVectorDataGroup(), vectorDataNode);
             this.oldLayerId = oldLayerId;
         }
 
         @Override
         public void undo() {
-            super.undo();
-            product.getVectorDataGroup().remove(vectorDataNode);
+            super.undo(); // removes VDN
             setSelectedLayer(oldLayerId);
         }
 
         @Override
         public void redo() {
-            super.redo();
             oldLayerId = getSelectedLayerId();
-            product.getVectorDataGroup().add(vectorDataNode);
-            selectVectorDataLayer(vectorDataNode);
+            super.redo(); // inserts VDN
+            selectVectorDataLayer(getProductNode());
         }
 
-        @Override
-        public void die() {
-            super.die();
-            product = null;
-            vectorDataNode = null;
-        }
-
-        @Override
-        public String getPresentationName() {
-            return "Insert Vector Data Container";
+        private static String getSelectedLayerId() {
+            ProductSceneView sceneView = SnapApp.getDefault().getSelectedProductSceneView();
+            if (sceneView != null) {
+                Layer selectedLayer = sceneView.getSelectedLayer();
+                if (selectedLayer != null) {
+                    return selectedLayer.getId();
+                }
+            }
+            return null;
         }
 
         private void setSelectedLayer(String layerId) {

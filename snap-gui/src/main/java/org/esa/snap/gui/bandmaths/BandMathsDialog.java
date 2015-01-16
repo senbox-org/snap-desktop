@@ -38,6 +38,7 @@ import org.esa.beam.framework.datamodel.Band;
 import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.datamodel.ProductData;
 import org.esa.beam.framework.datamodel.ProductNode;
+import org.esa.beam.framework.datamodel.ProductNodeGroup;
 import org.esa.beam.framework.datamodel.ProductNodeList;
 import org.esa.beam.framework.datamodel.RasterDataNode;
 import org.esa.beam.framework.datamodel.VirtualBand;
@@ -51,15 +52,11 @@ import org.esa.beam.util.Guardian;
 import org.esa.snap.gui.SnapApp;
 import org.esa.snap.gui.SnapDialogs;
 import org.esa.snap.gui.actions.file.OpenImageViewAction;
+import org.esa.snap.gui.nodes.UndoableProductNodeInsertion;
+import org.openide.awt.UndoRedo;
 
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import java.awt.BorderLayout;
-import java.awt.GridBagConstraints;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionListener;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -70,10 +67,9 @@ import java.util.Set;
 
 class BandMathsDialog extends ModalDialog {
 
-    // todo - where to place such general preferences? SnapApp?
-    public static final String PROPERTY_KEY_AUTO_SHOW_NEW_BANDS = "snap.autoshowbands.enabled";
-    public static final String PROPERTY_KEY_GEOLOCATION_EPS = "geolocation.eps";
-    public static final double PROPERTY_DEFAULT_GEOLOCATION_EPS = 1.0e-4;
+    public static final String PREF_KEY_AUTO_SHOW_NEW_BANDS = "bandmaths_autoshowbands_enabled";
+    public static final String PREF_KEY_GEOLOCATION_EPS = "geolocation_eps";
+    public static final double PREF_VALUE_GEOLOCATION_EPS = 1.0e-4;
 
 
     private static final String PROPERTY_NAME_PRODUCT = "productName";
@@ -85,7 +81,6 @@ class BandMathsDialog extends ModalDialog {
     private static final String PROPERTY_NAME_BAND_DESC = "bandDescription";
     private static final String PROPERTY_NAME_BAND_UNIT = "bandUnit";
     private static final String PROPERTY_NAME_BAND_WAVELENGTH = "bandWavelength";
-
 
     private final SnapApp snapApp;
     private final ProductNodeList<Product> productsList;
@@ -113,7 +108,7 @@ class BandMathsDialog extends ModalDialog {
     private static int numNewBands = 0;
 
     public BandMathsDialog(final SnapApp snapApp, Product currentProduct, ProductNodeList<Product> productsList,
-                                String helpId) {
+                           String helpId) {
         super(snapApp.getMainFrame(), "Band Maths", ID_OK_CANCEL_HELP, helpId);
         Guardian.assertNotNull("currentProduct", currentProduct);
         Guardian.assertNotNull("productsList", productsList);
@@ -151,7 +146,9 @@ class BandMathsDialog extends ModalDialog {
             setBandProperties(band, "");
         }
 
-        targetProduct.addBand(band);
+        ProductNodeGroup<Band> bandGroup = targetProduct.getBandGroup();
+        bandGroup.add(band);
+        UndoRedo.Manager undoManager = SnapApp.getDefault().getUndoManager(targetProduct);
 
         if (saveExpressionOnly) {
             checkExpressionForExternalReferences(getExpression());
@@ -163,9 +160,13 @@ class BandMathsDialog extends ModalDialog {
             band.setSourceImage(VirtualBand.createVirtualSourceImage(band, expression));
         }
 
+        if (undoManager != null) {
+            undoManager.addEdit(new UndoableProductNodeInsertion<>(bandGroup, band));
+        }
+
         hide();
         band.setModified(true);
-        if (snapApp.getPreferences().getBoolean(PROPERTY_KEY_AUTO_SHOW_NEW_BANDS, true)) {
+        if (snapApp.getPreferences().getBoolean(PREF_KEY_AUTO_SHOW_NEW_BANDS, true)) {
             new OpenImageViewAction(band).openProductSceneView();
         }
     }
@@ -188,7 +189,7 @@ class BandMathsDialog extends ModalDialog {
 
         if (isTargetBandReferencedInExpression()) {
             showErrorDialog("You cannot reference the target band '" + getBandName() +
-                            "' within the expression.");
+                                    "' within the expression.");
             return false;
         }
         return super.verifyUserInput();
@@ -294,9 +295,11 @@ class BandMathsDialog extends ModalDialog {
         descriptor.setDescription("The name for the new band.");
         descriptor.setNotEmpty(true);
         descriptor.setValidator(new ProductNodeNameValidator());
-        while(targetProduct.containsRasterDataNode("new_band_" + (++numNewBands))) {
-            // loop
-        }
+        String newBandName;
+        do {
+            numNewBands++;
+            newBandName = "new_band_" + numNewBands;
+        } while (targetProduct.containsRasterDataNode(newBandName));
         descriptor.setDefaultValue("new_band_" + (numNewBands));
 
         descriptor = container.getDescriptor(PROPERTY_NAME_BAND_DESC);
@@ -374,7 +377,7 @@ class BandMathsDialog extends ModalDialog {
     }
 
     private float getGeolocationEps() {
-        return (float) snapApp.getPreferences().getDouble(PROPERTY_KEY_GEOLOCATION_EPS, PROPERTY_DEFAULT_GEOLOCATION_EPS);
+        return (float) snapApp.getPreferences().getDouble(PREF_KEY_GEOLOCATION_EPS, PREF_VALUE_GEOLOCATION_EPS);
     }
 
     private ActionListener createEditExpressionButtonListener() {
@@ -411,8 +414,8 @@ class BandMathsDialog extends ModalDialog {
                 }
                 if (!externalProducts.isEmpty()) {
                     String message = "The entered maths expression references multiple products.\n"
-                                     + "It will cause problems unless the session is restored as is.\n\n"
-                                     + "Note: You can save the session from the file menu.";
+                            + "It will cause problems unless the session is restored as is.\n\n"
+                            + "Note: You can save the session from the file menu.";
                     SnapDialogs.showMessage("Warning", message, JOptionPane.WARNING_MESSAGE, null);
                 }
             }
@@ -469,14 +472,14 @@ class BandMathsDialog extends ModalDialog {
             final String name = (String) value;
             if (!ProductNode.isValidNodeName(name)) {
                 final String message = MessageFormat.format("The band name ''{0}'' is not valid.\n\n"
-                                                            + "Names must not start with a dot and must not\n"
-                                                            + "contain any of the following characters: \\/:*?\"<>|",
+                                                                    + "Names must not start with a dot and must not\n"
+                                                                    + "contain any of the following characters: \\/:*?\"<>|",
                                                             name);
                 throw new ValidationException(message);
             }
             if (targetProduct.containsRasterDataNode(name)) {
                 throw new ValidationException("The band name must be unique within the product scope.\n"
-                                              + "The scope comprises bands and tie-point grids.");
+                                                      + "The scope comprises bands and tie-point grids.");
             }
         }
     }
