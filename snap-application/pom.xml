@@ -27,6 +27,11 @@
             <type>pom</type>
         </dependency>
         <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-netbeans-modules-javahelp</artifactId>
+            <version>${netbeans.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.esa.snap</groupId>
             <artifactId>snap-engine</artifactId>
             <version>${project.version}</version>

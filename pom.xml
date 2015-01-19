@@ -80,6 +80,13 @@
                         <cluster>${brandingToken}</cluster>
                         <useOSGiDependencies>false</useOSGiDependencies>
                     </configuration>
+                    <dependencies>
+                        <dependency>
+                            <groupId>javax.help</groupId>
+                            <artifactId>javahelp</artifactId>
+                            <version>2.0.05</version>
+                        </dependency>
+                    </dependencies>
                 </plugin>
                 <plugin>
                     <!-- NetBeans 6.9+ requires JDK 6, starting NetBeans 7.4 source 1.7 is required -->
