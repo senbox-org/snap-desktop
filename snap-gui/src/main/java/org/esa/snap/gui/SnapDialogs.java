@@ -20,6 +20,7 @@ import java.util.prefs.Preferences;
         "LBL_Information=Information",
         "LBL_Question=Question",
         "LBL_Message=Message",
+        "LBL_Warning=Warning",
         "LBL_DoNotShowThisMessage=Don't show this message anymore.",
         "LBL_QuestionRemember=Remember my decision and don't ask again."
 })
@@ -50,6 +51,26 @@ public class SnapDialogs {
      */
     public static void showInformation(String title, String message, String preferencesKey) {
         showMessage(title, message, JOptionPane.INFORMATION_MESSAGE, preferencesKey);
+    }
+
+    /**
+     * Displays a modal dialog with the provided warning message text.
+     *
+     * @param message The information message text to be displayed.
+     */
+    public static void showWarning(String message) {
+        showInformation(Bundle.LBL_Warning(), message, null);
+    }
+
+    /**
+     * Displays a modal dialog with the provided warning message text.
+     *
+     * @param title          The dialog title. May be {@code null}.
+     * @param message        The warning message text to be displayed.
+     * @param preferencesKey If not {@code null}, a checkbox is displayed, and if checked the dialog will not be displayed again which lets users store the answer
+     */
+    public static void showWarning(String title, String message, String preferencesKey) {
+        showMessage(title, message, JOptionPane.WARNING_MESSAGE, preferencesKey);
     }
 
     /**
@@ -134,8 +155,8 @@ public class SnapDialogs {
     /**
      * Displays a modal dialog with the provided error message text.
      *
-     * @param title          The dialog title. May be {@code null}.
-     * @param message        The information message text to be displayed.
+     * @param title   The dialog title. May be {@code null}.
+     * @param message The information message text to be displayed.
      */
     public static void showError(String title, String message) {
         // todo - finalize this code here
@@ -161,4 +182,5 @@ public class SnapDialogs {
     private static Preferences getPreferences() {
         return SnapApp.getDefault().getPreferences().node("dialogs");
     }
+
 }
