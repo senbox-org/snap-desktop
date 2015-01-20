@@ -31,6 +31,8 @@ import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.Insets;
 
+import static org.esa.snap.gui.preferences.PreferenceUtils.*;
+
 /**
  * Preferences tab for handling the UI behavior preferences.
  *
@@ -82,14 +84,13 @@ public final class UiBehaviorPanelController extends DefaultConfigController {
         tableLayout.setColumnWeightX(1, 1.0);
 
         tableLayout.setCellColspan(0, 0, 2);
-        tableLayout.setCellColspan(1, 0, 2);
         tableLayout.setCellColspan(2, 0, 2);
         tableLayout.setCellColspan(3, 0, 2);
-        tableLayout.setCellColspan(4, 0, 1);
-        tableLayout.setCellColspan(4, 1, 1);
         tableLayout.setCellColspan(5, 0, 2);
         tableLayout.setCellColspan(6, 0, 2);
-        tableLayout.setCellColspan(7, 0, 2);
+        tableLayout.setCellColspan(8, 0, 2);
+        tableLayout.setCellColspan(9, 0, 2);
+        tableLayout.setCellColspan(10, 0, 2);
 
         JPanel pageUI = new JPanel(tableLayout);
 
@@ -108,6 +109,7 @@ public final class UiBehaviorPanelController extends DefaultConfigController {
         JComponent[] checkVersionComponents = registry.findPropertyEditor(checkVersion.getDescriptor()).createComponents(checkVersion.getDescriptor(), context);
         JComponent[] unsuppressComponents = registry.findPropertyEditor(unsuppress.getDescriptor()).createComponents(unsuppress.getDescriptor(), context);
 
+        pageUI.add(createTitleLabel("Display Settings"));
         pageUI.add(autoShowNavigationComponents[0]);
         pageUI.add(showNewBandsComponents[0]);
         pageUI.add(showOnlyDisplayedComponents[0]);
@@ -115,6 +117,7 @@ public final class UiBehaviorPanelController extends DefaultConfigController {
         pageUI.add(lowMemoryLimitComponents[1]);
         pageUI.add(lowMemoryLimitComponents[0]);
         pageUI.add(tableLayout.createHorizontalSpacer());
+        pageUI.add(createTitleLabel("Message Settings"));
         pageUI.add(checkVersionComponents[0]);
         pageUI.add(unsuppressComponents[0]);
         pageUI.add(tableLayout.createVerticalSpacer());

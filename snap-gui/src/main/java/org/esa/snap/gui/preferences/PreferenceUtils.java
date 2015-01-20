@@ -18,11 +18,13 @@ package org.esa.snap.gui.preferences;
 
 import com.bc.ceres.binding.Property;
 import com.bc.ceres.binding.ValidationException;
+import com.bc.ceres.swing.TableLayout;
 import org.openide.awt.ColorComboBox;
 
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSeparator;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import java.awt.Color;
@@ -75,5 +77,21 @@ public class PreferenceUtils {
         });
         colorComboBox.setPreferredSize(new Dimension(colorComboBox.getWidth(), 25));
         return colorComboBox;
+    }
+
+    static JPanel createTitleLabel(String title) {
+        TableLayout layout = new TableLayout(3);
+        layout.setColumnWeightX(0, 0.0);
+        layout.setColumnWeightX(1, 0.0);
+        layout.setColumnWeightX(2, 1.0);
+        layout.setColumnFill(0, TableLayout.Fill.NONE);
+        layout.setColumnFill(1, TableLayout.Fill.NONE);
+        layout.setColumnFill(2, TableLayout.Fill.HORIZONTAL);
+        JPanel comp = new JPanel(layout);
+        JLabel label = new JLabel(title);
+        comp.add(label);
+        comp.add(new JLabel("     "));
+        comp.add(new JSeparator());
+        return comp;
     }
 }
