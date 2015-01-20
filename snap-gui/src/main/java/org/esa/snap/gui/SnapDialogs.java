@@ -25,6 +25,9 @@ import java.util.prefs.Preferences;
         "LBL_QuestionRemember=Remember my decision and don't ask again."
 })
 public class SnapDialogs {
+    public static final int YES_OPTION = JOptionPane.YES_OPTION;
+    public static final int NO_OPTION = JOptionPane.NO_OPTION;
+    public static final int CANCEL_OPTION = JOptionPane.CANCEL_OPTION;
 
     private static final String PREF_KEY_SUFFIX_DECISION = ".decision";
     private static final String PREF_KEY_SUFFIX_DONTSHOW = ".dontShow";
@@ -111,7 +114,7 @@ public class SnapDialogs {
      * @param message        The question text to be displayed.
      * @param allowCancel    If {@code true}, the dialog also offers a cancel button.
      * @param preferencesKey If not {@code null}, a checkbox is displayed, and if checked the dialog will not be displayed again which lets users store the answer
-     * @return {@code JOptionPane.YES_OPTION}, {@code JOptionPane.NO_OPTION}, or {@code JOptionPane.CANCEL_OPTION}.
+     * @return {@link #YES_OPTION}, {@link #NO_OPTION}, or {@link #CANCEL_OPTION}.
      */
     public static int requestDecision(String title, String message, boolean allowCancel, String preferencesKey) {
         Object result;
@@ -121,9 +124,9 @@ public class SnapDialogs {
         if (preferencesKey != null) {
             String decision = getPreferences().get(preferencesKey + PREF_KEY_SUFFIX_DECISION, "");
             if (decision.equals(PREF_VALUE_YES)) {
-                return JOptionPane.YES_OPTION;
+                return YES_OPTION;
             } else if (decision.equals(PREF_VALUE_NO)) {
-                return JOptionPane.NO_OPTION;
+                return NO_OPTION;
             }
             JPanel panel = new JPanel(new BorderLayout(4, 4));
             panel.add(new JLabel(message), BorderLayout.CENTER);
@@ -141,14 +144,14 @@ public class SnapDialogs {
             if (storeResult) {
                 getPreferences().put(preferencesKey + PREF_KEY_SUFFIX_DECISION, PREF_VALUE_YES);
             }
-            return JOptionPane.YES_OPTION;
+            return YES_OPTION;
         } else if (NotifyDescriptor.NO_OPTION.equals(result)) {
             if (storeResult) {
                 getPreferences().put(preferencesKey + PREF_KEY_SUFFIX_DECISION, PREF_VALUE_NO);
             }
-            return JOptionPane.NO_OPTION;
+            return NO_OPTION;
         } else {
-            return JOptionPane.CANCEL_OPTION;
+            return CANCEL_OPTION;
         }
     }
 
