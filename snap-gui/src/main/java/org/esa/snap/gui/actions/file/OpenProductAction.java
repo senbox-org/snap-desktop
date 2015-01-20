@@ -127,9 +127,9 @@ public final class OpenProductAction extends AbstractAction {
                                                                                  "is already opened.\n" +
                                                                                  "Do you want to open another instance?", file),
                                                     true, null);
-                if (NotifyDescriptor.NO_OPTION.equals(i)) {
+                if (i == SnapDialogs.NO_OPTION) {
                     fileList.remove(file);
-                } else if (!NotifyDescriptor.YES_OPTION.equals(i)) {
+                } else if (i != SnapDialogs.YES_OPTION) {
                     // cancel!
                     return;
                 }

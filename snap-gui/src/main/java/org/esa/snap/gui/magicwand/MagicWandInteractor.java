@@ -227,7 +227,7 @@ public class MagicWandInteractor extends ViewportInteractor implements MagicWand
                                                        "Reset filter and use the ones of the selected product?",
                                                false,
                                                "reset_magic_wand_filter");
-        if (resp == JOptionPane.YES_OPTION) {
+        if (resp == SnapDialogs.YES_OPTION) {
             model.setBandNames();
             return ensureBandNamesSet(view, product);
         } else {

@@ -162,7 +162,7 @@ public class AttachPixelGeoCodingAction extends AbstractAction implements Contex
                                                         "Do you really want to continue?",
                                                         requiredMegas);
             final int answer = SnapDialogs.requestDecision(dialogTitle, message, false, "load_latlon_band_data");
-            if (answer != JOptionPane.YES_OPTION) {
+            if (answer != SnapDialogs.YES_OPTION) {
                 return;
             }
         }

@@ -101,9 +101,9 @@ public final class CloseProductAction extends AbstractAction {
             if (product.isModified()) {
                 int i = SnapDialogs.requestDecision(Bundle.CTL_OpenProductActionName(),
                                                     MessageFormat.format("Product ''{0}'' has been modified.\nDo you want to save it?", product.getName()), true, null);
-                if (NotifyDescriptor.YES_OPTION.equals(i)) {
+                if (i == SnapDialogs.YES_OPTION) {
                     saveList.add(product);
-                } else if (!NotifyDescriptor.NO_OPTION.equals(i)) {
+                } else if (i != SnapDialogs.NO_OPTION) {
                     // cancel!
                     return false;
                 }
