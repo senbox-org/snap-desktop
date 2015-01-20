@@ -11,7 +11,7 @@ import org.esa.beam.framework.dataio.ProductReaderPlugIn;
 import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.util.io.BeamFileFilter;
 import org.esa.snap.gui.SnapApp;
-import org.esa.snap.gui.nodes.PNodeFactory;
+import org.esa.snap.gui.SnapDialogs;
 import org.openide.NotifyDescriptor;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -57,11 +57,13 @@ public final class OpenProductAction extends AbstractAction {
     private static final Logger LOG = Logger.getLogger(OpenProductAction.class.getName());
 
     static RecentPaths getRecentProductPaths() {
-        return new RecentPaths(SnapApp.getInstance().getPreferences(), PREFERENCES_KEY_RECENTLY_OPENED_PRODUCTS, true);
+        return new RecentPaths(SnapApp.getDefault().getPreferences(), PREFERENCES_KEY_RECENTLY_OPENED_PRODUCTS, true);
     }
 
     static List<File> getOpenedProductFiles() {
-        return PNodeFactory.getInstance().getOpenedProducts().stream().map(Product::getFileLocation).collect(Collectors.toList());
+        return Arrays.stream(SnapApp.getDefault().getProductManager().getProducts())
+                .map(Product::getFileLocation)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -79,7 +81,7 @@ public final class OpenProductAction extends AbstractAction {
             return;
         }
 
-        Preferences preferences = SnapApp.getInstance().getPreferences();
+        Preferences preferences = SnapApp.getDefault().getPreferences();
 
         JFileChooser fc = new JFileChooser(new File(preferences.get(PREFERENCES_KEY_LAST_PRODUCT_DIR, ".")));
         fc.setDialogTitle(Bundle.CTL_OpenProductActionName());
@@ -120,10 +122,11 @@ public final class OpenProductAction extends AbstractAction {
         List<File> fileList = new ArrayList<>(Arrays.asList(files));
         for (File file : files) {
             if (openedFiles.contains(file)) {
-                int i = SnapApp.getInstance().showQuestionDialog(
-                        Bundle.CTL_OpenProductActionName(),
-                        MessageFormat.format("Product\n{0}\nis already opened.\nDo you want to open another instance?", file),
-                        null);
+                int i = SnapDialogs.requestDecision(Bundle.CTL_OpenProductActionName(),
+                                                    MessageFormat.format("Product\n{0}\n" +
+                                                                                 "is already opened.\n" +
+                                                                                 "Do you want to open another instance?", file),
+                                                    true, null);
                 if (NotifyDescriptor.NO_OPTION.equals(i)) {
                     fileList.remove(file);
                 } else if (!NotifyDescriptor.YES_OPTION.equals(i)) {
@@ -141,7 +144,7 @@ public final class OpenProductAction extends AbstractAction {
                     try {
                         Product product = formatName != null ? ProductIO.readProduct(file, formatName) : ProductIO.readProduct(file);
                         getRecentProductPaths().add(file.getPath());
-                        SwingUtilities.invokeLater(() -> PNodeFactory.getInstance().addProduct(product));
+                        SwingUtilities.invokeLater(() -> SnapApp.getDefault().getProductManager().addProduct(product));
                     } catch (IOException problem) {
                         problems.add(problem);
                     }
@@ -164,7 +167,7 @@ public final class OpenProductAction extends AbstractAction {
                         LOG.log(Level.SEVERE, problem.getMessage(), problem);
                         problemsMessage.append(MessageFormat.format("<b>  {0}</b>: {1}<br/>", problem.getClass().getSimpleName(), problem.getMessage()));
                     }
-                    SnapApp.getInstance().showErrorDialog(Bundle.CTL_OpenProductActionName(), problemsMessage.toString());
+                    SnapDialogs.showError(Bundle.CTL_OpenProductActionName(), problemsMessage.toString());
                 }
             }
         };

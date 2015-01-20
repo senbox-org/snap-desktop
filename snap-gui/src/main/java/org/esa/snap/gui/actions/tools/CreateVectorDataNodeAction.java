@@ -33,7 +33,7 @@ import org.esa.beam.framework.ui.product.ProductSceneView;
 import org.esa.beam.framework.ui.product.VectorDataLayerFilterFactory;
 import org.esa.beam.jai.ImageManager;
 import org.esa.snap.gui.SnapApp;
-import org.esa.snap.gui.nodes.PNodeFactory;
+import org.esa.snap.gui.nodes.UndoableProductNodeInsertion;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.openide.awt.ActionID;
@@ -91,7 +91,7 @@ public class CreateVectorDataNodeAction extends AbstractAction implements HelpCt
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        Product product = SnapApp.getInstance().getSelectedProduct();
+        Product product = SnapApp.getDefault().getSelectedProduct();
         if (product != null) {
             DialogData dialogData = new DialogData(product.getVectorDataGroup());
             PropertySet propertySet = PropertyContainer.createObjectBacked(dialogData);
@@ -127,19 +127,21 @@ public class CreateVectorDataNodeAction extends AbstractAction implements HelpCt
         vectorDataNode.getPlacemarkGroup();
         String oldLayerId = selectVectorDataLayer(vectorDataNode);
 
-        UndoRedo.Manager undoManager = PNodeFactory.getInstance().getUndoManager(product);
-        undoManager.addEdit(new MyUndoableEdit(product, vectorDataNode, oldLayerId));
+        UndoRedo.Manager undoManager = SnapApp.getDefault().getUndoManager(product);
+        if (undoManager != null) {
+            undoManager.addEdit(new UndoableVectorDataNodeInsertion(product, vectorDataNode, oldLayerId));
+        }
 
         return vectorDataNode;
     }
 
     private static String selectVectorDataLayer(VectorDataNode vectorDataNode) {
         Layer oldLayer = null;
-        ProductSceneView sceneView = SnapApp.getInstance().getSelectedProductSceneView();
+        ProductSceneView sceneView = SnapApp.getDefault().getSelectedProductSceneView();
         if (sceneView != null) {
             oldLayer = sceneView.getSelectedLayer();
             // todo find new solution
-            //SnapApp.getInstance().getProductTree().expand(vectorDataNode);
+            //SnapApp.getDefault().getProductTree().expand(vectorDataNode);
 
             sceneView.selectVectorDataLayer(vectorDataNode);
 
@@ -155,19 +157,8 @@ public class CreateVectorDataNodeAction extends AbstractAction implements HelpCt
     }
 
     public static String getDefaultVectorDataNodeName() {
-        //return VisatActivator.getInstance().getModuleContext().getRuntimeConfig().getContextProperty(KEY_VECTOR_DATA_INITIAL_NAME, "geometry");
+        //return VisatActivator.getDefault().getModuleContext().getRuntimeConfig().getContextProperty(KEY_VECTOR_DATA_INITIAL_NAME, "geometry");
         return "geometry";
-    }
-
-    private static String getSelectedLayerId() {
-        ProductSceneView sceneView = SnapApp.getInstance().getSelectedProductSceneView();
-        if (sceneView != null) {
-            Layer selectedLayer = sceneView.getSelectedLayer();
-            if (selectedLayer != null) {
-                return selectedLayer.getId();
-            }
-        }
-        return null;
     }
 
     private static class NameValidator implements Validator {
@@ -192,7 +183,7 @@ public class CreateVectorDataNodeAction extends AbstractAction implements HelpCt
         private final PropertyPane propertyPane;
 
         private MyModalDialog(PropertyPane propertyPane) {
-            super(SnapApp.getInstance().getMainFrame(),
+            super(SnapApp.getDefault().getMainFrame(),
                   DIALOG_TITLE,
                   ModalDialog.ID_OK_CANCEL_HELP,
                   HELP_ID);
@@ -225,40 +216,41 @@ public class CreateVectorDataNodeAction extends AbstractAction implements HelpCt
     }
 
 
-    private static class MyUndoableEdit extends AbstractUndoableEdit {
-        private final Product product;
-        private final VectorDataNode vectorDataNode;
+    private static class UndoableVectorDataNodeInsertion extends UndoableProductNodeInsertion<VectorDataNode> {
         private String oldLayerId;
 
-        public MyUndoableEdit(Product product, VectorDataNode vectorDataNode, String oldLayerId) {
-            this.product = product;
-            this.vectorDataNode = vectorDataNode;
+        public UndoableVectorDataNodeInsertion(Product product, VectorDataNode vectorDataNode, String oldLayerId) {
+            super(product.getVectorDataGroup(), vectorDataNode);
             this.oldLayerId = oldLayerId;
         }
 
         @Override
         public void undo() {
-            super.undo();
-            product.getVectorDataGroup().remove(vectorDataNode);
+            super.undo(); // removes VDN
             setSelectedLayer(oldLayerId);
         }
 
         @Override
         public void redo() {
-            super.redo();
             oldLayerId = getSelectedLayerId();
-            product.getVectorDataGroup().add(vectorDataNode);
-            selectVectorDataLayer(vectorDataNode);
+            super.redo(); // inserts VDN
+            selectVectorDataLayer(getProductNode());
         }
 
-        @Override
-        public String getPresentationName() {
-            return "Insert Vector Data Container";
+        private static String getSelectedLayerId() {
+            ProductSceneView sceneView = SnapApp.getDefault().getSelectedProductSceneView();
+            if (sceneView != null) {
+                Layer selectedLayer = sceneView.getSelectedLayer();
+                if (selectedLayer != null) {
+                    return selectedLayer.getId();
+                }
+            }
+            return null;
         }
 
         private void setSelectedLayer(String layerId) {
             if (layerId != null) {
-                ProductSceneView sceneView = SnapApp.getInstance().getSelectedProductSceneView();
+                ProductSceneView sceneView = SnapApp.getDefault().getSelectedProductSceneView();
                 if (sceneView != null) {
                     Layer layer = LayerUtils.getChildLayerById(sceneView.getRootLayer(), layerId);
                     if (layer != null) {

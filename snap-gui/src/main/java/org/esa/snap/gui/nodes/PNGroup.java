@@ -5,17 +5,18 @@
  */
 package org.esa.snap.gui.nodes;
 
+import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.datamodel.ProductNode;
-import org.openide.awt.UndoRedo;
-import org.openide.nodes.ChildFactory;
 
 /**
- * A group object serves as a key for {@link GroupNode}s and is a child factory for nodes
+ * A group object serves as a key for {@link PNGroupNode}s and is a child factory for nodes
  * representing {@link ProductNode}s.
  *
  * @author Norman
  */
-abstract class Group<T extends ProductNode> extends ChildFactory.Detachable<T> implements UndoRedo.Provider {
+abstract class PNGroup<T> extends PNGroupBase<T> {
+
+    public abstract Product getProduct();
 
     public abstract String getDisplayName();
 }

@@ -1,21 +1,23 @@
 package org.esa.snap.gui;
 
+import com.bc.ceres.core.ExtensionFactory;
+import com.bc.ceres.core.ExtensionManager;
 import com.bc.ceres.jai.operator.ReinterpretDescriptor;
 import org.esa.beam.framework.datamodel.Product;
+import org.esa.beam.framework.datamodel.ProductManager;
 import org.esa.beam.framework.datamodel.ProductNode;
 import org.esa.beam.framework.ui.product.ProductSceneView;
 import org.esa.beam.util.PropertyMap;
 import org.esa.snap.gui.util.CompatiblePropertyMap;
 import org.esa.snap.gui.util.ContextGlobalExtenderImpl;
-import org.esa.snap.tango.TangoIcons;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
-import org.openide.NotifyDescriptor;
-import org.openide.awt.NotificationDisplayer;
 import org.openide.awt.StatusDisplayer;
+import org.openide.awt.UndoRedo;
 import org.openide.modules.OnStart;
 import org.openide.modules.OnStop;
 import org.openide.util.ContextGlobalProvider;
+import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
 import org.openide.util.NbPreferences;
 import org.openide.util.Utilities;
@@ -31,39 +33,68 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.text.MessageFormat;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
-import static org.openide.util.NbBundle.Messages;
-
 /**
- * The central SNAP application class (dummy).
+ * The central SNAP application class.
+ * <p>
+ * If you want to provide alter behaviour of this class, register your derived class as a service using
+ * <pre>
+ *     &#64;ServiceProvider(service = MoonApp.class, supersedes = "org.esa.snap.gui.SnapApp")
+ *     public class MoonApp extends SnapApp {
+ *         ...
+ *     }
+ * </pre>
  *
  * @author Norman Fomferra
  * @since 2.0
  */
+@ServiceProvider(service = SnapApp.class)
 @SuppressWarnings("UnusedDeclaration")
 public class SnapApp {
 
     private final static Logger LOG = Logger.getLogger(SnapApp.class.getName());
 
-    private static SnapApp instance;
+    private final ProductManager productManager;
 
-    protected SnapApp() {
-    }
-
-    public static SnapApp getInstance() {
+    public static SnapApp getDefault() {
+        SnapApp instance = Lookup.getDefault().lookup(SnapApp.class);
+        if (instance == null) {
+            instance = new SnapApp();
+        }
         return instance;
     }
 
-    protected static void setInstance(SnapApp instance) {
-        SnapApp.instance = instance;
+    public SnapApp() {
+
+        productManager = new ProductManager();
+        // Register a provider that delivers an UndoManager for a Product instance.
+        UndoManagerProvider undoManagerProvider = new UndoManagerProvider();
+        ExtensionManager.getInstance().register(Product.class, undoManagerProvider);
+        productManager.addListener(undoManagerProvider);
+
+        Lookup.Result<ProductNode> productNodeSelection = Utilities.actionsGlobalContext().lookupResult(ProductNode.class);
+        productNodeSelection.addLookupListener(ev -> {
+            updateMainFrameTitle();
+        });
+    }
+
+    public ProductManager getProductManager() {
+        return productManager;
+    }
+
+    public UndoRedo.Manager getUndoManager(Product product) {
+        return product.getExtension(UndoRedo.Manager.class);
     }
 
     public Frame getMainFrame() {
@@ -91,30 +122,6 @@ public class SnapApp {
         return NbBundle.getBundle("org.netbeans.core.ui.Bundle").getString("LBL_ProductInformation");
     }
 
-    public void showOutOfMemoryErrorDialog(String message) {
-        showErrorDialog("Out of Memory", message);
-    }
-
-    public void showErrorDialog(String title, String message) {
-        NotifyDescriptor nd = new NotifyDescriptor(message,
-                                                   title,
-                                                   JOptionPane.OK_OPTION,
-                                                   NotifyDescriptor.ERROR_MESSAGE,
-                                                   null,
-                                                   null);
-        DialogDisplayer.getDefault().notify(nd);
-
-        ImageIcon icon = TangoIcons.status_dialog_error(TangoIcons.Res.R16);
-        JLabel balloonDetails = new JLabel(message);
-        JButton popupDetails = new JButton("Call ESA");
-        NotificationDisplayer.getDefault().notify(title,
-                                                  icon,
-                                                  balloonDetails,
-                                                  popupDetails,
-                                                  NotificationDisplayer.Priority.HIGH,
-                                                  NotificationDisplayer.Category.ERROR);
-    }
-
     /**
      * @return The user's application preferences.
      */
@@ -135,18 +142,11 @@ public class SnapApp {
         return LOG;
     }
 
-    /**
-     * @deprecated Should be superfluous now. Kept for compatibility reasons only. Remove ASAP and latest before 2.0 release.
-     */
-    @Deprecated
-    public void updateState() {
-    }
-
     public void handleError(String message, Throwable t) {
         if (t != null) {
             t.printStackTrace();
         }
-        showErrorDialog(getInstanceName() + " - Error", message);
+        SnapDialogs.showError(getInstanceName() + " - Error", message);
         getLogger().log(Level.SEVERE, message, t);
     }
 
@@ -162,81 +162,91 @@ public class SnapApp {
         return null;
     }
 
+    public String getMainFrameTitle() {
+
+        ProductNode selectedProductNode = getSelectedProductNode();
+        Product selectedProduct = null;
+        if (selectedProductNode != null) {
+            selectedProduct = selectedProductNode.getProduct();
+            if (selectedProduct == null) {
+                selectedProduct = getSelectedProduct();
+            }
+        }
+
+        String title;
+        if (selectedProduct == null) {
+            if (Utilities.isMac()) {
+                title = String.format("[%s]", "Empty");
+            } else {
+                title = String.format("%s", getInstanceName());
+            }
+        } else if (selectedProduct == selectedProductNode) {
+            File fileLocation = selectedProduct.getFileLocation();
+            String path = fileLocation != null ? fileLocation.getPath() : "not saved";
+            if (Utilities.isMac()) {
+                title = String.format("%s - [%s]",
+                                      selectedProduct.getName(), path);
+            } else {
+                title = String.format("%s - [%s] - %s",
+                                      selectedProduct.getName(), path, getInstanceName());
+            }
+        } else {
+            File fileLocation = selectedProduct.getFileLocation();
+            String path = fileLocation != null ? fileLocation.getPath() : "not saved";
+            if (Utilities.isMac()) {
+                title = String.format("%s - [%s] - [%s]",
+                                      selectedProduct.getName(), path, selectedProductNode.getName());
+            } else {
+                title = String.format("%s - [%s] - [%s] - %s",
+                                      selectedProduct.getName(), path, selectedProductNode.getName(), getInstanceName());
+            }
+        }
+
+        return title;
+    }
+
+    private void updateMainFrameTitle() {
+        getMainFrame().setTitle(getMainFrameTitle());
+    }
+
     public ProductSceneView getSelectedProductSceneView() {
         return Utilities.actionsGlobalContext().lookup(ProductSceneView.class);
     }
 
-    public int showQuestionDialog(String title, String message, String preferencesKey) {
-        return showQuestionDialog(title, message, false, preferencesKey);
+
+    public void onStart() {
+        WindowManager.getDefault().setRole("developer");
     }
 
-    @Messages("LBL_QuestionRemember=Remember my decision and don't ask again.")
-    public int showQuestionDialog(String title, String message, boolean allowCancel, String preferencesKey) {
-        Object result;
-        boolean storeResult;
-        if (preferencesKey != null) {
-            String decision = getPreferences().get(preferencesKey + ".confirmed", "");
-            if (decision.equals("yes")) {
-                return JOptionPane.YES_OPTION;
-            } else if (decision.equals("no")) {
-                return JOptionPane.NO_OPTION;
-            }
-            JPanel panel = new JPanel(new BorderLayout(4, 4));
-            panel.add(new JLabel(message), BorderLayout.CENTER);
-            JCheckBox decisionCheckBox = new JCheckBox("Remember my decision and don't ask again.", false);
-            panel.add(decisionCheckBox, BorderLayout.SOUTH);
-            NotifyDescriptor d = new NotifyDescriptor.Confirmation(panel, getInstanceName() + " - " + title, allowCancel ? NotifyDescriptor.YES_NO_CANCEL_OPTION : NotifyDescriptor.YES_NO_OPTION);
-            result = DialogDisplayer.getDefault().notify(d);
-            storeResult = decisionCheckBox.isSelected();
-        } else {
-            NotifyDescriptor d = new NotifyDescriptor.Confirmation(message, getInstanceName() + " - " + title, allowCancel ? NotifyDescriptor.YES_NO_CANCEL_OPTION : NotifyDescriptor.YES_NO_OPTION);
-            result = DialogDisplayer.getDefault().notify(d);
-            storeResult = false;
+    public void onShowing() {
+        updateMainFrameTitle();
+    }
+
+    public boolean onTryStop() {
+        Frame mainWindow = getDefault().getMainFrame();
+        if (mainWindow == null || !mainWindow.isShowing()) {
+            return true;
         }
-        if (NotifyDescriptor.YES_OPTION.equals(result)) {
-            if (storeResult) {
-                getPreferences().put(preferencesKey + ".confirmed", "yes");
-            }
-            return JOptionPane.YES_OPTION;
-        } else if (NotifyDescriptor.NO_OPTION.equals(result)) {
-            if (storeResult) {
-                getPreferences().put(preferencesKey + ".confirmed", "no");
-            }
-            return JOptionPane.NO_OPTION;
-        } else {
-            return JOptionPane.CANCEL_OPTION;
-        }
+        ActionListener actionListener = (ActionEvent e) -> LOG.info(">>> " + getClass() + " action called");
+        JLabel label = new JLabel("<html>SNAP found some cached <b>bazoo files</b> in your <b>gnarz folder</b>.<br>" +
+                                          "Should they be rectified now?");
+        JPanel panel = new JPanel();
+        panel.setBorder(new EmptyBorder(10, 10, 10, 10));
+        panel.add(label);
+        DialogDescriptor dialogDescriptor = new DialogDescriptor(
+                panel,
+                "Confirm",
+                true,
+                DialogDescriptor.YES_NO_CANCEL_OPTION,
+                null,
+                actionListener);
+        Dialog dialog = DialogDisplayer.getDefault().createDialog(dialogDescriptor, mainWindow);
+        dialog.setVisible(true);
+        Object value = dialogDescriptor.getValue();
+        return !new Integer(2).equals(value);
     }
 
-    @Messages("LBL_Information=Information")
-    public final void showInfoDialog(String message, String preferencesKey) {
-        showInfoDialog("Information", message, preferencesKey);
-    }
-
-    public final void showInfoDialog(String title, String message, String preferencesKey) {
-        showMessageDialog(title, message, JOptionPane.INFORMATION_MESSAGE, preferencesKey);
-    }
-
-    public final void showMessageDialog(String title, String message, int messageType, String preferencesKey) {
-        if (preferencesKey != null) {
-            String decision = getPreferences().get(preferencesKey + ".dontShow", "");
-            if (decision.equals("true")) {
-                return;
-            }
-            JPanel panel = new JPanel(new BorderLayout(4, 4));
-            panel.add(new JLabel(message), BorderLayout.CENTER);
-            JCheckBox dontShowCheckBox = new JCheckBox("Don't show this message anymore.", false);
-            panel.add(dontShowCheckBox, BorderLayout.SOUTH);
-            NotifyDescriptor d = new NotifyDescriptor(panel, getInstanceName() + " - " + title, NotifyDescriptor.DEFAULT_OPTION, messageType, null, null);
-            DialogDisplayer.getDefault().notify(d);
-            boolean storeResult = dontShowCheckBox.isSelected();
-            if (storeResult) {
-                getPreferences().put(preferencesKey + ".dontShow", "true");
-            }
-        } else {
-            NotifyDescriptor d = new NotifyDescriptor(message, getInstanceName() + " - " + title, NotifyDescriptor.DEFAULT_OPTION, messageType, null, null);
-            DialogDisplayer.getDefault().notify(d);
-        }
+    public void onStop() {
     }
 
     /**
@@ -249,10 +259,9 @@ public class SnapApp {
 
         @Override
         public void run() {
-            LOG.info(">>> " + getClass() + " called");
-            setInstance(new SnapApp());
+            LOG.fine(">>> " + getClass() + " called");
             initJAI();
-            WindowManager.getDefault().setRole("developer");
+            SnapApp.getDefault().onStart();
         }
     }
 
@@ -265,7 +274,8 @@ public class SnapApp {
 
         @Override
         public void run() {
-            LOG.info(getClass() + " called");
+            LOG.fine(getClass() + " called");
+            SnapApp.getDefault().onShowing();
         }
     }
 
@@ -285,28 +295,8 @@ public class SnapApp {
 
         @Override
         public Boolean call() {
-            Frame mainWindow = getInstance().getMainFrame();
-            if (mainWindow == null || !mainWindow.isShowing()) {
-                return true;
-            }
-            LOG.info(">>> " + getClass() + " called");
-            ActionListener actionListener = (ActionEvent e) -> LOG.info(">>> " + getClass() + " action called");
-            JLabel label = new JLabel("<html>SNAP found some cached <b>bazoo files</b> in your <b>gnarz folder</b>.<br>" +
-                                              "Should they be rectified now?");
-            JPanel panel = new JPanel();
-            panel.setBorder(new EmptyBorder(10, 10, 10, 10));
-            panel.add(label);
-            DialogDescriptor dialogDescriptor = new DialogDescriptor(
-                    panel,
-                    "Confirm",
-                    true,
-                    DialogDescriptor.YES_NO_CANCEL_OPTION,
-                    null,
-                    actionListener);
-            Dialog dialog = DialogDisplayer.getDefault().createDialog(dialogDescriptor, mainWindow);
-            dialog.setVisible(true);
-            Object value = dialogDescriptor.getValue();
-            return !new Integer(2).equals(value);
+            LOG.fine(">>> " + getClass() + " called");
+            return SnapApp.getDefault().onTryStop();
         }
     }
 
@@ -315,9 +305,8 @@ public class SnapApp {
 
         @Override
         public void run() {
-            LOG.info(">>> " + getClass() + " called");
-            // do some cleanup
-            setInstance(null);
+            LOG.fine(">>> " + getClass() + " called");
+            SnapApp.getDefault().onStop();
         }
     }
 
@@ -374,5 +363,35 @@ public class SnapApp {
             supersedes = "org.netbeans.modules.openide.windows.GlobalActionContextImpl"
     )
     public static class ActionContextExtender extends ContextGlobalExtenderImpl {
+    }
+
+    /**
+     * Associates objects with an undo manager.
+     */
+    private static class UndoManagerProvider implements ExtensionFactory, ProductManager.Listener {
+        private Map<Object, UndoRedo.Manager> undoManagers = new HashMap<>();
+
+        @Override
+        public Class<?>[] getExtensionTypes() {
+            return new Class<?>[]{UndoRedo.Manager.class};
+        }
+
+        @Override
+        public Object getExtension(Object object, Class<?> extensionType) {
+            return undoManagers.get(object);
+        }
+
+        @Override
+        public void productAdded(ProductManager.Event event) {
+            undoManagers.put(event.getProduct(), new UndoRedo.Manager());
+        }
+
+        @Override
+        public void productRemoved(ProductManager.Event event) {
+            UndoRedo.Manager manager = undoManagers.remove(event.getProduct());
+            if (manager != null) {
+                manager.die();
+            }
+        }
     }
 }

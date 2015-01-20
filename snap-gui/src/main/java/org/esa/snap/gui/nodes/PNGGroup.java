@@ -5,53 +5,68 @@
  */
 package org.esa.snap.gui.nodes;
 
+import com.bc.ceres.core.Assert;
 import org.esa.beam.framework.datamodel.Band;
 import org.esa.beam.framework.datamodel.FlagCoding;
 import org.esa.beam.framework.datamodel.IndexCoding;
 import org.esa.beam.framework.datamodel.Mask;
+import org.esa.beam.framework.datamodel.MetadataElement;
+import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.datamodel.ProductNode;
 import org.esa.beam.framework.datamodel.ProductNodeGroup;
 import org.esa.beam.framework.datamodel.TiePointGrid;
 import org.esa.beam.framework.datamodel.VectorDataNode;
-import org.openide.awt.UndoRedo;
-import org.openide.nodes.Node;
-import org.openide.nodes.NodeEvent;
-import org.openide.nodes.NodeListener;
-import org.openide.nodes.NodeMemberEvent;
-import org.openide.nodes.NodeReorderEvent;
-import org.openide.util.Exceptions;
+import org.openide.util.NbBundle;
 
-import java.beans.IntrospectionException;
-import java.beans.PropertyChangeEvent;
 import java.util.List;
 
 
 /**
- * A group that represents a {@link org.esa.beam.framework.datamodel.ProductNodeGroup} (=PNG).
+ * A group that gets its nodes from a {@link org.esa.beam.framework.datamodel.ProductNodeGroup} (=PNG).
  *
  * @author Norman
  */
-abstract class PNGGroup<T extends ProductNode> extends Group<T> implements NodeListener {
+@NbBundle.Messages({
+        "LBL_MetadataGroupName=Metadata",
+        "LBL_FlagCodingGroupName=Flag Codings",
+        "LBL_IndexCodingGroupName=Index Codings",
+        "LBL_VectorDataGroupName=Vector Data",
+        "LBL_TiePointGroupName=Tie-Point Grids",
+        "LBL_BandGroupName=Bands",
+        "LBL_MaskGroupName=Masks",
+})
+abstract class PNGGroup<T extends ProductNode> extends PNGroup<T> {
 
     private final String displayName;
     private final ProductNodeGroup<T> group;
-    private final UndoRedo undoRedo;
 
-    protected PNGGroup(String displayName, ProductNodeGroup<T> group, UndoRedo undoRedo) {
+    protected PNGGroup(String displayName, ProductNodeGroup<T> group) {
+        Assert.notNull(group, "group");
         this.displayName = displayName;
         this.group = group;
-        this.undoRedo = undoRedo;
     }
 
     @Override
-    public UndoRedo getUndoRedo() {
-        return undoRedo;
+    public Product getProduct() {
+        return group.getProduct();
     }
 
     @Override
     public String getDisplayName() {
         return displayName;
     }
+
+    @Override
+    boolean isDirectChild(ProductNode productNode) {
+        int nodeCount = group.getNodeCount();
+        for (int i = 0; i < nodeCount; i++) {
+            if (group.get(i) == productNode) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     @Override
     protected boolean createKeys(List<T> list) {
@@ -63,106 +78,90 @@ abstract class PNGGroup<T extends ProductNode> extends Group<T> implements NodeL
     }
 
     @Override
-    protected Node createNodeForKey(T key) {
-        try {
-            Node node = createPNLeafNode(key);
-            node.addNodeListener(this);
-            return node;
-        } catch (IntrospectionException e) {
-            Exceptions.printStackTrace(e);
-            return null;
-        }
-    }
+    protected abstract PNNode createNodeForKey(T key);
 
-    protected abstract PNLeafNode createPNLeafNode(T key) throws IntrospectionException;
-
-    @Override
-    public void childrenAdded(NodeMemberEvent ev) {
-    }
-
-    @Override
-    public void childrenRemoved(NodeMemberEvent ev) {
-    }
-
-    @Override
-    public void childrenReordered(NodeReorderEvent ev) {
-    }
-
-    @Override
-    public void nodeDestroyed(NodeEvent ev) {
-        PNLeafNode node = (PNLeafNode) ev.getNode();
-        group.remove((T) node.getProductNode());
-        refresh(true);
-    }
-
-    @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-    }
 
     public static class B extends PNGGroup<Band> {
-        public B(ProductNodeGroup<Band> group, UndoRedo undoRedo) {
-            super("Bands", group, undoRedo);
+
+        public B(ProductNodeGroup<Band> group) {
+            super(Bundle.LBL_BandGroupName(), group);
         }
 
         @Override
-        protected PNLeafNode createPNLeafNode(Band key) throws IntrospectionException {
-            return new BNode(key, getUndoRedo());
+        protected PNNode createNodeForKey(Band key) {
+            return new PNNode.B(key);
         }
-
     }
 
     public static class TPG extends PNGGroup<TiePointGrid> {
-        public TPG(ProductNodeGroup<TiePointGrid> group, UndoRedo undoRedo) {
-            super("Tie-Point Grids", group, undoRedo);
+
+        public TPG(ProductNodeGroup<TiePointGrid> group) {
+            super(Bundle.LBL_TiePointGroupName(), group);
         }
 
         @Override
-        protected PNLeafNode createPNLeafNode(TiePointGrid key) throws IntrospectionException {
-            return new TPGNode(key, getUndoRedo());
+        protected PNNode createNodeForKey(TiePointGrid key) {
+            return new PNNode.TPG(key);
         }
     }
 
     public static class VDN extends PNGGroup<VectorDataNode> {
-        public VDN(ProductNodeGroup<VectorDataNode> group, UndoRedo undoRedo) {
-            super("Vector Data", group, undoRedo);
+
+        public VDN(ProductNodeGroup<VectorDataNode> group) {
+            super(Bundle.LBL_VectorDataGroupName(), group);
         }
 
         @Override
-        protected PNLeafNode createPNLeafNode(VectorDataNode key) throws IntrospectionException {
-            return new VDNNode(key, getUndoRedo());
+        protected PNNode createNodeForKey(VectorDataNode key) {
+            return new PNNode.VDN(key);
         }
     }
 
     public static class M extends PNGGroup<Mask> {
-        public M(ProductNodeGroup<Mask> group, UndoRedo undoRedo) {
-            super("Masks", group, undoRedo);
+
+        public M(ProductNodeGroup<Mask> group) {
+            super(Bundle.LBL_MaskGroupName(), group);
         }
 
         @Override
-        protected PNLeafNode createPNLeafNode(Mask key) throws IntrospectionException {
-            return new MNode(key, getUndoRedo());
+        protected PNNode createNodeForKey(Mask key) {
+            return new PNNode.M(key);
         }
     }
 
     public static class FC extends PNGGroup<FlagCoding> {
-        public FC(ProductNodeGroup<FlagCoding> group, UndoRedo undoRedo) {
-            super("Flag Codings", group, undoRedo);
+
+        public FC(ProductNodeGroup<FlagCoding> group) {
+            super(Bundle.LBL_FlagCodingGroupName(), group);
         }
 
         @Override
-        protected PNLeafNode createPNLeafNode(FlagCoding key) throws IntrospectionException {
-            return new FCNode(key, getUndoRedo());
+        protected PNNode createNodeForKey(FlagCoding key) {
+            return new PNNode.FC(key);
         }
     }
 
     public static class IC extends PNGGroup<IndexCoding> {
-        public IC(ProductNodeGroup<IndexCoding> group, UndoRedo undoRedo) {
-            super("Index Codings", group, undoRedo);
+
+        public IC(ProductNodeGroup<IndexCoding> group) {
+            super(Bundle.LBL_IndexCodingGroupName(), group);
         }
 
         @Override
-        protected PNLeafNode createPNLeafNode(IndexCoding key) throws IntrospectionException {
-            return new ICNode(key, getUndoRedo());
+        protected PNNode createNodeForKey(IndexCoding key) {
+            return new PNNode.IC(key);
+        }
+    }
+
+    public static class ME extends PNGGroup<MetadataElement> {
+
+        public ME(ProductNodeGroup<MetadataElement> group) {
+            super(Bundle.LBL_MetadataGroupName(), group);
+        }
+
+        @Override
+        protected PNNode createNodeForKey(MetadataElement key) {
+            return new PNNode.ME(key);
         }
     }
 }

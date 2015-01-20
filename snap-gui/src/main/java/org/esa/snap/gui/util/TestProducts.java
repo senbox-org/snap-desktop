@@ -28,6 +28,7 @@ public class TestProducts {
         product.addMask("Mask_B", "Band_B < 0.0", "I am Mask B", Color.RED, 0.5);
         product.getMetadataRoot().addElement(new MetadataElement("Global_Attributes"));
         product.getMetadataRoot().addElement(new MetadataElement("Local_Attributes"));
+        product.setModified(false);
         return product;
     }
 
@@ -43,6 +44,7 @@ public class TestProducts {
         product.addMask("Mask_3", "Band_3 > -0.1 && Band_3 < 0.1", "I am Mask 3", Color.BLUE, 0.5);
         product.getMetadataRoot().addElement(new MetadataElement("Global_Attributes"));
         product.getMetadataRoot().addElement(new MetadataElement("Local_Attributes"));
+        product.setModified(false);
         return product;
     }
 

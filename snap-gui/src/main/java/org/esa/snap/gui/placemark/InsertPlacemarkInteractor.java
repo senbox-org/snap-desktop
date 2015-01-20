@@ -22,7 +22,7 @@ import org.esa.beam.framework.datamodel.Placemark;
 import org.esa.beam.framework.datamodel.PlacemarkDescriptor;
 import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.ui.product.ProductSceneView;
-import org.esa.snap.gui.nodes.PNodeFactory;
+import org.esa.snap.gui.SnapApp;
 import org.openide.awt.UndoRedo;
 
 import javax.swing.undo.AbstractUndoableEdit;
@@ -90,25 +90,10 @@ public abstract class InsertPlacemarkInteractor extends FigureEditorInteractor {
 
         placemarkDescriptor.getPlacemarkGroup(product).add(newPlacemark);
 
-        UndoRedo.Manager undoManager = PNodeFactory.getInstance().getUndoManager(product);
-        undoManager.addEdit(new AbstractUndoableEdit() {
-            @Override
-            public void undo() {
-                super.undo();
-                placemarkDescriptor.getPlacemarkGroup(product).remove(newPlacemark);
-            }
-
-            @Override
-            public void redo() {
-                super.redo();
-                placemarkDescriptor.getPlacemarkGroup(product).add(newPlacemark);
-            }
-
-            @Override
-            public String getPresentationName() {
-                return "Insert " + placemarkDescriptor.getRoleLabel();
-            }
-        });
+        UndoRedo.Manager undoManager = SnapApp.getDefault().getUndoManager(product);
+        if (undoManager != null) {
+            undoManager.addEdit(new UndoablePlacemarkInsertion(product, newPlacemark));
+        }
     }
 
     private Cursor createCursor() {
@@ -136,5 +121,32 @@ public abstract class InsertPlacemarkInteractor extends FigureEditorInteractor {
         }
 
         return null;
+    }
+
+    private class UndoablePlacemarkInsertion extends AbstractUndoableEdit {
+        private final Product product;
+        private final Placemark newPlacemark;
+
+        public UndoablePlacemarkInsertion(Product product, Placemark newPlacemark) {
+            this.product = product;
+            this.newPlacemark = newPlacemark;
+        }
+
+        @Override
+        public void undo() {
+            super.undo();
+            placemarkDescriptor.getPlacemarkGroup(product).remove(newPlacemark);
+        }
+
+        @Override
+        public void redo() {
+            super.redo();
+            placemarkDescriptor.getPlacemarkGroup(product).add(newPlacemark);
+        }
+
+        @Override
+        public String getPresentationName() {
+            return "Insert " + placemarkDescriptor.getRoleLabel();
+        }
     }
 }

@@ -51,11 +51,6 @@
             <artifactId>org-openide-util</artifactId>
             <version>${netbeans.version}</version>
         </dependency>
-
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-        </dependency>
     </dependencies>
 
 </project>

@@ -5,33 +5,33 @@
  */
 package org.esa.snap.gui.windows;
 
-import org.esa.snap.gui.nodes.PNodeFactory;
+import org.esa.beam.framework.datamodel.Product;
+import org.esa.snap.gui.SnapApp;
+import org.esa.snap.gui.nodes.ProductGroupNode;
 import org.esa.snap.gui.util.TestProducts;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
-import org.openide.awt.UndoRedo;
 import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.ExplorerUtils;
 import org.openide.explorer.view.BeanTreeView;
-import org.openide.nodes.AbstractNode;
-import org.openide.nodes.Children;
 import org.openide.nodes.Node;
 import org.openide.util.NbBundle;
 import org.openide.windows.IOProvider;
 import org.openide.windows.InputOutput;
 import org.openide.windows.TopComponent;
 
-import javax.swing.ActionMap;
+import javax.swing.*;
 import javax.swing.text.DefaultEditorKit;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.logging.Logger;
 
 /**
+ * The product explorer tool window.
+ *
  * @author Norman
  */
 @TopComponent.Description(
@@ -49,9 +49,9 @@ import java.util.logging.Logger;
         preferredID = "ProductExplorerTopComponent"
 )
 @NbBundle.Messages({
-                           "CTL_ProductExplorerTopComponentName=Product Explorer",
-                           "CTL_ProductExplorerTopComponentDescription=Lists all open products",
-                   })
+        "CTL_ProductExplorerTopComponentName=Product Explorer",
+        "CTL_ProductExplorerTopComponentDescription=Lists all open products",
+})
 public class ProductExplorerTopComponent extends TopComponent implements ExplorerManager.Provider {
 
     private static final Logger LOG = Logger.getLogger(ProductExplorerTopComponent.class.getName());
@@ -73,10 +73,11 @@ public class ProductExplorerTopComponent extends TopComponent implements Explore
         treeView.setRootVisible(false);
         add(treeView, BorderLayout.CENTER);
         // 2. Create a node hierarchy:
-        PNodeFactory.getInstance().addProducts(TestProducts.createProducts());
-        Children productChildren = Children.create(PNodeFactory.getInstance(), true);
-        Node rootNode = new AbstractNode(productChildren);
-        rootNode.setDisplayName("Open products");
+        Product[] products = TestProducts.createProducts();
+        for (Product product : products) {
+            SnapApp.getDefault().getProductManager().addProduct(product);
+        }
+        Node rootNode = new ProductGroupNode(SnapApp.getDefault().getProductManager());
         // 3. Set the root of the node hierarchy on the ExplorerManager:
         explorerManager.setRootContext(rootNode);
 
@@ -103,13 +104,6 @@ public class ProductExplorerTopComponent extends TopComponent implements Explore
                 }
             }
         });
-    }
-
-    @Override
-    public UndoRedo getUndoRedo() {
-        Node[] activatedNodes = getActivatedNodes();
-        LOG.info("getUndoRedo: activatedNodes = " + Arrays.toString(activatedNodes));
-        return super.getUndoRedo();
     }
 
     @Override

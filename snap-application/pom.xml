@@ -27,6 +27,11 @@
             <type>pom</type>
         </dependency>
         <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-netbeans-modules-javahelp</artifactId>
+            <version>${netbeans.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.esa.snap</groupId>
             <artifactId>snap-engine</artifactId>
             <version>${project.version}</version>
@@ -79,6 +84,9 @@
                 <artifactId>nbm-maven-plugin</artifactId>
                 <configuration>
                     <installerLicenseFile>../LICENSE.html</installerLicenseFile>
+                    <additionalArguments>--locale en_GB -J-Dsun.java2d.noddraw=true -J-Dsun.awt.nopixfmt=true -J-Dsun.java2d.dpiaware=false</additionalArguments>
+                    <!-- additional arguments need to be added also to the default config file -->
+                    <etcConfFile>src/main/resources/defaultSnap.conf</etcConfFile>
                 </configuration>
             </plugin>
             <!-- Permits NbModuleSuite to be run in integration-test phase: -->

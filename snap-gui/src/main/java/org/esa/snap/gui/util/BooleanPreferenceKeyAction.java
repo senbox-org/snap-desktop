@@ -17,6 +17,8 @@ import java.util.prefs.PreferenceChangeListener;
 import java.util.prefs.Preferences;
 
 /**
+ * An action which sets a boolean preference value.
+ *
  * @author Norman
  */
 public class BooleanPreferenceKeyAction extends AbstractAction
@@ -26,9 +28,13 @@ public class BooleanPreferenceKeyAction extends AbstractAction
 
     protected BooleanPreferenceKeyAction(String preferenceKey) {
         this.preferenceKey = preferenceKey;
-        Preferences preferences = SnapApp.getInstance().getPreferences();
+        Preferences preferences = SnapApp.getDefault().getPreferences();
         preferences.addPreferenceChangeListener(WeakListeners.create(PreferenceChangeListener.class, this, preferences));
         setSelected(getPreferenceValue());
+    }
+
+    public String getPreferenceKey() {
+        return preferenceKey;
     }
 
     public boolean isSelected() {
@@ -65,16 +71,16 @@ public class BooleanPreferenceKeyAction extends AbstractAction
 
     @Override
     public void preferenceChange(PreferenceChangeEvent evt) {
-        if (preferenceKey.equals(evt.getKey())) {
+        if (getPreferenceKey().equals(evt.getKey())) {
             setSelected(getPreferenceValue());
         }
     }
 
     private boolean getPreferenceValue() {
-        return SnapApp.getInstance().getPreferences().getBoolean(preferenceKey, false);
+        return SnapApp.getDefault().getPreferences().getBoolean(getPreferenceKey(), false);
     }
 
     private void setPreferenceValue(boolean selected) {
-        SnapApp.getInstance().getPreferences().putBoolean(preferenceKey, selected);
+        SnapApp.getDefault().getPreferences().putBoolean(getPreferenceKey(), selected);
     }
 }

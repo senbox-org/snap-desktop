@@ -59,12 +59,12 @@ public class ImageCursorSynchronizer implements Runnable, PreferenceChangeListen
         viewPplMap = new WeakHashMap<>();
         psvOverlayMapUpdater = new PsvListUpdater();
 
-        Preferences preferences = SnapApp.getInstance().getPreferences();
+        Preferences preferences = SnapApp.getDefault().getPreferences();
         preferences.addPreferenceChangeListener(WeakListeners.create(PreferenceChangeListener.class, this, preferences));
     }
 
     private boolean isActive() {
-        return SnapApp.getInstance().getPreferences().getBoolean(PROPERTY_KEY_AUTO_SYNC_CURSORS, false);
+        return SnapApp.getDefault().getPreferences().getBoolean(PROPERTY_KEY_AUTO_SYNC_CURSORS, false);
     }
 
     @Override

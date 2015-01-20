@@ -31,14 +31,13 @@ import org.esa.beam.glayer.MaskLayerType;
 import org.esa.beam.jai.ImageManager;
 import org.esa.beam.util.io.FileUtils;
 import org.esa.snap.gui.SnapApp;
+import org.esa.snap.gui.SnapDialogs;
 
-import javax.swing.JDialog;
-import javax.swing.JOptionPane;
+import javax.swing.*;
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
-import java.awt.Point;
-import java.awt.Window;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
@@ -133,7 +132,7 @@ public class MagicWandInteractor extends ViewportInteractor implements MagicWand
         }
         optionsWindow.setVisible(true);
 
-        ProductSceneView view = SnapApp.getInstance().getSelectedProductSceneView();
+        ProductSceneView view = SnapApp.getDefault().getSelectedProductSceneView();
         if (view != null) {
             view.getRootLayer().addListener(layerListener);
         }
@@ -149,7 +148,7 @@ public class MagicWandInteractor extends ViewportInteractor implements MagicWand
             optionsWindow.setVisible(false);
         }
 
-        ProductSceneView view = SnapApp.getInstance().getSelectedProductSceneView();
+        ProductSceneView view = SnapApp.getDefault().getSelectedProductSceneView();
         if (view != null) {
             view.getRootLayer().removeListener(layerListener);
         }
@@ -158,7 +157,7 @@ public class MagicWandInteractor extends ViewportInteractor implements MagicWand
     @Override
     public void mouseClicked(MouseEvent event) {
 
-        final ProductSceneView view = SnapApp.getInstance().getSelectedProductSceneView();
+        final ProductSceneView view = SnapApp.getDefault().getSelectedProductSceneView();
         if (view == null) {
             return;
         }
@@ -222,12 +221,12 @@ public class MagicWandInteractor extends ViewportInteractor implements MagicWand
 
     private boolean handleInvalidBandFilter(ProductSceneView view) {
         Product product = view.getProduct();
-        int resp = SnapApp.getInstance().showQuestionDialog(DIALOG_TITLE,
-                                                        "The currently selected band filter does not match\n" +
-                                                        "the bands of the selected data product.\n\n" +
-                                                        "Reset filter and use the ones of the selected product?",
-                                                        false,
-                                                        "visat.magicWandTool.resetFilter");
+        int resp = SnapDialogs.requestDecision(DIALOG_TITLE,
+                                               "The currently selected band filter does not match\n" +
+                                                       "the bands of the selected data product.\n\n" +
+                                                       "Reset filter and use the ones of the selected product?",
+                                               false,
+                                               "reset_magic_wand_filter");
         if (resp == JOptionPane.YES_OPTION) {
             model.setBandNames();
             return ensureBandNamesSet(view, product);
@@ -244,7 +243,7 @@ public class MagicWandInteractor extends ViewportInteractor implements MagicWand
             try {
                 ip = transform.inverseTransform(mp, null);
             } catch (NoninvertibleTransformException e) {
-                SnapApp.getInstance().showErrorDialog(DIALOG_TITLE, "A geographic transformation problem occurred:\n" + e.getMessage());
+                SnapDialogs.showError(DIALOG_TITLE, "A geographic transformation problem occurred:\n" + e.getMessage());
                 return null;
             }
         } else {
@@ -254,9 +253,9 @@ public class MagicWandInteractor extends ViewportInteractor implements MagicWand
         final int pixelX = (int) ip.getX();
         final int pixelY = (int) ip.getY();
         if (pixelX < 0
-            || pixelY < 0
-            || pixelX >= product.getSceneRasterWidth()
-            || pixelY >= product.getSceneRasterHeight()) {
+                || pixelY < 0
+                || pixelX >= product.getSceneRasterWidth()
+                || pixelY >= product.getSceneRasterHeight()) {
             return null;
         }
 
@@ -272,14 +271,14 @@ public class MagicWandInteractor extends ViewportInteractor implements MagicWand
         }
         if (model.getBandCount() == 0) {
             // It's actually hard to get here, because we have a selected image view...
-            SnapApp.getInstance().showErrorDialog(DIALOG_TITLE, "No bands selected.");
+            SnapDialogs.showError(DIALOG_TITLE, "No bands selected.");
             return false;
         }
         return true;
     }
 
     void updateMask() {
-        final ProductSceneView view = SnapApp.getInstance().getSelectedProductSceneView();
+        final ProductSceneView view = SnapApp.getDefault().getSelectedProductSceneView();
         if (view != null) {
             final Product product = view.getProduct();
             updateMagicWandMask(product);
@@ -292,8 +291,8 @@ public class MagicWandInteractor extends ViewportInteractor implements MagicWand
 
     private JDialog createOptionsWindow() {
         form = new MagicWandForm(this);
-        JDialog optionsWindow = new JDialog(SnapApp.getInstance().getMainFrame(), DIALOG_TITLE, false);
-        UIUtils.centerComponent(optionsWindow, SnapApp.getInstance().getMainFrame());
+        JDialog optionsWindow = new JDialog(SnapApp.getDefault().getMainFrame(), DIALOG_TITLE, false);
+        UIUtils.centerComponent(optionsWindow, SnapApp.getDefault().getMainFrame());
         optionsWindow.getContentPane().add(form.createPanel());
         optionsWindow.pack();
         return optionsWindow;

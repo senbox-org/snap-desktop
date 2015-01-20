@@ -15,7 +15,6 @@
  */
 package org.esa.snap.gui.actions.file;
 
-import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.core.SubProgressMonitor;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
 import org.esa.beam.framework.datamodel.RasterDataNode;
@@ -24,15 +23,21 @@ import org.esa.beam.framework.ui.product.ProductSceneImage;
 import org.esa.beam.framework.ui.product.ProductSceneView;
 import org.esa.beam.util.Debug;
 import org.esa.snap.gui.SnapApp;
-import org.esa.snap.gui.nodes.PNodeFactory;
+import org.esa.snap.gui.SnapDialogs;
+import org.esa.snap.gui.windows.ProductSceneViewTopComponent;
 import org.esa.snap.netbeans.docwin.DocumentWindowManager;
 import org.esa.snap.netbeans.docwin.WindowUtilities;
-import org.esa.snap.gui.windows.ProductSceneViewTopComponent;
-import org.openide.awt.*;
+import org.openide.awt.ActionID;
+import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
+import org.openide.awt.ActionRegistration;
+import org.openide.awt.UndoRedo;
 import org.openide.util.ImageUtilities;
 import org.openide.util.NbBundle;
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.SwingWorker;
 import java.awt.event.ActionEvent;
 import java.text.MessageFormat;
 
@@ -51,76 +56,82 @@ import java.text.MessageFormat;
         iconBase = "org/esa/snap/gui/icons/RsBandAsSwath16.gif"
 )
 @ActionReferences({
-        //@ActionReference(path = "Menu/File", position = 149),
-        @ActionReference(path = "Context/Product/Band", position = 100),
-        @ActionReference(path = "Context/Product/TPGrid", position = 100)
+        @ActionReference(path = "Context/Product/RasterDataNode", position = 100),
 })
 @NbBundle.Messages("CTL_OpenImageViewActionName=Open in Image View")
 public class OpenImageViewAction extends AbstractAction {
 
-    RasterDataNode band;
+    RasterDataNode raster;
 
-    public OpenImageViewAction(RasterDataNode band) {
-        this.band = band;
+    public OpenImageViewAction(RasterDataNode rasterDataNode) {
+        this.raster = rasterDataNode;
         putValue(Action.NAME, Bundle.CTL_OpenImageViewActionName());
         putValue(Action.LARGE_ICON_KEY, ImageUtilities.loadImageIcon("org/esa/snap/gui/icons/RsBandAsSwath24.gif", false));
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        SnapApp.getInstance().setStatusBarMessage("Opening image view...");
+        openProductSceneView();
+    }
 
-        UIUtils.setRootFrameWaitCursor(SnapApp.getInstance().getMainFrame());
+    public void openProductSceneView() {
+        SnapApp snapApp = SnapApp.getDefault();
+        snapApp.setStatusBarMessage("Opening image view...");
 
-        String progressMonitorTitle = MessageFormat.format("{0} - Creating image for ''{1}''",
-                                                           SnapApp.getInstance().getInstanceName(),
-                                                           band.getName());
+        UIUtils.setRootFrameWaitCursor(snapApp.getMainFrame());
 
-        ProductSceneView existingView = getProductSceneView(band);
-        SwingWorker worker = new ProgressMonitorSwingWorker<ProductSceneImage, Object>(SnapApp.getInstance().getMainFrame(),
-                                                                                       progressMonitorTitle) {
+        String progressMonitorTitle = MessageFormat.format("Creating image for ''{0}''", raster.getName());
+
+        ProductSceneView existingView = getProductSceneView(raster);
+        SwingWorker worker = new ProgressMonitorSwingWorker<ProductSceneImage, Object>(snapApp.getMainFrame(), progressMonitorTitle) {
 
             @Override
-            protected ProductSceneImage doInBackground(ProgressMonitor pm) throws Exception {
+            protected ProductSceneImage doInBackground(com.bc.ceres.core.ProgressMonitor pm) throws Exception {
                 try {
-                    return createProductSceneImage(band, existingView, pm);
+                    return createProductSceneImage(raster, existingView, pm);
                 } finally {
                     if (pm.isCanceled()) {
-                        band.unloadRasterData();
+                        raster.unloadRasterData();
                     }
                 }
             }
 
             @Override
             public void done() {
-                UIUtils.setRootFrameDefaultCursor(SnapApp.getInstance().getMainFrame());
-                SnapApp.getInstance().setStatusBarMessage("");
+
+                UIUtils.setRootFrameDefaultCursor(snapApp.getMainFrame());
+                snapApp.setStatusBarMessage("");
                 try {
                     ProductSceneImage sceneImage = get();
-                    UndoRedo.Manager undoManager = PNodeFactory.getInstance().getUndoManager(sceneImage.getProduct());
+                    UndoRedo.Manager undoManager = SnapApp.getDefault().getUndoManager(sceneImage.getProduct());
                     ProductSceneView view = new ProductSceneView(sceneImage, undoManager);
                     openDocumentWindow(view);
-                } catch (OutOfMemoryError ignored) {
-                    SnapApp.getInstance().showOutOfMemoryErrorDialog("Failed to open image view.");
                 } catch (Exception e) {
-                    SnapApp.getInstance().handleError(
-                            MessageFormat.format("Failed to open image view.\n\n{0}", e.getMessage()), e);
+                    snapApp.handleError(MessageFormat.format("Failed to open image view.\n\n{0}", e.getMessage()), e);
                 }
             }
         };
         worker.execute();
     }
 
-    public ProductSceneViewTopComponent openDocumentWindow(final ProductSceneView view) {
+    private ProductSceneView getProductSceneView(RasterDataNode raster) {
+        return WindowUtilities.getOpened(ProductSceneViewTopComponent.class)
+                .filter(topComponent -> raster == topComponent.getView().getRaster())
+                .map(ProductSceneViewTopComponent::getView)
+                .findFirst()
+                .orElse(null);
+    }
+
+    private ProductSceneViewTopComponent openDocumentWindow(final ProductSceneView view) {
         return openDocumentWindow(view, true);
     }
 
-    public ProductSceneViewTopComponent openDocumentWindow(final ProductSceneView view, boolean configureByPreferences) {
+    private ProductSceneViewTopComponent openDocumentWindow(final ProductSceneView view, boolean configureByPreferences) {
         if (configureByPreferences) {
-            view.setLayerProperties(SnapApp.getInstance().getCompatiblePreferences());
+            view.setLayerProperties(SnapApp.getDefault().getCompatiblePreferences());
         }
 
-        UndoRedo.Manager undoManager = PNodeFactory.getInstance().getUndoManager(view.getProduct());
+        UndoRedo.Manager undoManager = SnapApp.getDefault().getUndoManager(view.getProduct());
         ProductSceneViewTopComponent productSceneViewWindow = new ProductSceneViewTopComponent(view, undoManager);
 
         DocumentWindowManager.getDefault().openWindow(productSceneViewWindow);
@@ -129,7 +140,7 @@ public class OpenImageViewAction extends AbstractAction {
         return productSceneViewWindow;
     }
 
-    protected ProductSceneImage createProductSceneImage(final RasterDataNode raster, ProductSceneView existingView, ProgressMonitor pm) {
+    private ProductSceneImage createProductSceneImage(final RasterDataNode raster, ProductSceneView existingView, com.bc.ceres.core.ProgressMonitor pm) {
         Debug.assertNotNull(raster);
         Debug.assertNotNull(pm);
 
@@ -141,7 +152,7 @@ public class OpenImageViewAction extends AbstractAction {
                 sceneImage = new ProductSceneImage(raster, existingView);
             } else {
                 sceneImage = new ProductSceneImage(raster,
-                                                   SnapApp.getInstance().getCompatiblePreferences(),
+                                                   SnapApp.getDefault().getCompatiblePreferences(),
                                                    SubProgressMonitor.create(pm, 1));
             }
             sceneImage.initVectorDataCollectionLayer();
@@ -153,11 +164,5 @@ public class OpenImageViewAction extends AbstractAction {
 
     }
 
-    public ProductSceneView getProductSceneView(RasterDataNode raster) {
-        return WindowUtilities.getOpened(ProductSceneViewTopComponent.class)
-                .filter(topComponent -> raster == topComponent.getView().getRaster())
-                .map(ProductSceneViewTopComponent::getView)
-                .findFirst()
-                .orElse(null);
-    }
+
 }

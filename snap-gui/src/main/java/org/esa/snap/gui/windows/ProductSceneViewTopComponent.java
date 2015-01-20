@@ -12,6 +12,7 @@ import org.esa.beam.framework.datamodel.ProductNode;
 import org.esa.beam.framework.datamodel.ProductNodeEvent;
 import org.esa.beam.framework.datamodel.ProductNodeListenerAdapter;
 import org.esa.beam.framework.ui.product.ProductSceneView;
+import org.esa.snap.gui.actions.edit.SelectionActions;
 import org.esa.snap.gui.util.ContextGlobalExtender;
 import org.esa.snap.netbeans.docwin.DocumentTopComponent;
 import org.esa.snap.netbeans.docwin.WindowUtilities;
@@ -50,7 +51,7 @@ public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNo
     public ProductSceneViewTopComponent(ProductSceneView view, UndoRedo undoRedo) {
         super(view.getRaster());
         this.view = view;
-        this.undoRedo = undoRedo;
+        this.undoRedo = undoRedo != null ? undoRedo : UndoRedo.NONE;
         this.nodeRenameHandler = new NodeRenameHandler();
         this.selection = Selection.EMPTY;
         setName(getClass().getSimpleName() + "_" + (++counter));
@@ -182,18 +183,18 @@ public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNo
 
     private void updateActionMap(Selection newSelection) {
         ActionMap actionMap = getActionMap();
-        actionMap.put("select-all", new SelectAllAction());
+        actionMap.put(SelectionActions.SELECT_ALL, new SelectAllAction());
         actionMap.put(DefaultEditorKit.pasteAction, new PasteAction());
         if (!newSelection.isEmpty()) {
             actionMap.put(DefaultEditorKit.cutAction, new CutAction());
             actionMap.put(DefaultEditorKit.copyAction, new CopyAction());
             actionMap.put("delete", new DeleteAction());
-            actionMap.put("deselect-all", new DeselectAllAction());
+            actionMap.put(SelectionActions.DESELECT_ALL, new DeselectAllAction());
         } else {
             actionMap.remove(DefaultEditorKit.cutAction);
             actionMap.remove(DefaultEditorKit.copyAction);
             actionMap.remove("delete");
-            actionMap.remove("deselect-all");
+            actionMap.remove(SelectionActions.DESELECT_ALL);
         }
         getDynamicContent().remove(actionMap);
         getDynamicContent().add(actionMap);
@@ -208,7 +209,7 @@ public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNo
                 Transferable transferable = getView().getFigureEditor().getFigureSelection().createTransferable(false);
                 clipboard.setContents(transferable, selection);
                 getView().getFigureEditor().deleteSelection();
-                //JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), "Cut: " + transferable);
+                //JOptionPane.showMessage(WindowManager.getDefault().getMainWindow(), "Cut: " + transferable);
             }
         }
     }
@@ -223,7 +224,7 @@ public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNo
                 // to the same SimpleFeature.
                 Transferable transferable = getView().getFigureEditor().getFigureSelection().createTransferable(true);
                 clipboard.setContents(transferable, selection);
-                //JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), "Copy: " + transferable);
+                //JOptionPane.showMessage(WindowManager.getDefault().getMainWindow(), "Copy: " + transferable);
             }
         }
     }
@@ -233,7 +234,7 @@ public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNo
         public void actionPerformed(ActionEvent e) {
             Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
             Transferable contents = clipboard.getContents(getView());
-            //JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), "Paste: " + contents);
+            //JOptionPane.showMessage(WindowManager.getDefault().getMainWindow(), "Paste: " + contents);
 
             try {
                 getView().getSelectionContext().insert(contents);

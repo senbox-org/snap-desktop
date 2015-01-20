@@ -64,7 +64,7 @@ class TileableImpl implements Tileable {
     public void tileHorizontally() {
         tile(editorWindows -> {
             int windowCount = editorWindows.size();
-            int colCount = Math.min(windowCount, 16);
+            int colCount = Math.min(windowCount, TileUtilities.MAX_TILE_COLUMN_COUNT);
             int windowIndex = 0;
             for (int colIndex = 0; colIndex < colCount; colIndex++) {
                 if (windowIndex < windowCount) {
@@ -82,7 +82,7 @@ class TileableImpl implements Tileable {
     public void tileVertically() {
         tile(editorWindows -> {
             int windowCount = editorWindows.size();
-            int rowCount = Math.min(windowCount, 16);
+            int rowCount = Math.min(windowCount, TileUtilities.MAX_TILE_ROW_COUNT);
             int windowIndex = 0;
             for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
                 if (windowIndex < windowCount) {
