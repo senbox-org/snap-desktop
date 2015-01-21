@@ -10,8 +10,10 @@ import org.esa.beam.framework.ui.product.ProductSceneView;
 import org.esa.beam.util.PropertyMap;
 import org.esa.snap.gui.util.CompatiblePropertyMap;
 import org.esa.snap.gui.util.ContextGlobalExtenderImpl;
+import org.esa.snap.tango.TangoIcons;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
+import org.openide.awt.NotificationDisplayer;
 import org.openide.awt.StatusDisplayer;
 import org.openide.awt.UndoRedo;
 import org.openide.modules.OnStart;
@@ -37,6 +39,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
@@ -66,6 +70,7 @@ public class SnapApp {
     private final static Logger LOG = Logger.getLogger(SnapApp.class.getName());
 
     private final ProductManager productManager;
+    private boolean shuttingDown;
 
     public static SnapApp getDefault() {
         SnapApp instance = Lookup.getDefault().lookup(SnapApp.class);
@@ -84,9 +89,7 @@ public class SnapApp {
         productManager.addListener(undoManagerProvider);
 
         Lookup.Result<ProductNode> productNodeSelection = Utilities.actionsGlobalContext().lookupResult(ProductNode.class);
-        productNodeSelection.addLookupListener(ev -> {
-            updateMainFrameTitle();
-        });
+        productNodeSelection.addLookupListener(ev -> updateMainFrameTitle());
     }
 
     public ProductManager getProductManager() {
@@ -148,6 +151,24 @@ public class SnapApp {
         }
         SnapDialogs.showError(getInstanceName() + " - Error", message);
         getLogger().log(Level.SEVERE, message, t);
+
+        ImageIcon icon = TangoIcons.status_dialog_error(TangoIcons.Res.R16);
+        JLabel balloonDetails = new JLabel(message);
+        JButton popupDetails = new JButton("Send Report");
+        popupDetails.addActionListener(e -> {
+            try {
+                // todo - discuss with STDF how to exactly deal with this
+                Desktop.getDesktop().browse(new URI("https://senbox.atlassian.net/browse/SNAP/"));
+            } catch (URISyntaxException | IOException e1) {
+                getLogger().log(Level.SEVERE, message, e1);
+            }
+        });
+        NotificationDisplayer.getDefault().notify("Error",
+                                                  icon,
+                                                  balloonDetails,
+                                                  popupDetails,
+                                                  NotificationDisplayer.Priority.HIGH,
+                                                  NotificationDisplayer.Category.ERROR);
     }
 
     public Product getSelectedProduct() {
