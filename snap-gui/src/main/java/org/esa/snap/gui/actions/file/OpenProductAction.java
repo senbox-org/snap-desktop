@@ -9,6 +9,7 @@ import org.esa.beam.framework.dataio.ProductIO;
 import org.esa.beam.framework.dataio.ProductIOPlugInManager;
 import org.esa.beam.framework.dataio.ProductReaderPlugIn;
 import org.esa.beam.framework.datamodel.Product;
+import org.esa.beam.util.io.BeamFileChooser;
 import org.esa.beam.util.io.BeamFileFilter;
 import org.esa.snap.gui.SnapApp;
 import org.esa.snap.gui.SnapDialogs;
@@ -83,7 +84,7 @@ public final class OpenProductAction extends AbstractAction {
 
         Preferences preferences = SnapApp.getDefault().getPreferences();
 
-        JFileChooser fc = new JFileChooser(new File(preferences.get(PREFERENCES_KEY_LAST_PRODUCT_DIR, ".")));
+        JFileChooser fc = new BeamFileChooser(new File(preferences.get(PREFERENCES_KEY_LAST_PRODUCT_DIR, ".")));
         fc.setDialogTitle(Bundle.CTL_OpenProductActionName());
         fc.setAcceptAllFileFilterUsed(true);
         filters.forEach(fc::addChoosableFileFilter);
@@ -122,15 +123,14 @@ public final class OpenProductAction extends AbstractAction {
         List<File> fileList = new ArrayList<>(Arrays.asList(files));
         for (File file : files) {
             if (openedFiles.contains(file)) {
-                int i = SnapDialogs.requestDecision(Bundle.CTL_OpenProductActionName(),
+                SnapDialogs.Answer answer = SnapDialogs.requestDecision(Bundle.CTL_OpenProductActionName(),
                                                     MessageFormat.format("Product\n{0}\n" +
                                                                                  "is already opened.\n" +
                                                                                  "Do you want to open another instance?", file),
                                                     true, null);
-                if (i == SnapDialogs.NO_OPTION) {
+                if (answer == SnapDialogs.Answer.NO) {
                     fileList.remove(file);
-                } else if (i != SnapDialogs.YES_OPTION) {
-                    // cancel!
+                } else if (answer == SnapDialogs.Answer.CANCELLED) {
                     return;
                 }
             }
@@ -173,5 +173,9 @@ public final class OpenProductAction extends AbstractAction {
         };
 
         swingWorker.execute();
+    }
+
+    public static void reopenProduct(Product product, File newFile) {
+        // todo!!!
     }
 }

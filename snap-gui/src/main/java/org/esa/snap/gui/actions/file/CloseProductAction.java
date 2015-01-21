@@ -16,7 +16,6 @@ import org.esa.snap.gui.SnapApp;
 import org.esa.snap.gui.SnapDialogs;
 import org.esa.snap.netbeans.docwin.DocumentWindow;
 import org.esa.snap.netbeans.docwin.WindowUtilities;
-import org.openide.NotifyDescriptor;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
@@ -99,12 +98,11 @@ public final class CloseProductAction extends AbstractAction {
 
         for (Product product : products) {
             if (product.isModified()) {
-                int i = SnapDialogs.requestDecision(Bundle.CTL_OpenProductActionName(),
-                                                    MessageFormat.format("Product ''{0}'' has been modified.\nDo you want to save it?", product.getName()), true, null);
-                if (i == SnapDialogs.YES_OPTION) {
+                SnapDialogs.Answer answer = SnapDialogs.requestDecision(Bundle.CTL_OpenProductActionName(),
+                                                                        MessageFormat.format("Product ''{0}'' has been modified.\nDo you want to save it?", product.getName()), true, null);
+                if (answer == SnapDialogs.Answer.YES) {
                     saveList.add(product);
-                } else if (i != SnapDialogs.NO_OPTION) {
-                    // cancel!
+                } else if (answer == SnapDialogs.Answer.CANCELLED) {
                     return false;
                 }
             }

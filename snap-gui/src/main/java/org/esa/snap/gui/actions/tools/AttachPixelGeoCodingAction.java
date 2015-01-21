@@ -161,8 +161,8 @@ public class AttachPixelGeoCodingAction extends AbstractAction implements Contex
                                                         "of additional data into memory.\n\n" +
                                                         "Do you really want to continue?",
                                                         requiredMegas);
-            final int answer = SnapDialogs.requestDecision(dialogTitle, message, false, "load_latlon_band_data");
-            if (answer != SnapDialogs.YES_OPTION) {
+            final SnapDialogs.Answer answer = SnapDialogs.requestDecision(dialogTitle, message, false, "load_latlon_band_data");
+            if (answer != SnapDialogs.Answer.YES) {
                 return;
             }
         }
