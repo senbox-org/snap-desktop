@@ -14,7 +14,7 @@
  * with this program; if not, see http://www.gnu.org/licenses/
  */
 
-package org.esa.snap.gui.preferences;
+package org.esa.snap.gui.preferences.general;
 
 import com.bc.ceres.binding.Property;
 import com.bc.ceres.swing.TableLayout;
@@ -22,6 +22,8 @@ import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.PropertyEditorRegistry;
 import org.esa.beam.framework.ui.PixelInfoView;
 import org.esa.beam.framework.ui.SuppressibleOptionPane;
+import org.esa.snap.gui.preferences.ConfigProperty;
+import org.esa.snap.gui.preferences.DefaultConfigController;
 import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.HelpCtx;
 
@@ -34,19 +36,19 @@ import java.awt.Insets;
 import static org.esa.snap.gui.preferences.PreferenceUtils.*;
 
 /**
- * Preferences tab for handling the UI behavior preferences.
+ * Preferences tab for handling the UI behavior preferences. Sub-level panel to the "Miscellaneous"-panel.
  *
  * @author thomas
  */
-@org.openide.util.NbBundle.Messages({
-        "AdvancedOption_DisplayName_UiBehavior=UI Behavior",
-        "AdvancedOption_Keywords_UiBehavior=UI, behavior"
-})
 @OptionsPanelController.SubRegistration(location = "Appearance",
         displayName = "#AdvancedOption_DisplayName_UiBehavior",
         keywords = "#AdvancedOption_Keywords_UiBehavior",
         keywordsCategory = "Advanced, UiBehavior",
         id = "UiBehavior")
+@org.openide.util.NbBundle.Messages({
+        "AdvancedOption_DisplayName_UiBehavior=UI Behavior",
+        "AdvancedOption_Keywords_UiBehavior=UI, behavior"
+})
 public final class UiBehaviorPanelController extends DefaultConfigController {
 
     /**
@@ -57,10 +59,6 @@ public final class UiBehaviorPanelController extends DefaultConfigController {
      * Preferences key for automatically showing new bands
      */
     public static final String PROPERTY_KEY_AUTO_SHOW_NEW_BANDS = "visat.autoshowbands.enabled";
-    /**
-     * Preferences key for low memory size
-     */
-    public static final String PROPERTY_KEY_LOW_MEMORY_LIMIT = "low.memory.limit";
     /**
      * Preferences key for on-line version check
      */
@@ -77,20 +75,11 @@ public final class UiBehaviorPanelController extends DefaultConfigController {
 
     @Override
     protected JPanel createPanel(BindingContext context) {
-        TableLayout tableLayout = new TableLayout(2);
+        TableLayout tableLayout = new TableLayout(1);
         tableLayout.setTableAnchor(TableLayout.Anchor.NORTHWEST);
         tableLayout.setTablePadding(new Insets(4, 10, 0, 0));
         tableLayout.setTableFill(TableLayout.Fill.BOTH);
-        tableLayout.setColumnWeightX(1, 1.0);
-
-        tableLayout.setCellColspan(0, 0, 2);
-        tableLayout.setCellColspan(2, 0, 2);
-        tableLayout.setCellColspan(3, 0, 2);
-        tableLayout.setCellColspan(5, 0, 2);
-        tableLayout.setCellColspan(6, 0, 2);
-        tableLayout.setCellColspan(8, 0, 2);
-        tableLayout.setCellColspan(9, 0, 2);
-        tableLayout.setCellColspan(10, 0, 2);
+        tableLayout.setColumnWeightX(0, 1.0);
 
         JPanel pageUI = new JPanel(tableLayout);
 
@@ -98,14 +87,12 @@ public final class UiBehaviorPanelController extends DefaultConfigController {
         Property autoShowNavigation = context.getPropertySet().getProperty(PROPERTY_KEY_AUTO_SHOW_NAVIGATION);
         Property showNewBands = context.getPropertySet().getProperty(PROPERTY_KEY_AUTO_SHOW_NEW_BANDS);
         Property showOnlyDisplayed = context.getPropertySet().getProperty(PixelInfoView.PROPERTY_KEY_SHOW_ONLY_DISPLAYED_BAND_PIXEL_VALUES);
-        Property lowMemoryLimit = context.getPropertySet().getProperty(PROPERTY_KEY_LOW_MEMORY_LIMIT);
         Property checkVersion = context.getPropertySet().getProperty(PROPERTY_KEY_VERSION_CHECK_ENABLED);
         Property unsuppress = context.getPropertySet().getProperty(PROPERTY_KEY_UNSUPPRESS);
 
         JComponent[] autoShowNavigationComponents = registry.findPropertyEditor(autoShowNavigation.getDescriptor()).createComponents(autoShowNavigation.getDescriptor(), context);
         JComponent[] showNewBandsComponents = registry.findPropertyEditor(showNewBands.getDescriptor()).createComponents(showNewBands.getDescriptor(), context);
         JComponent[] showOnlyDisplayedComponents = registry.findPropertyEditor(showOnlyDisplayed.getDescriptor()).createComponents(showOnlyDisplayed.getDescriptor(), context);
-        JComponent[] lowMemoryLimitComponents = registry.findPropertyEditor(lowMemoryLimit.getDescriptor()).createComponents(lowMemoryLimit.getDescriptor(), context);
         JComponent[] checkVersionComponents = registry.findPropertyEditor(checkVersion.getDescriptor()).createComponents(checkVersion.getDescriptor(), context);
         JComponent[] unsuppressComponents = registry.findPropertyEditor(unsuppress.getDescriptor()).createComponents(unsuppress.getDescriptor(), context);
 
@@ -113,9 +100,6 @@ public final class UiBehaviorPanelController extends DefaultConfigController {
         pageUI.add(autoShowNavigationComponents[0]);
         pageUI.add(showNewBandsComponents[0]);
         pageUI.add(showOnlyDisplayedComponents[0]);
-        pageUI.add(tableLayout.createHorizontalSpacer());
-        pageUI.add(lowMemoryLimitComponents[1]);
-        pageUI.add(lowMemoryLimitComponents[0]);
         pageUI.add(tableLayout.createHorizontalSpacer());
         pageUI.add(createTitleLabel("Message Settings"));
         pageUI.add(checkVersionComponents[0]);
@@ -147,11 +131,7 @@ public final class UiBehaviorPanelController extends DefaultConfigController {
                 key = PixelInfoView.PROPERTY_KEY_SHOW_ONLY_DISPLAYED_BAND_PIXEL_VALUES)
         boolean showOnlyLoadedOrDisplayedBandPixels = PixelInfoView.PROPERTY_DEFAULT_SHOW_DISPLAYED_BAND_PIXEL_VALUES;
 
-        @ConfigProperty(label = "Warn if free RAM falls below (MB)",
-                key = PROPERTY_KEY_LOW_MEMORY_LIMIT)
-        int lowMemoryThreshold = 20;
-
-        @ConfigProperty(label = "Check for new version on %s start",
+        @ConfigProperty(label = "Check for new version on startup",
                 key = PROPERTY_KEY_VERSION_CHECK_ENABLED)
         boolean checkEnabled = true;
 

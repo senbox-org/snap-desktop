@@ -14,11 +14,13 @@
  * with this program; if not, see http://www.gnu.org/licenses/
  */
 
-package org.esa.snap.gui.preferences;
+package org.esa.snap.gui.preferences.general;
 
 import com.bc.ceres.binding.ValidationException;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.Enablement;
+import org.esa.snap.gui.preferences.ConfigProperty;
+import org.esa.snap.gui.preferences.DefaultConfigController;
 import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.HelpCtx;
 
@@ -26,19 +28,19 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 /**
- * Panel for write options.
+ * Panel for write options. Sub-level panel to the "Miscellaneous"-panel.
  *
  * @author thomas
  */
-@org.openide.util.NbBundle.Messages({
-        "Options_DisplayName_WriteOptions=Write Options",
-        "Options_Keywords_WriteOptions=write, writing, save, header, MPH, SPH, history, annotation, incremental"
-})
 @OptionsPanelController.SubRegistration(location = "Advanced",
         displayName = "#Options_DisplayName_WriteOptions",
         keywords = "#Options_Keywords_WriteOptions",
         keywordsCategory = "Write Options",
         id = "WriteOptions")
+@org.openide.util.NbBundle.Messages({
+        "Options_DisplayName_WriteOptions=Write Options",
+        "Options_Keywords_WriteOptions=write, writing, save, header, MPH, SPH, history, annotation, incremental"
+})
 public final class WriteOptionsPanelController extends DefaultConfigController {
 
     /**

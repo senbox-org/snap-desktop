@@ -31,10 +31,9 @@ import javax.swing.JPanel;
 import java.awt.Insets;
 
 import static com.bc.ceres.swing.TableLayout.*;
-import static org.esa.snap.gui.preferences.PreferenceUtils.*;
 
 /**
- * The first sub-panel of the layer preferences, handling general properties.
+ * Panel handling general layer preferences. Sub-panel of the "Layer"-panel.
  *
  * @author thomas
  */
@@ -47,7 +46,7 @@ import static org.esa.snap.gui.preferences.PreferenceUtils.*;
         keywords = "#Options_Keywords_LayerGeneral",
         keywordsCategory = "Layer",
         id = "LayerGeneral")
-public final class GeneralPanel extends DefaultConfigController {
+public final class GeneralLayerPanel extends DefaultConfigController {
 
     protected Object createBean() {
         return new GeneralLayerBean();
@@ -70,17 +69,13 @@ public final class GeneralPanel extends DefaultConfigController {
         JPanel pageUI = new JPanel(tableLayout);
 
         PropertyEditorRegistry registry = PropertyEditorRegistry.getInstance();
-        Property antiAliasing = context.getPropertySet().getProperty(ProductSceneView.PROPERTY_KEY_GRAPHICS_ANTIALIASING);
         Property showNavigationControl = context.getPropertySet().getProperty(ProductSceneView.PROPERTY_KEY_IMAGE_NAV_CONTROL_SHOWN);
         Property showScrollBars = context.getPropertySet().getProperty(ProductSceneView.PROPERTY_KEY_IMAGE_SCROLL_BARS_SHOWN);
 
-        JComponent[] antiAliasingComponents = registry.findPropertyEditor(antiAliasing.getDescriptor()).createComponents(antiAliasing.getDescriptor(), context);
         JComponent[] showNavigationControlComponents = registry.findPropertyEditor(showNavigationControl.getDescriptor()).createComponents(showNavigationControl.getDescriptor(), context);
         JComponent[] showScrollBarsComponents = registry.findPropertyEditor(showScrollBars.getDescriptor()).createComponents(showScrollBars.getDescriptor(), context);
 
-        tableLayout.setRowPadding(1, new Insets(10, 80, 10, 4));
-        pageUI.add(antiAliasingComponents[0]);
-        addNote(pageUI, "Note: For best performance turn anti-aliasing off.");
+        tableLayout.setRowPadding(0, new Insets(10, 80, 10, 4));
         pageUI.add(showNavigationControlComponents[0]);
         pageUI.add(showScrollBarsComponents[0]);
         pageUI.add(tableLayout.createVerticalSpacer());
@@ -91,15 +86,11 @@ public final class GeneralPanel extends DefaultConfigController {
     @SuppressWarnings("UnusedDeclaration")
     static class GeneralLayerBean {
 
-        @ConfigProperty(label = "Use anti-aliasing for rendering text and vector graphics",
-                key = ProductSceneView.PROPERTY_KEY_GRAPHICS_ANTIALIASING)
-        boolean antiAliasing = true;
-
         @ConfigProperty(label = "Show a navigation control widget in image views",
                 key = ProductSceneView.PROPERTY_KEY_IMAGE_NAV_CONTROL_SHOWN)
         boolean showNavigationControl = true;
 
-        @ConfigProperty(label = "Show a navigation control widget in image views",
+        @ConfigProperty(label = "Show scroll bars in image views",
                 key = ProductSceneView.PROPERTY_KEY_IMAGE_SCROLL_BARS_SHOWN)
         boolean showScrollBars = false;
     }

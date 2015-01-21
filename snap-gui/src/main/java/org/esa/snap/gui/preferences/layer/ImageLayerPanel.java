@@ -38,25 +38,21 @@ import java.awt.Insets;
 import static org.esa.snap.gui.preferences.PreferenceUtils.*;
 
 /**
- * The second sub-panel of the layer preferences, handling image properties.
+ * * Panel handling image layer preferences. Sub-panel of the "Layer"-panel.
  *
  * @author thomas
  */
-@org.openide.util.NbBundle.Messages({
-        "Options_DisplayName_LayerImage=Image Layer",
-        "Options_Keywords_LayerImage=layer, image"
-})
 @OptionsPanelController.SubRegistration(location = "LayerPreferences",
         displayName = "#Options_DisplayName_LayerImage",
         keywords = "#Options_Keywords_LayerImage",
         keywordsCategory = "Layer",
         id = "LayerImage")
-public final class ImagePanel extends DefaultConfigController {
+@org.openide.util.NbBundle.Messages({
+        "Options_DisplayName_LayerImage=Image Layer",
+        "Options_Keywords_LayerImage=layer, image"
+})
+public final class ImageLayerPanel extends DefaultConfigController {
 
-    /**
-     * Preferences key for the memory capacity of the JAI tile cache in megabytes
-     */
-    public static final String PROPERTY_KEY_JAI_TILE_CACHE_CAPACITY = "jai.tileCache.memoryCapacity";
     /**
      * Preferences key for the background color
      */
@@ -100,13 +96,12 @@ public final class ImagePanel extends DefaultConfigController {
         tableLayout.setTableFill(TableLayout.Fill.BOTH);
         tableLayout.setColumnWeightX(1, 1.0);
 
-        tableLayout.setCellColspan(3, 0, 2);
-        tableLayout.setCellColspan(6, 0, 2);
+        tableLayout.setCellColspan(2, 0, 2);
+        tableLayout.setCellColspan(5, 0, 2);
 
         JPanel pageUI = new JPanel(tableLayout);
 
         PropertyEditorRegistry registry = PropertyEditorRegistry.getInstance();
-        Property tileCacheCapacity = context.getPropertySet().getProperty(PROPERTY_KEY_JAI_TILE_CACHE_CAPACITY);
         Property backgroundColor = context.getPropertySet().getProperty(PROPERTY_KEY_IMAGE_BG_COLOR);
         Property showImageBorder = context.getPropertySet().getProperty(PROPERTY_KEY_IMAGE_BORDER_SHOWN);
         Property imageBorderSize = context.getPropertySet().getProperty(PROPERTY_KEY_IMAGE_BORDER_SIZE);
@@ -115,7 +110,6 @@ public final class ImagePanel extends DefaultConfigController {
         Property pixelBorderSize = context.getPropertySet().getProperty(PROPERTY_KEY_PIXEL_BORDER_SIZE);
         Property pixelBorderColor = context.getPropertySet().getProperty(PROPERTY_KEY_PIXEL_BORDER_COLOR);
 
-        JComponent[] tileCacheCapacityComponents = registry.findPropertyEditor(tileCacheCapacity.getDescriptor()).createComponents(tileCacheCapacity.getDescriptor(), context);
         JComponent[] backgroundColorComponents = createColorComponents(backgroundColor);
         JComponent[] showImageBorderComponents = registry.findPropertyEditor(showImageBorder.getDescriptor()).createComponents(showImageBorder.getDescriptor(), context);
         JComponent[] imageBorderSizeComponents = registry.findPropertyEditor(imageBorderSize.getDescriptor()).createComponents(imageBorderSize.getDescriptor(), context);
@@ -124,10 +118,6 @@ public final class ImagePanel extends DefaultConfigController {
         JComponent[] pixelBorderSizeComponents = registry.findPropertyEditor(pixelBorderSize.getDescriptor()).createComponents(pixelBorderSize.getDescriptor(), context);
         pixelBorderColorComponents = createColorComponents(pixelBorderColor);
 
-        pageUI.add(tileCacheCapacityComponents[1]);
-        pageUI.add(tileCacheCapacityComponents[0]);
-        pageUI.add(tableLayout.createHorizontalSpacer());
-        addNote(pageUI, "Note: If you have enough memory, choose values > 256 MB for better performance.");
         pageUI.add(backgroundColorComponents[0]);
         pageUI.add(backgroundColorComponents[1]);
         pageUI.add(showImageBorderComponents[0]);
@@ -167,7 +157,7 @@ public final class ImagePanel extends DefaultConfigController {
         });
 
         for (JComponent imageBorderColorComponent : imageBorderColorComponents) {
-            imageBorderColorComponent.setEnabled(ImageLayer.DEFAULT_PIXEL_BORDER_SHOWN);
+            imageBorderColorComponent.setEnabled(ImageLayer.DEFAULT_BORDER_SHOWN);
         }
     }
 
@@ -178,10 +168,6 @@ public final class ImagePanel extends DefaultConfigController {
 
     @SuppressWarnings("UnusedDeclaration")
     static class ImageLayerBean {
-
-        @ConfigProperty(label = "Tile cache capacity (MB)",
-                key = PROPERTY_KEY_JAI_TILE_CACHE_CAPACITY)
-        int tileCacheCapacity = 512;
 
         @ConfigProperty(label = "Background colour",
                 key = PROPERTY_KEY_IMAGE_BG_COLOR)

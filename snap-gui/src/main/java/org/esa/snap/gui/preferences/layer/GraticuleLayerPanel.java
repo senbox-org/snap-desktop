@@ -38,20 +38,20 @@ import java.awt.Insets;
 import static org.esa.snap.gui.preferences.PreferenceUtils.*;
 
 /**
- * The fifth sub-panel of the layer preferences, handling graticule properties.
+ * * Panel handling graticule layer preferences. Sub-panel of the "Layer"-panel.
  *
  * @author thomas
  */
-@org.openide.util.NbBundle.Messages({
-        "Options_DisplayName_LayerGraticule=Graticule Layer",
-        "Options_Keywords_LayerGraticule=layer, graticule"
-})
 @OptionsPanelController.SubRegistration(location = "LayerPreferences",
         displayName = "#Options_DisplayName_LayerGraticule",
         keywords = "#Options_Keywords_LayerGraticule",
         keywordsCategory = "Layer",
         id = "LayerGraticule")
-public final class GraticulePanel extends DefaultConfigController {
+@org.openide.util.NbBundle.Messages({
+        "Options_DisplayName_LayerGraticule=Graticule Layer",
+        "Options_Keywords_LayerGraticule=layer, graticule"
+})
+public final class GraticuleLayerPanel extends DefaultConfigController {
 
     private JComponent[] textFgColorComponents;
     private JComponent[] textBgColorComponents;

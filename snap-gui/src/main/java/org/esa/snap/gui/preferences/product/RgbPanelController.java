@@ -14,18 +14,19 @@
  * with this program; if not, see http://www.gnu.org/licenses/
  */
 
-package org.esa.snap.gui.preferences;
+package org.esa.snap.gui.preferences.product;
 
 import com.bc.ceres.swing.binding.BindingContext;
 import org.esa.beam.framework.ui.RGBImageProfilePane;
 import org.esa.beam.util.PropertyMap;
+import org.esa.snap.gui.preferences.DefaultConfigController;
 import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.HelpCtx;
 
 import javax.swing.JPanel;
 
 /**
- * The top-level controller for logging preferences.
+ * The controller for RGB product profile preferences. Sub-level panel to the "Product Profile"-panel.
  *
  * @author thomas
  */
@@ -33,9 +34,9 @@ import javax.swing.JPanel;
         "Options_DisplayName_RGB=RGB-Image Profiles",
         "Options_Keywords_RGB=RGB, profile"
 })
-@OptionsPanelController.TopLevelRegistration(
-        categoryName = "#Options_DisplayName_RGB",
-        iconBase = "org/esa/snap/gui/icons/RGB32.gif",
+@OptionsPanelController.SubRegistration(
+        location = "ProductPreferences",
+        displayName = "#Options_DisplayName_RGB",
         keywords = "#Options_Keywords_RGB",
         keywordsCategory = "RGB",
         id = "rgb-image-profiles")

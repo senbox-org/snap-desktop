@@ -191,6 +191,29 @@
     </folder>
 
     <!--
+    Re-configure some of the default options.
+    See https://forums.netbeans.org/ntopic22790.html for information on how to find the keys.
+    -->
+
+    <folder name="OptionsDialog">
+        <folder name="Advanced">
+            <file name="org-netbeans-core-ui-options-filetypes-FileAssociationsOptionsPanelController.instance_hidden"/>
+        </folder>
+        <file name="General.instance_hidden"/>
+
+        <file name="Proxy.instance">
+            <attr methodvalue="org.netbeans.spi.options.OptionsCategory.createCategory" name="instanceCreate"/>
+            <attr name="controller" newvalue="org.netbeans.core.ui.options.general.GeneralOptionsPanelController"/>
+            <!--<attr bundlevalue="org.netbeans.core.ui.options.general.Bundle#CTL_General_Options" name="categoryName"/>-->
+            <attr bundlevalue="org.esa.snap.gui.Bundle#ProxyOptionsTabName" name="categoryName"/>
+            <attr intvalue="5" name="position"/>
+            <attr name="iconBase" stringvalue="org/netbeans/core/ui/options/general/generalOptions.png"/>
+            <attr bundlevalue="org.esa.snap.gui.Bundle#ProxyOptionsKW" name="keywords"/>
+            <attr bundlevalue="org.esa.snap.gui.Bundle#ProxyOptionsKWCategory" name="keywordsCategory"/>
+        </file>
+    </folder>
+
+    <!--
     The 'navigator' window mode is not present by default, so we add it for SNAP.
     See http://wiki.netbeans.org/TaT_FixNavigatorModeInRCPApp.
     -->

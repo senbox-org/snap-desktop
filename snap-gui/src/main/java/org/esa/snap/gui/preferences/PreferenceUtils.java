@@ -54,6 +54,22 @@ public class PreferenceUtils {
         return components;
     }
 
+    public static JPanel createTitleLabel(String title) {
+        TableLayout layout = new TableLayout(3);
+        layout.setColumnWeightX(0, 0.0);
+        layout.setColumnWeightX(1, 0.0);
+        layout.setColumnWeightX(2, 1.0);
+        layout.setColumnFill(0, TableLayout.Fill.NONE);
+        layout.setColumnFill(1, TableLayout.Fill.NONE);
+        layout.setColumnFill(2, TableLayout.Fill.HORIZONTAL);
+        JPanel comp = new JPanel(layout);
+        JLabel label = new JLabel(title);
+        comp.add(label);
+        comp.add(new JLabel("   "));
+        comp.add(new JSeparator());
+        return comp;
+    }
+
     private static ColorComboBox createColorCombobox(final Property property) {
         ColorComboBox colorComboBox = new ColorComboBox();
         colorComboBox.setSelectedColor(property.getValue());
@@ -77,21 +93,5 @@ public class PreferenceUtils {
         });
         colorComboBox.setPreferredSize(new Dimension(colorComboBox.getWidth(), 25));
         return colorComboBox;
-    }
-
-    static JPanel createTitleLabel(String title) {
-        TableLayout layout = new TableLayout(3);
-        layout.setColumnWeightX(0, 0.0);
-        layout.setColumnWeightX(1, 0.0);
-        layout.setColumnWeightX(2, 1.0);
-        layout.setColumnFill(0, TableLayout.Fill.NONE);
-        layout.setColumnFill(1, TableLayout.Fill.NONE);
-        layout.setColumnFill(2, TableLayout.Fill.HORIZONTAL);
-        JPanel comp = new JPanel(layout);
-        JLabel label = new JLabel(title);
-        comp.add(label);
-        comp.add(new JLabel("     "));
-        comp.add(new JSeparator());
-        return comp;
     }
 }

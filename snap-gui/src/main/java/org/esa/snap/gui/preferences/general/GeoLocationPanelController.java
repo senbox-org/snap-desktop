@@ -14,13 +14,15 @@
  * with this program; if not, see http://www.gnu.org/licenses/
  */
 
-package org.esa.snap.gui.preferences;
+package org.esa.snap.gui.preferences.general;
 
 import com.bc.ceres.binding.Property;
 import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.PropertyEditorRegistry;
 import org.esa.beam.framework.ui.GridBagUtils;
+import org.esa.snap.gui.preferences.ConfigProperty;
+import org.esa.snap.gui.preferences.DefaultConfigController;
 import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.HelpCtx;
 
@@ -41,25 +43,21 @@ import java.beans.PropertyChangeListener;
 import static com.bc.ceres.swing.TableLayout.*;
 
 /**
- * TODO fill out or delete
+ * The preferences panel handling geo-location details. Sub-level panel to the "Miscellaneous"-panel.
  *
  * @author thomas
  */
-@org.openide.util.NbBundle.Messages({
-        "Options_DisplayName_GeoLocation=Geo-Location",
-        "Options_Keywords_GeoLocation=geo, location, geo-location, compatibility, differ"
-})
 @OptionsPanelController.SubRegistration(location = "Advanced",
         displayName = "#Options_DisplayName_GeoLocation",
         keywords = "#Options_Keywords_GeoLocation",
         keywordsCategory = "Geo-Location",
         id = "GeoLocation")
+@org.openide.util.NbBundle.Messages({
+        "Options_DisplayName_GeoLocation=Geo-Location",
+        "Options_Keywords_GeoLocation=geo, location, geo-location, compatibility, differ"
+})
 public final class GeoLocationPanelController extends DefaultConfigController {
 
-    /**
-     * Preferences key for geo-location epsilon
-     */
-    public static final String PROPERTY_KEY_GEOLOCATION_EPS = "geolocation.eps";
     /**
      * Preferences key for pixel offset-X for display pixel positions
      */
@@ -117,7 +115,6 @@ public final class GeoLocationPanelController extends DefaultConfigController {
         tableLayout.setTableFill(TableLayout.Fill.HORIZONTAL);
 
         final PropertyEditorRegistry registry = PropertyEditorRegistry.getInstance();
-        Property geoLocationEps = context.getPropertySet().getProperty(PROPERTY_KEY_GEOLOCATION_EPS);
         Property paramOffsetX = context.getPropertySet().getProperty(PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_X);
         Property paramOffsetY = context.getPropertySet().getProperty(PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_Y);
         Property paramShowDecimals = context.getPropertySet().getProperty(PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_SHOW_DECIMALS);
@@ -126,36 +123,30 @@ public final class GeoLocationPanelController extends DefaultConfigController {
         paramOffsetX.addPropertyChangeListener(listener);
         paramOffsetY.addPropertyChangeListener(listener);
 
-        JComponent[] geoLocationEpsComponents = registry.findPropertyEditor(geoLocationEps.getDescriptor()).createComponents(geoLocationEps.getDescriptor(), context);
         JComponent[] xComponents = registry.findPropertyEditor(paramOffsetX.getDescriptor()).createComponents(paramOffsetX.getDescriptor(), context);
         JComponent[] yComponents = registry.findPropertyEditor(paramOffsetY.getDescriptor()).createComponents(paramOffsetY.getDescriptor(), context);
         JComponent[] showDecimalComponents = registry.findPropertyEditor(paramShowDecimals.getDescriptor()).createComponents(paramShowDecimals.getDescriptor(), context);
         JComponent[] geolocationAsDecimalComponents = registry.findPropertyEditor(paramGeolocationAsDecimal.getDescriptor()).createComponents(paramGeolocationAsDecimal.getDescriptor(), context);
 
         final JPanel pageUI = new JPanel(tableLayout);
-        tableLayout.setRowPadding(0, new Insets(10, 0, 10, 4));
-        pageUI.add(geoLocationEpsComponents[1]);
-        tableLayout.setCellWeightX(0, 1, 1.0);
-        tableLayout.setCellColspan(0, 1, 2);
-        pageUI.add(geoLocationEpsComponents[0]);
 
         pageUI.add(xComponents[1]);
-        tableLayout.setCellWeightX(1, 1, 1.0);
+        tableLayout.setCellWeightX(0, 1, 1.0);
         pageUI.add(xComponents[0]);
 
-        tableLayout.setCellRowspan(1, 2, 2);
-        tableLayout.setCellWeightX(1, 2, 1.0);
-        tableLayout.setCellAnchor(1, 2, TableLayout.Anchor.CENTER);
-        tableLayout.setCellFill(1, 2, TableLayout.Fill.NONE);
+        tableLayout.setCellRowspan(0, 2, 2);
+        tableLayout.setCellWeightX(0, 2, 1.0);
+        tableLayout.setCellAnchor(0, 2, TableLayout.Anchor.CENTER);
+        tableLayout.setCellFill(0, 2, TableLayout.Fill.NONE);
         pageUI.add(visualizer);
 
         pageUI.add(yComponents[1]);
-        tableLayout.setCellWeightX(2, 1, 1.0);
+        tableLayout.setCellWeightX(1, 1, 1.0);
         pageUI.add(yComponents[0]);
 
-        tableLayout.setRowPadding(2, new Insets(10, 0, 4, 4));
+        tableLayout.setRowPadding(1, new Insets(10, 0, 4, 4));
         pageUI.add(showDecimalComponents[0], cell(3, 0, 1, 3));
-        tableLayout.setRowPadding(3, new Insets(10, 0, 4, 4));
+        tableLayout.setRowPadding(2, new Insets(10, 0, 4, 4));
         pageUI.add(geolocationAsDecimalComponents[0], cell(4, 0, 1, 3));
 
         return createPageUIContentPane(pageUI);
@@ -224,9 +215,6 @@ public final class GeoLocationPanelController extends DefaultConfigController {
     }
 
     static class GeoLocationBean {
-
-        @ConfigProperty(label = "Consider products as spatially compatible if their geo-locations differ less than", key = PROPERTY_KEY_GEOLOCATION_EPS)
-        float geolocationEps = DEFAULT_GEOLOCATION_EPS;
 
         @ConfigProperty(label = "Relative pixel-X offset", key = PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_X, interval = "[0,1]")
         float paramOffsetX = PROPERTY_DEFAULT_PIXEL_OFFSET_FOR_DISPLAY;

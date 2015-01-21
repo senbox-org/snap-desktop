@@ -42,20 +42,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The sixth sub-panel of the layer preferences, handling the properties for the world map.
+ * Panel handling world map layer preferences. Sub-panel of the "Layer"-panel.
  *
  * @author thomas
  */
-@org.openide.util.NbBundle.Messages({
-        "Options_DisplayName_LayerWorldMap=World Map Layer",
-        "Options_Keywords_LayerWorldMap=layer, worldmap"
-})
 @OptionsPanelController.SubRegistration(location = "LayerPreferences",
         displayName = "#Options_DisplayName_LayerWorldMap",
         keywords = "#Options_Keywords_LayerWorldMap",
         keywordsCategory = "Layer",
         id = "LayerWorldMap")
-public final class WorldMapPanel extends DefaultConfigController {
+@org.openide.util.NbBundle.Messages({
+        "Options_DisplayName_LayerWorldMap=World Map Layer",
+        "Options_Keywords_LayerWorldMap=layer, worldmap"
+})
+public final class WorldMapLayerPanel extends DefaultConfigController {
 
     /**
      * Preferences key for the world map type

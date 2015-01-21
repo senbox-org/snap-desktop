@@ -20,7 +20,7 @@ import com.bc.ceres.binding.Property;
 import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.PropertyEditorRegistry;
-import org.esa.beam.glayer.NoDataLayerType;
+import org.esa.beam.framework.datamodel.Mask;
 import org.esa.snap.gui.preferences.ConfigProperty;
 import org.esa.snap.gui.preferences.DefaultConfigController;
 import org.esa.snap.gui.preferences.PreferenceUtils;
@@ -35,32 +35,32 @@ import java.awt.Color;
 import java.awt.Insets;
 
 /**
- * The third sub-panel of the layer preferences, handling no-data properties.
+ * Panel handling mask layer preferences. Sub-panel of the "Layer"-panel.
  *
  * @author thomas
  */
-@org.openide.util.NbBundle.Messages({
-        "Options_DisplayName_LayerNoData=No-Data Layer",
-        "Options_Keywords_LayerNoData=layer, no-data"
-})
 @OptionsPanelController.SubRegistration(location = "LayerPreferences",
-        displayName = "#Options_DisplayName_LayerNoData",
-        keywords = "#Options_Keywords_LayerNoData",
+        displayName = "#Options_DisplayName_LayerMask",
+        keywords = "#Options_Keywords_LayerMask",
         keywordsCategory = "Layer",
-        id = "LayerNoData")
-public final class NoDataPanel extends DefaultConfigController {
+        id = "LayerMask")
+@org.openide.util.NbBundle.Messages({
+        "Options_DisplayName_LayerMask=Mask Layer",
+        "Options_Keywords_LayerMask=layer, mask"
+})
+public final class MaskLayerPanel extends DefaultConfigController {
 
     /**
-     * Preferences key for the no-data overlay color
+     * Preferences key for the mask overlay color
      */
-    public static final String PROPERTY_KEY_NO_DATA_OVERLAY_COLOR = "noDataOverlay.color";
+    public static final String PROPERTY_KEY_MASK_COLOR = "mask.color";
     /**
-     * Preferences key for the no-data overlay transparency
+     * Preferences key for the mask overlay transparency
      */
-    public static final String PROPERTY_KEY_NO_DATA_OVERLAY_TRANSPARENCY = "noDataOverlay.transparency";
+    public static final String PROPERTY_KEY_MASK_TRANSPARENCY = "mask.transparency";
 
     protected Object createBean() {
-        return new NoDataBean();
+        return new MaskBean();
     }
 
     @Override
@@ -74,16 +74,16 @@ public final class NoDataPanel extends DefaultConfigController {
         JPanel pageUI = new JPanel(tableLayout);
 
         PropertyEditorRegistry registry = PropertyEditorRegistry.getInstance();
-        Property noDataOverlayColor = context.getPropertySet().getProperty(PROPERTY_KEY_NO_DATA_OVERLAY_COLOR);
-        Property noDataOverlayTransparency = context.getPropertySet().getProperty(PROPERTY_KEY_NO_DATA_OVERLAY_TRANSPARENCY);
+        Property maskOverlayColor = context.getPropertySet().getProperty(PROPERTY_KEY_MASK_COLOR);
+        Property maskOverlayTransparency = context.getPropertySet().getProperty(PROPERTY_KEY_MASK_TRANSPARENCY);
 
-        JComponent[] noDataOverlayColorComponents = PreferenceUtils.createColorComponents(noDataOverlayColor);
-        JComponent[] noDataOverlayTransparencyComponents = registry.findPropertyEditor(noDataOverlayTransparency.getDescriptor()).createComponents(noDataOverlayTransparency.getDescriptor(), context);
+        JComponent[] maskOverlayColorComponents = PreferenceUtils.createColorComponents(maskOverlayColor);
+        JComponent[] maskOverlayTransparencyComponents = registry.findPropertyEditor(maskOverlayTransparency.getDescriptor()).createComponents(maskOverlayTransparency.getDescriptor(), context);
 
-        pageUI.add(noDataOverlayColorComponents[0]);
-        pageUI.add(noDataOverlayColorComponents[1]);
-        pageUI.add(noDataOverlayTransparencyComponents[1]);
-        pageUI.add(noDataOverlayTransparencyComponents[0]);
+        pageUI.add(maskOverlayColorComponents[0]);
+        pageUI.add(maskOverlayColorComponents[1]);
+        pageUI.add(maskOverlayTransparencyComponents[1]);
+        pageUI.add(maskOverlayTransparencyComponents[0]);
         pageUI.add(tableLayout.createVerticalSpacer());
 
         JPanel parent = new JPanel(new BorderLayout());
@@ -98,16 +98,17 @@ public final class NoDataPanel extends DefaultConfigController {
     }
 
     @SuppressWarnings("UnusedDeclaration")
-    static class NoDataBean {
+    static class MaskBean {
 
-        @ConfigProperty(label = "No-data overlay colour",
-                key = PROPERTY_KEY_NO_DATA_OVERLAY_COLOR)
-        Color noDataOverlayColor = NoDataLayerType.DEFAULT_COLOR;
+        @SuppressWarnings("AccessStaticViaInstance")
+        @ConfigProperty(label = "Mask overlay colour",
+                key = PROPERTY_KEY_MASK_COLOR)
+        Color noDataOverlayColor = Mask.ImageType.DEFAULT_COLOR.RED;
 
-        @ConfigProperty(label = "No-data overlay transparency",
-                key = PROPERTY_KEY_NO_DATA_OVERLAY_TRANSPARENCY,
+        @ConfigProperty(label = "Mask overlay transparency",
+                key = PROPERTY_KEY_MASK_TRANSPARENCY,
                 interval = "[0.0,0.95]")
-        double noDataOverlayTransparency = 0.3;
+        double noDataOverlayTransparency = Mask.ImageType.DEFAULT_TRANSPARENCY;
     }
 
 }
