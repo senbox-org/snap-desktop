@@ -129,6 +129,11 @@
             <artifactId>org-netbeans-swing-tabcontrol</artifactId>
             <version>${netbeans.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-netbeans-api-progress</artifactId>
+            <version>${netbeans.version}</version>
+        </dependency>
         <!-- SNAP NetBeans Goodies -->
         <dependency>
             <groupId>org.esa.snap.netbeans</groupId>
