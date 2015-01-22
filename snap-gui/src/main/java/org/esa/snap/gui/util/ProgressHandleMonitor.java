@@ -26,7 +26,6 @@ public class ProgressHandleMonitor implements ProgressMonitor, Cancellable {
     public static ProgressHandleMonitor create(String displayName, Cancellable cancellable) {
         ProgressHandleMonitor progressMonitor = new ProgressHandleMonitor(cancellable);
         ProgressHandle progressHandle = ProgressHandleFactory.createHandle(displayName, progressMonitor);
-        progressHandle.start();
         progressMonitor.setProgressHandle(progressHandle);
         return progressMonitor;
     }
@@ -49,8 +48,6 @@ public class ProgressHandleMonitor implements ProgressMonitor, Cancellable {
     }
 
     /**
-     * Sets the progress handle which is assumed to be started.
-     *
      * @param progressHandle The progress handle.
      */
     public void setProgressHandle(ProgressHandle progressHandle) {
@@ -67,8 +64,13 @@ public class ProgressHandleMonitor implements ProgressMonitor, Cancellable {
             progressHandle = ProgressHandleFactory.createHandle(taskName, this);
             progressHandle.start(this.totalWorkUnits);
         } else {
+            try {
+                progressHandle.start(this.totalWorkUnits);
+            } catch (java.lang.IllegalStateException e) {
+                // if already started, use fall back
+                progressHandle.switchToDeterminate(this.totalWorkUnits);
+            }
             progressHandle.setDisplayName(taskName);
-            progressHandle.switchToDeterminate(this.totalWorkUnits);
         }
     }
 
