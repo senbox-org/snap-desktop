@@ -3,16 +3,16 @@ package org.esa.snap.gui;
 import com.bc.ceres.core.ExtensionFactory;
 import com.bc.ceres.core.ExtensionManager;
 import com.bc.ceres.jai.operator.ReinterpretDescriptor;
+import org.esa.beam.framework.dataio.ProductReader;
 import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.datamodel.ProductManager;
 import org.esa.beam.framework.datamodel.ProductNode;
 import org.esa.beam.framework.ui.product.ProductSceneView;
 import org.esa.beam.util.PropertyMap;
+import org.esa.snap.gui.actions.file.SaveProductAction;
 import org.esa.snap.gui.util.CompatiblePropertyMap;
 import org.esa.snap.gui.util.ContextGlobalExtenderImpl;
 import org.esa.snap.tango.TangoIcons;
-import org.openide.DialogDescriptor;
-import org.openide.DialogDisplayer;
 import org.openide.awt.NotificationDisplayer;
 import org.openide.awt.StatusDisplayer;
 import org.openide.awt.UndoRedo;
@@ -30,10 +30,7 @@ import org.openide.windows.WindowManager;
 import javax.media.jai.JAI;
 import javax.media.jai.OperationRegistry;
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -42,6 +39,8 @@ import java.io.PrintStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -244,27 +243,52 @@ public class SnapApp {
     }
 
     public boolean onTryStop() {
-        Frame mainWindow = getDefault().getMainFrame();
-        if (mainWindow == null || !mainWindow.isShowing()) {
-            return true;
+
+        final ArrayList<Product> modifiedProducts = new ArrayList<>(5);
+        final Product[] products = getProductManager().getProducts();
+        for (final Product product : products) {
+            final ProductReader reader = product.getProductReader();
+            if (reader != null) {
+                final Object input = reader.getInput();
+                if (input instanceof Product) {
+                    modifiedProducts.add(product);
+                }
+            }
+            if (!modifiedProducts.contains(product) && product.isModified()) {
+                modifiedProducts.add(product);
+            }
         }
-        ActionListener actionListener = (ActionEvent e) -> LOG.info(">>> " + getClass() + " action called");
-        JLabel label = new JLabel("<html>SNAP found some cached <b>bazoo files</b> in your <b>gnarz folder</b>.<br>" +
-                                          "Should they be rectified now?");
-        JPanel panel = new JPanel();
-        panel.setBorder(new EmptyBorder(10, 10, 10, 10));
-        panel.add(label);
-        DialogDescriptor dialogDescriptor = new DialogDescriptor(
-                panel,
-                "Confirm",
-                true,
-                DialogDescriptor.YES_NO_CANCEL_OPTION,
-                null,
-                actionListener);
-        Dialog dialog = DialogDisplayer.getDefault().createDialog(dialogDescriptor, mainWindow);
-        dialog.setVisible(true);
-        Object value = dialogDescriptor.getValue();
-        return !new Integer(2).equals(value);
+        if (!modifiedProducts.isEmpty()) {
+            final StringBuilder message = new StringBuilder();
+            if (modifiedProducts.size() == 1) {
+                message.append("The following product has been modified:");
+                message.append("\n    ").append(modifiedProducts.get(0).getDisplayName());
+                message.append("\n\nDo you wish to save it?");
+            } else {
+                message.append("The following products have been modified:");
+                for (Product modifiedProduct : modifiedProducts) {
+                    message.append("\n    ").append(modifiedProduct.getDisplayName());
+                }
+                message.append("\n\nDo you want to save them?");
+            }
+            SnapDialogs.Answer answer = SnapDialogs.requestDecision("Products Modified", message.toString(), true, null);
+            if (answer == SnapDialogs.Answer.YES) {
+                try {
+                    shuttingDown = true;
+                    //Save Products in reverse order is neccessary because derived products must be saved first
+                    Collections.reverse(modifiedProducts);
+                    for (Product modifiedProduct : modifiedProducts) {
+                        new SaveProductAction(modifiedProduct).execute();
+                    }
+                } finally {
+                    shuttingDown = false;
+                }
+            } else if (answer == SnapDialogs.Answer.CANCELLED) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public void onStop() {
