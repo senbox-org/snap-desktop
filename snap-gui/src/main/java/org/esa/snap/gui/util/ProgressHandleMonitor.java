@@ -13,16 +13,20 @@ import org.openide.util.Cancellable;
  * @since SNAP 2
  */
 public class ProgressHandleMonitor implements ProgressMonitor, Cancellable {
+
+    private static final int F = 100;
+
     private ProgressHandle progressHandle;
     private Cancellable cancellable;
     private boolean canceled;
-    private int workUnitI;
-    private double workUnitD;
-    private int totalWork;
+    private int totalWorkUnits;
+    private int currentWorkUnits;
+    private double currentWorkUnitsRational;
 
     public static ProgressHandleMonitor create(String displayName, Cancellable cancellable) {
         ProgressHandleMonitor progressMonitor = new ProgressHandleMonitor(cancellable);
         ProgressHandle progressHandle = ProgressHandleFactory.createHandle(displayName, progressMonitor);
+        progressHandle.start();
         progressMonitor.setProgressHandle(progressHandle);
         return progressMonitor;
     }
@@ -56,17 +60,16 @@ public class ProgressHandleMonitor implements ProgressMonitor, Cancellable {
 
     @Override
     public void beginTask(String taskName, int totalWork) {
-        this.totalWork = totalWork;
+        this.totalWorkUnits = F * totalWork;
+        this.currentWorkUnits = 0;
+        this.currentWorkUnitsRational = 0.0;
         if (progressHandle == null) {
             progressHandle = ProgressHandleFactory.createHandle(taskName, this);
-            progressHandle.start(totalWork);
+            progressHandle.start(this.totalWorkUnits);
         } else {
-            progressHandle.start(totalWork);
             progressHandle.setDisplayName(taskName);
-            //progressHandle.switchToDeterminate(totalWork);
+            progressHandle.switchToDeterminate(this.totalWorkUnits);
         }
-        workUnitI = 0;
-        workUnitD = 0.0;
     }
 
     @Override
@@ -77,13 +80,12 @@ public class ProgressHandleMonitor implements ProgressMonitor, Cancellable {
 
     @Override
     public void internalWorked(double work) {
-        workUnitD += work;
-        int i = (int) workUnitD;
-        if (i > workUnitI) {
-            workUnitI = i;
-            progressHandle.progress(workUnitI);
+        currentWorkUnitsRational += F * work;
+        int i = (int) currentWorkUnitsRational;
+        if (i > currentWorkUnits) {
+            currentWorkUnits = i;
+            progressHandle.progress(currentWorkUnits);
         }
-        System.out.println("totalWork = " + totalWork + ", workUnitD = " + workUnitD + ", workUnitI = " + workUnitI + ", work = " + work);
     }
 
     @Override
