@@ -24,16 +24,12 @@ import org.openide.util.WeakSet;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Action which closes a selected product.
@@ -52,8 +48,6 @@ import java.util.logging.Logger;
         "CTL_CloseProductActionName=Close Product"
 })
 public final class CloseProductAction extends AbstractAction {
-
-    private static final Logger LOG = Logger.getLogger(CloseProductAction.class.getName());
 
     private final WeakSet<Product> productSet;
 
@@ -99,7 +93,9 @@ public final class CloseProductAction extends AbstractAction {
         for (Product product : products) {
             if (product.isModified()) {
                 SnapDialogs.Answer answer = SnapDialogs.requestDecision(Bundle.CTL_OpenProductActionName(),
-                                                                        MessageFormat.format("Product ''{0}'' has been modified.\nDo you want to save it?", product.getName()), true, null);
+                                                                        MessageFormat.format("Product ''{0}'' has been modified.\n" +
+                                                                                                     "Do you want to save it?",
+                                                                                             product.getName()), true, null);
                 if (answer == SnapDialogs.Answer.YES) {
                     saveList.add(product);
                 } else if (answer == SnapDialogs.Answer.CANCELLED) {
@@ -108,50 +104,19 @@ public final class CloseProductAction extends AbstractAction {
             }
         }
 
-        SwingWorker<List<IOException>, Object> swingWorker = new SwingWorker<List<IOException>, Object>() {
-            @Override
-            protected List<IOException> doInBackground() {
-                List<IOException> problems = new ArrayList<>();
-                for (Product product : saveList) {
-                    // todo - save product
-                    // SaveProductAction.saveProduct(product);
-                    LOG.info("Saving to " + product.getFileLocation());
-                }
-                return problems;
-            }
+        for (Product product : saveList) {
+            new SaveProductAction(product).execute();
+        }
 
-            @Override
-            protected void done() {
+        for (Product product : closeList) {
+            WindowUtilities.getOpened(DocumentWindow.class)
+                    .filter(dw -> (dw.getDocument() instanceof ProductNode)
+                            && ((ProductNode) dw.getDocument()).getProduct() == product)
+                    .forEach(DocumentWindow::documentClosing);
+            SnapApp.getDefault().getProductManager().removeProduct(product);
+        }
 
-                List<IOException> problems;
-                try {
-                    problems = get();
-                } catch (InterruptedException | ExecutionException e) {
-                    throw new RuntimeException(e);
-                }
-                if (!problems.isEmpty()) {
-                    StringBuilder problemsMessage = new StringBuilder();
-                    problemsMessage.append(MessageFormat.format("<html>{0} problem(s) occurred:<br/>", problems.size()));
-                    for (IOException problem : problems) {
-                        LOG.log(Level.SEVERE, problem.getMessage(), problem);
-                        problemsMessage.append(MessageFormat.format("<b>  {0}</b>: {1}<br/>", problem.getClass().getSimpleName(), problem.getMessage()));
-                    }
-                    SnapDialogs.showError(Bundle.CTL_OpenProductActionName(), problemsMessage.toString());
-                }
-
-                for (Product product : closeList) {
-                    WindowUtilities.getOpened(DocumentWindow.class)
-                            .filter(dw -> (dw.getDocument() instanceof ProductNode)
-                                    && ((ProductNode) dw.getDocument()).getProduct() == product)
-                            .forEach(DocumentWindow::documentClosing);
-                    SnapApp.getDefault().getProductManager().removeProduct(product);
-                }
-
-                closeList.forEach(Product::dispose);
-            }
-        };
-
-        swingWorker.execute();
+        closeList.forEach(Product::dispose);
         return true;
     }
 

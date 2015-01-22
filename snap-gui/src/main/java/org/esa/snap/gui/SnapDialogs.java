@@ -27,6 +27,7 @@ import java.util.prefs.Preferences;
         "LBL_Question=Question",
         "LBL_Message=Message",
         "LBL_Warning=Warning",
+        "LBL_Error=Error",
         "LBL_DoNotShowThisMessage=Don't show this message anymore.",
         "LBL_QuestionRemember=Remember my decision and don't ask again."
 })
@@ -71,7 +72,7 @@ public class SnapDialogs {
      * @param message The information message text to be displayed.
      */
     public static void showWarning(String message) {
-        showInformation(Bundle.LBL_Warning(), message, null);
+        showWarning(null, message, null);
     }
 
     /**
@@ -167,12 +168,21 @@ public class SnapDialogs {
     /**
      * Displays a modal dialog with the provided error message text.
      *
+     * @param message The error message text to be displayed.
+     */
+    public static void showError(String message) {
+        showError(null, message);
+    }
+
+    /**
+     * Displays a modal dialog with the provided error message text.
+     *
      * @param title   The dialog title. May be {@code null}.
-     * @param message The information message text to be displayed.
+     * @param message The error message text to be displayed.
      */
     public static void showError(String title, String message) {
         NotifyDescriptor nd = new NotifyDescriptor(message,
-                                                   title,
+                                                   title != null ? title : Bundle.LBL_Error(),
                                                    JOptionPane.OK_OPTION,
                                                    NotifyDescriptor.ERROR_MESSAGE,
                                                    null,

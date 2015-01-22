@@ -50,7 +50,9 @@ public final class ReopenProductAction extends AbstractAction implements Present
         pathList.forEach(path -> {
             if (!openedFiles.contains(new File(path))) {
                 JMenuItem menuItem = new JMenuItem(path);
-                menuItem.addActionListener(e -> OpenProductAction.openProductFile(null, new File(path)));
+                OpenProductAction openProductAction = new OpenProductAction();
+                openProductAction.setFile(new File(path));
+                menuItem.addActionListener(openProductAction);
                 menu.add(menuItem);
             }
         });

@@ -5,7 +5,6 @@
  */
 package org.esa.snap.gui.actions.file;
 
-import org.esa.beam.framework.dataio.ProductIO;
 import org.esa.beam.framework.dataio.ProductIOPlugInManager;
 import org.esa.beam.framework.dataio.ProductReaderPlugIn;
 import org.esa.beam.framework.datamodel.Product;
@@ -13,7 +12,7 @@ import org.esa.beam.util.io.BeamFileChooser;
 import org.esa.beam.util.io.BeamFileFilter;
 import org.esa.snap.gui.SnapApp;
 import org.esa.snap.gui.SnapDialogs;
-import org.openide.NotifyDescriptor;
+import org.netbeans.api.progress.ProgressUtils;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
@@ -29,8 +28,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.logging.Level;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
@@ -49,12 +47,14 @@ import java.util.stream.Collectors;
 @ActionReference(path = "Menu/File", position = 10)
 @NbBundle.Messages({
         "CTL_OpenProductActionName=Open Product",
-        "CTL_OpenProductActionMenuText=Open Product..."
+        "CTL_OpenProductActionMenuText=Open Product...",
+        "LBL_NoReaderFoundText=No appropriate product reader found.",
+
 })
 public final class OpenProductAction extends AbstractAction {
 
-    public static final String PREFERENCES_KEY_RECENTLY_OPENED_PRODUCTS = "recentlyOpenedProducts";
-    public static final String PREFERENCES_KEY_LAST_PRODUCT_DIR = "lastProductDir";
+    public static final String PREFERENCES_KEY_RECENTLY_OPENED_PRODUCTS = "recently_opened_products";
+    public static final String PREFERENCES_KEY_LAST_PRODUCT_DIR = "last_product_dir";
     private static final Logger LOG = Logger.getLogger(OpenProductAction.class.getName());
 
     static RecentPaths getRecentProductPaths() {
@@ -67,8 +67,37 @@ public final class OpenProductAction extends AbstractAction {
                 .collect(Collectors.toList());
     }
 
+    public File getFile() {
+        Object value = getValue("file");
+        if (value instanceof File) {
+            return (File) value;
+        }
+        return null;
+    }
+
+    public void setFile(File file) {
+        putValue("file", file);
+    }
+
+    public String getFileFormat() {
+        Object value = getValue("fileFormat");
+        if (value instanceof String) {
+            return (String) value;
+        }
+        return null;
+    }
+
+    public void setFileFormat(String fileFormat) {
+        putValue("fileFormat", fileFormat);
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
+
+        if (getFile() != null) {
+            openProductFilesCheckOpened(getFileFormat(), getFile());
+            return;
+        }
 
         Iterator<ProductReaderPlugIn> readerPlugIns = ProductIOPlugInManager.getInstance().getAllReaderPlugIns();
 
@@ -78,13 +107,13 @@ public final class OpenProductAction extends AbstractAction {
             filters.add(readerPlugIn.getProductFileFilter());
         }
         if (filters.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "No reader found!");
+            SnapDialogs.showWarning(Bundle.LBL_NoReaderFoundText());
             return;
         }
 
         Preferences preferences = SnapApp.getDefault().getPreferences();
 
-        JFileChooser fc = new BeamFileChooser(new File(preferences.get(PREFERENCES_KEY_LAST_PRODUCT_DIR, ".")));
+        BeamFileChooser fc = new BeamFileChooser(new File(preferences.get(PREFERENCES_KEY_LAST_PRODUCT_DIR, ".")));
         fc.setDialogTitle(Bundle.CTL_OpenProductActionName());
         fc.setAcceptAllFileFilterUsed(true);
         filters.forEach(fc::addChoosableFileFilter);
@@ -111,14 +140,10 @@ public final class OpenProductAction extends AbstractAction {
                 ? ((BeamFileFilter) fc.getFileFilter()).getFormatName()
                 : null;
 
-        openProductFiles(formatName, files);
+        openProductFilesCheckOpened(formatName, files);
     }
 
-    static void openProductFile(final String formatName, final File file) {
-        openProductFiles(formatName, file);
-    }
-
-    static void openProductFiles(final String formatName, final File... files) {
+    private static void openProductFilesCheckOpened(final String formatName, final File... files) {
         List<File> openedFiles = getOpenedProductFiles();
         List<File> fileList = new ArrayList<>(Arrays.asList(files));
         for (File file : files) {
@@ -136,46 +161,33 @@ public final class OpenProductAction extends AbstractAction {
             }
         }
 
-        SwingWorker<List<IOException>, Object> swingWorker = new SwingWorker<List<IOException>, Object>() {
-            @Override
-            protected List<IOException> doInBackground() {
-                List<IOException> problems = new ArrayList<>();
-                for (File file : fileList) {
-                    try {
-                        Product product = formatName != null ? ProductIO.readProduct(file, formatName) : ProductIO.readProduct(file);
-                        getRecentProductPaths().add(file.getPath());
-                        SwingUtilities.invokeLater(() -> SnapApp.getDefault().getProductManager().addProduct(product));
-                    } catch (IOException problem) {
-                        problems.add(problem);
-                    }
-                }
-                return problems;
-            }
+        for (File file : fileList) {
+            openProductFileDontCheckOpened(file, formatName);
+        }
+    }
 
-            @Override
-            protected void done() {
-                List<IOException> problems;
-                try {
-                    problems = get();
-                } catch (InterruptedException | ExecutionException e) {
-                    throw new RuntimeException(e);
-                }
-                if (!problems.isEmpty()) {
-                    StringBuilder problemsMessage = new StringBuilder();
-                    problemsMessage.append(MessageFormat.format("<html>{0} problem(s) occurred:<br/>", problems.size()));
-                    for (IOException problem : problems) {
-                        LOG.log(Level.SEVERE, problem.getMessage(), problem);
-                        problemsMessage.append(MessageFormat.format("<b>  {0}</b>: {1}<br/>", problem.getClass().getSimpleName(), problem.getMessage()));
-                    }
-                    SnapDialogs.showError(Bundle.CTL_OpenProductActionName(), problemsMessage.toString());
-                }
-            }
-        };
+    private static Object openProductFileDontCheckOpened(File file, String formatName) {
+        SnapApp.getDefault().setStatusBarMessage(MessageFormat.format("Reading product ''{0}''...", file.getName()));
 
-        swingWorker.execute();
+        AtomicBoolean cancelled = new AtomicBoolean();
+        ReadProductOperation operation = new ReadProductOperation(file, formatName);
+        ProgressUtils.runOffEventDispatchThread(operation, Bundle.CTL_OpenProductActionName(), cancelled, true);
+
+        SnapApp.getDefault().setStatusBarMessage("");
+
+        if (cancelled.get()) {
+            return null;
+        }
+
+        if (operation.getStatus() instanceof IOException) {
+            SnapDialogs.showError(Bundle.CTL_OpenProductActionName(), ((IOException) operation.getStatus()).getMessage());
+        }
+
+        return operation.getStatus();
     }
 
     public static void reopenProduct(Product product, File newFile) {
         // todo!!!
     }
+
 }

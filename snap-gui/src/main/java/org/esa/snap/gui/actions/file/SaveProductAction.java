@@ -116,7 +116,7 @@ public final class SaveProductAction extends AbstractAction {
 
         //boolean incremental = true;
         boolean incremental = false;
-        SaveProductOperation operation = new SaveProductOperation(product, incremental);
+        WriteProductOperation operation = new WriteProductOperation(product, incremental);
         ProgressUtils.runOffEventThreadWithProgressDialog(operation,
                                                           Bundle.CTL_SaveProductActionName(),
                                                           operation.getProgressHandle(),

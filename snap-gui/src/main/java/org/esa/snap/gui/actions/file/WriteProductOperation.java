@@ -1,5 +1,6 @@
 package org.esa.snap.gui.actions.file;
 
+import com.bc.ceres.core.Assert;
 import com.bc.ceres.core.ProgressMonitor;
 import org.esa.beam.dataio.dimap.DimapProductConstants;
 import org.esa.beam.framework.dataio.ProductIO;
@@ -16,16 +17,17 @@ import org.openide.util.Cancellable;
 import java.io.File;
 
 /**
-* @author Norman
-*/
-public class SaveProductOperation implements Runnable, Cancellable {
+ * @author Norman
+ */
+class WriteProductOperation implements Runnable, Cancellable {
 
     private final Product product;
     private final Boolean incremental;
     private final ProgressHandleMonitor pm;
     private Boolean status;
 
-    public SaveProductOperation(Product product, Boolean incremental) {
+    public WriteProductOperation(Product product, Boolean incremental) {
+        Assert.notNull(product, "product");
         this.product = product;
         if (incremental != null) {
             this.incremental = incremental;
@@ -92,10 +94,11 @@ public class SaveProductOperation implements Runnable, Cancellable {
         }
 
         File file = product.getFileLocation();
-        boolean saveOk = saveProductImpl(product, file,
-                                         DimapProductConstants.DIMAP_FORMAT_NAME,
-                                         incremental,
-                                         pm);
+        boolean saveOk = saveProduct(product, file,
+                                     DimapProductConstants.DIMAP_FORMAT_NAME,
+                                     incremental,
+                                     pm);
+
         if (saveOk) {
             product.setModified(false);
             OpenProductAction.getRecentProductPaths().add(file.getPath());
@@ -112,11 +115,11 @@ public class SaveProductOperation implements Runnable, Cancellable {
         status = saveOk;
     }
 
-    public boolean saveProductImpl(Product product,
-                                   File file,
-                                   String formatName,
-                                   boolean incremental,
-                                   ProgressMonitor pm) {
+    private static boolean saveProduct(Product product,
+                                       File file,
+                                       String formatName,
+                                       boolean incremental,
+                                       ProgressMonitor pm) {
         Debug.assertNotNull(product);
         boolean status = false;
         try {
