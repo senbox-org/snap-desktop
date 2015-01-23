@@ -66,9 +66,17 @@ public final class UiBehaviorPanelController extends DefaultConfigController {
     public static final String PROPERTY_KEY_VERSION_CHECK_ENABLED =
             "visat.versionCheck" + SuppressibleOptionPane.KEY_PREFIX_ENABLED;
     /**
-     * Preferences key for unsuppressing tips and messages
+     * Preferences key for showing a message after writing a GPF-processed product.
      */
-    public static final String PROPERTY_KEY_UNSUPPRESS = "unsuppress";
+    public static final String PROPERTY_KEY_SAVE_INFO = "saveInfo";
+    /**
+     * Preferences key for showing a message after opening a GPF-processed product in the application.
+     */
+    public static final String PROPERTY_KEY_OPEN_IN_APP_INFO = "openInAppInfo";
+    /**
+     * Preferences key for showing a message after writing and opening a GPF-processed product.
+     */
+    public static final String PROPERTY_KEY_SAVE_AND_OPEN_IN_APP_INFO = "saveAndOpenInAppInfo";
 
     protected PropertyContainer createPropertyContainer() {
         return createPropertyContainer(new UiBehaviorBean());
@@ -89,13 +97,17 @@ public final class UiBehaviorPanelController extends DefaultConfigController {
         Property showNewBands = context.getPropertySet().getProperty(PROPERTY_KEY_AUTO_SHOW_NEW_BANDS);
         Property showOnlyDisplayed = context.getPropertySet().getProperty(PixelInfoView.PROPERTY_KEY_SHOW_ONLY_DISPLAYED_BAND_PIXEL_VALUES);
         Property checkVersion = context.getPropertySet().getProperty(PROPERTY_KEY_VERSION_CHECK_ENABLED);
-        Property unsuppress = context.getPropertySet().getProperty(PROPERTY_KEY_UNSUPPRESS);
+        Property saveInfo = context.getPropertySet().getProperty(PROPERTY_KEY_SAVE_INFO);
+        Property openInApp = context.getPropertySet().getProperty(PROPERTY_KEY_OPEN_IN_APP_INFO);
+        Property saveAndOpenInApp = context.getPropertySet().getProperty(PROPERTY_KEY_SAVE_AND_OPEN_IN_APP_INFO);
 
         JComponent[] autoShowNavigationComponents = registry.findPropertyEditor(autoShowNavigation.getDescriptor()).createComponents(autoShowNavigation.getDescriptor(), context);
         JComponent[] showNewBandsComponents = registry.findPropertyEditor(showNewBands.getDescriptor()).createComponents(showNewBands.getDescriptor(), context);
         JComponent[] showOnlyDisplayedComponents = registry.findPropertyEditor(showOnlyDisplayed.getDescriptor()).createComponents(showOnlyDisplayed.getDescriptor(), context);
         JComponent[] checkVersionComponents = registry.findPropertyEditor(checkVersion.getDescriptor()).createComponents(checkVersion.getDescriptor(), context);
-        JComponent[] unsuppressComponents = registry.findPropertyEditor(unsuppress.getDescriptor()).createComponents(unsuppress.getDescriptor(), context);
+        JComponent[] saveInfoComponents = registry.findPropertyEditor(saveInfo.getDescriptor()).createComponents(saveInfo.getDescriptor(), context);
+        JComponent[] openInAppComponents = registry.findPropertyEditor(openInApp.getDescriptor()).createComponents(openInApp.getDescriptor(), context);
+        JComponent[] saveAndOpenInAppComponents = registry.findPropertyEditor(saveAndOpenInApp.getDescriptor()).createComponents(saveAndOpenInApp.getDescriptor(), context);
 
         pageUI.add(createTitleLabel("Display Settings"));
         pageUI.add(autoShowNavigationComponents[0]);
@@ -104,7 +116,9 @@ public final class UiBehaviorPanelController extends DefaultConfigController {
         pageUI.add(tableLayout.createHorizontalSpacer());
         pageUI.add(createTitleLabel("Message Settings"));
         pageUI.add(checkVersionComponents[0]);
-        pageUI.add(unsuppressComponents[0]);
+        pageUI.add(saveInfoComponents[0]);
+        pageUI.add(openInAppComponents[0]);
+        pageUI.add(saveAndOpenInAppComponents[0]);
         pageUI.add(tableLayout.createVerticalSpacer());
 
         JPanel parent = new JPanel(new BorderLayout());
@@ -136,9 +150,17 @@ public final class UiBehaviorPanelController extends DefaultConfigController {
                 key = PROPERTY_KEY_VERSION_CHECK_ENABLED)
         boolean checkEnabled = true;
 
-        @Preference(label = "Show all suppressed tips and messages again",
-                key = PROPERTY_KEY_UNSUPPRESS)
-        boolean unsuppress = false;
+        @Preference(label = "Show target product writing success and duration information",
+                key = PROPERTY_KEY_SAVE_INFO)
+        boolean saveInfo = true;
+
+        @Preference(label = "Show target product opening information",
+                key = PROPERTY_KEY_OPEN_IN_APP_INFO)
+        boolean openInAppInfo = true;
+
+        @Preference(label = "Show target product writing and opening information",
+                key = PROPERTY_KEY_SAVE_AND_OPEN_IN_APP_INFO)
+        boolean saveAndOpenInAppInfo = true;
     }
 
 }
