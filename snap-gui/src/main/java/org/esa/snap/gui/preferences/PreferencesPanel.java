@@ -20,12 +20,11 @@ import com.bc.ceres.binding.Property;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.PropertyPane;
 
-import javax.swing.JComponent;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
 
 /**
- * TODO fill out or delete
+ * Non-public helper class.
  *
  * @author thomas
  */
@@ -46,7 +45,7 @@ class PreferencesPanel {
         }
     }
 
-    JComponent getComponent() {
+    JPanel getComponent() {
         if (panel == null) {
             panel = new JPanel(new BorderLayout());
             panel.add(new PropertyPane(bindingContext).createPanel(), BorderLayout.CENTER);

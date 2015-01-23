@@ -38,15 +38,28 @@ import java.awt.Font;
  */
 public class PreferenceUtils {
 
-    public static void addNote(JPanel pageUI, String text) {
+    /**
+     * Adds a text note to the given <code>JPanel</code>.
+     *
+     * @param panel A panel to add the note to.
+     * @param text  The note text.
+     */
+    public static void addNote(JPanel panel, String text) {
         JLabel note = new JLabel(text);
         if (note.getFont() != null) {
             note.setFont(note.getFont().deriveFont(Font.ITALIC));
         }
         note.setForeground(new Color(0, 0, 92));
-        pageUI.add(note);
+        panel.add(note);
     }
 
+    /**
+     * Creates color combobox components for a given property.
+     *
+     * @param colorProperty The property to create the components for.
+     *
+     * @return A new color combobox.
+     */
     public static JComponent[] createColorComponents(Property colorProperty) {
         JComponent[] components = new JComponent[2];
         components[0] = new JLabel(colorProperty.getDescriptor().getDisplayName() + ":");
@@ -54,6 +67,13 @@ public class PreferenceUtils {
         return components;
     }
 
+    /**
+     * Creates a <code>JPanel</code> containing a label with the given text and a horizontal line.
+     *
+     * @param title The label text.
+     *
+     * @return A <code>JPanel</code> with the title label.
+     */
     public static JPanel createTitleLabel(String title) {
         TableLayout layout = new TableLayout(3);
         layout.setColumnWeightX(0, 0.0);

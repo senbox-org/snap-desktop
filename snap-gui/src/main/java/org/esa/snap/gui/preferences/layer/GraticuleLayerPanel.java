@@ -17,13 +17,14 @@
 package org.esa.snap.gui.preferences.layer;
 
 import com.bc.ceres.binding.Property;
+import com.bc.ceres.binding.PropertyContainer;
 import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.Enablement;
 import com.bc.ceres.swing.binding.PropertyEditorRegistry;
 import org.esa.beam.glayer.GraticuleLayerType;
-import org.esa.snap.gui.preferences.ConfigProperty;
 import org.esa.snap.gui.preferences.DefaultConfigController;
+import org.esa.snap.gui.preferences.Preference;
 import org.esa.snap.gui.preferences.PreferenceUtils;
 import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.HelpCtx;
@@ -56,8 +57,8 @@ public final class GraticuleLayerPanel extends DefaultConfigController {
     private JComponent[] textFgColorComponents;
     private JComponent[] textBgColorComponents;
 
-    protected Object createBean() {
-        return new MaskBean();
+    protected PropertyContainer createPropertyContainer() {
+        return createPropertyContainer(new GraticuleBean());
     }
 
     @Override
@@ -171,53 +172,53 @@ public final class GraticuleLayerPanel extends DefaultConfigController {
     }
 
     @SuppressWarnings("UnusedDeclaration")
-    static class MaskBean {
+    static class GraticuleBean {
 
-        @ConfigProperty(label = "Compute latitude and longitude steps",
+        @Preference(label = "Compute latitude and longitude steps",
                 key = GraticuleLayerType.PROPERTY_NAME_RES_AUTO)
         boolean computeLatLonSteps = true;
 
-        @ConfigProperty(label = "Average grid size in pixels",
+        @Preference(label = "Average grid size in pixels",
                 key = GraticuleLayerType.PROPERTY_NAME_RES_PIXELS,
                 interval = "[16,512]")
         int averageGridSize = 128;
 
-        @ConfigProperty(label = "Latitude step (dec. degree)",
+        @Preference(label = "Latitude step (dec. degree)",
                 key = GraticuleLayerType.PROPERTY_NAME_RES_LAT,
                 interval = "[0.01,90.0]")
         double latStep = 1.0;
 
-        @ConfigProperty(label = "Longitude step (dec. degree)",
+        @Preference(label = "Longitude step (dec. degree)",
                 key = GraticuleLayerType.PROPERTY_NAME_RES_LON,
                 interval = "[0.01,180.0]")
         double lonStep = 1.0;
 
-        @ConfigProperty(label = "Line colour",
+        @Preference(label = "Line colour",
                 key = GraticuleLayerType.PROPERTY_NAME_LINE_COLOR)
         Color lineColor = new Color(204, 204, 255);
 
-        @ConfigProperty(label = "Line width",
+        @Preference(label = "Line width",
                 key = GraticuleLayerType.PROPERTY_NAME_LINE_WIDTH)
         double lineWidth = 0.5;
 
-        @ConfigProperty(label = "Line transparency",
+        @Preference(label = "Line transparency",
                 key = GraticuleLayerType.PROPERTY_NAME_LINE_TRANSPARENCY,
                 interval = "[0.0,1.0]")
         double lineTransparency = 0.0;
 
-        @ConfigProperty(label = "Show text labels",
+        @Preference(label = "Show text labels",
                 key = GraticuleLayerType.PROPERTY_NAME_TEXT_ENABLED)
         boolean showTextLabels = true;
 
-        @ConfigProperty(label = "Text foreground colour",
+        @Preference(label = "Text foreground colour",
                 key = GraticuleLayerType.PROPERTY_NAME_TEXT_FG_COLOR)
         Color fgColor = Color.white;
 
-        @ConfigProperty(label = "Text background colour",
+        @Preference(label = "Text background colour",
                 key = GraticuleLayerType.PROPERTY_NAME_TEXT_BG_COLOR)
         Color bgColor = Color.black;
 
-        @ConfigProperty(label = "Text background transparency",
+        @Preference(label = "Text background transparency",
                 key = GraticuleLayerType.PROPERTY_NAME_TEXT_BG_TRANSPARENCY,
                 interval = "[0.0,1.0]")
         double textBgTransparency = 0.7;

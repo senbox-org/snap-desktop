@@ -17,13 +17,14 @@
 package org.esa.snap.gui.preferences.general;
 
 import com.bc.ceres.binding.Property;
+import com.bc.ceres.binding.PropertyContainer;
 import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.PropertyEditorRegistry;
 import org.esa.beam.framework.ui.PixelInfoView;
 import org.esa.beam.framework.ui.SuppressibleOptionPane;
-import org.esa.snap.gui.preferences.ConfigProperty;
 import org.esa.snap.gui.preferences.DefaultConfigController;
+import org.esa.snap.gui.preferences.Preference;
 import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.HelpCtx;
 
@@ -69,8 +70,8 @@ public final class UiBehaviorPanelController extends DefaultConfigController {
      */
     public static final String PROPERTY_KEY_UNSUPPRESS = "unsuppress";
 
-    protected Object createBean() {
-        return new UiBehaviorBean();
+    protected PropertyContainer createPropertyContainer() {
+        return createPropertyContainer(new UiBehaviorBean());
     }
 
     @Override
@@ -119,23 +120,23 @@ public final class UiBehaviorPanelController extends DefaultConfigController {
 
     static class UiBehaviorBean {
 
-        @ConfigProperty(label = "Show navigation window when image views are opened",
+        @Preference(label = "Show navigation window when image views are opened",
                 key = PROPERTY_KEY_AUTO_SHOW_NAVIGATION)
         boolean autoShowNavigation = true;
 
-        @ConfigProperty(label = "Open image view for new (virtual) bands",
+        @Preference(label = "Open image view for new (virtual) bands",
                 key = PROPERTY_KEY_AUTO_SHOW_NEW_BANDS)
         boolean autoShowNewBands = true;
 
-        @ConfigProperty(label = "Show only pixel values of loaded or displayed bands",
+        @Preference(label = "Show only pixel values of loaded or displayed bands",
                 key = PixelInfoView.PROPERTY_KEY_SHOW_ONLY_DISPLAYED_BAND_PIXEL_VALUES)
         boolean showOnlyLoadedOrDisplayedBandPixels = PixelInfoView.PROPERTY_DEFAULT_SHOW_DISPLAYED_BAND_PIXEL_VALUES;
 
-        @ConfigProperty(label = "Check for new version on startup",
+        @Preference(label = "Check for new version on startup",
                 key = PROPERTY_KEY_VERSION_CHECK_ENABLED)
         boolean checkEnabled = true;
 
-        @ConfigProperty(label = "Show all suppressed tips and messages again",
+        @Preference(label = "Show all suppressed tips and messages again",
                 key = PROPERTY_KEY_UNSUPPRESS)
         boolean unsuppress = false;
     }

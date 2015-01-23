@@ -16,11 +16,12 @@
 
 package org.esa.snap.gui.preferences.general;
 
+import com.bc.ceres.binding.PropertyContainer;
 import com.bc.ceres.binding.ValidationException;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.Enablement;
-import org.esa.snap.gui.preferences.ConfigProperty;
 import org.esa.snap.gui.preferences.DefaultConfigController;
+import org.esa.snap.gui.preferences.Preference;
 import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.HelpCtx;
 
@@ -77,8 +78,8 @@ public final class WriteOptionsPanelController extends DefaultConfigController {
      */
     public static final boolean DEFAULT_VALUE_SAVE_INCREMENTAL = true;
 
-    protected Object createBean() {
-        return new WriteOptionsBean();
+    protected PropertyContainer createPropertyContainer() {
+        return createPropertyContainer(new WriteOptionsBean());
     }
 
     @Override
@@ -112,16 +113,16 @@ public final class WriteOptionsPanelController extends DefaultConfigController {
     @SuppressWarnings("UnusedDeclaration")
     static class WriteOptionsBean {
 
-        @ConfigProperty(label = "Save product header (MPH, SPH, Global_Attributes)", key = PROPERTY_KEY_SAVE_PRODUCT_HEADERS)
+        @Preference(label = "Save product header (MPH, SPH, Global_Attributes)", key = PROPERTY_KEY_SAVE_PRODUCT_HEADERS)
         boolean saveProductHeaders = DEFAULT_VALUE_SAVE_PRODUCT_HEADERS;
 
-        @ConfigProperty(label = "Save product history (History)", key = PROPERTY_KEY_SAVE_PRODUCT_HISTORY)
+        @Preference(label = "Save product history (History)", key = PROPERTY_KEY_SAVE_PRODUCT_HISTORY)
         boolean saveProductHistory = DEFAULT_VALUE_SAVE_PRODUCT_HISTORY;
 
-        @ConfigProperty(label = "Save product annotation datasets (ADS)", key = PROPERTY_KEY_SAVE_PRODUCT_ANNOTATIONS)
+        @Preference(label = "Save product annotation datasets (ADS)", key = PROPERTY_KEY_SAVE_PRODUCT_ANNOTATIONS)
         boolean saveProductAds = DEFAULT_VALUE_SAVE_PRODUCT_ANNOTATIONS;
 
-        @ConfigProperty(label = "Use incremental save (only save modified items)", key = PROPERTY_KEY_SAVE_INCREMENTAL)
+        @Preference(label = "Use incremental save (only save modified items)", key = PROPERTY_KEY_SAVE_INCREMENTAL)
         boolean saveIncremental = DEFAULT_VALUE_SAVE_INCREMENTAL;
     }
 

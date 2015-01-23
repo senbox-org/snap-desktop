@@ -17,12 +17,13 @@
 package org.esa.snap.gui.preferences.layer;
 
 import com.bc.ceres.binding.Property;
+import com.bc.ceres.binding.PropertyContainer;
 import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.PropertyEditorRegistry;
 import org.esa.beam.framework.ui.product.ProductSceneView;
-import org.esa.snap.gui.preferences.ConfigProperty;
 import org.esa.snap.gui.preferences.DefaultConfigController;
+import org.esa.snap.gui.preferences.Preference;
 import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.HelpCtx;
 
@@ -48,8 +49,8 @@ import static com.bc.ceres.swing.TableLayout.*;
         id = "LayerGeneral")
 public final class GeneralLayerPanel extends DefaultConfigController {
 
-    protected Object createBean() {
-        return new GeneralLayerBean();
+    protected PropertyContainer createPropertyContainer() {
+        return createPropertyContainer(new GeneralLayerBean());
     }
 
     @Override
@@ -86,11 +87,11 @@ public final class GeneralLayerPanel extends DefaultConfigController {
     @SuppressWarnings("UnusedDeclaration")
     static class GeneralLayerBean {
 
-        @ConfigProperty(label = "Show a navigation control widget in image views",
+        @Preference(label = "Show a navigation control widget in image views",
                 key = ProductSceneView.PROPERTY_KEY_IMAGE_NAV_CONTROL_SHOWN)
         boolean showNavigationControl = true;
 
-        @ConfigProperty(label = "Show scroll bars in image views",
+        @Preference(label = "Show scroll bars in image views",
                 key = ProductSceneView.PROPERTY_KEY_IMAGE_SCROLL_BARS_SHOWN)
         boolean showScrollBars = false;
     }

@@ -27,12 +27,18 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * Annotation for user preferences. Use is mandatory if preferences are supplied via a bean, see
+ * {@link DefaultConfigController#createPropertyContainer()} and
+ * {@link DefaultConfigController#createPropertyContainer(Object)}.
+ *
+ * @see DefaultConfigController
+ *
  * @author thomas
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.FIELD})
-public @interface ConfigProperty {
+public @interface Preference {
 
     /**
      * @return The label of the property. Must not be empty.

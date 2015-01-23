@@ -17,12 +17,13 @@
 package org.esa.snap.gui.preferences.layer;
 
 import com.bc.ceres.binding.Property;
+import com.bc.ceres.binding.PropertyContainer;
 import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.PropertyEditorRegistry;
 import org.esa.beam.framework.datamodel.Mask;
-import org.esa.snap.gui.preferences.ConfigProperty;
 import org.esa.snap.gui.preferences.DefaultConfigController;
+import org.esa.snap.gui.preferences.Preference;
 import org.esa.snap.gui.preferences.PreferenceUtils;
 import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.HelpCtx;
@@ -59,8 +60,8 @@ public final class MaskLayerPanel extends DefaultConfigController {
      */
     public static final String PROPERTY_KEY_MASK_TRANSPARENCY = "mask.transparency";
 
-    protected Object createBean() {
-        return new MaskBean();
+    protected PropertyContainer createPropertyContainer() {
+        return createPropertyContainer(new MaskBean());
     }
 
     @Override
@@ -101,11 +102,11 @@ public final class MaskLayerPanel extends DefaultConfigController {
     static class MaskBean {
 
         @SuppressWarnings("AccessStaticViaInstance")
-        @ConfigProperty(label = "Mask overlay colour",
+        @Preference(label = "Mask overlay colour",
                 key = PROPERTY_KEY_MASK_COLOR)
         Color noDataOverlayColor = Mask.ImageType.DEFAULT_COLOR.RED;
 
-        @ConfigProperty(label = "Mask overlay transparency",
+        @Preference(label = "Mask overlay transparency",
                 key = PROPERTY_KEY_MASK_TRANSPARENCY,
                 interval = "[0.0,0.95]")
         double noDataOverlayTransparency = Mask.ImageType.DEFAULT_TRANSPARENCY;

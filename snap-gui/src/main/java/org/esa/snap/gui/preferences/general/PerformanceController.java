@@ -16,8 +16,9 @@
 
 package org.esa.snap.gui.preferences.general;
 
-import org.esa.snap.gui.preferences.ConfigProperty;
+import com.bc.ceres.binding.PropertyContainer;
 import org.esa.snap.gui.preferences.DefaultConfigController;
+import org.esa.snap.gui.preferences.Preference;
 import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.HelpCtx;
 
@@ -42,10 +43,18 @@ public final class PerformanceController extends DefaultConfigController {
      * Preferences key for the memory capacity of the JAI tile cache in megabytes
      */
     public static final String PROPERTY_KEY_JAI_TILE_CACHE_CAPACITY = "jai.tileCache.memoryCapacity";
+    /**
+     * Preferences key for the number of processors which may be employed for JAI image processing.
+     */
+    public static final String PROPERTY_KEY_JAI_PARALLELISM = "snap.jai.parallelism";
+    /**
+     * Preferences key for the number of jobs that can be run in parallel.
+     */
+    public static final String PROPERTY_KEY_PARALLEL_JOBS_COUNT = "snap.parallelism.jobscount";
 
     @Override
-    protected Object createBean() {
-        return new PerformanceBean();
+    protected PropertyContainer createPropertyContainer() {
+        return createPropertyContainer(new PerformanceBean());
     }
 
     @Override
@@ -55,9 +64,17 @@ public final class PerformanceController extends DefaultConfigController {
 
     static class PerformanceBean {
 
-        @ConfigProperty(label = "Tile cache capacity (MB)",
+        @Preference(label = "Tile cache capacity (MB)",
                 key = PROPERTY_KEY_JAI_TILE_CACHE_CAPACITY)
         int tileCacheCapacity = 512;
+
+        @Preference(label = "Number of cores which may be employed for JAI image processing",
+                key = PROPERTY_KEY_JAI_PARALLELISM)
+        int jaiParallelism = Runtime.getRuntime().availableProcessors();
+
+        @Preference(label = "Number of cores which may be employed for JAI image processing",
+                key = PROPERTY_KEY_PARALLEL_JOBS_COUNT)
+        int jobsCount = 1;
     }
 
 }

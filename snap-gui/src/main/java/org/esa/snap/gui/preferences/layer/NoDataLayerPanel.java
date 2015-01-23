@@ -17,12 +17,13 @@
 package org.esa.snap.gui.preferences.layer;
 
 import com.bc.ceres.binding.Property;
+import com.bc.ceres.binding.PropertyContainer;
 import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.PropertyEditorRegistry;
 import org.esa.beam.glayer.NoDataLayerType;
-import org.esa.snap.gui.preferences.ConfigProperty;
 import org.esa.snap.gui.preferences.DefaultConfigController;
+import org.esa.snap.gui.preferences.Preference;
 import org.esa.snap.gui.preferences.PreferenceUtils;
 import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.HelpCtx;
@@ -59,8 +60,8 @@ public final class NoDataLayerPanel extends DefaultConfigController {
      */
     public static final String PROPERTY_KEY_NO_DATA_OVERLAY_TRANSPARENCY = "noDataOverlay.transparency";
 
-    protected Object createBean() {
-        return new NoDataBean();
+    protected PropertyContainer createPropertyContainer() {
+        return createPropertyContainer(new NoDataBean());
     }
 
     @Override
@@ -100,11 +101,11 @@ public final class NoDataLayerPanel extends DefaultConfigController {
     @SuppressWarnings("UnusedDeclaration")
     static class NoDataBean {
 
-        @ConfigProperty(label = "No-data overlay colour",
+        @Preference(label = "No-data overlay colour",
                 key = PROPERTY_KEY_NO_DATA_OVERLAY_COLOR)
         Color noDataOverlayColor = NoDataLayerType.DEFAULT_COLOR;
 
-        @ConfigProperty(label = "No-data overlay transparency",
+        @Preference(label = "No-data overlay transparency",
                 key = PROPERTY_KEY_NO_DATA_OVERLAY_TRANSPARENCY,
                 interval = "[0.0,0.95]")
         double noDataOverlayTransparency = 0.3;

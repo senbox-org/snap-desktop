@@ -34,7 +34,6 @@ import org.openide.util.NbPreferences;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import java.beans.PropertyChangeListener;
-import java.lang.reflect.Field;
 import java.util.prefs.Preferences;
 
 /**
@@ -48,16 +47,20 @@ public abstract class DefaultConfigController extends OptionsPanelController {
     private PreferencesPanel panel;
     private Preferences preferences;
     private BindingContext bindingContext;
-    private Object originalState;
+    private PropertyContainer originalState;
 
     /**
-     * Create a bean object instance that holds all parameters. The parameters need to annotated with
-     * {@link ConfigProperty}. Clients that want to maintain properties need to overwrite this method.
+     * Create a {@link PropertyContainer} object instance that holds all parameters.
+     * Clients that want to maintain properties need to overwrite this method. If
+     * the parameters are stored within a bean, use {@link #createPropertyContainer(Object)}
+     * in order to create a <code>PropertyContainer</code> instance.
      *
-     * @return A bean object instance.
+     * @return An instance of {@link PropertyContainer}, holding all configuration parameters.
+     *
+     * @see DefaultConfigController#createPropertyContainer(Object).
      */
-    protected Object createBean() {
-        return new Object();
+    protected PropertyContainer createPropertyContainer() {
+        return new PropertyContainer();
     }
 
     /**
@@ -66,11 +69,10 @@ public abstract class DefaultConfigController extends OptionsPanelController {
      *
      * @param context The {@link BindingContext} for the panel.
      *
-     * @return A JPanel instance for the given {@link BindingContext}. If <code>null</code>, a default panel
-     * will be used.
+     * @return A JPanel instance for the given {@link BindingContext}, never <code>null</code>.
      */
     protected JPanel createPanel(BindingContext context) {
-        return null;
+        return new PreferencesPanel(null, bindingContext).getComponent();
     }
 
     /**
@@ -84,6 +86,49 @@ public abstract class DefaultConfigController extends OptionsPanelController {
      * @see com.bc.ceres.swing.binding.BindingContext#bindEnabledState(String, boolean, String, Object)
      */
     protected void configure(BindingContext context) {
+    }
+
+    /**
+     * Creates a PropertyContainer for any bean. The bean parameters need to be annotated with {@link Preference}.
+     *
+     * @param bean a bean with fields annoted with {@link Preference}.
+     *
+     * @return an instance of {@link PropertyContainer}, fit for passing within overridden
+     * {@link #createPropertyContainer()}.
+     */
+    protected final PropertyContainer createPropertyContainer(Object bean) {
+        return PropertyContainer.createObjectBacked(bean, field -> {
+            Class<Preference> annotationClass = Preference.class;
+            Preference annotation = field.getAnnotation(annotationClass);
+            if (annotation == null) {
+                throw new IllegalStateException("Field '" + field.getName() + "' must be annotated with '" +
+                                                annotationClass.getSimpleName() + "'.");
+            }
+            String label = annotation.label();
+            String key = annotation.key();
+            String[] valueSet = annotation.valueSet();
+            String valueRange = annotation.interval();
+            Validator validator = createValidator(annotation.validatorClass());
+            Assert.state(StringUtils.isNotNullAndNotEmpty(label),
+                         "Label of field '" + field.getName() + "' must not be null or empty.");
+            Assert.state(StringUtils.isNotNullAndNotEmpty(key),
+                         "Key of field '" + field.getName() + "' must not be null or empty.");
+            boolean isDeprecated = field.getAnnotation(Deprecated.class) != null;
+
+            PropertyDescriptor valueDescriptor = new PropertyDescriptor(key, field.getType());
+            valueDescriptor.setDeprecated(isDeprecated);
+            valueDescriptor.setAttribute("key", key);
+            valueDescriptor.setAttribute("displayName", label);
+            valueDescriptor.setAttribute("propertyValidator", validator);
+
+            if (valueSet.length > 0) {
+                valueDescriptor.setValueSet(new ValueSet(valueSet));
+            }
+            if (StringUtils.isNotNullAndNotEmpty(valueRange)) {
+                valueDescriptor.setValueRange(ValueRange.parseValueRange(valueRange));
+            }
+            return valueDescriptor;
+        });
     }
 
     @Override
@@ -147,7 +192,7 @@ public abstract class DefaultConfigController extends OptionsPanelController {
 
     private void init() {
         preferences = NbPreferences.forModule(SnapApp.class);
-        setupPanel(createBean());
+        setupPanel(createPropertyContainer());
         initiallyFillPreferences();
         setupChangeListeners();
         panel.getComponent(); // trigger component initialisation
@@ -156,19 +201,13 @@ public abstract class DefaultConfigController extends OptionsPanelController {
 
     private void setOriginalState() {
         if (originalState == null) {
-            originalState = createBean();
+            originalState = createPropertyContainer();
             for (Property property : bindingContext.getPropertySet().getProperties()) {
                 String key = property.getName();
-                for (Field field : originalState.getClass().getDeclaredFields()) {
-                    if (field.getAnnotation(ConfigProperty.class).key().equals(key)) {
-                        try {
-                            field.setAccessible(true);
-                            field.set(originalState, property.getValue());
-                        } catch (IllegalAccessException e) {
-                            throw new IllegalStateException(e);
-                        }
-                        break;
-                    }
+                try {
+                    originalState.getProperty(key).setValue(property.getValue());
+                } catch (ValidationException e) {
+                    e.printStackTrace(); // very basic exception handling because exception is not expected to be thrown
                 }
             }
         }
@@ -176,18 +215,13 @@ public abstract class DefaultConfigController extends OptionsPanelController {
 
     private void restoreOriginalState() {
         try {
-            for (Field origField : originalState.getClass().getDeclaredFields()) {
-                String key = origField.getAnnotation(ConfigProperty.class).key();
-                origField.setAccessible(true);
-                Object value = origField.get(originalState);
-                Property property = bindingContext.getPropertySet().getProperty(key);
-                property.setValue(value);
+            for (Property originalProperty : originalState.getProperties()) {
+                Property property = bindingContext.getPropertySet().getProperty(originalProperty.getName());
+                property.setValue(originalProperty.getValue());
             }
             bindingContext.adjustComponents();
-        } catch (IllegalAccessException e) {
-            throw new IllegalStateException(e);
         } catch (ValidationException e) {
-            throw new IllegalStateException("Must never come here.", e);
+            e.printStackTrace();  // very basic exception handling because exception is not expected to be thrown
         }
     }
 
@@ -207,39 +241,8 @@ public abstract class DefaultConfigController extends OptionsPanelController {
         }
     }
 
-    private void setupPanel(Object bean) {
-        bindingContext = new BindingContext(PropertyContainer.createObjectBacked(bean, field -> {
-            Class<ConfigProperty> annotationClass = ConfigProperty.class;
-            ConfigProperty annotation = field.getAnnotation(annotationClass);
-            if (annotation == null) {
-                throw new IllegalStateException("Field '" + field.getName() + "' must be annotated with '" +
-                                                annotationClass.getSimpleName() + "'.");
-            }
-            String label = annotation.label();
-            String key = annotation.key();
-            String[] valueSet = annotation.valueSet();
-            String valueRange = annotation.interval();
-            Validator validator = createValidator(annotation.validatorClass());
-            Assert.state(StringUtils.isNotNullAndNotEmpty(label),
-                         "Label of field '" + field.getName() + "' must not be null or empty.");
-            Assert.state(StringUtils.isNotNullAndNotEmpty(key),
-                         "Key of field '" + field.getName() + "' must not be null or empty.");
-            boolean isDeprecated = field.getAnnotation(Deprecated.class) != null;
-
-            PropertyDescriptor valueDescriptor = new PropertyDescriptor(key, field.getType());
-            valueDescriptor.setDeprecated(isDeprecated);
-            valueDescriptor.setAttribute("key", key);
-            valueDescriptor.setAttribute("displayName", label);
-            valueDescriptor.setAttribute("propertyValidator", validator);
-
-            if (valueSet.length > 0) {
-                valueDescriptor.setValueSet(new ValueSet(valueSet));
-            }
-            if (StringUtils.isNotNullAndNotEmpty(valueRange)) {
-                valueDescriptor.setValueRange(ValueRange.parseValueRange(valueRange));
-            }
-            return valueDescriptor;
-        }));
+    private void setupPanel(PropertyContainer propertyContainer) {
+        bindingContext = new BindingContext(propertyContainer);
         panel = new PreferencesPanel(createPanel(bindingContext), bindingContext);
     }
 

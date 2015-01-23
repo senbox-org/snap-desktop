@@ -17,14 +17,15 @@
 package org.esa.snap.gui.preferences.layer;
 
 import com.bc.ceres.binding.Property;
+import com.bc.ceres.binding.PropertyContainer;
 import com.bc.ceres.glayer.support.ImageLayer;
 import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.Enablement;
 import com.bc.ceres.swing.binding.PropertyEditorRegistry;
 import org.esa.beam.framework.ui.product.ProductSceneView;
-import org.esa.snap.gui.preferences.ConfigProperty;
 import org.esa.snap.gui.preferences.DefaultConfigController;
+import org.esa.snap.gui.preferences.Preference;
 import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.HelpCtx;
 
@@ -84,8 +85,8 @@ public final class ImageLayerPanel extends DefaultConfigController {
     private JComponent[] imageBorderColorComponents;
     private JComponent[] pixelBorderColorComponents;
 
-    protected Object createBean() {
-        return new ImageLayerBean();
+    protected PropertyContainer createPropertyContainer() {
+        return createPropertyContainer(new ImageLayerBean());
     }
 
     @Override
@@ -169,31 +170,31 @@ public final class ImageLayerPanel extends DefaultConfigController {
     @SuppressWarnings("UnusedDeclaration")
     static class ImageLayerBean {
 
-        @ConfigProperty(label = "Background colour",
+        @Preference(label = "Background colour",
                 key = PROPERTY_KEY_IMAGE_BG_COLOR)
         Color backgroundColor = ProductSceneView.DEFAULT_IMAGE_BACKGROUND_COLOR;
 
-        @ConfigProperty(label = "Show image border",
+        @Preference(label = "Show image border",
                 key = PROPERTY_KEY_IMAGE_BORDER_SHOWN)
         boolean showImageBorder = ImageLayer.DEFAULT_BORDER_SHOWN;
 
-        @ConfigProperty(label = "Image border size",
+        @Preference(label = "Image border size",
                 key = PROPERTY_KEY_IMAGE_BORDER_SIZE)
         double imageBorderSize = ImageLayer.DEFAULT_BORDER_WIDTH;
 
-        @ConfigProperty(label = "Image border colour",
+        @Preference(label = "Image border colour",
                 key = PROPERTY_KEY_IMAGE_BORDER_COLOR)
         Color imageBorderColor = ImageLayer.DEFAULT_BORDER_COLOR;
 
-        @ConfigProperty(label = "Show pixel borders in magnified views",
+        @Preference(label = "Show pixel borders in magnified views",
                 key = PROPERTY_KEY_PIXEL_BORDER_SHOWN)
         boolean showPixelBorder = ImageLayer.DEFAULT_PIXEL_BORDER_SHOWN;
 
-        @ConfigProperty(label = "Pixel border size",
+        @Preference(label = "Pixel border size",
                 key = PROPERTY_KEY_PIXEL_BORDER_SIZE)
         double pixelBorderSize = ImageLayer.DEFAULT_PIXEL_BORDER_WIDTH;
 
-        @ConfigProperty(label = "Pixel border colour",
+        @Preference(label = "Pixel border colour",
                 key = PROPERTY_KEY_PIXEL_BORDER_COLOR)
         Color pixelBorderColor = ImageLayer.DEFAULT_PIXEL_BORDER_COLOR;
     }

@@ -17,12 +17,13 @@
 package org.esa.snap.gui.preferences.general;
 
 import com.bc.ceres.binding.Property;
+import com.bc.ceres.binding.PropertyContainer;
 import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.PropertyEditorRegistry;
 import org.esa.beam.framework.ui.GridBagUtils;
-import org.esa.snap.gui.preferences.ConfigProperty;
 import org.esa.snap.gui.preferences.DefaultConfigController;
+import org.esa.snap.gui.preferences.Preference;
 import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.HelpCtx;
 
@@ -93,8 +94,8 @@ public final class GeoLocationPanelController extends DefaultConfigController {
      */
     public static final boolean PROPERTY_DEFAULT_DISPLAY_GEOLOCATION_AS_DECIMAL = false;
 
-    protected Object createBean() {
-        return new GeoLocationBean();
+    protected PropertyContainer createPropertyContainer() {
+        return createPropertyContainer(new GeoLocationBean());
     }
 
     @Override
@@ -216,16 +217,16 @@ public final class GeoLocationPanelController extends DefaultConfigController {
 
     static class GeoLocationBean {
 
-        @ConfigProperty(label = "Relative pixel-X offset", key = PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_X, interval = "[0,1]")
+        @Preference(label = "Relative pixel-X offset", key = PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_X, interval = "[0,1]")
         float paramOffsetX = PROPERTY_DEFAULT_PIXEL_OFFSET_FOR_DISPLAY;
 
-        @ConfigProperty(label = "Relative pixel-Y offset", key = PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_Y, interval = "[0,1]")
+        @Preference(label = "Relative pixel-Y offset", key = PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_Y, interval = "[0,1]")
         float paramOffsetY = PROPERTY_DEFAULT_PIXEL_OFFSET_FOR_DISPLAY;
 
-        @ConfigProperty(label = "Show floating-point image coordinates", key = PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_SHOW_DECIMALS)
+        @Preference(label = "Show floating-point image coordinates", key = PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_SHOW_DECIMALS)
         boolean paramShowDecimals = PROPERTY_DEFAULT_PIXEL_OFFSET_FOR_DISPLAY_SHOW_DECIMALS;
 
-        @ConfigProperty(label = "Show geo-location coordinates in decimal degrees", key = PROPERTY_KEY_DISPLAY_GEOLOCATION_AS_DECIMAL)
+        @Preference(label = "Show geo-location coordinates in decimal degrees", key = PROPERTY_KEY_DISPLAY_GEOLOCATION_AS_DECIMAL)
         boolean paramGeolocationAsDecimal = PROPERTY_DEFAULT_DISPLAY_GEOLOCATION_AS_DECIMAL;
     }
 
