@@ -40,7 +40,16 @@ public final class CloseAllProductsAction extends AbstractAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        execute();
+    }
+
+    /**
+     * Executes the action command.
+     *
+     * @return {@code Boolean.TRUE} on success, {@code Boolean.FALSE} on failure, or {@code null} on cancellation.
+     */
+    public Boolean execute() {
         List<Product> products = Arrays.asList(SnapApp.getDefault().getProductManager().getProducts());
-        new CloseProductAction(products).actionPerformed(e);
+        return new CloseProductAction(products).execute();
     }
 }

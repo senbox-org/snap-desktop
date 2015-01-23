@@ -6,6 +6,7 @@
 package org.esa.snap.gui.actions.file;
 
 import com.bc.ceres.core.Assert;
+import org.esa.beam.dataio.dimap.DimapProductReader;
 import org.esa.beam.framework.datamodel.Product;
 import org.esa.snap.gui.SnapApp;
 import org.esa.snap.gui.SnapDialogs;
@@ -86,36 +87,45 @@ public final class SaveProductAction extends AbstractAction {
         execute();
     }
 
+    /**
+     * Executes the action command.
+     *
+     * @return {@code Boolean.TRUE} on success, {@code Boolean.FALSE} on failure, or {@code null} on cancellation.
+     */
     public Boolean execute() {
         Product product = productRef.get();
         if (product != null) {
-            if (product.getFileLocation() != null) {
+            if (product.getFileLocation() != null && (product.getProductReader() == null ||product.getProductReader() instanceof DimapProductReader)) {
                 return saveProduct(product);
             } else {
+                // if file location not set, delegate to save-as
                 return new SaveProductAsAction(product).execute();
             }
+        } else {
+            // reference was garbage collected, that's fine, no need to save.
+            return true;
         }
-        return null;
     }
 
-    public Boolean saveProduct(Product product) {
+    private Boolean saveProduct(Product product) {
 
         Assert.notNull(product.getFileLocation());
 
         final File file = product.getFileLocation();
         if (file.isFile() && !file.canWrite()) {
-            SnapDialogs.showWarning(MessageFormat.format("The product\n" +
+            SnapDialogs.showWarning(Bundle.CTL_SaveProductActionName(),
+                                    MessageFormat.format("The product\n" +
                                                                  "''{0}''\n" +
                                                                  "exists and cannot be overwritten, because it is read only.\n" +
                                                                  "Please choose another file or remove the write protection.",
-                                                         file.getPath()));
+                                                         file.getPath()),
+                                    null);
             return false;
         }
 
         SnapApp.getDefault().setStatusBarMessage(MessageFormat.format("Writing product ''{0}'' to {1}...", product.getDisplayName(), file));
 
-        //boolean incremental = true;
-        boolean incremental = false;
+        boolean incremental = true;
         WriteProductOperation operation = new WriteProductOperation(product, incremental);
         ProgressUtils.runOffEventThreadWithProgressDialog(operation,
                                                           Bundle.CTL_SaveProductActionName(),

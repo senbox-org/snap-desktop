@@ -57,9 +57,12 @@ class WriteProductOperation implements Runnable, Cancellable {
     @Override
     public void run() {
 
-        boolean saveProductHeaders = SnapApp.getDefault().getPreferences().getBoolean(SaveProductAction.PROPERTY_KEY_SAVE_PRODUCT_HEADERS, SaveProductAction.DEFAULT_VALUE_SAVE_PRODUCT_HEADERS);
-        boolean saveProductHistory = SnapApp.getDefault().getPreferences().getBoolean(SaveProductAction.PROPERTY_KEY_SAVE_PRODUCT_HISTORY, SaveProductAction.DEFAULT_VALUE_SAVE_PRODUCT_HISTORY);
-        boolean saveADS = SnapApp.getDefault().getPreferences().getBoolean(SaveProductAction.PROPERTY_KEY_SAVE_PRODUCT_ANNOTATIONS, SaveProductAction.DEFAULT_VALUE_SAVE_PRODUCT_ANNOTATIONS);
+        boolean saveProductHeaders = SnapApp.getDefault().getPreferences().getBoolean(SaveProductAction.PROPERTY_KEY_SAVE_PRODUCT_HEADERS,
+                                                                                      SaveProductAction.DEFAULT_VALUE_SAVE_PRODUCT_HEADERS);
+        boolean saveProductHistory = SnapApp.getDefault().getPreferences().getBoolean(SaveProductAction.PROPERTY_KEY_SAVE_PRODUCT_HISTORY,
+                                                                                      SaveProductAction.DEFAULT_VALUE_SAVE_PRODUCT_HISTORY);
+        boolean saveADS = SnapApp.getDefault().getPreferences().getBoolean(SaveProductAction.PROPERTY_KEY_SAVE_PRODUCT_ANNOTATIONS,
+                                                                           SaveProductAction.DEFAULT_VALUE_SAVE_PRODUCT_ANNOTATIONS);
         MetadataElement metadataRoot = product.getMetadataRoot();
         ProductNodeList<MetadataElement> metadataElementBackup = new ProductNodeList<>();
 
@@ -115,13 +118,12 @@ class WriteProductOperation implements Runnable, Cancellable {
         status = saveOk;
     }
 
-    private static boolean saveProduct(Product product,
+    private static Boolean saveProduct(Product product,
                                        File file,
                                        String formatName,
                                        boolean incremental,
                                        ProgressMonitor pm) {
         Debug.assertNotNull(product);
-        boolean status = false;
         try {
             // todo - really add GPF dependency?!?
             /*
@@ -132,13 +134,13 @@ class WriteProductOperation implements Runnable, Cancellable {
             }
             */
             ProductIO.writeProduct(product, file, formatName, incremental, pm);
-            status = !pm.isCanceled();
+            return !pm.isCanceled() ? true : null;
         } catch (RuntimeException e) {
             throw e;
         } catch (Exception e) {
             SnapApp.getDefault().handleError("Save failed", e);
+            return false;
         }
-        return status;
     }
 
 

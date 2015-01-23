@@ -69,7 +69,6 @@ public class SnapApp {
     private final static Logger LOG = Logger.getLogger(SnapApp.class.getName());
 
     private final ProductManager productManager;
-    private boolean shuttingDown;
 
     public static SnapApp getDefault() {
         SnapApp instance = Lookup.getDefault().lookup(SnapApp.class);
@@ -271,19 +270,19 @@ public class SnapApp {
                 }
                 message.append("\n\nDo you want to save them?");
             }
-            SnapDialogs.Answer answer = SnapDialogs.requestDecision("Products Modified", message.toString(), true, null);
+            SnapDialogs.Answer answer = SnapDialogs.requestDecision("Exit", message.toString(), true, null);
             if (answer == SnapDialogs.Answer.YES) {
-                try {
-                    shuttingDown = true;
-                    //Save Products in reverse order is neccessary because derived products must be saved first
+                    //Save Products in reverse order is necessary because derived products must be saved first
                     Collections.reverse(modifiedProducts);
                     for (Product modifiedProduct : modifiedProducts) {
-                        new SaveProductAction(modifiedProduct).execute();
+                        Boolean saveStatus = new SaveProductAction(modifiedProduct).execute();
+                        if (saveStatus == null) {
+                            // save cancelled --> cancel SNAP shutdown
+                            return false;
+                        }
                     }
-                } finally {
-                    shuttingDown = false;
-                }
             } else if (answer == SnapDialogs.Answer.CANCELLED) {
+                // decision request cancelled --> cancel SNAP shutdown
                 return false;
             }
         }

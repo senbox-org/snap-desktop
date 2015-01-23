@@ -18,7 +18,7 @@ class ReadProductOperation implements Runnable, Cancellable {
 
     private final File file;
     private final String formatName;
-    private Object status;
+    private Boolean status;
 
     public ReadProductOperation(File file, String formatName) {
         Assert.notNull(file, "file");
@@ -26,16 +26,8 @@ class ReadProductOperation implements Runnable, Cancellable {
         this.formatName = formatName;
     }
 
-    public Object getStatus() {
+    public Boolean getStatus() {
         return status;
-    }
-
-    @Override
-    public boolean cancel() {
-        SnapDialogs.Answer answer = SnapDialogs.requestDecision(Bundle.CTL_OpenProductActionName(),
-                                                                "Do you really want to cancel the read process?",
-                                                                false, null);
-        return answer == SnapDialogs.Answer.YES;
     }
 
     @Override
@@ -44,20 +36,34 @@ class ReadProductOperation implements Runnable, Cancellable {
             Product product = formatName != null ? ProductIO.readProduct(file, formatName) : ProductIO.readProduct(file);
             if (!Thread.interrupted()) {
                 if (product == null) {
-                    status = null;
-                    SwingUtilities.invokeLater(() -> {
-                        SnapDialogs.showError(Bundle.LBL_NoReaderFoundText());
-                    });
+                    status = false;
+                    SwingUtilities.invokeLater(() -> SnapDialogs.showError(Bundle.LBL_NoReaderFoundText()));
                 } else {
+                    status = true;
                     OpenProductAction.getRecentProductPaths().add(file.getPath());
                     SwingUtilities.invokeLater(() -> SnapApp.getDefault().getProductManager().addProduct(product));
-                    status = true;
                 }
             } else {
                 status = null;
             }
         } catch (IOException problem) {
-            status = problem;
+            status = false;
+            SwingUtilities.invokeLater(() -> {
+                SnapDialogs.showError(Bundle.CTL_OpenProductActionName(), problem.getMessage());
+            });
         }
     }
+
+    @Override
+    public boolean cancel() {
+        SnapDialogs.Answer answer = SnapDialogs.requestDecision(Bundle.CTL_OpenProductActionName(),
+                                                                "Do you really want to cancel the read process?",
+                                                                false, null);
+        boolean cancel = answer == SnapDialogs.Answer.YES;
+        if (cancel) {
+            status = null;
+        }
+        return cancel;
+    }
+
 }

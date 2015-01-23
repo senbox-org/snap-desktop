@@ -61,12 +61,17 @@ public final class CloseProductAction extends AbstractAction {
         execute();
     }
 
-    public void execute() {
-        closeProducts(new HashSet<>(productSet));
+    /**
+     * Executes the action command.
+     *
+     * @return {@code Boolean.TRUE} on success, {@code Boolean.FALSE} on failure, or {@code null} on cancellation.
+     */
+    public Boolean execute() {
+        return closeProducts(new HashSet<>(productSet));
     }
 
-    static boolean closeProducts(Set<Product> products) {
-
+    private static Boolean closeProducts(Set<Product> products) {
+        SnapDialogs.showInformation("Hi!", "x");
         List<Product> closeList = new ArrayList<>(products);
         List<Product> saveList = new ArrayList<>();
 
@@ -99,13 +104,17 @@ public final class CloseProductAction extends AbstractAction {
                 if (answer == SnapDialogs.Answer.YES) {
                     saveList.add(product);
                 } else if (answer == SnapDialogs.Answer.CANCELLED) {
-                    return false;
+                    return null;
                 }
             }
         }
 
         for (Product product : saveList) {
-            new SaveProductAction(product).execute();
+            Boolean status = new SaveProductAction(product).execute();
+            if (status == null) {
+                // cancelled
+                return null;
+            }
         }
 
         for (Product product : closeList) {
