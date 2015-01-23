@@ -45,13 +45,13 @@ import org.esa.beam.framework.datamodel.VirtualBand;
 import org.esa.beam.framework.dataop.barithm.BandArithmetic;
 import org.esa.beam.framework.dataop.barithm.RasterDataSymbol;
 import org.esa.beam.framework.ui.GridBagUtils;
-import org.esa.beam.framework.ui.ModalDialog;
 import org.esa.beam.framework.ui.product.ProductExpressionPane;
 import org.esa.beam.util.Debug;
 import org.esa.beam.util.Guardian;
 import org.esa.snap.gui.SnapApp;
 import org.esa.snap.gui.SnapDialogs;
 import org.esa.snap.gui.actions.file.OpenImageViewAction;
+import org.esa.snap.gui.framework.ui.ModalDialog;
 import org.esa.snap.gui.nodes.UndoableProductNodeInsertion;
 import org.openide.awt.UndoRedo;
 
@@ -416,7 +416,7 @@ class BandMathsDialog extends ModalDialog {
                     String message = "The entered maths expression references multiple products.\n"
                             + "It will cause problems unless the session is restored as is.\n\n"
                             + "Note: You can save the session from the file menu.";
-                    SnapDialogs.showMessage("Warning", message, JOptionPane.WARNING_MESSAGE, null);
+                    SnapDialogs.showWarning(message);
                 }
             }
         }

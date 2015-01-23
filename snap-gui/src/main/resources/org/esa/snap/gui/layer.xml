@@ -136,45 +136,68 @@
     -->
     <folder name="Menu">
         <folder name="File">
-            <file name="org-netbeans-modules-print-action-PageSetupAction.shadow_hidden"/>
             <!-- Enable, once we know how to print an image view, etc. -->
+            <file name="org-netbeans-modules-print-action-PageSetupAction.shadow_hidden"/>
             <file name="org-netbeans-modules-print-action-PrintAction.shadow_hidden"/>
-        </folder>
-        <folder name="Edit">
-            <file name="org-openide-actions-FindAction.shadow_hidden"/>
-            <file name="org-openide-actions-ReplaceAction.shadow_hidden"/>
         </folder>
         <folder name="View">
             <file name="org-netbeans-core-actions-LogAction.shadow_hidden"/>
         </folder>
+        <folder name="Edit">
+            <!--A CallbackSystemAction, allows to search for something (e.g. in text files), Only enabled if key is mapped to an implementation -->
+            <file name="org-openide-actions-FindAction.shadow_hidden"/>
+            <!--A CallbackSystemAction, allows to replace something (e.g. in text files), Only enabled if key is mapped to an implementation -->
+            <file name="org-openide-actions-ReplaceAction.shadow_hidden"/>
+        </folder>
         <folder name="Tools">
+            <!-- Allows to manage file templates (e.g. java, xml html, etc.), not applicable for us.-->
             <file name="org-netbeans-modules-templates-actions-TemplatesAction.shadow_hidden"/>
+            <!-- Action to open a properties window, moved here from Window/Tools menu-->
+            <file name="org-netbeans-core-windows-actions-GlobalPropertiesAction.shadow">
+                <attr name="originalFile" stringvalue="Actions/Window/org-netbeans-core-windows-actions-GlobalPropertiesAction.instance"/>
+                <attr name="position" intvalue="200"/>
+            </file>
         </folder>
         <folder name="GoTo_hidden">
+            <!--Simply navigates back to the previous active window, moved to the Windows menu -->
             <file name="org-netbeans-core-windows-actions-RecentViewListAction.shadow_hidden"/>
+            <!--A CallbackSystemAction; allows to go to specific place (e.g. line in text files)-->
             <file name="org-openide-actions-GotoAction.shadow_hidden"/>
+            <!--We currently have no favorites view, so we can't select anything there.-->
             <file name="org-netbeans-modules-favorites-SelectInFavorites.shadow_hidden"/>
         </folder>
         <folder name="Window">
+            <!-- Moved on level down in the menu hierarchy-->
+            <file name="org-netbeans-core-io-ui-IOWindowAction.shadow_hidden"/>
             <folder name="Tool Windows">
                 <file name="org-netbeans-core-io-ui-IOWindowAction.shadow">
                     <attr name="originalFile" stringvalue="Actions/Window/org-netbeans-core-io-ui-IOWindowAction.instance"/>
                     <attr name="position" intvalue="10000"/>
                 </file>
             </folder>
+
+            <!--Simply navigates back to the previous active document -->
             <file name="SwitchToRecentDocumentAction.shadow_hidden"/>
+            <!-- The favorites window which we can't use right now, because we can't open files from there. -->
             <file name="org-netbeans-modules-favorites-View.shadow_hidden"/>
-            <file name="org-netbeans-core-io-ui-IOWindowAction.shadow_hidden"/>
+            <!-- Actions for creating and managing document groups; we don't want to use them, they are confusing and we have workspaces-->
             <file name="GroupsMenuAction.shadow_hidden"/>
             <file name="DocumentsAction.shadow_hidden"/>
 
-            <folder name="Web_hidden"/>
-            <folder name="Tools_hidden"/>
+            <folder name="Web_hidden">
+                <!-- Action to open a browser document window-->
+                <file name="org-netbeans-core-actions-HTMLViewAction.shadow_hidden"/>
+            </folder>
+            <folder name="Tools_hidden">
+                <!-- Action to open a properties window, moved into Tools menu-->
+                <file name="org-netbeans-core-windows-actions-GlobalPropertiesAction.shadow_hidden"/>
+            </folder>
+
+            <!--Moved here from the GoTo (Navigate) menu-->
             <file name="org-netbeans-core-windows-actions-RecentViewListAction.shadow">
                 <attr name="originalFile" stringvalue="Actions/Window/org-netbeans-core-windows-actions-RecentViewListAction.instance"/>
                 <attr name="position" intvalue="20250"/>
             </file>
-
         </folder>
 
         <file name="Spacer.instance">

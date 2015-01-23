@@ -221,13 +221,13 @@ public class MagicWandInteractor extends ViewportInteractor implements MagicWand
 
     private boolean handleInvalidBandFilter(ProductSceneView view) {
         Product product = view.getProduct();
-        int resp = SnapDialogs.requestDecision(DIALOG_TITLE,
-                                               "The currently selected band filter does not match\n" +
-                                                       "the bands of the selected data product.\n\n" +
-                                                       "Reset filter and use the ones of the selected product?",
-                                               false,
-                                               "reset_magic_wand_filter");
-        if (resp == JOptionPane.YES_OPTION) {
+        SnapDialogs.Answer answer = SnapDialogs.requestDecision(DIALOG_TITLE,
+                                                                "The currently selected band filter does not match\n" +
+                                                                        "the bands of the selected data product.\n\n" +
+                                                                        "Reset filter and use the ones of the selected product?",
+                                                                false,
+                                                                "reset_magic_wand_filter");
+        if (answer == SnapDialogs.Answer.YES) {
             model.setBandNames();
             return ensureBandNamesSet(view, product);
         } else {

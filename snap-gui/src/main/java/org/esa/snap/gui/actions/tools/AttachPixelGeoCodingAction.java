@@ -161,8 +161,8 @@ public class AttachPixelGeoCodingAction extends AbstractAction implements Contex
                                                         "of additional data into memory.\n\n" +
                                                         "Do you really want to continue?",
                                                         requiredMegas);
-            final int answer = SnapDialogs.requestDecision(dialogTitle, message, false, "load_latlon_band_data");
-            if (answer != JOptionPane.YES_OPTION) {
+            final SnapDialogs.Answer answer = SnapDialogs.requestDecision(dialogTitle, message, false, "load_latlon_band_data");
+            if (answer != SnapDialogs.Answer.YES) {
                 return;
             }
         }
@@ -256,9 +256,9 @@ public class AttachPixelGeoCodingAction extends AbstractAction implements Contex
             selectedLatBand = findBandName(latValue);
 
             if (selectedLatBand == null || selectedLonBand == null || Objects.equals(selectedLatBand, selectedLonBand)) {
-                SnapDialogs.showMessage(super.getJDialog().getTitle(),
-                                        "You have to select two different bands for the Pixel Geo-Coding.",
-                                        JOptionPane.WARNING_MESSAGE, null);
+                SnapDialogs.showWarning(Bundle.CTL_AttachPixelGeoCodingDialogTitle(),
+                                        "You have to select two different bands for the pixel geo-coding.",
+                                        null);
             } else {
                 super.onOK();
             }

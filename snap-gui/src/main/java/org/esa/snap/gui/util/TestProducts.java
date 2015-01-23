@@ -1,9 +1,12 @@
 package org.esa.snap.gui.util;
 
+import org.esa.beam.framework.datamodel.Band;
 import org.esa.beam.framework.datamodel.MetadataElement;
 import org.esa.beam.framework.datamodel.Product;
+import org.esa.beam.framework.datamodel.ProductData;
 import org.esa.beam.framework.datamodel.TiePointGrid;
 
+import javax.media.jai.operator.ConstantDescriptor;
 import java.awt.Color;
 import java.util.Random;
 
@@ -15,7 +18,7 @@ import java.util.Random;
 public class TestProducts {
 
     public static Product[] createProducts() {
-        return new Product[]{createProduct1(), createProduct2()};
+        return new Product[]{createProduct1(), createProduct2(), createProduct3()};
     }
 
     public static Product createProduct1() {
@@ -45,6 +48,29 @@ public class TestProducts {
         product.getMetadataRoot().addElement(new MetadataElement("Global_Attributes"));
         product.getMetadataRoot().addElement(new MetadataElement("Local_Attributes"));
         product.setModified(false);
+        return product;
+    }
+
+    public static Product createProduct3() {
+        int size = 10 * 1024;
+        Product product = new Product("Product_3", "Type_3", size, size);
+        product.setPreferredTileSize(512, 512);
+        Band band1 = new Band("Big_Band_1", ProductData.TYPE_FLOAT64, product.getSceneRasterWidth(), product.getSceneRasterHeight());
+        Band band2 = new Band("Big_Band_2", ProductData.TYPE_FLOAT64, product.getSceneRasterWidth(), product.getSceneRasterHeight());
+        Band band3 = new Band("Big_Band_3", ProductData.TYPE_FLOAT64, product.getSceneRasterWidth(), product.getSceneRasterHeight());
+        Band band4 = new Band("Big_Band_4", ProductData.TYPE_FLOAT64, product.getSceneRasterWidth(), product.getSceneRasterHeight());
+        Band band5 = new Band("Big_Band_5", ProductData.TYPE_FLOAT64, product.getSceneRasterWidth(), product.getSceneRasterHeight());
+        band1.setSourceImage(ConstantDescriptor.create(1f * size, 1F * size, new Double[]{1.0}, null));
+        band2.setSourceImage(ConstantDescriptor.create(1f * size, 1F * size, new Double[]{2.0}, null));
+        band3.setSourceImage(ConstantDescriptor.create(1f * size, 1F * size, new Double[]{3.0}, null));
+        band4.setSourceImage(ConstantDescriptor.create(1f * size, 1F * size, new Double[]{4.0}, null));
+        band5.setSourceImage(ConstantDescriptor.create(1f * size, 1F * size, new Double[]{5.0}, null));
+        product.addBand(band1);
+        product.addBand(band2);
+        product.addBand(band3);
+        product.addBand(band4);
+        product.addBand(band5);
+        product.setModified(true);
         return product;
     }
 

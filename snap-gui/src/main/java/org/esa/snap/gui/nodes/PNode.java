@@ -5,21 +5,27 @@
  */
 package org.esa.snap.gui.nodes;
 
+import org.esa.beam.framework.datamodel.MetadataElement;
 import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.datamodel.ProductNode;
+import org.esa.beam.framework.datamodel.ProductNodeGroup;
 import org.esa.snap.gui.SnapApp;
 import org.esa.snap.gui.actions.file.CloseProductAction;
 import org.openide.awt.UndoRedo;
 import org.openide.nodes.Node;
+import org.openide.nodes.PropertySupport;
+import org.openide.nodes.Sheet;
 import org.openide.util.WeakListeners;
 
 import javax.swing.*;
+import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
 import java.util.prefs.Preferences;
+import java.util.stream.Stream;
 
 /**
  * A node that represents a {@link org.esa.beam.framework.datamodel.Product} (=P).
@@ -85,6 +91,21 @@ class PNode extends PNNode<Product> implements PreferenceChangeListener {
         }
     }
 
+    @Override
+    public PropertySet[] getPropertySets() {
+
+        Sheet.Set set = new Sheet.Set();
+        set.setDisplayName("Product Properties");
+        set.put(new PropertySupport.ReadOnly<File>("fileLocation", File.class, "File", "File location") {
+            @Override
+            public File getValue() {
+                return getProduct().getFileLocation();
+            }
+        });
+
+        return Stream.concat(Stream.of(super.getPropertySets()), Stream.of(set)).toArray(PropertySet[]::new);
+    }
+
     private boolean isGroupByNodeType() {
         return SnapApp.getDefault().getPreferences().getBoolean(GroupByNodeTypeAction.PREFERENCE_KEY, true);
     }
@@ -129,8 +150,11 @@ class PNode extends PNNode<Product> implements PreferenceChangeListener {
         @Override
         protected boolean createKeys(List<Object> list) {
             Product product = node.getProduct();
+            ProductNodeGroup<MetadataElement> metadataElementGroup = product.getMetadataRoot().getElementGroup();
             if (node.isGroupByNodeType()) {
-                list.addAll(Arrays.asList(product.getMetadataRoot().getElementGroup().toArray()));
+                if (metadataElementGroup != null) {
+                    list.addAll(Arrays.asList(metadataElementGroup.toArray()));
+                }
                 list.addAll(Arrays.asList(product.getIndexCodingGroup().toArray()));
                 list.addAll(Arrays.asList(product.getFlagCodingGroup().toArray()));
                 list.addAll(Arrays.asList(product.getVectorDataGroup().toArray()));
@@ -138,7 +162,9 @@ class PNode extends PNNode<Product> implements PreferenceChangeListener {
                 list.addAll(Arrays.asList(product.getBandGroup().toArray()));
                 list.addAll(Arrays.asList(product.getMaskGroup().toArray()));
             } else {
-                list.add(new PNGGroup.ME(product.getMetadataRoot().getElementGroup()));
+                if (metadataElementGroup != null) {
+                    list.add(new PNGGroup.ME(metadataElementGroup));
+                }
                 if (product.getIndexCodingGroup().getNodeCount() > 0) {
                     list.add(new PNGGroup.IC(product.getIndexCodingGroup()));
                 }
