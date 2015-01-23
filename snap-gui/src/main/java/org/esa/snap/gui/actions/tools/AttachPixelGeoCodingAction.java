@@ -256,9 +256,9 @@ public class AttachPixelGeoCodingAction extends AbstractAction implements Contex
             selectedLatBand = findBandName(latValue);
 
             if (selectedLatBand == null || selectedLonBand == null || Objects.equals(selectedLatBand, selectedLonBand)) {
-                SnapDialogs.showMessage(super.getJDialog().getTitle(),
-                                        "You have to select two different bands for the Pixel Geo-Coding.",
-                                        JOptionPane.WARNING_MESSAGE, null);
+                SnapDialogs.showWarning(Bundle.CTL_AttachPixelGeoCodingDialogTitle(),
+                                        "You have to select two different bands for the pixel geo-coding.",
+                                        null);
             } else {
                 super.onOK();
             }

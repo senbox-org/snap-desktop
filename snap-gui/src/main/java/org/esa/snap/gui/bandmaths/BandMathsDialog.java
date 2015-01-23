@@ -416,7 +416,7 @@ class BandMathsDialog extends ModalDialog {
                     String message = "The entered maths expression references multiple products.\n"
                             + "It will cause problems unless the session is restored as is.\n\n"
                             + "Note: You can save the session from the file menu.";
-                    SnapDialogs.showMessage("Warning", message, JOptionPane.WARNING_MESSAGE, null);
+                    SnapDialogs.showWarning(message);
                 }
             }
         }

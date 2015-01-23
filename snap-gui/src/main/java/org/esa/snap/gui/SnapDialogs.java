@@ -13,7 +13,6 @@ import javax.swing.filechooser.FileFilter;
 import java.awt.*;
 import java.io.File;
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.prefs.Preferences;
 
 /**
@@ -87,6 +86,25 @@ public class SnapDialogs {
     }
 
     /**
+     * Displays a modal dialog with the provided error message text.
+     *
+     * @param message The error message text to be displayed.
+     */
+    public static void showError(String message) {
+        showError(null, message);
+    }
+
+    /**
+     * Displays a modal dialog with the provided error message text.
+     *
+     * @param title   The dialog title. May be {@code null}.
+     * @param message The error message text to be displayed.
+     */
+    public static void showError(String title, String message) {
+        showMessage(title != null ? title : Bundle.LBL_Error(), message, JOptionPane.ERROR_MESSAGE, null);
+    }
+
+    /**
      * Displays a modal dialog with the provided message text.
      *
      * @param title          The dialog title. May be {@code null}.
@@ -105,14 +123,16 @@ public class SnapDialogs {
             panel.add(new JLabel(message), BorderLayout.CENTER);
             JCheckBox dontShowCheckBox = new JCheckBox(Bundle.LBL_DoNotShowThisMessage(), false);
             panel.add(dontShowCheckBox, BorderLayout.SOUTH);
-            NotifyDescriptor d = new NotifyDescriptor(panel, title, NotifyDescriptor.DEFAULT_OPTION, messageType, null, null);
+            NotifyDescriptor d = new NotifyDescriptor(panel, title, JOptionPane.DEFAULT_OPTION, messageType, null, null);
             DialogDisplayer.getDefault().notify(d);
-            boolean storeResult = dontShowCheckBox.isSelected();
-            if (storeResult) {
-                getPreferences().put(preferencesKey + PREF_KEY_SUFFIX_DONTSHOW, PREF_VALUE_TRUE);
+            if (d.getValue() != NotifyDescriptor.CANCEL_OPTION) {
+                boolean storeResult = dontShowCheckBox.isSelected();
+                if (storeResult) {
+                    getPreferences().put(preferencesKey + PREF_KEY_SUFFIX_DONTSHOW, PREF_VALUE_TRUE);
+                }
             }
         } else {
-            NotifyDescriptor d = new NotifyDescriptor(message, title, NotifyDescriptor.DEFAULT_OPTION, messageType, null, null);
+            NotifyDescriptor d = new NotifyDescriptor(message, title, JOptionPane.DEFAULT_OPTION, messageType, null, null);
             DialogDisplayer.getDefault().notify(d);
         }
     }
@@ -138,11 +158,8 @@ public class SnapDialogs {
             } else if (decision.equals(PREF_VALUE_NO)) {
                 return Answer.NO;
             }
-            JPanel panel = new JPanel(new BorderLayout(4, 4));
-            panel.add(new JLabel(message), BorderLayout.CENTER);
             JCheckBox decisionCheckBox = new JCheckBox(Bundle.LBL_QuestionRemember(), false);
-            panel.add(decisionCheckBox, BorderLayout.SOUTH);
-            NotifyDescriptor d = new NotifyDescriptor.Confirmation(panel, title, optionType);
+            NotifyDescriptor d = new NotifyDescriptor.Confirmation(new Object[]{message, decisionCheckBox}, title, optionType);
             result = DialogDisplayer.getDefault().notify(d);
             storeResult = decisionCheckBox.isSelected();
         } else {
@@ -163,31 +180,6 @@ public class SnapDialogs {
         } else {
             return Answer.CANCELLED;
         }
-    }
-
-    /**
-     * Displays a modal dialog with the provided error message text.
-     *
-     * @param message The error message text to be displayed.
-     */
-    public static void showError(String message) {
-        showError(null, message);
-    }
-
-    /**
-     * Displays a modal dialog with the provided error message text.
-     *
-     * @param title   The dialog title. May be {@code null}.
-     * @param message The error message text to be displayed.
-     */
-    public static void showError(String title, String message) {
-        NotifyDescriptor nd = new NotifyDescriptor(message,
-                                                   title != null ? title : Bundle.LBL_Error(),
-                                                   JOptionPane.OK_OPTION,
-                                                   NotifyDescriptor.ERROR_MESSAGE,
-                                                   null,
-                                                   null);
-        DialogDisplayer.getDefault().notify(nd);
     }
 
     /**
@@ -250,8 +242,8 @@ public class SnapDialogs {
         // Loop while the user does not want to overwrite a selected, existing file
         // or if the user presses "Cancel"
         //
-        File file = null;
-        while (file == null) {
+        File file;
+        do {
             file = requestFileForSave2(title, dirsOnly, fileFilter, defaultExtension, fileName, preferenceKey);
             if (file == null) {
                 return null; // Cancelled
@@ -267,7 +259,7 @@ public class SnapDialogs {
                     file = null; // No, do not overwrite, let user select another file
                 }
             }
-        }
+        } while (file == null);
         return file;
     }
 
