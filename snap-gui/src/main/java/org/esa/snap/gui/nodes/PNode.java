@@ -13,15 +13,19 @@ import org.esa.snap.gui.SnapApp;
 import org.esa.snap.gui.actions.file.CloseProductAction;
 import org.openide.awt.UndoRedo;
 import org.openide.nodes.Node;
+import org.openide.nodes.PropertySupport;
+import org.openide.nodes.Sheet;
 import org.openide.util.WeakListeners;
 
 import javax.swing.*;
+import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
 import java.util.prefs.Preferences;
+import java.util.stream.Stream;
 
 /**
  * A node that represents a {@link org.esa.beam.framework.datamodel.Product} (=P).
@@ -85,6 +89,21 @@ class PNode extends PNNode<Product> implements PreferenceChangeListener {
         if (GroupByNodeTypeAction.PREFERENCE_KEY.equals(key)) {
             group.refresh();
         }
+    }
+
+    @Override
+    public PropertySet[] getPropertySets() {
+
+        Sheet.Set set = new Sheet.Set();
+        set.setDisplayName("Product Properties");
+        set.put(new PropertySupport.ReadOnly<File>("fileLocation", File.class, "File", "File location") {
+            @Override
+            public File getValue() {
+                return getProduct().getFileLocation();
+            }
+        });
+
+        return Stream.concat(Stream.of(super.getPropertySets()), Stream.of(set)).toArray(PropertySet[]::new);
     }
 
     private boolean isGroupByNodeType() {

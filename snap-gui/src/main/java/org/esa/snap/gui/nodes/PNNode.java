@@ -26,6 +26,7 @@ import org.openide.util.lookup.Lookups;
 
 import javax.swing.*;
 import java.awt.datatransfer.Transferable;
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -85,6 +86,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
     @Override
     public PropertySet[] getPropertySets() {
         Sheet.Set set = new Sheet.Set();
+        set.setDisplayName("Product Node Properties");
         set.put(new PropertySupport.ReadWrite<String>("name", String.class, "Name", "Name of the element") {
             @Override
             public String getValue() {
