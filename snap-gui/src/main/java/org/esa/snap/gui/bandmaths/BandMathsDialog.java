@@ -82,7 +82,6 @@ class BandMathsDialog extends ModalDialog {
     private static final String PROPERTY_NAME_BAND_UNIT = "bandUnit";
     private static final String PROPERTY_NAME_BAND_WAVELENGTH = "bandWavelength";
 
-    private final SnapApp snapApp;
     private final ProductNodeList<Product> productsList;
     private final BindingContext bindingContext;
     private Product targetProduct;
@@ -107,13 +106,11 @@ class BandMathsDialog extends ModalDialog {
 
     private static int numNewBands = 0;
 
-    public BandMathsDialog(final SnapApp snapApp, Product currentProduct, ProductNodeList<Product> productsList,
-                           String helpId) {
-        super(snapApp.getMainFrame(), "Band Maths", ID_OK_CANCEL_HELP, helpId);
+    public BandMathsDialog(Product currentProduct, ProductNodeList<Product> productsList, String helpId) {
+        super(SnapApp.getDefault().getMainFrame(), "Band Maths", ID_OK_CANCEL_HELP, helpId);
         Guardian.assertNotNull("currentProduct", currentProduct);
         Guardian.assertNotNull("productsList", productsList);
         Guardian.assertGreaterThan("productsList must be not empty", productsList.size(), 0);
-        this.snapApp = snapApp;
         targetProduct = currentProduct;
         this.productsList = productsList;
         bindingContext = createBindingContext();
@@ -166,7 +163,7 @@ class BandMathsDialog extends ModalDialog {
 
         hide();
         band.setModified(true);
-        if (snapApp.getPreferences().getBoolean(PREF_KEY_AUTO_SHOW_NEW_BANDS, true)) {
+        if (SnapApp.getDefault().getPreferences().getBoolean(PREF_KEY_AUTO_SHOW_NEW_BANDS, true)) {
             new OpenImageViewAction(band).openProductSceneView();
         }
     }
@@ -377,7 +374,7 @@ class BandMathsDialog extends ModalDialog {
     }
 
     private float getGeolocationEps() {
-        return (float) snapApp.getPreferences().getDouble(PREF_KEY_GEOLOCATION_EPS, PREF_VALUE_GEOLOCATION_EPS);
+        return (float) SnapApp.getDefault().getPreferences().getDouble(PREF_KEY_GEOLOCATION_EPS, PREF_VALUE_GEOLOCATION_EPS);
     }
 
     private ActionListener createEditExpressionButtonListener() {
@@ -385,7 +382,7 @@ class BandMathsDialog extends ModalDialog {
             Product[] compatibleProducts = getCompatibleProducts();
             ProductExpressionPane pep = ProductExpressionPane.createGeneralExpressionPane(compatibleProducts,
                                                                                           targetProduct,
-                                                                                          snapApp.getCompatiblePreferences());
+                                                                                          SnapApp.getDefault().getCompatiblePreferences());
             pep.setCode(getExpression());
             int status = pep.showModalDialog(getJDialog(), "Band Maths Expression Editor");
             if (status == ModalDialog.ID_OK) {
@@ -443,7 +440,7 @@ class BandMathsDialog extends ModalDialog {
     private boolean isTargetBandReferencedInExpression() {
         final Product[] products = getCompatibleProducts();
 
-        final int defaultIndex = Arrays.asList(products).indexOf(snapApp.getSelectedProduct());
+        final int defaultIndex = Arrays.asList(products).indexOf(SnapApp.getDefault().getSelectedProduct());
         final Namespace namespace = BandArithmetic.createDefaultNamespace(products,
                                                                           defaultIndex == -1 ? 0 : defaultIndex);
         final Parser parser = new ParserImpl(namespace, false);
