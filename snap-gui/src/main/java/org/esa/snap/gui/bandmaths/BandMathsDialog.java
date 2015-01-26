@@ -156,7 +156,6 @@ class BandMathsDialog extends ModalDialog {
 
         ProductNodeGroup<Band> bandGroup = targetProduct.getBandGroup();
         bandGroup.add(band);
-        UndoRedo.Manager undoManager = SnapApp.getDefault().getUndoManager(targetProduct);
 
         if (saveExpressionOnly) {
             checkExpressionForExternalReferences(getExpression());
@@ -168,6 +167,7 @@ class BandMathsDialog extends ModalDialog {
             band.setSourceImage(VirtualBand.createVirtualSourceImage(band, expression));
         }
 
+        UndoRedo.Manager undoManager = SnapApp.getDefault().getUndoManager(targetProduct);
         if (undoManager != null) {
             undoManager.addEdit(new UndoableProductNodeInsertion<>(bandGroup, band));
         }
