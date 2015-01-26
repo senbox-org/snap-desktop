@@ -28,11 +28,11 @@ import org.esa.beam.framework.datamodel.PlainFeatureFactory;
 import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.datamodel.ProductNodeGroup;
 import org.esa.beam.framework.datamodel.VectorDataNode;
-import org.esa.beam.framework.ui.ModalDialog;
 import org.esa.beam.framework.ui.product.ProductSceneView;
 import org.esa.beam.framework.ui.product.VectorDataLayerFilterFactory;
 import org.esa.beam.jai.ImageManager;
 import org.esa.snap.gui.SnapApp;
+import org.esa.snap.gui.framework.ui.ModalDialog;
 import org.esa.snap.gui.nodes.UndoableProductNodeInsertion;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -66,10 +66,11 @@ import java.text.MessageFormat;
         position = 191
 )
 @Messages({
-                  "CTL_CreateVectorDataNodeActionText=Create Vector Data Container...",
-                  "CTL_CreateVectorDataNodeActionPopupText=Create Vector Data Container..."
-          })
+        "CTL_CreateVectorDataNodeActionText=Create Vector Data Container...",
+        "CTL_CreateVectorDataNodeActionPopupText=Create Vector Data Container..."
+})
 public class CreateVectorDataNodeAction extends AbstractAction implements HelpCtx.Provider {
+
     private static final String DIALOG_TITLE = "New Vector Data Container";
     //private static final String KEY_VECTOR_DATA_INITIAL_NAME = "geometry.initialName";
 
@@ -162,6 +163,7 @@ public class CreateVectorDataNodeAction extends AbstractAction implements HelpCt
     }
 
     private static class NameValidator implements Validator {
+
         private final Product product;
 
         private NameValidator(Product product) {
@@ -173,13 +175,14 @@ public class CreateVectorDataNodeAction extends AbstractAction implements HelpCt
             String name = (String) value;
             if (product.getVectorDataGroup().contains(name)) {
                 final String pattern = "A vector data container with name ''{0}'' already exists.\n" +
-                        "Please choose another one.";
+                                       "Please choose another one.";
                 throw new ValidationException(MessageFormat.format(pattern, name));
             }
         }
     }
 
     private static class MyModalDialog extends ModalDialog {
+
         private final PropertyPane propertyPane;
 
         private MyModalDialog(PropertyPane propertyPane) {
@@ -202,6 +205,7 @@ public class CreateVectorDataNodeAction extends AbstractAction implements HelpCt
     }
 
     private static class DialogData {
+
         private String name;
         private String description;
 
@@ -217,6 +221,7 @@ public class CreateVectorDataNodeAction extends AbstractAction implements HelpCt
 
 
     private static class UndoableVectorDataNodeInsertion extends UndoableProductNodeInsertion<VectorDataNode> {
+
         private String oldLayerId;
 
         public UndoableVectorDataNodeInsertion(Product product, VectorDataNode vectorDataNode, String oldLayerId) {

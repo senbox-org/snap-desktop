@@ -22,11 +22,11 @@ import com.bc.ceres.glayer.support.LayerUtils;
 import com.bc.ceres.swing.figure.AbstractInteractorInterceptor;
 import com.bc.ceres.swing.figure.Interactor;
 import org.esa.beam.framework.datamodel.VectorDataNode;
-import org.esa.beam.framework.ui.ModalDialog;
 import org.esa.beam.framework.ui.product.ProductSceneView;
 import org.esa.beam.framework.ui.product.VectorDataLayer;
 import org.esa.beam.framework.ui.product.VectorDataLayerFilterFactory;
 import org.esa.snap.gui.actions.tools.CreateVectorDataNodeAction;
+import org.esa.snap.gui.framework.ui.ModalDialog;
 
 import javax.swing.JLabel;
 import javax.swing.JList;

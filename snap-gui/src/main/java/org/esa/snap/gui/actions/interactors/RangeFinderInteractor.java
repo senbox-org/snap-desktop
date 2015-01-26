@@ -24,10 +24,10 @@ import org.esa.beam.framework.datamodel.GeoCoding;
 import org.esa.beam.framework.datamodel.GeoPos;
 import org.esa.beam.framework.datamodel.PixelPos;
 import org.esa.beam.framework.dataop.maptransf.Ellipsoid;
-import org.esa.beam.framework.ui.ModalDialog;
 import org.esa.beam.framework.ui.product.ProductSceneView;
 import org.esa.beam.util.math.MathUtils;
 import org.esa.snap.gui.SnapApp;
+import org.esa.snap.gui.framework.ui.ModalDialog;
 import org.openide.util.ImageUtilities;
 
 import javax.swing.ImageIcon;
@@ -233,24 +233,24 @@ class RangeFinderInteractor extends ViewportInteractor {
             distanceError += dd.distanceError;
             message.append(
                     "Distance between points " + i + " to " + (i + 1) + " in pixels:\n" +
-                            "XH[" + dd.xH + "] to XN[" + dd.xN + "]: " + Math.abs(dd.xH - dd.xN) + "\n" +
-                            "YH[" + dd.yH + "] to YN[" + dd.yN + "]: " + Math.abs(dd.yH - dd.yN) + "\n" +
-                            "\n" +
-                            "LonH: " + dd.lonH + "   LatH: " + dd.latH + "\n" +
-                            "LonN: " + dd.lonN + "   LatN: " + dd.latN + "\n" +
-                            "\n" +
-                            "LamH: " + dd.lamH + "   PhiH: " + dd.phiH + "\n" +
-                            "LamN: " + dd.lamN + "   PhiN: " + dd.phiN + "\n" +
-                            "\n" +
-                            "Mean earth radius used: " + DistanceData.MEAN_EARTH_RADIUS_KM + " km" + "\n" +
-                            "\n" +
-                            "Distance: " + dd.distance + " +/- " + dd.distanceError + " km\n" +
-                            "\n\n"           /*I18N*/
+                    "XH[" + dd.xH + "] to XN[" + dd.xN + "]: " + Math.abs(dd.xH - dd.xN) + "\n" +
+                    "YH[" + dd.yH + "] to YN[" + dd.yN + "]: " + Math.abs(dd.yH - dd.yN) + "\n" +
+                    "\n" +
+                    "LonH: " + dd.lonH + "   LatH: " + dd.latH + "\n" +
+                    "LonN: " + dd.lonN + "   LatN: " + dd.latN + "\n" +
+                    "\n" +
+                    "LamH: " + dd.lamH + "   PhiH: " + dd.phiH + "\n" +
+                    "LamN: " + dd.lamN + "   PhiN: " + dd.phiN + "\n" +
+                    "\n" +
+                    "Mean earth radius used: " + DistanceData.MEAN_EARTH_RADIUS_KM + " km" + "\n" +
+                    "\n" +
+                    "Distance: " + dd.distance + " +/- " + dd.distanceError + " km\n" +
+                    "\n\n"           /*I18N*/
             );
         }
         message.insert(0, "Total distance: " + distance + " +/- " + distanceError + " km\n" +
-                "\n" +
-                "computed as described below:\n\n");
+                          "\n" +
+                          "computed as described below:\n\n");
 
         final JScrollPane content = new JScrollPane(new JTextArea(message.toString()));
         content.setPreferredSize(new Dimension(300, 150));
