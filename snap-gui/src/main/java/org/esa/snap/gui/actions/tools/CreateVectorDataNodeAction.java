@@ -47,7 +47,6 @@ import org.openide.util.NbBundle.Messages;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JPanel;
-import javax.swing.undo.AbstractUndoableEdit;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.text.MessageFormat;
