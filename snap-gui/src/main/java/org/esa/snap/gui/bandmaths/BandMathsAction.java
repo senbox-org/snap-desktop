@@ -37,8 +37,8 @@ import java.awt.event.ActionEvent;
         id = "org.esa.snap.gui.bandmaths.BandMathsAction"
 )
 @ActionRegistration(
-        displayName = "#ACT_MenuText",
-        popupText = "#ACT_MenuText",
+        displayName = "#CTL_BandMathsAction_MenuText",
+        popupText = "#CTL_BandMathsAction_MenuText",
         iconBase = "org/esa/snap/gui/icons/BandMaths24.gif",
         lazy = true
 )
@@ -61,8 +61,8 @@ import java.awt.event.ActionEvent;
         ),
 })
 @Messages({
-        "ACT_MenuText=Create Band from Math Expression...",
-        "ACT_ShortDescription=Create a new band using an arbitrary mathematical expression"
+        "CTL_BandMathsAction_MenuText=Create Band from Math Expression...",
+        "CTL_BandMathsAction_ShortDescription=Create a new band using an arbitrary mathematical expression"
 })
 public class BandMathsAction extends AbstractAction implements HelpCtx.Provider {
 
@@ -70,9 +70,9 @@ public class BandMathsAction extends AbstractAction implements HelpCtx.Provider 
     private final Product product;
 
     public BandMathsAction(ProductNode node) {
-        super(Bundle.ACT_MenuText());
+        super(Bundle.CTL_BandMathsAction_MenuText());
         product = node.getProduct();
-        putValue(Action.SHORT_DESCRIPTION, Bundle.ACT_ShortDescription());
+        putValue(Action.SHORT_DESCRIPTION, Bundle.CTL_BandMathsAction_ShortDescription());
         putValue(Action.SMALL_ICON, ImageUtilities.loadImageIcon("icons/BandMaths16.gif", false));
         putValue(Action.LARGE_ICON_KEY, ImageUtilities.loadImageIcon("icons/BandMaths24.gif", false));
     }

@@ -54,6 +54,7 @@ import org.esa.snap.gui.actions.file.OpenImageViewAction;
 import org.esa.snap.gui.framework.ui.ModalDialog;
 import org.esa.snap.gui.nodes.UndoableProductNodeInsertion;
 import org.openide.awt.UndoRedo;
+import org.openide.util.NbBundle;
 
 import javax.swing.*;
 import java.awt.*;
@@ -65,6 +66,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+@NbBundle.Messages({
+        "CTL_BandMathsDialog_ErrBandNotCreated=The band could not be created.\nAn parse error occurred:\n",
+        "CTL_BandMathsDialog_ErrExpressionNotValid=Please check the band maths expression you have entered.\nIt is not valid.",
+        "CTL_BandMathsDialog_ErrBandCannotBeReferenced=You cannot reference the target band ''{0}'' within the expression.",
+        "CTL_BandMathsDialog_LblExpression=Band maths expression:",
+})
 class BandMathsDialog extends ModalDialog {
 
     public static final String PREF_KEY_AUTO_SHOW_NEW_BANDS = "bandmaths_autoshowbands_enabled";
@@ -125,7 +132,7 @@ class BandMathsDialog extends ModalDialog {
             int defaultProductIndex = Arrays.asList(products).indexOf(targetProduct);
             validMaskExpression = BandArithmetic.getValidMaskExpression(getExpression(), products, defaultProductIndex, null);
         } catch (ParseException e) {
-            String errorMessage = "The band could not be created.\nAn parse error occurred:\n" + e.getMessage();
+            String errorMessage = Bundle.CTL_BandMathsDialog_ErrBandNotCreated() + e.getMessage();
             SnapDialogs.showError("Error", errorMessage);
             hide();
             return;
@@ -180,13 +187,12 @@ class BandMathsDialog extends ModalDialog {
     @Override
     protected boolean verifyUserInput() {
         if (!isValidExpression()) {
-            showErrorDialog("Please check the band maths expression you have entered.\nIt is not valid."); /*I18N*/
+            showErrorDialog(Bundle.CTL_BandMathsDialog_ErrExpressionNotValid()); /*I18N*/
             return false;
         }
 
         if (isTargetBandReferencedInExpression()) {
-            showErrorDialog("You cannot reference the target band '" + getBandName() +
-                                    "' within the expression.");
+            showErrorDialog(Bundle.CTL_BandMathsDialog_ErrBandCannotBeReferenced(getBandName()));
             return false;
         }
         return super.verifyUserInput();
@@ -250,7 +256,7 @@ class BandMathsDialog extends ModalDialog {
 
         gbc.gridy = ++line;
 
-        JLabel expressionLabel = new JLabel("Band maths expression:");
+        JLabel expressionLabel = new JLabel(Bundle.CTL_BandMathsDialog_LblExpression());
         JTextArea expressionArea = new JTextArea();
         expressionArea.setRows(3);
         TextComponentAdapter textComponentAdapter = new TextComponentAdapter(expressionArea);
@@ -411,8 +417,8 @@ class BandMathsDialog extends ModalDialog {
                 }
                 if (!externalProducts.isEmpty()) {
                     String message = "The entered maths expression references multiple products.\n"
-                            + "It will cause problems unless the session is restored as is.\n\n"
-                            + "Note: You can save the session from the file menu.";
+                                     + "It will cause problems unless the session is restored as is.\n\n"
+                                     + "Note: You can save the session from the file menu.";
                     SnapDialogs.showWarning(message);
                 }
             }
@@ -462,21 +468,24 @@ class BandMathsDialog extends ModalDialog {
         return false;
     }
 
+    @NbBundle.Messages({
+            "CTL_PNNV_ExMsg_UniqueBandName=The band name must be unique within the product scope.\n"
+            + "The scope comprises bands and tie-point grids.",
+            "CTL_PNNV_ExMsg_ContainedCharacter=The band name ''{0}'' is not valid.\n\n"
+            + "Names must not start with a dot and must not\n"
+            + "contain any of the following characters: \\/:*?\"<>|"
+
+    })
     private class ProductNodeNameValidator implements Validator {
 
         @Override
         public void validateValue(Property property, Object value) throws ValidationException {
             final String name = (String) value;
             if (!ProductNode.isValidNodeName(name)) {
-                final String message = MessageFormat.format("The band name ''{0}'' is not valid.\n\n"
-                                                                    + "Names must not start with a dot and must not\n"
-                                                                    + "contain any of the following characters: \\/:*?\"<>|",
-                                                            name);
-                throw new ValidationException(message);
+                throw new ValidationException(Bundle.CTL_PNNV_ExMsg_ContainedCharacter(name));
             }
             if (targetProduct.containsRasterDataNode(name)) {
-                throw new ValidationException("The band name must be unique within the product scope.\n"
-                                                      + "The scope comprises bands and tie-point grids.");
+                throw new ValidationException(Bundle.CTL_PNNV_ExceptionMsg());
             }
         }
     }
