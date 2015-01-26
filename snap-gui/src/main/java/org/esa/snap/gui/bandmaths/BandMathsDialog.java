@@ -56,10 +56,14 @@ import org.esa.snap.gui.nodes.UndoableProductNodeInsertion;
 import org.openide.awt.UndoRedo;
 import org.openide.util.NbBundle;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import java.awt.BorderLayout;
+import java.awt.GridBagConstraints;
 import java.awt.event.ActionListener;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -485,7 +489,7 @@ class BandMathsDialog extends ModalDialog {
                 throw new ValidationException(Bundle.CTL_PNNV_ExMsg_ContainedCharacter(name));
             }
             if (targetProduct.containsRasterDataNode(name)) {
-                throw new ValidationException(Bundle.CTL_PNNV_ExceptionMsg());
+                throw new ValidationException(Bundle.CTL_PNNV_ExMsg_UniqueBandName());
             }
         }
     }
