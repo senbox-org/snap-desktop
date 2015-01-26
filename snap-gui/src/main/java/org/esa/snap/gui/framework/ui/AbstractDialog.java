@@ -19,6 +19,7 @@ import org.esa.beam.framework.ui.UIDefaults;
 import org.esa.beam.framework.ui.UIUtils;
 import org.netbeans.modules.javahelp.HelpConstants;
 import org.openide.util.HelpCtx;
+import org.openide.util.NbBundle;
 
 import javax.swing.AbstractButton;
 import javax.swing.Box;
@@ -42,9 +43,6 @@ import java.util.List;
 import java.util.Map;
 
 
-// todo (mp) - decide if we want to replace this class by DialogDescriptor and DialogDisplayer
-// todo (mp) - decide in which package to place this and the derived classes
-// todo (mp) - use @NbBundle.Messages
 /**
  * The <code>AbstractDialog</code> is the base class for {@link ModalDialog} and {@link ModelessDialog},
  * two helper classes used to quickly construct modal and modeless dialogs. The dialogs created with this
@@ -58,8 +56,11 @@ import java.util.Map;
  * {@link #onYes()} and {@link #onNo()} methods are NOT called.
  *
  * @author Norman Fomferra
- * @since BEAM 4.2
  */
+@NbBundle.Messages({
+        "CTL_AbstractDlg_NoHelpThemeAvailable=Sorry, no help theme available.",
+        "CTL_AbstractDlg_NoHelpIDShowingStandard=Sorry, help for id '%s' not available.\nShowing standard help."
+})
 public abstract class AbstractDialog {
 
     public static final int ID_OK = 0x0001;
@@ -359,14 +360,9 @@ public abstract class AbstractDialog {
      * Clients should override this method to implement a different behaviour.
      */
     protected void onHelp() {
-        if (helpId == null) {
-            showInformationDialog("Sorry, no help theme available.");
-        } else {
-            if (!new HelpCtx(helpId).display()) {
-                showWarningDialog("Sorry, help for id '" + helpId + "' not available.\n" +
-                                  "Showing standard help.");
-                new HelpCtx(HelpConstants.MASTER_ID).display();
-            }
+        if (helpId == null || !new HelpCtx(helpId).display()) {
+            showWarningDialog(String.format(Bundle.CTL_AbstractDlg_NoHelpIDShowingStandard(), helpId));
+            new HelpCtx(HelpConstants.MASTER_ID).display();
         }
     }
 
