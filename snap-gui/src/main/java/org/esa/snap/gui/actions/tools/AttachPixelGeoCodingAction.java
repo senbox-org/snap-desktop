@@ -16,27 +16,28 @@
 
 package org.esa.snap.gui.actions.tools;
 
+import com.bc.ceres.core.Assert;
 import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
 import org.esa.beam.framework.datamodel.Band;
 import org.esa.beam.framework.datamodel.BasicPixelGeoCoding;
-import org.esa.beam.framework.datamodel.GeoCoding;
 import org.esa.beam.framework.datamodel.GeoCodingFactory;
 import org.esa.beam.framework.datamodel.PixelGeoCoding;
 import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.datamodel.ProductNode;
 import org.esa.beam.framework.ui.ExpressionPane;
 import org.esa.beam.framework.ui.GridBagUtils;
-import org.esa.beam.framework.ui.ModalDialog;
 import org.esa.beam.framework.ui.UIUtils;
 import org.esa.beam.framework.ui.product.ProductExpressionPane;
 import org.esa.beam.util.ArrayUtils;
 import org.esa.beam.util.StringUtils;
+import org.esa.snap.gui.framework.ui.ModalDialog;
 import org.esa.snap.gui.SnapApp;
 import org.esa.snap.gui.SnapDialogs;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
+import org.openide.awt.UndoRedo;
 import org.openide.util.ContextAwareAction;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
@@ -50,11 +51,13 @@ import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import javax.swing.undo.AbstractUndoableEdit;
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -83,9 +86,11 @@ import java.util.logging.Level;
 )
 @Messages({
         "CTL_AttachPixelGeoCodingActionText=Attach Pixel Geo-Coding...",
-        "CTL_AttachPixelGeoCodingDialogTitle=Attach Pixel Geo-Coding"
+        "CTL_AttachPixelGeoCodingDialogTitle=Attach Pixel Geo-Coding",
+        "CTL_AttachPixelGeoCodingDialogDescription=Attach a pixel based geo-coding to the selected product"
 })
-public class AttachPixelGeoCodingAction extends AbstractAction implements ContextAwareAction, LookupListener{
+public class AttachPixelGeoCodingAction extends AbstractAction implements ContextAwareAction, LookupListener {
+
     private static final String HELP_ID = "pixelGeoCodingSetup";
 
     private final Lookup lkp;
@@ -100,7 +105,7 @@ public class AttachPixelGeoCodingAction extends AbstractAction implements Contex
         Lookup.Result<ProductNode> lkpContext = lkp.lookupResult(ProductNode.class);
         lkpContext.addLookupListener(WeakListeners.create(LookupListener.class, this, lkpContext));
         setEnableState();
-        putValue(Action.SHORT_DESCRIPTION, "Attach a pixel based geo-coding to the selected product");
+        putValue(Action.SHORT_DESCRIPTION, Bundle.CTL_AttachPixelGeoCodingDialogDescription());
     }
 
     @Override
@@ -149,8 +154,8 @@ public class AttachPixelGeoCodingAction extends AbstractAction implements Contex
         final String validMask = setupDialog.getValidMask();
         final String msgPattern = "New Pixel Geo-Coding: lon = ''{0}'' ; lat = ''{1}'' ; radius=''{2}'' ; mask=''{3}''";
         snapApp.getLogger().log(Level.INFO, MessageFormat.format(msgPattern,
-                                                                  lonBand.getName(), latBand.getName(),
-                                                                  searchRadius, validMask));
+                                                                 lonBand.getName(), latBand.getName(),
+                                                                 searchRadius, validMask));
 
 
         final long requiredBytes = PixelGeoCoding.getRequiredMemory(product, validMask != null);
@@ -172,8 +177,13 @@ public class AttachPixelGeoCodingAction extends AbstractAction implements Contex
 
             @Override
             protected Void doInBackground(ProgressMonitor pm) throws Exception {
-                final GeoCoding pixelGeoCoding = GeoCodingFactory.createPixelGeoCoding(latBand, lonBand, validMask, searchRadius, pm);
+                final BasicPixelGeoCoding pixelGeoCoding = GeoCodingFactory.createPixelGeoCoding(latBand, lonBand, validMask, searchRadius, pm);
                 product.setGeoCoding(pixelGeoCoding);
+                UndoRedo.Manager undoManager = SnapApp.getDefault().getUndoManager(product);
+                if (undoManager != null) {
+                    undoManager.addEdit(new UndoableAttachGeoCoding<>(product, pixelGeoCoding));
+                }
+
                 return null;
             }
 
@@ -389,4 +399,42 @@ public class AttachPixelGeoCodingAction extends AbstractAction implements Contex
 
     }
 
+    private static class UndoableAttachGeoCoding<T extends BasicPixelGeoCoding> extends AbstractUndoableEdit {
+
+        private Product product;
+        private T pixelGeoCoding;
+
+        public UndoableAttachGeoCoding(Product product, T pixelGeoCoding) {
+            Assert.notNull(product, "product");
+            Assert.notNull(pixelGeoCoding, "pixelGeoCoding");
+            this.product = product;
+            this.pixelGeoCoding = pixelGeoCoding;
+        }
+
+
+        @Override
+        public String getPresentationName() {
+            return Bundle.CTL_AttachPixelGeoCodingDialogTitle();
+        }
+
+        @Override
+        public void undo() throws CannotUndoException {
+            super.undo();
+            if (product.getGeoCoding() == pixelGeoCoding) {
+                product.setGeoCoding(pixelGeoCoding.getPixelPosEstimator());
+            }
+        }
+
+        @Override
+        public void redo() throws CannotRedoException {
+            super.redo();
+            product.setGeoCoding(pixelGeoCoding);
+        }
+
+        @Override
+        public void die() {
+            pixelGeoCoding = null;
+            product = null;
+        }
+    }
 }

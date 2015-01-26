@@ -19,8 +19,12 @@ package org.esa.snap.gui.actions.tools;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.SwingWorker;
+import javax.swing.undo.AbstractUndoableEdit;
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
 import java.awt.event.ActionEvent;
 
+import com.bc.ceres.core.Assert;
 import org.esa.beam.framework.datamodel.BasicPixelGeoCoding;
 import org.esa.beam.framework.datamodel.GeoCoding;
 import org.esa.beam.framework.datamodel.Product;
@@ -31,6 +35,7 @@ import org.esa.snap.gui.SnapDialogs;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
+import org.openide.awt.UndoRedo;
 import org.openide.util.ContextAwareAction;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
@@ -97,13 +102,14 @@ public class DetachPixelGeoCodingAction extends AbstractAction implements Contex
                 try {
                     GeoCoding geoCoding = product.getGeoCoding();
                     if (geoCoding instanceof BasicPixelGeoCoding) {
-                        final BasicPixelGeoCoding pixelGeoCoding = (BasicPixelGeoCoding) product.getGeoCoding();
+                        final BasicPixelGeoCoding pixelGeoCoding = (BasicPixelGeoCoding) geoCoding;
                         final GeoCoding delegate = pixelGeoCoding.getPixelPosEstimator();
                         product.setGeoCoding(delegate);
-                    } else {
-                        product.setGeoCoding(null);
+                        UndoRedo.Manager undoManager = SnapApp.getDefault().getUndoManager(product);
+                        if (undoManager != null) {
+                            undoManager.addEdit(new UndoableDetachGeoCoding<>(product, pixelGeoCoding));
+                        }
                     }
-                    geoCoding.dispose();
                 } catch (Throwable e) {
                     return e;
                 }
@@ -143,6 +149,45 @@ public class DetachPixelGeoCodingAction extends AbstractAction implements Contex
             state = product.getGeoCoding() instanceof BasicPixelGeoCoding;
         }
         setEnabled(state);
+    }
+
+    private static class UndoableDetachGeoCoding<T extends BasicPixelGeoCoding> extends AbstractUndoableEdit {
+
+        private Product product;
+        private T pixelGeoCoding;
+
+        public UndoableDetachGeoCoding(Product product, T pixelGeoCoding) {
+            Assert.notNull(product, "product");
+            Assert.notNull(pixelGeoCoding, "pixelGeoCoding");
+            this.product = product;
+            this.pixelGeoCoding = pixelGeoCoding;
+        }
+
+
+        @Override
+        public String getPresentationName() {
+            return Bundle.CTL_AttachPixelGeoCodingDialogTitle();
+        }
+
+        @Override
+        public void undo() throws CannotUndoException {
+            super.undo();
+            product.setGeoCoding(pixelGeoCoding);
+        }
+
+        @Override
+        public void redo() throws CannotRedoException {
+            super.redo();
+            if (product.getGeoCoding() == pixelGeoCoding) {
+                product.setGeoCoding(pixelGeoCoding.getPixelPosEstimator());
+            }
+        }
+
+        @Override
+        public void die() {
+            pixelGeoCoding = null;
+            product = null;
+        }
     }
 
 }
