@@ -34,9 +34,10 @@ import org.openide.util.NbBundle;
 public final class SyncImageCursorsAction extends BooleanPreferenceKeyAction {
 
     public static final String PREFERENCE_KEY = "auto_sync_image_cursors";
+    public static final boolean PREFERENCE_DEFAULT_VALUE = false;
 
     public SyncImageCursorsAction() {
-        super(PREFERENCE_KEY);
+        super(PREFERENCE_KEY, PREFERENCE_DEFAULT_VALUE);
         putValue(NAME, Bundle.CTL_SyncImageCursorsActionName());
         putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/gui/icons/SyncCursor24.png", false));
         putValue(SHORT_DESCRIPTION, Bundle.CTL_SyncImageCursorsActionToolTip());

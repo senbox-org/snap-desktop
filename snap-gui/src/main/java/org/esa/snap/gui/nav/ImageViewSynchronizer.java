@@ -94,7 +94,8 @@ public class ImageViewSynchronizer implements Runnable, PreferenceChangeListener
     }
 
     private boolean isActive() {
-        return SnapApp.getDefault().getPreferences().getBoolean(PROPERTY_KEY_AUTO_SYNC_VIEWS, false);
+        return SnapApp.getDefault().getPreferences().getBoolean(PROPERTY_KEY_AUTO_SYNC_VIEWS,
+                                                                SyncImageViewsAction.PREFERENCE_DEFAULT_VALUE);
     }
 
     private class LayerCanvasModelChangeHandler implements LayerCanvasModel.ChangeListener {

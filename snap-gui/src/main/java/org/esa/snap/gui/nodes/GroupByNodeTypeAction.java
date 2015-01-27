@@ -28,14 +28,15 @@ import org.openide.util.NbBundle;
         position = 300
 )
 @NbBundle.Messages({
-        "CTL_GroupByNodeTypeActionName=Ungroup Nodes"
+        "CTL_GroupByNodeTypeActionName=Group Nodes by Type"
 })
 public class GroupByNodeTypeAction extends BooleanPreferenceKeyAction {
 
     public static final String PREFERENCE_KEY = "group_by_node_type";
+    public static final boolean PREFERENCE_DEFAULT_VALUE = true;
 
     public GroupByNodeTypeAction() {
-        super(PREFERENCE_KEY);
+        super(PREFERENCE_KEY, PREFERENCE_DEFAULT_VALUE);
         putValue(NAME, Bundle.CTL_GroupByNodeTypeActionName());
     }
 }

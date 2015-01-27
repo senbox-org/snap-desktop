@@ -25,9 +25,15 @@ public class BooleanPreferenceKeyAction extends AbstractAction
         implements PreferenceChangeListener, Presenter.Toolbar, Presenter.Menu, Presenter.Popup {
 
     private final String preferenceKey;
+    private final boolean defaultValue;
 
     protected BooleanPreferenceKeyAction(String preferenceKey) {
+        this(preferenceKey, false);
+    }
+
+    protected BooleanPreferenceKeyAction(String preferenceKey, boolean defaultValue) {
         this.preferenceKey = preferenceKey;
+        this.defaultValue = defaultValue;
         Preferences preferences = SnapApp.getDefault().getPreferences();
         preferences.addPreferenceChangeListener(WeakListeners.create(PreferenceChangeListener.class, this, preferences));
         setSelected(getPreferenceValue());
@@ -77,7 +83,7 @@ public class BooleanPreferenceKeyAction extends AbstractAction
     }
 
     private boolean getPreferenceValue() {
-        return SnapApp.getDefault().getPreferences().getBoolean(getPreferenceKey(), false);
+        return SnapApp.getDefault().getPreferences().getBoolean(getPreferenceKey(), defaultValue);
     }
 
     private void setPreferenceValue(boolean selected) {

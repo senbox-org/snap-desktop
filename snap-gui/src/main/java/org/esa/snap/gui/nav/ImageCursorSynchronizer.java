@@ -64,7 +64,8 @@ public class ImageCursorSynchronizer implements Runnable, PreferenceChangeListen
     }
 
     private boolean isActive() {
-        return SnapApp.getDefault().getPreferences().getBoolean(PROPERTY_KEY_AUTO_SYNC_CURSORS, false);
+        return SnapApp.getDefault().getPreferences().getBoolean(PROPERTY_KEY_AUTO_SYNC_CURSORS,
+                                                                SyncImageCursorsAction.PREFERENCE_DEFAULT_VALUE);
     }
 
     @Override
