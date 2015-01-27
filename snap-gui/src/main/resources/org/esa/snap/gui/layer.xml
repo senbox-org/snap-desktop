@@ -152,11 +152,6 @@
         <folder name="Tools">
             <!-- Allows to manage file templates (e.g. java, xml html, etc.), not applicable for us.-->
             <file name="org-netbeans-modules-templates-actions-TemplatesAction.shadow_hidden"/>
-            <!-- Action to open a properties window, moved here from Window/Tools menu-->
-            <file name="org-netbeans-core-windows-actions-GlobalPropertiesAction.shadow">
-                <attr name="originalFile" stringvalue="Actions/Window/org-netbeans-core-windows-actions-GlobalPropertiesAction.instance"/>
-                <attr name="position" intvalue="200"/>
-            </file>
         </folder>
         <folder name="GoTo_hidden">
             <!--Simply navigates back to the previous active window, moved to the Windows menu -->
@@ -170,6 +165,11 @@
             <!-- Moved on level down in the menu hierarchy-->
             <file name="org-netbeans-core-io-ui-IOWindowAction.shadow_hidden"/>
             <folder name="Tool Windows">
+                <!-- Action to open a properties window, moved here from Window/Tools menu-->
+                <file name="org-netbeans-core-windows-actions-GlobalPropertiesAction.shadow">
+                    <attr name="originalFile" stringvalue="Actions/Window/org-netbeans-core-windows-actions-GlobalPropertiesAction.instance"/>
+                    <attr name="position" intvalue="200"/>
+                </file>
                 <file name="org-netbeans-core-io-ui-IOWindowAction.shadow">
                     <attr name="originalFile" stringvalue="Actions/Window/org-netbeans-core-io-ui-IOWindowAction.instance"/>
                     <attr name="position" intvalue="10000"/>
@@ -189,7 +189,7 @@
                 <file name="org-netbeans-core-actions-HTMLViewAction.shadow_hidden"/>
             </folder>
             <folder name="Tools_hidden">
-                <!-- Action to open a properties window, moved into Tools menu-->
+                <!-- Action to open a properties window, moved into 'Window/Tool Windows' menu-->
                 <file name="org-netbeans-core-windows-actions-GlobalPropertiesAction.shadow_hidden"/>
             </folder>
 
