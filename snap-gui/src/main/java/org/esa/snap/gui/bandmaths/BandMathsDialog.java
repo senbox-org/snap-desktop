@@ -191,7 +191,7 @@ class BandMathsDialog extends ModalDialog {
     @Override
     protected boolean verifyUserInput() {
         if (!isValidExpression()) {
-            showErrorDialog(Bundle.CTL_BandMathsDialog_ErrExpressionNotValid()); /*I18N*/
+            showErrorDialog(Bundle.CTL_BandMathsDialog_ErrExpressionNotValid());
             return false;
         }
 
@@ -199,7 +199,29 @@ class BandMathsDialog extends ModalDialog {
             showErrorDialog(Bundle.CTL_BandMathsDialog_ErrBandCannotBeReferenced(getBandName()));
             return false;
         }
+
+        if(!referencedRastersHaveEqualSize()) {
+            showErrorDialog("The size of one of the referenced rasters is not equal to the size of the other rasters." );
+            return false;
+        }
+
         return super.verifyUserInput();
+    }
+
+    private boolean referencedRastersHaveEqualSize() {
+        Product[] compatibleProducts = getCompatibleProducts();
+        int defaultProductIndex = Arrays.asList(compatibleProducts).indexOf(targetProduct);
+        try {
+            RasterDataNode[] rasters = BandArithmetic.getRefRasters(getExpression(), compatibleProducts, defaultProductIndex);
+            for (RasterDataNode raster : rasters) {
+                if(!raster.getRasterSize().equals(targetProduct.getSceneRasterSize())) {
+                    return false;
+                }
+            }
+        } catch (ParseException e) {
+            return false;
+        }
+        return true;
     }
 
     private void makeUI() {
