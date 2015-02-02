@@ -17,7 +17,6 @@ package org.esa.snap.gui.framework.ui;
 
 import org.esa.beam.framework.ui.UIDefaults;
 import org.esa.beam.framework.ui.UIUtils;
-import org.netbeans.modules.javahelp.HelpConstants;
 import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle;
 
@@ -362,7 +361,6 @@ public abstract class AbstractDialog {
     protected void onHelp() {
         if (helpId == null || !new HelpCtx(helpId).display()) {
             showWarningDialog(String.format(Bundle.CTL_AbstractDlg_NoHelpIDShowingStandard(), helpId));
-            new HelpCtx(HelpConstants.MASTER_ID).display();
         }
     }
 
