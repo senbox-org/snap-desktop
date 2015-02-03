@@ -35,6 +35,7 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.util.Map;
 
 /**
  * Action for importing a product.
@@ -55,7 +56,53 @@ import java.io.File;
         "CTL_ImportProductActionName=Import Product",
         "CTL_ImportProductActionMenuText=Import Product..."
 })
-public class ImportProductAction implements ActionListener {
+public class ImportProductAction extends AbstractAction {
+
+    /**
+     * Action factory method used in NetBeans {@code layer.xml} file, e.g.
+     *
+     * <pre>
+     * &lt;file name="org-esa-beam-dataio-ceos-ImportAvnir2Product.instance"&gt;
+     *     &lt;attr name="instanceCreate"
+     *         methodvalue="org.openide.awt.Actions.alwaysEnabled"/&gt;
+     *     &lt;attr name="delegate"
+     *         methodvalue="org.esa.snap.gui.actions.file.ImportProductAction.create"/&gt;
+     *     &lt;attr name="displayName"
+     *         stringvalue="ALOS/AVNIR-2 Product"/&gt;
+     *     &lt;attr name="formatName"
+     *         stringvalue="AVNIR-2"/&gt;
+     *     &lt;attr name="useAllFileFilter"
+     *         boolvalue="true"/&gt;
+     *     &lt;attr name="helpId"
+     *         stringvalue="importAvnir2Product"/&gt;
+     *     &lt;attr name="ShortDescription"
+     *         stringvalue="Import an ALOS/AVNIR-2 data product."/&gt;
+     * &lt;/file&gt;
+     * </pre>
+     *
+     * @param configuration Configuration attributes from layer.xml.
+     * @return The action.
+     * @since SNAP 2
+     */
+    public static ImportProductAction create(Map<String, Object> configuration) {
+        ImportProductAction importProductAction = new ImportProductAction();
+        importProductAction.setFormatName((String) configuration.get("formatName"));
+        importProductAction.setHelpId((String) configuration.get("helpId"));
+        importProductAction.setUseAllFileFilter((Boolean) configuration.get("useAllFileFilter"));
+        return importProductAction;
+    }
+
+    public void setFormatName(String formatName) {
+        putValue("formatName", formatName);
+    }
+
+    public void setHelpId(String helpId) {
+        putValue("helpId", helpId);
+    }
+
+    public void setUseAllFileFilter(Boolean useAllFileFilter) {
+        putValue("useAllFileFilter", useAllFileFilter);
+    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
