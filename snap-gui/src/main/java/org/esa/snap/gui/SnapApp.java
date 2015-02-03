@@ -7,6 +7,7 @@ import org.esa.beam.framework.dataio.ProductReader;
 import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.datamodel.ProductManager;
 import org.esa.beam.framework.datamodel.ProductNode;
+import org.esa.beam.framework.gpf.GPF;
 import org.esa.beam.framework.ui.product.ProductSceneView;
 import org.esa.beam.util.PropertyMap;
 import org.esa.snap.gui.actions.file.SaveProductAction;
@@ -305,6 +306,7 @@ public class SnapApp {
         public void run() {
             LOG.fine(">>> " + getClass() + " called");
             initJAI();
+            GPF.getDefaultInstance().getOperatorSpiRegistry().loadOperatorSpis();
             SnapApp.getDefault().onStart();
         }
     }
