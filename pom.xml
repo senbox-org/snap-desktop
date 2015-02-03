@@ -26,6 +26,8 @@
         <module>nbexec</module>
         <module>tiled-editors</module>
         <module>doc-windows</module>
+
+        <module>snap-aatsr-sst-ui</module>
     </modules>
 
     <dependencyManagement>

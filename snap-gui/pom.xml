@@ -31,6 +31,9 @@
                             <type>impl</type>
                         </dependency>
                     </moduleDependencies>
+                    <publicPackages>
+                        <publicPackage>org.esa.snap.gui.actions.*</publicPackage>
+                    </publicPackages>
                 </configuration>
             </plugin>
             <plugin>
