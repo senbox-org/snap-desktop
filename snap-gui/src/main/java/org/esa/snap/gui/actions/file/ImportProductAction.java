@@ -26,6 +26,7 @@ import org.esa.snap.gui.SnapDialogs;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
+import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle;
 
 import javax.swing.*;
@@ -56,7 +57,7 @@ import java.util.Map;
         "CTL_ImportProductActionName=Import Product",
         "CTL_ImportProductActionMenuText=Import Product..."
 })
-public class ImportProductAction extends AbstractAction {
+public class ImportProductAction extends AbstractAction implements HelpCtx.Provider {
 
     /**
      * Action factory method used in NetBeans {@code layer.xml} file, e.g.
@@ -87,17 +88,22 @@ public class ImportProductAction extends AbstractAction {
     public static ImportProductAction create(Map<String, Object> configuration) {
         ImportProductAction importProductAction = new ImportProductAction();
         importProductAction.setFormatName((String) configuration.get("formatName"));
-        importProductAction.setHelpId((String) configuration.get("helpId"));
+        importProductAction.setHelpCtx((String) configuration.get("helpId"));
         importProductAction.setUseAllFileFilter((Boolean) configuration.get("useAllFileFilter"));
         return importProductAction;
     }
 
-    public void setFormatName(String formatName) {
-        putValue("formatName", formatName);
+    @Override
+    public HelpCtx getHelpCtx() {
+        return (HelpCtx) getValue("helpCtx");
     }
 
-    public void setHelpId(String helpId) {
-        putValue("helpId", helpId);
+    public void setHelpCtx(String helpId) {
+        putValue("helpCtx", helpId != null ? new HelpCtx(helpId) : null);
+    }
+
+    public void setFormatName(String formatName) {
+        putValue("formatName", formatName);
     }
 
     public void setUseAllFileFilter(Boolean useAllFileFilter) {
