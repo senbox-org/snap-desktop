@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * A plain Java NetBeans Platform launcher which mimics the core functionality of the NB's native launcher
@@ -38,9 +39,9 @@ import java.util.Set;
  * <p>
  * Usage:
  * <pre>
- *    Launcher {--root &lt;root&gt;} [--branding &lt;app&gt;] [--userdir &lt;userdir&gt;] [--cachedir &lt;cachedir&gt;] &lt;args&gt;
+ *    Launcher {--root &lt;root&gt;} [--clusters &lt;clusters&gt;] [--branding &lt;app&gt;] [--userdir &lt;userdir&gt;] [--cachedir &lt;cachedir&gt;] &lt;args&gt;
  * </pre>
- * where the {@code branding}, {@code userdir}, and {@code cachedir} options are the same as for the native launcher.
+ * where the {@code clusters}, {@code branding}, {@code userdir}, and {@code cachedir} options are the same as for the native launcher.
  * The current working directory must be the target deployment directory, {@code $appmodule/target/$app}.
  * <p>
  * The Launcher takes care of any changed code in all modules contained in a module <i>root</i> indicated by the given
@@ -81,6 +82,7 @@ public class Launcher {
         String appName = basename(deploymentDir);
 
         LinkedList<String> argList = new LinkedList<>(Arrays.asList(args));
+        String clusterDirs = parseArg(argList, "--clusters");
         String brandingToken = parseArg(argList, "--branding");
         String userDir = parseArg(argList, "--userdir");
         String cacheDir = parseArg(argList, "--cachedir");
@@ -107,11 +109,13 @@ public class Launcher {
         // Parse "default_options"
         List<String> defaultOptionList = new LinkedList<>();
         String defaultOptions = getVar("default_options");
+        String defaultClusterDirs = null;
         String defaultBrandingToken = null;
         String defaultUserDir = null;
         String defaultCacheDir = null;
         if (defaultOptions != null) {
             defaultOptionList = parseOptions(defaultOptions);
+            defaultClusterDirs = parseArg(defaultOptionList, "--clusters");
             defaultBrandingToken = parseArg(defaultOptionList, "--branding");
             defaultUserDir = parseArg(defaultOptionList, "--userdir");
             defaultCacheDir = parseArg(defaultOptionList, "--cachedir");
@@ -130,6 +134,10 @@ public class Launcher {
             if (defaultUserDir == null) {
                 defaultUserDir = path(deploymentDir, "..", "userdir");
             }
+        }
+
+        if (clusterDirs == null) {
+            clusterDirs = defaultClusterDirs;
         }
 
         if (userDir == null) {
@@ -160,6 +168,10 @@ public class Launcher {
         String extraClusterPaths = getVar("extra_clusters");
         if (extraClusterPaths != null) {
             clusterList.add(extraClusterPaths);
+        }
+
+        if (clusterDirs != null) {
+            clusterList.addAll(toAbsolutePaths(Arrays.asList(clusterDirs.split(File.pathSeparator))));
         }
 
         String clusterPaths = toPathsString(clusterList);
@@ -311,14 +323,14 @@ public class Launcher {
                         // but this pattern is specific to the NB Maven Plugin
 
                         // 1. module names that end with artifact name
-                        moduleNames.stream().filter(moduleName -> moduleName.endsWith(artifactName)).forEach(moduleName -> {
-                            addPatch(moduleName, classesDir);
-                        });
+                        moduleNames.stream()
+                                .filter(moduleName -> moduleName.endsWith(artifactName))
+                                .forEach(moduleName -> addPatch(moduleName, classesDir));
 
                         // 2. module names that don't end with artifact name, but contain artifact name
-                        moduleNames.stream().filter(moduleName -> !moduleName.endsWith(artifactName) && moduleName.contains(artifactName)).forEach(moduleName -> {
-                            addPatch(moduleName, classesDir);
-                        });
+                        moduleNames.stream()
+                                .filter(moduleName -> !moduleName.endsWith(artifactName) && moduleName.contains(artifactName))
+                                .forEach(moduleName -> addPatch(moduleName, classesDir));
                     }
                 }
             }
@@ -347,7 +359,7 @@ public class Launcher {
         st.quoteChar('"');
         st.quoteChar('\'');
 
-        boolean firstArgQuoted = false;
+        boolean firstArgQuoted;
         try {
             int tt = st.nextToken();
             firstArgQuoted = tt == '\'' || tt == '"';
@@ -435,11 +447,9 @@ public class Launcher {
     }
 
     private static List<String> toAbsolutePaths(List<String> paths) {
-        ArrayList<String> absPaths = new ArrayList<>();
-        for (String path : paths) {
-            absPaths.add(Paths.get(path).toAbsolutePath().toString());
-        }
-        return absPaths;
+        return paths.stream()
+                .map(path -> Paths.get(path).toAbsolutePath().toString())
+                .collect(Collectors.toList());
     }
 
     private static List<String> readLines(String path) {
