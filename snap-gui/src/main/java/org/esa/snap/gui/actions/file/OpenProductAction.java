@@ -25,6 +25,8 @@ import java.io.File;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -112,6 +114,14 @@ public final class OpenProductAction extends AbstractAction {
             ProductReaderPlugIn readerPlugIn = readerPlugIns.next();
             filters.add(readerPlugIn.getProductFileFilter());
         }
+        Collections.sort(filters, new Comparator<FileFilter>() {
+            @Override
+            public int compare(FileFilter f1, FileFilter f2) {
+                String d1 = f1.getDescription();
+                String d2 = f2.getDescription();
+                return d1 != null ? d1.compareTo(d2) : d2 == null ? 0 : 1;
+            }
+        });
         if (filters.isEmpty()) {
             SnapDialogs.showError(Bundle.LBL_NoReaderFoundText());
             return false;
