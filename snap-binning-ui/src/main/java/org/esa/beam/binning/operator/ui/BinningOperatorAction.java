@@ -30,13 +30,14 @@ import java.awt.event.ActionEvent;
  *
  * @author Tonio Fincke
  * @author Thomas Storm
+ * @author Marco Peters
  */
 @ActionID(category = "Processors", id = "org.esa.beam.binning.operator.ui.BinningOperatorAction")
-@ActionRegistration(displayName = "#CTL_BinningOperatorActionText", lazy = false)
+@ActionRegistration(displayName = "#CTL_BinningOperatorAction_Text", lazy = false)
 @ActionReference(path = "Menu/Processing", position = 10000)
 @NbBundle.Messages({
-        "CTL_BinningOperatorActionText=Level-3 Binning...",
-        "CTL_BinningOperatorActionDescription=Spatial and temporal aggregation of input products."
+        "CTL_BinningOperatorAction_Text=Level-3 Binning...",
+        "CTL_BinningOperatorAction_Description=Spatial and temporal aggregation of input products."
 })
 public class BinningOperatorAction extends AbstractSnapAction {
 
@@ -45,8 +46,9 @@ public class BinningOperatorAction extends AbstractSnapAction {
     private ModelessDialog dialog;
 
     public BinningOperatorAction() {
-        putValue(NAME, Bundle.CTL_BinningOperatorActionText());
-        putValue(SHORT_DESCRIPTION, Bundle.CTL_BinningOperatorActionDescription());
+        putValue(NAME, Bundle.CTL_BinningOperatorAction_Text());
+        putValue(SHORT_DESCRIPTION, Bundle.CTL_BinningOperatorAction_Description());
+        setHelpId(HELP_ID);
     }
 
     @Override
