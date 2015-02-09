@@ -15,7 +15,6 @@
         <brandingToken>snap</brandingToken>
         <snap.version>${project.version}</snap.version>
         <netbeans.version>RELEASE802</netbeans.version>
-        <javahelp.version>2.0.05</javahelp.version>
         <junit.version>4.11</junit.version>
     </properties>
 
@@ -27,10 +26,85 @@
         <module>nbexec</module>
         <module>tiled-editors</module>
         <module>doc-windows</module>
+
+        <module>snap-binning-ui</module>
     </modules>
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.netbeans.api</groupId>
+                <artifactId>org-openide-awt</artifactId>
+                <version>${netbeans.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.netbeans.api</groupId>
+                <artifactId>org-openide-util</artifactId>
+                <version>${netbeans.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.netbeans.api</groupId>
+                <artifactId>org-netbeans-api-annotations-common</artifactId>
+                <version>${netbeans.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.netbeans.api</groupId>
+                <artifactId>org-netbeans-modules-javahelp</artifactId>
+                <version>${netbeans.version}</version>
+            </dependency>
+
+
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>snap-ceres-core</artifactId>
+                <version>${snap.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>snap-jai</artifactId>
+                <version>${snap.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>snap-glayer</artifactId>
+                <version>${snap.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>snap-ceres-ui</artifactId>
+                <version>${snap.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>snap-binding</artifactId>
+                <version>${snap.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>snap-metadata</artifactId>
+                <version>${snap.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>snap-core</artifactId>
+                <version>${snap.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>snap-gpf</artifactId>
+                <version>${snap.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>snap-ui</artifactId>
+                <version>${snap.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>snap-gui</artifactId>
+                <version>${snap.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
@@ -81,13 +155,6 @@
                         <cluster>${brandingToken}</cluster>
                         <useOSGiDependencies>false</useOSGiDependencies>
                     </configuration>
-                    <dependencies>
-                        <dependency>
-                            <groupId>javax.help</groupId>
-                            <artifactId>javahelp</artifactId>
-                            <version>${javahelp.version}</version>
-                        </dependency>
-                    </dependencies>
                 </plugin>
                 <plugin>
                     <!-- NetBeans 6.9+ requires JDK 6, starting NetBeans 7.4 source 1.7 is required -->
