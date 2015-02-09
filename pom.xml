@@ -28,6 +28,7 @@
         <module>doc-windows</module>
 
         <module>snap-binning-ui</module>
+        <module>snap-collocation-ui</module>
     </modules>
 
     <dependencyManagement>
