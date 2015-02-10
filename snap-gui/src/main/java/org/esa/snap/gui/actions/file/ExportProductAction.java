@@ -16,10 +16,14 @@
 package org.esa.snap.gui.actions.file;
 
 import org.esa.beam.framework.datamodel.Product;
-import org.esa.snap.gui.SnapApp;
+import org.esa.beam.framework.datamodel.ProductNode;
+import org.openide.util.ContextAwareAction;
 import org.openide.util.HelpCtx;
+import org.openide.util.Lookup;
+import org.openide.util.Utilities;
 
 import javax.swing.AbstractAction;
+import javax.swing.Action;
 import java.awt.event.ActionEvent;
 import java.util.Map;
 
@@ -28,27 +32,24 @@ import java.util.Map;
  *
  * @author Marco Peters
  */
-public class ExportProductAction extends AbstractAction implements HelpCtx.Provider{
-    // todo (mp) - should only be enabled if a product is selected
+public class ExportProductAction extends AbstractAction implements HelpCtx.Provider, ContextAwareAction {
+
+    private Product product;
+
     /**
      * Action factory method used in NetBeans {@code layer.xml} file, e.g.
      * <p>
      * <pre>
      * &lt;file name="org-esa-beam-csv-dataio-ExportCSVProduct.instance"&gt;
-     *     &lt;attr name="instanceCreate"
-     *         methodvalue="org.openide.awt.Actions.alwaysEnabled"/&gt;
-     *     &lt;attr name="delegate"
-     *         methodvalue="org.esa.snap.gui.actions.file.ExportProductAction.create"/&gt;
-     *     &lt;attr name="displayName"
-     *         stringvalue="CSV Product"/&gt;
-     *     &lt;attr name="formatName"
-     *         stringvalue="CSV"/&gt;
-     *     &lt;attr name="useAllFileFilter"
-     *         boolvalue="true"/&gt;
-     *     &lt;attr name="helpId"
-     *         stringvalue="exportCsvProduct"/&gt;
-     *     &lt;attr name="ShortDescription"
-     *         stringvalue=">Writes a product in CSV format."/&gt;
+     *      &lt;attr name="instanceCreate" methodvalue="org.openide.awt.Actions.context"/&gt;
+     *      &lt;attr name="type" stringvalue="org.esa.beam.framework.datamodel.ProductNode"/&gt;
+     *      &lt;attr name="delegate" methodvalue="org.esa.snap.gui.actions.file.ExportProductAction.create"/&gt;
+     *      &lt;attr name="selectionType" stringvalue="EXACTLY_ONE"/&gt;
+     *      &lt;attr name="displayName" stringvalue="CSV Product"/&gt;
+     *      &lt;attr name="formatName" stringvalue="CSV"/&gt;
+     *      &lt;attr name="useAllFileFilter" boolvalue="true"/&gt;
+     *      &lt;attr name="helpId" stringvalue="exportCsvProduct"/&gt;
+     *      &lt;attr name="ShortDescription" stringvalue=">Writes a product in CSV format."/&gt;
      * &lt;/file&gt;
      * </pre>
      *
@@ -63,6 +64,13 @@ public class ExportProductAction extends AbstractAction implements HelpCtx.Provi
         exportProductAction.setHelpCtx((String) configuration.get("helpId"));
         exportProductAction.setUseAllFileFilter((Boolean) configuration.get("useAllFileFilter"));
         return exportProductAction;
+    }
+
+    @Override
+    public Action createContextAwareInstance(Lookup actionContext) {
+        ProductNode productNode = actionContext.lookup(ProductNode.class);
+        setProduct(productNode.getProduct());
+        return this;
     }
 
     @Override
@@ -82,12 +90,13 @@ public class ExportProductAction extends AbstractAction implements HelpCtx.Provi
         putValue("useAllFileFilter", useAllFileFilter);
     }
 
+    public void setProduct(Product p) {
+        product = p;
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
-        Product selectedProduct = SnapApp.getDefault().getSelectedProduct();
-        if (selectedProduct != null) {
-            new SaveProductAsAction(selectedProduct).execute();
-        }
+        new SaveProductAsAction(product).execute();
     }
 
 }
