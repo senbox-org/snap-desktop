@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+AutoUpdate-Essential-Module: true
+AutoUpdate-Show-In-Client: false
+OpenIDE-Module-Localizing-Bundle: org/esa/snap/rcp/Bundle.properties
+OpenIDE-Module-Layer: org/esa/snap/rcp/layer.xml
+OpenIDE-Module-Long-Description: NB-Module providing core GUI compone
+ nts for SNAP Desktop

@@ -1,7 +1,7 @@
 package org.esa.beam.opendap;
 
 import org.esa.beam.opendap.ui.OpendapAccessPanel;
-import org.esa.snap.gui.actions.AbstractSnapAction;
+import org.esa.snap.rcp.actions.AbstractSnapAction;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;

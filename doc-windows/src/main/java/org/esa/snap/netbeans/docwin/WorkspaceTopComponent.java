@@ -64,7 +64,7 @@ import static org.openide.util.NbBundle.Messages;
 )
 @ActionID(
         category = "Window",
-        id = "org.esa.snap.gui.window.WorkspaceTopComponent"
+        id = "org.esa.snap.netbeans.docwin.WorkspaceTopComponent"
 )
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_WorkspaceTopComponentNameBase",

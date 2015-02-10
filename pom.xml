@@ -23,7 +23,7 @@
     <modules>
         <module>snap-application</module>
         <module>snap-branding</module>
-        <module>snap-gui</module>
+        <module>snap-rcp</module>
         <module>snap-tango</module>
         <module>nbexec</module>
         <module>tiled-editors</module>
@@ -131,7 +131,7 @@
 
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>snap-gui</artifactId>
+                <artifactId>snap-rcp</artifactId>
                 <version>${snap.version}</version>
             </dependency>
             <dependency>
@@ -140,128 +140,7 @@
                 <version>${snap.version}</version>
             </dependency>
 
-
-            <!--
-                        <dependency>
-                            <groupId>${project.groupId}</groupId>
-                            <artifactId>snap-ceres-core</artifactId>
-                            <version>${snap.version}</version>
-                        </dependency>
-                        <dependency>
-                            <groupId>${project.groupId}</groupId>
-                            <artifactId>snap-jai</artifactId>
-                            <version>${snap.version}</version>
-                        </dependency>
-                        <dependency>
-                            <groupId>${project.groupId}</groupId>
-                            <artifactId>snap-glayer</artifactId>
-                            <version>${snap.version}</version>
-                        </dependency>
-                        <dependency>
-                            <groupId>${project.groupId}</groupId>
-                            <artifactId>snap-ceres-ui</artifactId>
-                            <version>${snap.version}</version>
-                        </dependency>
-                        <dependency>
-                            <groupId>${project.groupId}</groupId>
-                            <artifactId>snap-binding</artifactId>
-                            <version>${snap.version}</version>
-                        </dependency>
-                        <dependency>
-                            <groupId>${project.groupId}</groupId>
-                            <artifactId>snap-metadata</artifactId>
-                            <version>${snap.version}</version>
-                        </dependency>
-                        <dependency>
-                            <groupId>${project.groupId}</groupId>
-                            <artifactId>snap-core</artifactId>
-                            <version>${snap.version}</version>
-                        </dependency>
-                        <dependency>
-                            <groupId>${project.groupId}</groupId>
-                            <artifactId>snap-gpf</artifactId>
-                            <version>${snap.version}</version>
-                        </dependency>
-                        <dependency>
-                            <groupId>${project.groupId}</groupId>
-                            <artifactId>snap-ui</artifactId>
-                            <version>${snap.version}</version>
-                        </dependency>
-                        <dependency>
-                            <groupId>${project.groupId}</groupId>
-                            <artifactId>snap-gui</artifactId>
-                            <version>${snap.version}</version>
-                        </dependency>
-
-                        <dependency>
-                            <groupId>edu.ucar</groupId>
-                            <artifactId>netcdf</artifactId>
-                            <version>${netcdf.version}</version>
-                        </dependency>
-                        <dependency>
-                            <groupId>edu.ucar</groupId>
-                            <artifactId>opendap</artifactId>
-                            <version>${netcdf.version}</version>
-                        </dependency>
-
-                        <dependency>
-                            <groupId>junit</groupId>
-                            <artifactId>junit</artifactId>
-                            <version>${junit.version}</version>
-                            <scope>test</scope>
-                        </dependency>
-                        -->
         </dependencies>
     </dependencyManagement>
 
-    <!--
-
-        <repository>
-            <id>snap-repo-public</id>
-            <name>Public Maven Repository for SNAP</name>
-            <url>http://nexus.senbox.net/nexus/content/repositories/public/</url>
-            <releases>
-                <enabled>true</enabled>
-                <checksumPolicy>warn</checksumPolicy>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-                <checksumPolicy>warn</checksumPolicy>
-            </snapshots>
-        </repository>
-
-    </repositories>
-
-    <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>nbm-maven-plugin</artifactId>
-                    <version>3.14</version>
-                    <extensions>true</extensions>
-                    <configuration>
-                        <brandingToken>${brandingToken}</brandingToken>
-                        <cluster>${brandingToken}</cluster>
-                        <useOSGiDependencies>false</useOSGiDependencies>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.2</version>
-                    <configuration>
-                        <source>1.8</source>
-                        <target>1.8</target>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-jar-plugin</artifactId>
-                    <version>2.5</version>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-    </build>
--->
 </project>

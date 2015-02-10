@@ -20,7 +20,7 @@ import org.esa.beam.opendap.utils.OpendapUtils;
 import org.esa.beam.util.PropertyMap;
 import org.esa.beam.util.StringUtils;
 import org.esa.beam.util.logging.BeamLogManager;
-import org.esa.snap.gui.actions.file.OpenProductAction;
+import org.esa.snap.rcp.actions.file.OpenProductAction;
 import thredds.catalog.InvCatalog;
 import thredds.catalog.InvCatalogFactory;
 import thredds.catalog.InvDataset;

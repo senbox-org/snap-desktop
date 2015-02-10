@@ -52,7 +52,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>snap-gui</artifactId>
+            <artifactId>snap-rcp</artifactId>
         </dependency>
 
         <dependency>

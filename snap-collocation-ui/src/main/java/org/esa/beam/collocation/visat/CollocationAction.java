@@ -17,11 +17,10 @@
 package org.esa.beam.collocation.visat;
 
 import org.esa.beam.framework.ui.ModelessDialog;
-import org.esa.snap.gui.actions.AbstractSnapAction;
+import org.esa.snap.rcp.actions.AbstractSnapAction;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
-import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle;
 
 import java.awt.event.ActionEvent;

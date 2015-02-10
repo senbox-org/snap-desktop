@@ -1,4 +1,4 @@
-package org.esa.snap.gui;
+package org.esa.snap.rcp;
 
 import junit.framework.Test;
 import org.netbeans.junit.NbModuleSuite;
