@@ -3,19 +3,21 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.esa.snap</groupId>
+    <parent>
+        <groupId>org.esa.snap</groupId>
+        <artifactId>snap-engine</artifactId>
+        <version>2.0.0-SNAPSHOT</version>
+    </parent>
+
     <artifactId>snap-desktop</artifactId>
-    <version>2.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>SNAP Desktop Project</name>
     <description>Desktop GUI for SNAP based on NetBeans Platform</description>
 
     <properties>
-        <brandingToken>snap</brandingToken>
         <snap.version>${project.version}</snap.version>
         <netbeans.version>RELEASE802</netbeans.version>
-        <junit.version>4.11</junit.version>
     </properties>
 
     <modules>
@@ -29,13 +31,85 @@
 
         <module>snap-binning-ui</module>
         <module>snap-collocation-ui</module>
+        <module>snap-opendap-ui</module>
     </modules>
 
     <dependencyManagement>
         <dependencies>
             <dependency>
                 <groupId>org.netbeans.api</groupId>
+                <artifactId>org-netbeans-api-annotations-common</artifactId>
+                <version>${netbeans.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.netbeans.api</groupId>
+                <artifactId>org-netbeans-api-progress</artifactId>
+                <version>${netbeans.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.netbeans.api</groupId>
+                <artifactId>org-netbeans-modules-autoupdate-services</artifactId>
+                <version>${netbeans.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.netbeans.api</groupId>
+                <artifactId>org-netbeans-modules-autoupdate-ui</artifactId>
+                <version>${netbeans.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.netbeans.api</groupId>
+                <artifactId>org-netbeans-modules-javahelp</artifactId>
+                <version>${netbeans.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.netbeans.api</groupId>
+                <artifactId>org-netbeans-modules-options-api</artifactId>
+                <version>${netbeans.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.netbeans.api</groupId>
+                <artifactId>org-netbeans-modules-settings</artifactId>
+                <version>${netbeans.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.netbeans.api</groupId>
+                <artifactId>org-netbeans-swing-tabcontrol</artifactId>
+                <version>${netbeans.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.netbeans.api</groupId>
+                <artifactId>org-openide-actions</artifactId>
+                <version>${netbeans.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.netbeans.api</groupId>
                 <artifactId>org-openide-awt</artifactId>
+                <version>${netbeans.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.netbeans.api</groupId>
+                <artifactId>org-openide-dialogs</artifactId>
+                <version>${netbeans.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.netbeans.api</groupId>
+                <artifactId>org-openide-explorer</artifactId>
+                <version>${netbeans.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.netbeans.api</groupId>
+                <artifactId>org-openide-io</artifactId>
+                <version>${netbeans.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.netbeans.api</groupId>
+                <artifactId>org-openide-modules</artifactId>
+                <version>${netbeans.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.netbeans.api</groupId>
+                <artifactId>org-openide-nodes</artifactId>
                 <version>${netbeans.version}</version>
             </dependency>
             <dependency>
@@ -45,87 +119,102 @@
             </dependency>
             <dependency>
                 <groupId>org.netbeans.api</groupId>
-                <artifactId>org-netbeans-api-annotations-common</artifactId>
+                <artifactId>org-openide-util-lookup</artifactId>
                 <version>${netbeans.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.netbeans.api</groupId>
-                <artifactId>org-netbeans-modules-javahelp</artifactId>
+                <artifactId>org-openide-windows</artifactId>
                 <version>${netbeans.version}</version>
             </dependency>
 
 
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>snap-ceres-core</artifactId>
-                <version>${snap.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>snap-jai</artifactId>
-                <version>${snap.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>snap-glayer</artifactId>
-                <version>${snap.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>snap-ceres-ui</artifactId>
-                <version>${snap.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>snap-binding</artifactId>
-                <version>${snap.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>snap-metadata</artifactId>
-                <version>${snap.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>snap-core</artifactId>
-                <version>${snap.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>snap-gpf</artifactId>
-                <version>${snap.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>snap-ui</artifactId>
-                <version>${snap.version}</version>
-            </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>snap-gui</artifactId>
                 <version>${snap.version}</version>
             </dependency>
-
             <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>${junit.version}</version>
-                <scope>test</scope>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>snap-tango</artifactId>
+                <version>${snap.version}</version>
             </dependency>
+
+
+            <!--
+                        <dependency>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>snap-ceres-core</artifactId>
+                            <version>${snap.version}</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>snap-jai</artifactId>
+                            <version>${snap.version}</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>snap-glayer</artifactId>
+                            <version>${snap.version}</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>snap-ceres-ui</artifactId>
+                            <version>${snap.version}</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>snap-binding</artifactId>
+                            <version>${snap.version}</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>snap-metadata</artifactId>
+                            <version>${snap.version}</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>snap-core</artifactId>
+                            <version>${snap.version}</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>snap-gpf</artifactId>
+                            <version>${snap.version}</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>snap-ui</artifactId>
+                            <version>${snap.version}</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>snap-gui</artifactId>
+                            <version>${snap.version}</version>
+                        </dependency>
+
+                        <dependency>
+                            <groupId>edu.ucar</groupId>
+                            <artifactId>netcdf</artifactId>
+                            <version>${netcdf.version}</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>edu.ucar</groupId>
+                            <artifactId>opendap</artifactId>
+                            <version>${netcdf.version}</version>
+                        </dependency>
+
+                        <dependency>
+                            <groupId>junit</groupId>
+                            <artifactId>junit</artifactId>
+                            <version>${junit.version}</version>
+                            <scope>test</scope>
+                        </dependency>
+                        -->
         </dependencies>
     </dependencyManagement>
 
-    <repositories>
-        <!--
-        Repository hosting NetBeans modules, especially APIs.
-        Versions are based on IDE releases, e.g.: RELEASE691
-        To create your own repository, use: nbm:populate-repository
-        -->
-        <!--<repository>-->
-            <!--<id>netbeans</id>-->
-            <!--<name>NetBeans</name>-->
-            <!--<url>http://bits.netbeans.org/nexus/content/groups/netbeans/</url>-->
-        <!--</repository>-->
+    <!--
 
         <repository>
             <id>snap-repo-public</id>
@@ -158,7 +247,6 @@
                     </configuration>
                 </plugin>
                 <plugin>
-                    <!-- NetBeans 6.9+ requires JDK 6, starting NetBeans 7.4 source 1.7 is required -->
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>3.2</version>
@@ -175,5 +263,5 @@
             </plugins>
         </pluginManagement>
     </build>
-
+-->
 </project>
