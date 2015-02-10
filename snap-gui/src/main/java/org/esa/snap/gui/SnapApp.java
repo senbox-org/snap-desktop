@@ -113,6 +113,7 @@ public class SnapApp {
 
     /**
      * @return The (display) name of this application.
+     *
      * @deprecated use {@link #getInstanceName()}
      */
     @Deprecated
@@ -133,6 +134,7 @@ public class SnapApp {
 
     /**
      * @return The user's application preferences.
+     *
      * @deprecated this is for compatibility only, use #getPreferences()
      */
     @Deprecated
@@ -170,6 +172,9 @@ public class SnapApp {
                                                   NotificationDisplayer.Category.ERROR);
     }
 
+    /**
+     * @return The currently selected product or {@code null}.
+     */
     public Product getSelectedProduct() {
         ProductSceneView productSceneView = getSelectedProductSceneView();
         if (productSceneView != null) {
@@ -273,15 +278,15 @@ public class SnapApp {
             }
             SnapDialogs.Answer answer = SnapDialogs.requestDecision("Exit", message.toString(), true, null);
             if (answer == SnapDialogs.Answer.YES) {
-                    //Save Products in reverse order is necessary because derived products must be saved first
-                    Collections.reverse(modifiedProducts);
-                    for (Product modifiedProduct : modifiedProducts) {
-                        Boolean saveStatus = new SaveProductAction(modifiedProduct).execute();
-                        if (saveStatus == null) {
-                            // save cancelled --> cancel SNAP shutdown
-                            return false;
-                        }
+                //Save Products in reverse order is necessary because derived products must be saved first
+                Collections.reverse(modifiedProducts);
+                for (Product modifiedProduct : modifiedProducts) {
+                    Boolean saveStatus = new SaveProductAction(modifiedProduct).execute();
+                    if (saveStatus == null) {
+                        // save cancelled --> cancel SNAP shutdown
+                        return false;
                     }
+                }
             } else if (answer == SnapDialogs.Answer.CANCELLED) {
                 // decision request cancelled --> cancel SNAP shutdown
                 return false;
@@ -409,12 +414,14 @@ public class SnapApp {
             supersedes = "org.netbeans.modules.openide.windows.GlobalActionContextImpl"
     )
     public static class ActionContextExtender extends ContextGlobalExtenderImpl {
+
     }
 
     /**
      * Associates objects with an undo manager.
      */
     private static class UndoManagerProvider implements ExtensionFactory, ProductManager.Listener {
+
         private Map<Object, UndoRedo.Manager> undoManagers = new HashMap<>();
 
         @Override
