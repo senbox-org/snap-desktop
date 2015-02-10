@@ -67,16 +67,20 @@ public final class OpenProductAction extends AbstractAction {
                 .collect(Collectors.toList());
     }
 
-    public File getFile() {
-        Object value = getValue("file");
-        if (value instanceof File) {
-            return (File) value;
+    public File[] getFiles() {
+        Object value = getValue("files");
+        if (value instanceof File[]) {
+            return (File[]) value;
         }
         return null;
     }
 
     public void setFile(File file) {
-        putValue("file", file);
+        setFiles(file);
+    }
+
+    public void setFiles(File... files) {
+        putValue("files", files);
     }
 
     public String getFileFormat() {
@@ -103,8 +107,9 @@ public final class OpenProductAction extends AbstractAction {
      */
     public Boolean execute() {
 
-        if (getFile() != null) {
-            return openProductFilesCheckOpened(getFileFormat(), getFile());
+        File[] configuredFiles = getFiles();
+        if (configuredFiles != null) {
+            return openProductFilesCheckOpened(getFileFormat(), configuredFiles);
         }
 
         Iterator<ProductReaderPlugIn> readerPlugIns = ProductIOPlugInManager.getInstance().getAllReaderPlugIns();
