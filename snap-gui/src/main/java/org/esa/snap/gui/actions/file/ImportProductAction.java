@@ -44,15 +44,17 @@ import java.util.Map;
  * @author Marco Peters
  * @author Norman Fomferra
  */
-@ActionID(
-        category = "File",
-        id = "org.esa.snap.gui.actions.file.ImportProductAction"
-)
-@ActionRegistration(
-        displayName = "#CTL_ImportProductActionName",
-        menuText = "#CTL_ImportProductActionMenuText"
-)
-@ActionReference(path = "Menu/File", position = 100, separatorBefore = 99)
+// note (mp, nf) - it is not yet decided if we want on generic import action or
+// register an action for each format. We want to discuss this with the SenBox Team.
+//@ActionID(
+//        category = "File",
+//        id = "org.esa.snap.gui.actions.file.ImportProductAction"
+//)
+//@ActionRegistration(
+//        displayName = "#CTL_ImportProductActionName",
+//        menuText = "#CTL_ImportProductActionMenuText"
+//)
+//@ActionReference(path = "Menu/File", position = 100, separatorBefore = 99)
 @NbBundle.Messages({
         "CTL_ImportProductActionName=Import Product",
         "CTL_ImportProductActionMenuText=Import Product..."
