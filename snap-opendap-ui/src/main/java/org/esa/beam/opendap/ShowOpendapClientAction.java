@@ -48,7 +48,7 @@ public class ShowOpendapClientAction extends AbstractSnapAction {
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
         final OpendapAccessPanel opendapAccessPanel = new OpendapAccessPanel(getAppContext(), getHelpId());
-        final JDialog dialog = new JDialog(getAppContext().getApplicationWindow(), Bundle.CTL_CloseAllProductsActionName());
+        final JDialog dialog = new JDialog(getAppContext().getApplicationWindow(), Bundle.CTL_ShowOpendapClientAction_Name());
         dialog.setContentPane(opendapAccessPanel);
         dialog.pack();
         final Dimension size = dialog.getSize();
