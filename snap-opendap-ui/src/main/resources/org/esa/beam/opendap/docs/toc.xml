@@ -7,7 +7,7 @@
     <tocitem text="Sentinel Toolbox Application">
         <tocitem text="Tools">
             <tocitem text="Import and Export Tools">
-                <tocitem text="OPeNDAP Client" target="opendap-client"/>
+                <tocitem text="OPeNDAP Access" target="opendap-client"/>
             </tocitem>
         </tocitem>
     </tocitem>

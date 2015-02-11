@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.esa.snap</groupId>
@@ -37,7 +37,8 @@
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-netbeans-modules-nbjunit</artifactId>
             <version>${netbeans.version}</version>
-            <scope>test</scope> <!-- beyond platform cluster, this often needs to be dropped down to compile/runtime, some other modules in IDE clusters depend on it -->
+            <scope>test</scope>
+            <!-- beyond platform cluster, this often needs to be dropped down to compile/runtime, some other modules in IDE clusters depend on it -->
         </dependency>
         <!-- To use Jelly Tools in your functional tests, add or replace with:
         <dependency>
@@ -79,6 +80,11 @@
             <artifactId>snap-unmix-ui</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>snap-opendap-ui</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>junit</groupId>
@@ -94,7 +100,9 @@
                 <artifactId>nbm-maven-plugin</artifactId>
                 <configuration>
                     <installerLicenseFile>../LICENSE.html</installerLicenseFile>
-                    <additionalArguments>--locale en_GB -J-Dsun.java2d.noddraw=true -J-Dsun.awt.nopixfmt=true -J-Dsun.java2d.dpiaware=false</additionalArguments>
+                    <additionalArguments>--locale en_GB -J-Dsun.java2d.noddraw=true -J-Dsun.awt.nopixfmt=true
+                        -J-Dsun.java2d.dpiaware=false
+                    </additionalArguments>
                     <!-- additional arguments need to be added also to the default config file -->
                     <etcConfFile>src/main/resources/defaultSnap.conf</etcConfFile>
                 </configuration>

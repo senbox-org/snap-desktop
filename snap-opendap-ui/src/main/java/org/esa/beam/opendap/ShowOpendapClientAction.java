@@ -11,23 +11,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 
-/*
-    <extension point="snap-ui:actions">
-        <action>
-            <id>showOpendapClientAction</id>
-            <parent>file</parent>
-            <class>org.esa.beam.opendap.ShowOpendapClientAction</class>
-            <text>OPeNDAP Access</text>
-            <smallIcon>icons/RsProduct16.gif</smallIcon>
-            <largeIcon>icons/RsProduct24.gif</largeIcon>
-            <shortDescr>Download products from OPeNDAP servers</shortDescr>
-            <helpId>opendap-client</helpId>
-            <placeAfter>reopen</placeAfter>
-            <placeBefore>productGrabber</placeBefore>
-        </action>
-    </extension>
- */
-
 @ActionID(
         category = "File",
         id = "org.esa.beam.opendap.ShowOpendapClientAction"
@@ -42,7 +25,6 @@ import java.awt.event.ActionEvent;
 public class ShowOpendapClientAction extends AbstractSnapAction {
     public ShowOpendapClientAction() {
         setHelpId("opendap-client");
-        putValue("ShortDescription", "Download products from OPeNDAP servers.");
     }
 
     @Override

@@ -13,7 +13,6 @@ import com.jidesoft.swing.SimpleScrollPane;
 import org.esa.beam.framework.help.HelpSys;
 import org.esa.beam.framework.ui.AppContext;
 import org.esa.beam.framework.ui.GridBagUtils;
-import org.esa.beam.framework.ui.UIUtils;
 import org.esa.beam.framework.ui.tool.ToolButtonFactory;
 import org.esa.beam.opendap.datamodel.OpendapLeaf;
 import org.esa.beam.opendap.utils.OpendapUtils;
@@ -21,6 +20,7 @@ import org.esa.beam.util.PropertyMap;
 import org.esa.beam.util.StringUtils;
 import org.esa.beam.util.logging.BeamLogManager;
 import org.esa.snap.rcp.actions.file.OpenProductAction;
+import org.esa.snap.tango.TangoIcons;
 import thredds.catalog.InvCatalog;
 import thredds.catalog.InvCatalogFactory;
 import thredds.catalog.InvDataset;
@@ -104,7 +104,7 @@ public class OpendapAccessPanel extends JPanel implements CatalogTree.UIContext 
         });
         updateUrlField();
         refreshButton = ToolButtonFactory.createButton(
-                UIUtils.loadImageIcon("/org/esa/beam/opendap/images/icons/ViewRefresh22.png", OpendapAccessPanel.class),
+                TangoIcons.actions_view_refresh(TangoIcons.Res.R22),
                 false);
         refreshButton.addActionListener(new ActionListener() {
             @Override
@@ -302,7 +302,7 @@ public class OpendapAccessPanel extends JPanel implements CatalogTree.UIContext 
         gbc.gridx = 3;
         gbc.insets.right = 0;
         final AbstractButton helpButton = ToolButtonFactory.createButton(
-                UIUtils.loadImageIcon("/org/esa/beam/opendap/images/icons/Help22.png", OpendapAccessPanel.class),
+                TangoIcons.apps_help_browser(TangoIcons.Res.R22),
                 false);
         HelpSys.enableHelpOnButton(helpButton, helpId);
         urlPanel.add(helpButton, gbc);
