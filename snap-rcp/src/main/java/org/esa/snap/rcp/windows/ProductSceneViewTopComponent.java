@@ -21,10 +21,16 @@ import org.openide.util.Exceptions;
 import org.openide.util.ImageUtilities;
 import org.openide.util.Utilities;
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
+import javax.swing.JComponent;
+import javax.swing.JLayer;
 import javax.swing.plaf.LayerUI;
 import javax.swing.text.DefaultEditorKit;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -41,7 +47,6 @@ public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNo
         implements UndoRedo.Provider, SelectionChangeListener {
 
     private static final Logger LOG = Logger.getLogger(ProductSceneViewTopComponent.class.getName());
-    private static int counter;
 
     private final ProductSceneView view;
     private UndoRedo undoRedo;
@@ -54,11 +59,10 @@ public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNo
         this.undoRedo = undoRedo != null ? undoRedo : UndoRedo.NONE;
         this.nodeRenameHandler = new NodeRenameHandler();
         this.selection = Selection.EMPTY;
-        setName(getClass().getSimpleName() + "_" + (++counter));
         setToolTipText(view.getRaster().getDescription());
         setIcon(ImageUtilities.loadImage("org/esa/snap/rcp/icons/RsBandAsSwath16.gif"));
         updateDisplayName();
-
+        setName(getDisplayName());
 /*
         // checkme - this is ugly and not wanted (nf), the node will either passed in or we'll have
         // a central node factory, e.g. via an ExtensionObject
