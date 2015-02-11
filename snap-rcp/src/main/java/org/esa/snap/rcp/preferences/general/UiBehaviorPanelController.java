@@ -51,16 +51,16 @@ public final class UiBehaviorPanelController extends DefaultConfigController {
     /**
      * Preferences key for automatically showing navigation
      */
-    public static final String PROPERTY_KEY_AUTO_SHOW_NAVIGATION = "visat.autoshownavigation.enabled";
+    public static final String PROPERTY_KEY_AUTO_SHOW_NAVIGATION = "autoshownavigation.enabled";
     /**
      * Preferences key for automatically showing new bands
      */
-    public static final String PROPERTY_KEY_AUTO_SHOW_NEW_BANDS = "visat.autoshowbands.enabled";
+    public static final String PROPERTY_KEY_AUTO_SHOW_NEW_BANDS = "autoshowbands.enabled";
     /**
      * Preferences key for on-line version check
      */
     public static final String PROPERTY_KEY_VERSION_CHECK_ENABLED =
-            "visat.versionCheck" + SuppressibleOptionPane.KEY_PREFIX_ENABLED;
+            "versionCheck" + SuppressibleOptionPane.KEY_PREFIX_ENABLED;
     /**
      * Preferences key for showing a message after writing a GPF-processed product.
      */
