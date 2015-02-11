@@ -32,6 +32,7 @@
         <module>snap-binning-ui</module>
         <module>snap-collocation-ui</module>
         <module>snap-opendap-ui</module>
+        <module>snap-unmix-ui</module>
     </modules>
 
     <dependencyManagement>
