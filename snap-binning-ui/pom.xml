@@ -10,8 +10,11 @@
     <artifactId>snap-binning-ui</artifactId>
     <packaging>nbm</packaging>
 
-    <name>Level-3 Binning Processor GUI (GPF)</name>
-    <description>The Level-3 Binning Operator GUI performs a spatial and temporal aggregation of a number of input (Level-2) products using the NASA SeaDAS binning scheme. This module has replaced the module 'snap-binning'.</description>
+    <name>Level-3 Binning GUI</name>
+    <description>GUI for the Level-3 Binning Operator which performs a spatial and
+        temporal aggregation of a number of input (Level-2) products using the NASA
+        SeaDAS binning scheme.
+    </description>
 
     <dependencies>
         <dependency>
