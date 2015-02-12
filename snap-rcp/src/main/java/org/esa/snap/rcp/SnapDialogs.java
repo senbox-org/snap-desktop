@@ -8,9 +8,13 @@ import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.util.NbBundle;
 
-import javax.swing.*;
+import javax.swing.JCheckBox;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.filechooser.FileFilter;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.io.File;
 import java.text.MessageFormat;
 import java.util.prefs.Preferences;
@@ -43,6 +47,9 @@ public class SnapDialogs {
     private static final String PREF_VALUE_YES = "yes";
     private static final String PREF_VALUE_NO = "no";
     private static final String PREF_VALUE_TRUE = "true";
+
+    private SnapDialogs() {
+    }
 
     /**
      * Displays a modal dialog with the provided information message text.
@@ -191,7 +198,7 @@ public class SnapDialogs {
      * @param preferencesKey the key under which the last directory the user visited is stored
      * @return the file selected by the user or <code>null</code> if the user canceled file selection
      */
-    public final File requestFileForOpen(String title,
+    public static File requestFileForOpen(String title,
                                          boolean dirsOnly,
                                          FileFilter fileFilter,
                                          String preferencesKey) {
