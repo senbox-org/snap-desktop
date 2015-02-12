@@ -1,6 +1,6 @@
 package org.esa.beam.opendap.ui;
 
-import org.esa.beam.framework.gpf.ui.DefaultAppContext;
+import org.esa.beam.framework.ui.DefaultAppContext;
 import org.esa.beam.opendap.datamodel.OpendapLeaf;
 import org.junit.Assume;
 import org.junit.Test;

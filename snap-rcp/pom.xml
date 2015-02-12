@@ -163,7 +163,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>snap-glayer</artifactId>
+            <artifactId>ceres-glayer</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -176,6 +176,10 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>snap-gpf</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>snap-gpf-ui</artifactId>
         </dependency>
 
         <!-- Testing-->
