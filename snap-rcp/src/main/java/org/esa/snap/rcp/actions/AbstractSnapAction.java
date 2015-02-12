@@ -24,11 +24,13 @@ import org.esa.beam.util.PropertyMap;
 import org.esa.snap.rcp.SnapApp;
 import org.openide.util.HelpCtx;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.AbstractAction;
+import java.awt.Window;
 
 
 public abstract class AbstractSnapAction extends AbstractAction implements HelpCtx.Provider {
+
+    public static final String HELP_ID = "helpId";
 
     private SnapContext appContext;
 
@@ -40,7 +42,7 @@ public abstract class AbstractSnapAction extends AbstractAction implements HelpC
     }
 
     public String getHelpId() {
-        Object value = getValue("helpId");
+        Object value = getValue(HELP_ID);
         if (value instanceof String) {
             return (String) value;
         }
@@ -48,7 +50,7 @@ public abstract class AbstractSnapAction extends AbstractAction implements HelpC
     }
 
     public void setHelpId(String helpId) {
-        putValue("helpId", helpId);
+        putValue(HELP_ID, helpId);
     }
 
     @Override
