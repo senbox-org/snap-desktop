@@ -36,7 +36,7 @@ import java.awt.event.ActionEvent;
 @ActionRegistration(displayName = "#CTL_BinningOperatorAction_Text", lazy = false)
 @ActionReference(path = "Menu/Processing", position = 10000)
 @NbBundle.Messages({
-        "CTL_BinningOperatorAction_Text=Level-3 Binning...",
+        "CTL_BinningOperatorAction_Text=Level-3 Binning",
         "CTL_BinningOperatorAction_Description=Spatial and temporal aggregation of input products."
 })
 public class BinningOperatorAction extends AbstractSnapAction {

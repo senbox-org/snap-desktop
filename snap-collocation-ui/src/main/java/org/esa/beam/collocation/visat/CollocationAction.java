@@ -35,7 +35,7 @@ import java.awt.event.ActionEvent;
 @ActionRegistration(displayName = "#CTL_CollocationAction_Text", lazy = false)
 @ActionReference(path = "Menu/Processing/Geometric Operations", position = 10000)
 @NbBundle.Messages({
-        "CTL_CollocationAction_Text=Collocation...",
+        "CTL_CollocationAction_Text=Collocation",
         "CTL_CollocationAction_Description=Geographic collocation of two data products."
 })
 public class CollocationAction extends AbstractSnapAction {
