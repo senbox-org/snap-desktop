@@ -40,6 +40,11 @@
             <scope>test</scope>
             <!-- beyond platform cluster, this often needs to be dropped down to compile/runtime, some other modules in IDE clusters depend on it -->
         </dependency>
+        <dependency>
+            <groupId>org.netbeans.modules</groupId>
+            <artifactId>org-netbeans-modules-extbrowser</artifactId>
+            <version>${netbeans.version}</version>
+        </dependency>
         <!-- To use Jelly Tools in your functional tests, add or replace with:
         <dependency>
             <groupId>org.netbeans.api</groupId>
@@ -99,11 +104,6 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>help</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.netbeans.modules</groupId>
-            <artifactId>org-netbeans-modules-extbrowser</artifactId>
-            <version>RELEASE802</version>
         </dependency>
     </dependencies>
 
