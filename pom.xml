@@ -35,6 +35,7 @@
         <module>snap-collocation-ui</module>
         <module>snap-opendap-ui</module>
         <module>snap-pixel-extraction-ui</module>
+        <module>snap-scripting</module>
         <module>snap-unmix-ui</module>
     </modules>
 
