@@ -22,7 +22,7 @@
         <version>2.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>help</artifactId>
+    <artifactId>snap-help</artifactId>
     <packaging>nbm</packaging>
 
     <name>SNAP Help</name>
