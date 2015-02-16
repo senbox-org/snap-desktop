@@ -16,9 +16,11 @@
 
 package org.esa.beam.opendap.ui;
 
-import com.bc.ceres.core.ProgressBarProgressMonitor;
+import com.bc.ceres.swing.progress.ProgressBarProgressMonitor;
 
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JProgressBar;
 import java.util.GregorianCalendar;
 
 /**

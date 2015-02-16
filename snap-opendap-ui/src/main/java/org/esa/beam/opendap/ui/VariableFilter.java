@@ -1,6 +1,6 @@
 package org.esa.beam.opendap.ui;
 
-import com.bc.ceres.core.ProgressBarProgressMonitor;
+import com.bc.ceres.swing.progress.ProgressBarProgressMonitor;
 import com.jidesoft.list.CheckBoxListSelectionModelWithWrapper;
 import com.jidesoft.list.FilterableCheckBoxList;
 import com.jidesoft.list.FilterableListModel;
@@ -11,12 +11,22 @@ import org.esa.beam.opendap.datamodel.OpendapLeaf;
 import org.esa.beam.opendap.utils.VariableCollector;
 import org.esa.beam.util.logging.BeamLogManager;
 
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
+import javax.swing.ListModel;
+import javax.swing.SwingWorker;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
