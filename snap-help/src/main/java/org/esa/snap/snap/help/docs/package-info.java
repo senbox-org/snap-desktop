@@ -1,5 +1,5 @@
 @HelpSetRegistration(helpSet = "help.hs", position = 3876)
-package org.esa.snap.help.docs;
+package org.esa.snap.snap.help.docs;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
