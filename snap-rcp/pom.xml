@@ -159,7 +159,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>snap-jai</artifactId>
+            <artifactId>ceres-jai</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
