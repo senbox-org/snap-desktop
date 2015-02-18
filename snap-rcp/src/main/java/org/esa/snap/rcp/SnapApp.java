@@ -8,6 +8,8 @@ import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.datamodel.ProductManager;
 import org.esa.beam.framework.datamodel.ProductNode;
 import org.esa.beam.framework.gpf.GPF;
+import org.esa.beam.framework.gpf.OperatorSpi;
+import org.esa.beam.framework.gpf.OperatorSpiRegistry;
 import org.esa.beam.framework.ui.product.ProductSceneView;
 import org.esa.beam.util.PropertyMap;
 import org.esa.snap.rcp.actions.file.SaveProductAction;
@@ -44,6 +46,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -311,7 +314,7 @@ public class SnapApp {
         public void run() {
             LOG.fine(">>> " + getClass() + " called");
             initJAI();
-            GPF.getDefaultInstance().getOperatorSpiRegistry().loadOperatorSpis();
+            initGPF();
             SnapApp.getDefault().onStart();
         }
     }
@@ -399,6 +402,15 @@ public class SnapApp {
             }
         } else {
             LOG.warning(MessageFormat.format("{0} not found", jaiRegistryPath));
+        }
+    }
+
+    private static void initGPF() {
+        OperatorSpiRegistry operatorSpiRegistry = GPF.getDefaultInstance().getOperatorSpiRegistry();
+        operatorSpiRegistry.loadOperatorSpis();
+        Set<OperatorSpi> services = operatorSpiRegistry.getServiceRegistry().getServices();
+        for (OperatorSpi service : services) {
+            LOG.info(String.format("GPF operator SPI: %s (alias '%s')", service.getClass(), service.getOperatorAlias()));
         }
     }
 
