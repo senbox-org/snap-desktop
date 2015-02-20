@@ -9,7 +9,7 @@ import org.esa.beam.framework.ui.tool.ToolButtonFactory;
 import org.esa.beam.opendap.datamodel.OpendapLeaf;
 import org.esa.beam.opendap.utils.OpendapUtils;
 import org.esa.beam.util.StringUtils;
-import org.esa.snap.rcp.SnapApp;
+import org.esa.beam.util.logging.BeamLogManager;
 import org.esa.snap.rcp.actions.file.OpenProductAction;
 import org.esa.snap.tango.TangoIcons;
 import org.openide.modules.Places;
@@ -226,7 +226,7 @@ public class OpendapAccessPanel extends JPanel implements CatalogTree.UIContext 
                 }
             }
         } catch (IOException e) {
-            LOG.warning("Unable to retrieve meta information for file '" + leaf.getName() + "'.");
+            BeamLogManager.getSystemLogger().warning("Unable to retrieve meta information for file '" + leaf.getName() + "'.");
         }
 
         setResponseText(componentIndex, text);

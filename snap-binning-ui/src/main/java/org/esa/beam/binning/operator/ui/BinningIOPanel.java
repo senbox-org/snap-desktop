@@ -23,16 +23,13 @@ import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.gpf.ui.TargetProductSelector;
 import org.esa.beam.framework.ui.AppContext;
 import org.esa.beam.framework.ui.product.SourceProductList;
+import org.esa.beam.util.SystemUtils;
 import org.esa.beam.util.io.WildcardMatcher;
-import org.esa.beam.util.logging.BeamLogManager;
 
-import javax.swing.BorderFactory;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.SwingWorker;
+import javax.swing.*;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.TreeSet;
@@ -142,7 +139,7 @@ class BinningIOPanel extends JPanel {
                             }
                         }
                     } catch (IOException e) {
-                        Logger logger = BeamLogManager.getSystemLogger();
+                        Logger logger = SystemUtils.LOG;
                         logger.severe("I/O problem occurred while scanning source product files: " + e.getMessage());
                     }
                 }

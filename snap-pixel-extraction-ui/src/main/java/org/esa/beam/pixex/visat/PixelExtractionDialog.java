@@ -31,17 +31,14 @@ import org.esa.beam.framework.ui.AppContext;
 import org.esa.beam.framework.ui.ModelessDialog;
 import org.esa.beam.pixex.Coordinate;
 import org.esa.beam.pixex.PixExOp;
+import org.esa.beam.util.SystemUtils;
 import org.esa.beam.util.io.WildcardMatcher;
-import org.esa.beam.util.logging.BeamLogManager;
 
-import javax.swing.AbstractButton;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
-import java.awt.Component;
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -134,7 +131,7 @@ class PixelExtractionDialog extends ModelessDialog implements ParameterUpdater {
     private Product openFirstProduct(String[] inputPaths) {
         if (inputPaths != null) {
 
-            final Logger logger = BeamLogManager.getSystemLogger();
+            final Logger logger = SystemUtils.LOG;
 
             for (String inputPath : inputPaths) {
                 if (inputPath == null || inputPath.trim().length() == 0) {

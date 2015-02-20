@@ -3,7 +3,7 @@ package org.esa.beam.opendap.ui;
 import org.esa.beam.framework.ui.AppContext;
 import org.esa.beam.opendap.datamodel.OpendapLeaf;
 import org.esa.beam.opendap.utils.OpendapUtils;
-import org.esa.beam.util.logging.BeamLogManager;
+import org.esa.beam.util.SystemUtils;
 import thredds.catalog.InvAccess;
 import thredds.catalog.InvCatalogRef;
 import thredds.catalog.InvDataset;
@@ -104,7 +104,7 @@ class CatalogTree {
             insertCatalogElements(catalogDatasets, parent, expandPath);
         } catch (Exception e) {
             String msg = MessageFormat.format("Unable to completely resolve catalog. Reason: {0}", e.getMessage());
-            BeamLogManager.getSystemLogger().warning(msg);
+            SystemUtils.LOG.warning(msg);
             appContext.handleError(msg, e);
         }
     }

@@ -3,7 +3,6 @@ package org.esa.snap.rcp.ctxhelp;
 import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.datamodel.ProductNode;
 import org.esa.beam.util.SystemUtils;
-import org.esa.beam.util.logging.BeamLogManager;
 
 import java.awt.*;
 import java.io.FileReader;
@@ -51,7 +50,7 @@ public class ContextWebSearch {
             URI uri = URI.create(search);
             Desktop.getDesktop().browse(uri);
         } catch (IOException e) {
-            BeamLogManager.getSystemLogger().log(Level.WARNING, "Failed to perform context search");
+            SystemUtils.LOG.log(Level.WARNING, "Failed to perform context search");
         }
     }
 
@@ -62,7 +61,7 @@ public class ContextWebSearch {
         try {
             loadConfig();
         } catch (IOException e) {
-            BeamLogManager.getSystemLogger().log(Level.SEVERE, "Failed to load context search configuration", e);
+            SystemUtils.LOG.log(Level.SEVERE, "Failed to load context search configuration", e);
         }
     }
 

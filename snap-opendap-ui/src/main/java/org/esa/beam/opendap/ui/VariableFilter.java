@@ -9,6 +9,7 @@ import org.esa.beam.opendap.datamodel.DAPVariable;
 import org.esa.beam.opendap.datamodel.OpendapLeaf;
 import org.esa.beam.opendap.ui.utils.FilteredListModel;
 import org.esa.beam.opendap.utils.VariableCollector;
+import org.esa.beam.util.logging.BeamLogManager;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -19,15 +20,15 @@ import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.ListModel;
 import javax.swing.SwingWorker;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -306,7 +307,8 @@ public class VariableFilter implements FilterComponent, CatalogTree.CatalogTreeL
                 DAPVariable[] dapVariables = get();
                 listModel.addVariables(dapVariables);
             } catch (Exception e) {
-                LOG.warning("Stopping to scan for variables due to exception: " + e.getMessage());
+                BeamLogManager.getSystemLogger().warning(
+                        "Stopping to scan for variables due to exception: " + e.getMessage());
             } finally {
                 filterPreparators.remove(this);
                 pm.worked(1);
