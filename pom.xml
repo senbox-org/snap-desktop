@@ -33,6 +33,7 @@
 
         <module>snap-binning-ui</module>
         <module>snap-collocation-ui</module>
+        <module>snap-desktop-examples</module>
         <module>snap-help</module>
         <module>snap-opendap-ui</module>
         <module>snap-pixel-extraction-ui</module>

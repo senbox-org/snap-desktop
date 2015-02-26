@@ -165,5 +165,15 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>examples</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.esa.snap</groupId>
+                    <artifactId>snap-desktop-examples</artifactId>
+                    <version>${snap.version}</version>
+                </dependency>
+            </dependencies>
+        </profile>
     </profiles>
 </project>

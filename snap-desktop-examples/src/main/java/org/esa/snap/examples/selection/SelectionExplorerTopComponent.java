@@ -1,9 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package org.esa.snap.rcp.windows;
+package org.esa.snap.examples.selection;
 
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -14,30 +9,32 @@ import org.openide.util.NbBundle;
 import org.openide.util.Utilities;
 import org.openide.windows.TopComponent;
 
-import javax.swing.*;
+import javax.swing.JLabel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.util.Collection;
 
 /**
  * Experimental top component which displays infos about selected node(s).
  */
 @TopComponent.Description(
-        preferredID = "SelectionExplorerTopComponent",
+        preferredID = "SelectionObservingTopComponent",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
-@TopComponent.Registration(mode = "explorer", openAtStartup = true, position = 2, roles={"developer"})
-@ActionID(category = "Window", id = "org.esa.snap.rcp.window.SelectionExplorerTopComponent")
-@ActionReference(path = "Menu/Window/Tool Windows", position = 0)
+@TopComponent.Registration(mode = "explorer", openAtStartup = false, position = 2, roles={"developer"})
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_SelectionExplorerTopComponentName",
         preferredID = "SelectionExplorerTopComponent"
 )
+@ActionID(category = "Window", id = "org.esa.snap.rcp.window.SelectionObservingTopComponent")
+@ActionReference(path = "Menu/Window/Tool Windows", position = 0)
 @NbBundle.Messages({
-                           "CTL_SelectionExplorerTopComponentName=Global Selection",
-                           "CTL_SelectionExplorerTopComponentDescription=Displays info about global selection",
-                   })
+        "CTL_SelectionExplorerTopComponentName=Global Selection",
+        "CTL_SelectionExplorerTopComponentDescription=Displays info about global selection",
+})
 public final class SelectionExplorerTopComponent extends TopComponent implements LookupListener {
 
     private JLabel infoLabel;
@@ -63,7 +60,7 @@ public final class SelectionExplorerTopComponent extends TopComponent implements
 
     @Override
     public void resultChanged(LookupEvent lookupEvent) {
-        Collection<? extends Object> selectedObjects = result.allInstances();
+        Collection<?> selectedObjects = result.allInstances();
         if (!selectedObjects.isEmpty()) {
             Object[][] data = new Object[selectedObjects.size()][3];
             int i = 0;
