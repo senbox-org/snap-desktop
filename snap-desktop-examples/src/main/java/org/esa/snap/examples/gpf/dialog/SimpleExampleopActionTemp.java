@@ -9,17 +9,17 @@ import org.openide.util.NbBundle;
 
 import java.awt.event.ActionEvent;
 
-@ActionID(category = "Processors", id = "org.esa.snap.examples.gpf.dialog.SimpleExampleAction")
+@ActionID(category = "Processors", id = "org.esa.snap.examples.gpf.dialog.SimpleExampleOpAction")
 @ActionRegistration(displayName = "#CTL_SimpleExampleOpActionText", lazy = false)
 @ActionReference(path = "Menu/Examples/Processing", position = 10000)
 @NbBundle.Messages({
         "CTL_SimpleExampleOpActionText=Simple Example Processor",
         "CTL_SimpleExampleOpActionDescription=Simple example processor with custom user interface."
 })
-public class SimpleExampleOpAction extends AbstractSnapAction {
+public class SimpleExampleopActionTemp extends AbstractSnapAction {
     public static final String HELP_ID = "sampleScientificTool";
 
-    public SimpleExampleOpAction() {
+    public SimpleExampleopActionTemp() {
         setHelpId(HELP_ID);
         putValue(NAME, Bundle.CTL_SimpleExampleOpActionText());
         putValue(SHORT_DESCRIPTION, Bundle.CTL_SimpleExampleOpActionDescription());
