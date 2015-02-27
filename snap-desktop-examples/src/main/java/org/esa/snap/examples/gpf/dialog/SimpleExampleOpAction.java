@@ -16,10 +16,10 @@ import java.awt.event.ActionEvent;
         "CTL_SimpleExampleOpActionText=Simple Example Processor",
         "CTL_SimpleExampleOpActionDescription=Simple example processor with custom user interface."
 })
-public class SimpleExampleopActionTemp extends AbstractSnapAction {
+public class SimpleExampleOpAction extends AbstractSnapAction {
     public static final String HELP_ID = "sampleScientificTool";
 
-    public SimpleExampleopActionTemp() {
+    public SimpleExampleOpAction() {
         setHelpId(HELP_ID);
         putValue(NAME, Bundle.CTL_SimpleExampleOpActionText());
         putValue(SHORT_DESCRIPTION, Bundle.CTL_SimpleExampleOpActionDescription());
