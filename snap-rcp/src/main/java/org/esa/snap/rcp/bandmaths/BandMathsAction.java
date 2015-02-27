@@ -28,7 +28,8 @@ import org.openide.util.HelpCtx;
 import org.openide.util.ImageUtilities;
 import org.openide.util.NbBundle.Messages;
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import java.awt.event.ActionEvent;
 
 @ActionID(
@@ -85,8 +86,8 @@ public class BandMathsAction extends AbstractAction implements HelpCtx.Provider 
     public void actionPerformed(ActionEvent actionEvent) {
         final ProductNodeList<Product> products = new ProductNodeList<>();
         Product[] openedProducts = SnapApp.getDefault().getProductManager().getProducts();
-        for (ProductNode prodNode : openedProducts) {
-            products.add(prodNode.getProduct());
+        for (Product prod : openedProducts) {
+            products.add(prod);
         }
 
         BandMathsDialog bandMathsDialog = new BandMathsDialog(product, products, HELP_ID);
