@@ -22,7 +22,7 @@ import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle;
 import org.openide.util.WeakSet;
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -71,7 +71,6 @@ public final class CloseProductAction extends AbstractAction {
     }
 
     private static Boolean closeProducts(Set<Product> products) {
-        SnapDialogs.showInformation("Hi!", "x");
         List<Product> closeList = new ArrayList<>(products);
         List<Product> saveList = new ArrayList<>();
 
