@@ -29,7 +29,6 @@ import java.util.GregorianCalendar;
 public class DownloadProgressBarPM extends ProgressBarProgressMonitor implements LabelledProgressBarPM {
 
     private final JProgressBar progressBar;
-    private final JLabel preMessageLabel;
     private JLabel postMessageLabel;
     private int totalWork;
     private int currentWork;
@@ -39,7 +38,6 @@ public class DownloadProgressBarPM extends ProgressBarProgressMonitor implements
     public DownloadProgressBarPM(JProgressBar progressBar, JLabel preMessageLabel, JLabel postMessageLabel, JButton cancelButton) {
         super(progressBar, preMessageLabel);
         this.progressBar = progressBar;
-        this.preMessageLabel = preMessageLabel;
         this.postMessageLabel = postMessageLabel;
         this.cancelButton = cancelButton;
     }
@@ -56,8 +54,6 @@ public class DownloadProgressBarPM extends ProgressBarProgressMonitor implements
 
     @Override
     public void setTooltip(String tooltip) {
-        preMessageLabel.setToolTipText(tooltip);
-        postMessageLabel.setToolTipText(tooltip);
         progressBar.setToolTipText(tooltip);
     }
 

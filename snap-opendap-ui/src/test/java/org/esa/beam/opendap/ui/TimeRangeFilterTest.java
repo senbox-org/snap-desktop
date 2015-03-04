@@ -16,30 +16,22 @@
 
 package org.esa.beam.opendap.ui;
 
-import com.jidesoft.utils.Lm;
 import org.esa.beam.opendap.datamodel.OpendapLeaf;
 import org.esa.beam.util.TimeStampExtractor;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import thredds.catalog.InvDataset;
 import ucar.nc2.units.DateRange;
 
-import javax.swing.*;
+import javax.swing.JCheckBox;
 import java.util.GregorianCalendar;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * @author Thomas Storm
  * @author Tonio Fincke
  */
 public class TimeRangeFilterTest {
-
-    @BeforeClass
-    public static void setUp() throws Exception {
-        Lm.verifyLicense("Brockmann Consult", "BEAM", "lCzfhklpZ9ryjomwWxfdupxIcuIoCxg2");
-    }
 
     @Test
     public void testAccept_UserStartFileStart() throws Exception {

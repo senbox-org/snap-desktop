@@ -1,101 +1,102 @@
 package org.esa.beam.opendap.ui;
 
 import com.bc.ceres.binding.ValidationException;
-import com.jidesoft.combobox.DateExComboBox;
 import org.esa.beam.framework.datamodel.ProductData;
 import org.esa.beam.opendap.datamodel.OpendapLeaf;
+import org.esa.beam.opendap.utils.DateChooserButton;
 import org.esa.beam.opendap.utils.PatternProvider;
 import org.esa.beam.util.StringUtils;
 import org.esa.beam.util.TimeStampExtractor;
-import org.esa.beam.util.logging.BeamLogManager;
 import ucar.nc2.units.DateRange;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class TimeRangeFilter implements FilterComponent {
 
-    private JComboBox datePatternComboBox;
-    private JComboBox fileNamePatternComboBox;
-    private DateExComboBox startTimePicker;
-    private DateExComboBox stopTimePicker;
+    public static final Logger LOG = Logger.getLogger(TimeRangeFilter.class.getName());
+    private JComboBox<String> datePatternComboBox;
+    private JComboBox<String> fileNamePatternComboBox;
+    private DateChooserButton startDateButton;
+    private DateChooserButton stopDateButton;
     private JButton applyButton;
     private JCheckBox filterCheckBox;
     TimeStampExtractor timeStampExtractor;
     List<FilterChangeListener> listeners;
-    List<JLabel> labels;
 
+    List<JLabel> labels;
     Date startDate;
     Date endDate;
 
     public TimeRangeFilter(final JCheckBox filterCheckBox) {
         this.filterCheckBox = filterCheckBox;
         final SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        startTimePicker = new DateExComboBox();
-        startTimePicker.setFormat(dateFormat);
-        stopTimePicker = new DateExComboBox();
-        stopTimePicker.setFormat(dateFormat);
+        Date date = Date.from(Instant.now());
+        startDateButton = new DateChooserButton(dateFormat, date);
+        stopDateButton = new DateChooserButton(dateFormat, date);
 
         final int width = 150;
-        final Dimension ps = startTimePicker.getPreferredSize();
+        final Dimension ps = startDateButton.getPreferredSize();
         final Dimension comboBoxDimension = new Dimension(width, ps.height);
-        setComboBoxSize(comboBoxDimension, startTimePicker);
-        setComboBoxSize(comboBoxDimension, stopTimePicker);
+        setJComponentSize(comboBoxDimension, startDateButton);
+        setJComponentSize(comboBoxDimension, stopDateButton);
 
-        datePatternComboBox = new JComboBox();
-        setComboBoxSize(comboBoxDimension, datePatternComboBox);
+        datePatternComboBox = new JComboBox<>();
+        setJComponentSize(comboBoxDimension, datePatternComboBox);
         datePatternComboBox.setEditable(true);
 
-        fileNamePatternComboBox = new JComboBox();
-        setComboBoxSize(comboBoxDimension, fileNamePatternComboBox);
+        fileNamePatternComboBox = new JComboBox<>();
+        setJComponentSize(comboBoxDimension, fileNamePatternComboBox);
         fileNamePatternComboBox.setEditable(true);
 
         initPatterns();
 
         final UIUpdater uiUpdater = new UIUpdater();
-        final TimePickerValidator timePickerValidator = new TimePickerValidator();
-        filterCheckBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                updateUIState();
-                if (timeStampExtractor != null) {
-                    fireFilterChangedEvent();
-                }
+        filterCheckBox.addActionListener(e -> {
+            updateUIState();
+            if (timeStampExtractor != null) {
+                fireFilterChangedEvent();
             }
         });
-        startTimePicker.addActionListener(uiUpdater);
-        startTimePicker.addActionListener(timePickerValidator);
-        stopTimePicker.addActionListener(uiUpdater);
-        stopTimePicker.addActionListener(timePickerValidator);
+        startDateButton.addPropertyChangeListener(DateChooserButton.PROPERTY_NAME_DATE, evt -> updateUIState());
+        startDateButton.addPropertyChangeListener(DateChooserButton.PROPERTY_NAME_DATE, evt -> validateDateChooser(startDateButton));
+        stopDateButton.addPropertyChangeListener(DateChooserButton.PROPERTY_NAME_DATE, evt -> updateUIState());
+        stopDateButton.addPropertyChangeListener(DateChooserButton.PROPERTY_NAME_DATE, evt -> validateDateChooser(stopDateButton));
         datePatternComboBox.addActionListener(uiUpdater);
         fileNamePatternComboBox.addActionListener(uiUpdater);
 
-        listeners = new ArrayList<FilterChangeListener>();
-        labels = new ArrayList<JLabel>();
+        listeners = new ArrayList<>();
+        labels = new ArrayList<>();
 
         applyButton = new JButton("Apply");
-        applyButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (StringUtils.isNotNullAndNotEmpty(datePatternComboBox.getEditor().getItem().toString())
-                        && StringUtils.isNotNullAndNotEmpty(fileNamePatternComboBox.getEditor().getItem().toString())) {
-                    timeStampExtractor = new TimeStampExtractor(datePatternComboBox.getSelectedItem().toString(),
-                                                                fileNamePatternComboBox.getSelectedItem().toString());
-                } else {
-                    timeStampExtractor = null;
-                }
-                startDate = startTimePicker.getDate();
-                endDate = stopTimePicker.getDate();
-                updateUIState();
-                applyButton.setEnabled(false);
-                fireFilterChangedEvent();
+        applyButton.addActionListener(e -> {
+            if (StringUtils.isNotNullAndNotEmpty(datePatternComboBox.getEditor().getItem().toString())
+                && StringUtils.isNotNullAndNotEmpty(fileNamePatternComboBox.getEditor().getItem().toString())) {
+                timeStampExtractor = new TimeStampExtractor(datePatternComboBox.getSelectedItem().toString(),
+                                                            fileNamePatternComboBox.getSelectedItem().toString());
+            } else {
+                timeStampExtractor = null;
             }
+            startDate = startDateButton.getDate();
+            endDate = stopDateButton.getDate();
+            updateUIState();
+            applyButton.setEnabled(false);
+            fireFilterChangedEvent();
         });
     }
 
@@ -103,15 +104,15 @@ public class TimeRangeFilter implements FilterComponent {
         final boolean isSelected = filterCheckBox.isSelected();
         datePatternComboBox.setEnabled(isSelected);
         fileNamePatternComboBox.setEnabled(isSelected);
-        startTimePicker.setEnabled(isSelected);
-        stopTimePicker.setEnabled(isSelected);
+        startDateButton.setEnabled(isSelected);
+        stopDateButton.setEnabled(isSelected);
         for (JLabel label : labels) {
             label.setEnabled(isSelected);
         }
         final String datePattern = datePatternComboBox.getSelectedItem().toString();
         final String fileNamePattern = fileNamePatternComboBox.getSelectedItem().toString();
-        final boolean hasStartDate = startTimePicker.getDate() != null;
-        final boolean hasEndDate = stopTimePicker.getDate() != null;
+        final boolean hasStartDate = startDateButton.getDate() != null;
+        final boolean hasEndDate = stopDateButton.getDate() != null;
         final boolean patternProvided = !("".equals(datePattern) || "".equals(fileNamePattern));
         if (isSelected && (patternProvided || (!hasStartDate && !hasEndDate))) {
             applyButton.setEnabled(true);
@@ -131,7 +132,7 @@ public class TimeRangeFilter implements FilterComponent {
         }
     }
 
-    private void setComboBoxSize(Dimension comboBoxDimension, JComboBox comboBox) {
+    private void setJComponentSize(Dimension comboBoxDimension, JComponent comboBox) {
         comboBox.setPreferredSize(comboBoxDimension);
         comboBox.setMinimumSize(comboBoxDimension);
     }
@@ -167,7 +168,7 @@ public class TimeRangeFilter implements FilterComponent {
         JLabel startDateLabel = new JLabel("Start date:");
         filterUI.add(startDateLabel, gbc);
         gbc.gridx++;
-        filterUI.add(startTimePicker, gbc);
+        filterUI.add(startDateButton, gbc);
 
         gbc.gridx = 0;
         gbc.gridy++;
@@ -175,7 +176,7 @@ public class TimeRangeFilter implements FilterComponent {
         filterUI.add(stopDateLabel, gbc);
 
         gbc.gridx++;
-        filterUI.add(stopTimePicker, gbc);
+        filterUI.add(stopDateButton, gbc);
         gbc.gridy++;
 
         gbc.weightx = 1;
@@ -280,23 +281,19 @@ public class TimeRangeFilter implements FilterComponent {
         }
     }
 
-    private class TimePickerValidator implements ActionListener {
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            Date startDate = startTimePicker.getDate();
-            Date endDate = stopTimePicker.getDate();
-            if (startDate == null || endDate == null) {
-                return;
-            }
-            if (startDate.after(endDate)) {
-                if (e.getSource().equals(startTimePicker)) {
-                    startTimePicker.setDate(endDate);
-                    BeamLogManager.getSystemLogger().info("Start date after end date: Set start date to end date.");
-                } else if (e.getSource().equals(stopTimePicker)) {
-                    stopTimePicker.setDate(startDate);
-                    BeamLogManager.getSystemLogger().info("Start date after end date: Set end date to start date.");
-                }
+    private void validateDateChooser(DateChooserButton button) {
+        Date startDate = startDateButton.getDate();
+        Date endDate = stopDateButton.getDate();
+        if (startDate == null || endDate == null) {
+            return;
+        }
+        if (startDate.after(endDate)) {
+            if (button.equals(startDateButton)) {
+                startDateButton.setDate(endDate);
+                LOG.info("Start date after end date: Set start date to end date.");
+            } else if (button.equals(stopDateButton)) {
+                stopDateButton.setDate(startDate);
+                LOG.info("Start date after end date: Set end date to start date.");
             }
         }
     }

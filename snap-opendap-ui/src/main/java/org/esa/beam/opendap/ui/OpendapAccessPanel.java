@@ -1,39 +1,50 @@
 package org.esa.beam.opendap.ui;
 
-import com.jidesoft.combobox.AbstractComboBox;
-import com.jidesoft.combobox.FolderChooserComboBox;
-import com.jidesoft.combobox.PopupPanel;
-import com.jidesoft.status.LabelStatusBarItem;
-import com.jidesoft.status.ProgressStatusBarItem;
-import com.jidesoft.status.StatusBar;
 import com.jidesoft.swing.FolderChooser;
-import com.jidesoft.swing.JideBoxLayout;
 import com.jidesoft.swing.JideScrollPane;
 import com.jidesoft.swing.SimpleScrollPane;
-import org.esa.beam.framework.help.HelpSys;
 import org.esa.beam.framework.ui.AppContext;
 import org.esa.beam.framework.ui.GridBagUtils;
 import org.esa.beam.framework.ui.tool.ToolButtonFactory;
 import org.esa.beam.opendap.datamodel.OpendapLeaf;
 import org.esa.beam.opendap.utils.OpendapUtils;
-import org.esa.beam.util.PropertyMap;
 import org.esa.beam.util.StringUtils;
-import org.esa.beam.util.logging.BeamLogManager;
+import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.file.OpenProductAction;
 import org.esa.snap.tango.TangoIcons;
+import org.openide.modules.Places;
+import org.openide.util.HelpCtx;
 import thredds.catalog.InvCatalog;
 import thredds.catalog.InvCatalogFactory;
 import thredds.catalog.InvDataset;
 
-import javax.swing.*;
+import javax.swing.AbstractButton;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.JTree;
+import javax.swing.SwingWorker;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.BorderLayout;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
@@ -42,14 +53,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
+import java.util.prefs.Preferences;
 
 public class OpendapAccessPanel extends JPanel implements CatalogTree.UIContext {
 
+    private static final Logger LOG = Logger.getLogger(OpendapAccessPanel.class.getName());
     private static final String PROPERTY_KEY_SERVER_URLS = "opendap.server.urls";
+    private static final String PROPERTY_KEY_DOWNLOAD_DIR = "opendap.download.dir";
     private final static int DDS_AREA_INDEX = 0;
     private final static int DAS_AREA_INDEX = 1;
 
-    private JComboBox urlField;
+    private JComboBox<String> urlField;
     private AbstractButton refreshButton;
     private CatalogTree catalogTree;
 
@@ -68,12 +83,12 @@ public class OpendapAccessPanel extends JPanel implements CatalogTree.UIContext 
     private VariableFilter variableFilter;
 
     private JCheckBox openInVisat;
-    private StatusBar statusBar;
+    private JPanel statusBar;
 
     private double currentDataSize = 0.0;
-    private final PropertyMap propertyMap;
+    private final Preferences preferences;
     private final String helpId;
-    private FolderChooserComboBox folderChooserComboBox;
+    private JTextField folderTextField;
     private JProgressBar progressBar;
     private JLabel preMessageLabel;
     private JLabel postMessageLabel;
@@ -81,10 +96,11 @@ public class OpendapAccessPanel extends JPanel implements CatalogTree.UIContext 
     private JButton downloadButton;
     private AppContext appContext;
     private JButton cancelButton;
+    private JLabel statusBarMessage;
 
     public OpendapAccessPanel(AppContext appContext, String helpId) {
         super();
-        this.propertyMap = appContext.getPreferences();
+        this.preferences = SnapApp.getDefault().getPreferences();
         this.helpId = helpId;
         this.appContext = appContext;
         initComponents();
@@ -92,7 +108,7 @@ public class OpendapAccessPanel extends JPanel implements CatalogTree.UIContext 
     }
 
     private void initComponents() {
-        urlField = new JComboBox();
+        urlField = new JComboBox<>();
         urlField.setEditable(true);
         urlField.getEditor().getEditorComponent().addKeyListener(new KeyAdapter() {
             @Override
@@ -106,17 +122,14 @@ public class OpendapAccessPanel extends JPanel implements CatalogTree.UIContext 
         refreshButton = ToolButtonFactory.createButton(
                 TangoIcons.actions_view_refresh(TangoIcons.Res.R22),
                 false);
-        refreshButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                final boolean usingUrl = refresh();
-                if (usingUrl) {
-                    final String urls = propertyMap.getPropertyString(PROPERTY_KEY_SERVER_URLS);
-                    final String currentUrl = urlField.getSelectedItem().toString();
-                    if (!urls.contains(currentUrl)) {
-                        propertyMap.setPropertyString(PROPERTY_KEY_SERVER_URLS, urls + "\n" + currentUrl);
-                        updateUrlField();
-                    }
+        refreshButton.addActionListener(e -> {
+            final boolean usingUrl = refresh();
+            if (usingUrl) {
+                final String urls = preferences.get(PROPERTY_KEY_SERVER_URLS, "");
+                final String currentUrl = urlField.getSelectedItem().toString();
+                if (!urls.contains(currentUrl)) {
+                    preferences.put(PROPERTY_KEY_SERVER_URLS, urls + "\n" + currentUrl);
+                    updateUrlField();
                 }
             }
         });
@@ -127,7 +140,7 @@ public class OpendapAccessPanel extends JPanel implements CatalogTree.UIContext 
         ddsArea.setEditable(false);
         dasArea.setEditable(false);
 
-        textAreas = new HashMap<Integer, JTextArea>();
+        textAreas = new HashMap<>();
         textAreas.put(DAS_AREA_INDEX, dasArea);
         textAreas.put(DDS_AREA_INDEX, ddsArea);
 
@@ -136,12 +149,9 @@ public class OpendapAccessPanel extends JPanel implements CatalogTree.UIContext 
         metaInfoArea.setToolTipTextAt(DDS_AREA_INDEX, "Dataset Descriptor Structure: description of dataset variables");
         metaInfoArea.setToolTipTextAt(DAS_AREA_INDEX, "Dataset Attribute Structure: description of dataset attributes");
 
-        metaInfoArea.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                if (catalogTree.getSelectedLeaf() != null) {
-                    setMetadataText(metaInfoArea.getSelectedIndex(), catalogTree.getSelectedLeaf());
-                }
+        metaInfoArea.addChangeListener(e -> {
+            if (catalogTree.getSelectedLeaf() != null) {
+                setMetadataText(metaInfoArea.getSelectedIndex(), catalogTree.getSelectedLeaf());
             }
         });
 
@@ -179,36 +189,21 @@ public class OpendapAccessPanel extends JPanel implements CatalogTree.UIContext 
         });
 
         openInVisat = new JCheckBox("Open in SNAP");
-        statusBar = new StatusBar();
-        final LabelStatusBarItem message = new LabelStatusBarItem("label");
-        message.setText("Ready.");
-        message.setAlignment(JLabel.LEFT);
-        statusBar.add(message, JideBoxLayout.FLEXIBLE);
-
+        statusBarMessage = new JLabel("Ready.");
+        statusBarMessage.setText("Ready.");
         preMessageLabel = new JLabel();
         postMessageLabel = new JLabel();
-        final LabelStatusBarItem preMessage = new LabelStatusBarItem() {
-            @Override
-            protected JLabel createLabel() {
-                return preMessageLabel;
-            }
-        };
-        final LabelStatusBarItem postMessage = new LabelStatusBarItem() {
-            @Override
-            protected JLabel createLabel() {
-                return postMessageLabel;
-            }
-        };
+        progressBar = new JProgressBar(0, 100);
 
-        statusBar.add(preMessage, JideBoxLayout.FIX);
-
-        ProgressStatusBarItem progressBarItem = new ProgressStatusBarItem();
-        progressBarItem.setProgress(0);
-        progressBar = progressBarItem.getProgressBar();
-
-        statusBar.add(progressBarItem, JideBoxLayout.FIX);
-
-        statusBar.add(postMessage, JideBoxLayout.FIX);
+        statusBar = new JPanel();
+        statusBar.setLayout(new BoxLayout(statusBar, BoxLayout.X_AXIS));
+        statusBar.add(statusBarMessage);
+        statusBar.add(Box.createHorizontalStrut(4));
+        statusBar.add(preMessageLabel);
+        statusBar.add(Box.createHorizontalGlue());
+        statusBar.add(progressBar);
+        statusBar.add(Box.createHorizontalGlue());
+        statusBar.add(postMessageLabel);
 
         useRegionFilter.setEnabled(false);
     }
@@ -231,7 +226,7 @@ public class OpendapAccessPanel extends JPanel implements CatalogTree.UIContext 
                 }
             }
         } catch (IOException e) {
-            BeamLogManager.getSystemLogger().warning("Unable to retrieve meta information for file '" + leaf.getName() + "'.");
+            LOG.warning("Unable to retrieve meta information for file '" + leaf.getName() + "'.");
         }
 
         setResponseText(componentIndex, text);
@@ -240,9 +235,7 @@ public class OpendapAccessPanel extends JPanel implements CatalogTree.UIContext 
     private void setResponseText(int componentIndex, String response) {
         JTextArea textArea = textAreas.get(componentIndex);
         if (response.length() > 100000) {
-            StringBuilder responseBuilder = new StringBuilder(response.substring(0, 10000));
-            responseBuilder.append("\n" + "Cut remaining file content");
-            response = responseBuilder.toString();
+            response = response.substring(0, 10000) + "\nCut remaining file content";
         }
         textArea.setText(response);
         textArea.setCaretPosition(0);
@@ -250,16 +243,14 @@ public class OpendapAccessPanel extends JPanel implements CatalogTree.UIContext 
 
     @Override
     public void updateStatusBar(String message) {
-        LabelStatusBarItem messageItem = (LabelStatusBarItem) statusBar.getItemByName("label");
-        messageItem.setText(message);
+        statusBarMessage.setText(message);
     }
 
     private void filterLeaf(OpendapLeaf leaf) {
-        if (
-                (!useDatasetNameFilter.isSelected() || datasetNameFilter.accept(leaf)) &&
-                        (!useTimeRangeFilter.isSelected() || timeRangeFilter.accept(leaf)) &&
-                        (!useRegionFilter.isSelected() || regionFilter.accept(leaf)) &&
-                        (!useVariableFilter.isSelected() || variableFilter.accept(leaf))) {
+        if ((!useDatasetNameFilter.isSelected() || datasetNameFilter.accept(leaf)) &&
+            (!useTimeRangeFilter.isSelected() || timeRangeFilter.accept(leaf)) &&
+            (!useRegionFilter.isSelected() || regionFilter.accept(leaf)) &&
+            (!useVariableFilter.isSelected() || variableFilter.accept(leaf))) {
             catalogTree.setLeafVisible(leaf, true);
         } else {
             catalogTree.setLeafVisible(leaf, false);
@@ -267,7 +258,7 @@ public class OpendapAccessPanel extends JPanel implements CatalogTree.UIContext 
     }
 
     private void updateUrlField() {
-        final String urlsProperty = propertyMap.getPropertyString(PROPERTY_KEY_SERVER_URLS);
+        final String urlsProperty = preferences.get(PROPERTY_KEY_SERVER_URLS, "");
         final String[] urls = urlsProperty.split("\n");
         for (String url : urls) {
             if (StringUtils.isNotNullAndNotEmpty(url) && !contains(urlField, url)) {
@@ -276,9 +267,9 @@ public class OpendapAccessPanel extends JPanel implements CatalogTree.UIContext 
         }
     }
 
-    private static boolean contains(JComboBox urlField, String url) {
+    private static boolean contains(JComboBox<String> urlField, String url) {
         for (int i = 0; i < urlField.getItemCount(); i++) {
-            if (urlField.getItemAt(i).toString().equals(url)) {
+            if (urlField.getItemAt(i).equals(url)) {
                 return true;
             }
         }
@@ -301,10 +292,8 @@ public class OpendapAccessPanel extends JPanel implements CatalogTree.UIContext 
         urlPanel.add(refreshButton, gbc);
         gbc.gridx = 3;
         gbc.insets.right = 0;
-        final AbstractButton helpButton = ToolButtonFactory.createButton(
-                TangoIcons.apps_help_browser(TangoIcons.Res.R22),
-                false);
-        HelpSys.enableHelpOnButton(helpButton, helpId);
+        final AbstractButton helpButton = ToolButtonFactory.createButton(TangoIcons.apps_help_browser(TangoIcons.Res.R22), false);
+        helpButton.addActionListener(e -> new HelpCtx(helpId).display());
         urlPanel.add(helpButton, gbc);
 
         final JPanel variableInfo = new JPanel(new BorderLayout(5, 5));
@@ -321,7 +310,8 @@ public class OpendapAccessPanel extends JPanel implements CatalogTree.UIContext 
         final JComponent timeRangeFilterUI = timeRangeFilter.getUI();
         final JComponent regionFilterUI = regionFilter.getUI();
         final JComponent variableFilterUI = variableFilter.getUI();
-        GridBagUtils.addToPanel(filterPanel, new TitledPanel(useDatasetNameFilter, datasetNameFilterUI, true, true), gbc, "gridx=0,gridy=0,anchor=NORTHWEST,weightx=1,weighty=0,,fill=BOTH");
+        GridBagUtils.addToPanel(filterPanel, new TitledPanel(useDatasetNameFilter, datasetNameFilterUI, true, true), gbc,
+                                "gridx=0,gridy=0,anchor=NORTHWEST,weightx=1,weighty=0,,fill=BOTH");
         GridBagUtils.addToPanel(filterPanel, new TitledPanel(useTimeRangeFilter, timeRangeFilterUI, true, true), gbc, "gridy=1");
         GridBagUtils.addToPanel(filterPanel, new TitledPanel(useRegionFilter, regionFilterUI, true, true), gbc, "gridy=2");
         GridBagUtils.addToPanel(filterPanel, new TitledPanel(useVariableFilter, variableFilterUI, true, true), gbc, "gridy=3");
@@ -335,42 +325,30 @@ public class OpendapAccessPanel extends JPanel implements CatalogTree.UIContext 
         cancelButton = new JButton("Cancel");
         final DownloadProgressBarPM pm = new DownloadProgressBarPM(progressBar, preMessageLabel, postMessageLabel, cancelButton);
         progressBar.setVisible(false);
-        folderChooserComboBox = new FolderChooserComboBox() {
-            @Override
-            public PopupPanel createPopupComponent() {
-                final PopupPanel popupComponent = super.createPopupComponent();
-                final JScrollPane content = (JScrollPane) popupComponent.getComponents()[0];
-                final JComponent upperPane = (JComponent) content.getComponents()[0];
-                FolderChooser folderChooser = (FolderChooser) upperPane.getComponents()[0];
-                folderChooser.setRecentListVisible(false);
-                popupComponent.setTitle("Choose download directory");
-                return popupComponent;
-            }
-        };
+        File downloadDir = new File(preferences.get(PROPERTY_KEY_DOWNLOAD_DIR, Places.getUserDirectory().getAbsolutePath()));
+        if (!downloadDir.isDirectory()) {
+            downloadDir = new File(Places.getUserDirectory().getAbsolutePath());
+        }
+        folderTextField = new JTextField(downloadDir.getAbsolutePath());
+        JButton folderChooserButton = new JButton("Folder");
+        folderChooserButton.addActionListener(e -> fetchDownloadDirectory());
         downloadButton = new JButton("Download");
         downloadButton.setEnabled(false);
         final DownloadAction downloadAction = createDownloadAction(pm);
         downloadButton.addActionListener(downloadAction);
-        folderChooserComboBox.setEditable(true);
         downloadButtonPanel.add(openInVisat, BorderLayout.NORTH);
-        downloadButtonPanel.add(folderChooserComboBox);
-        JPanel buttonPanel = new JPanel(new BorderLayout());
-        buttonPanel.add(downloadButton, BorderLayout.WEST);
+        downloadButtonPanel.add(folderTextField);
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+        buttonPanel.add(folderChooserButton);
+        buttonPanel.add(downloadButton);
         cancelButton.setEnabled(false);
-        downloadButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                cancelButton.setEnabled(true);
-            }
+        downloadButton.addActionListener(e -> cancelButton.setEnabled(true));
+        cancelButton.addActionListener(e -> {
+            downloadAction.cancel();
+            cancelButton.setEnabled(false);
         });
-        cancelButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                downloadAction.cancel();
-                cancelButton.setEnabled(false);
-            }
-        });
-        buttonPanel.add(cancelButton, BorderLayout.EAST);
+        buttonPanel.add(cancelButton);
         downloadButtonPanel.add(buttonPanel, BorderLayout.EAST);
 
         JPanel centerRightPane = new JPanel(new BorderLayout());
@@ -391,12 +369,29 @@ public class OpendapAccessPanel extends JPanel implements CatalogTree.UIContext 
         this.add(statusBar, BorderLayout.SOUTH);
     }
 
+    private File fetchDownloadDirectory() {
+        FolderChooser folderChooser = new FolderChooser();
+        folderChooser.setRecentListVisible(false);
+        folderChooser.setCurrentDirectory(new File(folderTextField.getText()));
+        folderChooser.setNavigationFieldVisible(true);
+        folderChooser.setFileHidingEnabled(true);
+        int result = folderChooser.showOpenDialog(OpendapAccessPanel.this);
+        if (FolderChooser.APPROVE_OPTION == result) {
+            String downloadDirPath = folderChooser.getSelectedFile().getAbsolutePath();
+            preferences.put(PROPERTY_KEY_DOWNLOAD_DIR, downloadDirPath);
+            folderTextField.setText(downloadDirPath);
+            return folderChooser.getSelectedFile();
+        } else {
+            return null;
+        }
+    }
+
     private DownloadAction createDownloadAction(DownloadProgressBarPM pm) {
         return new DownloadAction(pm, new ParameterProviderImpl(), new DownloadAction.DownloadHandler() {
 
             @Override
             public void handleException(Exception e) {
-                appContext.handleError("Unable to perform download. Reason: " + e.getMessage(), e);
+                SnapApp.getDefault().handleError("Unable to perform download. Reason: " + e.getMessage(), e);
             }
 
             @Override
@@ -408,18 +403,6 @@ public class OpendapAccessPanel extends JPanel implements CatalogTree.UIContext 
                 }
             }
         });
-    }
-
-    private File fetchTargetDirectory() {
-        final JFileChooser chooser = new JFileChooser();
-        chooser.setDialogType(JFileChooser.OPEN_DIALOG);
-        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        chooser.setDialogTitle("Select Target Directory");
-        final int i = chooser.showDialog(null, "Save to directory");
-        if (i == JFileChooser.APPROVE_OPTION) {
-            return chooser.getSelectedFile();
-        }
-        return null;
     }
 
     private boolean refresh() {
@@ -469,8 +452,8 @@ public class OpendapAccessPanel extends JPanel implements CatalogTree.UIContext 
 
     private class ParameterProviderImpl implements DownloadAction.ParameterProvider {
 
-        Map<String, Boolean> dapURIs = new HashMap<String, Boolean>();
-        List<String> fileURIs = new ArrayList<String>();
+        Map<String, Boolean> dapURIs = new HashMap<>();
+        List<String> fileURIs = new ArrayList<>();
         private boolean mayAlwaysOverwrite = false;
         private boolean mayNeverOverwrite = false;
 
@@ -479,7 +462,7 @@ public class OpendapAccessPanel extends JPanel implements CatalogTree.UIContext 
             if (dapURIs.isEmpty() && fileURIs.isEmpty()) {
                 collectURIs();
             }
-            return new HashMap<String, Boolean>(dapURIs);
+            return new HashMap<>(dapURIs);
         }
 
         @Override
@@ -487,7 +470,7 @@ public class OpendapAccessPanel extends JPanel implements CatalogTree.UIContext 
             if (dapURIs.isEmpty() && fileURIs.isEmpty()) {
                 collectURIs();
             }
-            return new ArrayList<String>(fileURIs);
+            return new ArrayList<>(fileURIs);
         }
 
         private void collectURIs() {
@@ -525,14 +508,10 @@ public class OpendapAccessPanel extends JPanel implements CatalogTree.UIContext 
         @Override
         public File getTargetDirectory() {
             final File targetDirectory;
-            AbstractComboBox.DefaultTextFieldEditorComponent textField = (AbstractComboBox.DefaultTextFieldEditorComponent) folderChooserComboBox.getEditor();
-            if (textField.getText() == null || textField.getText().equals("")) {
-                targetDirectory = fetchTargetDirectory();
-                if (targetDirectory != null) {
-                    textField.setText(targetDirectory.toString());
-                }
+            if (folderTextField.getText() == null || folderTextField.getText().equals("")) {
+                targetDirectory = fetchDownloadDirectory();
             } else {
-                targetDirectory = new File(textField.getText());
+                targetDirectory = new File(folderTextField.getText());
             }
             return targetDirectory;
         }

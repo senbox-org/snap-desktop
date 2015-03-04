@@ -1,6 +1,5 @@
 package org.esa.beam.opendap;
 
-import com.jidesoft.utils.Lm;
 import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.datamodel.ProductManager;
 import org.esa.beam.framework.ui.AppContext;
@@ -9,8 +8,10 @@ import org.esa.beam.framework.ui.product.ProductSceneView;
 import org.esa.beam.opendap.ui.OpendapAccessPanel;
 import org.esa.beam.util.PropertyMap;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.UIManager;
+import java.awt.Window;
 
 /**
  * @author Tonio Fincke
@@ -18,7 +19,6 @@ import java.awt.*;
 public class OpendapAccess {
 
     public static void main(String[] args) {
-        Lm.verifyLicense("Brockmann Consult", "BEAM", "lCzfhklpZ9ryjomwWxfdupxIcuIoCxg2");
 
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
