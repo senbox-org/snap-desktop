@@ -9,6 +9,7 @@ import org.openide.NotifyDescriptor;
 import org.openide.util.NbBundle;
 
 import javax.swing.JCheckBox;
+import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -236,6 +237,8 @@ public class SnapDialogs {
      * @param fileFilter       The file filter to be used, can be <code>null</code>.
      * @param defaultExtension The extension used as default.
      * @param fileName         The initial filename.
+     * @param accessory        An accessory UI component to be shown in the {@link JFileChooser#setAccessory(JComponent) file chooser},
+     *                         can be <code>null</code>.
      * @param preferenceKey    The key under which the last directory the user visited is stored.
      * @return The file selected by the user or <code>null</code> if the user cancelled the file selection.
      */
@@ -244,6 +247,7 @@ public class SnapDialogs {
                                           FileFilter fileFilter,
                                           String defaultExtension,
                                           String fileName,
+                                          JComponent accessory,
                                           String preferenceKey) {
 
         // Loop while the user does not want to overwrite a selected, existing file
@@ -251,7 +255,7 @@ public class SnapDialogs {
         //
         File file;
         do {
-            file = requestFileForSave2(title, dirsOnly, fileFilter, defaultExtension, fileName, preferenceKey);
+            file = requestFileForSave2(title, dirsOnly, fileFilter, defaultExtension, fileName, accessory, preferenceKey);
             if (file == null) {
                 return null; // Cancelled
             } else if (file.exists()) {
@@ -275,6 +279,7 @@ public class SnapDialogs {
                                             FileFilter fileFilter,
                                             String defaultExtension,
                                             final String fileName,
+                                            JComponent accessory,
                                             final String preferenceKey) {
 
         Assert.notNull(preferenceKey, "preferenceKey");
@@ -292,7 +297,9 @@ public class SnapDialogs {
         }
         fileChooser.setDialogTitle(getDialogTitle(title));
         fileChooser.setFileSelectionMode(dirsOnly ? JFileChooser.DIRECTORIES_ONLY : JFileChooser.FILES_ONLY);
-
+        if(accessory != null) {
+            fileChooser.setAccessory(accessory);
+        }
         int result = fileChooser.showSaveDialog(SnapApp.getDefault().getMainFrame());
         if (fileChooser.getCurrentDirectory() != null) {
             getPreferences().put(preferenceKey, fileChooser.getCurrentDirectory().getPath());

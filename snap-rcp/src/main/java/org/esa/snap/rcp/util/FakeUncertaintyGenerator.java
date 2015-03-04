@@ -8,8 +8,8 @@ import org.esa.beam.framework.datamodel.ProductData;
 import org.esa.beam.framework.datamodel.ProductManager;
 import org.esa.beam.framework.datamodel.Stx;
 import org.esa.beam.util.ProductUtils;
-import org.esa.snap.rcp.SnapApp;
 import org.openide.modules.OnStart;
+
 
 /**
  * @author Norman Fomferra
@@ -29,7 +29,7 @@ public class FakeUncertaintyGenerator {
         @Override
         public void run() {
             if (Boolean.getBoolean("snap.uncertainty.test")) {
-                SnapApp.getDefault().getProductManager().addListener(new ProductManager.Listener() {
+                ListenerSupport.installProductManagerListener(new ProductManager.Listener() {
                     @Override
                     public void productAdded(ProductManager.Event event) {
                         bandCount = addUncertaintyBands(event.getProduct(), bandCount);
@@ -51,9 +51,9 @@ public class FakeUncertaintyGenerator {
             bandCount++;
             String bandName = band.getName();
             if (bandName.startsWith("radiance")
-                    && !bandName.endsWith("_blur")
-                    && !bandName.endsWith("_variance")
-                    && !bandName.endsWith("_confidence")) {
+                && !bandName.endsWith("_blur")
+                && !bandName.endsWith("_variance")
+                && !bandName.endsWith("_confidence")) {
                 Band varianceBand = product.getBand(bandName + "_variance");
                 Band confidenceBand = product.getBand(bandName + "_confidence");
                 if (confidenceBand == null) {
@@ -108,7 +108,9 @@ public class FakeUncertaintyGenerator {
         double maxVar = Math.min(varStx.getMean() + 3 * varStx.getStandardDeviation(), varStx.getMaximum());
         double absVar = maxVar - minVar;
 
-        confidenceBand = product.addBand(sourceBand.getName() + "_confidence", String.format("min(max((1 - (%s - %s) / %s), 0), 1)", varianceBand.getName(), minVar, absVar), ProductData.TYPE_FLOAT32);
+        confidenceBand = product.addBand(sourceBand.getName() + "_confidence",
+                                         String.format("min(max((1 - (%s - %s) / %s), 0), 1)", varianceBand.getName(), minVar, absVar),
+                                         ProductData.TYPE_FLOAT32);
         confidenceBand.setUnit("dl");
         return confidenceBand;
     }

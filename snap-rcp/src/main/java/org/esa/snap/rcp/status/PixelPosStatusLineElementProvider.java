@@ -3,15 +3,15 @@ package org.esa.snap.rcp.status;
 import com.bc.ceres.glayer.support.ImageLayer;
 import com.bc.ceres.glayer.swing.LayerCanvas;
 import org.esa.beam.framework.ui.PixelPositionListener;
-import org.esa.snap.netbeans.docwin.DocumentWindowManager;
+import org.esa.beam.framework.ui.product.ProductSceneView;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
+import org.esa.snap.rcp.util.ListenerSupport;
 import org.openide.awt.StatusLineElementProvider;
 import org.openide.util.lookup.ServiceProvider;
-import org.openide.windows.TopComponent;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JLabel;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
@@ -25,11 +25,8 @@ import java.util.prefs.Preferences;
  * @author Norman Fomferra
  */
 @ServiceProvider(service = StatusLineElementProvider.class, position = 10)
-public class PixelPosStatusLineElementProvider
-        implements StatusLineElementProvider,
-        DocumentWindowManager.Listener,
-        PixelPositionListener,
-        PreferenceChangeListener {
+public class PixelPosStatusLineElementProvider extends ListenerSupport.SceneViewListener
+        implements StatusLineElementProvider, PixelPositionListener, PreferenceChangeListener {
 
     public final static String PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_X = "";
     public final static String PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_Y = "";
@@ -45,8 +42,8 @@ public class PixelPosStatusLineElementProvider
     private JLabel label;
 
     public PixelPosStatusLineElementProvider() {
-        DocumentWindowManager.getDefault().addListener(this);
-        SnapApp.getDefault().getPreferences().addPreferenceChangeListener(this);
+        ListenerSupport.installSceneViewListener(this);
+        ListenerSupport.installPreferenceChangeListener(this);
         updateSettings();
         label = new JLabel();
     }
@@ -98,37 +95,21 @@ public class PixelPosStatusLineElementProvider
     public void preferenceChange(PreferenceChangeEvent evt) {
         final String propertyName = evt.getKey();
         if (PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_X.equals(propertyName)
-                || PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_Y.equals(propertyName)
-                || PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_SHOW_DECIMALS.equals(propertyName)) {
+            || PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_Y.equals(propertyName)
+            || PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_SHOW_DECIMALS.equals(propertyName)) {
             updateSettings();
         }
     }
 
 
     @Override
-    public void windowOpened(DocumentWindowManager.Event e) {
-        TopComponent topComponent = e.getDocumentWindow().getTopComponent();
-        if (topComponent instanceof ProductSceneViewTopComponent) {
-            ProductSceneViewTopComponent component = (ProductSceneViewTopComponent) topComponent;
-            component.getView().addPixelPositionListener(this);
-        }
+    public void closed(ProductSceneView view) {
+        view.removePixelPositionListener(this);
     }
 
     @Override
-    public void windowClosed(DocumentWindowManager.Event e) {
-        TopComponent topComponent = e.getDocumentWindow().getTopComponent();
-        if (topComponent instanceof ProductSceneViewTopComponent) {
-            ProductSceneViewTopComponent component = (ProductSceneViewTopComponent) topComponent;
-            component.getView().removePixelPositionListener(this);
-        }
-    }
-
-    @Override
-    public void windowSelected(DocumentWindowManager.Event e) {
-    }
-
-    @Override
-    public void windowDeselected(DocumentWindowManager.Event e) {
+    public void opened(ProductSceneView view) {
+        view.addPixelPositionListener(this);
     }
 
     private void updateSettings() {

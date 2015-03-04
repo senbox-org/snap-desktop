@@ -10,6 +10,8 @@ import org.esa.beam.framework.datamodel.ProductNode;
 import org.esa.beam.framework.gpf.GPF;
 import org.esa.beam.framework.gpf.OperatorSpi;
 import org.esa.beam.framework.gpf.OperatorSpiRegistry;
+import org.esa.beam.framework.ui.AppContext;
+import org.esa.beam.framework.ui.application.ApplicationPage;
 import org.esa.beam.framework.ui.product.ProductSceneView;
 import org.esa.beam.util.PropertyMap;
 import org.esa.snap.rcp.actions.file.SaveProductAction;
@@ -32,8 +34,12 @@ import org.openide.windows.WindowManager;
 
 import javax.media.jai.JAI;
 import javax.media.jai.OperationRegistry;
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import java.awt.Desktop;
+import java.awt.Frame;
+import java.awt.Window;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -457,6 +463,52 @@ public class SnapApp {
             if (manager != null) {
                 manager.die();
             }
+        }
+    }
+
+    public static class SnapContext implements AppContext {
+
+        private final SnapApp app = getDefault();
+
+        @Override
+        public ApplicationPage getApplicationPage() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public ProductManager getProductManager() {
+            return app.getProductManager();
+        }
+
+        @Override
+        public Product getSelectedProduct() {
+            return app.getSelectedProduct();
+        }
+
+        @Override
+        public Window getApplicationWindow() {
+            return app.getMainFrame();
+        }
+
+        @Override
+        public String getApplicationName() {
+            return app.getInstanceName();
+        }
+
+        @Override
+        public void handleError(String message, Throwable t) {
+            app.handleError(message, t);
+        }
+
+        @Override
+        @Deprecated
+        public PropertyMap getPreferences() {
+            return app.getCompatiblePreferences();
+        }
+
+        @Override
+        public ProductSceneView getSelectedProductSceneView() {
+            return app.getSelectedProductSceneView();
         }
     }
 }

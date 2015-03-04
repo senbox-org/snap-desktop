@@ -22,14 +22,13 @@ import org.esa.beam.framework.datamodel.GeoPos;
 import org.esa.beam.framework.datamodel.PixelPos;
 import org.esa.beam.framework.ui.PixelPositionListener;
 import org.esa.beam.framework.ui.product.ProductSceneView;
-import org.esa.snap.netbeans.docwin.DocumentWindowManager;
 import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.view.SyncImageCursorsAction;
+import org.esa.snap.rcp.util.ListenerSupport;
 import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
 import org.openide.util.WeakListeners;
 import org.openide.windows.OnShowing;
-import org.openide.windows.TopComponent;
 
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
@@ -73,9 +72,9 @@ public class ImageCursorSynchronizer implements Runnable, PreferenceChangeListen
         if (PROPERTY_KEY_AUTO_SYNC_CURSORS.equals(evt.getKey())) {
             if (isActive()) {
                 initPsvOverlayMap();
-                DocumentWindowManager.getDefault().addListener(psvOverlayMapUpdater);
+                ListenerSupport.installSceneViewListener(psvOverlayMapUpdater);
             } else {
-                DocumentWindowManager.getDefault().removeListener(psvOverlayMapUpdater);
+                ListenerSupport.uninstallSceneViewListener(psvOverlayMapUpdater);
                 clearPsvOverlayMap();
             }
         }
@@ -139,32 +138,16 @@ public class ImageCursorSynchronizer implements Runnable, PreferenceChangeListen
         }
     }
 
-    private class PsvListUpdater implements DocumentWindowManager.Listener {
+    private class PsvListUpdater extends ListenerSupport.SceneViewListener {
 
         @Override
-        public void windowOpened(DocumentWindowManager.Event e) {
-            TopComponent topComponent = e.getDocumentWindow().getTopComponent();
-            if (topComponent instanceof ProductSceneViewTopComponent) {
-                ProductSceneView view = ((ProductSceneViewTopComponent) topComponent).getView();
-                addPPL(view);
-            }
+        public void opened(ProductSceneView view) {
+            addPPL(view);
         }
 
         @Override
-        public void windowClosed(DocumentWindowManager.Event e) {
-            TopComponent topComponent = e.getDocumentWindow().getTopComponent();
-            if (topComponent instanceof ProductSceneViewTopComponent) {
-                ProductSceneView view = ((ProductSceneViewTopComponent) topComponent).getView();
-                removePPL(view);
-            }
-        }
-
-        @Override
-        public void windowSelected(DocumentWindowManager.Event e) {
-        }
-
-        @Override
-        public void windowDeselected(DocumentWindowManager.Event e) {
+        public void closed(ProductSceneView view) {
+            removePPL(view);
         }
     }
 

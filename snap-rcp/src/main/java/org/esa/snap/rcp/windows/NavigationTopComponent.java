@@ -35,20 +35,28 @@ import org.esa.snap.rcp.actions.help.HelpAction;
 import org.esa.snap.rcp.actions.view.SyncImageCursorsAction;
 import org.esa.snap.rcp.actions.view.SyncImageViewsAction;
 import org.esa.snap.rcp.nav.NavigationCanvas;
+import org.esa.snap.rcp.util.ListenerSupport;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.util.HelpCtx;
-import org.openide.util.Lookup;
-import org.openide.util.LookupEvent;
-import org.openide.util.LookupListener;
 import org.openide.util.NbBundle;
 import org.openide.util.Utilities;
-import org.openide.util.WeakListeners;
 import org.openide.windows.TopComponent;
 
-import javax.swing.*;
+import javax.swing.AbstractButton;
+import javax.swing.BorderFactory;
+import javax.swing.JFormattedTextField;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSlider;
+import javax.swing.JSpinner;
+import javax.swing.JTextField;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.text.NumberFormatter;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.geom.Rectangle2D;
@@ -57,14 +65,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
-import static java.lang.Math.abs;
-import static java.lang.Math.floor;
-import static java.lang.Math.log;
-import static java.lang.Math.log10;
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-import static java.lang.Math.pow;
-import static java.lang.Math.round;
+import static java.lang.Math.*;
 
 @TopComponent.Description(
         preferredID = "NavigationTopComponent",
@@ -89,7 +90,7 @@ import static java.lang.Math.round;
 /**
  * A window which displays product spectra.
  */
-public class NavigationTopComponent extends TopComponent implements LookupListener {
+public class NavigationTopComponent extends TopComponent {
 
     public static final String ID = NavigationTopComponent.class.getName();
 
@@ -123,8 +124,17 @@ public class NavigationTopComponent extends TopComponent implements LookupListen
 
     public NavigationTopComponent() {
         initComponent();
-        Lookup.Result<ProductSceneView> productSceneViewResult = Utilities.actionsGlobalContext().lookupResult(ProductSceneView.class);
-        productSceneViewResult.addLookupListener(WeakListeners.create(LookupListener.class, this, productSceneViewResult));
+        ListenerSupport.installSceneViewListener(new ListenerSupport.SceneViewListener() {
+            @Override
+            public void deselected(ProductSceneView view) {
+                setCurrentView(null);
+            }
+
+            @Override
+            public void selected(ProductSceneView view) {
+                setCurrentView(view);
+            }
+        });
     }
 
     public void initComponent() {
@@ -282,11 +292,6 @@ public class NavigationTopComponent extends TopComponent implements LookupListen
 
         updateCurrentView();
         updateState();
-    }
-
-    @Override
-    public void resultChanged(LookupEvent ev) {
-        updateCurrentView();
     }
 
     private void updateCurrentView() {

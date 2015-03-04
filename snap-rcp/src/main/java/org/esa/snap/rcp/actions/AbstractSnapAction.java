@@ -15,28 +15,22 @@
  */
 package org.esa.snap.rcp.actions;
 
-import org.esa.beam.framework.datamodel.Product;
-import org.esa.beam.framework.datamodel.ProductManager;
 import org.esa.beam.framework.ui.AppContext;
-import org.esa.beam.framework.ui.application.ApplicationPage;
-import org.esa.beam.framework.ui.product.ProductSceneView;
-import org.esa.beam.util.PropertyMap;
 import org.esa.snap.rcp.SnapApp;
 import org.openide.util.HelpCtx;
 
 import javax.swing.AbstractAction;
-import java.awt.Window;
 
 
 public abstract class AbstractSnapAction extends AbstractAction implements HelpCtx.Provider {
 
     public static final String HELP_ID = "helpId";
 
-    private SnapContext appContext;
+    private SnapApp.SnapContext appContext;
 
     public AppContext getAppContext() {
         if (appContext == null) {
-            appContext = new SnapContext();
+            appContext = new SnapApp.SnapContext();
         }
         return appContext;
     }
@@ -62,49 +56,4 @@ public abstract class AbstractSnapAction extends AbstractAction implements HelpC
         return null;
     }
 
-    private static class SnapContext implements AppContext {
-
-        private final SnapApp app = SnapApp.getDefault();
-
-        @Override
-        public ApplicationPage getApplicationPage() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public ProductManager getProductManager() {
-            return app.getProductManager();
-        }
-
-        @Override
-        public Product getSelectedProduct() {
-            return app.getSelectedProduct();
-        }
-
-        @Override
-        public Window getApplicationWindow() {
-            return app.getMainFrame();
-        }
-
-        @Override
-        public String getApplicationName() {
-            return app.getInstanceName();
-        }
-
-        @Override
-        public void handleError(String message, Throwable t) {
-            app.handleError(message, t);
-        }
-
-        @Override
-        @Deprecated
-        public PropertyMap getPreferences() {
-            return app.getCompatiblePreferences();
-        }
-
-        @Override
-        public ProductSceneView getSelectedProductSceneView() {
-            return app.getSelectedProductSceneView();
-        }
-    }
 }

@@ -18,6 +18,7 @@
     <properties>
         <snap.version>${project.version}</snap.version>
         <netbeans.version>RELEASE802</netbeans.version>
+        <doc-windows.version>1.0-SNAPSHOT</doc-windows.version>
     </properties>
 
     <modules>
@@ -38,6 +39,7 @@
         <module>snap-opendap-ui</module>
         <module>snap-pixel-extraction-ui</module>
         <module>snap-scripting</module>
+        <module>snap-timeseries-ui</module>
         <module>snap-unmix-ui</module>
     </modules>
 
@@ -140,7 +142,11 @@
                 <version>${netbeans.version}</version>
             </dependency>
 
-
+            <dependency>
+                <groupId>org.esa.snap.netbeans</groupId>
+                <artifactId>doc-windows</artifactId>
+                <version>${doc-windows.version}</version>
+            </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>snap-rcp</artifactId>

@@ -20,7 +20,7 @@ import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle;
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
@@ -103,6 +103,7 @@ public final class SaveProductAsAction extends AbstractAction {
                                                       DimapProductHelpers.createDimapFileFilter(),
                                                       DimapProductConstants.DIMAP_HEADER_FILE_EXTENSION,
                                                       fileName,
+                                                      null,
                                                       OpenProductAction.PREFERENCES_KEY_LAST_PRODUCT_DIR);
         if (newFile == null) {
             // cancelled
