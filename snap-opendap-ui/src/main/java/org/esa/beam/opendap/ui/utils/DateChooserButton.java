@@ -1,4 +1,4 @@
-package org.esa.beam.opendap.utils;
+package org.esa.beam.opendap.ui.utils;
 
 import org.jfree.ui.DateChooserPanel;
 

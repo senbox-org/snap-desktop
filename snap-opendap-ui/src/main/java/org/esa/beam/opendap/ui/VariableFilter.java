@@ -1,13 +1,13 @@
 package org.esa.beam.opendap.ui;
 
 import com.bc.ceres.swing.progress.ProgressBarProgressMonitor;
-import com.jidesoft.list.CheckBoxListSelectionModelWithWrapper;
-import com.jidesoft.list.FilterableCheckBoxList;
-import com.jidesoft.list.FilterableListModel;
-import com.jidesoft.list.QuickListFilterField;
+import com.jidesoft.swing.CheckBoxList;
+import com.jidesoft.swing.CheckBoxListSelectionModel;
+import com.jidesoft.swing.LabeledTextField;
 import org.esa.beam.framework.ui.GridBagUtils;
 import org.esa.beam.opendap.datamodel.DAPVariable;
 import org.esa.beam.opendap.datamodel.OpendapLeaf;
+import org.esa.beam.opendap.ui.utils.FilteredListModel;
 import org.esa.beam.opendap.utils.VariableCollector;
 
 import javax.swing.JButton;
@@ -19,8 +19,12 @@ import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.ListModel;
 import javax.swing.SwingWorker;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
@@ -38,17 +42,18 @@ import java.util.logging.Logger;
 
 public class VariableFilter implements FilterComponent, CatalogTree.CatalogTreeListener {
 
+    private static final Logger LOG = Logger.getLogger(VariableFilter.class.getName());
     private static final int MAX_THREAD_COUNT = 10;
-    public static final Logger LOG = Logger.getLogger(VariableFilter.class.getName());
     private final JCheckBox filterCheckBox;
     private VariableCollector collector = new VariableCollector();
 
-    private FilterListModel listModel;
+    private VariableListModel listModel;
     private JButton selectAllButton;
     private JButton selectNoneButton;
     private JButton applyButton;
-    private FilterableCheckBoxList checkBoxList;
-    private QuickListFilterField field;
+    private LabeledTextField filterField;
+    private FilteredListModel<DAPVariable> filteredListModel;
+    private CheckBoxList checkBoxList;
     private List<FilterChangeListener> listeners;
     private final HashSet<VariableFilterPreparator> filterPreparators = new HashSet<>();
     private final List<VariableFilterPreparator> filterPreparatorsInWait = new ArrayList<>();
@@ -75,10 +80,22 @@ public class VariableFilter implements FilterComponent, CatalogTree.CatalogTreeL
         return panel;
     }
 
+
+    private void initComponents() {
+        applyButton = new JButton("Apply");
+        selectAllButton = new JButton("Select all");
+        selectNoneButton = new JButton("Select none");
+        listModel = new VariableListModel();
+        filterField = new LabeledTextField();
+        filteredListModel = new FilteredListModel<>(listModel);
+        checkBoxList = new ToolTippedCheckBoxList(filteredListModel);
+        progressBar = new JProgressBar();
+        statusLabel = new JLabel("");
+        percentageLabel = new JLabel("");
+        pm = new VariableFilterProgressBarProgressMonitor(progressBar, statusLabel, percentageLabel);
+    }
+
     private void configureComponents() {
-        checkBoxList.getCheckBoxListSelectionModel().getModel().getElementAt(0);
-
-
         selectAllButton.addActionListener(e -> {
             int variableCount = checkBoxList.getModel().getSize();
             int[] selectedIndices = new int[variableCount];
@@ -103,13 +120,13 @@ public class VariableFilter implements FilterComponent, CatalogTree.CatalogTreeL
             updateUI(useFilter, useFilter, useFilter);
         });
         checkBoxList.getCheckBoxListSelectionModel().addListSelectionListener(e -> {
-            CheckBoxListSelectionModelWithWrapper model = (CheckBoxListSelectionModelWithWrapper) e.getSource();
+            CheckBoxListSelectionModel model = (CheckBoxListSelectionModel) e.getSource();
             int anchorSelectionIndex = model.getAnchorSelectionIndex();
             if (e.getValueIsAdjusting() || anchorSelectionIndex == -1) {
                 return;
             }
             for (int i = 0; i < listModel.getSize(); i++) {
-                DAPVariable variable = (DAPVariable) listModel.getElementAt(i);
+                DAPVariable variable = listModel.getElementAt(i);
                 DAPVariable currentVariable = (DAPVariable) model.getModel().getElementAt(anchorSelectionIndex);
                 if (variable.equals(currentVariable)) {
                     boolean isSelected = model.isSelectedIndex(anchorSelectionIndex);
@@ -119,11 +136,12 @@ public class VariableFilter implements FilterComponent, CatalogTree.CatalogTreeL
             updateUI(true, true, true);
         });
 
-        listModel.addListDataListener(field.getDisplayListModel());
         Font font = selectAllButton.getFont().deriveFont(10.0F);
         selectAllButton.setFont(font);
         selectNoneButton.setFont(font);
-        field.setHintText("Type here to filter variables");
+        filterField.setHintText("Type here to filter variables");
+        filterField.getTextField().getDocument().addDocumentListener(new FilterDocumentListener());
+
         progressBar.setVisible(false);
     }
 
@@ -135,25 +153,13 @@ public class VariableFilter implements FilterComponent, CatalogTree.CatalogTreeL
         GridBagUtils.addToPanel(panel, statusLabel, gbc, "insets.top=5, anchor=WEST");
         GridBagUtils.addToPanel(panel, progressBar, gbc, "gridx=1,fill=HORIZONTAL, weightx=1.0");
         GridBagUtils.addToPanel(panel, percentageLabel, gbc, "insets.left=5, gridx=2, fill=NONE, weightx=0.0");
-        GridBagUtils.addToPanel(panel, field, gbc, "insets.left=0, gridx=0, gridy=1, gridwidth=3, fill=HORIZONTAL, weightx=1.0");
+        GridBagUtils.addToPanel(panel, filterField, gbc, "insets.left=0, gridx=0, gridy=1, gridwidth=3, fill=HORIZONTAL, weightx=1.0");
         GridBagUtils.addToPanel(panel, scrollPane, gbc, "gridy=2");
         GridBagUtils.addToPanel(panel, selectAllButton, gbc, "insets.right=5, gridy=3, gridwidth=1, fill=NONE, weightx=0");
         GridBagUtils.addToPanel(panel, selectNoneButton, gbc, "gridx=1");
         GridBagUtils.addToPanel(panel, applyButton, gbc, "insets.right=0, gridx=2, gridy=4, anchor=EAST");
     }
 
-    private void initComponents() {
-        applyButton = new JButton("Apply");
-        selectAllButton = new JButton("Select all");
-        selectNoneButton = new JButton("Select none");
-        listModel = new FilterListModel();
-        field = new QuickListFilterField(listModel);
-        checkBoxList = new ToolTippedCheckBoxList(field.getDisplayListModel());
-        progressBar = new JProgressBar();
-        statusLabel = new JLabel("");
-        percentageLabel = new JLabel("");
-        pm = new VariableFilterProgressBarProgressMonitor(progressBar, statusLabel, percentageLabel);
-    }
 
     @Override
     public boolean accept(OpendapLeaf leaf) {
@@ -191,7 +197,7 @@ public class VariableFilter implements FilterComponent, CatalogTree.CatalogTreeL
         selectNoneButton.setEnabled(filterCheckBox.isSelected() && enableSelectNoneButton && someSelected);
         applyButton.setEnabled(filterCheckBox.isSelected() && enableApplyButton && filtersAvailable);
         checkBoxList.setEnabled(filterCheckBox.isSelected());
-        field.setEnabled(filterCheckBox.isSelected());
+        filterField.setEnabled(filterCheckBox.isSelected());
     }
 
     @Override
@@ -220,7 +226,7 @@ public class VariableFilter implements FilterComponent, CatalogTree.CatalogTreeL
         listModel.variableToSelected.clear();
     }
 
-    private static class FilterListModel implements ListModel {
+    private static class VariableListModel implements ListModel<DAPVariable> {
 
         private SortedSet<DAPVariable> allVariables = new TreeSet<>();
         private Map<DAPVariable, Boolean> variableToSelected = new HashMap<>();
@@ -239,8 +245,8 @@ public class VariableFilter implements FilterComponent, CatalogTree.CatalogTreeL
         }
 
         @Override
-        public Object getElementAt(int index) {
-            return allVariables.toArray()[index];
+        public DAPVariable getElementAt(int index) {
+            return (DAPVariable) allVariables.toArray()[index];
         }
 
         @Override
@@ -380,9 +386,9 @@ public class VariableFilter implements FilterComponent, CatalogTree.CatalogTreeL
         }
     }
 
-    private class ToolTippedCheckBoxList extends FilterableCheckBoxList {
+    private class ToolTippedCheckBoxList extends CheckBoxList {
 
-        public ToolTippedCheckBoxList(FilterableListModel displayListModel) {
+        public ToolTippedCheckBoxList(ListModel displayListModel) {
             super(displayListModel);
         }
 
@@ -391,6 +397,39 @@ public class VariableFilter implements FilterComponent, CatalogTree.CatalogTreeL
             int index = locationToIndex(event.getPoint());
             DAPVariable item = (DAPVariable) getModel().getElementAt(index);
             return item.getInfotext();
+        }
+
+    }
+
+    private class FilterDocumentListener implements DocumentListener {
+
+        @Override
+        public void insertUpdate(DocumentEvent e) {
+            updateFilter(getFilterText(e));
+        }
+
+        @Override
+        public void removeUpdate(DocumentEvent e) {
+            updateFilter(getFilterText(e));
+        }
+
+        @Override
+        public void changedUpdate(DocumentEvent e) {
+        }
+
+        private void updateFilter(String text) {
+            filteredListModel.setFilter(element -> element.getName().contains(text.trim()));
+        }
+
+        private String getFilterText(DocumentEvent e) {
+            Document document = e.getDocument();
+            String text = null;
+            try {
+                text = document.getText(0, document.getLength());
+            } catch (BadLocationException e1) {
+                LOG.severe(e1.getMessage());
+            }
+            return text;
         }
 
     }
