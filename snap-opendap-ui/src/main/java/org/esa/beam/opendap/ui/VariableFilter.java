@@ -9,7 +9,6 @@ import org.esa.beam.framework.ui.GridBagUtils;
 import org.esa.beam.opendap.datamodel.DAPVariable;
 import org.esa.beam.opendap.datamodel.OpendapLeaf;
 import org.esa.beam.opendap.utils.VariableCollector;
-import org.esa.beam.util.logging.BeamLogManager;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -22,13 +21,9 @@ import javax.swing.ListModel;
 import javax.swing.SwingWorker;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,10 +34,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.logging.Logger;
 
 public class VariableFilter implements FilterComponent, CatalogTree.CatalogTreeListener {
 
     private static final int MAX_THREAD_COUNT = 10;
+    public static final Logger LOG = Logger.getLogger(VariableFilter.class.getName());
     private final JCheckBox filterCheckBox;
     private VariableCollector collector = new VariableCollector();
 
@@ -53,19 +50,19 @@ public class VariableFilter implements FilterComponent, CatalogTree.CatalogTreeL
     private FilterableCheckBoxList checkBoxList;
     private QuickListFilterField field;
     private List<FilterChangeListener> listeners;
-    private final HashSet<VariableFilterPreparator> filterPreparators = new HashSet<VariableFilterPreparator>();
-    private final List<VariableFilterPreparator> filterPreparatorsInWait = new ArrayList<VariableFilterPreparator>();
+    private final HashSet<VariableFilterPreparator> filterPreparators = new HashSet<>();
+    private final List<VariableFilterPreparator> filterPreparatorsInWait = new ArrayList<>();
     private LabelledProgressBarPM pm;
     private JProgressBar progressBar;
     private JLabel statusLabel;
     private JLabel percentageLabel;
-    private int totalWork;
-    private int worked;
+    private double totalWork;
+    private double worked;
 
     public VariableFilter(JCheckBox filterCheckBox, CatalogTree catalogTree) {
         this.filterCheckBox = filterCheckBox;
         catalogTree.addCatalogTreeListener(this);
-        listeners = new ArrayList<FilterChangeListener>();
+        listeners = new ArrayList<>();
     }
 
     @Override
@@ -82,59 +79,44 @@ public class VariableFilter implements FilterComponent, CatalogTree.CatalogTreeL
         checkBoxList.getCheckBoxListSelectionModel().getModel().getElementAt(0);
 
 
-        selectAllButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int variableCount = checkBoxList.getModel().getSize();
-                int[] selectedIndices = new int[variableCount];
-                for (int i = 0; i < variableCount; i++) {
-                    selectedIndices[i] = i;
-                }
-                checkBoxList.setCheckBoxListSelectedIndices(selectedIndices);
-                updateUI(true, false, true);
+        selectAllButton.addActionListener(e -> {
+            int variableCount = checkBoxList.getModel().getSize();
+            int[] selectedIndices = new int[variableCount];
+            for (int i = 0; i < variableCount; i++) {
+                selectedIndices[i] = i;
             }
+            checkBoxList.setCheckBoxListSelectedIndices(selectedIndices);
+            updateUI(true, false, true);
         });
-        selectNoneButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                checkBoxList.setCheckBoxListSelectedIndices(new int[0]);
-                updateUI(true, true, false);
-            }
+        selectNoneButton.addActionListener(e -> {
+            checkBoxList.setCheckBoxListSelectedIndices(new int[0]);
+            updateUI(true, true, false);
         });
-        applyButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                fireFilterChanged();
-                updateUI(false, selectAllButton.isEnabled(), selectNoneButton.isEnabled());
-            }
+        applyButton.addActionListener(e -> {
+            fireFilterChanged();
+            updateUI(false, selectAllButton.isEnabled(), selectNoneButton.isEnabled());
         });
         filterCheckBox.setEnabled(false);
-        filterCheckBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                boolean useFilter = filterCheckBox.isSelected();
-                fireFilterChanged();
-                updateUI(useFilter, useFilter, useFilter);
-            }
+        filterCheckBox.addActionListener(e -> {
+            boolean useFilter = filterCheckBox.isSelected();
+            fireFilterChanged();
+            updateUI(useFilter, useFilter, useFilter);
         });
-        checkBoxList.getCheckBoxListSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                CheckBoxListSelectionModelWithWrapper model = (CheckBoxListSelectionModelWithWrapper) e.getSource();
-                int anchorSelectionIndex = model.getAnchorSelectionIndex();
-                if (e.getValueIsAdjusting() || anchorSelectionIndex == -1) {
-                    return;
-                }
-                for (int i = 0; i < listModel.getSize(); i++) {
-                    DAPVariable variable = (DAPVariable) listModel.getElementAt(i);
-                    DAPVariable currentVariable = (DAPVariable) model.getModel().getElementAt(anchorSelectionIndex);
-                    if (variable.equals(currentVariable)) {
-                        boolean isSelected = model.isSelectedIndex(anchorSelectionIndex);
-                        setVariableSelected(currentVariable, isSelected);
-                    }
-                }
-                updateUI(true, true, true);
+        checkBoxList.getCheckBoxListSelectionModel().addListSelectionListener(e -> {
+            CheckBoxListSelectionModelWithWrapper model = (CheckBoxListSelectionModelWithWrapper) e.getSource();
+            int anchorSelectionIndex = model.getAnchorSelectionIndex();
+            if (e.getValueIsAdjusting() || anchorSelectionIndex == -1) {
+                return;
             }
+            for (int i = 0; i < listModel.getSize(); i++) {
+                DAPVariable variable = (DAPVariable) listModel.getElementAt(i);
+                DAPVariable currentVariable = (DAPVariable) model.getModel().getElementAt(anchorSelectionIndex);
+                if (variable.equals(currentVariable)) {
+                    boolean isSelected = model.isSelectedIndex(anchorSelectionIndex);
+                    setVariableSelected(currentVariable, isSelected);
+                }
+            }
+            updateUI(true, true, true);
         });
 
         listModel.addListDataListener(field.getDisplayListModel());
@@ -240,9 +222,9 @@ public class VariableFilter implements FilterComponent, CatalogTree.CatalogTreeL
 
     private static class FilterListModel implements ListModel {
 
-        private SortedSet<DAPVariable> allVariables = new TreeSet<DAPVariable>();
-        private Map<DAPVariable, Boolean> variableToSelected = new HashMap<DAPVariable, Boolean>();
-        private Set<ListDataListener> listeners = new HashSet<ListDataListener>();
+        private SortedSet<DAPVariable> allVariables = new TreeSet<>();
+        private Map<DAPVariable, Boolean> variableToSelected = new HashMap<>();
+        private Set<ListDataListener> listeners = new HashSet<>();
 
         void addVariables(DAPVariable[] dapVariables) {
             allVariables.addAll(Arrays.asList(dapVariables));
@@ -293,8 +275,8 @@ public class VariableFilter implements FilterComponent, CatalogTree.CatalogTreeL
     public void catalogElementsInsertionFinished() {
         pm.setPreMessage("Scanning variables... ");
         pm.setPostMessage("");
-        pm.beginTask("", totalWork);
-        pm.worked(worked);
+        pm.beginTask("", (int)totalWork);
+        pm.worked((int)worked);
     }
 
     private class VariableFilterPreparator extends SwingWorker<DAPVariable[], Void> {
@@ -318,8 +300,7 @@ public class VariableFilter implements FilterComponent, CatalogTree.CatalogTreeL
                 DAPVariable[] dapVariables = get();
                 listModel.addVariables(dapVariables);
             } catch (Exception e) {
-                BeamLogManager.getSystemLogger().warning(
-                        "Stopping to scan for variables due to exception: " + e.getMessage());
+                LOG.warning("Stopping to scan for variables due to exception: " + e.getMessage());
             } finally {
                 filterPreparators.remove(this);
                 pm.worked(1);
@@ -329,7 +310,7 @@ public class VariableFilter implements FilterComponent, CatalogTree.CatalogTreeL
                     filterPreparators.add(nextFilterPreparator);
                     nextFilterPreparator.execute();
                 }
-                int percentage = (int) (((double) worked / (double) totalWork) * 100);
+                int percentage = (int) ((worked / totalWork) * 100);
                 pm.setTaskName(percentage + " %");
                 if (filterPreparators.isEmpty()) {
                     updateUI(true, true, true);
