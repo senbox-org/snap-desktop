@@ -18,33 +18,33 @@ import java.awt.BorderLayout;
 import java.util.Collection;
 
 /**
- * Experimental top component which displays infos about selected node(s).
+ * Example top component which displays infos about selected node(s).
  */
 @TopComponent.Description(
-        preferredID = "SelectionObservingTopComponent",
+        preferredID = "ExampleSelectionTopComponent",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
-@TopComponent.Registration(mode = "explorer", openAtStartup = false, position = 2, roles={"developer"})
+@TopComponent.Registration(mode = "explorer", openAtStartup = false, position = 2)
 @TopComponent.OpenActionRegistration(
-        displayName = "#CTL_SelectionExplorerTopComponentName",
-        preferredID = "SelectionExplorerTopComponent"
+        displayName = "#CTL_ExampleSelectionTopComponentName",
+        preferredID = "ExampleSelectionTopComponent"
 )
-@ActionID(category = "Window", id = "org.esa.snap.rcp.window.SelectionObservingTopComponent")
+@ActionID(category = "Window", id = "org.esa.snap.rcp.window.ExampleSelectionTopComponent")
 @ActionReference(path = "Menu/Window/Tool Windows", position = 0)
 @NbBundle.Messages({
-        "CTL_SelectionExplorerTopComponentName=Global Selection",
-        "CTL_SelectionExplorerTopComponentDescription=Displays info about global selection",
+        "CTL_ExampleSelectionTopComponentName=Example Selection",
+        "CTL_ExampleSelectionTopComponentDescription=Displays info about global selection",
 })
-public final class SelectionExplorerTopComponent extends TopComponent implements LookupListener {
+public final class ExampleSelectionTopComponent extends TopComponent implements LookupListener {
 
     private JLabel infoLabel;
     private JTable infoTable;
     private Lookup.Result<Object> result;
 
-    public SelectionExplorerTopComponent() {
+    public ExampleSelectionTopComponent() {
         initComponents();
-        setName(Bundle.CTL_SelectionExplorerTopComponentName());
-        setToolTipText(Bundle.CTL_SelectionExplorerTopComponentDescription());
+        setName(Bundle.CTL_ExampleSelectionTopComponentName());
+        setToolTipText(Bundle.CTL_ExampleSelectionTopComponentDescription());
         putClientProperty(TopComponent.PROP_MAXIMIZATION_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_KEEP_PREFERRED_SIZE_WHEN_SLIDED_IN, Boolean.TRUE);
     }
