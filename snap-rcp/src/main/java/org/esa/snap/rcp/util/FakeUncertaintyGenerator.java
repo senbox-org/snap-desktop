@@ -8,6 +8,7 @@ import org.esa.beam.framework.datamodel.ProductData;
 import org.esa.beam.framework.datamodel.ProductManager;
 import org.esa.beam.framework.datamodel.Stx;
 import org.esa.beam.util.ProductUtils;
+import org.esa.snap.rcp.SnapApp;
 import org.openide.modules.OnStart;
 
 
@@ -29,16 +30,16 @@ public class FakeUncertaintyGenerator {
         @Override
         public void run() {
             if (Boolean.getBoolean("snap.uncertainty.test")) {
-                ListenerSupport.installProductManagerListener(new ProductManager.Listener() {
-                    @Override
-                    public void productAdded(ProductManager.Event event) {
-                        bandCount = addUncertaintyBands(event.getProduct(), bandCount);
-                    }
+                SnapApp.getDefault().getProductManager().addListener(new ProductManager.Listener() {
+                            @Override
+                            public void productAdded(ProductManager.Event event) {
+                                bandCount = addUncertaintyBands(event.getProduct(), bandCount);
+                            }
 
-                    @Override
-                    public void productRemoved(ProductManager.Event event) {
-                    }
-                });
+                            @Override
+                            public void productRemoved(ProductManager.Event event) {
+                            }
+                        });
             }
 
         }

@@ -111,7 +111,7 @@ public class TimeSeriesManagerTopComponent extends TopComponent {
                 }
             }
         }, ProductNode.class);
-        ListenerSupport.installProductManagerListener(new ProductManager.Listener() {
+        SnapApp.getDefault().getProductManager().addListener(new ProductManager.Listener() {
             @Override
             public void productAdded(ProductManager.Event event) {
 

@@ -1,10 +1,8 @@
 package org.esa.snap.rcp.util;
 
-import org.esa.beam.framework.datamodel.ProductManager;
 import org.esa.beam.framework.datamodel.ProductNode;
 import org.esa.beam.framework.ui.product.ProductSceneView;
 import org.esa.snap.netbeans.docwin.DocumentWindowManager;
-import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
 import org.openide.util.Lookup;
 import org.openide.util.LookupListener;
@@ -12,12 +10,19 @@ import org.openide.util.Utilities;
 import org.openide.util.WeakListeners;
 import org.openide.windows.TopComponent;
 
-import java.util.prefs.PreferenceChangeListener;
-
 public class ListenerSupport {
 
     private ListenerSupport() {
     }
+
+//    public void installSceneViewSelectionListener(SceneViewSelectionListener svsl) {
+//        Lookup.Result<ProductSceneView> productSceneViewResult = Utilities.actionsGlobalContext().lookupResult(ProductSceneView.class);
+//        productSceneViewResult.addLookupListener(WeakListeners.create(LookupListener.class,
+//                                                                      ev -> {
+//                                                                          Lookup lookup = Utilities.actionsGlobalContext();
+//                                                                          svsl.selectionChanged(lookup.lookup(ProductSceneView.class));
+//                                                                      }, productSceneViewResult));
+//    }
 
     public static void installSceneViewListener(SceneViewListener svl) {
         DocumentWindowManager.Listener listener = new DocumentWindowManager.Listener() {
@@ -85,21 +90,6 @@ public class ListenerSupport {
         pnsl.result.removeLookupListener(pnsl.listener);
     }
 
-    public static void installProductManagerListener(ProductManager.Listener pml) {
-        SnapApp.getDefault().getProductManager().addListener(pml);
-    }
-
-    public static void uninstallProductManagerListener(ProductManager.Listener pml) {
-        SnapApp.getDefault().getProductManager().removeListener(pml);
-    }
-
-    public static void installPreferenceChangeListener(PreferenceChangeListener pcl) {
-        SnapApp.getDefault().getPreferences().addPreferenceChangeListener(pcl);
-    }
-
-    public static void uninstallPreferenceChangeListener(PreferenceChangeListener pcl) {
-        SnapApp.getDefault().getPreferences().removePreferenceChangeListener(pcl);
-    }
 
     public static abstract class SceneViewListener {
 
@@ -114,11 +104,11 @@ public class ListenerSupport {
 
         }
 
-        public void selected(ProductSceneView view){
+        public void selected(ProductSceneView view) {
 
         }
 
-        public void deselected(ProductSceneView view){
+        public void deselected(ProductSceneView view) {
 
         }
 

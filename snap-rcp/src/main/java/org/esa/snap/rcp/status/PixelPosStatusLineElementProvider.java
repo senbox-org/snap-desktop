@@ -43,7 +43,7 @@ public class PixelPosStatusLineElementProvider extends ListenerSupport.SceneView
 
     public PixelPosStatusLineElementProvider() {
         ListenerSupport.installSceneViewListener(this);
-        ListenerSupport.installPreferenceChangeListener(this);
+        SnapApp.getDefault().getPreferences().addPreferenceChangeListener(this);
         updateSettings();
         label = new JLabel();
     }
