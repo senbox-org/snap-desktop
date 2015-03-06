@@ -71,7 +71,7 @@ import static org.esa.beam.timeseries.core.timeseries.datamodel.AbstractTimeSeri
 )
 @ActionID(category = "Window", id = "org.esa.beam.timeseries.ui.graph.TimeSeriesGraphTopComponent")
 @ActionReferences({
-        @ActionReference(path = "Menu/Window/Tool Windows", position = 1220),
+        @ActionReference(path = "Menu/Window/Tool Windows/Time Series", position = 1220),
         @ActionReference(path = "Toolbars/Time Series", position = 20)
 })
 @NbBundle.Messages({"CTL_TimeSeriesGraphTopComponentName=Time Series Graph"})

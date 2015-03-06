@@ -85,7 +85,7 @@ import java.util.Locale;
 )
 @ActionID(category = "Window", id = "org.esa.beam.timeseries.ui.matrix.TimeSeriesMatrixTopComponent")
 @ActionReferences({
-        @ActionReference(path = "Menu/Window/Tool Windows", position = 1240, separatorAfter = 1250),
+        @ActionReference(path = "Menu/Window/Tool Windows/Time Series", position = 1240, separatorAfter = 1250),
         @ActionReference(path = "Toolbars/Time Series", position = 40)
 })
 @NbBundle.Messages({ "CTL_TimeSeriesMatrixTopComponentName=Time Series Matrix" })
