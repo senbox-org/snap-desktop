@@ -31,11 +31,11 @@ import org.esa.beam.framework.ui.product.ProductSceneView;
 import org.esa.beam.framework.ui.tool.ToolButtonFactory;
 import org.esa.beam.util.math.MathUtils;
 import org.esa.snap.netbeans.docwin.WindowUtilities;
+import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.help.HelpAction;
 import org.esa.snap.rcp.actions.view.SyncImageCursorsAction;
 import org.esa.snap.rcp.actions.view.SyncImageViewsAction;
 import org.esa.snap.rcp.nav.NavigationCanvas;
-import org.esa.snap.rcp.util.ListenerSupport;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.util.HelpCtx;
@@ -124,15 +124,15 @@ public class NavigationTopComponent extends TopComponent {
 
     public NavigationTopComponent() {
         initComponent();
-        ListenerSupport.installSceneViewListener(new ListenerSupport.SceneViewListener() {
+        SnapApp.getDefault().installProductSceneViewSelectionChangeListener(new ProductSceneViewSelectionChangeListener() {
             @Override
-            public void deselected(ProductSceneView view) {
-                setCurrentView(null);
+            public void sceneViewSelected(ProductSceneView first, ProductSceneView... more) {
+                setCurrentView(first);
             }
 
             @Override
-            public void selected(ProductSceneView view) {
-                setCurrentView(view);
+            public void sceneViewDeselected(ProductSceneView first, ProductSceneView... more) {
+                setCurrentView(null);
             }
         });
     }

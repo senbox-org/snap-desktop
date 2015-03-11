@@ -17,6 +17,8 @@ import org.esa.beam.util.PropertyMap;
 import org.esa.snap.rcp.actions.file.SaveProductAction;
 import org.esa.snap.rcp.util.CompatiblePropertyMap;
 import org.esa.snap.rcp.util.ContextGlobalExtenderImpl;
+import org.esa.snap.rcp.util.SceneViewListenerSupport;
+import org.esa.snap.rcp.windows.ProductSceneViewSelectionChangeListener;
 import org.esa.snap.tango.TangoIcons;
 import org.openide.awt.NotificationDisplayer;
 import org.openide.awt.StatusDisplayer;
@@ -79,6 +81,7 @@ public class SnapApp {
     private final static Logger LOG = Logger.getLogger(SnapApp.class.getName());
 
     private final ProductManager productManager;
+    private SceneViewListenerSupport sceneViewListenerSupport;
 
     public static SnapApp getDefault() {
         SnapApp instance = Lookup.getDefault().lookup(SnapApp.class);
@@ -98,6 +101,7 @@ public class SnapApp {
 
         Lookup.Result<ProductNode> productNodeSelection = Utilities.actionsGlobalContext().lookupResult(ProductNode.class);
         productNodeSelection.addLookupListener(ev -> updateMainFrameTitle());
+        sceneViewListenerSupport = new SceneViewListenerSupport();
     }
 
     public ProductManager getProductManager() {
@@ -110,10 +114,6 @@ public class SnapApp {
 
     public Frame getMainFrame() {
         return WindowManager.getDefault().getMainWindow();
-    }
-
-    public ProductNode getSelectedProductNode() {
-        return Utilities.actionsGlobalContext().lookup(ProductNode.class);
     }
 
     public void setStatusBarMessage(String message) {
@@ -181,6 +181,18 @@ public class SnapApp {
                                                   NotificationDisplayer.Category.ERROR);
     }
 
+    public void installProductSceneViewSelectionChangeListener(ProductSceneViewSelectionChangeListener psvscl) {
+        sceneViewListenerSupport.installSelectionChangeListener(psvscl);
+    }
+
+    public ProductSceneView getSelectedProductSceneView() {
+        return Utilities.actionsGlobalContext().lookup(ProductSceneView.class);
+    }
+
+    public ProductNode getSelectedProductNode() {
+        return Utilities.actionsGlobalContext().lookup(ProductNode.class);
+    }
+
     /**
      * @return The currently selected product or {@code null}.
      */
@@ -242,11 +254,6 @@ public class SnapApp {
     private void updateMainFrameTitle() {
         getMainFrame().setTitle(getMainFrameTitle());
     }
-
-    public ProductSceneView getSelectedProductSceneView() {
-        return Utilities.actionsGlobalContext().lookup(ProductSceneView.class);
-    }
-
 
     public void onStart() {
         WindowManager.getDefault().setRole("developer");
