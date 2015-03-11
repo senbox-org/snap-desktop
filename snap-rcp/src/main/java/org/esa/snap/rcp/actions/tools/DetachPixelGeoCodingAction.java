@@ -164,7 +164,7 @@ public class DetachPixelGeoCodingAction extends AbstractAction implements Contex
 
         @Override
         public String getPresentationName() {
-            return Bundle.CTL_AttachPixelGeoCodingDialogTitle();
+            return Bundle.CTL_DetachPixelGeoCodingDialogTitle();
         }
 
         @Override
