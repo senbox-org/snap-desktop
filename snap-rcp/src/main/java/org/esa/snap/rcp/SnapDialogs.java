@@ -8,14 +8,9 @@ import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.util.NbBundle;
 
-import javax.swing.JCheckBox;
-import javax.swing.JComponent;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
+import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.io.File;
 import java.text.MessageFormat;
 import java.util.prefs.Preferences;
@@ -190,6 +185,15 @@ public class SnapDialogs {
         }
     }
 
+    public static Boolean requestOverwriteDecision(String title, File file) {
+        Answer answer = requestDecision(getDialogTitle(title),
+                                        MessageFormat.format(
+                                                "The file ''{0}'' already exists.\nDo you wish to overwrite it?",
+                                                file),
+                                        true, null);
+        return answer == Answer.YES ? Boolean.TRUE : answer == Answer.NO ? Boolean.FALSE : null;
+    }
+
     /**
      * Opens a standard file-open dialog box.
      *
@@ -259,14 +263,10 @@ public class SnapDialogs {
             if (file == null) {
                 return null; // Cancelled
             } else if (file.exists()) {
-                Answer answer = requestDecision(getDialogTitle(title),
-                                                MessageFormat.format(
-                                                        "The file ''{0}'' already exists.\nDo you wish to overwrite it?",
-                                                        file),
-                                                true, null);
-                if (answer == Answer.CANCELLED) {
+                Boolean overwrite = requestOverwriteDecision(title, file);
+                if (overwrite == null) {
                     return null;
-                } else if (answer == Answer.NO) {
+                } else if (!overwrite) {
                     file = null; // No, do not overwrite, let user select another file
                 }
             }
