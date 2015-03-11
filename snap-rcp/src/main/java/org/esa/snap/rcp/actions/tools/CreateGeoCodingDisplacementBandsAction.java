@@ -16,6 +16,7 @@
 
 package org.esa.snap.rcp.actions.tools;
 
+import com.bc.ceres.core.Assert;
 import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
 import org.esa.beam.framework.datamodel.Band;
@@ -26,6 +27,7 @@ import org.esa.beam.framework.datamodel.PixelPos;
 import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.datamodel.ProductData;
 import org.esa.beam.framework.datamodel.ProductNode;
+import org.esa.beam.framework.datamodel.RasterDataNode;
 import org.esa.beam.framework.datamodel.VirtualBand;
 import org.esa.beam.framework.ui.UIUtils;
 import org.esa.snap.rcp.SnapApp;
@@ -34,6 +36,7 @@ import org.esa.snap.rcp.preferences.general.UiBehaviorPanelController;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
+import org.openide.awt.UndoRedo;
 import org.openide.util.ContextAwareAction;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
@@ -44,6 +47,9 @@ import org.openide.util.WeakListeners;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.undo.AbstractUndoableEdit;
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
 import java.awt.Color;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
@@ -134,7 +140,12 @@ public class CreateGeoCodingDisplacementBandsAction extends AbstractAction imple
         final ProgressMonitorSwingWorker swingWorker = new ProgressMonitorSwingWorker<Band[], Object>(mainFrame, dialogTitle) {
             @Override
             protected Band[] doInBackground(ProgressMonitor pm) throws Exception {
-                return createXYDisplacementBands(product, pm);
+                final Band[] xyDisplacementBands = createXYDisplacementBands(product, pm);
+                UndoRedo.Manager undoManager = SnapApp.getDefault().getUndoManager(product);
+                if (undoManager != null) {
+                    undoManager.addEdit(new UndoableDisplacementBands(product, xyDisplacementBands));
+                }
+                return xyDisplacementBands;
             }
 
             @Override
@@ -260,6 +271,55 @@ public class CreateGeoCodingDisplacementBandsAction extends AbstractAction imple
         band05X.setImageInfo(imageInfo);
         band05X.setNoDataValue(Double.NaN);
         band05X.setNoDataValueUsed(true);
+    }
+
+    private static class UndoableDisplacementBands extends AbstractUndoableEdit {
+
+        private Band[] displacementBands;
+        private Product product;
+
+
+        public UndoableDisplacementBands(Product product, Band[] displacementBands) {
+            Assert.notNull(product, "product");
+            Assert.notNull(displacementBands, "displacementBands");
+            this.product = product;
+            this.displacementBands = displacementBands;
+        }
+
+
+        @Override
+        public String getPresentationName() {
+            return Bundle.CTL_CreateGeoCodingDisplacementBandsDialogTitle();
+        }
+
+        @Override
+        public void undo() throws CannotUndoException {
+            super.undo();
+            final RasterDataNode[] rasters = SnapApp.getDefault().getSelectedProductSceneView().getRasters();
+            for (Band displacementBand : displacementBands) {
+                if (product.containsBand(displacementBand.getName())) {
+                    product.removeBand(displacementBand);
+                }
+            }
+        }
+
+        @Override
+        public void redo() throws CannotRedoException {
+            super.redo();
+            for (Band displacementBand : displacementBands) {
+                if (!product.containsBand(displacementBand.getName())) {
+                    product.addBand(displacementBand);
+                    product.fireProductNodeChanged(displacementBand.getName());
+                }
+            }
+        }
+
+        @Override
+        public void die() {
+            product = null;
+            displacementBands = null;
+        }
+
     }
 
 }
