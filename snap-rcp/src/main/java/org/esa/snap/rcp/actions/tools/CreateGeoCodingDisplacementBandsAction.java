@@ -295,7 +295,6 @@ public class CreateGeoCodingDisplacementBandsAction extends AbstractAction imple
         @Override
         public void undo() throws CannotUndoException {
             super.undo();
-            final RasterDataNode[] rasters = SnapApp.getDefault().getSelectedProductSceneView().getRasters();
             for (Band displacementBand : displacementBands) {
                 if (product.containsBand(displacementBand.getName())) {
                     product.removeBand(displacementBand);
