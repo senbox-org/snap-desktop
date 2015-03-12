@@ -10,6 +10,7 @@ import javax.swing.JPanel;
 import javax.swing.JWindow;
 import javax.swing.border.BevelBorder;
 import java.awt.BorderLayout;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -40,7 +41,9 @@ public class DateChooserButton extends JComponent {
         datePickerButton = new JButton();
         datePickerButton.addActionListener(e -> {
             JWindow frame = new JWindow();
-            frame.setLocation(datePickerButton.getLocationOnScreen());
+            Point locationOnScreen = datePickerButton.getLocationOnScreen();
+            locationOnScreen.move(0, datePickerButton.getHeight());
+            frame.setLocation(locationOnScreen);
             JPanel contentPane = new JPanel(new BorderLayout());
             contentPane.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
             datePanel.setDate(date);
