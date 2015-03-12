@@ -39,7 +39,7 @@ import org.esa.beam.timeseries.core.timeseries.datamodel.TimeSeriesListener;
 import org.esa.beam.util.math.MathUtils;
 import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.util.ListenerSupport;
+import org.esa.snap.rcp.util.SelectionChangeSupport;
 import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -95,7 +95,7 @@ public class TimeSeriesPlayerTopComponent extends TopComponent {
     public TimeSeriesPlayerTopComponent() {
         initComponent();
         timeSeriesPlayerTSL = new TimeSeriesPlayerTSL();
-        ListenerSupport.installSceneViewListener(new SceneViewListener());
+        SnapApp.getDefault().addProductSceneViewSelectionChangeListener(new SceneViewSelectionChangeListener());
     }
 
 
@@ -205,26 +205,25 @@ public class TimeSeriesPlayerTopComponent extends TopComponent {
         }
     }
 
-
-    private class SceneViewListener extends ListenerSupport.SceneViewListener {
+    private class SceneViewSelectionChangeListener implements SelectionChangeSupport.Listener<ProductSceneView> {
 
         @Override
-        public void deselected(ProductSceneView view) {
-            if (currentView != view) {
+        public void selected(ProductSceneView first, ProductSceneView... more) {
+            if (currentView != first) {
+                final RasterDataNode viewRaster = first.getRaster();
+                final String viewProductType = viewRaster.getProduct().getProductType();
+                maybeUpdateCurrentView(first, viewProductType);
+            }
+        }
+
+        @Override
+        public void deselected(ProductSceneView first, ProductSceneView... more) {
+            if (currentView != first) {
                 setCurrentView(null);
             }
         }
-
-        @Override
-        public void selected(ProductSceneView view) {
-            if (currentView != view) {
-                final RasterDataNode viewRaster = view.getRaster();
-                final String viewProductType = viewRaster.getProduct().getProductType();
-                maybeUpdateCurrentView(view, viewProductType);
-            }
-        }
-
     }
+
 
     private void maybeUpdateCurrentView(ProductSceneView view, String viewProductType) {
         if (!view.isRGB() &&

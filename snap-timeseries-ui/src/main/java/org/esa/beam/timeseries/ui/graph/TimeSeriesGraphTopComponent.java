@@ -30,7 +30,7 @@ import org.esa.beam.timeseries.core.timeseries.datamodel.AbstractTimeSeries;
 import org.esa.beam.timeseries.core.timeseries.datamodel.TimeSeriesChangeEvent;
 import org.esa.beam.timeseries.core.timeseries.datamodel.TimeSeriesListener;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.util.ListenerSupport;
+import org.esa.snap.rcp.util.SelectionChangeSupport;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.XYPlot;
@@ -121,17 +121,15 @@ public class TimeSeriesGraphTopComponent extends TopComponent {
         if (selectedView != null) {
             maySetCurrentView(selectedView);
         }
-        ListenerSupport.installSceneViewListener(new ListenerSupport.SceneViewListener() {
+        SnapApp.getDefault().addProductSceneViewSelectionChangeListener(new SelectionChangeSupport.Listener<ProductSceneView>() {
             @Override
-            public void deselected(ProductSceneView view) {
-                if (currentView == view) {
-                    maySetCurrentView(null);
-                }
+            public void selected(ProductSceneView first, ProductSceneView... more) {
+                maySetCurrentView(first);
             }
 
             @Override
-            public void selected(ProductSceneView view) {
-                maySetCurrentView(view);
+            public void deselected(ProductSceneView first, ProductSceneView... more) {
+                maySetCurrentView(null);
             }
         });
     }

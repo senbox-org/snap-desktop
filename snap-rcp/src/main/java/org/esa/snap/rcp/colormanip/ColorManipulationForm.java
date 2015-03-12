@@ -44,13 +44,23 @@ import org.esa.beam.util.io.FileUtils;
 import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
-import org.esa.snap.rcp.windows.ProductSceneViewSelectionChangeListener;
+import org.esa.snap.rcp.util.SelectionChangeSupport;
 import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.AbstractButton;
+import javax.swing.BorderFactory;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -79,7 +89,7 @@ import java.util.prefs.Preferences;
 @NbBundle.Messages({
         "CTL_ColorManipulationForm_TitlePrefix=Colour Manipulation"
 })
-class ColorManipulationForm implements ProductSceneViewSelectionChangeListener {
+class ColorManipulationForm implements SelectionChangeSupport.Listener<ProductSceneView> {
 
     private final static String PREFERENCES_KEY_IO_DIR = "visat.color_palettes.dir";
 
@@ -322,7 +332,7 @@ class ColorManipulationForm implements ProductSceneViewSelectionChangeListener {
 
         setProductSceneView(SnapApp.getDefault().getSelectedProductSceneView());
 
-        SnapApp.getDefault().installProductSceneViewSelectionChangeListener(this);
+        SnapApp.getDefault().addProductSceneViewSelectionChangeListener(this);
     }
 
 
@@ -732,12 +742,12 @@ class ColorManipulationForm implements ProductSceneViewSelectionChangeListener {
     }
 
     @Override
-    public void sceneViewSelected(ProductSceneView first, ProductSceneView... more) {
+    public void selected(ProductSceneView first, ProductSceneView... more) {
         setProductSceneView(first);
     }
 
     @Override
-    public void sceneViewDeselected(ProductSceneView first, ProductSceneView... more) {
+    public void deselected(ProductSceneView first, ProductSceneView... more) {
         if (getFormModel().getProductSceneView() == first) {
             setProductSceneView(null);
         }

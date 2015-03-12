@@ -33,7 +33,7 @@ import org.esa.beam.timeseries.core.timeseries.datamodel.TimeCoding;
 import org.esa.beam.timeseries.core.timeseries.datamodel.TimeSeriesListener;
 import org.esa.beam.util.math.MathUtils;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.util.ListenerSupport;
+import org.esa.snap.rcp.util.SelectionChangeSupport;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -122,7 +122,7 @@ public class TimeSeriesMatrixTopComponent extends TopComponent {
     }
 
     private void initUI() {
-        ListenerSupport.installSceneViewListener(sceneViewListener);
+        SnapApp.getDefault().addProductSceneViewSelectionChangeListener(sceneViewListener);
 
         dateLabel = new JLabel(String.format(DATE_PREFIX + " %s", getStartDateString()));
         matrixSizeSpinner = new JSpinner(new SpinnerNumberModel(MATRIX_DEFAULT_VALUE,
@@ -317,18 +317,18 @@ public class TimeSeriesMatrixTopComponent extends TopComponent {
         }
     }
 
-    private class SceneViewListener extends ListenerSupport.SceneViewListener {
+    private class SceneViewListener implements SelectionChangeSupport.Listener<ProductSceneView> {
 
         @Override
-        public void deselected(ProductSceneView view) {
-            if (currentView == view) {
-                setCurrentView(null);
+        public void deselected(ProductSceneView first, ProductSceneView... more) {
+            if (currentView == first) {
+                setCurrentView(first);
             }
         }
 
         @Override
-        public void selected(ProductSceneView view) {
-            setCurrentView(view);
+        public void selected(ProductSceneView first, ProductSceneView... more) {
+            setCurrentView(first);
         }
 
     }

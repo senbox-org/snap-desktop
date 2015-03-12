@@ -1,7 +1,6 @@
 package org.esa.snap.rcp.util;
 
 import org.esa.beam.framework.ui.product.ProductSceneView;
-import org.esa.snap.rcp.windows.ProductSceneViewSelectionChangeListener;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -9,7 +8,7 @@ import org.openide.util.Utilities;
 
 import static org.junit.Assert.*;
 
-public class SceneViewListenerSupportTest {
+public class SelectionChangeSupportTest {
 
     private static ContextGlobalExtender globalExtender;
 
@@ -20,9 +19,9 @@ public class SceneViewListenerSupportTest {
 
     @Test
     public void testSingleSelection() throws Exception {
-        SceneViewListenerSupport sceneViewListenerSupport = new SceneViewListenerSupport();
+        SelectionChangeSupport<ProductSceneView> selectionChangeSupport = new SelectionChangeSupport<>(ProductSceneView.class);
         MySelectionChangeListener changeListener = new MySelectionChangeListener();
-        sceneViewListenerSupport.installSelectionChangeListener(changeListener);
+        selectionChangeSupport.addSelectionChangeListener(changeListener);
 
         ProductSceneView sceneView1 = Mockito.mock(ProductSceneView.class);
         globalExtender.put("view", sceneView1);
@@ -33,9 +32,9 @@ public class SceneViewListenerSupportTest {
 
     @Test
     public void testMultiSelection() throws Exception {
-        SceneViewListenerSupport sceneViewListenerSupport = new SceneViewListenerSupport();
+        SelectionChangeSupport<ProductSceneView> selectionChangeSupport = new SelectionChangeSupport<>(ProductSceneView.class);
         MySelectionChangeListener changeListener = new MySelectionChangeListener();
-        sceneViewListenerSupport.installSelectionChangeListener(changeListener);
+        selectionChangeSupport.addSelectionChangeListener(changeListener);
 
         ProductSceneView sceneView1 = Mockito.mock(ProductSceneView.class);
         ProductSceneView sceneView2 = Mockito.mock(ProductSceneView.class);
@@ -55,19 +54,19 @@ public class SceneViewListenerSupportTest {
         assertEquals(0, changeListener.moreCount);
     }
 
-    private static class MySelectionChangeListener implements ProductSceneViewSelectionChangeListener {
+    private static class MySelectionChangeListener implements SelectionChangeSupport.Listener<ProductSceneView> {
 
         volatile int count = 0;
         volatile int moreCount = 0;
 
         @Override
-        public void sceneViewSelected(ProductSceneView first, ProductSceneView... more) {
+        public void selected(ProductSceneView first, ProductSceneView... more) {
             count++;
             moreCount = more.length;
         }
 
         @Override
-        public void sceneViewDeselected(ProductSceneView first, ProductSceneView... more) {
+        public void deselected(ProductSceneView first, ProductSceneView... more) {
             count--;
             moreCount = more.length;
         }

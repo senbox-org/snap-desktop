@@ -36,6 +36,7 @@ import org.esa.snap.rcp.actions.help.HelpAction;
 import org.esa.snap.rcp.actions.view.SyncImageCursorsAction;
 import org.esa.snap.rcp.actions.view.SyncImageViewsAction;
 import org.esa.snap.rcp.nav.NavigationCanvas;
+import org.esa.snap.rcp.util.SelectionChangeSupport;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.util.HelpCtx;
@@ -124,14 +125,14 @@ public class NavigationTopComponent extends TopComponent {
 
     public NavigationTopComponent() {
         initComponent();
-        SnapApp.getDefault().installProductSceneViewSelectionChangeListener(new ProductSceneViewSelectionChangeListener() {
+        SnapApp.getDefault().addProductSceneViewSelectionChangeListener(new SelectionChangeSupport.Listener<ProductSceneView>() {
             @Override
-            public void sceneViewSelected(ProductSceneView first, ProductSceneView... more) {
+            public void selected(ProductSceneView first, ProductSceneView... more) {
                 setCurrentView(first);
             }
 
             @Override
-            public void sceneViewDeselected(ProductSceneView first, ProductSceneView... more) {
+            public void deselected(ProductSceneView first, ProductSceneView... more) {
                 setCurrentView(null);
             }
         });

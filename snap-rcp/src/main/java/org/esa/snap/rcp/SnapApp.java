@@ -17,8 +17,7 @@ import org.esa.beam.util.PropertyMap;
 import org.esa.snap.rcp.actions.file.SaveProductAction;
 import org.esa.snap.rcp.util.CompatiblePropertyMap;
 import org.esa.snap.rcp.util.ContextGlobalExtenderImpl;
-import org.esa.snap.rcp.util.SceneViewListenerSupport;
-import org.esa.snap.rcp.windows.ProductSceneViewSelectionChangeListener;
+import org.esa.snap.rcp.util.SelectionChangeSupport;
 import org.esa.snap.tango.TangoIcons;
 import org.openide.awt.NotificationDisplayer;
 import org.openide.awt.StatusDisplayer;
@@ -81,7 +80,8 @@ public class SnapApp {
     private final static Logger LOG = Logger.getLogger(SnapApp.class.getName());
 
     private final ProductManager productManager;
-    private SceneViewListenerSupport sceneViewListenerSupport;
+    private SelectionChangeSupport<ProductSceneView> viewSelectionChangeSupport;
+    private SelectionChangeSupport<ProductNode> nodeSelectionChangeSupport;
 
     public static SnapApp getDefault() {
         SnapApp instance = Lookup.getDefault().lookup(SnapApp.class);
@@ -99,9 +99,10 @@ public class SnapApp {
         ExtensionManager.getInstance().register(Product.class, undoManagerProvider);
         productManager.addListener(undoManagerProvider);
 
-        Lookup.Result<ProductNode> productNodeSelection = Utilities.actionsGlobalContext().lookupResult(ProductNode.class);
-        productNodeSelection.addLookupListener(ev -> updateMainFrameTitle());
-        sceneViewListenerSupport = new SceneViewListenerSupport();
+        nodeSelectionChangeSupport = new SelectionChangeSupport<>(ProductNode.class);
+        viewSelectionChangeSupport = new SelectionChangeSupport<>(ProductSceneView.class);
+
+        nodeSelectionChangeSupport.addSelectionChangeListener(new MainFrameTitleUpdater());
     }
 
     public ProductManager getProductManager() {
@@ -181,8 +182,20 @@ public class SnapApp {
                                                   NotificationDisplayer.Category.ERROR);
     }
 
-    public void installProductSceneViewSelectionChangeListener(ProductSceneViewSelectionChangeListener psvscl) {
-        sceneViewListenerSupport.installSelectionChangeListener(psvscl);
+    public void addProductSceneViewSelectionChangeListener(SelectionChangeSupport.Listener<ProductSceneView> psvscl) {
+        viewSelectionChangeSupport.addSelectionChangeListener(psvscl);
+    }
+
+    public void removeProductSceneViewSelectionChangeListener(SelectionChangeSupport.Listener<ProductSceneView> psvscl) {
+        viewSelectionChangeSupport.removeSelectionChangeListener(psvscl);
+    }
+
+    public void addProductNodeSelectionChangeListener(SelectionChangeSupport.Listener<ProductNode> pnscl) {
+        nodeSelectionChangeSupport.addSelectionChangeListener(pnscl);
+    }
+
+    public void removeProductNodeSelectionChangeListener(SelectionChangeSupport.Listener<ProductNode> pnscl) {
+        nodeSelectionChangeSupport.removeSelectionChangeListener(pnscl);
     }
 
     public ProductSceneView getSelectedProductSceneView() {
@@ -516,6 +529,20 @@ public class SnapApp {
         @Override
         public ProductSceneView getSelectedProductSceneView() {
             return app.getSelectedProductSceneView();
+        }
+    }
+
+    private class MainFrameTitleUpdater implements SelectionChangeSupport.Listener<ProductNode> {
+
+        @Override
+        public void selected(ProductNode first, ProductNode... more) {
+            updateMainFrameTitle();
+        }
+
+        @Override
+        public void deselected(ProductNode first, ProductNode... more) {
+            updateMainFrameTitle();
+
         }
     }
 }
