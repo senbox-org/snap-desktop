@@ -24,13 +24,19 @@ import org.esa.beam.framework.datamodel.IndexCoding;
 import org.esa.beam.framework.datamodel.ProductNodeEvent;
 import org.esa.beam.framework.datamodel.RasterDataNode;
 import org.esa.beam.framework.datamodel.Stx;
-import org.esa.snap.rcp.util.ColorCellRenderer;
+import org.esa.beam.framework.ui.color.ColorTableCellEditor;
+import org.esa.beam.framework.ui.color.ColorTableCellRenderer;
 
-import javax.swing.*;
+import javax.swing.AbstractButton;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableRowSorter;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
 import java.text.NumberFormat;
 
 class Discrete1BandTabularForm implements ColorManipulationChildForm {
@@ -49,8 +55,8 @@ class Discrete1BandTabularForm implements ColorManipulationChildForm {
 
         final JTable table = new JTable(tableModel);
         table.setRowSorter(new TableRowSorter<>(tableModel));
-        table.setDefaultRenderer(Color.class, new ColorCellRenderer());
-        table.setDefaultEditor(Color.class, new org.esa.snap.rcp.util.ColorCellEditor());
+        table.setDefaultRenderer(Color.class, new ColorTableCellRenderer());
+        table.setDefaultEditor(Color.class, new ColorTableCellEditor());
         table.getTableHeader().setReorderingAllowed(false);
         table.getColumnModel().getColumn(1).setPreferredWidth(140);
         table.getColumnModel().getColumn(3).setCellRenderer(new PercentageRenderer());
@@ -133,7 +139,7 @@ class Discrete1BandTabularForm implements ColorManipulationChildForm {
         }
 
         public ImageInfo getImageInfo() {
-            return  parentForm.getFormModel().getModifiedImageInfo();
+            return parentForm.getFormModel().getModifiedImageInfo();
         }
 
         @Override

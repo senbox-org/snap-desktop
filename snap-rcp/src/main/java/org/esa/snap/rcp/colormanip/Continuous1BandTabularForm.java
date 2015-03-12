@@ -20,13 +20,16 @@ import org.esa.beam.framework.datamodel.ColorPaletteDef;
 import org.esa.beam.framework.datamodel.ImageInfo;
 import org.esa.beam.framework.datamodel.ProductNodeEvent;
 import org.esa.beam.framework.datamodel.RasterDataNode;
-import org.esa.snap.rcp.util.ColorCellEditor;
-import org.esa.snap.rcp.util.ColorCellRenderer;
+import org.esa.beam.framework.ui.color.ColorTableCellEditor;
+import org.esa.beam.framework.ui.color.ColorTableCellRenderer;
 
-import javax.swing.*;
+import javax.swing.AbstractButton;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
 
 class Continuous1BandTabularForm implements ColorManipulationChildForm {
 
@@ -54,8 +57,8 @@ class Continuous1BandTabularForm implements ColorManipulationChildForm {
         parentForm.getFormModel().modifyMoreOptionsForm(moreOptionsForm);
 
         final JTable table = new JTable(tableModel);
-        table.setDefaultRenderer(Color.class, new ColorCellRenderer());
-        table.setDefaultEditor(Color.class, new ColorCellEditor());
+        table.setDefaultRenderer(Color.class, new ColorTableCellRenderer());
+        table.setDefaultEditor(Color.class, new ColorTableCellEditor());
         table.getTableHeader().setReorderingAllowed(false);
         table.getColumnModel().getColumn(0).setPreferredWidth(140);
         table.getColumnModel().getColumn(1).setPreferredWidth(140);
