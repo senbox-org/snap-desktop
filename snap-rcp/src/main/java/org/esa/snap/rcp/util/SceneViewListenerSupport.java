@@ -10,19 +10,21 @@ import org.openide.util.WeakListeners;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.function.Predicate;
 
 public class SceneViewListenerSupport {
 
     private final Lookup.Result<ProductSceneView> psvResult;
-    private final HashMap<ProductSceneViewSelectionChangeListener, LookupListener> listenerMap;
+    private final LinkedList<ProductSceneViewSelectionChangeListener> psvsclList;
+    private final LookupListener psvLookupListener;
     private Collection<? extends ProductSceneView> currentlySelectedViews;
 
     public SceneViewListenerSupport() {
         currentlySelectedViews = Collections.emptyList();
         psvResult = Utilities.actionsGlobalContext().lookupResult(ProductSceneView.class);
-        listenerMap = new HashMap<>();
+        psvsclList = new LinkedList<>();
+        psvLookupListener = createLookupListener();
     }
 
     public Collection<? extends ProductSceneView> getCurrentlySelectedViews() {
@@ -30,18 +32,20 @@ public class SceneViewListenerSupport {
     }
 
     public void installSelectionChangeListener(ProductSceneViewSelectionChangeListener psvscl) {
-        LookupListener lookupListener = createLookupListener(psvscl);
-        psvResult.addLookupListener(WeakListeners.create(LookupListener.class, lookupListener, psvResult));
-        listenerMap.put(psvscl, lookupListener);
+        if (psvsclList.isEmpty()) { // first listener added --> add LookupListener
+            psvResult.addLookupListener(WeakListeners.create(LookupListener.class, psvLookupListener, psvResult));
+        }
+        psvsclList.add(psvscl);
     }
 
     public void uninstallSelectionChangeListener(ProductSceneViewSelectionChangeListener psvscl) {
-        if (psvResult != null) {
-            psvResult.removeLookupListener(WeakListeners.create(LookupListener.class, listenerMap.get(psvscl), psvResult));
+        psvsclList.remove(psvscl);
+        if (psvsclList.isEmpty()) { // last listener removed --> remove LookupListener
+            psvResult.removeLookupListener(WeakListeners.create(LookupListener.class, psvLookupListener, psvResult));
         }
     }
 
-    private LookupListener createLookupListener(ProductSceneViewSelectionChangeListener psvscl) {
+    private LookupListener createLookupListener() {
         return ev -> {
             Collection<? extends ProductSceneView> allViews = psvResult.allInstances();
 
@@ -64,10 +68,14 @@ public class SceneViewListenerSupport {
             currentlySelectedViews = allViews;
 
             if (firstDeselected != null) {
-                psvscl.sceneViewDeselected(firstDeselected, moreDeselected);
+                for (ProductSceneViewSelectionChangeListener listener : psvsclList) {
+                    listener.sceneViewDeselected(firstDeselected, moreDeselected);
+                }
             }
             if (firstSelected != null) {
-                psvscl.sceneViewSelected(firstSelected, moreSelected);
+                for (ProductSceneViewSelectionChangeListener listener : psvsclList) {
+                    listener.sceneViewSelected(firstSelected, moreSelected);
+                }
             }
 
         };
