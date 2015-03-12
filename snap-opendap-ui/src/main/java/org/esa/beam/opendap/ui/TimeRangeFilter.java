@@ -3,10 +3,10 @@ package org.esa.beam.opendap.ui;
 import com.bc.ceres.binding.ValidationException;
 import org.esa.beam.framework.datamodel.ProductData;
 import org.esa.beam.opendap.datamodel.OpendapLeaf;
-import org.esa.beam.opendap.ui.utils.DateChooserButton;
 import org.esa.beam.opendap.utils.PatternProvider;
 import org.esa.beam.util.StringUtils;
 import org.esa.beam.util.TimeStampExtractor;
+import org.esa.snap.rcp.util.DateChooserButton;
 import ucar.nc2.units.DateRange;
 
 import javax.swing.JButton;

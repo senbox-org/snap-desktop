@@ -1,4 +1,4 @@
-package org.esa.beam.opendap.ui.utils;
+package org.esa.snap.rcp.util;
 
 import javax.swing.AbstractListModel;
 import javax.swing.ListModel;
