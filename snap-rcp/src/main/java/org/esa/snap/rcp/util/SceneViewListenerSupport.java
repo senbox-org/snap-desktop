@@ -43,8 +43,7 @@ public class SceneViewListenerSupport {
 
     private LookupListener createLookupListener(ProductSceneViewSelectionChangeListener psvscl) {
         return ev -> {
-            Lookup lookup = Utilities.actionsGlobalContext();
-            Collection<? extends ProductSceneView> allViews = lookup.lookupAll(ProductSceneView.class);
+            Collection<? extends ProductSceneView> allViews = psvResult.allInstances();
 
             ProductSceneView[] allDeselected = currentlySelectedViews.stream().filter((Predicate<ProductSceneView>) (o) -> !allViews.contains(o)).toArray(ProductSceneView[]::new);
             ProductSceneView firstDeselected = null;
