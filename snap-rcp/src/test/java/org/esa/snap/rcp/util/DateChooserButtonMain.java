@@ -4,7 +4,6 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.WindowConstants;
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -17,7 +16,7 @@ public class DateChooserButtonMain {
 
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -28,9 +27,7 @@ public class DateChooserButtonMain {
             frame.pack();
             frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
             frame.setVisible(true);
-
         });
-
     }
 
     private static Container createPanel() {
