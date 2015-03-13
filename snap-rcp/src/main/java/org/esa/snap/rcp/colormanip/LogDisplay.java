@@ -2,13 +2,14 @@ package org.esa.snap.rcp.colormanip;
 
 import org.esa.beam.framework.datamodel.ColorPaletteDef;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.AbstractButton;
+import javax.swing.JOptionPane;
+import java.awt.Component;
 
 class LogDisplay {
 
     static AbstractButton createButton() {
-        final AbstractButton logDisplayButton = ImageInfoEditorSupport.createToggleButton("icons/LogDisplay24.png");
+        final AbstractButton logDisplayButton = ImageInfoEditorSupport.createToggleButton("/org/esa/snap/rcp/icons/LogDisplay24.png");
         logDisplayButton.setName("logDisplayButton");
         logDisplayButton.setToolTipText("Switch to logarithmic display"); /*I18N*/
         return logDisplayButton;

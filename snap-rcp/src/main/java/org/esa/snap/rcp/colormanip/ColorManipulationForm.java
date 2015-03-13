@@ -31,10 +31,8 @@ import org.esa.beam.framework.datamodel.ProductNodeListenerAdapter;
 import org.esa.beam.framework.datamodel.RasterDataNode;
 import org.esa.beam.framework.datamodel.Stx;
 import org.esa.beam.framework.ui.GridBagUtils;
-import org.esa.beam.framework.ui.UIUtils;
 import org.esa.beam.framework.ui.product.BandChooser;
 import org.esa.beam.framework.ui.product.ProductSceneView;
-import org.esa.beam.framework.ui.tool.ToolButtonFactory;
 import org.esa.beam.util.ProductUtils;
 import org.esa.beam.util.ResourceInstaller;
 import org.esa.beam.util.SystemUtils;
@@ -153,12 +151,8 @@ class ColorManipulationForm implements SelectionChangeSupport.Listener<ProductSc
         updateToolButtons();
     }
 
-    public static AbstractButton createButton(final String iconPath) {
-        return ToolButtonFactory.createButton(UIUtils.loadImageIcon(iconPath), false);
-    }
-
-    public static AbstractButton createToggleButton(final String iconPath) {
-        return ToolButtonFactory.createButton(UIUtils.loadImageIcon(iconPath), true);
+    private static AbstractButton createButton(final String iconPath) {
+        return ImageInfoEditorSupport.createButton(iconPath);
     }
 
     private Component getToolViewPaneControl() {
@@ -288,17 +282,17 @@ class ColorManipulationForm implements SelectionChangeSupport.Listener<ProductSc
 
         moreOptionsPane = new MoreOptionsPane(this, formModel.isMoreOptionsFormCollapsedOnInit());
 
-        resetButton = createButton("icons/Undo24.gif");
+        resetButton = createButton("/org/esa/snap/rcp/icons/Undo24.gif");
         resetButton.setName("ResetButton");
         resetButton.setToolTipText("Reset to defaults"); /*I18N*/
         resetButton.addActionListener(wrapWithAutoApplyActionListener(e -> resetToDefaults()));
 
-        multiApplyButton = createButton("icons/MultiAssignBands24.gif");
+        multiApplyButton = createButton("/org/esa/snap/rcp/icons/MultiAssignBands24.gif");
         multiApplyButton.setName("MultiApplyButton");
         multiApplyButton.setToolTipText("Apply to other bands"); /*I18N*/
         multiApplyButton.addActionListener(e -> applyMultipleColorPaletteDef());
 
-        importButton = createButton("/com/bc/ceres/swing/actions/icons_16x16/document-open.png");
+        importButton = createButton("/tango/22x22/actions/document-open.png");
         importButton.setName("ImportButton");
         importButton.setToolTipText("Import colour palette from text file."); /*I18N*/
         importButton.addActionListener(e -> {
@@ -307,7 +301,7 @@ class ColorManipulationForm implements SelectionChangeSupport.Listener<ProductSc
         });
         importButton.setEnabled(true);
 
-        exportButton = createButton("/com/bc/ceres/swing/actions/icons_16x16/document-save.png");
+        exportButton = createButton("/tango/22x22/actions/document-save-as.png");
         exportButton.setName("ExportButton");
         exportButton.setToolTipText("Save colour palette to text file."); /*I18N*/
         exportButton.addActionListener(e -> {
@@ -316,7 +310,7 @@ class ColorManipulationForm implements SelectionChangeSupport.Listener<ProductSc
         });
         exportButton.setEnabled(true);
 
-        helpButton = createButton("icons/Help22.png");
+        helpButton = createButton("/tango/22x22/apps/help-browser.png");
         helpButton.setToolTipText("Help."); /*I18N*/
         helpButton.setName("helpButton");
         helpButton.addActionListener(e -> toolView.getHelpCtx().display());

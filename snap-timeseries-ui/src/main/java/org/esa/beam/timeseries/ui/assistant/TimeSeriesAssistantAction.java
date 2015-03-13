@@ -18,10 +18,10 @@ package org.esa.beam.timeseries.ui.assistant;
 
 import org.esa.beam.framework.ui.assistant.AssistantPane;
 import org.esa.snap.rcp.actions.AbstractSnapAction;
-import org.esa.snap.tango.TangoIcons;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
+import org.openide.util.ImageUtilities;
 import org.openide.util.NbBundle;
 
 import java.awt.event.ActionEvent;
@@ -32,7 +32,7 @@ import java.awt.event.ActionEvent;
 )
 @ActionRegistration(
         displayName = "#CTL_TimeSeriesAssistantActionName",
-        iconBase = "tango/22x22/actions/appointment-new.png"
+        iconBase = "org/esa/beam/timeseries/ui/icons/timeseries-new24.png"
 )
 @ActionReference(path = "Menu/File", position = 20)
 @NbBundle.Messages({
@@ -42,7 +42,7 @@ import java.awt.event.ActionEvent;
 public class TimeSeriesAssistantAction extends AbstractSnapAction {
 
     public TimeSeriesAssistantAction() {
-        putValue(LARGE_ICON_KEY, TangoIcons.actions_appointment_new(TangoIcons.Res.R22));
+        putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon("/org/esa/beam/timeseries/ui/icons/timeseries-new24.png", false));
     }
 
     @Override

@@ -26,10 +26,10 @@ import org.esa.beam.framework.datamodel.Stx;
 import org.esa.beam.framework.datamodel.StxFactory;
 import org.esa.beam.framework.ui.ImageInfoEditorModel;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import javax.swing.AbstractButton;
+import javax.swing.JPanel;
+import java.awt.BorderLayout;
+import java.awt.Component;
 
 class Continuous1BandGraphicalForm implements ColorManipulationChildForm {
 
@@ -57,36 +57,28 @@ class Continuous1BandGraphicalForm implements ColorManipulationChildForm {
         parentForm.getFormModel().modifyMoreOptionsForm(moreOptionsForm);
 
         logDisplayButton = LogDisplay.createButton();
-        logDisplayButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                final boolean shouldLog10Display = logDisplayButton.isSelected();
-                if (shouldLog10Display) {
-                    final ImageInfo imageInfo = parentForm.getFormModel().getModifiedImageInfo();
-                    final ColorPaletteDef cpd = imageInfo.getColorPaletteDef();
-                    if (LogDisplay.checkApplicability(cpd)) {
-                        setLogarithmicDisplay(parentForm.getFormModel().getRaster(), shouldLog10Display);
-                        parentForm.applyChanges();
-                    } else {
-                        LogDisplay.showNotApplicableInfo(parentForm.getContentPanel());
-                        logDisplayButton.setSelected(false);
-                    }
-                } else {
-                    setLogarithmicDisplay(parentForm.getFormModel().getRaster(), shouldLog10Display);
+        logDisplayButton.addActionListener(e -> {
+            final boolean shouldLog10Display = logDisplayButton.isSelected();
+            if (shouldLog10Display) {
+                final ImageInfo imageInfo = parentForm.getFormModel().getModifiedImageInfo();
+                final ColorPaletteDef cpd = imageInfo.getColorPaletteDef();
+                if (LogDisplay.checkApplicability(cpd)) {
+                    setLogarithmicDisplay(parentForm.getFormModel().getRaster(), true);
                     parentForm.applyChanges();
+                } else {
+                    LogDisplay.showNotApplicableInfo(parentForm.getContentPanel());
+                    logDisplayButton.setSelected(false);
                 }
+            } else {
+                setLogarithmicDisplay(parentForm.getFormModel().getRaster(), false);
+                parentForm.applyChanges();
             }
         });
 
-        evenDistButton = ImageInfoEditorSupport.createButton("icons/EvenDistribution24.gif");
+        evenDistButton = ImageInfoEditorSupport.createButton("/org/esa/snap/rcp/icons/EvenDistribution24.gif");
         evenDistButton.setName("evenDistButton");
-        evenDistButton.setToolTipText("Distribute sliders evenly between first and last slider"); /*I18N*/
-        evenDistButton.addActionListener(parentForm.wrapWithAutoApplyActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                distributeSlidersEvenly();
-            }
-        }));
+        evenDistButton.setToolTipText("Distribute sliders evenly between first and last slider");
+        evenDistButton.addActionListener(parentForm.wrapWithAutoApplyActionListener(e -> distributeSlidersEvenly()));
     }
 
 

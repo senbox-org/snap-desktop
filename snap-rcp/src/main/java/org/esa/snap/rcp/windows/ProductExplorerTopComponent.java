@@ -20,14 +20,13 @@ import org.openide.windows.IOProvider;
 import org.openide.windows.InputOutput;
 import org.openide.windows.TopComponent;
 
-import javax.swing.*;
+import javax.swing.ActionMap;
 import javax.swing.text.DefaultEditorKit;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.logging.Logger;
 
 /**
  * The product explorer tool window.
@@ -36,6 +35,7 @@ import java.util.logging.Logger;
  */
 @TopComponent.Description(
         preferredID = "ProductExplorerTopComponent",
+        iconBase = "org/esa/snap/rcp/icons/RsProduct16.gif",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(
@@ -53,8 +53,6 @@ import java.util.logging.Logger;
         "CTL_ProductExplorerTopComponentDescription=Lists all open products",
 })
 public class ProductExplorerTopComponent extends TopComponent implements ExplorerManager.Provider {
-
-    private static final Logger LOG = Logger.getLogger(ProductExplorerTopComponent.class.getName());
 
     private final ExplorerManager explorerManager = new ExplorerManager();
 

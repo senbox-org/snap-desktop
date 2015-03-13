@@ -60,7 +60,7 @@ import java.util.WeakHashMap;
         position = 1
 )
 @TopComponent.OpenActionRegistration(
-        displayName = "#CTL_TimeSeriesManagerTopComponentName",
+        displayName = "#CTL_TimeSeriesManagerTopComponent_Name",
         preferredID = "TimeSeriesManagerTopComponent"
 )
 @ActionID(category = "Window", id = "org.esa.beam.timeseries.ui.manager.TimeSeriesManagerTopComponent")
@@ -68,7 +68,10 @@ import java.util.WeakHashMap;
         @ActionReference(path = "Menu/Window/Tool Windows/Time Series", position = 1210, separatorBefore = 1200),
         @ActionReference(path = "Toolbars/Time Series", position = 10)
 })
-@NbBundle.Messages({ "CTL_TimeSeriesManagerTopComponentName=Time Series Manager" })
+@NbBundle.Messages({
+        "CTL_TimeSeriesManagerTopComponent_Name=Time Series Manager",
+        "CTL_TimeSeriesManagerTopComponent_ComponentName=Time_Series_Manager"
+})
 /**
  * Main class for the manager tool.
  *
@@ -88,6 +91,7 @@ public class TimeSeriesManagerTopComponent extends TopComponent {
     private final TimeSeriesManagerTSL timeSeriesManagerTSL;
 
     public TimeSeriesManagerTopComponent() {
+        setName(Bundle.CTL_TimeSeriesManagerTopComponent_ComponentName());
         formMap = new WeakHashMap<>();
         timeSeriesManagerTSL = new TimeSeriesManagerTSL();
         initUI();
@@ -97,7 +101,7 @@ public class TimeSeriesManagerTopComponent extends TopComponent {
         setLayout(new BorderLayout());
         setBorder(new EmptyBorder(4, 4, 4, 4));
 
-        prefixTitle = Bundle.CTL_TimeSeriesManagerTopComponentName();
+        prefixTitle = Bundle.CTL_TimeSeriesManagerTopComponent_Name();
 
         setSelectedProduct(SnapApp.getDefault().getSelectedProduct());
 
@@ -232,9 +236,9 @@ public class TimeSeriesManagerTopComponent extends TopComponent {
             final String pinLabel = name;
             final String pinDescription = name;
             final Placemark placemark = Placemark.createPointPlacemark(
-                        PinDescriptor.getInstance(),
-                        pinName, pinLabel, pinDescription,
-                        null, new GeoPos(geoPos), geoCoding);
+                    PinDescriptor.getInstance(),
+                    pinName, pinLabel, pinDescription,
+                    null, new GeoPos(geoPos), geoCoding);
             timeSeries.registerRelation(placemark, geoPos);
         }
     }

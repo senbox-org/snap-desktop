@@ -21,11 +21,11 @@ import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
-import java.awt.*;
+import java.awt.BorderLayout;
 
 @TopComponent.Description(
         preferredID = "ColorManipulationTopComponent",
-        iconBase = "org/esa/snap/rcp/icons/Navigation16.gif",
+        iconBase = "org/esa/snap/rcp/icons/ContrastStretch16.gif",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(
@@ -40,14 +40,18 @@ import java.awt.*;
         preferredID = "ColorManipulationTopComponent"
 )
 @NbBundle.Messages({
-        "CTL_ColorManipulationTopComponent_Name=Colour Manipulation"
+        "CTL_ColorManipulationTopComponent_Name=Colour Manipulation",
+        "CTL_ColorManipulationTopComponent_ComponentName=Colour_Manipulation"
 })
 /**
  * The color manipulation tool window.
  */
 public class ColorManipulationTopComponent extends TopComponent implements HelpCtx.Provider {
 
+    private static final String HELP_ID = "showColorManipulationWnd";
+
     public ColorManipulationTopComponent() {
+        setName(Bundle.CTL_ColorManipulationTopComponent_ComponentName());
         ColorManipulationForm cmf = new ColorManipulationForm(this, new FormModel());
         setLayout(new BorderLayout());
         add(cmf.getContentPanel(), BorderLayout.CENTER);
@@ -55,6 +59,6 @@ public class ColorManipulationTopComponent extends TopComponent implements HelpC
 
     @Override
     public HelpCtx getHelpCtx() {
-        return new HelpCtx("showColorManipulationWnd");
+        return new HelpCtx(HELP_ID);
     }
 }

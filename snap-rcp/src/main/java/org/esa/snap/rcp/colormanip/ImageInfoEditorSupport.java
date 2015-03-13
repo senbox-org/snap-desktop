@@ -16,9 +16,10 @@
 
 package org.esa.snap.rcp.colormanip;
 
-import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import org.esa.beam.framework.ui.tool.ToolButtonFactory;
+import org.openide.util.ImageUtilities;
+
+import javax.swing.AbstractButton;
 
 class ImageInfoEditorSupport {
 
@@ -34,83 +35,48 @@ class ImageInfoEditorSupport {
 
         final ColorManipulationForm form = imageInfoEditor.getParentForm();
 
-        autoStretch95Button = createButton("icons/Auto95Percent24.gif");
+        autoStretch95Button = createButton("/org/esa/snap/rcp/icons/Auto95Percent24.gif");
         autoStretch95Button.setName("AutoStretch95Button");
-        autoStretch95Button.setToolTipText("Auto-adjust to 95% of all pixels"); /*I18N*/
-        autoStretch95Button.addActionListener(form.wrapWithAutoApplyActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                imageInfoEditor.compute95Percent();
-            }
-        }));
+        autoStretch95Button.setToolTipText("Auto-adjust to 95% of all pixels");
+        autoStretch95Button.addActionListener(form.wrapWithAutoApplyActionListener(e -> imageInfoEditor.compute95Percent()));
 
-        autoStretch100Button = createButton("icons/Auto100Percent24.gif");
+        autoStretch100Button = createButton("/org/esa/snap/rcp/icons/Auto100Percent24.gif");
         autoStretch100Button.setName("AutoStretch100Button");
-        autoStretch100Button.setToolTipText("Auto-adjust to 100% of all pixels"); /*I18N*/
-        autoStretch100Button.addActionListener(form.wrapWithAutoApplyActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                imageInfoEditor.compute100Percent();
-            }
-        }));
+        autoStretch100Button.setToolTipText("Auto-adjust to 100% of all pixels");
+        autoStretch100Button.addActionListener(form.wrapWithAutoApplyActionListener(e -> imageInfoEditor.compute100Percent()));
 
-        zoomInVButton = createButton("icons/ZoomIn24V.gif");
+        zoomInVButton = createButton("/org/esa/snap/rcp/icons/ZoomIn24V.gif");
         zoomInVButton.setName("zoomInVButton");
-        zoomInVButton.setToolTipText("Stretch histogram vertically"); /*I18N*/
-        zoomInVButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                imageInfoEditor.computeZoomInVertical();
-            }
-        });
+        zoomInVButton.setToolTipText("Stretch histogram vertically");
+        zoomInVButton.addActionListener(e -> imageInfoEditor.computeZoomInVertical());
 
-        zoomOutVButton = createButton("icons/ZoomOut24V.gif");
+        zoomOutVButton = createButton("/org/esa/snap/rcp/icons/ZoomOut24V.gif");
         zoomOutVButton.setName("zoomOutVButton");
-        zoomOutVButton.setToolTipText("Shrink histogram vertically"); /*I18N*/
-        zoomOutVButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                imageInfoEditor.computeZoomOutVertical();
-            }
-        });
+        zoomOutVButton.setToolTipText("Shrink histogram vertically");
+        zoomOutVButton.addActionListener(e -> imageInfoEditor.computeZoomOutVertical());
 
-        zoomInHButton = createButton("icons/ZoomIn24H.gif");
+        zoomInHButton = createButton("/org/esa/snap/rcp/icons/ZoomIn24H.gif");
         zoomInHButton.setName("zoomInHButton");
-        zoomInHButton.setToolTipText("Stretch histogram horizontally"); /*I18N*/
-        zoomInHButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                imageInfoEditor.computeZoomInToSliderLimits();
-            }
-        });
+        zoomInHButton.setToolTipText("Stretch histogram horizontally");
+        zoomInHButton.addActionListener(e -> imageInfoEditor.computeZoomInToSliderLimits());
 
-        zoomOutHButton = createButton("icons/ZoomOut24H.gif");
+        zoomOutHButton = createButton("/org/esa/snap/rcp/icons/ZoomOut24H.gif");
         zoomOutHButton.setName("zoomOutHButton");
-        zoomOutHButton.setToolTipText("Shrink histogram horizontally"); /*I18N*/
-        zoomOutHButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                imageInfoEditor.computeZoomOutToFullHistogramm();
-            }
-        });
+        zoomOutHButton.setToolTipText("Shrink histogram horizontally");
+        zoomOutHButton.addActionListener(e -> imageInfoEditor.computeZoomOutToFullHistogramm());
 
-        showExtraInfoButton = createToggleButton("icons/Information24.gif");
+        showExtraInfoButton = createToggleButton("/org/esa/snap/rcp/icons/Information24.gif");
         showExtraInfoButton.setName("ShowExtraInfoButton");
         showExtraInfoButton.setToolTipText("Show extra information");
         showExtraInfoButton.setSelected(imageInfoEditor.getShowExtraInfo());
-        showExtraInfoButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                imageInfoEditor.setShowExtraInfo(showExtraInfoButton.isSelected());
-            }
-        });
+        showExtraInfoButton.addActionListener(e -> imageInfoEditor.setShowExtraInfo(showExtraInfoButton.isSelected()));
     }
 
     public static AbstractButton createToggleButton(String s) {
-        return ColorManipulationForm.createToggleButton(s);
+        return ToolButtonFactory.createButton(ImageUtilities.loadImageIcon(s, false), true);
     }
 
     public static AbstractButton createButton(String s) {
-        return ColorManipulationForm.createButton(s);
+        return ToolButtonFactory.createButton(ImageUtilities.loadImageIcon(s, false), false);
     }
 }

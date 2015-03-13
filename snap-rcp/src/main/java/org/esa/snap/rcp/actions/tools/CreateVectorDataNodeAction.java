@@ -44,8 +44,10 @@ import org.openide.util.HelpCtx;
 import org.openide.util.ImageUtilities;
 import org.openide.util.NbBundle.Messages;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JPanel;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.text.MessageFormat;
 
@@ -56,7 +58,7 @@ import java.text.MessageFormat;
 @ActionRegistration(
         displayName = "#CTL_CreateVectorDataNodeActionText",
         popupText = "#CTL_CreateVectorDataNodeActionPopupText",
-        iconBase = "org/esa/snap/rcp/icons/NewVectorDataNode16.gif"
+        iconBase = "org/esa/snap/rcp/icons/NewVectorDataNode24.gif"
 )
 @ActionReference(
         path = "Toolbars/Tools",

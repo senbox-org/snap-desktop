@@ -28,8 +28,11 @@ import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.SwingConstants;
+import java.awt.BorderLayout;
+import java.awt.Component;
 
 
 /**
@@ -37,7 +40,7 @@ import java.awt.*;
  */
 @TopComponent.Description(
         preferredID = "UncertaintyVisualisationTopComponent",
-        iconBase = "org/esa/snap/rcp/icons/Navigation16.gif",
+        iconBase = "org/esa/snap/rcp/icons/UncertaintyStretch16.png",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(
@@ -52,7 +55,8 @@ import java.awt.*;
         preferredID = "UncertaintyVisualisationTopComponent"
 )
 @NbBundle.Messages({
-        "CTL_UncertaintyVisualisationTopComponent_Name=Uncertainty Visualisation"
+        "CTL_UncertaintyVisualisationTopComponent_Name=Uncertainty Visualisation",
+        "CTL_UncertaintyVisualisationTopComponent_ComponentName=Uncertainty_Visualisation"
 })
 public class UncertaintyVisualisationTopComponent extends TopComponent {
 
@@ -60,6 +64,7 @@ public class UncertaintyVisualisationTopComponent extends TopComponent {
 
 
     public UncertaintyVisualisationTopComponent() {
+        setName(Bundle.CTL_UncertaintyVisualisationTopComponent_ComponentName());
         ColorManipulationForm cmf = new ColorManipulationForm(this, new MyFormModel());
         setLayout(new BorderLayout());
         add(cmf.getContentPanel(), BorderLayout.CENTER);
