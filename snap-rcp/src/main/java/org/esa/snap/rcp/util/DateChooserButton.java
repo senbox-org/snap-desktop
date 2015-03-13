@@ -2,7 +2,6 @@ package org.esa.snap.rcp.util;
 
 import org.jfree.ui.DateChooserPanel;
 
-import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -11,7 +10,6 @@ import javax.swing.JWindow;
 import javax.swing.border.BevelBorder;
 import java.awt.BorderLayout;
 import java.awt.Point;
-import java.awt.event.ActionEvent;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Calendar;
@@ -38,25 +36,22 @@ public class DateChooserButton extends JComponent {
     }
 
     private void initUI() {
-        DateChooserPanel datePanel = new DateChooserPanel(getCalendar(), true);
+        DateChooserPanel datePanel = new MyDateChooserPanel();
+        datePanel.setDate(date);
+        datePanel.addPropertyChangeListener(PROPERTY_NAME_DATE, evt -> {
+            DateChooserButton.this.setDate((Date) evt.getNewValue());
+            closeWindow();
+        });
+
         datePickerButton = new JButton();
         datePickerButton.addActionListener(e -> {
-            if (window != null) {
-                closeWindow();
+            if (closeWindow()) {
                 return;
             }
             window = new JWindow();
             JPanel contentPane = new JPanel(new BorderLayout());
             contentPane.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
-            datePanel.setDate(date);
             contentPane.add(datePanel, BorderLayout.CENTER);
-            contentPane.add(new JButton(new AbstractAction("OK") {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    setDate(datePanel.getDate());
-                    closeWindow();
-                }
-            }), BorderLayout.SOUTH);
             window.setContentPane(contentPane);
             window.pack();
             Point locationOnScreen = datePickerButton.getLocationOnScreen();
@@ -69,9 +64,13 @@ public class DateChooserButton extends JComponent {
         updateButtonLabel();
     }
 
-    private void closeWindow() {
-        window.setVisible(false);
-        window = null;
+    private boolean closeWindow() {
+        if (window != null) {
+            window.setVisible(false);
+            window = null;
+            return true;
+        }
+        return false;
     }
 
     public SimpleDateFormat getDateFormat() {
@@ -103,4 +102,17 @@ public class DateChooserButton extends JComponent {
         datePickerButton.setText(dateFormat.format(date));
     }
 
+    private class MyDateChooserPanel extends DateChooserPanel {
+
+        public MyDateChooserPanel() {
+            super(DateChooserButton.this.getCalendar(), true);
+        }
+
+        @Override
+        public void setDate(Date theDate) {
+            Date oldDate = getDate();
+            super.setDate(theDate);
+            firePropertyChange(PROPERTY_NAME_DATE, oldDate, theDate);
+        }
+    }
 }
