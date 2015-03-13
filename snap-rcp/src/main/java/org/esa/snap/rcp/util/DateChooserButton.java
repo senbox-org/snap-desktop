@@ -36,36 +36,38 @@ public class DateChooserButton extends JComponent {
     }
 
     private void initUI() {
-        DateChooserPanel datePanel = new MyDateChooserPanel();
-        datePanel.setDate(date);
-        datePanel.addPropertyChangeListener(PROPERTY_NAME_DATE, evt -> {
-            DateChooserButton.this.setDate((Date) evt.getNewValue());
-            closeWindow();
-        });
-
         datePickerButton = new JButton();
         datePickerButton.addActionListener(e -> {
-            if (closeWindow()) {
-                return;
+            if (!closeWindow()) {
+                showWindow();
             }
-            window = new JWindow();
-            JPanel contentPane = new JPanel(new BorderLayout());
-            contentPane.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
-            contentPane.add(datePanel, BorderLayout.CENTER);
-            window.setContentPane(contentPane);
-            window.pack();
-            Point locationOnScreen = datePickerButton.getLocationOnScreen();
-            locationOnScreen.y += datePickerButton.getHeight();
-            window.setLocation(locationOnScreen);
-            window.setVisible(true);
         });
         this.setLayout(new BorderLayout());
         this.add(datePickerButton, BorderLayout.CENTER);
         updateButtonLabel();
     }
 
+    private void showWindow() {
+        DateChooserPanel datePanel = new MyDateChooserPanel();
+        datePanel.setDate(date);
+        datePanel.addPropertyChangeListener(PROPERTY_NAME_DATE, evt -> {
+            DateChooserButton.this.setDate((Date) evt.getNewValue());
+            closeWindow();
+        });
+        window = new JWindow();
+        JPanel contentPane = new JPanel(new BorderLayout());
+        contentPane.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
+        contentPane.add(datePanel, BorderLayout.CENTER);
+        window.setContentPane(contentPane);
+        window.pack();
+        Point locationOnScreen = datePickerButton.getLocationOnScreen();
+        locationOnScreen.y += datePickerButton.getHeight();
+        window.setLocation(locationOnScreen);
+        window.setVisible(true);
+    }
+
     private boolean closeWindow() {
-        if (window != null) {
+        if (window != null && window.isShowing()) {
             window.setVisible(false);
             window = null;
             return true;
