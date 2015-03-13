@@ -24,6 +24,7 @@ public class DateChooserButton extends JComponent {
     private Date date;
     private Calendar calendar;
     private JButton datePickerButton;
+    private JWindow window;
 
     public DateChooserButton(SimpleDateFormat dateFormat, Date date) {
         this.dateFormat = dateFormat;
@@ -40,10 +41,11 @@ public class DateChooserButton extends JComponent {
         DateChooserPanel datePanel = new DateChooserPanel(getCalendar(), true);
         datePickerButton = new JButton();
         datePickerButton.addActionListener(e -> {
-            JWindow frame = new JWindow();
-            Point locationOnScreen = datePickerButton.getLocationOnScreen();
-            locationOnScreen.move(0, datePickerButton.getHeight());
-            frame.setLocation(locationOnScreen);
+            if (window != null) {
+                closeWindow();
+                return;
+            }
+            window = new JWindow();
             JPanel contentPane = new JPanel(new BorderLayout());
             contentPane.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
             datePanel.setDate(date);
@@ -51,17 +53,25 @@ public class DateChooserButton extends JComponent {
             contentPane.add(new JButton(new AbstractAction("OK") {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    frame.setVisible(false);
                     setDate(datePanel.getDate());
+                    closeWindow();
                 }
             }), BorderLayout.SOUTH);
-            frame.setContentPane(contentPane);
-            frame.pack();
-            frame.setVisible(true);
+            window.setContentPane(contentPane);
+            window.pack();
+            Point locationOnScreen = datePickerButton.getLocationOnScreen();
+            locationOnScreen.y += datePickerButton.getHeight();
+            window.setLocation(locationOnScreen);
+            window.setVisible(true);
         });
         this.setLayout(new BorderLayout());
         this.add(datePickerButton, BorderLayout.CENTER);
         updateButtonLabel();
+    }
+
+    private void closeWindow() {
+        window.setVisible(false);
+        window = null;
     }
 
     public SimpleDateFormat getDateFormat() {
