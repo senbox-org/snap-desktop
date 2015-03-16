@@ -27,7 +27,6 @@ import org.esa.beam.framework.datamodel.PixelPos;
 import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.datamodel.ProductData;
 import org.esa.beam.framework.datamodel.ProductNode;
-import org.esa.beam.framework.datamodel.RasterDataNode;
 import org.esa.beam.framework.datamodel.VirtualBand;
 import org.esa.beam.framework.ui.UIUtils;
 import org.esa.snap.rcp.SnapApp;
@@ -80,7 +79,6 @@ import java.util.concurrent.ExecutionException;
  * of the current geo-coding.
  */
 public class CreateGeoCodingDisplacementBandsAction extends AbstractAction implements ContextAwareAction, LookupListener {
-//public class CreateGeoCodingDisplacementBandsAction {
 
     private final Lookup lookup;
     public static final float[][] OFFSETS = new float[][]{
