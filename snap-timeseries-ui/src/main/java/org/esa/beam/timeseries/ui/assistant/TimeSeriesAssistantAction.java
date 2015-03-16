@@ -42,7 +42,7 @@ import java.awt.event.ActionEvent;
 public class TimeSeriesAssistantAction extends AbstractSnapAction {
 
     public TimeSeriesAssistantAction() {
-        putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon("/org/esa/beam/timeseries/ui/icons/timeseries-new24.png", false));
+        putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon("org/esa/beam/timeseries/ui/icons/timeseries-new24.png", false));
     }
 
     @Override

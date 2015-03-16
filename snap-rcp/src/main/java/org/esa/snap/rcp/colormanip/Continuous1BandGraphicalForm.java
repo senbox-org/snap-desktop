@@ -75,7 +75,7 @@ class Continuous1BandGraphicalForm implements ColorManipulationChildForm {
             }
         });
 
-        evenDistButton = ImageInfoEditorSupport.createButton("/org/esa/snap/rcp/icons/EvenDistribution24.gif");
+        evenDistButton = ImageInfoEditorSupport.createButton("org/esa/snap/rcp/icons/EvenDistribution24.gif");
         evenDistButton.setName("evenDistButton");
         evenDistButton.setToolTipText("Distribute sliders evenly between first and last slider");
         evenDistButton.addActionListener(parentForm.wrapWithAutoApplyActionListener(e -> distributeSlidersEvenly()));
