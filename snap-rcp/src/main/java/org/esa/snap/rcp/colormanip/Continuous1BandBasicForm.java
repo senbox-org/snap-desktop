@@ -24,9 +24,16 @@ import org.esa.beam.framework.datamodel.RasterDataNode;
 import org.esa.beam.framework.datamodel.Stx;
 import org.esa.beam.util.math.Range;
 
-import javax.swing.*;
+import javax.swing.AbstractButton;
+import javax.swing.JButton;
+import javax.swing.JFormattedTextField;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.text.NumberFormatter;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 
@@ -42,7 +49,7 @@ class Continuous1BandBasicForm implements ColorManipulationChildForm {
     private final DiscreteCheckBox discreteCheckBox;
 
 
-    private enum RangeKey {FromPaletteSource, FromData, FromMinMaxFields, FromCurrentPalette;}
+    private enum RangeKey {FromPaletteSource, FromData, FromMinMaxFields, FromCurrentPalette}
     private boolean shouldFireChooserEvent;
     private boolean hidden = false;
 
