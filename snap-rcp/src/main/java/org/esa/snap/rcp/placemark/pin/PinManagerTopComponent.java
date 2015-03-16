@@ -9,23 +9,26 @@ import org.esa.snap.rcp.placemark.PlacemarkManagerTopComponent;
 import org.esa.snap.rcp.placemark.TableModelFactory;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
 import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
 @TopComponent.Description(
         preferredID = "PinManagerTopComponent",
-        iconBase = "org/esa/snap/rcp/icons/PinManager16.gif",
+        iconBase = "org/esa/snap/rcp/icons/PinManager24.gif",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS //todo define
 )
 @TopComponent.Registration(
         mode = "navigator",
-        openAtStartup = false
-//        ,
-//        position = 1
+        openAtStartup = false,
+        position = 1
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.placemark.pin.PinManagerTopComponent")
-@ActionReference(path = "Menu/Window/Tool Windows")
+@ActionReferences({
+                          @ActionReference(path = "Menu/Window/Tool Windows"),
+                          @ActionReference(path = "Toolbars/Views")
+                  })
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_PinManagerTopComponent_Name",
         preferredID = "PinManagerTopComponent"
@@ -37,7 +40,7 @@ import org.openide.windows.TopComponent;
 /**
  * @author Tonio Fincke
  */
-public class PinManagerTopComponent extends PlacemarkManagerTopComponent implements HelpCtx.Provider {
+public class PinManagerTopComponent extends PlacemarkManagerTopComponent {
 
     public PinManagerTopComponent() {
         super(PinDescriptor.getInstance(), new TableModelFactory() {

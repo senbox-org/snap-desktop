@@ -41,6 +41,7 @@ import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.util.SelectionChangeSupport;
 import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
+import org.openide.util.HelpCtx;
 import org.openide.windows.TopComponent;
 
 import javax.swing.BorderFactory;
@@ -92,7 +93,7 @@ import java.util.prefs.Preferences;
 /**
  * @author Tonio Fincke
  */
-public class PlacemarkManagerTopComponent extends TopComponent {
+public class PlacemarkManagerTopComponent extends TopComponent implements HelpCtx.Provider {
 
     public static final String PROPERTY_KEY_IO_DIR = "pin.io.dir";
 
@@ -165,14 +166,8 @@ public class PlacemarkManagerTopComponent extends TopComponent {
         }
         content.setPreferredSize(new Dimension(420, 200));
 
-        //todo enable help
-//        if (getDescriptor().getHelpId() != null) {
-//            HelpSys.enableHelpKey(content, getDescriptor().getHelpId());
-//        }
-
         setCurrentView(snapApp.getSelectedProductSceneView());
         setProduct(snapApp.getSelectedProduct());
-
         snapApp.addProductSceneViewSelectionChangeListener(new ProductSceneViewSelectionChangeListener());
         snapApp.addProductNodeSelectionChangeListener(new ProductSelectionListener());
         snapApp.getProductManager().addListener(new ProductRemovedListener());

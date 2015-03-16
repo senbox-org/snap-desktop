@@ -158,13 +158,10 @@ public class PlacemarkManagerButtons extends JPanel {
             }
         });
 
-        //todo enable help
         final AbstractButton helpButton = createButton("icons/Help22.png");
+        helpButton.setToolTipText("Help."); /*I18N*/
         helpButton.setName("helpButton");
-//        final String helpId = topComponent.getHelpId();
-//        if (helpId != null) {
-//            HelpSys.enableHelpOnButton(helpButton, helpId);
-//        }
+        helpButton.addActionListener(e -> topComponent.getHelpCtx().display());
 
         final GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridy = 1;
