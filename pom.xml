@@ -35,6 +35,8 @@
         <module>snap-binning-ui</module>
         <module>snap-collocation-ui</module>
         <module>snap-desktop-examples</module>
+        <module>snap-gpf-ui</module>
+        <module>snap-graph-builder</module>
         <module>snap-help</module>
         <module>snap-opendap-ui</module>
         <module>snap-pixel-extraction-ui</module>
@@ -155,6 +157,11 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>snap-tango</artifactId>
+                <version>${snap.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>snap-gpf-ui</artifactId>
                 <version>${snap.version}</version>
             </dependency>
 
