@@ -35,7 +35,6 @@ import org.esa.beam.framework.ui.product.BandChooser;
 import org.esa.beam.framework.ui.product.ProductSceneView;
 import org.esa.beam.util.ProductUtils;
 import org.esa.beam.util.ResourceInstaller;
-import org.esa.beam.util.SystemUtils;
 import org.esa.beam.util.io.BeamFileChooser;
 import org.esa.beam.util.io.BeamFileFilter;
 import org.esa.beam.util.io.FileUtils;
@@ -44,6 +43,7 @@ import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.util.SelectionChangeSupport;
 import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
+import org.openide.modules.Places;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
@@ -64,17 +64,9 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.ProviderNotFoundException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
@@ -111,7 +103,7 @@ class ColorManipulationForm implements SelectionChangeSupport.Listener<ProductSc
     private ColorManipulationChildForm continuous3BandGraphicalForm;
     private JPanel toolButtonsPanel;
     private AbstractButton helpButton;
-    private File ioDir;
+    private Path ioDir;
     private JPanel editorPanel;
     private MoreOptionsPane moreOptionsPane;
     private SceneViewImageInfoChangeListener sceneViewChangeListener;
@@ -282,17 +274,17 @@ class ColorManipulationForm implements SelectionChangeSupport.Listener<ProductSc
 
         moreOptionsPane = new MoreOptionsPane(this, formModel.isMoreOptionsFormCollapsedOnInit());
 
-        resetButton = createButton("/org/esa/snap/rcp/icons/Undo24.gif");
+        resetButton = createButton("org/esa/snap/rcp/icons/Undo24.gif");
         resetButton.setName("ResetButton");
         resetButton.setToolTipText("Reset to defaults"); /*I18N*/
         resetButton.addActionListener(wrapWithAutoApplyActionListener(e -> resetToDefaults()));
 
-        multiApplyButton = createButton("/org/esa/snap/rcp/icons/MultiAssignBands24.gif");
+        multiApplyButton = createButton("org/esa/snap/rcp/icons/MultiAssignBands24.gif");
         multiApplyButton.setName("MultiApplyButton");
         multiApplyButton.setToolTipText("Apply to other bands"); /*I18N*/
         multiApplyButton.addActionListener(e -> applyMultipleColorPaletteDef());
 
-        importButton = createButton("/tango/22x22/actions/document-open.png");
+        importButton = createButton("tango/22x22/actions/document-open.png");
         importButton.setName("ImportButton");
         importButton.setToolTipText("Import colour palette from text file."); /*I18N*/
         importButton.addActionListener(e -> {
@@ -301,7 +293,7 @@ class ColorManipulationForm implements SelectionChangeSupport.Listener<ProductSc
         });
         importButton.setEnabled(true);
 
-        exportButton = createButton("/tango/22x22/actions/document-save-as.png");
+        exportButton = createButton("tango/22x22/actions/document-save-as.png");
         exportButton.setName("ExportButton");
         exportButton.setToolTipText("Save colour palette to text file."); /*I18N*/
         exportButton.addActionListener(e -> {
@@ -310,7 +302,7 @@ class ColorManipulationForm implements SelectionChangeSupport.Listener<ProductSc
         });
         exportButton.setEnabled(true);
 
-        helpButton = createButton("/tango/22x22/apps/help-browser.png");
+        helpButton = createButton("tango/22x22/apps/help-browser.png");
         helpButton.setToolTipText("Help."); /*I18N*/
         helpButton.setName("helpButton");
         helpButton.addActionListener(e -> toolView.getHelpCtx().display());
@@ -460,7 +452,6 @@ class ColorManipulationForm implements SelectionChangeSupport.Listener<ProductSc
         }
 
 
-
         // This code replaces visatApp.updateImages(rasters) from BEAM code.
         WindowUtilities.getOpened(ProductSceneViewTopComponent.class).forEach(tc -> {
             final ProductSceneView view = tc.getView();
@@ -474,19 +465,18 @@ class ColorManipulationForm implements SelectionChangeSupport.Listener<ProductSc
     }
 
     private void setIODir(final File dir) {
+        ioDir = dir.toPath();
         if (preferences != null) {
-            preferences.put(PREFERENCES_KEY_IO_DIR, dir.getPath());
+            preferences.put(PREFERENCES_KEY_IO_DIR, ioDir.toString());
         }
-        ioDir = dir;
     }
 
-    protected File getIODir() {
+    protected Path getIODir() {
         if (ioDir == null) {
             if (preferences != null) {
-                ioDir = new File(
-                        preferences.get(PREFERENCES_KEY_IO_DIR, getSystemAuxdataDir().getPath()));
+                ioDir = Paths.get(preferences.get(PREFERENCES_KEY_IO_DIR, getColorPalettesDir().toString()));
             } else {
-                ioDir = getSystemAuxdataDir();
+                ioDir = getColorPalettesDir();
             }
         }
         return ioDir;
@@ -504,14 +494,14 @@ class ColorManipulationForm implements SelectionChangeSupport.Listener<ProductSc
     private void importColorPaletteDef() {
         final ImageInfo targetImageInfo = getFormModel().getModifiedImageInfo();
         if (targetImageInfo == null) {
-            // Normaly this code is unreachable because, the export Button
+            // Normally this code is unreachable because, the export Button
             // is disabled if the _contrastStretchPane has no ImageInfo.
             return;
         }
         final BeamFileChooser fileChooser = new BeamFileChooser();
         fileChooser.setDialogTitle("Import Colour Palette"); /*I18N*/
         fileChooser.setFileFilter(getOrCreateColorPaletteDefinitionFileFilter());
-        fileChooser.setCurrentDirectory(getIODir());
+        fileChooser.setCurrentDirectory(getIODir().toFile());
         final int result = fileChooser.showOpenDialog(getToolViewPaneControl());
         final File file = fileChooser.getSelectedFile();
         if (file != null && file.getParentFile() != null) {
@@ -557,7 +547,7 @@ class ColorManipulationForm implements SelectionChangeSupport.Listener<ProductSc
         }
         int answer = JOptionPane.showConfirmDialog(getToolViewPaneControl(),
                                                    "Automatically distribute points of\n" +
-                                                           "colour palette between min/max?",
+                                                   "colour palette between min/max?",
                                                    "Import Colour Palette",
                                                    JOptionPane.YES_NO_CANCEL_OPTION
         );
@@ -577,14 +567,14 @@ class ColorManipulationForm implements SelectionChangeSupport.Listener<ProductSc
     private void exportColorPaletteDef() {
         final ImageInfo imageInfo = getFormModel().getModifiedImageInfo();
         if (imageInfo == null) {
-            // Normaly this code is unreacable because, the export Button should be
-            // disabled if the color manipulation form have no ImageInfo.
+            // Normally this code is unreachable because, the export Button should be
+            // disabled if the color manipulation form has no ImageInfo.
             return;
         }
         final BeamFileChooser fileChooser = new BeamFileChooser();
         fileChooser.setDialogTitle("Export Colour Palette"); /*I18N*/
         fileChooser.setFileFilter(getOrCreateColorPaletteDefinitionFileFilter());
-        fileChooser.setCurrentDirectory(getIODir());
+        fileChooser.setCurrentDirectory(getIODir().toFile());
         final int result = fileChooser.showSaveDialog(getToolViewPaneControl());
         File file = fileChooser.getSelectedFile();
         if (file != null && file.getParentFile() != null) {
@@ -621,12 +611,10 @@ class ColorManipulationForm implements SelectionChangeSupport.Listener<ProductSc
     }
 
     private void installDefaultColorPalettes() {
-        final URL codeSourceUrl = BeamUiActivator.class.getProtectionDomain().getCodeSource().getLocation();
-        final File auxdataDir = getSystemAuxdataDir();
-        final ResourceInstaller resourceInstaller = new ResourceInstaller(codeSourceUrl, "auxdata/color_palettes/",
-                                                                          auxdataDir);
-        ProgressMonitorSwingWorker swingWorker = new ProgressMonitorSwingWorker(toolView,
-                                                                                "Installing Auxdata...") {
+        Path sourceBasePath = ResourceInstaller.findModuleCodeBasePath(BeamUiActivator.class);
+        final Path auxdataDir = Places.getUserDirectory().toPath();
+        final ResourceInstaller resourceInstaller = new ResourceInstaller(sourceBasePath, "auxdata/color_palettes/", auxdataDir);
+        ProgressMonitorSwingWorker swingWorker = new ProgressMonitorSwingWorker(toolView, "Installing Auxdata...") {
             @Override
             protected Object doInBackground(ProgressMonitor progressMonitor) throws Exception {
                 resourceInstaller.install(".*.cpd", progressMonitor);
@@ -634,18 +622,6 @@ class ColorManipulationForm implements SelectionChangeSupport.Listener<ProductSc
                 return Boolean.TRUE;
             }
 
-            /**
-             * Executed on the <i>Event Dispatch Thread</i> after the {@code doInBackground}
-             * method is finished. The default
-             * implementation does nothing. Subclasses may override this method to
-             * perform completion actions on the <i>Event Dispatch Thread</i>. Note
-             * that you can query status inside the implementation of this method to
-             * determine the result of this task or whether this task has been cancelled.
-             *
-             * @see #doInBackground
-             * @see #isCancelled()
-             * @see #get
-             */
             @Override
             protected void done() {
                 try {
@@ -656,36 +632,11 @@ class ColorManipulationForm implements SelectionChangeSupport.Listener<ProductSc
             }
         };
         swingWorker.executeWithBlocking();
+
     }
 
-    private static Path findModuleCodeBasePath() {
-        try {
-            URI uri = BeamUiActivator.class.getProtectionDomain().getCodeSource().getLocation().toURI();
-
-            try {
-                FileSystem fileSystem = FileSystems.newFileSystem(uri, Collections.emptyMap(), BeamUiActivator.class.getClassLoader());
-                return fileSystem.getPath("/");
-            } catch (ProviderNotFoundException e) {
-                // ok
-            }
-
-            Path path = Paths.get(uri);
-            if (Files.isRegularFile(path)) {
-                try {
-                    FileSystem fileSystem = FileSystems.newFileSystem(path, BeamUiActivator.class.getClassLoader());
-                    return fileSystem.getPath("/");
-                } catch (ProviderNotFoundException e) {
-                    // ok
-                }
-            }
-            return path;
-        } catch (URISyntaxException | IOException e) {
-            throw new RuntimeException("Failed to detect the module's code base path", e);
-        }
-    }
-
-    private File getSystemAuxdataDir() {
-        return new File(SystemUtils.getApplicationDataDir(), "snap-ui/auxdata/color-palettes");
+    private Path getColorPalettesDir() {
+        return Places.getUserDirectory().toPath().resolve("auxdata/color_palettes");
     }
 
     private ImageInfo createDefaultImageInfo() {

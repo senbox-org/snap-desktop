@@ -29,20 +29,27 @@ import org.esa.beam.util.SystemUtils;
 import org.esa.beam.util.io.BeamFileFilter;
 import org.esa.snap.tango.TangoIcons;
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.DefaultListModel;
+import javax.swing.DefaultListSelectionModel;
+import javax.swing.ListModel;
+import javax.swing.ListSelectionModel;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.*;
+import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeSupport;
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 class EndmemberFormModel {
 
-    private DefaultListModel endmemberListModel;
+    private DefaultListModel<Endmember> endmemberListModel;
     private DefaultListSelectionModel endmemberListSelectionModel;
     private int selectedEndmemberIndex;
 
@@ -58,11 +65,11 @@ class EndmemberFormModel {
     private PropertyChangeSupport propertyChangeSupport;
 
     private Color[] defaultColors = new Color[]{Color.BLACK, Color.RED.darker(), Color.GREEN.darker(), Color.BLUE.darker(), Color.YELLOW};
-    private static File defaultEndmemberDir = new File(SystemUtils.getApplicationDataDir(), "beam-unmix/auxdata");
+    private static Path defaultEndmemberDir = SystemUtils.getApplicationDataDir().toPath().resolve("beam-unmix/auxdata");
 
     public EndmemberFormModel(AppContext appContext) {
         this.appContext = appContext;
-        endmemberListModel = new DefaultListModel();
+        endmemberListModel = new DefaultListModel<>();
         endmemberListSelectionModel = new DefaultListSelectionModel();
         endmemberListSelectionModel.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         endmemberListModel.addListDataListener(new EndmemberListDataListener());
@@ -77,20 +84,19 @@ class EndmemberFormModel {
     public Endmember[] getEndmembers() {
         Endmember[] endmembers = new Endmember[endmemberListModel.getSize()];
         for (int i = 0; i < endmembers.length; i++) {
-            endmembers[i] = (Endmember) endmemberListModel.getElementAt(i);
+            endmembers[i] = endmemberListModel.getElementAt(i);
         }
         return endmembers;
     }
 
     public void setEndmembers(Endmember[] endmembers) {
         endmemberListModel.removeAllElements();
-        for (int i = 0; i < endmembers.length; i++) {
-            Endmember endmember = endmembers[i];
+        for (Endmember endmember : endmembers) {
             endmemberListModel.addElement(endmember);
         }
     }
 
-    public ListModel getEndmemberListModel() {
+    public ListModel<Endmember> getEndmemberListModel() {
         return endmemberListModel;
     }
 
@@ -157,8 +163,9 @@ class EndmemberFormModel {
     }
 
     private void ensureDefaultDirSet() {
-        if (!defaultEndmemberDir.exists()) {
-            final ResourceInstaller resourceInstaller = new ResourceInstaller(ResourceInstaller.getSourceUrl(SpectralUnmixingDialog.class),
+        if (!Files.exists(defaultEndmemberDir)) {
+            final ResourceInstaller resourceInstaller = new ResourceInstaller(ResourceInstaller.findModuleCodeBasePath(
+                    SpectralUnmixingDialog.class),
                                                                               "auxdata/", defaultEndmemberDir);
             try {
                 resourceInstaller.install(".*", com.bc.ceres.core.ProgressMonitor.NULL);
@@ -170,7 +177,7 @@ class EndmemberFormModel {
         final String key = DiagramGraphIO.DIAGRAM_GRAPH_IO_LAST_DIR_KEY;
         final PropertyMap preferences = appContext.getPreferences();
         if (preferences.getPropertyString(key, null) == null) {
-            preferences.setPropertyString(key, defaultEndmemberDir.getPath());
+            preferences.setPropertyString(key, defaultEndmemberDir.toFile().getPath());
         }
     }
 
