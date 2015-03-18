@@ -37,12 +37,14 @@
         <module>snap-desktop-examples</module>
         <module>snap-gpf-ui</module>
         <module>snap-graph-builder</module>
+        <module>snap-gui-utilities</module>
         <module>snap-help</module>
         <module>snap-opendap-ui</module>
         <module>snap-pixel-extraction-ui</module>
         <module>snap-scripting</module>
         <module>snap-timeseries-ui</module>
         <module>snap-unmix-ui</module>
+        <module>snap-visat-rcp</module>
     </modules>
 
     <dependencyManagement>
@@ -152,6 +154,11 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>snap-rcp</artifactId>
+                <version>${snap.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.esa.snap</groupId>
+                <artifactId>snap-visat-rcp</artifactId>
                 <version>${snap.version}</version>
             </dependency>
             <dependency>
