@@ -31,7 +31,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>snap-ceres-ui</artifactId>
+            <artifactId>ceres-ui</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
