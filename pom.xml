@@ -43,6 +43,7 @@
         <module>snap-pixel-extraction-ui</module>
         <module>snap-scripting</module>
         <module>snap-timeseries-ui</module>
+        <module>snap-ui</module>
         <module>snap-unmix-ui</module>
         <module>snap-visat-rcp</module>
     </modules>
@@ -154,6 +155,11 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>snap-rcp</artifactId>
+                <version>${snap.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>snap-ui</artifactId>
                 <version>${snap.version}</version>
             </dependency>
             <dependency>
