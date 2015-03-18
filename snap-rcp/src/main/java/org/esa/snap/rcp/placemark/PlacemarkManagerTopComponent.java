@@ -833,7 +833,11 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
 
     @Override
     public UndoRedo getUndoRedo() {
-        return snapApp.getUndoManager(getProduct());
+        final UndoRedo.Manager undoManager = snapApp.getUndoManager(getProduct());
+        if (undoManager != null) {
+            return undoManager;
+        }
+        return UndoRedo.NONE;
     }
 
     private class PlacemarkListener implements ProductNodeListener {
