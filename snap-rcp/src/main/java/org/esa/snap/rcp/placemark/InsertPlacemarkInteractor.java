@@ -25,8 +25,11 @@ import org.esa.beam.framework.ui.product.ProductSceneView;
 import org.esa.snap.rcp.SnapApp;
 import org.openide.awt.UndoRedo;
 
-import javax.swing.undo.AbstractUndoableEdit;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Cursor;
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 
 /**
@@ -88,7 +91,7 @@ public abstract class InsertPlacemarkInteractor extends FigureEditorInteractor {
 
         UndoRedo.Manager undoManager = SnapApp.getDefault().getUndoManager(product);
         if (undoManager != null) {
-            undoManager.addEdit(new UndoablePlacemarkInsertion(product, newPlacemark));
+            undoManager.addEdit(UndoablePlacemarkActionFactory.createUndoablePlacemarkInsertion(product, newPlacemark, placemarkDescriptor));
         }
     }
 
@@ -119,30 +122,4 @@ public abstract class InsertPlacemarkInteractor extends FigureEditorInteractor {
         return null;
     }
 
-    private class UndoablePlacemarkInsertion extends AbstractUndoableEdit {
-        private final Product product;
-        private final Placemark newPlacemark;
-
-        public UndoablePlacemarkInsertion(Product product, Placemark newPlacemark) {
-            this.product = product;
-            this.newPlacemark = newPlacemark;
-        }
-
-        @Override
-        public void undo() {
-            super.undo();
-            placemarkDescriptor.getPlacemarkGroup(product).remove(newPlacemark);
-        }
-
-        @Override
-        public void redo() {
-            super.redo();
-            placemarkDescriptor.getPlacemarkGroup(product).add(newPlacemark);
-        }
-
-        @Override
-        public String getPresentationName() {
-            return "Insert " + placemarkDescriptor.getRoleLabel();
-        }
-    }
 }

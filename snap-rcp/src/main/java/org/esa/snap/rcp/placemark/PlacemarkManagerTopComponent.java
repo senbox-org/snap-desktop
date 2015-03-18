@@ -41,6 +41,7 @@ import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.util.SelectionChangeSupport;
 import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
+import org.openide.awt.UndoRedo;
 import org.openide.util.HelpCtx;
 import org.openide.windows.TopComponent;
 
@@ -49,7 +50,6 @@ import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
@@ -93,7 +93,7 @@ import java.util.prefs.Preferences;
 /**
  * @author Tonio Fincke
  */
-public class PlacemarkManagerTopComponent extends TopComponent implements HelpCtx.Provider {
+public class PlacemarkManagerTopComponent extends TopComponent implements UndoRedo.Provider, HelpCtx.Provider {
 
     public static final String PROPERTY_KEY_IO_DIR = "pin.io.dir";
 
@@ -279,14 +279,6 @@ public class PlacemarkManagerTopComponent extends TopComponent implements HelpCt
         columnModel.getColumn(2).setCellEditor(new FloatCellEditor(-180, 180));
         columnModel.getColumn(3).setCellEditor(new FloatCellEditor(-90, 90));
         columnModel.getColumn(4).setCellEditor(new ColorTableCellEditor());
-//        ColorComboBox comboBox = new ColorComboBox();
-//        comboBox.setColorValueVisible(true);
-//        comboBox.setColorIconVisible(true);
-//        comboBox.setInvalidValueAllowed(false);
-//        comboBox.setAllowDefaultColor(true);
-//        comboBox.setAllowMoreColors(true);
-//        columnModel.getColumn(4).setCellEditor(new ColorCellEditor(comboBox));
-//        columnModel.getColumn(4).setCellEditor(new ColorCE());
     }
 
     private ProductSceneView getSceneView() {
@@ -302,7 +294,7 @@ public class PlacemarkManagerTopComponent extends TopComponent implements HelpCt
             final TiePointGrid[] tiePointGrids = product.getTiePointGrids();
             for (TiePointGrid tiePointGrid : tiePointGrids) {
                 ProductSceneViewTopComponent productSceneViewTopComponent = getProductSceneViewTopComponent(tiePointGrid);
-                if(productSceneViewTopComponent != null) {
+                if (productSceneViewTopComponent != null) {
                     return productSceneViewTopComponent.getView();
                 }
             }
@@ -339,6 +331,10 @@ public class PlacemarkManagerTopComponent extends TopComponent implements HelpCt
         if (PlacemarkDialog.showEditPlacemarkDialog(
                 SwingUtilities.getWindowAncestor(this), product, newPlacemark, placemarkDescriptor)) {
             makePlacemarkNameUnique(newPlacemark);
+            UndoRedo.Manager undoManager = SnapApp.getDefault().getUndoManager(product);
+            if (undoManager != null) {
+                undoManager.addEdit(UndoablePlacemarkActionFactory.createUndoablePlacemarkInsertion(product, newPlacemark, placemarkDescriptor));
+            }
             updateUIState();
         }
     }
@@ -358,6 +354,10 @@ public class PlacemarkManagerTopComponent extends TopComponent implements HelpCt
         if (PlacemarkDialog.showEditPlacemarkDialog(
                 SwingUtilities.getWindowAncestor(this), product, newPlacemark, placemarkDescriptor)) {
             makePlacemarkNameUnique(newPlacemark);
+            UndoRedo.Manager undoManager = SnapApp.getDefault().getUndoManager(product);
+            if (undoManager != null) {
+                undoManager.addEdit(UndoablePlacemarkActionFactory.createUndoablePlacemarkCopying(product, newPlacemark, placemarkDescriptor));
+            }
             updateUIState();
         }
     }
@@ -369,37 +369,42 @@ public class PlacemarkManagerTopComponent extends TopComponent implements HelpCt
     void editActivePin() {
         Guardian.assertNotNull("product", product);
         Placemark activePlacemark = getSelectedPlacemark();
+        Placemark originalPlacemark = Placemark.createPointPlacemark(activePlacemark.getDescriptor(),
+                                                                     activePlacemark.getName(),
+                                                                     activePlacemark.getLabel(),
+                                                                     activePlacemark.getDescription(),
+                                                                     activePlacemark.getPixelPos(),
+                                                                     activePlacemark.getGeoPos(),
+                                                                     activePlacemark.getProduct().getGeoCoding());
         Guardian.assertNotNull("activePlacemark", activePlacemark);
         if (PlacemarkDialog.showEditPlacemarkDialog(SwingUtilities.getWindowAncestor(this), product, activePlacemark,
                                                     placemarkDescriptor)) {
             makePlacemarkNameUnique(activePlacemark);
+            UndoRedo.Manager undoManager = SnapApp.getDefault().getUndoManager(product);
+            if (undoManager != null) {
+                undoManager.addEdit(UndoablePlacemarkActionFactory.createUndoablePlacemarkEditing(product, originalPlacemark, activePlacemark, placemarkDescriptor));
+            }
             updateUIState();
         }
     }
 
     void removeSelectedPins() {
         final List<Placemark> placemarks = getSelectedPlacemarks();
-        int i = JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(this),
-                                              MessageFormat.format(
-                                                      "Do you really want to remove {0} selected {1}(s)?\n" +
-                                                              "This action can not be undone.",
-                                                      placemarks.size(), placemarkDescriptor.getRoleLabel()),
-                                              MessageFormat.format("{0} - Remove {1}s", getTitle(),
-                                                                   placemarkDescriptor.getRoleLabel()),
-                                              JOptionPane.OK_CANCEL_OPTION);
-        if (i == JOptionPane.OK_OPTION) {
-            int selectedRow = placemarkTable.getSelectedRow();
-            for (Placemark placemark : placemarks) {
-                getPlacemarkGroup(product).remove(placemark);
-            }
-            if (selectedRow >= getPlacemarkGroup(product).getNodeCount()) {
-                selectedRow = getPlacemarkGroup(product).getNodeCount() - 1;
-            }
-            if (selectedRow >= 0) {
-                placemarkTable.getSelectionModel().setSelectionInterval(selectedRow, selectedRow);
-            }
-            updateUIState();
+        for (Placemark placemark : placemarks) {
+            getPlacemarkGroup(product).remove(placemark);
         }
+        int selectedRow = placemarkTable.getSelectedRow();
+        if (selectedRow >= getPlacemarkGroup(product).getNodeCount()) {
+            selectedRow = getPlacemarkGroup(product).getNodeCount() - 1;
+        }
+        if (selectedRow >= 0) {
+            placemarkTable.getSelectionModel().setSelectionInterval(selectedRow, selectedRow);
+        }
+        UndoRedo.Manager undoManager = SnapApp.getDefault().getUndoManager(product);
+        if (undoManager != null) {
+            undoManager.addEdit(UndoablePlacemarkActionFactory.createUndoablePlacemarkRemoval(product, placemarks, placemarkDescriptor));
+        }
+        updateUIState();
     }
 
     private int getNumSelectedPlacemarks() {
@@ -421,7 +426,6 @@ public class PlacemarkManagerTopComponent extends TopComponent implements HelpCt
         int[] sortedRowIndexes = placemarkTable.getSelectedRows();
         if (sortedRowIndexes != null) {
             for (int rowIndex : sortedRowIndexes) {
-//                int modelRowIndex = placemarkTable.getActualRowAt(rowIndex);
                 int modelRowIndex = placemarkTable.convertRowIndexToModel(rowIndex);
                 placemarkList.add(placemarkTableModel.getPlacemarkAt(modelRowIndex));
             }
@@ -680,7 +684,7 @@ public class PlacemarkManagerTopComponent extends TopComponent implements HelpCt
                     }
                 } catch (IOException ioe) {
                     SnapDialogs.showError(String.format("I/O Error.\n   Failed to export %ss.\n%s",
-                                          placemarkDescriptor.getRoleLabel(), ioe.getMessage()));
+                                                        placemarkDescriptor.getRoleLabel(), ioe.getMessage()));
                     ioe.printStackTrace();
                 }
             }
@@ -773,7 +777,7 @@ public class PlacemarkManagerTopComponent extends TopComponent implements HelpCt
                     }
                 } catch (IOException ignored) {
                     SnapDialogs.showError(MessageFormat.format("I/O Error.\nFailed to export {0} data table.",  /*I18N*/
-                                                         placemarkDescriptor.getRoleLabel()));
+                                                               placemarkDescriptor.getRoleLabel()));
                 }
             }
         }
@@ -827,6 +831,11 @@ public class PlacemarkManagerTopComponent extends TopComponent implements HelpCt
         return dir;
     }
 
+    @Override
+    public UndoRedo getUndoRedo() {
+        return snapApp.getUndoManager(getProduct());
+    }
+
     private class PlacemarkListener implements ProductNodeListener {
 
         @Override
@@ -863,6 +872,13 @@ public class PlacemarkManagerTopComponent extends TopComponent implements HelpCt
             if (sourceNode instanceof Placemark && sourceNode.getOwner() == placemarkDescriptor.getPlacemarkGroup(
                     product)) {
                 placemarkTableModel.removePlacemark((Placemark) sourceNode);
+                int selectedRow = placemarkTable.getSelectedRow();
+                if (selectedRow >= getPlacemarkGroup(product).getNodeCount()) {
+                    selectedRow = getPlacemarkGroup(product).getNodeCount() - 1;
+                }
+                if (selectedRow >= 0) {
+                    placemarkTable.getSelectionModel().setSelectionInterval(selectedRow, selectedRow);
+                }
                 updateUIState();
             }
         }
@@ -1103,34 +1119,5 @@ public class PlacemarkManagerTopComponent extends TopComponent implements HelpCt
 
         }
     }
-
-    //copied from MaskTable
-//    private static class ColorCE extends ColorCellEditor {
-//        @Override
-//        protected ColorExComboBox createColorComboBox() {
-//        protected ColorComboBox createColorComboBox() {
-//            ColorExComboBox comboBox = super.createColorComboBox();
-//            ColorComboBox comboBox = super.createColorComboBox();
-//            comboBox.setColorValueVisible(true);
-//            comboBox.setColorIconVisible(true);
-//            comboBox.setInvalidValueAllowed(false);
-//            comboBox.setAllowDefaultColor(true);
-//            comboBox.setAllowMoreColors(true);
-//            return comboBox;
-//        }
-//    }
-
-    //copied from MaskTable
-//    private static class ColorCR extends ColorCellRenderer {
-//        @Override
-//        public Component getTableCellRendererComponent(JTable table, Object value,
-//                                                       boolean isSelected, boolean hasFocus, int row, int column) {
-//            setColorIconVisible(true);
-//            setColorValueVisible(true);
-//            setCrossBackGroundStyle(true);
-//            return super.getTableCellRendererComponent(table, value,
-//                                                       isSelected, hasFocus, row, column);
-//        }
-//    }
 
 }
