@@ -141,7 +141,7 @@ public class CreateGeoCodingDisplacementBandsAction extends AbstractAction imple
                 final Band[] xyDisplacementBands = createXYDisplacementBands(product, pm);
                 UndoRedo.Manager undoManager = SnapApp.getDefault().getUndoManager(product);
                 if (undoManager != null) {
-                    undoManager.addEdit(new UndoableDisplacementBands(product, xyDisplacementBands));
+                    undoManager.addEdit(new UndoableDisplacementBandsCreation(product, xyDisplacementBands));
                 }
                 return xyDisplacementBands;
             }
@@ -271,13 +271,13 @@ public class CreateGeoCodingDisplacementBandsAction extends AbstractAction imple
         band05X.setNoDataValueUsed(true);
     }
 
-    private static class UndoableDisplacementBands extends AbstractUndoableEdit {
+    private static class UndoableDisplacementBandsCreation extends AbstractUndoableEdit {
 
         private Band[] displacementBands;
         private Product product;
 
 
-        public UndoableDisplacementBands(Product product, Band[] displacementBands) {
+        public UndoableDisplacementBandsCreation(Product product, Band[] displacementBands) {
             Assert.notNull(product, "product");
             Assert.notNull(displacementBands, "displacementBands");
             this.product = product;
