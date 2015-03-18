@@ -15,51 +15,49 @@
  */
 package org.esa.beam.framework.ui;
 
-import org.esa.beam.framework.help.HelpSys;
-import org.esa.beam.util.Debug;
-import org.esa.beam.util.SystemUtils;
+import org.openide.util.HelpCtx;
+import org.openide.util.NbBundle;
 
-import javax.help.BadIDException;
-import javax.help.DefaultHelpBroker;
-import javax.help.HelpBroker;
-import javax.help.HelpSet;
 import javax.swing.AbstractButton;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
+
 
 /**
  * The <code>AbstractDialog</code> is the base class for {@link ModalDialog} and {@link ModelessDialog},
  * two helper classes used to quickly construct modal and modeless dialogs. The dialogs created with this
  * class have a unique border and font and a standard button row for the typical buttons like "OK", "Cancel" etc.
- * <p/>
+ * <p>
  * <p>Instances of a modal dialog are created with a parent component, a title, the actual dialog content component, and
  * a bit-combination of the standard buttons to be used.
- * <p/>
+ * <p>
  * <p>A limited way of input validation is provided by the  <code>verifyUserInput</code> method which can be overridden
  * in order to return <code>false</code> if a user input is invalid. In this case the {@link #onOK()},
  * {@link #onYes()} and {@link #onNo()} methods are NOT called.
  *
  * @author Norman Fomferra
- * @since BEAM 4.2
  */
+@NbBundle.Messages({
+        "CTL_AbstractDlg_NoHelpThemeAvailable=Sorry, no help theme available.",
+        "CTL_AbstractDlg_NoHelpIDShowingStandard=Sorry, help for id '%s' not available.\nShowing standard help."
+})
 public abstract class AbstractDialog {
 
     public static final int ID_OK = 0x0001;
@@ -84,7 +82,6 @@ public abstract class AbstractDialog {
 
     // Java help support
     private String helpId;
-    private HelpBroker helpBroker;
 
     protected AbstractDialog(JDialog dialog, int buttonMask, Object[] otherButtons, String helpID) {
         this.parent = (Window) dialog.getParent();
@@ -360,8 +357,8 @@ public abstract class AbstractDialog {
      * Clients should override this method to implement a different behaviour.
      */
     protected void onHelp() {
-        if (helpId == null) {
-            showInformationDialog("Sorry, no help theme available."); /*I18N*/
+        if (helpId == null || !new HelpCtx(helpId).display()) {
+            showWarningDialog(String.format(Bundle.CTL_AbstractDlg_NoHelpIDShowingStandard(), helpId));
         }
     }
 
@@ -405,7 +402,7 @@ public abstract class AbstractDialog {
         dialog.setResizable(true);
         dialog.setContentPane(contentPane);
 
-        ArrayList<AbstractButton> buttons = new ArrayList<AbstractButton>();
+        ArrayList<AbstractButton> buttons = new ArrayList<>();
 
         collectButtons(buttons);
 
@@ -415,25 +412,19 @@ public abstract class AbstractDialog {
                     String text = (String) otherItem;
                     JButton otherButton = new JButton(text);
                     otherButton.setName(getQualifiedPropertyName(text));
-                    otherButton.addActionListener(new ActionListener() {
-
-                        public void actionPerformed(ActionEvent e) {
-                            setButtonID(ID_OTHER);
-                            if (verifyUserInput()) {
-                                onOther();
-                            }
+                    otherButton.addActionListener(e -> {
+                        setButtonID(ID_OTHER);
+                        if (verifyUserInput()) {
+                            onOther();
                         }
                     });
                     buttons.add(otherButton);
                 } else if (otherItem instanceof AbstractButton) {
                     AbstractButton otherButton = (AbstractButton) otherItem;
-                    otherButton.addActionListener(new ActionListener() {
-
-                        public void actionPerformed(ActionEvent e) {
-                            setButtonID(ID_OTHER);
-                            if (verifyUserInput()) {
-                                onOther();
-                            }
+                    otherButton.addActionListener(e -> {
+                        setButtonID(ID_OTHER);
+                        if (verifyUserInput()) {
+                            onOther();
                         }
                     });
                     buttons.add(otherButton);
@@ -442,16 +433,13 @@ public abstract class AbstractDialog {
         }
 
         if ((buttonMask & ID_OK) != 0) {
-            JButton button = new JButton("OK");  /*I18N*/
+            JButton button = new JButton("OK");
             button.setMnemonic('O');
             button.setName(getQualifiedPropertyName("ok"));
-            button.addActionListener(new ActionListener() {
-
-                public void actionPerformed(ActionEvent e) {
-                    setButtonID(ID_OK);
-                    if (verifyUserInput()) {
-                        onOK();
-                    }
+            button.addActionListener(e -> {
+                setButtonID(ID_OK);
+                if (verifyUserInput()) {
+                    onOK();
                 }
             });
             buttons.add(button);
@@ -460,16 +448,13 @@ public abstract class AbstractDialog {
             registerButton(ID_OK, button);
         }
         if ((buttonMask & ID_YES) != 0) {
-            JButton button = new JButton("Yes");  /*I18N*/
+            JButton button = new JButton("Yes");
             button.setMnemonic('Y');
             button.setName(getQualifiedPropertyName("yes"));
-            button.addActionListener(new ActionListener() {
-
-                public void actionPerformed(ActionEvent e) {
-                    setButtonID(ID_YES);
-                    if (verifyUserInput()) {
-                        onYes();
-                    }
+            button.addActionListener(e -> {
+                setButtonID(ID_YES);
+                if (verifyUserInput()) {
+                    onYes();
                 }
             });
             buttons.add(button);
@@ -478,46 +463,35 @@ public abstract class AbstractDialog {
             registerButton(ID_YES, button);
         }
         if ((buttonMask & ID_NO) != 0) {
-            JButton button = new JButton("No"); /*I18N*/
+            JButton button = new JButton("No");
             button.setMnemonic('N');
             button.setName(getQualifiedPropertyName("no"));
-            button.addActionListener(new ActionListener() {
-
-                public void actionPerformed(ActionEvent e) {
-                    setButtonID(ID_NO);
-                    if (verifyUserInput()) {
-                        onNo();
-                    }
+            button.addActionListener(e -> {
+                setButtonID(ID_NO);
+                if (verifyUserInput()) {
+                    onNo();
                 }
             });
             buttons.add(button);
             registerButton(ID_NO, button);
         }
         if ((buttonMask & ID_CANCEL) != 0) {
-            JButton button = new JButton("Cancel");  /*I18N*/
+            JButton button = new JButton("Cancel");
             button.setMnemonic('C');
             button.setName(getQualifiedPropertyName("cancel"));
-            button.addActionListener(new ActionListener() {
-
-                public void actionPerformed(ActionEvent e) {
-                    close();
-                }
-            });
+            button.addActionListener(e -> close());
             buttons.add(button);
             button.setVerifyInputWhenFocusTarget(false);
             registerButton(ID_CANCEL, button);
         }
         if ((buttonMask & ID_APPLY) != 0) {
-            JButton button = new JButton("Apply");  /*I18N*/
+            JButton button = new JButton("Apply");
             button.setMnemonic('A');
             button.setName(getQualifiedPropertyName("apply"));
-            button.addActionListener(new ActionListener() {
-
-                public void actionPerformed(ActionEvent e) {
-                    setButtonID(ID_APPLY);
-                    if (verifyUserInput()) {
-                        onApply();
-                    }
+            button.addActionListener(e -> {
+                setButtonID(ID_APPLY);
+                if (verifyUserInput()) {
+                    onApply();
                 }
             });
             buttons.add(button);
@@ -526,15 +500,12 @@ public abstract class AbstractDialog {
             registerButton(ID_APPLY, button);
         }
         if ((buttonMask & ID_CLOSE) != 0) {
-            JButton button = new JButton("Close");  /*I18N*/
+            JButton button = new JButton("Close");
             button.setMnemonic('C');
             button.setName(getQualifiedPropertyName("close"));
-            button.addActionListener(new ActionListener() {
-
-                public void actionPerformed(ActionEvent e) {
-                    setButtonID(ID_CLOSE);
-                    onClose();
-                }
+            button.addActionListener(e -> {
+                setButtonID(ID_CLOSE);
+                onClose();
             });
             button.setToolTipText("Close dialog window");
             buttons.add(button);
@@ -542,31 +513,25 @@ public abstract class AbstractDialog {
             registerButton(ID_CLOSE, button);
         }
         if ((buttonMask & ID_RESET) != 0) {
-            JButton button = new JButton("Reset"); /*I18N*/
+            JButton button = new JButton("Reset");
             button.setName(getQualifiedPropertyName("reset"));
             button.setMnemonic('R');
-            button.addActionListener(new ActionListener() {
-
-                public void actionPerformed(ActionEvent e) {
-                    final int buttonID = ID_RESET;
-                    setButtonID(buttonID);
-                    onReset();
-                }
+            button.addActionListener(e -> {
+                final int buttonID = ID_RESET;
+                setButtonID(buttonID);
+                onReset();
             });
             buttons.add(button);
             registerButton(ID_RESET, button);
         }
 
         if ((buttonMask & ID_HELP) != 0) {
-            JButton button = new JButton("Help"); /*I18N*/
+            JButton button = new JButton("Help");
             button.setName(getQualifiedPropertyName("help"));
             button.setMnemonic('H');
-            button.addActionListener(new ActionListener() {
-
-                public void actionPerformed(ActionEvent e) {
-                    setButtonID(ID_HELP);
-                    onHelp();
-                }
+            button.addActionListener(e -> {
+                setButtonID(ID_HELP);
+                onHelp();
             });
             button.setToolTipText("Show help on this topic.");
             buttons.add(button);
@@ -602,46 +567,10 @@ public abstract class AbstractDialog {
         if (helpId == null) {
             return;
         }
-        if (helpBroker == null) {
-            initHelpBroker();
-        }
-        if (helpBroker == null) {
-            return;
-        }
-        HelpSet helpSet = helpBroker.getHelpSet();
-        try {
-            helpBroker.setCurrentID(helpId);
-        } catch (BadIDException e) {
-            Logger systemLogger = SystemUtils.LOG;
-            if (systemLogger != null) {
-                systemLogger.severe("ModalDialog: '" + helpId + "' is not a valid helpID");
-            } else {
-                Debug.trace(e);
-            }
-        }
-        if (helpSet == null) {
-            return;
-        }
-        if (getJDialog() != null) {
-            helpBroker.enableHelpKey(getJDialog(), helpId, helpSet);
-        }
         if (getJDialog().getContentPane() != null) {
-            helpBroker.enableHelpKey(getJDialog().getContentPane(), helpId, helpSet);
-        }
-        AbstractButton helpButton = getButton(ID_HELP);
-        if (helpButton != null) {
-            helpBroker.enableHelpKey(helpButton, helpId, helpSet);
-            helpBroker.enableHelpOnButton(helpButton, helpId, helpSet);
-        }
-    }
-
-    private void initHelpBroker() {
-        HelpSet helpSet = HelpSys.getHelpSet();
-        if (helpSet != null) {
-            helpBroker = helpSet.createHelpBroker();
-            if (helpBroker instanceof DefaultHelpBroker) {
-                DefaultHelpBroker defaultHelpBroker = (DefaultHelpBroker) helpBroker;
-                defaultHelpBroker.setActivationWindow(getJDialog());
+            Container contentPane = getJDialog().getContentPane();
+            if (contentPane instanceof JComponent) {
+                HelpCtx.setHelpIDString((JComponent) contentPane, helpId);
             }
         }
     }
@@ -651,7 +580,7 @@ public abstract class AbstractDialog {
     }
 
     private void setComponentName(JDialog dialog) {
-        if(this.dialog.getName() == null && dialog.getTitle() != null) {
+        if (this.dialog.getName() == null && dialog.getTitle() != null) {
             dialog.setName(dialog.getTitle().toLowerCase().replaceAll(" ", "_"));
         }
     }

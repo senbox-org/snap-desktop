@@ -27,7 +27,6 @@ import org.esa.beam.framework.gpf.Operator;
 import org.esa.beam.framework.gpf.OperatorSpi;
 import org.esa.beam.framework.gpf.OperatorSpiRegistry;
 import org.esa.beam.framework.gpf.descriptor.OperatorDescriptor;
-import org.esa.beam.framework.help.HelpSys;
 import org.esa.beam.framework.ui.AbstractDialog;
 import org.esa.beam.framework.ui.AppContext;
 import org.esa.beam.framework.ui.ModalDialog;
@@ -35,6 +34,7 @@ import org.esa.beam.framework.ui.UIUtils;
 import org.esa.beam.util.Debug;
 import org.esa.beam.util.SystemUtils;
 import org.esa.beam.util.io.FileUtils;
+import org.openide.util.HelpCtx;
 import org.xmlpull.mxp1.MXParser;
 
 import javax.swing.AbstractAction;
@@ -136,7 +136,7 @@ public class OperatorMenu {
     private JMenuItem createHelpMenuItem() {
         JMenuItem menuItem = new JMenuItem("Help");
         if (helpId != null && !helpId.isEmpty()) {
-            HelpSys.enableHelpOnButton(menuItem, helpId);
+            menuItem.addActionListener(e -> new HelpCtx(helpId).display());
         } else {
             menuItem.setEnabled(false);
         }

@@ -17,10 +17,10 @@
 package org.esa.beam.ui;
 
 import com.bc.ceres.swing.TableLayout;
+import org.esa.beam.framework.ui.ModalDialog;
 import org.esa.beam.framework.ui.UIUtils;
 import org.esa.beam.framework.ui.tool.ToolButtonFactory;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.framework.ui.ModalDialog;
 
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
@@ -61,8 +61,8 @@ public class NamesAssociationDialog extends ModalDialog {
 
     private JTable aliasNames;
     private JScrollPane aliasNameScrollPane;
-    private JList centerNames;
-    private JList rightNames;
+    private JList<String> centerNames;
+    private JList<String> rightNames;
     private AbstractButton removeButton;
     private boolean shown = false;
 
@@ -228,14 +228,14 @@ public class NamesAssociationDialog extends ModalDialog {
     }
 
     private JComponent createCenterList() {
-        centerNames = new JList(new AbstractListModel() {
+        centerNames = new JList<>(new AbstractListModel<String>() {
             @Override
             public int getSize() {
                 return nameProvider.getCenterNames().length;
             }
 
             @Override
-            public Object getElementAt(int index) {
+            public String getElementAt(int index) {
                 return nameProvider.getCenterNames()[index];
             }
         });
@@ -248,7 +248,7 @@ public class NamesAssociationDialog extends ModalDialog {
     }
 
     private JComponent createRightList() {
-        rightNames = new JList(new AbstractListModel() {
+        rightNames = new JList<>(new AbstractListModel<String>() {
 
             @Override
             public int getSize() {
@@ -256,7 +256,7 @@ public class NamesAssociationDialog extends ModalDialog {
             }
 
             @Override
-            public Object getElementAt(int index) {
+            public String getElementAt(int index) {
                 return nameProvider.getRightNames()[index];
             }
         });

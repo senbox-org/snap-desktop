@@ -1487,20 +1487,6 @@
 
         <!-- Help ########################################################################################## -->
 
-        <action>
-            <parent>help</parent>
-            <id>helpTopics</id>
-            <placeFirst>true</placeFirst>
-            <text>Help Topics</text>
-            <class>org.esa.beam.visat.actions.HelpTopicsAction</class>
-            <mnemonic>T</mnemonic>
-            <accelerator>F1</accelerator>
-            <separatorBefore>false</separatorBefore>
-            <description>Opens the VISAT help browser.</description>
-            <smallIcon>icons/Help16.png</smallIcon>
-            <largeIcon>icons/Help22.png</largeIcon>
-            <helpId>visat</helpId>
-        </action>
 
         <action>
             <parent>help</parent>

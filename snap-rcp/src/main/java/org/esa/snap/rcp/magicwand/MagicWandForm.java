@@ -7,19 +7,33 @@ import com.bc.ceres.swing.undo.support.DefaultUndoContext;
 import com.thoughtworks.xstream.XStream;
 import org.esa.beam.framework.datamodel.Band;
 import org.esa.beam.framework.datamodel.Product;
+import org.esa.beam.framework.ui.ModalDialog;
 import org.esa.beam.framework.ui.product.BandChooser;
 import org.esa.beam.framework.ui.product.ProductSceneView;
 import org.esa.beam.framework.ui.tool.ToolButtonFactory;
 import org.esa.beam.util.io.FileUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
-import org.esa.snap.rcp.framework.ui.ModalDialog;
 import org.esa.snap.tango.TangoIcons;
 import org.openide.util.ImageUtilities;
 
-import javax.swing.*;
+import javax.swing.AbstractButton;
+import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
+import javax.swing.JCheckBox;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JSlider;
+import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.GridLayout;
+import java.awt.Insets;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileWriter;
@@ -32,7 +46,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.prefs.Preferences;
 
-import static com.bc.ceres.swing.TableLayout.cell;
+import static com.bc.ceres.swing.TableLayout.*;
 
 /**
  * @author Norman Fomferra

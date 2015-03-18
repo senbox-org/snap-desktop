@@ -17,8 +17,8 @@ package org.esa.snap.rcp.placemark;
 
 import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.ui.GridBagUtils;
+import org.esa.beam.framework.ui.ModalDialog;
 import org.esa.beam.util.Guardian;
-import org.esa.snap.rcp.framework.ui.ModalDialog;
 
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
