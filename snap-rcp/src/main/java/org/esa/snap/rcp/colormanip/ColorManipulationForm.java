@@ -120,6 +120,7 @@ class ColorManipulationForm implements SelectionChangeSupport.Listener<ProductSc
         sceneViewChangeListener = new SceneViewImageInfoChangeListener();
         titlePrefix = this.formModel.getTitlePrefix();
         emptyForm = new EmptyImageInfoForm(this);
+        toolView.setDisplayName(titlePrefix);
     }
 
     public FormModel getFormModel() {
@@ -169,7 +170,6 @@ class ColorManipulationForm implements SelectionChangeSupport.Listener<ProductSc
 
         installChildForm();
 
-        updateTitle();
         updateToolButtons();
 
         updateMultiApplyState();
@@ -226,14 +226,6 @@ class ColorManipulationForm implements SelectionChangeSupport.Listener<ProductSc
         } else {
             childForm.updateFormModel(getFormModel());
         }
-    }
-
-    private void updateTitle() {
-        String titlePostfix = "";
-        if (getFormModel().isValid()) {
-            titlePostfix = " - " + getFormModel().getModelName();
-        }
-        toolView.setDisplayName(titlePrefix + titlePostfix);
     }
 
     private void updateToolButtons() {
@@ -670,10 +662,8 @@ class ColorManipulationForm implements SelectionChangeSupport.Listener<ProductSc
             if (raster != null) {
                 final String propertyName = event.getPropertyName();
                 if (ProductNode.PROPERTY_NAME_NAME.equalsIgnoreCase(propertyName)) {
-                    updateTitle();
                     childForm.handleRasterPropertyChange(event, raster);
                 } else if (RasterDataNode.PROPERTY_NAME_ANCILLARY_BANDS.equalsIgnoreCase(propertyName)) {
-                    updateTitle();
                     childForm.handleRasterPropertyChange(event, raster);
                 } else if (RasterDataNode.PROPERTY_NAME_UNIT.equalsIgnoreCase(propertyName)) {
                     childForm.handleRasterPropertyChange(event, raster);
