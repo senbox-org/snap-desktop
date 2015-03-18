@@ -111,7 +111,6 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
     private TiePointGrid[] selectedGrids;
     private boolean synchronizingPlacemarkSelectedState;
     private AbstractPlacemarkTableModel placemarkTableModel;
-    private String prefixTitle;
     private PlacemarkManagerButtons buttonPane;
     private ProductSceneView currentView;
     private final SelectionChangeListener selectionChangeHandler;
@@ -125,11 +124,11 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
         placemarkTableModel = modelFactory.createTableModel(placemarkDescriptor, product, null, null);
         selectionChangeHandler = new ViewSelectionChangeHandler();
         initUI();
+        setDisplayName(getTitle());
     }
 
     public void initUI() {
         setLayout(new BorderLayout());
-        prefixTitle = getTitle();
         placemarkTable = new JTable(placemarkTableModel);
         placemarkTable.setRowSorter(new TableRowSorter<>(placemarkTableModel));
         placemarkTable.setName("placemarkTable");
@@ -228,13 +227,10 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
         selectedBands = productToSelectedBands.get(this.product);
         selectedGrids = productToSelectedGrids.get(this.product);
         if (this.product != null) {
-            setDisplayName(getTitle() + " - " + this.product.getProductRefString());
             if (placemarkListener == null) {
                 placemarkListener = new PlacemarkListener();
             }
             this.product.addProductNodeListener(placemarkListener);
-        } else {
-            setDisplayName(getTitle());
         }
 
         updateTableModel();
@@ -467,11 +463,7 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
         if (productSelected) {
             updatePlacemarkTableSelectionFromView();
             numSelectedPins = getNumSelectedPlacemarks();
-            setDisplayName(prefixTitle + " - " + product.getDisplayName());
-        } else {
-            setDisplayName(prefixTitle);
         }
-
         placemarkTable.setEnabled(productSelected);
         buttonPane.updateUIState(productSelected, placemarkTable.getRowCount(), numSelectedPins);
     }
@@ -661,7 +653,7 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
         if (result == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
             if (file != null) {
-                final Boolean overwriteDecision = SnapDialogs.requestOverwriteDecision(prefixTitle, file);
+                final Boolean overwriteDecision = SnapDialogs.requestOverwriteDecision(getTitle(), file);
                 if (overwriteDecision == null || !overwriteDecision) {
                     return;
                 }
@@ -719,7 +711,7 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
         }
         ProductChooser productChooser = new ProductChooser(
                 snapApp.getMainFrame(),
-                prefixTitle,
+                getTitle(),
                 getHelpId(),
                 allOtherProducts,
                 null);
@@ -765,7 +757,7 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
         if (result == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
             if (file != null) {
-                final Boolean overwriteDecision = SnapDialogs.requestOverwriteDecision(prefixTitle, file);
+                final Boolean overwriteDecision = SnapDialogs.requestOverwriteDecision(getTitle(), file);
                 if (overwriteDecision == null || !overwriteDecision) {
                     return;
                 }
@@ -833,9 +825,8 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
 
     @Override
     public UndoRedo getUndoRedo() {
-        final UndoRedo.Manager undoManager = snapApp.getUndoManager(getProduct());
-        if (undoManager != null) {
-            return undoManager;
+        if (product != null) {
+            return snapApp.getUndoManager(getProduct());
         }
         return UndoRedo.NONE;
     }
