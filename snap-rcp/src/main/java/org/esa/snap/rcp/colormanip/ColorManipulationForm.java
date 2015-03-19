@@ -35,6 +35,7 @@ import org.esa.beam.framework.ui.product.BandChooser;
 import org.esa.beam.framework.ui.product.ProductSceneView;
 import org.esa.beam.util.ProductUtils;
 import org.esa.beam.util.ResourceInstaller;
+import org.esa.beam.util.SystemUtils;
 import org.esa.beam.util.io.BeamFileChooser;
 import org.esa.beam.util.io.BeamFileFilter;
 import org.esa.beam.util.io.FileUtils;
@@ -43,7 +44,6 @@ import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.util.SelectionChangeSupport;
 import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
-import org.openide.modules.Places;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
@@ -604,7 +604,7 @@ class ColorManipulationForm implements SelectionChangeSupport.Listener<ProductSc
 
     private void installDefaultColorPalettes() {
         Path sourceBasePath = ResourceInstaller.findModuleCodeBasePath(BeamUiActivator.class);
-        final Path auxdataDir = Places.getUserDirectory().toPath();
+        final Path auxdataDir = getColorPalettesDir();
         final ResourceInstaller resourceInstaller = new ResourceInstaller(sourceBasePath, "auxdata/color_palettes/", auxdataDir);
         ProgressMonitorSwingWorker swingWorker = new ProgressMonitorSwingWorker(toolView, "Installing Auxdata...") {
             @Override
@@ -628,7 +628,7 @@ class ColorManipulationForm implements SelectionChangeSupport.Listener<ProductSc
     }
 
     private Path getColorPalettesDir() {
-        return Places.getUserDirectory().toPath().resolve("auxdata/color_palettes");
+        return SystemUtils.getApplicationDataDir().toPath().resolve("auxdata/color_palettes");
     }
 
     private ImageInfo createDefaultImageInfo() {
