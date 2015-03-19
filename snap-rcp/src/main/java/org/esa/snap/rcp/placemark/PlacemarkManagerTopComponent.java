@@ -168,7 +168,6 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
         setCurrentView(snapApp.getSelectedProductSceneView());
         setProduct(snapApp.getSelectedProduct());
         snapApp.addProductSceneViewSelectionChangeListener(new ProductSceneViewSelectionChangeListener());
-        snapApp.addProductNodeSelectionChangeListener(new ProductSelectionListener());
         snapApp.getProductManager().addListener(new ProductRemovedListener());
         updateUIState();
         add(content, BorderLayout.CENTER);
@@ -1015,29 +1014,11 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
 
         @Override
         public void productRemoved(ProductManager.Event event) {
-            if (product == getProduct()) {
-                setProduct(null);
-                productToSelectedBands.remove(product);
-                productToSelectedGrids.remove(product);
-            }
+            productToSelectedBands.remove(product);
+            productToSelectedGrids.remove(product);
         }
 
     }
-
-    private class ProductSelectionListener implements SelectionChangeSupport.Listener<ProductNode> {
-
-        @Override
-        public void selected(ProductNode first, ProductNode... more) {
-            setProduct(first.getProduct());
-        }
-
-        @Override
-        public void deselected(ProductNode first, ProductNode... more) {
-            //do nothing
-        }
-
-    }
-
 
     private class PlacemarkTableSelectionHandler implements ListSelectionListener {
 
