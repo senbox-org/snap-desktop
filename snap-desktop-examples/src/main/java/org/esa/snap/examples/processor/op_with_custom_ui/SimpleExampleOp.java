@@ -1,4 +1,4 @@
-package org.esa.snap.examples.gpf.dialog;
+package org.esa.snap.examples.processor.op_with_custom_ui;
 
 
 import org.esa.beam.framework.datamodel.Product;
@@ -17,8 +17,7 @@ import org.esa.beam.framework.gpf.pointop.WritableSample;
 @OperatorMetadata(alias = "Simple",
                   category = "Optical Processing",
                   version = "1.0",
-                  description = "An simple operator which does nothing meaningful. " +
-                          "It is just a coding example.")
+                  description = "Example operator with a custom UI.")
 public class SimpleExampleOp extends SampleOperator {
     private static final String OUTPUT_BAND_NAME = "output";
     private static final String[] REQUIRED_RASTER_NAMES = new String[]{

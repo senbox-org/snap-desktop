@@ -14,7 +14,7 @@
  * with this program; if not, see http://www.gnu.org/licenses/
  */
 
-package org.esa.snap.examples.gpf.dialog;
+package org.esa.snap.examples.processor.op_with_custom_ui;
 
 import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.gpf.GPF;
@@ -61,7 +61,6 @@ public class SimpleExampleDialog extends SingleTargetProductDialog {
         if (validateUserInput()) {
             super.onApply();
         }
-
     }
 
     private boolean validateUserInput() {

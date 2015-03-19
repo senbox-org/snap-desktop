@@ -45,7 +45,7 @@ import java.util.Collection;
         lazy = false
 )
 @ActionReference(
-        path = "Menu/Examples",
+        path = "Menu/Tools/Examples",
         position = 153
 )
 @NbBundle.Messages({

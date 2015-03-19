@@ -1,4 +1,4 @@
-package org.esa.snap.examples.gpf.dialog;
+package org.esa.snap.examples.processor.op_with_custom_ui;
 
 import com.bc.ceres.binding.PropertySet;
 import com.bc.ceres.swing.binding.BindingContext;
