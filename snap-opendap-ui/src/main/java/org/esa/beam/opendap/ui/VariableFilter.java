@@ -5,11 +5,11 @@ import com.jidesoft.swing.CheckBoxList;
 import com.jidesoft.swing.CheckBoxListSelectionModel;
 import com.jidesoft.swing.LabeledTextField;
 import org.esa.beam.framework.ui.GridBagUtils;
+import org.esa.beam.framework.ui.util.FilteredListModel;
 import org.esa.beam.opendap.datamodel.DAPVariable;
 import org.esa.beam.opendap.datamodel.OpendapLeaf;
 import org.esa.beam.opendap.utils.VariableCollector;
 import org.esa.beam.util.logging.BeamLogManager;
-import org.esa.snap.rcp.util.FilteredListModel;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;

@@ -1,4 +1,4 @@
-package org.esa.snap.rcp.util;
+package org.esa.beam.framework.ui.util;
 
 import javax.swing.AbstractListModel;
 import javax.swing.ListModel;

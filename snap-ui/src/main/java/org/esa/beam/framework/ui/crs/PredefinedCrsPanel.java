@@ -18,9 +18,8 @@ package org.esa.beam.framework.ui.crs;
 import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.TableLayout.Anchor;
 import com.bc.ceres.swing.TableLayout.Fill;
-import com.jidesoft.list.FilterableListModel;
-import com.jidesoft.list.QuickListFilterField;
-import com.jidesoft.utils.Lm;
+import com.jidesoft.swing.LabeledTextField;
+import org.esa.beam.framework.ui.util.FilteredListModel;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -30,26 +29,31 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
+import javax.swing.WindowConstants;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
+import java.util.logging.Logger;
 
 class PredefinedCrsPanel extends JPanel {
-    
+
+    public static final Logger LOG = Logger.getLogger(PredefinedCrsPanel.class.getName());
     private final CrsInfoListModel crsListModel;
     private JTextArea infoArea;
-    private JList crsList;
-    private QuickListFilterField filterField;
+    private JList<CrsInfo> crsList;
+    private LabeledTextField filterField;
 
     private CrsInfo selectedCrsInfo;
+    private FilteredListModel<CrsInfo> filteredListModel;
 
 
     // for testing the UI
     public static void main(String[] args) {
-        Lm.verifyLicense("Brockmann Consult", "BEAM", "lCzfhklpZ9ryjomwWxfdupxIcuIoCxg2");
         final JFrame frame = new JFrame("CRS Selection Panel");
         Container contentPane = frame.getContentPane();
 
@@ -58,13 +62,8 @@ class PredefinedCrsPanel extends JPanel {
         contentPane.add(predefinedCrsForm);
         frame.setSize(600, 400);
         frame.setLocationRelativeTo(null);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                frame.setVisible(true);
-            }
-        });
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        SwingUtilities.invokeLater(() -> frame.setVisible(true));
     }
 
     PredefinedCrsPanel(CrsInfoListModel model) {
@@ -73,13 +72,12 @@ class PredefinedCrsPanel extends JPanel {
     }
 
     private void createUI() {
-        filterField = new QuickListFilterField(crsListModel);
+        filterField = new LabeledTextField();
         filterField.setHintText("Type here to filter CRS");
-        filterField.setWildcardEnabled(true);
-        final FilterableListModel listModel = filterField.getDisplayListModel();
-        crsList = new JList(listModel);
+        filterField.getTextField().getDocument().addDocumentListener(new FilterDocumentListener());
+        filteredListModel = new FilteredListModel<>(crsListModel);
+        crsList = new JList<>(filteredListModel);
         crsList.setVisibleRowCount(15);
-        filterField.setList(crsList);
         crsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         crsList.setSelectedValue(crsListModel.getElementAt(0), true);
 
@@ -111,19 +109,48 @@ class PredefinedCrsPanel extends JPanel {
         add(infoLabel);
         add(crsListScrollPane);
         add(infoAreaScrollPane);
-        addPropertyChangeListener("enabled", new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                filterLabel.setEnabled((Boolean) evt.getNewValue());
-                filterField.setEnabled((Boolean) evt.getNewValue());
-                infoLabel.setEnabled((Boolean) evt.getNewValue());
-                crsList.setEnabled((Boolean) evt.getNewValue());
-                crsListScrollPane.setEnabled((Boolean) evt.getNewValue());
-                infoArea.setEnabled((Boolean) evt.getNewValue());
-                infoAreaScrollPane.setEnabled((Boolean) evt.getNewValue());
-            }
+        addPropertyChangeListener("enabled", evt -> {
+            filterLabel.setEnabled((Boolean) evt.getNewValue());
+            filterField.setEnabled((Boolean) evt.getNewValue());
+            infoLabel.setEnabled((Boolean) evt.getNewValue());
+            crsList.setEnabled((Boolean) evt.getNewValue());
+            crsListScrollPane.setEnabled((Boolean) evt.getNewValue());
+            infoArea.setEnabled((Boolean) evt.getNewValue());
+            infoAreaScrollPane.setEnabled((Boolean) evt.getNewValue());
         });
         crsList.getSelectionModel().setSelectionInterval(0,0);
+    }
+
+    private class FilterDocumentListener implements DocumentListener {
+
+        @Override
+        public void insertUpdate(DocumentEvent e) {
+            updateFilter(getFilterText(e));
+        }
+
+        @Override
+        public void removeUpdate(DocumentEvent e) {
+            updateFilter(getFilterText(e));
+        }
+
+        @Override
+        public void changedUpdate(DocumentEvent e) {
+        }
+
+        private void updateFilter(String text) {
+            filteredListModel.setFilter(element -> element.getDescription().contains(text.trim()));
+        }
+
+        private String getFilterText(DocumentEvent e) {
+            Document document = e.getDocument();
+            String text = null;
+            try {
+                text = document.getText(0, document.getLength());
+            } catch (BadLocationException e1) {
+                LOG.severe(e1.getMessage());
+            }
+            return text;
+        }
     }
 
     private class CrsListSelectionListener implements ListSelectionListener {

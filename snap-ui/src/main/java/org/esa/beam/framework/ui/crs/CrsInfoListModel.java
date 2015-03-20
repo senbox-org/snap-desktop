@@ -25,12 +25,12 @@ import java.util.List;
 * @version $ Revision $ Date $
 * @since BEAM 4.6
 */
-class CrsInfoListModel extends AbstractListModel {
+class CrsInfoListModel extends AbstractListModel<CrsInfo> {
 
     private final List<CrsInfo> crsList;
 
     CrsInfoListModel(List<CrsInfo> crsList) {
-        this.crsList = new ArrayList<CrsInfo>(crsList);
+        this.crsList = new ArrayList<>(crsList);
     }
 
     @Override
