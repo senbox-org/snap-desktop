@@ -22,11 +22,13 @@ import org.esa.beam.framework.datamodel.Band;
 import org.esa.beam.framework.datamodel.Mask;
 import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.datamodel.ProductData;
+import org.junit.Ignore;
 
 import javax.swing.table.TableModel;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 
+@Ignore
 public class MaskFormTest extends TestCase {
     private Product product;
     private MaskManagerForm maskManagerForm;

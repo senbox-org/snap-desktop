@@ -22,6 +22,7 @@ import org.esa.beam.framework.datamodel.ProductNodeEvent;
 import org.esa.beam.framework.datamodel.ProductNodeListenerAdapter;
 import org.esa.beam.framework.datamodel.RasterDataNode;
 import org.esa.beam.framework.ui.GridLayout2;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.swing.AbstractAction;
@@ -46,6 +47,7 @@ public class MaskApplicationTest {
         Lm.verifyLicense("Brockmann Consult", "BEAM", "lCzfhklpZ9ryjomwWxfdupxIcuIoCxg2");
     }
 
+    @Ignore
     @Test
     public void testNothing() {
         // Dummy test to make JUnit 4 runner happy
