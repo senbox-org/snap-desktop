@@ -22,7 +22,9 @@ import com.bc.ceres.glayer.swing.WakefulComponent;
 import com.bc.ceres.grender.Viewport;
 import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.util.ProductUtils;
+import org.esa.snap.tango.TangoIcons;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.openide.util.ImageUtilities;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -404,7 +406,7 @@ public class WorldMapPane extends JPanel {
     private class ZoomAllAction extends AbstractAction {
 
         private ZoomAllAction() {
-            putValue(LARGE_ICON_KEY, UIUtils.loadImageIcon("/com/bc/ceres/swing/actions/icons_22x22/view-fullscreen.png"));
+            putValue(LARGE_ICON_KEY, TangoIcons.actions_view_fullscreen(TangoIcons.Res.R22));
         }
 
         @Override
@@ -418,7 +420,7 @@ public class WorldMapPane extends JPanel {
     private class ZoomToSelectedAction extends AbstractAction {
 
         private ZoomToSelectedAction() {
-            putValue(LARGE_ICON_KEY, UIUtils.loadImageIcon("icons/ZoomTo24.gif"));
+            putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/ZoomTo24.gif", false));
         }
 
         @Override

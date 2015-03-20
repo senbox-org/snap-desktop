@@ -59,6 +59,10 @@
             <artifactId>snap-core</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.esa.snap</groupId>
+            <artifactId>snap-tango</artifactId>
+        </dependency>
+        <dependency>
             <groupId>javax.help</groupId>
             <artifactId>javahelp</artifactId>
             <version>${javahelp.version}</version>
