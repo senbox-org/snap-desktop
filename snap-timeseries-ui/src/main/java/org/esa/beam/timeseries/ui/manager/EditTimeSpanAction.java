@@ -2,15 +2,15 @@ package org.esa.beam.timeseries.ui.manager;
 
 import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.swing.TableLayout;
-import com.jidesoft.combobox.DateComboBox;
 import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.datamodel.ProductData;
 import org.esa.beam.framework.ui.ModalDialog;
-import org.esa.beam.framework.ui.UIUtils;
 import org.esa.beam.timeseries.core.timeseries.datamodel.AbstractTimeSeries;
 import org.esa.beam.timeseries.core.timeseries.datamodel.GridTimeCoding;
 import org.esa.beam.timeseries.core.timeseries.datamodel.ProductLocation;
 import org.esa.beam.timeseries.core.timeseries.datamodel.TimeCoding;
+import org.esa.snap.rcp.util.DateChooserButton;
+import org.openide.util.ImageUtilities;
 
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
@@ -22,10 +22,11 @@ import java.awt.Component;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -37,8 +38,8 @@ class EditTimeSpanAction extends AbstractAction {
         this.timeSeries = timeSeries;
         setEnabled(timeSeries != null);
 //        putValue(NAME, "[?]"); // todo set name
-        URL editTimeSpanIconImageURL = UIUtils.getImageURL("/org/esa/beam/timeseries/ui/icons/timeseries-rangeedit24.png", EditTimeSpanAction.class);
-        putValue(LARGE_ICON_KEY, new ImageIcon(editTimeSpanIconImageURL));
+        ImageIcon editTimeSpanIcon = ImageUtilities.loadImageIcon("org/esa/beam/timeseries/ui/icons/timeseries-rangeedit24.png", false);
+        putValue(LARGE_ICON_KEY, editTimeSpanIcon);
         putValue(ACTION_COMMAND_KEY, getClass().getName());
         putValue(SHORT_DESCRIPTION, "Edit time span");
         putValue("componentName", "EditTimeSpan");
@@ -60,8 +61,8 @@ class EditTimeSpanAction extends AbstractAction {
 
         private final SimpleDateFormat dateFormat;
         private AbstractTimeSeries timeSeries;
-        private DateComboBox startTimeBox;
-        private DateComboBox endTimeBox;
+        private DateChooserButton startTimeBox;
+        private DateChooserButton endTimeBox;
         private JLabel startTimeLabel;
         private JLabel endTimeLabel;
         private JCheckBox autoAdjustBox;
@@ -125,7 +126,7 @@ class EditTimeSpanAction extends AbstractAction {
         }
 
         private List<Product> getCompatibleProducts() {
-            List<Product> result = new ArrayList<Product>();
+            List<Product> result = new ArrayList<>();
             for (ProductLocation productLocation : timeSeries.getProductLocations()) {
                 for (Product product : productLocation.getProducts(ProgressMonitor.NULL).values()) {
                     for (String variable : timeSeries.getEoVariables()) {
@@ -160,15 +161,8 @@ class EditTimeSpanAction extends AbstractAction {
             return startTime;
         }
 
-        private DateComboBox createDateComboBox() {
-            final DateComboBox box = new DateComboBox();
-            box.setTimeDisplayed(true);
-            box.setFormat(dateFormat);
-            box.setShowNoneButton(false);
-            box.setShowTodayButton(false);
-            box.setShowOKButton(true);
-            box.setEditable(false);
-            return box;
+        private DateChooserButton createDateComboBox() {
+            return new DateChooserButton(dateFormat, Date.from(Instant.now()));
         }
 
         private void setUiEnabled(boolean enable) {
