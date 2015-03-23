@@ -63,7 +63,6 @@ public abstract class ChartPagePanel extends PagePanel {
 //    private RoiMaskSelector roiMaskSelector;
     protected AbstractButton refreshButton;
     private final boolean refreshButtonEnabled;
-    private AbstractButton switchToTableButton;
 
     static {
         final StandardChartTheme theme = (StandardChartTheme) ChartFactory.getChartTheme();
@@ -95,7 +94,7 @@ public abstract class ChartPagePanel extends PagePanel {
             }
         });
 
-        switchToTableButton = ToolButtonFactory.createButton(
+        AbstractButton switchToTableButton = ToolButtonFactory.createButton(
                 UIUtils.loadImageIcon("icons/Table24.png"),
                 false);
         switchToTableButton.setToolTipText("Switch to Table View");
