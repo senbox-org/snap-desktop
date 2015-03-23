@@ -24,6 +24,7 @@ import com.bc.ceres.binding.Validator;
 import com.bc.ceres.binding.ValueRange;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.Enablement;
+import org.esa.beam.framework.datamodel.GeoPos;
 import org.esa.beam.framework.datamodel.Mask;
 import org.esa.beam.framework.datamodel.ProductNodeEvent;
 import org.esa.beam.framework.datamodel.RasterDataNode;
@@ -44,6 +45,7 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.DeviationRenderer;
 import org.jfree.chart.renderer.xy.XYErrorRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYIntervalSeries;
 import org.jfree.data.xy.XYIntervalSeriesCollection;
 import org.jfree.ui.Layer;
@@ -63,6 +65,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.Shape;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -136,21 +139,21 @@ class ProfilePlotPanel extends ChartPagePanel {
         };
 
 
-//        profilePlotDisplay.addChartMouseListener(new XYPlotMarker(profilePlotDisplay, new XYPlotMarker.Listener() {
-//            @Override
-//            public void pointSelected(XYDataset xyDataset, int seriesIndex, Point2D dataPoint) {
-//                if (profileData != null) {
-//                    GeoPos[] geoPositions = profileData.getGeoPositions();
+        profilePlotDisplay.addChartMouseListener(new XYPlotMarker(profilePlotDisplay, new XYPlotMarker.Listener() {
+            @Override
+            public void pointSelected(XYDataset xyDataset, int seriesIndex, Point2D dataPoint) {
+                if (profileData != null) {
+                    GeoPos[] geoPositions = profileData.getGeoPositions();
 //                    int index = (int) dataPoint.getX();
 //                    if (index >= 0 && index < geoPositions.length) {
 //                    }
-//                }
-//            }
+                }
+            }
 
-//            @Override
-//            public void pointDeselected() {
-//            }
-//        }));
+            @Override
+            public void pointDeselected() {
+            }
+        }));
         profilePlotDisplay.setInitialDelay(200);
         profilePlotDisplay.setDismissDelay(1500);
         profilePlotDisplay.setReshowDelay(200);
