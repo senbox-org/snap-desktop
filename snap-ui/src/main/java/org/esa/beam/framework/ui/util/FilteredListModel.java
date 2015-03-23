@@ -2,6 +2,7 @@ package org.esa.beam.framework.ui.util;
 
 import javax.swing.AbstractListModel;
 import javax.swing.ListModel;
+import javax.swing.SwingWorker;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import java.util.ArrayList;
@@ -40,7 +41,19 @@ public class FilteredListModel<T> extends AbstractListModel {
 
     public void setFilter(Filter<T> f) {
         filter = f;
-        doFilter();
+        SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+            @Override
+            protected Void doInBackground() throws Exception {
+                doFilter();
+                return null;
+            }
+
+            @Override
+            protected void done() {
+                fireContentsChanged(this, 0, getSize() - 1);
+            }
+        };
+        worker.execute();
     }
 
     private void doFilter() {
@@ -56,7 +69,6 @@ public class FilteredListModel<T> extends AbstractListModel {
                 }
             }
         }
-        fireContentsChanged(this, 0, getSize() - 1);
     }
 
     public int getSize() {
