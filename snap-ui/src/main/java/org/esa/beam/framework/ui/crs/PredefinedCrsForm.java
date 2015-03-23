@@ -27,10 +27,6 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 
 /**
  * @author Marco Peters
@@ -82,15 +78,14 @@ public class PredefinedCrsForm extends CrsForm {
         final JButton crsButton = new JButton("Select...");
         final PredefinedCrsPanel predefinedCrsForm = new PredefinedCrsPanel(
                 new CrsInfoListModel(CrsInfo.generateCRSList()));
-        crsButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                final ModalDialog dialog = new ModalDialog(getAppContext().getApplicationWindow(),
-                                                           "Select Coordinate Reference System",
-                                                           predefinedCrsForm,
-                                                           ModalDialog.ID_OK_CANCEL, null);
-                if (dialog.show() == ModalDialog.ID_OK) {
-                    selectedCrsInfo = predefinedCrsForm.getSelectedCrsInfo();
+        crsButton.addActionListener(e -> {
+            final ModalDialog dialog = new ModalDialog(getAppContext().getApplicationWindow(),
+                                                       "Select Coordinate Reference System",
+                                                       predefinedCrsForm,
+                                                       ModalDialog.ID_OK_CANCEL, null);
+            if (dialog.show() == ModalDialog.ID_OK) {
+                selectedCrsInfo = predefinedCrsForm.getSelectedCrsInfo();
+                if (selectedCrsInfo != null) {
                     crsCodeField.setText(selectedCrsInfo.toString());
                     fireCrsChanged();
                 }
@@ -98,12 +93,9 @@ public class PredefinedCrsForm extends CrsForm {
         });
         panel.add(crsCodeField);
         panel.add(crsButton);
-        panel.addPropertyChangeListener("enabled", new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                crsCodeField.setEnabled((Boolean) evt.getNewValue());
-                crsButton.setEnabled((Boolean) evt.getNewValue());
-            }
+        panel.addPropertyChangeListener("enabled", evt -> {
+            crsCodeField.setEnabled((Boolean) evt.getNewValue());
+            crsButton.setEnabled((Boolean) evt.getNewValue());
         });
         return panel;
     }
