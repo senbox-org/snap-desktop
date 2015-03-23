@@ -34,19 +34,10 @@ import org.esa.snap.gpf.ProcessTimeMonitor;
 import org.esa.snap.util.MemUtils;
 import org.esa.snap.util.ResourceUtils;
 
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-import javax.swing.JTabbedPane;
-import javax.swing.SwingWorker;
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -81,7 +72,7 @@ public class BatchGraphDialog extends ModelessDialog {
 
     private boolean isProcessing = false;
     protected File graphFile;
-    protected boolean openProcessedProducts = false;
+    protected boolean openProcessedProducts = true;
 
     public BatchGraphDialog(final AppContext theAppContext, final String title, final String helpID,
                             final boolean closeOnDone) {
@@ -340,7 +331,7 @@ public class BatchGraphDialog extends ModelessDialog {
             assignParameters();
 
             // first graph must pass
-            result = true;//graphExecutorList.get(0).InitGraph();
+            result = graphExecutorList.get(0).InitGraph();
 
         } catch (Exception e) {
             statusLabel.setText(e.getMessage());
@@ -513,8 +504,8 @@ public class BatchGraphDialog extends ModelessDialog {
             final List<GraphNode> cloneGraphNodes = cloneGraphEx.GetGraphNodes();
             for (GraphNode cloneNode : cloneGraphNodes) {
                 final GraphNode node = graphEx.getGraphNodeList().findGraphNode(cloneNode.getID());
-                //               if (node != null)
-                //                   cloneNode.setOperatorUI(node.GetOperatorUI());
+                if (node != null)
+                     cloneNode.setOperatorUI(node.GetOperatorUI());
             }
         }
     }

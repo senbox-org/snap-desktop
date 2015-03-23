@@ -15,6 +15,7 @@
  */
 package org.esa.snap.dat.dialogs;
 
+import org.esa.beam.framework.dataio.ProductIO;
 import org.esa.beam.framework.datamodel.MetadataElement;
 import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.visat.VisatApp;

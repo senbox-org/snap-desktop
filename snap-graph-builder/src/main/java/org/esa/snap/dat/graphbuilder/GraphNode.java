@@ -15,11 +15,7 @@
  */
 package org.esa.snap.dat.graphbuilder;
 
-import com.bc.ceres.binding.ConversionException;
-import com.bc.ceres.binding.Converter;
-import com.bc.ceres.binding.Property;
-import com.bc.ceres.binding.PropertyContainer;
-import com.bc.ceres.binding.PropertyDescriptor;
+import com.bc.ceres.binding.*;
 import com.bc.ceres.binding.dom.DomElement;
 import com.bc.ceres.binding.dom.XppDomElement;
 import com.thoughtworks.xstream.io.xml.xppdom.XppDom;
@@ -34,18 +30,7 @@ import org.esa.beam.framework.gpf.graph.NodeSource;
 import org.esa.snap.gpf.ui.OperatorUI;
 import org.esa.snap.gpf.ui.UIValidation;
 
-import java.awt.AlphaComposite;
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.GradientPaint;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.awt.Stroke;
+import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.util.HashMap;
 import java.util.Map;

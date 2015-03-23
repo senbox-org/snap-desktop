@@ -16,13 +16,7 @@
 package org.esa.snap.dat.graphbuilder;
 
 import com.bc.ceres.binding.dom.DomElement;
-import org.esa.beam.framework.gpf.OperatorSpi;
-import org.esa.beam.framework.gpf.graph.Graph;
-import org.esa.beam.framework.gpf.graph.GraphException;
-import org.esa.beam.framework.gpf.graph.GraphIO;
-import org.esa.beam.framework.gpf.graph.Node;
-import org.esa.beam.framework.gpf.graph.NodeSource;
-import org.esa.snap.gpf.SubGraphOp;
+import org.esa.beam.framework.gpf.graph.*;
 
 import java.io.FileReader;
 import java.util.ArrayList;
@@ -48,7 +42,7 @@ public class SubGraphHandler {
     }
 
     private GraphNode[] replaceAllSubGraphs() throws GraphException {
-        final SubGraphData[] dataList = findSubGraphs(OperatorSpi.getOperatorAlias(SubGraphOp.class));
+        final SubGraphData[] dataList = findSubGraphs("SubGraph");
         final List<GraphNode> savedList = new ArrayList<>();
 
         for (SubGraphData data : dataList) {

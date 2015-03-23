@@ -20,7 +20,7 @@ import com.bc.ceres.binding.dom.XppDomElement;
 import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.ui.AppContext;
 
-import javax.swing.JComponent;
+import javax.swing.*;
 import java.util.Map;
 
 /**

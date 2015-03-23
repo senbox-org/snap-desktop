@@ -26,45 +26,22 @@ import org.esa.beam.util.io.BeamFileFilter;
 import org.esa.beam.visat.VisatApp;
 import org.esa.snap.dat.dialogs.PromptDialog;
 import org.esa.snap.db.CommonReaders;
-import org.esa.snap.gpf.ProductSetReaderOp;
 import org.esa.snap.gpf.ProductSetReaderOpUI;
 import org.esa.snap.gpf.ui.SourceUI;
 import org.esa.snap.gpf.ui.UIValidation;
-import org.esa.snap.util.DialogUtils;
-import org.esa.snap.util.ImageUtils;
-import org.esa.snap.util.MemUtils;
-import org.esa.snap.util.ProductFunctions;
-import org.esa.snap.util.ResourceUtils;
+import org.esa.snap.util.*;
 
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.SwingWorker;
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
+import java.util.*;
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
 
 /**
  * Provides the User Interface for creating, loading and saving Graphs
@@ -423,8 +400,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer {
      * @param productFileList the product files
      */
     public void setInputFiles(final File[] productFileList) {
-        final GraphNode productSetNode = graphEx.getGraphNodeList().findGraphNodeByOperator(
-                ProductSetReaderOp.Spi.getOperatorAlias(ProductSetReaderOp.class));
+        final GraphNode productSetNode = graphEx.getGraphNodeList().findGraphNodeByOperator("ProductSet-Reader");
         if (productSetNode != null) {
             ProductSetReaderOpUI ui = (ProductSetReaderOpUI) productSetNode.GetOperatorUI();
             ui.setProductFileList(productFileList);
@@ -455,7 +431,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer {
     }
 
     /**
-     * Call decription dialog
+     * Call description dialog
      */
     private void OnInfo() {
         final PromptDialog dlg = new PromptDialog("Graph Description", "Description", graphEx.getGraphDescription(), true);

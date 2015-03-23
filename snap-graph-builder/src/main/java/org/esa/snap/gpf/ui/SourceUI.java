@@ -16,13 +16,13 @@
 package org.esa.snap.gpf.ui;
 
 import com.bc.ceres.swing.TableLayout;
+import org.esa.beam.framework.dataio.ProductIO;
 import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.gpf.ui.SourceProductSelector;
 import org.esa.beam.framework.ui.AppContext;
 import org.esa.snap.db.CommonReaders;
 
-import javax.swing.JComponent;
-import javax.swing.JPanel;
+import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -65,7 +65,7 @@ public class SourceUI extends BaseOperatorUI {
         return ioParametersPanel;
     }
 
-    private static void initSourceProductSelectors(List<SourceProductSelector> sourceProductSelectorList) {
+    private static void initSourceProductSelectors(java.util.List<SourceProductSelector> sourceProductSelectorList) {
         for (SourceProductSelector sourceProductSelector : sourceProductSelectorList) {
             sourceProductSelector.initProducts();
         }

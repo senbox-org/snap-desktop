@@ -19,13 +19,9 @@ import org.esa.beam.framework.ui.GridBagUtils;
 import org.esa.beam.framework.ui.ModalDialog;
 import org.esa.beam.visat.VisatApp;
 
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
+import javax.swing.*;
 import javax.swing.text.JTextComponent;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
+import java.awt.*;
 
 /**
  * Created by IntelliJ IDEA.

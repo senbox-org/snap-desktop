@@ -20,13 +20,8 @@ import org.esa.snap.db.ProductEntry;
 import org.esa.snap.util.ClipboardUtils;
 import org.esa.snap.util.ProductFunctions;
 
-import javax.swing.DropMode;
-import javax.swing.JComponent;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-import javax.swing.JTable;
-import javax.swing.TransferHandler;
-import java.awt.Dimension;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
@@ -143,7 +138,7 @@ public class FileTable extends JTable {
         }
 
         @Override
-        public boolean canImport(TransferSupport info) {
+        public boolean canImport(TransferHandler.TransferSupport info) {
             return info.isDataFlavorSupported(DataFlavor.stringFlavor);
         }
 
@@ -156,7 +151,7 @@ public class FileTable extends JTable {
          * Perform the actual import
          */
         @Override
-        public boolean importData(TransferSupport info) {
+        public boolean importData(TransferHandler.TransferSupport info) {
             if (!info.isDrop()) {
                 return false;
             }

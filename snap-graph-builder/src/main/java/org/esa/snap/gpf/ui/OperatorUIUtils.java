@@ -18,8 +18,8 @@ package org.esa.snap.gpf.ui;
 import org.esa.beam.framework.dataio.ProductIO;
 import org.esa.beam.framework.datamodel.Product;
 
-import javax.swing.JList;
-import java.awt.Dimension;
+import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,19 +32,6 @@ public final class OperatorUIUtils {
 
     public final static String SOURCE_BAND_NAMES = "sourceBandNames";
 
-    public static void initParamList(final JList paramList, final String[] availNames, final Object[] paramDefaults) {
-        if (paramDefaults != null) {
-            final String[] srcBandNames = new String[paramDefaults.length];
-            final int[] indixes = new int[paramDefaults.length];
-            for (int i = 0; i < srcBandNames.length; ++i) {
-                srcBandNames[i] = (String) paramDefaults[i];
-                indixes[i] = i;
-            }
-            paramList.setListData(srcBandNames);
-            paramList.setSelectedIndices(indixes);
-        }
-        initParamList(paramList, availNames);
-    }
 
     public static void initParamList(final JList paramList, final String[] availNames) {
         initParamList(paramList, availNames, null);
@@ -101,6 +88,9 @@ public final class OperatorUIUtils {
         for (Object selectedValue : selectedValues) {
             names[i++] = (String) selectedValue;
         }
+        if(names.length == 0 && paramMap.get(paramName) != null)    // don't overwrite with empty value
+            return;
+
         paramMap.put(paramName, names);
     }
 

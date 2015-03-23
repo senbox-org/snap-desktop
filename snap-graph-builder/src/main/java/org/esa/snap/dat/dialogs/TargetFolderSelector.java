@@ -18,12 +18,8 @@ package org.esa.snap.dat.dialogs;
 import com.bc.ceres.swing.TableLayout;
 import org.esa.beam.framework.gpf.ui.TargetProductSelector;
 
-import javax.swing.BorderFactory;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.Insets;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * NEST

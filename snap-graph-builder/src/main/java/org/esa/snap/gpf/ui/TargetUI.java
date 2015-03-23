@@ -21,7 +21,7 @@ import org.esa.beam.framework.ui.BasicApp;
 import org.esa.beam.util.SystemUtils;
 import org.esa.beam.util.io.FileUtils;
 
-import javax.swing.JComponent;
+import javax.swing.*;
 import java.io.File;
 import java.util.Map;
 

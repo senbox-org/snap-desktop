@@ -1,6 +1,6 @@
 package org.esa.snap.util;
 
-import javax.swing.ImageIcon;
+import javax.swing.*;
 
 /**
  * Created by luis on 08/02/2015.

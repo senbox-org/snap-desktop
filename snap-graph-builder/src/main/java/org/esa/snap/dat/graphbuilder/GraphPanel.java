@@ -20,32 +20,15 @@ import org.esa.beam.framework.gpf.graph.NodeSource;
 import org.esa.beam.util.StringUtils;
 import org.esa.snap.util.ImageUtils;
 
-import javax.swing.ImageIcon;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
+import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.RenderingHints;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
+import java.awt.*;
+import java.awt.event.*;
 import java.awt.geom.Rectangle2D;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Draws and Edits the graph graphically
@@ -238,7 +221,7 @@ class GraphPanel extends JPanel implements ActionListener, PopupMenuListener, Mo
      * @param g The Graphics
      */
     @Override
-    protected void paintComponent(Graphics g) {
+    protected void paintComponent(java.awt.Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
 
@@ -463,7 +446,7 @@ class GraphPanel extends JPanel implements ActionListener, PopupMenuListener, Mo
             graphPanel = panel;
         }
 
-        public void actionPerformed(ActionEvent event) {
+        public void actionPerformed(java.awt.event.ActionEvent event) {
             graphPanel.AddOperatorAction(event.getActionCommand());
         }
     }
@@ -476,7 +459,7 @@ class GraphPanel extends JPanel implements ActionListener, PopupMenuListener, Mo
             graphPanel = panel;
         }
 
-        public void actionPerformed(ActionEvent event) {
+        public void actionPerformed(java.awt.event.ActionEvent event) {
             graphPanel.AutoConnectGraph();
         }
     }
@@ -489,7 +472,7 @@ class GraphPanel extends JPanel implements ActionListener, PopupMenuListener, Mo
             graphPanel = panel;
         }
 
-        public void actionPerformed(ActionEvent event) {
+        public void actionPerformed(java.awt.event.ActionEvent event) {
             graphPanel.RemoveSourceAction(event.getActionCommand());
         }
     }

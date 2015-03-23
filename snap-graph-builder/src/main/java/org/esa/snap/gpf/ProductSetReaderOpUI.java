@@ -21,7 +21,7 @@ import org.esa.snap.dat.dialogs.ProductSetPanel;
 import org.esa.snap.gpf.ui.BaseOperatorUI;
 import org.esa.snap.gpf.ui.UIValidation;
 
-import javax.swing.JComponent;
+import javax.swing.*;
 import java.io.File;
 import java.util.Map;
 

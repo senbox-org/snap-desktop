@@ -23,8 +23,7 @@ import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.PropertyPane;
 import org.esa.beam.framework.ui.AppContext;
 
-import javax.swing.JComponent;
-import javax.swing.JScrollPane;
+import javax.swing.*;
 import java.util.Map;
 
 /**

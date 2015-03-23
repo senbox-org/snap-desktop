@@ -15,6 +15,7 @@
  */
 package org.esa.snap.util;
 
+import org.esa.beam.framework.dataio.ProductIO;
 import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.datamodel.ProductManager;
 import org.esa.beam.visat.VisatApp;

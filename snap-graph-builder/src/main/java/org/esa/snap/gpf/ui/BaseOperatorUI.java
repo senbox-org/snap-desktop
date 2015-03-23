@@ -15,14 +15,7 @@
  */
 package org.esa.snap.gpf.ui;
 
-import com.bc.ceres.binding.ConversionException;
-import com.bc.ceres.binding.Converter;
-import com.bc.ceres.binding.ConverterRegistry;
-import com.bc.ceres.binding.Property;
-import com.bc.ceres.binding.PropertyContainer;
-import com.bc.ceres.binding.PropertyDescriptor;
-import com.bc.ceres.binding.PropertySet;
-import com.bc.ceres.binding.PropertySetDescriptor;
+import com.bc.ceres.binding.*;
 import com.bc.ceres.binding.dom.DomConverter;
 import com.bc.ceres.binding.dom.DomElement;
 import com.bc.ceres.binding.dom.XppDomElement;
@@ -36,7 +29,7 @@ import org.esa.beam.framework.gpf.descriptor.OperatorDescriptor;
 import org.esa.beam.framework.gpf.descriptor.PropertySetDescriptorFactory;
 import org.esa.beam.framework.ui.AppContext;
 
-import javax.swing.JComponent;
+import javax.swing.*;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;

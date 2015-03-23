@@ -19,14 +19,11 @@ import com.bc.ceres.core.Assert;
 import com.bc.ceres.core.ProgressMonitor;
 import org.esa.snap.gpf.ProgressMonitorList;
 
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 
 /**
  * A {@link com.bc.ceres.core.ProgressMonitor} which uses a
- * Swing's {@link ProgressMonitor} to display progress.
+ * Swing's {@link javax.swing.ProgressMonitor} to display progress.
  */
 public class ProgressBarProgressMonitor implements ProgressMonitor {
 
