@@ -11,12 +11,12 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -39,15 +39,18 @@ import java.util.stream.Collectors;
  * <p>
  * Usage:
  * <pre>
- *    Launcher {--root &lt;root&gt;} [--clusters &lt;clusters&gt;] [--branding &lt;app&gt;] [--userdir &lt;userdir&gt;] [--cachedir &lt;cachedir&gt;] &lt;args&gt;
+ *    Launcher [--patches &lt;patches&gt;] [--clusters &lt;clusters&gt;] [--branding &lt;app&gt;]
+ *             [--userdir &lt;userdir&gt;] [--cachedir &lt;cachedir&gt;] &lt;args&gt;
  * </pre>
- * where the {@code clusters}, {@code branding}, {@code userdir}, and {@code cachedir} options are the same as for the native launcher.
+ * where the {@code clusters}, {@code branding}, {@code userdir}, and {@code cachedir} options are the same as
+ * for the native launcher.
  * The current working directory must be the target deployment directory, {@code $appmodule/target/$app}.
  * <p>
- * The Launcher takes care of any changed code in all modules contained in a module <i>root</i> indicated by the given
- * {@code root} options. Every root must contain a single wildcard ($). The module root which
- * includes the application module, namely {@code $appmodule/../../../$/target/classes}<br/> is always included.
- * <p/>
+ * The Launcher takes care of any changed code in modules indicated by the <i>patches</i> patterns given by the
+ * {@code patches} option. the <i>patches</i> patterns may contain multiple patterns separated by a semicolon (;)
+ * on Windows systems and a colon (:) on Unixes. Every patch pattern must contain a single wildcard character ($).
+ * The default patch pattern is {@code $appmodule/../../../$/target/classes}<br/> and is always included.
+ * <p>
  * So, In IntelliJ IDEA we can hit CTRL+F9
  * and then run/debug the Launcher.
  * <p>
@@ -64,8 +67,11 @@ import java.util.stream.Collectors;
  */
 public class Launcher {
 
+    // Command-line arguments
     private final String[] args;
-    private final Map<String, String> variables;
+
+    // Contains all environment variables and all variables from ${some-dir}/${app-name}/etc/${app-name}.conf
+    private final Map<String, String> configuration;
 
     public static void main(String[] args) {
         new Launcher(args).run();
@@ -73,7 +79,7 @@ public class Launcher {
 
     private Launcher(String[] args) {
         this.args = args;
-        this.variables = new HashMap<>();
+        this.configuration = new HashMap<>();
     }
 
     private void run() {
@@ -88,12 +94,30 @@ public class Launcher {
         String cacheDir = parseArg(argList, "--cachedir");
 
         // Collect project dirs.
-        // Default is "../../.." which refers to a Maven specific directory layout.
-        Set<Root> rootDirs = parseRoots(argList);
+        // Default is "../../../$/target/classes" which refers to a Maven specific directory layout:
+        //
+        // ${parent-1}/
+        //     pom.xml
+        //     ${nb-app-module-dir}/
+        //         pom.xml
+        //         src/
+        //         target/
+        //             ${app}    // -> must be current working directory
+        //     ${nb-nbm-module-dir-1}/
+        //     ${nb-nbm-module-dir-2}/
+        //     ${nb-nbm-module-dir-3}/
+        //     ...
+        // ${parent-2}/
+        //     pom.xml
+        //     ${nb-nbm-module-dir-1}/
+        //     ${nb-nbm-module-dir-2}/
+        //     ...
+        //
+        Set<Patch> patches = parseClusterPatches(argList);
 
-        variables.putAll(System.getenv());
-        setVarIfNotSet("APPNAME", appName);
-        setVarIfNotSet("HOME", System.getProperty("user.home"));
+        configuration.putAll(System.getenv());
+        setConfigurationVariableIfNotSet("APPNAME", appName);
+        setConfigurationVariableIfNotSet("HOME", System.getProperty("user.home"));
 
         String appDir = abspath(deploymentDir, appName);
         String platformDir = abspath(deploymentDir, "platform");
@@ -123,13 +147,12 @@ public class Launcher {
 
         if (defaultUserDir == null) {
             // From nbexec:
-            /*
             if ("Darwin".equals(System.getProperty("os.name"))) {
                 defaultUserDir = getVar("default_mac_userdir");
             } else {
                 defaultUserDir = getVar("default_userdir");
             }
-            */
+
             // .. but not used here because our default is the nbm standard location
             if (defaultUserDir == null) {
                 defaultUserDir = path(deploymentDir, "..", "userdir");
@@ -181,27 +204,27 @@ public class Launcher {
         buildClasspath(platformDir, classPathList);
 
         if ("true".equals(getVar("KDE_FULL_SESSION"))) {
-            setPropIfNotSet("netbeans.running.environment", "kde");
+            setSystemPropertyIfNotSet("netbeans.running.environment", "kde");
         } else if (getVar("GNOME_DESKTOP_SESSION_ID") != null) {
-            setPropIfNotSet("netbeans.running.environment", "gnome");
+            setSystemPropertyIfNotSet("netbeans.running.environment", "gnome");
         }
 
         // todo - address following warning:
         // WARNING [org.netbeans.modules.autoupdate.ui.actions.AutoupdateSettings]: The property "netbeans.default_userdir_root" was not set!
 
         if (getVar("DEFAULT_USERDIR_ROOT") != null) {
-            setPropIfNotSet("netbeans.default_userdir_root", getVar("DEFAULT_USERDIR_ROOT"));
+            setSystemPropertyIfNotSet("netbeans.default_userdir_root", getVar("DEFAULT_USERDIR_ROOT"));
         }
 
-        setPropIfNotSet("netbeans.home", platformDir);
-        setPropIfNotSet("netbeans.dirs", clusterPaths);
-        setPropIfNotSet("netbeans.logger.console", "true");
-        setPropIfNotSet("com.apple.mrj.application.apple.menu.about.name", brandingToken);
+        setSystemPropertyIfNotSet("netbeans.home", platformDir);
+        setSystemPropertyIfNotSet("netbeans.dirs", clusterPaths);
+        setSystemPropertyIfNotSet("netbeans.logger.console", "true");
+        setSystemPropertyIfNotSet("com.apple.mrj.application.apple.menu.about.name", brandingToken);
 
         List<String> remainingDefaultOptions = parseJavaOptions(defaultOptionList, false);
         List<String> remainingArgs = parseJavaOptions(argList, true);
 
-        setPatchModules(appDir, rootDirs);
+        setPatchModules(clusterList, patches);
 
         List<String> newArgList = new ArrayList<>();
         newArgList.add("--branding");
@@ -216,39 +239,22 @@ public class Launcher {
         runMain(classPathList, newArgList);
     }
 
-    private Set<Root> parseRoots(LinkedList<String> argList) {
-        try {
-            Set<Root> rootDirs = new LinkedHashSet<>();
-            // Add Maven-specific output directory for application module
-            processRoot("../../../$/target/classes", rootDirs);
-            while (true) {
-                String rootDirPath = parseArg(argList, "--root");
-                if (rootDirPath != null) {
-                    processRoot(rootDirPath, rootDirs);
-                } else {
-                    break;
+    private Set<Patch> parseClusterPatches(LinkedList<String> argList) {
+        Set<Patch> patches = new LinkedHashSet<>();
+        // Add Maven-specific output directory for application module
+        patches.add(Patch.parse("../../../$/target/classes"));
+        while (true) {
+            String patchPatterns = parseArg(argList, "--patches");
+            if (patchPatterns != null) {
+                String[] patterns = patchPatterns.split(File.pathSeparator);
+                for (String pattern : patterns) {
+                    patches.add(Patch.parse(pattern));
                 }
+            } else {
+                break;
             }
-            return rootDirs;
-        } catch (IOException e) {
-            System.err.println("ERROR: " + e.getMessage());
-            System.exit(1);
-            return null;
         }
-    }
-
-    private void processRoot(String rootDirPath, Set<Root> rootDirs) throws IOException {
-        int wcPos = rootDirPath.indexOf("$");
-        if (wcPos >= 0) {
-            String subPath = rootDirPath.substring(wcPos + 1);
-            subPath = subPath.replace('/', File.separatorChar);
-            if (subPath.startsWith(File.separator)) {
-                subPath = subPath.substring(1);
-            }
-            rootDirs.add(new Root(new File(rootDirPath.substring(0, wcPos)).getCanonicalFile(), subPath));
-        } else {
-            throw new IllegalArgumentException("module root must contain a single wildcard '$'");
-        }
+        return patches;
     }
 
     private List<String> parseJavaOptions(List<String> defaultOptionList, boolean fail) {
@@ -259,7 +265,7 @@ public class Launcher {
                     String kv = option.substring(4);
                     int i = kv.indexOf("=");
                     if (i > 0) {
-                        setPropIfNotSet(kv.substring(0, i), kv.substring(i + 1));
+                        setSystemPropertyIfNotSet(kv.substring(0, i), kv.substring(i + 1));
                     }
                 } else {
                     String msg = String.format("configured option '%s' will be ignored, because the JVM is already running", option);
@@ -280,72 +286,69 @@ public class Launcher {
     /*
      * scan appDir for modules and set system property netbeans.patches.<module>=<module-classes-dir> for each module
      */
-    private void setPatchModules(String appDir, Set<Root> roots) {
-        String modulesDir = path(appDir, "modules");
-        File[] moduleJars = new File(path(modulesDir)).listFiles(file -> file.getName().toLowerCase().endsWith(".jar"));
+    private void setPatchModules(List<String> clusterList, Set<Patch> patches) {
+
+        String JAR_EXT = ".jar";
         List<String> moduleNames = new ArrayList<>();
-        if (moduleJars != null) {
-            for (File moduleJar : moduleJars) {
-                String moduleFileName = moduleJar.getName();
-                String moduleName = moduleFileName.substring(0, moduleFileName.length() - 4);
-                info("candidate patch-providing module in development: " + moduleName);
-                moduleNames.add(moduleName);
+        for (String clusterDir : clusterList) {
+            Path clusterModulesDir = Paths.get(clusterDir).resolve("modules");
+            try {
+                Files.list(clusterModulesDir).forEach(path -> {
+                    String fileName = path.getFileName().toString();
+                    if (fileName.endsWith(JAR_EXT)) {
+                        String moduleName = fileName.substring(0, fileName.length() - JAR_EXT.length());
+                        //info("candidate patch-providing module in development: " + moduleName);
+                        moduleNames.add(moduleName);
+                    }
+                });
+            } catch (IOException e) {
+                warn("failed to list entries of " + clusterModulesDir);
             }
         }
 
-        for (Root root : roots) {
+        // we assume that either
+        //    1. <parentDir>/<modulePatchDir> --> <clusterDir>/modules/*<modulePatchDir>.jar
+        //    2. <parentDir>/<modulePatchDir> --> <clusterDir>/modules/*<modulePatchDir>*.jar
+        //
+        for (Patch patch : patches) {
             patchCount = 0;
-            File[] projectDirs = root.dir.listFiles(file -> file.isDirectory() && !file.getName().startsWith("."));
-            if (projectDirs != null) {
-                for (File projectDir : projectDirs) {
-                    //info("checking '" + projectDir + "'");
+            Path parentSourceDir = patch.dir;
+            try {
+                Files.list(parentSourceDir)
+                        .filter(moduleSourceDir -> Files.isDirectory(moduleSourceDir))
+                        .forEach(moduleSourceDir -> {
+                            String moduleSourceName = moduleSourceDir.getFileName().toString();
+                            if (!moduleSourceName.startsWith(".")) {
+                                //info("checking '" + moduleSourceDir + "'");
+                                Path modulePatchDir = moduleSourceDir.resolve(patch.subPath);
+                                if (Files.isDirectory(modulePatchDir)) {
 
-                    // check - generify: "target/classes" is a Maven specific output path
-                    File classesDir = new File(projectDir, root.subPath);
-                    if (classesDir.isDirectory()) {
-                        String projectDirName = projectDir.getName();
-                        // determine version pos
-                        int versionPos = -1;
-                        for (int i = 0; i < projectDirName.length() - 1; i++) {
-                            if (projectDirName.charAt(i) == '-' && Character.isDigit(projectDirName.charAt(i + 1))) {
-                                versionPos = i;
-                                break;
+                                    //info("checking if artifact '" + artifactName + "' has output directory " + classesDir);
+                                    for (String moduleName : moduleNames) {
+                                        if (moduleName.endsWith(moduleSourceName) || moduleName.contains(moduleSourceName)) {
+                                            addPatch(moduleName, modulePatchDir);
+                                            break;
+                                        }
+                                    }
+                                }
                             }
-                        }
-
-                        // strip version part
-                        String artifactName = versionPos > 0 ?  projectDirName.substring(0, versionPos) : projectDirName;
-
-                        //info("checking if artifact '" + artifactName + "' has output directory " + classesDir);
-
-                        // check - generify: we assume that
-                        //    <project-dir>/<module-dir>  --> <cluster-dir>/modules/<module-dir>.jar
-                        // but this pattern is specific to the NB Maven Plugin
-
-                        // 1. module names that end with artifact name
-                        moduleNames.stream()
-                                .filter(moduleName -> moduleName.endsWith(artifactName))
-                                .forEach(moduleName -> addPatch(moduleName, classesDir));
-
-                        // 2. module names that don't end with artifact name, but contain artifact name
-                        moduleNames.stream()
-                                .filter(moduleName -> !moduleName.endsWith(artifactName) && moduleName.contains(artifactName))
-                                .forEach(moduleName -> addPatch(moduleName, classesDir));
-                    }
-                }
+                        });
+            } catch (IOException e) {
+                warn("failed to list entries of " + parentSourceDir);
             }
+
             if (patchCount == 0) {
-                warn("no module patches found for module root " + root);
+                warn("no module patches found for cluster patch " + patch);
             } else {
-                info(patchCount + " module patch(es) found for module root " + root);
+                info(patchCount + " module patch(es) found for cluster patch " + patch);
             }
         }
 
     }
 
-    private void addPatch(String moduleName, File classesDir) {
+    private void addPatch(String moduleName, Path classesDir) {
         String propertyName = "netbeans.patches." + moduleName.replace("-", ".");
-        setPropIfNotSet(propertyName, classesDir.getPath());
+        setSystemPropertyIfNotSet(propertyName, classesDir.toString());
         patchCount++;
     }
 
@@ -399,33 +402,36 @@ public class Launcher {
     }
 
     private void appendToClasspath(String path, List<URL> classPathList) {
-        File[] files = new File(path).listFiles(file -> file.isDirectory()
-                || file.getName().toLowerCase().endsWith(".jar")
-                || file.getName().toLowerCase().endsWith(".zip"));
-        if (files != null) {
-            for (File file : files) {
-                if (file.isDirectory()) {
-                    appendToClasspath(file.getPath(), classPathList);
-                } else if (file.isFile()) {
-                    try {
-                        URL url = file.toURI().toURL();
-                        classPathList.add(url);
-                        info("added to application classpath: " + file);
-                    } catch (MalformedURLException e) {
-                        throw new IllegalStateException(e);
+        try {
+            Files.list(Paths.get(path)).forEach(file -> {
+                if (Files.isDirectory(file)) {
+                    appendToClasspath(file.toString(), classPathList);
+                } else if (Files.isRegularFile(file)) {
+                    String s = file.getFileName().toString().toLowerCase();
+                    if (s.endsWith(".jar") || s.endsWith(".zip")) {
+                        try {
+                            URL url = file.toUri().toURL();
+                            classPathList.add(url);
+                            info("added to application classpath: " + file);
+                        } catch (MalformedURLException e) {
+                            throw new IllegalStateException(e);
+
+                        }
                     }
                 }
-            }
+            });
+        } catch (IOException e) {
+            warn("failed to list entries of " + path);
         }
     }
 
-    private void setVarIfNotSet(String varName, String varValue) {
-        if (!variables.containsKey(varName)) {
-            variables.put(varName, varValue);
+    private void setConfigurationVariableIfNotSet(String varName, String varValue) {
+        if (!configuration.containsKey(varName)) {
+            configuration.put(varName, varValue);
         }
     }
 
-    private void setPropIfNotSet(String name, String value) {
+    private void setSystemPropertyIfNotSet(String name, String value) {
         String oldValue = System.getProperty(name);
         if (oldValue == null) {
             info("setting system property: " + name + " = " + value);
@@ -476,9 +482,9 @@ public class Launcher {
     }
 
     private String getVar(String name) {
-        String value = variables.get(name);
+        String value = configuration.get(name);
         if (value != null) {
-            return resolveString(value, variables);
+            return resolveString(value, configuration);
         }
         return null;
     }
@@ -493,7 +499,10 @@ public class Launcher {
             Set<String> propertyNames = properties.stringPropertyNames();
             for (String propertyName : propertyNames) {
                 String propertyValue = properties.getProperty(propertyName);
-                variables.put(propertyName, propertyValue);
+                if (propertyValue.startsWith("\"") && propertyValue.endsWith("\"")) {
+                    propertyValue = propertyValue.substring(1, propertyValue.length() - 1);
+                }
+                configuration.put(propertyName, propertyValue);
             }
         } catch (IOException e) {
             throw new IllegalStateException(e);
@@ -528,33 +537,52 @@ public class Launcher {
         return Paths.get(deploymentDir).getFileName().toString();
     }
 
-    private class Root {
-        final File dir;
-        final String subPath;
+    public static class Patch {
+        public static final char WILDCARD_CHAR = '$';
 
-        private Root(File dir, String subPath) {
-            this.dir = dir;
-            String s = subPath.replace('/', File.separatorChar);
-            if (s.startsWith(File.separator)) {
-                s = s.substring(1);
+        private final Path dir;
+        private final String subPath;
+
+        public static Patch parse(String pattern) {
+            int wcPos = pattern.indexOf(WILDCARD_CHAR);
+            if (wcPos >= 0) {
+                String subPath = pattern.substring(wcPos + 1);
+                if (subPath.startsWith(File.separator) || subPath.startsWith("/")) {
+                    subPath = subPath.substring(1);
+                }
+                return new Patch(Paths.get(pattern.substring(0, wcPos)).toAbsolutePath().normalize(), subPath);
+            } else {
+                throw new IllegalArgumentException(String.format("patch pattern must contain a single wildcard '%s'", WILDCARD_CHAR));
             }
-            this.subPath = s;
+        }
+
+        private Patch(Path dir, String subPath) {
+            this.dir = dir;
+            this.subPath = subPath;
+        }
+
+        public Path getDir() {
+            return dir;
+        }
+
+        public String getSubPath() {
+            return subPath;
         }
 
         @Override
         public String toString() {
             if (subPath.isEmpty()) {
-                return dir + File.separator + "$";
+                return dir + File.separator + WILDCARD_CHAR;
             }
-            return dir + File.separator + "$" + File.separator + subPath;
+            return dir + File.separator + WILDCARD_CHAR + File.separator + subPath;
         }
 
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
-            Root root = (Root) o;
-            return dir.equals(root.dir) && subPath.equals(root.subPath);
+            Patch patch = (Patch) o;
+            return dir.equals(patch.dir) && subPath.equals(patch.subPath);
 
         }
 
