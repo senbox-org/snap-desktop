@@ -306,44 +306,57 @@ public class Launcher {
             }
         }
 
-        // we assume that either
-        //    1. <parentDir>/<modulePatchDir> --> <clusterDir>/modules/*<modulePatchDir>.jar
-        //    2. <parentDir>/<modulePatchDir> --> <clusterDir>/modules/*<modulePatchDir>*.jar
-        //
         for (Patch patch : patches) {
             patchCount = 0;
             Path parentSourceDir = patch.dir;
             try {
-                Files.list(parentSourceDir)
+                List<Path> moduleSourceDirs = Files.list(parentSourceDir)
                         .filter(moduleSourceDir -> Files.isDirectory(moduleSourceDir))
-                        .forEach(moduleSourceDir -> {
-                            String moduleSourceName = moduleSourceDir.getFileName().toString();
-                            if (!moduleSourceName.startsWith(".")) {
-                                //info("checking '" + moduleSourceDir + "'");
-                                Path modulePatchDir = moduleSourceDir.resolve(patch.subPath);
-                                if (Files.isDirectory(modulePatchDir)) {
+                        .collect(Collectors.toList());
 
-                                    //info("checking if artifact '" + artifactName + "' has output directory " + classesDir);
-                                    for (String moduleName : moduleNames) {
-                                        if (moduleName.endsWith(moduleSourceName) || moduleName.contains(moduleSourceName)) {
-                                            addPatch(moduleName, modulePatchDir);
-                                            break;
-                                        }
-                                    }
-                                }
-                            }
-                        });
+                for (Path moduleSourceDir : moduleSourceDirs) {
+                    addPatchForModuleSourceDir(moduleSourceDir, moduleNames, patch);
+                }
             } catch (IOException e) {
                 warn("failed to list entries of " + parentSourceDir);
             }
 
             if (patchCount == 0) {
-                warn("no module patches found for cluster patch " + patch);
+                // Maybe patch points to single-module project directory, so let's see
+                addPatchForModuleSourceDir(parentSourceDir, moduleNames, patch);
+            }
+
+            if (patchCount == 0) {
+                warn("no module patches found for pattern " + patch);
             } else {
-                info(patchCount + " module patch(es) found for cluster patch " + patch);
+                info(patchCount + " module patch(es) found for pattern " + patch);
             }
         }
 
+    }
+
+    private boolean addPatchForModuleSourceDir(Path moduleSourceDir, List<String> moduleNames, Patch patch) {
+        String moduleSourceName = moduleSourceDir.getFileName().toString();
+        if (!moduleSourceName.startsWith(".")) {
+            //info("checking '" + moduleSourceDir + "'");
+            Path modulePatchDir = moduleSourceDir.resolve(patch.subPath);
+            if (Files.isDirectory(modulePatchDir)) {
+                //info("checking if artifact '" + artifactName + "' has output directory " + classesDir);
+                for (String moduleName : moduleNames) {
+                    if (moduleName.endsWith(moduleSourceName)) {
+                        addPatch(moduleName, modulePatchDir);
+                        return true;
+                    }
+                }
+                for (String moduleName : moduleNames) {
+                    if (moduleName.contains(moduleSourceName)) {
+                        addPatch(moduleName, modulePatchDir);
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     private void addPatch(String moduleName, Path classesDir) {
@@ -550,9 +563,12 @@ public class Launcher {
                 if (subPath.startsWith(File.separator) || subPath.startsWith("/")) {
                     subPath = subPath.substring(1);
                 }
+                if (subPath.indexOf(WILDCARD_CHAR) > 0) {
+                    throw new IllegalArgumentException(String.format("patch pattern must contain a single wildcard '%s'", WILDCARD_CHAR));
+                }
                 return new Patch(Paths.get(pattern.substring(0, wcPos)).toAbsolutePath().normalize(), subPath);
             } else {
-                throw new IllegalArgumentException(String.format("patch pattern must contain a single wildcard '%s'", WILDCARD_CHAR));
+                throw new IllegalArgumentException(String.format("patch pattern must contain wildcard '%s'", WILDCARD_CHAR));
             }
         }
 
@@ -583,7 +599,6 @@ public class Launcher {
             if (o == null || getClass() != o.getClass()) return false;
             Patch patch = (Patch) o;
             return dir.equals(patch.dir) && subPath.equals(patch.subPath);
-
         }
 
         @Override

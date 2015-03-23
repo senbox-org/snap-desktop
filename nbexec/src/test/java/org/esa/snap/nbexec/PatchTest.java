@@ -5,29 +5,58 @@ import org.junit.Test;
 import java.nio.file.Paths;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeTrue;
 
 public class PatchTest {
+
     @Test
-    public void testParseOk1() throws Exception {
-        Launcher.Patch patch = Launcher.Patch.parse("C:\\Users\\Norman\\JavaProjects\\senbox\\s3tbx\\$\\target\\classes");
-        assertEquals(Paths.get("C:\\Users\\Norman\\JavaProjects\\senbox\\s3tbx"), patch.getDir());
+    public void testParseOkWin() throws Exception {
+        assumeTrue(System.getProperty("os.name").startsWith("Win"));
+        Launcher.Patch patch = Launcher.Patch.parse("C:\\Users\\Norman\\Projects\\my-snap-module\\$\\target\\classes");
+        assertEquals(Paths.get("C:\\Users\\Norman\\Projects\\my-snap-module"), patch.getDir());
         assertEquals("target\\classes", patch.getSubPath());
     }
 
     @Test
-    public void testParseOk2() throws Exception {
-        Launcher.Patch patch = Launcher.Patch.parse("/home/norman/projects/senbox/s3tbx/$/target/classes");
-        assertEquals(Paths.get("/home/norman/projects/senbox/s3tbx"), patch.getDir());
-        assertEquals("target/classes", patch.getSubPath());
+    public void testParseOkNoneWin() throws Exception {
+        assumeTrue(!System.getProperty("os.name").startsWith("Win"));
+        Launcher.Patch patch = Launcher.Patch.parse("/home/norman/projects/my-snap-module/$/target/classes");
+        assertEquals(Paths.get("C:\\Users\\Norman\\Projects\\my-snap-module"), patch.getDir());
+        assertEquals("target\\classes", patch.getSubPath());
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testParseError1() {
-        Launcher.Patch.parse("C:\\Users\\Norman\\JavaProjects\\senbox\\s3tbx\\target\\classes");
+    @Test
+    public void testParseErrorsWin() {
+        assumeTrue(System.getProperty("os.name").startsWith("Win"));
+        try {
+            Launcher.Patch.parse("C:\\Users\\Norman\\Projects\\my-snap-module\\target\\classes");
+            fail();
+        } catch (IllegalArgumentException e) {
+            // ok
+        }
+        try {
+            Launcher.Patch.parse("C:\\Users\\Norman\\Projects\\my-snap-module\\$\\target\\classes\\$");
+            fail();
+        } catch (IllegalArgumentException e) {
+            // ok
+        }
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testParseError2() {
-        Launcher.Patch.parse("/home/norman/projects/senbox/s3tbx/target/classes");
+    @Test
+    public void testParseErrorsNoneWin() {
+        assumeTrue(!System.getProperty("os.name").startsWith("Win"));
+        try {
+            Launcher.Patch.parse("/home/norman/projects/snap-module/target/classes");
+            fail();
+        } catch (IllegalArgumentException e) {
+            // ok
+        }
+        try {
+            Launcher.Patch.parse("/home/norman/projects/snap-module/$/target/classes/$");
+            fail();
+        } catch (IllegalArgumentException e) {
+            // ok
+        }
     }
 }
