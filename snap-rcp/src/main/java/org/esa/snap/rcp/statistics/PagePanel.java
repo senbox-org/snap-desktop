@@ -240,7 +240,7 @@ public abstract class PagePanel extends JPanel implements ProductNodeListener {
     }
 
     protected void showAlternativeView() {
-        final JPanel parent = (JPanel) this.getParent();
+        final TopComponent parent = (TopComponent) this.getParent();
         parent.remove(this);
         this.setVisible(false);
         parent.add(alternativeView, BorderLayout.CENTER);
