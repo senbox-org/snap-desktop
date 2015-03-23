@@ -138,7 +138,10 @@ class PredefinedCrsPanel extends JPanel {
         }
 
         private void updateFilter(String text) {
-            filteredListModel.setFilter(element -> element.getDescription().contains(text.trim()));
+            filteredListModel.setFilter(crsInfo -> {
+                String description = crsInfo.toString().toLowerCase();
+                return description.contains(text.trim().toLowerCase());
+            });
         }
 
         private String getFilterText(DocumentEvent e) {
