@@ -144,11 +144,7 @@
                 <artifactId>nbm-maven-plugin</artifactId>
                 <configuration>
                     <installerLicenseFile>../LICENSE.html</installerLicenseFile>
-                    <additionalArguments>--locale en_GB -J-Dsun.java2d.noddraw=true -J-Dsun.awt.nopixfmt=true
-                        -J-Dsun.java2d.dpiaware=false
-                    </additionalArguments>
-                    <!-- additional arguments need to be added also to the default config file -->
-                    <etcConfFile>src/main/resources/defaultSnap.conf</etcConfFile>
+                    <etcConfFile>../etc/snap.conf</etcConfFile>
                 </configuration>
             </plugin>
             <!-- Permits NbModuleSuite to be run in integration-test phase: -->
