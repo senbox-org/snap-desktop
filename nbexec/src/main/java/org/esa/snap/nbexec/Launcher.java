@@ -564,11 +564,13 @@ public class Launcher {
                     subPath = subPath.substring(1);
                 }
                 if (subPath.indexOf(WILDCARD_CHAR) > 0) {
-                    throw new IllegalArgumentException(String.format("patch pattern must contain a single wildcard '%s'", WILDCARD_CHAR));
+                    throw new IllegalArgumentException(String.format("patch pattern must contain a single wildcard '%s': %s",
+                                                                     WILDCARD_CHAR, pattern));
                 }
                 return new Patch(Paths.get(pattern.substring(0, wcPos)).toAbsolutePath().normalize(), subPath);
             } else {
-                throw new IllegalArgumentException(String.format("patch pattern must contain wildcard '%s'", WILDCARD_CHAR));
+                throw new IllegalArgumentException(String.format("patch pattern must contain wildcard '%s': %s",
+                                                                 WILDCARD_CHAR, pattern));
             }
         }
 
