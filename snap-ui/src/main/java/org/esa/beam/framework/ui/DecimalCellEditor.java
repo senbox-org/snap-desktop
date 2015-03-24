@@ -26,22 +26,22 @@ import java.awt.Color;
 import java.awt.Component;
 
 /**
- * A {@code FloatCellEditor} which is able to validate the entered value.
+ * A {@code DecimalCellEditor} which is able to validate the entered value.
  * If the value is not valid the cell is marked with a red border and the value is rejected.
  * The cell value is right aligned.
  */
-public class FloatCellEditor extends DefaultCellEditor {
+public class DecimalCellEditor extends DefaultCellEditor {
 
     private Border defaultBorder;
-    private float minValue;
-    private float maxValue;
+    private double minValue;
+    private double maxValue;
 
     /**
      * Creates a new editor. The bounds of the valid value range are set
-     * to {@link Float#MIN_VALUE} and {@link Float#MAX_VALUE}
+     * to {@link Double#MIN_VALUE} and {@link Double#MAX_VALUE}
      */
-    public FloatCellEditor() {
-        this(Float.MIN_VALUE, Float.MAX_VALUE);
+    public DecimalCellEditor() {
+        this(Double.MIN_VALUE, Double.MAX_VALUE);
     }
 
     /**
@@ -51,7 +51,7 @@ public class FloatCellEditor extends DefaultCellEditor {
      * @param minValue the minimum value of the valid range
      * @param maxValue the maximum value of the valid range
      */
-    public FloatCellEditor(float minValue, float maxValue) {
+    public DecimalCellEditor(double minValue, double maxValue) {
         super(new JTextField());
         this.minValue = minValue;
         this.maxValue = maxValue;
@@ -74,9 +74,9 @@ public class FloatCellEditor extends DefaultCellEditor {
     @Override
     public boolean stopCellEditing() {
         JTextField textField = (JTextField) getComponent();
-        float value;
+        double value;
         try {
-            value = Float.parseFloat(textField.getText());
+            value = Double.parseDouble(textField.getText());
         } catch (NumberFormatException ignored) {
             ((JComponent) getComponent()).setBorder(new LineBorder(Color.red));
             return false;
@@ -96,7 +96,7 @@ public class FloatCellEditor extends DefaultCellEditor {
         return true;
     }
 
-    protected boolean validateValue(float value) {
+    protected boolean validateValue(double value) {
         return value >= minValue && value <= maxValue;
     }
 
@@ -104,9 +104,9 @@ public class FloatCellEditor extends DefaultCellEditor {
     public Object getCellEditorValue() {
         JTextField textField = (JTextField) getComponent();
         try {
-            return Float.parseFloat(textField.getText());
+            return Double.parseDouble(textField.getText());
         } catch (NumberFormatException ignored) {
-            return Float.NaN;
+            return Double.NaN;
         }
     }
 }

@@ -16,6 +16,7 @@
 
 package org.esa.snap.rcp.statistics;
 
+import org.esa.beam.framework.ui.UIUtils;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -23,9 +24,11 @@ import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
+import javax.swing.Icon;
+
 @TopComponent.Description(
-        preferredID = "DensityPlotTopComponent",
-        iconBase = "org/esa/snap/rcp/icons/DensityPlot24.gif",
+        preferredID = "ProfilePlotTopComponent",
+        iconBase = "org/esa/snap/rcp/icons/ProfilePlot24.gif",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS //todo define
 )
 @TopComponent.Registration(
@@ -33,40 +36,50 @@ import org.openide.windows.TopComponent;
         openAtStartup = false,
         position = 1
 )
-@ActionID(category = "Window", id = "org.esa.snap.rcp.statistics.DensityPlotTopComponent")
+@ActionID(category = "Window", id = "org.esa.snap.rcp.statistics.ProfilePlotTopComponent")
 @ActionReferences({
         @ActionReference(path = "Menu/Window/Tool Windows"),
         @ActionReference(path = "Toolbars/Analysis")
 })
 @TopComponent.OpenActionRegistration(
-        displayName = "#CTL_DensityPlotTopComponent_Name",
-        preferredID = "DensityPlotTopComponent"
+        displayName = "#CTL_ProfilePlotTopComponent_Name",
+        preferredID = "ProfilePlotTopComponent"
 )
 @NbBundle.Messages({
-        "CTL_DensityPlotTopComponent_Name=Scatter Plot",
-        "CTL_DensityPlotTopComponent_HelpId=densityPlotDialog"
+        "CTL_ProfilePlotTopComponent_Name=Profile Plot",
+        "CTL_ProfilePlotTopComponent_HelpId=profilePlotDialog"
 })
 /**
- * The tool view containing a density plot
+ * The tool view containing a profile plot
  *
  * @author Marco Zuehlke
  */
-public class DensityPlotTopComponent extends AbstractStatisticsTopComponent {
+public class ProfilePlotTopComponent extends AbstractStatisticsTopComponent {
 
-    public static final String ID = DensityPlotTopComponent.class.getName();
+    public static final String ID = ProfilePlotTopComponent.class.getName();
+    public static final String tableHelpID = "tableView";
 
     @Override
     protected PagePanel createPagePanel() {
-        return new DensityPlotPanel(this, getHelpId());
+        final String helpId = getHelpId();
+        final String chartTitle = ProfilePlotPanel.CHART_TITLE;
+//        final Icon largeIcon = getDescriptor().getLargeIcon();
+        final Icon largeIcon = UIUtils.loadImageIcon("icons/ProfilePlot24.gif");
+        final ProfilePlotPanel profilePlotPanel = new ProfilePlotPanel(this, helpId);
+        final TableViewPagePanel tableViewPagePanel = new TableViewPagePanel(this, tableHelpID, chartTitle, largeIcon);
+        profilePlotPanel.setAlternativeView(tableViewPagePanel);
+        tableViewPagePanel.setAlternativeView(profilePlotPanel);
+        return profilePlotPanel;
     }
 
     @Override
     String getHelpId() {
-        return Bundle.CTL_DensityPlotTopComponent_HelpId();
+        return Bundle.CTL_ProfilePlotTopComponent_HelpId();
     }
 
     @Override
     public HelpCtx getHelpCtx() {
-        return new HelpCtx(Bundle.CTL_DensityPlotTopComponent_HelpId());
+        return new HelpCtx(Bundle.CTL_ProfilePlotTopComponent_HelpId());
     }
+
 }

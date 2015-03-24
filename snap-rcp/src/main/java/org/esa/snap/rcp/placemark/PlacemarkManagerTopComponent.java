@@ -21,8 +21,8 @@ import org.esa.beam.framework.datamodel.ProductNodeListener;
 import org.esa.beam.framework.datamodel.RasterDataNode;
 import org.esa.beam.framework.datamodel.TiePointGrid;
 import org.esa.beam.framework.ui.AbstractDialog;
+import org.esa.beam.framework.ui.DecimalCellEditor;
 import org.esa.beam.framework.ui.DecimalTableCellRenderer;
-import org.esa.beam.framework.ui.FloatCellEditor;
 import org.esa.beam.framework.ui.ModalDialog;
 import org.esa.beam.framework.ui.color.ColorTableCellEditor;
 import org.esa.beam.framework.ui.color.ColorTableCellRenderer;
@@ -268,11 +268,11 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
     }
 
     protected void addCellEditor(TableColumnModel columnModel) {
-        final FloatCellEditor pixelCellEditor = new FloatCellEditor();
+        final DecimalCellEditor pixelCellEditor = new DecimalCellEditor();
         columnModel.getColumn(0).setCellEditor(pixelCellEditor);
         columnModel.getColumn(1).setCellEditor(pixelCellEditor);
-        columnModel.getColumn(2).setCellEditor(new FloatCellEditor(-180, 180));
-        columnModel.getColumn(3).setCellEditor(new FloatCellEditor(-90, 90));
+        columnModel.getColumn(2).setCellEditor(new DecimalCellEditor(-180, 180));
+        columnModel.getColumn(3).setCellEditor(new DecimalCellEditor(-90, 90));
         columnModel.getColumn(4).setCellEditor(new ColorTableCellEditor());
     }
 
