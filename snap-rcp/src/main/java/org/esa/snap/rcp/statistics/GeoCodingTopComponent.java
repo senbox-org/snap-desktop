@@ -35,7 +35,7 @@ import org.openide.windows.TopComponent;
 @ActionID(category = "Window", id = "org.esa.snap.rcp.statistics.GeoCodingTopComponent")
 @ActionReferences({
         @ActionReference(path = "Menu/Window/Tool Windows"),
-        @ActionReference(path = "Toolbars/Views")
+        @ActionReference(path = "Toolbars/Analysis")
 })
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_GeoCodingTopComponent_Name",

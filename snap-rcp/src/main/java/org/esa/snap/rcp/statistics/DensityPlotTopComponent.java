@@ -36,7 +36,7 @@ import org.openide.windows.TopComponent;
 @ActionID(category = "Window", id = "org.esa.snap.rcp.statistics.DensityPlotTopComponent")
 @ActionReferences({
         @ActionReference(path = "Menu/Window/Tool Windows"),
-        @ActionReference(path = "Toolbars/Views")
+        @ActionReference(path = "Toolbars/Analysis")
 })
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_DensityPlotTopComponent_Name",
