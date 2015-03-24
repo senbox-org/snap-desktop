@@ -43,7 +43,7 @@ public abstract class AbstractPlacemarkTableModel extends DefaultTableModel {
     private TiePointGrid[] selectedGrids;
 
     private final PlacemarkListener placemarkListener;
-    private final ArrayList<Placemark> placemarkList;
+    private final ArrayList<Placemark> placemarkList = new ArrayList<>(10);
 
     protected AbstractPlacemarkTableModel(PlacemarkDescriptor placemarkDescriptor, Product product, Band[] selectedBands,
                                           TiePointGrid[] selectedGrids) {
@@ -51,7 +51,6 @@ public abstract class AbstractPlacemarkTableModel extends DefaultTableModel {
         this.product = product;
         initSelectedBands(selectedBands);
         initSelectedGrids(selectedGrids);
-        placemarkList = new ArrayList<Placemark>(10);
         placemarkListener = new PlacemarkListener();
         if (product != null) {
             product.addProductNodeListener(placemarkListener);
@@ -184,7 +183,7 @@ public abstract class AbstractPlacemarkTableModel extends DefaultTableModel {
     @Override
     public Class getColumnClass(int columnIndex) {
         if (columnIndex >= 0 && columnIndex < getStandardColumnNames().length - 1) {
-            return Float.class;
+            return Double.class;
         }
         return Object.class;
     }
@@ -277,51 +276,23 @@ public abstract class AbstractPlacemarkTableModel extends DefaultTableModel {
     }
 
     protected void setGeoPosLat(Object lat, Placemark placemark) {
-        if (lat instanceof Double) {
-            double lon;
-            if (placemark.getGeoPos() == null) {
-                lon = Double.NaN;
-            } else {
-                lon = placemark.getGeoPos().lon;
-            }
-            placemark.setGeoPos(new GeoPos((Double)lat, lon));
-        }
+        double lon = placemark.getGeoPos() == null ? Double.NaN : placemark.getGeoPos().lon;
+        placemark.setGeoPos(new GeoPos((Double) lat, lon));
     }
 
     protected void setGeoPosLon(Object lon, Placemark placemark) {
-        if (lon instanceof Double) {
-            double lat;
-            if (placemark.getGeoPos() == null) {
-                lat = Float.NaN;
-            } else {
-                lat = placemark.getGeoPos().lat;
-            }
-            placemark.setGeoPos(new GeoPos(lat, (Double) lon));
-        }
+        double lat = placemark.getGeoPos() == null ? Double.NaN : placemark.getGeoPos().lat;
+        placemark.setGeoPos(new GeoPos(lat, (Double) lon));
     }
 
     protected void setPixelPosY(Object value, Placemark placemark) {
-        if (value instanceof Double) {
-            double pixelX;
-            if (placemark.getPixelPos() == null) {
-                pixelX = -1;
-            } else {
-                pixelX = placemark.getPixelPos().x;
-            }
-            placemark.setPixelPos(new PixelPos(pixelX, (Double) value));
-        }
+        double pixelX = placemark.getPixelPos() == null ? -1 : placemark.getPixelPos().x;
+        placemark.setPixelPos(new PixelPos(pixelX, (Double) value));
     }
 
     protected void setPixelPosX(Object value, Placemark placemark) {
-        if (value instanceof Double) {
-            double pixelY;
-            if (placemark.getPixelPos() == null) {
-                pixelY = -1;
-            } else {
-                pixelY = placemark.getPixelPos().y;
-            }
-            placemark.setPixelPos(new PixelPos((Double) value, pixelY));
-        }
+        double pixelY = placemark.getPixelPos() == null ? -1 : placemark.getPixelPos().y;
+        placemark.setPixelPos(new PixelPos((Double) value, pixelY));
     }
 
     private void initSelectedBands(Band[] selectedBands) {

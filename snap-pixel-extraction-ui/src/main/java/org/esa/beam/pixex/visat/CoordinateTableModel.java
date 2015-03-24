@@ -41,7 +41,7 @@ class CoordinateTableModel extends AbstractPlacemarkTableModel {
                 return String.class;
             case 1:
             case 2:
-                return Float.class;
+                return Double.class;
             case 3:
                 return Date.class;
             default:

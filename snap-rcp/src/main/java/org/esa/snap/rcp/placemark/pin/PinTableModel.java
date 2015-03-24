@@ -52,8 +52,7 @@ public class PinTableModel extends AbstractPlacemarkTableModel {
 
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
-        if (getProduct().getGeoCoding() == null &&
-                (columnIndex == lonIndex || columnIndex == latIndex)) {
+        if (getProduct().getGeoCoding() == null && (columnIndex == lonIndex || columnIndex == latIndex)) {
             return false;
         }
         return columnIndex < getStandardColumnNames().length;
@@ -103,13 +102,13 @@ public class PinTableModel extends AbstractPlacemarkTableModel {
     public Class getColumnClass(int columnIndex) {
         switch (columnIndex) {
             case xIndex:
-                return Float.class;
+                return Double.class;
             case yIndex:
-                return Float.class;
+                return Double.class;
             case lonIndex:
-                return Float.class;
+                return Double.class;
             case latIndex:
-                return Float.class;
+                return Double.class;
             case colorIndex:
                 return Color.class;
             case labelIndex:
