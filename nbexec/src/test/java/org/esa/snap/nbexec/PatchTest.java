@@ -22,8 +22,8 @@ public class PatchTest {
     public void testParseOkNoneWin() throws Exception {
         assumeTrue(!System.getProperty("os.name").startsWith("Win"));
         Launcher.Patch patch = Launcher.Patch.parse("/home/norman/projects/my-snap-module/$/target/classes");
-        assertEquals(Paths.get("C:\\Users\\Norman\\Projects\\my-snap-module"), patch.getDir());
-        assertEquals("target\\classes", patch.getSubPath());
+        assertEquals(Paths.get("/home/norman/projects/my-snap-module"), patch.getDir());
+        assertEquals("target/classes", patch.getSubPath());
     }
 
     @Test
