@@ -66,7 +66,6 @@ public class SpectrumChooser extends ModalDialog {
     private final TristateCheckBox[] tristateCheckBoxes;
     private boolean[] collapsed;
     private TableLayout spectraPanelLayout;
-    private JComboBox shapeSizeComboBox;
 
     public SpectrumChooser(Window parent, DisplayableSpectrum[] originalSpectra) {
         super(parent, "Available Spectra", ModalDialog.ID_OK_CANCEL_HELP, "spectrumChooser");
@@ -170,13 +169,14 @@ public class SpectrumChooser extends ModalDialog {
         spectrumNameLabel.setFont(font);
         spectraPanel.add(spectrumNameLabel);
         spectraPanel.add(new JLabel(spectrum.getUnit()));
-        JComboBox strokeComboBox = new JComboBox(SpectrumStrokeProvider.getStrokeIcons());
+        JComboBox<ImageIcon> strokeComboBox = new JComboBox<>(SpectrumStrokeProvider.getStrokeIcons());
         strokeComboBox.setSelectedItem(strokeIcon);
         strokeComboBox.addActionListener(
                 e -> spectrum.setLineStyle(
                         SpectrumStrokeProvider.getStroke((ImageIcon) strokeComboBox.getSelectedItem())));
         spectraPanel.add(strokeComboBox);
-        JComboBox shapeComboBox = new JComboBox(SpectrumShapeProvider.getShapeIcons());
+        JComboBox<ImageIcon> shapeComboBox = new JComboBox<>(SpectrumShapeProvider.getShapeIcons());
+        JComboBox<Integer> shapeSizeComboBox = new JComboBox<>(SpectrumShapeProvider.getScaleGrades());
         shapeComboBox.setSelectedItem(shapeIcon);
         shapeComboBox.addActionListener(e -> {
             final int shapeIndex = SpectrumShapeProvider.getShape((ImageIcon) shapeComboBox.getSelectedItem());
@@ -189,10 +189,9 @@ public class SpectrumChooser extends ModalDialog {
 
         });
         spectraPanel.add(shapeComboBox);
-        shapeSizeComboBox = new JComboBox(SpectrumShapeProvider.getScaleGrades());
         shapeSizeComboBox.setSelectedItem(spectrum.getSymbolSize());
         shapeSizeComboBox.addActionListener(e -> {
-            final String selectedItem = shapeComboBox.getSelectedItem().toString();
+            final String selectedItem = shapeSizeComboBox.getSelectedItem().toString();
             if (!selectedItem.equals("")) {
                 spectrum.setSymbolSize(Integer.parseInt(selectedItem));
             }
