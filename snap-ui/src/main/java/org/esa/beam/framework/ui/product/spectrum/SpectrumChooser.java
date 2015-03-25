@@ -6,7 +6,10 @@ import org.esa.beam.framework.datamodel.Band;
 import org.esa.beam.framework.ui.DecimalTableCellRenderer;
 import org.esa.beam.framework.ui.ModalDialog;
 import org.esa.beam.framework.ui.UIUtils;
+import org.esa.beam.framework.ui.product.LoadSaveRasterDataNodesConfigurationsComponent;
+import org.esa.beam.framework.ui.product.LoadSaveRasterDataNodesConfigurationsProvider;
 import org.esa.beam.framework.ui.tool.ToolButtonFactory;
+import org.esa.beam.util.ArrayUtils;
 
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
@@ -35,8 +38,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-//public class SpectrumChooser extends ModalDialog implements LoadSaveRasterDataNodesConfigurationsComponent {
-public class SpectrumChooser extends ModalDialog {
+public class SpectrumChooser extends ModalDialog implements LoadSaveRasterDataNodesConfigurationsComponent {
 
     private static final int band_selected_index = 0;
     private static final int band_name_index = 1;
@@ -100,14 +102,14 @@ public class SpectrumChooser extends ModalDialog {
         spectraScrollPane.getHorizontalScrollBar().setUnitIncrement(20);
         content.add(spectraScrollPane, BorderLayout.CENTER);
 
-//        LoadSaveRasterDataNodesConfigurationsProvider provider = new LoadSaveRasterDataNodesConfigurationsProvider(this);
-//        AbstractButton loadButton = provider.getLoadButton();
-//        AbstractButton saveButton = provider.getSaveButton();
+        LoadSaveRasterDataNodesConfigurationsProvider provider = new LoadSaveRasterDataNodesConfigurationsProvider(this);
+        AbstractButton loadButton = provider.getLoadButton();
+        AbstractButton saveButton = provider.getSaveButton();
         TableLayout layout = new TableLayout(1);
         layout.setTablePadding(4, 4);
         JPanel buttonPanel = new JPanel(layout);
-//        buttonPanel.add(loadButton);
-//        buttonPanel.add(saveButton);
+        buttonPanel.add(loadButton);
+        buttonPanel.add(saveButton);
         buttonPanel.add(layout.createVerticalSpacer());
         content.add(buttonPanel, BorderLayout.EAST);
 
@@ -280,33 +282,32 @@ public class SpectrumChooser extends ModalDialog {
         return originalSpectra;
     }
 
-//    @Override
-//    public void setReadRasterDataNodeNames(String[] readRasterDataNodeNames) {
-//        SpectrumTableModel spectrumTableModel = getSpectrumTableModel();
-//        for (int i = 0; i < spectraTable.getRowCount(); i++) {
-//            BandTableModel bandTableModel = spectrumTableModel.getBandTableModel(i);
-//            for (int j = 0; j < bandTableModel.getRowCount(); j++) {
-//                String bandName = bandTableModel.getValueAt(j, band_name_index).toString();
-//                boolean selected = ArrayUtils.isMemberOf(bandName, readRasterDataNodeNames);
-//                bandTableModel.setValueAt(selected, j, band_selected_index);
-//            }
-//        }
-//    }
+    @Override
+    public void setReadRasterDataNodeNames(String[] readRasterDataNodeNames) {
+        for (JTable bandTable : bandTables) {
+            BandTableModel bandTableModel = (BandTableModel) bandTable.getModel();
+            for (int j = 0; j < bandTableModel.getRowCount(); j++) {
+                String bandName = bandTableModel.getValueAt(j, band_name_index).toString();
+                boolean selected = ArrayUtils.isMemberOf(bandName, readRasterDataNodeNames);
+                bandTableModel.setValueAt(selected, j, band_selected_index);
+            }
+        }
 
-//    @Override
-//    public String[] getRasterDataNodeNamesToWrite() {
-//        List<String> bandNames = new ArrayList<>();
-//        SpectrumTableModel spectrumTableModel = getSpectrumTableModel();
-//        for (int i = 0; i < spectrumTableModel.getRowCount(); i++) {
-//            BandTableModel bandTableModel = spectrumTableModel.getBandTableModel(i);
-//            for (int j = 0; j < bandTableModel.getRowCount(); j++) {
-//                if ((boolean) bandTableModel.getValueAt(j, band_selected_index)) {
-//                    bandNames.add(bandTableModel.getValueAt(j, band_name_index).toString());
-//                }
-//            }
-//        }
-//        return bandNames.toArray(new String[bandNames.size()]);
-//    }
+    }
+
+    @Override
+    public String[] getRasterDataNodeNamesToWrite() {
+        List<String> bandNames = new ArrayList<>();
+        for (JTable bandTable : bandTables) {
+            BandTableModel bandTableModel = (BandTableModel) bandTable.getModel();
+            for (int j = 0; j < bandTableModel.getRowCount(); j++) {
+                if ((boolean) bandTableModel.getValueAt(j, band_selected_index)) {
+                    bandNames.add(bandTableModel.getValueAt(j, band_name_index).toString());
+                }
+            }
+        }
+        return bandNames.toArray(new String[bandNames.size()]);
+    }
 
     private static class BandTableModel extends DefaultTableModel {
 
