@@ -31,7 +31,6 @@ import org.esa.beam.timeseries.core.timeseries.datamodel.AbstractTimeSeries;
 import org.esa.beam.timeseries.core.timeseries.datamodel.TimeSeriesChangeEvent;
 import org.esa.beam.timeseries.core.timeseries.datamodel.TimeSeriesListener;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.util.SelectionChangeSupport;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -107,17 +106,7 @@ public class TimeSeriesManagerTopComponent extends TopComponent {
 
         realizeActiveForm();
         updateTitle();
-        SnapApp.getDefault().addProductNodeSelectionChangeListener(new SelectionChangeSupport.Listener<ProductNode>() {
-            @Override
-            public void selected(ProductNode first, ProductNode... more) {
-                setSelectedProduct(first.getProduct());
-            }
-
-            @Override
-            public void deselected(ProductNode first, ProductNode... more) {
-
-            }
-        });
+        SnapApp.getDefault().getSelectionSupport(ProductNode.class).addHandler((oldValue, newValue) -> setSelectedProduct(newValue.getProduct()));
         SnapApp.getDefault().getProductManager().addListener(new ProductManager.Listener() {
             @Override
             public void productAdded(ProductManager.Event event) {

@@ -30,7 +30,7 @@ import org.esa.beam.framework.ui.product.ProductSceneView;
 import org.esa.beam.framework.ui.product.VectorDataLayer;
 import org.esa.beam.framework.ui.product.VectorDataLayerFilterFactory;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.util.SelectionChangeSupport;
+import org.esa.snap.rcp.util.SelectionSupport;
 import org.openide.util.HelpCtx;
 import org.openide.windows.TopComponent;
 
@@ -51,13 +51,13 @@ public abstract class AbstractStatisticsTopComponent extends TopComponent implem
 
     private final PagePanelLL pagePanelLL;
     private final SelectionChangeListener pagePanelSCL;
-    private final PagePanelProductListener pagePanelProductListener;
-    private final PagePanelProductSceneViewListener pagePanelProductSceneViewListener;
+    private final PagePanelProductHandler pagePanelProductListener;
+    private final PagePanelProductSceneViewHandler pagePanelProductSceneViewListener;
     private final PagePanelProductRemovedListener pagePanelProductRemovedListener;
 
     protected AbstractStatisticsTopComponent() {
-        pagePanelProductListener = new PagePanelProductListener();
-        pagePanelProductSceneViewListener = new PagePanelProductSceneViewListener();
+        pagePanelProductListener = new PagePanelProductHandler();
+        pagePanelProductSceneViewListener = new PagePanelProductSceneViewHandler();
         pagePanelProductRemovedListener = new PagePanelProductRemovedListener();
         pagePanelLL = new PagePanelLL();
         pagePanelSCL = new PagePanelSCL();
@@ -80,8 +80,8 @@ public abstract class AbstractStatisticsTopComponent extends TopComponent implem
     public void componentShowing() {
         final SnapApp snapApp = SnapApp.getDefault();
         snapApp.getProductManager().addListener(pagePanelProductRemovedListener);
-        snapApp.addProductNodeSelectionChangeListener(pagePanelProductListener);
-        snapApp.addProductSceneViewSelectionChangeListener(pagePanelProductSceneViewListener);
+        snapApp.getSelectionSupport(ProductNode.class).addHandler(pagePanelProductListener);
+        snapApp.getSelectionSupport(ProductSceneView.class).addHandler(pagePanelProductSceneViewListener);
         final ProductSceneView productSceneView = snapApp.getSelectedProductSceneView();
         addViewListener(productSceneView);
         setCurrentSelection();
@@ -93,8 +93,8 @@ public abstract class AbstractStatisticsTopComponent extends TopComponent implem
         transferProductNodeListener(product, null);
         final SnapApp snapApp = SnapApp.getDefault();
         snapApp.getProductManager().removeListener(pagePanelProductRemovedListener);
-        snapApp.removeProductNodeSelectionChangeListener(pagePanelProductListener);
-        snapApp.removeProductSceneViewSelectionChangeListener(pagePanelProductSceneViewListener);
+        snapApp.getSelectionSupport(ProductNode.class).removeHandler(pagePanelProductListener);
+        snapApp.getSelectionSupport(ProductSceneView.class).removeHandler(pagePanelProductSceneViewListener);
         removeViewListener(snapApp.getSelectedProductSceneView());
     }
 
@@ -167,31 +167,26 @@ public abstract class AbstractStatisticsTopComponent extends TopComponent implem
         }
     }
 
-    private class PagePanelProductListener implements SelectionChangeSupport.Listener<ProductNode> {
+    private class PagePanelProductHandler implements SelectionSupport.Handler<ProductNode> {
 
         @Override
-        public void selected(ProductNode first, ProductNode... more) {
+        public void selectionChange(ProductNode oldValue, ProductNode newValue) {
             RasterDataNode raster = null;
-            if (first instanceof RasterDataNode) {
-                raster = (RasterDataNode) first;
+            if (newValue instanceof RasterDataNode) {
+                raster = (RasterDataNode) newValue;
             }
             VectorDataNode vector = null;
-            if (first instanceof VectorDataNode) {
-                vector = (VectorDataNode) first;
+            if (newValue instanceof VectorDataNode) {
+                vector = (VectorDataNode) newValue;
                 final ProductSceneView sceneView = SnapApp.getDefault().getSelectedProductSceneView();
                 if (sceneView != null) {
                     raster = sceneView.getRaster();
                 }
             }
-            Product product = first.getProduct();
+            Product product = newValue.getProduct();
             if (product != null) {
                 selectionChanged(product, raster, vector);
             }
-        }
-
-        @Override
-        public void deselected(ProductNode first, ProductNode... more) {
-            //do nothing
         }
     }
 
@@ -209,13 +204,18 @@ public abstract class AbstractStatisticsTopComponent extends TopComponent implem
 
     }
 
-    private class PagePanelProductSceneViewListener implements SelectionChangeSupport.Listener<ProductSceneView> {
+    private class PagePanelProductSceneViewHandler implements SelectionSupport.Handler<ProductSceneView> {
 
         @Override
-        public void selected(ProductSceneView first, ProductSceneView... more) {
-            addViewListener(first);
-            VectorDataNode vectorDataNode = getVectorDataNode(first);
-            selectionChanged(first.getRaster().getProduct(), first.getRaster(), vectorDataNode);
+        public void selectionChange(ProductSceneView oldValue, ProductSceneView newValue) {
+            if (oldValue != null) {
+                removeViewListener(oldValue);
+            }
+            if (newValue != null) {
+                addViewListener(newValue);
+                VectorDataNode vectorDataNode = getVectorDataNode(newValue);
+                selectionChanged(newValue.getRaster().getProduct(), newValue.getRaster(), vectorDataNode);
+            }
         }
 
         private VectorDataNode getVectorDataNode(ProductSceneView view) {
@@ -228,11 +228,6 @@ public abstract class AbstractStatisticsTopComponent extends TopComponent implem
                 vectorDataNode = vdl.getVectorDataNode();
             }
             return vectorDataNode;
-        }
-
-        @Override
-        public void deselected(ProductSceneView first, ProductSceneView... more) {
-            removeViewListener(first);
         }
     }
 

@@ -36,7 +36,6 @@ import org.esa.beam.framework.dataop.barithm.BandArithmetic;
 import org.esa.beam.framework.ui.GridBagUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
-import org.esa.snap.rcp.util.SelectionChangeSupport;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -108,15 +107,9 @@ class HistogramPanel extends ChartPagePanel {
 
     @Override
     protected void initComponents() {
-        SnapApp.getDefault().addProductNodeSelectionChangeListener(new SelectionChangeSupport.Listener<ProductNode>() {
-            @Override
-            public void selected(ProductNode first, ProductNode... more) {
-                handleMasklessProduct(first.getProduct());
-            }
-
-            @Override
-            public void deselected(ProductNode first, ProductNode... more) {
-                //do nothing
+        SnapApp.getDefault().getSelectionSupport(ProductNode.class).addHandler((oldValue, newValue) -> {
+            handleMasklessProduct(newValue.getProduct());
+            if (newValue != null) {
             }
         });
         SnapApp.getDefault().getProductManager().addListener(new ProductManager.Listener() {

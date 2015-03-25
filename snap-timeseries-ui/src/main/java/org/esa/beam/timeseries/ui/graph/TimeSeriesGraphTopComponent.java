@@ -30,7 +30,6 @@ import org.esa.beam.timeseries.core.timeseries.datamodel.AbstractTimeSeries;
 import org.esa.beam.timeseries.core.timeseries.datamodel.TimeSeriesChangeEvent;
 import org.esa.beam.timeseries.core.timeseries.datamodel.TimeSeriesListener;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.util.SelectionChangeSupport;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.XYPlot;
@@ -46,7 +45,7 @@ import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-import static org.esa.beam.timeseries.core.timeseries.datamodel.AbstractTimeSeries.*;
+import static org.esa.beam.timeseries.core.timeseries.datamodel.AbstractTimeSeries.rasterToVariableName;
 
 /**
  * Main class for the graph tool.
@@ -121,15 +120,12 @@ public class TimeSeriesGraphTopComponent extends TopComponent {
         if (selectedView != null) {
             maySetCurrentView(selectedView);
         }
-        SnapApp.getDefault().addProductSceneViewSelectionChangeListener(new SelectionChangeSupport.Listener<ProductSceneView>() {
-            @Override
-            public void selected(ProductSceneView first, ProductSceneView... more) {
-                maySetCurrentView(first);
-            }
-
-            @Override
-            public void deselected(ProductSceneView first, ProductSceneView... more) {
+        SnapApp.getDefault().getSelectionSupport(ProductSceneView.class).addHandler((oldValue, newValue) -> {
+            if (oldValue != null) {
                 maySetCurrentView(null);
+            }
+            if (newValue != null) {
+                maySetCurrentView(newValue);
             }
         });
     }
