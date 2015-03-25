@@ -18,6 +18,7 @@ package org.esa.snap.rcp.statistics;
 
 import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
+import com.jidesoft.swing.SimpleScrollPane;
 import org.esa.beam.framework.ui.GridBagUtils;
 import org.esa.beam.framework.ui.UIUtils;
 import org.esa.beam.framework.ui.tool.ToolButtonFactory;
@@ -31,7 +32,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JLayeredPane;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.ScrollPaneConstants;
 import java.awt.BorderLayout;
@@ -41,8 +41,6 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-
-//import com.jidesoft.swing.SimpleScrollPane;
 
 /**
  * A common class for chart based panels
@@ -212,8 +210,7 @@ public abstract class ChartPagePanel extends PagePanel {
         GridBagUtils.addToPanel(extendedOptionsPanel, optionsPanel, extendedOptionsPanelConstraints, "insets.left=0,insets.right=0,gridy=2,fill=VERTICAL,fill=HORIZONTAL,weighty=1");
         GridBagUtils.addToPanel(extendedOptionsPanel, new JSeparator(), extendedOptionsPanelConstraints, "insets.left=4,insets.right=2,gridy=5,anchor=SOUTHWEST");
 
-        //todo find more beautiful replacement for jide simplescrollpane
-        final JScrollPane optionsScrollPane = new JScrollPane(extendedOptionsPanel,
+        final SimpleScrollPane optionsScrollPane = new SimpleScrollPane(extendedOptionsPanel,
                                                                    ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
                                                                    ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         optionsScrollPane.setBorder(null);
