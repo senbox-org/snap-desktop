@@ -1,8 +1,8 @@
 package org.esa.beam.framework.ui.product;
 
-import org.esa.beam.framework.ui.UIUtils;
 import org.esa.beam.framework.ui.tool.ToolButtonFactory;
 import org.esa.beam.util.SystemUtils;
+import org.openide.util.ImageUtilities;
 
 import javax.swing.AbstractButton;
 import javax.swing.JFileChooser;
@@ -30,7 +30,7 @@ public class LoadSaveRasterDataNodesConfigurationsProvider {
 
     public AbstractButton getLoadButton() {
         if(loadButton == null) {
-            loadButton = createButton("/com/bc/ceres/swing/actions/icons_22x22/document-open.png");
+            loadButton = createButton("tango/22x22/actions/document-open.png");
             loadButton.setToolTipText("Load configuration");
             loadButton.addActionListener(new LoadConfigurationActionListener());
         }
@@ -39,15 +39,15 @@ public class LoadSaveRasterDataNodesConfigurationsProvider {
 
     public AbstractButton getSaveButton() {
         if(saveButton == null) {
-            saveButton = createButton("/com/bc/ceres/swing/actions/icons_22x22/document-save.png");
+            saveButton = createButton("tango/22x22/actions/document-save-as.png");
             saveButton.setToolTipText("Save configuration");
             saveButton.addActionListener(new SaveConfigurationActionListener());
         }
         return saveButton;
     }
 
-    private static AbstractButton createButton(String iconPath) {
-        return ToolButtonFactory.createButton(UIUtils.loadImageIcon(iconPath), false);
+    private static AbstractButton createButton(String s) {
+        return ToolButtonFactory.createButton(ImageUtilities.loadImageIcon(s, false), false);
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
@@ -55,7 +55,7 @@ public class LoadSaveRasterDataNodesConfigurationsProvider {
         File file = new File(SystemUtils.getApplicationDataDir(), "snap-ui" + File.separator + "auxdata" +
                 File.separator + "band-sets");
         if (!file.exists()) {
-            file.mkdir();
+            file.mkdirs();
         }
         return file;
     }

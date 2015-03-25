@@ -42,7 +42,7 @@ import org.esa.beam.util.io.FileUtils;
 import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
-import org.esa.snap.rcp.util.SelectionChangeSupport;
+import org.esa.snap.rcp.util.SelectionSupport;
 import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
@@ -79,7 +79,7 @@ import java.util.prefs.Preferences;
 @NbBundle.Messages({
         "CTL_ColorManipulationForm_TitlePrefix=Colour Manipulation"
 })
-class ColorManipulationForm implements SelectionChangeSupport.Listener<ProductSceneView> {
+class ColorManipulationForm implements SelectionSupport.Handler<ProductSceneView> {
 
     private final static String PREFERENCES_KEY_IO_DIR = "visat.color_palettes.dir";
 
@@ -318,7 +318,7 @@ class ColorManipulationForm implements SelectionChangeSupport.Listener<ProductSc
 
         setProductSceneView(SnapApp.getDefault().getSelectedProductSceneView());
 
-        SnapApp.getDefault().addProductSceneViewSelectionChangeListener(this);
+        SnapApp.getDefault().getSelectionSupport(ProductSceneView.class).addHandler(this);
     }
 
 
@@ -687,15 +687,11 @@ class ColorManipulationForm implements SelectionChangeSupport.Listener<ProductSc
     }
 
     @Override
-    public void selected(ProductSceneView first, ProductSceneView... more) {
-        setProductSceneView(first);
-    }
-
-    @Override
-    public void deselected(ProductSceneView first, ProductSceneView... more) {
-        if (getFormModel().getProductSceneView() == first) {
+    public void selectionChange(ProductSceneView oldValue, ProductSceneView newValue) {
+        if (getFormModel().getProductSceneView() == oldValue) {
             setProductSceneView(null);
         }
+        setProductSceneView(newValue);
     }
 
     private class SceneViewImageInfoChangeListener implements PropertyChangeListener {

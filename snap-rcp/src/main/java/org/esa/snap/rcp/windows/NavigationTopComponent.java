@@ -36,7 +36,6 @@ import org.esa.snap.rcp.actions.help.HelpAction;
 import org.esa.snap.rcp.actions.view.SyncImageCursorsAction;
 import org.esa.snap.rcp.actions.view.SyncImageViewsAction;
 import org.esa.snap.rcp.nav.NavigationCanvas;
-import org.esa.snap.rcp.util.SelectionChangeSupport;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.util.HelpCtx;
@@ -66,7 +65,14 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
-import static java.lang.Math.*;
+import static java.lang.Math.abs;
+import static java.lang.Math.floor;
+import static java.lang.Math.log;
+import static java.lang.Math.log10;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+import static java.lang.Math.pow;
+import static java.lang.Math.round;
 
 @TopComponent.Description(
         preferredID = "NavigationTopComponent",
@@ -125,17 +131,7 @@ public class NavigationTopComponent extends TopComponent {
 
     public NavigationTopComponent() {
         initComponent();
-        SnapApp.getDefault().addProductSceneViewSelectionChangeListener(new SelectionChangeSupport.Listener<ProductSceneView>() {
-            @Override
-            public void selected(ProductSceneView first, ProductSceneView... more) {
-                setCurrentView(first);
-            }
-
-            @Override
-            public void deselected(ProductSceneView first, ProductSceneView... more) {
-                setCurrentView(null);
-            }
-        });
+        SnapApp.getDefault().getSelectionSupport(ProductSceneView.class).addHandler((oldValue, newValue) -> setCurrentView(newValue));
     }
 
     public void initComponent() {

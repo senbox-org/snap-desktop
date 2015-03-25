@@ -39,7 +39,7 @@ import org.esa.beam.timeseries.core.timeseries.datamodel.TimeSeriesListener;
 import org.esa.beam.util.math.MathUtils;
 import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.util.SelectionChangeSupport;
+import org.esa.snap.rcp.util.SelectionSupport;
 import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -95,7 +95,7 @@ public class TimeSeriesPlayerTopComponent extends TopComponent {
     public TimeSeriesPlayerTopComponent() {
         initComponent();
         timeSeriesPlayerTSL = new TimeSeriesPlayerTSL();
-        SnapApp.getDefault().addProductSceneViewSelectionChangeListener(new SceneViewSelectionChangeListener());
+        SnapApp.getDefault().getSelectionSupport(ProductSceneView.class).addHandler(new SceneViewSelectionChangeHandler());
     }
 
 
@@ -205,21 +205,17 @@ public class TimeSeriesPlayerTopComponent extends TopComponent {
         }
     }
 
-    private class SceneViewSelectionChangeListener implements SelectionChangeSupport.Listener<ProductSceneView> {
+    private class SceneViewSelectionChangeHandler implements SelectionSupport.Handler<ProductSceneView> {
 
         @Override
-        public void selected(ProductSceneView first, ProductSceneView... more) {
-            if (currentView != first) {
-                final RasterDataNode viewRaster = first.getRaster();
-                final String viewProductType = viewRaster.getProduct().getProductType();
-                maybeUpdateCurrentView(first, viewProductType);
-            }
-        }
-
-        @Override
-        public void deselected(ProductSceneView first, ProductSceneView... more) {
-            if (currentView != first) {
+        public void selectionChange(ProductSceneView oldValue, ProductSceneView newValue) {
+            if (currentView == oldValue) {
                 setCurrentView(null);
+            }
+            if (currentView != newValue) {
+                final RasterDataNode viewRaster = newValue.getRaster();
+                final String viewProductType = viewRaster.getProduct().getProductType();
+                maybeUpdateCurrentView(newValue, viewProductType);
             }
         }
     }

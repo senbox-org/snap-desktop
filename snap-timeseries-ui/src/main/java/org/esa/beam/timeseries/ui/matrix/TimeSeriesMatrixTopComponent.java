@@ -33,7 +33,7 @@ import org.esa.beam.timeseries.core.timeseries.datamodel.TimeCoding;
 import org.esa.beam.timeseries.core.timeseries.datamodel.TimeSeriesListener;
 import org.esa.beam.util.math.MathUtils;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.util.SelectionChangeSupport;
+import org.esa.snap.rcp.util.SelectionSupport;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -102,7 +102,7 @@ public class TimeSeriesMatrixTopComponent extends TopComponent {
     private JLabel dateLabel;
     private ProductSceneView currentView;
     private AbstractTimeSeries timeSeries;
-    private final SceneViewListener sceneViewListener;
+    private final SceneViewHandler sceneViewListener;
     private final TimeSeriesPPL pixelPosListener;
     private final MatrixMouseWheelListener mouseWheelListener;
     private final TimeSeriesListener timeSeriesMatrixTSL;
@@ -114,7 +114,7 @@ public class TimeSeriesMatrixTopComponent extends TopComponent {
 
     public TimeSeriesMatrixTopComponent() {
         pixelPosListener = new TimeSeriesPPL();
-        sceneViewListener = new SceneViewListener();
+        sceneViewListener = new SceneViewHandler();
         mouseWheelListener = new MatrixMouseWheelListener();
         timeSeriesMatrixTSL = new TimeSeriesMatrixTSL();
         dateFormat = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss", Locale.getDefault());
@@ -122,7 +122,7 @@ public class TimeSeriesMatrixTopComponent extends TopComponent {
     }
 
     private void initUI() {
-        SnapApp.getDefault().addProductSceneViewSelectionChangeListener(sceneViewListener);
+        SnapApp.getDefault().getSelectionSupport(ProductSceneView.class).addHandler(sceneViewListener);
 
         dateLabel = new JLabel(String.format(DATE_PREFIX + " %s", getStartDateString()));
         matrixSizeSpinner = new JSpinner(new SpinnerNumberModel(MATRIX_DEFAULT_VALUE,
@@ -226,7 +226,6 @@ public class TimeSeriesMatrixTopComponent extends TopComponent {
      * Checks if the view displays a timeseries product.
      * If so it is set as the current view.
      */
-
     private void setCurrentView(ProductSceneView newView) {
         if (currentView == newView) {
             return;
@@ -317,20 +316,15 @@ public class TimeSeriesMatrixTopComponent extends TopComponent {
         }
     }
 
-    private class SceneViewListener implements SelectionChangeSupport.Listener<ProductSceneView> {
+    private class SceneViewHandler implements SelectionSupport.Handler<ProductSceneView> {
 
         @Override
-        public void deselected(ProductSceneView first, ProductSceneView... more) {
-            if (currentView == first) {
-                setCurrentView(first);
+        public void selectionChange(ProductSceneView oldValue, ProductSceneView newValue) {
+            if (currentView == oldValue) {
+                setCurrentView(null);
             }
+            setCurrentView(newValue);
         }
-
-        @Override
-        public void selected(ProductSceneView first, ProductSceneView... more) {
-            setCurrentView(first);
-        }
-
     }
 
     private class TimeSeriesPPL implements PixelPositionListener {

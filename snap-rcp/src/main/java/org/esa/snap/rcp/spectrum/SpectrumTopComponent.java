@@ -43,7 +43,7 @@ import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.placemark.PlacemarkUtils;
 import org.esa.snap.rcp.statistics.XYPlotMarker;
-import org.esa.snap.rcp.util.SelectionChangeSupport;
+import org.esa.snap.rcp.windows.ToolTopComponent;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -128,9 +128,9 @@ import java.util.Map;
         "CTL_SpectrumTopComponent_HelpId=showSpectrumWnd"
 })
 /**
- * A window which displays product allSpectra.
+ * A window which displays spectra at selected pixel positions.
  */
-public class SpectrumTopComponent extends TopComponent implements HelpCtx.Provider {
+public class SpectrumTopComponent extends ToolTopComponent {
 
     public static final String ID = SpectrumTopComponent.class.getName();
 
@@ -492,11 +492,6 @@ public class SpectrumTopComponent extends TopComponent implements HelpCtx.Provid
 
         helpButton.addActionListener(e -> getHelpCtx());
 
-        // Add an internal frame listener to VISAT so that we can update our
-        // spectrum dialog with the information of the currently activated
-        // product scene view.
-        //
-        SnapApp.getDefault().addProductSceneViewSelectionChangeListener(new SpectrumViewSelectionListener());
         SnapApp.getDefault().getProductManager().addListener(new ProductManager.Listener() {
             @Override
             public void productAdded(ProductManager.Event event) {
@@ -525,11 +520,9 @@ public class SpectrumTopComponent extends TopComponent implements HelpCtx.Provid
         });
 
 
-        final ProductSceneView view = SnapApp.getDefault().getSelectedProductSceneView();
+        final ProductSceneView view = getSelectedProductSceneView();
         if (view != null) {
-            handleViewActivated(view);
-        } else {
-            setCurrentView(view);
+            productSceneViewSelected(view);
         }
         setDisplayName(Bundle.CTL_SpectrumTopComponent_Name());
         setLayout(new BorderLayout());
@@ -706,12 +699,14 @@ public class SpectrumTopComponent extends TopComponent implements HelpCtx.Provid
         return chartHandler.hasDiagram();
     }
 
-    private void handleViewActivated(final ProductSceneView view) {
+    @Override
+    protected void productSceneViewSelected(ProductSceneView view) {
         view.addPixelPositionListener(pixelPositionListener);
         setCurrentView(view);
     }
 
-    private void handleViewDeactivated(final ProductSceneView view) {
+    @Override
+    protected void productSceneViewDeselected(ProductSceneView view) {
         view.removePixelPositionListener(pixelPositionListener);
         setCurrentView(null);
     }
@@ -1175,25 +1170,8 @@ public class SpectrumTopComponent extends TopComponent implements HelpCtx.Provid
 
     }
 
-/////////////////////////////////////////////////////////////////////////
-// View change handling
-
-    private class SpectrumViewSelectionListener implements SelectionChangeSupport.Listener<ProductSceneView> {
-
-        @Override
-        public void selected(ProductSceneView first, ProductSceneView... more) {
-            handleViewActivated(first);
-        }
-
-        @Override
-        public void deselected(ProductSceneView first, ProductSceneView... more) {
-            handleViewDeactivated(first);
-        }
-
-    }
-
-/////////////////////////////////////////////////////////////////////////
-// Product change handling
+    /////////////////////////////////////////////////////////////////////////
+    // Product change handling
 
     private class ProductNodeHandler extends ProductNodeListenerAdapter {
 

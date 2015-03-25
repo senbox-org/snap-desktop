@@ -39,7 +39,7 @@ import org.esa.beam.util.io.FileUtils;
 import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
-import org.esa.snap.rcp.util.SelectionChangeSupport;
+import org.esa.snap.rcp.util.SelectionSupport;
 import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
 import org.openide.awt.UndoRedo;
 import org.openide.util.HelpCtx;
@@ -167,7 +167,7 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
 
         setCurrentView(snapApp.getSelectedProductSceneView());
         setProduct(snapApp.getSelectedProduct());
-        snapApp.addProductSceneViewSelectionChangeListener(new ProductSceneViewSelectionChangeListener());
+        snapApp.getSelectionSupport(ProductSceneView.class).addHandler(new ProductSceneViewSelectionChangeHandler());
         snapApp.getProductManager().addListener(new ProductRemovedListener());
         updateUIState();
         add(content, BorderLayout.CENTER);
@@ -989,20 +989,15 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
         }
     }
 
-    private class ProductSceneViewSelectionChangeListener implements SelectionChangeSupport.Listener<ProductSceneView> {
+    private class ProductSceneViewSelectionChangeHandler implements SelectionSupport.Handler<ProductSceneView> {
 
         @Override
-        public void selected(ProductSceneView first, ProductSceneView... more) {
-            setCurrentView(first);
-        }
-
-        @Override
-        public void deselected(ProductSceneView first, ProductSceneView... more) {
-            if (first == currentView) {
+        public void selectionChange(ProductSceneView oldValue, ProductSceneView newValue) {
+            if (oldValue == currentView) {
                 setCurrentView(null);
             }
+            setCurrentView(newValue);
         }
-
     }
 
     private class ProductRemovedListener implements ProductManager.Listener {
