@@ -79,7 +79,19 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.esa.snap</groupId>
+            <artifactId>snap-core</artifactId>
+            <type>test-jar</type>
+        </dependency>
+
     </dependencies>
+
     <profiles>
         <profile>
             <id>oracle-tools</id>
