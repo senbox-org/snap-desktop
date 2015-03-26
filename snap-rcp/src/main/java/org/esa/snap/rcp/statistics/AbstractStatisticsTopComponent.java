@@ -171,21 +171,23 @@ public abstract class AbstractStatisticsTopComponent extends TopComponent implem
 
         @Override
         public void selectionChange(ProductNode oldValue, ProductNode newValue) {
-            RasterDataNode raster = null;
-            if (newValue instanceof RasterDataNode) {
-                raster = (RasterDataNode) newValue;
-            }
-            VectorDataNode vector = null;
-            if (newValue instanceof VectorDataNode) {
-                vector = (VectorDataNode) newValue;
-                final ProductSceneView sceneView = SnapApp.getDefault().getSelectedProductSceneView();
-                if (sceneView != null) {
-                    raster = sceneView.getRaster();
+            if (newValue != null) {
+                RasterDataNode raster = null;
+                if (newValue instanceof RasterDataNode) {
+                    raster = (RasterDataNode) newValue;
                 }
-            }
-            Product product = newValue.getProduct();
-            if (product != null) {
-                selectionChanged(product, raster, vector);
+                VectorDataNode vector = null;
+                if (newValue instanceof VectorDataNode) {
+                    vector = (VectorDataNode) newValue;
+                    final ProductSceneView sceneView = SnapApp.getDefault().getSelectedProductSceneView();
+                    if (sceneView != null) {
+                        raster = sceneView.getRaster();
+                    }
+                }
+                Product product = newValue.getProduct();
+                if (product != null) {
+                    selectionChanged(product, raster, vector);
+                }
             }
         }
     }
