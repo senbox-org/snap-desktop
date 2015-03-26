@@ -20,13 +20,9 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Ignore
 public class ColorSelectionTest {
@@ -73,23 +69,11 @@ public class ColorSelectionTest {
     }
 
     private static List<ColorItem> getColorItems() {
-        try {
-            Path path = Paths.get(ColorComboBox.class.getResource("colors.txt").toURI());
-            List<String> lines = Files.readAllLines(path);
-            List<ColorItem> colors = new ArrayList<>();
-            for (String line : lines) {
-                int i = line.indexOf('\t');
-                Color color = Color.decode(line.substring(0, i).trim());
-                String displayName = line.substring(i).trim();
-                System.out.println("color = "+color+", displayName = " + displayName);
-                colors.add(new ColorItem(displayName, color));
-            }
-            return colors;
-        } catch (URISyntaxException | IOException e) {
-            throw new RuntimeException(e);
-        }
+        List<ColorItem> colors = new ArrayList<>();
+        List<String> names = ColorCodes.getNames();
+        colors.addAll(names.stream().map(name -> new ColorItem(name, ColorCodes.getColor(name))).collect(Collectors.toList()));
+        return colors;
     }
-
 
     static class ColorItem {
         String name;
@@ -120,7 +104,7 @@ public class ColorSelectionTest {
             @Override
             public void paintIcon(Component c, Graphics g, int x, int y) {
                 g.setColor(value.color);
-                g.fillRect(0, 0, getIconWidth(),getIconHeight());
+                g.fillRect(0, 0, getIconWidth(), getIconHeight());
             }
 
             @Override
