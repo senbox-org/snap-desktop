@@ -55,11 +55,31 @@ public class ColorCodes {
         return Collections.unmodifiableList(instance.nameList);
     }
 
+    public static int indexOf(String name) {
+        return instance.nameList.indexOf(name);
+    }
+
+    public static int indexOf(Color color) {
+        String name = getName(color);
+        if (name != null) {
+            return indexOf(name);
+        }
+        return -1;
+    }
+
     public static Color getColor(String name) {
         return instance.colorMap.get(name);
     }
 
     public static String getName(Color color) {
         return instance.nameMap.get(color);
+    }
+
+    public static Color getColor(int index) {
+        return getColor(getName(index));
+    }
+
+    public static String getName(int index) {
+        return instance.nameList.get(index);
     }
 }
