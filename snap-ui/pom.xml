@@ -84,6 +84,16 @@
             <groupId>com.jidesoft</groupId>
             <artifactId>jide-components</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.esa.snap</groupId>
+            <artifactId>snap-core</artifactId>
+            <type>test-jar</type>
+        </dependency>
     </dependencies>
 
     <build>

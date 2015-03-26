@@ -77,6 +77,10 @@
             <artifactId>org-netbeans-api-annotations-common</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
