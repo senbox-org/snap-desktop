@@ -12,7 +12,6 @@ import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
 import org.openide.util.Utilities;
-import org.openide.util.WeakListeners;
 import org.openide.windows.OnShowing;
 
 import java.awt.geom.Rectangle2D;
@@ -25,7 +24,7 @@ import java.util.prefs.Preferences;
  * @author Norman
  */
 @OnShowing
-public class ImageViewSynchronizer implements Runnable, PreferenceChangeListener, LookupListener {
+public class ImageViewSynchronizer implements Runnable {
 
     public static final String PROPERTY_KEY_AUTO_SYNC_VIEWS = SyncImageViewsAction.PREFERENCE_KEY;
 
@@ -34,45 +33,15 @@ public class ImageViewSynchronizer implements Runnable, PreferenceChangeListener
 
     @Override
     public void run() {
-
         layerCanvasModelChangeHandler = new LayerCanvasModelChangeHandler();
 
         Preferences preferences = SnapApp.getDefault().getPreferences();
-        preferences.addPreferenceChangeListener(WeakListeners.create(PreferenceChangeListener.class, this, preferences));
+        preferences.addPreferenceChangeListener(new ImageViewSynchronizerPreferenceChangeListener());
 
         Lookup.Result<ProductSceneView> lookupResult = Utilities.actionsGlobalContext().lookupResult(ProductSceneView.class);
-        lookupResult.addLookupListener(WeakListeners.create(LookupListener.class, this, lookupResult));
+        lookupResult.addLookupListener(new ImageViewSynchronizerLookupListener());
 
         syncImageViewsWithSelectedView();
-    }
-
-    @Override
-    public void preferenceChange(PreferenceChangeEvent evt) {
-        if (PROPERTY_KEY_AUTO_SYNC_VIEWS.equals(evt.getKey())) {
-            syncImageViewsWithSelectedView();
-        }
-    }
-
-    @Override
-    public void resultChanged(LookupEvent ev) {
-
-        ProductSceneView newView = SnapApp.getDefault().getSelectedProductSceneView();
-
-        if (lastView != newView) {
-            final ProductSceneView oldView = lastView;
-            if (oldView != null) {
-                if (oldView.getLayerCanvas() != null) {
-                    oldView.getLayerCanvas().getModel().removeChangeListener(layerCanvasModelChangeHandler);
-                }
-            }
-            lastView = newView;
-            if (lastView != null) {
-                syncImageViews(lastView);
-                if (lastView.getLayerCanvas() != null) {
-                    lastView.getLayerCanvas().getModel().addChangeListener(layerCanvasModelChangeHandler);
-                }
-            }
-        }
     }
 
     private void syncImageViewsWithSelectedView() {
@@ -121,4 +90,42 @@ public class ImageViewSynchronizer implements Runnable, PreferenceChangeListener
             syncImageViewsWithSelectedView();
         }
     }
+
+    private class ImageViewSynchronizerPreferenceChangeListener implements PreferenceChangeListener {
+
+        @Override
+        public void preferenceChange(PreferenceChangeEvent evt) {
+            if (PROPERTY_KEY_AUTO_SYNC_VIEWS.equals(evt.getKey())) {
+                syncImageViewsWithSelectedView();
+            }
+        }
+
+    }
+
+    private class ImageViewSynchronizerLookupListener implements LookupListener {
+
+        @Override
+        public void resultChanged(LookupEvent ev) {
+
+            ProductSceneView newView = SnapApp.getDefault().getSelectedProductSceneView();
+
+            if (lastView != newView) {
+                final ProductSceneView oldView = lastView;
+                if (oldView != null) {
+                    if (oldView.getLayerCanvas() != null) {
+                        oldView.getLayerCanvas().getModel().removeChangeListener(layerCanvasModelChangeHandler);
+                    }
+                }
+                lastView = newView;
+                if (lastView != null) {
+                    syncImageViews(lastView);
+                    if (lastView.getLayerCanvas() != null) {
+                        lastView.getLayerCanvas().getModel().addChangeListener(layerCanvasModelChangeHandler);
+                    }
+                }
+            }
+        }
+
+    }
+
 }
