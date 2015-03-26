@@ -29,6 +29,7 @@ import javax.swing.table.TableRowSorter;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
@@ -172,6 +173,7 @@ public class SpectrumChooser extends ModalDialog implements LoadSaveRasterDataNo
         spectraPanel.add(spectrumNameLabel);
         spectraPanel.add(new JLabel(spectrum.getUnit()));
         JComboBox<ImageIcon> strokeComboBox = new JComboBox<>(SpectrumStrokeProvider.getStrokeIcons());
+        strokeComboBox.setPreferredSize(new Dimension(100, 20));
         strokeComboBox.setSelectedItem(strokeIcon);
         strokeComboBox.addActionListener(
                 e -> spectrum.setLineStyle(
@@ -179,6 +181,8 @@ public class SpectrumChooser extends ModalDialog implements LoadSaveRasterDataNo
         spectraPanel.add(strokeComboBox);
         JComboBox<ImageIcon> shapeComboBox = new JComboBox<>(SpectrumShapeProvider.getShapeIcons());
         JComboBox<Integer> shapeSizeComboBox = new JComboBox<>(SpectrumShapeProvider.getScaleGrades());
+        shapeComboBox.setPreferredSize(new Dimension(100, 20));
+        shapeSizeComboBox.setPreferredSize(new Dimension(100, 20));
         shapeComboBox.setSelectedItem(shapeIcon);
         shapeComboBox.addActionListener(e -> {
             final int shapeIndex = SpectrumShapeProvider.getShape((ImageIcon) shapeComboBox.getSelectedItem());
@@ -188,7 +192,6 @@ public class SpectrumChooser extends ModalDialog implements LoadSaveRasterDataNo
             } else {
                 shapeSizeComboBox.setSelectedItem(spectrum.getSymbolSize());
             }
-
         });
         spectraPanel.add(shapeComboBox);
         shapeSizeComboBox.setSelectedItem(spectrum.getSymbolSize());
