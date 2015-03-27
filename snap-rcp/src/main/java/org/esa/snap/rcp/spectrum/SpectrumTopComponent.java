@@ -266,11 +266,11 @@ public class SpectrumTopComponent extends ToolTopComponent {
 
     private void maybeShowTip() {
         if (!tipShown) {
-            final String message = "Tip: If you press the SHIFT key while moving the mouse cursor over \n" +
+            final String message = "<html>Tip: If you press the SHIFT key while moving the mouse cursor over<br/>" +
                     "an image, " + SnapApp.getDefault().getInstanceName() + " adjusts the diagram axes " +
-                    "to the local values at the\n" +
-                    "current pixel position, if you release the SHIFT key again, then the\n" +
-                    "min/max are accumulated again.";
+                    "to the local values at the<br/>" +
+                    "current pixel position, if you release the SHIFT key again, then the<br/>" +
+                    "min/max are accumulated again.</html>";
             SnapDialogs.showInformation("Spectrum Tip", message, SUPPRESS_MESSAGE_KEY);
             tipShown = true;
         }
