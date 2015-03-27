@@ -33,6 +33,7 @@ import org.esa.beam.framework.datamodel.TransectProfileDataBuilder;
 import org.esa.beam.framework.datamodel.VectorDataNode;
 import org.esa.beam.framework.dataop.barithm.BandArithmetic;
 import org.esa.beam.framework.ui.GridBagUtils;
+import org.esa.snap.rcp.nav.DefaultCursorSynchronizer;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -111,6 +112,7 @@ class ProfilePlotPanel extends ChartPagePanel {
     private XYErrorRenderer pointRenderer;
     private Enablement pointDataSourceEnablement;
     private Enablement dataFieldEnablement;
+    private DefaultCursorSynchronizer cursorSynchronizer;
 
     ProfilePlotPanel(TopComponent parentComponent, String helpId) {
         super(parentComponent, helpId, CHART_TITLE, false);
@@ -144,14 +146,22 @@ class ProfilePlotPanel extends ChartPagePanel {
             public void pointSelected(XYDataset xyDataset, int seriesIndex, Point2D dataPoint) {
                 if (profileData != null) {
                     GeoPos[] geoPositions = profileData.getGeoPositions();
-//                    int index = (int) dataPoint.getX();
-//                    if (index >= 0 && index < geoPositions.length) {
-//                    }
+                    int index = (int) dataPoint.getX();
+                    if (index >= 0 && index < geoPositions.length) {
+                        if (cursorSynchronizer == null) {
+                            cursorSynchronizer = new DefaultCursorSynchronizer();
+                        }
+                        if (!cursorSynchronizer.isEnabled()) {
+                            cursorSynchronizer.setEnabled(true);
+                        }
+                        cursorSynchronizer.updateCursorOverlays(geoPositions[index]);
+                    }
                 }
             }
 
             @Override
             public void pointDeselected() {
+                cursorSynchronizer.setEnabled(false);
             }
         }));
         profilePlotDisplay.setInitialDelay(200);

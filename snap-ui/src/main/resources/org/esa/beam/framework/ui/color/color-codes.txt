@@ -47,7 +47,7 @@
 #1F45FC	Blue Orchid
 #6960EC	Blue Lotus
 #736AFF	Light Slate Blue
-#357EC7	Slate Blue
+#357EC7	Slate Blue 2
 #368BC1	Glacial Blue Ice
 #488AC7	Silk Blue
 #3090C7	Blue Ivy
@@ -59,7 +59,7 @@
 #306EFF	Blue Ribbon
 #157DEC	Blue Dress
 #1589FF	Dodger Blue
-#6495ED	Cornflower Blue
+#6495ED	Cornflower Blue 2
 #6698FF	Sky Blue
 #38ACEC	Butterfly Blue
 #56A5EC	Iceberg
@@ -295,7 +295,7 @@
 #C12869	Rogue Pink
 #C12267	Burnt Pink
 #C25283	Bashful Pink
-#C12283	Carnation Pink
+#C12283	Carnation Pink 2
 #B93B8F	Plum
 #7E587E	Viola Purple
 #571B7E	Purple Iris
@@ -335,6 +335,6 @@
 #EBDDE2	Lavender Pinocchio
 #E3E4FA	Lavender blue
 #FDEEF4	Pearl
-#FFF5EE	SeaShell
+#FFF5EE	Sea Shell
 #FEFCFF	Milk White
 #FFFFFF	White

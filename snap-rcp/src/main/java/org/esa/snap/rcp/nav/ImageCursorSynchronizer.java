@@ -27,7 +27,6 @@ import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.view.SyncImageCursorsAction;
 import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
-import org.openide.util.WeakListeners;
 import org.openide.windows.OnShowing;
 import org.openide.windows.TopComponent;
 
@@ -44,7 +43,7 @@ import java.util.prefs.Preferences;
  * @author Marco Peters, Norman Fomferra
  */
 @OnShowing
-public class ImageCursorSynchronizer implements Runnable, PreferenceChangeListener {
+public class ImageCursorSynchronizer implements Runnable {
 
     public static final String PROPERTY_KEY_AUTO_SYNC_CURSORS = SyncImageCursorsAction.PREFERENCE_KEY;
     private static final GeoPos INVALID_GEO_POS = new GeoPos(Float.NaN, Float.NaN);
@@ -60,25 +59,12 @@ public class ImageCursorSynchronizer implements Runnable, PreferenceChangeListen
         psvOverlayMapUpdater = new PsvListUpdater();
 
         Preferences preferences = SnapApp.getDefault().getPreferences();
-        preferences.addPreferenceChangeListener(WeakListeners.create(PreferenceChangeListener.class, this, preferences));
+        preferences.addPreferenceChangeListener(new ImageCursorSynchronizerPreferenceChangeListener());
     }
 
     private boolean isActive() {
         return SnapApp.getDefault().getPreferences().getBoolean(PROPERTY_KEY_AUTO_SYNC_CURSORS,
                                                                 SyncImageCursorsAction.PREFERENCE_DEFAULT_VALUE);
-    }
-
-    @Override
-    public void preferenceChange(PreferenceChangeEvent evt) {
-        if (PROPERTY_KEY_AUTO_SYNC_CURSORS.equals(evt.getKey())) {
-            if (isActive()) {
-                initPsvOverlayMap();
-                DocumentWindowManager.getDefault().addListener(psvOverlayMapUpdater);
-            } else {
-                DocumentWindowManager.getDefault().removeListener(psvOverlayMapUpdater);
-                clearPsvOverlayMap();
-            }
-        }
     }
 
     public void updateCursorOverlays(GeoPos geoPos, ProductSceneView sourceView) {
@@ -202,4 +188,22 @@ public class ImageCursorSynchronizer implements Runnable, PreferenceChangeListen
             updateCursorOverlays(INVALID_GEO_POS, null);
         }
     }
+
+    private class ImageCursorSynchronizerPreferenceChangeListener implements PreferenceChangeListener {
+
+        @Override
+        public void preferenceChange(PreferenceChangeEvent evt) {
+            if (PROPERTY_KEY_AUTO_SYNC_CURSORS.equals(evt.getKey())) {
+                if (isActive()) {
+                    initPsvOverlayMap();
+                    DocumentWindowManager.getDefault().addListener(psvOverlayMapUpdater);
+                } else {
+                    DocumentWindowManager.getDefault().removeListener(psvOverlayMapUpdater);
+                    clearPsvOverlayMap();
+                }
+            }
+        }
+
+    }
+
 }

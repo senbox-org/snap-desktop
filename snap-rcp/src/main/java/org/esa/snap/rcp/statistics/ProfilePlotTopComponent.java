@@ -63,14 +63,19 @@ public class ProfilePlotTopComponent extends AbstractStatisticsTopComponent {
     protected PagePanel createPagePanel() {
         final String helpId = getHelpId();
         final String chartTitle = ProfilePlotPanel.CHART_TITLE;
-//        final Icon largeIcon = getDescriptor().getLargeIcon();
         final Icon largeIcon = UIUtils.loadImageIcon("icons/ProfilePlot24.gif");
-        final ProfilePlotPanel profilePlotPanel = new ProfilePlotPanel(this, helpId);
+        ProfilePlotPanel profilePlotPanel = new ProfilePlotPanel(this, helpId);
         final TableViewPagePanel tableViewPagePanel = new TableViewPagePanel(this, tableHelpID, chartTitle, largeIcon);
         profilePlotPanel.setAlternativeView(tableViewPagePanel);
         tableViewPagePanel.setAlternativeView(profilePlotPanel);
         return profilePlotPanel;
     }
+
+//    @Override
+//    protected void componentDeactivated() {
+//        super.componentDeactivated();
+//        profilePlotPanel.
+//    }
 
     @Override
     String getHelpId() {

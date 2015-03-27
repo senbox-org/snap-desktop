@@ -138,7 +138,12 @@ public class ColorLabel extends JComponent {
         if (getDisplayName() != null) {
             text = String.format("%s (%s)", getDisplayName(), rgbText);
         } else {
-            text = rgbText;
+            String name = ColorCodes.getName(color);
+            if (name != null) {
+                text = String.format("%s (%s)", name, rgbText);
+            } else {
+                text = rgbText;
+            }
         }
         setToolTipText(text);
     }
