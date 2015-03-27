@@ -184,6 +184,12 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>snap-gpf-ui</artifactId>
         </dependency>
+        <!-- TODO: remove this dependency as soon as snap-statistics-op has been moved to snap-core
+          (prerequisite: snap-gpf needs to be moved to snap-core before) -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>snap-statistics</artifactId>
+        </dependency>
 
         <!-- Testing-->
 

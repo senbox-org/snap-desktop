@@ -177,7 +177,11 @@
                 <artifactId>snap-gpf-ui</artifactId>
                 <version>${snap.version}</version>
             </dependency>
-
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>snap-statistics</artifactId>
+                <version>${snap.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

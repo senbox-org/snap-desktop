@@ -99,13 +99,13 @@ import org.esa.beam.visat.actions.ShowImageViewAction;
 import org.esa.beam.visat.actions.ShowImageViewRGBAction;
 import org.esa.beam.visat.actions.ShowToolBarAction;
 import org.esa.beam.visat.toolviews.diag.TileCacheDiagnosisToolView;
-import org.esa.beam.visat.toolviews.stat.DensityPlotToolView;
-import org.esa.beam.visat.toolviews.stat.GeoCodingToolView;
-import org.esa.beam.visat.toolviews.stat.HistogramPlotToolView;
-import org.esa.beam.visat.toolviews.stat.InformationToolView;
-import org.esa.beam.visat.toolviews.stat.ProfilePlotToolView;
-import org.esa.beam.visat.toolviews.stat.ScatterPlotToolView;
-import org.esa.beam.visat.toolviews.stat.StatisticsToolView;
+//import org.esa.beam.visat.toolviews.stat.DensityPlotToolView;
+//import org.esa.beam.visat.toolviews.stat.GeoCodingToolView;
+//import org.esa.beam.visat.toolviews.stat.HistogramPlotToolView;
+//import org.esa.beam.visat.toolviews.stat.InformationToolView;
+//import org.esa.beam.visat.toolviews.stat.ProfilePlotToolView;
+//import org.esa.beam.visat.toolviews.stat.ScatterPlotToolView;
+//import org.esa.beam.visat.toolviews.stat.StatisticsToolView;
 
 import javax.media.jai.JAI;
 import javax.swing.AbstractButton;
@@ -470,10 +470,10 @@ public class VisatApp extends BasicApp implements AppContext {
             getMainFrame().getDockableBarManager().addDockableBar(layersToolBar);
             pm.worked(1);
 
-            CommandBar analysisToolBar = createAnalysisToolBar();
-            analysisToolBar.getContext().setInitSide(DockableBarContext.DOCK_SIDE_NORTH);
-            analysisToolBar.getContext().setInitIndex(2);
-            getMainFrame().getDockableBarManager().addDockableBar(analysisToolBar);
+//            CommandBar analysisToolBar = createAnalysisToolBar();
+//            analysisToolBar.getContext().setInitSide(DockableBarContext.DOCK_SIDE_NORTH);
+//            analysisToolBar.getContext().setInitIndex(2);
+//            getMainFrame().getDockableBarManager().addDockableBar(analysisToolBar);
             pm.worked(1);
 
             CommandBar toolsToolBar = createInteractionsToolBar();
@@ -1972,31 +1972,31 @@ public class VisatApp extends BasicApp implements AppContext {
         return toolBar;
     }
 
-    protected JMenu createAnalysisMenu() {
-        return createJMenu("analysis", "Analysis", 'A',
-                InformationToolView.ID + SHOW_TOOLVIEW_CMD_POSTFIX,
-                GeoCodingToolView.ID + SHOW_TOOLVIEW_CMD_POSTFIX,
-                StatisticsToolView.ID + SHOW_TOOLVIEW_CMD_POSTFIX,
-                HistogramPlotToolView.ID + SHOW_TOOLVIEW_CMD_POSTFIX,
-                ScatterPlotToolView.ID + SHOW_TOOLVIEW_CMD_POSTFIX,
-                DensityPlotToolView.ID + SHOW_TOOLVIEW_CMD_POSTFIX,
-                ProfilePlotToolView.ID + SHOW_TOOLVIEW_CMD_POSTFIX
-        );
-    }
+//    protected JMenu createAnalysisMenu() {
+//        return createJMenu("analysis", "Analysis", 'A',
+//                InformationToolView.ID + SHOW_TOOLVIEW_CMD_POSTFIX,
+//                GeoCodingToolView.ID + SHOW_TOOLVIEW_CMD_POSTFIX,
+//                StatisticsToolView.ID + SHOW_TOOLVIEW_CMD_POSTFIX,
+//                HistogramPlotToolView.ID + SHOW_TOOLVIEW_CMD_POSTFIX,
+//                ScatterPlotToolView.ID + SHOW_TOOLVIEW_CMD_POSTFIX,
+//                DensityPlotToolView.ID + SHOW_TOOLVIEW_CMD_POSTFIX,
+//                ProfilePlotToolView.ID + SHOW_TOOLVIEW_CMD_POSTFIX
+//        );
+//    }
 
-    protected CommandBar createAnalysisToolBar() {
-        final CommandBar toolBar = createToolBar(ANALYSIS_TOOL_BAR_ID, "Analysis");
-        addCommandsToToolBar(toolBar, new String[]{
-                InformationToolView.ID + SHOW_TOOLVIEW_CMD_POSTFIX,
-                GeoCodingToolView.ID + SHOW_TOOLVIEW_CMD_POSTFIX,
-                StatisticsToolView.ID + SHOW_TOOLVIEW_CMD_POSTFIX,
-                HistogramPlotToolView.ID + SHOW_TOOLVIEW_CMD_POSTFIX,
-                DensityPlotToolView.ID + SHOW_TOOLVIEW_CMD_POSTFIX,
-                ScatterPlotToolView.ID + SHOW_TOOLVIEW_CMD_POSTFIX,
-                ProfilePlotToolView.ID + SHOW_TOOLVIEW_CMD_POSTFIX,
-        });
-        return toolBar;
-    }
+//    protected CommandBar createAnalysisToolBar() {
+//        final CommandBar toolBar = createToolBar(ANALYSIS_TOOL_BAR_ID, "Analysis");
+//        addCommandsToToolBar(toolBar, new String[]{
+//                InformationToolView.ID + SHOW_TOOLVIEW_CMD_POSTFIX,
+//                GeoCodingToolView.ID + SHOW_TOOLVIEW_CMD_POSTFIX,
+//                StatisticsToolView.ID + SHOW_TOOLVIEW_CMD_POSTFIX,
+//                HistogramPlotToolView.ID + SHOW_TOOLVIEW_CMD_POSTFIX,
+//                DensityPlotToolView.ID + SHOW_TOOLVIEW_CMD_POSTFIX,
+//                ScatterPlotToolView.ID + SHOW_TOOLVIEW_CMD_POSTFIX,
+//                ProfilePlotToolView.ID + SHOW_TOOLVIEW_CMD_POSTFIX,
+//        });
+//        return toolBar;
+//    }
 
     protected CommandBar createInteractionsToolBar() {
         final CommandBar toolBar = createToolBar(INTERACTIONS_TOOL_BAR_ID, "Interactions");
@@ -2024,13 +2024,13 @@ public class VisatApp extends BasicApp implements AppContext {
         final HashSet<String> excludedIds = new HashSet<String>(8);
         // todo - remove bad forward dependencies to tool views (nf - 30.10.2008)
         excludedIds.add(TileCacheDiagnosisToolView.ID);
-        excludedIds.add(InformationToolView.ID);
-        excludedIds.add(GeoCodingToolView.ID);
-        excludedIds.add(StatisticsToolView.ID);
-        excludedIds.add(HistogramPlotToolView.ID);
-        excludedIds.add(ScatterPlotToolView.ID);
-        excludedIds.add(DensityPlotToolView.ID);
-        excludedIds.add(ProfilePlotToolView.ID);
+//        excludedIds.add(InformationToolView.ID);
+//        excludedIds.add(GeoCodingToolView.ID);
+//        excludedIds.add(StatisticsToolView.ID);
+//        excludedIds.add(HistogramPlotToolView.ID);
+//        excludedIds.add(ScatterPlotToolView.ID);
+//        excludedIds.add(DensityPlotToolView.ID);
+//        excludedIds.add(ProfilePlotToolView.ID);
         excludedIds.add("org.esa.beam.scripting.visat.ScriptConsoleToolView");
         excludedIds.add("org.esa.beam.visat.toolviews.layermanager.LayerEditorToolView");
 
@@ -2220,7 +2220,7 @@ public class VisatApp extends BasicApp implements AppContext {
         menuBar.add(createJMenu("file", "File", 'F'));
         menuBar.add(createJMenu("edit", "Edit", 'E'));
         menuBar.add(createJMenu("view", "View", 'V'));
-        menuBar.add(createAnalysisMenu());
+//        menuBar.add(createAnalysisMenu());
         menuBar.add(createJMenu("tools", "Utilities", 'U'));
         menuBar.add(createJMenu("processing", "Processing", 'P'));
         menuBar.add(createJMenu("window", "Window", 'W'));
