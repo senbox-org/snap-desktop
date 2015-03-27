@@ -84,6 +84,10 @@ public class XYPlotMarker implements ChartMouseListener {
     public void chartMouseClicked(ChartMouseEvent event) {
         removeDataset();
         final boolean overlayRemoved = removeOverlay();
+        if (overlayRemoved) {
+            listener.pointDeselected();
+            return;
+        }
 
         XYPlot plot = chartPanel.getChart().getXYPlot();
 
@@ -120,13 +124,9 @@ public class XYPlotMarker implements ChartMouseListener {
                 }
             }
         }
-
         if (xyDataset != null) {
             updatePoint(event);
-        } else if (overlayRemoved) {
-            listener.pointDeselected();
         }
-
     }
 
     @Override
