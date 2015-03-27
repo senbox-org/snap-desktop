@@ -1,4 +1,4 @@
-package org.esa.beam.visat.toolviews.stat;
+package org.esa.snap.rcp.statistics;
 
 import org.esa.beam.framework.ui.io.CsvEncoder;
 import org.esa.beam.framework.ui.io.TableModelCsvEncoder;

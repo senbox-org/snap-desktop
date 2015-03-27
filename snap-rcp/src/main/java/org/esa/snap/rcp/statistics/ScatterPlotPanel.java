@@ -14,7 +14,7 @@
  * with this program; if not, see http://www.gnu.org/licenses/
  */
 
-package org.esa.beam.visat.toolviews.stat;
+package org.esa.snap.rcp.statistics;
 
 import com.bc.ceres.binding.Property;
 import com.bc.ceres.binding.PropertyContainer;
@@ -36,11 +36,11 @@ import org.esa.beam.framework.datamodel.RasterDataNode;
 import org.esa.beam.framework.datamodel.VectorDataNode;
 import org.esa.beam.framework.dataop.barithm.BandArithmetic;
 import org.esa.beam.framework.ui.GridBagUtils;
-import org.esa.beam.framework.ui.application.ToolView;
 import org.esa.beam.jai.ImageManager;
 import org.esa.beam.util.SystemUtils;
 import org.esa.beam.util.math.MathUtils;
-import org.esa.beam.visat.VisatApp;
+import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.rcp.SnapDialogs;
 import org.geotools.feature.FeatureCollection;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -74,6 +74,7 @@ import org.jfree.ui.RectangleInsets;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
+import org.openide.windows.TopComponent;
 
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
@@ -107,8 +108,6 @@ import java.util.Map;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
-
-import static org.esa.beam.visat.toolviews.stat.StatisticChartStyling.*;
 
 /**
  * The scatter plot pane within the statistics window.
@@ -164,7 +163,7 @@ class ScatterPlotPanel extends ChartPagePanel {
     private final ProductManager.Listener productRemovedListener;
     private final Map<Product, UserSettings> userSettingsMap;
 
-    ScatterPlotPanel(ToolView parentDialog, String helpId) {
+    ScatterPlotPanel(TopComponent parentDialog, String helpId) {
         super(parentDialog, helpId, CHART_TITLE, false);
         userSettingsMap = new HashMap<>();
         productRemovedListener = new ProductManager.Listener() {
@@ -231,7 +230,7 @@ class ScatterPlotPanel extends ChartPagePanel {
         getAlternativeView().initComponents();
         initParameters();
         createUI();
-        VisatApp.getApp().getProductManager().addListener(productRemovedListener);
+        SnapApp.getDefault().getProductManager().addListener(productRemovedListener);
     }
 
     @Override
@@ -267,7 +266,7 @@ class ScatterPlotPanel extends ChartPagePanel {
         }
 
         if (isRasterChanged()) {
-            getPlot().getRangeAxis().setLabel(getAxisLabel(raster, "X", false));
+            getPlot().getRangeAxis().setLabel(StatisticChartStyling.getAxisLabel(raster, "X", false));
             computeChartDataIfPossible();
         }
     }
@@ -833,20 +832,25 @@ class ScatterPlotPanel extends ChartPagePanel {
                     computingData = false;
                 } catch (InterruptedException | CancellationException e) {
                     SystemUtils.LOG.log(Level.WARNING, "Failed to compute correlative plot.", e);
-                    JOptionPane.showMessageDialog(getParentDialogContentPane(),
-                                                  "Failed to compute correlative plot.\n" +
-                                                  "Calculation canceled.",
-                                                  /*I18N*/
-                                                  CHART_TITLE, /*I18N*/
-                                                  JOptionPane.ERROR_MESSAGE);
+                    SnapDialogs.showMessage(/*I18N*/CHART_TITLE /*I18N*/, "Failed to compute correlative plot.\n" +
+                                    "Calculation canceled.", JOptionPane.ERROR_MESSAGE, null);
+//                    JOptionPane.showMessageDialog(getParentDialogContentPane(),
+//                                                  "Failed to compute correlative plot.\n" +
+//                                                  "Calculation canceled.",
+//                                                  /*I18N*/
+//                                                  CHART_TITLE, /*I18N*/
+//                                                  JOptionPane.ERROR_MESSAGE);
                 } catch (ExecutionException e) {
                     SystemUtils.LOG.log(Level.WARNING, "Failed to compute correlative plot.", e);
-                    JOptionPane.showMessageDialog(getParentDialogContentPane(),
-                                                  "Failed to compute correlative plot.\n" +
-                                                  "An error occurred:\n" +
-                                                  e.getCause().getMessage(),
-                                                  CHART_TITLE, /*I18N*/
-                                                  JOptionPane.ERROR_MESSAGE);
+                    SnapDialogs.showMessage(/*I18N*/ CHART_TITLE /*I18N*/, "Failed to compute correlative plot.\n" +
+                                    "An error occurred:\n" + e.getCause().getMessage(), JOptionPane.ERROR_MESSAGE,
+                                            null);
+//                    JOptionPane.showMessageDialog(getParentDialogContentPane(),
+//                                                  "Failed to compute correlative plot.\n" +
+//                                                  "An error occurred:\n" +
+//                                                  e.getCause().getMessage(),
+//                                                  CHART_TITLE, /*I18N*/
+//                                                  JOptionPane.ERROR_MESSAGE);
                 }
             }
         };
