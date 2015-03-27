@@ -6,7 +6,9 @@ import org.esa.beam.opendap.datamodel.OpendapLeaf;
 import org.esa.beam.opendap.utils.PatternProvider;
 import org.esa.beam.util.StringUtils;
 import org.esa.beam.util.TimeStampExtractor;
-import org.esa.snap.rcp.util.DateChooserButton;
+import org.esa.snap.rcp.util.DateTimePicker;
+import org.jdesktop.swingx.JXDatePicker;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.DateRange;
 
 import javax.swing.JButton;
@@ -21,10 +23,11 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.logging.Logger;
 
 public class TimeRangeFilter implements FilterComponent {
@@ -32,8 +35,8 @@ public class TimeRangeFilter implements FilterComponent {
     public static final Logger LOG = Logger.getLogger(TimeRangeFilter.class.getName());
     private JComboBox<String> datePatternComboBox;
     private JComboBox<String> fileNamePatternComboBox;
-    private DateChooserButton startDateButton;
-    private DateChooserButton stopDateButton;
+    private JXDatePicker startDateButton;
+    private JXDatePicker stopDateButton;
     private JButton applyButton;
     private JCheckBox filterCheckBox;
     TimeStampExtractor timeStampExtractor;
@@ -46,9 +49,13 @@ public class TimeRangeFilter implements FilterComponent {
     public TimeRangeFilter(final JCheckBox filterCheckBox) {
         this.filterCheckBox = filterCheckBox;
         final SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        Date date = Date.from(Instant.now());
-        startDateButton = new DateChooserButton(dateFormat, date);
-        stopDateButton = new DateChooserButton(dateFormat, date);
+        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        Calendar utc = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        Date date = utc.getTime();
+        startDateButton = new JXDatePicker(date);
+        startDateButton.setFormats(dateFormat);
+        stopDateButton = new JXDatePicker(date);
+        stopDateButton.setFormats(dateFormat);
 
         final int width = 150;
         final Dimension ps = startDateButton.getPreferredSize();
@@ -73,10 +80,10 @@ public class TimeRangeFilter implements FilterComponent {
                 fireFilterChangedEvent();
             }
         });
-        startDateButton.addPropertyChangeListener(DateChooserButton.PROPERTY_NAME_DATE, evt -> updateUIState());
-        startDateButton.addPropertyChangeListener(DateChooserButton.PROPERTY_NAME_DATE, evt -> validateDateChooser(startDateButton));
-        stopDateButton.addPropertyChangeListener(DateChooserButton.PROPERTY_NAME_DATE, evt -> updateUIState());
-        stopDateButton.addPropertyChangeListener(DateChooserButton.PROPERTY_NAME_DATE, evt -> validateDateChooser(stopDateButton));
+        startDateButton.addPropertyChangeListener(DateTimePicker.COMMIT_KEY, evt -> updateUIState());
+        startDateButton.addPropertyChangeListener(DateTimePicker.COMMIT_KEY, evt -> validateDateChooser(startDateButton));
+        stopDateButton.addPropertyChangeListener(DateTimePicker.COMMIT_KEY, evt -> updateUIState());
+        stopDateButton.addPropertyChangeListener(DateTimePicker.COMMIT_KEY, evt -> validateDateChooser(stopDateButton));
         datePatternComboBox.addActionListener(uiUpdater);
         fileNamePatternComboBox.addActionListener(uiUpdater);
 
@@ -199,10 +206,7 @@ public class TimeRangeFilter implements FilterComponent {
         if (timeCoverage != null) {
             return fitsToServerSpecifiedTimeRange(timeCoverage);
         }
-        if (timeStampExtractor != null) {
-            return fitsToUserSpecifiedTimeRange(leaf);
-        }
-        return true;
+        return timeStampExtractor == null || fitsToUserSpecifiedTimeRange(leaf);
     }
 
     private boolean fitsToServerSpecifiedTimeRange(DateRange dateRange) {
@@ -217,11 +221,11 @@ public class TimeRangeFilter implements FilterComponent {
     }
 
     private boolean endsAtOrBeforeEndDate(DateRange dateRange) {
-        return dateRange.getEnd().getDate().equals(endDate) || dateRange.getEnd().before(endDate);
+        return dateRange.getEnd().getCalendarDate().equals(CalendarDate.of(endDate)) || dateRange.getEnd().before(endDate);
     }
 
     private boolean startsAtOrAfterStartDate(DateRange dateRange) {
-        return dateRange.getStart().getDate().equals(startDate) || dateRange.getStart().after(startDate);
+        return dateRange.getStart().getCalendarDate().equals(CalendarDate.of(startDate)) || dateRange.getStart().after(startDate);
     }
 
     private boolean fitsToUserSpecifiedTimeRange(OpendapLeaf leaf) {
@@ -281,7 +285,7 @@ public class TimeRangeFilter implements FilterComponent {
         }
     }
 
-    private void validateDateChooser(DateChooserButton button) {
+    private void validateDateChooser(JXDatePicker button) {
         Date startDate = startDateButton.getDate();
         Date endDate = stopDateButton.getDate();
         if (startDate == null || endDate == null) {

@@ -9,7 +9,7 @@ import org.esa.beam.timeseries.core.timeseries.datamodel.AbstractTimeSeries;
 import org.esa.beam.timeseries.core.timeseries.datamodel.GridTimeCoding;
 import org.esa.beam.timeseries.core.timeseries.datamodel.ProductLocation;
 import org.esa.beam.timeseries.core.timeseries.datamodel.TimeCoding;
-import org.esa.snap.rcp.util.DateChooserButton;
+import org.jdesktop.swingx.JXDatePicker;
 import org.openide.util.ImageUtilities;
 
 import javax.swing.AbstractAction;
@@ -22,13 +22,14 @@ import java.awt.Component;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
+import java.util.TimeZone;
+import java.util.stream.Collectors;
 
 class EditTimeSpanAction extends AbstractAction {
 
@@ -59,17 +60,17 @@ class EditTimeSpanAction extends AbstractAction {
 
     private static class EditTimeSpanDialog extends ModalDialog {
 
-        private final SimpleDateFormat dateFormat;
+        private final DateFormat dateFormat;
         private AbstractTimeSeries timeSeries;
-        private DateChooserButton startTimeBox;
-        private DateChooserButton endTimeBox;
+        private JXDatePicker startTimeBox;
+        private JXDatePicker endTimeBox;
         private JLabel startTimeLabel;
         private JLabel endTimeLabel;
         private JCheckBox autoAdjustBox;
 
         private EditTimeSpanDialog(Window window, AbstractTimeSeries timeSeries) {
             super(window, "Edit Time Span", ModalDialog.ID_OK_CANCEL, null);
-            dateFormat = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss", Locale.ENGLISH);
+            dateFormat = ProductData.UTC.createDateFormat(("dd-MMM-yyyy HH:mm:ss"));
             this.timeSeries = timeSeries;
             createUserInterface();
         }
@@ -86,7 +87,7 @@ class EditTimeSpanAction extends AbstractAction {
 
         @Override
         protected boolean verifyUserInput() {
-            if (endTimeBox.getCalendar().compareTo(startTimeBox.getCalendar()) < 0) {
+            if (endTimeBox.getDate().compareTo(startTimeBox.getDate()) < 0) {
                 showErrorDialog("End time is before start time.");
                 return false;
             }
@@ -106,10 +107,10 @@ class EditTimeSpanAction extends AbstractAction {
             startTimeLabel = new JLabel("Start time:");
             startTimeBox = createDateComboBox();
             final TimeCoding timeCoding = timeSeries.getTimeCoding();
-            startTimeBox.setCalendar(timeCoding.getStartTime().getAsCalendar());
+            startTimeBox.setDate(timeCoding.getStartTime().getAsDate());
             endTimeLabel = new JLabel("End time:");
             endTimeBox = createDateComboBox();
-            endTimeBox.setCalendar(timeCoding.getEndTime().getAsCalendar());
+            endTimeBox.setDate(timeCoding.getEndTime().getAsDate());
             content.add(autoAdjustBox);
             content.add(startTimeLabel);
             content.add(startTimeBox);
@@ -129,13 +130,8 @@ class EditTimeSpanAction extends AbstractAction {
             List<Product> result = new ArrayList<>();
             for (ProductLocation productLocation : timeSeries.getProductLocations()) {
                 for (Product product : productLocation.getProducts(ProgressMonitor.NULL).values()) {
-                    for (String variable : timeSeries.getEoVariables()) {
-                        if (timeSeries.isProductCompatible(product, variable)) {
-                            if (timeSeries.isEoVariableSelected(variable)) {
-                                result.add(product);
-                            }
-                        }
-                    }
+                    result.addAll(timeSeries.getEoVariables().stream().filter(variable -> timeSeries.isProductCompatible(product, variable)).filter(
+                            timeSeries::isEoVariableSelected).map(variable -> product).collect(Collectors.toList()));
                 }
             }
             return result;
@@ -161,8 +157,14 @@ class EditTimeSpanAction extends AbstractAction {
             return startTime;
         }
 
-        private DateChooserButton createDateComboBox() {
-            return new DateChooserButton(dateFormat, Date.from(Instant.now()));
+        private JXDatePicker createDateComboBox() {
+            TimeZone utcZone = TimeZone.getTimeZone("UTC");
+            Calendar utc = Calendar.getInstance(utcZone);
+            Date date = utc.getTime();
+            JXDatePicker datePicker = new JXDatePicker(date);
+            datePicker.setTimeZone(utcZone);
+            datePicker.setFormats(dateFormat);
+            return datePicker;
         }
 
         private void setUiEnabled(boolean enable) {

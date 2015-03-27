@@ -20,13 +20,10 @@ import com.bc.ceres.binding.Property;
 import com.bc.ceres.binding.PropertyContainer;
 import com.bc.ceres.binding.PropertyDescriptor;
 import com.bc.ceres.binding.ValidationException;
-import com.bc.ceres.binding.Validator;
 import com.bc.ceres.binding.ValueRange;
 import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.Enablement;
-import com.jidesoft.combobox.DefaultDateModel;
-import com.jidesoft.grid.DateCellEditor;
 import com.vividsolutions.jts.geom.Point;
 import org.esa.beam.framework.datamodel.GeoPos;
 import org.esa.beam.framework.datamodel.Placemark;
@@ -43,11 +40,12 @@ import org.esa.beam.framework.ui.product.ProductExpressionPane;
 import org.esa.beam.framework.ui.tool.ToolButtonFactory;
 import org.esa.beam.pixex.Coordinate;
 import org.esa.beam.pixex.PixExOp;
+import org.esa.snap.rcp.util.DateCellRenderer;
+import org.esa.snap.rcp.util.DateTimePickerCellEditor;
 import org.geotools.feature.NameImpl;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.type.AttributeDescriptorImpl;
 import org.geotools.feature.type.AttributeTypeImpl;
-import org.jfree.ui.DateCellRenderer;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
@@ -74,10 +72,6 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -111,7 +105,7 @@ class PixelExtractionParametersForm {
     private Product activeProduct;
     private JLabel expressionNoteLabel;
     private JSpinner timeSpinner;
-    private JComboBox timeUnitComboBox;
+    private JComboBox<String> timeUnitComboBox;
     private JCheckBox includeOriginalInputBox;
     private Enablement aggregationEneblement;
     private JCheckBox timeBox;
@@ -261,12 +255,7 @@ class PixelExtractionParametersForm {
             mainPanel.add(timeDeltaComponent);
         }
 
-        coordinateTableModel.addTableModelListener(new TableModelListener() {
-            @Override
-            public void tableChanged(TableModelEvent e) {
-                updateIncludeOriginalInputBox();
-            }
-        });
+        coordinateTableModel.addTableModelListener(e -> updateIncludeOriginalInputBox());
 
         final BindingContext bindingContext = new BindingContext(container);
 
@@ -278,12 +267,7 @@ class PixelExtractionParametersForm {
         windowSpinner = createWindowSizeEditor(bindingContext);
         windowLabel = new JLabel();
         windowLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        windowSpinner.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                handleWindowSpinnerChange();
-            }
-        });
+        windowSpinner.addChangeListener(e -> handleWindowSpinnerChange());
         mainPanel.add(windowSpinner);
         mainPanel.add(windowLabel);
 
@@ -380,15 +364,12 @@ class PixelExtractionParametersForm {
         final Component horizontalSpacer2 = tableLayout.createHorizontalSpacer();
         timeSpinner = new JSpinner(new SpinnerNumberModel(1, 1, null, 1));
         timeSpinner.setEnabled(false);
-        timeUnitComboBox = new JComboBox(new String[]{"Day(s)", "Hour(s)", "Minute(s)"});
+        timeUnitComboBox = new JComboBox<>(new String[]{"Day(s)", "Hour(s)", "Minute(s)"});
         timeUnitComboBox.setEnabled(false);
 
-        timeBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                timeSpinner.setEnabled(timeBox.isSelected());
-                timeUnitComboBox.setEnabled(timeBox.isSelected());
-            }
+        timeBox.addActionListener(e -> {
+            timeSpinner.setEnabled(timeBox.isSelected());
+            timeUnitComboBox.setEnabled(timeBox.isSelected());
         });
 
         return new Component[]{boxLabel, timeBox, horizontalSpacer, horizontalSpacer2, timeSpinner, timeUnitComboBox};
@@ -480,12 +461,7 @@ class PixelExtractionParametersForm {
         final JPanel panel = new JPanel(tableLayout);
 
         useExpressionCheckBox = new JCheckBox("Use expression");
-        useExpressionCheckBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                updateExpressionComponents();
-            }
-        });
+        useExpressionCheckBox.addActionListener(e -> updateExpressionComponents());
         editExpressionButton = new JButton("Edit Expression...");
         final Window parentWindow = SwingUtilities.getWindowAncestor(panel);
         editExpressionButton.addActionListener(new EditExpressionActionListener(parentWindow));
@@ -538,14 +514,12 @@ class PixelExtractionParametersForm {
         coordinateTable.setPreferredScrollableViewportSize(new Dimension(250, 100));
         coordinateTable.getColumnModel().getColumn(1).setCellEditor(new DecimalCellEditor(-90, 90));
         coordinateTable.getColumnModel().getColumn(2).setCellEditor(new DecimalCellEditor(-180, 180));
-        coordinateTable.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
 
-        final DefaultDateModel dateModel = new DefaultDateModel();
         final DateFormat dateFormat = ProductData.UTC.createDateFormat("yyyy-MM-dd'T'HH:mm:ss"); // ISO 8601
-        dateModel.setDateFormat(dateFormat);
-        final DateCellEditor dateCellEditor = new DateCellEditor(dateModel, true);
-        dateCellEditor.setTimeDisplayed(true);
-        coordinateTable.getColumnModel().getColumn(3).setCellEditor(dateCellEditor);
+        final DateFormat timeFormat = ProductData.UTC.createDateFormat("HH:mm:ss"); // ISO 8601
+        DateTimePickerCellEditor cellEditor = new DateTimePickerCellEditor(dateFormat, timeFormat);
+        cellEditor.setClickCountToStart(1);
+        coordinateTable.getColumnModel().getColumn(3).setCellEditor(cellEditor);
         coordinateTable.getColumnModel().getColumn(3).setPreferredWidth(200);
         final DateCellRenderer dateCellRenderer = new DateCellRenderer(dateFormat);
         dateCellRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -568,12 +542,9 @@ class PixelExtractionParametersForm {
         final PropertyDescriptor windowSizeDescriptor = bindingContext.getPropertySet().getProperty("windowSize").getDescriptor();
         windowSizeDescriptor.setValueRange(new ValueRange(1, Double.POSITIVE_INFINITY));
         windowSizeDescriptor.setAttribute("stepSize", 2);
-        windowSizeDescriptor.setValidator(new Validator() {
-            @Override
-            public void validateValue(Property property, Object value) throws ValidationException {
-                if (((Number) value).intValue() % 2 == 0) {
-                    throw new ValidationException("Only odd values allowed as window size.");
-                }
+        windowSizeDescriptor.setValidator((property, value) -> {
+            if (((Number) value).intValue() % 2 == 0) {
+                throw new ValidationException("Only odd values allowed as window size.");
             }
         });
 

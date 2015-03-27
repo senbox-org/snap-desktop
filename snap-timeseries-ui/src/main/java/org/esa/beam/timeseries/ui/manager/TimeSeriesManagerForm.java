@@ -20,6 +20,7 @@ import com.bc.ceres.swing.TableLayout;
 import com.jidesoft.swing.TitledSeparator;
 import org.esa.beam.framework.datamodel.Band;
 import org.esa.beam.framework.datamodel.Product;
+import org.esa.beam.framework.datamodel.ProductData;
 import org.esa.beam.framework.datamodel.RasterDataNode;
 import org.esa.beam.framework.ui.UIUtils;
 import org.esa.beam.framework.ui.tool.ToolButtonFactory;
@@ -58,17 +59,17 @@ import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.net.URL;
-import java.text.SimpleDateFormat;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 class TimeSeriesManagerForm {
 
     private final String helpId;
-    private final SimpleDateFormat dateFormat;
+    private final DateFormat dateFormat;
     private final JComponent control;
     private final FrameClosingTimeSeriesListener frameClosingTimeSeriesListener;
     private JLabel nameField;
@@ -87,7 +88,7 @@ class TimeSeriesManagerForm {
 
     TimeSeriesManagerForm(String helpId) {
         this.helpId = helpId;
-        dateFormat = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss", Locale.ENGLISH);
+        dateFormat = ProductData.UTC.createDateFormat("dd-MMM-yyyy HH:mm:ss");
         control = createControl();
         frameClosingTimeSeriesListener = new FrameClosingTimeSeriesListener();
     }
@@ -372,11 +373,7 @@ class TimeSeriesManagerForm {
         public List<String> getSelectedVariableNames() {
             final List<String> allVars = timeSeries.getEoVariables();
             final List<String> selectedVars = new ArrayList<>(allVars.size());
-            for (String varName : allVars) {
-                if (timeSeries.isEoVariableSelected(varName)) {
-                    selectedVars.add(varName);
-                }
-            }
+            selectedVars.addAll(allVars.stream().filter(timeSeries::isEoVariableSelected).collect(Collectors.toList()));
             return selectedVars;
         }
     }

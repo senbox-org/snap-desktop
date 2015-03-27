@@ -20,6 +20,7 @@ import com.bc.ceres.glayer.support.ImageLayer;
 import com.bc.ceres.glayer.swing.LayerCanvas;
 import com.bc.ceres.swing.TableLayout;
 import org.esa.beam.framework.datamodel.Band;
+import org.esa.beam.framework.datamodel.ProductData;
 import org.esa.beam.framework.datamodel.ProductNode;
 import org.esa.beam.framework.datamodel.ProductNodeEvent;
 import org.esa.beam.framework.datamodel.RasterDataNode;
@@ -57,11 +58,10 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
-import java.text.SimpleDateFormat;
+import java.text.DateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * Main class for the matrix tool.
@@ -109,7 +109,7 @@ public class TimeSeriesMatrixTopComponent extends TopComponent {
 
     private static final String DATE_PREFIX = "Date: ";
     private MatrixTableModel matrixModel;
-    private final SimpleDateFormat dateFormat;
+    private final DateFormat dateFormat;
     private MatrixCellRenderer matrixCellRenderer;
 
     public TimeSeriesMatrixTopComponent() {
@@ -117,7 +117,7 @@ public class TimeSeriesMatrixTopComponent extends TopComponent {
         sceneViewListener = new SceneViewHandler();
         mouseWheelListener = new MatrixMouseWheelListener();
         timeSeriesMatrixTSL = new TimeSeriesMatrixTSL();
-        dateFormat = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss", Locale.getDefault());
+        dateFormat = ProductData.UTC.createDateFormat("dd-MMM-yyyy HH:mm:ss");
         initUI();
     }
 

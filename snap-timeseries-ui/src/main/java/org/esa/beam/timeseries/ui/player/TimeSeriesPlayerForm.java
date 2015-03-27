@@ -41,11 +41,10 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.TimeZone;
 
 /**
  * @author Thomas Storm
@@ -199,9 +198,8 @@ class TimeSeriesPlayerForm extends JPanel {
         TimeCoding timeCoding = timeSeries.getRasterTimeMap().get(band);
         if (timeCoding != null) {
             final ProductData.UTC utcStartTime = timeCoding.getStartTime();
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy");
-            SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
-            dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+            DateFormat dateFormat = ProductData.UTC.createDateFormat("dd-MMM-yyyy");
+            DateFormat timeFormat = ProductData.UTC.createDateFormat("HH:mm:ss");
             final String dateText = dateFormat.format(utcStartTime.getAsCalendar().getTime());
             final String timeText = timeFormat.format(utcStartTime.getAsCalendar().getTime());
             return dateText + DATE_SEPARATOR + timeText;
