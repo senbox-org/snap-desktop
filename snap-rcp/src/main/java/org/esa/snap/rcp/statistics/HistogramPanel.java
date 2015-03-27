@@ -108,8 +108,8 @@ class HistogramPanel extends ChartPagePanel {
     @Override
     protected void initComponents() {
         SnapApp.getDefault().getSelectionSupport(ProductNode.class).addHandler((oldValue, newValue) -> {
-            handleMasklessProduct(newValue.getProduct());
             if (newValue != null) {
+                handleMasklessProduct(newValue.getProduct());
             }
         });
         SnapApp.getDefault().getProductManager().addListener(new ProductManager.Listener() {
