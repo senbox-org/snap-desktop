@@ -14,7 +14,7 @@
  * with this program; if not, see http://www.gnu.org/licenses/
  */
 
-package org.esa.beam.visat.toolviews.stat;
+package org.esa.snap.rcp.statistics;
 
 import org.esa.beam.framework.datamodel.Mask;
 import org.esa.beam.framework.datamodel.Product;
@@ -24,7 +24,8 @@ import org.esa.beam.statistics.output.StatisticsOutputContext;
 import org.esa.beam.util.io.BeamFileChooser;
 import org.esa.beam.util.io.BeamFileFilter;
 import org.esa.beam.util.io.FileUtils;
-import org.esa.beam.visat.VisatApp;
+import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.rcp.SnapDialogs;
 
 import javax.media.jai.Histogram;
 import javax.swing.AbstractAction;
@@ -56,7 +57,7 @@ class ExportStatisticsAsCsvAction extends AbstractAction {
     public void actionPerformed(ActionEvent e) {
         PrintStream metadataOutputStream = null;
         PrintStream csvOutputStream = null;
-        String exportDir = VisatApp.getApp().getPreferences().getPropertyString(PROPERTY_KEY_EXPORT_DIR);
+        String exportDir = SnapApp.getDefault().getPreferences().get(PROPERTY_KEY_EXPORT_DIR, null);
         File baseDir = null;
         if (exportDir != null) {
             baseDir = new File(exportDir);
@@ -65,10 +66,10 @@ class ExportStatisticsAsCsvAction extends AbstractAction {
         final BeamFileFilter beamFileFilter = new BeamFileFilter("CSV", new String[]{".csv", ".txt"}, "CSV files");
         fileChooser.setFileFilter(beamFileFilter);
         File outputAsciiFile;
-        int result = fileChooser.showSaveDialog(VisatApp.getApp().getApplicationWindow());
+        int result = fileChooser.showSaveDialog(SnapApp.getDefault().getMainFrame());
         if (result == JFileChooser.APPROVE_OPTION) {
             outputAsciiFile = fileChooser.getSelectedFile();
-            VisatApp.getApp().getPreferences().setPropertyString(PROPERTY_KEY_EXPORT_DIR, outputAsciiFile.getParent());
+            SnapApp.getDefault().getPreferences().put(PROPERTY_KEY_EXPORT_DIR, outputAsciiFile.getParent());
         } else {
             return;
         }
@@ -128,11 +129,8 @@ class ExportStatisticsAsCsvAction extends AbstractAction {
             csvStatisticsWriter.finaliseOutput();
             metadataWriter.finaliseOutput();
         } catch (IOException exception) {
-            JOptionPane.showMessageDialog(VisatApp.getApp().getApplicationWindow(),
-                                          "Failed to export statistics.\nAn error occurred:" +
-                                                  exception.getMessage(),
-                                          "Statistics export",
-                                          JOptionPane.ERROR_MESSAGE);
+            SnapDialogs.showMessage("Statistics export", "Failed to export statistics.\nAn error occurred:" +
+                    exception.getMessage(), JOptionPane.ERROR_MESSAGE, null);
         } finally {
             if (metadataOutputStream != null) {
                 metadataOutputStream.close();
@@ -141,11 +139,13 @@ class ExportStatisticsAsCsvAction extends AbstractAction {
                 csvOutputStream.close();
             }
         }
-        JOptionPane.showMessageDialog(VisatApp.getApp().getApplicationWindow(),
-                                      "The statistics have successfully been exported to '" + outputAsciiFile +
-                                              "'.",
-                                      "Statistics export",
-                                      JOptionPane.INFORMATION_MESSAGE);
+//        JOptionPane.showMessageDialog(VisatApp.getApp().getApplicationWindow(),
+//                                      "The statistics have successfully been exported to '" + outputAsciiFile +
+//                                              "'.",
+//                                      "Statistics export",
+//                                      JOptionPane.INFORMATION_MESSAGE);
+        SnapDialogs.showMessage("Statistics export", "The statistics have successfully been exported to '" +
+                outputAsciiFile + "'.", JOptionPane.INFORMATION_MESSAGE, null);
     }
 
     public void setSelectedMasks(Mask[] selectedMasks) {

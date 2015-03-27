@@ -14,7 +14,7 @@
  * with this program; if not, see http://www.gnu.org/licenses/
  */
 
-package org.esa.beam.visat.toolviews.stat;
+package org.esa.snap.rcp.statistics;
 
 import com.bc.ceres.binding.PropertyContainer;
 import com.bc.ceres.binding.PropertyDescriptor;
@@ -24,7 +24,6 @@ import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.core.SubProgressMonitor;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
-import com.jidesoft.swing.TitledSeparator;
 import org.esa.beam.framework.datamodel.Mask;
 import org.esa.beam.framework.datamodel.ProductNodeGroup;
 import org.esa.beam.framework.datamodel.RasterDataNode;
@@ -33,10 +32,10 @@ import org.esa.beam.framework.datamodel.StxFactory;
 import org.esa.beam.framework.datamodel.VectorDataNode;
 import org.esa.beam.framework.ui.GridBagUtils;
 import org.esa.beam.framework.ui.UIUtils;
-import org.esa.beam.framework.ui.application.ToolView;
 import org.esa.beam.framework.ui.tool.ToolButtonFactory;
 import org.esa.beam.statistics.output.Util;
 import org.esa.beam.util.StringUtils;
+import org.esa.snap.rcp.SnapDialogs;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -47,6 +46,7 @@ import org.jfree.chart.renderer.xy.XYBarRenderer;
 import org.jfree.data.xy.XIntervalSeries;
 import org.jfree.data.xy.XIntervalSeriesCollection;
 import org.jfree.ui.RectangleInsets;
+import org.openide.windows.TopComponent;
 
 import javax.media.jai.Histogram;
 import javax.swing.AbstractButton;
@@ -62,7 +62,6 @@ import javax.swing.JSeparator;
 import javax.swing.JSpinner;
 import javax.swing.JTable;
 import javax.swing.SpinnerNumberModel;
-import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
@@ -112,7 +111,7 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
     private PutStatisticsIntoVectorDataAction putStatisticsIntoVectorDataAction;
     private AccuracyModel accuracyModel;
 
-    public StatisticsPanel(final ToolView parentDialog, String helpID) {
+    public StatisticsPanel(final TopComponent parentDialog, String helpID) {
         super(parentDialog, helpID, TITLE_PREFIX);
         setMinimumSize(new Dimension(1000, 390));
         resultText = new StringBuilder();
@@ -228,7 +227,7 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
             }
         });
 
-        GridBagUtils.addToPanel(accuracyPanel, new TitledSeparator("Histogram accuracy", SwingConstants.CENTER), gbc, "fill=HORIZONTAL, weightx=1.0,anchor=NORTH,gridwidth=2");
+        GridBagUtils.addToPanel(accuracyPanel, new TitledSeparator("Histogram accuracy"), gbc, "fill=HORIZONTAL, weightx=1.0,anchor=NORTH,gridwidth=2");
         GridBagUtils.addToPanel(accuracyPanel, checkBox, gbc, "gridy=1,insets.left=5,insets.top=2");
         GridBagUtils.addToPanel(accuracyPanel, label, gbc, "gridy=2, insets.left=26,weightx=0.0,fill=NONE,anchor=WEST,gridwidth=1");
         GridBagUtils.addToPanel(accuracyPanel, accuracySpinner, gbc, "gridx=1,weightx=1.0,fill=HORIZONTAL,insets.right=5,insets.left=5");
@@ -348,11 +347,10 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
                     exportButton.setEnabled(true);
                 } catch (Exception e) {
                     e.printStackTrace();
-                    JOptionPane.showMessageDialog(getParentDialogContentPane(),
-                                                  "Failed to compute statistics.\nAn error occurred:" + e.getMessage(),
-                                                  /*I18N*/
-                                                  "Statistics", /*I18N*/
-                                                  JOptionPane.ERROR_MESSAGE);
+                    SnapDialogs.showMessage("<html>Statistics",
+                                            "Failed to compute statistics.<br/>An error occurred:"
+                                                    + e.getMessage() + "</html>",
+                                            JOptionPane.ERROR_MESSAGE, null);
                 }
             }
         };

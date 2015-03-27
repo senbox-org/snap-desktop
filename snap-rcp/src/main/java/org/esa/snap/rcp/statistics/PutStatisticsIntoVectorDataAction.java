@@ -14,7 +14,7 @@
  * with this program; if not, see http://www.gnu.org/licenses/
  */
 
-package org.esa.beam.visat.toolviews.stat;
+package org.esa.snap.rcp.statistics;
 
 import org.esa.beam.framework.datamodel.Mask;
 import org.esa.beam.framework.datamodel.PlacemarkDescriptor;
@@ -26,7 +26,8 @@ import org.esa.beam.statistics.output.FeatureStatisticsWriter;
 import org.esa.beam.statistics.output.StatisticsOutputContext;
 import org.esa.beam.statistics.output.Util;
 import org.esa.beam.util.SystemUtils;
-import org.esa.beam.visat.VisatApp;
+import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.rcp.SnapDialogs;
 import org.geotools.data.collection.ListFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
@@ -35,10 +36,8 @@ import org.opengis.feature.simple.SimpleFeatureType;
 
 import javax.media.jai.Histogram;
 import javax.swing.AbstractAction;
-import javax.swing.JInternalFrame;
 import javax.swing.JOptionPane;
 import java.awt.event.ActionEvent;
-import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -94,7 +93,7 @@ class PutStatisticsIntoVectorDataAction extends AbstractAction {
             final VectorDataNode originalVDN = featureType2VDN.get(featureType);
             if (originalVDN.isPermanent()) {
                 SystemUtils.LOG.warning("Unable to put statistics into permanent vector data.");
-                VisatApp.getApp().showErrorDialog("Unable to put statistics into permanent vector data (such as pins/GCPs).");
+                SnapDialogs.showError("Unable to put statistics into permanent vector data (such as pins/GCPs).");
                 continue;
             }
 
@@ -133,10 +132,9 @@ class PutStatisticsIntoVectorDataAction extends AbstractAction {
             }
 
             exchangeVDN(featureType, featureStatisticsWriter);
-            JOptionPane.showMessageDialog(VisatApp.getApp().getApplicationWindow(),
-                                          "The vector data have successfully been extended with the computed statistics.",
-                                          "Extending vector data with statistics",
-                                          JOptionPane.INFORMATION_MESSAGE);
+            SnapDialogs.showMessage("Extending vector data with statistics",
+                                    "The vector data have successfully been extended with the computed statistics.",
+                                    JOptionPane.INFORMATION_MESSAGE, null);
         }
     }
 
@@ -147,15 +145,16 @@ class PutStatisticsIntoVectorDataAction extends AbstractAction {
         vectorDataNodeGroup.remove(originalVDN);
         originalVDN.dispose();
         vectorDataNodeGroup.add(vectorDataNode);
-        final JInternalFrame internalFrame = VisatApp.getApp().findInternalFrame(originalVDN);
-        if (internalFrame != null) {
-            try {
-                internalFrame.setClosed(true);
-            } catch (PropertyVetoException ignored) {
-                // ok
-            }
-        }
-        final ProductSceneView sceneView = VisatApp.getApp().getSelectedProductSceneView();
+        //todo solve this one
+//        final JInternalFrame internalFrame = VisatApp.getApp().findInternalFrame(originalVDN);
+//        if (internalFrame != null) {
+//            try {
+//                internalFrame.setClosed(true);
+//            } catch (PropertyVetoException ignored) {
+//                 ok
+//            }
+//        }
+        final ProductSceneView sceneView = SnapApp.getDefault().getSelectedProductSceneView();
         if (sceneView != null) {
             sceneView.setLayersVisible(vectorDataNode);
         }
