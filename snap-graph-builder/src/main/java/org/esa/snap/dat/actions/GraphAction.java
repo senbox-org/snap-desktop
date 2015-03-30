@@ -15,16 +15,17 @@
  */
 package org.esa.snap.dat.actions;
 
-import com.bc.ceres.core.CoreException;
-import com.bc.ceres.core.runtime.ConfigurationElement;
 import org.esa.beam.framework.ui.ModelessDialog;
 import org.esa.snap.dat.graphbuilder.GraphBuilderDialog;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
- * <p>An action which creates a default dialog for an operator given by the
- * action property action property {@code operatorName}.</p>
+ * <p>An action which creates a graph builder dialog for a graph given by the
+ * action property action property {@code graphFile}.</p>
  * <p>Optionally the dialog title can be set via the {@code dialogTitle} property and
  * the ID of the help page can be given using the {@code helpId} property. If not given the
  * name of the operator will be used instead. Also optional the
@@ -32,27 +33,27 @@ import java.io.File;
  */
 public class GraphAction extends OperatorAction {
 
-    private String graphFileName;
-    private boolean enableEditing = false;
+    protected static final Set<String> KNOWN_KEYS = new HashSet<>(Arrays.asList("graphFile", "enableEditing"));
+    static {
+        KNOWN_KEYS.addAll(OperatorAction.KNOWN_KEYS);
+    }
 
-    @Override
-    public void configure(ConfigurationElement config) throws CoreException {
-        super.configure(config);
+    public String getGraphFileName() {
+        return getPropertyString("graphFile");
+    }
 
-        graphFileName = getConfigString(config, "graphFile");
-        String enableEditingStr = getConfigString(config, "enableEditing");
-        if (enableEditingStr != null) {
-            enableEditing = enableEditingStr.equalsIgnoreCase("true");
-        }
+    public boolean isEditingEnabled() {
+        final String enableEditingStr = getPropertyString("enableEditing");
+        return enableEditingStr != null && enableEditingStr.equalsIgnoreCase("true");
     }
 
     @Override
     protected ModelessDialog createOperatorDialog() {
-        final GraphBuilderDialog dialog = new GraphBuilderDialog(getAppContext(), dialogTitle, getHelpId(), enableEditing);
+        final GraphBuilderDialog dialog = new GraphBuilderDialog(getAppContext(), getDialogTitle(), getHelpId(), isEditingEnabled());
         dialog.show();
 
         final File graphPath = GraphBuilderDialog.getInternalGraphFolder();
-        final File graphFile = new File(graphPath, graphFileName);
+        final File graphFile = new File(graphPath, getGraphFileName());
 
         addIcon(dialog);
         dialog.LoadGraph(graphFile);

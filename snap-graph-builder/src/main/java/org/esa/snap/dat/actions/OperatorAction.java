@@ -15,15 +15,17 @@
  */
 package org.esa.snap.dat.actions;
 
-import com.bc.ceres.core.CoreException;
-import com.bc.ceres.core.runtime.ConfigurationElement;
 import org.esa.beam.framework.ui.ModelessDialog;
-import org.esa.beam.framework.ui.command.CommandEvent;
-import org.esa.beam.visat.actions.AbstractVisatAction;
 import org.esa.snap.dat.dialogs.SingleOperatorDialog;
+import org.esa.snap.rcp.actions.DefaultOperatorAction;
 import org.esa.snap.util.ImageUtils;
 
-import javax.swing.ImageIcon;
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * <p>An action which creates a default dialog for an operator given by the
@@ -33,52 +35,50 @@ import javax.swing.ImageIcon;
  * name of the operator will be used instead. Also optional the
  * file name suffix for the target product can be given via the {@code targetProductNameSuffix} property.</p>
  */
-public class OperatorAction extends AbstractVisatAction {
-    private ModelessDialog dialog;
-    protected String operatorName;
-    protected String dialogTitle;
-    protected String targetProductNameSuffix;
+public class OperatorAction extends DefaultOperatorAction {
+    protected static final Set<String> KNOWN_KEYS = new HashSet<>(Arrays.asList("displayName", "operatorName", "dialogTitle", "targetProductNameSuffix", "icon"));
 
-    private String iconName;
-    private boolean disable = false;
+    private ModelessDialog dialog;
+
+    public static OperatorAction create(Map<String, Object> properties) {
+        OperatorAction action = new OperatorAction();
+        for (Map.Entry<String, Object> entry : properties.entrySet()) {
+            if (KNOWN_KEYS.contains(entry.getKey())) {
+                action.putValue(entry.getKey(), entry.getValue());
+            }
+        }
+        return action;
+    }
 
     @Override
-    public void actionPerformed(CommandEvent event) {
+    public void actionPerformed(ActionEvent event) {
         ModelessDialog dialog = createOperatorDialog();
         dialog.show();
     }
 
-    @Override
-    public void configure(ConfigurationElement config) throws CoreException {
-        operatorName = getConfigString(config, "operatorName");
-        dialogTitle = getValue(config, "dialogTitle", operatorName);
-        targetProductNameSuffix = getConfigString(config, "targetProductNameSuffix");
-
-        iconName = getConfigString(config, "icon");
-        String disableStr = getConfigString(config, "disable");
-        if (disableStr != null) {
-            disable = disableStr.equalsIgnoreCase("true");
+    public String getPropertyString(final String key) {
+        Object value = getValue(key);
+        if (value instanceof String) {
+            return (String) value;
         }
-        super.configure(config);
+        return null;
     }
 
-    @Override
-    public void updateState(final CommandEvent event) {
-        if (disable)
-            setEnabled(false);
+    public String getIcon() {
+        return getPropertyString("icon");
     }
 
     protected ModelessDialog createOperatorDialog() {
-        final SingleOperatorDialog dialog = new SingleOperatorDialog(operatorName,
-                getAppContext(), dialogTitle, getHelpId());
-        if (targetProductNameSuffix != null) {
-            dialog.setTargetProductNameSuffix(targetProductNameSuffix);
+        SingleOperatorDialog productDialog = new SingleOperatorDialog(getOperatorName(), getAppContext(), getDialogTitle(), getHelpId());
+        if (getTargetProductNameSuffix() != null) {
+            productDialog.setTargetProductNameSuffix(getTargetProductNameSuffix());
         }
-        addIcon(dialog);
-        return dialog;
+        addIcon(productDialog);
+        return productDialog;
     }
 
     protected void addIcon(final ModelessDialog dlg) {
+        String iconName = getIcon();
         if (iconName == null) {
             setIcon(dlg, ImageUtils.esaPlanetIcon);
         } else if (iconName.equals("esaIcon")) {
