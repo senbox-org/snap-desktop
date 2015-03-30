@@ -3,6 +3,7 @@ package org.esa.snap.rcp;
 import com.bc.ceres.core.ExtensionFactory;
 import com.bc.ceres.core.ExtensionManager;
 import com.bc.ceres.jai.operator.ReinterpretDescriptor;
+import org.esa.beam.BeamCoreActivator;
 import org.esa.beam.framework.dataio.ProductReader;
 import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.datamodel.ProductManager;
@@ -34,6 +35,9 @@ import org.openide.util.lookup.ServiceProvider;
 import org.openide.windows.OnShowing;
 import org.openide.windows.WindowManager;
 
+import javax.imageio.spi.IIORegistry;
+import javax.imageio.spi.ImageReaderSpi;
+import javax.imageio.spi.ImageWriterSpi;
 import javax.media.jai.JAI;
 import javax.media.jai.OperationRegistry;
 import javax.swing.ImageIcon;
@@ -53,6 +57,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -329,6 +334,7 @@ public class SnapApp {
         @Override
         public void run() {
             LOG.fine(">>> " + getClass() + " called");
+            initImageIO();
             initJAI();
             initGPF();
             SnapApp.getDefault().onStart();
@@ -379,6 +385,25 @@ public class SnapApp {
             SnapApp.getDefault().onStop();
         }
     }
+
+    private static void initImageIO() {
+        ClassLoader classLoader = BeamCoreActivator.class.getClassLoader();
+        loadIIOSPIs(ImageReaderSpi.class, classLoader);
+        loadIIOSPIs(ImageWriterSpi.class, classLoader);
+    }
+
+    private static <T> void loadIIOSPIs(Class<T> providerClass, ClassLoader classLoader) {
+        IIORegistry iioRegistry = IIORegistry.getDefaultInstance();
+        Iterator<T> spis = IIORegistry.lookupProviders(providerClass, classLoader);
+        while (spis.hasNext()) {
+            T provider = spis.next();
+            if (!iioRegistry.contains(provider)) {
+                iioRegistry.registerServiceProvider(provider, providerClass);
+                LOG.log(Level.INFO, String.format("Registered  %s = %s", providerClass.getSimpleName(), provider.getClass().getName()));
+            }
+        }
+    }
+
 
     private static void initJAI() {
         // Disable native libraries for JAI:
