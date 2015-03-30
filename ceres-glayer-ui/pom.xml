@@ -11,7 +11,7 @@
     <artifactId>ceres-glayer-ui</artifactId>
     <packaging>nbm</packaging>
 
-    <name>Ceres GLayer Library</name>
+    <name>Ceres GLayer Library GUI</name>
     <description>The Ceres GLayer Library provides a framework for rendering of multiple graphical layers to some
         graphics context.
     </description>
