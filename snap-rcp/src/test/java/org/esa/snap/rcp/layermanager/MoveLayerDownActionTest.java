@@ -14,7 +14,7 @@
  * with this program; if not, see http://www.gnu.org/licenses/
  */
 
-package org.esa.beam.visat.toolviews.layermanager;
+package org.esa.snap.rcp.layermanager;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -47,7 +47,7 @@ public class MoveLayerDownActionTest extends AbstractMoveLayerTest {
     @Before
     public void setupTreeModel() {
         super.setupTreeModel();
-        layerDownAction = new MoveLayerDownAction(new DummyAppContext());
+        layerDownAction = new MoveLayerDownAction();
 
     }
 

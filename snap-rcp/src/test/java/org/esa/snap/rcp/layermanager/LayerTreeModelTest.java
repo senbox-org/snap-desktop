@@ -13,11 +13,12 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, see http://www.gnu.org/licenses/
  */
-package org.esa.beam.visat.toolviews.layermanager;
+package org.esa.snap.rcp.layermanager;
 
 import com.bc.ceres.glayer.CollectionLayer;
 import com.bc.ceres.glayer.Layer;
 import com.bc.ceres.glayer.support.LayerUtils;
+import junit.framework.Assert;
 import junit.framework.TestCase;
 
 import javax.swing.event.TreeModelEvent;
@@ -43,47 +44,47 @@ public class LayerTreeModelTest extends TestCase {
 
         LayerTreeModel treeModel = new LayerTreeModel(layer0);
 
-        assertSame(layer0, treeModel.getRoot());
+        Assert.assertSame(layer0, treeModel.getRoot());
 
         Layer[] path = LayerUtils.getLayerPath(layer0, layer0);
-        assertNotNull(path);
-        assertEquals(1, path.length);
-        assertSame(layer0, path[0]);
+        Assert.assertNotNull(path);
+        Assert.assertEquals(1, path.length);
+        Assert.assertSame(layer0, path[0]);
 
         path = LayerUtils.getLayerPath(layer3, layer4);
-        assertNotNull(path);
-        assertEquals(2, path.length);
-        assertSame(layer3, path[0]);
-        assertSame(layer4, path[1]);
+        Assert.assertNotNull(path);
+        Assert.assertEquals(2, path.length);
+        Assert.assertSame(layer3, path[0]);
+        Assert.assertSame(layer4, path[1]);
 
         path = LayerUtils.getLayerPath(layer0, layer4);
-        assertNotNull(path);
-        assertEquals(3, path.length);
-        assertSame(layer0, path[0]);
-        assertSame(layer3, path[1]);
-        assertSame(layer4, path[2]);
+        Assert.assertNotNull(path);
+        Assert.assertEquals(3, path.length);
+        Assert.assertSame(layer0, path[0]);
+        Assert.assertSame(layer3, path[1]);
+        Assert.assertSame(layer4, path[2]);
 
         path = LayerUtils.getLayerPath(layer4, layer3);
-        assertNotNull(path);
-        assertEquals(0, path.length);
+        Assert.assertNotNull(path);
+        Assert.assertEquals(0, path.length);
 
-        assertEquals(3, treeModel.getChildCount(layer0));
-        assertSame(layer1, treeModel.getChild(layer0, 0));
-        assertSame(layer2, treeModel.getChild(layer0, 1));
-        assertSame(layer3, treeModel.getChild(layer0, 2));
+        Assert.assertEquals(3, treeModel.getChildCount(layer0));
+        Assert.assertSame(layer1, treeModel.getChild(layer0, 0));
+        Assert.assertSame(layer2, treeModel.getChild(layer0, 1));
+        Assert.assertSame(layer3, treeModel.getChild(layer0, 2));
 
-        assertEquals(0, treeModel.getChildCount(layer1));
-        assertEquals(0, treeModel.getChildCount(layer2));
-        assertEquals(2, treeModel.getChildCount(layer3));
-        assertSame(layer4, treeModel.getChild(layer3, 0));
-        assertSame(layer5, treeModel.getChild(layer3, 1));
+        Assert.assertEquals(0, treeModel.getChildCount(layer1));
+        Assert.assertEquals(0, treeModel.getChildCount(layer2));
+        Assert.assertEquals(2, treeModel.getChildCount(layer3));
+        Assert.assertSame(layer4, treeModel.getChild(layer3, 0));
+        Assert.assertSame(layer5, treeModel.getChild(layer3, 1));
 
 
         final MyTreeModelListener listener = new MyTreeModelListener();
         treeModel.addTreeModelListener(listener);
         final List<Layer> children = layer3.getChildren();
         children.remove(layer4);
-        assertEquals("treeStructureChanged;", listener.trace);
+        Assert.assertEquals("treeStructureChanged;", listener.trace);
     }
 
     private static class MyTreeModelListener implements TreeModelListener {

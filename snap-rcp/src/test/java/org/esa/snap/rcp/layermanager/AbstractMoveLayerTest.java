@@ -14,7 +14,7 @@
  * with this program; if not, see http://www.gnu.org/licenses/
  */
 
-package org.esa.beam.visat.toolviews.layermanager;
+package org.esa.snap.rcp.layermanager;
 
 import com.bc.ceres.glayer.CollectionLayer;
 import com.bc.ceres.glayer.Layer;
