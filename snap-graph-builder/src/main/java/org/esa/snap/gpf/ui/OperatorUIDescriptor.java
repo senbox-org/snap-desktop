@@ -21,9 +21,9 @@ package org.esa.snap.gpf.ui;
  */
 public interface OperatorUIDescriptor {
 
-    public String getId();
+    String getId();
 
-    public String getOperatorName();
+    String getOperatorName();
 
-    public OperatorUI createOperatorUI();
+    OperatorUI createOperatorUI();
 }

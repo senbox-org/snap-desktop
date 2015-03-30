@@ -16,25 +16,21 @@
 package org.esa.snap.gpf.ui;
 
 import com.bc.ceres.core.Assert;
-import com.bc.ceres.core.CoreException;
-import com.bc.ceres.core.runtime.ConfigurableExtension;
-import com.bc.ceres.core.runtime.ConfigurationElement;
-import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * Provides a standard implementation for {@link org.esa.beam.framework.ui.application.ToolViewDescriptor}.
+ * Provides a standard implementation for {@link org.esa.snap.gpf.ui.OperatorUIDescriptor}.
  */
-@XStreamAlias("toolView")
-public class DefaultOperatorUIDescriptor implements OperatorUIDescriptor, ConfigurableExtension {
+public class DefaultOperatorUIDescriptor implements OperatorUIDescriptor {
 
     private String id;
-    @XStreamAlias("operatorName")
     private String operatorName;
+    private Class<? extends OperatorUI> operatorUIClass;
 
-    @XStreamAlias("class")
-    private Class operatorUIClass;
-
-    public DefaultOperatorUIDescriptor() {
+    public DefaultOperatorUIDescriptor(final String id, final String operatorName,
+                                       final Class<? extends OperatorUI> operatorUIClass) {
+        this.id = id;
+        this.operatorName = operatorName;
+        this.operatorUIClass = operatorUIClass;
     }
 
     public String getId() {
@@ -55,9 +51,5 @@ public class DefaultOperatorUIDescriptor implements OperatorUIDescriptor, Config
         }
         Assert.state(object instanceof OperatorUI, "object instanceof operatorUI");
         return (OperatorUI) object;
-    }
-
-    @Override
-    public void configure(ConfigurationElement config) throws CoreException {
     }
 }

@@ -15,11 +15,15 @@
  */
 package org.esa.snap.gpf.ui;
 
-import com.bc.ceres.core.CoreException;
-import com.bc.ceres.core.runtime.Activator;
-import com.bc.ceres.core.runtime.ModuleContext;
-import org.esa.beam.BeamCoreActivator;
+import com.bc.ceres.core.Assert;
+import org.esa.beam.util.SystemUtils;
+import org.openide.filesystems.FileObject;
+import org.openide.filesystems.FileUtil;
+import org.openide.modules.ModuleInfo;
+import org.openide.util.Lookup;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,27 +31,19 @@ import java.util.Map;
 /**
  * An <code>OperatorUIRegistry</code> provides access to operator user interfaces as described by their OperatorUIDescriptor.
  */
-public class OperatorUIRegistry implements Activator {
+public class OperatorUIRegistry {
 
-    private static OperatorUIRegistry instance;
-    private Map<String, OperatorUIDescriptor> operatorUIDescriptors;
+    private static OperatorUIRegistry instance = null;
+    private final Map<String, OperatorUIDescriptor> operatorUIDescriptors = new HashMap<>();
 
     public OperatorUIRegistry() {
-        instance = this;
-    }
-
-    @Override
-    public void start(ModuleContext moduleContext) throws CoreException {
-        registerOperatorUIs(moduleContext);
-    }
-
-    @Override
-    public void stop(ModuleContext moduleContext) throws CoreException {
-        operatorUIDescriptors = null;
-        instance = null;
+        registerOperatorUIs();
     }
 
     public static OperatorUIRegistry getInstance() {
+        if(instance == null) {
+            instance = new OperatorUIRegistry();
+        }
         return instance;
     }
 
@@ -59,20 +55,89 @@ public class OperatorUIRegistry implements Activator {
         return operatorUIDescriptors.get(operatorName);
     }
 
-    private void registerOperatorUIs(ModuleContext moduleContext) {
-        List<OperatorUIDescriptor> operatorUIDescriptorList = BeamCoreActivator.loadExecutableExtensions(moduleContext,
-                "OperatorUIs",
-                "OperatorUI",
-                OperatorUIDescriptor.class);
-        operatorUIDescriptors = new HashMap<>(2 * operatorUIDescriptorList.size());
-        for (OperatorUIDescriptor operatorUIDescriptor : operatorUIDescriptorList) {
-            final String opName = operatorUIDescriptor.getOperatorName();
-            final OperatorUIDescriptor existingDescriptor = operatorUIDescriptors.get(opName);
-            if (existingDescriptor != null) {
-                moduleContext.getLogger().info(String.format("OperatorUI [%s] has been redeclared for [%s]!\n",
-                        operatorUIDescriptor.getId(), opName));
+    private void registerOperatorUIs() {
+        final FileObject[] files = FileUtil.getConfigFile("OperatorUIs").getChildren();
+        final List<FileObject> orderedFiles = FileUtil.getOrder(Arrays.asList(files), true);
+        for (FileObject file : orderedFiles) {
+            OperatorUIDescriptor operatorUIDescriptor = null;
+            try {
+                operatorUIDescriptor = createOperatorUIDescriptor(file);
+            } catch (Exception e) {
+                SystemUtils.LOG.severe(String.format("Failed to create operatorUI from layer.xml path '%s'", file.getPath()));
             }
-            operatorUIDescriptors.put(opName, operatorUIDescriptor);
+            if (operatorUIDescriptor != null) {
+                // must have only one operatorUI per operator
+                final OperatorUIDescriptor existingDescriptor = operatorUIDescriptors.get(operatorUIDescriptor.getOperatorName());
+                if (existingDescriptor != null) {
+                    SystemUtils.LOG.info(String.format("OperatorUI [%s] has been redeclared for [%s]!\n",
+                                                       operatorUIDescriptor.getId(), operatorUIDescriptor.getOperatorName()));
+                }
+
+                operatorUIDescriptors.put(operatorUIDescriptor.getOperatorName(), operatorUIDescriptor);
+                SystemUtils.LOG.info(String.format("New operatorUI added from layer.xml path '%s': %s",
+                                                   file.getPath(), operatorUIDescriptor.getOperatorName()));
+            }
         }
+    }
+
+    public static OperatorUIDescriptor createOperatorUIDescriptor(FileObject fileObject) {
+        final String id = fileObject.getName();
+        final String operatorName = (String) fileObject.getAttribute("operatorName");
+        final Class<? extends OperatorUI> operatorUIClass = getClassAttribute(fileObject, "operatorUIClass", OperatorUI.class, false);
+        Assert.argument(operatorName != null && !operatorName.isEmpty(), "Missing attribute 'operatorName'");
+        Assert.argument(operatorUIClass != null, "Attribute 'class' must be provided");
+
+        return new DefaultOperatorUIDescriptor(id, operatorName, operatorUIClass);
+    }
+
+    public static OperatorUI CreateOperatorUI(final String operatorName) {
+
+        final OperatorUIRegistry reg = OperatorUIRegistry.getInstance();
+        if (reg != null) {
+            OperatorUIDescriptor desc = reg.getOperatorUIDescriptor(operatorName);
+            if (desc != null) {
+                return desc.createOperatorUI();
+            }
+            desc = OperatorUIRegistry.getInstance().getOperatorUIDescriptor("DefaultUI");
+            if (desc != null) {
+                return desc.createOperatorUI();
+            }
+        }
+        return new DefaultUI();
+    }
+
+    public static <T> Class<T> getClassAttribute(FileObject fileObject,
+                                                 String attributeName,
+                                                 Class<T> expectedType,
+                                                 boolean required) {
+        String className = (String) fileObject.getAttribute(attributeName);
+        if (className == null || className.isEmpty()) {
+            if (required) {
+                throw new IllegalArgumentException(String.format("Missing attribute '%s' of type %s",
+                                                                 attributeName, expectedType.getName()));
+            }
+            return null;
+        }
+
+        Collection<? extends ModuleInfo> modules = Lookup.getDefault().lookupAll(ModuleInfo.class);
+        for (ModuleInfo module : modules) {
+            if (module.isEnabled()) {
+                try {
+                    Class<?> implClass = module.getClassLoader().loadClass(className);
+                    if (expectedType.isAssignableFrom(implClass)) {
+                        //noinspection unchecked
+                        return (Class<T>) implClass;
+                    } else {
+                        throw new IllegalArgumentException(String.format("Value %s of attribute '%s' must be a %s",
+                                                                         implClass.getName(),
+                                                                         attributeName,
+                                                                         expectedType.getName()));
+                    }
+                } catch (ClassNotFoundException e) {
+                    // it's ok, continue
+                }
+            }
+        }
+        return null;
     }
 }

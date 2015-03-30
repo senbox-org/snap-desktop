@@ -23,19 +23,26 @@ import org.esa.beam.framework.gpf.GPF;
 import org.esa.beam.framework.gpf.OperatorSpi;
 import org.esa.beam.framework.gpf.OperatorSpiRegistry;
 import org.esa.beam.framework.gpf.annotations.OperatorMetadata;
-import org.esa.beam.framework.gpf.graph.*;
+import org.esa.beam.framework.gpf.graph.Graph;
+import org.esa.beam.framework.gpf.graph.GraphContext;
+import org.esa.beam.framework.gpf.graph.GraphException;
+import org.esa.beam.framework.gpf.graph.GraphIO;
+import org.esa.beam.framework.gpf.graph.GraphProcessor;
+import org.esa.beam.framework.gpf.graph.Node;
 import org.esa.beam.framework.ui.BasicApp;
 import org.esa.beam.gpf.operators.standard.WriteOp;
 import org.esa.beam.util.io.BeamFileFilter;
 import org.esa.beam.util.io.FileUtils;
 import org.esa.beam.visat.VisatApp;
 import org.esa.snap.gpf.ReaderUtils;
-import org.esa.snap.gpf.ui.DefaultUI;
 import org.esa.snap.gpf.ui.OperatorUI;
-import org.esa.snap.gpf.ui.OperatorUIDescriptor;
 import org.esa.snap.gpf.ui.OperatorUIRegistry;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
@@ -140,25 +147,9 @@ public class GraphExecuter extends Observable {
         final GraphNode newGraphNode = new GraphNode(newNode);
         graphNodeList.add(newGraphNode);
 
-        newGraphNode.setOperatorUI(CreateOperatorUI(newGraphNode.getOperatorName()));
+        newGraphNode.setOperatorUI(OperatorUIRegistry.CreateOperatorUI(newGraphNode.getOperatorName()));
 
         return newGraphNode;
-    }
-
-    public static OperatorUI CreateOperatorUI(final String operatorName) {
-
-        final OperatorUIRegistry reg = OperatorUIRegistry.getInstance();
-        if (reg != null) {
-            OperatorUIDescriptor desc = reg.getOperatorUIDescriptor(operatorName);
-            if (desc != null) {
-                return desc.createOperatorUI();
-            }
-            desc = OperatorUIRegistry.getInstance().getOperatorUIDescriptor("DefaultUI");
-            if (desc != null) {
-                return desc.createOperatorUI();
-            }
-        }
-        return new DefaultUI();
     }
 
     public void removeOperator(final GraphNode node) {
@@ -337,7 +328,7 @@ public class GraphExecuter extends Observable {
                 graphNodeList.add(newGraphNode);
 
                 if (addUI) {
-                    OperatorUI ui = CreateOperatorUI(newGraphNode.getOperatorName());
+                    OperatorUI ui = OperatorUIRegistry.CreateOperatorUI(newGraphNode.getOperatorName());
                     if (ui == null) {
                         throw new GraphException("Unable to load " + newGraphNode.getOperatorName());
                     }

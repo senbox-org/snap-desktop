@@ -40,10 +40,10 @@ import org.esa.beam.framework.ui.BasicApp;
 import org.esa.beam.framework.ui.UIUtils;
 import org.esa.beam.gpf.operators.standard.WriteOp;
 import org.esa.beam.visat.VisatApp;
-import org.esa.snap.dat.graphbuilder.GraphExecuter;
 import org.esa.snap.db.CommonReaders;
 import org.esa.snap.gpf.ProgressMonitorList;
 import org.esa.snap.gpf.ui.OperatorUI;
+import org.esa.snap.gpf.ui.OperatorUIRegistry;
 import org.esa.snap.gpf.ui.UIValidation;
 import org.esa.snap.util.ImageUtils;
 import org.esa.snap.util.ProductFunctions;
@@ -113,7 +113,7 @@ public class SingleOperatorDialog extends SingleTargetProductDialog {
             sourceProductSelectorList.get(0).addSelectionChangeListener(productChangedHandler);
         }
 
-        opUI = GraphExecuter.CreateOperatorUI(operatorName);
+        opUI = OperatorUIRegistry.CreateOperatorUI(operatorName);
 
         addParameters();
 
