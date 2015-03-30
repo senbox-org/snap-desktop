@@ -32,10 +32,15 @@ import org.esa.beam.util.StringUtils;
 import javax.swing.AbstractButton;
 import javax.swing.DefaultListModel;
 import javax.swing.JCheckBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
+import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.BorderLayout;
@@ -44,7 +49,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A panel which performs the 'compute' action.
@@ -52,11 +58,11 @@ import java.awt.event.ItemListener;
  * @author Marco Zuehlke
  */
 class MultipleRoiComputePanel extends JPanel {
-
-    //todo remove/replace jide components
-
-
-//    private final QuickListFilterField maskNameSearchField;
+    private DefaultListModel<String> maskNameListModel;
+    private final JTextField maskNameSearchField;
+//    private List<Integer> indexInMaskNameList2;
+    private int[] indexesInMaskNameList2;
+    private int[] indexesInMaskNameList;
 
     interface ComputeMasks {
 
@@ -77,32 +83,32 @@ class MultipleRoiComputePanel extends JPanel {
     MultipleRoiComputePanel(final ComputeMasks method, final RasterDataNode rasterDataNode) {
         productNodeListener = new PNL();
 
-        DefaultListModel maskNameListModel = new DefaultListModel();
+        maskNameSearchField = new JTextField();
+        maskNameSearchField.setEnabled(false);
+        maskNameSearchField.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                updateMaskListState();
+            }
 
-//        maskNameSearchField = new QuickListFilterField(maskNameListModel);
-//        maskNameSearchField.setHintText("Filter masks here");
-//        maskNameSearchField.setPreferredSize(new Dimension(150, 21));
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                updateMaskListState();
+            }
 
-        maskNameList = new CheckBoxList();
-//        maskNameList = new CheckBoxList(maskNameSearchField.getDisplayListModel()) {
-//            @Override
-//            public int getNextMatch(String prefix, int startIndex, Position.Bias bias) {
-//                return -1;
-//            }
-//
-//            @Override
-//            public boolean isCheckBoxEnabled(int index) {
-//                return true;
-//            }
-//        };
-//        SearchableUtils.installSearchable(maskNameList);
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                updateMaskListState();
+            }
+        });
 
+        maskNameList = new CheckBoxList(new DefaultListModel());
         maskNameList.getCheckBoxListSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         maskNameList.getCheckBoxListSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 updateEnablement();
-//                refreshButton.setEnabled(true);
+                refreshButton.setEnabled(true);
                 if (!e.getValueIsAdjusting()) {
                     selectAndEnableCheckBoxes();
                 }
@@ -152,6 +158,9 @@ class MultipleRoiComputePanel extends JPanel {
         });
         topPanel.add(refreshButton, BorderLayout.WEST);
 
+        AbstractButton showMaskManagerButton = ToolButtonFactory.createButton(
+                UIUtils.loadImageIcon("icons/Table24.png"),
+                false);
 //        AbstractButton showMaskManagerButton = VisatApp.getApp().getCommandManager().getCommand("org.esa.beam.visat.toolviews.mask.MaskManagerToolView.showCmd").createToolBarButton();
 
         selectAllCheckBox = new JCheckBox("Select all");
@@ -182,16 +191,12 @@ class MultipleRoiComputePanel extends JPanel {
         GridBagConstraints multiRoiComputePanelConstraints = GridBagUtils.createConstraints("anchor=NORTHWEST,weightx=1");
         GridBagUtils.addToPanel(multiRoiComputePanel, topPanel, multiRoiComputePanelConstraints, "gridx=0,gridy=0,gridwidth=3");
         GridBagUtils.addToPanel(multiRoiComputePanel, new JSeparator(), multiRoiComputePanelConstraints, "gridy=1,fill=HORIZONTAL");
-//        GridBagUtils.addToPanel(multiRoiComputePanel, useRoiCheckBox, multiRoiComputePanelConstraints, "gridy=2");
-        GridBagUtils.addToPanel(multiRoiComputePanel, new JPanel(), multiRoiComputePanelConstraints, "gridy=2");
-//        GridBagUtils.addToPanel(multiRoiComputePanel, maskNameSearchField, multiRoiComputePanelConstraints, "gridy=3,weightx=0,gridwidth=2");
-        GridBagUtils.addToPanel(multiRoiComputePanel, new JPanel(), multiRoiComputePanelConstraints, "gridy=3,weightx=0,gridwidth=2");
-//        GridBagUtils.addToPanel(multiRoiComputePanel, showMaskManagerButton, multiRoiComputePanelConstraints, "gridy=3,gridx=2,weightx=0,gridwidth=1");
-        GridBagUtils.addToPanel(multiRoiComputePanel, new JPanel(), multiRoiComputePanelConstraints, "gridy=3,gridx=2,weightx=0,gridwidth=1");
-//        GridBagUtils.addToPanel(multiRoiComputePanel, new JScrollPane(maskNameList), multiRoiComputePanelConstraints, "gridy=4,gridx=0,fill=HORIZONTAL,gridwidth=3");
-        GridBagUtils.addToPanel(multiRoiComputePanel, new JPanel(), multiRoiComputePanelConstraints, "gridy=4,gridx=0,fill=HORIZONTAL,gridwidth=3");
-//        GridBagUtils.addToPanel(multiRoiComputePanel, checkBoxPanel, multiRoiComputePanelConstraints, "gridy=5,weighty=1,gridwidth=3");
-        GridBagUtils.addToPanel(multiRoiComputePanel, new JPanel(), multiRoiComputePanelConstraints, "gridy=5,weighty=1,gridwidth=3");
+        GridBagUtils.addToPanel(multiRoiComputePanel, useRoiCheckBox, multiRoiComputePanelConstraints, "gridy=2,weightx=0");
+        GridBagUtils.addToPanel(multiRoiComputePanel, new JLabel(("Filter: ")), multiRoiComputePanelConstraints, "gridy=3,gridx=0,gridwidth=1,anchor=WEST");
+        GridBagUtils.addToPanel(multiRoiComputePanel, maskNameSearchField, multiRoiComputePanelConstraints, "gridx=1,weightx=1");
+//        GridBagUtils.addToPanel(multiRoiComputePanel, showMaskManagerButton, multiRoiComputePanelConstraints, "gridy=3,gridx=2,weightx=0");
+        GridBagUtils.addToPanel(multiRoiComputePanel, new JScrollPane(maskNameList), multiRoiComputePanelConstraints, "gridy=4,gridx=0,fill=HORIZONTAL,gridwidth=3,anchor=NORTHWEST");
+        GridBagUtils.addToPanel(multiRoiComputePanel, checkBoxPanel, multiRoiComputePanelConstraints, "gridy=5,weighty=1,gridwidth=3");
         add(multiRoiComputePanel);
 
         setRaster(rasterDataNode);
@@ -214,7 +219,7 @@ class MultipleRoiComputePanel extends JPanel {
                     product.addProductNodeListener(productNodeListener);
                 }
             }
-            updateMaskListState();
+            resetMaskListState();
             refreshButton.setEnabled(raster != null);
         }
     }
@@ -233,48 +238,26 @@ class MultipleRoiComputePanel extends JPanel {
         return StringUtils.toStringArray(selectedValues);
     }
 
-    private void updateMaskListState() {
-
-        final DefaultListModel maskNameListModel = new DefaultListModel();
+    private void resetMaskListState() {
+        maskNameListModel = new DefaultListModel<String>();
         final String[] currentSelectedMaskNames = getSelectedMaskNames();
-
         if (product != null) {
             final ProductNodeGroup<Mask> maskGroup = product.getMaskGroup();
             final Mask[] masks = maskGroup.toArray(new Mask[maskGroup.getNodeCount()]);
             for (Mask mask : masks) {
                 maskNameListModel.addElement(mask.getName());
             }
+            maskNameList.setModel(maskNameListModel);
         }
-
-//        try {
-//            maskNameSearchField.setListModel(maskNameListModel);
-//            if (product != null) {
-//                maskNameList.setModel(maskNameSearchField.getDisplayListModel());
-//            }
-//        } catch (Throwable e) {
-
-            /*
-            We catch everything here, because there seems to be a bug in the combination of
-            JIDE QuickListFilterField and FilteredCheckBoxList:
-
-             java.lang.IndexOutOfBoundsException: bitIndex < 0: -1
-             	at java.util.BitSet.get(BitSet.java:441)
-             	at javax.swing.DefaultListSelectionModel.clear(DefaultListSelectionModel.java:257)
-             	at javax.swing.DefaultListSelectionModel.setState(DefaultListSelectionModel.java:567)
-             	at javax.swing.DefaultListSelectionModel.removeIndexInterval(DefaultListSelectionModel.java:635)
-             	at com.jidesoft.list.CheckBoxListSelectionModelWithWrapper.removeIndexInterval(Unknown Source)
-/             */
-//            Debug.trace(e);
-//        }
-
         final String[] allNames = StringUtils.toStringArray(maskNameListModel.toArray());
+        indexesInMaskNameList = new int[allNames.length];
         for (int i = 0; i < allNames.length; i++) {
             String name = allNames[i];
             if (StringUtils.contains(currentSelectedMaskNames, name)) {
                 maskNameList.getCheckBoxListSelectionModel().addSelectionInterval(i, i);
             }
+            indexesInMaskNameList[i] = i;
         }
-
         updateEnablement();
     }
 
@@ -282,11 +265,44 @@ class MultipleRoiComputePanel extends JPanel {
         boolean hasMasks = (product != null && product.getMaskGroup().getNodeCount() > 0);
         boolean canSelectMasks = hasMasks && useRoiCheckBox.isSelected();
         useRoiCheckBox.setEnabled(hasMasks);
-//        maskNameSearchField.setEnabled(canSelectMasks);
+        maskNameSearchField.setEnabled(canSelectMasks);
         maskNameList.setEnabled(canSelectMasks);
         selectAllCheckBox.setEnabled(canSelectMasks && maskNameList.getCheckBoxListSelectedIndices().length < maskNameList.getModel().getSize());
         selectNoneCheckBox.setEnabled(canSelectMasks && maskNameList.getCheckBoxListSelectedIndices().length > 0);
         refreshButton.setEnabled(raster != null);
+    }
+
+    private void updateMaskListState() {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                final String text = maskNameSearchField.getText();
+                final DefaultListModel<Object> updatedListModel = new DefaultListModel<>();
+                List<Boolean> selected = new ArrayList<>();
+                int[] newIndexesInMaskNameList = new int[maskNameListModel.getSize()];
+                int counter = 0;
+                for (int i = 0; i < maskNameListModel.getSize(); i++) {
+                    if (maskNameListModel.get(i).toLowerCase().contains(text.toLowerCase())) {
+                        updatedListModel.addElement(maskNameListModel.get(i));
+                        if (indexesInMaskNameList[i] >= 0) {
+                            selected.add(maskNameList.getCheckBoxListSelectionModel().isSelectedIndex(indexesInMaskNameList[i]));
+                        } else {
+                            selected.add(false);
+                        }
+                        newIndexesInMaskNameList[i] = counter++;
+                    } else {
+                        newIndexesInMaskNameList[i] = -1;
+                    }
+                }
+                indexesInMaskNameList = newIndexesInMaskNameList;
+                maskNameList.setModel(updatedListModel);
+                for (int i = 0; i < selected.size(); i++) {
+                    if (selected.get(i)) {
+                        maskNameList.getCheckBoxListSelectionModel().addSelectionInterval(i, i);
+                    }
+                }
+            }
+        });
     }
 
     private class PNL implements ProductNodeListener {
@@ -329,7 +345,7 @@ class MultipleRoiComputePanel extends JPanel {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        updateMaskListState();
+                        resetMaskListState();
                     }
                 });
             }
