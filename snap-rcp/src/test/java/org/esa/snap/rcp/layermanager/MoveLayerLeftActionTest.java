@@ -14,7 +14,7 @@
  * with this program; if not, see http://www.gnu.org/licenses/
  */
 
-package org.esa.beam.visat.toolviews.layermanager;
+package org.esa.snap.rcp.layermanager;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -26,7 +26,7 @@ import org.junit.Test;
  * @version $Revision: $ $Date: $
  * @since BEAM 4.6
  */
-public class MoveLayerUpActionTest extends AbstractMoveLayerTest {
+public class MoveLayerLeftActionTest extends AbstractMoveLayerTest {
 
 
     /*
@@ -41,56 +41,49 @@ public class MoveLayerUpActionTest extends AbstractMoveLayerTest {
                       |- layer7
        */
 
-    private MoveLayerUpAction layerUpAction;
+    private MoveLayerLeftAction layerLeftAction;
 
     @Override
     @Before
     public void setupTreeModel() {
         super.setupTreeModel();
-        layerUpAction = new MoveLayerUpAction(new DummyAppContext());
+        layerLeftAction = new MoveLayerLeftAction();
 
     }
 
     @Test
-    public void testMoveLayer1Up() {
-        layerUpAction.moveUp(layer1);      // Not possible it's already the first node
-
-        Assert.assertEquals(4, layer0.getChildren().size());
-        Assert.assertEquals(0, layer0.getChildIndex("layer1"));
-
-    }
-
-    @Test
-    public void testMoveLayer3Up() {
-        layerUpAction.moveUp(layer3);
-
-        Assert.assertEquals(2, layer3.getChildren().size());
-        Assert.assertEquals(4, layer0.getChildren().size());
-        Assert.assertEquals(0, layer0.getChildIndex("layer1"));
-        Assert.assertEquals(1, layer0.getChildIndex("layer3"));
-        Assert.assertEquals(2, layer0.getChildIndex("layer2"));
-    }
-
-    @Test
-    public void testMoveLayer5Up() {
-        layerUpAction.moveUp(layer5);
-
-        Assert.assertEquals(2, layer3.getChildren().size());
-        Assert.assertEquals(0, layer3.getChildIndex("layer5"));
-        Assert.assertEquals(1, layer3.getChildIndex("layer4"));
-
-    }
-
-    @Test
-    public void testMoveLayer6Up() {
-        layerUpAction.moveUp(layer6);
+    public void testMoveLayer2Left() {
+        layerLeftAction.moveLeft(layer2);   // Not possible; no parent to move to
 
         Assert.assertEquals(4, layer0.getChildren().size());
         Assert.assertEquals(0, layer0.getChildIndex("layer1"));
         Assert.assertEquals(1, layer0.getChildIndex("layer2"));
-        Assert.assertEquals(2, layer0.getChildIndex("layer6"));
-        Assert.assertEquals(3, layer0.getChildIndex("layer3"));
+        Assert.assertEquals(2, layer0.getChildIndex("layer3"));
+        Assert.assertEquals(3, layer0.getChildIndex("layer6"));
     }
 
+    @Test
+    public void testMoveLayer4Left() {
+        layerLeftAction.moveLeft(layer4);
+
+        Assert.assertEquals(5, layer0.getChildren().size());
+        Assert.assertEquals(0, layer0.getChildIndex("layer1"));
+        Assert.assertEquals(1, layer0.getChildIndex("layer2"));
+        Assert.assertEquals(2, layer0.getChildIndex("layer3"));
+        Assert.assertEquals(3, layer0.getChildIndex("layer4"));
+        Assert.assertEquals(4, layer0.getChildIndex("layer6"));
+    }
+
+    @Test
+    public void testMoveLayer7Left() {
+        layerLeftAction.moveLeft(layer7);
+
+        Assert.assertEquals(5, layer0.getChildren().size());
+        Assert.assertEquals(0, layer0.getChildIndex("layer1"));
+        Assert.assertEquals(1, layer0.getChildIndex("layer2"));
+        Assert.assertEquals(2, layer0.getChildIndex("layer3"));
+        Assert.assertEquals(3, layer0.getChildIndex("layer6"));
+        Assert.assertEquals(4, layer0.getChildIndex("layer7"));
+    }
 
 }
