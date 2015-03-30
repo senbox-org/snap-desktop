@@ -33,7 +33,7 @@ import org.esa.beam.framework.datamodel.TransectProfileDataBuilder;
 import org.esa.beam.framework.datamodel.VectorDataNode;
 import org.esa.beam.framework.dataop.barithm.BandArithmetic;
 import org.esa.beam.framework.ui.GridBagUtils;
-import org.esa.snap.rcp.nav.DefaultCursorSynchronizer;
+import org.esa.snap.rcp.sync.DefaultCursorSynchronizer;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
