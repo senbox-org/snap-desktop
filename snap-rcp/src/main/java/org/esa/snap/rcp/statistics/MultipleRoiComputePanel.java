@@ -60,8 +60,6 @@ import java.util.List;
 class MultipleRoiComputePanel extends JPanel {
     private DefaultListModel<String> maskNameListModel;
     private final JTextField maskNameSearchField;
-//    private List<Integer> indexInMaskNameList2;
-    private int[] indexesInMaskNameList2;
     private int[] indexesInMaskNameList;
 
     interface ComputeMasks {
@@ -158,9 +156,7 @@ class MultipleRoiComputePanel extends JPanel {
         });
         topPanel.add(refreshButton, BorderLayout.WEST);
 
-        AbstractButton showMaskManagerButton = ToolButtonFactory.createButton(
-                UIUtils.loadImageIcon("icons/Table24.png"),
-                false);
+        //todo enable showMaskManagerButton
 //        AbstractButton showMaskManagerButton = VisatApp.getApp().getCommandManager().getCommand("org.esa.beam.visat.toolviews.mask.MaskManagerToolView.showCmd").createToolBarButton();
 
         selectAllCheckBox = new JCheckBox("Select all");
