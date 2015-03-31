@@ -17,6 +17,7 @@ package org.esa.snap.dat.graphbuilder;
 
 import org.esa.beam.framework.gpf.graph.GraphException;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.List;
@@ -32,6 +33,7 @@ import static org.junit.Assert.*;
  * @version 1.0
  * @since 12/21/2007
  */
+@Ignore
 public class TestGraphExecuter implements Observer {
 
     private GraphExecuter graphEx;
