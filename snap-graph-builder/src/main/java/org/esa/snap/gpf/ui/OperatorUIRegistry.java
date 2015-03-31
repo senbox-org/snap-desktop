@@ -56,7 +56,12 @@ public class OperatorUIRegistry {
     }
 
     private void registerOperatorUIs() {
-        final FileObject[] files = FileUtil.getConfigFile("OperatorUIs").getChildren();
+        FileObject fileObj = FileUtil.getConfigFile("OperatorUIs");
+        if(fileObj == null) {
+            SystemUtils.LOG.warning("No operatorUIs found.");
+            return;
+        }
+        final FileObject[] files = fileObj.getChildren();
         final List<FileObject> orderedFiles = FileUtil.getOrder(Arrays.asList(files), true);
         for (FileObject file : orderedFiles) {
             OperatorUIDescriptor operatorUIDescriptor = null;
