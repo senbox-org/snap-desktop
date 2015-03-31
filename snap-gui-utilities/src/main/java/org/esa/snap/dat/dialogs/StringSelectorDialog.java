@@ -16,7 +16,7 @@
 package org.esa.snap.dat.dialogs;
 
 import org.esa.beam.framework.ui.ModalDialog;
-import org.esa.beam.visat.VisatApp;
+import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.util.DialogUtils;
 
 import javax.swing.*;
@@ -34,7 +34,7 @@ public class StringSelectorDialog extends ModalDialog {
     private boolean ok = false;
 
     public StringSelectorDialog(final String title, final String[] itemNames) {
-        super(VisatApp.getApp().getMainFrame(), title, ModalDialog.ID_OK_CANCEL, null);
+        super(SnapApp.getDefault().getMainFrame(), title, ModalDialog.ID_OK_CANCEL, null);
 
         final JPanel content = new JPanel(new GridBagLayout());
         final GridBagConstraints gbc = DialogUtils.createGridBagConstraints();

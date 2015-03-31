@@ -17,7 +17,7 @@ package org.esa.snap.dat.dialogs;
 
 import org.esa.beam.framework.ui.GridBagUtils;
 import org.esa.beam.framework.ui.ModalDialog;
-import org.esa.beam.visat.VisatApp;
+import org.esa.snap.rcp.SnapApp;
 
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
@@ -35,7 +35,7 @@ public class PromptDialog extends ModalDialog {
     private boolean ok = false;
 
     public PromptDialog(String title, String label, String defaultValue, boolean textArea) {
-        super(VisatApp.getApp().getMainFrame(), title, ModalDialog.ID_OK_CANCEL, null);
+        super(SnapApp.getDefault().getMainFrame(), title, ModalDialog.ID_OK_CANCEL, null);
 
         final JPanel content = GridBagUtils.createPanel();
         final GridBagConstraints gbc = new GridBagConstraints();

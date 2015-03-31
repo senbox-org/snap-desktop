@@ -22,9 +22,9 @@ import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.io.WKTReader;
 import org.esa.beam.framework.datamodel.GeoPos;
 import org.esa.beam.framework.ui.AppContext;
-import org.esa.beam.visat.VisatApp;
-import org.esa.snap.gpf.ui.worldmap.WorldMapUI;
 import org.esa.snap.gpf.ui.worldmap.NestWorldMapPane;
+import org.esa.snap.gpf.ui.worldmap.WorldMapUI;
+import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.util.DialogUtils;
 
 import javax.swing.*;
@@ -286,7 +286,7 @@ public class SubsetUI extends BaseOperatorUI {
             worldMapUI.getWorlMapPane().revalidate();
             worldMapUI.getWorlMapPane().getLayerCanvas().updateUI();
         } catch (Exception e) {
-            VisatApp.getApp().showErrorDialog(e.getMessage());
+            SnapApp.getDefault().handleError("UpdateGeoRegion error reading wkt", e);
         }
     }
 }

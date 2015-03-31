@@ -15,14 +15,13 @@
  */
 package org.esa.snap.dat.dialogs;
 
-import org.esa.beam.framework.dataio.ProductIO;
 import org.esa.beam.framework.datamodel.MetadataElement;
 import org.esa.beam.framework.datamodel.Product;
-import org.esa.beam.visat.VisatApp;
 import org.esa.snap.datamodel.AbstractMetadata;
 import org.esa.snap.db.CommonReaders;
 import org.esa.snap.db.ProductEntry;
 import org.esa.snap.gpf.OperatorUtils;
+import org.esa.snap.rcp.SnapApp;
 
 import java.io.File;
 import java.io.IOException;
@@ -89,7 +88,7 @@ public class FileModel extends BaseFileModel implements FileTableModel {
         }
 
         private Product getProductFromProductManager(final File file) {
-            final VisatApp app = VisatApp.getApp();
+            final SnapApp app = SnapApp.getDefault();
             if(app != null) {
                 final Product[] products = app.getProductManager().getProducts();
                 for(Product p : products) {

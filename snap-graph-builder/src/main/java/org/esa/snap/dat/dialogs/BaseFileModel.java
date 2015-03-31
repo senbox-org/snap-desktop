@@ -15,11 +15,12 @@
  */
 package org.esa.snap.dat.dialogs;
 
-import org.esa.beam.visat.VisatApp;
 import org.esa.snap.db.ProductDB;
 import org.esa.snap.db.ProductEntry;
+import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.rcp.SnapDialogs;
 
-import javax.swing.SwingWorker;
+import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumnModel;
 import java.io.File;
@@ -55,8 +56,8 @@ public abstract class BaseFileModel extends AbstractTableModel implements FileTa
         try {
             return ProductDB.instance().getProductEntry(file);
         } catch (Exception e) {
-            if (VisatApp.getApp() != null) {
-                VisatApp.getApp().showErrorDialog(e.getMessage());
+            if (SnapApp.getDefault() != null) {
+                SnapDialogs.showError("Error getting product entry: "+e.getMessage());
             }
         }
         return null;

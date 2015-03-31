@@ -15,8 +15,9 @@
  */
 package org.esa.snap.dat.dialogs;
 
-import org.esa.beam.visat.VisatApp;
 import org.esa.snap.db.ProductEntry;
+import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.util.ClipboardUtils;
 import org.esa.snap.util.ProductFunctions;
 
@@ -123,8 +124,8 @@ public class FileTable extends JTable {
                 setFiles(fileList);
             }
         } catch (Exception e) {
-            if (VisatApp.getApp() != null) {
-                VisatApp.getApp().showErrorDialog("Unable to paste from clipboard: " + e.getMessage());
+            if (SnapApp.getDefault() != null) {
+                SnapDialogs.showError("Unable to paste from clipboard: "+e.getMessage());
             }
         }
     }

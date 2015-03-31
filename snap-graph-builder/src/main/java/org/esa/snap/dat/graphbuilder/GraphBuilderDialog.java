@@ -29,6 +29,8 @@ import org.esa.snap.db.CommonReaders;
 import org.esa.snap.gpf.ProductSetReaderOpUI;
 import org.esa.snap.gpf.ui.SourceUI;
 import org.esa.snap.gpf.ui.UIValidation;
+import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.util.*;
 
 import javax.swing.*;
@@ -88,10 +90,10 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer {
         graphEx = new GraphExecuter();
         graphEx.addObserver(this);
 
-        String lastDir = VisatApp.getApp().getPreferences().getPropertyString(LAST_GRAPH_PATH,
-                ResourceUtils.getGraphFolder("").getAbsolutePath());
+        String lastDir = SnapApp.getDefault().getPreferences().get(LAST_GRAPH_PATH,
+                                                                   ResourceUtils.getGraphFolder("").getAbsolutePath());
         if (new File(lastDir).exists()) {
-            VisatApp.getApp().getPreferences().setPropertyString(LAST_GRAPH_PATH, lastDir);
+            SnapApp.getDefault().getPreferences().put(LAST_GRAPH_PATH, lastDir);
         }
 
         initUI();
@@ -481,7 +483,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer {
             return false;
         } else if (!warningStr.isEmpty()) {
             if (warningStr.length() > 100 && !warningStr.equals(lastWarningMsg)) {
-                VisatApp.getApp().showWarningDialog(warningStr);
+                SnapDialogs.showWarning(warningStr);
                 lastWarningMsg = warningStr;
             } else {
                 statusLabel.setForeground(new Color(0, 100, 255));

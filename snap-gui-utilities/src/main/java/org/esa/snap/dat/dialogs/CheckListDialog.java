@@ -16,7 +16,7 @@
 package org.esa.snap.dat.dialogs;
 
 import org.esa.beam.framework.ui.ModalDialog;
-import org.esa.beam.visat.VisatApp;
+import org.esa.snap.rcp.SnapApp;
 
 import javax.swing.*;
 import java.awt.*;
@@ -39,7 +39,7 @@ public class CheckListDialog extends ModalDialog {
     }
 
     public CheckListDialog(final String title, final Map<String, Boolean> items, final boolean singleSelection) {
-        super(VisatApp.getApp().getMainFrame(), title, ModalDialog.ID_OK, null);
+        super(SnapApp.getDefault().getMainFrame(), title, ModalDialog.ID_OK, null);
         this.items = items;
         this.singleSelection = singleSelection;
 

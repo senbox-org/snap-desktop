@@ -23,7 +23,6 @@ import org.esa.beam.framework.ui.AppContext;
 import org.esa.beam.framework.ui.ModelessDialog;
 import org.esa.beam.util.io.FileChooserFactory;
 import org.esa.beam.util.io.FileUtils;
-import org.esa.beam.visat.VisatApp;
 import org.esa.snap.dat.graphbuilder.GraphBuilderDialog;
 import org.esa.snap.dat.graphbuilder.GraphExecuter;
 import org.esa.snap.dat.graphbuilder.GraphNode;
@@ -31,6 +30,7 @@ import org.esa.snap.dat.graphbuilder.ProgressBarProgressMonitor;
 import org.esa.snap.db.CommonReaders;
 import org.esa.snap.db.ProductEntry;
 import org.esa.snap.gpf.ProcessTimeMonitor;
+import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.util.MemUtils;
 import org.esa.snap.util.ResourceUtils;
 
@@ -242,12 +242,11 @@ public class BatchGraphDialog extends ModelessDialog {
     }
 
     private static String getPref(final String id, final String defaultStr) {
-        return VisatApp.getApp().getPreferences().getPropertyString(id, defaultStr);
+        return SnapApp.getDefault().getPreferences().get(id, defaultStr);
     }
 
     private static void setPref(final String id, final String value) {
-        VisatApp.getApp().getPreferences().setPropertyString(id, value);
-        VisatApp.getApp().savePreferences();
+        SnapApp.getDefault().getPreferences().put(id, value);
     }
 
     @Override

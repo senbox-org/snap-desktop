@@ -20,8 +20,7 @@ import org.esa.snap.dat.graphbuilder.GraphBuilderDialog;
 
 import java.io.File;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Map;
 
 /**
  * <p>An action which creates a graph builder dialog for a graph given by the
@@ -33,9 +32,18 @@ import java.util.Set;
  */
 public class GraphAction extends OperatorAction {
 
-    protected static final Set<String> KNOWN_KEYS = new HashSet<>(Arrays.asList("graphFile", "enableEditing"));
     static {
-        KNOWN_KEYS.addAll(OperatorAction.KNOWN_KEYS);
+        KNOWN_KEYS.addAll(Arrays.asList("graphFile", "enableEditing"));
+    }
+
+    public static GraphAction create(Map<String, Object> properties) {
+        GraphAction action = new GraphAction();
+        for (Map.Entry<String, Object> entry : properties.entrySet()) {
+            if (KNOWN_KEYS.contains(entry.getKey())) {
+                action.putValue(entry.getKey(), entry.getValue());
+            }
+        }
+        return action;
     }
 
     public String getGraphFileName() {

@@ -1,10 +1,11 @@
 package org.esa.snap.util;
 
 import org.esa.beam.framework.ui.BasicApp;
+import org.esa.beam.util.SystemUtils;
 import org.esa.beam.util.io.BeamFileChooser;
 import org.esa.beam.util.io.BeamFileFilter;
 import org.esa.beam.util.io.FileUtils;
-import org.esa.beam.visat.VisatApp;
+import org.esa.snap.rcp.SnapApp;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
@@ -37,12 +38,33 @@ public class FileFolderUtils {
         if (!extension.isEmpty()) {
             fileFilter = new BeamFileFilter(formatName, extension, description);
         }
-        File file;
+        File file = null;
         if (isSave) {
-            file = VisatApp.getApp().showFileSaveDialog(title, false, fileFilter, '.' + extension, fileName,
-                    lastDirPropertyKey);
+            final String lastDir = SnapApp.getDefault().getPreferences().get(
+                    lastDirPropertyKey, SystemUtils.getUserHomeDir().getPath());
+            final File currentDir = new File(lastDir);
+
+            final BeamFileChooser fileChooser = new BeamFileChooser();
+            fileChooser.setCurrentDirectory(currentDir);
+            fileChooser.addChoosableFileFilter(new BeamFileFilter(formatName, extension, description));
+            fileChooser.setAcceptAllFileFilterUsed(false);
+
+            fileChooser.setDialogTitle("Save");
+            fileChooser.setCurrentFilename(fileName);
+            fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+
+            final int result = fileChooser.showSaveDialog(SnapApp.getDefault().getMainFrame());
+            if(result == JFileChooser.APPROVE_OPTION) {
+                file = fileChooser.getSelectedFile();
+
+                final File currentDirectory = fileChooser.getCurrentDirectory();
+                if (currentDirectory != null) {
+                    SnapApp.getDefault().getPreferences().put(
+                            lastDirPropertyKey, currentDirectory.getPath());
+                }
+            }
         } else {
-            String lastDir = VisatApp.getApp().getPreferences().getPropertyString(lastDirPropertyKey, defaultPath);
+            String lastDir = SnapApp.getDefault().getPreferences().get(lastDirPropertyKey, defaultPath);
             if (fileName == null)
                 file = showFileOpenDialog(title, false, fileFilter, lastDir, lastDirPropertyKey);
             else
@@ -72,13 +94,13 @@ public class FileFolderUtils {
         if (fileFilter != null) {
             fileChooser.setFileFilter(fileFilter);
         }
-        fileChooser.setDialogTitle(VisatApp.getApp().getAppName() + " - " + title);
+        fileChooser.setDialogTitle(title);
         fileChooser.setFileSelectionMode(dirsOnly ? JFileChooser.DIRECTORIES_ONLY : JFileChooser.FILES_ONLY);
-        int result = fileChooser.showOpenDialog(VisatApp.getApp().getMainFrame());
+        int result = fileChooser.showOpenDialog(SnapApp.getDefault().getMainFrame());
         if (fileChooser.getCurrentDirectory() != null) {
             final String lastDirPath = fileChooser.getCurrentDirectory().getAbsolutePath();
             if (lastDirPath != null) {
-                VisatApp.getApp().getPreferences().setPropertyString(lastDirPropertyKey, lastDirPath);
+                SnapApp.getDefault().getPreferences().put(lastDirPropertyKey, lastDirPath);
             }
         }
         if (result == JFileChooser.APPROVE_OPTION) {

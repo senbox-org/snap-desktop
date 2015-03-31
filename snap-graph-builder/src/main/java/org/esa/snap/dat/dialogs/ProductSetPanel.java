@@ -21,9 +21,9 @@ import org.esa.beam.framework.ui.AppContext;
 import org.esa.beam.framework.ui.BasicApp;
 import org.esa.beam.util.SystemUtils;
 import org.esa.beam.util.io.FileChooserFactory;
-import org.esa.beam.visat.VisatApp;
 import org.esa.snap.db.DBSearch;
 import org.esa.snap.db.ProductEntry;
+import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.util.DialogUtils;
 import org.esa.snap.util.ProductFunctions;
 
@@ -137,7 +137,7 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
             clearButton.setEnabled(enableButtons);
 
         if (addAllOpenButton != null) {
-            addAllOpenButton.setEnabled(VisatApp.getApp().getProductManager().getProducts().length > 0);
+            addAllOpenButton.setEnabled(SnapApp.getDefault().getProductManager().getProducts().length > 0);
         }
 
         String cntMsg = "";
@@ -172,7 +172,7 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
         addAllOpenButton.addActionListener(new ActionListener() {
 
             public void actionPerformed(final ActionEvent e) {
-                final Product[] products = VisatApp.getApp().getProductManager().getProducts();
+                final Product[] products = SnapApp.getDefault().getProductManager().getProducts();
                 for (Product prod : products) {
                     final File file = prod.getFileLocation();
                     if (file != null && file.exists()) {
@@ -292,16 +292,16 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
     private static File[] GetFilePath(Component component, String title) {
 
         File[] files = null;
-        final File openDir = new File(VisatApp.getApp().getPreferences().
-                getPropertyString(BasicApp.PROPERTY_KEY_APP_LAST_OPEN_DIR, "."));
+        final File openDir = new File(SnapApp.getDefault().getPreferences().
+                get(BasicApp.PROPERTY_KEY_APP_LAST_OPEN_DIR, "."));
         final JFileChooser chooser = FileChooserFactory.getInstance().createFileChooser(openDir);
         chooser.setMultiSelectionEnabled(true);
         chooser.setDialogTitle(title);
         if (chooser.showDialog(component, "ok") == JFileChooser.APPROVE_OPTION) {
             files = chooser.getSelectedFiles();
 
-            VisatApp.getApp().getPreferences().
-                    setPropertyString(BasicApp.PROPERTY_KEY_APP_LAST_OPEN_DIR, chooser.getCurrentDirectory().getAbsolutePath());
+            SnapApp.getDefault().getPreferences().
+                    put(BasicApp.PROPERTY_KEY_APP_LAST_OPEN_DIR, chooser.getCurrentDirectory().getAbsolutePath());
         }
         return files;
     }

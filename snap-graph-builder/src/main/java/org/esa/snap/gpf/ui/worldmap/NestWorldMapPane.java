@@ -29,7 +29,7 @@ import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.ui.ButtonOverlayControl;
 import org.esa.beam.framework.ui.UIUtils;
 import org.esa.beam.util.ProductUtils;
-import org.esa.beam.visat.VisatApp;
+import org.esa.snap.rcp.SnapApp;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 
 import javax.swing.*;
@@ -38,7 +38,12 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
-import java.awt.geom.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Area;
+import java.awt.geom.GeneralPath;
+import java.awt.geom.PathIterator;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -91,7 +96,7 @@ public class NestWorldMapPane extends JPanel {
 
             setNavControlVisible(true);
         } catch (Exception e) {
-            VisatApp.getApp().showErrorDialog("Error in worldmap initialization: "+e.getMessage());
+            SnapApp.getDefault().handleError("Error in worldmap initialization", e);
         }
 
     }

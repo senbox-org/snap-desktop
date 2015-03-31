@@ -15,7 +15,11 @@
  */
 package org.esa.snap.dat.dialogs;
 
-import com.bc.ceres.binding.*;
+import com.bc.ceres.binding.Property;
+import com.bc.ceres.binding.PropertyDescriptor;
+import com.bc.ceres.binding.PropertySet;
+import com.bc.ceres.binding.ValidationException;
+import com.bc.ceres.binding.ValueSet;
 import com.bc.ceres.core.SubProgressMonitor;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
@@ -34,17 +38,22 @@ import org.esa.beam.framework.gpf.experimental.Output;
 import org.esa.beam.framework.gpf.internal.OperatorExecutor;
 import org.esa.beam.framework.gpf.internal.OperatorProductReader;
 import org.esa.beam.framework.gpf.internal.RasterDataNodeValues;
-import org.esa.beam.framework.gpf.ui.*;
+import org.esa.beam.framework.gpf.ui.DefaultIOParametersPanel;
+import org.esa.beam.framework.gpf.ui.OperatorMenu;
+import org.esa.beam.framework.gpf.ui.OperatorParameterSupport;
+import org.esa.beam.framework.gpf.ui.SingleTargetProductDialog;
+import org.esa.beam.framework.gpf.ui.SourceProductSelector;
+import org.esa.beam.framework.gpf.ui.TargetProductSelectorModel;
 import org.esa.beam.framework.ui.AppContext;
 import org.esa.beam.framework.ui.BasicApp;
 import org.esa.beam.framework.ui.UIUtils;
 import org.esa.beam.gpf.operators.standard.WriteOp;
-import org.esa.beam.visat.VisatApp;
 import org.esa.snap.db.CommonReaders;
 import org.esa.snap.gpf.ProgressMonitorList;
 import org.esa.snap.gpf.ui.OperatorUI;
 import org.esa.snap.gpf.ui.OperatorUIRegistry;
 import org.esa.snap.gpf.ui.UIValidation;
+import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.util.ImageUtils;
 import org.esa.snap.util.ProductFunctions;
 
@@ -53,7 +62,10 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -209,7 +221,7 @@ public class SingleOperatorDialog extends SingleTargetProductDialog {
         final List<SourceProductSelector> sourceProductSelectorList = ioParametersPanel.getSourceProductSelectorList();
 
         if (sourceProductSelectorList.isEmpty()) {
-            VisatApp.getApp().showErrorDialog("SourceProduct @Parameter not found in operator");
+            SnapDialogs.showError("SourceProduct @Parameter not found in operator");
         } else {
 
             sourceProductSelectorList.get(0).addSelectionChangeListener(new AbstractSelectionChangeListener() {
@@ -247,10 +259,10 @@ public class SingleOperatorDialog extends SingleTargetProductDialog {
         if (validation.getState() == UIValidation.State.WARNING) {
             final String msg = "Warning: " + validation.getMsg() +
                     "\n\nWould you like to continue?";
-            return VisatApp.getApp().showQuestionDialog(msg, null) == 0;
+            return SnapDialogs.requestDecision("Warning", msg, false, null) == SnapDialogs.Answer.YES;
         } else if (validation.getState() == UIValidation.State.ERROR) {
             final String msg = "Error: " + validation.getMsg();
-            VisatApp.getApp().showErrorDialog(msg);
+            SnapDialogs.showError(msg);
             return false;
         }
         return true;
