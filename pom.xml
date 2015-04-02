@@ -22,8 +22,6 @@
     </properties>
 
     <modules>
-        <module>ceres-glayer-ui</module>
-
         <module>snap-application</module>
         <module>snap-branding</module>
         <module>snap-rcp</module>
