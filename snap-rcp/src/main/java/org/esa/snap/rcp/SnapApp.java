@@ -3,7 +3,6 @@ package org.esa.snap.rcp;
 import com.bc.ceres.core.ExtensionFactory;
 import com.bc.ceres.core.ExtensionManager;
 import com.bc.ceres.jai.operator.ReinterpretDescriptor;
-import org.esa.beam.BeamCoreActivator;
 import org.esa.beam.framework.dataio.ProductReader;
 import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.datamodel.ProductManager;
@@ -24,6 +23,7 @@ import org.esa.snap.tango.TangoIcons;
 import org.openide.awt.NotificationDisplayer;
 import org.openide.awt.StatusDisplayer;
 import org.openide.awt.UndoRedo;
+import org.openide.modules.ModuleInfo;
 import org.openide.modules.OnStart;
 import org.openide.modules.OnStop;
 import org.openide.util.ContextGlobalProvider;
@@ -57,8 +57,8 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
@@ -387,20 +387,19 @@ public class SnapApp {
     }
 
     private static void initImageIO() {
-        ClassLoader classLoader = BeamCoreActivator.class.getClassLoader();
-        loadIIOSPIs(ImageReaderSpi.class, classLoader);
-        loadIIOSPIs(ImageWriterSpi.class, classLoader);
-    }
+        // todo - actually this should be done in the activator of ceres-jai which does not exist yet
+        Lookup.Result<ModuleInfo> moduleInfos = Lookup.getDefault().lookupResult(ModuleInfo.class);
+        String ceresJaiCodeName = "org.esa.snap.ceres.jai";
+        Optional<? extends ModuleInfo> info = moduleInfos.allInstances().stream().filter(
+                moduleInfo -> ceresJaiCodeName.equals(moduleInfo.getCodeName())).findFirst();
 
-    private static <T> void loadIIOSPIs(Class<T> providerClass, ClassLoader classLoader) {
-        IIORegistry iioRegistry = IIORegistry.getDefaultInstance();
-        Iterator<T> spis = IIORegistry.lookupProviders(providerClass, classLoader);
-        while (spis.hasNext()) {
-            T provider = spis.next();
-            if (!iioRegistry.contains(provider)) {
-                iioRegistry.registerServiceProvider(provider, providerClass);
-                LOG.log(Level.INFO, String.format("Registered  %s = %s", providerClass.getSimpleName(), provider.getClass().getName()));
-            }
+        if (info.isPresent()) {
+            ClassLoader classLoader = info.get().getClassLoader();
+            IIORegistry iioRegistry = IIORegistry.getDefaultInstance();
+            iioRegistry.registerServiceProviders(IIORegistry.lookupProviders(ImageReaderSpi.class, classLoader));
+            iioRegistry.registerServiceProviders(IIORegistry.lookupProviders(ImageWriterSpi.class, classLoader));
+        }else {
+            LOG.warning(String.format("Module '%s' not found. Not able to load image-IO services.", ceresJaiCodeName));
         }
     }
 
