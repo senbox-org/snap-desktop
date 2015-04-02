@@ -14,9 +14,8 @@
  * with this program; if not, see http://www.gnu.org/licenses/
  */
 
-package org.esa.beam.visat.toolviews.mask;
+package org.esa.snap.rcp.mask;
 
-import com.jidesoft.utils.Lm;
 import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.datamodel.ProductNodeEvent;
 import org.esa.beam.framework.datamodel.ProductNodeListenerAdapter;
@@ -42,10 +41,6 @@ public class MaskApplicationTest {
 
     private Product selectedProduct;
     private RasterDataNode selectedBand;
-
-    static {
-        Lm.verifyLicense("Brockmann Consult", "BEAM", "lCzfhklpZ9ryjomwWxfdupxIcuIoCxg2");
-    }
 
     @Ignore
     @Test

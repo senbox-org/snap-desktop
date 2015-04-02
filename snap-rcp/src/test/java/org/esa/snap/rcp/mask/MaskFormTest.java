@@ -14,9 +14,8 @@
  * with this program; if not, see http://www.gnu.org/licenses/
  */
 
-package org.esa.beam.visat.toolviews.mask;
+package org.esa.snap.rcp.mask;
 
-import com.jidesoft.utils.Lm;
 import junit.framework.TestCase;
 import org.esa.beam.framework.datamodel.Band;
 import org.esa.beam.framework.datamodel.Mask;
@@ -33,10 +32,6 @@ public class MaskFormTest extends TestCase {
     private Product product;
     private MaskManagerForm maskManagerForm;
     private MaskViewerForm maskViewerForm;
-
-    static {
-        Lm.verifyLicense("Brockmann Consult", "BEAM", "lCzfhklpZ9ryjomwWxfdupxIcuIoCxg2");
-    }
 
     @Override
     public void setUp() {

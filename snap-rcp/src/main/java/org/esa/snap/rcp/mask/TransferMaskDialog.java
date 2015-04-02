@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, see http://www.gnu.org/licenses/
  */
-package org.esa.beam.visat.toolviews.mask;
+package org.esa.snap.rcp.mask;
 
 import com.bc.ceres.swing.TableLayout;
 import org.esa.beam.framework.datamodel.GeoCoding;

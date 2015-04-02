@@ -14,21 +14,22 @@
  * with this program; if not, see http://www.gnu.org/licenses/
  */
 
-package org.esa.beam.visat.toolviews.mask;
+package org.esa.snap.rcp.mask;
 
 import org.esa.beam.framework.datamodel.Mask;
 import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.datamodel.ProductNodeGroup;
 import org.esa.beam.framework.ui.UIUtils;
 import org.esa.beam.framework.ui.tool.ToolButtonFactory;
-import org.esa.beam.util.PropertyMap;
-import org.esa.beam.visat.VisatApp;
+import org.esa.beam.util.StringUtils;
+import org.esa.snap.rcp.SnapApp;
 
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import java.net.URL;
+import java.util.prefs.Preferences;
 
 /**
  * @author Marco Peters
@@ -80,15 +81,10 @@ abstract class MaskAction extends AbstractAction {
                                    product.getSceneRasterWidth(),
                                    product.getSceneRasterHeight(),
                                    type);
-        final VisatApp visatApp = VisatApp.getApp();
-        if(visatApp != null) {
-            final PropertyMap preferences = visatApp.getPreferences();
-            mask.setImageColor(preferences.getPropertyColor("mask.color",
-                                                            Mask.ImageType.DEFAULT_COLOR));
-            mask.setImageTransparency(preferences.getPropertyDouble("mask.transparency",
-                                                                    Mask.ImageType.DEFAULT_TRANSPARENCY));
-        }
-
+        final Preferences preferences = SnapApp.getDefault().getPreferences();
+        mask.setImageColor(
+                StringUtils.parseColor(preferences.get("mask.color", StringUtils.formatColor(Mask.ImageType.DEFAULT_COLOR))));
+        mask.setImageTransparency(preferences.getDouble("mask.transparency", Mask.ImageType.DEFAULT_TRANSPARENCY));
         return mask;
     }
 

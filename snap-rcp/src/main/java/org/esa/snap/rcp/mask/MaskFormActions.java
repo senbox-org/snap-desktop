@@ -14,7 +14,7 @@
  * with this program; if not, see http://www.gnu.org/licenses/
  */
 
-package org.esa.beam.visat.toolviews.mask;
+package org.esa.snap.rcp.mask;
 
 import com.bc.ceres.binding.Property;
 import com.bc.ceres.binding.PropertyContainer;
@@ -33,7 +33,6 @@ import org.esa.beam.framework.datamodel.VectorDataNode;
 import org.esa.beam.framework.dataop.barithm.BandArithmetic;
 import org.esa.beam.framework.gpf.GPF;
 import org.esa.beam.framework.ui.AbstractDialog;
-import org.esa.beam.framework.ui.application.support.AbstractToolView;
 import org.esa.beam.framework.ui.product.ProductExpressionPane;
 import org.esa.beam.framework.ui.product.ProductSceneView;
 import org.esa.beam.util.PropertyMap;
@@ -41,15 +40,16 @@ import org.esa.beam.util.StringUtils;
 import org.esa.beam.util.io.BeamFileChooser;
 import org.esa.beam.util.io.BeamFileFilter;
 import org.esa.beam.util.io.FileUtils;
-import org.esa.beam.visat.VisatApp;
-import org.esa.beam.visat.actions.CreateVectorDataNodeAction;
-import org.esa.beam.visat.internal.RasterDataNodeDeleter;
+import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.windows.ToolTopComponent;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
+import org.openide.windows.TopComponent;
 
 import javax.swing.Action;
 import javax.swing.JComponent;
@@ -89,17 +89,19 @@ class MaskFormActions {
 
     private final MaskAction[] maskActions;
 
-    MaskFormActions(AbstractToolView maskToolView, MaskForm maskForm) {
+    MaskFormActions(ToolTopComponent maskTopComponent, MaskForm maskForm) {
         maskActions = new MaskAction[]{
                 new NewBandMathsAction(maskForm), new NewRangeAction(maskForm),
-                new NewVectorDataNodeAction(maskForm), new NullAction(maskForm),
+//                new NewVectorDataNodeAction(maskForm),
+                new NullAction(maskForm),
                 new NewUnionAction(maskForm), new NewIntersectionAction(maskForm),
                 new NewDifferenceAction(maskForm), new NewInvDifferenceAction(maskForm),
                 new NewComplementAction(maskForm), new NullAction(maskForm),
                 new CopyAction(maskForm), new EditAction(maskForm),
-                new RemoveAction(maskForm), new TransferAction(maskForm),
-                new ImportAction(maskToolView, maskForm), new ExportAction(maskToolView, maskForm),
-                new ZoomToVectorMaskAction(maskToolView, maskForm), new NullAction(maskForm),
+//                new RemoveAction(maskForm),
+                new TransferAction(maskForm),
+                new ImportAction(maskTopComponent, maskForm), new ExportAction(maskTopComponent, maskForm),
+                new ZoomToVectorMaskAction(maskTopComponent, maskForm), new NullAction(maskForm),
         };
     }
 
@@ -156,9 +158,9 @@ class MaskFormActions {
         return getMaskAction(ImportAction.class);
     }
 
-    public MaskAction getRemoveAction() {
-        return getMaskAction(RemoveAction.class);
-    }
+//    public MaskAction getRemoveAction() {
+//        return getMaskAction(RemoveAction.class);
+//    }
 
     public MaskAction getNullAction() {
         return getMaskAction(NullAction.class);
@@ -194,29 +196,29 @@ class MaskFormActions {
 
     }
 
-    private static class NewVectorDataNodeAction extends MaskAction {
-
-        private CreateVectorDataNodeAction action;
-
-        private NewVectorDataNodeAction(MaskForm maskForm) {
-            super(maskForm,
-                  "NewVectorDataNode24.gif",
-                  "newGeometry",
-                  "Creates a new mask based on a new geometry container (lines and polygons))");
-            action = new CreateVectorDataNodeAction();
-        }
-
-        @Override
-        void updateState() {
-            action.updateState();
-            setEnabled(action.isEnabled());
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            action.run();
-        }
-    }
+//    private static class NewVectorDataNodeAction extends MaskAction {
+//
+//        private CreateVectorDataNodeAction action;
+//
+//        private NewVectorDataNodeAction(MaskForm maskForm) {
+//            super(maskForm,
+//                  "NewVectorDataNode24.gif",
+//                  "newGeometry",
+//                  "Creates a new mask based on a new geometry container (lines and polygons))");
+//            action = new CreateVectorDataNodeAction();
+//        }
+//
+//        @Override
+//        void updateState() {
+//            action.updateState();
+//            setEnabled(action.isEnabled());
+//        }
+//
+//        @Override
+//        public void actionPerformed(ActionEvent e) {
+//            action.run();
+//        }
+//    }
 
     private static class NewIntersectionAction extends BandMathsAction {
 
@@ -399,29 +401,32 @@ class MaskFormActions {
         }
     }
 
-    private static class RemoveAction extends MaskAction {
-
-        private RemoveAction(MaskForm maskForm) {
-            super(maskForm, "icons/Remove24.gif", "removeButton", "Remove the selected mask.");
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            Mask[] selectedMasks = getMaskForm().getSelectedMasks();
-            getMaskForm().getMaskTable().clearSelection();
-            RasterDataNodeDeleter.deleteRasterDataNodes(selectedMasks);
-        }
-
-        @Override
-        void updateState() {
-            setEnabled(getMaskForm().isInManagementMode() && getMaskForm().getSelectedRowCount() > 0);
-        }
-    }
+//    private static class RemoveAction extends MaskAction {
+//
+//        private RemoveAction(MaskForm maskForm) {
+//            super(maskForm, "icons/Remove24.gif", "removeButton", "Remove the selected mask.");
+//        }
+//
+//        @Override
+//        public void actionPerformed(ActionEvent e) {
+//            Mask[] selectedMasks = getMaskForm().getSelectedMasks();
+//            getMaskForm().getMaskTable().clearSelection();
+//            RasterDataNodeDeleter.deleteRasterDataNodes(selectedMasks);
+//        }
+//
+//        @Override
+//        void updateState() {
+//            setEnabled(getMaskForm().isInManagementMode() && getMaskForm().getSelectedRowCount() > 0);
+//        }
+//    }
 
     private static class ImportAction extends MaskIOAction {
 
-        private ImportAction(AbstractToolView maskToolView, MaskForm maskForm) {
-            super(maskToolView, maskForm, "icons/Import24.gif", "importButton", "Import masks from file.");
+        private final TopComponent maskTopComponent;
+
+        private ImportAction(TopComponent maskTopComponent, MaskForm maskForm) {
+            super(maskTopComponent, maskForm, "icons/Import24.gif", "importButton", "Import masks from file.");
+            this.maskTopComponent = maskTopComponent;
         }
 
         @Override
@@ -447,7 +452,7 @@ class MaskFormActions {
             fileChooser.setFileFilter(xmlFilter);
             fileChooser.setCurrentDirectory(getDirectory());
 
-            if (fileChooser.showOpenDialog(getMaskToolView().getPaneWindow()) == JFileChooser.APPROVE_OPTION) {
+            if (fileChooser.showOpenDialog(SwingUtilities.getWindowAncestor(maskTopComponent)) == JFileChooser.APPROVE_OPTION) {
                 final File file = fileChooser.getSelectedFile();
                 if (file != null) {
                     setDirectory(file.getAbsoluteFile().getParentFile());
@@ -532,9 +537,11 @@ class MaskFormActions {
     private static class ExportAction extends MaskIOAction {
 
         private static final String ACTION_NAME = "Export mask definition(s) to XML file.";
+        private final TopComponent maskTopComponent;
 
-        private ExportAction(AbstractToolView maskToolView, MaskForm maskForm) {
-            super(maskToolView, maskForm, "icons/Export24.gif", "exportButton", ACTION_NAME);
+        private ExportAction(TopComponent maskTopComponent, MaskForm maskForm) {
+            super(maskTopComponent, maskForm, "icons/Export24.gif", "exportButton", ACTION_NAME);
+            this.maskTopComponent = maskTopComponent;
         }
 
         @Override
@@ -564,14 +571,12 @@ class MaskFormActions {
                 final File targetDirectory = getDirectory();
                 fileChooser.setCurrentDirectory(targetDirectory);
                 fileChooser.setSelectedFile(new File(targetDirectory, masks[0].getName()));
-                final int result = fileChooser.showSaveDialog(getMaskToolView().getPaneWindow());
+                final int result = fileChooser.showSaveDialog(SwingUtilities.getWindowAncestor(maskTopComponent));
                 dialogApproved = result == JFileChooser.APPROVE_OPTION;
                 if (dialogApproved) {
                     File file = fileChooser.getSelectedFile();
                     if (file != null) {
-                        if (!VisatApp.getApp().promptForOverwrite(file)) {
-                            return;
-                        }
+                        SnapDialogs.requestOverwriteDecision(ACTION_NAME, file);
                         setDirectory(file.getAbsoluteFile().getParentFile());
                         file = FileUtils.ensureExtension(file, ".xml");
                         writeXml(file, document);
@@ -617,10 +622,7 @@ class MaskFormActions {
                 }
                 stringBuilder.append(" to XML.");
             }
-            JOptionPane.showMessageDialog(getMaskToolView().getControl(),
-                                          stringBuilder.toString(),
-                                          ACTION_NAME,
-                                          JOptionPane.INFORMATION_MESSAGE);
+            SnapDialogs.showMessage(ACTION_NAME, stringBuilder.toString(), JOptionPane.INFORMATION_MESSAGE, null);
         }
 
         private static int countExportedMasks(boolean[] masksExported) {
@@ -732,7 +734,7 @@ class MaskFormActions {
             Window window = getWindow(e);
             Mask selectedMask = getMaskForm().getSelectedMask();
             PropertyContainer selectedMaskConfig = selectedMask.getImageConfig();
-            Mask.ImageType type = selectedMask.getImageType();
+            ImageType type = selectedMask.getImageType();
             if (type == Mask.BandMathsType.INSTANCE) {
                 Product product = getMaskForm().getProduct();
                 ProductExpressionPane expressionPane = ProductExpressionPane.createBooleanExpressionPane(
@@ -878,7 +880,7 @@ class MaskFormActions {
         void updateState() {
             setEnabled(getMaskForm().isInManagementMode() &&
                        getMaskForm().getSelectedRowCount() > 0 &&
-                       VisatApp.getApp().getProductManager().getProductCount() > 1);
+                       SnapApp.getDefault().getProductManager().getProductCount() > 1);
         }
 
         @Override
@@ -886,7 +888,7 @@ class MaskFormActions {
             Window window = getWindow(e);
             final Product sourcProduct = getMaskForm().getProduct();
             Mask[] selectedMasks = getMaskForm().getSelectedMasks();
-            Product[] allProducts = VisatApp.getApp().getProductManager().getProducts();
+            Product[] allProducts = SnapApp.getDefault().getProductManager().getProducts();
             final TransferMaskDialog dialog = new TransferMaskDialog(window, sourcProduct, allProducts, selectedMasks);
             if (dialog.show() == AbstractDialog.ID_OK) {
                 Product[] maskPixelTargetProducts = dialog.getMaskPixelTargets();
@@ -972,18 +974,19 @@ class MaskFormActions {
 
     private static class ZoomToVectorMaskAction extends MaskAction {
 
-        private final AbstractToolView toolView;
+        private final ToolTopComponent topComponent;
 
-        private ZoomToVectorMaskAction(AbstractToolView toolView, MaskForm maskForm) {
+        private ZoomToVectorMaskAction(ToolTopComponent topComponent, MaskForm maskForm) {
             super(maskForm, "icons/ZoomTo24.gif", "zoomToButton",
                   "Zooms to the selected mask.");
-            this.toolView = toolView;
+            this.topComponent = topComponent;
+//            this.toolView = topComponent;
         }
 
         @Override
         void updateState() {
             setEnabled(getMaskForm().getSelectedRowCount() == 1 &&
-                       VisatApp.getApp().getSelectedProductSceneView() != null);
+                       topComponent.getSelectedProductSceneView() != null);
 
         }
 
@@ -991,7 +994,7 @@ class MaskFormActions {
         public void actionPerformed(ActionEvent e) {
             Mask mask = getMaskForm().getSelectedMask();
             ImageType imageType = mask.getImageType();
-            ProductSceneView productSceneView = VisatApp.getApp().getSelectedProductSceneView();
+            ProductSceneView productSceneView = topComponent.getSelectedProductSceneView();
             if (productSceneView != null) {
                 Rectangle2D modelBounds;
                 if (imageType == Mask.VectorDataType.INSTANCE) {
@@ -1010,10 +1013,7 @@ class MaskFormActions {
                     final Shape transformedModelBounds = v2mTransform.createTransformedShape(viewBounds);
                     viewport.zoom(transformedModelBounds.getBounds2D());
                 } else {
-                    JOptionPane.showMessageDialog(toolView.getPaneWindow(),
-                                                  "The selected mask is empty.",
-                                                  "Zoom to Mask",
-                                                  JOptionPane.INFORMATION_MESSAGE);
+                    SnapDialogs.showMessage("Zoom to Mask", "The selected mask is empty.", JOptionPane.INFORMATION_MESSAGE, null);
                 }
             }
         }
