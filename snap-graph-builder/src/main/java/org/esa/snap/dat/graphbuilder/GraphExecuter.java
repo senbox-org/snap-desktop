@@ -33,10 +33,10 @@ import org.esa.beam.framework.ui.BasicApp;
 import org.esa.beam.gpf.operators.standard.WriteOp;
 import org.esa.beam.util.io.BeamFileFilter;
 import org.esa.beam.util.io.FileUtils;
-import org.esa.beam.visat.VisatApp;
 import org.esa.snap.gpf.ReaderUtils;
 import org.esa.snap.gpf.ui.OperatorUI;
 import org.esa.snap.gpf.ui.OperatorUIRegistry;
+import org.esa.snap.rcp.SnapDialogs;
 
 import java.io.File;
 import java.io.FileReader;
@@ -258,8 +258,8 @@ public class GraphExecuter extends Observable {
         if (lastLoadedGraphFile != null)
             filename = lastLoadedGraphFile.getAbsolutePath();
         final BeamFileFilter fileFilter = new BeamFileFilter("XML", "xml", "Graph");
-        final File filePath = VisatApp.getApp().showFileSaveDialog("Save Graph", false, fileFilter, ".xml", filename,
-                BasicApp.PROPERTY_KEY_APP_LAST_SAVE_DIR);
+        final File filePath = SnapDialogs.requestFileForSave("Save Graph", false, fileFilter, ".xml", filename,
+                                                             null, BasicApp.PROPERTY_KEY_APP_LAST_SAVE_DIR);
         if (filePath != null)
             writeGraph(filePath.getAbsolutePath());
         return filePath;

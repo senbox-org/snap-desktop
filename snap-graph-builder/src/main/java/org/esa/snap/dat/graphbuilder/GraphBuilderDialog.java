@@ -23,7 +23,6 @@ import org.esa.beam.framework.ui.AppContext;
 import org.esa.beam.framework.ui.ModelessDialog;
 import org.esa.beam.gpf.operators.standard.ReadOp;
 import org.esa.beam.util.io.BeamFileFilter;
-import org.esa.beam.visat.VisatApp;
 import org.esa.snap.dat.dialogs.PromptDialog;
 import org.esa.snap.db.CommonReaders;
 import org.esa.snap.gpf.ProductSetReaderOpUI;
@@ -31,7 +30,11 @@ import org.esa.snap.gpf.ui.SourceUI;
 import org.esa.snap.gpf.ui.UIValidation;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
-import org.esa.snap.util.*;
+import org.esa.snap.util.DialogUtils;
+import org.esa.snap.util.ImageUtils;
+import org.esa.snap.util.MemUtils;
+import org.esa.snap.util.ProductFunctions;
+import org.esa.snap.util.ResourceUtils;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -42,8 +45,12 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * Provides the User Interface for creating, loading and saving Graphs
@@ -328,7 +335,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer {
      */
     private void LoadGraph() {
         final BeamFileFilter fileFilter = new BeamFileFilter("XML", "xml", "Graph");
-        final File file = VisatApp.getApp().showFileOpenDialog("Load Graph", false, fileFilter, LAST_GRAPH_PATH);
+        final File file = SnapDialogs.requestFileForOpen("Load Graph", false, fileFilter, LAST_GRAPH_PATH);
         if (file == null) return;
 
         LoadGraph(file);
