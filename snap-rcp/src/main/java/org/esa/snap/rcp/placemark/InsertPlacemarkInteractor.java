@@ -20,6 +20,7 @@ import com.bc.ceres.swing.figure.FigureEditorInteractor;
 import org.esa.beam.framework.datamodel.PixelPos;
 import org.esa.beam.framework.datamodel.Placemark;
 import org.esa.beam.framework.datamodel.PlacemarkDescriptor;
+import org.esa.beam.framework.datamodel.PlacemarkNameFactory;
 import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.ui.product.ProductSceneView;
 import org.esa.snap.rcp.SnapApp;
