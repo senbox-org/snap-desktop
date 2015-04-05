@@ -98,7 +98,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer {
         graphEx.addObserver(this);
 
         String lastDir = SnapApp.getDefault().getPreferences().get(LAST_GRAPH_PATH,
-                                                                   ResourceUtils.getGraphFolder("").getAbsolutePath());
+                                                                   ResourceUtils.getGraphFolder("").toFile().getAbsolutePath());
         if (new File(lastDir).exists()) {
             SnapApp.getDefault().getPreferences().put(LAST_GRAPH_PATH, lastDir);
         }
@@ -646,11 +646,11 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer {
     }
 
     public static File getInternalGraphFolder() {
-        return ResourceUtils.getGraphFolder("internal");
+        return ResourceUtils.getGraphFolder("internal").toFile();
     }
 
     public static File getStandardGraphFolder() {
-        return ResourceUtils.getGraphFolder("Standard Graphs");
+        return ResourceUtils.getGraphFolder("Standard Graphs").toFile();
     }
 
     public interface ProcessingListener {

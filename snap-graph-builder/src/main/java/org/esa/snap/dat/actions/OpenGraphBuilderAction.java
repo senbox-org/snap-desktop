@@ -15,19 +15,49 @@
  */
 package org.esa.snap.dat.actions;
 
-import org.esa.beam.framework.ui.command.CommandEvent;
-import org.esa.beam.visat.actions.AbstractVisatAction;
 import org.esa.snap.dat.graphbuilder.GraphBuilderDialog;
+import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.util.ImageUtils;
+import org.openide.awt.ActionID;
+import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
+import org.openide.awt.ActionRegistration;
+import org.openide.util.NbBundle;
 
+import javax.swing.*;
+import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.InputStream;
 
-public class OpenGraphBuilderAction extends AbstractVisatAction {
+@ActionID(
+        category = "Tools",
+        id = "GraphBuilderAction"
+)
+@ActionRegistration(
+        displayName = "#CTL_GraphBuilderAction_MenuText",
+        popupText = "#CTL_GraphBuilderAction_MenuText",
+        iconBase = "org/esa/snap/icons/cog16.png",
+        lazy = true
+)
+@ActionReferences({
+        @ActionReference(
+                path = "Menu/Tools",
+                position = 110
+        ),
+        @ActionReference(path = "Toolbars/GraphBuilder")
+})
+@NbBundle.Messages({
+        "CTL_GraphBuilderAction_MenuText=GraphBuilder",
+        "CTL_GraphBuilderAction_ShortDescription=Create a custom processing graph"
+})
+public class OpenGraphBuilderAction extends AbstractAction {
 
-    @Override
-    public void actionPerformed(final CommandEvent event) {
-        final GraphBuilderDialog dialog = new GraphBuilderDialog(getAppContext(), "Graph Builder", "graph_builder");
+    public OpenGraphBuilderAction() {
+        super("GraphBuilder");
+    }
+
+    public void actionPerformed(ActionEvent event) {
+        final GraphBuilderDialog dialog = new GraphBuilderDialog(new SnapApp.SnapContext(), "Graph Builder", "graph_builder");
         dialog.getJDialog().setIconImage(ImageUtils.esaPlanetIcon.getImage());
         dialog.show();
 
@@ -42,5 +72,4 @@ public class OpenGraphBuilderAction extends AbstractVisatAction {
         }
         dialog.EnableInitialInstructions(true);
     }
-
 }

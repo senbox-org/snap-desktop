@@ -43,6 +43,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -56,7 +57,7 @@ public class BatchGraphDialog extends ModelessDialog {
     protected final ProductSetPanel productSetPanel;
     protected final List<GraphExecuter> graphExecutorList = new ArrayList<>(10);
 
-    protected final static File defaultGraphPath = ResourceUtils.getGraphFolder("");
+    protected final static Path defaultGraphPath = ResourceUtils.getGraphFolder("");
 
     private final JTabbedPane tabbedPane;
     private final JLabel statusLabel;
@@ -229,7 +230,7 @@ public class BatchGraphDialog extends ModelessDialog {
 
     private static File getFilePath(Component component, String title) {
 
-        final File graphPath = new File(getPref("batch.last_graph_path", defaultGraphPath.getAbsolutePath()));
+        final File graphPath = new File(getPref("batch.last_graph_path", defaultGraphPath.toFile().getAbsolutePath()));
         final JFileChooser chooser = FileChooserFactory.getInstance().createFileChooser(graphPath);
         chooser.setMultiSelectionEnabled(false);
         chooser.setDialogTitle(title);
