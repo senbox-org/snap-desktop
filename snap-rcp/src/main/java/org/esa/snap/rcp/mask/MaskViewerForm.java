@@ -13,17 +13,25 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, see http://www.gnu.org/licenses/
  */
-package org.esa.beam.visat.toolviews.mask;
+package org.esa.snap.rcp.mask;
 
-import org.esa.beam.framework.ui.application.support.AbstractToolView;
-
+import javax.swing.BorderFactory;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.event.ListSelectionListener;
+import java.awt.BorderLayout;
 
-public class MaskManagerToolView extends MaskToolView {
-    public static final String ID = MaskManagerToolView.class.getName();
+class MaskViewerForm extends MaskForm {
+
+    public MaskViewerForm(ListSelectionListener selectionListener) {
+        super(false, selectionListener);
+    }
 
     @Override
-    protected MaskForm createMaskForm(AbstractToolView maskToolView, ListSelectionListener selectionListener) {
-        return new MaskManagerForm(this, selectionListener);
+    public JPanel createContentPanel() {
+        JPanel tablePanel = new JPanel(new BorderLayout(4, 4));
+        tablePanel.add(new JScrollPane(getMaskTable()), BorderLayout.CENTER);
+        tablePanel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+        return tablePanel;
     }
 }

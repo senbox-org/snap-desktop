@@ -13,12 +13,12 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, see http://www.gnu.org/licenses/
  */
-package org.esa.beam.visat.toolviews.mask;
+package org.esa.snap.rcp.mask;
 
 import org.esa.beam.framework.ui.GridBagUtils;
 import org.esa.beam.framework.ui.UIUtils;
-import org.esa.beam.framework.ui.application.support.AbstractToolView;
 import org.esa.beam.framework.ui.tool.ToolButtonFactory;
+import org.esa.snap.rcp.windows.ToolTopComponent;
 
 import javax.swing.AbstractButton;
 import javax.swing.Action;
@@ -35,12 +35,12 @@ class MaskManagerForm extends MaskForm {
     private final AbstractButton helpButton;
     private final MaskFormActions actions;
 
-    MaskManagerForm(AbstractToolView maskToolView, ListSelectionListener selectionListener) {
+    MaskManagerForm(ToolTopComponent maskTopComponent, ListSelectionListener selectionListener) {
         super(true, selectionListener);
 
         helpButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon("icons/Help22.png"), false);
         helpButton.setName("helpButton");
-        actions = new MaskFormActions(maskToolView, this);
+        actions = new MaskFormActions(maskTopComponent, this);
 
         updateState();
     }
