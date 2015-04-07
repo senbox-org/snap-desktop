@@ -51,6 +51,10 @@ import javax.swing.event.ListSelectionListener;
 public class MaskManagerToolTopComponent extends MaskToolTopComponent {
     public static final String ID = MaskManagerToolTopComponent.class.getName();
 
+    public MaskManagerToolTopComponent() {
+        initUI();
+    }
+
     @Override
     protected MaskForm createMaskForm(ToolTopComponent maskTopComponent, ListSelectionListener selectionListener) {
         return new MaskManagerForm(this, selectionListener);

@@ -15,13 +15,12 @@
  */
 package org.esa.snap.rcp.mask;
 
-import com.jidesoft.combobox.ColorExComboBox;
-import com.jidesoft.grid.ColorCellEditor;
-import com.jidesoft.grid.ColorCellRenderer;
 import org.esa.beam.framework.datamodel.Mask;
 import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.datamodel.RasterDataNode;
 import org.esa.beam.framework.ui.UIUtils;
+import org.esa.beam.framework.ui.color.ColorTableCellEditor;
+import org.esa.beam.framework.ui.color.ColorTableCellRenderer;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -47,8 +46,10 @@ class MaskTable extends JTable {
         setName("maskTable");
         setAutoCreateColumnsFromModel(true);
         setPreferredScrollableViewportSize(new Dimension(200, 150));
-        setDefaultRenderer(Color.class, new ColorCR());
-        setDefaultEditor(Color.class, new ColorCE());
+//        setDefaultRenderer(Color.class, new ColorCR());
+//        setDefaultEditor(Color.class, new ColorCE());
+        setDefaultRenderer(Color.class, new ColorTableCellRenderer());
+        setDefaultEditor(Color.class, new ColorTableCellEditor());
         setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         getTableHeader().setReorderingAllowed(false);
         getTableHeader().setResizingAllowed(true);
@@ -169,31 +170,31 @@ class MaskTable extends JTable {
         }
     }
 
-    private static class ColorCE extends ColorCellEditor {
-        @Override
-        protected ColorExComboBox createColorComboBox() {
-            ColorExComboBox comboBox = super.createColorComboBox();
-            comboBox.setColorValueVisible(true);
-            comboBox.setColorIconVisible(true);
-            comboBox.setInvalidValueAllowed(false);
-            comboBox.setAllowDefaultColor(false);
-            comboBox.setAllowMoreColors(true);
-            return comboBox;
-        }
-    }
+//    private static class ColorCE extends ColorCellEditor {
+//        @Override
+//        protected ColorExComboBox createColorComboBox() {
+//            ColorExComboBox comboBox = super.createColorComboBox();
+//            comboBox.setColorValueVisible(true);
+//            comboBox.setColorIconVisible(true);
+//            comboBox.setInvalidValueAllowed(false);
+//            comboBox.setAllowDefaultColor(false);
+//            comboBox.setAllowMoreColors(true);
+//            return comboBox;
+//        }
+//    }
 
-    private static class ColorCR extends ColorCellRenderer {
-
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value,
-                                                       boolean isSelected, boolean hasFocus, int row, int column) {
-            setColorIconVisible(true);
-            setColorValueVisible(true);
-            setCrossBackGroundStyle(true);
-            return super.getTableCellRendererComponent(table, value,
-                                                       isSelected, hasFocus, row, column);
-        }
-    }
+//    private static class ColorCR extends ColorCellRenderer {
+//
+//        @Override
+//        public Component getTableCellRendererComponent(JTable table, Object value,
+//                                                       boolean isSelected, boolean hasFocus, int row, int column) {
+//            setColorIconVisible(true);
+//            setColorValueVisible(true);
+//            setCrossBackGroundStyle(true);
+//            return super.getTableCellRendererComponent(table, value,
+//                                                       isSelected, hasFocus, row, column);
+//        }
+//    }
 
     private static class VisibilityHR extends JLabel implements TableCellRenderer {
 

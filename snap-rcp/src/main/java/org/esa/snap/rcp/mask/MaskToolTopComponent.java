@@ -32,6 +32,7 @@ import org.openide.util.HelpCtx;
 import javax.swing.AbstractButton;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -40,6 +41,7 @@ public abstract class MaskToolTopComponent extends ToolTopComponent implements H
     private MaskForm maskForm;
 
     public void initUI() {
+        setLayout(new BorderLayout());
         maskForm = createMaskForm(this, new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
@@ -77,8 +79,8 @@ public abstract class MaskToolTopComponent extends ToolTopComponent implements H
             }
         });
         maskForm.updateState();
-
-        maskForm.createContentPanel();
+        setDisplayName(getTitle());
+        add(maskForm.createContentPanel(), BorderLayout.CENTER);
     }
 
     private void updateMaskForm(ProductSceneView view) {
