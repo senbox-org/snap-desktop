@@ -42,6 +42,7 @@ import org.esa.beam.util.io.BeamFileFilter;
 import org.esa.beam.util.io.FileUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.actions.tools.CreateVectorDataNodeAction;
 import org.esa.snap.rcp.util.internal.RasterDataNodeDeleter;
 import org.esa.snap.rcp.windows.ToolTopComponent;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -93,7 +94,7 @@ class MaskFormActions {
     MaskFormActions(ToolTopComponent maskTopComponent, MaskForm maskForm) {
         maskActions = new MaskAction[]{
                 new NewBandMathsAction(maskForm), new NewRangeAction(maskForm),
-//                new NewVectorDataNodeAction(maskForm), new NullAction(maskForm),
+                new NewVectorDataNodeAction(maskForm), new NullAction(maskForm),
                 new NewUnionAction(maskForm), new NewIntersectionAction(maskForm),
                 new NewDifferenceAction(maskForm), new NewInvDifferenceAction(maskForm),
                 new NewComplementAction(maskForm), new NullAction(maskForm),
@@ -157,9 +158,9 @@ class MaskFormActions {
         return getMaskAction(ImportAction.class);
     }
 
-//    public MaskAction getRemoveAction() {
-//        return getMaskAction(RemoveAction.class);
-//    }
+    public MaskAction getRemoveAction() {
+        return getMaskAction(RemoveAction.class);
+    }
 
     public MaskAction getNullAction() {
         return getMaskAction(NullAction.class);
@@ -195,29 +196,30 @@ class MaskFormActions {
 
     }
 
-//    private static class NewVectorDataNodeAction extends MaskAction {
-//
-//        private CreateVectorDataNodeAction action;
-//
-//        private NewVectorDataNodeAction(MaskForm maskForm) {
-//            super(maskForm,
-//                  "NewVectorDataNode24.gif",
-//                  "newGeometry",
-//                  "Creates a new mask based on a new geometry container (lines and polygons))");
-//            action = new CreateVectorDataNodeAction();
-//        }
-//
-//        @Override
-//        void updateState() {
-//            action.updateState();
-//            setEnabled(action.isEnabled());
-//        }
-//
-//        @Override
-//        public void actionPerformed(ActionEvent e) {
-//            action.run();
-//        }
-//    }
+    private static class NewVectorDataNodeAction extends MaskAction {
+
+        private CreateVectorDataNodeAction action;
+
+        private NewVectorDataNodeAction(MaskForm maskForm) {
+            super(maskForm,
+                  "icons/NewVectorDataNode24.gif",
+                  "newGeometry",
+                  "Creates a new mask based on a new geometry container (lines and polygons))");
+            action = new CreateVectorDataNodeAction();
+        }
+
+        @Override
+        void updateState() {
+            final boolean enabled = SnapApp.getDefault().getSelectedProduct() != null;
+            action.setEnabled(enabled);
+            setEnabled(enabled);
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            action.actionPerformed(e);
+        }
+    }
 
     private static class NewIntersectionAction extends BandMathsAction {
 
