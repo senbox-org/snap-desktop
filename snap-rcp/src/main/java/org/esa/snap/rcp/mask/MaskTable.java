@@ -46,8 +46,6 @@ class MaskTable extends JTable {
         setName("maskTable");
         setAutoCreateColumnsFromModel(true);
         setPreferredScrollableViewportSize(new Dimension(200, 150));
-//        setDefaultRenderer(Color.class, new ColorCR());
-//        setDefaultEditor(Color.class, new ColorCE());
         setDefaultRenderer(Color.class, new ColorTableCellRenderer());
         setDefaultEditor(Color.class, new ColorTableCellEditor());
         setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -170,32 +168,6 @@ class MaskTable extends JTable {
         }
     }
 
-//    private static class ColorCE extends ColorCellEditor {
-//        @Override
-//        protected ColorExComboBox createColorComboBox() {
-//            ColorExComboBox comboBox = super.createColorComboBox();
-//            comboBox.setColorValueVisible(true);
-//            comboBox.setColorIconVisible(true);
-//            comboBox.setInvalidValueAllowed(false);
-//            comboBox.setAllowDefaultColor(false);
-//            comboBox.setAllowMoreColors(true);
-//            return comboBox;
-//        }
-//    }
-
-//    private static class ColorCR extends ColorCellRenderer {
-//
-//        @Override
-//        public Component getTableCellRendererComponent(JTable table, Object value,
-//                                                       boolean isSelected, boolean hasFocus, int row, int column) {
-//            setColorIconVisible(true);
-//            setColorValueVisible(true);
-//            setCrossBackGroundStyle(true);
-//            return super.getTableCellRendererComponent(table, value,
-//                                                       isSelected, hasFocus, row, column);
-//        }
-//    }
-
     private static class VisibilityHR extends JLabel implements TableCellRenderer {
 
         VisibilityHR() {
@@ -217,15 +189,4 @@ class MaskTable extends JTable {
             return this;
         }
     }
-/*
-    private class ColumnReconfigurerTML implements TableModelListener {
-        @Override
-        public void tableChanged(TableModelEvent e) {
-            if (e.getType() == TableModelEvent.UPDATE
-                    && e.getColumn() == TableModelEvent.ALL_COLUMNS) {
-                reconfigureColumnModel();
-            }
-        }
-    }
-*/
 }

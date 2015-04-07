@@ -42,6 +42,7 @@ import org.esa.beam.util.io.BeamFileFilter;
 import org.esa.beam.util.io.FileUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.util.internal.RasterDataNodeDeleter;
 import org.esa.snap.rcp.windows.ToolTopComponent;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.jdom.Document;
@@ -92,14 +93,12 @@ class MaskFormActions {
     MaskFormActions(ToolTopComponent maskTopComponent, MaskForm maskForm) {
         maskActions = new MaskAction[]{
                 new NewBandMathsAction(maskForm), new NewRangeAction(maskForm),
-//                new NewVectorDataNodeAction(maskForm),
-                new NullAction(maskForm),
+//                new NewVectorDataNodeAction(maskForm), new NullAction(maskForm),
                 new NewUnionAction(maskForm), new NewIntersectionAction(maskForm),
                 new NewDifferenceAction(maskForm), new NewInvDifferenceAction(maskForm),
                 new NewComplementAction(maskForm), new NullAction(maskForm),
                 new CopyAction(maskForm), new EditAction(maskForm),
-//                new RemoveAction(maskForm),
-                new TransferAction(maskForm),
+                new RemoveAction(maskForm), new TransferAction(maskForm),
                 new ImportAction(maskTopComponent, maskForm), new ExportAction(maskTopComponent, maskForm),
                 new ZoomToVectorMaskAction(maskTopComponent, maskForm), new NullAction(maskForm),
         };
@@ -401,24 +400,25 @@ class MaskFormActions {
         }
     }
 
-//    private static class RemoveAction extends MaskAction {
-//
-//        private RemoveAction(MaskForm maskForm) {
-//            super(maskForm, "icons/Remove24.gif", "removeButton", "Remove the selected mask.");
-//        }
-//
-//        @Override
-//        public void actionPerformed(ActionEvent e) {
-//            Mask[] selectedMasks = getMaskForm().getSelectedMasks();
-//            getMaskForm().getMaskTable().clearSelection();
-//            RasterDataNodeDeleter.deleteRasterDataNodes(selectedMasks);
-//        }
-//
-//        @Override
-//        void updateState() {
-//            setEnabled(getMaskForm().isInManagementMode() && getMaskForm().getSelectedRowCount() > 0);
-//        }
-//    }
+    private static class RemoveAction extends MaskAction {
+
+        private RemoveAction(MaskForm maskForm) {
+            super(maskForm, "icons/Remove24.gif", "removeButton", "Remove the selected mask.");
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            Mask[] selectedMasks = getMaskForm().getSelectedMasks();
+            getMaskForm().getMaskTable().clearSelection();
+            RasterDataNodeDeleter.deleteRasterDataNodes(selectedMasks);
+        }
+
+        @Override
+        void updateState() {
+            setEnabled(getMaskForm().isInManagementMode() && getMaskForm().getSelectedRowCount() > 0);
+        }
+
+    }
 
     private static class ImportAction extends MaskIOAction {
 
