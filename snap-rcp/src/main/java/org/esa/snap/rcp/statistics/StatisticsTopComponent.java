@@ -41,7 +41,7 @@ public class StatisticsTopComponent extends AbstractStatisticsTopComponent {
     }
 
     @Override
-    String getHelpId() {
+    protected String getHelpId() {
         return Bundle.CTL_StatisticsTopComponent_HelpId();
     }
 

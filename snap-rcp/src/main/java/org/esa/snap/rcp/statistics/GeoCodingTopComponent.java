@@ -60,7 +60,7 @@ public class GeoCodingTopComponent extends AbstractStatisticsTopComponent {
     }
 
     @Override
-    String getHelpId() {
+    protected String getHelpId() {
         return Bundle.CTL_GeoCodingTopComponent_HelpId();
     }
 
