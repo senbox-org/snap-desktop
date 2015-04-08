@@ -57,12 +57,7 @@ public class DensityPlotTopComponent extends AbstractStatisticsTopComponent {
 
     @Override
     protected PagePanel createPagePanel() {
-        return new DensityPlotPanel(this, getHelpId());
-    }
-
-    @Override
-    protected String getHelpId() {
-        return Bundle.CTL_DensityPlotTopComponent_HelpId();
+        return new DensityPlotPanel(this, Bundle.CTL_DensityPlotTopComponent_HelpId());
     }
 
     @Override

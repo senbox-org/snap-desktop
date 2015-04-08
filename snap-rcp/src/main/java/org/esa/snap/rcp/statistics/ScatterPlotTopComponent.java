@@ -61,10 +61,9 @@ public class ScatterPlotTopComponent extends AbstractStatisticsTopComponent {
 
     @Override
     protected PagePanel createPagePanel() {
-        final String helpId = getHelpId();
         final Icon largeIcon = UIUtils.loadImageIcon("icons/ScatterPlot24.gif");
         final String chartTitle = ScatterPlotPanel.CHART_TITLE;
-        final ScatterPlotPanel scatterPlotPanel = new ScatterPlotPanel(this, helpId);
+        final ScatterPlotPanel scatterPlotPanel = new ScatterPlotPanel(this, Bundle.CTL_ScatterPlotTopComponent_HelpId());
         final TableViewPagePanel tableViewPanel = new TableViewPagePanel(this, tableHelpID, chartTitle, largeIcon);
         scatterPlotPanel.setAlternativeView(tableViewPanel);
         tableViewPanel.setAlternativeView(scatterPlotPanel);
@@ -72,12 +71,7 @@ public class ScatterPlotTopComponent extends AbstractStatisticsTopComponent {
     }
 
     @Override
-    protected String getHelpId() {
-        return Bundle.CTL_ScatterPlotTopComponent_HelpId();
-    }
-
-    @Override
     public HelpCtx getHelpCtx() {
-        return new HelpCtx(getHelpId());
+        return new HelpCtx(Bundle.CTL_ScatterPlotTopComponent_HelpId());
     }
 }

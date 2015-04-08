@@ -74,8 +74,6 @@ public abstract class AbstractStatisticsTopComponent extends TopComponent implem
 
     abstract protected PagePanel createPagePanel();
 
-    abstract protected String getHelpId();
-
     @Override
     public void componentShowing() {
         final SnapApp snapApp = SnapApp.getDefault();

@@ -61,7 +61,7 @@ public class ProfilePlotTopComponent extends AbstractStatisticsTopComponent {
 
     @Override
     protected PagePanel createPagePanel() {
-        final String helpId = getHelpId();
+        final String helpId = Bundle.CTL_ProfilePlotTopComponent_HelpId();
         final String chartTitle = ProfilePlotPanel.CHART_TITLE;
         final Icon largeIcon = UIUtils.loadImageIcon("icons/ProfilePlot24.gif");
         ProfilePlotPanel profilePlotPanel = new ProfilePlotPanel(this, helpId);
@@ -69,17 +69,6 @@ public class ProfilePlotTopComponent extends AbstractStatisticsTopComponent {
         profilePlotPanel.setAlternativeView(tableViewPagePanel);
         tableViewPagePanel.setAlternativeView(profilePlotPanel);
         return profilePlotPanel;
-    }
-
-//    @Override
-//    protected void componentDeactivated() {
-//        super.componentDeactivated();
-//        profilePlotPanel.
-//    }
-
-    @Override
-    protected String getHelpId() {
-        return Bundle.CTL_ProfilePlotTopComponent_HelpId();
     }
 
     @Override

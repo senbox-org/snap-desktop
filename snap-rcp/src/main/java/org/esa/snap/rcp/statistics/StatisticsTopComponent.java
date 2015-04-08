@@ -37,12 +37,7 @@ public class StatisticsTopComponent extends AbstractStatisticsTopComponent {
 
     @Override
     protected PagePanel createPagePanel() {
-        return new StatisticsPanel(this, getHelpId());
-    }
-
-    @Override
-    protected String getHelpId() {
-        return Bundle.CTL_StatisticsTopComponent_HelpId();
+        return new StatisticsPanel(this, Bundle.CTL_StatisticsTopComponent_HelpId());
     }
 
     @Override

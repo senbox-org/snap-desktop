@@ -8,7 +8,9 @@ package org.esa.snap.rcp.windows;
 import com.bc.ceres.glayer.support.ImageLayer;
 import org.esa.beam.framework.ui.PixelPositionListener;
 import org.esa.beam.framework.ui.product.ProductSceneView;
+import org.esa.snap.rcp.pixelinfo.PixelInfoViewTableModel;
 import org.esa.snap.rcp.util.CollapsibleItemsPanel;
+import org.netbeans.api.annotations.common.NonNull;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.util.Lookup;
@@ -18,8 +20,10 @@ import org.openide.util.NbBundle;
 import org.openide.util.Utilities;
 import org.openide.windows.TopComponent;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.ScrollPaneConstants;
+import java.awt.BorderLayout;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -46,13 +50,17 @@ import java.util.Collection;
                            "CTL_PixelInfoTopComponentName=Pixel Info",
                            "CTL_PixelInfoTopComponentDescription=Displays information about current pixel",
                    })
-public final class PixelInfoTopComponent extends TopComponent implements LookupListener {
+public final class PixelInfoTopComponent extends ToolTopComponent implements LookupListener {
 
     private Lookup.Result<ProductSceneView> productSceneViewResult;
     private PixelPositionListener pixelPositionListener;
     private CollapsibleItemsPanel.Item<JTable> positionItem;
     private CollapsibleItemsPanel.Item<JTable> timeItem;
+    private CollapsibleItemsPanel.Item<JTable> tiePointGridsItem;
     private CollapsibleItemsPanel.Item<JTable> bandsItem;
+    private CollapsibleItemsPanel.Item<JTable> flagsItem;
+
+    private PixelInfoViewTableModel positionTableModel;
 
     public PixelInfoTopComponent() {
         initComponents();
@@ -66,19 +74,39 @@ public final class PixelInfoTopComponent extends TopComponent implements LookupL
     private void initComponents() {
         setLayout(new BorderLayout());
 
-        positionItem = CollapsibleItemsPanel.createTableItem("Position", 6, 2);
-        timeItem = CollapsibleItemsPanel.createTableItem("Time", 2, 2);
+        positionItem = CollapsibleItemsPanel.createTableItem("Position", 6, 3);
+//        positionTableModel = new DefaultTableModel(5, 2);
+        positionTableModel = new PixelInfoViewTableModel(new String[]{"Coordinate", "Value", "Unit"});
+        positionItem.getComponent().setModel(positionTableModel);
+        timeItem = CollapsibleItemsPanel.createTableItem("Time", 2, 3);
+        tiePointGridsItem = CollapsibleItemsPanel.createTableItem("Tie Point Grids", 0, 3);
         bandsItem = CollapsibleItemsPanel.createTableItem("Bands", 18, 3);
+        final PixelInfoViewTableModel bandsModel = new PixelInfoViewTableModel(new String[]{"Band", "Value", "Unit"});
+        bandsItem.getComponent().setModel(bandsModel);
+        bandsModel.addRow("fsgdh", "2", "xy");
+        flagsItem = CollapsibleItemsPanel.createTableItem("Flags", 0, 2);
+
         CollapsibleItemsPanel collapsibleItemsPanel = new CollapsibleItemsPanel(
                 positionItem,
                 timeItem,
-                bandsItem);
-
+                tiePointGridsItem,
+                bandsItem,
+                flagsItem);
         JScrollPane scrollPane = new JScrollPane(collapsibleItemsPanel,
                                                  ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
                                                  ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
         add(scrollPane, BorderLayout.CENTER);
+    }
+
+    @Override
+    protected void productSceneViewSelected(@NonNull ProductSceneView view) {
+        super.productSceneViewSelected(view);
+    }
+
+    @Override
+    protected void productSceneViewDeselected(@NonNull ProductSceneView view) {
+        super.productSceneViewDeselected(view);
     }
 
     @Override
