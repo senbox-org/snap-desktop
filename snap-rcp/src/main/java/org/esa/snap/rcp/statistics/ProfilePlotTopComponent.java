@@ -78,7 +78,7 @@ public class ProfilePlotTopComponent extends AbstractStatisticsTopComponent {
 //    }
 
     @Override
-    String getHelpId() {
+    protected String getHelpId() {
         return Bundle.CTL_ProfilePlotTopComponent_HelpId();
     }
 

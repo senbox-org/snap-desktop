@@ -74,7 +74,7 @@ public abstract class AbstractStatisticsTopComponent extends TopComponent implem
 
     abstract protected PagePanel createPagePanel();
 
-    abstract String getHelpId();
+    abstract protected String getHelpId();
 
     @Override
     public void componentShowing() {

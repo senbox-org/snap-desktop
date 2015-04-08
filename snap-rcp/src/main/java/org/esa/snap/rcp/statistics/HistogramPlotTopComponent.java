@@ -61,7 +61,7 @@ public class HistogramPlotTopComponent extends AbstractStatisticsTopComponent {
     }
 
     @Override
-    String getHelpId() {
+    protected String getHelpId() {
         return Bundle.CTL_HistogramPlotTopComponent_HelpId();
     }
 

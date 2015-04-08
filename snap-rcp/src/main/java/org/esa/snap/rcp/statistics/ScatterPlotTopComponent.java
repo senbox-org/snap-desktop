@@ -72,7 +72,7 @@ public class ScatterPlotTopComponent extends AbstractStatisticsTopComponent {
     }
 
     @Override
-    String getHelpId() {
+    protected String getHelpId() {
         return Bundle.CTL_ScatterPlotTopComponent_HelpId();
     }
 

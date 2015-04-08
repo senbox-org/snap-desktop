@@ -61,7 +61,7 @@ public class DensityPlotTopComponent extends AbstractStatisticsTopComponent {
     }
 
     @Override
-    String getHelpId() {
+    protected String getHelpId() {
         return Bundle.CTL_DensityPlotTopComponent_HelpId();
     }
 
