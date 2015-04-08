@@ -19,6 +19,7 @@ package org.esa.snap.rcp.statistics;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
+import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
@@ -56,13 +57,11 @@ public class InformationTopComponent extends AbstractStatisticsTopComponent {
 
     @Override
     protected PagePanel createPagePanel() {
-        return new InformationPanel(this, getHelpId());
+        return new InformationPanel(this, Bundle.CTL_InformationTopComponent_HelpId());
     }
 
     @Override
-    String getHelpId() {
-        return Bundle.CTL_InformationTopComponent_HelpId();
+    public HelpCtx getHelpCtx() {
+        return new HelpCtx(Bundle.CTL_InformationTopComponent_HelpId());
     }
-
-
 }

@@ -56,12 +56,7 @@ public class GeoCodingTopComponent extends AbstractStatisticsTopComponent {
 
     @Override
     protected PagePanel createPagePanel() {
-        return new GeoCodingPanel(this, getHelpId());
-    }
-
-    @Override
-    String getHelpId() {
-        return Bundle.CTL_GeoCodingTopComponent_HelpId();
+        return new GeoCodingPanel(this, Bundle.CTL_GeoCodingTopComponent_HelpId());
     }
 
 

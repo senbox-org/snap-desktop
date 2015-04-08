@@ -57,12 +57,7 @@ public class HistogramPlotTopComponent extends AbstractStatisticsTopComponent {
 
     @Override
     protected PagePanel createPagePanel() {
-        return new HistogramPanel(this, getHelpId());
-    }
-
-    @Override
-    String getHelpId() {
-        return Bundle.CTL_HistogramPlotTopComponent_HelpId();
+        return new HistogramPanel(this, Bundle.CTL_HistogramPlotTopComponent_HelpId());
     }
 
     @Override
