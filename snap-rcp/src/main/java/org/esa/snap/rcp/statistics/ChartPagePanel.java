@@ -49,7 +49,6 @@ import java.io.IOException;
  * @author Tonio
  */
 public abstract class ChartPagePanel extends PagePanel {
-    //todo enable RoiMaskSelector when MaskManager is available
 
     protected static final String HELP_TIP_MESSAGE = "For more information about this plot\n" +
             "hit the help button at the bottom right.";
@@ -58,7 +57,7 @@ public abstract class ChartPagePanel extends PagePanel {
 
     private AbstractButton hideAndShowButton;
     private JPanel backgroundPanel;
-//    private RoiMaskSelector roiMaskSelector;
+    private RoiMaskSelector roiMaskSelector;
     protected AbstractButton refreshButton;
     private final boolean refreshButtonEnabled;
 
@@ -74,7 +73,7 @@ public abstract class ChartPagePanel extends PagePanel {
 
     @Override
     protected void updateComponents() {
-//        roiMaskSelector.updateMaskSource(getProduct());
+        roiMaskSelector.updateMaskSource(getProduct());
         refreshButton.setEnabled(refreshButtonEnabled && (getRaster() != null));
     }
 
@@ -200,12 +199,12 @@ public abstract class ChartPagePanel extends PagePanel {
     }
 
     protected void createUI(final ChartPanel chartPanel, final JPanel optionsPanel, BindingContext bindingContext) {
-//        roiMaskSelector = new RoiMaskSelector(bindingContext);
+        roiMaskSelector = new RoiMaskSelector(bindingContext);
 
         final JPanel extendedOptionsPanel = GridBagUtils.createPanel();
         GridBagConstraints extendedOptionsPanelConstraints = GridBagUtils.createConstraints("insets.left=4,insets.right=2,anchor=NORTHWEST,fill=HORIZONTAL,insets.top=2,weightx=1");
         GridBagUtils.addToPanel(extendedOptionsPanel, new JSeparator(), extendedOptionsPanelConstraints, "gridy=0");
-//        GridBagUtils.addToPanel(extendedOptionsPanel, roiMaskSelector.createPanel(), extendedOptionsPanelConstraints, "gridy=1,insets.left=-4");
+        GridBagUtils.addToPanel(extendedOptionsPanel, roiMaskSelector.createPanel(), extendedOptionsPanelConstraints, "gridy=1,insets.left=-4");
         GridBagUtils.addToPanel(extendedOptionsPanel, new JPanel(), extendedOptionsPanelConstraints, "gridy=1,insets.left=-4");
         GridBagUtils.addToPanel(extendedOptionsPanel, optionsPanel, extendedOptionsPanelConstraints, "insets.left=0,insets.right=0,gridy=2,fill=VERTICAL,fill=HORIZONTAL,weighty=1");
         GridBagUtils.addToPanel(extendedOptionsPanel, new JSeparator(), extendedOptionsPanelConstraints, "insets.left=4,insets.right=2,gridy=5,anchor=SOUTHWEST");
