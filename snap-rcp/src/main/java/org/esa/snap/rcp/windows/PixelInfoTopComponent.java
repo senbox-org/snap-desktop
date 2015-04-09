@@ -6,27 +6,29 @@
 package org.esa.snap.rcp.windows;
 
 import com.bc.ceres.glayer.support.ImageLayer;
+import org.esa.beam.framework.datamodel.PixelPos;
+import org.esa.beam.framework.datamodel.Placemark;
+import org.esa.beam.framework.datamodel.ProductNodeEvent;
+import org.esa.beam.framework.datamodel.ProductNodeListener;
 import org.esa.beam.framework.ui.PixelPositionListener;
 import org.esa.beam.framework.ui.product.ProductSceneView;
-import org.esa.snap.rcp.pixelinfo.PixelInfoViewTableModel;
-import org.esa.snap.rcp.util.CollapsibleItemsPanel;
+import org.esa.beam.util.math.MathUtils;
+import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.rcp.pixelinfo.PixelInfoView;
 import org.netbeans.api.annotations.common.NonNull;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
-import org.openide.util.Lookup;
-import org.openide.util.LookupEvent;
-import org.openide.util.LookupListener;
 import org.openide.util.NbBundle;
-import org.openide.util.Utilities;
 import org.openide.windows.TopComponent;
 
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.ScrollPaneConstants;
+import javax.swing.JCheckBox;
+import javax.swing.SwingUtilities;
 import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 /**
  * Experimental top component which displays information about selected pixel.
@@ -50,116 +52,166 @@ import java.util.Collection;
                            "CTL_PixelInfoTopComponentName=Pixel Info",
                            "CTL_PixelInfoTopComponentDescription=Displays information about current pixel",
                    })
-public final class PixelInfoTopComponent extends ToolTopComponent implements LookupListener {
+public final class PixelInfoTopComponent extends ToolTopComponent {
 
-    private Lookup.Result<ProductSceneView> productSceneViewResult;
+    private ProductSceneView currentView;
+
     private PixelPositionListener pixelPositionListener;
-    private CollapsibleItemsPanel.Item<JTable> positionItem;
-    private CollapsibleItemsPanel.Item<JTable> timeItem;
-    private CollapsibleItemsPanel.Item<JTable> tiePointGridsItem;
-    private CollapsibleItemsPanel.Item<JTable> bandsItem;
-    private CollapsibleItemsPanel.Item<JTable> flagsItem;
-
-    private PixelInfoViewTableModel positionTableModel;
+    private final PixelInfoView pixelInfoView;
+    private final PinSelectionChangeListener pinSelectionChangeListener;
+    private final PinChangedListener pinChangedListener;
+    private final JCheckBox pinCheckbox;
 
     public PixelInfoTopComponent() {
-        initComponents();
         setName(Bundle.CTL_PixelInfoTopComponentName());
         setToolTipText(Bundle.CTL_PixelInfoTopComponentDescription());
         putClientProperty(TopComponent.PROP_MAXIMIZATION_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_KEEP_PREFERRED_SIZE_WHEN_SLIDED_IN, Boolean.TRUE);
         pixelPositionListener = new MyPixelPositionListener();
-    }
-
-    private void initComponents() {
+        pinSelectionChangeListener = new PinSelectionChangeListener();
+        pinChangedListener = new PinChangedListener();
+        pixelInfoView = new PixelInfoView();
+        pinCheckbox = new JCheckBox("Snap to selected pin");
+        pinCheckbox.setName("pinCheckbox");
+        pinCheckbox.setSelected(false);
+        pinCheckbox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                updatePixelInfo();
+            }
+        });
         setLayout(new BorderLayout());
+        add(pixelInfoView, BorderLayout.CENTER);
+        add(pinCheckbox, BorderLayout.SOUTH);
 
-        positionItem = CollapsibleItemsPanel.createTableItem("Position", 6, 3);
-//        positionTableModel = new DefaultTableModel(5, 2);
-        positionTableModel = new PixelInfoViewTableModel(new String[]{"Coordinate", "Value", "Unit"});
-        positionItem.getComponent().setModel(positionTableModel);
-        timeItem = CollapsibleItemsPanel.createTableItem("Time", 2, 3);
-        tiePointGridsItem = CollapsibleItemsPanel.createTableItem("Tie Point Grids", 0, 3);
-        bandsItem = CollapsibleItemsPanel.createTableItem("Bands", 18, 3);
-        final PixelInfoViewTableModel bandsModel = new PixelInfoViewTableModel(new String[]{"Band", "Value", "Unit"});
-        bandsItem.getComponent().setModel(bandsModel);
-        bandsModel.addRow("fsgdh", "2", "xy");
-        flagsItem = CollapsibleItemsPanel.createTableItem("Flags", 0, 2);
-
-        CollapsibleItemsPanel collapsibleItemsPanel = new CollapsibleItemsPanel(
-                positionItem,
-                timeItem,
-                tiePointGridsItem,
-                bandsItem,
-                flagsItem);
-        JScrollPane scrollPane = new JScrollPane(collapsibleItemsPanel,
-                                                 ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
-                                                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-
-        add(scrollPane, BorderLayout.CENTER);
+        setCurrentView(SnapApp.getDefault().getSelectedProductSceneView());
     }
 
     @Override
     protected void productSceneViewSelected(@NonNull ProductSceneView view) {
-        super.productSceneViewSelected(view);
+        setCurrentView(view);
     }
 
     @Override
     protected void productSceneViewDeselected(@NonNull ProductSceneView view) {
-        super.productSceneViewDeselected(view);
+        setCurrentView(null);
     }
 
-    @Override
-    public void resultChanged(LookupEvent lookupEvent) {
-        Collection<? extends ProductSceneView> productSceneViews2 = productSceneViewResult.allInstances();
-        ProductSceneView productSceneView;
-        if (!productSceneViews2.isEmpty()) {
-            productSceneView = new ArrayList<>(productSceneViews2).get(0);
-            productSceneView.removePixelPositionListener(pixelPositionListener);
-            productSceneView.addPixelPositionListener(pixelPositionListener);
+    private void setCurrentView(ProductSceneView view) {
+        if (currentView == view) {
+            return;
+        }
+        if (currentView != null) {
+            currentView.removePixelPositionListener(pixelPositionListener);
+            currentView.removePropertyChangeListener(ProductSceneView.PROPERTY_NAME_SELECTED_PIN,
+                                                     pinSelectionChangeListener);
+            currentView.getProduct().removeProductNodeListener(pinChangedListener);
+        } else {
+            pixelInfoView.clearProductNodeRefs();
+        }
+        currentView = view;
+        if (currentView != null) {
+            currentView.addPixelPositionListener(pixelPositionListener);
+            currentView.addPropertyChangeListener(ProductSceneView.PROPERTY_NAME_SELECTED_PIN,
+                                                  pinSelectionChangeListener);
+            currentView.getProduct().addProductNodeListener(pinChangedListener);
         }
     }
 
-    @Override
-    public void componentOpened() {
-        productSceneViewResult = Utilities.actionsGlobalContext().lookupResult(ProductSceneView.class);
-        productSceneViewResult.addLookupListener(this);
+    private void updatePixelInfo() {
+        if (isSnapToSelectedPin()) {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    snapToSelectedPin();
+                }
+            });
+        } else {
+            pixelInfoView.updatePixelValues(currentView, -1, -1, 0, false);
+        }
     }
 
-    @Override
-    public void componentClosed() {
-        productSceneViewResult.removeLookupListener(this);
-        productSceneViewResult = null;
+    private boolean isSnapToSelectedPin() {
+        return pinCheckbox.isSelected();
     }
 
-    void writeProperties(java.util.Properties p) {
-        // better to version settings since initial version as advocated at
-        // http://wiki.apidesign.org/wiki/PropertyFiles
-        p.setProperty("version", "1.0");
+    private void snapToSelectedPin() {
+        final Placemark pin = currentView != null ? currentView.getSelectedPin() : null;
+        if (pin != null) {
+            final PixelPos pos = pin.getPixelPos();
+            final int x = MathUtils.floorInt(pos.x);
+            final int y = MathUtils.floorInt(pos.y);
+            pixelInfoView.updatePixelValues(currentView, x, y, 0, true);
+        } else {
+            pixelInfoView.updatePixelValues(currentView, -1, -1, 0, false);
+        }
     }
 
-    void readProperties(java.util.Properties p) {
-        String version = p.getProperty("version");
+//    @Override
+//    public boolean isVisible() {
+//        return super.isVisible() || pixelInfoView.isAnyCollapsiblePaneVisible();
+//    }
+
+    private class PinSelectionChangeListener implements PropertyChangeListener {
+
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+            if (isVisible()) {
+                updatePixelInfo();
+            }
+        }
+
+    }
+
+    private class PinChangedListener implements ProductNodeListener {
+
+        @Override
+        public void nodeChanged(ProductNodeEvent event) {
+            if (Placemark.PROPERTY_NAME_PIXELPOS.equals(event.getPropertyName())) {
+                handlePinEvent(event);
+            }
+        }
+
+        @Override
+        public void nodeDataChanged(ProductNodeEvent event) {
+            handlePinEvent(event);
+        }
+
+        @Override
+        public void nodeAdded(ProductNodeEvent event) {
+            handlePinEvent(event);
+        }
+
+        @Override
+        public void nodeRemoved(ProductNodeEvent event) {
+            handlePinEvent(event);
+        }
+
+        private void handlePinEvent(ProductNodeEvent event) {
+            if (currentView != null
+                    && event.getSourceNode() == currentView.getSelectedPin()) {
+                updatePixelInfo();
+            }
+        }
     }
 
     private class MyPixelPositionListener implements PixelPositionListener {
         @Override
         public void pixelPosChanged(ImageLayer baseImageLayer, int pixelX, int pixelY, int currentLevel, boolean pixelPosValid, MouseEvent e) {
-            JTable table = positionItem.getComponent();
-            table.getModel().setValueAt("X", 0, 0);
-            table.getModel().setValueAt(pixelX, 0, 1);
-            table.getModel().setValueAt("Y", 1, 0);
-            table.getModel().setValueAt(pixelY, 1, 1);
+            if (isActive()) {
+                pixelInfoView.updatePixelValues(currentView, pixelX, pixelY, currentLevel, pixelPosValid);
+            }
         }
 
         @Override
         public void pixelPosNotAvailable() {
-            JTable table = positionItem.getComponent();
-            table.getModel().setValueAt("X", 0, 0);
-            table.getModel().setValueAt("NaN", 0, 1);
-            table.getModel().setValueAt("Y", 1, 0);
-            table.getModel().setValueAt("NaN", 1, 1);
+            if (isActive()) {
+                pixelInfoView.clearProductNodeRefs();
+            }
+        }
 
+        private boolean isActive() {
+            return isVisible() && !isSnapToSelectedPin();
         }
     }
 }
