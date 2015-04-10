@@ -152,7 +152,7 @@ public class SpectrumChooser extends ModalDialog implements LoadSaveRasterDataNo
     private void addSpectrumComponentsToSpectraPanel(int index) {
         DisplayableSpectrum spectrum = spectra[index];
         ImageIcon strokeIcon;
-        if (spectrum.isRemainingBandsSpectrum()) {
+        if (spectrum.isDefaultOrRemainingBandsSpectrum()) {
             strokeIcon = new ImageIcon();
         } else {
             strokeIcon = SpectrumStrokeProvider.getStrokeIcon(spectrum.getLineStyle());
@@ -178,6 +178,9 @@ public class SpectrumChooser extends ModalDialog implements LoadSaveRasterDataNo
             strokeComboBox.setEnabled(false);
         } else {
             strokeComboBox = new JComboBox<>(SpectrumStrokeProvider.getStrokeIcons());
+            strokeComboBox.addActionListener(
+                    e -> spectrum.setLineStyle(
+                            SpectrumStrokeProvider.getStroke((ImageIcon) strokeComboBox.getSelectedItem())));
         }
         strokeComboBox.setPreferredSize(new Dimension(100, 20));
         strokeComboBox.setSelectedItem(strokeIcon);
