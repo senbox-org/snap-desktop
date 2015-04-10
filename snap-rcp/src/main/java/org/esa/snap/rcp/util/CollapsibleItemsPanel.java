@@ -8,11 +8,15 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 /**
- * Created by Norman on 24.11.2014.
+ * @author Norman Fomferra
+ * @author Tonio Fincke
  */
 public class CollapsibleItemsPanel extends JComponent {
 
     private Item[] items;
+    private JToggleButton[] toggleButtons;
+    private static ImageIcon col_icon = ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/NodeCollapsed11.png", false);
+    private static ImageIcon exp_icon = ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/NodeExpanded11.png", false);
 
     public static void main(String[] args) {
         try {
@@ -44,11 +48,11 @@ public class CollapsibleItemsPanel extends JComponent {
 
     public CollapsibleItemsPanel(Item... items) {
         this.items = items;
+        this.toggleButtons = new  JToggleButton[items.length];
         setLayout(null);
 
-        ImageIcon colIcon = ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/NodeCollapsed11.png", false);
-        ImageIcon expIcon = ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/NodeExpanded11.png", false);
-        for (Item item : items) {
+        for (int i = 0; i < items.length; i++) {
+            Item item = items[i];
             JToggleButton button = new JToggleButton(item.getDisplayName());
             Font font = button.getFont();
             button.setFont(font.deriveFont(Font.BOLD, font.getSize() * 0.8f));
@@ -59,24 +63,25 @@ public class CollapsibleItemsPanel extends JComponent {
 
             button.setHorizontalAlignment(SwingConstants.LEFT);
             button.setBorder(new EmptyBorder(2, 4, 2, 4));
-            button.setIcon(expIcon);
+            button.setIcon(exp_icon);
             button.addActionListener(e -> {
                 item.getComponent().setVisible(!button.isSelected());
-                button.setIcon(button.isSelected() ? colIcon : expIcon);
+                button.setIcon(button.isSelected() ? col_icon : exp_icon);
             });
-
+            toggleButtons[i] = button;
             add(panel);
         }
-    }
-
-    public int getItemCount() {
-        return items.length;
     }
 
     public Item getItem(int index) {
         return items[index];
     }
 
+    public void setCollapsed(int index, boolean collapsed) {
+        items[index].getComponent().setVisible(!collapsed);
+        toggleButtons[index].setSelected(collapsed);
+        toggleButtons[index].setIcon(collapsed ? col_icon : exp_icon);
+    }
 
     @Override
     public Dimension getPreferredSize() {
@@ -101,6 +106,10 @@ public class CollapsibleItemsPanel extends JComponent {
             component.setBounds(0, y, width, preferredSize.height);
             y += preferredSize.height;
         }
+    }
+
+    public boolean isCollapsed(int index) {
+        return !items[index].getComponent().isVisible();
     }
 
     /*

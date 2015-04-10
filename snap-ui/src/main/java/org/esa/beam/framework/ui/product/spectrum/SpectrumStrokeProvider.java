@@ -55,6 +55,9 @@ public class SpectrumStrokeProvider {
     }
 
     public static ImageIcon getStrokeIcon(Stroke lineStyle) {
+        if(lineStyle == EMPTY_STROKE) {
+            return new ImageIcon();
+        }
         return strokeIcons[ArrayUtils.getElementIndex(lineStyle, strokes)];
     }
 

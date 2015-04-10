@@ -615,7 +615,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
                 spectra = new DisplayableSpectrum[1];
                 spectra[0] = new DisplayableSpectrum(
                         DisplayableSpectrum.DEFAULT_SPECTRUM_NAME, getAvailableSpectralBands(), 1);
-                spectra[0].setLineStyle(SpectrumStrokeProvider.getStroke(0));
+                spectra[0].setLineStyle(SpectrumStrokeProvider.EMPTY_STROKE);
             }
         }
         productToAllSpectraMap.put(currentProduct, spectra);

@@ -27,6 +27,10 @@ import org.esa.beam.framework.datamodel.ProductNode;
 import org.esa.beam.framework.datamodel.ProductNodeEvent;
 import org.esa.beam.framework.datamodel.ProductNodeListener;
 import org.esa.beam.framework.ui.GridBagUtils;
+import org.esa.beam.framework.ui.tool.ToolButtonFactory;
+import org.openide.util.ImageUtilities;
+import org.openide.windows.TopComponent;
+import org.openide.windows.WindowManager;
 
 import javax.swing.AbstractButton;
 import javax.swing.DefaultListCellRenderer;
@@ -34,8 +38,11 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import java.awt.Component;
 import java.awt.GridBagConstraints;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 
 class RoiMaskSelector {
@@ -53,11 +60,25 @@ class RoiMaskSelector {
     private Enablement useRoiEnablement;
     private Enablement roiMaskEnablement;
 
-//    public RoiMaskSelector(BindingContext bindingContext) {
-//        this(bindingContext, VisatApp.getApp().getCommandManager().getCommand("org.esa.beam.visat.toolviews.mask.MaskManagerToolView.showCmd").createToolBarButton());
-//     }
+    private AbstractButton createShowMaskManagerButton() {
+        final AbstractButton showMaskManagerButton =
+                ToolButtonFactory.createButton(ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/MaskManager24.png", false), false);
+        showMaskManagerButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        final TopComponent maskManagerTopComponent = WindowManager.getDefault().findTopComponent("MaskManagerTopComponent");
+                        maskManagerTopComponent.open();
+                        maskManagerTopComponent.requestActive();
+                    }
+                });
+            }
+        });
+        return showMaskManagerButton;
+    }
 
-    public RoiMaskSelector(BindingContext bindingContext, AbstractButton showMaskManagerButton) {
+    public RoiMaskSelector(BindingContext bindingContext) {
         final Property useRoiMaskProperty = bindingContext.getPropertySet().getProperty(PROPERTY_NAME_USE_ROI_MASK);
         Assert.argument(useRoiMaskProperty != null, "bindingContext");
         Assert.argument(useRoiMaskProperty.getType().equals(Boolean.class) || useRoiMaskProperty.getType() == Boolean.TYPE, "bindingContext");
@@ -79,7 +100,7 @@ class RoiMaskSelector {
             }
         });
 
-        this.showMaskManagerButton = showMaskManagerButton;
+        this.showMaskManagerButton = createShowMaskManagerButton();
 
         bindingContext.bind(PROPERTY_NAME_USE_ROI_MASK, useRoiMaskCheckBox);
         bindingContext.bind(PROPERTY_NAME_ROI_MASK, roiMaskComboBox);
