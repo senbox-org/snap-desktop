@@ -172,12 +172,15 @@ public class SpectrumChooser extends ModalDialog implements LoadSaveRasterDataNo
         spectrumNameLabel.setFont(font);
         spectraPanel.add(spectrumNameLabel);
         spectraPanel.add(new JLabel(spectrum.getUnit()));
-        JComboBox<ImageIcon> strokeComboBox = new JComboBox<>(SpectrumStrokeProvider.getStrokeIcons());
+        JComboBox<ImageIcon> strokeComboBox;
+        if (spectrum.isDefaultOrRemainingBandsSpectrum()) {
+            strokeComboBox = new JComboBox<>(new ImageIcon[]{strokeIcon});
+            strokeComboBox.setEnabled(false);
+        } else {
+            strokeComboBox = new JComboBox<>(SpectrumStrokeProvider.getStrokeIcons());
+        }
         strokeComboBox.setPreferredSize(new Dimension(100, 20));
         strokeComboBox.setSelectedItem(strokeIcon);
-        strokeComboBox.addActionListener(
-                e -> spectrum.setLineStyle(
-                        SpectrumStrokeProvider.getStroke((ImageIcon) strokeComboBox.getSelectedItem())));
         spectraPanel.add(strokeComboBox);
         JComboBox<ImageIcon> shapeComboBox = new JComboBox<>(SpectrumShapeProvider.getShapeIcons());
         JComboBox<Integer> shapeSizeComboBox = new JComboBox<>(SpectrumShapeProvider.getScaleGrades());

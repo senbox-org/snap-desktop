@@ -53,6 +53,10 @@ public class DisplayableSpectrum implements Spectrum {
 
     }
 
+    public boolean isDefaultOrRemainingBandsSpectrum() {
+        return isRemainingBandsSpectrum() || name.equals(DEFAULT_SPECTRUM_NAME);
+    }
+
     public boolean isRemainingBandsSpectrum() {
         return name.equals(REMAINING_BANDS_NAME);
     }
