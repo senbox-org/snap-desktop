@@ -17,7 +17,6 @@
 package org.esa.beam.framework.ui.layer;
 
 import com.bc.ceres.glayer.Layer;
-import org.esa.beam.framework.ui.AppContext;
 
 import javax.swing.JComponent;
 
@@ -29,15 +28,13 @@ import javax.swing.JComponent;
  */
 public abstract class AbstractLayerEditor implements LayerEditor {
 
-    private AppContext appContext;
     private Layer currentLayer;
 
     protected AbstractLayerEditor() {
     }
 
     @Override
-    public final JComponent createControl(AppContext appContext, Layer layer) {
-        this.appContext = appContext;
+    public final JComponent createControl(Layer layer) {
         this.currentLayer = layer;
         return createControl();
     }
@@ -60,13 +57,6 @@ public abstract class AbstractLayerEditor implements LayerEditor {
      * @return The editor control.
      */
     protected abstract JComponent createControl();
-
-    /**
-     * @return The application context.
-     */
-    protected AppContext getAppContext() {
-        return appContext;
-    }
 
     /**
      * @return The current layer.

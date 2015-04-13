@@ -13,17 +13,43 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, see http://www.gnu.org/licenses/
  */
-package org.esa.beam.visat.toolviews.layermanager;
+package org.esa.snap.rcp.layermanager;
 
 import com.bc.ceres.glayer.Layer;
 import com.bc.ceres.glayer.support.AbstractLayerListener;
 import org.esa.beam.framework.ui.layer.LayerEditor;
+import org.openide.awt.ActionID;
+import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
+import org.openide.util.NbBundle;
+import org.openide.windows.TopComponent;
 
-import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeEvent;
 
+@TopComponent.Description(
+        preferredID = "LayerEditorTopComponent",
+        iconBase = "org/esa/snap/rcp/icons/LayerEditor24.png",
+        persistenceType = TopComponent.PERSISTENCE_ALWAYS
+)
+@TopComponent.Registration(
+        mode = "navigator",
+        openAtStartup = false,
+        position = 1
+)
+@ActionID(category = "Window", id = "org.esa.snap.rcp.layermanager.LayerEditorTopComponent")
+@ActionReferences({
+        @ActionReference(path = "Menu/Window/Tool Windows"),
+})
+@TopComponent.OpenActionRegistration(
+        displayName = "#CTL_LayerEditorTopComponent_Name",
+        preferredID = "LayerEditorTopComponent"
+)
+@NbBundle.Messages({
+        "CTL_LayerEditorTopComponent_Name=Layer Editor",
+        "CTL_LayerEditorTopComponent_HelpId=showLayerEditorWnd"
+})
 /**
  * Layer manager tool view.
  * <p/>
@@ -33,50 +59,54 @@ import java.beans.PropertyChangeEvent;
  * @version $Revision: $ $Date: $
  * @since BEAM 4.6
  */
-public class LayerEditorToolView extends AbstractLayerToolView {
+public class LayerEditorTopComponent extends AbstractLayerTopComponent {
 
-    static final String ID = LayerEditorToolView.class.getName();
-    private final LayerEditor emptyLayerEditor;
     private LayerEditor activeEditor;
-    private final LayerHandler layerHandler;
+    private LayerHandler layerHandler;
 
-    public LayerEditorToolView() {
-        layerHandler = new LayerHandler();
-        emptyLayerEditor = LayerEditor.EMPTY;
+    @Override
+    protected String getTitle() {
+        return Bundle.CTL_LayerEditorTopComponent_Name();
+    }
+
+    @Override
+    protected String getHelpId() {
+        return Bundle.CTL_LayerEditorTopComponent_HelpId();
     }
 
     @Override
     protected void layerSelectionChanged(Layer oldLayer, Layer newLayer) {
+        if (layerHandler == null) {
+            layerHandler = new LayerHandler();
+        }
 
         if (oldLayer != null) {
             oldLayer.removeListener(layerHandler);
         }
 
-        final JPanel controlPanel = getControlPanel();
-
-        if (controlPanel.getComponentCount() > 0) {
-            controlPanel.remove(0);
+        if (getComponentCount() > 0) {
+            remove(0);
         }
 
         LayerEditor oldEditor = activeEditor;
 
         if (newLayer != null) {
             activeEditor = getLayerEditor(newLayer);
-            getDescriptor().setTitle("Layer Editor - " + newLayer.getName());
+            setDisplayName("Layer Editor - " + newLayer.getName());
         } else {
-            activeEditor = emptyLayerEditor;
-            getDescriptor().setTitle("Layer Editor");
+            activeEditor = LayerEditor.EMPTY;
+            setDisplayName("Layer Editor");
         }
 
         if (oldEditor != null) {
             oldEditor.handleEditorDetached();
         }
-        controlPanel.add(activeEditor.createControl(getAppContext(), newLayer), BorderLayout.CENTER);
+        add(activeEditor.createControl(newLayer), BorderLayout.CENTER);
         activeEditor.handleEditorAttached();
         activeEditor.handleLayerContentChanged();
 
-        controlPanel.validate();
-        controlPanel.repaint();
+        validate();
+        repaint();
 
         if (newLayer != null) {
             newLayer.addListener(layerHandler);
@@ -95,7 +125,7 @@ public class LayerEditorToolView extends AbstractLayerToolView {
             return layerEditor;
         }
 
-        return emptyLayerEditor;
+        return LayerEditor.EMPTY;
     }
 
     private class LayerHandler extends AbstractLayerListener {
