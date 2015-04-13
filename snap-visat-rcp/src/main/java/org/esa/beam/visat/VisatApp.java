@@ -2032,7 +2032,7 @@ public class VisatApp extends BasicApp implements AppContext {
 //        excludedIds.add(DensityPlotToolView.ID);
 //        excludedIds.add(ProfilePlotToolView.ID);
         excludedIds.add("org.esa.beam.scripting.visat.ScriptConsoleToolView");
-        excludedIds.add("org.esa.beam.visat.toolviews.layermanager.LayerEditorToolView");
+//        excludedIds.add("org.esa.beam.visat.toolviews.layermanager.LayerEditorToolView");
 
         return excludedIds;
     }

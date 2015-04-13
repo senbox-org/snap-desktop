@@ -17,9 +17,12 @@
 package org.esa.snap.rcp.layermanager;
 
 import org.esa.beam.framework.ui.UIUtils;
+import org.openide.windows.TopComponent;
+import org.openide.windows.WindowManager;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.SwingUtilities;
 import java.awt.event.ActionEvent;
 
 class OpenLayerEditorAction extends AbstractAction {
@@ -31,10 +34,12 @@ class OpenLayerEditorAction extends AbstractAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-//        ApplicationPage page = VisatApp.getApp().getApplicationPage();
-//        ToolView toolView = page.getToolView(LayerEditorToolView.ID);
-//        if (toolView != null) {
-//            page.showToolView(LayerEditorToolView.ID);
-//        }
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                final TopComponent layerEditorTopComponent = WindowManager.getDefault().findTopComponent("LayerEditorTopComponent");
+                layerEditorTopComponent.open();
+                layerEditorTopComponent.requestActive();
+            }
+        });
     }
 }

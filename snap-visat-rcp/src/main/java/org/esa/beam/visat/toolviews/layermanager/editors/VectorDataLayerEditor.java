@@ -37,6 +37,7 @@ import org.esa.beam.framework.ui.product.VectorDataFigureEditor;
 import org.esa.beam.framework.ui.product.VectorDataLayer;
 import org.esa.beam.util.Debug;
 import org.esa.beam.util.ObjectUtils;
+import org.openide.util.Utilities;
 
 import java.awt.Color;
 import java.beans.PropertyChangeEvent;
@@ -180,8 +181,8 @@ public class VectorDataLayerEditor extends AbstractLayerConfigurationEditor {
 
     private void updateColorAndOpacity(String colorPropertyName, String opacityPropertyName) {
         PropertySet propertySet = getBindingContext().getPropertySet();
-        Color color  = propertySet.getValue(colorPropertyName);
-        boolean isTransparent = color != null &&  color.getAlpha() == 0;
+        Color color = propertySet.getValue(colorPropertyName);
+        boolean isTransparent = color != null && color.getAlpha() == 0;
         if (isTransparent) {
             propertySet.setValue(opacityPropertyName, 0.0);
         } else {
@@ -217,26 +218,31 @@ public class VectorDataLayerEditor extends AbstractLayerConfigurationEditor {
         }
     }
 
+    private ProductSceneView getSelectedProductSceneView() {
+        return Utilities.actionsGlobalContext().lookup(ProductSceneView.class);
+    }
+
     private FigureEditor getFigureEditor() {
-        final ProductSceneView view = getAppContext().getSelectedProductSceneView();
+        final ProductSceneView view = getSelectedProductSceneView();
         return view != null ? view.getFigureEditor() : null;
     }
 
     private Layer getSelectedLayer() {
-        final ProductSceneView view = getAppContext().getSelectedProductSceneView();
+        final ProductSceneView view = getSelectedProductSceneView();
         return view != null ? view.getSelectedLayer() : null;
     }
 
     private SimpleFeatureFigure[] getFigures(boolean selectedOnly) {
-        if (getAppContext() != null) {
-            final ProductSceneView sceneView = getAppContext().getSelectedProductSceneView();
-            return sceneView.getFeatureFigures(selectedOnly);
+        final ProductSceneView sceneView = getSelectedProductSceneView();
+        final SimpleFeatureFigure[] featureFigures = sceneView.getFeatureFigures(selectedOnly);
+        if (featureFigures.length > 0) {
+            return featureFigures;
         }
         return NO_SIMPLE_FEATURE_FIGURES;
     }
 
     private boolean areFiguresSelected() {
-        final ProductSceneView sceneView = getAppContext().getSelectedProductSceneView();
+        final ProductSceneView sceneView = getSelectedProductSceneView();
         return sceneView.getFigureEditor().getFigureSelection().isEmpty();
     }
 

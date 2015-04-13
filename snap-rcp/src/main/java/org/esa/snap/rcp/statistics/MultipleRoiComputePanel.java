@@ -28,6 +28,9 @@ import org.esa.beam.framework.ui.GridBagUtils;
 import org.esa.beam.framework.ui.UIUtils;
 import org.esa.beam.framework.ui.tool.ToolButtonFactory;
 import org.esa.beam.util.StringUtils;
+import org.openide.util.ImageUtilities;
+import org.openide.windows.TopComponent;
+import org.openide.windows.WindowManager;
 
 import javax.swing.AbstractButton;
 import javax.swing.DefaultListModel;
@@ -157,8 +160,7 @@ class MultipleRoiComputePanel extends JPanel {
         topPanel.add(refreshButton, BorderLayout.WEST);
 
         //todo enable showMaskManagerButton
-//        AbstractButton showMaskManagerButton = VisatApp.getApp().getCommandManager().getCommand("org.esa.beam.visat.toolviews.mask.MaskManagerToolView.showCmd").createToolBarButton();
-
+        AbstractButton showMaskManagerButton = createShowMaskManagerButton();
         selectAllCheckBox = new JCheckBox("Select all");
         selectAllCheckBox.addItemListener(new ItemListener() {
             @Override
@@ -190,12 +192,30 @@ class MultipleRoiComputePanel extends JPanel {
         GridBagUtils.addToPanel(multiRoiComputePanel, useRoiCheckBox, multiRoiComputePanelConstraints, "gridy=2,weightx=0");
         GridBagUtils.addToPanel(multiRoiComputePanel, new JLabel(("Filter: ")), multiRoiComputePanelConstraints, "gridy=3,gridx=0,gridwidth=1,anchor=WEST");
         GridBagUtils.addToPanel(multiRoiComputePanel, maskNameSearchField, multiRoiComputePanelConstraints, "gridx=1,weightx=1");
-//        GridBagUtils.addToPanel(multiRoiComputePanel, showMaskManagerButton, multiRoiComputePanelConstraints, "gridy=3,gridx=2,weightx=0");
+        GridBagUtils.addToPanel(multiRoiComputePanel, showMaskManagerButton, multiRoiComputePanelConstraints, "gridy=3,gridx=2,weightx=0");
         GridBagUtils.addToPanel(multiRoiComputePanel, new JScrollPane(maskNameList), multiRoiComputePanelConstraints, "gridy=4,gridx=0,fill=HORIZONTAL,gridwidth=3,anchor=NORTHWEST");
         GridBagUtils.addToPanel(multiRoiComputePanel, checkBoxPanel, multiRoiComputePanelConstraints, "gridy=5,weighty=1,gridwidth=3");
         add(multiRoiComputePanel);
 
         setRaster(rasterDataNode);
+    }
+
+    private AbstractButton createShowMaskManagerButton() {
+        final AbstractButton showMaskManagerButton =
+                ToolButtonFactory.createButton(ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/MaskManager24.png", false), false);
+        showMaskManagerButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        final TopComponent maskManagerTopComponent = WindowManager.getDefault().findTopComponent("MaskManagerTopComponent");
+                        maskManagerTopComponent.open();
+                        maskManagerTopComponent.requestActive();
+                    }
+                });
+            }
+        });
+        return showMaskManagerButton;
     }
 
     void setRaster(final RasterDataNode newRaster) {

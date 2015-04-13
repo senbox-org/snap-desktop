@@ -17,7 +17,6 @@
 package org.esa.beam.framework.ui.layer;
 
 import com.bc.ceres.glayer.Layer;
-import org.esa.beam.framework.ui.AppContext;
 
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -43,12 +42,11 @@ public interface LayerEditor {
     /**
      * Creates the control for the user interface which is displayed
      * in the Layer Editor Toolview.
-     * 
-     * @param appContext the application context 
+     *
      * @param layer The layer to create the control for.
      * @return The control.
      */
-    JComponent createControl(AppContext appContext, Layer layer);
+    JComponent createControl(Layer layer);
 
     /**
      * Called y the framework in order to inform this editor that it has been attached to the Layer Editor Toolview.
