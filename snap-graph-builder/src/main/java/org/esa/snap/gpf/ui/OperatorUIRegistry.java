@@ -16,7 +16,7 @@
 package org.esa.snap.gpf.ui;
 
 import com.bc.ceres.core.Assert;
-import org.esa.beam.util.SystemUtils;
+import org.esa.snap.util.SystemUtils;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 import org.openide.modules.ModuleInfo;

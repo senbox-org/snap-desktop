@@ -17,7 +17,7 @@
 package org.esa.snap.rcp.layermanager;
 
 import com.bc.ceres.glayer.Layer;
-import org.esa.beam.framework.ui.UIUtils;
+import org.esa.snap.framework.ui.UIUtils;
 import org.esa.snap.rcp.SnapApp;
 
 import javax.swing.AbstractAction;

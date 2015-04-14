@@ -22,12 +22,12 @@ import com.bc.ceres.glayer.support.LayerUtils;
 import com.bc.ceres.swing.TreeCellExtender;
 import com.jidesoft.swing.CheckBoxTree;
 import com.jidesoft.swing.CheckBoxTreeSelectionModel;
-import org.esa.beam.framework.ui.GridBagUtils;
-import org.esa.beam.framework.ui.UIUtils;
-import org.esa.beam.framework.ui.product.ProductSceneView;
-import org.esa.beam.framework.ui.product.VectorDataLayer;
-import org.esa.beam.framework.ui.tool.ToolButtonFactory;
-import org.esa.beam.glayer.MaskLayerType;
+import org.esa.snap.framework.ui.GridBagUtils;
+import org.esa.snap.framework.ui.UIUtils;
+import org.esa.snap.framework.ui.product.ProductSceneView;
+import org.esa.snap.framework.ui.product.VectorDataLayer;
+import org.esa.snap.framework.ui.tool.ToolButtonFactory;
+import org.esa.snap.glayer.MaskLayerType;
 import org.esa.snap.rcp.windows.ToolTopComponent;
 import org.openide.util.HelpCtx;
 

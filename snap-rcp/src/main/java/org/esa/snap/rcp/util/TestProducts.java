@@ -1,13 +1,13 @@
 package org.esa.snap.rcp.util;
 
-import org.esa.beam.framework.datamodel.Band;
-import org.esa.beam.framework.datamodel.MetadataElement;
-import org.esa.beam.framework.datamodel.Product;
-import org.esa.beam.framework.datamodel.ProductData;
-import org.esa.beam.framework.datamodel.TiePointGrid;
+import org.esa.snap.framework.datamodel.Band;
+import org.esa.snap.framework.datamodel.MetadataElement;
+import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.datamodel.ProductData;
+import org.esa.snap.framework.datamodel.TiePointGrid;
 
 import javax.media.jai.operator.ConstantDescriptor;
-import java.awt.*;
+import java.awt.Color;
 import java.util.Random;
 
 /**

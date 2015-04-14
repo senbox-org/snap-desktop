@@ -17,11 +17,11 @@
 package org.esa.snap.rcp.actions.tools;
 
 import com.bc.ceres.core.Assert;
-import org.esa.beam.framework.datamodel.BasicPixelGeoCoding;
-import org.esa.beam.framework.datamodel.GeoCoding;
-import org.esa.beam.framework.datamodel.Product;
-import org.esa.beam.framework.datamodel.ProductNode;
-import org.esa.beam.framework.ui.UIUtils;
+import org.esa.snap.framework.datamodel.BasicPixelGeoCoding;
+import org.esa.snap.framework.datamodel.GeoCoding;
+import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.datamodel.ProductNode;
+import org.esa.snap.framework.ui.UIUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.openide.awt.ActionID;
@@ -36,7 +36,9 @@ import org.openide.util.NbBundle.Messages;
 import org.openide.util.Utilities;
 import org.openide.util.WeakListeners;
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.SwingWorker;
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;

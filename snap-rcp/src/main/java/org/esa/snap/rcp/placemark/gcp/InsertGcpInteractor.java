@@ -16,7 +16,7 @@
 
 package org.esa.snap.rcp.placemark.gcp;
 
-import org.esa.beam.framework.datamodel.GcpDescriptor;
+import org.esa.snap.framework.datamodel.GcpDescriptor;
 import org.esa.snap.rcp.placemark.InsertPlacemarkInteractor;
 
 /**

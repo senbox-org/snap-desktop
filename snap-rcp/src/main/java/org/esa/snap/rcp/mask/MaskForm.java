@@ -15,9 +15,9 @@
  */
 package org.esa.snap.rcp.mask;
 
-import org.esa.beam.framework.datamodel.Mask;
-import org.esa.beam.framework.datamodel.Product;
-import org.esa.beam.framework.datamodel.RasterDataNode;
+import org.esa.snap.framework.datamodel.Mask;
+import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.datamodel.RasterDataNode;
 
 import javax.swing.AbstractButton;
 import javax.swing.Action;

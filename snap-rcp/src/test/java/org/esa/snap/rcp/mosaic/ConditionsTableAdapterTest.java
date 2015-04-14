@@ -18,16 +18,15 @@ package org.esa.snap.rcp.mosaic;
 
 import com.bc.ceres.binding.PropertyContainer;
 import com.bc.ceres.swing.binding.BindingContext;
-import org.esa.beam.framework.gpf.annotations.ParameterDescriptorFactory;
-import org.esa.beam.gpf.operators.standard.MosaicOp;
+import org.esa.snap.framework.gpf.annotations.ParameterDescriptorFactory;
+import org.esa.snap.gpf.operators.standard.MosaicOp;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.swing.*;
+import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class ConditionsTableAdapterTest {
 

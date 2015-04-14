@@ -5,17 +5,17 @@
  */
 package org.esa.snap.rcp.nodes;
 
-import org.esa.beam.framework.datamodel.Band;
-import org.esa.beam.framework.datamodel.FlagCoding;
-import org.esa.beam.framework.datamodel.IndexCoding;
-import org.esa.beam.framework.datamodel.Mask;
-import org.esa.beam.framework.datamodel.MetadataElement;
-import org.esa.beam.framework.datamodel.Product;
-import org.esa.beam.framework.datamodel.ProductNode;
-import org.esa.beam.framework.datamodel.ProductNodeEvent;
-import org.esa.beam.framework.datamodel.ProductNodeGroup;
-import org.esa.beam.framework.datamodel.TiePointGrid;
-import org.esa.beam.framework.datamodel.VectorDataNode;
+import org.esa.snap.framework.datamodel.Band;
+import org.esa.snap.framework.datamodel.FlagCoding;
+import org.esa.snap.framework.datamodel.IndexCoding;
+import org.esa.snap.framework.datamodel.Mask;
+import org.esa.snap.framework.datamodel.MetadataElement;
+import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.datamodel.ProductNode;
+import org.esa.snap.framework.datamodel.ProductNodeEvent;
+import org.esa.snap.framework.datamodel.ProductNodeGroup;
+import org.esa.snap.framework.datamodel.TiePointGrid;
+import org.esa.snap.framework.datamodel.VectorDataNode;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.file.OpenImageViewAction;
 import org.openide.awt.UndoRedo;
@@ -24,12 +24,12 @@ import org.openide.nodes.PropertySupport;
 import org.openide.nodes.Sheet;
 import org.openide.util.lookup.Lookups;
 
-import javax.swing.*;
+import javax.swing.Action;
 import java.awt.datatransfer.Transferable;
 import java.io.IOException;
 
 /**
- * A node that represents some {@link org.esa.beam.framework.datamodel.ProductNode} (=PN).
+ * A node that represents some {@link org.esa.snap.framework.datamodel.ProductNode} (=PN).
  *
  * @author Norman
  */
@@ -158,7 +158,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
     }
 
     /**
-     * A node that represents a {@link org.esa.beam.framework.datamodel.MetadataElement} (=ME).
+     * A node that represents a {@link org.esa.snap.framework.datamodel.MetadataElement} (=ME).
      *
      * @author Norman
      */
@@ -183,7 +183,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
     }
 
     /**
-     * A node that represents an {@link org.esa.beam.framework.datamodel.IndexCoding} (=IC).
+     * A node that represents an {@link org.esa.snap.framework.datamodel.IndexCoding} (=IC).
      *
      * @author Norman
      */
@@ -208,7 +208,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
     }
 
     /**
-     * A node that represents a {@link org.esa.beam.framework.datamodel.FlagCoding} (=FC).
+     * A node that represents a {@link org.esa.snap.framework.datamodel.FlagCoding} (=FC).
      *
      * @author Norman
      */
@@ -233,7 +233,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
     }
 
     /**
-     * A node that represents a {@link org.esa.beam.framework.datamodel.VectorDataNode} (=VDN).
+     * A node that represents a {@link org.esa.snap.framework.datamodel.VectorDataNode} (=VDN).
      *
      * @author Norman
      */
@@ -258,7 +258,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
     }
 
     /**
-     * A node that represents a {@link org.esa.beam.framework.datamodel.TiePointGrid} (=TPG).
+     * A node that represents a {@link org.esa.snap.framework.datamodel.TiePointGrid} (=TPG).
      *
      * @author Norman
      */
@@ -288,7 +288,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
     }
 
     /**
-     * A node that represents a {@link org.esa.beam.framework.datamodel.Mask} (=M).
+     * A node that represents a {@link org.esa.snap.framework.datamodel.Mask} (=M).
      *
      * @author Norman
      */
@@ -318,7 +318,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
     }
 
     /**
-     * A node that represents a {@link org.esa.beam.framework.datamodel.Band} (=B).
+     * A node that represents a {@link org.esa.snap.framework.datamodel.Band} (=B).
      *
      * @author Norman
      */

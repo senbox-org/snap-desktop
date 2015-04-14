@@ -16,10 +16,10 @@
 
 package org.esa.snap.rcp.statistics;
 
-import org.esa.beam.framework.datamodel.Mask;
-import org.esa.beam.framework.datamodel.Product;
-import org.esa.beam.framework.datamodel.ProductNodeGroup;
-import org.esa.beam.framework.datamodel.RasterDataNode;
+import org.esa.snap.framework.datamodel.Mask;
+import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.datamodel.ProductNodeGroup;
+import org.esa.snap.framework.datamodel.RasterDataNode;
 import org.jfree.chart.ChartPanel;
 
 import javax.swing.JCheckBoxMenuItem;

@@ -16,9 +16,9 @@
 
 package org.esa.snap.rcp.statistics;
 
-import org.esa.beam.framework.datamodel.ProductNodeGroup;
-import org.esa.beam.framework.datamodel.RasterDataNode;
-import org.esa.beam.framework.datamodel.VectorDataNode;
+import org.esa.snap.framework.datamodel.ProductNodeGroup;
+import org.esa.snap.framework.datamodel.RasterDataNode;
+import org.esa.snap.framework.datamodel.VectorDataNode;
 
 import javax.media.jai.Histogram;
 

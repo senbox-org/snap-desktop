@@ -5,7 +5,7 @@
  */
 package org.esa.snap.rcp.nodes;
 
-import org.esa.beam.framework.datamodel.ProductNodeEvent;
+import org.esa.snap.framework.datamodel.ProductNodeEvent;
 import org.openide.util.lookup.Lookups;
 
 /**

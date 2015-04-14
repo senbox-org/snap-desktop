@@ -15,9 +15,9 @@
  */
 package org.esa.snap.rcp.statistics;
 
-import org.esa.beam.framework.datamodel.Product;
-import org.esa.beam.framework.datamodel.RasterDataNode;
-import org.esa.beam.framework.datamodel.Stx;
+import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.datamodel.RasterDataNode;
+import org.esa.snap.framework.datamodel.Stx;
 
 import java.util.ArrayList;
 import java.util.HashMap;

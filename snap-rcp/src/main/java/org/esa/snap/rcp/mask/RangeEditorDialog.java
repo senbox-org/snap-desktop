@@ -19,8 +19,8 @@ package org.esa.snap.rcp.mask;
 import com.bc.ceres.binding.PropertyContainer;
 import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
-import org.esa.beam.framework.ui.ModalDialog;
-import org.esa.beam.util.StringUtils;
+import org.esa.snap.framework.ui.ModalDialog;
+import org.esa.snap.util.StringUtils;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;

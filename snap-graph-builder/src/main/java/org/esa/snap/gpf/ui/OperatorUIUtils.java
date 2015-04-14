@@ -15,11 +15,11 @@
  */
 package org.esa.snap.gpf.ui;
 
-import org.esa.beam.framework.dataio.ProductIO;
-import org.esa.beam.framework.datamodel.Product;
+import org.esa.snap.framework.dataio.ProductIO;
+import org.esa.snap.framework.datamodel.Product;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JList;
+import java.awt.Dimension;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;

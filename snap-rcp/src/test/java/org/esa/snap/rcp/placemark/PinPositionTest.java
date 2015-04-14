@@ -3,12 +3,12 @@ package org.esa.snap.rcp.placemark;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
-import org.esa.beam.framework.datamodel.CrsGeoCoding;
-import org.esa.beam.framework.datamodel.GeoCoding;
-import org.esa.beam.framework.datamodel.PinDescriptor;
-import org.esa.beam.framework.datamodel.PixelPos;
-import org.esa.beam.framework.datamodel.Placemark;
-import org.esa.beam.framework.datamodel.Product;
+import org.esa.snap.framework.datamodel.CrsGeoCoding;
+import org.esa.snap.framework.datamodel.GeoCoding;
+import org.esa.snap.framework.datamodel.PinDescriptor;
+import org.esa.snap.framework.datamodel.PixelPos;
+import org.esa.snap.framework.datamodel.Placemark;
+import org.esa.snap.framework.datamodel.Product;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,7 +18,7 @@ import org.opengis.referencing.operation.TransformException;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 public class PinPositionTest {
 

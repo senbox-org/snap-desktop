@@ -5,20 +5,21 @@
  */
 package org.esa.snap.rcp.actions.file;
 
-import org.esa.beam.framework.dataio.ProductIOPlugInManager;
-import org.esa.beam.framework.dataio.ProductReaderPlugIn;
-import org.esa.beam.framework.datamodel.Product;
-import org.esa.beam.util.io.BeamFileChooser;
-import org.esa.beam.util.io.BeamFileFilter;
+import org.esa.snap.framework.dataio.ProductIOPlugInManager;
+import org.esa.snap.framework.dataio.ProductReaderPlugIn;
+import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.util.io.BeamFileChooser;
+import org.esa.snap.util.io.BeamFileFilter;
 import org.netbeans.api.progress.ProgressUtils;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle;
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 import java.awt.event.ActionEvent;
 import java.io.File;

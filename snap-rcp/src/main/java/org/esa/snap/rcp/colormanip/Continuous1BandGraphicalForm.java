@@ -17,14 +17,14 @@
 package org.esa.snap.rcp.colormanip;
 
 import com.bc.ceres.core.ProgressMonitor;
-import org.esa.beam.framework.datamodel.ColorPaletteDef;
-import org.esa.beam.framework.datamodel.ImageInfo;
-import org.esa.beam.framework.datamodel.ProductNodeEvent;
-import org.esa.beam.framework.datamodel.RasterDataNode;
-import org.esa.beam.framework.datamodel.Scaling;
-import org.esa.beam.framework.datamodel.Stx;
-import org.esa.beam.framework.datamodel.StxFactory;
-import org.esa.beam.framework.ui.ImageInfoEditorModel;
+import org.esa.snap.framework.datamodel.ColorPaletteDef;
+import org.esa.snap.framework.datamodel.ImageInfo;
+import org.esa.snap.framework.datamodel.ProductNodeEvent;
+import org.esa.snap.framework.datamodel.RasterDataNode;
+import org.esa.snap.framework.datamodel.Scaling;
+import org.esa.snap.framework.datamodel.Stx;
+import org.esa.snap.framework.datamodel.StxFactory;
+import org.esa.snap.framework.ui.ImageInfoEditorModel;
 
 import javax.swing.AbstractButton;
 import javax.swing.JPanel;

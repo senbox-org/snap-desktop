@@ -16,10 +16,10 @@
 
 package org.esa.snap.rcp.mosaic;
 
-import org.esa.beam.framework.gpf.ui.TargetProductSelector;
-import org.esa.beam.framework.ui.AppContext;
+import org.esa.snap.framework.gpf.ui.TargetProductSelector;
+import org.esa.snap.framework.ui.AppContext;
 
-import javax.swing.*;
+import javax.swing.JTabbedPane;
 
 /**
  * @author Marco Peters

@@ -21,9 +21,10 @@ import com.bc.ceres.binding.ValidationException;
 import com.bc.ceres.binding.ValueSet;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.PropertyPane;
-import org.esa.beam.framework.ui.AppContext;
+import org.esa.snap.framework.ui.AppContext;
 
-import javax.swing.*;
+import javax.swing.JComponent;
+import javax.swing.JScrollPane;
 import java.util.Map;
 
 /**

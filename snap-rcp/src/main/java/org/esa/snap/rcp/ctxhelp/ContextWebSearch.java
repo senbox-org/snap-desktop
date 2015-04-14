@@ -1,10 +1,10 @@
 package org.esa.snap.rcp.ctxhelp;
 
-import org.esa.beam.framework.datamodel.Product;
-import org.esa.beam.framework.datamodel.ProductNode;
-import org.esa.beam.util.SystemUtils;
+import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.datamodel.ProductNode;
+import org.esa.snap.util.SystemUtils;
 
-import java.awt.*;
+import java.awt.Desktop;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;

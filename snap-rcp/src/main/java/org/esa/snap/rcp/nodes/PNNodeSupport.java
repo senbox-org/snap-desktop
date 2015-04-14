@@ -5,15 +5,15 @@
  */
 package org.esa.snap.rcp.nodes;
 
-import org.esa.beam.framework.datamodel.ProductNode;
-import org.esa.beam.framework.datamodel.ProductNodeEvent;
-import org.esa.beam.framework.datamodel.ProductNodeListener;
+import org.esa.snap.framework.datamodel.ProductNode;
+import org.esa.snap.framework.datamodel.ProductNodeEvent;
+import org.esa.snap.framework.datamodel.ProductNodeListener;
 import org.openide.awt.UndoRedo;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
 import org.openide.util.Utilities;
 
-import javax.swing.*;
+import javax.swing.Action;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;

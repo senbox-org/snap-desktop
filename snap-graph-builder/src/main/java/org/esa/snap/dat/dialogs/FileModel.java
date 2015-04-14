@@ -15,11 +15,11 @@
  */
 package org.esa.snap.dat.dialogs;
 
-import org.esa.beam.framework.datamodel.MetadataElement;
-import org.esa.beam.framework.datamodel.Product;
 import org.esa.snap.datamodel.AbstractMetadata;
 import org.esa.snap.db.CommonReaders;
 import org.esa.snap.db.ProductEntry;
+import org.esa.snap.framework.datamodel.MetadataElement;
+import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.gpf.OperatorUtils;
 import org.esa.snap.rcp.SnapApp;
 

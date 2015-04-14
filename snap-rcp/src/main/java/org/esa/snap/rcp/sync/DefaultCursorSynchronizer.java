@@ -1,8 +1,8 @@
 package org.esa.snap.rcp.sync;
 
-import org.esa.beam.framework.datamodel.GeoCoding;
-import org.esa.beam.framework.datamodel.GeoPos;
-import org.esa.beam.framework.ui.product.ProductSceneView;
+import org.esa.snap.framework.datamodel.GeoCoding;
+import org.esa.snap.framework.datamodel.GeoPos;
+import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
 

@@ -18,14 +18,14 @@ package org.esa.snap.rcp.spectrum;
 
 import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.glevel.MultiLevelModel;
-import org.esa.beam.framework.datamodel.Band;
-import org.esa.beam.framework.datamodel.Placemark;
-import org.esa.beam.framework.ui.diagram.AbstractDiagramGraph;
-import org.esa.beam.jai.ImageManager;
-import org.esa.beam.util.Debug;
-import org.esa.beam.util.ProductUtils;
-import org.esa.beam.util.math.IndexValidator;
-import org.esa.beam.util.math.Range;
+import org.esa.snap.framework.datamodel.Band;
+import org.esa.snap.framework.datamodel.Placemark;
+import org.esa.snap.framework.ui.diagram.AbstractDiagramGraph;
+import org.esa.snap.jai.ImageManager;
+import org.esa.snap.util.Debug;
+import org.esa.snap.util.ProductUtils;
+import org.esa.snap.util.math.IndexValidator;
+import org.esa.snap.util.math.Range;
 
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;

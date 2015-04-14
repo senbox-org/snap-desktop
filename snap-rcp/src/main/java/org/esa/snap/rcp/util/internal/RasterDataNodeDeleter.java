@@ -16,16 +16,16 @@
 package org.esa.snap.rcp.util.internal;
 
 import com.bc.ceres.core.Assert;
-import org.esa.beam.framework.datamodel.Band;
-import org.esa.beam.framework.datamodel.Mask;
-import org.esa.beam.framework.datamodel.Mask.ImageType;
-import org.esa.beam.framework.datamodel.Product;
-import org.esa.beam.framework.datamodel.ProductNode;
-import org.esa.beam.framework.datamodel.ProductNodeGroup;
-import org.esa.beam.framework.datamodel.RasterDataNode;
-import org.esa.beam.framework.datamodel.TiePointGrid;
-import org.esa.beam.framework.datamodel.VectorDataNode;
-import org.esa.beam.framework.datamodel.VirtualBand;
+import org.esa.snap.framework.datamodel.Band;
+import org.esa.snap.framework.datamodel.Mask;
+import org.esa.snap.framework.datamodel.Mask.ImageType;
+import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.datamodel.ProductNode;
+import org.esa.snap.framework.datamodel.ProductNodeGroup;
+import org.esa.snap.framework.datamodel.RasterDataNode;
+import org.esa.snap.framework.datamodel.TiePointGrid;
+import org.esa.snap.framework.datamodel.VectorDataNode;
+import org.esa.snap.framework.datamodel.VirtualBand;
 import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;

@@ -5,14 +5,14 @@
  */
 package org.esa.snap.rcp.actions.file;
 
-import org.esa.beam.dataio.dimap.DimapProductConstants;
-import org.esa.beam.dataio.dimap.DimapProductHelpers;
-import org.esa.beam.dataio.dimap.DimapProductReader;
-import org.esa.beam.framework.dataio.ProductIO;
-import org.esa.beam.framework.dataio.ProductReader;
-import org.esa.beam.framework.datamodel.Band;
-import org.esa.beam.framework.datamodel.Product;
-import org.esa.beam.jai.BandOpImage;
+import org.esa.snap.dataio.dimap.DimapProductConstants;
+import org.esa.snap.dataio.dimap.DimapProductHelpers;
+import org.esa.snap.dataio.dimap.DimapProductReader;
+import org.esa.snap.framework.dataio.ProductIO;
+import org.esa.snap.framework.dataio.ProductReader;
+import org.esa.snap.framework.datamodel.Band;
+import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.jai.BandOpImage;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.openide.awt.ActionID;

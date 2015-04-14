@@ -2,15 +2,15 @@ package org.esa.snap.rcp.actions.file;
 
 import com.bc.ceres.core.Assert;
 import com.bc.ceres.core.ProgressMonitor;
-import org.esa.beam.dataio.dimap.DimapProductConstants;
-import org.esa.beam.framework.dataio.ProductIO;
-import org.esa.beam.framework.datamodel.MetadataElement;
-import org.esa.beam.framework.datamodel.Product;
-import org.esa.beam.framework.datamodel.ProductNodeList;
-import org.esa.beam.util.Debug;
+import org.esa.snap.dataio.dimap.DimapProductConstants;
+import org.esa.snap.framework.dataio.ProductIO;
+import org.esa.snap.framework.datamodel.MetadataElement;
+import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.datamodel.ProductNodeList;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.util.ProgressHandleMonitor;
+import org.esa.snap.util.Debug;
 import org.netbeans.api.progress.ProgressHandle;
 import org.openide.util.Cancellable;
 

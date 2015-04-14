@@ -16,7 +16,7 @@
 package org.esa.snap.rcp.layermanager;
 
 import com.bc.ceres.glayer.Layer;
-import org.esa.beam.framework.ui.product.ProductSceneView;
+import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.rcp.windows.ToolTopComponent;
 import org.netbeans.api.annotations.common.NonNull;
 

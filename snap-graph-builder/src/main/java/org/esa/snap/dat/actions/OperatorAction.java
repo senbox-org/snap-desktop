@@ -15,12 +15,12 @@
  */
 package org.esa.snap.dat.actions;
 
-import org.esa.beam.framework.ui.ModelessDialog;
 import org.esa.snap.dat.dialogs.SingleOperatorDialog;
+import org.esa.snap.framework.ui.ModelessDialog;
 import org.esa.snap.rcp.actions.DefaultOperatorAction;
-import org.esa.snap.util.ImageUtils;
+import org.esa.snap.util.IconUtils;
 
-import javax.swing.*;
+import javax.swing.ImageIcon;
 import java.awt.event.ActionEvent;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -80,15 +80,15 @@ public class OperatorAction extends DefaultOperatorAction {
     protected void addIcon(final ModelessDialog dlg) {
         String iconName = getIcon();
         if (iconName == null) {
-            setIcon(dlg, ImageUtils.esaPlanetIcon);
+            setIcon(dlg, IconUtils.esaPlanetIcon);
         } else if (iconName.equals("esaIcon")) {
-            setIcon(dlg, ImageUtils.esaPlanetIcon);
+            setIcon(dlg, IconUtils.esaPlanetIcon);
         } else if (iconName.equals("rstbIcon")) {
-            setIcon(dlg, ImageUtils.rstbIcon);
+            setIcon(dlg, IconUtils.rstbIcon);
         } else if (iconName.equals("geoAusIcon")) {
-            setIcon(dlg, ImageUtils.geoAusIcon);
+            setIcon(dlg, IconUtils.geoAusIcon);
         } else {
-            final ImageIcon icon = ImageUtils.LoadIcon(iconName);
+            final ImageIcon icon = IconUtils.LoadIcon(iconName);
             if (icon != null)
                 setIcon(dlg, icon);
         }

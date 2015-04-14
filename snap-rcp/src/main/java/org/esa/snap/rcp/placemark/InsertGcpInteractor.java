@@ -16,7 +16,7 @@
 
 package org.esa.snap.rcp.placemark;
 
-import org.esa.beam.framework.datamodel.GcpDescriptor;
+import org.esa.snap.framework.datamodel.GcpDescriptor;
 
 /**
  * A tool used to create ground control points (single click), select (single click on a GCP) or

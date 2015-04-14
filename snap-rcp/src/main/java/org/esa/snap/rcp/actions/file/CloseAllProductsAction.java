@@ -5,14 +5,14 @@
  */
 package org.esa.snap.rcp.actions.file;
 
-import org.esa.beam.framework.datamodel.Product;
+import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.rcp.SnapApp;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle;
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
 import java.util.Arrays;
 import java.util.List;

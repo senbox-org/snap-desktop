@@ -16,7 +16,7 @@
 
 package org.esa.snap.rcp.layermanager;
 
-import org.esa.beam.framework.ui.UIUtils;
+import org.esa.snap.framework.ui.UIUtils;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
 

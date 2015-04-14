@@ -18,8 +18,8 @@ package org.esa.snap.rcp.layermanager;
 
 import com.bc.ceres.glayer.Layer;
 import com.bc.ceres.grender.Viewport;
-import org.esa.beam.framework.ui.UIUtils;
-import org.esa.beam.framework.ui.product.ProductSceneView;
+import org.esa.snap.framework.ui.UIUtils;
+import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.rcp.SnapApp;
 
 import javax.swing.AbstractAction;

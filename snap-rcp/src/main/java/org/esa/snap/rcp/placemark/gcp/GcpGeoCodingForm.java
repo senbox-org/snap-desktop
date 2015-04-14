@@ -17,19 +17,19 @@
 package org.esa.snap.rcp.placemark.gcp;
 
 import com.bc.ceres.swing.TableLayout;
-import org.esa.beam.framework.datamodel.GcpGeoCoding;
-import org.esa.beam.framework.datamodel.GeoCoding;
-import org.esa.beam.framework.datamodel.GeoPos;
-import org.esa.beam.framework.datamodel.PixelPos;
-import org.esa.beam.framework.datamodel.Placemark;
-import org.esa.beam.framework.datamodel.PlacemarkGroup;
-import org.esa.beam.framework.datamodel.Product;
-import org.esa.beam.framework.datamodel.ProductNode;
-import org.esa.beam.framework.datamodel.ProductNodeEvent;
-import org.esa.beam.framework.datamodel.ProductNodeGroup;
-import org.esa.beam.framework.datamodel.ProductNodeListener;
-import org.esa.beam.framework.dataop.maptransf.Datum;
-import org.esa.beam.util.Debug;
+import org.esa.snap.framework.datamodel.GcpGeoCoding;
+import org.esa.snap.framework.datamodel.GeoCoding;
+import org.esa.snap.framework.datamodel.GeoPos;
+import org.esa.snap.framework.datamodel.PixelPos;
+import org.esa.snap.framework.datamodel.Placemark;
+import org.esa.snap.framework.datamodel.PlacemarkGroup;
+import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.datamodel.ProductNode;
+import org.esa.snap.framework.datamodel.ProductNodeEvent;
+import org.esa.snap.framework.datamodel.ProductNodeGroup;
+import org.esa.snap.framework.datamodel.ProductNodeListener;
+import org.esa.snap.framework.dataop.maptransf.Datum;
+import org.esa.snap.util.Debug;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;

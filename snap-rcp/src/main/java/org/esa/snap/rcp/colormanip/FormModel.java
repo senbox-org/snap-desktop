@@ -1,13 +1,14 @@
 package org.esa.snap.rcp.colormanip;
 
-import org.esa.beam.framework.datamodel.Band;
-import org.esa.beam.framework.datamodel.ImageInfo;
-import org.esa.beam.framework.datamodel.Product;
-import org.esa.beam.framework.datamodel.RasterDataNode;
-import org.esa.beam.framework.ui.product.ProductSceneView;
+import org.esa.snap.framework.datamodel.Band;
+import org.esa.snap.framework.datamodel.ImageInfo;
+import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.datamodel.RasterDataNode;
+import org.esa.snap.framework.ui.product.ProductSceneView;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JLabel;
+import javax.swing.SwingConstants;
+import java.awt.Component;
 
 /**
  * @author Norman Fomferra

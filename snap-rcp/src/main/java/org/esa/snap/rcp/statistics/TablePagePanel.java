@@ -16,8 +16,8 @@
 
 package org.esa.snap.rcp.statistics;
 
-import org.esa.beam.framework.datamodel.ProductNodeEvent;
-import org.esa.beam.util.StringUtils;
+import org.esa.snap.framework.datamodel.ProductNodeEvent;
+import org.esa.snap.util.StringUtils;
 import org.openide.windows.TopComponent;
 
 import javax.swing.JTable;

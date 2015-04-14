@@ -6,12 +6,12 @@
 package org.esa.snap.rcp.actions.file;
 
 import com.bc.jexp.ParseException;
-import org.esa.beam.framework.dataio.ProductReader;
-import org.esa.beam.framework.datamodel.Band;
-import org.esa.beam.framework.datamodel.Product;
-import org.esa.beam.framework.datamodel.ProductNode;
-import org.esa.beam.framework.datamodel.RasterDataNode;
-import org.esa.beam.framework.datamodel.VirtualBand;
+import org.esa.snap.framework.dataio.ProductReader;
+import org.esa.snap.framework.datamodel.Band;
+import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.datamodel.ProductNode;
+import org.esa.snap.framework.datamodel.RasterDataNode;
+import org.esa.snap.framework.datamodel.VirtualBand;
 import org.esa.snap.netbeans.docwin.DocumentWindow;
 import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.rcp.SnapApp;

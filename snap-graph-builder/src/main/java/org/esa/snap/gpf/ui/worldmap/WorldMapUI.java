@@ -15,8 +15,8 @@
  */
 package org.esa.snap.gpf.ui.worldmap;
 
-import org.esa.beam.framework.datamodel.GeoPos;
 import org.esa.snap.db.ProductEntry;
+import org.esa.snap.framework.datamodel.GeoPos;
 
 /**
 

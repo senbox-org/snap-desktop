@@ -15,13 +15,13 @@
  */
 package org.esa.snap.gpf.ui;
 
-import org.esa.beam.framework.gpf.ui.TargetProductSelector;
-import org.esa.beam.framework.ui.AppContext;
-import org.esa.beam.framework.ui.BasicApp;
-import org.esa.beam.util.SystemUtils;
-import org.esa.beam.util.io.FileUtils;
+import org.esa.snap.framework.gpf.ui.TargetProductSelector;
+import org.esa.snap.framework.ui.AppContext;
+import org.esa.snap.framework.ui.BasicApp;
+import org.esa.snap.util.SystemUtils;
+import org.esa.snap.util.io.FileUtils;
 
-import javax.swing.*;
+import javax.swing.JComponent;
 import java.io.File;
 import java.util.Map;
 

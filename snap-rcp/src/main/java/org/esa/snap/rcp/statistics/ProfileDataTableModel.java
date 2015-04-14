@@ -1,9 +1,9 @@
 package org.esa.snap.rcp.statistics;
 
-import org.esa.beam.framework.datamodel.GeoPos;
-import org.esa.beam.framework.datamodel.TransectProfileData;
-import org.esa.beam.framework.ui.io.CsvEncoder;
-import org.esa.beam.framework.ui.io.TableModelCsvEncoder;
+import org.esa.snap.framework.datamodel.GeoPos;
+import org.esa.snap.framework.datamodel.TransectProfileData;
+import org.esa.snap.framework.ui.io.CsvEncoder;
+import org.esa.snap.framework.ui.io.TableModelCsvEncoder;
 import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
 

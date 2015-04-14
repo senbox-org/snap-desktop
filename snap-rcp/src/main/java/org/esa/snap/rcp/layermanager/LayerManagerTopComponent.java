@@ -19,7 +19,7 @@ import com.bc.ceres.glayer.Layer;
 import com.bc.ceres.swing.selection.AbstractSelectionContext;
 import com.bc.ceres.swing.selection.Selection;
 import com.bc.ceres.swing.selection.support.DefaultSelection;
-import org.esa.beam.framework.ui.product.ProductSceneView;
+import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;

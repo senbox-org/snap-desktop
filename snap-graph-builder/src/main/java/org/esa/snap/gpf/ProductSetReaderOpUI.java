@@ -15,13 +15,13 @@
  */
 package org.esa.snap.gpf;
 
-import org.esa.beam.framework.ui.AppContext;
 import org.esa.snap.dat.dialogs.FileTable;
 import org.esa.snap.dat.dialogs.ProductSetPanel;
+import org.esa.snap.framework.ui.AppContext;
 import org.esa.snap.gpf.ui.BaseOperatorUI;
 import org.esa.snap.gpf.ui.UIValidation;
 
-import javax.swing.*;
+import javax.swing.JComponent;
 import java.io.File;
 import java.util.Map;
 

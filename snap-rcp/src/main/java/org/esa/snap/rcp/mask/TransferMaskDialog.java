@@ -16,11 +16,11 @@
 package org.esa.snap.rcp.mask;
 
 import com.bc.ceres.swing.TableLayout;
-import org.esa.beam.framework.datamodel.GeoCoding;
-import org.esa.beam.framework.datamodel.Mask;
-import org.esa.beam.framework.datamodel.Product;
-import org.esa.beam.framework.ui.ModalDialog;
-import org.esa.beam.util.ProductUtils;
+import org.esa.snap.framework.datamodel.GeoCoding;
+import org.esa.snap.framework.datamodel.Mask;
+import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.ui.ModalDialog;
+import org.esa.snap.util.ProductUtils;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;

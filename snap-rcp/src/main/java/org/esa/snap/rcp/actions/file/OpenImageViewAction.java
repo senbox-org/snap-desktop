@@ -17,15 +17,15 @@ package org.esa.snap.rcp.actions.file;
 
 import com.bc.ceres.core.SubProgressMonitor;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
-import org.esa.beam.framework.datamodel.RasterDataNode;
-import org.esa.beam.framework.ui.UIUtils;
-import org.esa.beam.framework.ui.product.ProductSceneImage;
-import org.esa.beam.framework.ui.product.ProductSceneView;
-import org.esa.beam.util.Debug;
+import org.esa.snap.framework.datamodel.RasterDataNode;
+import org.esa.snap.framework.ui.UIUtils;
+import org.esa.snap.framework.ui.product.ProductSceneImage;
+import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.netbeans.docwin.DocumentWindowManager;
 import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
+import org.esa.snap.util.Debug;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -34,7 +34,9 @@ import org.openide.awt.UndoRedo;
 import org.openide.util.ImageUtilities;
 import org.openide.util.NbBundle;
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.SwingWorker;
 import java.awt.event.ActionEvent;
 import java.text.MessageFormat;
 

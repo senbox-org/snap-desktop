@@ -6,10 +6,10 @@ import com.bc.ceres.core.ExtensionManager;
 import com.bc.ceres.core.SingleTypeExtensionFactory;
 import com.bc.ceres.glayer.Layer;
 import com.bc.ceres.glayer.LayerType;
-import org.esa.beam.framework.ui.layer.DefaultLayerSourceDescriptor;
-import org.esa.beam.framework.ui.layer.LayerEditor;
-import org.esa.beam.framework.ui.layer.LayerSource;
-import org.esa.beam.framework.ui.layer.LayerSourceDescriptor;
+import org.esa.snap.framework.ui.layer.DefaultLayerSourceDescriptor;
+import org.esa.snap.framework.ui.layer.LayerEditor;
+import org.esa.snap.framework.ui.layer.LayerSource;
+import org.esa.snap.framework.ui.layer.LayerSourceDescriptor;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 import org.openide.modules.ModuleInfo;
@@ -27,9 +27,9 @@ import java.util.logging.Logger;
 
 /**
  * Either 'editor' or 'editorFactory' must be given:
- * - 'editor' must be a 'org.esa.beam.framework.ui.layer.LayerEditor'
+ * - 'editor' must be a 'org.esa.snap.framework.ui.layer.LayerEditor'
  * - 'editorFactory' must be a 'com.bc.ceres.core.ExtensionFactory' that produces
- * instances of 'org.esa.beam.framework.ui.layer.LayerEditor'.
+ * instances of 'org.esa.snap.framework.ui.layer.LayerEditor'.
  * <p>
  * <editor field="layerEditorClass" type="java.lang.Class"/>
  * <editorFactory field="layerEditorFactoryClass" type="java.lang.Class"/>
@@ -168,7 +168,7 @@ public class LayerManager {
 
     /**
      * Creates an extension factory that maps an instances of a {@link com.bc.ceres.glayer.Layer} or
-     * a {@link com.bc.ceres.glayer.LayerType} to an instance of a {@link org.esa.beam.framework.ui.layer.LayerEditor}.
+     * a {@link com.bc.ceres.glayer.LayerType} to an instance of a {@link org.esa.snap.framework.ui.layer.LayerEditor}.
      */
     private static ExtensionFactory createExtensionFactory(Class<? extends LayerEditor> editorClass, Class<? extends ExtensionFactory> editorFactoryClass) throws Exception {
         if (editorClass != null) {

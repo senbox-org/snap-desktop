@@ -18,10 +18,14 @@ package org.esa.snap.dat.graphbuilder;
 import com.bc.ceres.binding.dom.DefaultDomElement;
 import com.bc.ceres.binding.dom.DomElement;
 import com.bc.ceres.core.ProgressMonitor;
-import org.esa.beam.framework.gpf.OperatorSpi;
-import org.esa.beam.framework.gpf.graph.*;
-import org.esa.beam.gpf.operators.standard.ReadOp;
-import org.esa.beam.gpf.operators.standard.WriteOp;
+import org.esa.snap.framework.gpf.OperatorSpi;
+import org.esa.snap.framework.gpf.graph.Graph;
+import org.esa.snap.framework.gpf.graph.GraphException;
+import org.esa.snap.framework.gpf.graph.GraphIO;
+import org.esa.snap.framework.gpf.graph.GraphProcessor;
+import org.esa.snap.framework.gpf.graph.Node;
+import org.esa.snap.gpf.operators.standard.ReadOp;
+import org.esa.snap.gpf.operators.standard.WriteOp;
 
 import java.io.File;
 import java.io.FileReader;

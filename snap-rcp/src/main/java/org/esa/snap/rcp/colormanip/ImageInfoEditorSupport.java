@@ -16,7 +16,7 @@
 
 package org.esa.snap.rcp.colormanip;
 
-import org.esa.beam.framework.ui.tool.ToolButtonFactory;
+import org.esa.snap.framework.ui.tool.ToolButtonFactory;
 import org.openide.util.ImageUtilities;
 
 import javax.swing.AbstractButton;

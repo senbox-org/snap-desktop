@@ -15,22 +15,29 @@
  */
 package org.esa.snap.dat.dialogs;
 
-import org.esa.beam.framework.datamodel.Product;
-import org.esa.beam.framework.gpf.ui.TargetProductSelectorModel;
-import org.esa.beam.framework.ui.AppContext;
-import org.esa.beam.framework.ui.BasicApp;
-import org.esa.beam.util.SystemUtils;
-import org.esa.beam.util.io.FileChooserFactory;
 import org.esa.snap.db.DBSearch;
 import org.esa.snap.db.ProductEntry;
+import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.gpf.ui.TargetProductSelectorModel;
+import org.esa.snap.framework.ui.AppContext;
+import org.esa.snap.framework.ui.BasicApp;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.util.DialogUtils;
 import org.esa.snap.util.ProductFunctions;
+import org.esa.snap.util.SystemUtils;
+import org.esa.snap.util.io.FileChooserFactory;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;

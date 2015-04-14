@@ -1,8 +1,8 @@
 package org.esa.snap.rcp.nodes;
 
 import com.bc.ceres.core.Assert;
-import org.esa.beam.framework.datamodel.ProductNode;
-import org.esa.beam.framework.datamodel.ProductNodeGroup;
+import org.esa.snap.framework.datamodel.ProductNode;
+import org.esa.snap.framework.datamodel.ProductNodeGroup;
 import org.openide.util.NbBundle;
 
 import javax.swing.undo.AbstractUndoableEdit;

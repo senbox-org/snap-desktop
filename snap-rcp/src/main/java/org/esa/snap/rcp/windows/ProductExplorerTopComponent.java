@@ -5,7 +5,7 @@
  */
 package org.esa.snap.rcp.windows;
 
-import org.esa.beam.framework.datamodel.Product;
+import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.nodes.ProductGroupNode;
 import org.esa.snap.rcp.util.TestProducts;

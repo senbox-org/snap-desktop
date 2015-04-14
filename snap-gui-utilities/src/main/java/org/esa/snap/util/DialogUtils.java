@@ -15,11 +15,19 @@
  */
 package org.esa.snap.util;
 
-import org.esa.beam.framework.ui.GridBagUtils;
-import org.esa.beam.framework.ui.tool.ToolButtonFactory;
+import org.esa.snap.framework.ui.GridBagUtils;
+import org.esa.snap.framework.ui.tool.ToolButtonFactory;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JFormattedTextField;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import java.awt.BorderLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.beans.PropertyChangeListener;

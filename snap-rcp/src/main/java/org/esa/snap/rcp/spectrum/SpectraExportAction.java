@@ -16,19 +16,20 @@
 
 package org.esa.snap.rcp.spectrum;
 
-import org.esa.beam.framework.datamodel.Placemark;
-import org.esa.beam.framework.ui.diagram.DiagramGraph;
-import org.esa.beam.framework.ui.diagram.DiagramGraphIO;
-import org.esa.beam.framework.ui.product.spectrum.DisplayableSpectrum;
-import org.esa.beam.util.io.BeamFileFilter;
+import org.esa.snap.framework.datamodel.Placemark;
+import org.esa.snap.framework.ui.diagram.DiagramGraph;
+import org.esa.snap.framework.ui.diagram.DiagramGraphIO;
+import org.esa.snap.framework.ui.product.spectrum.DisplayableSpectrum;
 import org.esa.snap.rcp.SnapApp;
-//import org.esa.beam.visat.VisatApp;
+import org.esa.snap.util.io.BeamFileFilter;
 
 import javax.swing.AbstractAction;
 import javax.swing.SwingUtilities;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
+
+//import org.esa.snap.visat.VisatApp;
 
 class SpectraExportAction extends AbstractAction {
 

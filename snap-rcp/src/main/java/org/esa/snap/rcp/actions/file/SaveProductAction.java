@@ -6,8 +6,8 @@
 package org.esa.snap.rcp.actions.file;
 
 import com.bc.ceres.core.Assert;
-import org.esa.beam.dataio.dimap.DimapProductReader;
-import org.esa.beam.framework.datamodel.Product;
+import org.esa.snap.dataio.dimap.DimapProductReader;
+import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.netbeans.api.progress.ProgressUtils;
@@ -16,7 +16,7 @@ import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle;
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.lang.ref.WeakReference;

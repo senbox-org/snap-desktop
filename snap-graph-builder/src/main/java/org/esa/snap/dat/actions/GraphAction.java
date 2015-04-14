@@ -15,8 +15,8 @@
  */
 package org.esa.snap.dat.actions;
 
-import org.esa.beam.framework.ui.ModelessDialog;
 import org.esa.snap.dat.graphbuilder.GraphBuilderDialog;
+import org.esa.snap.framework.ui.ModelessDialog;
 
 import java.io.File;
 import java.util.Arrays;

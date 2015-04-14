@@ -120,7 +120,7 @@
                 <artifactId>nbm-maven-plugin</artifactId>
                 <configuration>
                     <publicPackages>
-                        <publicPackage>org.esa.beam.framework.gpf.ui</publicPackage>
+                        <publicPackage>org.esa.snap.framework.gpf.ui</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>

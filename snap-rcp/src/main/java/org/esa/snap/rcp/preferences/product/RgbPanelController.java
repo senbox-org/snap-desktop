@@ -17,13 +17,13 @@
 package org.esa.snap.rcp.preferences.product;
 
 import com.bc.ceres.swing.binding.BindingContext;
-import org.esa.beam.framework.ui.RGBImageProfilePane;
-import org.esa.beam.util.PropertyMap;
+import org.esa.snap.framework.ui.RGBImageProfilePane;
 import org.esa.snap.rcp.preferences.DefaultConfigController;
+import org.esa.snap.util.PropertyMap;
 import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.HelpCtx;
 
-import javax.swing.*;
+import javax.swing.JPanel;
 
 /**
  * The controller for RGB product profile preferences. Sub-level panel to the "Product Profile"-panel.

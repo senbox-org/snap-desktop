@@ -1,13 +1,13 @@
 package org.esa.snap.rcp.actions.file;
 
 import com.bc.ceres.core.Assert;
-import org.esa.beam.framework.dataio.ProductIO;
-import org.esa.beam.framework.datamodel.Product;
+import org.esa.snap.framework.dataio.ProductIO;
+import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.openide.util.Cancellable;
 
-import javax.swing.*;
+import javax.swing.SwingUtilities;
 import java.io.File;
 import java.io.IOException;
 

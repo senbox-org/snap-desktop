@@ -19,7 +19,7 @@
     <symbolicName>snap-ui</symbolicName>
     <version>2.0.0</version>
     <name>SNAP User Interface Library</name>
-    <activator>org.esa.beam.BeamUiActivator</activator>
+    <activator>org.esa.snap.BeamUiActivator</activator>
 
 
     <description>This module provides user interface components used e.g. by VISAT.</description>
@@ -49,11 +49,11 @@
        Extension point 'applicationDescriptors': Adds new application descriptors to the runtime.
     -->
     <extensionPoint id="applicationDescriptors">
-        <applicationDescriptor type="org.esa.beam.framework.ui.application.ApplicationDescriptor"
+        <applicationDescriptor type="org.esa.snap.framework.ui.application.ApplicationDescriptor"
                                class="@descriptorClass"
                                autoConfig="true">
             <descriptorClass type="java.lang.Class">
-                org.esa.beam.framework.ui.application.support.DefaultApplicationDescriptor
+                org.esa.snap.framework.ui.application.support.DefaultApplicationDescriptor
             </descriptorClass>
             <applicationId type="java.lang.String"/>
             <!-- ID of the ceres application -->
@@ -70,22 +70,22 @@
             </excludedActionGroups>
             <excludedToolViews type="java.lang.String[]">
                 <!-- Here:  IDs of tool views you wish to exclude from your application -->
-                <!-- e.g. <id>org.esa.beam.visat.toolviews.lm.LayersToolView</id> -->
+                <!-- e.g. <id>org.esa.snap.visat.toolviews.lm.LayersToolView</id> -->
             </excludedToolViews>
         </applicationDescriptor>
     </extensionPoint>
 
     <!--
        Extension point 'toolViews': Adds new tool views to an application.
-       Extensions are instances of org.esa.beam.framework.ui.application.ToolView
+       Extensions are instances of org.esa.snap.framework.ui.application.ToolView
        specified by the 'class' element.
     -->
     <extensionPoint id="toolViews">
-        <toolView type="org.esa.beam.framework.ui.application.ToolViewDescriptor"
+        <toolView type="org.esa.snap.framework.ui.application.ToolViewDescriptor"
                   class="@descriptorClass"
                   autoConfig="true">
             <descriptorClass type="java.lang.Class">
-                org.esa.beam.framework.ui.application.support.DefaultToolViewDescriptor
+                org.esa.snap.framework.ui.application.support.DefaultToolViewDescriptor
             </descriptorClass>
             <class field="toolViewClass" type="java.lang.Class"/>
             <title type="java.lang.String"/>
@@ -98,11 +98,11 @@
 
     <!--
        Extension point 'actions': Adds new actions to an application.
-       Extensions are instances of org.esa.beam.framework.ui.command.Command
+       Extensions are instances of org.esa.snap.framework.ui.command.Command
        specified by the 'class' element.
     -->
     <extensionPoint id="actions">
-        <action type="org.esa.beam.framework.ui.command.Command"
+        <action type="org.esa.snap.framework.ui.command.Command"
                 class="@class"
                 autoConfig="false">
             <id type="java.lang.String"/>
@@ -135,10 +135,10 @@
        'id' values.
     -->
     <extensionPoint id="actionGroups">
-        <actionGroup type="org.esa.beam.framework.ui.command.CommandGroup"
+        <actionGroup type="org.esa.snap.framework.ui.command.CommandGroup"
                 class="@descriptorClass"
                 autoConfig="false">
-            <descriptorClass type="java.lang.Class">org.esa.beam.framework.ui.command.CommandGroup</descriptorClass>
+            <descriptorClass type="java.lang.Class">org.esa.snap.framework.ui.command.CommandGroup</descriptorClass>
             <id type="java.lang.String"/>
             <class type="java.lang.Class"/>
             <parent type="java.lang.String"/>
@@ -165,21 +165,21 @@
     <!--
        The extension point 'layerEditors' comprises any number of 'layerEditor' elements.
        These are mappings from a specific layer or layer type to an appropriate layer editor or editor factory.
-       The value of the 'editor' element is the name of a class that implements the org.esa.beam.framework.ui.layer.LayerEditor interface.
+       The value of the 'editor' element is the name of a class that implements the org.esa.snap.framework.ui.layer.LayerEditor interface.
        The value of the 'editorFactory' element is the name of a class that implements the com.bc.ceres.core.ExtensionFactory interface.
     -->
     <extensionPoint id="layerEditors">
-        <layerEditor type="org.esa.beam.framework.ui.layer.LayerEditorDescriptor"
+        <layerEditor type="org.esa.snap.framework.ui.layer.LayerEditorDescriptor"
                      class="@descriptorClass"
                      autoConfig="true">
-            <descriptorClass type="java.lang.Class">org.esa.beam.framework.ui.layer.DefaultLayerEditorDescriptor
+            <descriptorClass type="java.lang.Class">org.esa.snap.framework.ui.layer.DefaultLayerEditorDescriptor
             </descriptorClass>
 
             <!--
                  Either 'editor' or 'editorFactory' must be given:
-                 - 'editor' must be a 'org.esa.beam.framework.ui.layer.LayerEditor'
+                 - 'editor' must be a 'org.esa.snap.framework.ui.layer.LayerEditor'
                  - 'editorFactory' must be a 'com.bc.ceres.core.ExtensionFactory' that produces
-                    instances of 'org.esa.beam.framework.ui.layer.LayerEditor'.
+                    instances of 'org.esa.snap.framework.ui.layer.LayerEditor'.
              -->
             <editor field="layerEditorClass" type="java.lang.Class"/>
             <editorFactory field="layerEditorFactoryClass" type="java.lang.Class"/>
@@ -197,13 +197,13 @@
 
     <!--
        The extension point 'layerSources' comprises any number of 'layerSource' elements.
-       The value of the 'layerSourceClass' element is the name of a class that implements the org.esa.beam.framework.ui.layer.LayerSource interface.
+       The value of the 'layerSourceClass' element is the name of a class that implements the org.esa.snap.framework.ui.layer.LayerSource interface.
     -->
     <extensionPoint id="layerSources">
-        <layerSource type="org.esa.beam.framework.ui.layer.LayerSourceDescriptor"
+        <layerSource type="org.esa.snap.framework.ui.layer.LayerSourceDescriptor"
                      class="@descriptorClass"
                      autoConfig="true">
-            <descriptorClass type="java.lang.Class">org.esa.beam.framework.ui.layer.DefaultLayerSourceDescriptor
+            <descriptorClass type="java.lang.Class">org.esa.snap.framework.ui.layer.DefaultLayerSourceDescriptor
             </descriptorClass>
             <id field="id" type="java.lang.String"/>
             <name field="name" type="java.lang.String"/>
@@ -216,13 +216,13 @@
 
     <!--
         Experimental code added by Norman.
-        Demonstrates how we create layers for special feature types, e.g. "org.esa.beam.TrackPoint".
-        See class org.esa.beam.framework.ui.product.TrackLayerTypeFactory.
+        Demonstrates how we create layers for special feature types, e.g. "org.esa.snap.TrackPoint".
+        See class org.esa.snap.framework.ui.product.TrackLayerTypeFactory.
     -->
     <extension point="snap-ceres-core:adapters">
         <adapter>
-            <extensibleType>org.esa.beam.framework.datamodel.VectorDataNode</extensibleType>
-            <extensionFactory>org.esa.beam.framework.ui.product.TrackLayerTypeFactory</extensionFactory>
+            <extensibleType>org.esa.snap.framework.datamodel.VectorDataNode</extensibleType>
+            <extensionFactory>org.esa.snap.framework.ui.product.TrackLayerTypeFactory</extensionFactory>
         </adapter>
     </extension>
 

@@ -1,7 +1,7 @@
-importPackage(org.esa.beam.framework.datamodel);
-importPackage(org.esa.beam.framework.dataio);
-importPackage(org.esa.beam.visat);
-importPackage(org.esa.beam.visat.actions);
+importPackage(org.esa.snap.framework.datamodel);
+importPackage(org.esa.snap.framework.dataio);
+importPackage(org.esa.snap.visat);
+importPackage(org.esa.snap.visat.actions);
 
 
 var visat = VisatApp.getApp();

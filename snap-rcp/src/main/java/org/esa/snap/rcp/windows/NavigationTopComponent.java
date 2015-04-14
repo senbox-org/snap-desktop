@@ -20,22 +20,22 @@ import com.bc.ceres.glayer.swing.LayerCanvas;
 import com.bc.ceres.glayer.swing.LayerCanvasModel;
 import com.bc.ceres.grender.AdjustableView;
 import com.bc.ceres.grender.Viewport;
-import org.esa.beam.framework.datamodel.Product;
-import org.esa.beam.framework.datamodel.ProductNode;
-import org.esa.beam.framework.datamodel.ProductNodeEvent;
-import org.esa.beam.framework.datamodel.ProductNodeListener;
-import org.esa.beam.framework.datamodel.ProductNodeListenerAdapter;
-import org.esa.beam.framework.ui.GridBagUtils;
-import org.esa.beam.framework.ui.UIUtils;
-import org.esa.beam.framework.ui.product.ProductSceneView;
-import org.esa.beam.framework.ui.tool.ToolButtonFactory;
-import org.esa.beam.util.math.MathUtils;
+import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.datamodel.ProductNode;
+import org.esa.snap.framework.datamodel.ProductNodeEvent;
+import org.esa.snap.framework.datamodel.ProductNodeListener;
+import org.esa.snap.framework.datamodel.ProductNodeListenerAdapter;
+import org.esa.snap.framework.ui.GridBagUtils;
+import org.esa.snap.framework.ui.UIUtils;
+import org.esa.snap.framework.ui.product.ProductSceneView;
+import org.esa.snap.framework.ui.tool.ToolButtonFactory;
 import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.help.HelpAction;
 import org.esa.snap.rcp.actions.view.SyncImageCursorsAction;
 import org.esa.snap.rcp.actions.view.SyncImageViewsAction;
 import org.esa.snap.rcp.nav.NavigationCanvas;
+import org.esa.snap.util.math.MathUtils;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.util.HelpCtx;
@@ -65,14 +65,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
-import static java.lang.Math.abs;
-import static java.lang.Math.floor;
-import static java.lang.Math.log;
-import static java.lang.Math.log10;
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-import static java.lang.Math.pow;
-import static java.lang.Math.round;
+import static java.lang.Math.*;
 
 @TopComponent.Description(
         preferredID = "NavigationTopComponent",

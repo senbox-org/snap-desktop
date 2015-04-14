@@ -17,11 +17,11 @@
 package org.esa.snap.rcp.colormanip;
 
 import com.bc.ceres.core.Assert;
-import org.esa.beam.framework.datamodel.ImageInfo;
-import org.esa.beam.framework.ui.AbstractImageInfoEditorModel;
-import org.esa.beam.util.math.MathUtils;
+import org.esa.snap.framework.datamodel.ImageInfo;
+import org.esa.snap.framework.ui.AbstractImageInfoEditorModel;
+import org.esa.snap.util.math.MathUtils;
 
-import java.awt.*;
+import java.awt.Color;
 
 
 class ImageInfoEditorModel3B extends AbstractImageInfoEditorModel {

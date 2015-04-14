@@ -16,8 +16,8 @@
 package org.esa.snap.dat.graphbuilder;
 
 import com.bc.ceres.binding.dom.XppDomElement;
-import org.esa.beam.framework.gpf.graph.Node;
-import org.esa.beam.framework.gpf.graph.NodeSource;
+import org.esa.snap.framework.gpf.graph.Node;
+import org.esa.snap.framework.gpf.graph.NodeSource;
 import org.junit.Before;
 import org.junit.Test;
 

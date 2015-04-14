@@ -15,10 +15,10 @@
  */
 package org.esa.snap.dat.actions;
 
-import org.esa.beam.framework.ui.command.CommandEvent;
-import org.esa.beam.visat.actions.AbstractVisatAction;
 import org.esa.snap.dat.dialogs.BatchGraphDialog;
-import org.esa.snap.util.ImageUtils;
+import org.esa.snap.framework.ui.command.CommandEvent;
+import org.esa.snap.util.IconUtils;
+import org.esa.snap.visat.actions.AbstractVisatAction;
 
 public class BatchProcessingAction extends AbstractVisatAction {
 
@@ -26,7 +26,7 @@ public class BatchProcessingAction extends AbstractVisatAction {
     public void actionPerformed(final CommandEvent event) {
         final BatchGraphDialog dialog = new BatchGraphDialog(getAppContext(),
                 "Batch Processing", "batchProcessing", false);
-        dialog.getJDialog().setIconImage(ImageUtils.esaPlanetIcon.getImage());
+        dialog.getJDialog().setIconImage(IconUtils.esaPlanetIcon.getImage());
         dialog.show();
     }
 

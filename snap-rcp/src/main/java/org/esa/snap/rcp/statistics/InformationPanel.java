@@ -18,15 +18,15 @@ package org.esa.snap.rcp.statistics;
 
 import com.bc.ceres.core.runtime.Module;
 import com.bc.ceres.core.runtime.internal.ModuleReader;
-import org.esa.beam.framework.dataio.ProductReader;
-import org.esa.beam.framework.dataio.ProductReaderPlugIn;
-import org.esa.beam.framework.datamodel.AbstractBand;
-import org.esa.beam.framework.datamodel.Band;
-import org.esa.beam.framework.datamodel.Product;
-import org.esa.beam.framework.datamodel.ProductData;
-import org.esa.beam.framework.datamodel.TiePointGrid;
-import org.esa.beam.util.StringUtils;
-import org.esa.beam.util.SystemUtils;
+import org.esa.snap.framework.dataio.ProductReader;
+import org.esa.snap.framework.dataio.ProductReaderPlugIn;
+import org.esa.snap.framework.datamodel.AbstractBand;
+import org.esa.snap.framework.datamodel.Band;
+import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.datamodel.ProductData;
+import org.esa.snap.framework.datamodel.TiePointGrid;
+import org.esa.snap.util.StringUtils;
+import org.esa.snap.util.SystemUtils;
 import org.openide.windows.TopComponent;
 
 import javax.swing.JScrollPane;

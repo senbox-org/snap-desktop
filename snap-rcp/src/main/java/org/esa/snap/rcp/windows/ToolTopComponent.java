@@ -15,7 +15,7 @@
  */
 package org.esa.snap.rcp.windows;
 
-import org.esa.beam.framework.ui.product.ProductSceneView;
+import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.rcp.SnapApp;
 import org.netbeans.api.annotations.common.NonNull;
 import org.openide.windows.TopComponent;

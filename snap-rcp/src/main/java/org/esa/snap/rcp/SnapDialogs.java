@@ -1,16 +1,21 @@
 package org.esa.snap.rcp;
 
 import com.bc.ceres.core.Assert;
-import org.esa.beam.util.SystemUtils;
-import org.esa.beam.util.io.BeamFileChooser;
-import org.esa.beam.util.io.FileUtils;
+import org.esa.snap.util.SystemUtils;
+import org.esa.snap.util.io.BeamFileChooser;
+import org.esa.snap.util.io.FileUtils;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.util.NbBundle;
 
-import javax.swing.*;
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.filechooser.FileFilter;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.io.File;
 import java.text.MessageFormat;
 import java.util.prefs.Preferences;

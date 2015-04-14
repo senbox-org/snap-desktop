@@ -17,10 +17,10 @@ package org.esa.snap.gpf.ui;
 
 
 import com.bc.ceres.binding.dom.XppDomElement;
-import org.esa.beam.framework.datamodel.Product;
-import org.esa.beam.framework.ui.AppContext;
+import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.ui.AppContext;
 
-import javax.swing.*;
+import javax.swing.JComponent;
 import java.util.Map;
 
 /**

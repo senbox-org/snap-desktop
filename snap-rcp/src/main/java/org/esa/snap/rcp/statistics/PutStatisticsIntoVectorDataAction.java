@@ -16,18 +16,18 @@
 
 package org.esa.snap.rcp.statistics;
 
-import org.esa.beam.framework.datamodel.Mask;
-import org.esa.beam.framework.datamodel.PlacemarkDescriptor;
-import org.esa.beam.framework.datamodel.ProductNodeGroup;
-import org.esa.beam.framework.datamodel.VectorDataNode;
-import org.esa.beam.framework.ui.product.ProductSceneView;
-import org.esa.beam.statistics.output.BandNameCreator;
-import org.esa.beam.statistics.output.FeatureStatisticsWriter;
-import org.esa.beam.statistics.output.StatisticsOutputContext;
-import org.esa.beam.statistics.output.Util;
-import org.esa.beam.util.SystemUtils;
+import org.esa.snap.framework.datamodel.Mask;
+import org.esa.snap.framework.datamodel.PlacemarkDescriptor;
+import org.esa.snap.framework.datamodel.ProductNodeGroup;
+import org.esa.snap.framework.datamodel.VectorDataNode;
+import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.statistics.output.BandNameCreator;
+import org.esa.snap.statistics.output.FeatureStatisticsWriter;
+import org.esa.snap.statistics.output.StatisticsOutputContext;
+import org.esa.snap.statistics.output.Util;
+import org.esa.snap.util.SystemUtils;
 import org.geotools.data.collection.ListFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;

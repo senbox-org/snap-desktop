@@ -15,13 +15,13 @@
  */
 package org.esa.snap.gpf.ui;
 
-import org.esa.beam.GlobalTestConfig;
-import org.esa.beam.framework.datamodel.Product;
-import org.esa.beam.framework.datamodel.ProductManager;
-import org.esa.beam.framework.ui.AppContext;
-import org.esa.beam.framework.ui.application.ApplicationPage;
-import org.esa.beam.framework.ui.product.ProductSceneView;
-import org.esa.beam.util.PropertyMap;
+import org.esa.snap.GlobalTestConfig;
+import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.datamodel.ProductManager;
+import org.esa.snap.framework.ui.AppContext;
+import org.esa.snap.framework.ui.application.ApplicationPage;
+import org.esa.snap.framework.ui.product.ProductSceneView;
+import org.esa.snap.util.PropertyMap;
 import org.junit.Before;
 import org.junit.Test;
 

@@ -21,17 +21,17 @@ import com.bc.ceres.binding.PropertyContainer;
 import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.PropertyEditorRegistry;
-import org.esa.beam.framework.ui.product.ProductSceneView;
+import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.rcp.preferences.DefaultConfigController;
 import org.esa.snap.rcp.preferences.Preference;
 import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.HelpCtx;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+import java.awt.Insets;
 
-import static com.bc.ceres.swing.TableLayout.Anchor;
-import static com.bc.ceres.swing.TableLayout.Fill;
+import static com.bc.ceres.swing.TableLayout.*;
 
 /**
  * Panel handling general layer preferences. Sub-panel of the "Layer"-panel.

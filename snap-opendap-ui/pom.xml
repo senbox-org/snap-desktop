@@ -97,7 +97,7 @@
                 <configuration>
                     <publicPackages>
                         <publicPackage>opendap.*</publicPackage>
-                        <publicPackage>org.esa.beam.opendap.*</publicPackage>
+                        <publicPackage>org.esa.snap.opendap.*</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>

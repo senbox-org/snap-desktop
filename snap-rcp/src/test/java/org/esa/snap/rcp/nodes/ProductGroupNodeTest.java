@@ -1,17 +1,14 @@
 package org.esa.snap.rcp.nodes;
 
-import org.esa.beam.framework.datamodel.Product;
-import org.esa.beam.framework.datamodel.ProductManager;
+import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.datamodel.ProductManager;
 import org.esa.snap.rcp.util.TestProducts;
 import org.junit.Test;
 import org.openide.awt.UndoRedo;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * @author Norman Fomferra
