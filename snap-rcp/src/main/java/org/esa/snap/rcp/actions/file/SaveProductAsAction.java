@@ -32,24 +32,17 @@ import java.text.MessageFormat;
  *
  * @author Norman
  */
-@ActionID(
-        category = "File",
-        id = "SaveProductAsAction"
-)
-@ActionRegistration(
-        displayName = "#CTL_SaveProductAsActionName"
-)
+@ActionID(category = "File", id = "SaveProductAsAction")
+@ActionRegistration(displayName = "#CTL_SaveProductAsActionName")
 @ActionReference(path = "Menu/File", position = 51, separatorAfter = 59)
-@NbBundle.Messages({
-        "CTL_SaveProductAsActionName=Save Product As..."
-})
+@NbBundle.Messages({"CTL_SaveProductAsActionName=Save Product As..."})
 public final class SaveProductAsAction extends AbstractAction {
 
     public static final String PREFERENCES_KEY_PRODUCT_CONVERSION_REQUIRED = "product_conversion_required";
     private final WeakReference<Product> productRef;
 
-    public SaveProductAsAction(Product products) {
-        productRef = new WeakReference<>(products);
+    public SaveProductAsAction(Product product) {
+        productRef = new WeakReference<>(product);
     }
 
     @Override
@@ -78,10 +71,10 @@ public final class SaveProductAsAction extends AbstractAction {
         if (reader != null && !(reader instanceof DimapProductReader)) {
             SnapDialogs.Answer answer = SnapDialogs.requestDecision("Save Product As",
                                                                     MessageFormat.format("In order to save the product\n" +
-                                                                                                 "   {0}\n" +
-                                                                                                 "it has to be converted to the BEAM-DIMAP format.\n" +
-                                                                                                 "Depending on the product size the conversion also may take a while.\n\n" +
-                                                                                                 "Do you really want to convert the product now?\n",
+                                                                                         "   {0}\n" +
+                                                                                         "it has to be converted to the BEAM-DIMAP format.\n" +
+                                                                                         "Depending on the product size the conversion also may take a while.\n\n" +
+                                                                                         "Do you really want to convert the product now?\n",
                                                                                          product.getDisplayName()),
                                                                     true,
                                                                     PREFERENCES_KEY_PRODUCT_CONVERSION_REQUIRED);
