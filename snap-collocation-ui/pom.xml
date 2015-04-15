@@ -25,7 +25,7 @@
     <artifactId>snap-collocation-ui</artifactId>
     <packaging>nbm</packaging>
 
-    <name>Collocation GUI</name>
+    <name>SNAP Collocation GUI</name>
     <description>GUI for the geographic collocation of two data products.</description>
 
     <dependencies>
