@@ -145,6 +145,15 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>snap-tango</artifactId>
         </dependency>
+        <!--
+             The following will end up in snap/modules/ext/org.esa.snap.snap-rcp/org.esa.snap/nbexec.jar
+             where it can be used to launch and debug SNAP in IDEs other than NetBeans, e.g. IDEA or Eclipse
+         -->
+        <dependency>
+            <groupId>org.esa.snap</groupId>
+            <artifactId>nbexec</artifactId>
+            <version>${snap.version}</version>
+        </dependency>
 
         <!-- SNAP Engine -->
 
