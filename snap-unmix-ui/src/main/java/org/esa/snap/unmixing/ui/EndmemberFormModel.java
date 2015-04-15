@@ -164,9 +164,8 @@ class EndmemberFormModel {
 
     private void ensureDefaultDirSet() {
         if (!Files.exists(defaultEndmemberDir)) {
-            final ResourceInstaller resourceInstaller = new ResourceInstaller(ResourceInstaller.findModuleCodeBasePath(
-                    SpectralUnmixingDialog.class),
-                                                                              "auxdata/", defaultEndmemberDir);
+            Path sourceDirPath = ResourceInstaller.findModuleCodeBasePath(SpectralUnmixingDialog.class).resolve("auxdata/");
+            final ResourceInstaller resourceInstaller = new ResourceInstaller(sourceDirPath, defaultEndmemberDir);
             try {
                 resourceInstaller.install(".*", com.bc.ceres.core.ProgressMonitor.NULL);
             } catch (IOException e) {
