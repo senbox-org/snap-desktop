@@ -25,7 +25,10 @@
                 <artifactId>nbm-maven-plugin</artifactId>
                 <configuration>
                     <moduleDependencies>
-                        <!-- Following impl. dependency is required by class org.esa.snap.rcp.SnapGlobalActionContext -->
+                        <!--
+                            Following "impl" dependency is required by class org.esa.snap.rcp.util.ContextGlobalExtenderImpl
+                            which uses non-API class org.netbeans.modules.openide.windows.GlobalActionContextImpl
+                        -->
                         <dependency>
                             <id>org.netbeans.api:org-openide-windows</id>
                             <type>impl</type>
