@@ -613,7 +613,8 @@ class ColorManipulationForm implements SelectionSupport.Handler<ProductSceneView
     private void installDefaultColorPalettes() {
         Path sourceBasePath = ResourceInstaller.findModuleCodeBasePath(BeamUiActivator.class);
         final Path auxdataDir = getColorPalettesDir();
-        final ResourceInstaller resourceInstaller = new ResourceInstaller(sourceBasePath, "auxdata/color_palettes/", auxdataDir);
+        Path sourceDirPath = sourceBasePath.resolve("auxdata/color_palettes/");
+        final ResourceInstaller resourceInstaller = new ResourceInstaller(sourceDirPath, auxdataDir);
         ProgressMonitorSwingWorker swingWorker = new ProgressMonitorSwingWorker(toolView, "Installing Auxdata...") {
             @Override
             protected Object doInBackground(ProgressMonitor progressMonitor) throws Exception {

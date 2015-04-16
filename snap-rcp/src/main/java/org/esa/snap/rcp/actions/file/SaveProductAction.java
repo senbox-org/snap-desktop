@@ -35,44 +35,8 @@ import java.text.MessageFormat;
         displayName = "#CTL_SaveProductActionName"
 )
 @ActionReference(path = "Menu/File", position = 50, separatorBefore = 49)
-@NbBundle.Messages({
-        "CTL_SaveProductActionName=Save Product"
-})
+@NbBundle.Messages({"CTL_SaveProductActionName=Save Product"})
 public final class SaveProductAction extends AbstractAction {
-
-    /**
-     * Preferences key for save product headers (MPH, SPH) or not
-     */
-    public static final String PROPERTY_KEY_SAVE_PRODUCT_HEADERS = "save_product_headers";
-    /**
-     * Preferences key for save product history or not
-     */
-    public static final String PROPERTY_KEY_SAVE_PRODUCT_HISTORY = "save_product_history";
-    /**
-     * Preferences key for save product annotations (ADS) or not
-     */
-    public static final String PROPERTY_KEY_SAVE_PRODUCT_ANNOTATIONS = "save_product_annotations";
-    /**
-     * Preferences key for incremental mode at save
-     */
-    public static final String PROPERTY_KEY_SAVE_INCREMENTAL = "save_incremental";
-
-    /**
-     * default value for preference save product annotations (ADS) or not
-     */
-    public static boolean DEFAULT_VALUE_SAVE_PRODUCT_ANNOTATIONS = false;
-    /**
-     * default value for preference incremental mode at save
-     */
-    public static final boolean DEFAULT_VALUE_SAVE_INCREMENTAL = true;
-    /**
-     * default value for preference save product headers (MPH, SPH) or not
-     */
-    public static final boolean DEFAULT_VALUE_SAVE_PRODUCT_HEADERS = true;
-    /**
-     * default value for preference save product history (History) or not
-     */
-    public static final boolean DEFAULT_VALUE_SAVE_PRODUCT_HISTORY = true;
 
 
     private final WeakReference<Product> productRef;
