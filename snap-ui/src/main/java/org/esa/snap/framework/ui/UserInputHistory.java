@@ -20,6 +20,7 @@ import org.esa.snap.util.PropertyMap;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.prefs.Preferences;
 
 /**
  * <code>UserInputHistory</code> is a fixed-size array for {@code String} entries edited by a user. If a new entry is added
@@ -31,44 +32,44 @@ import java.util.List;
  */
 public class UserInputHistory {
 
-    private String _propertyKey;
-    private int _maxNumEntries;
-    private List<String> _entriesList;
+    private String propertyKey;
+    private int maxNumEntries;
+    private List<String> entriesList;
 
     public UserInputHistory(int maxNumEntries, String propertyKey) {
         Guardian.assertNotNullOrEmpty("propertyKey", propertyKey);
-        _propertyKey = propertyKey;
+        this.propertyKey = propertyKey;
         setMaxNumEntries(maxNumEntries);
     }
 
     public int getNumEntries() {
-        if (_entriesList != null) {
-            return _entriesList.size();
+        if (entriesList != null) {
+            return entriesList.size();
         }
         return 0;
     }
 
     public int getMaxNumEntries() {
-        return _maxNumEntries;
+        return maxNumEntries;
     }
 
     public String getPropertyKey() {
-        return _propertyKey;
+        return propertyKey;
     }
 
     public String[] getEntries() {
-        if (_entriesList != null) {
-            return _entriesList.toArray(new String[_entriesList.size()]);
+        if (entriesList != null) {
+            return entriesList.toArray(new String[entriesList.size()]);
         }
         return null;
     }
 
-    public void initBy(final PropertyMap propertyMap) {
-        int maxNumEntries = propertyMap.getPropertyInt(getLengthKey(), getMaxNumEntries());
+    public void initBy(final Preferences preferences) {
+        int maxNumEntries = preferences.getInt(getLengthKey(), getMaxNumEntries());
         setMaxNumEntries(maxNumEntries);
 
         for (int i = maxNumEntries - 1; i >= 0; i--) {
-            String entry = propertyMap.getPropertyString(getNumKey(i), null);
+            String entry = preferences.get(getNumKey(i), null);
             if (entry != null && isValidItem(entry)) {
                 push(entry);
             }
@@ -81,48 +82,48 @@ public class UserInputHistory {
 
     public void push(String entry) {
         if (entry != null && isValidItem(entry)) {
-            if (_entriesList == null) {
-                _entriesList = new LinkedList<String>();
+            if (entriesList == null) {
+                entriesList = new LinkedList<String>();
             }
-            for (String anEntry : _entriesList) {
+            for (String anEntry : entriesList) {
                 if (anEntry.equals(entry)) {
-                    _entriesList.remove(anEntry);
+                    entriesList.remove(anEntry);
                     break;
                 }
             }
-            if (_entriesList.size() == _maxNumEntries) {
-                _entriesList.remove(_entriesList.size() - 1);
+            if (entriesList.size() == maxNumEntries) {
+                entriesList.remove(entriesList.size() - 1);
             }
-            _entriesList.add(0, entry);
+            entriesList.add(0, entry);
         }
     }
 
-    public void copyInto(PropertyMap propertyMap) {
-        propertyMap.setPropertyInt(getLengthKey(), _maxNumEntries);
+    public void copyInto(Preferences preferences) {
+        preferences.putInt(getLengthKey(), maxNumEntries);
         for (int i = 0; i < 100; i++) {
-            propertyMap.setPropertyString(getNumKey(i), null);
+            preferences.put(getNumKey(i), "");
         }
         final String[] entries = getEntries();
         if (entries != null) {
             for (int i = 0; i < entries.length; i++) {
-                propertyMap.setPropertyString(getNumKey(i), entries[i]);
+                preferences.put(getNumKey(i), entries[i]);
             }
         }
     }
 
     private String getLengthKey() {
-        return _propertyKey + ".length";
+        return propertyKey + ".length";
     }
 
     private String getNumKey(int index) {
-        return _propertyKey + "." + index;
+        return propertyKey + "." + index;
     }
 
     public void setMaxNumEntries(int maxNumEntries) {
-        _maxNumEntries = maxNumEntries > 0 ? maxNumEntries : 16;
-        if (_entriesList != null) {
-            while (_maxNumEntries < _entriesList.size()) {
-                _entriesList.remove(_entriesList.size() - 1);
+        this.maxNumEntries = maxNumEntries > 0 ? maxNumEntries : 16;
+        if (entriesList != null) {
+            while (this.maxNumEntries < entriesList.size()) {
+                entriesList.remove(entriesList.size() - 1);
             }
         }
     }

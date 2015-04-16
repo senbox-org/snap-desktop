@@ -13,6 +13,7 @@ import org.esa.snap.framework.datamodel.ProductFilter;
 import org.esa.snap.framework.gpf.GPF;
 import org.esa.snap.framework.gpf.ui.CollocationCrsForm;
 import org.esa.snap.framework.gpf.ui.SourceProductSelector;
+import org.esa.snap.framework.ui.AppContext;
 import org.esa.snap.framework.ui.assistant.AssistantPage;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.timeseries.core.timeseries.datamodel.ProductLocation;
@@ -76,7 +77,7 @@ class TimeSeriesAssistantPage_ReprojectingSources extends AbstractTimeSeriesAssi
     @Override
     protected Component createPageComponent() {
         final PropertyChangeListener listener = evt -> getContext().updateState();
-        collocationCrsForm = new MyCollocationCrsForm(listener, getAssistantModel());
+        collocationCrsForm = new MyCollocationCrsForm(new SnapApp.SnapContext(), listener, getAssistantModel());
         collocationCrsForm.addMyChangeListener();
 
         final JPanel pagePanel = new JPanel(new BorderLayout());
@@ -104,8 +105,8 @@ class TimeSeriesAssistantPage_ReprojectingSources extends AbstractTimeSeriesAssi
         private final PropertyChangeListener listener;
         private final TimeSeriesAssistantModel assistantModel;
 
-        public MyCollocationCrsForm(PropertyChangeListener listener, TimeSeriesAssistantModel assistantModel) {
-            super(new SnapApp.SnapContext());
+        public MyCollocationCrsForm(AppContext appContext, PropertyChangeListener listener, TimeSeriesAssistantModel assistantModel) {
+            super(appContext);
             this.listener = listener;
             this.assistantModel = assistantModel;
         }
@@ -135,7 +136,7 @@ class TimeSeriesAssistantPage_ReprojectingSources extends AbstractTimeSeriesAssi
 
         @Override
         protected JComponent createCrsComponent() {
-            collocateProductSelector = new SourceProductSelector(getAppContext(), "Product:");
+            collocateProductSelector = new SourceProductSelector(new SnapApp.SnapContext(), "Product:");
             List<Product> products = new ArrayList<>();
             for (ProductLocation productLocation : assistantModel.getProductLocationsModel().getProductLocations()) {
                 for (Product product : productLocation.getProducts(ProgressMonitor.NULL).values()) {

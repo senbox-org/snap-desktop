@@ -24,6 +24,7 @@ import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.datum.GeodeticDatum;
 import org.opengis.referencing.operation.OperationMethod;
+//import org.openide.windows.WindowManager;
 
 import javax.swing.JComponent;
 import java.beans.PropertyChangeEvent;
@@ -57,7 +58,9 @@ public class CustomCrsForm extends CrsForm {
 
     @Override
     protected JComponent createCrsComponent() {
-        final CustomCrsPanel panel = new CustomCrsPanel(getAppContext().getApplicationWindow());
+//        final CustomCrsPanel panel = new CustomCrsPanel(WindowManager.getDefault().getMainWindow());
+        final CustomCrsPanel panel = new CustomCrsPanel(null);
+
         panel.addPropertyChangeListener("crs", new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {

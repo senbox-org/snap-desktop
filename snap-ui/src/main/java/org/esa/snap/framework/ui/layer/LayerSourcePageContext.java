@@ -28,13 +28,6 @@ import org.esa.snap.framework.ui.assistant.AssistantPageContext;
 public interface LayerSourcePageContext extends AssistantPageContext {
 
     /**
-     * Gets the {@link AppContext} of the application.
-     *
-     * @return The {@link AppContext} of the application.
-     */
-    AppContext getAppContext();
-
-    /**
      * Gets the {@link LayerContext layer context} of the selected view.
      *
      * @return The {@link LayerContext layer context} of the selected view.

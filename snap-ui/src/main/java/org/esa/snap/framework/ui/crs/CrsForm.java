@@ -41,7 +41,6 @@ public abstract class CrsForm {
     private JComponent crsComponent;
     private JRadioButton radioButton;
 
-
     protected CrsForm(AppContext appContext) {
         this.appContext = appContext;
         changeListeners = new ArrayList<PropertyChangeListener>();

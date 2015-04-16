@@ -68,14 +68,11 @@ public class LayerManagerTopComponent extends AbstractLayerTopComponent {
 
     private LayerSelectionContext selectionContext;
 
-    public LayerManagerTopComponent() {
-    }
-
     @Override
     protected void initUI() {
-        super.initUI();
         layerManagerMap = new WeakHashMap<>();
         selectionContext = new LayerSelectionContext();
+        super.initUI();
     }
 
     @Override

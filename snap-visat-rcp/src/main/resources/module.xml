@@ -64,70 +64,67 @@
 
     <categories>System,Application,VISAT</categories>
 
-    <extension point="snap-ui:layerEditors">
-        <layerEditor>
-            <editorFactory>org.esa.snap.visat.toolviews.layermanager.editors.VectorDataLayerEditorFactory
-            </editorFactory>
-            <layer>org.esa.snap.framework.ui.product.VectorDataLayer</layer>
-        </layerEditor>
-        <layerEditor>
-            <editor>org.esa.snap.visat.toolviews.layermanager.editors.ImageLayerEditor</editor>
-            <layerType>com.bc.ceres.glayer.support.ImageLayer$Type</layerType>
-        </layerEditor>
-        <layerEditor>
-            <editor>org.esa.snap.visat.toolviews.layermanager.editors.NoDataLayerEditor</editor>
-            <layerType>org.esa.snap.glayer.NoDataLayerType</layerType>
-        </layerEditor>
-        <layerEditor>
-            <editor>org.esa.snap.visat.toolviews.layermanager.editors.FeatureLayerEditor</editor>
-            <layerType>org.esa.snap.visat.toolviews.layermanager.layersrc.shapefile.FeatureLayerType</layerType>
-        </layerEditor>
-        <layerEditor>
-            <editor>org.esa.snap.visat.toolviews.layermanager.editors.GraticuleLayerEditor</editor>
-            <layerType>org.esa.snap.glayer.GraticuleLayerType</layerType>
-        </layerEditor>
-    </extension>
+    <!--<extension point="snap-ui:layerEditors">-->
+        <!--<layerEditor>-->
+            <!--<editorFactory>org.esa.snap.rcp.layermanager.editors.VectorDataLayerEditorFactory-->
+            <!--</editorFactory>-->
+            <!--<layer>org.esa.snap.framework.ui.product.VectorDataLayer</layer>-->
+        <!--</layerEditor>-->
+        <!--<layerEditor>-->
+            <!--<editor>org.esa.snap.rcp.layermanager.editors.ImageLayerEditor</editor>-->
+            <!--<layerType>com.bc.ceres.glayer.support.ImageLayer$Type</layerType>-->
+        <!--</layerEditor>-->
+        <!--<layerEditor>-->
+            <!--<editor>org.esa.snap.rcp.layermanager.editors.NoDataLayerEditor</editor>-->
+            <!--<layerType>org.esa.snap.glayer.NoDataLayerType</layerType>-->
+        <!--</layerEditor>-->
+        <!--<layerEditor>-->
+            <!--<editor>org.esa.snap.rcp.layermanager.editors.FeatureLayerEditor</editor>-->
+            <!--<layerType>org.esa.snap.visat.toolviews.layermanager.layersrc.shapefile.FeatureLayerType</layerType>-->
+        <!--</layerEditor>-->
+        <!--<layerEditor>-->
+            <!--<editor>org.esa.snap.rcp.layermanager.editors.GraticuleLayerEditor</editor>-->
+            <!--<layerType>org.esa.snap.glayer.GraticuleLayerType</layerType>-->
+        <!--</layerEditor>-->
+    <!--</extension>-->
 
     <extension point="snap-ui:layerSources">
-        <layerSource>
-            <id>wms-layer-source</id>
-            <name>Image from Web Map Server (WMS)</name>
-            <description>Retrieves images from a Web Map Server (WMS)</description>
-            <class>org.esa.snap.visat.toolviews.layermanager.layersrc.wms.WmsLayerSource</class>
-        </layerSource>
-        <layerSource>
-            <id>shapefile-layer-source</id>
-            <name>ESRI Shapefile</name>
-            <description>Displays shapes from an ESRI Shapefile</description>
-            <class>org.esa.snap.visat.toolviews.layermanager.layersrc.shapefile.ShapefileLayerSource</class>
-        </layerSource>
-        <layerSource>
-            <id>productdata-layer-source</id>
-            <name>Image of Band / Tie-Point Grid</name>
-            <description>Displays images from a Band or Tie-Point Grid of compatible products</description>
-            <class>org.esa.snap.visat.toolviews.layermanager.layersrc.product.ProductLayerSource</class>
-        </layerSource>
-        <layerSource>
-            <id>image-layer-source</id>
-            <name>Image from File</name>
-            <description>Displays images from a file</description>
-            <class>org.esa.snap.visat.toolviews.layermanager.layersrc.image.ImageFileLayerSource</class>
-        </layerSource>
+        <!--<layerSource>-->
+            <!--<id>wms-layer-source</id>-->
+            <!--<name>Image from Web Map Server (WMS)</name>-->
+            <!--<description>Retrieves images from a Web Map Server (WMS)</description>-->
+            <!--<class>org.esa.snap.visat.toolviews.layermanager.layersrc.wms.WmsLayerSource</class>-->
+        <!--</layerSource>-->
+        <!--<layerSource>-->
+            <!--<id>shapefile-layer-source</id>-->
+            <!--<name>ESRI Shapefile</name>-->
+            <!--<description>Displays shapes from an ESRI Shapefile</description>-->
+            <!--<class>org.esa.snap.visat.toolviews.layermanager.layersrc.shapefile.ShapefileLayerSource</class>-->
+        <!--</layerSource>-->
+        <!--<layerSource>-->
+            <!--<id>productdata-layer-source</id>-->
+            <!--<name>Image of Band / Tie-Point Grid</name>-->
+            <!--<description>Displays images from a Band or Tie-Point Grid of compatible products</description>-->
+            <!--<class>org.esa.snap.visat.toolviews.layermanager.layersrc.product.ProductLayerSource</class>-->
+        <!--</layerSource>-->
+        <!--<layerSource>-->
+            <!--<id>image-layer-source</id>-->
+            <!--<name>Image from File</name>-->
+            <!--<description>Displays images from a file</description>-->
+            <!--<class>org.esa.snap.visat.toolviews.layermanager.layersrc.image.ImageFileLayerSource</class>-->
+        <!--</layerSource>-->
         <layerSource>
             <id>group-layer-source</id>
             <name>Layer Group</name>
             <description>Inserts an empty Layer Group</description>
             <class>org.esa.snap.framework.ui.layer.CollectionLayerSource</class>
         </layerSource>
-
-        <layerSource>
-            <id>windfield-layer-source</id>
-            <name>Wind speed vectors from MERIS ECMWF annotations</name>
-            <description>Creates a windfield layer based on MERIS 'zonal_wind' and 'merid_wind' data</description>
-            <class>org.esa.snap.visat.toolviews.layermanager.layersrc.windfield.WindFieldLayerSource</class>
-        </layerSource>
-
-
+        <!--<layerSource>-->
+            <!--<id>windfield-layer-source</id>-->
+            <!--<name>Wind speed vectors from MERIS ECMWF annotations</name>-->
+            <!--<description>Creates a windfield layer based on MERIS 'zonal_wind' and 'merid_wind' data</description>-->
+            <!--<class>org.esa.snap.visat.toolviews.layermanager.layersrc.windfield.WindFieldLayerSource</class>-->
+        <!--</layerSource>-->
     </extension>
 
     <extension point="snap-ceres-core:serviceProviders">
@@ -171,7 +168,7 @@
         <toolView>
             <id>org.esa.snap.visat.toolviews.placemark.PlacemarkEditorToolView</id>
             <class>org.esa.snap.visat.toolviews.placemark.PlacemarkEditorToolView</class>
-            <!-- Not yet, editor functionality still not implemented! -->
+            <!-- Not yet, editors functionality still not implemented! -->
             <!--
             <title>Vector Data Editor</title>
             <description>Edit features of selected vector data.</description>
@@ -685,15 +682,15 @@
         <!-- Import Menu Group  -->
         <!--####################-->
 
-        <action>
-            <id>importShapefile</id>
-            <class>org.esa.snap.visat.actions.ImportVectorDataNodeFromShapefileAction</class>
-            <parent>importVectorData</parent>
-            <text>ESRI Shapefile</text>
-            <mnemonic>S</mnemonic>
-            <shortDescr>Import geometry from ESRI Shapefile.</shortDescr>
-            <helpId>importShapefile</helpId>
-        </action>
+        <!--<action>-->
+            <!--<id>importShapefile</id>-->
+            <!--<class>org.esa.snap.visat.actions.ImportVectorDataNodeFromShapefileAction</class>-->
+            <!--<parent>importVectorData</parent>-->
+            <!--<text>ESRI Shapefile</text>-->
+            <!--<mnemonic>S</mnemonic>-->
+            <!--<shortDescr>Import geometry from ESRI Shapefile.</shortDescr>-->
+            <!--<helpId>importShapefile</helpId>-->
+        <!--</action>-->
 
         <action>
             <id>importSeaDASTrack</id>
@@ -704,23 +701,23 @@
             <helpId>importSeaDASTrack</helpId>
         </action>
 
-        <action>
-            <id>importCSV</id>
-            <class>org.esa.snap.visat.actions.ImportVectorDataNodeFromCsvAction</class>
-            <text>CSV</text>
-            <parent>importVectorData</parent>
-            <shortDescr>Import geometry from CSV file.</shortDescr>
-            <helpId>importCSV</helpId>
-        </action>
+        <!--<action>-->
+            <!--<id>importCSV</id>-->
+            <!--<class>org.esa.snap.visat.actions.ImportVectorDataNodeFromCsvAction</class>-->
+            <!--<text>CSV</text>-->
+            <!--<parent>importVectorData</parent>-->
+            <!--<shortDescr>Import geometry from CSV file.</shortDescr>-->
+            <!--<helpId>importCSV</helpId>-->
+        <!--</action>-->
 
-        <action>
-            <id>importMermaid</id>
-            <class>org.esa.snap.visat.actions.ImportVectorDataNodeFromMermaidAction</class>
-            <text>MERMAID Extraction File</text>
-            <parent>importVectorData</parent>
-            <shortDescr>Import data from a MERMAID extraction file.</shortDescr>
-            <helpId>importMermaid</helpId>
-        </action>
+        <!--<action>-->
+            <!--<id>importMermaid</id>-->
+            <!--<class>org.esa.snap.visat.actions.ImportVectorDataNodeFromMermaidAction</class>-->
+            <!--<text>MERMAID Extraction File</text>-->
+            <!--<parent>importVectorData</parent>-->
+            <!--<shortDescr>Import data from a MERMAID extraction file.</shortDescr>-->
+            <!--<helpId>importMermaid</helpId>-->
+        <!--</action>-->
 
         <action>
             <parent>importRasterData</parent>

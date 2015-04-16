@@ -1036,7 +1036,8 @@ public class BasicApp {
         //////////////////////////////////////////////////////////////
         // Store file history
 
-        fileHistory.copyInto(getPreferences());
+        //do not use this now
+//        fileHistory.copyInto(getPreferences());
 
         //////////////////////////////////////////////////////////////
         // Store frame properties
@@ -1098,7 +1099,7 @@ public class BasicApp {
         //////////////////////////////////////////////////////////////
         // Initialize file history
 
-        fileHistory.initBy(getPreferences());
+//        fileHistory.initBy(getPreferences());
 
         //////////////////////////////////////////////////////////////
 

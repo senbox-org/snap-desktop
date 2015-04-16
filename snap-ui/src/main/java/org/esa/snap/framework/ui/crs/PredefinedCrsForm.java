@@ -79,7 +79,7 @@ public class PredefinedCrsForm extends CrsForm {
         final PredefinedCrsPanel predefinedCrsForm = new PredefinedCrsPanel(
                 new CrsInfoListModel(CrsInfo.generateCRSList()));
         crsButton.addActionListener(e -> {
-            final ModalDialog dialog = new ModalDialog(getAppContext().getApplicationWindow(),
+            final ModalDialog dialog = new ModalDialog(null,
                                                        "Select Coordinate Reference System",
                                                        predefinedCrsForm,
                                                        ModalDialog.ID_OK_CANCEL, null);

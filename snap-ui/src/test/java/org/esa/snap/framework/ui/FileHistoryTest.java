@@ -18,10 +18,10 @@ package org.esa.snap.framework.ui;
 import junit.framework.TestCase;
 import org.esa.snap.GlobalTestConfig;
 import org.esa.snap.GlobalTestTools;
-import org.esa.snap.util.PropertyMap;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.prefs.Preferences;
 
 /**
  * <code>FileHistory</code> is a fixed-size array for the pathes of files opened/saved by a user. If a new file is added
@@ -74,13 +74,13 @@ public class FileHistoryTest extends TestCase {
         assertTrue(_d.getAbsolutePath() + " deos not exist", _d.exists());
         assertTrue(_e.getAbsolutePath() + " deos not exist", _e.exists());
         final String propertyKey = "recent.files.";
-        final PropertyMap properties = new PropertyMap();
-        properties.setPropertyInt(propertyKey + ".length", 3);
-        properties.setPropertyString(propertyKey + ".0", _a.getAbsolutePath());
-        properties.setPropertyString(propertyKey + ".1", _b.getAbsolutePath());
-        properties.setPropertyString(propertyKey + ".2", _c.getAbsolutePath());
-        properties.setPropertyString(propertyKey + ".3", _d.getAbsolutePath());
-        properties.setPropertyString(propertyKey + ".4", _e.getAbsolutePath());
+        final Preferences preferences = new DummyPreferences();
+        preferences.putInt(propertyKey + ".length", 3);
+        preferences.put(propertyKey + ".0", _a.getAbsolutePath());
+        preferences.put(propertyKey + ".1", _b.getAbsolutePath());
+        preferences.put(propertyKey + ".2", _c.getAbsolutePath());
+        preferences.put(propertyKey + ".3", _d.getAbsolutePath());
+        preferences.put(propertyKey + ".4", _e.getAbsolutePath());
 
         //create and init new FileHistory
         final FileHistory history = new FileHistory(9, propertyKey);
@@ -90,7 +90,7 @@ public class FileHistoryTest extends TestCase {
         assertNull(history.getEntries());
 
         //init by Properties
-        history.initBy(properties);
+        history.initBy(preferences);
 
         assertEquals(3, history.getMaxNumEntries());
         assertEquals(2, history.getNumEntries());
@@ -129,13 +129,13 @@ public class FileHistoryTest extends TestCase {
         assertEquals(_d.getAbsolutePath(), files[1]);
 
         //copy values to properties
-        history.copyInto(properties);
+        history.copyInto(preferences);
 
-        assertEquals(2, properties.getPropertyInt(propertyKey + ".length"));
-        assertEquals(_e.getAbsolutePath(), properties.getPropertyString(propertyKey + ".0"));
-        assertEquals(_d.getAbsolutePath(), properties.getPropertyString(propertyKey + ".1"));
-        assertNull(properties.getPropertyString(propertyKey + ".2", null));
-        assertNull(properties.getPropertyString(propertyKey + ".3", null));
-        assertNull(properties.getPropertyString(propertyKey + ".4", null));
+        assertEquals(2, preferences.getInt(propertyKey + ".length", -1));
+        assertEquals(_e.getAbsolutePath(), preferences.get(propertyKey + ".0", null));
+        assertEquals(_d.getAbsolutePath(), preferences.get(propertyKey + ".1", null));
+        assertNull(preferences.get(propertyKey + ".2", null));
+        assertNull(preferences.get(propertyKey + ".3", null));
+        assertNull(preferences.get(propertyKey + ".4", null));
     }
 }

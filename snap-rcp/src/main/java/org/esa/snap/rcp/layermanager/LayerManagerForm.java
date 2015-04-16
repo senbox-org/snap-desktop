@@ -24,10 +24,13 @@ import com.jidesoft.swing.CheckBoxTree;
 import com.jidesoft.swing.CheckBoxTreeSelectionModel;
 import org.esa.snap.framework.ui.GridBagUtils;
 import org.esa.snap.framework.ui.UIUtils;
+import org.esa.snap.framework.ui.layer.LayerSourceAssistantPane;
+import org.esa.snap.framework.ui.layer.LayerSourceDescriptor;
 import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.framework.ui.product.VectorDataLayer;
 import org.esa.snap.framework.ui.tool.ToolButtonFactory;
 import org.esa.snap.glayer.MaskLayerType;
+import org.esa.snap.rcp.layermanager.layersrc.SelectLayerSourceAssistantPage;
 import org.esa.snap.rcp.windows.ToolTopComponent;
 import org.openide.util.HelpCtx;
 
@@ -39,6 +42,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JTree;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.TreeSelectionEvent;
@@ -56,6 +60,8 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 class LayerManagerForm implements AbstractLayerForm {
 
@@ -448,13 +454,16 @@ class LayerManagerForm implements AbstractLayerForm {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-//            LayerSourceAssistantPane pane = new LayerSourceAssistantPane(SwingUtilities.getWindowAncestor(control),
-//                                                                         "Add Layer"
-//                    , getAppContext()
-//            );
+            LayerSourceAssistantPane pane = new LayerSourceAssistantPane(SwingUtilities.getWindowAncestor(control),
+                                                                         "Add Layer");
+            //todo remove BEAMUIActivator
 //            LayerSourceDescriptor[] layerSourceDescriptors = BeamUiActivator.getInstance().getLayerSources();
-//            pane.show(new SelectLayerSourceAssistantPage(layerSourceDescriptors), screenBounds);
-//            screenBounds = pane.getWindow().getBounds();
+            final Map<String, LayerSourceDescriptor> layerSourceDescriptors1 =
+                    LayerManager.getDefault().getLayerSourceDescriptors();
+            final LayerSourceDescriptor[] layerSourceDescriptors2 =
+                    layerSourceDescriptors1.values().toArray(new LayerSourceDescriptor[layerSourceDescriptors1.size()]);
+            pane.show(new SelectLayerSourceAssistantPage(layerSourceDescriptors2), screenBounds);
+            screenBounds = pane.getWindow().getBounds();
         }
     }
 

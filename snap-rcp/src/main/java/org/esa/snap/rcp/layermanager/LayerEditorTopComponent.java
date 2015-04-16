@@ -74,12 +74,13 @@ public class LayerEditorTopComponent extends AbstractLayerTopComponent {
         return Bundle.CTL_LayerEditorTopComponent_HelpId();
     }
 
+    protected void initUI() {
+        layerHandler = new LayerHandler();
+        super.initUI();
+    }
+
     @Override
     protected void layerSelectionChanged(Layer oldLayer, Layer newLayer) {
-        if (layerHandler == null) {
-            layerHandler = new LayerHandler();
-        }
-
         if (oldLayer != null) {
             oldLayer.removeListener(layerHandler);
         }

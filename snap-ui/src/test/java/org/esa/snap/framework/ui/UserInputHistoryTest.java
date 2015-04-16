@@ -16,7 +16,8 @@
 package org.esa.snap.framework.ui;
 
 import junit.framework.TestCase;
-import org.esa.snap.util.PropertyMap;
+
+import java.util.prefs.Preferences;
 
 public class UserInputHistoryTest extends TestCase {
 
@@ -24,23 +25,16 @@ public class UserInputHistoryTest extends TestCase {
         super(name);
     }
 
-    @Override
-    public void setUp() {
-    }
-
-    @Override
-    public void tearDown() {
-    }
-
     public void testFail() {
         final String propertyKey = "test.prop";
-        final PropertyMap properties = new PropertyMap();
-        properties.setPropertyInt(propertyKey + ".length", 4);
-        properties.setPropertyString(propertyKey + ".0", "0");
-        properties.setPropertyString(propertyKey + ".1", "1");
-        properties.setPropertyString(propertyKey + ".2", "2");
-        properties.setPropertyString(propertyKey + ".3", "3");
-        properties.setPropertyString(propertyKey + ".4", "4");
+        final Preferences preferences = new DummyPreferences();
+
+        preferences.putInt(propertyKey + ".length", 4);
+        preferences.put(propertyKey + ".0", "0");
+        preferences.put(propertyKey + ".1", "1");
+        preferences.put(propertyKey + ".2", "2");
+        preferences.put(propertyKey + ".3", "3");
+        preferences.put(propertyKey + ".4", "4");
 
         final UserInputHistory history = new UserInputHistory(9, propertyKey);
 
@@ -48,7 +42,7 @@ public class UserInputHistoryTest extends TestCase {
         assertEquals(0, history.getNumEntries());
         assertNull(history.getEntries());
 
-        history.initBy(properties);
+        history.initBy(preferences);
 
         assertEquals(4, history.getMaxNumEntries());
         assertEquals(4, history.getNumEntries());
@@ -79,12 +73,13 @@ public class UserInputHistoryTest extends TestCase {
         assertEquals("4", entries[0]);
         assertEquals("0", entries[1]);
 
-        history.copyInto(properties);
+        history.copyInto(preferences);
 
-        assertEquals("4", properties.getPropertyString(propertyKey + ".0"));
-        assertEquals("0", properties.getPropertyString(propertyKey + ".1"));
-        assertNull(properties.getPropertyString(propertyKey + ".2", null));
-        assertNull(properties.getPropertyString(propertyKey + ".3", null));
-        assertNull(properties.getPropertyString(propertyKey + ".4", null));
+        assertEquals("4", preferences.get(propertyKey + ".0", null));
+        assertEquals("0", preferences.get(propertyKey + ".1", null));
+        assertNull(preferences.get(propertyKey + ".2", null));
+        assertNull(preferences.get(propertyKey + ".3", null));
+        assertNull(preferences.get(propertyKey + ".4", null));
     }
+
 }

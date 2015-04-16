@@ -17,8 +17,9 @@
 package org.esa.snap.framework.ui.layer;
 
 import com.bc.ceres.glayer.LayerContext;
-import org.esa.snap.framework.ui.AppContext;
 import org.esa.snap.framework.ui.assistant.AssistantPane;
+import org.esa.snap.framework.ui.product.ProductSceneView;
+import org.openide.util.Utilities;
 
 import java.awt.Window;
 import java.util.HashMap;
@@ -29,27 +30,21 @@ import java.util.Map;
  */
 public class LayerSourceAssistantPane extends AssistantPane implements LayerSourcePageContext {
 
-    private final AppContext appContext;
     private final Map<String, Object> properties;
     private LayerSource layerSource;
 
-    public LayerSourceAssistantPane(Window parent, String title, AppContext appContext) {
+    public LayerSourceAssistantPane(Window parent, String title) {
         super(parent, title);
-        this.appContext = appContext;
         properties = new HashMap<String, Object>();
     }
 
-
-    ///// Implementation of LayerSourcePageContext
-
-    @Override
-    public AppContext getAppContext() {
-        return appContext;
+    private ProductSceneView getSelectedProductSceneView() {
+        return Utilities.actionsGlobalContext().lookup(ProductSceneView.class);
     }
 
     @Override
     public LayerContext getLayerContext() {
-        return appContext.getSelectedProductSceneView().getLayerContext();
+        return getSelectedProductSceneView().getLayerContext();
     }
 
     @Override
