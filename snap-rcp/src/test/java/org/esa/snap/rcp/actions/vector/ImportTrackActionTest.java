@@ -1,4 +1,4 @@
-package org.esa.snap.visat.actions;
+package org.esa.snap.rcp.actions.vector;
 
 import org.esa.snap.framework.datamodel.CrsGeoCoding;
 import org.geotools.feature.FeatureCollection;

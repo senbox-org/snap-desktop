@@ -6,15 +6,14 @@ import org.esa.snap.framework.datamodel.PlacemarkDescriptor;
 import org.esa.snap.framework.datamodel.PlacemarkDescriptorRegistry;
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.ui.ModalDialog;
-import org.esa.snap.framework.ui.command.ExecCommand;
 import org.esa.snap.jai.ImageManager;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.rcp.actions.AbstractSnapAction;
 import org.esa.snap.util.FeatureUtils;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
-import javax.swing.AbstractAction;
 import javax.swing.SwingUtilities;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
@@ -23,7 +22,7 @@ import java.util.List;
  * @author olafd
  * @author Thomas Storm
  */
-abstract class AbstractImportVectorDataNodeAction extends AbstractAction {
+abstract class AbstractImportVectorDataNodeAction extends AbstractSnapAction {
 
     protected FeatureUtils.FeatureCrsProvider crsProvider;
     protected VectorDataNodeReader.PlacemarkDescriptorProvider placemarkDescriptorProvider;
@@ -34,8 +33,6 @@ abstract class AbstractImportVectorDataNodeAction extends AbstractAction {
         crsProvider = new MyFeatureCrsProvider();
         placemarkDescriptorProvider = new MyPlacemarkDescriptorProvider();
     }
-
-    protected abstract String getHelpId();
 
     private class MyPlacemarkDescriptorProvider implements VectorDataNodeReader.PlacemarkDescriptorProvider {
 

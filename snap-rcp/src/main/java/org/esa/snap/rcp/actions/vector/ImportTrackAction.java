@@ -14,7 +14,7 @@
  * with this program; if not, see http://www.gnu.org/licenses/
  */
 
-package org.esa.snap.visat.actions;
+package org.esa.snap.rcp.actions.vector;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -26,14 +26,15 @@ import org.esa.snap.framework.datamodel.PixelPos;
 import org.esa.snap.framework.datamodel.PlacemarkDescriptor;
 import org.esa.snap.framework.datamodel.PlacemarkDescriptorRegistry;
 import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.datamodel.ProductNode;
 import org.esa.snap.framework.datamodel.VectorDataNode;
-import org.esa.snap.framework.ui.command.CommandEvent;
-import org.esa.snap.framework.ui.command.ExecCommand;
 import org.esa.snap.framework.ui.product.ProductSceneView;
+import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.actions.AbstractSnapAction;
 import org.esa.snap.util.FeatureUtils;
 import org.esa.snap.util.io.CsvReader;
 import org.esa.snap.util.io.FileUtils;
-import org.esa.snap.visat.VisatApp;
 import org.geotools.data.collection.ListFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
@@ -45,11 +46,25 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.TransformException;
+import org.openide.awt.ActionID;
+import org.openide.awt.ActionReference;
+import org.openide.awt.ActionRegistration;
+import org.openide.util.ContextAwareAction;
+import org.openide.util.Lookup;
+import org.openide.util.LookupEvent;
+import org.openide.util.LookupListener;
+import org.openide.util.NbBundle;
+import org.openide.util.Utilities;
+import org.openide.util.WeakListeners;
 
+import javax.swing.Action;
+import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+
+//import org.esa.snap.visat.VisatApp;
 
 
 /**
@@ -68,51 +83,92 @@ import java.io.Reader;
  * @author Norman Fomferra
  * @since BEAM 4.10
  */
-public class ImportTrackAction extends ExecCommand {
+@ActionID(
+        category = "File",
+        id = "ImportTrackAction"
+)
+@ActionRegistration(
+        displayName = "#CTL_ImportSeadasTrackActionName"
+)
+@ActionReference(path = "Menu/File/Import/Vector Data", position = 50)
+@NbBundle.Messages({
+        "CTL_ImportSeadasTrackActionText=SeaDAS 6.x Track",
+        "CTL_ImportSeadasTrackActionName=Import SeaDAS Track",
+        "CTL_ImportSeadasTrackActionHelp=importSeadasTrack"
+})
+public class ImportTrackAction extends AbstractSnapAction implements ContextAwareAction, LookupListener {
 
-    public static final String TITLE = "Open Track File";
+    private Lookup lookup;
+    private final Lookup.Result<Product> result;
+
+    public ImportTrackAction() {
+        this(Utilities.actionsGlobalContext());
+    }
+
+    public ImportTrackAction(Lookup lookup) {
+        this.lookup = lookup;
+        result = lookup.lookupResult(Product.class);
+        result.addLookupListener(
+                WeakListeners.create(LookupListener.class, this, result));
+        setEnableState();
+        setHelpId(Bundle.CTL_ImportSeadasTrackActionHelp());
+        putValue(Action.NAME, Bundle.CTL_ImportSeadasTrackActionText());
+        putValue(Action.SHORT_DESCRIPTION, Bundle.CTL_ImportSeadasTrackActionName());
+    }
 
     @Override
-    public void actionPerformed(final CommandEvent event) {
-        VisatApp visatApp = VisatApp.getApp();
+    public Action createContextAwareInstance(Lookup lookup) {
+        return new ImportTrackAction(lookup);
+    }
 
-        File file = visatApp.showFileOpenDialog(TITLE, false, null, "importTrack.lastDir");
+    @Override
+    public void actionPerformed(ActionEvent ae) {
+        final File file =
+                SnapDialogs.requestFileForOpen(Bundle.CTL_ImportSeadasTrackActionName(), false, null, "importTrack.lastDir");
         if (file == null) {
             return;
         }
-
-        Product product = visatApp.getSelectedProduct();
-
+        final Product product = SnapApp.getDefault().getSelectedProduct();
         FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection;
         try {
             featureCollection = readTrack(file, product.getGeoCoding());
         } catch (IOException e) {
-            visatApp.showErrorDialog(TITLE, "Failed to load track file:\n" + e.getMessage());
+            SnapDialogs.showError(Bundle.CTL_ImportSeadasTrackActionName(), "Failed to load track file:\n" + e.getMessage());
             return;
         }
 
         if (featureCollection.isEmpty()) {
-            visatApp.showErrorDialog(TITLE, "No records found.");
+            SnapDialogs.showError(Bundle.CTL_ImportSeadasTrackActionName(), "No records found.");
             return;
         }
 
         String name = FileUtils.getFilenameWithoutExtension(file);
-        final PlacemarkDescriptor placemarkDescriptor = PlacemarkDescriptorRegistry.getInstance().getPlacemarkDescriptor(featureCollection.getSchema());
+        final PlacemarkDescriptor placemarkDescriptor =
+                PlacemarkDescriptorRegistry.getInstance().getPlacemarkDescriptor(featureCollection.getSchema());
         placemarkDescriptor.setUserDataOf(featureCollection.getSchema());
         VectorDataNode vectorDataNode = new VectorDataNode(name, featureCollection, placemarkDescriptor);
 
         product.getVectorDataGroup().add(vectorDataNode);
 
-        final ProductSceneView view = visatApp.getSelectedProductSceneView();
+        final ProductSceneView view = SnapApp.getDefault().getSelectedProductSceneView();
         if (view != null) {
             view.setLayersVisible(vectorDataNode);
         }
     }
 
     @Override
-    public void updateState(final CommandEvent event) {
-        setEnabled(VisatApp.getApp().getSelectedProduct() != null
-                           && VisatApp.getApp().getSelectedProduct().getGeoCoding() != null);
+    public void resultChanged(LookupEvent lookupEvent) {
+        setEnableState();
+    }
+
+    private void setEnableState() {
+        boolean state = false;
+        ProductNode productNode = lookup.lookup(ProductNode.class);
+        if (productNode != null) {
+            Product product = productNode.getProduct();
+            state = product != null && product.getGeoCoding() != null;
+        }
+        setEnabled(state);
     }
 
     private static FeatureCollection<SimpleFeatureType, SimpleFeature> readTrack(File file, GeoCoding geoCoding) throws IOException {
@@ -208,6 +264,5 @@ public class ImportTrackAction extends ExecCommand {
         fb.add(data);
         return fb.buildFeature(String.format("ID%08d", pointIndex));
     }
-
 
 }

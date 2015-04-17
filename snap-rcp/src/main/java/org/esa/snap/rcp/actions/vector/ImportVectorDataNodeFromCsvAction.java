@@ -20,6 +20,7 @@ import com.bc.ceres.core.ProgressMonitor;
 import org.esa.snap.dataio.geometry.VectorDataNodeIO;
 import org.esa.snap.dataio.geometry.VectorDataNodeReader;
 import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.datamodel.ProductNode;
 import org.esa.snap.framework.datamodel.VectorDataNode;
 import org.esa.snap.jai.ImageManager;
 import org.esa.snap.rcp.SnapApp;
@@ -43,7 +44,7 @@ import java.io.FileReader;
 import java.io.IOException;
 
 @ActionID(
-        category = "Vector",
+        category = "File",
         id = "ImportVectorDataNodeFromCsvAction"
 )
 @ActionRegistration(
@@ -51,7 +52,8 @@ import java.io.IOException;
 )
 @ActionReference(path = "Menu/File/Import/Vector Data", position = 10)
 @NbBundle.Messages({
-        "CTL_ImportVectorDataNodeFromCsvActionName=Import Vector Data Node From Csv",
+        "CTL_ImportVectorDataNodeFromCsvActionText=CSV",
+        "CTL_ImportVectorDataNodeFromCsvActionName=Import Vector Data Node From CSV",
         "CTL_ImportVectorDataNodeFromCsvActionHelp=importCSV"
 })
 public class ImportVectorDataNodeFromCsvAction extends AbstractImportVectorDataNodeAction
@@ -71,7 +73,10 @@ public class ImportVectorDataNodeFromCsvAction extends AbstractImportVectorDataN
         result = lookup.lookupResult(Product.class);
         result.addLookupListener(
                 WeakListeners.create(LookupListener.class, this, result));
-        setEnabled(false);
+        setEnableState();
+        setHelpId(Bundle.CTL_ImportVectorDataNodeFromCsvActionHelp());
+        putValue(Action.NAME, Bundle.CTL_ImportVectorDataNodeFromCsvActionText());
+        putValue(Action.SHORT_DESCRIPTION, Bundle.CTL_ImportVectorDataNodeFromCsvActionName());
     }
 
     @Override
@@ -81,7 +86,17 @@ public class ImportVectorDataNodeFromCsvAction extends AbstractImportVectorDataN
 
     @Override
     public void resultChanged(LookupEvent lookupEvent) {
-        setEnabled(result.allInstances().size() > 0);
+        setEnableState();
+    }
+
+    private void setEnableState() {
+        boolean state = false;
+        ProductNode productNode = lookup.lookup(ProductNode.class);
+        if (productNode != null) {
+            Product product = productNode.getProduct();
+            state = product != null && product.getGeoCoding() != null;
+        }
+        setEnabled(state);
     }
 
     @Override
@@ -91,12 +106,6 @@ public class ImportVectorDataNodeFromCsvAction extends AbstractImportVectorDataN
                                                          "Plain text");
         importer = new VectorDataNodeImporter(getHelpId(), filter, new DefaultVectorDataNodeReader(), "Import CSV file", "csv.io.dir");
         importer.importGeometry(SnapApp.getDefault());
-//        SnapApp.getDefault().updateState();
-    }
-
-    @Override
-    protected String getHelpId() {
-        return Bundle.CTL_ImportVectorDataNodeFromCsvActionHelp();
     }
 
     @Override

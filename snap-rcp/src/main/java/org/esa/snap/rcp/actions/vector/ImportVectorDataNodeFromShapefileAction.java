@@ -18,9 +18,9 @@ package org.esa.snap.rcp.actions.vector;
 
 import com.bc.ceres.core.ProgressMonitor;
 import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.datamodel.ProductNode;
 import org.esa.snap.framework.datamodel.ProductNodeGroup;
 import org.esa.snap.framework.datamodel.VectorDataNode;
-import org.esa.snap.framework.ui.command.CommandEvent;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.layermanager.layersrc.shapefile.SLDUtils;
 import org.esa.snap.util.FeatureUtils;
@@ -46,14 +46,15 @@ import java.io.File;
 import java.io.IOException;
 
 @ActionID(
-        category = "Vector",
+        category = "File",
         id = "ImportVectorDataNodeFromShapefileAction"
 )
 @ActionRegistration(
-        displayName = "#CTL_ImportVectorDataNodeFromShapefileActionName"
+        displayName = "#CTL_ImportVectorDataNodeFromShapefileActionText"
 )
 @ActionReference(path = "Menu/File/Import/Vector Data", position = 20)
 @NbBundle.Messages({
+        "CTL_ImportVectorDataNodeFromShapefileActionText=ESRI Shapefile",
         "CTL_ImportVectorDataNodeFromShapefileActionName=Import Vector Data Node From Shapefile",
         "CTL_ImportVectorDataNodeFromShapefileActionHelp=importShapefile"
 })
@@ -73,7 +74,10 @@ public class ImportVectorDataNodeFromShapefileAction extends AbstractImportVecto
         result = lookup.lookupResult(Product.class);
         result.addLookupListener(
                 WeakListeners.create(LookupListener.class, this, result));
-        setEnabled(false);
+        setEnableState();
+        setHelpId(Bundle.CTL_ImportVectorDataNodeFromShapefileActionHelp());
+        putValue(Action.NAME, Bundle.CTL_ImportVectorDataNodeFromShapefileActionText());
+        putValue(Action.SHORT_DESCRIPTION, Bundle.CTL_ImportVectorDataNodeFromShapefileActionName());
     }
 
     @Override
@@ -83,7 +87,17 @@ public class ImportVectorDataNodeFromShapefileAction extends AbstractImportVecto
 
     @Override
     public void resultChanged(LookupEvent lookupEvent) {
-        setEnabled(result.allInstances().size() > 0);
+        setEnableState();
+    }
+
+    private void setEnableState() {
+        boolean state = false;
+        ProductNode productNode = lookup.lookup(ProductNode.class);
+        if (productNode != null) {
+            Product product = productNode.getProduct();
+            state = product != null && product.getGeoCoding() != null;
+        }
+        setEnabled(state);
     }
 
     @Override
@@ -93,12 +107,6 @@ public class ImportVectorDataNodeFromShapefileAction extends AbstractImportVecto
                                                          "ESRI Shapefiles");
         importer = new VectorDataNodeImporter(getHelpId(), filter, new VdnShapefileReader(), "Import Shapefile", "shape.io.dir");
         importer.importGeometry(SnapApp.getDefault());
-//        VisatApp.getApp().updateState();
-    }
-
-    @Override
-    protected String getHelpId() {
-        return Bundle.CTL_ImportVectorDataNodeFromCsvActionHelp();
     }
 
     @Override
@@ -137,9 +145,6 @@ public class ImportVectorDataNodeFromShapefileAction extends AbstractImportVecto
                 return new VectorDataNode(name, featureCollection);
             }
         }
-
-
     }
-
 
 }

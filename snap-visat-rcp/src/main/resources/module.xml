@@ -692,14 +692,14 @@
             <!--<helpId>importShapefile</helpId>-->
         <!--</action>-->
 
-        <action>
-            <id>importSeaDASTrack</id>
-            <class>org.esa.snap.visat.actions.ImportTrackAction</class>
-            <text>SeaDAS 6.x Track</text>
-            <parent>importVectorData</parent>
-            <shortDescr>Import aSeaDAS 6.x track file.</shortDescr>
-            <helpId>importSeaDASTrack</helpId>
-        </action>
+        <!--<action>-->
+            <!--<id>importSeaDASTrack</id>-->
+            <!--<class>org.esa.snap.visat.actions.vector.ImportTrackAction</class>-->
+            <!--<text>SeaDAS 6.x Track</text>-->
+            <!--<parent>importVectorData</parent>-->
+            <!--<shortDescr>Import aSeaDAS 6.x track file.</shortDescr>-->
+            <!--<helpId>importSeaDASTrack</helpId>-->
+        <!--</action>-->
 
         <!--<action>-->
             <!--<id>importCSV</id>-->
