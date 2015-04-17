@@ -213,9 +213,13 @@ public class TimeSeriesPlayerTopComponent extends TopComponent {
                 setCurrentView(null);
             }
             if (currentView != newValue) {
-                final RasterDataNode viewRaster = newValue.getRaster();
-                final String viewProductType = viewRaster.getProduct().getProductType();
-                maybeUpdateCurrentView(newValue, viewProductType);
+                if (newValue != null) {
+                    final RasterDataNode viewRaster = newValue.getRaster();
+                    final String viewProductType = viewRaster.getProduct().getProductType();
+                    maybeUpdateCurrentView(newValue, viewProductType);
+                } else {
+                    setCurrentView(null);
+                }
             }
         }
     }

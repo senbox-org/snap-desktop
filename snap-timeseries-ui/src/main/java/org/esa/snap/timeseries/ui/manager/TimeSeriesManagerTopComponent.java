@@ -106,7 +106,13 @@ public class TimeSeriesManagerTopComponent extends TopComponent {
 
         realizeActiveForm();
         updateTitle();
-        SnapApp.getDefault().getSelectionSupport(ProductNode.class).addHandler((oldValue, newValue) -> setSelectedProduct(newValue.getProduct()));
+        SnapApp.getDefault().getSelectionSupport(ProductNode.class).addHandler((oldValue, newValue) -> {
+            if(newValue != null) {
+                setSelectedProduct(newValue.getProduct());
+            } else {
+                setSelectedProduct(null);
+            }
+        });
         SnapApp.getDefault().getProductManager().addListener(new ProductManager.Listener() {
             @Override
             public void productAdded(ProductManager.Event event) {

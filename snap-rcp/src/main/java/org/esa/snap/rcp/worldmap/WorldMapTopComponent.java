@@ -94,7 +94,11 @@ public class WorldMapTopComponent extends ToolTopComponent {
         snapApp.getSelectionSupport(ProductNode.class).addHandler(new SelectionSupport.Handler<ProductNode>() {
             @Override
             public void selectionChange(@NullAllowed ProductNode oldValue, @NullAllowed ProductNode newValue) {
-                setSelectedProduct(newValue.getProduct());
+                if(newValue != null) {
+                    setSelectedProduct(newValue.getProduct());
+                } else {
+                    setSelectedProduct(null);
+                }
             }
         });
         setProducts(snapApp.getProductManager().getProducts());
