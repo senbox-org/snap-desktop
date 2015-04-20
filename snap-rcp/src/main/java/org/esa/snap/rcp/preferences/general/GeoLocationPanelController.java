@@ -21,17 +21,27 @@ import com.bc.ceres.binding.PropertyContainer;
 import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.PropertyEditorRegistry;
-import org.esa.beam.framework.ui.GridBagUtils;
+import org.esa.snap.framework.ui.GridBagUtils;
 import org.esa.snap.rcp.preferences.DefaultConfigController;
 import org.esa.snap.rcp.preferences.Preference;
 import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.HelpCtx;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.BorderFactory;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.beans.PropertyChangeListener;
 
-import static com.bc.ceres.swing.TableLayout.cell;
+import static com.bc.ceres.swing.TableLayout.*;
 
 /**
  * The preferences panel handling geo-location details. Sub-level panel to the "Miscellaneous"-panel.

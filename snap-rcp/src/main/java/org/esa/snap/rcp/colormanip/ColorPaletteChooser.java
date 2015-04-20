@@ -1,13 +1,26 @@
 package org.esa.snap.rcp.colormanip;
 
-import org.esa.beam.framework.datamodel.ColorPaletteDef;
-import org.esa.beam.framework.datamodel.ImageInfo;
-import org.esa.beam.jai.ImageManager;
-import org.esa.beam.util.io.FileUtils;
-import org.esa.beam.util.math.Range;
+import org.esa.snap.framework.datamodel.ColorPaletteDef;
+import org.esa.snap.framework.datamodel.ImageInfo;
+import org.esa.snap.jai.ImageManager;
+import org.esa.snap.util.io.FileUtils;
+import org.esa.snap.util.math.Range;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.ComboBoxModel;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.ListCellRenderer;
+import java.awt.BasicStroke;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.util.List;
 import java.util.Vector;
 

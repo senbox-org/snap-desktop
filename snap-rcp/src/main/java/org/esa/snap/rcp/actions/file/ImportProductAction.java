@@ -15,19 +15,27 @@
  */
 package org.esa.snap.rcp.actions.file;
 
-import org.esa.beam.framework.datamodel.Product;
-import org.esa.beam.framework.datamodel.ProductNodeList;
-import org.esa.beam.framework.ui.GridBagUtils;
-import org.esa.beam.framework.ui.NewProductDialog;
-import org.esa.beam.framework.ui.product.ProductSubsetDialog;
-import org.esa.beam.util.io.BeamFileChooser;
+import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.datamodel.ProductNodeList;
+import org.esa.snap.framework.ui.GridBagUtils;
+import org.esa.snap.framework.ui.NewProductDialog;
+import org.esa.snap.framework.ui.product.ProductSubsetDialog;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.util.io.BeamFileChooser;
 import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.AbstractAction;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Frame;
+import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -62,7 +70,7 @@ public class ImportProductAction extends AbstractAction implements HelpCtx.Provi
      * Action factory method used in NetBeans {@code layer.xml} file, e.g.
      *
      * <pre>
-     * &lt;file name="org-esa-beam-dataio-ceos-ImportAvnir2Product.instance"&gt;
+     * &lt;file name="org-esa-snap-dataio-ceos-ImportAvnir2Product.instance"&gt;
      *     &lt;attr name="instanceCreate"
      *         methodvalue="org.openide.awt.Actions.alwaysEnabled"/&gt;
      *     &lt;attr name="delegate"

@@ -15,9 +15,9 @@
  */
 package org.esa.snap.rcp.mask;
 
-import org.esa.beam.framework.ui.GridBagUtils;
-import org.esa.beam.framework.ui.UIUtils;
-import org.esa.beam.framework.ui.tool.ToolButtonFactory;
+import org.esa.snap.framework.ui.GridBagUtils;
+import org.esa.snap.framework.ui.UIUtils;
+import org.esa.snap.framework.ui.tool.ToolButtonFactory;
 import org.esa.snap.rcp.windows.ToolTopComponent;
 
 import javax.swing.AbstractButton;

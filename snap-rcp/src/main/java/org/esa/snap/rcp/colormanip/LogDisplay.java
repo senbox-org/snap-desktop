@@ -1,6 +1,6 @@
 package org.esa.snap.rcp.colormanip;
 
-import org.esa.beam.framework.datamodel.ColorPaletteDef;
+import org.esa.snap.framework.datamodel.ColorPaletteDef;
 
 import javax.swing.AbstractButton;
 import javax.swing.JOptionPane;

@@ -16,7 +16,11 @@
 package org.esa.snap.dat.graphbuilder;
 
 import com.bc.ceres.binding.dom.DomElement;
-import org.esa.beam.framework.gpf.graph.*;
+import org.esa.snap.framework.gpf.graph.Graph;
+import org.esa.snap.framework.gpf.graph.GraphException;
+import org.esa.snap.framework.gpf.graph.GraphIO;
+import org.esa.snap.framework.gpf.graph.Node;
+import org.esa.snap.framework.gpf.graph.NodeSource;
 
 import java.io.FileReader;
 import java.util.ArrayList;

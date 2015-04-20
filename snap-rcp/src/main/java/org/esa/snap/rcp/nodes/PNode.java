@@ -5,10 +5,10 @@
  */
 package org.esa.snap.rcp.nodes;
 
-import org.esa.beam.framework.datamodel.MetadataElement;
-import org.esa.beam.framework.datamodel.Product;
-import org.esa.beam.framework.datamodel.ProductNode;
-import org.esa.beam.framework.datamodel.ProductNodeGroup;
+import org.esa.snap.framework.datamodel.MetadataElement;
+import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.datamodel.ProductNode;
+import org.esa.snap.framework.datamodel.ProductNodeGroup;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.file.CloseProductAction;
 import org.openide.awt.UndoRedo;
@@ -17,7 +17,7 @@ import org.openide.nodes.PropertySupport;
 import org.openide.nodes.Sheet;
 import org.openide.util.WeakListeners;
 
-import javax.swing.*;
+import javax.swing.Action;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -28,7 +28,7 @@ import java.util.prefs.Preferences;
 import java.util.stream.Stream;
 
 /**
- * A node that represents a {@link org.esa.beam.framework.datamodel.Product} (=P).
+ * A node that represents a {@link org.esa.snap.framework.datamodel.Product} (=P).
  * Every {@code PNode} holds a dedicated undo/redo context.
  *
  * @author Norman
@@ -140,7 +140,7 @@ class PNode extends PNNode<Product> implements PreferenceChangeListener {
     */
 
     /**
-     * A child factory for nodes below a {@link PNode} that holds a {@link org.esa.beam.framework.datamodel.Product}.
+     * A child factory for nodes below a {@link PNode} that holds a {@link org.esa.snap.framework.datamodel.Product}.
      *
      * @author Norman
      */

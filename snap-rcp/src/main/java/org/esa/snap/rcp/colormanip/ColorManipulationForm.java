@@ -18,32 +18,32 @@ package org.esa.snap.rcp.colormanip;
 import com.bc.ceres.core.Assert;
 import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
-import org.esa.beam.BeamUiActivator;
-import org.esa.beam.framework.datamodel.Band;
-import org.esa.beam.framework.datamodel.ColorPaletteDef;
-import org.esa.beam.framework.datamodel.ImageInfo;
-import org.esa.beam.framework.datamodel.Product;
-import org.esa.beam.framework.datamodel.ProductManager;
-import org.esa.beam.framework.datamodel.ProductNode;
-import org.esa.beam.framework.datamodel.ProductNodeEvent;
-import org.esa.beam.framework.datamodel.ProductNodeListener;
-import org.esa.beam.framework.datamodel.ProductNodeListenerAdapter;
-import org.esa.beam.framework.datamodel.RasterDataNode;
-import org.esa.beam.framework.datamodel.Stx;
-import org.esa.beam.framework.ui.GridBagUtils;
-import org.esa.beam.framework.ui.product.BandChooser;
-import org.esa.beam.framework.ui.product.ProductSceneView;
-import org.esa.beam.util.ProductUtils;
-import org.esa.beam.util.ResourceInstaller;
-import org.esa.beam.util.SystemUtils;
-import org.esa.beam.util.io.BeamFileChooser;
-import org.esa.beam.util.io.BeamFileFilter;
-import org.esa.beam.util.io.FileUtils;
+import org.esa.snap.BeamUiActivator;
+import org.esa.snap.framework.datamodel.Band;
+import org.esa.snap.framework.datamodel.ColorPaletteDef;
+import org.esa.snap.framework.datamodel.ImageInfo;
+import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.datamodel.ProductManager;
+import org.esa.snap.framework.datamodel.ProductNode;
+import org.esa.snap.framework.datamodel.ProductNodeEvent;
+import org.esa.snap.framework.datamodel.ProductNodeListener;
+import org.esa.snap.framework.datamodel.ProductNodeListenerAdapter;
+import org.esa.snap.framework.datamodel.RasterDataNode;
+import org.esa.snap.framework.datamodel.Stx;
+import org.esa.snap.framework.ui.GridBagUtils;
+import org.esa.snap.framework.ui.product.BandChooser;
+import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.util.SelectionSupport;
 import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
+import org.esa.snap.util.ProductUtils;
+import org.esa.snap.util.ResourceInstaller;
+import org.esa.snap.util.SystemUtils;
+import org.esa.snap.util.io.BeamFileChooser;
+import org.esa.snap.util.io.BeamFileFilter;
+import org.esa.snap.util.io.FileUtils;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
@@ -613,7 +613,8 @@ class ColorManipulationForm implements SelectionSupport.Handler<ProductSceneView
     private void installDefaultColorPalettes() {
         Path sourceBasePath = ResourceInstaller.findModuleCodeBasePath(BeamUiActivator.class);
         final Path auxdataDir = getColorPalettesDir();
-        final ResourceInstaller resourceInstaller = new ResourceInstaller(sourceBasePath, "auxdata/color_palettes/", auxdataDir);
+        Path sourceDirPath = sourceBasePath.resolve("auxdata/color_palettes/");
+        final ResourceInstaller resourceInstaller = new ResourceInstaller(sourceDirPath, auxdataDir);
         ProgressMonitorSwingWorker swingWorker = new ProgressMonitorSwingWorker(toolView, "Installing Auxdata...") {
             @Override
             protected Object doInBackground(ProgressMonitor progressMonitor) throws Exception {

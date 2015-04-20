@@ -25,13 +25,14 @@ import com.bc.ceres.binding.ValueRange;
 import com.bc.ceres.binding.ValueSet;
 import com.bc.ceres.core.Assert;
 import com.bc.ceres.swing.binding.BindingContext;
-import org.esa.beam.util.StringUtils;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.util.StringUtils;
 import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.Lookup;
 import org.openide.util.NbPreferences;
 
-import javax.swing.*;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
 import java.beans.PropertyChangeListener;
 import java.util.prefs.Preferences;
 

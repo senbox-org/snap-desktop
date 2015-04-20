@@ -17,7 +17,7 @@
 package org.esa.snap.rcp.layermanager;
 
 import com.bc.ceres.glayer.Layer;
-import org.esa.beam.framework.ui.product.ProductSceneView;
+import org.esa.snap.framework.ui.product.ProductSceneView;
 
 import javax.swing.JComponent;
 import javax.swing.JTree;

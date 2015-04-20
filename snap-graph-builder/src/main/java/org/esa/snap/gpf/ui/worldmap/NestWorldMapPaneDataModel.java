@@ -20,8 +20,8 @@ import com.bc.ceres.glayer.Layer;
 import com.bc.ceres.glayer.LayerContext;
 import com.bc.ceres.glayer.LayerType;
 import com.bc.ceres.glayer.LayerTypeRegistry;
-import org.esa.beam.framework.datamodel.GeoPos;
-import org.esa.beam.framework.datamodel.Product;
+import org.esa.snap.framework.datamodel.GeoPos;
+import org.esa.snap.framework.datamodel.Product;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -38,7 +38,7 @@ public class NestWorldMapPaneDataModel {
     public static final String PROPERTY_AUTO_ZOOM_ENABLED = "autoZoomEnabled";
 
     private PropertyChangeSupport changeSupport;
-    private static final LayerType layerType = LayerTypeRegistry.getLayerType("org.esa.beam.worldmap.BlueMarbleLayerType");
+    private static final LayerType layerType = LayerTypeRegistry.getLayerType("org.esa.snap.worldmap.BlueMarbleLayerType");
     private Layer worldMapLayer;
     private Product selectedProduct;
     private boolean autoZoomEnabled;

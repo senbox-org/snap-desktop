@@ -15,8 +15,8 @@
  */
 package org.esa.snap.rcp.placemark;
 
-import org.esa.beam.framework.ui.UIUtils;
-import org.esa.beam.framework.ui.tool.ToolButtonFactory;
+import org.esa.snap.framework.ui.UIUtils;
+import org.esa.snap.framework.ui.tool.ToolButtonFactory;
 import org.esa.snap.rcp.SnapApp;
 
 import javax.swing.AbstractButton;

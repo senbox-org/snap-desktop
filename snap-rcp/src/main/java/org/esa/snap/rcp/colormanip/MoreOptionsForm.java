@@ -21,9 +21,9 @@ import com.bc.ceres.binding.PropertyContainer;
 import com.bc.ceres.binding.ValueSet;
 import com.bc.ceres.swing.binding.Binding;
 import com.bc.ceres.swing.binding.BindingContext;
-import org.esa.beam.framework.datamodel.ImageInfo;
-import org.esa.beam.framework.ui.color.ColorComboBox;
-import org.esa.beam.framework.ui.color.ColorComboBoxAdapter;
+import org.esa.snap.framework.datamodel.ImageInfo;
+import org.esa.snap.framework.ui.color.ColorComboBox;
+import org.esa.snap.framework.ui.color.ColorComboBoxAdapter;
 import org.esa.snap.rcp.SnapDialogs;
 
 import javax.swing.JComboBox;

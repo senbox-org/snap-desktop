@@ -3,7 +3,7 @@ package org.esa.snap.rcp.sync;
 import com.bc.ceres.glayer.Layer;
 import com.bc.ceres.glayer.swing.LayerCanvasModel;
 import com.bc.ceres.grender.Viewport;
-import org.esa.beam.framework.ui.product.ProductSceneView;
+import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.view.SyncImageViewsAction;

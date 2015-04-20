@@ -1,6 +1,6 @@
 package org.esa.snap.rcp.util.internal;
 
-import org.esa.beam.framework.ui.product.ProductSceneView;
+import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.rcp.util.ContextGlobalExtender;
 import org.esa.snap.rcp.util.SelectionSupport;
 import org.junit.BeforeClass;
@@ -8,7 +8,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.openide.util.Utilities;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 public class DefaultSelectionSupportTest {
 

@@ -16,18 +16,17 @@
 
 package org.esa.snap.rcp.statistics;
 
-import org.esa.beam.framework.datamodel.Band;
-import org.esa.beam.framework.datamodel.Product;
-import org.esa.beam.framework.datamodel.ProductData;
-import org.esa.beam.framework.datamodel.TransectProfileData;
+import org.esa.snap.framework.datamodel.Band;
+import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.datamodel.ProductData;
+import org.esa.snap.framework.datamodel.TransectProfileData;
 import org.junit.Test;
 
 import java.awt.geom.Line2D;
 import java.io.IOException;
 import java.util.Arrays;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * @author Marco Peters

@@ -15,7 +15,7 @@
  */
 package org.esa.snap.dat.graphbuilder;
 
-import org.esa.beam.framework.gpf.graph.GraphException;
+import org.esa.snap.framework.gpf.graph.GraphException;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -23,8 +23,7 @@ import java.util.List;
 import java.util.Observer;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * GraphExecuter Tester.

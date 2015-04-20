@@ -25,11 +25,12 @@ import com.bc.ceres.swing.figure.Figure;
 import com.bc.ceres.swing.figure.FigureEditor;
 import com.bc.ceres.swing.figure.Interactor;
 import com.bc.ceres.swing.figure.interactions.SelectionInteractor;
-import org.esa.beam.framework.ui.product.ProductSceneView;
-import org.esa.beam.framework.ui.product.VectorDataFigureEditor;
-import org.esa.beam.framework.ui.product.VectorDataLayer;
+import org.esa.snap.framework.ui.product.ProductSceneView;
+import org.esa.snap.framework.ui.product.VectorDataFigureEditor;
+import org.esa.snap.framework.ui.product.VectorDataLayer;
 
-import java.awt.*;
+import java.awt.Rectangle;
+import java.awt.Shape;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;

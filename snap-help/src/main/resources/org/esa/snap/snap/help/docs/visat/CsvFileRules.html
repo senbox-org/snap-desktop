@@ -102,8 +102,8 @@
         'geometry:MultiPoint', 'geometry:MultiLineString', 'geometry:MultiPolygon'}. <br>
         In addition, the first data column must contain a unique ID for the geometries (e.g. an index 0, 1, 2,...),
         and the header of the first column must be one of
-        {'org.esa.beam.Point', 'org.esa.beam.LineString', 'org.esa.beam.Polygon',
-        'org.esa.beam.MultiPoint', 'org.esa.beam.MultiLineString', 'org.esa.beam.MultiPolygon'}. <br>
+        {'org.esa.snap.Point', 'org.esa.snap.LineString', 'org.esa.snap.Polygon',
+        'org.esa.snap.MultiPoint', 'org.esa.snap.MultiLineString', 'org.esa.snap.MultiPolygon'}. <br>
     </li>
 </ul>
 </p>
@@ -162,7 +162,7 @@
 <blockquote>
     <pre>
         #defaultCSS=symbol:pin; fill:#0000ff; fill-opacity:0.7; stroke:#ffffff; stroke-opacity:1.0; stroke-width:0.5
-        org.esa.beam.Pin	geometry:Point	style_css:String	label:String	text:String	pixelPos:Point	geoPos:Point	dateTime:Date
+        org.esa.snap.Pin	geometry:Point	style_css:String	label:String	text:String	pixelPos:Point	geoPos:Point	dateTime:Date
         pin_1	POINT (3.011064291000366 43.2885627746582)	[null]	Pin 1		POINT (476.5 658.5)	POINT (3.011064291000366 43.2885627746582)	[null]
         pin_5	POINT (6.4610161781311035 45.858734130859375)	[null]	Pin 5		POINT (660.5 365.5)	POINT (6.4610161781311035 45.858734130859375)	[null]
         pin_2	POINT (3.9401633739471436 42.58957290649414)	[null]	Pin 2		POINT (565.5 706.5)	POINT (3.9401633739471436 42.58957290649414)	[null]
@@ -185,7 +185,7 @@
         # Created on:	Thu Apr 12 14:48:36 CEST 2012
 
         # Wavelength:							884.94403
-        org.esa.beam.Multipolygon	Name:String	Geometry:MultiPolygon	radiance_14:Double
+        org.esa.snap.Multipolygon	Name:String	Geometry:MultiPolygon	radiance_14:Double
         0	multipolygon_1	MULTIPOLYGON (((10 47, 0 43, 6 40, 10 47)), ((2 39, 3 39, 2.5 38, 2 39)))	59.383057
         1	multipolygon_2	MULTIPOLYGON (((8 38, 2 45, 8 42, 8 38)), ((3 35, 5 36, 3.5 39, 3 35)))	59.383057
  </pre>

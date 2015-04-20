@@ -17,11 +17,18 @@
 package org.esa.snap.rcp.colormanip;
 
 import com.jidesoft.swing.TitledSeparator;
-import org.esa.beam.framework.ui.UIUtils;
-import org.esa.beam.framework.ui.tool.ToolButtonFactory;
+import org.esa.snap.framework.ui.UIUtils;
+import org.esa.snap.framework.ui.tool.ToolButtonFactory;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.AbstractButton;
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+import javax.swing.UIManager;
+import java.awt.BorderLayout;
+import java.awt.Color;
 
 class MoreOptionsPane {
     private static ImageIcon[] icons;

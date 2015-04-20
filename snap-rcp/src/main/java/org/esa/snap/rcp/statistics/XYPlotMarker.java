@@ -152,12 +152,12 @@ public class XYPlotMarker implements ChartMouseListener {
 
                 /*
                Exception in thread "AWT-EventQueue-0" java.lang.NullPointerException
-                   at org.esa.beam.framework.ui.product.ProductSceneView.getRaster(ProductSceneView.java:511)
-                   at org.esa.beam.framework.ui.product.ProductSceneView.getProduct(ProductSceneView.java:468)
-                   at org.esa.beam.visat.toolviews.nav.CursorSynchronizer.removePPL(CursorSynchronizer.java:133)
-                   at org.esa.beam.visat.toolviews.nav.CursorSynchronizer.clearPsvOverlayMap(CursorSynchronizer.java:116)
-                   at org.esa.beam.visat.toolviews.nav.CursorSynchronizer.setEnabled(CursorSynchronizer.java:67)
-                   at org.esa.beam.visat.toolviews.stat.ProfilePlotPanel$3.pointDeselected(ProfilePlotPanel.java:211)
+                   at org.esa.snap.framework.ui.product.ProductSceneView.getRaster(ProductSceneView.java:511)
+                   at org.esa.snap.framework.ui.product.ProductSceneView.getProduct(ProductSceneView.java:468)
+                   at org.esa.snap.visat.toolviews.nav.CursorSynchronizer.removePPL(CursorSynchronizer.java:133)
+                   at org.esa.snap.visat.toolviews.nav.CursorSynchronizer.clearPsvOverlayMap(CursorSynchronizer.java:116)
+                   at org.esa.snap.visat.toolviews.nav.CursorSynchronizer.setEnabled(CursorSynchronizer.java:67)
+                   at org.esa.snap.visat.toolviews.stat.ProfilePlotPanel$3.pointDeselected(ProfilePlotPanel.java:211)
                 */
             }
             return;

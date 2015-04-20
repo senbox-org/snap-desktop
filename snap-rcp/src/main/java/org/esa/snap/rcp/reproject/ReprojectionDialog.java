@@ -18,17 +18,17 @@ package org.esa.snap.rcp.reproject;
 
 import com.bc.ceres.binding.ConversionException;
 import com.bc.ceres.binding.ValidationException;
-import org.esa.beam.framework.datamodel.Product;
-import org.esa.beam.framework.dataop.dem.ElevationModelDescriptor;
-import org.esa.beam.framework.dataop.dem.ElevationModelRegistry;
-import org.esa.beam.framework.gpf.GPF;
-import org.esa.beam.framework.gpf.OperatorSpi;
-import org.esa.beam.framework.gpf.ui.OperatorMenu;
-import org.esa.beam.framework.gpf.ui.OperatorParameterSupport;
-import org.esa.beam.framework.gpf.ui.ParameterUpdater;
-import org.esa.beam.framework.gpf.ui.SingleTargetProductDialog;
-import org.esa.beam.framework.ui.AppContext;
-import org.esa.beam.framework.ui.DefaultAppContext;
+import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.dataop.dem.ElevationModelDescriptor;
+import org.esa.snap.framework.dataop.dem.ElevationModelRegistry;
+import org.esa.snap.framework.gpf.GPF;
+import org.esa.snap.framework.gpf.OperatorSpi;
+import org.esa.snap.framework.gpf.ui.OperatorMenu;
+import org.esa.snap.framework.gpf.ui.OperatorParameterSupport;
+import org.esa.snap.framework.gpf.ui.ParameterUpdater;
+import org.esa.snap.framework.gpf.ui.SingleTargetProductDialog;
+import org.esa.snap.framework.ui.AppContext;
+import org.esa.snap.framework.ui.DefaultAppContext;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import java.util.HashMap;

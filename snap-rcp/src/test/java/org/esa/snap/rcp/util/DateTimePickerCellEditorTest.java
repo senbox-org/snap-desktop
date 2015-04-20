@@ -1,6 +1,6 @@
 package org.esa.snap.rcp.util;
 
-import org.esa.beam.framework.datamodel.ProductData;
+import org.esa.snap.framework.datamodel.ProductData;
 import org.junit.Test;
 
 import java.text.DateFormat;

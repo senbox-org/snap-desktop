@@ -1,15 +1,14 @@
 package org.esa.snap.rcp.placemark;
 
-import org.esa.beam.framework.datamodel.GeoPos;
-import org.esa.beam.framework.datamodel.PinDescriptor;
-import org.esa.beam.framework.datamodel.PixelPos;
-import org.esa.beam.framework.datamodel.Product;
+import org.esa.snap.framework.datamodel.GeoPos;
+import org.esa.snap.framework.datamodel.PinDescriptor;
+import org.esa.snap.framework.datamodel.PixelPos;
+import org.esa.snap.framework.datamodel.Product;
 import org.junit.Test;
 
 import java.awt.HeadlessException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 public class PlacemarkDialogTest {
 

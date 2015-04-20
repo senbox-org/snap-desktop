@@ -15,12 +15,15 @@
  */
 package org.esa.snap.dat.dialogs;
 
-import org.esa.beam.framework.ui.ModalDialog;
+import org.esa.snap.framework.ui.ModalDialog;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.util.DialogUtils;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JComboBox;
+import javax.swing.JPanel;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 
 /**
  * Created by IntelliJ IDEA.

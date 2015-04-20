@@ -16,11 +16,11 @@
 package org.esa.snap.dat.dialogs;
 
 import com.bc.ceres.swing.TableLayout;
-import org.esa.beam.framework.datamodel.Product;
-import org.esa.beam.framework.gpf.ui.SourceProductSelector;
-import org.esa.beam.framework.ui.AppContext;
+import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.gpf.ui.SourceProductSelector;
+import org.esa.snap.framework.ui.AppContext;
 
-import javax.swing.*;
+import javax.swing.JPanel;
 import java.util.ArrayList;
 import java.util.List;
 

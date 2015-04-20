@@ -25,7 +25,7 @@
     <artifactId>snap-collocation-ui</artifactId>
     <packaging>nbm</packaging>
 
-    <name>Collocation GUI</name>
+    <name>SNAP Collocation GUI</name>
     <description>GUI for the geographic collocation of two data products.</description>
 
     <dependencies>
@@ -99,7 +99,7 @@
                 <artifactId>nbm-maven-plugin</artifactId>
                 <configuration>
                     <publicPackages>
-                        <publicPackage>org.esa.beam.collocation</publicPackage>
+                        <publicPackage>org.esa.snap.collocation</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>

@@ -17,16 +17,16 @@
 package org.esa.snap.rcp.placemark.gcp;
 
 import com.bc.ceres.core.Assert;
-import org.esa.beam.framework.datamodel.Band;
-import org.esa.beam.framework.datamodel.GcpGeoCoding;
-import org.esa.beam.framework.datamodel.GeoCoding;
-import org.esa.beam.framework.datamodel.GeoPos;
-import org.esa.beam.framework.datamodel.PixelPos;
-import org.esa.beam.framework.datamodel.Placemark;
-import org.esa.beam.framework.datamodel.PlacemarkDescriptor;
-import org.esa.beam.framework.datamodel.Product;
-import org.esa.beam.framework.datamodel.TiePointGrid;
-import org.esa.beam.framework.ui.product.AbstractPlacemarkTableModel;
+import org.esa.snap.framework.datamodel.Band;
+import org.esa.snap.framework.datamodel.GcpGeoCoding;
+import org.esa.snap.framework.datamodel.GeoCoding;
+import org.esa.snap.framework.datamodel.GeoPos;
+import org.esa.snap.framework.datamodel.PixelPos;
+import org.esa.snap.framework.datamodel.Placemark;
+import org.esa.snap.framework.datamodel.PlacemarkDescriptor;
+import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.datamodel.TiePointGrid;
+import org.esa.snap.framework.ui.product.AbstractPlacemarkTableModel;
 
 public class GcpTableModel extends AbstractPlacemarkTableModel {
 

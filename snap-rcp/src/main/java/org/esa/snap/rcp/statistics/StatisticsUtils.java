@@ -18,14 +18,14 @@ package org.esa.snap.rcp.statistics;
 
 import com.bc.ceres.swing.figure.Figure;
 import com.bc.ceres.swing.figure.ShapeFigure;
-import org.esa.beam.framework.datamodel.GeoPos;
-import org.esa.beam.framework.datamodel.Product;
-import org.esa.beam.framework.datamodel.RasterDataNode;
-import org.esa.beam.framework.datamodel.TransectProfileData;
-import org.esa.beam.framework.ui.product.ProductSceneView;
-import org.esa.beam.util.StringUtils;
-import org.esa.beam.util.math.MathUtils;
+import org.esa.snap.framework.datamodel.GeoPos;
+import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.datamodel.RasterDataNode;
+import org.esa.snap.framework.datamodel.TransectProfileData;
+import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.util.StringUtils;
+import org.esa.snap.util.math.MathUtils;
 
 import java.awt.Shape;
 import java.awt.geom.Point2D;

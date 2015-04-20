@@ -16,30 +16,44 @@
 package org.esa.snap.dat.graphbuilder;
 
 import com.bc.ceres.core.ProgressMonitor;
-import org.esa.beam.framework.datamodel.Product;
-import org.esa.beam.framework.gpf.graph.GraphException;
-import org.esa.beam.framework.help.HelpSys;
-import org.esa.beam.framework.ui.AppContext;
-import org.esa.beam.framework.ui.ModelessDialog;
-import org.esa.beam.gpf.operators.standard.ReadOp;
-import org.esa.beam.util.io.BeamFileFilter;
 import org.esa.snap.dat.dialogs.PromptDialog;
 import org.esa.snap.db.CommonReaders;
+import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.gpf.graph.GraphException;
+import org.esa.snap.framework.help.HelpSys;
+import org.esa.snap.framework.ui.AppContext;
+import org.esa.snap.framework.ui.ModelessDialog;
 import org.esa.snap.gpf.ProductSetReaderOpUI;
+import org.esa.snap.gpf.operators.standard.ReadOp;
 import org.esa.snap.gpf.ui.SourceUI;
 import org.esa.snap.gpf.ui.UIValidation;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.util.DialogUtils;
-import org.esa.snap.util.ImageUtils;
+import org.esa.snap.util.IconUtils;
 import org.esa.snap.util.MemUtils;
 import org.esa.snap.util.ProductFunctions;
 import org.esa.snap.util.ResourceUtils;
+import org.esa.snap.util.io.BeamFileFilter;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.SwingWorker;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -57,12 +71,12 @@ import java.util.Observer;
  */
 public class GraphBuilderDialog extends ModelessDialog implements Observer {
 
-    private static final ImageIcon processIcon = ImageUtils.LoadIcon("org/esa/snap/icons/cog.png");
-    private static final ImageIcon saveIcon = ImageUtils.LoadIcon("org/esa/snap/icons/save.png");
-    private static final ImageIcon loadIcon = ImageUtils.LoadIcon("org/esa/snap/icons/open.png");
-    private static final ImageIcon clearIcon = ImageUtils.LoadIcon("org/esa/snap/icons/edit-clear.png");
-    private static final ImageIcon helpIcon = ImageUtils.LoadIcon("org/esa/snap/icons/help-browser.png");
-    private static final ImageIcon infoIcon = ImageUtils.LoadIcon("org/esa/snap/icons/info22.png");
+    private static final ImageIcon processIcon = IconUtils.LoadIcon("org/esa/snap/icons/cog.png");
+    private static final ImageIcon saveIcon = IconUtils.LoadIcon("org/esa/snap/icons/save.png");
+    private static final ImageIcon loadIcon = IconUtils.LoadIcon("org/esa/snap/icons/open.png");
+    private static final ImageIcon clearIcon = IconUtils.LoadIcon("org/esa/snap/icons/edit-clear.png");
+    private static final ImageIcon helpIcon = IconUtils.LoadIcon("org/esa/snap/icons/help-browser.png");
+    private static final ImageIcon infoIcon = IconUtils.LoadIcon("org/esa/snap/icons/info22.png");
 
     private final AppContext appContext;
     private GraphPanel graphPanel = null;
@@ -115,7 +129,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer {
         } else {
             super.getJDialog().setMinimumSize(new Dimension(600, 500));
         }
-        super.getJDialog().setIconImage(ImageUtils.esaPlanetIcon.getImage());
+        super.getJDialog().setIconImage(IconUtils.esaPlanetIcon.getImage());
 
         final JPanel mainPanel = new JPanel(new BorderLayout(4, 4));
 

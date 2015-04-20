@@ -1,18 +1,18 @@
 package org.esa.snap.examples.processor.op_with_custom_ui;
 
 
-import org.esa.beam.framework.datamodel.Product;
-import org.esa.beam.framework.datamodel.ProductData;
-import org.esa.beam.framework.gpf.OperatorException;
-import org.esa.beam.framework.gpf.OperatorSpi;
-import org.esa.beam.framework.gpf.annotations.OperatorMetadata;
-import org.esa.beam.framework.gpf.annotations.Parameter;
-import org.esa.beam.framework.gpf.annotations.SourceProduct;
-import org.esa.beam.framework.gpf.pointop.ProductConfigurer;
-import org.esa.beam.framework.gpf.pointop.Sample;
-import org.esa.beam.framework.gpf.pointop.SampleConfigurer;
-import org.esa.beam.framework.gpf.pointop.SampleOperator;
-import org.esa.beam.framework.gpf.pointop.WritableSample;
+import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.datamodel.ProductData;
+import org.esa.snap.framework.gpf.OperatorException;
+import org.esa.snap.framework.gpf.OperatorSpi;
+import org.esa.snap.framework.gpf.annotations.OperatorMetadata;
+import org.esa.snap.framework.gpf.annotations.Parameter;
+import org.esa.snap.framework.gpf.annotations.SourceProduct;
+import org.esa.snap.framework.gpf.pointop.ProductConfigurer;
+import org.esa.snap.framework.gpf.pointop.Sample;
+import org.esa.snap.framework.gpf.pointop.SampleConfigurer;
+import org.esa.snap.framework.gpf.pointop.SampleOperator;
+import org.esa.snap.framework.gpf.pointop.WritableSample;
 
 @OperatorMetadata(alias = "Simple",
                   category = "Optical Processing",

@@ -16,15 +16,15 @@
 
 package org.esa.snap.rcp.placemark.gcp;
 
-import org.esa.beam.framework.datamodel.Band;
-import org.esa.beam.framework.datamodel.GcpDescriptor;
-import org.esa.beam.framework.datamodel.PlacemarkDescriptor;
-import org.esa.beam.framework.datamodel.Product;
-import org.esa.beam.framework.datamodel.ProductNodeEvent;
-import org.esa.beam.framework.datamodel.ProductNodeListenerAdapter;
-import org.esa.beam.framework.datamodel.TiePointGrid;
-import org.esa.beam.framework.ui.DecimalTableCellRenderer;
-import org.esa.beam.framework.ui.product.AbstractPlacemarkTableModel;
+import org.esa.snap.framework.datamodel.Band;
+import org.esa.snap.framework.datamodel.GcpDescriptor;
+import org.esa.snap.framework.datamodel.PlacemarkDescriptor;
+import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.datamodel.ProductNodeEvent;
+import org.esa.snap.framework.datamodel.ProductNodeListenerAdapter;
+import org.esa.snap.framework.datamodel.TiePointGrid;
+import org.esa.snap.framework.ui.DecimalTableCellRenderer;
+import org.esa.snap.framework.ui.product.AbstractPlacemarkTableModel;
 import org.esa.snap.rcp.placemark.PlacemarkManagerTopComponent;
 import org.esa.snap.rcp.placemark.TableModelFactory;
 import org.openide.awt.ActionID;

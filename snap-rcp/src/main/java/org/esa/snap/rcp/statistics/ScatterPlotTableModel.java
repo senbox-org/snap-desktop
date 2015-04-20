@@ -1,7 +1,7 @@
 package org.esa.snap.rcp.statistics;
 
-import org.esa.beam.framework.ui.io.CsvEncoder;
-import org.esa.beam.framework.ui.io.TableModelCsvEncoder;
+import org.esa.snap.framework.ui.io.CsvEncoder;
+import org.esa.snap.framework.ui.io.TableModelCsvEncoder;
 import org.opengis.feature.Property;
 
 import javax.swing.table.AbstractTableModel;

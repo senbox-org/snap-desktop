@@ -15,14 +15,25 @@
  */
 package org.esa.snap.rcp.actions.file;
 
-import org.esa.beam.framework.datamodel.Product;
-import org.esa.beam.framework.datamodel.ProductNode;
+import org.esa.snap.framework.dataio.ProductIOPlugInManager;
+import org.esa.snap.framework.dataio.ProductWriterPlugIn;
+import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.datamodel.ProductNode;
+import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.rcp.SnapDialogs;
+import org.netbeans.api.progress.ProgressUtils;
 import org.openide.util.ContextAwareAction;
 import org.openide.util.HelpCtx;
 import org.openide.util.Lookup;
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.filechooser.FileFilter;
 import java.awt.event.ActionEvent;
+import java.io.File;
+import java.lang.ref.WeakReference;
+import java.text.MessageFormat;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -32,15 +43,19 @@ import java.util.Map;
  */
 public class ExportProductAction extends AbstractAction implements HelpCtx.Provider, ContextAwareAction {
 
-    private Product product;
+    private static final String PROPERTY_FORMAT_NAME = "formatName";
+    private static final String PROPERTY_HELP_CTX = "helpCtx";
+    private static final String PROPERTY_USE_ALL_FILE_FILTER = "useAllFileFilter";
+
+    private WeakReference<Product> productRef;
 
     /**
      * Action factory method used in NetBeans {@code layer.xml} file, e.g.
      * <p>
      * <pre>
-     * &lt;file name="org-esa-beam-csv-dataio-ExportCSVProduct.instance"&gt;
+     * &lt;file name="org-esa-snap-csv-dataio-ExportCSVProduct.instance"&gt;
      *      &lt;attr name="instanceCreate" methodvalue="org.openide.awt.Actions.context"/&gt;
-     *      &lt;attr name="type" stringvalue="org.esa.beam.framework.datamodel.ProductNode"/&gt;
+     *      &lt;attr name="type" stringvalue="org.esa.snap.framework.datamodel.ProductNode"/&gt;
      *      &lt;attr name="delegate" methodvalue="ExportProductAction.create"/&gt;
      *      &lt;attr name="selectionType" stringvalue="EXACTLY_ONE"/&gt;
      *      &lt;attr name="displayName" stringvalue="CSV Product"/&gt;
@@ -58,9 +73,9 @@ public class ExportProductAction extends AbstractAction implements HelpCtx.Provi
      */
     public static ExportProductAction create(Map<String, Object> configuration) {
         ExportProductAction exportProductAction = new ExportProductAction();
-        exportProductAction.setFormatName((String) configuration.get("formatName"));
+        exportProductAction.setFormatName((String) configuration.get(PROPERTY_FORMAT_NAME));
         exportProductAction.setHelpCtx((String) configuration.get("helpId"));
-        exportProductAction.setUseAllFileFilter((Boolean) configuration.get("useAllFileFilter"));
+        exportProductAction.setUseAllFileFilter((Boolean) configuration.get(PROPERTY_USE_ALL_FILE_FILTER));
         return exportProductAction;
     }
 
@@ -73,28 +88,111 @@ public class ExportProductAction extends AbstractAction implements HelpCtx.Provi
 
     @Override
     public HelpCtx getHelpCtx() {
-        return (HelpCtx) getValue("helpCtx");
+        return (HelpCtx) getValue(PROPERTY_HELP_CTX);
     }
 
     public void setHelpCtx(String helpId) {
-        putValue("helpCtx", helpId != null ? new HelpCtx(helpId) : null);
+        putValue(PROPERTY_HELP_CTX, helpId != null ? new HelpCtx(helpId) : null);
+    }
+
+    public String getDisplayName() {
+        return (String) getValue("displayName");
     }
 
     public void setFormatName(String formatName) {
-        putValue("formatName", formatName);
+        putValue(PROPERTY_FORMAT_NAME, formatName);
     }
 
     public void setUseAllFileFilter(Boolean useAllFileFilter) {
-        putValue("useAllFileFilter", useAllFileFilter);
+        putValue(PROPERTY_USE_ALL_FILE_FILTER, useAllFileFilter);
     }
 
     public void setProduct(Product p) {
-        product = p;
+        productRef = new WeakReference<>(p);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        new SaveProductAsAction(product).execute();
+        execute();
+    }
+
+    /**
+     * @return {@code Boolean.TRUE} on success, {@code Boolean.FALSE} on failure, or {@code null} on cancellation.
+     */
+    public Boolean execute() {
+        Product product = productRef.get();
+        if (product != null) {
+            return exportProduct(product, (String) getValue(PROPERTY_FORMAT_NAME));
+        } else {
+            // reference was garbage collected, that's fine, no need to save.
+            return true;
+        }
+
+    }
+
+    private Boolean exportProduct(Product product, String formatName) {
+        String fileName;
+        if (product.getFileLocation() != null) {
+            fileName = product.getFileLocation().getName();
+        } else {
+            fileName = product.getName();
+        }
+
+        File newFile = SnapDialogs.requestFileForSave("Export Product",
+                                                      false,
+                                                      getFileFilter(formatName),
+                                                      getFileExtension(formatName),
+                                                      fileName,
+                                                      null,
+                                                      OpenProductAction.PREFERENCES_KEY_LAST_PRODUCT_DIR);
+
+        if (newFile == null) {
+            // cancelled
+            return null;
+        }
+
+        if (newFile.isFile() && !newFile.canWrite()) {
+            SnapDialogs.showWarning(getDisplayName(),
+                                    MessageFormat.format("The product\n" +
+                                                         "''{0}''\n" +
+                                                         "exists and cannot be overwritten, because it is read only.\n" +
+                                                         "Please choose another file or remove the write protection.",
+                                                         newFile.getPath()),
+                                    null);
+            return false;
+        }
+
+        SnapApp.getDefault().setStatusBarMessage(MessageFormat.format("Exporting product ''{0}'' to {1}...", product.getDisplayName(), newFile));
+
+        WriteProductOperation operation = new WriteProductOperation(product, newFile, formatName, false);
+        ProgressUtils.runOffEventThreadWithProgressDialog(operation,
+                                                          getDisplayName(),
+                                                          operation.getProgressHandle(),
+                                                          true,
+                                                          50,
+                                                          1000);
+
+        SnapApp.getDefault().setStatusBarMessage("");
+
+        return operation.getStatus();
+
+
+    }
+
+    private FileFilter getFileFilter(String formatName) {
+        Iterator<ProductWriterPlugIn> writerPlugIns = ProductIOPlugInManager.getInstance().getWriterPlugIns(formatName);
+        if(writerPlugIns.hasNext()) {
+            return writerPlugIns.next().getProductFileFilter();
+        }
+        return null;
+    }
+
+    private String getFileExtension(String formatName) {
+        Iterator<ProductWriterPlugIn> writerPlugIns = ProductIOPlugInManager.getInstance().getWriterPlugIns(formatName);
+        if(writerPlugIns.hasNext()) {
+            return writerPlugIns.next().getProductFileFilter().getDefaultExtension();
+        }
+        return null;
     }
 
 }

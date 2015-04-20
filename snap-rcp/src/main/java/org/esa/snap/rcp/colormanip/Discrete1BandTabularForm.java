@@ -17,15 +17,15 @@
 package org.esa.snap.rcp.colormanip;
 
 import com.bc.ceres.core.Assert;
-import org.esa.beam.framework.datamodel.Band;
-import org.esa.beam.framework.datamodel.ColorPaletteDef;
-import org.esa.beam.framework.datamodel.ImageInfo;
-import org.esa.beam.framework.datamodel.IndexCoding;
-import org.esa.beam.framework.datamodel.ProductNodeEvent;
-import org.esa.beam.framework.datamodel.RasterDataNode;
-import org.esa.beam.framework.datamodel.Stx;
-import org.esa.beam.framework.ui.color.ColorTableCellEditor;
-import org.esa.beam.framework.ui.color.ColorTableCellRenderer;
+import org.esa.snap.framework.datamodel.Band;
+import org.esa.snap.framework.datamodel.ColorPaletteDef;
+import org.esa.snap.framework.datamodel.ImageInfo;
+import org.esa.snap.framework.datamodel.IndexCoding;
+import org.esa.snap.framework.datamodel.ProductNodeEvent;
+import org.esa.snap.framework.datamodel.RasterDataNode;
+import org.esa.snap.framework.datamodel.Stx;
+import org.esa.snap.framework.ui.color.ColorTableCellEditor;
+import org.esa.snap.framework.ui.color.ColorTableCellRenderer;
 
 import javax.swing.AbstractButton;
 import javax.swing.JComponent;

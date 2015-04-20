@@ -16,16 +16,16 @@
 
 package org.esa.snap.rcp.statistics;
 
-import org.esa.beam.framework.datamodel.Mask;
-import org.esa.beam.framework.datamodel.Product;
-import org.esa.beam.statistics.output.CsvStatisticsWriter;
-import org.esa.beam.statistics.output.MetadataWriter;
-import org.esa.beam.statistics.output.StatisticsOutputContext;
-import org.esa.beam.util.io.BeamFileChooser;
-import org.esa.beam.util.io.BeamFileFilter;
-import org.esa.beam.util.io.FileUtils;
+import org.esa.snap.framework.datamodel.Mask;
+import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.statistics.output.CsvStatisticsWriter;
+import org.esa.snap.statistics.output.MetadataWriter;
+import org.esa.snap.statistics.output.StatisticsOutputContext;
+import org.esa.snap.util.io.BeamFileChooser;
+import org.esa.snap.util.io.BeamFileFilter;
+import org.esa.snap.util.io.FileUtils;
 
 import javax.media.jai.Histogram;
 import javax.swing.AbstractAction;

@@ -6,8 +6,8 @@
 package org.esa.snap.rcp.actions.file;
 
 import com.bc.ceres.core.Assert;
-import org.esa.beam.dataio.dimap.DimapProductReader;
-import org.esa.beam.framework.datamodel.Product;
+import org.esa.snap.dataio.dimap.DimapProductReader;
+import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.netbeans.api.progress.ProgressUtils;
@@ -16,7 +16,7 @@ import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle;
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -35,44 +35,8 @@ import java.text.MessageFormat;
         displayName = "#CTL_SaveProductActionName"
 )
 @ActionReference(path = "Menu/File", position = 50, separatorBefore = 49)
-@NbBundle.Messages({
-        "CTL_SaveProductActionName=Save Product"
-})
+@NbBundle.Messages({"CTL_SaveProductActionName=Save Product"})
 public final class SaveProductAction extends AbstractAction {
-
-    /**
-     * Preferences key for save product headers (MPH, SPH) or not
-     */
-    public static final String PROPERTY_KEY_SAVE_PRODUCT_HEADERS = "save_product_headers";
-    /**
-     * Preferences key for save product history or not
-     */
-    public static final String PROPERTY_KEY_SAVE_PRODUCT_HISTORY = "save_product_history";
-    /**
-     * Preferences key for save product annotations (ADS) or not
-     */
-    public static final String PROPERTY_KEY_SAVE_PRODUCT_ANNOTATIONS = "save_product_annotations";
-    /**
-     * Preferences key for incremental mode at save
-     */
-    public static final String PROPERTY_KEY_SAVE_INCREMENTAL = "save_incremental";
-
-    /**
-     * default value for preference save product annotations (ADS) or not
-     */
-    public static boolean DEFAULT_VALUE_SAVE_PRODUCT_ANNOTATIONS = false;
-    /**
-     * default value for preference incremental mode at save
-     */
-    public static final boolean DEFAULT_VALUE_SAVE_INCREMENTAL = true;
-    /**
-     * default value for preference save product headers (MPH, SPH) or not
-     */
-    public static final boolean DEFAULT_VALUE_SAVE_PRODUCT_HEADERS = true;
-    /**
-     * default value for preference save product history (History) or not
-     */
-    public static final boolean DEFAULT_VALUE_SAVE_PRODUCT_HISTORY = true;
 
 
     private final WeakReference<Product> productRef;

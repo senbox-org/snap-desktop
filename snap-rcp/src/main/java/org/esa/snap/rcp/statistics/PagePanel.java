@@ -16,14 +16,14 @@
 
 package org.esa.snap.rcp.statistics;
 
-import org.esa.beam.framework.datamodel.Product;
-import org.esa.beam.framework.datamodel.ProductNodeEvent;
-import org.esa.beam.framework.datamodel.ProductNodeListener;
-import org.esa.beam.framework.datamodel.RasterDataNode;
-import org.esa.beam.framework.datamodel.VectorDataNode;
-import org.esa.beam.framework.ui.UIUtils;
-import org.esa.beam.framework.ui.tool.ToolButtonFactory;
-import org.esa.beam.util.SystemUtils;
+import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.datamodel.ProductNodeEvent;
+import org.esa.snap.framework.datamodel.ProductNodeListener;
+import org.esa.snap.framework.datamodel.RasterDataNode;
+import org.esa.snap.framework.datamodel.VectorDataNode;
+import org.esa.snap.framework.ui.UIUtils;
+import org.esa.snap.framework.ui.tool.ToolButtonFactory;
+import org.esa.snap.util.SystemUtils;
 import org.openide.windows.TopComponent;
 
 import javax.swing.AbstractButton;

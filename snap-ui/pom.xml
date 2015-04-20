@@ -35,6 +35,10 @@
             <artifactId>org-openide-util</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-util-lookup</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.esa.snap</groupId>
             <artifactId>ceres-core</artifactId>
         </dependency>
@@ -121,10 +125,10 @@
                         <publicPackage>com.bc.ceres.swing.undo</publicPackage>
                         <publicPackage>com.bc.ceres.swing.update</publicPackage>
                         <publicPackage>com.bc.swing.*</publicPackage>
-                        <publicPackage>org.esa.beam</publicPackage>
-                        <publicPackage>org.esa.beam.framework.help</publicPackage>
-                        <publicPackage>org.esa.beam.framework.param.editors</publicPackage>
-                        <publicPackage>org.esa.beam.framework.ui.*</publicPackage>
+                        <publicPackage>org.esa.snap</publicPackage>
+                        <publicPackage>org.esa.snap.framework.help</publicPackage>
+                        <publicPackage>org.esa.snap.framework.param.editors</publicPackage>
+                        <publicPackage>org.esa.snap.framework.ui.*</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>

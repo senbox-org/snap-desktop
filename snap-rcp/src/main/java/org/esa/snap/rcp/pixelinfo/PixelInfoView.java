@@ -15,14 +15,14 @@
  */
 package org.esa.snap.rcp.pixelinfo;
 
-import org.esa.beam.framework.datamodel.Product;
-import org.esa.beam.framework.datamodel.ProductNode;
-import org.esa.beam.framework.datamodel.ProductNodeEvent;
-import org.esa.beam.framework.datamodel.ProductNodeListener;
-import org.esa.beam.framework.datamodel.ProductNodeListenerAdapter;
-import org.esa.beam.framework.datamodel.RasterDataNode;
-import org.esa.beam.framework.ui.UIUtils;
-import org.esa.beam.framework.ui.product.ProductSceneView;
+import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.datamodel.ProductNode;
+import org.esa.snap.framework.datamodel.ProductNodeEvent;
+import org.esa.snap.framework.datamodel.ProductNodeListener;
+import org.esa.snap.framework.datamodel.ProductNodeListenerAdapter;
+import org.esa.snap.framework.datamodel.RasterDataNode;
+import org.esa.snap.framework.ui.UIUtils;
+import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.preferences.general.GeoLocationPanelController;

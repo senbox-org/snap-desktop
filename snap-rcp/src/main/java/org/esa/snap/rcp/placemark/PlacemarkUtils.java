@@ -4,9 +4,9 @@ package org.esa.snap.rcp.placemark;
 import com.bc.ceres.swing.figure.Figure;
 import com.bc.ceres.swing.figure.FigureCollection;
 import com.bc.ceres.swing.figure.support.DefaultFigureStyle;
-import org.esa.beam.framework.datamodel.Placemark;
-import org.esa.beam.framework.ui.product.ProductSceneView;
-import org.esa.beam.framework.ui.product.SimpleFeaturePointFigure;
+import org.esa.snap.framework.datamodel.Placemark;
+import org.esa.snap.framework.ui.product.ProductSceneView;
+import org.esa.snap.framework.ui.product.SimpleFeaturePointFigure;
 import org.esa.snap.rcp.SnapApp;
 import org.opengis.feature.simple.SimpleFeature;
 

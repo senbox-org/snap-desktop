@@ -22,17 +22,21 @@ import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.Enablement;
 import com.bc.ceres.swing.binding.PropertyEditorRegistry;
-import org.esa.beam.glayer.GraticuleLayerType;
+import org.esa.snap.glayer.GraticuleLayerType;
 import org.esa.snap.rcp.preferences.DefaultConfigController;
 import org.esa.snap.rcp.preferences.Preference;
 import org.esa.snap.rcp.preferences.PreferenceUtils;
 import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.HelpCtx;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.Box;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Insets;
 
-import static org.esa.snap.rcp.preferences.PreferenceUtils.addNote;
+import static org.esa.snap.rcp.preferences.PreferenceUtils.*;
 
 /**
  * * Panel handling graticule layer preferences. Sub-panel of the "Layer"-panel.

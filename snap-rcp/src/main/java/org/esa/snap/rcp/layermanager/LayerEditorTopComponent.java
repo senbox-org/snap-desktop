@@ -17,7 +17,7 @@ package org.esa.snap.rcp.layermanager;
 
 import com.bc.ceres.glayer.Layer;
 import com.bc.ceres.glayer.support.AbstractLayerListener;
-import org.esa.beam.framework.ui.layer.LayerEditor;
+import org.esa.snap.framework.ui.layer.LayerEditor;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -74,12 +74,13 @@ public class LayerEditorTopComponent extends AbstractLayerTopComponent {
         return Bundle.CTL_LayerEditorTopComponent_HelpId();
     }
 
+    protected void initUI() {
+        layerHandler = new LayerHandler();
+        super.initUI();
+    }
+
     @Override
     protected void layerSelectionChanged(Layer oldLayer, Layer newLayer) {
-        if (layerHandler == null) {
-            layerHandler = new LayerHandler();
-        }
-
         if (oldLayer != null) {
             oldLayer.removeListener(layerHandler);
         }

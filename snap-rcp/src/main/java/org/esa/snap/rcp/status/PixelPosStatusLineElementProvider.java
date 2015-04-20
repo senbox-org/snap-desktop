@@ -2,7 +2,7 @@ package org.esa.snap.rcp.status;
 
 import com.bc.ceres.glayer.support.ImageLayer;
 import com.bc.ceres.glayer.swing.LayerCanvas;
-import org.esa.beam.framework.ui.PixelPositionListener;
+import org.esa.snap.framework.ui.PixelPositionListener;
 import org.esa.snap.netbeans.docwin.DocumentWindowManager;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;

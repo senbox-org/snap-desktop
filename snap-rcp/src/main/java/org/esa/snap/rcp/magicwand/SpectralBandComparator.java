@@ -1,6 +1,6 @@
 package org.esa.snap.rcp.magicwand;
 
-import org.esa.beam.framework.datamodel.Band;
+import org.esa.snap.framework.datamodel.Band;
 
 import java.util.Comparator;
 

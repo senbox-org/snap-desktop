@@ -1,7 +1,7 @@
 package org.esa.snap.rcp.colormanip;
 
-import org.esa.beam.framework.datamodel.ColorPaletteDef;
-import org.esa.beam.util.SystemUtils;
+import org.esa.snap.framework.datamodel.ColorPaletteDef;
+import org.esa.snap.util.SystemUtils;
 
 import java.io.File;
 import java.io.IOException;

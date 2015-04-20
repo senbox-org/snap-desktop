@@ -1,10 +1,10 @@
 package org.esa.snap.rcp.statistics;
 
-import org.esa.beam.framework.datamodel.Band;
-import org.esa.beam.framework.datamodel.Product;
-import org.esa.beam.framework.datamodel.TransectProfileData;
-import org.esa.beam.framework.datamodel.TransectProfileDataBuilder;
-import org.esa.beam.framework.datamodel.VectorDataNode;
+import org.esa.snap.framework.datamodel.Band;
+import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.datamodel.TransectProfileData;
+import org.esa.snap.framework.datamodel.TransectProfileDataBuilder;
+import org.esa.snap.framework.datamodel.VectorDataNode;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureImpl;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
@@ -16,7 +16,7 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import javax.swing.table.TableModel;
 import java.awt.geom.Path2D;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 /**
  * @author Norman Fomferra

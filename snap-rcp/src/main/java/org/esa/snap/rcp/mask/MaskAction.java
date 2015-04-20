@@ -16,13 +16,13 @@
 
 package org.esa.snap.rcp.mask;
 
-import org.esa.beam.framework.datamodel.Mask;
-import org.esa.beam.framework.datamodel.Product;
-import org.esa.beam.framework.datamodel.ProductNodeGroup;
-import org.esa.beam.framework.ui.UIUtils;
-import org.esa.beam.framework.ui.tool.ToolButtonFactory;
-import org.esa.beam.util.StringUtils;
+import org.esa.snap.framework.datamodel.Mask;
+import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.datamodel.ProductNodeGroup;
+import org.esa.snap.framework.ui.UIUtils;
+import org.esa.snap.framework.ui.tool.ToolButtonFactory;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.util.StringUtils;
 
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;

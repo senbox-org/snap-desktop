@@ -16,11 +16,11 @@
 
 package org.esa.snap.rcp.colormanip;
 
-import org.esa.beam.framework.datamodel.ProductNodeEvent;
-import org.esa.beam.framework.datamodel.RasterDataNode;
+import org.esa.snap.framework.datamodel.ProductNodeEvent;
+import org.esa.snap.framework.datamodel.RasterDataNode;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.AbstractButton;
+import java.awt.Component;
 
 
 interface ColorManipulationChildForm {

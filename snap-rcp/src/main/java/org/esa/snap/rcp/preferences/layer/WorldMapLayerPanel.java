@@ -23,14 +23,22 @@ import com.bc.ceres.glayer.LayerType;
 import com.bc.ceres.glayer.LayerTypeRegistry;
 import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
-import org.esa.beam.glayer.WorldMapLayerType;
+import org.esa.snap.glayer.WorldMapLayerType;
 import org.esa.snap.rcp.preferences.DefaultConfigController;
 import org.esa.snap.rcp.preferences.Preference;
 import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.HelpCtx;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.Box;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Insets;
 import java.util.ArrayList;
 import java.util.List;
 

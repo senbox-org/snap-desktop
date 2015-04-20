@@ -1,13 +1,12 @@
 package org.esa.snap.util;
 
-import org.esa.beam.framework.ui.BasicApp;
-import org.esa.beam.util.SystemUtils;
-import org.esa.beam.util.io.BeamFileChooser;
-import org.esa.beam.util.io.BeamFileFilter;
-import org.esa.beam.util.io.FileUtils;
+import org.esa.snap.framework.ui.BasicApp;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.util.io.BeamFileChooser;
+import org.esa.snap.util.io.BeamFileFilter;
+import org.esa.snap.util.io.FileUtils;
 
-import javax.swing.*;
+import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileSystemView;
 import java.io.File;

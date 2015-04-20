@@ -15,13 +15,13 @@
  */
 package org.esa.snap.rcp.mask;
 
-import org.esa.beam.framework.datamodel.Mask;
-import org.esa.beam.framework.datamodel.Product;
-import org.esa.beam.framework.datamodel.ProductManager;
-import org.esa.beam.framework.datamodel.ProductNode;
-import org.esa.beam.framework.datamodel.RasterDataNode;
-import org.esa.beam.framework.datamodel.VectorDataNode;
-import org.esa.beam.framework.ui.product.ProductSceneView;
+import org.esa.snap.framework.datamodel.Mask;
+import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.datamodel.ProductManager;
+import org.esa.snap.framework.datamodel.ProductNode;
+import org.esa.snap.framework.datamodel.RasterDataNode;
+import org.esa.snap.framework.datamodel.VectorDataNode;
+import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.SelectionSupport;
 import org.esa.snap.rcp.windows.ToolTopComponent;

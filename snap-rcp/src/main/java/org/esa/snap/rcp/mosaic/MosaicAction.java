@@ -16,8 +16,8 @@
 
 package org.esa.snap.rcp.mosaic;
 
-import org.esa.beam.framework.gpf.GPF;
-import org.esa.beam.framework.ui.ModelessDialog;
+import org.esa.snap.framework.gpf.GPF;
+import org.esa.snap.framework.ui.ModelessDialog;
 import org.esa.snap.rcp.actions.AbstractSnapAction;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;

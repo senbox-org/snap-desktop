@@ -16,9 +16,9 @@
 
 package org.esa.snap.rcp.bandmaths;
 
-import org.esa.beam.framework.datamodel.Product;
-import org.esa.beam.framework.datamodel.ProductNode;
-import org.esa.beam.framework.datamodel.ProductNodeList;
+import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.datamodel.ProductNode;
+import org.esa.snap.framework.datamodel.ProductNodeList;
 import org.esa.snap.rcp.SnapApp;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;

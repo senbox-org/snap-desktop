@@ -5,15 +5,15 @@
  */
 package org.esa.snap.rcp.nodes;
 
-import org.esa.beam.framework.datamodel.ProductNode;
-import org.esa.beam.framework.datamodel.ProductNodeListener;
+import org.esa.snap.framework.datamodel.ProductNode;
+import org.esa.snap.framework.datamodel.ProductNodeListener;
 import org.openide.awt.UndoRedo;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.util.Lookup;
 
 /**
- * A node that represents some {@link org.esa.beam.framework.datamodel.ProductNode} (=PN).
+ * A node that represents some {@link org.esa.snap.framework.datamodel.ProductNode} (=PN).
  *
  * @author Norman
  */

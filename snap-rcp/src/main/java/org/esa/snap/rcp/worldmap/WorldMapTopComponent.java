@@ -15,12 +15,12 @@
  */
 package org.esa.snap.rcp.worldmap;
 
-import org.esa.beam.framework.datamodel.Product;
-import org.esa.beam.framework.datamodel.ProductManager;
-import org.esa.beam.framework.datamodel.ProductNode;
-import org.esa.beam.framework.ui.WorldMapPane;
-import org.esa.beam.framework.ui.WorldMapPaneDataModel;
-import org.esa.beam.framework.ui.product.ProductSceneView;
+import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.datamodel.ProductManager;
+import org.esa.snap.framework.datamodel.ProductNode;
+import org.esa.snap.framework.ui.WorldMapPane;
+import org.esa.snap.framework.ui.WorldMapPaneDataModel;
+import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.SelectionSupport;
 import org.esa.snap.rcp.windows.ToolTopComponent;
@@ -94,7 +94,11 @@ public class WorldMapTopComponent extends ToolTopComponent {
         snapApp.getSelectionSupport(ProductNode.class).addHandler(new SelectionSupport.Handler<ProductNode>() {
             @Override
             public void selectionChange(@NullAllowed ProductNode oldValue, @NullAllowed ProductNode newValue) {
-                setSelectedProduct(newValue.getProduct());
+                if(newValue != null) {
+                    setSelectedProduct(newValue.getProduct());
+                } else {
+                    setSelectedProduct(null);
+                }
             }
         });
         setProducts(snapApp.getProductManager().getProducts());

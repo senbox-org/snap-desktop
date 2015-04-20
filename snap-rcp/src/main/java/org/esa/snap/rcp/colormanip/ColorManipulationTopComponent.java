@@ -17,6 +17,7 @@ package org.esa.snap.rcp.colormanip;
 
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
 import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
@@ -34,7 +35,10 @@ import java.awt.BorderLayout;
         position = 1
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.colormanip.ColorManipulationTopComponent")
-@ActionReference(path = "Menu/Window/Tool Windows")
+@ActionReferences({
+        @ActionReference(path = "Menu/Window/Tool Windows"),
+        @ActionReference(path = "Toolbars/Views")
+})
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_ColorManipulationTopComponent_Name",
         preferredID = "ColorManipulationTopComponent"
@@ -61,4 +65,6 @@ public class ColorManipulationTopComponent extends TopComponent implements HelpC
     public HelpCtx getHelpCtx() {
         return new HelpCtx(HELP_ID);
     }
+
+
 }

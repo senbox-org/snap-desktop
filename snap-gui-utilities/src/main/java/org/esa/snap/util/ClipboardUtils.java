@@ -15,9 +15,7 @@
  */
 package org.esa.snap.util;
 
-import org.esa.beam.util.SystemUtils;
-
-import java.awt.*;
+import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;

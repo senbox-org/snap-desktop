@@ -1,7 +1,7 @@
 package org.esa.snap.rcp.util;
 
 import com.bc.ceres.core.Assert;
-import org.esa.beam.util.PropertyMap;
+import org.esa.snap.util.PropertyMap;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;

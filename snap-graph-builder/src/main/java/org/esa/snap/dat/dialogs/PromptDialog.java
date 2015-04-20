@@ -15,13 +15,17 @@
  */
 package org.esa.snap.dat.dialogs;
 
-import org.esa.beam.framework.ui.GridBagUtils;
-import org.esa.beam.framework.ui.ModalDialog;
+import org.esa.snap.framework.ui.GridBagUtils;
+import org.esa.snap.framework.ui.ModalDialog;
 import org.esa.snap.rcp.SnapApp;
 
-import javax.swing.*;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.text.JTextComponent;
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
 
 /**
  * Created by IntelliJ IDEA.

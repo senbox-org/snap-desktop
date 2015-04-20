@@ -1,0 +1,4 @@
+org.esa.snap.rcp.layermanager.layersrc.shapefile.FeatureLayerType
+org.esa.snap.rcp.layermanager.layersrc.image.ImageFileLayerType
+org.esa.snap.rcp.layermanager.layersrc.windfield.WindFieldLayerType
+org.esa.snap.rcp.layermanager.layersrc.wms.WmsLayerType

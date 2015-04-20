@@ -17,10 +17,10 @@ package org.esa.snap.dat.graphbuilder;
 
 import com.bc.ceres.binding.dom.DomElement;
 import com.bc.ceres.binding.dom.XppDomElement;
-import org.esa.beam.framework.gpf.OperatorSpi;
-import org.esa.beam.framework.gpf.graph.Graph;
-import org.esa.beam.framework.gpf.graph.Node;
-import org.esa.beam.gpf.operators.standard.ReadOp;
+import org.esa.snap.framework.gpf.OperatorSpi;
+import org.esa.snap.framework.gpf.graph.Graph;
+import org.esa.snap.framework.gpf.graph.Node;
+import org.esa.snap.gpf.operators.standard.ReadOp;
 
 import java.util.ArrayList;
 import java.util.List;
