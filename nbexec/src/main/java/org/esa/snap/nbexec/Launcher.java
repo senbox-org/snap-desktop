@@ -308,22 +308,25 @@ public class Launcher {
 
         for (Patch patch : patches) {
             patchCount = 0;
+
             Path parentSourceDir = patch.dir;
-            try {
-                List<Path> moduleSourceDirs = Files.list(parentSourceDir)
-                        .filter(moduleSourceDir -> Files.isDirectory(moduleSourceDir))
-                        .collect(Collectors.toList());
+            if (Files.isDirectory(parentSourceDir)) {
+                try {
+                    List<Path> moduleSourceDirs = Files.list(parentSourceDir)
+                            .filter(moduleSourceDir -> Files.isDirectory(moduleSourceDir))
+                            .collect(Collectors.toList());
 
-                for (Path moduleSourceDir : moduleSourceDirs) {
-                    addPatchForModuleSourceDir(moduleSourceDir, moduleNames, patch);
+                    for (Path moduleSourceDir : moduleSourceDirs) {
+                        addPatchForModuleSourceDir(moduleSourceDir, moduleNames, patch);
+                    }
+                } catch (IOException e) {
+                    warn("failed to list entries of " + parentSourceDir);
                 }
-            } catch (IOException e) {
-                warn("failed to list entries of " + parentSourceDir);
-            }
 
-            if (patchCount == 0) {
-                // Maybe patch points to single-module project directory, so let's see
-                addPatchForModuleSourceDir(parentSourceDir, moduleNames, patch);
+                if (patchCount == 0 && parentSourceDir.getFileName() != null) {
+                    // Maybe patch points to single-module project directory, so let's see
+                    addPatchForModuleSourceDir(parentSourceDir, moduleNames, patch);
+                }
             }
 
             if (patchCount == 0) {
