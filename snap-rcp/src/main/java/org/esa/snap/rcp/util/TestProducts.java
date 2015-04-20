@@ -10,6 +10,7 @@ import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.ProductData;
 import org.esa.snap.framework.datamodel.Scene;
 import org.esa.snap.framework.datamodel.TiePointGrid;
+import org.esa.snap.framework.datamodel.VirtualBand;
 import org.esa.snap.framework.dataop.maptransf.Datum;
 
 import javax.media.jai.operator.ConstantDescriptor;
@@ -69,6 +70,15 @@ public class TestProducts {
         at.scale(sx, sx);
         at.rotate(-0.2, 10.0, 10.0);
         product.setGeoCoding(new ATGeoCoding(at));
+
+        // add band with new raster size!
+        VirtualBand band4 = new VirtualBand("Band_4", ProductData.TYPE_FLOAT64, 512, 512, "cos(ampl((X-256)/100, (Y-256)/100))");
+        AffineTransform at4 = new AffineTransform();
+        at4.scale(0.5 * sx, 0.5 * sx);
+        at4.rotate(-0.2, 5.0, 5.0);
+        band4.setGeoCoding(new ATGeoCoding(at));
+        product.addBand(band4);
+
         return product;
     }
 
