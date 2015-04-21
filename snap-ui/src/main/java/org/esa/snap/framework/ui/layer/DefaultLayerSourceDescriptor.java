@@ -22,7 +22,6 @@ import com.bc.ceres.glayer.LayerTypeRegistry;
 /**
  * The {@code DefaultLayerSourceDescriptor} provides metadata and
  * a factory method for a {@link LayerSource}.
- * <p/>
  * <p>
  * Instances of this class are created by reading the extension configuration of
  * the extension point {@code "layerSources"} in the {@code module.xml}.

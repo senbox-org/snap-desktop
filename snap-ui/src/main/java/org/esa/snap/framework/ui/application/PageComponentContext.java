@@ -21,7 +21,6 @@ package org.esa.snap.framework.ui.application;
  * class to get the view's local action handlers. The view uses this class to
  * get information about how the view is displayed in the application (for
  * example, on which window).
- * <p/>
  * <p>Clients shall not implement this interface, it is provided by the framework via the
  * {@link PageComponent#getContext} method.</p>
  *

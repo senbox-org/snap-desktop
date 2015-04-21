@@ -27,7 +27,6 @@ import java.util.Map;
 /**
  * The <code>DefaultCommandManager</code> provides a default implementation for the <code>CommandManager</code>
  * interface.
- * <p/>
  * <p>It also provides a simple mechanism to configure <code>Command</code> items with the key/value pairs stored in a
  * resource bundle.
  *

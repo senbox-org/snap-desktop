@@ -47,7 +47,6 @@ public class GridBagUtils {
     /**
      * Creates a <code>GridBagConstraints</code> instance with the attributes given as a comma separated key-value pairs
      * in a text string.
-     * <p/>
      * <p>According to the public <code>GridBagConstraints</code> attributes, the following key-value pairs are can
      * occur in the text string:
      * <p/>
@@ -158,7 +157,6 @@ public class GridBagUtils {
     /**
      * Sets the attributes of a given  <code>GridBagConstraints</code> instance to the attribute values given as a comma
      * separated key-value pairs in a text string.
-     * <p/>
      * <p>According to the public <code>GridBagConstraints</code> attributes, the following key-value pairs are can
      * occur in the text string:
      * <p/>

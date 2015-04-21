@@ -27,8 +27,7 @@ import java.util.Set;
 
 
 /**
- * <p><b>WARNING:</b> This class belongs to a preliminary API and may change in future releases.<p/>
- * <p>
+ * <p><b>WARNING:</b> This class belongs to a preliminary API and may change in future releases.<p>
  * <p>An action which creates a default dialog for an operator given by the
  * action property action property {@code operatorName}.</p>
  * <p>Optionally the dialog title can be set via the {@code dialogTitle} property and

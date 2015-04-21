@@ -94,7 +94,6 @@ public class ProductGrabberAction extends ExecCommand {
 
     /**
      * Tells a plug-in to update its component tree (if any) since the Java look-and-feel has changed.
-     * <p/>
      * <p>If a plug-in uses top-level containers such as dialogs or frames, implementors of this method should invoke
      * <code>SwingUtilities.updateComponentTreeUI()</code> on such containers.
      */

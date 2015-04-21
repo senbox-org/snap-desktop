@@ -114,11 +114,9 @@ import java.util.logging.Logger;
 /**
  * The <code>BasicApp</code> can be used as a base class for applications which use a single main frame as user
  * interface.
- * <p/>
  * <p> This class provides several useful capabilites as there are: <ld> <li> Action (command) management </li> <li>
  * Automatic user preferences loading and saving </li> <li> Logfile support </li> <li> Status bar support </li> <li>
  * Splash screen support </li> </ld>
- * <p/>
  * <p> And last but not least <code>BasicApp</code> automatically stores the file pathes a user visited in open- or save
  * dialog boxes.
  *
@@ -290,7 +288,6 @@ public class BasicApp {
 
     /**
      * Starts up the application.
-     * <p/>
      * <p>The startup sequence is as follows: <ol> <li>The method <code>createSplashScreen</code> is called. If it
      * returns non-null</li> the splash screen is shown.</li> <li> The method <code>loadPreferences</code> is called in
      * order to load user preferences.</li> <li> The method <code>startUp</code> is called with the splash screen.
@@ -985,7 +982,6 @@ public class BasicApp {
     /**
      * Exits the application. <p>The base class implementation calls <code>setShuttingDown(true)</code>, calls
      * {@link #handleImminentExit()} and disposes the main frame.
-     * <p/>
      * <p> When this method is overridden, this base class's implementation should always be called last. However, the
      * preferred way to change the shutdown behaviour is to override the {@link #handleImminentExit()} method.
      */
@@ -1233,7 +1229,6 @@ public class BasicApp {
     /**
      * Called after the look & feel has changed. The method simply calls <code>SwingUtilities.updateComponentTreeUI(getMainFrame())</code>
      * in order to reflect changes of the look-and-feel.
-     * <p/>
      * <p>You might want to override this method in order to call <code>SwingUtilities.updateComponentTreeUI()</code> on
      * other top-level containers beside the main frame.
      */

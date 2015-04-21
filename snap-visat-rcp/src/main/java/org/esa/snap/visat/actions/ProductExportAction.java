@@ -206,7 +206,6 @@ public class ProductExportAction extends ExecCommand {
 
     /**
      * Creates a valid product file name. Currently it only returns the given file.
-     * <p/>
      * <p>Override this method if you want a different behaviour.
      *
      * @param file the file from which the valid product file name must be created.

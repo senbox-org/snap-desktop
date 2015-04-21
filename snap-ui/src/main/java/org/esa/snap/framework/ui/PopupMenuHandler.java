@@ -34,7 +34,6 @@ import java.util.Comparator;
 
 /**
  * A handler which can be registered on components as a mouse listener.
- * <p/>
  * <p>This handler pops-up a popup menu if the corresponding event is a popup menu trigger on a given platform. The
  * popup-menu is created by the <code>PopupMenuFactory</code> instance passed to the constructor of this class.
  *
