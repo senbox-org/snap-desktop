@@ -45,7 +45,7 @@ public class RegionBoundsInputUI {
 
     /**
      * Initializes a RegionBoundsInputUI.
-     * This constructor creates the user interface and a binding context with default values.</br>
+     * This constructor creates the user interface and a binding context with default values.
      * The created binding context can be retrieved via {@link #getBindingContext()}.
      */
     public RegionBoundsInputUI() {
@@ -55,8 +55,8 @@ public class RegionBoundsInputUI {
     /**
      * Initializes a RegionBoundsInputUI with the given parameters.
      * If the parameters are valid geographic coordinates, they are used to initialize the user
-     * interface and to create a binding context.</br>
-     * If the values are invalid, default values will be used.</br>
+     * interface and to create a binding context.
+     * If the values are invalid, default values will be used.
      * The created binding context can be retrieved via {@link #getBindingContext()}.
      *
      * @param northBound The northern bounding latitude value
@@ -75,9 +75,9 @@ public class RegionBoundsInputUI {
      * Initializes a RegionBoundsInputUI with the given {@link BindingContext bindingContext}.
      * The bindingContext has to contain four parameters: {@link #PROPERTY_NORTH_BOUND northBound} ,
      * {@link #PROPERTY_SOUTH_BOUND southBound}, {@link #PROPERTY_WEST_BOUND westBound} and
-     * {@link #PROPERTY_EAST_BOUND eastBound}.</br>
+     * {@link #PROPERTY_EAST_BOUND eastBound}.
      * If the bindingContext contains geographic coordinates, these coordinates are used to initialize the user
-     * interface.</br>
+     * interface.
      *
      * @param bindingContext The binding context which is needed for initialisation.
      */

@@ -39,9 +39,9 @@ import java.util.Locale;
 
 /**
  * The startup class for VISAT. It provides the <code>main</code> method for the application.
- * <p>The VISAT application accepts the following command line options: <ld> <li> <code>-d</code> or
+ * <p>The VISAT application accepts the following command line options: <ul> <li> <code>-d</code> or
  * <code>--debug</code> sets VISAT into debugging mode <li> <code>-l <i>file</i></code> or <code>--logfile
- * <i>file</i></code> sets the logfile for VISAT to <i>file</i> </ld>
+ * <i>file</i></code> sets the logfile for VISAT to <i>file</i> </ul>
  *
  * @author Norman Fomferra
  * @version $Revision$ $Date$

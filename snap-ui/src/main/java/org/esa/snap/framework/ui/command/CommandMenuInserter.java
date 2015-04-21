@@ -26,7 +26,7 @@ import javax.swing.JMenu;
  */
 public interface CommandMenuInserter {
     /**
-     * Inserts the given <code>command</command> into the existing <code>menu</code>.
+     * Inserts the given <code>command</code> into the existing <code>menu</code>.
      *
      * @param newCommand The new command to insert into <code>menu</code>.
      * @param menu       The menu to add the <code>newCommand</code> to.

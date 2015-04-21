@@ -52,7 +52,7 @@ public class WorldMapImageLoader {
     /**
      * Reads the world map image from disk if not yet loaded, otherwise
      * it is just returning the image.
-     * <p/>
+     * <p>
      * If the world map image cannot be read an image with an error message is returned.
      *
      * @param highRes specifies if the high-resolution image shall be returned,

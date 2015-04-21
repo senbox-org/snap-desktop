@@ -19,7 +19,10 @@ import com.bc.ceres.core.Assert;
 import com.bc.ceres.core.ProgressMonitor;
 import org.esa.snap.gpf.ProgressMonitorList;
 
-import javax.swing.*;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.SwingUtilities;
 
 /**
  * A {@link com.bc.ceres.core.ProgressMonitor} which uses a
@@ -97,7 +100,7 @@ public class ProgressBarProgressMonitor implements ProgressMonitor {
     /**
      * Internal method to handle scaling correctly. This method
      * must not be called by a client. Clients should
-     * always use the method </code>worked(int)</code>.
+     * always use the method <code>worked(int)</code>.
      *
      * @param work the amount of work done
      */

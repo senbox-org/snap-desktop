@@ -22,7 +22,7 @@ import com.bc.ceres.glayer.LayerType;
 
 /**
  * A descriptor for a layer editor.
- * <p/>
+ * <p>
  * <i>Note: This API is not public yet and may significantly change in the future. Use it at your own risk.</i>
  *
  * @author Norman Fomferra

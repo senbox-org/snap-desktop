@@ -58,7 +58,7 @@ import java.util.List;
 
 /**
  * The type of a {@link FeatureLayer}.
- * <p/>
+ * <p>
  * Unstable API. Use at own risk.
  */
 @LayerTypeMetadata(name = "FeatureLayerType",

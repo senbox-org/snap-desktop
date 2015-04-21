@@ -17,12 +17,11 @@
 package org.esa.snap.framework.ui.layer;
 
 import com.bc.ceres.glayer.LayerContext;
-import org.esa.snap.framework.ui.AppContext;
 import org.esa.snap.framework.ui.assistant.AssistantPageContext;
 
 /**
  * Instances of this interface provide the context for implementations of {@link AbstractLayerSourceAssistantPage}.
- * <p/>
+ * <p>
  * <i>Note: This API is not public yet and may significantly change in the future. Use it at your own risk.</i>
  */
 public interface LayerSourcePageContext extends AssistantPageContext {

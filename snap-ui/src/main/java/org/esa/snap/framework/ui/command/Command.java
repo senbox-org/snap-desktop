@@ -274,7 +274,7 @@ public abstract class Command implements ConfigurableExtension {
 
     /**
      * Configures this command with the properties (if any) found in the given recource bundle. The resource keys for
-     * the corresponding properties are: <p> <ld> <li><code>command.</code><i>command-ID</i><code>.text = <i>display text</i></code></li>
+     * the corresponding properties are: <p> <ul> <li><code>command.</code><i>command-ID</i><code>.text = <i>display text</i></code></li>
      * <li><code>command.</code><i>command-ID</i><code>.popuptext = <i>display text for popup menu</i></code></li>
      * <li><code>command.</code><i>command-ID</i><code>.mnemonic = <i>mnemonic key character</i></code></li>
      * <li><code>command.</code><i>command-ID</i><code>.accelerator = <i>accelerator</i></code></li>
@@ -288,7 +288,7 @@ public abstract class Command implements ConfigurableExtension {
      * <li><code>command.</code><i>command-COMMAND_ID</i><code>.placeBefore = <i>command-ID</i></code></li>
      * <li><code>command.</code><i>command-ID</i><code>.placeAfter = <i>command-COMMAND_ID</i></code></li>
      * <li><code>command.</code><i>command-ID</i><code>.separatorBefore = true <i>or</i> false</code></li>
-     * <li><code>command.</code><i>command-ID</i><code>.separatorAfter = true <i>or</i> false</code></li> </ld>
+     * <li><code>command.</code><i>command-ID</i><code>.separatorAfter = true <i>or</i> false</code></li> </ul>
      *
      * @param resourceBundle the resource bundle from which the properties are received
      *

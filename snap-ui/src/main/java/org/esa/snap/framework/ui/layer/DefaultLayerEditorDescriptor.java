@@ -28,7 +28,7 @@ import com.bc.ceres.glayer.LayerType;
 /**
  * The default descriptor for a layer editor. Layer editors are configured in your Module Manifest {@code module.xml}
  * by extending the extension point {@code layerEditors} with {@code layerEditor} elements:
- * <p/>
+ * <p>
  * <pre>
  * &lt;extension point="beam-ui:layerEditors"&gt;
  *       &lt;layerEditor&gt;
@@ -41,8 +41,8 @@ import com.bc.ceres.glayer.LayerType;
  *       &lt;/layerEditor&gt;
  * &lt;extension&gt;
  * </pre>
- * <p/>
- * <p/>
+ * <p>
+ * <p>
  * <i>Note: This API is not public yet and may significantly change in the future. Use it at your own risk.</i>
  *
  * @author Norman Fomferra
@@ -98,7 +98,7 @@ public class DefaultLayerEditorDescriptor implements LayerEditorDescriptor, Conf
     /**
      * Creates an extension factory that maps an instances of a {@link Layer} or
      * a {@link LayerType} to an instance of a {@link LayerEditor}.
-     * <p/>
+     * <p>
      * Clients may override in order to provide their own {@code ExtensionFactory}.
      *
      * @return An appropriate extension factory.

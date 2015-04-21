@@ -70,7 +70,7 @@ public interface CommandUIFactory {
      *
      * @param command the tool command, must not be <code>null</code>
      *
-     * @return currently always <code>null</code!
+     * @return currently always <code>null</code>
      */
     JMenuItem createMenuItem(ToolCommand command);
 

@@ -30,8 +30,8 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * Class that enables the support for Drag & Drop.
- * <p/>
+ * Class that enables the support for Drag &amp; Drop.
+ * <p>
  * Limitations:
  * This handler only supports {@link JTree} with an {@link javax.swing.tree.TreeModel model}
  * which is backed by {@link Layer layer}.

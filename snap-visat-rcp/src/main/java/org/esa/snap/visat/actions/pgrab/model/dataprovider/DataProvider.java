@@ -26,7 +26,7 @@ import java.util.Comparator;
  * This interface shall be implemented to provide new data to a {@link RepositoryEntry}.
  * The data is shown in a table within the <code>ProductGrabber</code>.
  * <p> To add a <code>DataProvider</code> to the <code>ProductGrabber</code> use the following example code:
- * <p/>
+ * <p>
  * <code>
  * ProductGrabberVPI.getInstance().getRepositoryManager().addDataProvider(new SampleDataProvider());
  * </code>

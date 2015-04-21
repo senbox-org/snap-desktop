@@ -44,11 +44,11 @@ import java.awt.BorderLayout;
 
 /**
  * A tool windows that lets users edit the attribute values of selected vector data features.
- * <p/>
+ * <p>
  * <i>Note: the editor functionality is not implemented yet. Instead it is used as a tool windows that
  * displays the attributes of selected vector data features.
  * </i>
- * <p/>
+ * <p>
  * <i>Implementation idea: Wrap the entire feature attribute set in a {@link com.bc.ceres.binding.PropertySet}
  * so that we have {@link com.bc.ceres.swing.binding.BindingContext} and can then create a
  * {@link com.bc.ceres.swing.binding.PropertyPane} for editing (or use the JIDE Property Pane). Furthermore, we

@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 
 /**
  * Default implementation of a {@link ContextGlobalExtender} which is also a {@link ContextGlobalProvider}.
- * <p/>
+ * <p>
  * In order to register {@link ContextGlobalProvider} service use the following code:
  * <pre>
  *     &#64;ServiceProvider(

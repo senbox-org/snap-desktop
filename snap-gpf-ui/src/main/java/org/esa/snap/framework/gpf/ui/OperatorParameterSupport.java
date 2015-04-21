@@ -36,7 +36,7 @@ import java.util.Map;
 
 /**
  * WARNING: This class belongs to a preliminary API and may change in future releases.
- * <p/>
+ * <p>
  * Support for operator parameters input/output.
  *
  * @author Norman Fomferra
@@ -72,7 +72,7 @@ public class OperatorParameterSupport {
 
     /**
      * Creates a parameter support for the operator described by the given {@link OperatorDescriptor}.
-     * <p/>
+     * <p>
      * If a property set and a parameter map are given the client as to keep them in sync.
      * The {@code parameterUpdater} will be called before each save  and after each load request to
      * enable custom updating.

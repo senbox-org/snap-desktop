@@ -49,8 +49,8 @@ public class GridBagUtils {
      * in a text string.
      * <p>According to the public <code>GridBagConstraints</code> attributes, the following key-value pairs are can
      * occur in the text string:
-     * <p/>
-     * <ld> <li><code>{@link GridBagConstraints#gridx gridx}=<b>RELATIVE</b>|<i>integer</i></code></li> <li><code>{@link
+     * <p>
+     * <ul> <li><code>{@link GridBagConstraints#gridx gridx}=<b>RELATIVE</b>|<i>integer</i></code></li> <li><code>{@link
      * GridBagConstraints#gridy gridy}=<b>RELATIVE</b>|<i>integer</i></code></li> <li><code>{@link
      * GridBagConstraints#gridwidth gridwidth}=<b>REMAINDER</b>|<b>RELATIVE</b>|<i>integer</i></code></li>
      * <li><code>{@link GridBagConstraints#gridheight gridheight}=<b>REMAINDER</b>|<b>RELATIVE</b>|<i>integer</i></code></li>
@@ -63,7 +63,7 @@ public class GridBagUtils {
      * insets.right}=<i>integer</i></code></li> <li><code>{@link GridBagConstraints#insets
      * insets.top}=<i>integer</i></code></li> <li><code>{@link GridBagConstraints#ipadx
      * ipadx}=<i>integer</i></code></li> <li><code>{@link GridBagConstraints#ipady ipady}=<i>integer</i></code></li>
-     * </ld>
+     * </ul>
      *
      * @param code a textual representation of the attributes to be set
      */
@@ -74,11 +74,14 @@ public class GridBagUtils {
     }
 
     /**
-     * Creates a <code>GridBagConstraints</code> instance with the following attributes: <ld> <li><code>{@link
-     * GridBagConstraints#anchor anchor}=<b>WEST</b></li> <li><code>{@link GridBagConstraints#insets
-     * insets.top}=<b>0</b></code></li> <li><code>{@link GridBagConstraints#insets insets.left}=<b>3</b></code></li>
-     * <li><code>{@link GridBagConstraints#insets insets.bottom}=<b>0</b></code></li> <li><code>{@link
-     * GridBagConstraints#insets insets.right}=<b>3</b></code></li> </ld>
+     * Creates a <code>GridBagConstraints</code> instance with the following attributes:
+     * <ul>
+     *     <li>{@link GridBagConstraints#anchor anchor}=<b>WEST</b></li>
+     *     <li>{@link GridBagConstraints#insets insets.top}=<b>0</b></li>
+     *     <li>{@link GridBagConstraints#insets insets.left}=<b>3</b></li>
+     *     <li>{@link GridBagConstraints#insets insets.bottom}=<b>0</b></li>
+     *     <li>{@link GridBagConstraints#insets insets.right}=<b>3</b></li>
+     * </ul>
      */
     public static GridBagConstraints createDefaultConstraints() {
         GridBagConstraints gbc = new GridBagConstraints();
@@ -159,8 +162,8 @@ public class GridBagUtils {
      * separated key-value pairs in a text string.
      * <p>According to the public <code>GridBagConstraints</code> attributes, the following key-value pairs are can
      * occur in the text string:
-     * <p/>
-     * <ld> <li><code>{@link GridBagConstraints#gridx gridx}=<b>RELATIVE</b>|<i>integer</i></code></li> <li><code>{@link
+     * <p>
+     * <ul> <li><code>{@link GridBagConstraints#gridx gridx}=<b>RELATIVE</b>|<i>integer</i></code></li> <li><code>{@link
      * GridBagConstraints#gridy gridy}=<b>RELATIVE</b>|<i>integer</i></code></li> <li><code>{@link
      * GridBagConstraints#gridwidth gridwidth}=<b>REMAINDER</b>|<b>RELATIVE</b>|<i>integer</i></code></li>
      * <li><code>{@link GridBagConstraints#gridheight gridheight}=<b>REMAINDER</b>|<b>RELATIVE</b>|<i>integer</i></code></li>
@@ -173,7 +176,7 @@ public class GridBagUtils {
      * insets.right}=<i>integer</i></code></li> <li><code>{@link GridBagConstraints#insets
      * insets.top}=<i>integer</i></code></li> <li><code>{@link GridBagConstraints#ipadx
      * ipadx}=<i>integer</i></code></li> <li><code>{@link GridBagConstraints#ipady ipady}=<i>integer</i></code></li>
-     * </ld>
+     * </ul>
      *
      * @param gbc  the grid bag constraints whose attributes are to be set, must not be null
      * @param code a textual representation of the attributes to be set

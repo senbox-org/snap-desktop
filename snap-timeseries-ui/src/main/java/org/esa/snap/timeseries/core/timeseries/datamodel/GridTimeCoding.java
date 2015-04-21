@@ -22,7 +22,7 @@ import org.esa.snap.framework.datamodel.ProductData;
 
 /**
  * <p><i>Note that this class is not yet public API. Interface may change in future releases.</i></p>
- * <p/>
+ * <p>
  * Grid implementation of {@link TimeCoding}. It simply returns the central value of start and end time.
  *
  * @author Thomas Storm

@@ -137,8 +137,8 @@ public class ExecCommand extends SelectableCommand implements ConfigurableExtens
 
     /**
      * Configures this command with the properties (if any) found in the given recource bundle. Overrides the base class
-     * implementation in order to configure the following extra properties:<p> <ld>
-     * <li><code>command.</code><i>command-ID</i><code>.toggle = true</code> or <code>false</code></li> </ld>
+     * implementation in order to configure the following extra properties:<p> <ul>
+     * <li><code>command.</code><i>command-ID</i><code>.toggle = true</code> or <code>false</code></li> </ul>
      *
      * @param resourceBundle the resource bundle from which the properties are received
      *

@@ -19,7 +19,7 @@ package org.esa.snap.framework.ui.layer;
 /**
  * A layer source can add one or more layers
  * to an already existing root layer.
- * <p/>
+ * <p>
  * <i>Note: This API is not public yet and may significantly change in the future. Use it at your own risk.</i>
  *
  * @author Marco Peters
