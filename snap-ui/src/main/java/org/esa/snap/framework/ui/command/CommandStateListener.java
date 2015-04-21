@@ -22,7 +22,6 @@ import java.util.EventListener;
 /**
  * The listener for receiving command events from <code>ExecCommand</code>s, <code>ToolCommand</code>s and
  * <code>CommandGroup</code>s.
- * <p/>
  * <p>This listener contains the <code>updateState</code> method which is called each time a command should check and
  * eventually update its state. When you create a command (or command group) you provide this listener.
  */
@@ -30,7 +29,6 @@ public interface CommandStateListener extends EventListener {
 
     /**
      * Called when a command should update its state.
-     * <p/>
      * <p> This method can contain some code which analyzes the underlying element and makes a decision whether this
      * item or group should be made visible/invisible or enabled/disabled etc.
      *

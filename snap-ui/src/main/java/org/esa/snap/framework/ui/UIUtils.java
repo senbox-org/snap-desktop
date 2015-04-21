@@ -159,7 +159,6 @@ public class UIUtils {
 
     /**
      * Centers the given component within the screen area.
-     * <p/>
      * <p> The method performs the alignment by setting a newly computed location for the component. It does not alter
      * the component's size.
      *
@@ -173,7 +172,6 @@ public class UIUtils {
 
     /**
      * Centers the given component over another component.
-     * <p/>
      * <p> The method performs the alignment by setting a newly computed location for the component. It does not alter
      * the component's size.
      *

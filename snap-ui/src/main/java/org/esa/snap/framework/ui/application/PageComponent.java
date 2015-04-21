@@ -34,7 +34,6 @@ import javax.swing.Icon;
  * with multiple windows. In other words, a single page component instance is
  * never shared between windows.
  * <p/>
- * <p/>
  * <p>This interface is intended to be implemented by clients. However, the preferred way to implement this interface is via the
  * {@link org.esa.snap.framework.ui.application.support.AbstractToolView}, since the actual interface may change in the future.</p>
  *

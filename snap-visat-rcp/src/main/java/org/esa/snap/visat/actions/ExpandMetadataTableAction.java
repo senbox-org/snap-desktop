@@ -37,7 +37,6 @@ public class ExpandMetadataTableAction extends ExecCommand {
 
     /**
      * Called when a command should update its state.
-     * <p/>
      * <p> This method can contain some code which analyzes the underlying element and makes a decision whether
      * this item or group should be made visible/invisible or enabled/disabled etc.
      *

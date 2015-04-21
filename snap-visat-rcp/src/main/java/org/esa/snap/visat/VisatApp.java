@@ -812,7 +812,6 @@ public class VisatApp extends BasicApp implements AppContext {
 
     /**
      * Sets the currently selected node.
-     * <p/>
      * <p>The method does nothing if the given selected node is already the selected one The method calls
      * <code>updateState()</code> if the selected node changes.
      *
@@ -885,7 +884,6 @@ public class VisatApp extends BasicApp implements AppContext {
 
     /**
      * Finds the (internal) frames for the given raster data node.
-     * <p/>
      * <p>The content panes of the returned frames are always  instances of <code>ProductSceneView</code>.
      *
      * @param raster   the raster for which to perform the lookup
@@ -911,7 +909,6 @@ public class VisatApp extends BasicApp implements AppContext {
 
     /**
      * Finds the any internal frame for the given raster data node.
-     * <p/>
      * <p>The content pane of the returned frame is always an instance of <code>ProductSceneView</code>.
      *
      * @param raster the raster for which to perform the lookup
@@ -936,7 +933,6 @@ public class VisatApp extends BasicApp implements AppContext {
 
     /**
      * Finds the (internal) frames for the given raster data node.
-     * <p/>
      * <p>The content pane of the returned frame is always an instance of <code>ProductSceneView</code>.
      *
      * @param raster the raster for which to perform the lookup
@@ -962,7 +958,6 @@ public class VisatApp extends BasicApp implements AppContext {
 
     /**
      * Finds the (internal) frame for the given meta data element.
-     * <p/>
      * <p>The content pane of the returned frame is always an instance of <code>ProductMetadataView</code>.
      *
      * @param metadataElement the metadata element for which to perform the lookup
@@ -987,7 +982,6 @@ public class VisatApp extends BasicApp implements AppContext {
 
     /**
      * Finds the (internal) frame for the given product node.
-     * <p/>
      * <p>The content pane of the returned frame is always an instance of <code>ProductMetadataView</code>.
      *
      * @param productNode the product node for which to perform the lookup
@@ -1864,7 +1858,6 @@ public class VisatApp extends BasicApp implements AppContext {
     /**
      * Called after the look & feel has changed. The method simply calls <code>SwingUtilities.updateComponentTreeUI(getMainFrame())</code>
      * in order to reflect changes of the look-and-feel.
-     * <p/>
      * <p>You might want to override this method in order to call <code>SwingUtilities.updateComponentTreeUI()</code> on
      * other top-level containers beside the main frame.
      */
@@ -2191,11 +2184,9 @@ public class VisatApp extends BasicApp implements AppContext {
 
     /**
      * Creates a tool button for the tool-command with the given command ID.
-     * <p/>
      * <p>A command with the given ID must already been registered using any of the <code>createToolCommand</code>
      * methods of VisatApp, or directly using the <code>createToolCommand</code> method of VISAT's {@link
      * CommandManager}. Otherwise an {@link IllegalArgumentException} will be thrown.
-     * <p/>
      * <p>The new button is which is automatically added to VISAT's tool button group to ensure that a only single tool
      * is selected.
      *

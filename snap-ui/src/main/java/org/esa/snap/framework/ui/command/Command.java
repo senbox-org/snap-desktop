@@ -49,7 +49,6 @@ public abstract class Command implements ConfigurableExtension {
 
     /**
      * The key used for storing a large icon for the action, used for toolbar buttons.
-     * <p/>
      * <p>Note: Actually this key belongs in the javax.swing.Action interface, but Sun hasn't done this so far (why?).
      */
     public static final String ACTION_KEY_LARGE_ICON = "_largeIcon";
@@ -628,10 +627,8 @@ public abstract class Command implements ConfigurableExtension {
 
     /**
      * Lets an action update its component tree (if any) since the Java look-and-feel has changed.
-     * <p/>
      * <p>If a plug-in uses top-level containers such as dialogs or frames, implementors of this method should invoke
      * <code>SwingUtilities.updateComponentTreeUI()</code> on such containers.
-     * <p/>
      * <p>The default implementation does nothing.</p>
      */
     public void updateComponentTreeUI() {

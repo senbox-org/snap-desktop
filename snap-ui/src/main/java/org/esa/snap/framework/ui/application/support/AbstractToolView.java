@@ -68,11 +68,9 @@ public abstract class AbstractToolView extends AbstractControlFactory implements
 
     /**
      * Sets the tool window's context.
-     * <p/>
      * <p>Clients may override this method in order configure their tool window.
      * However, after calling this method,
      * {@link #getContext()} shall return the same {@code context}.</p>
-     * <p/>
      * <p>Clients must not call this method directly, it is called only once by the framework after a {@link PageComponentContext}
      * has been created for this tool window.</p>
      *
