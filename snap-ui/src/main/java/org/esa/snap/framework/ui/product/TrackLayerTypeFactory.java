@@ -7,7 +7,7 @@ import org.esa.snap.framework.datamodel.VectorDataNode;
 /**
  * The {@link ExtensionFactory} that adapts {@link VectorDataNode}s using the {@code FeatureType} "org.esa.snap.TrackPoint"
  * to the special {@link TrackLayerType}.
- * <p/>
+ * <p>
  * <i>Note: this is experimental code.</i>
  *
  * @author Norman Fomferra

@@ -17,7 +17,7 @@ import java.awt.geom.Line2D;
 /**
  * A special layer type that is used to create layers for {@link VectorDataNode}s that
  * have a special feature type. In this case "org.esa.snap.TrackPoint".
- * <p/>
+ * <p>
  * <i>Note: this is experimental code.</i>
  *
  * @author Norman Fomferra

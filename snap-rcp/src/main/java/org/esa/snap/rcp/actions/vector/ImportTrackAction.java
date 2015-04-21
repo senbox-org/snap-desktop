@@ -77,7 +77,7 @@ import java.io.Reader;
  *     ...
  *     lat-n TAB lon-n TAB data-n NEWLINE
  * </pre>
- * <p/>
+ * <p>
  * This is the format that is also used by SeaDAS 6.x in order to import ship tracks.
  *
  * @author Norman Fomferra

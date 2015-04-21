@@ -23,7 +23,7 @@ import org.esa.snap.framework.ui.command.CommandEvent;
 
 
 /**
- * <p><b>WARNING:</b> This class belongs to a preliminary API and may change in future releases.<p/>
+ * <p><b>WARNING:</b> This class belongs to a preliminary API and may change in future releases.<p>
  * 
  * <p>An action which creates a default dialog for an operator given by the
  * action property action property {@code operatorName}.</p>

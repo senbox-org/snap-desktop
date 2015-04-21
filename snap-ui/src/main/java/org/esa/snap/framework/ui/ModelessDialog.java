@@ -23,7 +23,7 @@ import java.awt.Window;
  * <p>A helper class used to implement standard modeless dialogs.</p>
  * <p>The dialog can be used directly (which doesn't make much sense) or the class is used as base class in
  * order to override the methods {@link #onApply()}, {@link #onClose()} etc. which are called if a user
- * presses the corresponding button.<p/>
+ * presses the corresponding button.<p>
  *
  * @author Norman Fomferra
  * @since BEAM 4.2

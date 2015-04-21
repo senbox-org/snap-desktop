@@ -55,7 +55,7 @@ import java.io.File;
  * <li>whole directories anywhere in the file system and</li>
  * <li>recursive directories anywhere in the file system</li>
  * </ul>
- * <p/>
+ * <p>
  * The file paths the user chooses are stored as objects of type {@link java.io.File} within the property that is passed
  * into the constructor. Products that are chosen from the product tree can be retrieved via
  * {@link #getSourceProducts()}. So, clients of these must take care that the value in the given property is taken into

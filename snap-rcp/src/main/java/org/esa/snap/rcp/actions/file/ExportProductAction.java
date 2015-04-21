@@ -62,7 +62,7 @@ public class ExportProductAction extends AbstractAction implements HelpCtx.Provi
      *      &lt;attr name="formatName" stringvalue="CSV"/&gt;
      *      &lt;attr name="useAllFileFilter" boolvalue="true"/&gt;
      *      &lt;attr name="helpId" stringvalue="exportCsvProduct"/&gt;
-     *      &lt;attr name="ShortDescription" stringvalue=">Writes a product in CSV format."/&gt;
+     *      &lt;attr name="ShortDescription" stringvalue="Writes a product in CSV format."/&gt;
      * &lt;/file&gt;
      * </pre>
      *

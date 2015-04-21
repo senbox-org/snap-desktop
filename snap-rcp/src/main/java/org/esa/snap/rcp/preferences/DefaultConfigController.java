@@ -57,7 +57,7 @@ public abstract class DefaultConfigController extends OptionsPanelController {
      *
      * @return An instance of {@link PropertyContainer}, holding all configuration parameters.
      *
-     * @see DefaultConfigController#createPropertyContainer(Object).
+     * @see #createPropertyContainer(Object)
      */
     protected PropertyContainer createPropertyContainer() {
         return new PropertyContainer();

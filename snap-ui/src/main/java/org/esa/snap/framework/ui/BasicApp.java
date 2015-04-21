@@ -114,9 +114,9 @@ import java.util.logging.Logger;
 /**
  * The <code>BasicApp</code> can be used as a base class for applications which use a single main frame as user
  * interface.
- * <p> This class provides several useful capabilites as there are: <ld> <li> Action (command) management </li> <li>
+ * <p> This class provides several useful capabilites as there are: <ul> <li> Action (command) management </li> <li>
  * Automatic user preferences loading and saving </li> <li> Logfile support </li> <li> Status bar support </li> <li>
- * Splash screen support </li> </ld>
+ * Splash screen support </li> </ul>
  * <p> And last but not least <code>BasicApp</code> automatically stores the file pathes a user visited in open- or save
  * dialog boxes.
  *
@@ -289,7 +289,7 @@ public class BasicApp {
     /**
      * Starts up the application.
      * <p>The startup sequence is as follows: <ol> <li>The method <code>createSplashScreen</code> is called. If it
-     * returns non-null</li> the splash screen is shown.</li> <li> The method <code>loadPreferences</code> is called in
+     * returns non-null the splash screen is shown.</li> <li> The method <code>loadPreferences</code> is called in
      * order to load user preferences.</li> <li> The method <code>startUp</code> is called with the splash screen.
      * Clients can override this method in order to implement application specific initialisation code.</li> <li> The
      * method <code>applyPreferences</code> is called.</li> <li> The main frame is shown.</li> <li> The splash screen
@@ -602,7 +602,7 @@ public class BasicApp {
 
     /**
      * Creates a default frame icon list for this application.
-     * <p/> Override this method if you want another behaviour.
+     * <p> Override this method if you want another behaviour.
      *
      * @return the frame icon list, or <code>null</code> if no icon is used
      */
@@ -627,10 +627,10 @@ public class BasicApp {
 
     /**
      * Starts up the client application.
-     * <p/>Called from {@link #startUp(com.bc.ceres.core.ProgressMonitor)} before
+     * <p>Called from {@link #startUp(com.bc.ceres.core.ProgressMonitor)} before
      * {@link #initClientUI(com.bc.ceres.core.ProgressMonitor)} is called.
-     * <p/>Clients should override this method in order to initialize non-UI components, e.g. load plugins.
-     * <p/>The default implementation does nothing.
+     * <p>Clients should override this method in order to initialize non-UI components, e.g. load plugins.
+     * <p>The default implementation does nothing.
      *
      * @param pm a progress monitor, can be used to signal progress
      * @throws Exception if an error occurs
@@ -640,10 +640,10 @@ public class BasicApp {
 
     /**
      * Initializes the client user interface.
-     * <p/>Called from {@link #startUp(com.bc.ceres.core.ProgressMonitor)} after
+     * <p>Called from {@link #startUp(com.bc.ceres.core.ProgressMonitor)} after
      * {@link #initClient(com.bc.ceres.core.ProgressMonitor)} is called.
-     * <p/>Clients should override this method in order to initialize their UI components.
-     * <p/>The default implementation does nothing.
+     * <p>Clients should override this method in order to initialize their UI components.
+     * <p>The default implementation does nothing.
      *
      * @param pm a progress monitor, can be used to signal progress
      * @throws Exception if an error occurs
@@ -1115,7 +1115,7 @@ public class BasicApp {
     }
 
     /**
-     * This method should be called after prefernces that affect the current look & feel have changed.
+     * This method should be called after preferences that affect the current look &amp; feel have changed.
      */
     protected final void applyLookAndFeelPreferences() {
         boolean startingUp = !isStartedUp();
@@ -1227,7 +1227,7 @@ public class BasicApp {
     }
 
     /**
-     * Called after the look & feel has changed. The method simply calls <code>SwingUtilities.updateComponentTreeUI(getMainFrame())</code>
+     * Called after the look &amp; feel has changed. The method simply calls <code>SwingUtilities.updateComponentTreeUI(getMainFrame())</code>
      * in order to reflect changes of the look-and-feel.
      * <p>You might want to override this method in order to call <code>SwingUtilities.updateComponentTreeUI()</code> on
      * other top-level containers beside the main frame.
@@ -1707,11 +1707,11 @@ public class BasicApp {
      * Adds a new JavaHelp {@link javax.help.HelpSet} to the existing help.
      * The helpset is as a resource path to the JavaHelp helpset XML file (*.hs).
      * The helpset and associated resources must be accessible by the given class-loader.
-     * <p/>
+     * <p>
      * Note that you also can add help-set instances directly to the BEAM help system by using the
      * static {@link  HelpSys#add(javax.help.HelpSet)} method.
      * </p>
-     * <p/>
+     * <p>
      * For more information on the JavaHelp architecture and API please refer to
      * the <a href="http://java.sun.com/products/javahelp/">JavaHelp home page</a>.
      * </p>

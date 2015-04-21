@@ -26,8 +26,7 @@ import com.bc.ceres.glayer.LayerTypeRegistry;
  * Instances of this class are created by reading the extension configuration of
  * the extension point {@code "layerSources"} in the {@code module.xml}.
  * </p>
- * Example 1:<br/>
- * <p>
+ * Example 1:
  * <pre>
  *    &lt;extension point="beam-visat-rcp:layerSources"&gt;
  *      &lt;layerSource&gt;
@@ -38,8 +37,7 @@ import com.bc.ceres.glayer.LayerTypeRegistry;
  *      &lt;/layerSource&gt;
  *    &lt;/extension&gt;
  * </pre>
- * Example 1:<br/>
- * <p>
+ * Example 2:
  * <pre>
  *    &lt;extension point="beam-visat-rcp:layerSources"&gt;
  *      &lt;layerSource&gt;

@@ -19,7 +19,7 @@ package org.esa.snap.framework.ui.assistant;
 import java.awt.Component;
 
 /**
- * An {@code AssistantPage} is part of a sequence of pages. <br/>
+ * An {@code AssistantPage} is part of a sequence of pages. <br>
  * It is used by an {@link AssistantPane} to assists the user to
  * accomplish a specific task by stepping through the pages.
  */

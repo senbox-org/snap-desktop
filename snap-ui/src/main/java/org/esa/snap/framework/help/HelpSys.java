@@ -25,10 +25,10 @@ import java.awt.Window;
 
 /**
  * This utility class supports the java help system.
- * <p/>
+ * <p>
  * It contains exclusively static methods and can hold a <code>HelpBroker</code> singleton from which this class
- * receives its functionallity.
- * <p/>
+ * receives its functionality.
+ * <p>
  * This class can be used in all components which have a context sensitive help.
  *
  * @author Sabine Embacher
@@ -189,7 +189,7 @@ public class HelpSys {
     /**
      * Sets the current help set. If the current help broker is not null, the help set will be assigned to it.
      * Otherwise, a help broker will be created from the given help set.
-     * <p/>
+     * <p>
      * This method can be used to switch to an other helpset.
      *
      * @param helpSet the help set to be set

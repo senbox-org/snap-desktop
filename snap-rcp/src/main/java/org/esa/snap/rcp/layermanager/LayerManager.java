@@ -27,19 +27,24 @@ import java.util.logging.Logger;
 
 /**
  * Either 'editor' or 'editorFactory' must be given:
- * - 'editor' must be a 'org.esa.snap.framework.ui.layer.LayerEditor'
- * - 'editorFactory' must be a 'com.bc.ceres.core.ExtensionFactory' that produces
- * instances of 'org.esa.snap.framework.ui.layer.LayerEditor'.
- * <p>
- * <editor field="layerEditorClass" type="java.lang.Class"/>
- * <editorFactory field="layerEditorFactoryClass" type="java.lang.Class"/>
- * <p>
+ * <ul>
+ * <li>'editor' must be a <code>org.esa.snap.framework.ui.layer.LayerEditor</code></li>
+ * <li>'editorFactory' must be a <code>com.bc.ceres.core.ExtensionFactory</code> that produces
+ * instances of <code>org.esa.snap.framework.ui.layer.LayerEditor</code>.</li>
+ * </ul>
+ * <pre>
+ * &lt;editor field="layerEditorClass" type="java.lang.Class"/&gt;
+ * &lt;editorFactory field="layerEditorFactoryClass" type="java.lang.Class"/&gt;
+ * </pre>
  * At least 'layer' or 'layerType' must be given:
- * - 'layer' must be a 'com.bc.ceres.glayer.Layer'
- * - 'layerType' must be a 'com.bc.ceres.glayer.LayerType'.
- * <p>
- * <layer field="layerClass" type="java.lang.Class"/>
- * <layerType field="layerTypeClass" type="java.lang.Class"/>
+ * <ul>
+ * <li>'layer' must be a <code>com.bc.ceres.glayer.Layer</code></li>
+ * <li>'layerType' must be a <code>com.bc.ceres.glayer.LayerType</code>.</li>
+ * </ul>
+ * <pre>
+ * &lt;layer field="layerClass" type="java.lang.Class"/&gt;
+ * &lt;layerType field="layerTypeClass" type="java.lang.Class"/&gt;
+ * </pre>
  *
  * @author Norman Fomferra
  */

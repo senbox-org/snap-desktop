@@ -82,7 +82,7 @@ public abstract class AbstractApplicationPage extends AbstractControlFactory imp
      * <code>PageComponent</code>, triggers all necessary events ("focus lost" and
      * "closed"), and will activate another <code>PageComponent</code> (if there is
      * one).
-     * <p/>
+     * <p>
      * Does nothing if this <code>ApplicationPage</code> doesn't contain the given
      * <code>PageComponent</code>.
      *
@@ -227,7 +227,7 @@ public abstract class AbstractApplicationPage extends AbstractControlFactory imp
     /**
      * Called when the <code>PageComponent</code> changes any of its properties (display
      * name, caption, icon, ...).
-     * <p/>
+     * <p>
      * This method should be overridden when these changes must be reflected in the UI.
      *
      * @param evt
@@ -296,7 +296,7 @@ public abstract class AbstractApplicationPage extends AbstractControlFactory imp
     /**
      * Activates the given <code>PageComponent</code>. Does nothing if it is already
      * the active one.
-     * <p/>
+     * <p>
      * Does nothing if this <code>ApplicationPage</code> doesn't contain the given
      * <code>PageComponent</code>.
      *
@@ -343,7 +343,7 @@ public abstract class AbstractApplicationPage extends AbstractControlFactory imp
 
     /**
      * This method must add the given tool view in the UI.
-     * <p/>
+     * <p>
      * Implementors may choose to add the tool view's control
      * directly, or add the tool view's control.
      *

@@ -122,7 +122,7 @@ public class DefaultCommandUIFactory implements CommandUIFactory {
      *
      * @param command the tool command, must not be <code>null</code>
      *
-     * @return currently always <code>null</code!
+     * @return currently always <code>null</code>
      */
     public JMenuItem createMenuItem(ToolCommand command) {
         // @todo 3 nf/nf - not used

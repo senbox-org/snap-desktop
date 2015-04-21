@@ -97,7 +97,7 @@ public class RegionSelectableWorldMapPane {
      *                       within the allowed latitude range [-90, 90], the longitude values are within the
      *                       allowed longitude range [-180, 180], the northBound is bigger than the southBound,
      *                       the eastBound is bigger than the westBound, and no value is null. In this case,
-     *                       the world map will be initialized with these values.</br>
+     *                       the world map will be initialized with these values.
      *
      * @throws IllegalArgumentException If the bindingContext is null, it does not contain the expected properties or
      *                                  the properties do not contain valid values

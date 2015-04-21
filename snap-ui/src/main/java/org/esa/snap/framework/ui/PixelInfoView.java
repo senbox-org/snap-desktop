@@ -173,7 +173,7 @@ public class PixelInfoView extends JPanel {
     }
 
     /**
-     * Sets the filter to be used to filter the displayed bands. <p/>
+     * Sets the filter to be used to filter the displayed bands. <p>
      *
      * @param displayFilter the filter, can be null
      */

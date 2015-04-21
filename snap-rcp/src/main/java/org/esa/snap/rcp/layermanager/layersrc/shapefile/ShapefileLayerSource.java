@@ -22,7 +22,7 @@ import org.esa.snap.rcp.SnapApp;
 
 /**
  * A layer source for ESRI shape files.
- * <p/>
+ * <p>
  * Unstable API. Use at own risk.
  *
  * @author Marco Zuehlke

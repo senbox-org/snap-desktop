@@ -62,7 +62,7 @@ import java.io.StringReader;
 
 /**
  * WARNING: This class belongs to a preliminary API and may change in future releases.
- * <p/>
+ * <p>
  * Provides an operator menu with action for loading, saving and displaying the parameters of an operator
  * in the file menu section and actions for help and about in the help menu section.
  *

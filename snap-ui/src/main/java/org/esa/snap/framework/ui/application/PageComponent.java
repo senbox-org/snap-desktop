@@ -26,14 +26,13 @@ import javax.swing.Icon;
  * associated with an application window. There can be multiple components
  * per page; a single page component can only be displayed once on a
  * single page.
- * <p/>
+ * <p>
  * Components instances encapsulate the creation of and access to the visual
  * presentation of the underlying control. A component's descriptor --
  * which is effectively a singleton -- can be asked to instantiate new
  * instances of a single page component for display within an application
  * with multiple windows. In other words, a single page component instance is
  * never shared between windows.
- * <p/>
  * <p>This interface is intended to be implemented by clients. However, the preferred way to implement this interface is via the
  * {@link org.esa.snap.framework.ui.application.support.AbstractToolView}, since the actual interface may change in the future.</p>
  *

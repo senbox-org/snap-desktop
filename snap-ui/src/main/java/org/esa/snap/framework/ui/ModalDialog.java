@@ -22,7 +22,7 @@ import java.awt.Window;
  * A helper class used to implement standard modal dialogs.
  * <p>The dialog can be used directly or the class is used as base class in order to override the methods {@link #onOK()},
  * {@link #onCancel()} etc. which are called if a user presses the corresponding button.
- * <p/>
+ * <p>
  *
  * @author Norman Fomferra
  * @since BEAM 1.0

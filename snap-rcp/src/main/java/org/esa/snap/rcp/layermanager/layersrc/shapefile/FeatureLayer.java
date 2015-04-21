@@ -51,7 +51,7 @@ import java.util.Map;
 
 /**
  * A layer that renders a feature collection using a given style.
- * <p/>
+ * <p>
  * Unstable API. Use at own risk.
  *
  * @author Marco Peters

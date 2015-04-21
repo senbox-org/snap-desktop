@@ -66,7 +66,7 @@ public abstract class AbstractShowOverlayAction extends ExecCommand {
     /**
      * Called when the action should update its 'enable' state for the product
      * scene view selected in VISAT.
-     * <p/>
+     * <p>
      * This method can contain some code which analyzes the given scene view
      * and makes a decision whether the action should be enabled or disabled.
      *

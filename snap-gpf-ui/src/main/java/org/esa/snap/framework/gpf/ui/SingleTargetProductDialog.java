@@ -377,7 +377,7 @@ public abstract class SingleTargetProductDialog extends ModelessDialog {
      * Creates the desired target product.
      * Usually, this method will be implemented by invoking one of the multiple {@link org.esa.snap.framework.gpf.GPF GPF}
      * {@code createProduct} methods.
-     * <p/>
+     * <p>
      * The method should throw a {@link OperatorException} in order to signal "nominal" processing errors,
      * other exeption types are treated as internal errors.
      *

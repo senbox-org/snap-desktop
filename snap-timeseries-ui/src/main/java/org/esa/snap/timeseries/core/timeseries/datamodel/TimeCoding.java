@@ -24,7 +24,7 @@ import java.util.Date;
 
 /**
  * <p><i>Note that this class is not yet public API. Interface may change in future releases.</i></p>
- * <p/>
+ * <p>
  * Abstract class representing a time-coding. A time-coding is defined by a start and an end time and thus represents
  * a time span. It maps time information to pixel-positions.
  */

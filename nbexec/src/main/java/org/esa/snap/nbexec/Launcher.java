@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
  * <p>
  * <i>IMPORTANT NOTE: This launcher only implements a subset of the functionality the native NetBeans
  * launcher {@code nbexec} provides. For example, you cannot update plugins and then let the application
- * restart itself.<br/>
+ * restart itself.<br>
  * The recommended way to run/debug applications build on the NetBeans platform is either using the NetBeans
  * Maven plugin (via {@code nbm:run-platform}) or directly using the NetBeans IDE.
  * </i>
@@ -49,7 +49,7 @@ import java.util.stream.Collectors;
  * The Launcher takes care of any changed code in modules indicated by the <i>patches</i> patterns given by the
  * {@code patches} option. the <i>patches</i> patterns may contain multiple patterns separated by a semicolon (;)
  * on Windows systems and a colon (:) on Unixes. Every patch pattern must contain a single wildcard character ($).
- * The default patch pattern is {@code $appmodule/../../../$/target/classes}<br/> and is always included.
+ * The default patch pattern is {@code $appmodule/../../../$/target/classes}<br> and is always included.
  * <p>
  * So, In IntelliJ IDEA we can hit CTRL+F9
  * and then run/debug the Launcher.

@@ -55,7 +55,6 @@ import java.util.Collection;
 })
 /**
  * This class is an example implementation and does not belong to the public API.
- * <p/>
  **/
 public class SelectionAwareAction extends AbstractSnapAction implements ContextAwareAction, LookupListener {
 

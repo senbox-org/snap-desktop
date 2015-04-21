@@ -30,7 +30,7 @@ import java.io.File;
 
 /**
  * A layer source for images.
- * <p/>
+ * <p>
  * The image can either be associated with an "world-file" or
  * the orientation relative to the existing layers has to be given by hand.
  *
