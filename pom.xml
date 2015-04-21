@@ -183,4 +183,14 @@
         </dependencies>
     </dependencyManagement>
 
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <excludePackageNames>*.internal:*.impl:org.esa.snap.visat</excludePackageNames>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
