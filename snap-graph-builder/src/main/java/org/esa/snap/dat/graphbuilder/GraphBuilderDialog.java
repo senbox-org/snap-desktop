@@ -206,7 +206,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.NORTHWEST;
 
-        final JButton processButton = DialogUtils.createButton("processButton", "Process", processIcon, panel, DialogUtils.ButtonStyle.TextAndIcon);
+        final JButton processButton = DialogUtils.createButton("processButton", "Run", processIcon, panel, DialogUtils.ButtonStyle.TextAndIcon);
         processButton.addActionListener(new ActionListener() {
 
             public void actionPerformed(final ActionEvent e) {
