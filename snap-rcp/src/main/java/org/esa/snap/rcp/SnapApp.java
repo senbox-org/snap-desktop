@@ -333,8 +333,7 @@ public class SnapApp {
 
         @Override
         public void run() {
-            LOG.fine(">>> " + getClass() + " called");
-            initImageIO();
+            LOG.info("Starting SNAP Desktop");
             initJAI();
             initGPF();
             SnapApp.getDefault().onStart();
@@ -350,7 +349,7 @@ public class SnapApp {
 
         @Override
         public void run() {
-            LOG.fine(getClass() + " called");
+            LOG.info("Showing SNAP Desktop");
             SnapApp.getDefault().onShowing();
         }
     }
@@ -371,7 +370,7 @@ public class SnapApp {
 
         @Override
         public Boolean call() {
-            LOG.fine(">>> " + getClass() + " called");
+            LOG.info("Request to stop SNAP Desktop");
             return SnapApp.getDefault().onTryStop();
         }
     }
@@ -381,7 +380,7 @@ public class SnapApp {
 
         @Override
         public void run() {
-            LOG.fine(">>> " + getClass() + " called");
+            LOG.info("Stopping SNAP Desktop");
             SnapApp.getDefault().onStop();
         }
     }
