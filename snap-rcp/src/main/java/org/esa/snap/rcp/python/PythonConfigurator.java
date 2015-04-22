@@ -77,13 +77,15 @@ public class PythonConfigurator extends OptionProcessor {
                 System.out.flush();
                 System.out.printf("Done. The SNAP-Python interface is located in '%s'%n", snappyDir);
                 System.out.printf("When using SNAP from Python, either do: sys.path.append('%s')%n", snappyDir.getParent());
-                System.out.printf(String.format("or copy the '%s' directory into your Python's 'site-packages' directory.%n", PyBridge.SNAPPY_DIR_NAME));
+                System.out.printf("or copy the '%s' directory into your Python's 'site-packages' directory.%n", PyBridge.SNAPPY_DIR_NAME);
                 System.out.flush();
             } catch (IOException e) {
-                e.printStackTrace(System.err);
+                e.printStackTrace(System.out);
+                System.out.flush();
                 throw new CommandException(-202, "Python configuration error: " + e.getMessage());
             } catch (Throwable t) {
-                t.printStackTrace(System.err);
+                t.printStackTrace(System.out);
+                System.out.flush();
                 throw new CommandException(-203, "Python configuration internal error: " + t.getMessage());
             }
         }
