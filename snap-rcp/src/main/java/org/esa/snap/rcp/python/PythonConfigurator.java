@@ -72,12 +72,12 @@ public class PythonConfigurator extends OptionProcessor {
 
             try {
                 System.out.flush();
-                System.out.println("Configuring SNAP-Python interface '" + PyBridge.SNAPPY_DIR_NAME + "'...");
+                System.out.println("Configuring SNAP-Python interface...");
                 Path snappyDir = PyBridge.installPythonModule(pythonExecutable, pythonModuleInstallDir, forcePythonConfig);
                 System.out.flush();
                 System.out.printf("Done. The SNAP-Python interface is located in '%s'%n", snappyDir);
-                System.out.printf("When using SNAP from Python, either do: sys.path.append('%s')%n", snappyDir.getParent());
-                System.out.printf("or copy the '%s' directory into your Python's 'site-packages' directory.%n", PyBridge.SNAPPY_DIR_NAME);
+                System.out.printf("When using SNAP from Python, either do: sys.path.append('%s')%n", snappyDir.getParent().toString().replace("\\", "\\\\"));
+                System.out.printf("or copy the '%s' module into your Python's 'site-packages' directory.%n", snappyDir.getFileName());
                 System.out.flush();
             } catch (IOException e) {
                 e.printStackTrace(System.out);
