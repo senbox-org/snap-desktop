@@ -54,7 +54,6 @@ import java.util.Map;
 /**
  * @author Marco Peters
  * @author Ralf Quast
- * @version $ Revision $ Date $
  * @since BEAM 4.7
  */
 class MosaicFormModel {

@@ -41,7 +41,6 @@ import java.beans.PropertyChangeListener;
 
 /**
  * @author Marco Peters
- * @version $ Revision $ Date $
  * @since BEAM 4.7
  */
 public class CollocationCrsForm extends CrsForm {

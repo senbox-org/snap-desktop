@@ -41,7 +41,6 @@ import static com.bc.ceres.swing.TableLayout.*;
 
 /**
  * @author Marco Peters
- * @version $ Revision $ Date $
  * @since BEAM 4.7
  */
 class RangeEditorDialog extends ModalDialog {

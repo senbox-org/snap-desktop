@@ -48,7 +48,6 @@ import java.util.List;
 
 /**
  * @author Marco Peters
- * @version $ Revision $ Date $
  * @since BEAM 4.7
  */
 class MosaicMapProjectionPanel extends JPanel {

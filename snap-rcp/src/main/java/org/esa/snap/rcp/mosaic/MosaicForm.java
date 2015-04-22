@@ -23,7 +23,6 @@ import javax.swing.JTabbedPane;
 
 /**
  * @author Marco Peters
- * @version $ Revision $ Date $
  * @since BEAM 4.7
  */
 public class MosaicForm extends JTabbedPane {

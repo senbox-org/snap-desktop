@@ -24,15 +24,15 @@ import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.datum.GeodeticDatum;
 import org.opengis.referencing.operation.OperationMethod;
-//import org.openide.windows.WindowManager;
 
 import javax.swing.JComponent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+//import org.openide.windows.WindowManager;
+
 /**
  * @author Marco Peters
- * @version $ Revision $ Date $
  * @since BEAM 4.7
  */
 public class CustomCrsForm extends CrsForm {

@@ -55,7 +55,6 @@ import java.util.List;
  * Layer type for layer that displays images coming from an OGC WMS.
  *
  * @author Marco Peters
- * @version $ Revision $ Date $
  * @since BEAM 4.6
  */
 @LayerTypeMetadata(name = "WmsLayerType",

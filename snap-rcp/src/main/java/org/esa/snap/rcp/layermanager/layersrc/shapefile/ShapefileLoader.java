@@ -54,7 +54,6 @@ import java.io.IOException;
 
 /**
  * @author Marco Peters
- * @version $ Revision $ Date $
  * @since BEAM 4.6
  */
 class ShapefileLoader extends ProgressMonitorSwingWorker<Layer, Object> {

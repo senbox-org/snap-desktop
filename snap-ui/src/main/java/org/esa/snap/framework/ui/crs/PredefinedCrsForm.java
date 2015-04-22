@@ -30,7 +30,6 @@ import javax.swing.JTextField;
 
 /**
  * @author Marco Peters
- * @version $ Revision $ Date $
  * @since BEAM 4.7
  */
 public class PredefinedCrsForm extends CrsForm {

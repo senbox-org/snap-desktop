@@ -38,7 +38,6 @@ import java.util.HashMap;
 
 /**
  * @author Marco Peters
- * @version $ Revision $ Date $
  * @since BEAM 4.7
  */
 abstract class AbstractUTMCrsProvider extends AbstractCrsProvider {
