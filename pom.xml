@@ -39,6 +39,7 @@
         <module>snap-help</module>
         <module>snap-opendap-ui</module>
         <module>snap-pixel-extraction-ui</module>
+		<module>snap-product-library</module>
         <module>snap-scripting</module>
         <module>snap-timeseries-ui</module>
         <module>snap-ui</module>
