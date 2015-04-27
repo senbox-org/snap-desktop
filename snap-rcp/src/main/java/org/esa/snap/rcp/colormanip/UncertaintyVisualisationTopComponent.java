@@ -40,7 +40,7 @@ import java.awt.Component;
  */
 @TopComponent.Description(
         preferredID = "UncertaintyVisualisationTopComponent",
-        iconBase = "org/esa/snap/rcp/icons/UncertaintyStretch16.png",
+        iconBase = "org/esa/snap/rcp/icons/UncertaintyStretch.png",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(

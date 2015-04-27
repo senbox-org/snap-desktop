@@ -32,7 +32,7 @@ import java.awt.event.ActionEvent;
 )
 @ActionRegistration(
         displayName = "#CTL_TimeSeriesAssistantActionName",
-        iconBase = "org/esa/snap/timeseries/ui/icons/timeseries-new24.png"
+        iconBase = "org/esa/snap/timeseries/ui/icons/timeseries-new.gif"
 )
 @ActionReference(path = "Menu/File", position = 20)
 @NbBundle.Messages({
@@ -42,7 +42,7 @@ import java.awt.event.ActionEvent;
 public class TimeSeriesAssistantAction extends AbstractSnapAction {
 
     public TimeSeriesAssistantAction() {
-        putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon("org/esa/snap/timeseries/ui/icons/timeseries-new24.png", false));
+        putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon("org/esa/snap/timeseries/ui/icons/timeseries-new24.gif", false));
     }
 
     @Override

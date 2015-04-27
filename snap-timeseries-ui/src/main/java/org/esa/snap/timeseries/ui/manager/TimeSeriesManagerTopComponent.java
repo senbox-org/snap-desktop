@@ -50,7 +50,7 @@ import java.util.WeakHashMap;
 
 @TopComponent.Description(
         preferredID = "TimeSeriesManagerTopComponent",
-        iconBase = "org/esa/snap/timeseries/ui/icons/timeseries-manager24.png",
+        iconBase = "org/esa/snap/timeseries/ui/icons/timeseries-manager.png",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(

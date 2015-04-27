@@ -63,7 +63,7 @@ import java.util.List;
  */
 @TopComponent.Description(
         preferredID = "TimeSeriesPlayerTopComponent",
-        iconBase = "org/esa/snap/timeseries/ui/icons/timeseries-player24.png",
+        iconBase = "org/esa/snap/timeseries/ui/icons/timeseries-player.png",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(

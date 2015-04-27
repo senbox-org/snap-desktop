@@ -28,7 +28,7 @@ import javax.swing.Icon;
 
 @TopComponent.Description(
         preferredID = "ScatterPlotTopComponent",
-        iconBase = "org/esa/snap/rcp/icons/ScatterPlot24.gif",
+        iconBase = "org/esa/snap/rcp/icons/ScatterPlot.gif",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS //todo define
 )
 @TopComponent.Registration(

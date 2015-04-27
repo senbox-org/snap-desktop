@@ -40,7 +40,7 @@ import java.text.DecimalFormat;
 
 @TopComponent.Description(
         preferredID = "GcpManagerTopComponent",
-        iconBase = "org/esa/snap/rcp/icons/GcpManager24.gif",
+        iconBase = "org/esa/snap/rcp/icons/GcpManager.gif",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS //todo define
 )
 @TopComponent.Registration(

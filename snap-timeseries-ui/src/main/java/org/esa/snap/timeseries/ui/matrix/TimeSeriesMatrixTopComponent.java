@@ -71,7 +71,7 @@ import java.util.List;
  */
 @TopComponent.Description(
         preferredID = "TimeSeriesMatrixTopComponent",
-        iconBase = "org/esa/snap/timeseries/ui/icons/timeseries-matrix24.png",
+        iconBase = "org/esa/snap/timeseries/ui/icons/timeseries-matrix.png",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(

@@ -9,7 +9,7 @@ import org.openide.windows.TopComponent;
 
 @TopComponent.Description(
         preferredID = "StatisticsTopComponent",
-        iconBase = "org/esa/snap/rcp/icons/Statistics24.gif",
+        iconBase = "org/esa/snap/rcp/icons/Statistics.gif",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS //todo define
 )
 @TopComponent.Registration(

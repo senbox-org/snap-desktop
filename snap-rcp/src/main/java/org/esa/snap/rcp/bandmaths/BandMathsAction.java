@@ -39,7 +39,7 @@ import java.awt.event.ActionEvent;
 @ActionRegistration(
         displayName = "#CTL_BandMathsAction_MenuText",
         popupText = "#CTL_BandMathsAction_MenuText",
-        iconBase = "org/esa/snap/rcp/icons/BandMaths24.gif",
+        iconBase = "org/esa/snap/rcp/icons/BandMaths.gif",
         lazy = true
 )
 @ActionReferences({
@@ -73,7 +73,7 @@ public class BandMathsAction extends AbstractAction implements HelpCtx.Provider 
         super(Bundle.CTL_BandMathsAction_MenuText());
         product = node.getProduct();
         putValue(Action.SHORT_DESCRIPTION, Bundle.CTL_BandMathsAction_ShortDescription());
-        putValue(Action.SMALL_ICON, ImageUtilities.loadImageIcon("icons/BandMaths16.gif", false));
+        putValue(Action.SMALL_ICON, ImageUtilities.loadImageIcon("icons/BandMaths.gif", false));
         putValue(Action.LARGE_ICON_KEY, ImageUtilities.loadImageIcon("icons/BandMaths24.gif", false));
     }
 

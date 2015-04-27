@@ -25,7 +25,7 @@ import org.openide.windows.TopComponent;
 
 @TopComponent.Description(
         preferredID = "InformationTopComponent",
-        iconBase = "org/esa/snap/rcp/icons/Information24.gif",
+        iconBase = "org/esa/snap/rcp/icons/Information.gif",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS //todo define
 )
 @TopComponent.Registration(

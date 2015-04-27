@@ -35,7 +35,7 @@ import java.beans.PropertyChangeListener;
  */
 @TopComponent.Description(
         preferredID = "PixelInfoTopComponent",
-        iconBase = "org/esa/snap/rcp/icons/PixelInfo16.png",
+        iconBase = "org/esa/snap/rcp/icons/PixelInfo.png",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(mode = "explorer",

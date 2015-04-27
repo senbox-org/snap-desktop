@@ -30,7 +30,7 @@ import java.beans.PropertyChangeEvent;
 
 @TopComponent.Description(
         preferredID = "LayerEditorTopComponent",
-        iconBase = "org/esa/snap/rcp/icons/LayerEditor24.png",
+        iconBase = "org/esa/snap/rcp/icons/LayerEditor.png",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(

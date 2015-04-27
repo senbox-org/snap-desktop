@@ -27,7 +27,7 @@ import javax.swing.event.ListSelectionListener;
 
 @TopComponent.Description(
         preferredID = "MaskManagerTopComponent",
-        iconBase = "org/esa/snap/rcp/icons/MaskManager24.png",
+        iconBase = "org/esa/snap/rcp/icons/MaskManager.png",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS //todo define
 )
 @TopComponent.Registration(

@@ -28,7 +28,7 @@ import javax.swing.Icon;
 
 @TopComponent.Description(
         preferredID = "ProfilePlotTopComponent",
-        iconBase = "org/esa/snap/rcp/icons/ProfilePlot24.gif",
+        iconBase = "org/esa/snap/rcp/icons/ProfilePlot.gif",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS //todo define
 )
 @TopComponent.Registration(

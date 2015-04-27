@@ -38,7 +38,7 @@ import java.awt.Dimension;
 
 @TopComponent.Description(
         preferredID = "WorldMapTopComponent",
-        iconBase = "org/esa/snap/rcp/icons/WorldMap24.gif",
+        iconBase = "org/esa/snap/rcp/icons/WorldMap.gif",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS //todo define
 )
 @TopComponent.Registration(

@@ -26,7 +26,7 @@ import java.awt.BorderLayout;
 
 @TopComponent.Description(
         preferredID = "ColorManipulationTopComponent",
-        iconBase = "org/esa/snap/rcp/icons/ContrastStretch16.gif",
+        iconBase = "org/esa/snap/rcp/icons/ContrastStretch.gif",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(

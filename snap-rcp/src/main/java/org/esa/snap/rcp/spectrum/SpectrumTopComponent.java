@@ -106,7 +106,7 @@ import java.util.Map;
 
 @TopComponent.Description(
         preferredID = "SpectrumTopComponent",
-        iconBase = "org/esa/snap/rcp/icons/Spectrum24.gif",
+        iconBase = "org/esa/snap/rcp/icons/Spectrum.gif",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS //todo define
 )
 @TopComponent.Registration(

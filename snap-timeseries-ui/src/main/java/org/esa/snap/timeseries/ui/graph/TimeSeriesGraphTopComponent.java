@@ -56,7 +56,7 @@ import static org.esa.snap.timeseries.core.timeseries.datamodel.AbstractTimeSeri
  */
 @TopComponent.Description(
         preferredID = "TimeSeriesGraphTopComponent",
-        iconBase = "org/esa/snap/timeseries/ui/icons/timeseries-plot24.png",
+        iconBase = "org/esa/snap/timeseries/ui/icons/timeseries-plot.png",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(

@@ -36,7 +36,7 @@ import java.io.InputStream;
 @ActionRegistration(
         displayName = "#CTL_GraphBuilderAction_MenuText",
         popupText = "#CTL_GraphBuilderAction_MenuText",
-        iconBase = "org/esa/snap/icons/cog16.png",
+        iconBase = "org/esa/snap/icons/cog.png",
         lazy = true
 )
 @ActionReferences({

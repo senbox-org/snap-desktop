@@ -25,7 +25,7 @@ import org.openide.windows.TopComponent;
 
 @TopComponent.Description(
         preferredID = "HistogramPlotTopComponent",
-        iconBase = "org/esa/snap/rcp/icons/Histogram24.gif",
+        iconBase = "org/esa/snap/rcp/icons/Histogram.gif",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS //todo define
 )
 @TopComponent.Registration(

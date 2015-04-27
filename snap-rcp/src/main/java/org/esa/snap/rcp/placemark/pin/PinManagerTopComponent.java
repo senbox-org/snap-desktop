@@ -16,7 +16,7 @@ import org.openide.windows.TopComponent;
 
 @TopComponent.Description(
         preferredID = "PinManagerTopComponent",
-        iconBase = "org/esa/snap/rcp/icons/PinManager24.gif",
+        iconBase = "org/esa/snap/rcp/icons/PinManager.gif",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS //todo define
 )
 @TopComponent.Registration(

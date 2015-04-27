@@ -31,7 +31,7 @@ import java.util.WeakHashMap;
 
 @TopComponent.Description(
         preferredID = "LayerManagerTopComponent",
-        iconBase = "org/esa/snap/rcp/icons/LayerManager24.png",
+        iconBase = "org/esa/snap/rcp/icons/LayerManager.png",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS //todo define
 )
 @TopComponent.Registration(

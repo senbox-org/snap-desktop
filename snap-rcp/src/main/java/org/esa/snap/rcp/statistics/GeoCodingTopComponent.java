@@ -24,7 +24,7 @@ import org.openide.windows.TopComponent;
 
 @TopComponent.Description(
         preferredID = "GeoCodingTopComponent",
-        iconBase = "org/esa/snap/rcp/icons/PhiLam24.gif",
+        iconBase = "org/esa/snap/rcp/icons/PhiLam.gif",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS //todo define
 )
 @TopComponent.Registration(
