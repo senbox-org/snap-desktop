@@ -12,7 +12,6 @@ import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.file.OpenProductAction;
 import org.esa.snap.tango.TangoIcons;
 import org.esa.snap.util.StringUtils;
-import org.esa.snap.util.logging.BeamLogManager;
 import org.openide.modules.Places;
 import org.openide.util.HelpCtx;
 import thredds.catalog.InvCatalog;
@@ -227,7 +226,7 @@ public class OpendapAccessPanel extends JPanel implements CatalogTree.UIContext 
                 }
             }
         } catch (IOException e) {
-            BeamLogManager.getSystemLogger().warning("Unable to retrieve meta information for file '" + leaf.getName() + "'.");
+            LOG.warning("Unable to retrieve meta information for file '" + leaf.getName() + "'.");
         }
 
         setResponseText(componentIndex, text);
@@ -331,7 +330,7 @@ public class OpendapAccessPanel extends JPanel implements CatalogTree.UIContext 
             downloadDir = new File(Places.getUserDirectory().getAbsolutePath());
         }
         folderTextField = new JTextField(downloadDir.getAbsolutePath());
-        JButton folderChooserButton = new JButton("Folder");
+        JButton folderChooserButton = new JButton("...");
         folderChooserButton.addActionListener(e -> fetchDownloadDirectory());
         downloadButton = new JButton("Download");
         downloadButton.setEnabled(false);
