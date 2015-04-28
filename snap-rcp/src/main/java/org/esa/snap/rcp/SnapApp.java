@@ -334,6 +334,7 @@ public class SnapApp {
         @Override
         public void run() {
             LOG.info("Starting SNAP Desktop");
+            initImageIO();
             initJAI();
             initGPF();
             SnapApp.getDefault().onStart();
