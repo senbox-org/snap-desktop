@@ -32,6 +32,7 @@
 
         <module>snap-binning-ui</module>
         <module>snap-collocation-ui</module>
+        <module>snap-dem-ui</module>
         <module>snap-desktop-examples</module>
         <module>snap-gpf-ui</module>
         <module>snap-graph-builder</module>
