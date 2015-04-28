@@ -83,12 +83,11 @@ public final class CloseProductAction extends AbstractAction {
                 Product firstSourceProduct = findFirstSourceProduct(productToBeClosed, stillOpenProducts);
                 if (firstSourceProduct != null) {
                     SnapDialogs.showInformation("Close Not Possible",
-                                                MessageFormat.format(
-                                                        "Can't close product ''{0}'' because it is in use\n" +
-                                                                "by product ''{1}''.\n" +
-                                                                "Please close the latter first.",
-                                                        productToBeClosed.getName(),
-                                                        firstSourceProduct.getName()), null);
+                                                String.format("Can't close product '%s' because it is in use%n" +
+                                                              "by product '%s'.%n" +
+                                                              "Please close the latter first.",
+                                                              productToBeClosed.getName(),
+                                                              firstSourceProduct.getName()), null);
                     return false;
                 }
             }
@@ -98,7 +97,7 @@ public final class CloseProductAction extends AbstractAction {
             if (product.isModified()) {
                 SnapDialogs.Answer answer = SnapDialogs.requestDecision(Bundle.CTL_OpenProductActionName(),
                                                                         MessageFormat.format("Product ''{0}'' has been modified.\n" +
-                                                                                                     "Do you want to save it?",
+                                                                                             "Do you want to save it?",
                                                                                              product.getName()), true, null);
                 if (answer == SnapDialogs.Answer.YES) {
                     saveList.add(product);
@@ -119,7 +118,7 @@ public final class CloseProductAction extends AbstractAction {
         for (Product product : closeList) {
             WindowUtilities.getOpened(DocumentWindow.class)
                     .filter(dw -> (dw.getDocument() instanceof ProductNode)
-                            && ((ProductNode) dw.getDocument()).getProduct() == product)
+                                  && ((ProductNode) dw.getDocument()).getProduct() == product)
                     .forEach(DocumentWindow::documentClosing);
             SnapApp.getDefault().getProductManager().removeProduct(product);
         }
@@ -128,56 +127,64 @@ public final class CloseProductAction extends AbstractAction {
         return true;
     }
 
-    private static Product findFirstSourceProduct(Product product, Set<Product> productsToBeClosed) {
-        Product firstSourceProduct = findFirstDirectSourceProduct(product, productsToBeClosed);
+    static Product findFirstSourceProduct(Product productToClose, Set<Product> productsStillOpen) {
+        Product firstSourceProduct = findFirstDirectSourceProduct(productToClose, productsStillOpen);
         if (firstSourceProduct != null) {
             return firstSourceProduct;
         }
-        return findFirstExpressionSourceProduct(product, productsToBeClosed);
+        return findFirstExpressionSourceProduct(productToClose, productsStillOpen);
     }
 
-    private static Product findFirstDirectSourceProduct(Product product, Set<Product> productsToBeClosed) {
-        final ProductReader reader = product.getProductReader();
-        if (reader != null) {
-            final Object input = reader.getInput();
-            if (input instanceof Product) {
-                Product sourceProduct = (Product) input;
-                if (productsToBeClosed.contains(sourceProduct)) {
-                    return sourceProduct;
-                } else {
-                    return findFirstDirectSourceProduct(sourceProduct, productsToBeClosed);
-                }
-            } else {
-                if (input instanceof Product[]) {
-                    for (final Product sourceProduct : (Product[]) input) {
-                        if (productsToBeClosed.contains(sourceProduct)) {
-                            return sourceProduct;
-                        }
-                        Product indirectSourceProduct = findFirstDirectSourceProduct(sourceProduct, productsToBeClosed);
+    private static Product findFirstDirectSourceProduct(Product productToBeClosed, Set<Product> productsStillOpen) {
+        for (Product openProduct : productsStillOpen) {
+            final ProductReader reader = openProduct.getProductReader();
+            if (reader != null) {
+                final Object input = reader.getInput();
+                if (input instanceof Product) {
+                    Product sourceProduct = (Product) input;
+                    if (productToBeClosed.equals(sourceProduct)) {
+                        return openProduct;
+                    } else {
+                        Product indirectSourceProduct = findFirstDirectSourceProduct(sourceProduct, productsStillOpen);
                         if (indirectSourceProduct != null) {
-                            return indirectSourceProduct;
+                            return openProduct;
+                        }
+                    }
+                } else {
+                    if (input instanceof Product[]) {
+                        for (final Product sourceProduct : (Product[]) input) {
+                            if (productToBeClosed.equals(sourceProduct)) {
+                                return openProduct;
+                            }
+                            Product indirectSourceProduct = findFirstDirectSourceProduct(sourceProduct, productsStillOpen);
+                            if (indirectSourceProduct != null) {
+                                return openProduct;
+                            }
                         }
                     }
                 }
             }
+
         }
         return null;
     }
 
-    private static Product findFirstExpressionSourceProduct(Product product, Set<Product> productsToBeClosed) {
-        Band[] bands = product.getBands();
-        for (Band band : bands) {
-            if (band instanceof VirtualBand) {
-                VirtualBand virtualBand = (VirtualBand) band;
-                try {
-                    RasterDataNode[] nodes = product.getRefRasterDataNodes(virtualBand.getExpression());
-                    for (RasterDataNode node : nodes) {
-                        if (productsToBeClosed.contains(node.getProduct())) {
-                            return node.getProduct();
+    static Product findFirstExpressionSourceProduct(Product productToBeClosed, Set<Product> productsStillOpen) {
+        for (Product openProduct : productsStillOpen) {
+            Band[] bands = openProduct.getBands();
+            for (Band band : bands) {
+                if (band instanceof VirtualBand) {
+                    VirtualBand virtualBand = (VirtualBand) band;
+                    try {
+                        RasterDataNode[] nodes = openProduct.getRefRasterDataNodes(virtualBand.getExpression());
+                        for (RasterDataNode node : nodes) {
+                            if (productToBeClosed.equals(node.getProduct())) {
+                                return openProduct;
+                            }
                         }
+                    } catch (ParseException e) {
+                        // ok
                     }
-                } catch (ParseException e) {
-                    // ok
                 }
             }
         }
