@@ -38,14 +38,16 @@
         <module>snap-graph-builder</module>
         <module>snap-gui-utilities</module>
         <module>snap-help</module>
-        <module>snap-opendap-ui</module>
         <module>snap-pixel-extraction-ui</module>
 		<module>snap-product-library</module>
         <module>snap-scripting</module>
-        <module>snap-timeseries-ui</module>
         <module>snap-ui</module>
         <module>snap-unmix-ui</module>
         <module>snap-visat-rcp</module>
+
+        <!-- disabled: these modules don't have the required maturity right now. -->
+        <!--<module>snap-opendap-ui</module>-->
+        <!--<module>snap-timeseries-ui</module>-->
     </modules>
 
     <dependencyManagement>
