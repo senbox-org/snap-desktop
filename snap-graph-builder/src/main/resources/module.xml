@@ -28,18 +28,18 @@
 
     <categories>System, GPF</categories>
 
-    <activator>org.esa.snap.gpf.ui.OperatorUIRegistry</activator>
+    <activator>org.esa.snap.graphbuilder.gpf.ui.OperatorUIRegistry</activator>
 
     <!--
        Extension point 'operatorUI': Adds new user interfaces for operators.
        Extensions are instances of OperatorUI specified by the 'class' element.
     -->
     <extensionPoint id="OperatorUIs">
-        <OperatorUI type="org.esa.snap.gpf.ui.OperatorUIDescriptor"
+        <OperatorUI type="org.esa.snap.graphbuilder.gpf.ui.OperatorUIDescriptor"
                     class="@descriptorClass"
                     autoConfig="true">
             <descriptorClass type="java.lang.Class">
-                org.esa.snap.gpf.ui.DefaultOperatorUIDescriptor
+                org.esa.snap.graphbuilder.gpf.ui.DefaultOperatorUIDescriptor
             </descriptorClass>
             <class field="operatorUIClass" type="java.lang.Class"/>
         </OperatorUI>
@@ -48,28 +48,28 @@
     <extension point="snap-graph-builder:OperatorUIs">
 
         <OperatorUI>
-            <id>org.esa.snap.gpf.ui.DefaultUI</id>
-            <class>org.esa.snap.gpf.ui.DefaultUI</class>
+            <id>org.esa.snap.graphbuilder.gpf.ui.DefaultUI</id>
+            <class>org.esa.snap.graphbuilder.gpf.ui.DefaultUI</class>
             <operatorName>DefaultUI</operatorName>
         </OperatorUI>
         <OperatorUI>
-            <id>org.esa.snap.gpf.ui.SourceUI</id>
-            <class>org.esa.snap.gpf.ui.SourceUI</class>
+            <id>org.esa.snap.graphbuilder.gpf.ui.SourceUI</id>
+            <class>org.esa.snap.graphbuilder.gpf.ui.SourceUI</class>
             <operatorName>Read</operatorName>
         </OperatorUI>
         <OperatorUI>
-            <id>org.esa.snap.gpf.ui.TargetUI</id>
-            <class>org.esa.snap.gpf.ui.TargetUI</class>
+            <id>org.esa.snap.graphbuilder.gpf.ui.TargetUI</id>
+            <class>org.esa.snap.graphbuilder.gpf.ui.TargetUI</class>
             <operatorName>Write</operatorName>
         </OperatorUI>
         <OperatorUI>
-            <id>org.esa.snap.gpf.ProductSetReaderOpUI</id>
-            <class>org.esa.snap.gpf.ProductSetReaderOpUI</class>
+            <id>org.esa.snap.graphbuilder.gpf.ui.ProductSetReaderOpUI</id>
+            <class>org.esa.snap.graphbuilder.gpf.ui.ProductSetReaderOpUI</class>
             <operatorName>ProductSet-Reader</operatorName>
         </OperatorUI>
         <OperatorUI>
-            <id>org.esa.snap.gpf.ui.SubsetUI</id>
-            <class>org.esa.snap.gpf.ui.SubsetUI</class>
+            <id>org.esa.snap.graphbuilder.gpf.ui.SubsetUI</id>
+            <class>org.esa.snap.graphbuilder.gpf.ui.SubsetUI</class>
             <operatorName>Subset</operatorName>
         </OperatorUI>
     </extension>
@@ -78,7 +78,7 @@
 
         <action>
             <id>openGraphBuilderDialog</id>
-            <class>org.esa.snap.dat.actions.OpenGraphBuilderAction</class>
+            <class>org.esa.snap.graphbuilder.rcp.actions.OpenGraphBuilderAction</class>
             <parent>Graphs</parent>
             <text>Graph Builder</text>
             <mnemonic>G</mnemonic>
@@ -91,7 +91,7 @@
 
         <action>
             <id>batchProcessing</id>
-            <class>org.esa.snap.dat.actions.BatchProcessingAction</class>
+            <class>org.esa.snap.graphbuilder.rcp.actions.BatchProcessingAction</class>
             <parent>Graphs</parent>
             <placeAfter>openGraphBuilderDialog</placeAfter>
             <text>Batch Processing</text>

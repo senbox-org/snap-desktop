@@ -1,7 +1,7 @@
 package org.esa.snap.rcp.toolviews.productlibrary;
 
 import org.esa.snap.rcp.toolviews.productlibrary.model.SortingDecorator;
-import org.esa.snap.dat.dialogs.BatchGraphDialog;
+import org.esa.snap.graphbuilder.rcp.dialogs.BatchGraphDialog;
 import org.esa.snap.datamodel.AbstractMetadata;
 import org.esa.snap.db.ProductEntry;
 import org.esa.snap.framework.ui.UIUtils;

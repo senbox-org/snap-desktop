@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='ISO-8859-1' ?>
+<!DOCTYPE map
+        PUBLIC "-//Sun Microsystems Inc.//DTD JavaHelp Map Version 2.0//EN"
+        "http://java.sun.com/products/javahelp/map_2_0.dtd">
+
+<map version="2.0">
+
+    <!--Graph Tools-->
+    <mapID target="graph_builder" url="operators/graph_builder.html"/>
+    <mapID target="batchProcessing" url="operators/batch_processing.html"/>
+
+</map>

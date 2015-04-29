@@ -19,8 +19,8 @@ import org.esa.snap.rcp.toolviews.productlibrary.model.DatabaseQueryListener;
 import org.esa.snap.db.GeoPosList;
 import org.esa.snap.db.ProductEntry;
 import org.esa.snap.framework.datamodel.GeoPos;
-import org.esa.snap.gpf.ui.worldmap.NestWorldMapPane;
-import org.esa.snap.gpf.ui.worldmap.NestWorldMapPaneDataModel;
+import org.esa.snap.graphbuilder.gpf.ui.worldmap.NestWorldMapPane;
+import org.esa.snap.graphbuilder.gpf.ui.worldmap.NestWorldMapPaneDataModel;
 
 import javax.swing.event.MouseInputAdapter;
 import java.awt.event.MouseEvent;

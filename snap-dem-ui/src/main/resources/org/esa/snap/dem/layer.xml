@@ -40,7 +40,7 @@
         <folder name="Operators">
             <file name="org-esa-snap-gpf-FillHoleOp-Action.instance">
                 <attr name="instanceCreate" methodvalue="org.openide.awt.Actions.alwaysEnabled"/>
-                <attr name="delegate" methodvalue="org.esa.snap.dat.actions.OperatorAction.create"/>
+                <attr name="delegate" methodvalue="org.esa.snap.graphbuilder.rcp.actions.OperatorAction.create"/>
                 <attr name="displayName" stringvalue="Fill DEM Hole"/>
                 <attr name="operatorName" stringvalue="Fill-Hole"/>
                 <attr name="dialogTitle" stringvalue="Fill DEM Hole"/>
