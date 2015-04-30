@@ -17,7 +17,7 @@ import org.esa.snap.framework.datamodel.ProductNodeGroup;
 import org.esa.snap.framework.datamodel.TiePointGrid;
 import org.esa.snap.framework.datamodel.VectorDataNode;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.actions.file.OpenImageViewAction;
+import org.esa.snap.rcp.actions.view.OpenImageViewAction;
 import org.openide.awt.UndoRedo;
 import org.openide.nodes.Node;
 import org.openide.nodes.PropertySupport;
@@ -326,7 +326,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
 
         public B(Band band) {
             super(band);
-            setIconBaseWithExtension("org/esa/snap/rcp/icons/RsBandAsSwath16.gif");
+            setIconBaseWithExtension("org/esa/snap/rcp/icons/RsBandAsSwath.gif");
         }
 
         @Override

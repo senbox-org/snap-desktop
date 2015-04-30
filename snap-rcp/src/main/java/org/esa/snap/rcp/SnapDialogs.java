@@ -113,6 +113,18 @@ public class SnapDialogs {
     }
 
     /**
+     * Displays a modal dialog indicating an 'Out of Memory'-error with the
+     * provided error message text. It also displays a hint how to solve the problem.
+     *
+     * @param message The error message text to be displayed.
+     */
+    public static void showOutOfMemoryError(String message) {
+        showError("Out of Memory", String.format("%s\n\n" +
+                                                 "You can try to release memory by closing products or image views which\n" +
+                                                 "you currently not really need.", message));
+    }
+
+    /**
      * Displays a modal dialog with the provided message text.
      *
      * @param title          The dialog title. May be {@code null}.
@@ -209,9 +221,9 @@ public class SnapDialogs {
      * @return the file selected by the user or <code>null</code> if the user canceled file selection
      */
     public static File requestFileForOpen(String title,
-                                         boolean dirsOnly,
-                                         FileFilter fileFilter,
-                                         String preferencesKey) {
+                                          boolean dirsOnly,
+                                          FileFilter fileFilter,
+                                          String preferencesKey) {
         Assert.notNull(preferencesKey, "preferencesKey");
 
         String lastDir = getPreferences().get(preferencesKey, SystemUtils.getUserHomeDir().getPath());
@@ -302,7 +314,7 @@ public class SnapDialogs {
         }
         fileChooser.setDialogTitle(getDialogTitle(title));
         fileChooser.setFileSelectionMode(dirsOnly ? JFileChooser.DIRECTORIES_ONLY : JFileChooser.FILES_ONLY);
-        if(accessory != null) {
+        if (accessory != null) {
             fileChooser.setAccessory(accessory);
         }
         int result = fileChooser.showSaveDialog(SnapApp.getDefault().getMainFrame());

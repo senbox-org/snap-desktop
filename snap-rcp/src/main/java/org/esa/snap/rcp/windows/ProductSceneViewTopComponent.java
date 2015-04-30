@@ -60,7 +60,7 @@ public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNo
         this.nodeRenameHandler = new NodeRenameHandler();
         this.selection = Selection.EMPTY;
         setToolTipText(view.getRaster().getDescription());
-        setIcon(ImageUtilities.loadImage("org/esa/snap/rcp/icons/RsBandAsSwath16.gif"));
+        setIcon(ImageUtilities.loadImage("org/esa/snap/rcp/icons/RsBandAsSwath.gif"));
         updateDisplayName();
         setName(getDisplayName());
 /*
@@ -172,7 +172,7 @@ public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNo
     }
 
     private void updateDisplayName() {
-        setDisplayName(WindowUtilities.getUniqueTitle(getDocument().getName(), ProductSceneViewTopComponent.class));
+        setDisplayName(WindowUtilities.getUniqueTitle(getView().getName(), ProductSceneViewTopComponent.class));
     }
 
     private void setSelection(Selection newSelection) {

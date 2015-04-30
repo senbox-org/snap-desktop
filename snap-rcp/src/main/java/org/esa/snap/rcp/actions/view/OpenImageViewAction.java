@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, see http://www.gnu.org/licenses/
  */
-package org.esa.snap.rcp.actions.file;
+package org.esa.snap.rcp.actions.view;
 
 import com.bc.ceres.core.SubProgressMonitor;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
@@ -31,7 +31,6 @@ import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.awt.UndoRedo;
-import org.openide.util.ImageUtilities;
 import org.openide.util.NbBundle;
 
 import javax.swing.AbstractAction;
@@ -47,14 +46,15 @@ import java.text.MessageFormat;
  * @author Norman Fomferra
  */
 @ActionID(
-        category = "File",
+        category = "View",
         id = "OpenImageViewAction"
 )
 @ActionRegistration(
         displayName = "#CTL_OpenImageViewActionName",
-        iconBase = "org/esa/snap/rcp/icons/RsBandAsSwath16.gif"
+        iconBase = "org/esa/snap/rcp/icons/RsBandAsSwath.gif"
 )
 @ActionReferences({
+        @ActionReference(path = "Menu/View", position = 100),
         @ActionReference(path = "Context/Product/RasterDataNode", position = 100),
 })
 @NbBundle.Messages("CTL_OpenImageViewActionName=Open in Image View")
@@ -65,7 +65,6 @@ public class OpenImageViewAction extends AbstractAction {
     public OpenImageViewAction(RasterDataNode rasterDataNode) {
         this.raster = rasterDataNode;
         putValue(Action.NAME, Bundle.CTL_OpenImageViewActionName());
-        putValue(Action.LARGE_ICON_KEY, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/RsBandAsSwath24.gif", false));
     }
 
     @Override
@@ -122,13 +121,7 @@ public class OpenImageViewAction extends AbstractAction {
     }
 
     private ProductSceneViewTopComponent openDocumentWindow(final ProductSceneView view) {
-        return openDocumentWindow(view, true);
-    }
-
-    private ProductSceneViewTopComponent openDocumentWindow(final ProductSceneView view, boolean configureByPreferences) {
-        if (configureByPreferences) {
-            view.setLayerProperties(SnapApp.getDefault().getCompatiblePreferences());
-        }
+        view.setLayerProperties(SnapApp.getDefault().getCompatiblePreferences());
 
         UndoRedo.Manager undoManager = SnapApp.getDefault().getUndoManager(view.getProduct());
         ProductSceneViewTopComponent productSceneViewWindow = new ProductSceneViewTopComponent(view, undoManager);
