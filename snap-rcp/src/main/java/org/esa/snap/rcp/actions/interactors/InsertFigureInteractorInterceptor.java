@@ -39,7 +39,7 @@ import java.awt.event.InputEvent;
 import java.util.List;
 
 
-class InsertFigureInteractorInterceptor extends AbstractInteractorInterceptor {
+public class InsertFigureInteractorInterceptor extends AbstractInteractorInterceptor {
 
     @Override
     public boolean interactionAboutToStart(Interactor interactor, InputEvent inputEvent) {
