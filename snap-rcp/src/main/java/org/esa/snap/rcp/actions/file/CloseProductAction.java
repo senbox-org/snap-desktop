@@ -13,6 +13,7 @@ import org.esa.snap.framework.datamodel.ProductNode;
 import org.esa.snap.framework.datamodel.RasterDataNode;
 import org.esa.snap.framework.datamodel.VirtualBand;
 import org.esa.snap.netbeans.docwin.DocumentWindow;
+import org.esa.snap.netbeans.docwin.DocumentWindowManager;
 import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
@@ -117,9 +118,8 @@ public final class CloseProductAction extends AbstractAction {
 
         for (Product product : closeList) {
             WindowUtilities.getOpened(DocumentWindow.class)
-                    .filter(dw -> (dw.getDocument() instanceof ProductNode)
-                                  && ((ProductNode) dw.getDocument()).getProduct() == product)
-                    .forEach(DocumentWindow::documentClosing);
+                    .filter(dw -> (dw.getDocument() instanceof ProductNode) && ((ProductNode) dw.getDocument()).getProduct() == product)
+                    .forEach(dw -> DocumentWindowManager.getDefault().closeWindow(dw));
             SnapApp.getDefault().getProductManager().removeProduct(product);
         }
 

@@ -94,7 +94,7 @@ public class DocumentWindowManager implements WindowContainer<DocumentWindow> {
         if (anyWorkspace.isPresent()) {
             return anyWorkspace.get().removeTopComponent(documentWindow.getTopComponent());
         } else {
-            return documentWindow.getTopComponent().close();
+            return removeOpenedWindow(documentWindow);
         }
     }
 
@@ -134,17 +134,23 @@ public class DocumentWindowManager implements WindowContainer<DocumentWindow> {
         }
     }
 
-    void removeOpenedWindow(DocumentWindow documentWindow) {
+    boolean removeOpenedWindow(DocumentWindow documentWindow) {
         if (openDocumentWindows.remove(documentWindow)) {
             if (getSelectedWindow() == documentWindow) {
                 setSelectedWindow(null);
             }
-            Event event = new Event(documentWindow);
-            Listener[] listeners = getListeners();
-            for (Listener listener : listeners) {
-                listener.windowClosed(event);
+            boolean isClosed = documentWindow.getTopComponent().close();
+
+            if (isClosed) {
+                Event event = new Event(documentWindow);
+                Listener[] listeners = getListeners();
+                for (Listener listener : listeners) {
+                    listener.windowClosed(event);
+                }
             }
+            return isClosed;
         }
+        return false;
     }
 
     void setSelectedWindow(DocumentWindow newValue) {
