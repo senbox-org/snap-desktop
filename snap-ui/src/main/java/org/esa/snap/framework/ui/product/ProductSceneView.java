@@ -261,6 +261,9 @@ public class ProductSceneView extends BasicView
         setMaskOverlayEnabled(true);
     }
 
+    public String getName() {
+        return sceneImage.getName();
+    }
     public UndoContext getUndoContext() {
         return undoContext;
     }

@@ -1092,20 +1092,20 @@
             <helpId>imageView</helpId>
         </action>
 
-        <action>
-            <parent>view</parent>
-            <id>showImageViewRGB</id>
-            <placeAfter>showImageView</placeAfter>
-            <text>Open RGB Image View...</text>
-            <class>org.esa.snap.visat.actions.ShowImageViewRGBAction</class>
-            <mnemonic>R</mnemonic>
-            <accellerator>control alt G</accellerator>
-            <shortDescr>Open an RGB image view for the selected product.</shortDescr>
-            <context>product</context>
-            <smallIcon>icons/ImageView16.gif</smallIcon>
-            <largeIcon>icons/ImageView24.gif</largeIcon>
-            <helpId>rgbImageProfile</helpId>
-        </action>
+        <!--<action>-->
+            <!--<parent>view</parent>-->
+            <!--<id>showImageViewRGB</id>-->
+            <!--<placeAfter>showImageView</placeAfter>-->
+            <!--<text>Open RGB Image View...</text>-->
+            <!--<class>org.esa.snap.visat.actions.ShowImageViewRGBAction</class>-->
+            <!--<mnemonic>R</mnemonic>-->
+            <!--<accellerator>control alt G</accellerator>-->
+            <!--<shortDescr>Open an RGB image view for the selected product.</shortDescr>-->
+            <!--<context>product</context>-->
+            <!--<smallIcon>icons/ImageView16.gif</smallIcon>-->
+            <!--<largeIcon>icons/ImageView24.gif</largeIcon>-->
+            <!--<helpId>rgbImageProfile</helpId>-->
+        <!--</action>-->
 
         <action>
             <parent>view</parent>

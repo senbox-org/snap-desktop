@@ -13,60 +13,87 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, see http://www.gnu.org/licenses/
  */
-package org.esa.snap.visat.actions;
+package org.esa.snap.rcp.actions.view;
 
 import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.core.SubProgressMonitor;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
 import org.esa.snap.framework.datamodel.Band;
 import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.datamodel.ProductNode;
 import org.esa.snap.framework.datamodel.RGBImageProfile;
 import org.esa.snap.framework.ui.RGBImageProfilePane;
 import org.esa.snap.framework.ui.UIUtils;
-import org.esa.snap.framework.ui.command.CommandEvent;
-import org.esa.snap.framework.ui.command.ExecCommand;
 import org.esa.snap.framework.ui.product.ProductSceneImage;
 import org.esa.snap.framework.ui.product.ProductSceneView;
-import org.esa.snap.visat.VisatApp;
+import org.esa.snap.netbeans.docwin.DocumentWindowManager;
+import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
+import org.openide.awt.ActionID;
+import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
+import org.openide.awt.ActionRegistration;
+import org.openide.awt.UndoRedo;
+import org.openide.util.HelpCtx;
+import org.openide.util.NbBundle;
 
-import javax.swing.Icon;
-import javax.swing.JInternalFrame;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.SwingWorker;
 import java.awt.Cursor;
+import java.awt.event.ActionEvent;
 
 /**
  * This action opens an RGB image view on the currently selected Product.
  *
  * @author Marco Peters
  */
-@Deprecated
-public class ShowImageViewRGBAction extends ExecCommand {
+@ActionID(category = "View", id = "OpenRGBImageViewAction")
+@ActionRegistration(
+        displayName = "#CTL_OpenRGBImageViewAction_MenuText",
+        popupText = "#CTL_OpenRGBImageViewAction_MenuText",
+        iconBase = "org/esa/snap/rcp/icons/ImageView.gif",
+        lazy = true
+)
+@ActionReferences({
+        @ActionReference(path = "Menu/View", position = 110),
+        @ActionReference(path = "Context/Product/Product",position = 400),
+})
+@NbBundle.Messages({
+        "CTL_OpenRGBImageViewAction_MenuText=Open RGB Image View",
+        "CTL_OpenRGBImageViewAction_ShortDescription=Open an RGB image view for the selected product"
+})
+public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Provider {
 
-    public static String ID = "showImageViewRGB";
+    private static final String HELP_ID = "rgbImageProfile";
+    private final Product product;
 
-    @Override
-    public void actionPerformed(final CommandEvent event) {
-        final Product product = VisatApp.getApp().getSelectedProduct();
-        if (product != null) {
-            openProductSceneViewRGB(product, getHelpId());
-        }
+    public OpenRGBImageViewAction(ProductNode node) {
+        super(Bundle.CTL_OpenRGBImageViewAction_MenuText());
+        product = node.getProduct();
+        putValue(Action.SHORT_DESCRIPTION, Bundle.CTL_OpenRGBImageViewAction_ShortDescription());
     }
 
     @Override
-    public void updateState(final CommandEvent event) {
-        setEnabled(VisatApp.getApp().getSelectedProduct() != null);
+    public void actionPerformed(ActionEvent e) {
+        openProductSceneViewRGB(product, HELP_ID);
+    }
+
+    @Override
+    public HelpCtx getHelpCtx() {
+        return new HelpCtx(HELP_ID);
     }
 
     public void openProductSceneViewRGB(final Product product, final String helpId) {
-        final VisatApp visatApp = VisatApp.getApp();
-        final Product[] openedProducts = visatApp.getProductManager().getProducts();
+        final Product[] openedProducts = SnapApp.getDefault().getProductManager().getProducts();
         final int[] defaultBandIndices = getDefaultBandIndices(product);
 
-        final RGBImageProfilePane profilePane = new RGBImageProfilePane(visatApp.getPreferences(), product,
+        final RGBImageProfilePane profilePane = new RGBImageProfilePane(SnapApp.getDefault().getCompatiblePreferences(), product,
                 openedProducts, defaultBandIndices);
 
         final String title = "Select RGB-Image Channels";
-        final boolean ok = profilePane.showDialog(visatApp.getMainFrame(), title, helpId);
+        final boolean ok = profilePane.showDialog(SnapApp.getDefault().getMainFrame(), title, helpId);
         if (!ok) {
             return;
         }
@@ -113,14 +140,10 @@ public class ShowImageViewRGBAction extends ExecCommand {
         return bandIndices;
     }
 
-    /**
-     * Creates product scene view using the given RGBA expressions.
-     */
-    public void openProductSceneViewRGB(final String name, final Product product, final String[] rgbaExpressions) {
-        final VisatApp visatApp = VisatApp.getApp();
+    private  void openProductSceneViewRGB(final String name, final Product product, final String[] rgbaExpressions) {
         final SwingWorker<ProductSceneImage, Object> worker = new ProgressMonitorSwingWorker<ProductSceneImage, Object>(
-                visatApp.getMainFrame(),
-                visatApp.getAppName() + " - Creating image for '" + name + "'") {
+                SnapApp.getDefault().getMainFrame(),
+                SnapApp.getDefault().getInstanceName() + " - Creating image for '" + name + "'") {
 
             @Override
             protected ProductSceneImage doInBackground(ProgressMonitor pm) throws Exception {
@@ -129,67 +152,56 @@ public class ShowImageViewRGBAction extends ExecCommand {
 
             @Override
             protected void done() {
-                visatApp.getMainFrame().setCursor(Cursor.getDefaultCursor());
+                SnapApp.getDefault().getMainFrame().setCursor(Cursor.getDefaultCursor());
 
+                String errorMsg = "The RGB image view could not be created.";
                 try {
                     ProductSceneView productSceneView = new ProductSceneView(get());
-                    productSceneView.setLayerProperties(visatApp.getPreferences());
-                    openInternalFrame(productSceneView);
+                    productSceneView.setLayerProperties(SnapApp.getDefault().getCompatiblePreferences());
+                    openDocumentWindow(productSceneView);
                 } catch (OutOfMemoryError e) {
-                    visatApp.showOutOfMemoryErrorDialog("The RGB image view could not be created."); /*I18N*/
+                    SnapDialogs.showOutOfMemoryError(errorMsg);
                     return;
                 } catch (Exception e) {
-                    visatApp.handleUnknownException(e);
+                    SnapApp.getDefault().handleError(errorMsg, e);
                     return;
                 }
-                visatApp.clearStatusBarMessage();
+                SnapApp.getDefault().setStatusBarMessage("");
             }
         };
-        visatApp.setStatusBarMessage("Creating RGB image view...");  /*I18N*/
-        UIUtils.setRootFrameWaitCursor(visatApp.getMainFrame());
+        SnapApp.getDefault().setStatusBarMessage("Creating RGB image view...");  /*I18N*/
+        UIUtils.setRootFrameWaitCursor(SnapApp.getDefault().getMainFrame());
         worker.execute();
     }
 
-    public JInternalFrame openInternalFrame(final ProductSceneView view) {
-        return openInternalFrame(view, true);
-    }
+    private ProductSceneViewTopComponent openDocumentWindow(final ProductSceneView view) {
+        final SnapApp snapApp = SnapApp.getDefault();
 
-    public JInternalFrame openInternalFrame(ProductSceneView view, boolean configureByPreferences) {
-        final VisatApp visatApp = VisatApp.getApp();
-        view.setCommandUIFactory(visatApp.getCommandUIFactory());
-        if (configureByPreferences) {
-            view.setLayerProperties(visatApp.getPreferences());
-        }
+        view.setLayerProperties(snapApp.getCompatiblePreferences());
 
-        final String title = createUniqueInternalFrameTitle(view.getSceneName());
-        final Icon icon = UIUtils.loadImageIcon("icons/RsBandAsSwath16.gif");
-        final JInternalFrame internalFrame = visatApp.createInternalFrame(title, icon, view, getHelpId(),true);
-        visatApp.addPropertyMapChangeListener(view);
-        updateState();
+        UndoRedo.Manager undoManager = SnapApp.getDefault().getUndoManager(view.getProduct());
+        ProductSceneViewTopComponent psvTopComponent = new ProductSceneViewTopComponent(view, undoManager);
 
-        return internalFrame;
-    }
+        DocumentWindowManager.getDefault().openWindow(psvTopComponent);
+        psvTopComponent.requestSelected();
 
+        return psvTopComponent;
 
-    public static class RGBBand {
-
-        public Band band;
-        private boolean dataLoaded;
     }
 
     private ProductSceneImage createProductSceneImageRGB(String name, final Product product, String[] rgbaExpressions,
                                                          ProgressMonitor pm) throws Exception {
-        final VisatApp visatApp = VisatApp.getApp();
-        RGBBand[] rgbBands = null;
+        final SnapApp visatApp = SnapApp.getDefault();
+        Band[] rgbBands = null;
         boolean errorOccurred = false;
         ProductSceneImage productSceneImage = null;
         try {
             pm.beginTask("Creating RGB image...", 2);
             rgbBands = allocateRgbBands(product, rgbaExpressions);
-            productSceneImage = new ProductSceneImage(name, rgbBands[0].band,
-                                                      rgbBands[1].band,
-                                                      rgbBands[2].band,
-                                                      visatApp.getPreferences(),
+            productSceneImage = new ProductSceneImage(name, rgbBands[0],
+                                                      rgbBands[1],
+                                                      rgbBands[2],
+                                                      visatApp.getCompatiblePreferences(),
                                                       SubProgressMonitor.create(pm, 1));
             productSceneImage.initVectorDataCollectionLayer();
             productSceneImage.initMaskCollectionLayer();
@@ -205,17 +217,16 @@ public class ShowImageViewRGBAction extends ExecCommand {
         return productSceneImage;
     }
 
-    public static RGBBand[] allocateRgbBands(final Product product, final String[] rgbaExpressions) {
-        final RGBBand[] rgbBands = new RGBBand[3]; // todo - set to [4] as soon as we support alpha
+    private static Band[] allocateRgbBands(final Product product, final String[] rgbaExpressions) {
+        final Band[] rgbBands = new Band[3]; // todo - set to [4] as soon as we support alpha
         final boolean productModificationState = product.isModified();
         for (int i = 0; i < rgbBands.length; i++) {
-            final RGBBand rgbBand = new RGBBand();
             String expression = rgbaExpressions[i].isEmpty() ? "0" : rgbaExpressions[i];
-            rgbBand.band = product.getBand(expression);
-            if (rgbBand.band == null) {
-                rgbBand.band = new ProductSceneView.RGBChannel(product,
-                                                               RGBImageProfile.RGB_BAND_NAMES[i],
-                                                               expression);
+            Band rgbBand = product.getBand(expression);
+            if (rgbBand == null) {
+                rgbBand = new ProductSceneView.RGBChannel(product,
+                                                          RGBImageProfile.RGB_BAND_NAMES[i],
+                                                          expression);
             }
             rgbBands[i] = rgbBand;
         }
@@ -223,26 +234,18 @@ public class ShowImageViewRGBAction extends ExecCommand {
         return rgbBands;
     }
 
-    public static void releaseRgbBands(RGBBand[] rgbBands, boolean errorOccurred) {
+    private static void releaseRgbBands(Band[] rgbBands, boolean errorOccurred) {
         for (int i = 0; i < rgbBands.length; i++) {
-            final RGBBand rgbBand = rgbBands[i];
-            if (rgbBand != null && rgbBand.band != null) {
-                if (rgbBand.band instanceof ProductSceneView.RGBChannel) {
-                    if (rgbBand.dataLoaded) {
-                        rgbBand.band.unloadRasterData();
-                    }
+            Band rgbBand = rgbBands[i];
+            if (rgbBand != null) {
+                if (rgbBand instanceof ProductSceneView.RGBChannel) {
                     if (errorOccurred) {
-                        rgbBand.band.dispose();
+                        rgbBand.dispose();
                     }
                 }
-                rgbBand.band = null;
             }
             rgbBands[i] = null;
         }
-    }
-
-    public static String createUniqueInternalFrameTitle(String name) {
-        return UIUtils.getUniqueFrameTitle(VisatApp.getApp().getAllInternalFrames(), name);
     }
 
     private static String createSceneName(Product product, RGBImageProfile rgbImageProfile) {
