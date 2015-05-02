@@ -1,0 +1,17 @@
+
+<filesystem>
+
+    <folder name="WorldWindLayers">
+        <file name="DefaultProductLayer">
+            <attr name="WWLayerClass" stringvalue="org.esa.snap.worldwind.layers.DefaultProductLayer"/>
+            <attr name="showInWorldMapToolView" stringvalue="true"/>
+            <attr name="showIn3DToolView" stringvalue="true"/>
+        </file>
+        <file name="Level2ProductLayer">
+            <attr name="WWLayerClass" stringvalue="org.esa.snap.worldwind.layers.Level2ProductLayer"/>
+            <attr name="showInWorldMapToolView" stringvalue="false"/>
+            <attr name="showIn3DToolView" stringvalue="true"/>
+        </file>
+    </folder>
+
+</filesystem>

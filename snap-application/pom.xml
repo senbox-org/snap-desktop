@@ -130,6 +130,11 @@
             <artifactId>snap-scripting</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.esa.snap</groupId>
+            <artifactId>snap-worldwind</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <!-- disabled: these modules don't have the required maturity right now. -->
         <!--<dependency>-->

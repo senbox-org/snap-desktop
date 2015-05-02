@@ -1,0 +1,333 @@
+/*
+ * Copyright (C) 2015 by Array Systems Computing Inc. http://www.array.ca
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option)
+ * any later version.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, see http://www.gnu.org/licenses/
+ */
+package org.esa.snap.worldwind;
+
+import gov.nasa.worldwind.WorldWindow;
+import gov.nasa.worldwind.event.SelectEvent;
+import gov.nasa.worldwind.event.SelectListener;
+import gov.nasa.worldwind.layers.Earth.MSVirtualEarthLayer;
+import gov.nasa.worldwind.layers.Earth.OSMMapnikLayer;
+import gov.nasa.worldwind.layers.Layer;
+import gov.nasa.worldwind.layers.LayerList;
+import gov.nasa.worldwind.layers.placename.PlaceNameLayer;
+import gov.nasa.worldwindx.examples.WMSLayersPanel;
+import org.esa.snap.worldwind.layers.DefaultProductLayer;
+import org.esa.snap.worldwind.layers.WWLayer;
+import org.esa.snap.worldwind.layers.WWLayerDescriptor;
+import org.esa.snap.worldwind.layers.WWLayerRegistry;
+import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.datamodel.ProductNode;
+import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.rcp.util.SelectionSupport;
+import org.esa.snap.util.SystemUtils;
+import org.netbeans.api.annotations.common.NullAllowed;
+import org.openide.awt.ActionID;
+import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
+import org.openide.util.NbBundle;
+import org.openide.windows.TopComponent;
+
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.awt.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.net.URISyntaxException;
+
+@TopComponent.Description(
+        preferredID = "WW3DToolView",
+        iconBase = "org/esa/snap/icons/earth24.png",
+        persistenceType = TopComponent.PERSISTENCE_NEVER
+)
+@TopComponent.Registration(
+        mode = "rightSlidingSide",
+        openAtStartup = false,
+        position = 2
+)
+@ActionID(category = "Window", id = "org.esa.s1tbx.worldwind.WW3DToolView")
+@ActionReferences({
+        @ActionReference(path = "Menu/Window/Tool Windows"),
+        @ActionReference(path = "Toolbars/Views")
+})
+@TopComponent.OpenActionRegistration(
+        displayName = "#CTL_WorldWind3DTopComponentName",
+        preferredID = "WorldWind3DTopComponent"
+)
+@NbBundle.Messages({
+        "CTL_WorldWind3DTopComponentName=WorldWind 3D View",
+        "CTL_WorldWind3DTopComponentDescription=WorldWind 3D World Map",
+})
+
+/**
+ * The window displaying the full WorldWind 3D.
+ *
+ */
+public class WW3DToolView extends WWBaseToolView implements WWView {
+
+    private LayerPanel layerPanel = null;
+    private ProductPanel productPanel = null;
+
+    private final Dimension wmsPanelSize = new Dimension(400, 600);
+
+    private final JTabbedPane tabbedPane = new JTabbedPane();
+    private int previousTabIndex = 0;
+
+    private static final boolean includeStatusBar = true;
+    private static final boolean includeLayerPanel = false;
+    private static final boolean includeProductPanel = true;
+    private static final boolean includeWMSPanel = false;
+
+    private static final String[] servers = new String[]
+            {
+                    "http://neowms.sci.gsfc.nasa.gov/wms/wms",
+                    //"http://mapserver.flightgear.org/cgi-bin/landcover",
+                    "http://wms.jpl.nasa.gov/wms.cgi",
+                    "http://worldwind46.arc.nasa.gov:8087/wms"
+            };
+
+    public WW3DToolView() {
+        setDisplayName("WorldWind 3D");
+        setLayout(new BorderLayout(4, 4));
+        setBorder(new EmptyBorder(4, 4, 4, 4));
+        add(createControl(), BorderLayout.CENTER);
+        //SnapApp.getDefault().getSelectionSupport(ProductSceneView.class).addHandler((oldValue, newValue) -> setCurrentView(newValue));
+    }
+
+    public JComponent createControl() {
+
+        final Window windowPane = SwingUtilities.getWindowAncestor(this);
+        if (windowPane != null)
+            windowPane.setSize(800, 400);
+        final JPanel mainPane = new JPanel(new BorderLayout(4, 4));
+        mainPane.setSize(new Dimension(300, 300));
+
+        // world wind canvas
+        initialize(mainPane);
+
+        return mainPane;
+    }
+
+    private static void insertTiledLayer(final WorldWindow wwd, final Layer layer) {
+        int position = 0;
+        final LayerList layers = wwd.getModel().getLayers();
+        for (Layer l : layers) {
+            if (l instanceof PlaceNameLayer) {
+                position = layers.indexOf(l);
+                break;
+            }
+        }
+        layers.add(position, layer);
+    }
+
+    private void initialize(final JPanel mainPane) {
+        SystemUtils.LOG.info("INITIALIZE IN WW3DToolView CALLED" + " includeLayerPanel " + includeLayerPanel + " includeProductPanel " + includeProductPanel);
+
+        // Create the WorldWindow.
+        try {
+            createWWPanel(includeStatusBar, false, false);
+            wwjPanel.addLayerPanelLayer();
+            wwjPanel.addElevation();
+
+            final MSVirtualEarthLayer virtualEarthLayerA = new MSVirtualEarthLayer(MSVirtualEarthLayer.LAYER_AERIAL);
+            virtualEarthLayerA.setName("MS Bing Aerial");
+            insertTiledLayer(getWwd(), virtualEarthLayerA);
+
+            final MSVirtualEarthLayer virtualEarthLayerR = new MSVirtualEarthLayer(MSVirtualEarthLayer.LAYER_ROADS);
+            virtualEarthLayerR.setName("MS Bing Roads");
+            virtualEarthLayerR.setEnabled(false);
+            insertTiledLayer(getWwd(), virtualEarthLayerR);
+
+            final MSVirtualEarthLayer virtualEarthLayerH = new MSVirtualEarthLayer(MSVirtualEarthLayer.LAYER_HYBRID);
+            virtualEarthLayerH.setName("MS Bing Hybrid");
+            virtualEarthLayerH.setEnabled(false);
+            insertTiledLayer(getWwd(), virtualEarthLayerH);
+
+            final OSMMapnikLayer streetLayer = new OSMMapnikLayer();
+            streetLayer.setOpacity(0.7);
+            streetLayer.setEnabled(false);
+            streetLayer.setName("Open Street Map");
+            insertTiledLayer(getWwd(), streetLayer);
+
+            final WWLayerDescriptor[] wwLayerDescriptors = WWLayerRegistry.getInstance().getWWLayerDescriptors();
+            for(WWLayerDescriptor layerDescriptor : wwLayerDescriptors) {
+                if(layerDescriptor.showIn3DToolView()) {
+                    final WWLayer wwLayer = layerDescriptor.createWWLayer();
+                    insertTiledLayer(getWwd(), wwLayer);
+
+                    wwLayer.setOpacity(0.8);
+                    // CHANGED: otherwise the objects in the product layer won't react to the select listener
+                    // wwLayer.setPickEnabled(false);
+
+                    if(wwLayer instanceof DefaultProductLayer) {
+                        ((DefaultProductLayer)wwLayer).setEnableSurfaceImages(true);
+                    }
+                }
+            }
+
+            // update world map window with the information of the currently activated  product scene view.
+            final SnapApp snapApp = SnapApp.getDefault();
+            snapApp.getProductManager().addListener(new WWProductManagerListener(this));
+            snapApp.getSelectionSupport(ProductNode.class).addHandler(new SelectionSupport.Handler<ProductNode>() {
+                @Override
+                public void selectionChange(@NullAllowed ProductNode oldValue, @NullAllowed ProductNode newValue) {
+                    setSelectedProduct(newValue.getProduct());
+                }
+            });
+            setProducts(snapApp.getProductManager().getProducts());
+            setSelectedProduct(snapApp.getSelectedProduct());
+
+            // Put the pieces together.
+            mainPane.add(wwjPanel, BorderLayout.CENTER);
+            if (includeLayerPanel) {
+                layerPanel = new LayerPanel(wwjPanel.getWwd(), null);
+                mainPane.add(layerPanel, BorderLayout.WEST);
+
+                layerPanel.add(makeControlPanel(), BorderLayout.SOUTH);
+                layerPanel.update(getWwd());
+            }
+            if (includeProductPanel) {
+                final LayerList layerList = getWwd().getModel().getLayers();
+                Layer layer = layerList.getLayerByName("Products");
+
+                productPanel = new ProductPanel(wwjPanel.getWwd(), (DefaultProductLayer)layer);
+                mainPane.add(productPanel, BorderLayout.WEST);
+
+                productPanel.add(makeControlPanel(), BorderLayout.SOUTH);
+
+                productPanel.update(getWwd());
+            }
+            if (includeWMSPanel) {
+                tabbedPane.add(new JPanel());
+                tabbedPane.setTitleAt(0, "+");
+                tabbedPane.addChangeListener(new ChangeListener() {
+                    public void stateChanged(ChangeEvent changeEvent) {
+                        if (tabbedPane.getSelectedIndex() != 0) {
+                            previousTabIndex = tabbedPane.getSelectedIndex();
+                            return;
+                        }
+
+                        final String server = JOptionPane.showInputDialog("Enter WMS server URL");
+                        if (server == null || server.length() < 1) {
+                            tabbedPane.setSelectedIndex(previousTabIndex);
+                            return;
+                        }
+
+                        // Respond by adding a new WMSLayerPanel to the tabbed pane.
+                        if (addTab(tabbedPane.getTabCount(), server.trim()) != null)
+                            tabbedPane.setSelectedIndex(tabbedPane.getTabCount() - 1);
+                    }
+                });
+
+                // Create a tab for each server and add it to the tabbed panel.
+                for (int i = 0; i < servers.length; i++) {
+                    this.addTab(i + 1, servers[i]); // i+1 to place all server tabs to the right of the Add Server tab
+                }
+
+                // Display the first server pane by default.
+                this.tabbedPane.setSelectedIndex(this.tabbedPane.getTabCount() > 0 ? 1 : 0);
+                this.previousTabIndex = this.tabbedPane.getSelectedIndex();
+
+                mainPane.add(tabbedPane, BorderLayout.EAST);
+            }
+
+            this.wwjPanel.getWwd().addSelectListener(new SelectListener()
+            {
+
+                public void selected(SelectEvent event)
+                {
+                    final LayerList layerList = getWwd().getModel().getLayers();
+                    for(Layer layer : layerList) {
+                        if(layer instanceof WWLayer) {
+                            final WWLayer wwLayer = (WWLayer) layer;
+                            wwLayer.updateInfoAnnotation(event);
+                        }
+                    }
+                }
+            });
+
+        } catch (Throwable e) {
+            SnapApp.getDefault().handleError("Unable to initialize WW3DToolView: " + e.getMessage(), e);
+        }
+    }
+
+    private JPanel makeControlPanel() {
+
+        final JPanel controlPanel = new JPanel(new GridLayout(2, 1, 5, 5));
+        controlPanel.setBorder(new EmptyBorder(15, 15, 15, 15));
+
+        final LayerList layerList = getWwd().getModel().getLayers();
+        for(Layer layer : layerList) {
+            if(layer instanceof WWLayer) {
+                final WWLayer wwLayer = (WWLayer) layer;
+                final JPanel layerControlPanel = wwLayer.getControlPanel(getWwd());
+                controlPanel.add(layerControlPanel);
+            }
+        }
+
+        return controlPanel;
+    }
+
+    @Override
+    public void setSelectedProduct(final Product product) {
+
+        if (productPanel != null)
+            productPanel.update(getWwd());
+
+        super.setSelectedProduct(product);
+    }
+
+    @Override
+    public void setProducts(final Product[] products) {
+        if (productPanel != null)
+            productPanel.update(getWwd());
+
+        super.setProducts(products);
+    }
+
+    @Override
+    public void removeProduct(final Product product) {
+        if (productPanel != null)
+            productPanel.update(getWwd());
+
+        super.removeProduct(product);
+    }
+
+    private WMSLayersPanel addTab(final int position, final String server) {
+        // Add a server to the tabbed dialog.
+        try {
+            final WMSLayersPanel layersPanel = new WMSLayersPanel(wwjPanel.getWwd(), server, wmsPanelSize);
+            this.tabbedPane.add(layersPanel, BorderLayout.CENTER);
+            final String title = layersPanel.getServerDisplayString();
+            this.tabbedPane.setTitleAt(position, title != null && title.length() > 0 ? title : server);
+
+            // Add a listener to notice wms layer selections and tell the layer panel to reflect the new state.
+            layersPanel.addPropertyChangeListener("LayersPanelUpdated", new PropertyChangeListener() {
+                public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+                    layerPanel.update(wwjPanel.getWwd());
+                }
+            });
+
+            return layersPanel;
+        } catch (URISyntaxException e) {
+            JOptionPane.showMessageDialog(null, "Server URL is invalid", "Invalid Server URL",
+                    JOptionPane.ERROR_MESSAGE);
+            tabbedPane.setSelectedIndex(previousTabIndex);
+            return null;
+        }
+    }
+}

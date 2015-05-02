@@ -44,7 +44,8 @@
         <module>snap-ui</module>
         <module>snap-unmix-ui</module>
         <module>snap-visat-rcp</module>
-
+        <module>snap-worldwind</module>
+        
         <!-- disabled: these modules don't have the required maturity right now. -->
         <!--<module>snap-opendap-ui</module>-->
         <!--<module>snap-timeseries-ui</module>-->

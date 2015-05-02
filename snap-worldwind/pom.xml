@@ -1,0 +1,183 @@
+<?xml version="1.0"?>
+<!--
+ * Copyright (C) 2015 by Array Systems Computing Inc. http://www.array.ca
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option)
+ * any later version.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, see http://www.gnu.org/licenses/
+  -->
+<project>
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.esa.snap</groupId>
+        <artifactId>snap-desktop</artifactId>
+        <version>2.0.0-SNAPSHOT</version>
+    </parent>
+
+    <name>SNAP WorldWind</name>
+    <artifactId>snap-worldwind</artifactId>
+
+    <packaging>nbm</packaging>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.esa.snap</groupId>
+            <artifactId>ceres-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.esa.snap</groupId>
+            <artifactId>ceres-glayer</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.esa.snap</groupId>
+            <artifactId>snap-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.esa.snap</groupId>
+            <artifactId>snap-gpf</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.esa.snap</groupId>
+            <artifactId>snap-ui</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.esa.snap</groupId>
+            <artifactId>snap-engine-utilities</artifactId>
+            <version>${snap.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.esa.snap</groupId>
+            <artifactId>snap-gui-utilities</artifactId>
+            <version>${snap.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.esa.snap</groupId>
+            <artifactId>snap-rcp</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>gov.nasa</groupId>
+            <artifactId>worldwind</artifactId>
+            <version>2.0.0-986</version>
+        </dependency>
+	    <dependency>
+			<groupId>gov.nasa</groupId>
+			<artifactId>worldwindx</artifactId>
+            <version>2.0.0-986</version>
+		</dependency>
+        <dependency>
+			 <groupId>org.jogamp.gluegen</groupId>
+			 <artifactId>gluegen-rt-main</artifactId>
+             <version>2.1.5-01</version>
+		</dependency>
+		<dependency>
+			 <groupId>org.jogamp.jogl</groupId>
+			 <artifactId>jogl-all-main</artifactId>
+             <version>2.1.5-01</version>
+		</dependency>
+
+        <!-- natives -->
+
+        <dependency>
+            <groupId>org.jogamp.gluegen</groupId>
+            <artifactId>gluegen-rt</artifactId>
+            <classifier>natives-windows-amd64</classifier>
+            <version>2.1.5-01</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jogamp.gluegen</groupId>
+            <artifactId>gluegen-rt</artifactId>
+            <classifier>natives-windows-i586</classifier>
+            <version>2.1.5-01</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jogamp.gluegen</groupId>
+            <artifactId>gluegen-rt</artifactId>
+            <classifier>natives-linux-amd64</classifier>
+            <version>2.1.5-01</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jogamp.gluegen</groupId>
+            <artifactId>gluegen-rt</artifactId>
+            <classifier>natives-linux-i586</classifier>
+            <version>2.1.5-01</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jogamp.jogl</groupId>
+            <artifactId>jogl-all</artifactId>
+            <classifier>natives-windows-amd64</classifier>
+            <version>2.1.5-01</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jogamp.jogl</groupId>
+            <artifactId>jogl-all</artifactId>
+            <classifier>natives-windows-i586</classifier>
+            <version>2.1.5-01</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jogamp.jogl</groupId>
+            <artifactId>jogl-all</artifactId>
+            <classifier>natives-linux-amd64</classifier>
+            <version>2.1.5-01</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jogamp.jogl</groupId>
+            <artifactId>jogl-all</artifactId>
+            <classifier>natives-linux-i586</classifier>
+            <version>2.1.5-01</version>
+        </dependency>
+
+        <!-- netbeans platform -->
+
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-modules</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-util</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-util-lookup</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-filesystems</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-netbeans-api-annotations-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-windows</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>            
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>nbm-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <useDefaultManifestFile>true</useDefaultManifestFile>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
