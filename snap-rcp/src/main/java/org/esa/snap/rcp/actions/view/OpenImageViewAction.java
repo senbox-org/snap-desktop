@@ -56,6 +56,7 @@ import java.text.MessageFormat;
 @ActionReferences({
         @ActionReference(path = "Menu/View", position = 100),
         @ActionReference(path = "Context/Product/RasterDataNode", position = 100),
+        @ActionReference(path = "Menu/View", position = 100)
 })
 @NbBundle.Messages("CTL_OpenImageViewActionName=Open in Image View")
 public class OpenImageViewAction extends AbstractAction {

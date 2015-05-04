@@ -35,15 +35,15 @@ import java.awt.event.MouseEvent;
  */
 public class ProductMetadataView extends BasicView implements ProductNodeView {
 
-    private ProductMetadataTable _metadataTable;
+    private ProductMetadataTable metadataTable;
     private JMenuItem expandMenuItem;
     private JMenuItem collapseMenuItem;
 
     public ProductMetadataView(MetadataElement metadataElement) {
-        _metadataTable = new ProductMetadataTable(metadataElement);
-        _metadataTable.addMouseListener(new PopupMenuHandler(this));
+        metadataTable = new ProductMetadataTable(metadataElement);
+        metadataTable.addMouseListener(new PopupMenuHandler(this));
         setLayout(new BorderLayout());
-        add(new JScrollPane(_metadataTable), BorderLayout.CENTER);
+        add(new JScrollPane(metadataTable), BorderLayout.CENTER);
         expandMenuItem = new JMenuItem(new ExpandAllAction());
         collapseMenuItem = new JMenuItem(new CollapseAllAction());
     }
@@ -53,11 +53,11 @@ public class ProductMetadataView extends BasicView implements ProductNodeView {
     }
 
     public MetadataElement getMetadataElement() {
-        return _metadataTable.getMetadataElement();
+        return metadataTable.getMetadataElement();
     }
 
     public ProductMetadataTable getMetadataTable() {
-        return _metadataTable;
+        return metadataTable;
     }
 
     /**
@@ -89,7 +89,7 @@ public class ProductMetadataView extends BasicView implements ProductNodeView {
      */
     @Override
     public void dispose() {
-        _metadataTable = null;
+        metadataTable = null;
         super.dispose();
     }
 

@@ -23,7 +23,6 @@ import org.esa.snap.framework.dataio.ProductIO;
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.ui.command.CommandEvent;
 import org.esa.snap.framework.ui.command.ExecCommand;
-import org.esa.snap.framework.ui.product.ProductMetadataView;
 import org.esa.snap.framework.ui.product.ProductNodeView;
 import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.util.SystemUtils;
@@ -31,7 +30,6 @@ import org.esa.snap.util.io.BeamFileFilter;
 import org.esa.snap.visat.VisatApp;
 import org.esa.snap.visat.actions.ShowImageViewAction;
 import org.esa.snap.visat.actions.ShowImageViewRGBAction;
-import org.esa.snap.visat.actions.ShowMetadataViewAction;
 
 import javax.swing.JInternalFrame;
 import javax.swing.JOptionPane;
@@ -166,7 +164,7 @@ public class OpenSessionAction extends ExecCommand {
             //
             ShowImageViewAction showImageViewAction = getAction(ShowImageViewAction.ID);
             ShowImageViewRGBAction showImageViewRGBAction = getAction(ShowImageViewRGBAction.ID);
-            ShowMetadataViewAction showMetadataViewAction = getAction(ShowMetadataViewAction.ID);
+//            ShowMetadataViewAction showMetadataViewAction = getAction(ShowMetadataViewAction.ID);
 
             final ProductNodeView[] nodeViews = restoredSession.getViews();
             for (ProductNodeView nodeView : nodeViews) {
@@ -183,10 +181,10 @@ public class OpenSessionAction extends ExecCommand {
                         internalFrame = showImageViewAction.openInternalFrame(sceneView, false);
                     }
                     sceneView.getLayerCanvas().getViewport().setTransform(viewport);
-                } else if (nodeView instanceof ProductMetadataView) {
-                    ProductMetadataView metadataView = (ProductMetadataView) nodeView;
-
-                    internalFrame = showMetadataViewAction.openInternalFrame(metadataView);
+//                } else if (nodeView instanceof ProductMetadataView) {
+//                    ProductMetadataView metadataView = (ProductMetadataView) nodeView;
+//
+//                    internalFrame = showMetadataViewAction.openInternalFrame(metadataView);
                 }
                 if (internalFrame != null) {
                     try {

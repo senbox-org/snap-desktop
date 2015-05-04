@@ -39,7 +39,6 @@ import org.esa.snap.framework.ui.product.VectorDataLayer;
 import org.esa.snap.framework.ui.product.tree.AbstractTN;
 import org.esa.snap.framework.ui.product.tree.ProductTreeModel;
 import org.esa.snap.util.Debug;
-import org.esa.snap.visat.actions.ShowMetadataViewAction;
 import org.esa.snap.visat.actions.ShowPlacemarkViewAction;
 import org.esa.snap.visat.internal.RasterDataNodeDeleter;
 
@@ -227,10 +226,10 @@ public class ProductsToolView extends AbstractToolView {
                 }
                 return;
             }
-            if (clickCount == 2) {
-                final ExecCommand command = visatApp.getCommandManager().getExecCommand(ShowMetadataViewAction.ID);
-                command.execute(metadataElement);
-            }
+//            if (clickCount == 2) {
+//                final ExecCommand command = visatApp.getCommandManager().getExecCommand(ShowMetadataViewAction.ID);
+//                command.execute(metadataElement);
+//            }
         }
 
         private void rasterDataNodeSelected(final RasterDataNode raster, final int clickCount) {

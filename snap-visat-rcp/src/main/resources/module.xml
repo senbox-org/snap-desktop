@@ -1107,19 +1107,19 @@
             <!--<helpId>rgbImageProfile</helpId>-->
         <!--</action>-->
 
-        <action>
-            <parent>view</parent>
-            <id>showMetadataView</id>
-            <placeAfter>showImageViewRGB</placeAfter>
-            <text>Open Metadata View</text>
-            <class>org.esa.snap.visat.actions.ShowMetadataViewAction</class>
-            <mnemonic>M</mnemonic>
-            <accellerator>control alt M</accellerator>
-            <shortDescr>Open a metadata view for the selected metadata node.</shortDescr>
-            <context>metadataNode</context>
-            <smallIcon>icons/ImageView16.gif</smallIcon>
-            <largeIcon>icons/ImageView24.gif</largeIcon>
-        </action>
+        <!--<action>-->
+            <!--<parent>view</parent>-->
+            <!--<id>showMetadataView</id>-->
+            <!--<placeAfter>showImageViewRGB</placeAfter>-->
+            <!--<text>Open Metadata View</text>-->
+            <!--<class>org.esa.snap.rcp.actions.file.ShowMetadataViewAction</class>-->
+            <!--<mnemonic>M</mnemonic>-->
+            <!--<accellerator>control alt M</accellerator>-->
+            <!--<shortDescr>Open a metadata view for the selected metadata node.</shortDescr>-->
+            <!--<context>metadataNode</context>-->
+            <!--<smallIcon>icons/ImageView16.gif</smallIcon>-->
+            <!--<largeIcon>icons/ImageView24.gif</largeIcon>-->
+        <!--</action>-->
 
         <action>
             <parent>view</parent>

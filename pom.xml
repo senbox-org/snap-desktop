@@ -98,6 +98,11 @@
                 <artifactId>org-netbeans-modules-sendopts</artifactId>
                 <version>${netbeans.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.netbeans.api</groupId>
+                <artifactId>org-netbeans-swing-outline</artifactId>
+                <version>${netbeans.version}</version>
+            </dependency>
 
 
             <dependency>
