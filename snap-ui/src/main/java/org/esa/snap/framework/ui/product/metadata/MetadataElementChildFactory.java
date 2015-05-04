@@ -10,7 +10,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Created by tonio on 29.04.2015.
+ * @author Tonio Fincke
  */
 public class MetadataElementChildFactory extends ChildFactory.Detachable<MetadataTableElement> {
 

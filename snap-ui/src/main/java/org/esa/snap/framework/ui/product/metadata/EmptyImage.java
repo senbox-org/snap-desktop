@@ -5,7 +5,7 @@ import java.awt.image.ImageObserver;
 import java.awt.image.ImageProducer;
 
 /**
- * Created by tonio on 29.04.2015.
+ * @author Tonio Fincke
  */
 public class EmptyImage extends Image {
 

@@ -1,16 +1,15 @@
 package org.esa.snap.framework.ui.product.metadata;
 
-import org.esa.snap.framework.datamodel.MetadataElement;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.nodes.Sheet;
 import org.openide.util.lookup.AbstractLookup;
 import org.openide.util.lookup.InstanceContent;
 
-import java.awt.*;
+import java.awt.Image;
 
 /**
- * Created by tonio on 29.04.2015.
+ * @author Tonio Fincke
  */
 public class MetadataElementInnerNode extends AbstractNode {
 

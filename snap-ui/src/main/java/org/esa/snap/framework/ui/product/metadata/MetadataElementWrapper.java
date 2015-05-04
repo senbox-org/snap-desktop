@@ -4,7 +4,7 @@ import org.esa.snap.framework.datamodel.MetadataAttribute;
 import org.esa.snap.framework.datamodel.MetadataElement;
 
 /**
- * Created by tonio on 29.04.2015.
+ * @author Tonio Fincke
  */
 class MetadataElementWrapper extends MetadataElement implements MetadataTableElement {
 

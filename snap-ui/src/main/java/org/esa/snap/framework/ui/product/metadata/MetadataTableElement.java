@@ -1,7 +1,7 @@
 package org.esa.snap.framework.ui.product.metadata;
 
 /**
- * Created by tonio on 29.04.2015.
+ * @author Tonio Fincke
  */
 interface MetadataTableElement {
 
