@@ -15,6 +15,7 @@ import org.esa.snap.util.io.BeamFileFilter;
 import org.netbeans.api.progress.ProgressUtils;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle;
 
@@ -43,9 +44,13 @@ import java.util.stream.Collectors;
 )
 @ActionRegistration(
         displayName = "#CTL_OpenProductActionName",
-        menuText = "#CTL_OpenProductActionMenuText"
+        menuText = "#CTL_OpenProductActionMenuText",
+        iconBase = "org/esa/snap/rcp/icons/Open.gif"
 )
-@ActionReference(path = "Menu/File", position = 10)
+@ActionReferences({
+        @ActionReference(path = "Menu/File", position = 10),
+        @ActionReference(path = "Toolbars/File")
+})
 @NbBundle.Messages({
         "CTL_OpenProductActionName=Open Product",
         "CTL_OpenProductActionMenuText=Open Product...",
