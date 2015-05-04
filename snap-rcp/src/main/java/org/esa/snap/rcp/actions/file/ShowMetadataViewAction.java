@@ -51,7 +51,7 @@ import java.awt.event.ActionEvent;
         displayName = "#CTL_ShowMetadataViewActionName"
 )
 @ActionReferences({
-        @ActionReference(path = "Context/Product/MetadataAttribute", position = 110),
+        @ActionReference(path = "Context/Product/MetadataElement", position = 100),
         @ActionReference(path = "Menu/View", position = 110)
 })
 @NbBundle.Messages("CTL_ShowMetadataViewActionName=Open Metadata View")
