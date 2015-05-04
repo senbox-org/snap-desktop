@@ -1,9 +1,9 @@
 package org.esa.snap.rcp.metadata;
 
 import org.netbeans.swing.outline.DefaultOutlineCellRenderer;
+import org.openide.awt.HtmlRenderer;
 import org.openide.nodes.Node.Property;
 import org.openide.util.Exceptions;
-import org.openide.awt.HtmlRenderer;
 
 import javax.swing.JLabel;
 import javax.swing.JTable;
@@ -61,11 +61,13 @@ class MetadataOutlineCellRenderer extends DefaultOutlineCellRenderer {
             cell = super.getTableCellRendererComponent(table, valueToDisplay, isSelected, hasFocus, row, column);
         }
         if (cell != null) {
-            if (centered) {
-                if (cell instanceof HtmlRenderer.Renderer) {
-                    ((HtmlRenderer.Renderer) cell).setCentered(centered);
-                } else if (cell instanceof DefaultTableCellRenderer.UIResource) {
+            if (cell instanceof HtmlRenderer.Renderer) {
+                ((HtmlRenderer.Renderer) cell).setCentered(centered);
+            } else if (cell instanceof DefaultTableCellRenderer.UIResource) {
+                if (centered) {
                     ((DefaultTableCellRenderer.UIResource) cell).setHorizontalAlignment(JLabel.CENTER);
+                } else {
+                    ((DefaultTableCellRenderer.UIResource) cell).setHorizontalAlignment(JLabel.LEFT);
                 }
             }
             Color foregroundColor = table.getForeground();
