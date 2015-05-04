@@ -40,7 +40,6 @@ import java.awt.BorderLayout;
 public class MetadataViewTopComponent extends DocumentTopComponent<ProductNode> implements ExplorerManager.Provider {
 
     private ExplorerManager em = new ExplorerManager();
-    Children children;
 
     public MetadataViewTopComponent(MetadataView document) {
         super(document.getRootElement());
@@ -48,7 +47,7 @@ public class MetadataViewTopComponent extends DocumentTopComponent<ProductNode> 
         setName(getDisplayName());
         setupView(document);
 
-        children = Children.create(new MetadataElementChildFactory(document.getMetadataTableElements()), true);
+        Children children = Children.create(new MetadataElementChildFactory(document.getMetadataTableElements()), true);
         em.setRootContext(new AbstractNode(children));
     }
 

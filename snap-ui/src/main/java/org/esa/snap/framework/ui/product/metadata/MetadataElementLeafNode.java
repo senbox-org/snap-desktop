@@ -15,8 +15,6 @@ import java.awt.Image;
  */
 public class MetadataElementLeafNode extends AbstractNode {
 
-    private Sheet updatedSheet;
-
     public MetadataElementLeafNode(MetadataAttribute attribute) {
         this(attribute, new InstanceContent());
     }
@@ -25,7 +23,7 @@ public class MetadataElementLeafNode extends AbstractNode {
         super(Children.LEAF, new AbstractLookup(content));
         content.add(attribute);
         setName(attribute.getName());
-        updatedSheet = createSheet();
+        createSheet();
     }
 
     @Override

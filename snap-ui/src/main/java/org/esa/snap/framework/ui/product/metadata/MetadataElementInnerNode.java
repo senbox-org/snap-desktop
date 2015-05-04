@@ -13,8 +13,6 @@ import java.awt.Image;
  */
 public class MetadataElementInnerNode extends AbstractNode {
 
-    private Sheet updatedSheet;
-
     public MetadataElementInnerNode(MetadataTableElement element) {
         this(element, new InstanceContent());
     }
@@ -24,7 +22,7 @@ public class MetadataElementInnerNode extends AbstractNode {
                 new AbstractLookup(content));
         content.add(element);
         setName(element.getName());
-        updatedSheet = createSheet();
+        createSheet();
     }
 
     @Override
@@ -41,13 +39,6 @@ public class MetadataElementInnerNode extends AbstractNode {
     protected final Sheet createSheet() {
         Sheet sheet = Sheet.createDefault();
         Sheet.Set set = Sheet.createPropertiesSet();
-//        MetadataElement metadataElement = getLookup().lookup(MetadataElement.class);
-//
-//        MetadataAttributePropertySetter propertySetter = new MetadataAttributePropertySetter(metadataElement);
-//        MetadataAttributePropertySetter.AttributeProperty[] modelProperties = propertySetter.getAttributeProperties();
-//        for (MetadataAttributePropertySetter.AttributeProperty attributeProperty : modelProperties) {
-//            set.put(attributeProperty);
-//        }
         sheet.put(set);
         return sheet;
     }

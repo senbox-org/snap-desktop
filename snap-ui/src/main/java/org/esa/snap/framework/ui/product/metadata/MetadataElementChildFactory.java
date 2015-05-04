@@ -1,7 +1,6 @@
 package org.esa.snap.framework.ui.product.metadata;
 
 import org.esa.snap.framework.datamodel.MetadataAttribute;
-import org.esa.snap.framework.datamodel.MetadataElement;
 import org.openide.nodes.ChildFactory;
 import org.openide.nodes.Node;
 
@@ -31,6 +30,10 @@ public class MetadataElementChildFactory extends ChildFactory.Detachable<Metadat
         if (metadataElement instanceof MetadataElementWrapper) {
             return new MetadataElementInnerNode(metadataElement);
         } else {
+//            MetadataAttribute attribute = (MetadataAttribute) metadataElement;
+//            if (attribute.getDataElemSize() > 0) {
+//
+//            }
             return new MetadataElementLeafNode((MetadataAttribute) metadataElement);
         }
     }
