@@ -11,13 +11,13 @@ import java.awt.Image;
 /**
  * @author Tonio Fincke
  */
-public class MetadataElementInnerNode extends AbstractNode {
+class MetadataElementInnerNode extends AbstractNode {
 
-    public MetadataElementInnerNode(MetadataTableElement element) {
+    public MetadataElementInnerNode(MetadataTableInnerElement element) {
         this(element, new InstanceContent());
     }
 
-    private MetadataElementInnerNode(MetadataTableElement element, InstanceContent content) {
+    private MetadataElementInnerNode(MetadataTableInnerElement element, InstanceContent content) {
         super(Children.create(new MetadataElementChildFactory(element.getMetadataTableElements()), false),
                 new AbstractLookup(content));
         content.add(element);

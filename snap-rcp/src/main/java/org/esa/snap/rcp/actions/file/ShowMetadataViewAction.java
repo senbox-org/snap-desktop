@@ -17,7 +17,6 @@ package org.esa.snap.rcp.actions.file;
 
 import org.esa.snap.framework.datamodel.MetadataElement;
 import org.esa.snap.framework.datamodel.ProductNode;
-import org.esa.snap.framework.ui.product.metadata.MetadataView;
 import org.esa.snap.netbeans.docwin.DocumentWindowManager;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.metadata.MetadataViewTopComponent;
@@ -95,12 +94,11 @@ public class ShowMetadataViewAction extends AbstractAction implements ContextAwa
     }
     
     public void openMetadataView(final MetadataElement element) {
-        MetadataView metadataView = new MetadataView(element);
-        openDocumentWindow(metadataView);
+        openDocumentWindow(element);
     }
 
-    private MetadataViewTopComponent openDocumentWindow(final MetadataView view) {
-        final MetadataViewTopComponent metadataViewTopComponent = new MetadataViewTopComponent(view);
+    private MetadataViewTopComponent openDocumentWindow(final MetadataElement element) {
+        final MetadataViewTopComponent metadataViewTopComponent = new MetadataViewTopComponent(element);
         DocumentWindowManager.getDefault().openWindow(metadataViewTopComponent);
         metadataViewTopComponent.requestSelected();
         return metadataViewTopComponent;

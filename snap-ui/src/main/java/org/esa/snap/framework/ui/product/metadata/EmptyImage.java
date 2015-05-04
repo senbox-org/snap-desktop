@@ -7,7 +7,7 @@ import java.awt.image.ImageProducer;
 /**
  * @author Tonio Fincke
  */
-public class EmptyImage extends Image {
+class EmptyImage extends Image {
 
     @Override
     public int getWidth(ImageObserver observer) {

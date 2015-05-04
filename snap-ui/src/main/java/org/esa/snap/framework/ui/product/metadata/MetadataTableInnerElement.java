@@ -3,6 +3,7 @@ package org.esa.snap.framework.ui.product.metadata;
 import org.esa.snap.framework.datamodel.MetadataAttribute;
 import org.esa.snap.framework.datamodel.MetadataElement;
 import org.esa.snap.framework.datamodel.ProductData;
+import org.openide.nodes.AbstractNode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,14 +11,38 @@ import java.util.List;
 /**
  * @author Tonio Fincke
  */
-public class MetadataTableElementFactory {
+public class MetadataTableInnerElement implements MetadataTableElement {
 
-    public static MetadataTableElement[] getChildrenElementsFromElement(MetadataElement metadataElement) {
+    private final MetadataElement metadataElement;
+    private final MetadataTableElement[] metadataTableElements;
+
+
+    public MetadataTableInnerElement(MetadataElement metadataElement) {
+        this.metadataElement = metadataElement;
+        metadataTableElements = getChildrenElementsFromElement(metadataElement);
+    }
+
+    @Override
+    public MetadataTableElement[] getMetadataTableElements() {
+        return metadataTableElements;
+    }
+
+    @Override
+    public String getName() {
+        return metadataElement.getName();
+    }
+
+    @Override
+    public AbstractNode createNode() {
+        return new MetadataElementInnerNode(this);
+    }
+
+    private static MetadataTableElement[] getChildrenElementsFromElement(MetadataElement metadataElement) {
         MetadataElement[] elements = metadataElement.getElements();
         MetadataAttribute[] attributes = metadataElement.getAttributes();
         List<MetadataTableElement> metadataTableElementList = new ArrayList<>();
         for (MetadataElement element : elements) {
-            metadataTableElementList.add(new MetadataElementWrapper(element));
+            metadataTableElementList.add(new MetadataTableInnerElement(element));
         }
         for (MetadataAttribute attribute : attributes) {
             final long dataElemSize = attribute.getNumDataElems();
@@ -33,10 +58,10 @@ public class MetadataTableElementFactory {
                         addIntMetadataAttributes(attribute, (int[]) dataElems, metadataTableElementList);
                     }
                 } else {
-                    metadataTableElementList.add(new MetadataAttributeWrapper(attribute));
+                    metadataTableElementList.add(new MetadataTableLeaf(attribute));
                 }
             } else {
-                metadataTableElementList.add(new MetadataAttributeWrapper(attribute));
+                metadataTableElementList.add(new MetadataTableLeaf(attribute));
             }
         }
         return metadataTableElementList.toArray(new MetadataTableElement[metadataTableElementList.size()]);
@@ -54,12 +79,12 @@ public class MetadataTableElementFactory {
             partAttribute.setDataElems(new float[]{elems[j]});
             partAttribute.setUnit(unit);
             partAttribute.setDescription(description);
-            metadataTableElementList.add(new MetadataAttributeWrapper(partAttribute));
+            metadataTableElementList.add(new MetadataTableLeaf(partAttribute));
         }
     }
 
     private static void addByteMetadataAttributes(MetadataAttribute attribute, byte[] elems,
-                                                 List<MetadataTableElement> metadataTableElementList) {
+                                                  List<MetadataTableElement> metadataTableElementList) {
         final String name = attribute.getName();
         final int dataType = attribute.getDataType();
         final String unit = attribute.getUnit();
@@ -70,7 +95,7 @@ public class MetadataTableElementFactory {
             partAttribute.setDataElems(new byte[]{elems[j]});
             partAttribute.setUnit(unit);
             partAttribute.setDescription(description);
-            metadataTableElementList.add(new MetadataAttributeWrapper(partAttribute));
+            metadataTableElementList.add(new MetadataTableLeaf(partAttribute));
         }
     }
 
@@ -86,7 +111,7 @@ public class MetadataTableElementFactory {
             partAttribute.setDataElems(new int[]{elems[j]});
             partAttribute.setUnit(unit);
             partAttribute.setDescription(description);
-            metadataTableElementList.add(new MetadataAttributeWrapper(partAttribute));
+            metadataTableElementList.add(new MetadataTableLeaf(partAttribute));
         }
     }
 
