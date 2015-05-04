@@ -17,7 +17,6 @@ package org.esa.snap.rcp.actions.file;
 
 import org.esa.snap.framework.datamodel.MetadataElement;
 import org.esa.snap.framework.datamodel.ProductNode;
-import org.esa.snap.framework.ui.product.ProductMetadataView;
 import org.esa.snap.framework.ui.product.metadata.MetadataView;
 import org.esa.snap.netbeans.docwin.DocumentWindowManager;
 import org.esa.snap.rcp.SnapApp;
@@ -57,10 +56,8 @@ import java.awt.event.ActionEvent;
         @ActionReference(path = "Menu/View", position = 110)
 })
 @NbBundle.Messages("CTL_ShowMetadataViewActionName=Open Metadata View")
-//public class ShowMetadataViewAction extends ExecCommand {
 public class ShowMetadataViewAction extends AbstractAction implements ContextAwareAction, LookupListener {
 
-//    public static String ID = "showMetadataView";
     private Lookup lookup;
     private final Lookup.Result<ProductNode> result;
 
@@ -74,9 +71,7 @@ public class ShowMetadataViewAction extends AbstractAction implements ContextAwa
         result.addLookupListener(
                 WeakListeners.create(LookupListener.class, this, result));
         setEnableState();
-//        setHelpId(org.esa.snap.rcp.actions.vector.Bundle.CTL_ImportVectorDataNodeFromShapefileActionHelp());
         putValue(Action.NAME, org.esa.snap.rcp.actions.file.Bundle.CTL_ShowMetadataViewActionName());
-//        putValue(Action.SHORT_DESCRIPTION, org.esa.snap.rcp.actions.vector.Bundle.CTL_ImportVectorDataNodeFromShapefileActionName());
     }
 
     @Override
@@ -90,95 +85,24 @@ public class ShowMetadataViewAction extends AbstractAction implements ContextAwa
     }
 
     private void setEnableState() {
-//        boolean state = false;
         ProductNode productNode = lookup.lookup(ProductNode.class);
-//        if (productNode != null) {
-//            Product product = productNode.getProduct();
-//            state = product != null && product.getGeoCoding() != null;
-//        }
         setEnabled(productNode != null && productNode instanceof MetadataElement);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-//
-//    }
-//    @Override
-//    public void actionPerformed(final CommandEvent event) {
-//        final VisatApp visatApp = VisatApp.getApp();
         openMetadataView((MetadataElement) SnapApp.getDefault().getSelectedProductNode());
     }
     
-//    @Override
-//    public void updateState(final CommandEvent event) {
-//        setEnabled(SnapApp.getDefault().getSelectedProductNode() instanceof MetadataElement);
-//    }
-
-//    public ProductMetadataView openMetadataView(final MetadataElement element) {
     public void openMetadataView(final MetadataElement element) {
         MetadataView metadataView = new MetadataView(element);
-//        ProductMetadataView metadataView = new ProductMetadataView(element);
         openDocumentWindow(metadataView);
-//        openInternalFrame(metadataView);
-//        return metadataView;
     }
 
-//    private MetadataViewTopComponent openDocumentWindow(final ProductMetadataView view) {
     private MetadataViewTopComponent openDocumentWindow(final MetadataView view) {
-//        return openDocumentWindow(view, true);
-//    }
-//
-//    private ProductSceneViewTopComponent openDocumentWindow(final ProductMetadataView view, boolean configureByPreferences) {
-//        if (configureByPreferences) {
-//            view.setLayerProperties(SnapApp.getDefault().getCompatiblePreferences());
-//        }
-
-//        UndoRedo.Manager undoManager = SnapApp.getDefault().getUndoManager(view.getProduct());
-//        ProductSceneViewTopComponent productSceneViewWindow = new ProductSceneViewTopComponent(view, undoManager);
         final MetadataViewTopComponent metadataViewTopComponent = new MetadataViewTopComponent(view);
-
-//        DocumentWindowManager.getDefault().openWindow(productSceneViewWindow);
         DocumentWindowManager.getDefault().openWindow(metadataViewTopComponent);
-//        productSceneViewWindow.requestSelected();
         metadataViewTopComponent.requestSelected();
-
-//        return productSceneViewWindow;
         return metadataViewTopComponent;
     }
-
-//    public JInternalFrame openInternalFrame(ProductMetadataView metadataView) {
-//        final SnapApp snapApp = SnapApp.getDefault();
-//        snapApp.setStatusBarMessage("Creating metadata view...");
-//        snapApp.getMainFrame().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-
-
-//        JInternalFrame metadataFrame = null;
-//        try {
-//            metadataView.setCommandUIFactory(visatApp.getCommandUIFactory());
-//            final Icon icon = UIUtils.loadImageIcon("icons/RsMetaData16.gif");
-//            final MetadataElement element = metadataView.getMetadataElement();
-//            metadataFrame = visatApp.createInternalFrame(element.getDisplayName(),
-//                                                         icon,
-//                                                         metadataView, null,false);
-//            final Product product = metadataView.getProduct();
-//            final JInternalFrame internalFrame = metadataFrame;
-//            product.addProductNodeListener(new ProductNodeListenerAdapter() {
-//                @Override
-//                public void nodeChanged(final ProductNodeEvent event) {
-//                    if (event.getSourceNode() == element &&
-//                            event.getPropertyName().equalsIgnoreCase(ProductNode.PROPERTY_NAME_NAME)) {
-//                        internalFrame.setTitle(element.getDisplayName());
-//                    }
-//                }
-//            });
-//            updateState();
-//        } catch (Exception e) {
-//            visatApp.handleUnknownException(e);
-//        }
-
-//        visatApp.getMainFrame().setCursor(Cursor.getDefaultCursor());
-//        visatApp.clearStatusBarMessage();
-
-//        return metadataFrame;
-//    }
 }

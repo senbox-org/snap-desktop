@@ -17,6 +17,7 @@ import org.esa.snap.framework.datamodel.ProductNodeGroup;
 import org.esa.snap.framework.datamodel.TiePointGrid;
 import org.esa.snap.framework.datamodel.VectorDataNode;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.rcp.actions.file.ShowMetadataViewAction;
 import org.esa.snap.rcp.actions.view.OpenImageViewAction;
 import org.openide.awt.UndoRedo;
 import org.openide.nodes.Node;
@@ -180,6 +181,12 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
                               getProductNode().getParentElement().getElementGroup(),
                               getProductNode());
         }
+
+        @Override
+        public Action getPreferredAction() {
+//            return new ShowMetadataViewAction(this.getProductNode());
+            return new ShowMetadataViewAction();
+        }
     }
 
     /**
@@ -205,6 +212,11 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
                               getProductNode().getProduct().getIndexCodingGroup(),
                               getProductNode());
         }
+
+        @Override
+        public Action getPreferredAction() {
+            return new ShowMetadataViewAction();
+        }
     }
 
     /**
@@ -229,6 +241,11 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
             deleteProductNode(getProductNode().getProduct(),
                               getProductNode().getProduct().getFlagCodingGroup(),
                               getProductNode());
+        }
+
+        @Override
+        public Action getPreferredAction() {
+            return new ShowMetadataViewAction();
         }
     }
 
