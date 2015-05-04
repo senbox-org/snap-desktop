@@ -1121,18 +1121,18 @@
             <!--<largeIcon>icons/ImageView24.gif</largeIcon>-->
         <!--</action>-->
 
-        <action>
-            <parent>view</parent>
-            <id>showPlacemarkView</id>
-            <placeAfter>showMetadataView</placeAfter>
-            <text>Open Placemark View</text>
-            <class>org.esa.snap.visat.actions.ShowPlacemarkViewAction</class>
-            <mnemonic>P</mnemonic>
-            <accellerator>control alt P</accellerator>
-            <shortDescr>Open a placemark view for the selected metadata node.</shortDescr>
-            <context>vectorDataNode</context>
-            <smallIcon>icons/RsVectorData16.gif</smallIcon>
-        </action>
+        <!--<action>-->
+            <!--<parent>view</parent>-->
+            <!--<id>showPlacemarkView</id>-->
+            <!--<placeAfter>showMetadataView</placeAfter>-->
+            <!--<text>Open Placemark View</text>-->
+            <!--<class>org.esa.snap.visat.actions.ShowPlacemarkViewAction</class>-->
+            <!--<mnemonic>P</mnemonic>-->
+            <!--<accellerator>control alt P</accellerator>-->
+            <!--<shortDescr>Open a placemark view for the selected metadata node.</shortDescr>-->
+            <!--<context>vectorDataNode</context>-->
+            <!--<smallIcon>icons/RsVectorData16.gif</smallIcon>-->
+        <!--</action>-->
 
         <!-- View / Show ... Overlay ============================================================================== -->
 

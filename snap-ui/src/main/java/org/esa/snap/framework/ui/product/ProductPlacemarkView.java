@@ -15,7 +15,6 @@
  */
 package org.esa.snap.framework.ui.product;
 
-import com.jidesoft.grid.SortableTable;
 import org.esa.snap.framework.datamodel.ProductNode;
 import org.esa.snap.framework.datamodel.ProductNodeEvent;
 import org.esa.snap.framework.datamodel.ProductNodeListener;
@@ -33,6 +32,7 @@ import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableRowSorter;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Cursor;
@@ -48,17 +48,16 @@ import java.util.Enumeration;
 public class ProductPlacemarkView extends BasicView implements ProductNodeView {
 
     private VectorDataNode vectorDataNode;
-    private SortableTable placemarkTable;
     private final PlacemarkTableModel tableModel;
 
     public ProductPlacemarkView(VectorDataNode vectorDataNode) {
         this.vectorDataNode = vectorDataNode;
         this.vectorDataNode.getProduct().addProductNodeListener(new PNL());
-        placemarkTable = new SortableTable();
+        tableModel = new PlacemarkTableModel();
+        JTable placemarkTable = new JTable();
+        placemarkTable.setRowSorter(new TableRowSorter<>(tableModel));
         placemarkTable.addMouseListener(new PopupMenuHandler(this));
         placemarkTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-
-        tableModel = new PlacemarkTableModel();
         placemarkTable.setModel(tableModel);
 
         final TableCellRenderer renderer = placemarkTable.getTableHeader().getDefaultRenderer();

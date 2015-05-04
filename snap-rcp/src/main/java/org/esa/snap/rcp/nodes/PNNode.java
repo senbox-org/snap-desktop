@@ -17,6 +17,7 @@ import org.esa.snap.framework.datamodel.ProductNodeGroup;
 import org.esa.snap.framework.datamodel.TiePointGrid;
 import org.esa.snap.framework.datamodel.VectorDataNode;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.rcp.actions.ShowPlacemarkViewAction;
 import org.esa.snap.rcp.actions.file.ShowMetadataViewAction;
 import org.esa.snap.rcp.actions.view.OpenImageViewAction;
 import org.openide.awt.UndoRedo;
@@ -271,6 +272,11 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
             deleteProductNode(getProductNode().getProduct(),
                               getProductNode().getProduct().getVectorDataGroup(),
                               getProductNode());
+        }
+
+        @Override
+        public Action getPreferredAction() {
+            return new ShowPlacemarkViewAction();
         }
     }
 
