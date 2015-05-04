@@ -9,8 +9,15 @@ import org.esa.snap.framework.datamodel.MetadataElement;
 public class MetadataView {
 
     MetadataElement root;
-    private static final String[] columnNames = new String[]{"Value", "Value", "Type", "Type", "Unit", "Unit",
+    private static final String[] column_names = new String[]{"Value", "Value", "Type", "Type", "Unit", "Unit",
             "Description", "Description"};
+    private static final int[] column_widths = {
+            180, // 0
+            180, // 1
+            50, // 2
+            40, // 3
+            200 // 4
+    };
     private static final String nodesColumnName = "Name";
     private final MetadataTableElement[] metadataTableElements;
 
@@ -32,7 +39,11 @@ public class MetadataView {
     }
 
     public String[] getColumnNames() {
-        return columnNames;
+        return column_names;
+    }
+
+    public int[] getColumnWidths() {
+        return column_widths;
     }
 
     public MetadataTableElement[] getMetadataTableElements() {

@@ -20,7 +20,7 @@ import org.esa.snap.framework.datamodel.ProductNode;
 import org.esa.snap.framework.ui.product.metadata.MetadataView;
 import org.esa.snap.netbeans.docwin.DocumentWindowManager;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.windows.MetadataViewTopComponent;
+import org.esa.snap.rcp.metadata.MetadataViewTopComponent;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
