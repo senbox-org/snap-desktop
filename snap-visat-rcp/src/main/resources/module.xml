@@ -1136,92 +1136,92 @@
 
         <!-- View / Show ... Overlay ============================================================================== -->
 
-        <action>
-            <parent>view</parent>
-            <id>showNoDataOverlay</id>
-            <placeAfter>showPlacemarkView</placeAfter>
-            <separatorBefore>true</separatorBefore>
-            <text>Show No-Data Overlay</text>
-            <class>org.esa.snap.visat.actions.ShowNoDataOverlayAction</class>
-            <toggle>true</toggle>
-            <shortDescr>Show/hide no-data overlay for the selected image</shortDescr>
-            <context>image</context>
-            <smallIcon>icons/NoDataOverlay16.gif</smallIcon>
-            <largeIcon>icons/NoDataOverlay24.gif</largeIcon>
-            <helpId>noDataOverlay</helpId>
-        </action>
+        <!--<action>-->
+            <!--<parent>view</parent>-->
+            <!--<id>showNoDataOverlay</id>-->
+            <!--<placeAfter>showPlacemarkView</placeAfter>-->
+            <!--<separatorBefore>true</separatorBefore>-->
+            <!--<text>Show No-Data Overlay</text>-->
+            <!--<class>org.esa.snap.visat.actions.ShowNoDataOverlayAction</class>-->
+            <!--<toggle>true</toggle>-->
+            <!--<shortDescr>Show/hide no-data overlay for the selected image</shortDescr>-->
+            <!--<context>image</context>-->
+            <!--<smallIcon>icons/NoDataOverlay16.gif</smallIcon>-->
+            <!--<largeIcon>icons/NoDataOverlay24.gif</largeIcon>-->
+            <!--<helpId>noDataOverlay</helpId>-->
+        <!--</action>-->
 
-        <action>
-            <parent>view</parent>
-            <id>showShapeOverlay</id>
-            <placeAfter>showNoDataOverlay</placeAfter>
-            <text>Show Geometry Overlay</text>
-            <class>org.esa.snap.visat.actions.ShowGeometryOverlayAction</class>
-            <toggle>true</toggle>
-            <mnemonic>O</mnemonic>
-            <shortDescr>Show/hide geometry overlay for the selected image</shortDescr>
-            <context>image</context>
-            <smallIcon>icons/ShapeOverlay16.gif</smallIcon>
-            <largeIcon>icons/ShapeOverlay24.gif</largeIcon>
-            <helpId>showShapeOverlay</helpId>
-        </action>
+        <!--<action>-->
+            <!--<parent>view</parent>-->
+            <!--<id>showShapeOverlay</id>-->
+            <!--<placeAfter>showNoDataOverlay</placeAfter>-->
+            <!--<text>Show Geometry Overlay</text>-->
+            <!--<class>org.esa.snap.visat.actions.ShowGeometryOverlayAction</class>-->
+            <!--<toggle>true</toggle>-->
+            <!--<mnemonic>O</mnemonic>-->
+            <!--<shortDescr>Show/hide geometry overlay for the selected image</shortDescr>-->
+            <!--<context>image</context>-->
+            <!--<smallIcon>icons/ShapeOverlay16.gif</smallIcon>-->
+            <!--<largeIcon>icons/ShapeOverlay24.gif</largeIcon>-->
+            <!--<helpId>showShapeOverlay</helpId>-->
+        <!--</action>-->
 
-        <action>
-            <parent>view</parent>
-            <id>showGraticuleOverlay</id>
-            <placeAfter>showShapeOverlay</placeAfter>
-            <text>Show Graticule Overlay</text>
-            <class>org.esa.snap.visat.actions.ShowGraticuleOverlayAction</class>
-            <toggle>true</toggle>
-            <mnemonic>G</mnemonic>
-            <shortDescr>Show/hide graticule overlay for the selected image</shortDescr>
-            <context>image</context>
-            <smallIcon>icons/GraticuleOverlay16.gif</smallIcon>
-            <largeIcon>icons/GraticuleOverlay24.gif</largeIcon>
-            <helpId>showGraticuleOverlay</helpId>
-        </action>
+        <!--<action>-->
+            <!--<parent>view</parent>-->
+            <!--<id>showGraticuleOverlay</id>-->
+            <!--<placeAfter>showShapeOverlay</placeAfter>-->
+            <!--<text>Show Graticule Overlay</text>-->
+            <!--<class>org.esa.snap.visat.actions.ShowGraticuleOverlayAction</class>-->
+            <!--<toggle>true</toggle>-->
+            <!--<mnemonic>G</mnemonic>-->
+            <!--<shortDescr>Show/hide graticule overlay for the selected image</shortDescr>-->
+            <!--<context>image</context>-->
+            <!--<smallIcon>icons/GraticuleOverlay16.gif</smallIcon>-->
+            <!--<largeIcon>icons/GraticuleOverlay24.gif</largeIcon>-->
+            <!--<helpId>showGraticuleOverlay</helpId>-->
+        <!--</action>-->
 
-        <action>
-            <parent>view</parent>
-            <id>showPinOverlay</id>
-            <placeAfter>showGraticuleOverlay</placeAfter>
-            <text>Show Pin Overlay</text>
-            <class>org.esa.snap.visat.actions.ShowPinOverlayAction</class>
-            <toggle>true</toggle>
-            <shortDescr>Show/hide pin overlay for the selected image</shortDescr>
-            <smallIcon>icons/PinOverlay16.gif</smallIcon>
-            <largeIcon>icons/PinOverlay24.gif</largeIcon>
-            <context>image</context>
-            <helpId>showPinOverlay</helpId>
-        </action>
+        <!--<action>-->
+            <!--<parent>view</parent>-->
+            <!--<id>showPinOverlay</id>-->
+            <!--<placeAfter>showGraticuleOverlay</placeAfter>-->
+            <!--<text>Show Pin Overlay</text>-->
+            <!--<class>org.esa.snap.visat.actions.ShowPinOverlayAction</class>-->
+            <!--<toggle>true</toggle>-->
+            <!--<shortDescr>Show/hide pin overlay for the selected image</shortDescr>-->
+            <!--<smallIcon>icons/PinOverlay16.gif</smallIcon>-->
+            <!--<largeIcon>icons/PinOverlay24.gif</largeIcon>-->
+            <!--<context>image</context>-->
+            <!--<helpId>showPinOverlay</helpId>-->
+        <!--</action>-->
 
-        <action>
-            <parent>view</parent>
-            <id>showGcpOverlay</id>
-            <placeAfter>showPinOverlay</placeAfter>
-            <text>Show GCP Overlay</text>
-            <class>org.esa.snap.visat.actions.ShowGcpOverlayAction</class>
-            <toggle>true</toggle>
-            <shortDescr>Show/hide GCP overlay for the selected image</shortDescr>
-            <smallIcon>icons/GcpOverlay16.gif</smallIcon>
-            <largeIcon>icons/GcpOverlay24.gif</largeIcon>
-            <context>image</context>
-            <helpId>showGcpOverlay</helpId>
-        </action>
+        <!--<action>-->
+            <!--<parent>view</parent>-->
+            <!--<id>showGcpOverlay</id>-->
+            <!--<placeAfter>showPinOverlay</placeAfter>-->
+            <!--<text>Show GCP Overlay</text>-->
+            <!--<class>org.esa.snap.visat.actions.ShowGcpOverlayAction</class>-->
+            <!--<toggle>true</toggle>-->
+            <!--<shortDescr>Show/hide GCP overlay for the selected image</shortDescr>-->
+            <!--<smallIcon>icons/GcpOverlay16.gif</smallIcon>-->
+            <!--<largeIcon>icons/GcpOverlay24.gif</largeIcon>-->
+            <!--<context>image</context>-->
+            <!--<helpId>showGcpOverlay</helpId>-->
+        <!--</action>-->
 
-        <action>
-            <parent>view</parent>
-            <id>showWorldMapOverlay</id>
-            <placeAfter>showGcpOverlay</placeAfter>
-            <text>Show World Map Overlay</text>
-            <class>org.esa.snap.visat.actions.ShowWorldMapOverlayAction</class>
-            <toggle>true</toggle>
-            <shortDescr>Show/hide World Map overlay for the selected image</shortDescr>
-            <smallIcon>icons/WorldMapOverlay16.png</smallIcon>
-            <largeIcon>icons/WorldMapOverlay24.png</largeIcon>
-            <context>image</context>
-            <helpId>showWorldMapOverlay</helpId>
-        </action>
+        <!--<action>-->
+            <!--<parent>view</parent>-->
+            <!--<id>showWorldMapOverlay</id>-->
+            <!--<placeAfter>showGcpOverlay</placeAfter>-->
+            <!--<text>Show World Map Overlay</text>-->
+            <!--<class>org.esa.snap.visat.actions.ShowWorldMapOverlayAction</class>-->
+            <!--<toggle>true</toggle>-->
+            <!--<shortDescr>Show/hide World Map overlay for the selected image</shortDescr>-->
+            <!--<smallIcon>icons/WorldMapOverlay16.png</smallIcon>-->
+            <!--<largeIcon>icons/WorldMapOverlay24.png</largeIcon>-->
+            <!--<context>image</context>-->
+            <!--<helpId>showWorldMapOverlay</helpId>-->
+        <!--</action>-->
 
         <!-- Analysis ################################################################################################ -->
 

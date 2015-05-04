@@ -25,7 +25,6 @@ import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.HelpCtx;
-import org.openide.util.ImageUtilities;
 import org.openide.util.NbBundle.Messages;
 
 import javax.swing.AbstractAction;
@@ -73,8 +72,6 @@ public class BandMathsAction extends AbstractAction implements HelpCtx.Provider 
         super(Bundle.CTL_BandMathsAction_MenuText());
         product = node.getProduct();
         putValue(Action.SHORT_DESCRIPTION, Bundle.CTL_BandMathsAction_ShortDescription());
-        putValue(Action.SMALL_ICON, ImageUtilities.loadImageIcon("icons/BandMaths.gif", false));
-        putValue(Action.LARGE_ICON_KEY, ImageUtilities.loadImageIcon("icons/BandMaths24.gif", false));
     }
 
     @Override
