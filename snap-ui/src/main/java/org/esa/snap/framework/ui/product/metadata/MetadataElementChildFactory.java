@@ -21,7 +21,7 @@ class MetadataElementChildFactory extends ChildFactory.Detachable<MetadataTableE
 
     @Override
     protected boolean createKeys(List<MetadataTableElement> toPopulate) {
-        if(metadataTableElementList.size() == 0) {
+        if (metadataTableElementList.size() == 0) {
             return true;
         }
         return toPopulate.addAll(metadataTableElementList);
