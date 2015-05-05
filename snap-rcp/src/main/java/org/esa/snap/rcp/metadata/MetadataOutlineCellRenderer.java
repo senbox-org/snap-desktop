@@ -63,6 +63,7 @@ class MetadataOutlineCellRenderer extends DefaultOutlineCellRenderer {
         if (cell != null) {
             if (cell instanceof HtmlRenderer.Renderer) {
                 ((HtmlRenderer.Renderer) cell).setCentered(centered);
+                ((HtmlRenderer.Renderer) cell).setIndent(5);
             } else if (cell instanceof DefaultTableCellRenderer.UIResource) {
                 if (centered) {
                     ((DefaultTableCellRenderer.UIResource) cell).setHorizontalAlignment(JLabel.CENTER);
