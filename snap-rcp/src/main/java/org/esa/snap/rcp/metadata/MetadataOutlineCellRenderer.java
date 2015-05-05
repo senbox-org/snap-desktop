@@ -11,7 +11,6 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Font;
 import java.lang.reflect.InvocationTargetException;
 
 /**
@@ -30,7 +29,6 @@ class MetadataOutlineCellRenderer extends DefaultOutlineCellRenderer {
     /**
      * Highlight the non editable cells making the foreground lighter.
      */
-    protected boolean lighterEditableFields = false;
 
     @Override
     @SuppressWarnings("unchecked")
@@ -45,9 +43,7 @@ class MetadataOutlineCellRenderer extends DefaultOutlineCellRenderer {
         if (value instanceof Property) {
             try {
                 valueToDisplay = ((Property) value).getValue();
-            } catch (IllegalAccessException ex) {
-                Exceptions.printStackTrace(ex);
-            } catch (InvocationTargetException ex) {
+            } catch (IllegalAccessException | InvocationTargetException ex) {
                 Exceptions.printStackTrace(ex);
             }
         }
@@ -72,53 +68,12 @@ class MetadataOutlineCellRenderer extends DefaultOutlineCellRenderer {
                 }
             }
             Color foregroundColor = table.getForeground();
-            int modelRow = table.convertRowIndexToModel(row);
-            int modelColumn = table.convertColumnIndexToModel(column);
-            final boolean cellEditable = table.getModel().isCellEditable(modelRow, modelColumn);
-            if (lighterEditableFields && cellEditable) {
-                foregroundColor = Color.BLUE;
-            }
             cell.setForeground(foregroundColor);
             cell.setBackground(row % 2 == 0 ? Color.WHITE : VERY_LIGHT_GRAY);
             if (isSelected) {
-                if (lighterEditableFields && cellEditable) {
-                    cell.setFont(cell.getFont().deriveFont(Font.BOLD));
-                }
                 cell.setBackground(table.getSelectionBackground());
             }
         }
         return cell;
-    }
-
-    /**
-     * @return true if the text rendered in labels is centered.
-     */
-    public boolean isCentered() {
-        return centered;
-    }
-
-    /**
-     * Center the content of the cells displaying text.
-     *
-     * @param value true to center, false for default alignment.
-     */
-    public void setCentered(final boolean value) {
-        this.centered = value;
-    }
-
-    /**
-     * @return true if non editable cells have a lighter foreground.
-     */
-    public boolean isLighterEditableFields() {
-        return lighterEditableFields;
-    }
-
-    /**
-     * Highlight the non editable cells making the foreground lighter.
-     *
-     * @param value true to activate this feature.
-     */
-    public void setLighterEditableFields(final boolean value) {
-        this.lighterEditableFields = value;
     }
 }
