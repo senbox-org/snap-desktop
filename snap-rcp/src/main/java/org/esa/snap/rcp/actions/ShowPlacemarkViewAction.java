@@ -58,7 +58,7 @@ import java.awt.event.ActionEvent;
 public class ShowPlacemarkViewAction extends AbstractAction implements ContextAwareAction, LookupListener {
 
     private Lookup lookup;
-    private final Lookup.Result<ProductNode> result;
+    private final Lookup.Result<VectorDataNode> result;
 
     public ShowPlacemarkViewAction() {
         this(Utilities.actionsGlobalContext());
@@ -66,7 +66,7 @@ public class ShowPlacemarkViewAction extends AbstractAction implements ContextAw
 
     public ShowPlacemarkViewAction(Lookup lookup) {
         this.lookup = lookup;
-        result = lookup.lookupResult(ProductNode.class);
+        result = lookup.lookupResult(VectorDataNode.class);
         result.addLookupListener(
                 WeakListeners.create(LookupListener.class, this, result));
         setEnableState();
