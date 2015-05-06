@@ -288,27 +288,26 @@ public class WW3DToolView extends WWBaseToolView implements WWView {
 
     @Override
     public void setSelectedProduct(final Product product) {
+        super.setSelectedProduct(product);
 
         if (productPanel != null)
             productPanel.update(getWwd());
-
-        super.setSelectedProduct(product);
     }
 
     @Override
     public void setProducts(final Product[] products) {
+        super.setProducts(products);
+
         if (productPanel != null)
             productPanel.update(getWwd());
-
-        super.setProducts(products);
     }
 
     @Override
     public void removeProduct(final Product product) {
+        super.removeProduct(product);
+
         if (productPanel != null)
             productPanel.update(getWwd());
-
-        super.removeProduct(product);
     }
 
     private WMSLayersPanel addTab(final int position, final String server) {

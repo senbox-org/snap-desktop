@@ -79,8 +79,6 @@ class ProductPanel extends JPanel {
             final LayerAction action = new LayerAction(defaultProductLayer, wwd, name, defaultProductLayer.getOpacity(name) != 0);
             final JCheckBox jcb = new JCheckBox(action);
 
-            // CHANGED
-            SystemUtils.LOG.fine("fill: checkbox" + name);
             jcb.setSelected(action.selected);
             this.layersPanel.add(jcb);
 
