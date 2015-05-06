@@ -139,18 +139,17 @@ public class WWWorldMapToolView extends WWBaseToolView implements WWView {
                     final Layer placeNameLayer = layerList.getLayerByName("Place Names");
                     placeNameLayer.setEnabled(true);
 
-                    final SnapApp snapApp = SnapApp.getDefault();
-                    snapApp.getProductManager().addListener(new WWProductManagerListener(toolView));
-                    snapApp.getSelectionSupport(ProductNode.class).addHandler(new SelectionSupport.Handler<ProductNode>() {
+                    SnapApp.getDefault().getProductManager().addListener(new WWProductManagerListener(toolView));
+                    SnapApp.getDefault().getSelectionSupport(ProductNode.class).addHandler(new SelectionSupport.Handler<ProductNode>() {
                         @Override
                         public void selectionChange(@NullAllowed ProductNode oldValue, @NullAllowed ProductNode newValue) {
                             if (newValue != null) {
                                 setSelectedProduct(newValue.getProduct());
+                            } else {
+                                setSelectedProduct(null);
                             }
                         }
                     });
-                    setProducts(snapApp.getProductManager().getProducts());
-                    setSelectedProduct(snapApp.getSelectedProduct());
 
                     setProducts(SnapApp.getDefault().getProductManager().getProducts());
                     setSelectedProduct(SnapApp.getDefault().getSelectedProduct());
