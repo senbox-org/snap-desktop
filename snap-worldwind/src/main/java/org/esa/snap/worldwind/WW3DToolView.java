@@ -55,18 +55,18 @@ import java.net.URISyntaxException;
         persistenceType = TopComponent.PERSISTENCE_NEVER
 )
 @TopComponent.Registration(
-        mode = "rightSlidingSide",
+        mode = "editor",
         openAtStartup = false,
-        position = 2
+        position = 1
 )
-@ActionID(category = "Window", id = "org.esa.s1tbx.worldwind.WW3DToolView")
+@ActionID(category = "Window", id = "org.esa.snap.worldwind.WW3DToolView")
 @ActionReferences({
         @ActionReference(path = "Menu/Window/Tool Windows"),
         @ActionReference(path = "Toolbars/Views")
 })
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_WorldWind3DTopComponentName",
-        preferredID = "WorldWind3DTopComponent"
+        preferredID = "WW3DToolView"
 )
 @NbBundle.Messages({
         "CTL_WorldWind3DTopComponentName=WorldWind 3D View",

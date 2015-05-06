@@ -54,14 +54,13 @@ import java.awt.Window;
         openAtStartup = true,
         position = 3
 )
-@ActionID(category = "Window", id = "org.esa.s1tbx.worldwind.WWWorldMapToolView")
+@ActionID(category = "Window", id = "org.esa.snap.worldwind.WWWorldMapToolView")
 @ActionReferences({
-        @ActionReference(path = "Menu/Window/Tool Windows"),
-        @ActionReference(path = "Toolbars/Views")
+        @ActionReference(path = "Menu/Window/Tool Windows")
 })
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_WorldWindTopComponentName",
-        preferredID = "WorldWindTopComponent"
+        preferredID = "WWWorldMapToolView"
 )
 @NbBundle.Messages({
         "CTL_WorldWindTopComponentName=WorldWind View",
