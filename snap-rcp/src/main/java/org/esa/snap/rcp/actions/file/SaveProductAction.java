@@ -71,7 +71,7 @@ public final class SaveProductAction extends AbstractAction {
         }
     }
 
-    private Boolean saveProduct(Product product) {
+    static Boolean saveProduct(Product product) {
 
         Assert.notNull(product.getFileLocation());
 

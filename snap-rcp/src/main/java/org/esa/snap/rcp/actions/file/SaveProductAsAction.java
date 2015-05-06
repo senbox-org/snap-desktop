@@ -114,7 +114,7 @@ public final class SaveProductAsAction extends AbstractAction {
 
         product.setFileLocation(newFile);
 
-        Boolean status = new SaveProductAction(product).execute();
+        Boolean status = SaveProductAction.saveProduct(product);
         if (Boolean.TRUE.equals(status)) {
             try {
                 attachNewDimapReaderInstance(product, newFile);
