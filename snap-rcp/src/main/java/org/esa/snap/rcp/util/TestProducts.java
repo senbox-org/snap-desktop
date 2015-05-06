@@ -29,7 +29,7 @@ public class TestProducts {
 
 
     public static Product[] createProducts() {
-        return new Product[]{createProduct1(), createProduct2(), createProduct3()};
+        return new Product[]{createProduct1(), createProduct2(), createProduct3(), createProduct4()};
     }
 
     public static Product createProduct1() {
@@ -76,8 +76,11 @@ public class TestProducts {
         AffineTransform at4 = new AffineTransform();
         at4.scale(0.5 * sx, 0.5 * sx);
         at4.rotate(-0.2, 5.0, 5.0);
-        band4.setGeoCoding(new ATGeoCoding(at));
+        at4.translate(256, 256);
         product.addBand(band4);
+        band4.setGeoCoding(new ATGeoCoding(at4));
+        band4.setNoDataValue(-1.0);
+        band4.setNoDataValueUsed(true);
 
         return product;
     }
@@ -108,6 +111,23 @@ public class TestProducts {
         at.rotate(0.1, 15.0, 15.0);
         at.scale(sx, sx);
         product.setGeoCoding(new ATGeoCoding(at));
+        return product;
+    }
+
+    public static Product createProduct4() {
+        Product product = new Product("Test_Product_4", "Test_Type_4", 512, 512);
+        product.getMetadataRoot().addElement(new MetadataElement("Global_Attributes"));
+        product.getMetadataRoot().addElement(new MetadataElement("Local_Attributes"));
+        product.setModified(false);
+        double sx = 10.0 / product.getSceneRasterWidth();
+        VirtualBand band4 = new VirtualBand("Band_4", ProductData.TYPE_FLOAT64, 512, 512, "cos(ampl((X-256)/100, (Y-256)/100))");
+        product.addBand(band4);
+        AffineTransform at4 = new AffineTransform();
+        at4.scale(0.5 * sx, 0.5 * sx);
+        at4.rotate(-0.2, 5.0, 5.0);
+        at4.translate(256, 256);
+        product.setGeoCoding(new ATGeoCoding(at4));
+
         return product;
     }
 
