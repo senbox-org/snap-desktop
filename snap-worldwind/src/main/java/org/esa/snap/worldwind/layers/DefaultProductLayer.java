@@ -47,6 +47,7 @@ import java.awt.geom.PathIterator;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -73,11 +74,13 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
     }
 
     public String[] getProductNames() {
-        return outlineTable.keySet().toArray(new String[outlineTable.size()]);
+        final List<String> list = new ArrayList<>(outlineTable.keySet());
+        Collections.sort(list);
+        return list.toArray(new String[outlineTable.size()]);
     }
 
     private static String getUniqueName(final Product product) {
-        return product.getProductRefString();
+        return product.getProductRefString() + product.getName();
     }
 
     @Override
@@ -156,28 +159,31 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
 
             @Override
             protected SurfaceImage doInBackground() throws Exception {
-
+                try {
                     final Product newProduct = createSubsampledProduct(product);
                     final Band band = newProduct.getBandAt(0);
                     final BufferedImage image = ProductUtils.createRgbImage(new RasterDataNode[]{band},
-                            band.getImageInfo(com.bc.ceres.core.ProgressMonitor.NULL),
-                            com.bc.ceres.core.ProgressMonitor.NULL);
+                                                                            band.getImageInfo(com.bc.ceres.core.ProgressMonitor.NULL),
+                                                                            com.bc.ceres.core.ProgressMonitor.NULL);
 
                     final GeoPos geoPos1 = product.getGeoCoding().getGeoPos(new PixelPos(0, 0), null);
                     final GeoPos geoPos2 = product.getGeoCoding().getGeoPos(new PixelPos(product.getSceneRasterWidth() - 1,
-                                    product.getSceneRasterHeight() - 1),
-                            null
+                                                                                         product.getSceneRasterHeight() - 1),
+                                                                            null
                     );
 
                     final Sector sector = new Sector(Angle.fromDegreesLatitude(geoPos1.getLat()),
-                            Angle.fromDegreesLatitude(geoPos2.getLat()),
-                            Angle.fromDegreesLongitude(geoPos1.getLon()),
-                            Angle.fromDegreesLongitude(geoPos2.getLon()));
+                                                     Angle.fromDegreesLatitude(geoPos2.getLat()),
+                                                     Angle.fromDegreesLongitude(geoPos1.getLon()),
+                                                     Angle.fromDegreesLongitude(geoPos2.getLon()));
 
                     final SurfaceImage si = new SurfaceImage(image, sector);
                     si.setOpacity(getOpacity());
-
-                return si;
+                    return si;
+                } catch (Exception e) {
+                    //e.printStackTrace();
+                }
+                return null;
             }
 
             @Override
@@ -187,8 +193,10 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
                     if (imageTable.contains(name))
                         removeImage(name);
                     final SurfaceImage si = (SurfaceImage) get();
-                    addRenderable(si);
-                    imageTable.put(name, si);
+                    if(si != null) {
+                        addRenderable(si);
+                        imageTable.put(name, si);
+                    }
                 } catch (Exception e) {
                     SnapDialogs.showError(e.getMessage());
                 }
@@ -312,10 +320,10 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
         productSubsetDef.setNodeNames(new String[]{quicklookBandName});
         Product productSubset = product.createSubset(productSubsetDef, quicklookBandName, null);
 
-        if (!OperatorUtils.isMapProjected(product)) {
+        if (!OperatorUtils.isMapProjected(product) && productSubset.getGeoCoding() != null) {
             try {
-                final Map<String, Object> projParameters = new HashMap<String, Object>();
-                Map<String, Product> projProducts = new HashMap<String, Product>();
+                final Map<String, Object> projParameters = new HashMap<>();
+                Map<String, Product> projProducts = new HashMap<>();
                 projProducts.put("source", productSubset);
                 projParameters.put("crs", "WGS84(DD)");
                 productSubset = GPF.createProduct("Reproject", projParameters, projProducts);
