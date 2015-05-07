@@ -18,6 +18,7 @@ package org.esa.snap.graphbuilder.gpf.ui;
 
 import com.bc.ceres.binding.dom.XppDomElement;
 import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.gpf.graph.GraphException;
 import org.esa.snap.framework.ui.AppContext;
 
 import javax.swing.JComponent;
@@ -28,19 +29,19 @@ import java.util.Map;
  */
 public interface OperatorUI {
 
-    public String getOperatorName();
+    String getOperatorName();
 
-    public JComponent CreateOpTab(String operatorName, Map<String, Object> parameterMap, AppContext appContext);
+    JComponent CreateOpTab(String operatorName, Map<String, Object> parameterMap, AppContext appContext);
 
-    public void initParameters();
+    void initParameters();
 
-    public UIValidation validateParameters();
+    UIValidation validateParameters();
 
-    public void updateParameters();
+    void updateParameters();
 
-    public void setSourceProducts(Product[] products);
+    void setSourceProducts(Product[] products);
 
-    public boolean hasSourceProducts();
+    boolean hasSourceProducts();
 
-    public void convertToDOM(XppDomElement parentElement);
+    void convertToDOM(XppDomElement parentElement) throws GraphException;
 }
