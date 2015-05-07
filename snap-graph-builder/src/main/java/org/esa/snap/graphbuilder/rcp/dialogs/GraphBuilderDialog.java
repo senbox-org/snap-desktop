@@ -60,7 +60,7 @@ import java.util.Observer;
  */
 public class GraphBuilderDialog extends ModelessDialog implements Observer {
 
-    private static final ImageIcon processIcon = IconUtils.LoadIcon("org/esa/snap/icons/cog.png");
+    private static final ImageIcon processIcon = IconUtils.LoadIcon("org/esa/snap/icons/cog22.png");
     private static final ImageIcon saveIcon = IconUtils.LoadIcon("org/esa/snap/icons/save.png");
     private static final ImageIcon loadIcon = IconUtils.LoadIcon("org/esa/snap/icons/open.png");
     private static final ImageIcon clearIcon = IconUtils.LoadIcon("org/esa/snap/icons/edit-clear.png");
