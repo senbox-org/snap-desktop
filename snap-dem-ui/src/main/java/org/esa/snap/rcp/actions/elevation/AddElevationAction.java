@@ -27,7 +27,7 @@ import com.bc.ceres.glevel.support.DefaultMultiLevelImage;
 import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.ComponentAdapter;
-import org.esa.snap.dataio.dem.DEMFactory;
+import org.esa.snap.dem.dataio.DEMFactory;
 import org.esa.snap.datamodel.Unit;
 import org.esa.snap.framework.datamodel.Band;
 import org.esa.snap.framework.datamodel.GeoCoding;

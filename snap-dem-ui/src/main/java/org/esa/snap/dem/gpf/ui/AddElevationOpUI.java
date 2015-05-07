@@ -13,10 +13,10 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, see http://www.gnu.org/licenses/
  */
-package org.esa.snap.gpf;
+package org.esa.snap.dem.gpf.ui;
 
 
-import org.esa.snap.dataio.dem.DEMFactory;
+import org.esa.snap.dem.dataio.DEMFactory;
 import org.esa.snap.framework.ui.AppContext;
 import org.esa.snap.graphbuilder.gpf.ui.BaseOperatorUI;
 import org.esa.snap.graphbuilder.gpf.ui.UIValidation;
