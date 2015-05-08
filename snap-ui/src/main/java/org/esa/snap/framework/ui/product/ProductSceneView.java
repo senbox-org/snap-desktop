@@ -259,11 +259,9 @@ public class ProductSceneView extends BasicView
         getRaster().getProduct().addProductNodeListener(rasterChangeHandler);
 
         setMaskOverlayEnabled(true);
+        setName(sceneImage.getName());
     }
 
-    public String getName() {
-        return sceneImage.getName();
-    }
     public UndoContext getUndoContext() {
         return undoContext;
     }

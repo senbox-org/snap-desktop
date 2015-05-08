@@ -172,7 +172,7 @@ public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNo
     }
 
     private void updateDisplayName() {
-        setDisplayName(WindowUtilities.getUniqueTitle(getView().getName(), ProductSceneViewTopComponent.class));
+        setDisplayName(WindowUtilities.getUniqueTitle(getView().getSceneName(), ProductSceneViewTopComponent.class));
     }
 
     private void setSelection(Selection newSelection) {
