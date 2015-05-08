@@ -26,38 +26,38 @@
             </layerEditor>
         </extension>
     -->
-    <folder name="LayerEditors">
-        <file name="VectorDataLayer">
-            <attr name="layerClass"
-                  stringvalue="org.esa.snap.framework.ui.product.VectorDataLayer"/>
-            <attr name="editorFactoryClass"
-                  stringvalue="org.esa.snap.rcp.layermanager.editors.VectorDataLayerEditorFactory"/>
-        </file>
-        <file name="ImageLayer">
-            <attr name="layerTypeClass"
-                  stringvalue="com.bc.ceres.glayer.support.ImageLayer$Type"/>
-            <attr name="editorClass"
-                  stringvalue="org.esa.snap.rcp.layermanager.editors.ImageLayerEditor"/>
-        </file>
-        <file name="NoDataLayerType">
-            <attr name="layerTypeClass"
-                  stringvalue="org.esa.snap.glayer.NoDataLayerType"/>
-            <attr name="editorClass"
-                  stringvalue="org.esa.snap.rcp.layermanager.editors.NoDataLayerEditor"/>
-        </file>
-        <file name="FeatureLayerType">
-            <attr name="layerTypeClass"
-                  stringvalue="org.esa.snap.visat.toolviews.layermanager.layersrc.shapefile.FeatureLayerType"/>
-            <attr name="editorClass"
-                  stringvalue="org.esa.snap.rcp.layermanager.editors.FeatureLayerEditor"/>
-        </file>
-        <file name="GraticuleLayerType">
-            <attr name="layerTypeClass"
-                  stringvalue="org.esa.snap.glayer.GraticuleLayerType"/>
-            <attr name="editorClass"
-                  stringvalue="org.esa.snap.rcp.layermanager.editors.GraticuleLayerEditor"/>
-        </file>
-    </folder>
+    <!--<folder name="LayerEditors">-->
+        <!--<file name="VectorDataLayer">-->
+            <!--<attr name="layerClass"-->
+                  <!--stringvalue="org.esa.snap.framework.ui.product.VectorDataLayer"/>-->
+            <!--<attr name="editorFactoryClass"-->
+                  <!--stringvalue="org.esa.snap.rcp.layermanager.editors.VectorDataLayerEditorFactory"/>-->
+        <!--</file>-->
+        <!--<file name="ImageLayer">-->
+            <!--<attr name="layerTypeClass"-->
+                  <!--stringvalue="com.bc.ceres.glayer.support.ImageLayer$Type"/>-->
+            <!--<attr name="editorClass"-->
+                  <!--stringvalue="org.esa.snap.rcp.layermanager.editors.ImageLayerEditor"/>-->
+        <!--</file>-->
+        <!--<file name="NoDataLayerType">-->
+            <!--<attr name="layerTypeClass"-->
+                  <!--stringvalue="org.esa.snap.glayer.NoDataLayerType"/>-->
+            <!--<attr name="editorClass"-->
+                  <!--stringvalue="org.esa.snap.rcp.layermanager.editors.NoDataLayerEditor"/>-->
+        <!--</file>-->
+        <!--<file name="FeatureLayerType">-->
+            <!--<attr name="layerTypeClass"-->
+                  <!--stringvalue="org.esa.snap.visat.toolviews.layermanager.layersrc.shapefile.FeatureLayerType"/>-->
+            <!--<attr name="editorClass"-->
+                  <!--stringvalue="org.esa.snap.rcp.layermanager.editors.FeatureLayerEditor"/>-->
+        <!--</file>-->
+        <!--<file name="GraticuleLayerType">-->
+            <!--<attr name="layerTypeClass"-->
+                  <!--stringvalue="org.esa.snap.glayer.GraticuleLayerType"/>-->
+            <!--<attr name="editorClass"-->
+                  <!--stringvalue="org.esa.snap.rcp.layermanager.editors.GraticuleLayerEditor"/>-->
+        <!--</file>-->
+    <!--</folder>-->
     <!--
         <extension point="snap-ui:layerSources">
             <layerSource>
