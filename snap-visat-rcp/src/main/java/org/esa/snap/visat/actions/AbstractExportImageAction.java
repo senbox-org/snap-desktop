@@ -31,6 +31,7 @@ import org.esa.snap.util.geotiff.GeoTIFF;
 import org.esa.snap.util.geotiff.GeoTIFFMetadata;
 import org.esa.snap.util.io.FileUtils;
 import org.esa.snap.util.io.SnapFileChooser;
+import org.esa.snap.util.io.SnapFileFilter;
 import org.esa.snap.visat.VisatApp;
 
 import javax.media.jai.operator.BandSelectDescriptor;

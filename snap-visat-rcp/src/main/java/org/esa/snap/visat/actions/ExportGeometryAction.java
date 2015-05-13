@@ -25,6 +25,7 @@ import org.esa.snap.framework.ui.UIUtils;
 import org.esa.snap.framework.ui.command.CommandEvent;
 import org.esa.snap.framework.ui.command.ExecCommand;
 import org.esa.snap.jai.ImageManager;
+import org.esa.snap.util.io.SnapFileFilter;
 import org.esa.snap.visat.VisatApp;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataUtilities;

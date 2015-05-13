@@ -31,6 +31,7 @@ import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.util.Debug;
 import org.esa.snap.util.SystemUtils;
 import org.esa.snap.util.io.SnapFileChooser;
+import org.esa.snap.util.io.SnapFileFilter;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.openide.util.HelpCtx;
 

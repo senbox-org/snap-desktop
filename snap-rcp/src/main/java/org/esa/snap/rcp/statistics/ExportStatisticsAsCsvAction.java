@@ -25,6 +25,7 @@ import org.esa.snap.statistics.output.MetadataWriter;
 import org.esa.snap.statistics.output.StatisticsOutputContext;
 import org.esa.snap.util.io.FileUtils;
 import org.esa.snap.util.io.SnapFileChooser;
+import org.esa.snap.util.io.SnapFileFilter;
 
 import javax.media.jai.Histogram;
 import javax.swing.AbstractAction;

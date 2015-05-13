@@ -57,6 +57,7 @@ import org.esa.snap.util.StringUtils;
 import org.esa.snap.util.SystemUtils;
 import org.esa.snap.util.io.FileUtils;
 import org.esa.snap.util.io.SnapFileChooser;
+import org.esa.snap.util.io.SnapFileFilter;
 import org.esa.snap.visat.VisatApp;
 import org.esa.snap.visat.dialogs.ProductChooser;
 

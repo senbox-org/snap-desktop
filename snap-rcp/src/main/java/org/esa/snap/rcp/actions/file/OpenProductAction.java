@@ -11,6 +11,7 @@ import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.util.io.SnapFileChooser;
+import org.esa.snap.util.io.SnapFileFilter;
 import org.netbeans.api.progress.ProgressUtils;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;

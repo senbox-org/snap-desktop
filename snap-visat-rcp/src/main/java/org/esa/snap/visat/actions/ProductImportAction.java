@@ -35,6 +35,7 @@ import org.esa.snap.framework.ui.product.ProductSubsetDialog;
 import org.esa.snap.util.Debug;
 import org.esa.snap.util.SystemUtils;
 import org.esa.snap.util.io.SnapFileChooser;
+import org.esa.snap.util.io.SnapFileFilter;
 import org.esa.snap.visat.VisatApp;
 
 import javax.swing.JButton;
