@@ -26,7 +26,7 @@ import org.esa.snap.framework.ui.command.ExecCommand;
 import org.esa.snap.framework.ui.product.ProductNodeView;
 import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.util.SystemUtils;
-import org.esa.snap.util.io.BeamFileFilter;
+import org.esa.snap.util.io.SnapFileFilter;
 import org.esa.snap.visat.VisatApp;
 import org.esa.snap.visat.actions.ShowImageViewAction;
 import org.esa.snap.visat.actions.ShowImageViewRGBAction;
@@ -58,8 +58,8 @@ public class OpenSessionAction extends ExecCommand {
     public static final String LAST_SESSION_DIR_KEY = "beam.lastSessionDir";
     private static final String TITLE = "Open Session";
 
-    public static BeamFileFilter getSessionFileFilter() {
-        return new BeamFileFilter("SESSION",
+    public static SnapFileFilter getSessionFileFilter() {
+        return new SnapFileFilter("SESSION",
                                   new String[] {String.format(".%s", SystemUtils.getApplicationContextId()), ".beam"},
                                   String.format("%s Session file", SystemUtils.getApplicationName()));
     }

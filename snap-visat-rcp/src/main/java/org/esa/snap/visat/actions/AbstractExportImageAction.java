@@ -29,9 +29,8 @@ import org.esa.snap.util.ProductUtils;
 import org.esa.snap.util.SystemUtils;
 import org.esa.snap.util.geotiff.GeoTIFF;
 import org.esa.snap.util.geotiff.GeoTIFFMetadata;
-import org.esa.snap.util.io.BeamFileChooser;
-import org.esa.snap.util.io.BeamFileFilter;
 import org.esa.snap.util.io.FileUtils;
+import org.esa.snap.util.io.SnapFileChooser;
 import org.esa.snap.visat.VisatApp;
 
 import javax.media.jai.operator.BandSelectDescriptor;
@@ -88,15 +87,15 @@ public abstract class AbstractExportImageAction extends ExecCommand {
     private static final String IMAGE_EXPORT_DIR_PREFERENCES_KEY = "user.image.export.dir";
 
 
-    private BeamFileFilter[] imageFileFilters;
-    private BeamFileFilter[] sceneImageFileFilters;
+    private SnapFileFilter[] imageFileFilters;
+    private SnapFileFilter[] sceneImageFileFilters;
 
     public AbstractExportImageAction() {
-        imageFileFilters = new BeamFileFilter[IMAGE_FORMAT_DESCRIPTIONS.length];
+        imageFileFilters = new SnapFileFilter[IMAGE_FORMAT_DESCRIPTIONS.length];
         for (int i = 0; i < IMAGE_FORMAT_DESCRIPTIONS.length; i++) {
             imageFileFilters[i] = createFileFilter(IMAGE_FORMAT_DESCRIPTIONS[i]);
         }
-        sceneImageFileFilters = new BeamFileFilter[SCENE_IMAGE_FORMAT_DESCRIPTIONS.length];
+        sceneImageFileFilters = new SnapFileFilter[SCENE_IMAGE_FORMAT_DESCRIPTIONS.length];
         for (int i = 0; i < SCENE_IMAGE_FORMAT_DESCRIPTIONS.length; i++) {
             sceneImageFileFilters[i] = createFileFilter(SCENE_IMAGE_FORMAT_DESCRIPTIONS[i]);
         }
@@ -104,7 +103,7 @@ public abstract class AbstractExportImageAction extends ExecCommand {
     }
 
     protected void exportImage(final VisatApp visatApp,
-                               final BeamFileFilter[] filters,
+                               final SnapFileFilter[] filters,
                                final SelectableCommand command) {
         final ProductSceneView view = visatApp.getSelectedProductSceneView();
         if (view == null) {
@@ -114,11 +113,11 @@ public abstract class AbstractExportImageAction extends ExecCommand {
                                                                            SystemUtils.getUserHomeDir().getPath());
         final File currentDir = new File(lastDir);
 
-        final BeamFileChooser fileChooser = new BeamFileChooser();
+        final SnapFileChooser fileChooser = new SnapFileChooser();
         HelpSys.enableHelpKey(fileChooser, command.getHelpId());
         fileChooser.setCurrentDirectory(currentDir);
         for (int i = 0; i < filters.length; i++) {
-            BeamFileFilter filter = filters[i];
+            SnapFileFilter filter = filters[i];
             Debug.trace("export image: supported format " + (i + 1) + ": " + filter.getFormatName());
             fileChooser.addChoosableFileFilter(filter); // note: also selects current file filter!
         }
@@ -158,7 +157,7 @@ public abstract class AbstractExportImageAction extends ExecCommand {
         }
         final boolean entireImageSelected = isEntireImageSelected();
 
-        final BeamFileFilter fileFilter = fileChooser.getBeamFileFilter();
+        final SnapFileFilter fileFilter = fileChooser.getSnapFileFilter();
         String imageFormat = fileFilter != null ? fileFilter.getFormatName() : "TIFF";
         if (imageFormat.equals(GEOTIFF_FORMAT_DESCRIPTION[0]) && !entireImageSelected) {
             final int status = visatApp.showQuestionDialog("GeoTIFF is not applicable to image clippings.\n" +
@@ -187,14 +186,14 @@ public abstract class AbstractExportImageAction extends ExecCommand {
 
     protected abstract boolean isEntireImageSelected();
 
-    protected abstract void configureFileChooser(BeamFileChooser fileChooser, ProductSceneView view,
+    protected abstract void configureFileChooser(SnapFileChooser fileChooser, ProductSceneView view,
                                                  String imageBaseName);
 
-    protected BeamFileFilter[] getImageFileFilters() {
+    protected SnapFileFilter[] getImageFileFilters() {
         return imageFileFilters;
     }
 
-    protected BeamFileFilter[] getSceneImageFileFilters() {
+    protected SnapFileFilter[] getSceneImageFileFilters() {
         return sceneImageFileFilters;
     }
 
@@ -212,11 +211,11 @@ public abstract class AbstractExportImageAction extends ExecCommand {
         return false;
     }
 
-    protected static BeamFileFilter createFileFilter(String[] description) {
+    protected static SnapFileFilter createFileFilter(String[] description) {
         final String formatName = description[0];
         final String formatExt = description[1];
         final String formatDescr = description[2];
-        return new BeamFileFilter(formatName, formatExt, formatDescr);
+        return new SnapFileFilter(formatName, formatExt, formatDescr);
     }
 
     private class SaveImageSwingWorker extends ProgressMonitorSwingWorker {

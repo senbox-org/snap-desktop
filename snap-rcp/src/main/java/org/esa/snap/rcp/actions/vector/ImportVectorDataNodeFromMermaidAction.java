@@ -23,7 +23,7 @@ import org.esa.snap.framework.datamodel.ProductNode;
 import org.esa.snap.framework.datamodel.VectorDataNode;
 import org.esa.snap.jai.ImageManager;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.util.io.BeamFileFilter;
+import org.esa.snap.util.io.SnapFileFilter;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -99,7 +99,7 @@ public class ImportVectorDataNodeFromMermaidAction extends AbstractImportVectorD
 
     @Override
     public void actionPerformed(ActionEvent event) {
-        final BeamFileFilter filter = new BeamFileFilter(getVectorDataType(),
+        final SnapFileFilter filter = new SnapFileFilter(getVectorDataType(),
                                                          new String[]{".txt", ".dat", ".csv"},
                                                          "Plain text");
         importer = new VectorDataNodeImporter(getHelpId(), filter, new MermaidReader(), "Import MERMAID Extraction File", "csv.io.dir");

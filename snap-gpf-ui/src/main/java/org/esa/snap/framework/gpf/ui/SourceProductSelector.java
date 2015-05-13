@@ -28,8 +28,8 @@ import org.esa.snap.framework.datamodel.ProductManager;
 import org.esa.snap.framework.ui.AppContext;
 import org.esa.snap.framework.ui.BasicApp;
 import org.esa.snap.util.SystemUtils;
-import org.esa.snap.util.io.BeamFileChooser;
-import org.esa.snap.util.io.BeamFileFilter;
+import org.esa.snap.util.io.SnapFileChooser;
+import org.esa.snap.util.io.SnapFileFilter;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
@@ -276,11 +276,11 @@ public class SourceProductSelector {
 
         private ProductFileChooserAction() {
             super("...");
-            chooser = new BeamFileChooser();
+            chooser = new SnapFileChooser();
             chooser.setDialogTitle("Select Source Product");
             final Iterator<ProductReaderPlugIn> iterator = ProductIOPlugInManager.getInstance().getAllReaderPlugIns();
-            List<BeamFileFilter> sortedFileFilters = BeamFileFilter.getSortedFileFilters(iterator);
-            for (BeamFileFilter fileFilter : sortedFileFilters) {
+            List<SnapFileFilter> sortedFileFilters = SnapFileFilter.getSortedFileFilters(iterator);
+            for (SnapFileFilter fileFilter : sortedFileFilters) {
                 chooser.addChoosableFileFilter(fileFilter);
             }
             chooser.setAcceptAllFileFilterUsed(true);

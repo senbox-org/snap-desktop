@@ -55,9 +55,8 @@ import org.esa.snap.util.Guardian;
 import org.esa.snap.util.PropertyMap;
 import org.esa.snap.util.StringUtils;
 import org.esa.snap.util.SystemUtils;
-import org.esa.snap.util.io.BeamFileChooser;
-import org.esa.snap.util.io.BeamFileFilter;
 import org.esa.snap.util.io.FileUtils;
+import org.esa.snap.util.io.SnapFileChooser;
 import org.esa.snap.visat.VisatApp;
 import org.esa.snap.visat.dialogs.ProductChooser;
 
@@ -640,7 +639,7 @@ public class PlacemarkManagerToolView extends AbstractToolView {
     }
 
     private List<Placemark> loadPlacemarksFromFile() throws IOException {
-        final BeamFileChooser fileChooser = new BeamFileChooser();
+        final SnapFileChooser fileChooser = new SnapFileChooser();
         String roleLabel = StringUtils.firstLetterUp(placemarkDescriptor.getRoleLabel());
         fileChooser.setDialogTitle("Import " + roleLabel + "s"); /*I18N*/
         setComponentName(fileChooser, "Import");
@@ -663,7 +662,7 @@ public class PlacemarkManagerToolView extends AbstractToolView {
     }
 
     void exportPlacemarks() {
-        final BeamFileChooser fileChooser = new BeamFileChooser();
+        final SnapFileChooser fileChooser = new SnapFileChooser();
         fileChooser.setDialogTitle(MessageFormat.format("Export {0}(s)",
                                                         StringUtils.firstLetterUp(placemarkDescriptor.getRoleLabel())));   /*I18N*/
         setComponentName(fileChooser, "Export_Selected");
@@ -680,13 +679,13 @@ public class PlacemarkManagerToolView extends AbstractToolView {
                     return;
                 }
                 setIODir(file.getAbsoluteFile().getParentFile());
-                BeamFileFilter beamFileFilter = fileChooser.getBeamFileFilter();
+                SnapFileFilter snapFileFilter = fileChooser.getSnapFileFilter();
                 String fileExtension = FileUtils.getExtension(file);
-                if (fileExtension == null || !StringUtils.contains(beamFileFilter.getExtensions(), fileExtension)) {
-                    file = FileUtils.ensureExtension(file, beamFileFilter.getDefaultExtension());
+                if (fileExtension == null || !StringUtils.contains(snapFileFilter.getExtensions(), fileExtension)) {
+                    file = FileUtils.ensureExtension(file, snapFileFilter.getDefaultExtension());
                 }
                 try {
-                    if (beamFileFilter.getFormatName().equals(
+                    if (snapFileFilter.getFormatName().equals(
                             PlacemarkIO.createPlacemarkFileFilter().getFormatName())) {
 
                         final List<Placemark> placemarkList = getPlacemarksForExport();
@@ -768,7 +767,7 @@ public class PlacemarkManagerToolView extends AbstractToolView {
     }
 
     void exportPlacemarkDataTable() {
-        final BeamFileChooser fileChooser = new BeamFileChooser();
+        final SnapFileChooser fileChooser = new SnapFileChooser();
         fileChooser.setDialogTitle(MessageFormat.format("Export {0} Data Table",  /*I18N*/
                                                         StringUtils.firstLetterUp(placemarkDescriptor.getRoleLabel())));
         setComponentName(fileChooser, "Export_Data_Table");

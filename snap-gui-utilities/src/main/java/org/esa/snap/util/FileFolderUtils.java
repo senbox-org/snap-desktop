@@ -2,9 +2,9 @@ package org.esa.snap.util;
 
 import org.esa.snap.framework.ui.BasicApp;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.util.io.BeamFileChooser;
-import org.esa.snap.util.io.BeamFileFilter;
 import org.esa.snap.util.io.FileUtils;
+import org.esa.snap.util.io.SnapFileChooser;
+import org.esa.snap.util.io.SnapFileFilter;
 
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
@@ -33,9 +33,9 @@ public class FileFolderUtils {
     public static File GetFilePath(final String title, final String formatName, final String extension,
                                    final String fileName, final String description, final boolean isSave,
                                    final String lastDirPropertyKey, final String defaultPath) {
-        BeamFileFilter fileFilter = null;
+        SnapFileFilter fileFilter = null;
         if (!extension.isEmpty()) {
-            fileFilter = new BeamFileFilter(formatName, extension, description);
+            fileFilter = new SnapFileFilter(formatName, extension, description);
         }
         File file = null;
         if (isSave) {
@@ -43,9 +43,9 @@ public class FileFolderUtils {
                     lastDirPropertyKey, SystemUtils.getUserHomeDir().getPath());
             final File currentDir = new File(lastDir);
 
-            final BeamFileChooser fileChooser = new BeamFileChooser();
+            final SnapFileChooser fileChooser = new SnapFileChooser();
             fileChooser.setCurrentDirectory(currentDir);
-            fileChooser.addChoosableFileFilter(new BeamFileFilter(formatName, extension, description));
+            fileChooser.addChoosableFileFilter(new SnapFileFilter(formatName, extension, description));
             fileChooser.setAcceptAllFileFilterUsed(false);
 
             fileChooser.setDialogTitle("Save");
@@ -88,7 +88,7 @@ public class FileFolderUtils {
                                            FileFilter fileFilter,
                                            String currentDir,
                                            String lastDirPropertyKey) {
-        final BeamFileChooser fileChooser = new BeamFileChooser();
+        final SnapFileChooser fileChooser = new SnapFileChooser();
         fileChooser.setCurrentDirectory(new File(currentDir));
         if (fileFilter != null) {
             fileChooser.setFileFilter(fileFilter);

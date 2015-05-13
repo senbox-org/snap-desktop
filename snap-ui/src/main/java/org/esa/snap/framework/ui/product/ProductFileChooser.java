@@ -24,8 +24,8 @@ import org.esa.snap.framework.ui.GridBagUtils;
 import org.esa.snap.framework.ui.UIUtils;
 import org.esa.snap.util.Debug;
 import org.esa.snap.util.Guardian;
-import org.esa.snap.util.io.BeamFileChooser;
-import org.esa.snap.util.io.BeamFileFilter;
+import org.esa.snap.util.io.SnapFileChooser;
+import org.esa.snap.util.io.SnapFileFilter;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -48,7 +48,7 @@ import java.io.IOException;
  * @author Norman Fomferra
  * @version $Revision$  $Date$
  */
-public class ProductFileChooser extends BeamFileChooser {
+public class ProductFileChooser extends SnapFileChooser {
 
     private Product _product;
     private ProductReaderPlugIn _readerPlugIn;
@@ -70,7 +70,7 @@ public class ProductFileChooser extends BeamFileChooser {
         setDialogTitle(title);
         setFileSelectionMode(JFileChooser.FILES_ONLY);
 //        setAcceptAllFileFilterUsed(true);
-        addChoosableFileFilter(new BeamFileFilter());
+        addChoosableFileFilter(new SnapFileFilter());
         createUI();
     }
 

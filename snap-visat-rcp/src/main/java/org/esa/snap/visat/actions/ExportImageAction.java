@@ -28,7 +28,7 @@ import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.PropertyPane;
 import org.esa.snap.framework.ui.command.CommandEvent;
 import org.esa.snap.framework.ui.product.ProductSceneView;
-import org.esa.snap.util.io.BeamFileChooser;
+import org.esa.snap.util.io.SnapFileChooser;
 import org.esa.snap.util.math.MathUtils;
 import org.esa.snap.visat.VisatApp;
 
@@ -76,7 +76,7 @@ public class ExportImageAction extends AbstractExportImageAction {
     }
 
     @Override
-    protected void configureFileChooser(final BeamFileChooser fileChooser, final ProductSceneView view,
+    protected void configureFileChooser(final SnapFileChooser fileChooser, final ProductSceneView view,
                                         String imageBaseName) {
         fileChooser.setDialogTitle(getVisatApp().getAppName() + " - " + "Export Image"); /*I18N*/
         if (view.isRGB()) {

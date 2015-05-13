@@ -7,8 +7,8 @@ import org.esa.snap.framework.ui.AppContext;
 import org.esa.snap.pixex.PixExOpUtils;
 import org.esa.snap.util.PropertyMap;
 import org.esa.snap.util.SystemUtils;
-import org.esa.snap.util.io.BeamFileChooser;
-import org.esa.snap.util.io.BeamFileFilter;
+import org.esa.snap.util.io.SnapFileChooser;
+import org.esa.snap.util.io.SnapFileFilter;
 import org.opengis.feature.simple.SimpleFeature;
 
 import javax.swing.AbstractAction;
@@ -37,7 +37,7 @@ class AddCsvFileAction extends AbstractAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         PropertyMap preferences = appContext.getPreferences();
-        final BeamFileChooser fileChooser = getFileChooser(
+        final SnapFileChooser fileChooser = getFileChooser(
                 preferences.getPropertyString(LAST_OPEN_CSV_DIR, SystemUtils.getUserHomeDir().getPath()));
         int answer = fileChooser.showDialog(parent, "Select");
         if (answer == JFileChooser.APPROVE_OPTION) {
@@ -69,9 +69,9 @@ class AddCsvFileAction extends AbstractAction {
         placemark.setGeoPos(geoPos);
     }
 
-    private BeamFileChooser getFileChooser(String lastDir) {
-        final BeamFileChooser fileChooser = new BeamFileChooser();
-        fileChooser.setFileFilter(new BeamFileFilter("CSV", new String[]{".csv", ".txt", ".ascii"}, "CSV files"));
+    private SnapFileChooser getFileChooser(String lastDir) {
+        final SnapFileChooser fileChooser = new SnapFileChooser();
+        fileChooser.setFileFilter(new SnapFileFilter("CSV", new String[]{".csv", ".txt", ".ascii"}, "CSV files"));
         fileChooser.setCurrentDirectory(new File(lastDir));
         return fileChooser;
     }

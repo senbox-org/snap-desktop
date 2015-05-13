@@ -21,7 +21,7 @@ import org.esa.snap.framework.ui.diagram.DiagramGraph;
 import org.esa.snap.framework.ui.diagram.DiagramGraphIO;
 import org.esa.snap.framework.ui.product.spectrum.DisplayableSpectrum;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.util.io.BeamFileFilter;
+import org.esa.snap.util.io.SnapFileFilter;
 
 import javax.swing.AbstractAction;
 import javax.swing.SwingUtilities;
@@ -61,7 +61,7 @@ class SpectraExportAction extends AbstractAction {
         //todo move diagramgraphio to snap
         DiagramGraphIO.writeGraphs(SwingUtilities.getWindowAncestor(spectrumTopComponent),
                                    "Export Pin Spectra",
-                                   new BeamFileFilter[]{DiagramGraphIO.SPECTRA_CSV_FILE_FILTER},
+                                   new SnapFileFilter[]{DiagramGraphIO.SPECTRA_CSV_FILE_FILTER},
                                    SnapApp.getDefault().getCompatiblePreferences(),
                                    pinGraphs);
     }

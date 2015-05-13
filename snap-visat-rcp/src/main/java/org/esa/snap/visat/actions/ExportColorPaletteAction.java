@@ -24,8 +24,8 @@ import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.jai.ImageManager;
 import org.esa.snap.util.PropertyMap;
 import org.esa.snap.util.StringUtils;
-import org.esa.snap.util.io.BeamFileFilter;
 import org.esa.snap.util.io.FileUtils;
+import org.esa.snap.util.io.SnapFileFilter;
 import org.esa.snap.visat.VisatApp;
 
 import javax.swing.JFileChooser;
@@ -48,8 +48,8 @@ public class ExportColorPaletteAction extends ExecCommand {
 
     @Override
     public void actionPerformed(CommandEvent event) {
-        BeamFileFilter fileFilter1 = new BeamFileFilter("CSV", ".csv", "CSV files"); // I18N
-        BeamFileFilter fileFilter2 = new BeamFileFilter("TXT", ".txt", "Text files"); // I18N
+        SnapFileFilter fileFilter1 = new SnapFileFilter("CSV", ".csv", "CSV files"); // I18N
+        SnapFileFilter fileFilter2 = new SnapFileFilter("TXT", ".txt", "Text files"); // I18N
         JFileChooser fileChooser = new JFileChooser();
         File lastDir = new File(getPreferences().getPropertyString(KEY_LAST_OPEN, "."));
         fileChooser.setCurrentDirectory(lastDir);
@@ -66,8 +66,8 @@ public class ExportColorPaletteAction extends ExecCommand {
             getPreferences().setPropertyString(KEY_LAST_OPEN,
                                                fileChooser.getCurrentDirectory().getAbsolutePath());
             File file = fileChooser.getSelectedFile();
-            if (fileChooser.getFileFilter() instanceof BeamFileFilter) {
-                BeamFileFilter fileFilter = (BeamFileFilter) fileChooser.getFileFilter();
+            if (fileChooser.getFileFilter() instanceof SnapFileFilter) {
+                SnapFileFilter fileFilter = (SnapFileFilter) fileChooser.getFileFilter();
                 file = FileUtils.ensureExtension(file, fileFilter.getDefaultExtension());
             }
             try {

@@ -23,9 +23,8 @@ import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.statistics.output.CsvStatisticsWriter;
 import org.esa.snap.statistics.output.MetadataWriter;
 import org.esa.snap.statistics.output.StatisticsOutputContext;
-import org.esa.snap.util.io.BeamFileChooser;
-import org.esa.snap.util.io.BeamFileFilter;
 import org.esa.snap.util.io.FileUtils;
+import org.esa.snap.util.io.SnapFileChooser;
 
 import javax.media.jai.Histogram;
 import javax.swing.AbstractAction;
@@ -62,9 +61,9 @@ class ExportStatisticsAsCsvAction extends AbstractAction {
         if (exportDir != null) {
             baseDir = new File(exportDir);
         }
-        BeamFileChooser fileChooser = new BeamFileChooser(baseDir);
-        final BeamFileFilter beamFileFilter = new BeamFileFilter("CSV", new String[]{".csv", ".txt"}, "CSV files");
-        fileChooser.setFileFilter(beamFileFilter);
+        SnapFileChooser fileChooser = new SnapFileChooser(baseDir);
+        final SnapFileFilter snapFileFilter = new SnapFileFilter("CSV", new String[]{".csv", ".txt"}, "CSV files");
+        fileChooser.setFileFilter(snapFileFilter);
         File outputAsciiFile;
         int result = fileChooser.showSaveDialog(SnapApp.getDefault().getMainFrame());
         if (result == JFileChooser.APPROVE_OPTION) {

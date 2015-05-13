@@ -27,8 +27,8 @@ import org.esa.snap.framework.ui.ModalDialog;
 import org.esa.snap.framework.ui.command.CommandEvent;
 import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.util.SystemUtils;
-import org.esa.snap.util.io.BeamFileChooser;
-import org.esa.snap.util.io.BeamFileFilter;
+import org.esa.snap.util.io.SnapFileChooser;
+import org.esa.snap.util.io.SnapFileFilter;
 import org.esa.snap.visat.VisatApp;
 
 import javax.swing.ImageIcon;
@@ -72,7 +72,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
     }
 
     @Override
-    protected void configureFileChooser(BeamFileChooser fileChooser, ProductSceneView view, String imageBaseName) {
+    protected void configureFileChooser(SnapFileChooser fileChooser, ProductSceneView view, String imageBaseName) {
         legendParamGroup = createLegendParamGroup();
         legendParamGroup.setParameterValues(getVisatApp().getPreferences(), null);
         modifyHeaderText(legendParamGroup, view.getRaster());
@@ -160,7 +160,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         button.setMnemonic('P');
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                final BeamFileFilter fileFilter = (BeamFileFilter) fileChooser.getFileFilter();
+                final SnapFileFilter fileFilter = (SnapFileFilter) fileChooser.getFileFilter();
                 final ImageLegendDialog dialog = new ImageLegendDialog(visatApp,
                                                                        legendParamGroup,
                                                                        imageLegend,

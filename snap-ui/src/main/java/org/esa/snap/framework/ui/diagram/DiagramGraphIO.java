@@ -17,9 +17,9 @@
 package org.esa.snap.framework.ui.diagram;
 
 import org.esa.snap.util.PropertyMap;
-import org.esa.snap.util.io.BeamFileChooser;
-import org.esa.snap.util.io.BeamFileFilter;
 import org.esa.snap.util.io.CsvReader;
+import org.esa.snap.util.io.SnapFileChooser;
+import org.esa.snap.util.io.SnapFileFilter;
 
 import javax.swing.JOptionPane;
 import java.awt.Component;
@@ -33,8 +33,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DiagramGraphIO {
-    public static final BeamFileFilter CSV_FILE_FILTER = new BeamFileFilter("CSV", ".csv", "CSV (plain text)");
-    public static final BeamFileFilter SPECTRA_CSV_FILE_FILTER = new BeamFileFilter("Spectra-CSV", ".csv", "Spectra CSV");
+    public static final SnapFileFilter CSV_FILE_FILTER = new SnapFileFilter("CSV", ".csv", "CSV (plain text)");
+    public static final SnapFileFilter SPECTRA_CSV_FILE_FILTER = new SnapFileFilter("Spectra-CSV", ".csv", "Spectra CSV");
 
     public static final String DIAGRAM_GRAPH_IO_LAST_DIR_KEY = "diagramGraphIO.lastDir";
 
@@ -162,7 +162,7 @@ public class DiagramGraphIO {
 
     public static DiagramGraph[] readGraphs(Component parentComponent,
                                             String title,
-                                            BeamFileFilter[] fileFilters,
+                                            SnapFileFilter[] fileFilters,
                                             PropertyMap preferences) {
         File selectedFile = selectGraphFile(parentComponent, title, fileFilters, preferences, true);
         if (selectedFile != null) {
@@ -182,7 +182,7 @@ public class DiagramGraphIO {
 
     public static void writeGraphs(Component parentComponent,
                                    String title,
-                                   BeamFileFilter[] fileFilters,
+                                   SnapFileFilter[] fileFilters,
                                    PropertyMap preferences,
                                    DiagramGraph[] graphs) {
         if (graphs.length == 0) {
@@ -207,26 +207,26 @@ public class DiagramGraphIO {
 
     private static File selectGraphFile(Component parentComponent,
                                         String title,
-                                        BeamFileFilter[] fileFilters,
+                                        SnapFileFilter[] fileFilters,
                                         PropertyMap preferences,
                                         boolean open) {
         String lastDirPath = preferences.getPropertyString(DIAGRAM_GRAPH_IO_LAST_DIR_KEY, ".");
-        BeamFileChooser fileChooser = new BeamFileChooser(new File(lastDirPath));
+        SnapFileChooser fileChooser = new SnapFileChooser(new File(lastDirPath));
         fileChooser.setAcceptAllFileFilterUsed(true);
         fileChooser.setDialogTitle(title);
-        for (BeamFileFilter fileFilter : fileFilters) {
+        for (SnapFileFilter fileFilter : fileFilters) {
             fileChooser.addChoosableFileFilter(fileFilter);
         }
         fileChooser.setFileFilter(fileFilters[0]);
         if (open) {
-            fileChooser.setDialogType(BeamFileChooser.OPEN_DIALOG);
+            fileChooser.setDialogType(SnapFileChooser.OPEN_DIALOG);
         } else {
-            fileChooser.setDialogType(BeamFileChooser.SAVE_DIALOG);
+            fileChooser.setDialogType(SnapFileChooser.SAVE_DIALOG);
         }
         File selectedFile;
         while (true) {
             int i = fileChooser.showDialog(parentComponent, null);
-            if (i == BeamFileChooser.APPROVE_OPTION) {
+            if (i == SnapFileChooser.APPROVE_OPTION) {
                 selectedFile = fileChooser.getSelectedFile();
                 if (open || !selectedFile.exists()) {
                     break;

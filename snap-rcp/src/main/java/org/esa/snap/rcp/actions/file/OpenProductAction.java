@@ -10,8 +10,7 @@ import org.esa.snap.framework.dataio.ProductReaderPlugIn;
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
-import org.esa.snap.util.io.BeamFileChooser;
-import org.esa.snap.util.io.BeamFileFilter;
+import org.esa.snap.util.io.SnapFileChooser;
 import org.netbeans.api.progress.ProgressUtils;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -140,7 +139,7 @@ public final class OpenProductAction extends AbstractAction {
 
         Preferences preferences = SnapApp.getDefault().getPreferences();
 
-        BeamFileChooser fc = new BeamFileChooser(new File(preferences.get(PREFERENCES_KEY_LAST_PRODUCT_DIR, ".")));
+        SnapFileChooser fc = new SnapFileChooser(new File(preferences.get(PREFERENCES_KEY_LAST_PRODUCT_DIR, ".")));
         fc.setDialogTitle(Bundle.CTL_OpenProductActionName());
         fc.setAcceptAllFileFilterUsed(true);
         filters.forEach(fc::addChoosableFileFilter);
@@ -165,8 +164,8 @@ public final class OpenProductAction extends AbstractAction {
             preferences.put(PREFERENCES_KEY_LAST_PRODUCT_DIR, currentDirectory.toString());
         }
 
-        String formatName = (fc.getFileFilter() instanceof BeamFileFilter)
-                ? ((BeamFileFilter) fc.getFileFilter()).getFormatName()
+        String formatName = (fc.getFileFilter() instanceof SnapFileFilter)
+                ? ((SnapFileFilter) fc.getFileFilter()).getFormatName()
                 : null;
 
         return openProductFilesCheckOpened(formatName, files);

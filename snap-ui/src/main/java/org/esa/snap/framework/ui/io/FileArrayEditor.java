@@ -21,8 +21,7 @@ import org.esa.snap.framework.ui.GridBagUtils;
 import org.esa.snap.framework.ui.UIUtils;
 import org.esa.snap.framework.ui.tool.ToolButtonFactory;
 import org.esa.snap.util.Guardian;
-import org.esa.snap.util.io.BeamFileChooser;
-import org.esa.snap.util.io.BeamFileFilter;
+import org.esa.snap.util.io.SnapFileChooser;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -261,13 +260,13 @@ public class FileArrayEditor {
     }
 
     protected JFileChooser createFileChooserDialog() {
-        final JFileChooser chooser = new BeamFileChooser();
+        final JFileChooser chooser = new SnapFileChooser();
         chooser.setAcceptAllFileFilterUsed(true);
         chooser.setMultiSelectionEnabled(true);
 
         final Iterator<ProductReaderPlugIn> iterator = ProductIOPlugInManager.getInstance().getAllReaderPlugIns();
-        List<BeamFileFilter> sortedFileFilters = BeamFileFilter.getSortedFileFilters(iterator);
-        for (BeamFileFilter productFileFilter : sortedFileFilters) {
+        List<SnapFileFilter> sortedFileFilters = SnapFileFilter.getSortedFileFilters(iterator);
+        for (SnapFileFilter productFileFilter : sortedFileFilters) {
             chooser.addChoosableFileFilter(productFileFilter);
         }
         chooser.setFileFilter(chooser.getAcceptAllFileFilter());

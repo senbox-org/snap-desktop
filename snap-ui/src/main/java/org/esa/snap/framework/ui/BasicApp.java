@@ -51,9 +51,9 @@ import org.esa.snap.util.Guardian;
 import org.esa.snap.util.PropertyMap;
 import org.esa.snap.util.StringUtils;
 import org.esa.snap.util.SystemUtils;
-import org.esa.snap.util.io.BeamFileChooser;
 import org.esa.snap.util.io.FileChooserFactory;
 import org.esa.snap.util.io.FileUtils;
+import org.esa.snap.util.io.SnapFileChooser;
 
 import javax.help.HelpSet;
 import javax.help.HelpSetException;
@@ -1297,7 +1297,7 @@ public class BasicApp {
                                                             SystemUtils.getUserHomeDir().getPath());
         File currentDir = new File(lastDir);
 
-        BeamFileChooser fileChooser = new BeamFileChooser();
+        SnapFileChooser fileChooser = new SnapFileChooser();
         fileChooser.setCurrentDirectory(currentDir);
         if (fileFilter != null) {
             fileChooser.setFileFilter(fileFilter);
@@ -1410,7 +1410,7 @@ public class BasicApp {
                                                             SystemUtils.getUserHomeDir().getPath());
         File currentDir = new File(lastDir);
 
-        final BeamFileChooser fileChooser = new BeamFileChooser();
+        final SnapFileChooser fileChooser = new SnapFileChooser();
         fileChooser.setCurrentDirectory(currentDir);
         if (fileFilter != null) {
             fileChooser.setFileFilter(fileFilter);

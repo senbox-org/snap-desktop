@@ -23,9 +23,8 @@ import org.esa.snap.framework.help.HelpSys;
 import org.esa.snap.framework.ui.command.CommandEvent;
 import org.esa.snap.framework.ui.command.ExecCommand;
 import org.esa.snap.util.SystemUtils;
-import org.esa.snap.util.io.BeamFileChooser;
-import org.esa.snap.util.io.BeamFileFilter;
 import org.esa.snap.util.io.FileUtils;
+import org.esa.snap.util.io.SnapFileChooser;
 import org.esa.snap.visat.VisatApp;
 
 import javax.swing.JFileChooser;
@@ -128,13 +127,13 @@ public class ExportEnviGcpFileAction extends ExecCommand {
     private JFileChooser createFileChooser(final VisatApp visatApp) {
         String lastDirPath = visatApp.getPreferences().getPropertyString(GCP_EXPORT_DIR_PREFERENCES_KEY,
                                                                          SystemUtils.getUserHomeDir().getPath());
-        BeamFileChooser fileChooser = new BeamFileChooser();
+        SnapFileChooser fileChooser = new SnapFileChooser();
         HelpSys.enableHelpKey(fileChooser, getHelpId());
         fileChooser.setAcceptAllFileFilterUsed(false);
         fileChooser.setCurrentDirectory(new File(lastDirPath));
 
         fileChooser.setFileFilter(
-                new BeamFileFilter(GCP_FILE_DESCRIPTION, GCP_FILE_EXTENSION, GCP_FILE_DESCRIPTION));
+                new SnapFileFilter(GCP_FILE_DESCRIPTION, GCP_FILE_EXTENSION, GCP_FILE_DESCRIPTION));
         fileChooser.setDialogTitle(DIALOG_TITLE);
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         return fileChooser;

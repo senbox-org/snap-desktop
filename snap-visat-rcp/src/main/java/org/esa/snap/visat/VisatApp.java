@@ -91,9 +91,9 @@ import org.esa.snap.util.Guardian;
 import org.esa.snap.util.PropertyMap;
 import org.esa.snap.util.PropertyMapChangeListener;
 import org.esa.snap.util.SystemUtils;
-import org.esa.snap.util.io.BeamFileChooser;
-import org.esa.snap.util.io.BeamFileFilter;
 import org.esa.snap.util.io.FileUtils;
+import org.esa.snap.util.io.SnapFileChooser;
+import org.esa.snap.util.io.SnapFileFilter;
 import org.esa.snap.util.jai.JAIUtils;
 import org.esa.snap.visat.actions.ShowImageViewAction;
 import org.esa.snap.visat.actions.ShowImageViewRGBAction;
@@ -1207,8 +1207,8 @@ public class VisatApp extends BasicApp implements AppContext {
 
         Cursor oldCursor = getMainFrame().getCursor();
         String formatName = null;
-        if (selectedFileFilter instanceof BeamFileFilter) {
-            formatName = ((BeamFileFilter) selectedFileFilter).getFormatName();
+        if (selectedFileFilter instanceof SnapFileFilter) {
+            formatName = ((SnapFileFilter) selectedFileFilter).getFormatName();
         }
         UIUtils.setRootFrameWaitCursor(getMainFrame());
 
@@ -1221,7 +1221,7 @@ public class VisatApp extends BasicApp implements AppContext {
                                                             SystemUtils.getUserHomeDir().getPath());
         String lastFormat = getPreferences().getPropertyString(PROPERTY_KEY_APP_LAST_OPEN_FORMAT,
                                                                ALL_FILES_IDENTIFIER);
-        BeamFileChooser fileChooser = new BeamFileChooser();
+        SnapFileChooser fileChooser = new SnapFileChooser();
         fileChooser.setCurrentDirectory(new File(lastDir));
         fileChooser.setAcceptAllFileFilterUsed(true);
         fileChooser.setDialogTitle(getAppName() + " - " + "Open Data Product(s)"); /*I18N*/
@@ -1229,8 +1229,8 @@ public class VisatApp extends BasicApp implements AppContext {
 
         FileFilter actualFileFilter = fileChooser.getAcceptAllFileFilter();
         Iterator<ProductReaderPlugIn> allReaderPlugIns = ProductIOPlugInManager.getInstance().getAllReaderPlugIns();
-        List<BeamFileFilter> sortedFileFilters = BeamFileFilter.getSortedFileFilters(allReaderPlugIns);
-        for (BeamFileFilter productFileFilter : sortedFileFilters) {
+        List<SnapFileFilter> sortedFileFilters = SnapFileFilter.getSortedFileFilters(allReaderPlugIns);
+        for (SnapFileFilter productFileFilter : sortedFileFilters) {
             fileChooser.addChoosableFileFilter(productFileFilter);
             if (!ALL_FILES_IDENTIFIER.equals(lastFormat) &&
                 productFileFilter.getFormatName().equals(lastFormat)) {
@@ -1247,8 +1247,8 @@ public class VisatApp extends BasicApp implements AppContext {
         String currentDir = fileChooser.getCurrentDirectory().getAbsolutePath();
         getPreferences().setPropertyString(PROPERTY_KEY_APP_LAST_OPEN_DIR, currentDir);
 
-        if (fileChooser.getFileFilter() instanceof BeamFileFilter) {
-            String currentFormat = ((BeamFileFilter) fileChooser.getFileFilter()).getFormatName();
+        if (fileChooser.getFileFilter() instanceof SnapFileFilter) {
+            String currentFormat = ((SnapFileFilter) fileChooser.getFileFilter()).getFormatName();
             if (currentFormat != null) {
                 getPreferences().setPropertyString(PROPERTY_KEY_APP_LAST_OPEN_FORMAT, currentFormat);
             }
