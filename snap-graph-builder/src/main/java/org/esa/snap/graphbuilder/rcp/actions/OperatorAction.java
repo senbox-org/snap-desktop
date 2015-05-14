@@ -36,7 +36,9 @@ import java.util.Set;
  * file name suffix for the target product can be given via the {@code targetProductNameSuffix} property.</p>
  */
 public class OperatorAction extends DefaultOperatorAction {
-    protected static final Set<String> KNOWN_KEYS = new HashSet<>(Arrays.asList("displayName", "operatorName", "dialogTitle", "targetProductNameSuffix", "icon"));
+    protected static final Set<String> KNOWN_KEYS = new HashSet<>(Arrays.asList("displayName", "operatorName",
+                                                                                "dialogTitle", "targetProductNameSuffix",
+                                                                                "helpId", "icon"));
 
     private ModelessDialog dialog;
 
@@ -69,7 +71,10 @@ public class OperatorAction extends DefaultOperatorAction {
     }
 
     protected ModelessDialog createOperatorDialog() {
-        SingleOperatorDialog productDialog = new SingleOperatorDialog(getOperatorName(), getAppContext(), getDialogTitle(), getHelpId());
+        setHelpId(getPropertyString("helpId"));
+
+        final SingleOperatorDialog productDialog = new SingleOperatorDialog(getOperatorName(), getAppContext(),
+                                                                            getDialogTitle(), getHelpId());
         if (getTargetProductNameSuffix() != null) {
             productDialog.setTargetProductNameSuffix(getTargetProductNameSuffix());
         }
