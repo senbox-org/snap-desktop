@@ -24,6 +24,7 @@ import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.layers.LayerList;
 import gov.nasa.worldwind.layers.placename.PlaceNameLayer;
 import gov.nasa.worldwindx.examples.WMSLayersPanel;
+import gov.nasa.worldwindx.examples.analytics.AnalyticSurface;
 import org.esa.snap.worldwind.layers.DefaultProductLayer;
 import org.esa.snap.worldwind.layers.WWLayer;
 import org.esa.snap.worldwind.layers.WWLayerDescriptor;
@@ -254,6 +255,20 @@ public class WW3DToolView extends WWBaseToolView implements WWView {
 
                 public void selected(SelectEvent event)
                 {
+                    /*
+                    System.out.println("event.getTopObject() " + event.getTopObject());
+                    if (event.getTopObject() instanceof AnalyticSurface.AnalyticSurfaceObject) {
+                        System.out.println("pick point: " + event.getPickPoint());
+                        Point pickPoint = event.getPickPoint();
+                        if (pickPoint != null) {
+                            System.out.println("position: " + wwjPanel.getWwd().getView().computePositionFromScreenPoint(pickPoint.getX(), pickPoint.getY()));
+                        }
+
+                        //AnalyticSurface surface = (AnalyticSurface) event.getTopObject();
+                        //System.out.println("dimensions " + surface.getDimensions());
+                        //System.out.println("getCorners " + surface.getSector().getCorners());
+                    }
+                    */
                     final LayerList layerList = getWwd().getModel().getLayers();
                     for(Layer layer : layerList) {
                         if(layer instanceof WWLayer) {

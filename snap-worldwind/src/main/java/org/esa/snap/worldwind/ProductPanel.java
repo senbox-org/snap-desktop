@@ -73,8 +73,12 @@ class ProductPanel extends JPanel {
     }
 
     private void fill(WorldWindow wwd) {
-
+        System.out.println("fill");
         final String[] productNames = defaultProductLayer.getProductNames();
+        System.out.println("productNames: ");
+        for (int i = 0; i < productNames.length; i++) {
+            System.out.println(productNames[i]);
+        }
         for (String name : productNames) {
             final LayerAction action = new LayerAction(defaultProductLayer, wwd, name, defaultProductLayer.getOpacity(name) != 0);
             final JCheckBox jcb = new JCheckBox(action);
@@ -119,6 +123,8 @@ class ProductPanel extends JPanel {
         public void actionPerformed(ActionEvent actionEvent) {
             SystemUtils.LOG.fine("actionPerformed " + actionEvent);
             // Simply enable or disable the layer based on its toggle button.
+            //System.out.println("Product click " + layer);
+            //System.out.println(layer.getOpacity());
             if (((JCheckBox) actionEvent.getSource()).isSelected()) {
                 this.layer.setOpacity(name, this.layer.getOpacity());
             } else {

@@ -66,6 +66,7 @@ public class Level2ProductLayer extends BaseLayer implements WWLayer {
     private static double HUE_MAX_RED = 1.0;
 
     private static boolean theOWILimitChanged = false;
+
     private static boolean theRVLLimitChanged = false;
 
     //public double theCurrMinHue;
@@ -179,8 +180,8 @@ public class Level2ProductLayer extends BaseLayer implements WWLayer {
         final Band windDirBand = theColorBarLegendProduct.getBand(prefix + "_001_owiWindDirection");
         final Band rvlRadVelBand = theColorBarLegendProduct.getBand(prefix + "_001_rvlRadVel");
 
-        final Band waveLatBand = theColorBarLegendProduct.getBand(prefix + "_001_oswLon");
-        final Band waveLonBand = theColorBarLegendProduct.getBand(prefix + "_001_oswLat");
+        final Band waveLonBand = theColorBarLegendProduct.getBand(prefix + "_001_oswLon");
+        final Band waveLatBand = theColorBarLegendProduct.getBand(prefix + "_001_oswLat");
         final Band waveHeightBand = theColorBarLegendProduct.getBand(prefix + "_001_oswHs");
         final Band waveLengthBand = theColorBarLegendProduct.getBand(prefix + "_001_oswWl");
         final Band waveDirBand = theColorBarLegendProduct.getBand(prefix + "_001_oswDirmet");
@@ -221,20 +222,26 @@ public class Level2ProductLayer extends BaseLayer implements WWLayer {
                 rvlRadVelBand.readPixels(0, 0, rvlRadVelBand.getRasterWidth(), rvlRadVelBand.getRasterHeight(), rvlRadVelValues, com.bc.ceres.core.ProgressMonitor.NULL);
             }
 
+            double[] waveHeightValues = null;
+            double[] waveLatValues = null;
+            double[] waveLonValues = null;
+            double[] waveLengthValues = null;
+            double[] waveDirValues = null;
+
             if (waveLonBand != null) {
-                final double[] waveLonValues = new double[waveLonBand.getRasterWidth() * waveLonBand.getRasterHeight()];
+                waveLonValues = new double[waveLonBand.getRasterWidth() * waveLonBand.getRasterHeight()];
                 waveLonBand.readPixels(0, 0, waveLonBand.getRasterWidth(), waveLonBand.getRasterHeight(), waveLonValues, com.bc.ceres.core.ProgressMonitor.NULL);
 
-                final double[] waveLatValues = new double[waveLatBand.getRasterWidth() * waveLatBand.getRasterHeight()];
+                waveLatValues = new double[waveLatBand.getRasterWidth() * waveLatBand.getRasterHeight()];
                 waveLatBand.readPixels(0, 0, waveLatBand.getRasterWidth(), waveLatBand.getRasterHeight(), waveLatValues, com.bc.ceres.core.ProgressMonitor.NULL);
 
-                final double[] waveHeightValues = new double[waveHeightBand.getRasterWidth() * waveHeightBand.getRasterHeight()];
+                waveHeightValues = new double[waveHeightBand.getRasterWidth() * waveHeightBand.getRasterHeight()];
                 waveHeightBand.readPixels(0, 0, waveHeightBand.getRasterWidth(), waveHeightBand.getRasterHeight(), waveHeightValues, com.bc.ceres.core.ProgressMonitor.NULL);
 
-                final double[] waveLengthValues = new double[waveLengthBand.getRasterWidth() * waveLengthBand.getRasterHeight()];
+                waveLengthValues = new double[waveLengthBand.getRasterWidth() * waveLengthBand.getRasterHeight()];
                 waveLengthBand.readPixels(0, 0, waveLengthBand.getRasterWidth(), waveLengthBand.getRasterHeight(), waveLengthValues, com.bc.ceres.core.ProgressMonitor.NULL);
 
-                final double[] waveDirValues = new double[waveDirBand.getRasterWidth() * waveDirBand.getRasterHeight()];
+                waveDirValues = new double[waveDirBand.getRasterWidth() * waveDirBand.getRasterHeight()];
                 waveDirBand.readPixels(0, 0, waveDirBand.getRasterWidth(), waveDirBand.getRasterHeight(), waveDirValues, com.bc.ceres.core.ProgressMonitor.NULL);
             }
 
@@ -251,11 +258,18 @@ public class Level2ProductLayer extends BaseLayer implements WWLayer {
                     minHeight = cellSizeArr[cellSizeInd - 1] * 0.5e6 / 16;
                 }
                 addWindSpeedArrows(latValues, lonValues, incAngleValues, windSpeedValues, windDirValues, lonBand.getRasterWidth(), lonBand.getRasterHeight(), cellSizeArr[cellSizeInd], minHeight, maxHeight, productRenderablesInfo.theRenderableListHash.get("owi"));
+                //addWindSpeedArrows(waveLatValues, waveLonValues, incAngleValues, windSpeedValues, windDirValues, waveLonBand.getRasterWidth(), waveLonBand.getRasterHeight(), cellSizeArr[cellSizeInd], minHeight, maxHeight, productRenderablesInfo.theRenderableListHash.get("osw"));
             }
 
             createColorSurfaceWithGradient(geoPos1, geoPos2, windSpeedValues, windSpeedBand.getRasterWidth(), windSpeedBand.getRasterHeight(), 0, 10, false, productRenderablesInfo.theRenderableListHash.get("owi"), productRenderablesInfo, "owi");
             if (rvlRadVelValues != null) {
                 createColorSurfaceWithGradient(geoPos1, geoPos2, rvlRadVelValues, rvlRadVelBand.getRasterWidth(), rvlRadVelBand.getRasterHeight(), -6, 6, true, productRenderablesInfo.theRenderableListHash.get("rvl"), productRenderablesInfo, "rvl");
+            }
+
+            if (waveHeightValues != null) {
+                addWaveLengthArrows(waveLatValues, waveLonValues, waveLengthValues, waveDirValues, waveLonBand.getRasterWidth(), waveLonBand.getRasterHeight(), productRenderablesInfo.theRenderableListHash.get("osw"));
+                createColorSurfaceWithGradient(geoPos1, geoPos2, waveHeightValues, waveHeightBand.getRasterWidth(), waveHeightBand.getRasterHeight(), 0, 10, false, productRenderablesInfo.theRenderableListHash.get("osw"), productRenderablesInfo, "osw");
+
             }
             theProductRenderablesInfoHash.put(product, productRenderablesInfo);
 
@@ -329,6 +343,7 @@ public class Level2ProductLayer extends BaseLayer implements WWLayer {
                     for (Renderable renderable : renderableList) {
                         removeRenderable(renderable);
                         if (currComp.equals(comp)) {
+                            //System.out.println("renderable " + renderable);
                             addRenderable(renderable);
                         }
                     }
@@ -354,6 +369,8 @@ public class Level2ProductLayer extends BaseLayer implements WWLayer {
         float pixelHeight = Math.abs(latValues[0] - latValues[latValues.length - 1]) / height;
 
         //SystemUtils.LOG.info("pixelWidth " + pixelWidth + " pixelHeight " + pixelHeight);
+
+        //System.out.println("pixelWidth " + pixelWidth + " pixelHeight " + pixelHeight);
 
         // take half of the smaller dimension
         float arrowLength = pixelWidth;
@@ -458,6 +475,78 @@ public class Level2ProductLayer extends BaseLayer implements WWLayer {
         }
     }
 
+    private void addWaveLengthArrows(double[] latValues,
+                                    double[] lonValues,
+                                    double[] waveLengthValues,
+                                    double[] waveDirValues,
+                                    int width,
+                                    int height,
+                                    ArrayList<Renderable> renderableList) {
+
+        for (int row = 0; row < height; row++) {
+            for (int col = 0; col < width; col++) {
+
+                int i = row*width + col;
+                double arrowLength = waveLengthValues[i] / 10000;
+                final Position startPos = new Position(Angle.fromDegreesLatitude(latValues[i]), Angle.fromDegreesLongitude(lonValues[i]), 10.0);
+                final Position endPos = new Position(LatLon.greatCircleEndPosition(startPos, Angle.fromDegrees(waveDirValues[i]), Angle.fromDegrees(arrowLength)), 10.0);
+
+                //System.out.println("waveLengthValues[i] " + waveLengthValues[i]);
+
+                final ArrayList<Position> positions = new ArrayList<>();
+                positions.add(startPos);
+                positions.add(endPos);
+
+                final ShapeAttributes dpAttrs = new BasicShapeAttributes();
+                dpAttrs.setOutlineMaterial(Material.BLACK);
+                dpAttrs.setOutlineWidth(2d);
+
+
+                final DirectedPath directedPath = new DirectedPath(positions);
+                /*
+                directedPath.setAttributes(dpAttrs);
+                directedPath.setVisible(true);
+                directedPath.setFollowTerrain(true);
+                directedPath.setAltitudeMode(WorldWind.RELATIVE_TO_GROUND);
+                directedPath.setPathType(AVKey.GREAT_CIRCLE);
+                double arrowHeadLength = computeSegmentLength(directedPath, getDrawContext(), startPos, endPos) / 4;
+                directedPath.setArrowLength(arrowHeadLength);
+                */
+
+
+                Renderable renderable = new Renderable() {
+                    public void render (DrawContext dc) {
+
+                        directedPath.setAttributes(dpAttrs);
+                        directedPath.setVisible(true);
+                        directedPath.setFollowTerrain(true);
+                        directedPath.setAltitudeMode(WorldWind.RELATIVE_TO_GROUND);
+                        directedPath.setPathType(AVKey.GREAT_CIRCLE);
+
+                        // this is the length of the arrow head actually
+                        double arrowHeadLength = computeSegmentLength(directedPath, dc, startPos, endPos) / 4;
+                        directedPath.setArrowLength(arrowHeadLength);
+                        directedPath.render(dc);
+
+
+                        //System.out.println("eyePosition " + dc.getView().getCurrentEyePosition());
+                    }
+                };
+
+                addRenderable(renderable);
+
+                if (renderableList != null) {
+                    renderableList.add(renderable);
+                }
+                String info = "Wave length: " + waveLengthValues[i] + "<br/>";
+                //info += "Wind Direction: " + avgWindDir + "<br/>";
+                //info += "Incidence Angle: " + avgIncAngle + "<br/>";
+                theObjectInfoHash.put(directedPath, info);
+            }
+        }
+    }
+
+
     private double computeSegmentLength(Path path, DrawContext dc, Position posA, Position posB)
     {
         final LatLon llA = new LatLon(posA.getLatitude(), posA.getLongitude());
@@ -497,7 +586,7 @@ public class Level2ProductLayer extends BaseLayer implements WWLayer {
 
         AnalyticSurfaceAttributes attr = new AnalyticSurfaceAttributes();
         attr.setDrawShadow(false);
-        attr.setInteriorOpacity(0.6);
+        attr.setInteriorOpacity(1.0);
         //attr.setOutlineWidth(3);
         attr.setDrawOutline(false);
         analyticSurface.setSurfaceAttributes(attr);
@@ -529,7 +618,12 @@ public class Level2ProductLayer extends BaseLayer implements WWLayer {
         if (comp.equalsIgnoreCase("owi")) {
             analyticSurface = prodRenderInfo.owiAnalyticSurface;
             analyticSurfaceValueBuffer = prodRenderInfo.owiAnalyticSurfaceValueBuffer;
-        } else if (comp.equalsIgnoreCase("rvl")) {
+        }
+        else if (comp.equalsIgnoreCase("osw")) {
+            analyticSurface = prodRenderInfo.oswAnalyticSurface;
+            analyticSurfaceValueBuffer = prodRenderInfo.oswAnalyticSurfaceValueBuffer;
+        }
+        else if (comp.equalsIgnoreCase("rvl")) {
             analyticSurface = prodRenderInfo.rvlAnalyticSurface;
             analyticSurfaceValueBuffer = prodRenderInfo.rvlAnalyticSurfaceValueBuffer;
         }
@@ -616,6 +710,9 @@ public class Level2ProductLayer extends BaseLayer implements WWLayer {
         String title = "";
         if (comp.equalsIgnoreCase("owi")) {
             title = "OWI Wind Speed";
+        }
+        else if (comp.equalsIgnoreCase("osw")) {
+            title = "OSW Wave Height.";
         }
         else if (comp.equalsIgnoreCase("rvl")) {
             title = "RVL Rad. Vel.";
@@ -732,6 +829,7 @@ public class Level2ProductLayer extends BaseLayer implements WWLayer {
                     double maxValue = ((Integer) maxSP.getValue());
                     redrawColorBar(minValue, maxValue, "owi", wwd);
                 }
+
                 if (theRVLLimitChanged) {
                     System.out.println("theRVLLimitChanged");
 
@@ -751,6 +849,7 @@ public class Level2ProductLayer extends BaseLayer implements WWLayer {
         controlLevel2Panel.add(updateButton);
 
         createColorBarLegend(0, 10, "OWI Wind Speed", "owi");
+        createColorBarLegend(0, 10, "OSW Wave Height.", "osw");
         createColorBarLegend(-6, 6, "RVL Rad. Vel.", "rvl");
         addRenderable(theColorBarLegendHash.get("owi"));
 

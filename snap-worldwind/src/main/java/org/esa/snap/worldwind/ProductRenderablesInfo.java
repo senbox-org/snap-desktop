@@ -28,9 +28,11 @@ import java.util.HashMap;
 public class ProductRenderablesInfo  {
 
     public AnalyticSurface owiAnalyticSurface = null;
+    public AnalyticSurface oswAnalyticSurface = null;
     public AnalyticSurface rvlAnalyticSurface = null;
 
     public BufferWrapper owiAnalyticSurfaceValueBuffer = null;
+    public BufferWrapper oswAnalyticSurfaceValueBuffer = null;
     public BufferWrapper rvlAnalyticSurfaceValueBuffer = null;
 
     public HashMap<String, ArrayList<Renderable>> theRenderableListHash;
@@ -48,6 +50,10 @@ public class ProductRenderablesInfo  {
         if (comp.equalsIgnoreCase("owi")) {
             owiAnalyticSurface = analyticSurface;
             owiAnalyticSurfaceValueBuffer = analyticSurfaceValueBuffer;
+        }
+        else if (comp.equalsIgnoreCase("osw")) {
+            oswAnalyticSurface = analyticSurface;
+            oswAnalyticSurfaceValueBuffer = analyticSurfaceValueBuffer;
         }
         else if (comp.equalsIgnoreCase("rvl")) {
             rvlAnalyticSurface = analyticSurface;

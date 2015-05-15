@@ -114,7 +114,6 @@ class LayerPanel extends JPanel {
         }
 
         public void actionPerformed(ActionEvent actionEvent) {
-
             // Simply enable or disable the layer based on its toggle button.
             if (((JCheckBox) actionEvent.getSource()).isSelected())
                 this.layer.setEnabled(true);
