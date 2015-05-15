@@ -35,8 +35,8 @@ import org.esa.snap.gpf.operators.standard.WriteOp;
 import org.esa.snap.graphbuilder.gpf.ui.OperatorUI;
 import org.esa.snap.graphbuilder.gpf.ui.OperatorUIRegistry;
 import org.esa.snap.rcp.SnapDialogs;
-import org.esa.snap.util.io.BeamFileFilter;
 import org.esa.snap.util.io.FileUtils;
+import org.esa.snap.util.io.SnapFileFilter;
 
 import java.io.File;
 import java.io.FileReader;
@@ -257,7 +257,7 @@ public class GraphExecuter extends Observable {
         String filename = "myGraph";
         if (lastLoadedGraphFile != null)
             filename = lastLoadedGraphFile.getAbsolutePath();
-        final BeamFileFilter fileFilter = new BeamFileFilter("XML", "xml", "Graph");
+        final SnapFileFilter fileFilter = new SnapFileFilter("XML", "xml", "Graph");
         final File filePath = SnapDialogs.requestFileForSave("Save Graph", false, fileFilter, ".xml", filename,
                                                              null, BasicApp.PROPERTY_KEY_APP_LAST_SAVE_DIR);
         if (filePath != null)

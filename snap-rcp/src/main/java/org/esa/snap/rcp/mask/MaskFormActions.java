@@ -42,9 +42,9 @@ import org.esa.snap.rcp.util.internal.RasterDataNodeDeleter;
 import org.esa.snap.rcp.windows.ToolTopComponent;
 import org.esa.snap.util.PropertyMap;
 import org.esa.snap.util.StringUtils;
-import org.esa.snap.util.io.BeamFileChooser;
-import org.esa.snap.util.io.BeamFileFilter;
 import org.esa.snap.util.io.FileUtils;
+import org.esa.snap.util.io.SnapFileChooser;
+import org.esa.snap.util.io.SnapFileFilter;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -441,15 +441,15 @@ class MaskFormActions {
         }
 
         private void importMasks() {
-            final JFileChooser fileChooser = new BeamFileChooser();
+            final JFileChooser fileChooser = new SnapFileChooser();
             fileChooser.setDialogTitle("Import Masks from file");
-            final FileFilter bmdFilter = new BeamFileFilter("BITMASK_DEFINITION_FILE", ".bmd",
+            final FileFilter bmdFilter = new SnapFileFilter("BITMASK_DEFINITION_FILE", ".bmd",
                                                             "Bitmask definition files (*.bmd)");
             fileChooser.addChoosableFileFilter(bmdFilter);
-            final FileFilter bmdxFilter = new BeamFileFilter("BITMASK_DEFINITION_FILE_XML", ".bmdx",
+            final FileFilter bmdxFilter = new SnapFileFilter("BITMASK_DEFINITION_FILE_XML", ".bmdx",
                                                              "Bitmask definition xml files (*.bmdx)");
             fileChooser.addChoosableFileFilter(bmdxFilter);
-            final FileFilter xmlFilter = new BeamFileFilter("XML", ".xml", "XML files (*.xml)");
+            final FileFilter xmlFilter = new SnapFileFilter("XML", ".xml", "XML files (*.xml)");
             fileChooser.setFileFilter(xmlFilter);
             fileChooser.setCurrentDirectory(getDirectory());
 
@@ -565,9 +565,9 @@ class MaskFormActions {
             boolean[] masksExported = addContent(masks, document);
             boolean dialogApproved = false;
             if (hasAtLeastOneMaskExported(masksExported)) {
-                final JFileChooser fileChooser = new BeamFileChooser();
+                final JFileChooser fileChooser = new SnapFileChooser();
                 fileChooser.setDialogTitle(ACTION_NAME);
-                final FileFilter fileFilter = new BeamFileFilter("XML", ".xml", "XML files (*.xml)");
+                final FileFilter fileFilter = new SnapFileFilter("XML", ".xml", "XML files (*.xml)");
                 fileChooser.setFileFilter(fileFilter);
                 final File targetDirectory = getDirectory();
                 fileChooser.setCurrentDirectory(targetDirectory);

@@ -2,8 +2,8 @@ package org.esa.snap.rcp;
 
 import com.bc.ceres.core.Assert;
 import org.esa.snap.util.SystemUtils;
-import org.esa.snap.util.io.BeamFileChooser;
 import org.esa.snap.util.io.FileUtils;
+import org.esa.snap.util.io.SnapFileChooser;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.util.NbBundle;
@@ -229,7 +229,7 @@ public class SnapDialogs {
         String lastDir = getPreferences().get(preferencesKey, SystemUtils.getUserHomeDir().getPath());
         File currentDir = new File(lastDir);
 
-        BeamFileChooser fileChooser = new BeamFileChooser();
+        SnapFileChooser fileChooser = new SnapFileChooser();
         fileChooser.setCurrentDirectory(currentDir);
         if (fileFilter != null) {
             fileChooser.setFileFilter(fileFilter);
@@ -304,7 +304,7 @@ public class SnapDialogs {
         String lastDir = getPreferences().get(preferenceKey, SystemUtils.getUserHomeDir().getPath());
         File currentDir = new File(lastDir);
 
-        BeamFileChooser fileChooser = new BeamFileChooser();
+        SnapFileChooser fileChooser = new SnapFileChooser();
         fileChooser.setCurrentDirectory(currentDir);
         if (fileFilter != null) {
             fileChooser.setFileFilter(fileFilter);

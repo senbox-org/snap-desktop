@@ -24,7 +24,7 @@ import org.esa.snap.framework.datamodel.ProductNode;
 import org.esa.snap.framework.datamodel.VectorDataNode;
 import org.esa.snap.jai.ImageManager;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.util.io.BeamFileFilter;
+import org.esa.snap.util.io.SnapFileFilter;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -101,7 +101,7 @@ public class ImportVectorDataNodeFromCsvAction extends AbstractImportVectorDataN
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        final BeamFileFilter filter = new BeamFileFilter(getVectorDataType(),
+        final SnapFileFilter filter = new SnapFileFilter(getVectorDataType(),
                                                          new String[]{".txt", ".dat", ".csv"},
                                                          "Plain text");
         importer = new VectorDataNodeImporter(getHelpId(), filter, new DefaultVectorDataNodeReader(), "Import CSV file", "csv.io.dir");

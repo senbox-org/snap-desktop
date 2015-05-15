@@ -37,12 +37,26 @@ import org.esa.snap.util.IconUtils;
 import org.esa.snap.util.MemUtils;
 import org.esa.snap.util.ProductFunctions;
 import org.esa.snap.util.ResourceUtils;
-import org.esa.snap.util.io.BeamFileFilter;
+import org.esa.snap.util.io.SnapFileFilter;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.SwingWorker;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -60,7 +74,7 @@ import java.util.Observer;
  */
 public class GraphBuilderDialog extends ModelessDialog implements Observer {
 
-    private static final ImageIcon processIcon = IconUtils.LoadIcon("org/esa/snap/icons/cog.png");
+    private static final ImageIcon processIcon = IconUtils.LoadIcon("org/esa/snap/icons/cog22.png");
     private static final ImageIcon saveIcon = IconUtils.LoadIcon("org/esa/snap/icons/save.png");
     private static final ImageIcon loadIcon = IconUtils.LoadIcon("org/esa/snap/icons/open.png");
     private static final ImageIcon clearIcon = IconUtils.LoadIcon("org/esa/snap/icons/edit-clear.png");
@@ -337,7 +351,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer {
      * Loads a new graph from a file
      */
     private void LoadGraph() {
-        final BeamFileFilter fileFilter = new BeamFileFilter("XML", "xml", "Graph");
+        final SnapFileFilter fileFilter = new SnapFileFilter("XML", "xml", "Graph");
         final File file = SnapDialogs.requestFileForOpen("Load Graph", false, fileFilter, LAST_GRAPH_PATH);
         if (file == null) return;
 

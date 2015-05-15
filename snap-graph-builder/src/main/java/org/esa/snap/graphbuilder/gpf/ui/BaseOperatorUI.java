@@ -34,6 +34,7 @@ import org.esa.snap.framework.gpf.OperatorSpi;
 import org.esa.snap.framework.gpf.annotations.ParameterDescriptorFactory;
 import org.esa.snap.framework.gpf.descriptor.OperatorDescriptor;
 import org.esa.snap.framework.gpf.descriptor.PropertySetDescriptorFactory;
+import org.esa.snap.framework.gpf.graph.GraphException;
 import org.esa.snap.framework.ui.AppContext;
 
 import javax.swing.JComponent;
@@ -112,7 +113,7 @@ public abstract class BaseOperatorUI implements OperatorUI {
         return sourceProducts != null;
     }
 
-    public void convertToDOM(final XppDomElement parentElement) {
+    public void convertToDOM(final XppDomElement parentElement) throws GraphException {
 
         if (propertySet == null) {
             setParamsToConfiguration(parentElement.getXppDom());
@@ -153,6 +154,9 @@ public abstract class BaseOperatorUI implements OperatorUI {
                     final DomElement childElement = parentElement.createChild(getElementName(p));
                     final Object childValue = p.getValue();
                     final Converter converter = descriptor.getConverter();
+                    if(converter == null) {
+                        throw new GraphException(operatorName+" BaseOperatorUI: no coverter found for parameter "+descriptor.getName());
+                    }
 
                     final String alias = descriptor.getAlias();
 

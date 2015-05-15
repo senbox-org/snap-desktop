@@ -41,9 +41,9 @@ import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
 import org.esa.snap.util.ProductUtils;
 import org.esa.snap.util.ResourceInstaller;
 import org.esa.snap.util.SystemUtils;
-import org.esa.snap.util.io.BeamFileChooser;
-import org.esa.snap.util.io.BeamFileFilter;
 import org.esa.snap.util.io.FileUtils;
+import org.esa.snap.util.io.SnapFileChooser;
+import org.esa.snap.util.io.SnapFileFilter;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
@@ -93,7 +93,7 @@ class ColorManipulationForm implements SelectionSupport.Handler<ProductSceneView
     private final TopComponent toolView;
     private final FormModel formModel;
     private Band[] bandsToBeModified;
-    private BeamFileFilter beamFileFilter;
+    private SnapFileFilter snapFileFilter;
     private final ProductNodeListener productNodeListener;
     private boolean defaultColorPalettesInstalled;
     private JPanel contentPanel;
@@ -482,13 +482,13 @@ class ColorManipulationForm implements SelectionSupport.Handler<ProductSceneView
         return ioDir;
     }
 
-    private BeamFileFilter getOrCreateColorPaletteDefinitionFileFilter() {
-        if (beamFileFilter == null) {
+    private SnapFileFilter getOrCreateColorPaletteDefinitionFileFilter() {
+        if (snapFileFilter == null) {
             final String formatName = "COLOR_PALETTE_DEFINITION_FILE";
             final String description = "Colour palette files (*" + FILE_EXTENSION + ")";  /*I18N*/
-            beamFileFilter = new BeamFileFilter(formatName, FILE_EXTENSION, description);
+            snapFileFilter = new SnapFileFilter(formatName, FILE_EXTENSION, description);
         }
-        return beamFileFilter;
+        return snapFileFilter;
     }
 
     private void importColorPaletteDef() {
@@ -498,7 +498,7 @@ class ColorManipulationForm implements SelectionSupport.Handler<ProductSceneView
             // is disabled if the _contrastStretchPane has no ImageInfo.
             return;
         }
-        final BeamFileChooser fileChooser = new BeamFileChooser();
+        final SnapFileChooser fileChooser = new SnapFileChooser();
         fileChooser.setDialogTitle("Import Colour Palette"); /*I18N*/
         fileChooser.setFileFilter(getOrCreateColorPaletteDefinitionFileFilter());
         fileChooser.setCurrentDirectory(getIODir().toFile());
@@ -571,7 +571,7 @@ class ColorManipulationForm implements SelectionSupport.Handler<ProductSceneView
             // disabled if the color manipulation form has no ImageInfo.
             return;
         }
-        final BeamFileChooser fileChooser = new BeamFileChooser();
+        final SnapFileChooser fileChooser = new SnapFileChooser();
         fileChooser.setDialogTitle("Export Colour Palette"); /*I18N*/
         fileChooser.setFileFilter(getOrCreateColorPaletteDefinitionFileFilter());
         fileChooser.setCurrentDirectory(getIODir().toFile());

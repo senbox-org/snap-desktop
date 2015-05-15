@@ -34,8 +34,8 @@ import org.esa.snap.framework.ui.command.ExecCommand;
 import org.esa.snap.framework.ui.product.ProductSubsetDialog;
 import org.esa.snap.util.Debug;
 import org.esa.snap.util.SystemUtils;
-import org.esa.snap.util.io.BeamFileChooser;
-import org.esa.snap.util.io.BeamFileFilter;
+import org.esa.snap.util.io.SnapFileChooser;
+import org.esa.snap.util.io.SnapFileFilter;
 import org.esa.snap.visat.VisatApp;
 
 import javax.swing.JButton;
@@ -221,7 +221,7 @@ public class ProductImportAction extends ExecCommand {
         if (fileChooser == null) {
             fileChooser = new ProductFileChooser();
             fileChooser.setAcceptAllFileFilterUsed(useAllFileFilter);
-            BeamFileFilter fileFilter = readerPlugIn.getProductFileFilter();
+            SnapFileFilter fileFilter = readerPlugIn.getProductFileFilter();
             if (fileFilter != null) {
                 fileChooser.setFileFilter(fileFilter);
             }
@@ -302,7 +302,7 @@ public class ProductImportAction extends ExecCommand {
         return false;
     }
 
-    protected class ProductFileChooser extends BeamFileChooser {
+    protected class ProductFileChooser extends SnapFileChooser {
 
         private static final long serialVersionUID = -8122437634943074658L;
 

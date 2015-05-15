@@ -22,7 +22,7 @@ import org.esa.snap.framework.ui.NewProductDialog;
 import org.esa.snap.framework.ui.product.ProductSubsetDialog;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
-import org.esa.snap.util.io.BeamFileChooser;
+import org.esa.snap.util.io.SnapFileChooser;
 import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle;
 
@@ -125,7 +125,7 @@ public class ImportProductAction extends AbstractAction implements HelpCtx.Provi
         openProductAction.actionPerformed(e);
     }
 
-    protected class ProductFileChooser extends BeamFileChooser {
+    protected class ProductFileChooser extends SnapFileChooser {
 
         private static final long serialVersionUID = -8122437634943074658L;
 

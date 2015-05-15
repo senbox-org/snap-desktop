@@ -25,7 +25,7 @@ import org.esa.snap.framework.dataio.ProductWriterPlugIn;
 import org.esa.snap.framework.datamodel.Band;
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.ProductData;
-import org.esa.snap.util.io.BeamFileFilter;
+import org.esa.snap.util.io.SnapFileFilter;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -182,8 +182,8 @@ public class TargetProductSelectorModelTest {
             return "";
         }
 
-        public BeamFileFilter getProductFileFilter() {
-            return new BeamFileFilter();
+        public SnapFileFilter getProductFileFilter() {
+            return new SnapFileFilter();
         }
     }
 }

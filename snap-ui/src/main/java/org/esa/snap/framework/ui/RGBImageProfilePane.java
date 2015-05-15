@@ -24,9 +24,9 @@ import org.esa.snap.framework.ui.product.ProductExpressionPane;
 import org.esa.snap.framework.ui.tool.ToolButtonFactory;
 import org.esa.snap.util.Debug;
 import org.esa.snap.util.PropertyMap;
-import org.esa.snap.util.io.BeamFileChooser;
-import org.esa.snap.util.io.BeamFileFilter;
 import org.esa.snap.util.io.FileUtils;
+import org.esa.snap.util.io.SnapFileChooser;
+import org.esa.snap.util.io.SnapFileFilter;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -318,16 +318,16 @@ public class RGBImageProfilePane extends JPanel {
     }
 
     private void performOpen() {
-        final BeamFileChooser beamFileChooser = new BeamFileChooser(getProfilesDir());
-        beamFileChooser.setFileFilter(
-                new BeamFileFilter("RGB-PROFILE", RGBImageProfile.FILENAME_EXTENSION, "RGB-Image Profile Files"));
-        final int status = beamFileChooser.showOpenDialog(this);
-        if (beamFileChooser.getSelectedFile() == null) {
+        final SnapFileChooser snapFileChooser = new SnapFileChooser(getProfilesDir());
+        snapFileChooser.setFileFilter(
+                new SnapFileFilter("RGB-PROFILE", RGBImageProfile.FILENAME_EXTENSION, "RGB-Image Profile Files"));
+        final int status = snapFileChooser.showOpenDialog(this);
+        if (snapFileChooser.getSelectedFile() == null) {
             return;
         }
-        final File file = beamFileChooser.getSelectedFile();
+        final File file = snapFileChooser.getSelectedFile();
         lastDir = file.getParentFile();
-        if (status != BeamFileChooser.APPROVE_OPTION) {
+        if (status != SnapFileChooser.APPROVE_OPTION) {
             return;
         }
 
@@ -385,19 +385,19 @@ public class RGBImageProfilePane extends JPanel {
     }
 
     private File promptForSaveFile() {
-        final BeamFileChooser beamFileChooser = new BeamFileChooser(getProfilesDir());
-        beamFileChooser.setFileFilter(new BeamFileFilter("RGB-PROFILE", ".rgb", "RGB-Image Profile Files"));
+        final SnapFileChooser snapFileChooser = new SnapFileChooser(getProfilesDir());
+        snapFileChooser.setFileFilter(new SnapFileFilter("RGB-PROFILE", ".rgb", "RGB-Image Profile Files"));
 
         File selectedFile;
         while (true) {
-            final int status = beamFileChooser.showSaveDialog(this);
-            if (beamFileChooser.getSelectedFile() == null) {
+            final int status = snapFileChooser.showSaveDialog(this);
+            if (snapFileChooser.getSelectedFile() == null) {
                 selectedFile = null;
                 break;
             }
-            selectedFile = beamFileChooser.getSelectedFile();
+            selectedFile = snapFileChooser.getSelectedFile();
             lastDir = selectedFile.getParentFile();
-            if (status != BeamFileChooser.APPROVE_OPTION) {
+            if (status != SnapFileChooser.APPROVE_OPTION) {
                 selectedFile = null;
                 break;
             }

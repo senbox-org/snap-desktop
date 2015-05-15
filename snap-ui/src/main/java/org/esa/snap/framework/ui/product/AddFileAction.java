@@ -22,7 +22,7 @@ import org.esa.snap.framework.dataio.ProductReaderPlugIn;
 import org.esa.snap.framework.ui.AppContext;
 import org.esa.snap.util.PropertyMap;
 import org.esa.snap.util.SystemUtils;
-import org.esa.snap.util.io.BeamFileFilter;
+import org.esa.snap.util.io.SnapFileFilter;
 
 import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
@@ -65,8 +65,8 @@ class AddFileAction extends AbstractAction {
 
         FileFilter actualFileFilter = fileChooser.getAcceptAllFileFilter();
         Iterator<ProductReaderPlugIn> allReaderPlugIns = ProductIOPlugInManager.getInstance().getAllReaderPlugIns();
-        List<BeamFileFilter> sortedFileFilters = BeamFileFilter.getSortedFileFilters(allReaderPlugIns);
-        for (BeamFileFilter productFileFilter : sortedFileFilters) {
+        List<SnapFileFilter> sortedFileFilters = SnapFileFilter.getSortedFileFilters(allReaderPlugIns);
+        for (SnapFileFilter productFileFilter : sortedFileFilters) {
             fileChooser.addChoosableFileFilter(productFileFilter);
             if (!ALL_FILES_FORMAT.equals(lastFormat) &&
                 productFileFilter.getFormatName().equals(lastFormat)) {
@@ -95,8 +95,8 @@ class AddFileAction extends AbstractAction {
     }
 
     private void setLastOpenedFormat(PropertyMap preferences, FileFilter fileFilter) {
-        if (fileFilter instanceof BeamFileFilter) {
-            String currentFormat = ((BeamFileFilter) fileFilter).getFormatName();
+        if (fileFilter instanceof SnapFileFilter) {
+            String currentFormat = ((SnapFileFilter) fileFilter).getFormatName();
             if (currentFormat != null) {
                 preferences.setPropertyString(lastOpenedFormat, currentFormat);
             }

@@ -27,7 +27,7 @@ import org.esa.snap.unmixing.Endmember;
 import org.esa.snap.util.PropertyMap;
 import org.esa.snap.util.ResourceInstaller;
 import org.esa.snap.util.SystemUtils;
-import org.esa.snap.util.io.BeamFileFilter;
+import org.esa.snap.util.io.SnapFileFilter;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -192,7 +192,7 @@ class EndmemberFormModel {
             ensureDefaultDirSet();
             DiagramGraph[] diagramGraphs = DiagramGraphIO.readGraphs(null,
                                                                      "Add Endmembers",
-                                                                     new BeamFileFilter[]{DiagramGraphIO.SPECTRA_CSV_FILE_FILTER},
+                                                                     new SnapFileFilter[]{DiagramGraphIO.SPECTRA_CSV_FILE_FILTER},
                                                                      appContext.getPreferences());
             Endmember[] endmembers = convertGraphsToEndmembers(diagramGraphs);
             for (Endmember endmember : endmembers) {
@@ -260,7 +260,7 @@ class EndmemberFormModel {
             ensureDefaultDirSet();
             DiagramGraphIO.writeGraphs(null,
                                        "Export Endmembers",
-                                       new BeamFileFilter[]{DiagramGraphIO.SPECTRA_CSV_FILE_FILTER},
+                                       new SnapFileFilter[]{DiagramGraphIO.SPECTRA_CSV_FILE_FILTER},
                                        appContext.getPreferences(),
                                        endmemberDiagram.getGraphs());
         }

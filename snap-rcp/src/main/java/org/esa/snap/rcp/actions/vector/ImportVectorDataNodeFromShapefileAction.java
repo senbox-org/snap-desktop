@@ -24,7 +24,7 @@ import org.esa.snap.framework.datamodel.VectorDataNode;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.layermanager.layersrc.shapefile.SLDUtils;
 import org.esa.snap.util.FeatureUtils;
-import org.esa.snap.util.io.BeamFileFilter;
+import org.esa.snap.util.io.SnapFileFilter;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.styling.Style;
 import org.opengis.feature.simple.SimpleFeature;
@@ -102,7 +102,7 @@ public class ImportVectorDataNodeFromShapefileAction extends AbstractImportVecto
 
     @Override
     public void actionPerformed(ActionEvent event) {
-        final BeamFileFilter filter = new BeamFileFilter(getVectorDataType(),
+        final SnapFileFilter filter = new SnapFileFilter(getVectorDataType(),
                                                          new String[]{".shp"},
                                                          "ESRI Shapefiles");
         importer = new VectorDataNodeImporter(getHelpId(), filter, new VdnShapefileReader(), "Import Shapefile", "shape.io.dir");
