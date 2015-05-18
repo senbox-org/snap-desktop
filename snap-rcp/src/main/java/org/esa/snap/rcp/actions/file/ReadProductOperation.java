@@ -22,6 +22,7 @@ class ReadProductOperation implements Runnable, Cancellable {
 
     public ReadProductOperation(File file, String formatName) {
         Assert.notNull(file, "file");
+        Assert.notNull(formatName, "formatName");
         this.file = file;
         this.formatName = formatName;
     }
@@ -33,11 +34,11 @@ class ReadProductOperation implements Runnable, Cancellable {
     @Override
     public void run() {
         try {
-            Product product = formatName != null ? ProductIO.readProduct(file, formatName) : ProductIO.readProduct(file);
+            Product product = ProductIO.readProduct(file, formatName);
             if (!Thread.interrupted()) {
                 if (product == null) {
                     status = false;
-                    SwingUtilities.invokeLater(() -> SnapDialogs.showError(Bundle.LBL_NoReaderFoundText()));
+                    SwingUtilities.invokeLater(() -> SnapDialogs.showError(Bundle.LBL_NoReaderFoundText() + String.format("%nFile '%s' can not be opened.", file)));
                 } else {
                     status = true;
                     OpenProductAction.getRecentProductPaths().add(file.getPath());
@@ -48,9 +49,7 @@ class ReadProductOperation implements Runnable, Cancellable {
             }
         } catch (IOException problem) {
             status = false;
-            SwingUtilities.invokeLater(() -> {
-                SnapDialogs.showError(Bundle.CTL_OpenProductActionName(), problem.getMessage());
-            });
+            SwingUtilities.invokeLater(() -> SnapDialogs.showError(Bundle.CTL_OpenProductActionName(), problem.getMessage()));
         }
     }
 
