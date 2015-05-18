@@ -115,7 +115,7 @@ public class OpenImageViewAction extends AbstractAction {
 
     private ProductSceneView getProductSceneView(RasterDataNode raster) {
         return WindowUtilities.getOpened(ProductSceneViewTopComponent.class)
-                .filter(topComponent -> raster == topComponent.getView().getRaster())
+                .filter(topComponent -> topComponent.getView().getNumRasters() == 1 && raster == topComponent.getView().getRaster() )
                 .map(ProductSceneViewTopComponent::getView)
                 .findFirst()
                 .orElse(null);
