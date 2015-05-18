@@ -28,9 +28,13 @@ import com.bc.ceres.swing.figure.support.ShapeSymbol;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
+import org.esa.snap.framework.datamodel.PixelPos;
 import org.esa.snap.framework.datamodel.Placemark;
+import org.esa.snap.framework.datamodel.SceneRasterTransform;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.referencing.operation.TransformException;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -74,18 +78,22 @@ public class SimpleFeaturePointFigure extends AbstractPointFigure implements Sim
         }
     }
 
-    public SimpleFeaturePointFigure(SimpleFeature simpleFeature, FigureStyle style) {
-        this(simpleFeature, style, style);
+    private SceneRasterTransform sceneRasterTransform;
+
+    public SimpleFeaturePointFigure(SimpleFeature simpleFeature, SceneRasterTransform sceneRasterTransform, FigureStyle style) {
+        this(simpleFeature, sceneRasterTransform, style, style);
     }
 
-    public SimpleFeaturePointFigure(SimpleFeature simpleFeature, FigureStyle normalStyle, FigureStyle selectedStyle) {
+    public SimpleFeaturePointFigure(SimpleFeature simpleFeature, SceneRasterTransform sceneRasterTransform,
+                                    FigureStyle normalStyle, FigureStyle selectedStyle) {
         super(normalStyle, selectedStyle);
         this.simpleFeature = simpleFeature;
+        this.sceneRasterTransform = sceneRasterTransform;
         Object o = simpleFeature.getDefaultGeometry();
         if (!(o instanceof Point)) {
             throw new IllegalArgumentException("simpleFeature");
         }
-        geometry = (Point) o;
+        setGeometry((Point) o);
         setSelectable(true);
     }
 
@@ -114,8 +122,32 @@ public class SimpleFeaturePointFigure extends AbstractPointFigure implements Sim
     }
 
     @Override
+    public Point getGeometryInProductCoordinates() {
+        final PixelPos startPos = new PixelPos(geometry.getX(), geometry.getY());
+        PixelPos targetPos = new PixelPos();
+        try {
+            sceneRasterTransform.getForward().transform(startPos, targetPos);
+        } catch (TransformException e) {
+            e.printStackTrace();
+            targetPos = startPos;
+        }
+        Coordinate coordinate = new Coordinate(targetPos.getX(), targetPos.getY());
+        return new Point(new CoordinateArraySequence(new Coordinate[]{coordinate}), geometry.getFactory());
+    }
+
+    @Override
     public void setGeometry(Geometry geometry) {
-        this.geometry = (Point) geometry;
+        Point point = (Point) geometry;
+        final PixelPos startPos = new PixelPos(point.getX(), point.getY());
+        PixelPos targetPos = new PixelPos();
+        try {
+            sceneRasterTransform.getInverse().transform(startPos, targetPos);
+        } catch (TransformException e) {
+            e.printStackTrace();
+            targetPos = startPos;
+        }
+        Coordinate coordinate = new Coordinate(targetPos.getX(), targetPos.getY());
+        this.geometry = new Point(new CoordinateArraySequence(new Coordinate[]{coordinate}), point.getFactory());
     }
 
     @Override

@@ -474,6 +474,11 @@ public class ProductSceneView extends BasicView
         return getRaster().getProduct();
     }
 
+    @Override
+    public ProductNode getProductNode() {
+        return getRaster();
+    }
+
     public String getSceneName() {
         return getSceneImage().getName();
     }

@@ -27,6 +27,8 @@ public interface SimpleFeatureFigure extends Figure {
 
     Geometry getGeometry();
 
+    Geometry getGeometryInProductCoordinates();
+
     void setGeometry(Geometry geometry);
 
     void forceRegeneration();

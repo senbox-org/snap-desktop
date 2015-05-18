@@ -25,6 +25,8 @@ import com.bc.ceres.glayer.LayerContext;
 import com.bc.ceres.glayer.LayerType;
 import com.bc.ceres.glayer.LayerTypeRegistry;
 import com.bc.ceres.glayer.annotations.LayerTypeMetadata;
+import org.esa.snap.framework.datamodel.ProductNode;
+import org.esa.snap.framework.datamodel.RasterDataNode;
 import org.esa.snap.framework.datamodel.VectorDataNode;
 import org.esa.snap.glayer.ProductLayerContext;
 
@@ -41,19 +43,22 @@ import org.esa.snap.glayer.ProductLayerContext;
 public class VectorDataLayerType extends LayerType {
 
     public static final String PROPERTY_NAME_VECTOR_DATA = "vectorData";
+    public static final String PROPERTY_NAME_RASTER_DATA = "rasterData";
     public static final String VECTOR_DATA_LAYER_ID_PREFIX = "org.esa.snap.layers.vectorData";
 
     public static VectorDataLayer createLayer(LayerContext ctx, VectorDataNode vectorDataNode) {
+        Assert.notNull(ctx, "ctx");
+        final ProductLayerContext plc = (ProductLayerContext) ctx;
         final VectorDataLayerType specialLayerType = vectorDataNode.getExtension(VectorDataLayerType.class);
         final VectorDataLayer layer;
         if (specialLayerType != null) {
-            layer = specialLayerType.createLayerInternal(ctx, vectorDataNode);
+            layer = specialLayerType.createLayerInternal(plc, vectorDataNode);
         } else {
             final VectorDataLayerType fallbackLayerType = LayerTypeRegistry.getLayerType(VectorDataLayerType.class);
             if (fallbackLayerType == null) {
                 throw new IllegalStateException("fallbackLayerType == null (missing default VectorDataLayerType)");
             }
-            layer = fallbackLayerType.createLayerInternal(ctx, vectorDataNode);
+            layer = fallbackLayerType.createLayerInternal(plc, vectorDataNode);
         }
         return layer;
     }
@@ -70,7 +75,9 @@ public class VectorDataLayerType extends LayerType {
         final String vectorDataName = (String) configuration.getValue(PROPERTY_NAME_VECTOR_DATA);
         final VectorDataNode vectorDataNode = plc.getProduct().getVectorDataGroup().get(vectorDataName);
         Assert.notNull(vectorDataNode, String.format("VectorDataNode '%s' does not exist", vectorDataName));
-        return createLayer(vectorDataNode, configuration);
+        final ProductNode productNode = plc.getProductNode();
+        assert(productNode instanceof RasterDataNode);
+        return createLayer(vectorDataNode, (RasterDataNode) productNode, configuration);
     }
 
     @Override
@@ -81,18 +88,21 @@ public class VectorDataLayerType extends LayerType {
     public static PropertySet createLayerConfig() {
         final PropertyContainer configuration = new PropertyContainer();
         configuration.addProperty(Property.create(VectorDataLayerType.PROPERTY_NAME_VECTOR_DATA, String.class));
+        configuration.addProperty(Property.create(VectorDataLayerType.PROPERTY_NAME_RASTER_DATA, String.class));
         return configuration;
     }
 
-    protected VectorDataLayer createLayer(VectorDataNode vectorDataNode, PropertySet configuration) {
-        return new VectorDataLayer(this, vectorDataNode, configuration);
+    protected VectorDataLayer createLayer(VectorDataNode vectorDataNode, RasterDataNode rasterDataNode, PropertySet configuration) {
+        return new VectorDataLayer(this, vectorDataNode, rasterDataNode.getSceneRasterTransform(), configuration);
     }
 
-    private VectorDataLayer createLayerInternal(LayerContext ctx, VectorDataNode vectorDataNode) {
+    private VectorDataLayer createLayerInternal(ProductLayerContext ctx, VectorDataNode vectorDataNode) {
         final PropertySet configuration = createLayerConfig(ctx);
         // Save the name of the vectorDataNode, so that we can reconstruct the layer later (e.g. if loaded from session file).
         configuration.setValue(PROPERTY_NAME_VECTOR_DATA, vectorDataNode.getName());
-        return createLayer(vectorDataNode, configuration);
+        final ProductNode productNode = ctx.getProductNode();
+        assert(productNode instanceof RasterDataNode);
+        return createLayer(vectorDataNode, (RasterDataNode) productNode, configuration);
     }
 
 }

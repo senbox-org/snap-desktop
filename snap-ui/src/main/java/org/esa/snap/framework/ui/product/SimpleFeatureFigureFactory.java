@@ -26,6 +26,7 @@ import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import org.esa.snap.framework.datamodel.PlainFeatureFactory;
+import org.esa.snap.framework.datamodel.SceneRasterTransform;
 import org.esa.snap.util.AwtGeomToJtsGeomConverter;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -70,16 +71,21 @@ public class SimpleFeatureFigureFactory implements FigureFactory {
     }
 
     public PointFigure createPointFigure(Point geometry, FigureStyle style) {
-        return new SimpleFeaturePointFigure(createSimpleFeature(geometry), style);
+        return createPointFigure(geometry, SceneRasterTransform.IDENTITY, style);
     }
 
-    public SimpleFeatureFigure createSimpleFeatureFigure(SimpleFeature simpleFeature, String defaultStyleCss) {
+    private PointFigure createPointFigure(Point geometry, SceneRasterTransform sceneRasterTransform, FigureStyle style) {
+        return new SimpleFeaturePointFigure(createSimpleFeature(geometry), sceneRasterTransform, style);
+    }
+
+    public SimpleFeatureFigure createSimpleFeatureFigure(SimpleFeature simpleFeature,
+                                                         SceneRasterTransform sceneRasterTransform, String defaultStyleCss) {
         final String css = getStyleCss(simpleFeature, defaultStyleCss);
         final FigureStyle normalStyle = DefaultFigureStyle.createFromCss(css);
         final FigureStyle selectedStyle = deriveSelectedStyle(normalStyle);
         final Object geometry = simpleFeature.getDefaultGeometry();
         if (geometry instanceof Point) {
-            return new SimpleFeaturePointFigure(simpleFeature, normalStyle, selectedStyle);
+            return new SimpleFeaturePointFigure(simpleFeature, sceneRasterTransform, normalStyle, selectedStyle);
         } else {
             return new SimpleFeatureShapeFigure(simpleFeature, normalStyle, selectedStyle);
         }

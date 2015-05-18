@@ -77,6 +77,11 @@ public class SimpleFeatureShapeFigure extends AbstractShapeFigure implements Sim
     }
 
     @Override
+    public Geometry getGeometryInProductCoordinates() {
+        return null;
+    }
+
+    @Override
     public void setGeometry(Geometry geometry) {
         if (!geometryType.isAssignableFrom(geometry.getClass())) {
             Debug.trace("WARNING: Assigning a geometry of type " + geometry.getClass() + ", should actually be a " + geometryType);
