@@ -43,7 +43,6 @@ import org.esa.snap.glayer.ProductLayerContext;
 public class VectorDataLayerType extends LayerType {
 
     public static final String PROPERTY_NAME_VECTOR_DATA = "vectorData";
-    public static final String PROPERTY_NAME_RASTER_DATA = "rasterData";
     public static final String VECTOR_DATA_LAYER_ID_PREFIX = "org.esa.snap.layers.vectorData";
 
     public static VectorDataLayer createLayer(LayerContext ctx, VectorDataNode vectorDataNode) {
@@ -88,7 +87,6 @@ public class VectorDataLayerType extends LayerType {
     public static PropertySet createLayerConfig() {
         final PropertyContainer configuration = new PropertyContainer();
         configuration.addProperty(Property.create(VectorDataLayerType.PROPERTY_NAME_VECTOR_DATA, String.class));
-        configuration.addProperty(Property.create(VectorDataLayerType.PROPERTY_NAME_RASTER_DATA, String.class));
         return configuration;
     }
 

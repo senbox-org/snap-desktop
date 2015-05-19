@@ -99,7 +99,7 @@ public class FeatureFigureEditorApp extends FigureEditorApp {
             if (o instanceof Point) {
                 figureCollection.addFigure(new SimpleFeaturePointFigure(simpleFeature, SceneRasterTransform.IDENTITY, figureStyle));
             } else {
-                figureCollection.addFigure(new SimpleFeatureShapeFigure(simpleFeature, figureStyle));
+                figureCollection.addFigure(new SimpleFeatureShapeFigure(simpleFeature, SceneRasterTransform.IDENTITY, figureStyle));
             }
         }
     }

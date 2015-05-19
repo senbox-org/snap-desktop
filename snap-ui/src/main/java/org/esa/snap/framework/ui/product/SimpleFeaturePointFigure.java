@@ -32,6 +32,7 @@ import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
 import org.esa.snap.framework.datamodel.PixelPos;
 import org.esa.snap.framework.datamodel.Placemark;
 import org.esa.snap.framework.datamodel.SceneRasterTransform;
+import org.esa.snap.util.AwtGeomToJtsGeomConverter;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.referencing.operation.TransformException;
@@ -44,6 +45,7 @@ import java.awt.Paint;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.font.GlyphVector;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 
@@ -105,10 +107,13 @@ public class SimpleFeaturePointFigure extends AbstractPointFigure implements Sim
     @Override
     public void setMemento(Object memento) {
         Point point = (Point) memento;
-        simpleFeature.setDefaultGeometry(point);
-        geometry = point;
-        forceRegeneration();
-        fireFigureChanged();
+        try {
+            simpleFeature.setDefaultGeometry(sceneRasterTransform.getForward().transform(new PixelPos(point.getX(), point.getY()), new PixelPos()));
+            geometry = point;
+            fireFigureChanged();
+        } catch (TransformException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -119,20 +124,6 @@ public class SimpleFeaturePointFigure extends AbstractPointFigure implements Sim
     @Override
     public Point getGeometry() {
         return geometry;
-    }
-
-    @Override
-    public Point getGeometryInProductCoordinates() {
-        final PixelPos startPos = new PixelPos(geometry.getX(), geometry.getY());
-        PixelPos targetPos = new PixelPos();
-        try {
-            sceneRasterTransform.getForward().transform(startPos, targetPos);
-        } catch (TransformException e) {
-            e.printStackTrace();
-            targetPos = startPos;
-        }
-        Coordinate coordinate = new Coordinate(targetPos.getX(), targetPos.getY());
-        return new Point(new CoordinateArraySequence(new Coordinate[]{coordinate}), geometry.getFactory());
     }
 
     @Override
@@ -152,6 +143,7 @@ public class SimpleFeaturePointFigure extends AbstractPointFigure implements Sim
 
     @Override
     public void forceRegeneration() {
+        setGeometry((Geometry) simpleFeature.getDefaultGeometry());
     }
 
     @Override
@@ -169,6 +161,12 @@ public class SimpleFeaturePointFigure extends AbstractPointFigure implements Sim
         Coordinate coordinate = geometry.getCoordinate();
         coordinate.x = x;
         coordinate.y = y;
+        try {
+            final Point2D transform = sceneRasterTransform.getForward().transform(new PixelPos(x, y), new PixelPos());
+            simpleFeature.setDefaultGeometry(new AwtGeomToJtsGeomConverter().createPoint(transform));
+        } catch (TransformException e) {
+            e.printStackTrace();
+        }
         geometry.geometryChanged();
         fireFigureChanged();
     }

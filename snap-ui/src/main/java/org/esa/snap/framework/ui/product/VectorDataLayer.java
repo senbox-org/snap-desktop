@@ -27,7 +27,6 @@ import com.bc.ceres.swing.figure.FigureCollection;
 import com.bc.ceres.swing.figure.FigureStyle;
 import com.bc.ceres.swing.figure.support.DefaultFigureCollection;
 import com.bc.ceres.swing.figure.support.DefaultFigureStyle;
-import com.vividsolutions.jts.geom.Geometry;
 import org.esa.snap.framework.datamodel.Placemark;
 import org.esa.snap.framework.datamodel.ProductNode;
 import org.esa.snap.framework.datamodel.ProductNodeEvent;
@@ -76,7 +75,7 @@ public class VectorDataLayer extends Layer {
         this.vectorDataNode = vectorDataNode;
         this.sceneRasterTransform = sceneRasterTransform;
         setName(vectorDataNode.getName());
-        figureFactory = new SimpleFeatureFigureFactory(vectorDataNode.getFeatureType());
+        figureFactory = new SimpleFeatureFigureFactory(vectorDataNode.getFeatureType(), sceneRasterTransform);
         figureCollection = new DefaultFigureCollection();
         updateFigureCollection();
 
@@ -123,7 +122,7 @@ public class VectorDataLayer extends Layer {
                 final FigureStyle selectedStyle = getFigureFactory().deriveSelectedStyle(normalStyle);
                 featureFigure.setNormalStyle(normalStyle);
                 featureFigure.setSelectedStyle(selectedStyle);
-                featureFigure.setGeometry((Geometry) simpleFeature.getDefaultGeometry());
+//                featureFigure.setGeometry((Geometry) simpleFeature.getDefaultGeometry());
             } else {
                 featureFigure = getFigureFactory().createSimpleFeatureFigure(simpleFeature, sceneRasterTransform, vectorDataNode.getDefaultStyleCss());
                 figureCollection.addFigure(featureFigure);
@@ -210,7 +209,7 @@ public class VectorDataLayer extends Layer {
                 try {
                     final VectorDataNode vectorDataNode = getVectorDataNode();
                     final SimpleFeature simpleFeature = featureFigure.getSimpleFeature();
-                    simpleFeature.setDefaultGeometry(featureFigure.getGeometryInProductCoordinates());
+//                    simpleFeature.setDefaultGeometry(featureFigure.getGeometryInProductCoordinates());
                     Debug.trace("VectorDataLayer$FigureChangeHandler: vectorDataNode=" + vectorDataNode.getName() +
                                         ", featureType=" + simpleFeature.getFeatureType().getTypeName());
                     reactingAgainstFigureChange = true;
