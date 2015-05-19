@@ -24,6 +24,8 @@ import org.esa.snap.framework.datamodel.PlacemarkNameFactory;
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.util.ProductUtils;
+import org.opengis.referencing.operation.TransformException;
 import org.openide.awt.UndoRedo;
 
 import java.awt.Component;
@@ -83,8 +85,16 @@ public abstract class InsertPlacemarkInteractor extends FigureEditorInteractor {
                                                                                           product);
         final String name = uniqueNameAndLabel[0];
         final String label = uniqueNameAndLabel[1];
-        final PixelPos pixelPos = new PixelPos(view.getCurrentPixelX() + 0.5f,
-                                               view.getCurrentPixelY() + 0.5f);
+        final PixelPos rasterPos = new PixelPos(view.getCurrentPixelX() + 0.5f,
+                                                view.getCurrentPixelY() + 0.5f);
+        PixelPos pixelPos;
+        try {
+            pixelPos = ProductUtils.transformToProductGrid(view.getRaster(),
+                                                           rasterPos);
+        } catch (TransformException e) {
+            pixelPos = rasterPos;
+            e.printStackTrace();
+        }
         final Placemark newPlacemark = Placemark.createPointPlacemark(placemarkDescriptor, name, label, "", pixelPos, null,
                                                                       product.getGeoCoding());
 

@@ -338,7 +338,7 @@ public class SnapDialogs {
     }
 
 
-    private static String getDialogTitle(String titleText) {
+    public static String getDialogTitle(String titleText) {
         return MessageFormat.format("{0} - {1}", SnapApp.getDefault().getInstanceName(), titleText);
     }
 

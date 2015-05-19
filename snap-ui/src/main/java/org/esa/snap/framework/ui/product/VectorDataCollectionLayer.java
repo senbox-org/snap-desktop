@@ -28,6 +28,7 @@ import org.esa.snap.framework.datamodel.ProductNodeEvent;
 import org.esa.snap.framework.datamodel.ProductNodeGroup;
 import org.esa.snap.framework.datamodel.ProductNodeListener;
 import org.esa.snap.framework.datamodel.VectorDataNode;
+import org.esa.snap.glayer.ProductLayerContext;
 
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
@@ -42,15 +43,18 @@ public class VectorDataCollectionLayer extends CollectionLayer {
 
     private final ProductNodeListener pnl;
     private final transient WeakReference<ProductNodeGroup<VectorDataNode>> reference;
+    private final ProductLayerContext plc;
 
     public VectorDataCollectionLayer(VectorDataCollectionLayerType layerType,
                                      ProductNodeGroup<VectorDataNode> vectorDataGroup,
-                                     PropertySet configuration) {
+                                     PropertySet configuration,
+                                     ProductLayerContext plc) {
         super(layerType, configuration, "Vector data");
         Assert.notNull(vectorDataGroup, "vectorDataGroup");
 
         reference = new WeakReference<ProductNodeGroup<VectorDataNode>>(vectorDataGroup);
         pnl = new PNL();
+        this.plc = plc;
 
         setId(ID);
         vectorDataGroup.getProduct().addProductNodeListener(pnl);
@@ -69,7 +73,7 @@ public class VectorDataCollectionLayer extends CollectionLayer {
     }
 
     private Layer createLayer(final VectorDataNode vectorDataNode) {
-        final Layer layer = VectorDataLayerType.createLayer(null, vectorDataNode);
+        final Layer layer = VectorDataLayerType.createLayer(plc, vectorDataNode);
         layer.setVisible(false);
         return layer;
     }

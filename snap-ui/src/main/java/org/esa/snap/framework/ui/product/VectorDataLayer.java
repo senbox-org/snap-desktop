@@ -31,6 +31,7 @@ import org.esa.snap.framework.datamodel.Placemark;
 import org.esa.snap.framework.datamodel.ProductNode;
 import org.esa.snap.framework.datamodel.ProductNodeEvent;
 import org.esa.snap.framework.datamodel.ProductNodeListenerAdapter;
+import org.esa.snap.framework.datamodel.SceneRasterTransform;
 import org.esa.snap.framework.datamodel.VectorDataNode;
 import org.esa.snap.util.Debug;
 import org.geotools.feature.FeatureCollection;
@@ -58,20 +59,23 @@ public class VectorDataLayer extends Layer {
     private boolean reactingAgainstFigureChange;
 
     private static int id;
+    private SceneRasterTransform sceneRasterTransform;
 
-    public VectorDataLayer(LayerContext ctx, VectorDataNode vectorDataNode) {
-        this(TYPE, vectorDataNode, TYPE.createLayerConfig(ctx));
+    public VectorDataLayer(LayerContext ctx, VectorDataNode vectorDataNode, SceneRasterTransform sceneRasterTransform) {
+        this(TYPE, vectorDataNode, sceneRasterTransform, TYPE.createLayerConfig(ctx));
         getConfiguration().setValue(VectorDataLayerType.PROPERTY_NAME_VECTOR_DATA, vectorDataNode.getName());
     }
 
-    protected VectorDataLayer(VectorDataLayerType vectorDataLayerType, VectorDataNode vectorDataNode, PropertySet configuration) {
+    protected VectorDataLayer(VectorDataLayerType vectorDataLayerType, VectorDataNode vectorDataNode,
+                              SceneRasterTransform sceneRasterTransform, PropertySet configuration) {
         super(vectorDataLayerType, configuration);
 
         setUniqueId();
 
         this.vectorDataNode = vectorDataNode;
+        this.sceneRasterTransform = sceneRasterTransform;
         setName(vectorDataNode.getName());
-        figureFactory = new SimpleFeatureFigureFactory(vectorDataNode.getFeatureType());
+        figureFactory = new SimpleFeatureFigureFactory(vectorDataNode.getFeatureType(), sceneRasterTransform);
         figureCollection = new DefaultFigureCollection();
         updateFigureCollection();
 
@@ -118,8 +122,9 @@ public class VectorDataLayer extends Layer {
                 final FigureStyle selectedStyle = getFigureFactory().deriveSelectedStyle(normalStyle);
                 featureFigure.setNormalStyle(normalStyle);
                 featureFigure.setSelectedStyle(selectedStyle);
+//                featureFigure.setGeometry((Geometry) simpleFeature.getDefaultGeometry());
             } else {
-                featureFigure = getFigureFactory().createSimpleFeatureFigure(simpleFeature, vectorDataNode.getDefaultStyleCss());
+                featureFigure = getFigureFactory().createSimpleFeatureFigure(simpleFeature, sceneRasterTransform, vectorDataNode.getDefaultStyleCss());
                 figureCollection.addFigure(featureFigure);
             }
             featureFigure.forceRegeneration();
@@ -128,6 +133,10 @@ public class VectorDataLayer extends Layer {
         Collection<SimpleFeatureFigure> remainingFigures = figureMap.values();
         figureCollection.removeFigures(remainingFigures.toArray(new Figure[remainingFigures.size()]));
 
+    }
+
+    protected SceneRasterTransform getSceneRasterTransform() {
+        return sceneRasterTransform;
     }
 
     private void setLayerStyle(String styleCss) {
@@ -200,6 +209,7 @@ public class VectorDataLayer extends Layer {
                 try {
                     final VectorDataNode vectorDataNode = getVectorDataNode();
                     final SimpleFeature simpleFeature = featureFigure.getSimpleFeature();
+//                    simpleFeature.setDefaultGeometry(featureFigure.getGeometryInProductCoordinates());
                     Debug.trace("VectorDataLayer$FigureChangeHandler: vectorDataNode=" + vectorDataNode.getName() +
                                         ", featureType=" + simpleFeature.getFeatureType().getTypeName());
                     reactingAgainstFigureChange = true;

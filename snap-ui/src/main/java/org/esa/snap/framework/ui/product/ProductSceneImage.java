@@ -29,6 +29,7 @@ import org.esa.snap.framework.datamodel.GeoCoding;
 import org.esa.snap.framework.datamodel.ImageInfo;
 import org.esa.snap.framework.datamodel.Mask;
 import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.datamodel.ProductNode;
 import org.esa.snap.framework.datamodel.ProductNodeGroup;
 import org.esa.snap.framework.datamodel.RasterDataNode;
 import org.esa.snap.framework.datamodel.VectorDataNode;
@@ -436,6 +437,11 @@ public class ProductSceneImage implements ProductLayerContext {
     @Override
     public Product getProduct() {
         return getRaster().getProduct();
+    }
+
+    @Override
+    public ProductNode getProductNode() {
+        return getRaster();
     }
 
     private static class ImageLayerFilter implements LayerFilter {

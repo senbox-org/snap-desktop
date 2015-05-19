@@ -113,15 +113,23 @@ public class ImportProductAction extends AbstractAction implements HelpCtx.Provi
         putValue("formatName", formatName);
     }
 
-    public void setUseAllFileFilter(Boolean useAllFileFilter) {
+    String getFormatName() {
+        return (String) getValue("formatName");
+    }
+
+    public void setUseAllFileFilter(boolean useAllFileFilter) {
         putValue("useAllFileFilter", useAllFileFilter);
+    }
+
+    boolean getUseAllFileFilter() {
+        return Boolean.TRUE.equals(getValue("useAllFileFilter"));
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         OpenProductAction openProductAction = new OpenProductAction();
-        ProductFileChooser fileChooser = new ProductFileChooser();
-        //openProductAction.setFileChooser(fileChooser);
+        openProductAction.setFileFormat(getFormatName());
+        openProductAction.setUseAllFileFilter(getUseAllFileFilter());
         openProductAction.actionPerformed(e);
     }
 

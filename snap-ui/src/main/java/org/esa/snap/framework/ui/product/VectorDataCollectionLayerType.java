@@ -41,6 +41,6 @@ public class VectorDataCollectionLayerType extends CollectionLayer.Type {
         final ProductLayerContext plc = (ProductLayerContext) ctx;
         final ProductNodeGroup<VectorDataNode> vectorDataGroup = plc.getProduct().getVectorDataGroup();
 
-        return new VectorDataCollectionLayer(this, vectorDataGroup, configuration);
+        return new VectorDataCollectionLayer(this, vectorDataGroup, configuration, plc);
     }
 }
