@@ -19,7 +19,6 @@ import com.bc.ceres.core.ProgressMonitor;
 import org.esa.snap.db.CommonReaders;
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.gpf.graph.GraphException;
-import org.esa.snap.framework.help.HelpSys;
 import org.esa.snap.framework.ui.AppContext;
 import org.esa.snap.framework.ui.ModelessDialog;
 import org.esa.snap.gpf.operators.standard.ReadOp;
@@ -38,25 +37,12 @@ import org.esa.snap.util.MemUtils;
 import org.esa.snap.util.ProductFunctions;
 import org.esa.snap.util.ResourceUtils;
 import org.esa.snap.util.io.SnapFileFilter;
+import org.openide.util.HelpCtx;
 
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.SwingWorker;
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -453,7 +439,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer {
      * Call Help
      */
     private void OnHelp() {
-        HelpSys.showTheme(super.getHelpID());
+        new HelpCtx(getHelpID()).display();
     }
 
     /**

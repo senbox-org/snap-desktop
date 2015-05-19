@@ -57,6 +57,8 @@ public class GraphAction extends OperatorAction {
 
     @Override
     protected ModelessDialog createOperatorDialog() {
+        setHelpId(getPropertyString("helpId"));
+
         final GraphBuilderDialog dialog = new GraphBuilderDialog(getAppContext(), getDialogTitle(), getHelpId(), isEditingEnabled());
         dialog.show();
 
