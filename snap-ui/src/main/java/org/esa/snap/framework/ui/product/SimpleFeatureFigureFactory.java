@@ -28,6 +28,7 @@ import com.vividsolutions.jts.geom.Polygon;
 import org.esa.snap.framework.datamodel.PlainFeatureFactory;
 import org.esa.snap.framework.datamodel.SceneRasterTransform;
 import org.esa.snap.util.AwtGeomToJtsGeomConverter;
+import org.esa.snap.util.SceneRasterTransformUtils;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.referencing.operation.TransformException;
@@ -82,14 +83,8 @@ public class SimpleFeatureFigureFactory implements FigureFactory {
 
     @Override
     public ShapeFigure createPolygonFigure(Shape shape, FigureStyle style) {
-        Shape shapeInProductCoords;
-        try {
-            shapeInProductCoords = sceneRasterTransform.getForward().createTransformedShape(shape);
-        } catch (TransformException e) {
-            e.printStackTrace();
-            shapeInProductCoords = shape;
-        }
-        Polygon polygon = toJtsGeom.createPolygon(shapeInProductCoords);
+        Polygon polygon = toJtsGeom.createPolygon(
+                SceneRasterTransformUtils.transformShapeToProductCoordinates(shape, sceneRasterTransform));
         return createShapeFigure(polygon, style);
     }
 

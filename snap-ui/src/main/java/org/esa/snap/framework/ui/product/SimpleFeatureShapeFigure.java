@@ -29,6 +29,7 @@ import com.vividsolutions.jts.geom.Puntal;
 import org.esa.snap.framework.datamodel.SceneRasterTransform;
 import org.esa.snap.util.AwtGeomToJtsGeomConverter;
 import org.esa.snap.util.Debug;
+import org.esa.snap.util.SceneRasterTransformUtils;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.geometry.jts.LiteShape2;
 import org.opengis.feature.simple.SimpleFeature;
@@ -54,7 +55,8 @@ public class SimpleFeatureShapeFigure extends AbstractShapeFigure implements Sim
         this(simpleFeature, sceneRasterTransform, style, style);
     }
 
-    public SimpleFeatureShapeFigure(SimpleFeature simpleFeature, SceneRasterTransform sceneRasterTransform, FigureStyle normalStyle, FigureStyle selectedStyle) {
+    public SimpleFeatureShapeFigure(SimpleFeature simpleFeature, SceneRasterTransform sceneRasterTransform,
+                                    FigureStyle normalStyle, FigureStyle selectedStyle) {
         super(getRank(simpleFeature), normalStyle, selectedStyle);
         this.simpleFeature = simpleFeature;
         this.sceneRasterTransform = sceneRasterTransform;
@@ -74,7 +76,8 @@ public class SimpleFeatureShapeFigure extends AbstractShapeFigure implements Sim
             final LiteShape2 shapeInRasterCoords = new LiteShape2((Geometry) memento, null, null, true);
             setShape(shapeInRasterCoords);
             final Geometry productGeometry =
-                    getGeometryFromShape(sceneRasterTransform.getForward().createTransformedShape(shapeInRasterCoords));
+                    getGeometryFromShape(SceneRasterTransformUtils.transformShapeToProductCoordinates(
+                            shapeInRasterCoords, sceneRasterTransform));
             simpleFeature.setDefaultGeometry(productGeometry);
             forceRegeneration();
             fireFigureChanged();
@@ -109,7 +112,7 @@ public class SimpleFeatureShapeFigure extends AbstractShapeFigure implements Sim
         try {
             if (geometryShape == null) {
                 final LiteShape2 shapeInProductCoords = new LiteShape2((Geometry) simpleFeature.getDefaultGeometry(), null, null, true);
-                geometryShape = sceneRasterTransform.getInverse().createTransformedShape(shapeInProductCoords);
+                geometryShape = SceneRasterTransformUtils.transformShapeToRasterCoordinates(shapeInProductCoords, sceneRasterTransform);
             }
             return geometryShape;
         } catch (Exception e) {
@@ -126,12 +129,9 @@ public class SimpleFeatureShapeFigure extends AbstractShapeFigure implements Sim
     @Override
     public void setShape(Shape shape) {
         geometryShape = shape;
-        try {
-            simpleFeature.setDefaultGeometry(getGeometryFromShape(sceneRasterTransform.getForward().createTransformedShape(shape)));
-            fireFigureChanged();
-        } catch (TransformException e) {
-            e.printStackTrace();
-        }
+        simpleFeature.setDefaultGeometry(getGeometryFromShape(
+                SceneRasterTransformUtils.transformShapeToProductCoordinates(shape, sceneRasterTransform)));
+        fireFigureChanged();
     }
 
     private Geometry getGeometryFromShape(Shape shape) {
