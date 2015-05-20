@@ -55,7 +55,7 @@ import java.util.Map;
 
 @TopComponent.Description(
         preferredID = "ProductLibraryTopComponent",
-        iconBase = "org/esa/snap/icons/product_library24.png",
+        iconBase = "org/esa/snap/icons/search24.png",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(
@@ -65,8 +65,7 @@ import java.util.Map;
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.toolviews.productlibrary.ProductLibraryToolView")
 @ActionReferences({
-        @ActionReference(path = "Menu/Window/Tool Windows"),
-        @ActionReference(path = "Toolbars/Views")
+        @ActionReference(path = "Menu/Window/Tool Windows")
 })
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_ProductLibraryTopComponentName",
