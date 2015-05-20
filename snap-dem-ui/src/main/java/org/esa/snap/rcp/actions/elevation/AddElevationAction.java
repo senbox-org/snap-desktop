@@ -27,8 +27,8 @@ import com.bc.ceres.glevel.support.DefaultMultiLevelImage;
 import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.ComponentAdapter;
-import org.esa.snap.dem.dataio.DEMFactory;
 import org.esa.snap.datamodel.Unit;
+import org.esa.snap.dem.dataio.DEMFactory;
 import org.esa.snap.framework.datamodel.Band;
 import org.esa.snap.framework.datamodel.GeoCoding;
 import org.esa.snap.framework.datamodel.PixelPos;
@@ -51,19 +51,16 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
+import org.openide.util.ContextAwareAction;
 import org.openide.util.HelpCtx;
+import org.openide.util.Lookup;
+import org.openide.util.LookupEvent;
+import org.openide.util.LookupListener;
 import org.openide.util.NbBundle;
+import org.openide.util.Utilities;
+import org.openide.util.WeakListeners;
 
-import javax.swing.AbstractAction;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
+import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.event.ActionEvent;
@@ -105,18 +102,57 @@ import java.util.List;
         "CTL_AddElevationAction_MenuText=Add Elevation Band",
         "CTL_AddElevationAction_ShortDescription=Create a new elevation band from a DEM"
 })
-public class AddElevationAction extends AbstractAction implements HelpCtx.Provider {
+public class AddElevationAction extends AbstractAction implements ContextAwareAction, LookupListener, HelpCtx.Provider {
 
     private static final String HELP_ID = "createElevation";
+    private final Lookup lkp;
 
     public static final String DIALOG_TITLE = "Add Elevation Band";
     public static final String DEFAULT_ELEVATION_BAND_NAME = "elevation";
     public static final String DEFAULT_LATITUDE_BAND_NAME = "corr_latitude";
     public static final String DEFAULT_LONGITUDE_BAND_NAME = "corr_longitude";
 
+    public AddElevationAction() {
+        this(Utilities.actionsGlobalContext());
+    }
+
+    public AddElevationAction(Lookup lkp) {
+        super(org.esa.snap.rcp.actions.elevation.Bundle.CTL_AddElevationAction_MenuText());
+        this.lkp = lkp;
+        Lookup.Result<ProductNode> lkpContext = lkp.lookupResult(ProductNode.class);
+        lkpContext.addLookupListener(WeakListeners.create(LookupListener.class, this, lkpContext));
+        setEnableState();
+        putValue(Action.SHORT_DESCRIPTION, org.esa.snap.rcp.actions.elevation.Bundle.CTL_AddElevationAction_ShortDescription());
+    }
+
+    @Override
+    public Action createContextAwareInstance(Lookup actionContext) {
+        return new AddElevationAction(actionContext);
+    }
+
+    @Override
+    public void resultChanged(LookupEvent ev) {
+        setEnableState();
+    }
+
+    private void setEnableState() {
+        ProductNode productNode = lkp.lookup(ProductNode.class);
+        boolean state = false;
+        if (productNode != null) {
+            Product product = productNode.getProduct();
+            state = product.getGeoCoding() != null;
+        }
+        setEnabled(state);
+    }
+
     @Override
     public void actionPerformed(ActionEvent event) {
         final Product product = SnapApp.getDefault().getSelectedProduct();
+        if(product == null) {
+            SnapDialogs.showError("Unable to add an elevation band. Please select a product first.");
+            return;
+        }
+
         final DialogData dialogData = requestDialogData(product);
         if (dialogData == null) {
             return;
