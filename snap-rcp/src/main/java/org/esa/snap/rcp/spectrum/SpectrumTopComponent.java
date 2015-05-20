@@ -224,9 +224,6 @@ public class SpectrumTopComponent extends ToolTopComponent {
         showSpectraForSelectedPinsButton.setEnabled(hasSelectedPins);
         showSpectraForAllPinsButton.setEnabled(hasPins);
         showGridButton.setEnabled(hasView);
-// todo - not yet implemented for 4.1 but planned for 4.2 (mp - 31.10.2007)
-//        showAveragePinSpectrumButton.setEnabled(hasPins); // todo - hasSpectraGraphs
-//        showGraphPointsButton.setEnabled(chartHandlerHasDiagram);
         chartPanel.setEnabled(hasProduct);    // todo - hasSpectraGraphs
         showGridButton.setSelected(hasView);
         chartHandler.setGridVisible(showGridButton.isSelected());
@@ -397,14 +394,8 @@ public class SpectrumTopComponent extends ToolTopComponent {
         gbc.gridy++;
         buttonPane.add(showSpectraForAllPinsButton, gbc);
         gbc.gridy++;
-// todo - not yet implemented for 4.1 but planned for 4.2 (mp - 31.10.2007)
-//        buttonPane.add(showAveragePinSpectrumButton, gbc);
-//        gbc.gridy++;
         buttonPane.add(showGridButton, gbc);
         gbc.gridy++;
-// todo - not yet implemented for 4.1 but planned for 4.2 (mp - 31.10.2007)
-//        buttonPane.add(showGraphPointsButton, gbc);
-//        gbc.gridy++;
         buttonPane.add(exportSpectraButton, gbc);
 
         gbc.gridy++;
@@ -842,8 +833,6 @@ public class SpectrumTopComponent extends ToolTopComponent {
             dataset = new XYSeriesCollection();
             if (level >= 0) {
                 fillDatasetWithPinSeries(spectra, dataset, chart);
-                // todo - not yet implemented for 4.1 but planned for 5.0 (tf - 5.3.2014)
-//                fillDatasetWithAveragePinSpectrum(spectra, dataset, chart);
                 if (hasValidCursorPosition()) {
                     fillDatasetWithCursorSeries(spectra, dataset, chart);
                 }
@@ -971,43 +960,6 @@ public class SpectrumTopComponent extends ToolTopComponent {
             return pinSeries;
         }
 
-        // todo - not yet implemented for 4.1 but planned for 5.0 (tf - 5.3.2014)
-//        private void fillDatasetWithAveragePinSpectrum(List<DisplayableSpectrum> spectra, XYSeriesCollection dataset, JFreeChart chart) {
-//            if(!isShowingAveragePinSpectrum()) {
-//                return;
-//            }
-//            ProductNodeGroup<Placemark> pinGroup = getCurrentProduct().getPinGroup();
-//            for(int i = 0; i < pinGroup.getNodeCount(); i++) {
-//                Placemark pin = pinGroup.get(i);
-//                for (DisplayableSpectrum spectrum : spectra) {
-////                    XYSeries series = new XYSeries(spectrum.getName() + "_" + pin.getLabel());
-//                    final Band[] spectralBands = spectrum.getSelectedBands();
-//                    Map<Band, Double> bandToEnergy;
-//                    if (pinToEnergies.containsKey(pin)) {
-//                        bandToEnergy = pinToEnergies.get(pin);
-//                    } else {
-//                        bandToEnergy = new HashMap<Band, Double>();
-//                        pinToEnergies.put(pin, bandToEnergy);
-//                    }
-//                    for (Band spectralBand : spectralBands) {
-//                        double energy;
-//                        if (bandToEnergy.containsKey(spectralBand)) {
-//                            energy = bandToEnergy.get(spectralBand);
-//                        } else {
-//                            energy = readEnergy(pin, spectralBand);
-//                            bandToEnergy.put(spectralBand, energy);
-//                        }
-//                        final float wavelength = spectralBand.getSpectralWavelength();
-//                        if (energy != spectralBand.getGeophysicalNoDataValue()) {
-//                            series.add(wavelength, energy);
-//                        }
-//                    }
-////                    updateRenderer(seriesIndex++, pinColor, spectrum, chart);
-////                    pinSeries.add(series);
-//                }
-//            }
-//
-//        }
 
         private void updateRenderer(int seriesIndex, Color seriesColor, DisplayableSpectrum spectrum, JFreeChart chart) {
             final XYItemRenderer renderer = chart.getXYPlot().getRenderer();
