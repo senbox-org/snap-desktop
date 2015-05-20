@@ -219,97 +219,6 @@ public class PixelInfoViewModelUpdater {
         }
     }
 
-    private void resetScanLineTableModel() {
-        scanlineModel.clear();
-        if (currentRaster != null) {
-            scanlineModel.addRow("Date", "", "YYYY-MM-DD");
-            scanlineModel.addRow("Time (UTC)", "", "HH:MM:SS:mm [AM/PM]");
-        }
-    }
-
-    private void resetBandTableModel() {
-        bandModel.clear();
-        if (currentRaster != null) {
-            final int numBands = currentProduct.getNumBands();
-            for (int i = 0; i < numBands; i++) {
-                final Band band = currentProduct.getBandAt(i);
-                if (shouldDisplayBand(band)) {
-                    bandModel.addRow(band.getName(), "", band.getUnit());
-                }
-            }
-        }
-    }
-
-    private boolean shouldDisplayBand(final Band band) {
-        PixelInfoView.DisplayFilter displayFilter = pixelInfoView.getDisplayFilter();
-        if (displayFilter != null) {
-            return displayFilter.accept(band);
-        }
-        return band.hasRasterData();
-    }
-
-    private void resetTiePointGridTableModel() {
-        tiePointModel.clear();
-        if (currentRaster != null) {
-            final int numTiePointGrids = currentProduct.getNumTiePointGrids();
-            for (int i = 0; i < numTiePointGrids; i++) {
-                final TiePointGrid tiePointGrid = currentProduct.getTiePointGridAt(i);
-                tiePointModel.addRow(tiePointGrid.getName(), "", tiePointGrid.getUnit());
-            }
-        }
-    }
-
-    private void resetFlagTableModel() {
-        flagModel.clear();
-        if (currentRaster != null) {
-            for (Band band : currentFlagBands) {
-                final FlagCoding flagCoding = band.getFlagCoding();
-                final int numFlags = flagCoding.getNumAttributes();
-                final String bandNameDot = band.getName() + ".";
-                for (int j = 0; j < numFlags; j++) {
-                    String name = bandNameDot + flagCoding.getAttributeAt(j).getName();
-                    flagModel.addRow(name, "", "");
-                }
-            }
-        }
-    }
-
-    private void registerFlagDatasets() {
-        final Band[] bands = currentProduct.getBands();
-        Vector<Band> flagBandsVector = new Vector<Band>();
-        for (Band band : bands) {
-            if (isFlagBand(band)) {
-                flagBandsVector.add(band);
-            }
-        }
-        currentFlagBands = flagBandsVector.toArray(new Band[flagBandsVector.size()]);
-    }
-
-    private boolean isFlagBand(final Band band) {
-        return band.getFlagCoding() != null;
-    }
-
-    private int getBandRowCount() {
-        int rowCount = 0;
-        if (currentProduct != null) {
-            Band[] bands = currentProduct.getBands();
-            for (final Band band : bands) {
-                if (shouldDisplayBand(band)) {
-                    rowCount++;
-                }
-            }
-        }
-        return rowCount;
-    }
-
-    private int getFlagRowCount() {
-        int rowCount = 0;
-        for (Band band : currentFlagBands) {
-            rowCount += band.getFlagCoding().getNumAttributes();
-        }
-        return rowCount;
-    }
-
     private void updateGeolocValues() {
         final boolean available = isSampleValueAvailable(levelZeroX, levelZeroY, pixelPosValid);
         final float pX = levelZeroX + pixelInfoView.getPixelOffsetX();
@@ -368,6 +277,14 @@ public class PixelInfoViewModelUpdater {
         }
     }
 
+    private void resetScanLineTableModel() {
+        scanlineModel.clear();
+        if (currentRaster != null) {
+            scanlineModel.addRow("Date", "", "YYYY-MM-DD");
+            scanlineModel.addRow("Time (UTC)", "", "HH:MM:SS:mm [AM/PM]");
+        }
+    }
+
     private void updateScanLineValues() {
         final ProductData.UTC utcStartTime = currentProduct.getStartTime();
         final ProductData.UTC utcEndTime = currentProduct.getEndTime();
@@ -388,16 +305,127 @@ public class PixelInfoViewModelUpdater {
         }
     }
 
+
+    private void resetBandTableModel() {
+        bandModel.clear();
+        if (currentRaster != null) {
+            final int numBands = currentProduct.getNumBands();
+            for (int i = 0; i < numBands; i++) {
+                final Band band = currentProduct.getBandAt(i);
+                if (shouldDisplayBand(band)) {
+                    bandModel.addRow(band.getName(), "", band.getUnit());
+                }
+            }
+        }
+    }
+
     private void updateBandPixelValues() {
-        Band[] bands = currentProduct.getBands();
+        for (int i = 0; i < bandModel.getRowCount(); i++) {
+            final String bandName = (String) bandModel.getValueAt(i, 0);
+            bandModel.updateValue(getPixelString(currentProduct.getBand(bandName)), i);
+        }
+    }
+
+    private int getBandRowCount() {
+        int rowCount = 0;
+        if (currentProduct != null) {
+            Band[] bands = currentProduct.getBands();
+            for (final Band band : bands) {
+                if (shouldDisplayBand(band)) {
+                    rowCount++;
+                }
+            }
+        }
+        return rowCount;
+    }
+
+    private boolean shouldDisplayBand(final Band band) {
+        PixelInfoView.DisplayFilter displayFilter = pixelInfoView.getDisplayFilter();
+        if (displayFilter != null) {
+            return displayFilter.accept(band);
+        }
+        return band.hasRasterData();
+    }
+
+    private void resetTiePointGridTableModel() {
+        tiePointModel.clear();
+        if (currentRaster != null) {
+            final int numTiePointGrids = currentProduct.getNumTiePointGrids();
+            for (int i = 0; i < numTiePointGrids; i++) {
+                final TiePointGrid tiePointGrid = currentProduct.getTiePointGridAt(i);
+                tiePointModel.addRow(tiePointGrid.getName(), "", tiePointGrid.getUnit());
+            }
+        }
+    }
+
+    private void updateTiePointGridPixelValues() {
+        for ( int i = 0; i < tiePointModel.getRowCount(); i++) {
+            final TiePointGrid grid = currentProduct.getTiePointGrid((String) tiePointModel.getValueAt(i, 0));
+            tiePointModel.updateValue(grid.getPixelString(levelZeroX, levelZeroY), i);
+        }
+    }
+
+    private void resetFlagTableModel() {
+        flagModel.clear();
+        if (currentRaster != null) {
+            for (Band band : currentFlagBands) {
+                final FlagCoding flagCoding = band.getFlagCoding();
+                final int numFlags = flagCoding.getNumAttributes();
+                final String bandNameDot = band.getName() + ".";
+                for (int j = 0; j < numFlags; j++) {
+                    String name = bandNameDot + flagCoding.getAttributeAt(j).getName();
+                    flagModel.addRow(name, "", "");
+                }
+            }
+        }
+    }
+
+    private void updateFlagPixelValues() {
+        final boolean available = isSampleValueAvailable(levelZeroX, levelZeroY, pixelPosValid);
+
+        if (flagModel.getRowCount() != getFlagRowCount()) {
+            resetFlagTableModel();
+        }
         int rowIndex = 0;
-        for (final Band band : bands) {
-            if (shouldDisplayBand(band)) {
-                bandModel.updateValue(getPixelString(band), rowIndex);
+        for (Band band : currentFlagBands) {
+            long pixelValue = available ? ProductUtils.getGeophysicalSampleLong(band, pixelX, pixelY, level) : 0;
+
+            for (int j = 0; j < band.getFlagCoding().getNumAttributes(); j++) {
+                if (available) {
+                    MetadataAttribute attribute = band.getFlagCoding().getAttributeAt(j);
+                    int mask = attribute.getData().getElemInt();
+                    flagModel.updateValue(String.valueOf((pixelValue & mask) == mask), rowIndex);
+                } else {
+                    flagModel.updateValue(_INVALID_POS_TEXT, rowIndex);
+                }
                 rowIndex++;
             }
         }
     }
+
+    private void registerFlagDatasets() {
+        final Band[] bands = currentProduct.getBands();
+        Vector<Band> flagBandsVector = new Vector<Band>();
+        for (Band band : bands) {
+            if (isFlagBand(band)) {
+                flagBandsVector.add(band);
+            }
+        }
+        currentFlagBands = flagBandsVector.toArray(new Band[flagBandsVector.size()]);
+    }
+
+    private boolean isFlagBand(final Band band) {
+        return band.getFlagCoding() != null;
+    }
+
+    private int getFlagRowCount() {
+        int rowCount = 0;
+        for (Band band : currentFlagBands) {
+            rowCount += band.getFlagCoding().getNumAttributes();
+        }
+        return rowCount;
+    }
+
 
     private String getPixelString(Band band) {
         if (!pixelPosValid) {
@@ -430,38 +458,6 @@ public class PixelInfoViewModelUpdater {
         return image.getTile(tileX, tileY);
     }
 
-    private void updateTiePointGridPixelValues() {
-        final int numTiePointGrids = currentProduct.getNumTiePointGrids();
-        int rowIndex = 0;
-        for (int i = 0; i < numTiePointGrids; i++) {
-            final TiePointGrid grid = currentProduct.getTiePointGridAt(i);
-            tiePointModel.updateValue(grid.getPixelString(levelZeroX, levelZeroY), rowIndex);
-            rowIndex++;
-        }
-    }
-
-    private void updateFlagPixelValues() {
-        final boolean available = isSampleValueAvailable(levelZeroX, levelZeroY, pixelPosValid);
-
-        if (flagModel.getRowCount() != getFlagRowCount()) {
-            resetFlagTableModel();
-        }
-        int rowIndex = 0;
-        for (Band band : currentFlagBands) {
-            long pixelValue = available ? ProductUtils.getGeophysicalSampleLong(band, pixelX, pixelY, level) : 0;
-
-            for (int j = 0; j < band.getFlagCoding().getNumAttributes(); j++) {
-                if (available) {
-                    MetadataAttribute attribute = band.getFlagCoding().getAttributeAt(j);
-                    int mask = attribute.getData().getElemInt();
-                    flagModel.updateValue(String.valueOf((pixelValue & mask) == mask), rowIndex);
-                } else {
-                    flagModel.updateValue(_INVALID_POS_TEXT, rowIndex);
-                }
-                rowIndex++;
-            }
-        }
-    }
 
     private boolean isSampleValueAvailable(int pixelX, int pixelY, boolean pixelValid) {
         return currentProduct != null
