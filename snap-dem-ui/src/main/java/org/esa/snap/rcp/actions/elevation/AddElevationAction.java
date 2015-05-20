@@ -41,7 +41,6 @@ import org.esa.snap.framework.dataop.dem.ElevationModelRegistry;
 import org.esa.snap.framework.dataop.resamp.Resampling;
 import org.esa.snap.framework.dataop.resamp.ResamplingFactory;
 import org.esa.snap.framework.ui.ModalDialog;
-import org.esa.snap.framework.ui.command.CommandEvent;
 import org.esa.snap.jai.ImageManager;
 import org.esa.snap.jai.RasterDataNodeSampleOpImage;
 import org.esa.snap.jai.ResolutionLevel;
@@ -184,11 +183,6 @@ public class AddElevationAction extends AbstractAction implements ContextAwareAc
                 demDescriptor,
                 dialogData.outputElevationBand ? dialogData.elevationBandName : null,
                 resampling);
-    }
-
-    public void updateState(CommandEvent event) {
-        final Product product = SnapApp.getDefault().getSelectedProduct();
-        setEnabled(product != null && product.getGeoCoding() != null);
     }
 
     @Override
