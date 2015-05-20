@@ -17,14 +17,13 @@ package org.esa.snap.graphbuilder.rcp.actions;
 
 import org.esa.snap.graphbuilder.rcp.dialogs.GraphBuilderDialog;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.util.IconUtils;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle;
 
-import javax.swing.AbstractAction;
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.InputStream;
@@ -58,7 +57,7 @@ public class OpenGraphBuilderAction extends AbstractAction {
 
     public void actionPerformed(ActionEvent event) {
         final GraphBuilderDialog dialog = new GraphBuilderDialog(new SnapApp.SnapContext(), "Graph Builder", "graph_builder");
-        dialog.getJDialog().setIconImage(IconUtils.esaPlanetIcon.getImage());
+        //dialog.getJDialog().setIconImage(IconUtils.esaPlanetIcon.getImage());
         dialog.show();
 
         final File graphPath = GraphBuilderDialog.getInternalGraphFolder();

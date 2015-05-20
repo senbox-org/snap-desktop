@@ -31,6 +31,7 @@ import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphPanel;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.ProgressBarProgressMonitor;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.tango.TangoIcons;
 import org.esa.snap.util.DialogUtils;
 import org.esa.snap.util.IconUtils;
 import org.esa.snap.util.MemUtils;
@@ -60,12 +61,12 @@ import java.util.Observer;
  */
 public class GraphBuilderDialog extends ModelessDialog implements Observer {
 
-    private static final ImageIcon processIcon = IconUtils.LoadIcon("org/esa/snap/icons/cog22.png");
-    private static final ImageIcon saveIcon = IconUtils.LoadIcon("org/esa/snap/icons/save.png");
-    private static final ImageIcon loadIcon = IconUtils.LoadIcon("org/esa/snap/icons/open.png");
-    private static final ImageIcon clearIcon = IconUtils.LoadIcon("org/esa/snap/icons/edit-clear.png");
-    private static final ImageIcon helpIcon = IconUtils.LoadIcon("org/esa/snap/icons/help-browser.png");
-    private static final ImageIcon infoIcon = IconUtils.LoadIcon("org/esa/snap/icons/info22.png");
+    private static final ImageIcon processIcon = TangoIcons.actions_media_playback_start(TangoIcons.Res.R22);
+    private static final ImageIcon saveIcon = TangoIcons.actions_document_save_as(TangoIcons.Res.R22);
+    private static final ImageIcon loadIcon = TangoIcons.actions_document_open(TangoIcons.Res.R22);
+    private static final ImageIcon clearIcon = TangoIcons.actions_edit_clear(TangoIcons.Res.R22);
+    private static final ImageIcon helpIcon = TangoIcons.apps_help_browser(TangoIcons.Res.R22);
+    private static final ImageIcon infoIcon = TangoIcons.apps_accessories_text_editor(TangoIcons.Res.R22);
 
     private final AppContext appContext;
     private GraphPanel graphPanel = null;
