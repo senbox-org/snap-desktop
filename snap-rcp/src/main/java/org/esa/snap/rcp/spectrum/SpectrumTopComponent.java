@@ -54,8 +54,6 @@ import org.jfree.chart.annotations.XYTitleAnnotation;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.block.BlockBorder;
 import org.jfree.chart.block.LineBorder;
-import org.jfree.chart.event.AxisChangeEvent;
-import org.jfree.chart.event.AxisChangeListener;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
@@ -91,8 +89,6 @@ import java.awt.GridBagConstraints;
 import java.awt.Paint;
 import java.awt.Shape;
 import java.awt.Stroke;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
@@ -148,9 +144,6 @@ public class SpectrumTopComponent extends ToolTopComponent {
     private AbstractButton showSpectraForSelectedPinsButton;
     private AbstractButton showSpectraForAllPinsButton;
     private AbstractButton showGridButton;
-// todo - not yet implemented for 4.1 but planned for 4.2 (mp - 31.10.2007)
-//    private AbstractButton showAveragePinSpectrumButton;
-    //    private AbstractButton showGraphPointsButton;
 
     private boolean tipShown;
     private ProductSceneView currentView;
@@ -166,14 +159,10 @@ public class SpectrumTopComponent extends ToolTopComponent {
     public SpectrumTopComponent() {
         productNodeHandler = new ProductNodeHandler();
         pinSelectionChangeListener = new PinSelectionChangeListener();
-        productToAllSpectraMap = new HashMap<Product, DisplayableSpectrum[]>();
-        productToBandsMap = new HashMap<Product, List<SpectrumBand>>();
+        productToAllSpectraMap = new HashMap<>();
+        productToBandsMap = new HashMap<>();
         pixelPositionListener = new CursorSpectrumPixelPositionListener(this);
         initUI();
-    }
-
-    private String getHelpId() {
-        return Bundle.CTL_SpectrumTopComponent_HelpId();
     }
 
     @Override
@@ -279,7 +268,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
     private SpectrumBand[] getAvailableSpectralBands() {
         Debug.assertNotNull(currentProduct);
         if (!productToBandsMap.containsKey(currentProduct)) {
-            productToBandsMap.put(currentProduct, new ArrayList<SpectrumBand>());
+            productToBandsMap.put(currentProduct, new ArrayList<>());
         }
         List<SpectrumBand> spectrumBands = productToBandsMap.get(currentProduct);
         Band[] bands = currentProduct.getBands();
@@ -310,20 +299,14 @@ public class SpectrumTopComponent extends ToolTopComponent {
         final JFreeChart chart = ChartFactory.createXYLineChart(Bundle.CTL_SpectrumTopComponent_Name(),
                                                                 "Wavelength (nm)", "", null, PlotOrientation.VERTICAL,
                                                                 true, true, false);
-        chart.getXYPlot().getRangeAxis().addChangeListener(new AxisChangeListener() {
-            @Override
-            public void axisChanged(AxisChangeEvent axisChangeEvent) {
-                if (!isCodeInducedAxisChange) {
-                    rangeAxisAdjustmentIsFrozen = !((ValueAxis) axisChangeEvent.getAxis()).isAutoRange();
-                }
+        chart.getXYPlot().getRangeAxis().addChangeListener(axisChangeEvent -> {
+            if (!isCodeInducedAxisChange) {
+                rangeAxisAdjustmentIsFrozen = !((ValueAxis) axisChangeEvent.getAxis()).isAutoRange();
             }
         });
-        chart.getXYPlot().getDomainAxis().addChangeListener(new AxisChangeListener() {
-            @Override
-            public void axisChanged(AxisChangeEvent axisChangeEvent) {
-                if (!isCodeInducedAxisChange) {
-                    domainAxisAdjustmentIsFrozen = !((ValueAxis) axisChangeEvent.getAxis()).isAutoRange();
-                }
+        chart.getXYPlot().getDomainAxis().addChangeListener(axisChangeEvent -> {
+            if (!isCodeInducedAxisChange) {
+                domainAxisAdjustmentIsFrozen = !((ValueAxis) axisChangeEvent.getAxis()).isAutoRange();
             }
         });
         chart.getXYPlot().getRangeAxis().setAutoRange(false);
@@ -347,89 +330,48 @@ public class SpectrumTopComponent extends ToolTopComponent {
         filterButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon("icons/Filter24.gif"), false);
         filterButton.setName("filterButton");
         filterButton.setEnabled(false);
-        filterButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                selectSpectralBands();
-                recreateChart();
-            }
+        filterButton.addActionListener(e -> {
+            selectSpectralBands();
+            recreateChart();
         });
 
         showSpectrumForCursorButton = ToolButtonFactory.createButton(
                 UIUtils.loadImageIcon("icons/CursorSpectrum24.gif"), true);
-        showSpectrumForCursorButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                recreateChart();
-            }
-        });
+        showSpectrumForCursorButton.addActionListener(e -> recreateChart());
         showSpectrumForCursorButton.setName("showSpectrumForCursorButton");
         showSpectrumForCursorButton.setSelected(true);
         showSpectrumForCursorButton.setToolTipText("Show spectrum at cursor position.");
 
         showSpectraForSelectedPinsButton = ToolButtonFactory.createButton(
                 UIUtils.loadImageIcon("icons/SelectedPinSpectra24.gif"), true);
-        showSpectraForSelectedPinsButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (isShowingSpectraForAllPins()) {
-                    showSpectraForAllPinsButton.setSelected(false);
-                } else if (!isShowingSpectraForSelectedPins()) {
-                    plotMarker.setInvisible();
-                }
-                recreateChart();
+        showSpectraForSelectedPinsButton.addActionListener(e -> {
+            if (isShowingSpectraForAllPins()) {
+                showSpectraForAllPinsButton.setSelected(false);
+            } else if (!isShowingSpectraForSelectedPins()) {
+                plotMarker.setInvisible();
             }
+            recreateChart();
         });
         showSpectraForSelectedPinsButton.setName("showSpectraForSelectedPinsButton");
         showSpectraForSelectedPinsButton.setToolTipText("Show spectra for selected pins.");
 
         showSpectraForAllPinsButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon("icons/PinSpectra24.gif"),
                                                                      true);
-        showSpectraForAllPinsButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (isShowingSpectraForSelectedPins()) {
-                    showSpectraForSelectedPinsButton.setSelected(false);
-                } else if (!isShowingSpectraForAllPins()) {
-                    plotMarker.setInvisible();
-                }
-                recreateChart();
+        showSpectraForAllPinsButton.addActionListener(e -> {
+            if (isShowingSpectraForSelectedPins()) {
+                showSpectraForSelectedPinsButton.setSelected(false);
+            } else if (!isShowingSpectraForAllPins()) {
+                plotMarker.setInvisible();
             }
+            recreateChart();
         });
         showSpectraForAllPinsButton.setName("showSpectraForAllPinsButton");
         showSpectraForAllPinsButton.setToolTipText("Show spectra for all pins.");
 
-// todo - not yet implemented for 4.1 but planned for 4.2 (mp - 31.10.2007)
-//        showAveragePinSpectrumButton = ToolButtonFactory.createButton(
-//                UIUtils.loadImageIcon("icons/AverageSpectrum24.gif"), true);
-//        showAveragePinSpectrumButton.addActionListener(new ActionListener() {
-//            public void actionPerformed(ActionEvent e) {
-//                // todo - implement
-//            }
-//        });
-//        showAveragePinSpectrumButton.setName("showAveragePinSpectrumButton");
-//        showAveragePinSpectrumButton.setToolTipText("Show average spectrum of all pin spectra.");
-
         showGridButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon("icons/SpectrumGrid24.gif"), true);
-        showGridButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                chartHandler.setGridVisible(showGridButton.isSelected());
-            }
-        });
+        showGridButton.addActionListener(e -> chartHandler.setGridVisible(showGridButton.isSelected()));
         showGridButton.setName("showGridButton");
         showGridButton.setToolTipText("Show diagram grid.");
-
-// todo - not yet implemented for 4.1 but planned for 4.2 (mp - 31.10.2007)
-//        showGraphPointsButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon("icons/GraphPoints24.gif"), true);
-//        showGraphPointsButton.addActionListener(new ActionListener() {
-//            public void actionPerformed(ActionEvent e) {
-//                // todo - implement
-//                JOptionPane.showMessageDialog(null, "Not implemented");
-//            }
-//        });
-//        showGraphPointsButton.setName("showGraphPointsButton");
-//        showGraphPointsButton.setToolTipText("Show graph points grid.");
 
         AbstractButton exportSpectraButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon("icons/Export24.gif"),
                                                                             false);
@@ -633,13 +575,8 @@ public class SpectrumTopComponent extends ToolTopComponent {
         return showSpectraForSelectedPinsButton.isSelected();
     }
 
-    // todo - not yet implemented for 4.1 but planned for 5.0 (tf - 5.3.2014)
-//    private boolean isShowingAveragePinSpectrum() {
-//        return showAveragePinSpectrumButton.isSelected();
-//    }
-
     List<DisplayableSpectrum> getSelectedSpectra() {
-        List<DisplayableSpectrum> selectedSpectra = new ArrayList<DisplayableSpectrum>();
+        List<DisplayableSpectrum> selectedSpectra = new ArrayList<>();
         if (currentProduct != null && productToAllSpectraMap.containsKey(currentProduct)) {
             DisplayableSpectrum[] allSpectra = productToAllSpectraMap.get(currentProduct);
             for (DisplayableSpectrum displayableSpectrum : allSpectra) {
@@ -882,7 +819,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
         private XYSeriesCollection dataset;
 
         private ChartUpdater() {
-            pinToEnergies = new HashMap<Placemark, Map<Band, Double>>();
+            pinToEnergies = new HashMap<>();
             plotBounds = new Range[2];
             invalidatePlotBounds();
         }
@@ -1003,7 +940,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
         }
 
         private List<XYSeries> createXYSeriesFromPin(Placemark pin, int seriesIndex, List<DisplayableSpectrum> spectra, JFreeChart chart) {
-            List<XYSeries> pinSeries = new ArrayList<XYSeries>();
+            List<XYSeries> pinSeries = new ArrayList<>();
             Color pinColor = PlacemarkUtils.getPlacemarkColor(pin, getCurrentView());
             for (DisplayableSpectrum spectrum : spectra) {
                 XYSeries series = new XYSeries(spectrum.getName() + "_" + pin.getLabel());
@@ -1012,7 +949,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
                 if (pinToEnergies.containsKey(pin)) {
                     bandToEnergy = pinToEnergies.get(pin);
                 } else {
-                    bandToEnergy = new HashMap<Band, Double>();
+                    bandToEnergy = new HashMap<>();
                     pinToEnergies.put(pin, bandToEnergy);
                 }
                 for (Band spectralBand : spectralBands) {
