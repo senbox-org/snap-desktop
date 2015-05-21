@@ -16,17 +16,43 @@
 package org.esa.snap.graphbuilder.rcp.actions;
 
 import org.esa.snap.graphbuilder.rcp.dialogs.BatchGraphDialog;
-import org.esa.snap.framework.ui.command.CommandEvent;
-import org.esa.snap.util.IconUtils;
-import org.esa.snap.visat.actions.AbstractVisatAction;
+import org.esa.snap.rcp.SnapApp;
+import org.openide.awt.ActionID;
+import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
+import org.openide.awt.ActionRegistration;
+import org.openide.util.NbBundle;
 
-public class BatchProcessingAction extends AbstractVisatAction {
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+
+@ActionID(
+        category = "Tools",
+        id = "BatchProcessingAction"
+)
+@ActionRegistration(
+        displayName = "#CTL_BatchProcessingAction_MenuText",
+        popupText = "#CTL_BatchProcessingAction_MenuText",
+        iconBase = "org/esa/snap/icons/batch24.png",
+        lazy = true
+)
+@ActionReferences({
+        @ActionReference(
+                path = "Menu/Tools",
+                position = 120
+        ),
+        @ActionReference(path = "Toolbars/Processing")
+})
+@NbBundle.Messages({
+        "CTL_BatchProcessingAction_MenuText=Batch Processing",
+        "CTL_BatchProcessingAction_ShortDescription=Batch process several products"
+})
+public class BatchProcessingAction extends AbstractAction {
 
     @Override
-    public void actionPerformed(final CommandEvent event) {
-        final BatchGraphDialog dialog = new BatchGraphDialog(getAppContext(),
+    public void actionPerformed(final ActionEvent event) {
+        final BatchGraphDialog dialog = new BatchGraphDialog(new SnapApp.SnapContext(),
                 "Batch Processing", "batchProcessing", false);
-        dialog.getJDialog().setIconImage(IconUtils.esaPlanetIcon.getImage());
         dialog.show();
     }
 
