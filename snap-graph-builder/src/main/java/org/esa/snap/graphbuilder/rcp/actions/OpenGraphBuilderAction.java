@@ -35,7 +35,7 @@ import java.io.InputStream;
 @ActionRegistration(
         displayName = "#CTL_GraphBuilderAction_MenuText",
         popupText = "#CTL_GraphBuilderAction_MenuText",
-        iconBase = "org/esa/snap/icons/cog.png",
+        iconBase = "org/esa/snap/icons/graph24.png",
         lazy = true
 )
 @ActionReferences({
@@ -43,7 +43,7 @@ import java.io.InputStream;
                 path = "Menu/Tools",
                 position = 110
         ),
-        @ActionReference(path = "Toolbars/GraphBuilder")
+        @ActionReference(path = "Toolbars/Processing")
 })
 @NbBundle.Messages({
         "CTL_GraphBuilderAction_MenuText=GraphBuilder",

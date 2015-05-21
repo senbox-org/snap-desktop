@@ -33,7 +33,6 @@ import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.tango.TangoIcons;
 import org.esa.snap.util.DialogUtils;
-import org.esa.snap.util.IconUtils;
 import org.esa.snap.util.MemUtils;
 import org.esa.snap.util.ProductFunctions;
 import org.esa.snap.util.ResourceUtils;
@@ -119,7 +118,6 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer {
         } else {
             super.getJDialog().setMinimumSize(new Dimension(600, 500));
         }
-        super.getJDialog().setIconImage(IconUtils.esaPlanetIcon.getImage());
 
         final JPanel mainPanel = new JPanel(new BorderLayout(4, 4));
 
