@@ -25,6 +25,7 @@ import org.esa.snap.framework.datamodel.ProductManager;
 import org.esa.snap.framework.datamodel.ProductNodeEvent;
 import org.esa.snap.framework.datamodel.ProductNodeGroup;
 import org.esa.snap.framework.datamodel.ProductNodeListenerAdapter;
+import org.esa.snap.framework.datamodel.RasterDataNode;
 import org.esa.snap.framework.ui.GridBagUtils;
 import org.esa.snap.framework.ui.ModalDialog;
 import org.esa.snap.framework.ui.PixelPositionListener;
@@ -42,7 +43,6 @@ import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.placemark.PlacemarkUtils;
 import org.esa.snap.rcp.statistics.XYPlotMarker;
 import org.esa.snap.rcp.windows.ToolTopComponent;
-import org.esa.snap.util.Debug;
 import org.esa.snap.util.ProductUtils;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -132,8 +132,8 @@ public class SpectrumTopComponent extends ToolTopComponent {
 
     private static final String SUPPRESS_MESSAGE_KEY = "plugin.spectrum.tip";
 
-    private final Map<Product, DisplayableSpectrum[]> productToAllSpectraMap;
-    private final Map<Product, List<SpectrumBand>> productToBandsMap;
+    private final Map<RasterDataNode, DisplayableSpectrum[]> rasterToSpectraMap;
+    private final Map<RasterDataNode, List<SpectrumBand>> rasterToSpectralBandsMap;
 
     private final ProductNodeListenerAdapter productNodeHandler;
     private final PinSelectionChangeListener pinSelectionChangeListener;
@@ -159,8 +159,8 @@ public class SpectrumTopComponent extends ToolTopComponent {
     public SpectrumTopComponent() {
         productNodeHandler = new ProductNodeHandler();
         pinSelectionChangeListener = new PinSelectionChangeListener();
-        productToAllSpectraMap = new HashMap<>();
-        productToBandsMap = new HashMap<>();
+        rasterToSpectraMap = new HashMap<>();
+        rasterToSpectralBandsMap = new HashMap<>();
         pixelPositionListener = new CursorSpectrumPixelPositionListener(this);
         initUI();
     }
@@ -184,6 +184,11 @@ public class SpectrumTopComponent extends ToolTopComponent {
             if (currentView != null) {
                 currentView.addPropertyChangeListener(ProductSceneView.PROPERTY_NAME_SELECTED_PIN, pinSelectionChangeListener);
                 setCurrentProduct(currentView.getProduct());
+                if (!rasterToSpectraMap.containsKey(currentView.getRaster())) {
+                    setUpSpectra();
+                }
+                recreateChart();
+
             }
             updateUIState();
         }
@@ -202,10 +207,6 @@ public class SpectrumTopComponent extends ToolTopComponent {
             }
             if (currentProduct != null) {
                 currentProduct.addProductNodeListener(productNodeHandler);
-                if (!productToAllSpectraMap.containsKey(currentProduct)) {
-                    setUpSpectra();
-                }
-                recreateChart();
             }
             if (currentProduct == null) {
                 chartHandler.setEmptyPlot();
@@ -263,29 +264,31 @@ public class SpectrumTopComponent extends ToolTopComponent {
     }
 
     private SpectrumBand[] getAvailableSpectralBands() {
-        Debug.assertNotNull(currentProduct);
-        if (!productToBandsMap.containsKey(currentProduct)) {
-            productToBandsMap.put(currentProduct, new ArrayList<>());
+        final RasterDataNode currentRaster = currentView.getRaster();
+        if (!rasterToSpectralBandsMap.containsKey(currentRaster)) {
+            rasterToSpectralBandsMap.put(currentRaster, new ArrayList<>());
         }
-        List<SpectrumBand> spectrumBands = productToBandsMap.get(currentProduct);
+        List<SpectrumBand> spectrumBands = rasterToSpectralBandsMap.get(currentRaster);
         Band[] bands = currentProduct.getBands();
         for (Band band : bands) {
-            if (isSpectralBand(band)) {
-                if (!band.isFlagBand()) {
-                    boolean isAlreadyIncluded = false;
-                    for (SpectrumBand spectrumBand : spectrumBands) {
-                        if (spectrumBand.getOriginalBand() == band) {
-                            isAlreadyIncluded = true;
-                            break;
-                        }
+            if (isSpectralBand(band) && !band.isFlagBand() && isSizeCompatible(band, currentRaster)) {
+                boolean isAlreadyIncluded = false;
+                for (SpectrumBand spectrumBand : spectrumBands) {
+                    if (spectrumBand.getOriginalBand() == band) {
+                        isAlreadyIncluded = true;
+                        break;
                     }
-                    if (!isAlreadyIncluded) {
-                        spectrumBands.add(new SpectrumBand(band, true));
-                    }
+                }
+                if (!isAlreadyIncluded) {
+                    spectrumBands.add(new SpectrumBand(band, true));
                 }
             }
         }
         return spectrumBands.toArray(new SpectrumBand[spectrumBands.size()]);
+    }
+
+    private boolean isSizeCompatible(RasterDataNode raster1, RasterDataNode raster2) {
+        return raster1.getRasterSize().equals(raster2.getRasterSize());
     }
 
     private boolean isSpectralBand(Band band) {
@@ -439,11 +442,12 @@ public class SpectrumTopComponent extends ToolTopComponent {
                     setCurrentView(null);
                     setCurrentProduct(null);
                 }
-                if (productToAllSpectraMap.containsKey(product)) {
-                    productToAllSpectraMap.remove(product);
+                final RasterDataNode currentRaster = currentView.getRaster();
+                if (rasterToSpectraMap.containsKey(currentRaster)) {
+                    rasterToSpectraMap.remove(currentRaster);
                 }
-                if (productToBandsMap.containsKey(product)) {
-                    productToBandsMap.remove(product);
+                if (rasterToSpectralBandsMap.containsKey(currentRaster)) {
+                    rasterToSpectralBandsMap.remove(currentRaster);
                 }
                 PlacemarkGroup pinGroup = product.getPinGroup();
                 for (int i = 0; i < pinGroup.getNodeCount(); i++) {
@@ -464,11 +468,12 @@ public class SpectrumTopComponent extends ToolTopComponent {
     }
 
     private void selectSpectralBands() {
-        final DisplayableSpectrum[] allSpectra = productToAllSpectraMap.get(getCurrentProduct());
+        final RasterDataNode currentRaster = currentView.getRaster();
+        final DisplayableSpectrum[] allSpectra = rasterToSpectraMap.get(currentRaster);
         final SpectrumChooser spectrumChooser = new SpectrumChooser(SwingUtilities.getWindowAncestor(this), allSpectra);
         if (spectrumChooser.show() == ModalDialog.ID_OK) {
             final DisplayableSpectrum[] spectra = spectrumChooser.getSpectra();
-            productToAllSpectraMap.put(currentProduct, spectra);
+            rasterToSpectraMap.put(currentRaster, spectra);
         }
     }
 
@@ -504,7 +509,8 @@ public class SpectrumTopComponent extends ToolTopComponent {
 
     private void setUpSpectra() {
         DisplayableSpectrum[] spectra;
-        if (!areSpectralBandsAvailable()) {
+        final SpectrumBand[] availableSpectralBands = getAvailableSpectralBands();
+        if (availableSpectralBands.length == 0) {
             spectra = new DisplayableSpectrum[]{};
         } else {
             final Product.AutoGrouping autoGrouping = currentProduct.getAutoGrouping();
@@ -534,7 +540,6 @@ public class SpectrumTopComponent extends ToolTopComponent {
                         new DisplayableSpectrum(DisplayableSpectrum.REMAINING_BANDS_NAME, symbolIndex);
                 defaultSpectrum.setSelected(selectedSpectrumIndex == -1);
                 spectra[spectra.length - 1] = defaultSpectrum;
-                final SpectrumBand[] availableSpectralBands = getAvailableSpectralBands();
                 for (SpectrumBand availableSpectralBand : availableSpectralBands) {
                     final String bandName = availableSpectralBand.getName();
                     final int spectrumIndex = autoGrouping.indexOf(bandName);
@@ -547,19 +552,15 @@ public class SpectrumTopComponent extends ToolTopComponent {
             } else {
                 spectra = new DisplayableSpectrum[1];
                 spectra[0] = new DisplayableSpectrum(
-                        DisplayableSpectrum.DEFAULT_SPECTRUM_NAME, getAvailableSpectralBands(), 1);
+                        DisplayableSpectrum.DEFAULT_SPECTRUM_NAME, availableSpectralBands, 1);
                 spectra[0].setLineStyle(SpectrumStrokeProvider.EMPTY_STROKE);
             }
         }
-        productToAllSpectraMap.put(currentProduct, spectra);
+        rasterToSpectraMap.put(currentView.getRaster(), spectra);
     }
 
     private DisplayableSpectrum[] getAllSpectra() {
-        return productToAllSpectraMap.get(currentProduct);
-    }
-
-    private boolean areSpectralBandsAvailable() {
-        return getAvailableSpectralBands().length > 0;
+        return rasterToSpectraMap.get(currentView.getRaster());
     }
 
     private boolean isShowingSpectraForSelectedPins() {
@@ -568,8 +569,9 @@ public class SpectrumTopComponent extends ToolTopComponent {
 
     List<DisplayableSpectrum> getSelectedSpectra() {
         List<DisplayableSpectrum> selectedSpectra = new ArrayList<>();
-        if (currentProduct != null && productToAllSpectraMap.containsKey(currentProduct)) {
-            DisplayableSpectrum[] allSpectra = productToAllSpectraMap.get(currentProduct);
+        final RasterDataNode currentRaster = currentView.getRaster();
+        if (currentProduct != null && rasterToSpectraMap.containsKey(currentRaster)) {
+            DisplayableSpectrum[] allSpectra = rasterToSpectraMap.get(currentRaster);
             for (DisplayableSpectrum displayableSpectrum : allSpectra) {
                 if (displayableSpectrum.isSelected()) {
                     selectedSpectra.add(displayableSpectrum);
@@ -580,7 +582,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
     }
 
     private void addBandToSpectra(Band band) {
-        DisplayableSpectrum[] allSpectra = productToAllSpectraMap.get(getCurrentProduct());
+        DisplayableSpectrum[] allSpectra = rasterToSpectraMap.get(currentView.getRaster());
         Product.AutoGrouping autoGrouping = currentProduct.getAutoGrouping();
         if (autoGrouping != null) {
             final int bandIndex = autoGrouping.indexOf(band.getName());
@@ -597,7 +599,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
     }
 
     private void removeBandFromSpectra(Band band) {
-        DisplayableSpectrum[] allSpectra = productToAllSpectraMap.get(currentProduct);
+        DisplayableSpectrum[] allSpectra = rasterToSpectraMap.get(currentView.getRaster());
         for (DisplayableSpectrum displayableSpectrum : allSpectra) {
             Band[] spectralBands = displayableSpectrum.getSpectralBands();
             for (int j = 0; j < spectralBands.length; j++) {
@@ -621,10 +623,6 @@ public class SpectrumTopComponent extends ToolTopComponent {
 
     void removeCursorSpectraFromDataset() {
         chartHandler.removeCursorSpectraFromDataset();
-    }
-
-    boolean hasDiagram() {
-        return chartHandler.hasDiagram();
     }
 
     @Override
@@ -757,10 +755,6 @@ public class SpectrumTopComponent extends ToolTopComponent {
         private void setGridVisible(boolean visible) {
             chart.getXYPlot().setDomainGridlinesVisible(visible);
             chart.getXYPlot().setRangeGridlinesVisible(visible);
-        }
-
-        private boolean hasDiagram() {
-            return chart.getXYPlot().getDataset() != null;
         }
 
         private void removePinInformation(Placemark pin) {
@@ -922,9 +916,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
             Placemark[] pins = getDisplayedPins();
             for (Placemark pin : pins) {
                 List<XYSeries> pinSeries = createXYSeriesFromPin(pin, dataset.getSeriesCount(), spectra, chart);
-                for (XYSeries series : pinSeries) {
-                    dataset.addSeries(series);
-                }
+                pinSeries.forEach(dataset::addSeries);
             }
         }
 
@@ -1026,22 +1018,18 @@ public class SpectrumTopComponent extends ToolTopComponent {
             final List<DisplayableSpectrum> spectra = getSelectedSpectra();
             for (Placemark pin : displayedPins) {
                 Paint pinPaint = PlacemarkUtils.getPlacemarkColor(pin, getCurrentView());
-                for (DisplayableSpectrum spectrum : spectra) {
-                    if (spectrum.hasSelectedBands()) {
-                        String legendLabel = pin.getLabel() + "_" + spectrum.getName();
-                        LegendItem item = createLegendItem(spectrum, pinPaint, legendLabel);
-                        itemCollection.add(item);
-                    }
-                }
+                spectra.stream().filter(DisplayableSpectrum::hasSelectedBands).forEach(spectrum -> {
+                    String legendLabel = pin.getLabel() + "_" + spectrum.getName();
+                    LegendItem item = createLegendItem(spectrum, pinPaint, legendLabel);
+                    itemCollection.add(item);
+                });
             }
             if (isShowingCursorSpectrum() && hasValidCursorPosition()) {
-                for (DisplayableSpectrum spectrum : spectra) {
-                    if (spectrum.hasSelectedBands()) {
-                        Paint defaultPaint = Color.BLACK;
-                        LegendItem item = createLegendItem(spectrum, defaultPaint, spectrum.getName());
-                        itemCollection.add(item);
-                    }
-                }
+                spectra.stream().filter(DisplayableSpectrum::hasSelectedBands).forEach(spectrum -> {
+                    Paint defaultPaint = Color.BLACK;
+                    LegendItem item = createLegendItem(spectrum, defaultPaint, spectrum.getName());
+                    itemCollection.add(item);
+                });
             }
             return itemCollection;
         }
