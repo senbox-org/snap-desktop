@@ -26,7 +26,7 @@ import org.esa.snap.framework.datamodel.SceneRasterTransformException;
 import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
-import org.esa.snap.util.ProductUtils;
+import org.esa.snap.util.SceneRasterTransformUtils;
 import org.openide.awt.UndoRedo;
 
 import java.awt.Component;
@@ -90,8 +90,8 @@ public abstract class InsertPlacemarkInteractor extends FigureEditorInteractor {
                                                 view.getCurrentPixelY() + 0.5f);
         PixelPos pixelPos;
         try {
-            pixelPos = ProductUtils.transformToProductGrid(view.getRaster(),
-                                                           rasterPos);
+            pixelPos = SceneRasterTransformUtils.transformToProductRaster(view.getRaster(),
+                                                                          rasterPos);
             final Placemark newPlacemark = Placemark.createPointPlacemark(placemarkDescriptor, name, label, "", pixelPos, null,
                                                                           product.getGeoCoding());
 
