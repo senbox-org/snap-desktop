@@ -149,9 +149,12 @@ public class RegionSelectableWorldMapPane {
     private void initFigureEditor(DefaultFigureEditor editor, Product selectedProduct) {
         if (mustInitFigureEditor) {
             initGeometries(selectedProduct);
-            ShapeFigure shapeFigure = editor.getFigureFactory().createPolygonFigure(defaultShape, createFigureStyle(
+            final ShapeFigure polygonFigure = editor.getFigureFactory().createPolygonFigure(defaultShape, createFigureStyle(
                     (DefaultFigureStyle) editor.getDefaultPolygonStyle()));
-            editor.getFigureCollection().addFigure(shapeFigure);
+            if (polygonFigure != null) {
+                ShapeFigure shapeFigure = polygonFigure;
+                editor.getFigureCollection().addFigure(shapeFigure);
+            }
             regionSelectionInteractor.updateProperties(defaultShape.getBounds2D());
             mustInitFigureEditor = false;
         }
@@ -623,9 +626,12 @@ public class RegionSelectableWorldMapPane {
         private void updateFigure(Rectangle2D modelRectangle) {
             DefaultFigureEditor figureEditor = getFigureEditor();
             DefaultFigureStyle defaultFigureStyle = createFigureStyle((DefaultFigureStyle) figureEditor.getDefaultPolygonStyle());
-            Figure newFigure = figureEditor.getFigureFactory().createPolygonFigure(modelRectangle, defaultFigureStyle);
-            figureEditor.getFigureCollection().removeAllFigures();
-            figureEditor.getFigureCollection().addFigure(newFigure);
+            final ShapeFigure polygonFigure = figureEditor.getFigureFactory().createPolygonFigure(modelRectangle, defaultFigureStyle);
+            if (polygonFigure != null) {
+                Figure newFigure = polygonFigure;
+                figureEditor.getFigureCollection().removeAllFigures();
+                figureEditor.getFigureCollection().addFigure(newFigure);
+            }
         }
 
         private void setMovableRectangleInImageCoordinates(double x, double y, double width, double height) {

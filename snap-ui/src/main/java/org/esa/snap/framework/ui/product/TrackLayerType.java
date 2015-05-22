@@ -8,6 +8,7 @@ import org.esa.snap.framework.datamodel.RasterDataNode;
 import org.esa.snap.framework.datamodel.SceneRasterTransform;
 import org.esa.snap.framework.datamodel.VectorDataNode;
 import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.referencing.operation.MathTransform2D;
 import org.opengis.referencing.operation.TransformException;
 
 import java.awt.BasicStroke;
@@ -116,11 +117,18 @@ public class TrackLayerType extends VectorDataLayerType {
                     final Point2D.Double start = new Point2D.Double(sceneRasterCentroidX, sceneRasterCentroidY);
                     final Point2D.Double target = new Point2D.Double();
                     try {
-                        sceneRasterTransform.getInverse().transform(start, target);
+                        final MathTransform2D inverse = sceneRasterTransform.getInverse();
+                        if (inverse == null) {
+                            //todo error handling correct?
+                            return;
+                        }
+                        inverse.transform(start, target);
                         sceneRasterCentroidX = target.getX();
                         sceneRasterCentroidY = target.getY();
                     } catch (TransformException e) {
                         e.printStackTrace();
+                        //todo error handling correct?
+                        return;
                     }
                 }
                 if (i > 0) {

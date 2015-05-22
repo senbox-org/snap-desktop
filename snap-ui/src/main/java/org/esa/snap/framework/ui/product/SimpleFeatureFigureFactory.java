@@ -27,10 +27,12 @@ import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import org.esa.snap.framework.datamodel.PlainFeatureFactory;
 import org.esa.snap.framework.datamodel.SceneRasterTransform;
+import org.esa.snap.framework.datamodel.SceneRasterTransformException;
 import org.esa.snap.util.AwtGeomToJtsGeomConverter;
 import org.esa.snap.util.SceneRasterTransformUtils;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.referencing.operation.MathTransform2D;
 import org.opengis.referencing.operation.TransformException;
 
 import java.awt.Color;
@@ -68,10 +70,13 @@ public class SimpleFeatureFigureFactory implements FigureFactory {
     public ShapeFigure createLineFigure(Shape shape, FigureStyle style) {
         Shape shapeInProductCoords;
         try {
-            shapeInProductCoords = sceneRasterTransform.getForward().createTransformedShape(shape);
+            final MathTransform2D forward = sceneRasterTransform.getForward();
+            if (forward == null) {
+                return null;
+            }
+            shapeInProductCoords = forward.createTransformedShape(shape);
         } catch (TransformException e) {
-            e.printStackTrace();
-            shapeInProductCoords = shape;
+            return null;
         }
         MultiLineString multiLineString = toJtsGeom.createMultiLineString(shapeInProductCoords);
         if (multiLineString.getNumGeometries() == 1) {
@@ -83,8 +88,14 @@ public class SimpleFeatureFigureFactory implements FigureFactory {
 
     @Override
     public ShapeFigure createPolygonFigure(Shape shape, FigureStyle style) {
-        Polygon polygon = toJtsGeom.createPolygon(
-                SceneRasterTransformUtils.transformShapeToProductCoordinates(shape, sceneRasterTransform));
+        Polygon polygon;
+        try {
+            polygon = toJtsGeom.createPolygon(
+                    SceneRasterTransformUtils.transformShapeToProductCoordinates(shape, sceneRasterTransform));
+        } catch (SceneRasterTransformException e) {
+            e.printStackTrace();
+            return null;
+        }
         return createShapeFigure(polygon, style);
     }
 

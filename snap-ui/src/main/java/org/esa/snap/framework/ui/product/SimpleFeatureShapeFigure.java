@@ -27,6 +27,7 @@ import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geom.Polygonal;
 import com.vividsolutions.jts.geom.Puntal;
 import org.esa.snap.framework.datamodel.SceneRasterTransform;
+import org.esa.snap.framework.datamodel.SceneRasterTransformException;
 import org.esa.snap.util.AwtGeomToJtsGeomConverter;
 import org.esa.snap.util.Debug;
 import org.esa.snap.util.SceneRasterTransformUtils;
@@ -81,7 +82,7 @@ public class SimpleFeatureShapeFigure extends AbstractShapeFigure implements Sim
             simpleFeature.setDefaultGeometry(productGeometry);
             forceRegeneration();
             fireFigureChanged();
-        } catch (TransformException | FactoryException e) {
+        } catch (TransformException | FactoryException | SceneRasterTransformException e) {
             e.printStackTrace();
         }
     }
@@ -129,9 +130,13 @@ public class SimpleFeatureShapeFigure extends AbstractShapeFigure implements Sim
     @Override
     public void setShape(Shape shape) {
         geometryShape = shape;
-        simpleFeature.setDefaultGeometry(getGeometryFromShape(
-                SceneRasterTransformUtils.transformShapeToProductCoordinates(shape, sceneRasterTransform)));
-        fireFigureChanged();
+        try {
+            simpleFeature.setDefaultGeometry(getGeometryFromShape(
+                    SceneRasterTransformUtils.transformShapeToProductCoordinates(shape, sceneRasterTransform)));
+            fireFigureChanged();
+        } catch (SceneRasterTransformException e) {
+            e.printStackTrace();
+        }
     }
 
     private Geometry getGeometryFromShape(Shape shape) {

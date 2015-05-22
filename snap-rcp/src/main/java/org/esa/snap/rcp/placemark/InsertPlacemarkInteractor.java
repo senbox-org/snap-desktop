@@ -22,10 +22,11 @@ import org.esa.snap.framework.datamodel.Placemark;
 import org.esa.snap.framework.datamodel.PlacemarkDescriptor;
 import org.esa.snap.framework.datamodel.PlacemarkNameFactory;
 import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.datamodel.SceneRasterTransformException;
 import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.util.ProductUtils;
-import org.opengis.referencing.operation.TransformException;
 import org.openide.awt.UndoRedo;
 
 import java.awt.Component;
@@ -91,18 +92,18 @@ public abstract class InsertPlacemarkInteractor extends FigureEditorInteractor {
         try {
             pixelPos = ProductUtils.transformToProductGrid(view.getRaster(),
                                                            rasterPos);
-        } catch (TransformException e) {
-            pixelPos = rasterPos;
-            e.printStackTrace();
-        }
-        final Placemark newPlacemark = Placemark.createPointPlacemark(placemarkDescriptor, name, label, "", pixelPos, null,
-                                                                      product.getGeoCoding());
+            final Placemark newPlacemark = Placemark.createPointPlacemark(placemarkDescriptor, name, label, "", pixelPos, null,
+                                                                          product.getGeoCoding());
 
-        placemarkDescriptor.getPlacemarkGroup(product).add(newPlacemark);
+            placemarkDescriptor.getPlacemarkGroup(product).add(newPlacemark);
 
-        UndoRedo.Manager undoManager = SnapApp.getDefault().getUndoManager(product);
-        if (undoManager != null) {
-            undoManager.addEdit(UndoablePlacemarkActionFactory.createUndoablePlacemarkInsertion(product, newPlacemark, placemarkDescriptor));
+            UndoRedo.Manager undoManager = SnapApp.getDefault().getUndoManager(product);
+            if (undoManager != null) {
+                undoManager.addEdit(UndoablePlacemarkActionFactory.createUndoablePlacemarkInsertion(product, newPlacemark, placemarkDescriptor));
+            }
+        } catch (SceneRasterTransformException e) {
+            SnapDialogs.showError("Placemark insertion failed",
+                                  "Could not add placemark to product due to scene raster transformation exception");
         }
     }
 

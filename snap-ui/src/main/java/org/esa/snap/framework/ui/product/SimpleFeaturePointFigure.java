@@ -35,6 +35,7 @@ import org.esa.snap.framework.datamodel.SceneRasterTransform;
 import org.esa.snap.util.AwtGeomToJtsGeomConverter;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.referencing.operation.MathTransform2D;
 import org.opengis.referencing.operation.TransformException;
 
 import java.awt.BasicStroke;
@@ -107,11 +108,17 @@ public class SimpleFeaturePointFigure extends AbstractPointFigure implements Sim
     @Override
     public void setMemento(Object memento) {
         Point point = (Point) memento;
+        final MathTransform2D forward = sceneRasterTransform.getForward();
+        if (forward == null) {
+            //todo error handling correct?
+            return;
+        }
         try {
-            simpleFeature.setDefaultGeometry(sceneRasterTransform.getForward().transform(new PixelPos(point.getX(), point.getY()), new PixelPos()));
+            simpleFeature.setDefaultGeometry(forward.transform(new PixelPos(point.getX(), point.getY()), new PixelPos()));
             geometry = point;
             fireFigureChanged();
         } catch (TransformException e) {
+            //todo error handling correct?
             e.printStackTrace();
         }
     }
@@ -131,11 +138,15 @@ public class SimpleFeaturePointFigure extends AbstractPointFigure implements Sim
         Point point = (Point) geometry;
         final PixelPos startPos = new PixelPos(point.getX(), point.getY());
         PixelPos targetPos = new PixelPos();
+        final MathTransform2D inverse = sceneRasterTransform.getInverse();
+        if (inverse == null) {
+            return;
+        }
         try {
-            sceneRasterTransform.getInverse().transform(startPos, targetPos);
+            inverse.transform(startPos, targetPos);
         } catch (TransformException e) {
             e.printStackTrace();
-            targetPos = startPos;
+            return;
         }
         Coordinate coordinate = new Coordinate(targetPos.getX(), targetPos.getY());
         this.geometry = new Point(new CoordinateArraySequence(new Coordinate[]{coordinate}), point.getFactory());
