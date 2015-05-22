@@ -1,11 +1,13 @@
 package org.esa.snap.nbexec;
 
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.io.StreamTokenizer;
 import java.io.StringReader;
+import java.lang.management.ManagementFactory;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
@@ -22,13 +24,13 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-
-import static java.lang.management.ManagementFactory.*;
+import java.util.stream.Stream;
 
 /**
  * A plain Java NetBeans Platform launcher which mimics the core functionality of the NB's native launcher
@@ -72,6 +74,8 @@ import static java.lang.management.ManagementFactory.*;
  */
 public class Launcher {
 
+    private static final String CLUSTERS_EXT = ".clusters";
+
     // Command-line arguments
     private final String[] args;
 
@@ -89,8 +93,13 @@ public class Launcher {
 
     private void run() {
 
-        String deploymentDir = abspath("");
-        String appName = basename(deploymentDir);
+        Path installationDir = Paths.get("").toAbsolutePath();
+
+        Path etcDir = installationDir.resolve("etc");
+        Path platformDir = installationDir.resolve("platform");
+        if (!Files.isDirectory(etcDir) || !Files.isDirectory(platformDir)) {
+            throw new IllegalStateException("Not a valid installation directory: " + installationDir);
+        }
 
         LinkedList<String> argList = new LinkedList<>(Arrays.asList(args));
         String clusterDirs = parseArg(argList, "--clusters");
@@ -120,18 +129,33 @@ public class Launcher {
         //
         Set<Patch> patches = parseClusterPatches(argList);
 
+        Stream<Path> etcFiles;
+        try {
+            etcFiles = Files.list(etcDir);
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
+        List<Path> clustersFiles = etcFiles
+                .filter(Files::isRegularFile)
+                .filter(path -> path.getFileName().toString().endsWith(CLUSTERS_EXT))
+                .collect(Collectors.toList());
+        if (clustersFiles.isEmpty()) {
+            throw new IllegalStateException(String.format("no '*.clusters' file found in '%s'", etcDir));
+        } else if (clustersFiles.size() > 1) {
+            throw new IllegalStateException(String.format("multiple '*.clusters' files found in '%s'", etcDir));
+        }
+
+        Path clustersFile = clustersFiles.get(0);
+        String clustersFileName = clustersFile.getFileName().toString();
+        String appName = clustersFileName.substring(0, clustersFileName.length() - CLUSTERS_EXT.length());
+
+        Path confFile = etcDir.resolve(appName + ".conf");
+
         configuration.putAll(System.getenv());
         setConfigurationVariableIfNotSet("APPNAME", appName);
         setConfigurationVariableIfNotSet("HOME", System.getProperty("user.home"));
 
-        String appDir = abspath(deploymentDir, appName);
-        String platformDir = abspath(deploymentDir, "platform");
-        if (!exists(appDir) || !exists(platformDir)) {
-            throw new IllegalStateException("current working directory must be the '" + appName + "' deployment directory");
-        }
-
-        String confFile = path(deploymentDir, "etc", appName + ".conf");
-        if (exists(confFile)) {
+        if (Files.isRegularFile(confFile)) {
             loadConf(confFile);
         }
 
@@ -160,7 +184,7 @@ public class Launcher {
 
             // .. but not used here because our default is the nbm standard location
             if (defaultUserDir == null) {
-                defaultUserDir = path(deploymentDir, "..", "userdir");
+                defaultUserDir = installationDir.resolve("..").resolve("userdir").toString();
             }
         }
 
@@ -184,14 +208,8 @@ public class Launcher {
             cacheDir = defaultCacheDir;
         }
 
-        String clustersFile = path(deploymentDir, "etc", appName + ".clusters");
-        List<String> clusterList;
-        if (exists(clustersFile)) {
-            clusterList = readLines(clustersFile);
-            clusterList = toAbsolutePaths(clusterList);
-        } else {
-            clusterList = new ArrayList<>();
-        }
+        List<String> clusterList = readLines(clustersFile);
+        clusterList = toAbsolutePaths(clusterList);
 
         String extraClusterPaths = getVar("extra_clusters");
         if (extraClusterPaths != null) {
@@ -206,7 +224,7 @@ public class Launcher {
 
         List<URL> classPathList = new ArrayList<>();
         buildClasspath(userDir, classPathList);
-        buildClasspath(platformDir, classPathList);
+        buildClasspath(platformDir.toString(), classPathList);
 
         if ("true".equals(getVar("KDE_FULL_SESSION"))) {
             setSystemPropertyIfNotSet("netbeans.running.environment", "kde");
@@ -221,7 +239,7 @@ public class Launcher {
             setSystemPropertyIfNotSet("netbeans.default_userdir_root", getVar("DEFAULT_USERDIR_ROOT"));
         }
 
-        setSystemPropertyIfNotSet("netbeans.home", platformDir);
+        setSystemPropertyIfNotSet("netbeans.home", platformDir.toString());
         setSystemPropertyIfNotSet("netbeans.dirs", clusterPaths);
         setSystemPropertyIfNotSet("netbeans.logger.console", "true");
         setSystemPropertyIfNotSet("com.apple.mrj.application.apple.menu.about.name", brandingToken);
@@ -241,20 +259,42 @@ public class Launcher {
         newArgList.addAll(remainingArgs);
         newArgList.addAll(remainingDefaultOptions);
 
+        Path restartMarkerFile = Paths.get(userDir, "var", "restart");
+        try {
+            Files.deleteIfExists(restartMarkerFile);
+        } catch (IOException e) {
+            // So what?
+        }
+
         final String _userDir = userDir;
 
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            if (Files.exists(Paths.get(_userDir, "var", "restart"))) {
-                String processName = getRuntimeMXBean().getName();
-                String pid = processName.split("@")[0];
-                try {
-                    new ProcessBuilder().command(Paths.get("..", "bin", "restart").toString(), pid).start();
-                } catch (IOException e) {
-                    JOptionPane.showMessageDialog(null, "Failed to restart:\n" + e.getMessage());
-                    Logger.getLogger("org.esa.snap").log(Level.SEVERE, "Failed to restart", e);
+        Path restartExeFile;
+        try {
+            Optional<Path> restartFileResult = Files.list(installationDir.resolve("bin"))
+                    .filter(Files::isExecutable)
+                    .filter(p -> p.getFileName().toString().startsWith("restart."))
+                    .findFirst();
+            restartExeFile = restartFileResult.get();
+        } catch (IOException e) {
+            restartExeFile = null;
+        }
+
+        final Path _restartExeFile = restartExeFile;
+
+        if (_restartExeFile != null) {
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                if (Files.exists(restartMarkerFile)) {
+                    String processName = ManagementFactory.getRuntimeMXBean().getName();
+                    String pid = processName.split("@")[0];
+                    try {
+                        new ProcessBuilder().command(_restartExeFile.toString(), pid).start();
+                    } catch (IOException e) {
+                        Logger.getLogger("").log(Level.SEVERE, "Failed to restart", e);
+                        SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(null, "Failed to restart:\n" + e.getMessage()));
+                    }
                 }
-            }
-        }));
+            }));
+        }
 
         runMain(classPathList, newArgList);
 
@@ -496,16 +536,12 @@ public class Launcher {
                 .collect(Collectors.toList());
     }
 
-    private static List<String> readLines(String path) {
+    private static List<String> readLines(Path path) {
         try {
-            return Files.readAllLines(Paths.get(path));
+            return Files.readAllLines(path);
         } catch (IOException e) {
             return Collections.emptyList();
         }
-    }
-
-    private static boolean exists(String path) {
-        return new File(path).exists();
     }
 
     private String parseArg(List<String> argList, String name) {
@@ -527,11 +563,11 @@ public class Launcher {
         return null;
     }
 
-    private void loadConf(String path) {
+    private void loadConf(Path path) {
         info("reading configuration from " + path);
         try {
             Properties properties = new Properties();
-            try (FileReader reader = new FileReader(path)) {
+            try (Reader reader = Files.newBufferedReader(path)) {
                 properties.load(reader);
             }
             Set<String> propertyNames = properties.stringPropertyNames();
@@ -565,14 +601,6 @@ public class Launcher {
 
     private static String path(String first, String... more) {
         return Paths.get(first, more).toString();
-    }
-
-    private static String abspath(String first, String... more) {
-        return Paths.get(first, more).toAbsolutePath().toString();
-    }
-
-    private static String basename(String deploymentDir) {
-        return Paths.get(deploymentDir).getFileName().toString();
     }
 
     public static class Patch {
