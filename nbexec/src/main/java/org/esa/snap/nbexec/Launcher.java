@@ -1,5 +1,6 @@
 package org.esa.snap.nbexec;
 
+import javax.swing.JOptionPane;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -23,7 +24,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
+
+import static java.lang.management.ManagementFactory.*;
 
 /**
  * A plain Java NetBeans Platform launcher which mimics the core functionality of the NB's native launcher
@@ -236,7 +241,24 @@ public class Launcher {
         newArgList.addAll(remainingArgs);
         newArgList.addAll(remainingDefaultOptions);
 
+        final String _userDir = userDir;
+
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            if (Files.exists(Paths.get(_userDir, "var", "restart"))) {
+                String processName = getRuntimeMXBean().getName();
+                String pid = processName.split("@")[0];
+                try {
+                    new ProcessBuilder().command(Paths.get("..", "bin", "restart").toString(), pid).start();
+                } catch (IOException e) {
+                    JOptionPane.showMessageDialog(null, "Failed to restart:\n" + e.getMessage());
+                    Logger.getLogger("org.esa.snap").log(Level.SEVERE, "Failed to restart", e);
+                }
+            }
+        }));
+
         runMain(classPathList, newArgList);
+
+
     }
 
     private Set<Patch> parseClusterPatches(LinkedList<String> argList) {
