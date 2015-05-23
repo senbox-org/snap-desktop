@@ -275,7 +275,7 @@ public class Launcher {
                     .filter(p -> p.getFileName().toString().startsWith("restart."))
                     .findFirst();
             restartExeFile = restartFileResult.get();
-        } catch (IOException e) {
+        } catch (Exception e) {
             restartExeFile = null;
         }
 
