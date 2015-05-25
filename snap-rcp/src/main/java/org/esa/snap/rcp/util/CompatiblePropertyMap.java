@@ -1,6 +1,7 @@
 package org.esa.snap.rcp.util;
 
 import com.bc.ceres.core.Assert;
+import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.util.PropertyMap;
 
 import java.beans.PropertyChangeEvent;
@@ -23,6 +24,18 @@ public class CompatiblePropertyMap extends PropertyMap {
 
     public CompatiblePropertyMap(Preferences preferences) {
         Assert.notNull(preferences, "preferences");
+
+        try {
+            // populate properties with existing values from preferences
+            for (String key : preferences.keys()) {
+                if (getProperties().get(key) == null) {
+                    getProperties().put(key, preferences.get(key, null));
+                }
+            }
+        } catch (Exception e) {
+            SnapApp.getDefault().handleError("Unable to create CompatiblePropertyMap", e);
+        }
+
         addPropertyChangeListener(new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
