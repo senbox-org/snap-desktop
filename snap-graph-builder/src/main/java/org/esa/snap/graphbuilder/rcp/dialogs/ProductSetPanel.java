@@ -93,7 +93,7 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
         if (incTrgProduct) {
             targetProductSelector = new TargetFolderSelector();
             final String homeDirPath = SystemUtils.getUserHomeDir().getPath();
-            final String saveDir = theAppContext.getPreferences().getPropertyString(BasicApp.PROPERTY_KEY_APP_LAST_SAVE_DIR, homeDirPath);
+            final String saveDir = SnapApp.getDefault().getPreferences().get(BasicApp.PROPERTY_KEY_APP_LAST_SAVE_DIR, homeDirPath);
             targetProductSelector.getModel().setProductDir(new File(saveDir));
             targetProductSelector.getOpenInAppCheckBox().setText("Open in " + theAppContext.getApplicationName());
             targetProductSelector.getOpenInAppCheckBox().setVisible(false);
@@ -326,7 +326,7 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
     public void onApply() {
         if (targetProductSelector != null) {
             final String productDir = targetProductSelector.getModel().getProductDir().getAbsolutePath();
-            appContext.getPreferences().setPropertyString(BasicApp.PROPERTY_KEY_APP_LAST_SAVE_DIR, productDir);
+            SnapApp.getDefault().getPreferences().put(BasicApp.PROPERTY_KEY_APP_LAST_SAVE_DIR, productDir);
         }
     }
 

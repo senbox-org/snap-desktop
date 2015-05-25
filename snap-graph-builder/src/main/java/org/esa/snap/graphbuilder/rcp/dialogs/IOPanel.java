@@ -24,6 +24,7 @@ import org.esa.snap.framework.gpf.ui.TargetProductSelector;
 import org.esa.snap.framework.gpf.ui.TargetProductSelectorModel;
 import org.esa.snap.framework.ui.AppContext;
 import org.esa.snap.framework.ui.BasicApp;
+import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.util.SystemUtils;
 
 import javax.swing.JPanel;
@@ -39,21 +40,19 @@ import java.util.List;
  */
 public class IOPanel {
 
-    private final AppContext appContext;
     private final TargetProductSelector targetProductSelector;
     private final boolean useSourceSelector;
     private final List<SourceProductSelector> sourceProductSelectorList = new ArrayList<>(3);
     private String targetProductNameSuffix = "";
 
     IOPanel(final AppContext theAppContext, final JTabbedPane tabbedPane, boolean createSourceSelector) {
-        this.appContext = theAppContext;
         this.useSourceSelector = createSourceSelector;
 
         targetProductSelector = new TargetProductSelector();
         final String homeDirPath = SystemUtils.getUserHomeDir().getPath();
-        final String saveDir = appContext.getPreferences().getPropertyString(BasicApp.PROPERTY_KEY_APP_LAST_SAVE_DIR, homeDirPath);
+        final String saveDir = SnapApp.getDefault().getPreferences().get(BasicApp.PROPERTY_KEY_APP_LAST_SAVE_DIR, homeDirPath);
         targetProductSelector.getModel().setProductDir(new File(saveDir));
-        targetProductSelector.getOpenInAppCheckBox().setText("Open in " + appContext.getApplicationName());
+        targetProductSelector.getOpenInAppCheckBox().setText("Open in " + theAppContext.getApplicationName());
 
         final TableLayout tableLayout = new TableLayout(1);
         tableLayout.setTableAnchor(TableLayout.Anchor.NORTHWEST);
@@ -65,7 +64,7 @@ public class IOPanel {
 
         if (useSourceSelector) {
             // Fetch source products
-            sourceProductSelectorList.add(new SourceProductSelector(appContext));
+            sourceProductSelectorList.add(new SourceProductSelector(theAppContext));
 
             for (SourceProductSelector selector : sourceProductSelectorList) {
                 ioParametersPanel.add(selector.createDefaultPanel());
@@ -113,7 +112,7 @@ public class IOPanel {
 
     public void onApply() {
         final String productDir = targetProductSelector.getModel().getProductDir().getAbsolutePath();
-        appContext.getPreferences().setPropertyString(BasicApp.PROPERTY_KEY_APP_LAST_SAVE_DIR, productDir);
+        SnapApp.getDefault().getPreferences().put(BasicApp.PROPERTY_KEY_APP_LAST_SAVE_DIR, productDir);
     }
 
     public Product getSelectedSourceProduct() {

@@ -53,6 +53,7 @@ import org.esa.snap.gpf.operators.standard.WriteOp;
 import org.esa.snap.graphbuilder.gpf.ui.OperatorUI;
 import org.esa.snap.graphbuilder.gpf.ui.OperatorUIRegistry;
 import org.esa.snap.graphbuilder.gpf.ui.UIValidation;
+import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.util.IconUtils;
 import org.esa.snap.util.ProductFunctions;
@@ -280,7 +281,7 @@ public class SingleOperatorDialog extends SingleTargetProductDialog {
         }
 
         String productDir = targetProductSelector.getModel().getProductDir().getAbsolutePath();
-        appContext.getPreferences().setPropertyString(BasicApp.PROPERTY_KEY_APP_LAST_SAVE_DIR, productDir);
+        SnapApp.getDefault().getPreferences().put(BasicApp.PROPERTY_KEY_APP_LAST_SAVE_DIR, productDir);
 
         Product targetProduct = null;
         try {
