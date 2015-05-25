@@ -102,7 +102,7 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
             RGBImageProfile.storeRgbaExpressions(product, rgbaExpressions);
         }
 
-        final String sceneName = createSceneName(product, profilePane.getSelectedProfile());
+        final String sceneName = createSceneName(product, profilePane.getSelectedProfile(), "RGB");
         openProductSceneViewRGB(sceneName, product, rgbaExpressions);
     }
 
@@ -174,7 +174,7 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
         worker.execute();
     }
 
-    private ProductSceneViewTopComponent openDocumentWindow(final ProductSceneView view) {
+    public static ProductSceneViewTopComponent openDocumentWindow(final ProductSceneView view) {
         final SnapApp snapApp = SnapApp.getDefault();
 
         view.setLayerProperties(snapApp.getCompatiblePreferences());
@@ -217,7 +217,7 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
         return productSceneImage;
     }
 
-    private static Band[] allocateRgbBands(final Product product, final String[] rgbaExpressions) {
+    public static Band[] allocateRgbBands(final Product product, final String[] rgbaExpressions) {
         final Band[] rgbBands = new Band[3]; // todo - set to [4] as soon as we support alpha
         final boolean productModificationState = product.isModified();
         for (int i = 0; i < rgbBands.length; i++) {
@@ -234,7 +234,7 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
         return rgbBands;
     }
 
-    private static void releaseRgbBands(Band[] rgbBands, boolean errorOccurred) {
+    public static void releaseRgbBands(Band[] rgbBands, boolean errorOccurred) {
         for (int i = 0; i < rgbBands.length; i++) {
             Band rgbBand = rgbBands[i];
             if (rgbBand != null) {
@@ -248,7 +248,7 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
         }
     }
 
-    private static String createSceneName(Product product, RGBImageProfile rgbImageProfile) {
+    public static String createSceneName(Product product, RGBImageProfile rgbImageProfile, String operation) {
         final StringBuilder nameBuilder = new StringBuilder();
         final String productRef = product.getProductRefString();
         if (productRef != null) {
@@ -259,7 +259,7 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
             nameBuilder.append(rgbImageProfile.getName().replace("_", " "));
             nameBuilder.append(" ");
         }
-        nameBuilder.append("RGB");
+        nameBuilder.append(operation);
 
         return nameBuilder.toString();
     }
