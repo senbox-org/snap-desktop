@@ -118,7 +118,7 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
     }
 
     private void initDatabase() {
-        libConfig = new ProductLibraryConfig(SnapApp.getDefault().getCompatiblePreferences());
+        libConfig = new ProductLibraryConfig(SnapApp.getDefault().getPreferences());
 
         dbPane = new DatabasePane();
         dbPane.addListener(this);
