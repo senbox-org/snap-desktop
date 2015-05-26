@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 by Array Systems Computing Inc. http://www.array.ca
+ * Copyright (C) 2015 by Array Systems Computing Inc. http://www.array.ca
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -15,14 +15,14 @@
  */
 package org.esa.snap.rcp.toolviews.productlibrary.model;
 
+import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.util.Guardian;
-import org.esa.snap.util.PropertyMap;
 
-import java.awt.Rectangle;
+import java.awt.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+import java.util.prefs.Preferences;
 
 /**
  * This class handles the configuration of the ProductGrabber.
@@ -33,19 +33,19 @@ public class ProductLibraryConfig {
     private static final String WINDOW_LOCATION_Y_KEY = "productLibrary.window.locationY";
     private static final String WINDOW_WIDTH_KEY = "productLibrary.window.width";
     private static final String WINDOW_HEIGHT_KEY = "productLibrary.window.height";
-    private static final String BASE_DIR = "BaseDir_";
+    private static final String BASE_DIR = "productLibrary.baseDir_";
 
-    private final PropertyMap properties;
+    private final Preferences pref;
 
     /**
      * Creates a new instance with the given {@link org.esa.snap.util.PropertyMap}.
      * The property map which is used to load and store the configuration.
      *
-     * @param configuration the {@link org.esa.snap.util.PropertyMap}.
+     * @param preferences the {@link org.esa.snap.util.PropertyMap}.
      */
-    public ProductLibraryConfig(final PropertyMap configuration) {
-        Guardian.assertNotNull("configuration", configuration);
-        properties = configuration;
+    public ProductLibraryConfig(final Preferences preferences) {
+        Guardian.assertNotNull("preferences", preferences);
+        pref = preferences;
     }
 
     /**
@@ -54,7 +54,7 @@ public class ProductLibraryConfig {
      * @param baseDir the repository base directory.
      */
     public void addBaseDir(final File baseDir) {
-        properties.setPropertyString(BASE_DIR + baseDir.getAbsolutePath(), baseDir.getAbsolutePath());
+        pref.put(BASE_DIR + baseDir.getAbsolutePath(), baseDir.getAbsolutePath());
     }
 
     /**
@@ -63,7 +63,7 @@ public class ProductLibraryConfig {
      * @param baseDir the repository base directory.
      */
     public void removeBaseDir(final File baseDir) {
-        properties.setPropertyString(BASE_DIR + baseDir.getAbsolutePath(), null);
+        pref.put(BASE_DIR + baseDir.getAbsolutePath(), null);
     }
 
     /**
@@ -73,12 +73,10 @@ public class ProductLibraryConfig {
      */
     public File[] getBaseDirs() {
         final List<File> dirList = new ArrayList<>();
-        final Set keys = properties.getProperties().keySet();
-        for (Object o : keys) {
-            if (o instanceof String) {
-                final String key = (String) o;
+        try {
+            for (String key : pref.keys()) {
                 if (key.startsWith(BASE_DIR)) {
-                    final String path = properties.getPropertyString(key);
+                    final String path = pref.get(key, null);
                     if (path != null) {
                         final File file = new File(path);
                         if (file.exists()) {
@@ -87,6 +85,8 @@ public class ProductLibraryConfig {
                     }
                 }
             }
+        } catch (Exception e) {
+            SnapApp.getDefault().handleError("Product Library unable to reload base folders", e);
         }
         return dirList.toArray(new File[dirList.size()]);
     }
@@ -97,10 +97,10 @@ public class ProductLibraryConfig {
      * @param windowBounds the window bounds.
      */
     public void setWindowBounds(final Rectangle windowBounds) {
-        properties.setPropertyInt(WINDOW_LOCATION_X_KEY, windowBounds.x);
-        properties.setPropertyInt(WINDOW_LOCATION_Y_KEY, windowBounds.y);
-        properties.setPropertyInt(WINDOW_WIDTH_KEY, windowBounds.width);
-        properties.setPropertyInt(WINDOW_HEIGHT_KEY, windowBounds.height);
+        pref.put(WINDOW_LOCATION_X_KEY, String.valueOf(windowBounds.x));
+        pref.put(WINDOW_LOCATION_Y_KEY, String.valueOf(windowBounds.y));
+        pref.put(WINDOW_WIDTH_KEY, String.valueOf(windowBounds.width));
+        pref.put(WINDOW_HEIGHT_KEY, String.valueOf(windowBounds.height));
     }
 
     /**
@@ -109,12 +109,11 @@ public class ProductLibraryConfig {
      * @return the window bounds.
      */
     public Rectangle getWindowBounds() {
-        final int x = properties.getPropertyInt(WINDOW_LOCATION_X_KEY, 50);
-        final int y = properties.getPropertyInt(WINDOW_LOCATION_Y_KEY, 50);
-        final int width = properties.getPropertyInt(WINDOW_WIDTH_KEY, 700);
-        final int height = properties.getPropertyInt(WINDOW_HEIGHT_KEY, 450);
+        final int x = Integer.parseInt(pref.get(WINDOW_LOCATION_X_KEY, "50"));
+        final int y = Integer.parseInt(pref.get(WINDOW_LOCATION_Y_KEY, "50"));
+        final int width = Integer.parseInt(pref.get(WINDOW_WIDTH_KEY, "700"));
+        final int height = Integer.parseInt(pref.get(WINDOW_HEIGHT_KEY, "450"));
 
         return new Rectangle(x, y, width, height);
     }
-
 }
