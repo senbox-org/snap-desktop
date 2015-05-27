@@ -1,0 +1,7 @@
+OrthoRectification
+-io.in
+$sourceProductFile.AbsolutePath
+-io.out
+$targetProductFile.AbsolutePath
+-map
+$map

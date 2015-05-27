@@ -1,0 +1,68 @@
+<!--
+ ~ Copyright (C) 2015 CS SI
+ ~
+ ~ This program is free software; you can redistribute it and/or modify it
+ ~ under the terms of the GNU General Public License as published by the Free
+ ~ Software Foundation; either version 3 of the License, or (at your option)
+ ~ any later version.
+ ~ This program is distributed in the hope that it will be useful, but WITHOUT
+ ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ ~ more details.
+ ~
+ ~ You should have received a copy of the GNU General Public License along
+ ~ with this program; if not, see http://www.gnu.org/licenses/
+ ~
+-->
+<html>
+<head>
+    <title>Standalone Tool Adapter</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<table class="header">
+    <tr class="header">
+        <td class="header">&nbsp;
+            Standalone Tool Adapter
+        </td>
+        <td class="header" align="right"><a href="../general/BeamOverview.html"><img src="../images/snap_header.jpg"
+                                                                                     border=0></a>
+        </td>
+    </tr>
+</table>
+
+<h3>Overview</h3>
+
+<p>The Stand-Alone Tools Adapter is the glue between the Toolbox and an external tool.<br/>
+    It allows defining adapters - as GPF operators - for external processes/tools, that can be used either in a GPF graph or
+    from the Toolbox GUI.<br/>
+    The three major responsibilities for the Stand-Alone Tools Adapter both in GUI and GPF operator mode are:</p>
+<h4>Provide the user's inputs from the Toolbox context to the external tool</h4>
+<p>If the tool is invoked from the Toolbox GUI, the Stand-Alone Tools Adapter takes care of the current GUI
+    context and state: opened product files, selected product file, available bands in selected product, the selected
+    band, the displayed views, the selected view may serve as input to the tool.
+    In case of the GPF operator, inputs are provided by standard mechanisms used by the GPT and are already implemented
+    in SNAP: inputs come from XML configuration files or from command-line parameters.</p>
+
+<h4>Invoke the tool so that a new process is created</h4>
+
+<h4>Notify the user about the progress and eventually let her/him cancel the running process</h4>
+<p>The output of the tool while it is running, for example logging information, is converted to a progress
+    indication for the user. In the case of invocation from the Toolbox GUI, the user can see a progress bar and
+    can cancel the operation in case of long-running processes.</p>
+
+<h4>Open the generated outputs in the Toolbox.</h4>
+<p>If the tool is invoked from the Toolbox GUI and the output is readable by the Toolbox, the resulting product is
+    opened so that the user can visualise the result. If the tool is invoked from a GPF operator, the output of the
+    adapter operator can serve as input to a subsequent processing step.</p>
+<br/>
+<p>
+    See <a href="user_interface.html">here</a> for a description of the user interface as well as the
+    parameters that can be used to integrate an external tool (executable or script).
+</p>
+
+<hr>
+</body>
+</html>

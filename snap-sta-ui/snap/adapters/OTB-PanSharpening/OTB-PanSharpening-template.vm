@@ -1,0 +1,7 @@
+BundleToPerfectSensor
+-inp
+$sourceProductFile.AbsolutePath
+-inxs
+$xsImageFile.AbsolutePath
+-out
+$targetProductFile.AbsolutePath

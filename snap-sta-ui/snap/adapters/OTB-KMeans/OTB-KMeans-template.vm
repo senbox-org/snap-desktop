@@ -1,0 +1,9 @@
+KMeansClassification
+-in
+$sourceProductFile.AbsolutePath
+-nc
+$numberOfClasses
+-maxit
+$maxit
+-out
+$targetProductFile.AbsolutePath
