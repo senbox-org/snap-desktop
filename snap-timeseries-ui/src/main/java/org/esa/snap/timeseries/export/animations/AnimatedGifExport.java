@@ -21,7 +21,7 @@ import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
 import org.esa.snap.framework.datamodel.Band;
 import org.esa.snap.framework.datamodel.RasterDataNode;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.util.io.BeamFileFilter;
+import org.esa.snap.util.io.SnapFileFilter;
 import org.w3c.dom.Node;
 
 import javax.imageio.IIOImage;
@@ -150,7 +150,7 @@ public class AnimatedGifExport extends ProgressMonitorSwingWorker<Void, Void> {
 
     private FileWithLevel fetchOutputFile() {
         final RasterDataNode currentRaster = SnapApp.getDefault().getSelectedProductSceneView().getRaster();
-        BeamFileFilter gifFilter = new BeamFileFilter("gif", "gif", "Animated GIF");
+        SnapFileFilter gifFilter = new SnapFileFilter("gif", "gif", "Animated GIF");
         return getOutputFileWithLevelOption(currentRaster,
                                             "Export time series as animated GIF",
                                             "time_series_",

@@ -26,8 +26,8 @@ import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.timeseries.core.timeseries.datamodel.ProductLocation;
 import org.esa.snap.timeseries.core.timeseries.datamodel.ProductLocationType;
 import org.esa.snap.util.SystemUtils;
-import org.esa.snap.util.io.BeamFileChooser;
-import org.esa.snap.util.io.BeamFileFilter;
+import org.esa.snap.util.io.SnapFileChooser;
+import org.esa.snap.util.io.SnapFileFilter;
 
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
@@ -188,7 +188,7 @@ public class ProductLocationsPane extends JPanel {
             String lastFormat = preferences.get("app.file.lastOpenDir", ALL_FILES);
             // todo - decide where to put those properties
 //            String lastFormat = preferences.get(VisatApp.PROPERTY_KEY_APP_LAST_OPEN_DIR, VisatApp.ALL_FILES_IDENTIFIER);
-            BeamFileChooser fileChooser = new BeamFileChooser();
+            SnapFileChooser fileChooser = new SnapFileChooser();
             fileChooser.setCurrentDirectory(new File(lastDir));
             fileChooser.setAcceptAllFileFilterUsed(true);
             fileChooser.setDialogTitle("Select Product(s)");
@@ -198,7 +198,7 @@ public class ProductLocationsPane extends JPanel {
             Iterator allReaderPlugIns = ProductIOPlugInManager.getInstance().getAllReaderPlugIns();
             while (allReaderPlugIns.hasNext()) {
                 final ProductIOPlugIn plugIn = (ProductIOPlugIn) allReaderPlugIns.next();
-                BeamFileFilter productFileFilter = plugIn.getProductFileFilter();
+                SnapFileFilter productFileFilter = plugIn.getProductFileFilter();
                 fileChooser.addChoosableFileFilter(productFileFilter);
                 if (!ALL_FILES.equals(lastFormat) &&
                     productFileFilter.getFormatName().equals(lastFormat)) {
@@ -215,8 +215,8 @@ public class ProductLocationsPane extends JPanel {
             String currentDir = fileChooser.getCurrentDirectory().getAbsolutePath();
             preferences.put(PROPERTY_KEY_LAST_OPEN_TS_DIR, currentDir);
 
-            if (fileChooser.getFileFilter() instanceof BeamFileFilter) {
-                String currentFormat = ((BeamFileFilter) fileChooser.getFileFilter()).getFormatName();
+            if (fileChooser.getFileFilter() instanceof SnapFileFilter) {
+                String currentFormat = ((SnapFileFilter) fileChooser.getFileFilter()).getFormatName();
                 if (currentFormat != null) {
                     preferences.put("app.file.lastOpenFormat", currentFormat);
                     // todo - decide where to put those properties

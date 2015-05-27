@@ -25,7 +25,7 @@ import org.esa.snap.framework.datamodel.RasterDataNode;
 import org.esa.snap.framework.ui.UIUtils;
 import org.esa.snap.framework.ui.tool.ToolButtonFactory;
 import org.esa.snap.netbeans.docwin.WindowUtilities;
-import org.esa.snap.rcp.actions.file.OpenImageViewAction;
+import org.esa.snap.rcp.actions.view.OpenImageViewAction;
 import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
 import org.esa.snap.timeseries.core.TimeSeriesMapper;
 import org.esa.snap.timeseries.core.timeseries.datamodel.AbstractTimeSeries;
