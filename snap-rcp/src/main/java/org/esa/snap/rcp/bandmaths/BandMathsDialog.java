@@ -64,6 +64,11 @@ import javax.swing.JTextArea;
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -92,6 +97,7 @@ class BandMathsDialog extends ModalDialog {
     private static final String PROPERTY_NAME_BAND_DESC = "bandDescription";
     private static final String PROPERTY_NAME_BAND_UNIT = "bandUnit";
     private static final String PROPERTY_NAME_BAND_WAVELENGTH = "bandWavelength";
+    private static final String PREF_KEY_LAST_EXPRESSION_PATH = "BandMathsDialog.last_expression_path";
 
     private final ProductNodeList<Product> productsList;
     private final BindingContext bindingContext;
@@ -225,6 +231,14 @@ class BandMathsDialog extends ModalDialog {
     }
 
     private void makeUI() {
+        JButton loadExpressionButton = new JButton("Load...");
+        loadExpressionButton.setName("loadExpressionButton");
+        loadExpressionButton.addActionListener(createLoadExpressionButtonListener());
+
+        JButton saveExpressionButton = new JButton("Save...");
+        saveExpressionButton.setName("saveExpressionButton");
+        saveExpressionButton.addActionListener(createSaveExpressionButtonListener());
+
         JButton editExpressionButton = new JButton("Edit Expression...");
         editExpressionButton.setName("editExpressionButton");
         editExpressionButton.addActionListener(createEditExpressionButtonListener());
@@ -292,14 +306,50 @@ class BandMathsDialog extends ModalDialog {
         GridBagUtils.addToPanel(panel, expressionArea, gbc,
                                 "weighty=1, insets.top=3, gridwidth=3, fill=BOTH, anchor=WEST");
         gbc.gridy = ++line;
+        final JPanel loadSavePanel = new JPanel();
+        loadSavePanel.add(loadExpressionButton);
+        loadSavePanel.add(saveExpressionButton);
+        GridBagUtils.addToPanel(panel, loadSavePanel, gbc,
+                                "weighty=0, insets.top=3, gridwidth=2, fill=NONE, anchor=WEST");
         GridBagUtils.addToPanel(panel, editExpressionButton, gbc,
-                                "weighty=0, insets.top=3, gridwidth=3, fill=NONE, anchor=EAST");
+                                "weighty=1, insets.top=3, gridwidth=1, fill=HORIZONTAL, anchor=EAST");
 
         gbc.gridy = ++line;
         GridBagUtils.addToPanel(panel, new JLabel(""), gbc,
                                 "insets.top=10, weightx=1, weighty=1, gridwidth=3, fill=BOTH, anchor=WEST");
 
         setContent(panel);
+    }
+
+    private ActionListener createLoadExpressionButtonListener() {
+        return e -> {
+            try {
+                final File file = SnapDialogs.requestFileForOpen(
+                        "Load Band Maths Expression", false, null, PREF_KEY_LAST_EXPRESSION_PATH);
+                if (file == null)
+                    return;
+
+                expression = new String(Files.readAllBytes(file.toPath()));
+                bindingContext.getBinding(PROPERTY_NAME_EXPRESSION).setPropertyValue(expression);
+            } catch (IOException ex) {
+                showErrorDialog(ex.getMessage());
+            }
+        };
+    }
+
+    private ActionListener createSaveExpressionButtonListener() {
+        return e -> {
+            try {
+                final File file = SnapDialogs.requestFileForSave(
+                        "Save Band Maths Expression", false, null, ".txt", "myExpression", null, PREF_KEY_LAST_EXPRESSION_PATH);
+
+                final FileOutputStream out = new FileOutputStream(file.getAbsolutePath(), false);
+                PrintStream p = new PrintStream(out);
+                p.print(getExpression());
+            } catch (IOException ex) {
+                showErrorDialog(ex.getMessage());
+            }
+        };
     }
 
     private JComponent[] createComponents(String propertyName, Class<? extends PropertyEditor> editorClass) {
