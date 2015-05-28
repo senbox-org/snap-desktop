@@ -45,6 +45,7 @@
         <module>snap-unmix-ui</module>
         <module>snap-visat-rcp</module>
         <module>snap-worldwind</module>
+        <module>smart-configurator-ui</module>
         
         <!-- disabled: these modules don't have the required maturity right now. -->
         <!--<module>snap-opendap-ui</module>-->
