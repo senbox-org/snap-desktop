@@ -3,7 +3,7 @@ package org.esa.snap.rcp;
 import com.bc.ceres.core.ExtensionFactory;
 import com.bc.ceres.core.ExtensionManager;
 import com.bc.ceres.jai.operator.ReinterpretDescriptor;
-import org.esa.snap.core.runtime.Engine;
+import org.esa.snap.runtime.Engine;
 import org.esa.snap.framework.dataio.ProductReader;
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.ProductManager;
