@@ -21,23 +21,29 @@
         <tocitem text="Tools">
             <tocitem text="Import and Export Tools">
                 <tocitem text="Import Raster Data">
-                    <tocitem text="ATSR" target="importAtsrProduct"/>
-                    <tocitem text="ALOS/AVNIR-2" target="importAvnir2Product"/>
-                    <tocitem text="ALOS/PRISM" target="importPrismProduct"/>
-                    <tocitem text="BEAM-DIMAP" target="importDimapProduct"/>
-                    <tocitem text="CHRIS" target="importChrisProduct"/>
-                    <tocitem text="CSV" target="importCsvProduct"/>
-                    <tocitem text="ENVISAT" target="importEnvisatProduct"/>
-                    <tocitem text="ERS1/2" target="importErsProduct"/>
-                    <tocitem text="GETASSE30 Tile" target="importGETASSE30"/>
-                    <tocitem text="HDF-EOS" target="importNetCdfProduct"/>
-                    <tocitem text="LANDSAT" target="importLandsatProduct"/>
-                    <tocitem text="MERIS Binned Level-3" target="importMerisBinnedL3Product"/>
-                    <tocitem text="MODIS" target="importModisProduct"/>
-                    <tocitem text="NASA Ocean Color" target="importNasaObpgProduct"/>
-                    <tocitem text="NOAA-AVHRR/3 Level-1b" target="importAVHRR"/>
-                    <tocitem text="NetCDF" target="importNetCdfProduct"/>
-                    <tocitem text="SPOT VEGETATION" target="importSpotVgtProduct"/>
+                    <tocitem text="DEMs">
+                        <tocitem text="GETASSE30 Tile" target="importGETASSE30"/>
+                    </tocitem>
+                    <tocitem text="Generic Formats">
+                        <tocitem text="BEAM-DIMAP" target="importDimapProduct"/>
+                        <tocitem text="CSV" target="importCsvProduct"/>
+                        <tocitem text="HDF-EOS" target="importNetCdfProduct"/>
+                        <tocitem text="NetCDF" target="importNetCdfProduct"/>
+                    </tocitem>
+                    <tocitem text="Optical Sensors">
+                        <tocitem text="ATSR" target="importAtsrProduct"/>
+                        <tocitem text="ALOS/AVNIR-2" target="importAvnir2Product"/>
+                        <tocitem text="ALOS/PRISM" target="importPrismProduct"/>
+                        <tocitem text="CHRIS" target="importChrisProduct"/>
+                        <tocitem text="ENVISAT MERIS" target="importEnvisatProduct"/>
+                        <tocitem text="ERS1/2 ATSR" target="importErsProduct"/>
+                        <tocitem text="LANDSAT" target="importLandsatProduct"/>
+                        <tocitem text="MERIS Binned Level-3" target="importMerisBinnedL3Product"/>
+                        <tocitem text="MODIS" target="importModisProduct"/>
+                        <tocitem text="NASA Ocean Color" target="importNasaObpgProduct"/>
+                        <tocitem text="NOAA-AVHRR/3 Level-1b" target="importAVHRR"/>
+                        <tocitem text="SPOT VEGETATION" target="importSpotVgtProduct"/>
+                    </tocitem>
                 </tocitem>
                 <tocitem text="Import Vector Data">
                     <tocitem text="CSV" target="importCSV"/>
@@ -98,7 +104,6 @@
                 <tocitem text="Band Maths Expression Editor" target="expressionEditor"/>
                 <tocitem text="Attach Pixel-based Geo-Coding" target="pixelGeoCodingSetup"/>
                 <tocitem text="Create DEM-related Bands" target="createDemRelatedBands"/>
-                <tocitem text="Create ASAR NRCS Bands" target="createAsarNrcsBands"/>
                 <tocitem text="Create Filtered Band" target="createFilteredBand"/>
             </tocitem>
 
