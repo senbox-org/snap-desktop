@@ -47,7 +47,7 @@
                 <attr name="instanceCreate"
                       methodvalue="org.netbeans.modules.autoupdate.updateprovider.AutoupdateCatalogFactory.createUpdateProvider"/>
                 <attr name="instanceOf" stringvalue="org.netbeans.spi.autoupdate.UpdateProvider"/>
-                <attr name="url" urlvalue="http://www.senbox.net/snap/test_uc/snap-engine/updates.xml.gz"/>
+                <attr name="url" urlvalue="http://step.esa.int/updatecenter/unstable/updates.xml.gz"/>
             </file>
         </folder>
     </folder>

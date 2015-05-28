@@ -26,6 +26,7 @@ import java.util.List;
  * @version $Revision$ $Date$
  * @since BEAM 4.5.2
  */
+@Deprecated
 class PixelInfoViewTableModel extends AbstractTableModel {
 
     private final String[] columnNames;
