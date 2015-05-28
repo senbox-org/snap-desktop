@@ -18,6 +18,7 @@ package org.esa.snap.framework.ui;
 
 import org.esa.snap.framework.ui.product.ProductSceneView;
 
+@Deprecated
 class PixelInfoState {
     static final PixelInfoState INVALID = new PixelInfoState(null, -1, -1, -1, false);
 
