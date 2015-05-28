@@ -28,7 +28,7 @@
     <artifactId>snap-sta-ui</artifactId>
     <packaging>nbm</packaging>
 
-    <name>Standalone Tool Adapter GUI</name>
+    <name>SNAP Standalone Tool Adapter GUI</name>
     <description>GUI for Standalone Tool Adapter</description>
 
     <dependencies>
