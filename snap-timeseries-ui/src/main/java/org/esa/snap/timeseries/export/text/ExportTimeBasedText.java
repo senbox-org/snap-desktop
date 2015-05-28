@@ -29,8 +29,8 @@ import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.timeseries.core.timeseries.datamodel.AbstractTimeSeries;
 import org.esa.snap.timeseries.export.util.TimeSeriesExportHelper;
 import org.esa.snap.util.SystemUtils;
-import org.esa.snap.util.io.BeamFileChooser;
-import org.esa.snap.util.io.BeamFileFilter;
+import org.esa.snap.util.io.SnapFileChooser;
+import org.esa.snap.util.io.SnapFileFilter;
 
 import javax.swing.JFileChooser;
 import java.awt.Component;
@@ -49,7 +49,7 @@ public class ExportTimeBasedText extends ProgressMonitorSwingWorker<String, Void
     private static final String DLG_TITLE = "Exporting time series pin pixels";
     private static final String ERR_MSG_BASE = "Time series pin pixels cannot be exported:\n";
     private static final String EXPORT_DIR_PREFERENCES_KEY = "user.export.dir";
-    private static final BeamFileFilter csvFileFilter = new BeamFileFilter("CSV", "csv", "Comma separated values");
+    private static final SnapFileFilter csvFileFilter = new SnapFileFilter("CSV", "csv", "Comma separated values");
 
     private final AbstractTimeSeries timeSeries;
     private final PrintWriter writer;
@@ -144,7 +144,7 @@ public class ExportTimeBasedText extends ProgressMonitorSwingWorker<String, Void
         final String lastDir = snapApp.getPreferences().get(EXPORT_DIR_PREFERENCES_KEY, SystemUtils.getUserHomeDir().getPath());
         final File currentDir = new File(lastDir);
 
-        final BeamFileChooser fileChooser = new BeamFileChooser();
+        final SnapFileChooser fileChooser = new SnapFileChooser();
         HelpSys.enableHelpKey(fileChooser, helpID);
         fileChooser.setCurrentDirectory(currentDir);
         fileChooser.addChoosableFileFilter(csvFileFilter);

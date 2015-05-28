@@ -4,8 +4,8 @@ import org.esa.snap.framework.datamodel.RasterDataNode;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.util.SystemUtils;
-import org.esa.snap.util.io.BeamFileChooser;
-import org.esa.snap.util.io.BeamFileFilter;
+import org.esa.snap.util.io.SnapFileChooser;
+import org.esa.snap.util.io.SnapFileFilter;
 import org.openide.util.HelpCtx;
 
 import javax.swing.AbstractButton;
@@ -38,12 +38,12 @@ public class TimeSeriesExportHelper {
 
     public static FileWithLevel getOutputFileWithLevelOption(RasterDataNode raster,
                                                              String title, String fileNamePrefix, String dirPreferencesKey,
-                                                             BeamFileFilter fileFilter, String helpId) {
+                                                             SnapFileFilter fileFilter, String helpId) {
         SnapApp snapApp = SnapApp.getDefault();
         final String lastDir = snapApp.getPreferences().get(dirPreferencesKey, SystemUtils.getUserHomeDir().getPath());
         final File currentDir = new File(lastDir);
 
-        final BeamFileChooser fileChooser = new BeamFileChooser();
+        final SnapFileChooser fileChooser = new SnapFileChooser();
         if (helpId != null) {
             HelpCtx.setHelpIDString(fileChooser, helpId);
         }

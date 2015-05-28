@@ -27,6 +27,7 @@ import java.util.concurrent.TimeUnit;
  * @version $Revision$ $Date$
  * @since BEAM 4.5.2
  */
+@Deprecated
 class PixelInfoUpdateService {
 
     private final PixelInfoViewModelUpdater modelUpdater;

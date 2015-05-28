@@ -1,0 +1,62 @@
+<!--
+ ~ Copyright (C) 2015 CS SI
+ ~
+ ~ This program is free software; you can redistribute it and/or modify it
+ ~ under the terms of the GNU General Public License as published by the Free
+ ~ Software Foundation; either version 3 of the License, or (at your option)
+ ~ any later version.
+ ~ This program is distributed in the hope that it will be useful, but WITHOUT
+ ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ ~ more details.
+ ~
+ ~ You should have received a copy of the GNU General Public License along
+ ~ with this program; if not, see http://www.gnu.org/licenses/
+ ~
+-->
+
+<html>
+<head>
+    <title>Standalone Tool Adapter</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<table class="header">
+    <tr class="header">
+        <td class="header">&nbsp;
+            Standalone Tool Adapter
+        </td>
+        <td class="header" align="right"><a href="../general/BeamOverview.html"><img src="../images/snap_header.jpg"
+                                                                                     border=0></a>
+        </td>
+    </tr>
+</table>
+
+<h3>The user interface</h3>
+<p>The interface consists in 3 screens which allow the following operations: create new adapter, edit, duplicate and
+    delete an existing adapter, executing an adapter.</p>
+
+<h4>Managing the existing adapters</h4>
+<p>This form, having the title <i>'External tools'</i>, lists all the currently defined adapters, with a toolbar which contains
+    the buttons: new adapter, duplicate adapter, edit adapter, execute adapter, delete adapter. Under the toolbar,
+    there is a table containing the adapters where the user can check the adapter to apply the action form the toolbar.
+    If multiple adapters are checked, the action is applied to the first checked one.</p>
+<p>This form can be invoked by using the menu <i>Tools->Manage external tools</i> of the SNAP application.</p>
+<img src="../images/ManageAdapters.png"/>
+<h4>Creating a new adapter or modifying an existing one</h4>
+<p>The form for creating a new adapter is reused for editing an existing adapter and for duplicating an adapter.</p>
+<p>Go <a href="adapter_editor.html">here</a> to see details about editing an adapter.</p>
+
+<h4>Executing an adapter from SNAP</h4>
+<p>When executing an already defined adapter, some actions are necessary in the execution form:</p>
+<ul>
+    <li>Choosing the source products, either by selecting one from the already loaded products, or by loading new ones</li>
+    <il>Setting parameter values; this step is not necessary and if not executed, the default values of the parameters
+        will be used.</il>
+</ul>
+<img src="../images/ExecuteAdapter.png"/>
+<p>Note: the parameters <i>sourceProduct</i> and <i>sourceProductFile</i> will not be available in the execution form,
+    since those are edited by actually selecting the source product(s)!</p>
+</body>
+</html>

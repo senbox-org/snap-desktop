@@ -1,0 +1,56 @@
+<!--
+  ~ Copyright (C) 2014-2015 CS SI
+  ~
+  ~ This program is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU General Public License as published by the Free
+  ~ Software Foundation; either version 3 of the License, or (at your option)
+  ~ any later version.
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+  ~ more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License along
+  ~  with this program; if not, see http://www.gnu.org/licenses/
+  -->
+
+<operator>
+  <name>org.esa.snap.framework.gpf.operators.tooladapter.OTB_OC</name>
+  <operatorClass>org.esa.snap.framework.gpf.operators.tooladapter.ToolAdapterOp</operatorClass>
+  <alias>OTB-OpticalCalibration</alias>
+  <label>OTB Optical Calibration</label>
+  <version>1</version>
+  <description>Adapter for OpticalCalibration OTB application</description>
+  <authors>Cosmin Cara</authors>
+  <copyright></copyright>
+  <internal>false</internal>
+  <autoWriteSuppressed>false</autoWriteSuppressed>
+  <sourceProductDescriptors>
+    <org.esa.snap.framework.gpf.descriptor.DefaultSourceProductDescriptor>
+      <name>sourceProduct</name>
+    </org.esa.snap.framework.gpf.descriptor.DefaultSourceProductDescriptor>
+  </sourceProductDescriptors>
+  <targetPropertyDescriptors/>
+  <preprocessTool>false</preprocessTool>
+  <writeForProcessing>false</writeForProcessing>
+  <mainToolFileLocation class="sun.awt.shell.Win32ShellFolder2" resolves-to="file">E:\Download\OTB-mingw32\bin\otbApplicationLauncherCommandLine.exe</mainToolFileLocation>
+  <workingDir>E:\Processed</workingDir>
+  <templateFileLocation>OTB-OpticalCalibration-template.vm</templateFileLocation>
+  <variables>
+    <variable>
+      <key>ITK_AUTOLOAD_PATH</key>
+      <value>E:\Download\OTB-mingw32\lib\otb\applications</value>
+    </variable>
+  </variables>
+  <parameters>
+    <parameter>
+      <name>targetProductFile</name>
+      <dataType>java.io.File</dataType>
+      <defaultValue>E:\Processed\calibratedImage.tif</defaultValue>
+      <description></description>
+      <valueSet/>
+      <notNull>false</notNull>
+      <notEmpty>false</notEmpty>
+    </parameter>
+  </parameters>
+</operator>

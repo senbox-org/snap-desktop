@@ -54,6 +54,7 @@ import java.util.Vector;
  * @version $Revision$ $Date$
  * @since BEAM 4.5.2
  */
+@Deprecated
 class PixelInfoViewModelUpdater {
 
     private static final String _INVALID_POS_TEXT = "Invalid pos.";

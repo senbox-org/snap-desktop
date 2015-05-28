@@ -38,7 +38,7 @@ import org.esa.snap.timeseries.core.TimeSeriesMapper;
 import org.esa.snap.timeseries.core.timeseries.datamodel.AbstractTimeSeries;
 import org.esa.snap.timeseries.core.timeseries.datamodel.TimeCoding;
 import org.esa.snap.timeseries.export.util.TimeSeriesExportHelper;
-import org.esa.snap.util.io.BeamFileFilter;
+import org.esa.snap.util.io.SnapFileFilter;
 import org.esa.snap.util.kmz.KmlFeature;
 import org.esa.snap.util.kmz.KmlFolder;
 import org.esa.snap.util.kmz.KmlGroundOverlay;
@@ -85,7 +85,7 @@ public class ExportTimeBasedKmz extends AbstractAction implements ContextAwareAc
     private static final String HELP_ID = "exportTimeBasedKmz";
 
     private static final String IMAGE_EXPORT_DIR_PREFERENCES_KEY = "user.image.export.dir";
-    private final BeamFileFilter kmzFileFilter = new BeamFileFilter("KMZ", "kmz", "KMZ - Google Earth File Format");
+    private final SnapFileFilter kmzFileFilter = new SnapFileFilter("KMZ", "kmz", "KMZ - Google Earth File Format");
     private int level = 2;
     private ProductSceneView view;
 

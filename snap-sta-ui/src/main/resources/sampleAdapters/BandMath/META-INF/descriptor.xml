@@ -1,0 +1,59 @@
+<!--
+  ~ Copyright (C) 2014-2015 CS SI
+  ~
+  ~ This program is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU General Public License as published by the Free
+  ~ Software Foundation; either version 3 of the License, or (at your option)
+  ~ any later version.
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+  ~ more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License along
+  ~  with this program; if not, see http://www.gnu.org/licenses/
+  -->
+
+<operator>
+  <name>org.esa.snap.framework.gpf.operators.tooladapter.OTB_BM</name>
+  <operatorClass>org.esa.snap.framework.gpf.operators.tooladapter.ToolAdapterOp</operatorClass>
+  <alias>BandMath</alias>
+  <label>OTB Band Math</label>
+  <version>1</version>
+  <description></description>
+  <authors></authors>
+  <copyright></copyright>
+  <sourceProductDescriptors>
+    <org.esa.snap.framework.gpf.descriptor.DefaultSourceProductDescriptor>
+      <name>sourceProduct</name>
+    </org.esa.snap.framework.gpf.descriptor.DefaultSourceProductDescriptor>
+  </sourceProductDescriptors>
+  <preprocessTool>false</preprocessTool>
+  <writeForProcessing>false</writeForProcessing>
+  <processingWriter>GeoTIFF</processingWriter>
+  <mainToolFileLocation>E:\Download\OTB-mingw32\bin\otbApplicationLauncherCommandLine.exe</mainToolFileLocation>
+  <workingDir>E:\Processed</workingDir>
+  <templateFileLocation>BandMath-template.vm</templateFileLocation>
+  <variables>
+    <variable>
+      <key>ITK_AUTOLOAD_PATH</key>
+      <value>E:\Download\OTB-mingw32\lib\otb\applications</value>
+    </variable>
+  </variables>
+  <parameters>
+    <parameter>
+      <name>targetProductFile</name>
+      <dataType>java.io.File</dataType>
+      <defaultValue>E:\Processed\bandmathoutput.tif</defaultValue>
+      <description></description>
+      <valueSet/>
+    </parameter>
+    <parameter>
+      <name>expression</name>
+      <alias></alias>
+      <dataType>java.lang.String</dataType>
+      <defaultValue>abs(im1b1-im2b1)</defaultValue>
+      <valueSet/>
+    </parameter>
+  </parameters>
+</operator>

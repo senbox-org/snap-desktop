@@ -8,6 +8,7 @@
                 <attr name="delegate" methodvalue="org.esa.snap.rcp.actions.file.ImportProductAction.create"/>
                 <attr name="displayName" stringvalue="ACE DEM Tile"/>
                 <attr name="formatName" stringvalue="ACE"/>
+                <attr name="useAllFileFilter" boolvalue="false"/>
                 <attr name="helpId" stringvalue="importACEProduct"/>
                 <attr name="ShortDescription" stringvalue="Import a ACE DEM tile"/>
             </file>
@@ -16,6 +17,7 @@
                 <attr name="delegate" methodvalue="org.esa.snap.rcp.actions.file.ImportProductAction.create"/>
                 <attr name="displayName" stringvalue="SRTM GeoTIFF DEM Tile"/>
                 <attr name="formatName" stringvalue="GeoTIFF"/>
+                <attr name="useAllFileFilter" boolvalue="false"/>
                 <attr name="helpId" stringvalue="importSRTMProduct"/>
                 <attr name="ShortDescription" stringvalue="Import a SRTM DEM tile"/>
             </file>
@@ -24,6 +26,7 @@
                 <attr name="delegate" methodvalue="org.esa.snap.rcp.actions.file.ImportProductAction.create"/>
                 <attr name="displayName" stringvalue="SRTM ArcGrid DEM Tile"/>
                 <attr name="formatName" stringvalue="ARC_INFO_BIN_GRID"/>
+                <attr name="useAllFileFilter" boolvalue="false"/>
                 <attr name="helpId" stringvalue="importSRTMProduct"/>
                 <attr name="ShortDescription" stringvalue="Import a SRTM ArcInfo Grid DEM tile"/>
             </file>
@@ -32,6 +35,7 @@
                 <attr name="delegate" methodvalue="org.esa.snap.rcp.actions.file.ImportProductAction.create"/>
                 <attr name="displayName" stringvalue="ASTER GeoTIFF DEM Tile"/>
                 <attr name="formatName" stringvalue="GeoTIFF"/>
+                <attr name="useAllFileFilter" boolvalue="false"/>
                 <attr name="helpId" stringvalue="importASTERProduct"/>
                 <attr name="ShortDescription" stringvalue="Import a ASTER DEM tile"/>
             </file>

@@ -3,6 +3,7 @@ package org.esa.snap.rcp;
 import com.bc.ceres.core.ExtensionFactory;
 import com.bc.ceres.core.ExtensionManager;
 import com.bc.ceres.jai.operator.ReinterpretDescriptor;
+import org.esa.snap.core.runtime.Engine;
 import org.esa.snap.framework.dataio.ProductReader;
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.ProductManager;
@@ -87,6 +88,7 @@ public class SnapApp {
 
     private final ProductManager productManager;
     private Map<Class<?>, SelectionSupport<?>> selectionChangeSupports;
+    private Engine engine;
 
     public static SnapApp getDefault() {
         SnapApp instance = Lookup.getDefault().lookup(SnapApp.class);
@@ -265,6 +267,11 @@ public class SnapApp {
 
     public void onStart() {
         WindowManager.getDefault().setRole("developer");
+        engine = Engine.start(false);
+    }
+
+    public void onStop() {
+        engine.stop();
     }
 
     public void onShowing() {
@@ -318,9 +325,6 @@ public class SnapApp {
         }
 
         return true;
-    }
-
-    public void onStop() {
     }
 
     /**
@@ -414,7 +418,7 @@ public class SnapApp {
         int processorCount = Runtime.getRuntime().availableProcessors();
         int parallelism = Integer.getInteger("snap.jai.parallelism", processorCount);
         JAI.getDefaultInstance().getTileScheduler().setParallelism(parallelism);
-        LOG.info(MessageFormat.format(">>> JAI tile scheduler parallelism set to {0}", parallelism));
+        LOG.info(MessageFormat.format("JAI tile scheduler parallelism set to {0}", parallelism));
 
         // Load JAI registry files.
         // For some reason registry file loading must be done in this order: first our own, then JAI's descriptors (nf)

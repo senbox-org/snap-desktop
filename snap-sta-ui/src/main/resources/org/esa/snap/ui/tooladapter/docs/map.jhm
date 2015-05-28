@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='ISO-8859-1' ?>
+<!DOCTYPE map
+        PUBLIC "-//Sun Microsystems Inc.//DTD JavaHelp Map Version 2.0//EN"
+        "http://java.sun.com/products/javahelp/map_2_0.dtd">
+
+<map version="2.0">
+
+    <mapID target="sta_overview" url="sta/overview.html"/>
+    <mapID target="sta_user_interface" url="sta/user_interface.html"/>
+    <mapID target="sta_editor" url="sta/adapter_editor.html"/>
+    <mapID target="sta_execution" url="sta/adapter_execution.html"/>
+    <mapID target="sta_adapter_structure" url="sta/operator_structure.html"/>
+</map>

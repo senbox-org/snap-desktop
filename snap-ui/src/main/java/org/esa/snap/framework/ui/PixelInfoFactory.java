@@ -21,6 +21,7 @@ package org.esa.snap.framework.ui;
  * @author Norman Fomferra
  * @version $Revision$ $Date$
  */
+@Deprecated
 public interface PixelInfoFactory {
 
     /**

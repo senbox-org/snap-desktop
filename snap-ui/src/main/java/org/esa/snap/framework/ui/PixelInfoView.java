@@ -55,6 +55,7 @@ import java.util.Vector;
  * @author Sabine Embacher
  * @version 1.2
  */
+@Deprecated
 public class PixelInfoView extends JPanel {
 
     public static final String HELP_ID = "pixelInfoView";

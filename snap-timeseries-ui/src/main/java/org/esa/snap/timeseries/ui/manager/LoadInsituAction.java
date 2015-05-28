@@ -23,7 +23,7 @@ import org.esa.snap.timeseries.core.insitu.InsituLoaderFactory;
 import org.esa.snap.timeseries.core.insitu.InsituSource;
 import org.esa.snap.timeseries.core.timeseries.datamodel.AbstractTimeSeries;
 import org.esa.snap.util.SystemUtils;
-import org.esa.snap.util.io.BeamFileChooser;
+import org.esa.snap.util.io.SnapFileChooser;
 
 import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
@@ -57,7 +57,7 @@ class LoadInsituAction extends AbstractAction {
     public void actionPerformed(ActionEvent e) {
         final Preferences preferences = SnapApp.getDefault().getPreferences();
         String lastDir = preferences.get(PROPERTY_KEY_LAST_OPEN_INSITU_DIR, SystemUtils.getUserHomeDir().getPath());
-        final BeamFileChooser fileChooser = new BeamFileChooser(new File(lastDir));
+        final SnapFileChooser fileChooser = new SnapFileChooser(new File(lastDir));
         fileChooser.setAcceptAllFileFilterUsed(true);
         fileChooser.setDialogTitle("Select in-situ source file");
         fileChooser.setMultiSelectionEnabled(false);
