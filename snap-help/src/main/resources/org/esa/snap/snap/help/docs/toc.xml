@@ -13,7 +13,6 @@
         <tocitem text="Data Sources" target="snapDataSources"/>
         <tocitem text="Related Links" target="snapRelatedLinks"/>
         <tocitem text="BEAM-DIMAP Format" target="beamDimapFormat"/>
-        <tocitem text="ENVISAT Products" target="envisatProducts"/>
         <tocitem text="The 'pconvert' Tool" target="pconvertTool"/>
     </tocitem>
 
@@ -122,6 +121,9 @@
             <tocitem text="Help Menu" target="helpMenu"/>
             <tocitem text="No-Data Value" target="noDataValue"/>
         </tocitem>
+    </tocitem>
+
+    <tocitem text="Graph Processing Framework (GPF)">
     </tocitem>
 
     <tocitem text="Data Processors">
