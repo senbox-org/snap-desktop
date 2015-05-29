@@ -27,7 +27,7 @@
     <packaging>nbm</packaging>
 
     <name>SNAP User Interface Library</name>
-    <description>This module provides user interface components used e.g. by VISAT.</description>
+    <description>This module provides user interface components used by SNAP.</description>
 
     <dependencies>
         <dependency>
