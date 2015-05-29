@@ -41,6 +41,7 @@ import org.opengis.referencing.operation.TransformException;
 
 import javax.media.jai.PlanarImage;
 import javax.swing.SwingUtilities;
+import java.awt.Dimension;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.image.Raster;
@@ -114,8 +115,6 @@ public class PixelInfoViewModelUpdater {
             }
             product.addProductNodeListener(productNodeListener);
             currentProduct = product;
-            registerFlagDatasets();
-            resetTableModels();
         }
         if (raster != currentRaster) {
             currentRaster = raster;
@@ -153,24 +152,20 @@ public class PixelInfoViewModelUpdater {
     }
 
     private void fireTableChanged(final boolean clearRasterTableSelection) {
-        SwingUtilities.invokeLater(new Runnable() {
-
-            @Override
-            public void run() {
-                if (clearRasterTableSelection) {
-                    pixelInfoView.clearSelectionInRasterTables();
-                }
-                geolocModel.fireTableDataChanged();
-                scanlineModel.fireTableDataChanged();
-                bandModel.fireTableDataChanged();
-                tiePointModel.fireTableDataChanged();
-                flagModel.fireTableDataChanged();
+        SwingUtilities.invokeLater(() -> {
+            if (clearRasterTableSelection) {
+                pixelInfoView.clearSelectionInRasterTables();
             }
+            geolocModel.fireTableDataChanged();
+            scanlineModel.fireTableDataChanged();
+            bandModel.fireTableDataChanged();
+            tiePointModel.fireTableDataChanged();
+            flagModel.fireTableDataChanged();
         });
     }
 
     private void updateDataDisplay(boolean clearRasterTableSelection) {
-        if (currentProduct == null) {
+        if (currentRaster == null) {
             return;
         }
         if (pixelInfoView.isCollapsiblePaneVisible(PixelInfoView.GEOLOCATION_INDEX)) {
@@ -226,7 +221,6 @@ public class PixelInfoViewModelUpdater {
 
         String tix, tiy, tmx, tmy, tgx, tgy;
         tix = tiy = tmx = tmy = tgx = tgy = _INVALID_POS_TEXT;
-
         GeoCoding geoCoding = currentRaster.getGeoCoding();
         if (available) {
             PixelPos pixelPos = new PixelPos(pX, pY);
@@ -289,7 +283,9 @@ public class PixelInfoViewModelUpdater {
         final ProductData.UTC utcStartTime = currentProduct.getStartTime();
         final ProductData.UTC utcEndTime = currentProduct.getEndTime();
 
-        if (utcStartTime == null || utcEndTime == null || !isSampleValueAvailable(0, levelZeroY, true)) {
+        if (utcStartTime == null || utcEndTime == null ||
+            !isSampleValueAvailable(0, levelZeroY, true) ||
+            !equalsViewRasterSize(currentProduct.getSceneRasterSize())) {
             scanlineModel.updateValue("No date information", 0);
             scanlineModel.updateValue("No time information", 1);
         } else {
@@ -341,10 +337,24 @@ public class PixelInfoViewModelUpdater {
 
     private boolean shouldDisplayBand(final Band band) {
         PixelInfoView.DisplayFilter displayFilter = pixelInfoView.getDisplayFilter();
+        final boolean equalSize = equalsViewRasterSize(band.getRasterSize());
         if (displayFilter != null) {
-            return displayFilter.accept(band);
+            return displayFilter.accept(band) && equalSize;
         }
-        return band.hasRasterData();
+        return band.hasRasterData() && equalSize;
+    }
+
+    private boolean equalsViewRasterSize(Dimension size) {
+        if (currentRaster != null) {
+            Dimension viewSize;
+            if (currentRaster instanceof TiePointGrid) {
+                viewSize = currentRaster.getSceneRasterSize();
+            } else {
+                viewSize = currentRaster.getRasterSize();
+            }
+            return viewSize.equals(size);
+        }
+        return false;
     }
 
     private void resetTiePointGridTableModel() {
@@ -353,13 +363,15 @@ public class PixelInfoViewModelUpdater {
             final int numTiePointGrids = currentProduct.getNumTiePointGrids();
             for (int i = 0; i < numTiePointGrids; i++) {
                 final TiePointGrid tiePointGrid = currentProduct.getTiePointGridAt(i);
-                tiePointModel.addRow(tiePointGrid.getName(), "", tiePointGrid.getUnit());
+                if (equalsViewRasterSize(tiePointGrid.getSceneRasterSize())) {
+                    tiePointModel.addRow(tiePointGrid.getName(), "", tiePointGrid.getUnit());
+                }
             }
         }
     }
 
     private void updateTiePointGridPixelValues() {
-        for ( int i = 0; i < tiePointModel.getRowCount(); i++) {
+        for (int i = 0; i < tiePointModel.getRowCount(); i++) {
             final TiePointGrid grid = currentProduct.getTiePointGrid((String) tiePointModel.getValueAt(i, 0));
             tiePointModel.updateValue(grid.getPixelString(levelZeroX, levelZeroY), i);
         }
@@ -368,7 +380,7 @@ public class PixelInfoViewModelUpdater {
     private void resetFlagTableModel() {
         flagModel.clear();
         if (currentRaster != null) {
-            for (Band band : currentFlagBands) {
+            for (Band band : currentFlagBands) {  // currentFlagBands is already filtered for "equals size" in registerFlagDatasets
                 final FlagCoding flagCoding = band.getFlagCoding();
                 final int numFlags = flagCoding.getNumAttributes();
                 final String bandNameDot = band.getName() + ".";
@@ -404,11 +416,13 @@ public class PixelInfoViewModelUpdater {
     }
 
     private void registerFlagDatasets() {
-        final Band[] bands = currentProduct.getBands();
-        Vector<Band> flagBandsVector = new Vector<Band>();
-        for (Band band : bands) {
-            if (isFlagBand(band)) {
-                flagBandsVector.add(band);
+        Vector<Band> flagBandsVector = new Vector<>();
+        if (currentProduct != null) {
+            final Band[] bands = currentProduct.getBands();
+            for (Band band : bands) {
+                if (isFlagBand(band) && equalsViewRasterSize(band.getRasterSize())) {
+                    flagBandsVector.add(band);
+                }
             }
         }
         currentFlagBands = flagBandsVector.toArray(new Band[flagBandsVector.size()]);
@@ -460,12 +474,12 @@ public class PixelInfoViewModelUpdater {
 
 
     private boolean isSampleValueAvailable(int pixelX, int pixelY, boolean pixelValid) {
-        return currentProduct != null
-                && pixelValid
-                && pixelX >= 0
-                && pixelY >= 0
-                && pixelX < currentProduct.getSceneRasterWidth()
-                && pixelY < currentProduct.getSceneRasterHeight();
+        return currentRaster != null
+               && pixelValid
+               && pixelX >= 0
+               && pixelY >= 0
+               && pixelX < currentRaster.getRasterWidth()
+               && pixelY < currentRaster.getRasterHeight();
     }
 
     void clearProductNodeRefs() {
