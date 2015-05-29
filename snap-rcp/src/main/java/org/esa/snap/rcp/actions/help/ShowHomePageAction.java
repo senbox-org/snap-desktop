@@ -15,6 +15,8 @@
  */
 package org.esa.snap.rcp.actions.help;
 
+import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.runtime.Config;
 import org.esa.snap.util.SystemUtils;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -48,10 +50,10 @@ import java.net.URI;
 })
 @NbBundle.Messages({
         "CTL_ShowHomePageAction_MenuText=SNAP Home Page",
-        "CTL_ShowHomePageAction_ShortDescription=Show the toolboxes website"
+        "CTL_ShowHomePageAction_ShortDescription=Browse the SNAP Toolboxes home page"
 })
 public class ShowHomePageAction extends AbstractAction {
-    private static final String HOME_PAGE_URL_DEFAULT = "http://step.esa.int";
+    private static final String DEFAULT_PAGE_URL = "http://step.esa.int";
 
     /**
      * Launches the default browser to display the web site.
@@ -61,15 +63,6 @@ public class ShowHomePageAction extends AbstractAction {
      */
     @Override
     public void actionPerformed(ActionEvent event) {
-        final String homePageUrl = System.getProperty(SystemUtils.getApplicationContextId() + ".homePageUrl", HOME_PAGE_URL_DEFAULT);
-        final Desktop desktop = Desktop.getDesktop();
-
-        try {
-            desktop.browse(URI.create(homePageUrl));
-        } catch (IOException e) {
-            // TODO - handle
-        } catch (UnsupportedOperationException e) {
-            // TODO - handle
-        }
+        DesktopHelper.browse(Config.instance().preferences().get("snap.homePageUrl", DEFAULT_PAGE_URL));
     }
 }

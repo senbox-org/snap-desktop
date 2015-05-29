@@ -15,6 +15,7 @@
  */
 package org.esa.snap.rcp.actions.help;
 
+import org.esa.snap.runtime.Config;
 import org.esa.snap.util.SystemUtils;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -48,10 +49,10 @@ import java.net.URI;
 })
 @NbBundle.Messages({
         "CTL_ShowTutorialsPageAction_MenuText=Tutorials",
-        "CTL_ShowTutorialsPageAction_ShortDescription=Show the toolboxes tutorials web page"
+        "CTL_ShowTutorialsPageAction_ShortDescription=Browse the SNAP Toolboxes tutorials web page"
 })
 public class ShowTutorialsPageAction extends AbstractAction {
-    private static final String HOME_PAGE_URL_DEFAULT = "http://step.esa.int/main/tutorials";
+    private static final String DEFAULT_PAGE_URL = "http://step.esa.int/main/tutorials";
 
     /**
      * Launches the default browser to display the tutorials.
@@ -61,15 +62,6 @@ public class ShowTutorialsPageAction extends AbstractAction {
      */
     @Override
     public void actionPerformed(ActionEvent event) {
-        final String homePageUrl = System.getProperty(SystemUtils.getApplicationContextId() + ".homePageUrl", HOME_PAGE_URL_DEFAULT);
-        final Desktop desktop = Desktop.getDesktop();
-
-        try {
-            desktop.browse(URI.create(homePageUrl));
-        } catch (IOException e) {
-            // TODO - handle
-        } catch (UnsupportedOperationException e) {
-            // TODO - handle
-        }
+        DesktopHelper.browse(Config.instance().preferences().get("snap.tutorialsPageUrl", DEFAULT_PAGE_URL));
     }
 }
