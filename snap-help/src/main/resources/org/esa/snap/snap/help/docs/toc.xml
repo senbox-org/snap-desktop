@@ -126,6 +126,8 @@
         </tocitem>
     </tocitem>
 
+    <tocitem text="Command Line Interface (GPF)"/>
+
     <tocitem text="Data Processors">
         <tocitem text="Geometric Operations">
             <tocitem text="Reprojection" target="reprojectionAction">
