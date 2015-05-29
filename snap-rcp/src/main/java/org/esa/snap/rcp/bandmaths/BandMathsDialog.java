@@ -326,11 +326,11 @@ class BandMathsDialog extends ModalDialog {
             try {
                 final File file = SnapDialogs.requestFileForOpen(
                         "Load Band Maths Expression", false, null, PREF_KEY_LAST_EXPRESSION_PATH);
-                if (file == null)
-                    return;
-
-                expression = new String(Files.readAllBytes(file.toPath()));
-                bindingContext.getBinding(PROPERTY_NAME_EXPRESSION).setPropertyValue(expression);
+                if (file != null) {
+                    expression = new String(Files.readAllBytes(file.toPath()));
+                    bindingContext.getBinding(PROPERTY_NAME_EXPRESSION).setPropertyValue(expression);
+                    bindingContext.getBinding(PROPERTY_NAME_EXPRESSION).adjustComponents();
+                }
             } catch (IOException ex) {
                 showErrorDialog(ex.getMessage());
             }
@@ -343,9 +343,11 @@ class BandMathsDialog extends ModalDialog {
                 final File file = SnapDialogs.requestFileForSave(
                         "Save Band Maths Expression", false, null, ".txt", "myExpression", null, PREF_KEY_LAST_EXPRESSION_PATH);
 
-                final FileOutputStream out = new FileOutputStream(file.getAbsolutePath(), false);
-                PrintStream p = new PrintStream(out);
-                p.print(getExpression());
+                if (file != null) {
+                    final FileOutputStream out = new FileOutputStream(file.getAbsolutePath(), false);
+                    PrintStream p = new PrintStream(out);
+                    p.print(getExpression());
+                }
             } catch (IOException ex) {
                 showErrorDialog(ex.getMessage());
             }
