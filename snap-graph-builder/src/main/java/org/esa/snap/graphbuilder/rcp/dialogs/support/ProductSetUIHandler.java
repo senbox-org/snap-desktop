@@ -20,6 +20,7 @@ import com.bc.ceres.binding.dom.XppDomElement;
 import org.esa.snap.framework.gpf.OperatorSpi;
 import org.esa.snap.framework.gpf.graph.Graph;
 import org.esa.snap.framework.gpf.graph.Node;
+import org.esa.snap.framework.gpf.internal.ProductSetHandler;
 import org.esa.snap.gpf.operators.standard.ReadOp;
 
 import java.util.ArrayList;
@@ -29,13 +30,13 @@ import java.util.StringTokenizer;
 /**
  * Replaces ProductSetReader with ReadOp
  */
-public class ProductSetHandler {
+public class ProductSetUIHandler {
 
     private final Graph graph;
     private final GraphNodeList graphNodeList;
     private final GraphNode[] savedProductSetList;
 
-    public ProductSetHandler(final Graph graph, final GraphNodeList graphNodeList) {
+    public ProductSetUIHandler(final Graph graph, final GraphNodeList graphNodeList) {
         this.graph = graph;
         this.graphNodeList = graphNodeList;
 
@@ -43,7 +44,7 @@ public class ProductSetHandler {
     }
 
     private GraphNode[] replaceProductSetReaders() {
-        final ProductSetData[] productSetDataList = findProductSets("ProductSet-Reader");
+        final ProductSetData[] productSetDataList = findProductSets(ProductSetHandler.PRODUCT_SET_READER_NAME);
         final List<GraphNode> savedProductSetList = new ArrayList<>();
 
         int cnt = 0;
@@ -62,8 +63,6 @@ public class ProductSetHandler {
     }
 
     private ProductSetData[] findProductSets(final String readerName) {
-        final String SEPARATOR = ",";
-        final String SEPARATOR_ESC = "\\u002C"; // Unicode escape repr. of ','
         final List<ProductSetData> productSetDataList = new ArrayList<>();
 
         for (Node n : graph.getNodes()) {
@@ -76,10 +75,10 @@ public class ProductSetHandler {
                 for (DomElement p : params) {
                     if (p.getName().equals("fileList") && p.getValue() != null) {
 
-                        final StringTokenizer st = new StringTokenizer(p.getValue(), SEPARATOR);
+                        final StringTokenizer st = new StringTokenizer(p.getValue(), ProductSetHandler.SEPARATOR);
                         int length = st.countTokens();
                         for (int i = 0; i < length; i++) {
-                            final String str = st.nextToken().replace(SEPARATOR_ESC, SEPARATOR);
+                            final String str = st.nextToken().replace(ProductSetHandler.SEPARATOR_ESC, ProductSetHandler.SEPARATOR);
                             psData.fileList.add(str);
                         }
                         break;
@@ -115,7 +114,7 @@ public class ProductSetHandler {
 
     private void replaceProductSetWithReaders(final GraphNode sourceNode, final String id, final String value) {
 
-        GraphNode newReaderNode = GraphExecuter.createNewGraphNode(graph, graphNodeList,
+        final GraphNode newReaderNode = GraphExecuter.createNewGraphNode(graph, graphNodeList,
                 OperatorSpi.getOperatorAlias(ReadOp.class), id);
         newReaderNode.setOperatorUI(null);
         final DomElement config = newReaderNode.getNode().getConfiguration();
