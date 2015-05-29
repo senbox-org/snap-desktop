@@ -7,6 +7,7 @@
 
 <toc version="2.0" categoryclosedimage="folder" categoryopenimage="folder" topicimage="doc">
 
+
     <tocitem text="General">
         <tocitem text="Overview" target="snapOverview"/>
         <tocitem text="Definitions" target="snapDefinitions"/>
@@ -17,63 +18,26 @@
     </tocitem>
 
     <tocitem text="Sentinel Toolbox Application">
-        <tocitem text="Introduction" target="visat"/>
-        <tocitem text="Tools">
-            <tocitem text="Import and Export Tools">
-                <tocitem text="Import Raster Data">
-                    <tocitem text="DEMs">
-                        <tocitem text="GETASSE30 Tile" target="importGETASSE30"/>
-                    </tocitem>
-                    <tocitem text="Generic Formats">
-                        <tocitem text="BEAM-DIMAP" target="importDimapProduct"/>
-                        <tocitem text="CSV" target="importCsvProduct"/>
-                        <tocitem text="HDF-EOS" target="importNetCdfProduct"/>
-                        <tocitem text="NetCDF" target="importNetCdfProduct"/>
-                    </tocitem>
-                    <tocitem text="Optical Sensors">
-                        <tocitem text="ATSR" target="importAtsrProduct"/>
-                        <tocitem text="ALOS/AVNIR-2" target="importAvnir2Product"/>
-                        <tocitem text="ALOS/PRISM" target="importPrismProduct"/>
-                        <tocitem text="CHRIS" target="importChrisProduct"/>
-                        <tocitem text="ENVISAT MERIS" target="importEnvisatProduct"/>
-                        <tocitem text="ERS1/2 ATSR" target="importErsProduct"/>
-                        <tocitem text="LANDSAT" target="importLandsatProduct"/>
-                        <tocitem text="MERIS Binned Level-3" target="importMerisBinnedL3Product"/>
-                        <tocitem text="MODIS" target="importModisProduct"/>
-                        <tocitem text="NASA Ocean Color" target="importNasaObpgProduct"/>
-                        <tocitem text="NOAA-AVHRR/3 Level-1b" target="importAVHRR"/>
-                        <tocitem text="SPOT VEGETATION" target="importSpotVgtProduct"/>
-                    </tocitem>
-                </tocitem>
-                <tocitem text="Import Vector Data">
-                    <tocitem text="CSV" target="importCSV"/>
-                    <tocitem text="ESRI Shapefile" target="importShapefile"/>
-                    <tocitem text="MERMAID Extraction File" target="importMermaid"/>
-                    <tocitem text="SeaDAS 6.x Track" target="importSeaDASTrack"/>
-                </tocitem>
-                <tocitem text="Export Raster Data">
-                    <tocitem text="BEAM-DIMAP" target="exportDimapProduct"/>
-                    <tocitem text="CSV" target="exportCsv"/>
-                    <tocitem text="HDF-5" target="exportHdf5Product"/>
-                    <tocitem text="NetCDF/CF" target="exportNetCdfProduct"/>
-                </tocitem>
-                <tocitem text="Other Exports">
-                    <tocitem text="Colour Legend" target="exportLegendImageFile"/>
-                    <tocitem text="Colour Palette" target="exportColorPalette"/>
-                    <tocitem text="Displayed Image" target="exportImageFile"/>
-                    <tocitem text="ENVI GCP File" target="exportEnviGcpFile"/>
-                    <tocitem text="Geometry as Shapefile" target="exportShapefile"/>
-                    <tocitem text="KML" target="exportKml"/>
-                    <tocitem text="Mask Pixels" target="exportMaskPixels"/>
-                    <tocitem text="Product Metadata" target="exportProductMetadata"/>
-                    <tocitem text="Transect Pixels" target="exportTransectPixels"/>
-                </tocitem>
-                <tocitem text="Product Subset Dialog" target="subsetDialog"/>
-                <tocitem text="Product Grabber" target="productGrabber"/>
+        <tocitem text="Introduction" target="desktop"/>
+        <tocitem text="Menus and Toolbars">
+            <tocitem text="Menus bar">
+                <tocitem text="Main Menu Bar" target="menuBar"/>
+                <tocitem text="File Menu" target="fileMenu"/>
+                <tocitem text="Edit Menu" target="editMenu"/>
+                <tocitem text="View Menu" target="viewMenu"/>
+                <tocitem text="Analysis Menu" target="analysisMenu"/>
+                <tocitem text="Utilities Menu" target="utilitiesMenu"/>
+                <tocitem text="Processing Menu" target="processingMenu"/>
+                <tocitem text="Window Menu" target="windowMenu"/>
+                <tocitem text="Help Menu" target="helpMenu"/>
             </tocitem>
-
+            <tocitem text="Main Toolbar" target="mainToolbar"/>
+        </tocitem>
+        <tocitem text="Product View">
+            <tocitem text="Product Browser" target="productBrowser"/>
             <tocitem text="Imaging Tools">
                 <tocitem text="Image View" target="imageView"/>
+                <tocitem text="Pixel Info View" target="pixelInfoView"/>
                 <tocitem text="Layer Manager" target="showLayerManagerWnd"/>
                 <tocitem text="Navigation Window" target="showNavigationWnd"/>
                 <tocitem text="Colour Manipulation" target="showColorManipulationWnd"/>
@@ -82,7 +46,6 @@
                 <tocitem text="Vector Data Management" target="vectorDataManagement"/>
                 <tocitem text="Mask Management" target="showMaskManagerWnd"/>
             </tocitem>
-
             <tocitem text="Analysis Tools">
                 <tocitem text="Product World Map" target="showWorldMapWnd"/>
                 <tocitem text="Product GCP Manager" target="showGcpManagerWnd"/>
@@ -98,48 +61,72 @@
                 <tocitem text="Band Transect Co-ordinate List" target="coordinateListView"/>
                 <tocitem text="Compute Mask Area" target="computeMaskArea"/>
             </tocitem>
-
-            <tocitem text="Utilities">
-                <tocitem text="Band Maths" target="bandArithmetic"/>
-                <tocitem text="Band Maths Expression Editor" target="expressionEditor"/>
-                <tocitem text="Attach Pixel-based Geo-Coding" target="pixelGeoCodingSetup"/>
-                <tocitem text="Create DEM-related Bands" target="createDemRelatedBands"/>
-                <tocitem text="Create Filtered Band" target="createFilteredBand"/>
-            </tocitem>
-
-            <tocitem text="Module Manager" target="moduleManager"/>
         </tocitem>
-
-        <tocitem text="Reference">
-            <tocitem text="Product Browser" target="productBrowser"/>
-            <tocitem text="Pixel Info View" target="pixelInfoView"/>
-            <tocitem text="Preferences Dialog" target="preferences"/>
-            <tocitem text="Main Toolbar" target="mainToolbar"/>
-            <tocitem text="Main Menu Bar" target="menuBar"/>
-            <tocitem text="File Menu" target="fileMenu"/>
-            <tocitem text="Edit Menu" target="editMenu"/>
-            <tocitem text="View Menu" target="viewMenu"/>
-            <tocitem text="Analysis Menu" target="analysisMenu"/>
-            <tocitem text="Utilities Menu" target="utilitiesMenu"/>
-            <tocitem text="Processing Menu" target="processingMenu"/>
-            <tocitem text="Window Menu" target="windowMenu"/>
-            <tocitem text="Help Menu" target="helpMenu"/>
+        <tocitem text="Import and Export">
+            <tocitem text="Import Raster Data">
+                <tocitem text="DEMs">
+                    <tocitem text="GETASSE30 Tile" target="importGETASSE30"/>
+                </tocitem>
+                <tocitem text="Generic Formats">
+                    <tocitem text="BEAM-DIMAP" target="importDimapProduct"/>
+                    <tocitem text="CSV" target="importCsvProduct"/>
+                    <tocitem text="HDF-EOS" target="importNetCdfProduct"/>
+                    <tocitem text="NetCDF" target="importNetCdfProduct"/>
+                </tocitem>
+                <tocitem text="Optical Sensors">
+                    <tocitem text="ATSR" target="importAtsrProduct"/>
+                    <tocitem text="ALOS/AVNIR-2" target="importAvnir2Product"/>
+                    <tocitem text="ALOS/PRISM" target="importPrismProduct"/>
+                    <tocitem text="CHRIS" target="importChrisProduct"/>
+                    <tocitem text="ENVISAT MERIS" target="importEnvisatProduct"/>
+                    <tocitem text="ERS1/2 ATSR" target="importErsProduct"/>
+                    <tocitem text="LANDSAT" target="importLandsatProduct"/>
+                    <tocitem text="MERIS Binned Level-3" target="importMerisBinnedL3Product"/>
+                    <tocitem text="MODIS" target="importModisProduct"/>
+                    <tocitem text="NASA Ocean Color" target="importNasaObpgProduct"/>
+                    <tocitem text="NOAA-AVHRR/3 Level-1b" target="importAVHRR"/>
+                    <tocitem text="SPOT VEGETATION" target="importSpotVgtProduct"/>
+                </tocitem>
+            </tocitem>
+            <tocitem text="Import Vector Data">
+                <tocitem text="CSV" target="importCSV"/>
+                <tocitem text="ESRI Shapefile" target="importShapefile"/>
+                <tocitem text="MERMAID Extraction File" target="importMermaid"/>
+                <tocitem text="SeaDAS 6.x Track" target="importSeaDASTrack"/>
+            </tocitem>
+            <tocitem text="Export Raster Data">
+                <tocitem text="BEAM-DIMAP" target="exportDimapProduct"/>
+                <tocitem text="CSV" target="exportCsv"/>
+                <tocitem text="HDF-5" target="exportHdf5Product"/>
+                <tocitem text="NetCDF/CF" target="exportNetCdfProduct"/>
+            </tocitem>
+            <tocitem text="Other Exports">
+                <tocitem text="Colour Legend" target="exportLegendImageFile"/>
+                <tocitem text="Colour Palette" target="exportColorPalette"/>
+                <tocitem text="Displayed Image" target="exportImageFile"/>
+                <tocitem text="ENVI GCP File" target="exportEnviGcpFile"/>
+                <tocitem text="Geometry as Shapefile" target="exportShapefile"/>
+                <tocitem text="KML" target="exportKml"/>
+                <tocitem text="Mask Pixels" target="exportMaskPixels"/>
+                <tocitem text="Product Metadata" target="exportProductMetadata"/>
+                <tocitem text="Transect Pixels" target="exportTransectPixels"/>
+            </tocitem>
+            <tocitem text="Product Subset Dialog" target="subsetDialog"/>
+            <tocitem text="Product Grabber" target="productGrabber"/>
             <tocitem text="No-Data Value" target="noDataValue"/>
         </tocitem>
-    </tocitem>
-
-    <tocitem text="Graph Processing Framework (GPF)">
+        <tocitem text="Tools">
+            <tocitem text="Band Maths" target="bandArithmetic"/>
+            <tocitem text="Band Maths Expression Editor" target="expressionEditor"/>
+            <tocitem text="Attach Pixel-based Geo-Coding" target="pixelGeoCodingSetup"/>
+            <tocitem text="Create DEM-related Bands" target="createDemRelatedBands"/>
+            <tocitem text="Create Filtered Band" target="createFilteredBand"/>
+            <tocitem text="Module Manager" target="moduleManager"/>
+            <tocitem text="Preferences Dialog" target="preferences"/>
+        </tocitem>
     </tocitem>
 
     <tocitem text="Data Processors">
-        <tocitem text="Pre-Processing">
-        </tocitem>
-        <tocitem text="Thematic Water Processing">
-        </tocitem>
-        <tocitem text="Thematic Land Processing">
-        </tocitem>
-        <tocitem text="Image Analysis">
-        </tocitem>
         <tocitem text="Geometric Operations">
             <tocitem text="Reprojection" target="reprojectionAction">
                 <tocitem text="Reprojection Dialog" target="reprojectionAction"/>
@@ -158,5 +145,6 @@
         </tocitem>
 
     </tocitem>
+
 
 </toc>

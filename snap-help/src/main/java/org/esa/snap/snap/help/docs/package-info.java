@@ -1,4 +1,4 @@
-@HelpSetRegistration(helpSet = "help.hs", position = 100)
+@HelpSetRegistration(helpSet = "help.hs", position = 1000)
 package org.esa.snap.snap.help.docs;
 
 /*
