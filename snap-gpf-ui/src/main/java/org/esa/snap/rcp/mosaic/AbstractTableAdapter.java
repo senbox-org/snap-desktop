@@ -18,7 +18,8 @@ package org.esa.snap.rcp.mosaic;
 
 import com.bc.ceres.swing.binding.ComponentAdapter;
 
-import javax.swing.*;
+import javax.swing.JComponent;
+import javax.swing.JTable;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;

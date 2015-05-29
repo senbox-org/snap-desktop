@@ -23,8 +23,8 @@ import org.esa.snap.framework.gpf.ui.SourceProductSelector;
 import org.esa.snap.framework.gpf.ui.TargetProductSelector;
 import org.esa.snap.framework.gpf.ui.TargetProductSelectorModel;
 import org.esa.snap.framework.ui.AppContext;
-import org.esa.snap.framework.ui.BasicApp;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.rcp.actions.file.SaveProductAsAction;
 import org.esa.snap.util.SystemUtils;
 
 import javax.swing.JPanel;
@@ -50,7 +50,7 @@ public class IOPanel {
 
         targetProductSelector = new TargetProductSelector();
         final String homeDirPath = SystemUtils.getUserHomeDir().getPath();
-        final String saveDir = SnapApp.getDefault().getPreferences().get(BasicApp.PROPERTY_KEY_APP_LAST_SAVE_DIR, homeDirPath);
+        final String saveDir = SnapApp.getDefault().getPreferences().get(SaveProductAsAction.PREFERENCES_KEY_LAST_PRODUCT_DIR, homeDirPath);
         targetProductSelector.getModel().setProductDir(new File(saveDir));
         targetProductSelector.getOpenInAppCheckBox().setText("Open in " + theAppContext.getApplicationName());
 
@@ -112,7 +112,7 @@ public class IOPanel {
 
     public void onApply() {
         final String productDir = targetProductSelector.getModel().getProductDir().getAbsolutePath();
-        SnapApp.getDefault().getPreferences().put(BasicApp.PROPERTY_KEY_APP_LAST_SAVE_DIR, productDir);
+        SnapApp.getDefault().getPreferences().put(SaveProductAsAction.PREFERENCES_KEY_LAST_PRODUCT_DIR, productDir);
     }
 
     public Product getSelectedSourceProduct() {

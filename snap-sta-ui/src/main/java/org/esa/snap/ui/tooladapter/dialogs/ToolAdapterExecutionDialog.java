@@ -26,7 +26,7 @@ import org.esa.snap.framework.gpf.ui.OperatorMenu;
 import org.esa.snap.framework.gpf.ui.OperatorParameterSupport;
 import org.esa.snap.framework.gpf.ui.SingleTargetProductDialog;
 import org.esa.snap.framework.ui.AppContext;
-import org.esa.snap.framework.ui.BasicApp;
+import org.esa.snap.rcp.actions.file.SaveProductAsAction;
 import org.netbeans.api.progress.ProgressHandle;
 import org.netbeans.api.progress.ProgressHandleFactory;
 import org.netbeans.api.progress.ProgressUtils;
@@ -94,7 +94,7 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
     protected void onApply() {
         if (validateUserInput() && canApply()) {
             String productDir = targetProductSelector.getModel().getProductDir().getAbsolutePath();
-            appContext.getPreferences().setPropertyString(BasicApp.PROPERTY_KEY_APP_LAST_SAVE_DIR, productDir);
+            appContext.getPreferences().setPropertyString(SaveProductAsAction.PREFERENCES_KEY_LAST_PRODUCT_DIR, productDir);
             final Product[] sourceProducts = form.getSourceProducts();
             Map<String, Product> sourceProductMap = new HashMap<>();
             sourceProductMap.put(SOURCE_PRODUCT_FIELD, sourceProducts[0]);
