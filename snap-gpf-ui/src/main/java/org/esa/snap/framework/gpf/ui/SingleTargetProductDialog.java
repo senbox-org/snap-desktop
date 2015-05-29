@@ -26,10 +26,10 @@ import org.esa.snap.framework.gpf.experimental.Output;
 import org.esa.snap.framework.gpf.internal.OperatorExecutor;
 import org.esa.snap.framework.gpf.internal.OperatorProductReader;
 import org.esa.snap.framework.ui.AppContext;
-import org.esa.snap.framework.ui.BasicApp;
 import org.esa.snap.framework.ui.ModelessDialog;
 import org.esa.snap.framework.ui.SuppressibleOptionPane;
 import org.esa.snap.gpf.operators.standard.WriteOp;
+import org.esa.snap.rcp.actions.file.SaveProductAsAction;
 import org.esa.snap.util.SystemUtils;
 import org.esa.snap.util.io.FileUtils;
 
@@ -69,8 +69,7 @@ public abstract class SingleTargetProductDialog extends ModelessDialog {
         this.appContext = appContext;
         targetProductSelector = new TargetProductSelector(model, alwaysWriteOutput);
         String homeDirPath = SystemUtils.getUserHomeDir().getPath();
-        String saveDir = appContext.getPreferences().getPropertyString(BasicApp.PROPERTY_KEY_APP_LAST_SAVE_DIR,
-                                                                       homeDirPath);
+        String saveDir = appContext.getPreferences().getPropertyString(SaveProductAsAction.PREFERENCES_KEY_LAST_PRODUCT_DIR, homeDirPath);
         targetProductSelector.getModel().setProductDir(new File(saveDir));
         if (!alwaysWriteOutput) {
             targetProductSelector.getOpenInAppCheckBox().setText("Open in " + appContext.getApplicationName());
@@ -125,7 +124,7 @@ public abstract class SingleTargetProductDialog extends ModelessDialog {
         }
 
         String productDir = targetProductSelector.getModel().getProductDir().getAbsolutePath();
-        appContext.getPreferences().setPropertyString(BasicApp.PROPERTY_KEY_APP_LAST_SAVE_DIR, productDir);
+        appContext.getPreferences().setPropertyString(SaveProductAsAction.PREFERENCES_KEY_LAST_PRODUCT_DIR, productDir);
 
         Product targetProduct = null;
         try {

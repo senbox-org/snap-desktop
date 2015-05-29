@@ -39,6 +39,7 @@ import java.text.MessageFormat;
 public final class SaveProductAsAction extends AbstractAction {
 
     public static final String PREFERENCES_KEY_PRODUCT_CONVERSION_REQUIRED = "product_conversion_required";
+    public static final String PREFERENCES_KEY_LAST_PRODUCT_DIR = OpenProductAction.PREFERENCES_KEY_LAST_PRODUCT_DIR;
     private final WeakReference<Product> productRef;
 
     public SaveProductAsAction(Product product) {

@@ -31,7 +31,6 @@ import org.esa.snap.framework.param.ParamProperties;
 import org.esa.snap.framework.param.ParamValidateException;
 import org.esa.snap.framework.param.Parameter;
 import org.esa.snap.framework.ui.GridBagUtils;
-import org.esa.snap.framework.ui.PixelInfoView;
 import org.esa.snap.framework.ui.RGBImageProfilePane;
 import org.esa.snap.framework.ui.SuppressibleOptionPane;
 import org.esa.snap.framework.ui.UIUtils;
@@ -137,10 +136,10 @@ public class VisatPreferencesDialog extends ConfigDialog {
             param.getProperties().setLabel("Show navigation window when image views are opened"); /*I18N*/
             configParams.addParameter(param);
 
-            param = new Parameter(PixelInfoView.PROPERTY_KEY_SHOW_ONLY_DISPLAYED_BAND_PIXEL_VALUES,
-                                  PixelInfoView.PROPERTY_DEFAULT_SHOW_DISPLAYED_BAND_PIXEL_VALUES);
-            param.getProperties().setLabel("Show only pixel values of loaded or displayed bands"); /*I18N*/
-            configParams.addParameter(param);
+//            param = new Parameter(PixelInfoView.PROPERTY_KEY_SHOW_ONLY_DISPLAYED_BAND_PIXEL_VALUES,
+//                                  PixelInfoView.PROPERTY_DEFAULT_SHOW_DISPLAYED_BAND_PIXEL_VALUES);
+//            param.getProperties().setLabel("Show only pixel values of loaded or displayed bands"); /*I18N*/
+//            configParams.addParameter(param);
 
             param = new Parameter(PROPERTY_KEY_VERSION_CHECK_ENABLED, Boolean.TRUE);
             final String labelText = String.format("Check for new version on %s start", getApp().getAppName());
@@ -168,10 +167,10 @@ public class VisatPreferencesDialog extends ConfigDialog {
             displaySettingsPane.add(param.getEditor().getEditorComponent(), gbc);
             gbc.gridy++;
 
-            param = getConfigParam(PixelInfoView.PROPERTY_KEY_SHOW_ONLY_DISPLAYED_BAND_PIXEL_VALUES);
-            displaySettingsPane.add(param.getEditor().getEditorComponent(), gbc);
-            gbc.gridy++;
-
+//            param = getConfigParam(PixelInfoView.PROPERTY_KEY_SHOW_ONLY_DISPLAYED_BAND_PIXEL_VALUES);
+//            displaySettingsPane.add(param.getEditor().getEditorComponent(), gbc);
+//            gbc.gridy++;
+//
             //////////////////////////////////////////////////////////////////////////////////////
             // Memory Management
 

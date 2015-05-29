@@ -1,7 +1,7 @@
 package org.esa.snap.util;
 
-import org.esa.snap.framework.ui.BasicApp;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.rcp.actions.file.SaveProductAsAction;
 import org.esa.snap.util.io.FileUtils;
 import org.esa.snap.util.io.SnapFileChooser;
 import org.esa.snap.util.io.SnapFileFilter;
@@ -19,15 +19,15 @@ public class FileFolderUtils {
     public static File GetFilePath(final String title, final String formatName, final String extension,
                                    final String fileName, final String description, final boolean isSave) {
         return GetFilePath(title, formatName, extension, fileName, description, isSave,
-                BasicApp.PROPERTY_KEY_APP_LAST_OPEN_DIR,
-                FileSystemView.getFileSystemView().getRoots()[0].getAbsolutePath());
+                           SaveProductAsAction.PREFERENCES_KEY_LAST_PRODUCT_DIR,
+                           FileSystemView.getFileSystemView().getRoots()[0].getAbsolutePath());
     }
 
     public static File GetSaveFilePath(final String title, final String formatName, final String extension,
                                        final String fileName, final String description) {
         return GetFilePath(title, formatName, extension, fileName, description, true,
-                BasicApp.PROPERTY_KEY_APP_LAST_SAVE_DIR,
-                FileSystemView.getFileSystemView().getRoots()[0].getAbsolutePath());
+                           SaveProductAsAction.PREFERENCES_KEY_LAST_PRODUCT_DIR,
+                           FileSystemView.getFileSystemView().getRoots()[0].getAbsolutePath());
     }
 
     public static File GetFilePath(final String title, final String formatName, final String extension,
@@ -53,7 +53,7 @@ public class FileFolderUtils {
             fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
             final int result = fileChooser.showSaveDialog(SnapApp.getDefault().getMainFrame());
-            if(result == JFileChooser.APPROVE_OPTION) {
+            if (result == JFileChooser.APPROVE_OPTION) {
                 file = fileChooser.getSelectedFile();
 
                 final File currentDirectory = fileChooser.getCurrentDirectory();
@@ -64,10 +64,11 @@ public class FileFolderUtils {
             }
         } else {
             String lastDir = SnapApp.getDefault().getPreferences().get(lastDirPropertyKey, defaultPath);
-            if (fileName == null)
+            if (fileName == null) {
                 file = showFileOpenDialog(title, false, fileFilter, lastDir, lastDirPropertyKey);
-            else
+            } else {
                 file = showFileOpenDialog(title, false, fileFilter, fileName, lastDirPropertyKey);
+            }
         }
 
         return file == null ? null : FileUtils.ensureExtension(file, extension);

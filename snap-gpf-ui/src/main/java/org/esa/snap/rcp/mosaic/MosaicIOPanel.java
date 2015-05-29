@@ -32,9 +32,9 @@ import org.esa.snap.framework.gpf.ui.SourceProductSelector;
 import org.esa.snap.framework.gpf.ui.TargetProductSelector;
 import org.esa.snap.framework.gpf.ui.TargetProductSelectorModel;
 import org.esa.snap.framework.ui.AppContext;
-import org.esa.snap.framework.ui.BasicApp;
 import org.esa.snap.framework.ui.io.FileArrayEditor;
 import org.esa.snap.gpf.operators.standard.MosaicOp;
+import org.esa.snap.rcp.actions.file.SaveProductAsAction;
 import org.esa.snap.util.PropertyMap;
 import org.esa.snap.util.SystemUtils;
 import org.esa.snap.util.io.FileUtils;
@@ -384,7 +384,7 @@ class MosaicIOPanel extends JPanel {
                 selectorModel.setProductName("mosaic");
                 String homeDirPath = SystemUtils.getUserHomeDir().getPath();
                 final PropertyMap prefs = appContext.getPreferences();
-                String saveDir = prefs.getPropertyString(BasicApp.PROPERTY_KEY_APP_LAST_SAVE_DIR, homeDirPath);
+                String saveDir = prefs.getPropertyString(SaveProductAsAction.PREFERENCES_KEY_LAST_PRODUCT_DIR, homeDirPath);
                 selectorModel.setProductDir(new File(saveDir));
             }
         }

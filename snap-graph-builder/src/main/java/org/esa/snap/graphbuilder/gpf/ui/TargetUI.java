@@ -17,8 +17,8 @@ package org.esa.snap.graphbuilder.gpf.ui;
 
 import org.esa.snap.framework.gpf.ui.TargetProductSelector;
 import org.esa.snap.framework.ui.AppContext;
-import org.esa.snap.framework.ui.BasicApp;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.rcp.actions.file.SaveProductAsAction;
 import org.esa.snap.util.SystemUtils;
 import org.esa.snap.util.io.FileUtils;
 
@@ -53,7 +53,7 @@ public class TargetUI extends BaseOperatorUI {
 
         if (saveDir == null) {
             final String homeDirPath = SystemUtils.getUserHomeDir().getPath();
-            final String savePath = SnapApp.getDefault().getPreferences().get(BasicApp.PROPERTY_KEY_APP_LAST_SAVE_DIR, homeDirPath);
+            final String savePath = SnapApp.getDefault().getPreferences().get(SaveProductAsAction.PREFERENCES_KEY_LAST_PRODUCT_DIR, homeDirPath);
             saveDir = new File(savePath);
         }
         targetProductSelector.getModel().setProductDir(saveDir);
@@ -99,7 +99,7 @@ public class TargetUI extends BaseOperatorUI {
             return new UIValidation(UIValidation.State.ERROR, "Target file not specified");
 
         final String productDir = targetProductSelector.getModel().getProductDir().getAbsolutePath();
-        SnapApp.getDefault().getPreferences().put(BasicApp.PROPERTY_KEY_APP_LAST_SAVE_DIR, productDir);
+        SnapApp.getDefault().getPreferences().put(SaveProductAsAction.PREFERENCES_KEY_LAST_PRODUCT_DIR, productDir);
 
         return new UIValidation(UIValidation.State.OK, "");
     }

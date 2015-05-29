@@ -29,12 +29,12 @@ import org.esa.snap.framework.gpf.graph.GraphException;
 import org.esa.snap.framework.gpf.graph.GraphIO;
 import org.esa.snap.framework.gpf.graph.GraphProcessor;
 import org.esa.snap.framework.gpf.graph.Node;
-import org.esa.snap.framework.ui.BasicApp;
 import org.esa.snap.gpf.ReaderUtils;
 import org.esa.snap.gpf.operators.standard.WriteOp;
 import org.esa.snap.graphbuilder.gpf.ui.OperatorUI;
 import org.esa.snap.graphbuilder.gpf.ui.OperatorUIRegistry;
 import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.actions.file.SaveProductAsAction;
 import org.esa.snap.util.io.FileUtils;
 import org.esa.snap.util.io.SnapFileFilter;
 
@@ -193,7 +193,7 @@ public class GraphExecuter extends Observable {
         if (graphNodeList.isGraphComplete()) {
             AssignAllParameters();
 
-            ProductSetHandler productSetHandler = new ProductSetHandler(graph, graphNodeList);
+            ProductSetUIHandler productSetHandler = new ProductSetUIHandler(graph, graphNodeList);
             SubGraphHandler subGraphHandler = new SubGraphHandler(graph, graphNodeList);
 
             try {
@@ -259,7 +259,7 @@ public class GraphExecuter extends Observable {
             filename = lastLoadedGraphFile.getAbsolutePath();
         final SnapFileFilter fileFilter = new SnapFileFilter("XML", "xml", "Graph");
         final File filePath = SnapDialogs.requestFileForSave("Save Graph", false, fileFilter, ".xml", filename,
-                                                             null, BasicApp.PROPERTY_KEY_APP_LAST_SAVE_DIR);
+                                                             null, SaveProductAsAction.PREFERENCES_KEY_LAST_PRODUCT_DIR);
         if (filePath != null)
             writeGraph(filePath.getAbsolutePath());
         return filePath;
