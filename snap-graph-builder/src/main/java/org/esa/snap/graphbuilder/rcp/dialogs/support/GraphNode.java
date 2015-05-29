@@ -287,7 +287,13 @@ public class GraphNode {
         // check if already a source for this node
         disconnectOperatorSources(id);
 
-        final NodeSource ns = new NodeSource("sourceProduct", id);
+        //check if connected sources exists
+        String cntStr = "";
+        if(node.getSources().length > 0) {
+            cntStr = "."+node.getSources().length;
+        }
+
+        final NodeSource ns = new NodeSource("sourceProduct"+cntStr, id);
         node.addSource(ns);
     }
 
