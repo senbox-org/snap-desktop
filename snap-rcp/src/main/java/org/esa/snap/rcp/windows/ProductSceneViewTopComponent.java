@@ -86,6 +86,10 @@ public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNo
         add(new JLayer<>(this.view, new ProductSceneViewLayerUI()), BorderLayout.CENTER);
     }
 
+    /**
+     * Retrieves the ProductSceneView displayed.
+     * @return the scene view, never null
+     */
     public ProductSceneView getView() {
         return view;
     }

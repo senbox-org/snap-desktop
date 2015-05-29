@@ -26,7 +26,7 @@ import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.ProductFilter;
 import org.esa.snap.framework.datamodel.ProductManager;
 import org.esa.snap.framework.ui.AppContext;
-import org.esa.snap.framework.ui.BasicApp;
+import org.esa.snap.rcp.actions.file.OpenProductAction;
 import org.esa.snap.util.SystemUtils;
 import org.esa.snap.util.io.SnapFileChooser;
 import org.esa.snap.util.io.SnapFileFilter;
@@ -292,7 +292,7 @@ public class SourceProductSelector {
             final Window window = SwingUtilities.getWindowAncestor((JComponent) event.getSource());
 
             String homeDirPath = SystemUtils.getUserHomeDir().getPath();
-            String openDir = appContext.getPreferences().getPropertyString(BasicApp.PROPERTY_KEY_APP_LAST_OPEN_DIR,
+            String openDir = appContext.getPreferences().getPropertyString(OpenProductAction.PREFERENCES_KEY_LAST_PRODUCT_DIR,
                                                                            homeDirPath);
             currentDirectory = new File(openDir);
             chooser.setCurrentDirectory(currentDirectory);
@@ -325,7 +325,7 @@ public class SourceProductSelector {
                     e.printStackTrace();
                 }
                 currentDirectory = chooser.getCurrentDirectory();
-                appContext.getPreferences().setPropertyString(BasicApp.PROPERTY_KEY_APP_LAST_OPEN_DIR,
+                appContext.getPreferences().setPropertyString(OpenProductAction.PREFERENCES_KEY_LAST_PRODUCT_DIR,
                                                               currentDirectory.getAbsolutePath());
             }
         }

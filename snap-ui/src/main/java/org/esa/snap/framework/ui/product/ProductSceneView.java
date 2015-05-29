@@ -60,7 +60,6 @@ import org.esa.snap.framework.datamodel.RasterDataNode;
 import org.esa.snap.framework.datamodel.VectorDataNode;
 import org.esa.snap.framework.datamodel.VirtualBand;
 import org.esa.snap.framework.ui.BasicView;
-import org.esa.snap.framework.ui.PixelInfoFactory;
 import org.esa.snap.framework.ui.PixelPositionListener;
 import org.esa.snap.framework.ui.PopupMenuHandler;
 import org.esa.snap.framework.ui.UIUtils;
@@ -118,8 +117,7 @@ import java.util.Vector;
  * @author Norman Fomferra
  */
 public class ProductSceneView extends BasicView
-        implements FigureEditorAware, ProductNodeView, PropertyMapChangeListener, PixelInfoFactory,
-        ProductLayerContext, ViewportAware {
+        implements FigureEditorAware, ProductNodeView, PropertyMapChangeListener, ProductLayerContext, ViewportAware {
 
     public static final String BASE_IMAGE_LAYER_ID = "org.esa.snap.layers.baseImage";
     public static final String NO_DATA_LAYER_ID = "org.esa.snap.layers.noData";
@@ -363,19 +361,6 @@ public class ProductSceneView extends BasicView
             return getProduct();
         }
         return getRaster();
-    }
-
-    /**
-     * Creates a string containing all available information at the given pixel position. The string returned is a line
-     * separated text with each line containing a key/value pair.
-     *
-     * @param pixelX the pixel X co-ordinate
-     * @param pixelY the pixel Y co-ordinate
-     * @return the info string at the given position
-     */
-    @Override
-    public String createPixelInfoString(int pixelX, int pixelY) {
-        return getProduct() != null ? getProduct().createPixelInfoString(pixelX, pixelY) : "";
     }
 
     /**
@@ -1054,7 +1039,7 @@ public class ProductSceneView extends BasicView
 
 
     protected void copyPixelInfoStringToClipboard() {
-        SystemUtils.copyToClipboard(createPixelInfoString(currentPixelX, currentPixelY));
+        SystemUtils.copyToClipboard(getProduct() != null ? getProduct().createPixelInfoString(currentPixelX, currentPixelY) : "");
     }
 
     protected void disposeImageDisplayComponent() {

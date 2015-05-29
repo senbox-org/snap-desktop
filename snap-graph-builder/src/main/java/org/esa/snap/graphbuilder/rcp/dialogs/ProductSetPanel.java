@@ -20,11 +20,12 @@ import org.esa.snap.db.ProductEntry;
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.gpf.ui.TargetProductSelectorModel;
 import org.esa.snap.framework.ui.AppContext;
-import org.esa.snap.framework.ui.BasicApp;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.FileTable;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.FileTableModel;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.TargetFolderSelector;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.rcp.actions.file.OpenProductAction;
+import org.esa.snap.rcp.actions.file.SaveProductAsAction;
 import org.esa.snap.util.DialogUtils;
 import org.esa.snap.util.ProductFunctions;
 import org.esa.snap.util.SystemUtils;
@@ -93,7 +94,7 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
         if (incTrgProduct) {
             targetProductSelector = new TargetFolderSelector();
             final String homeDirPath = SystemUtils.getUserHomeDir().getPath();
-            final String saveDir = SnapApp.getDefault().getPreferences().get(BasicApp.PROPERTY_KEY_APP_LAST_SAVE_DIR, homeDirPath);
+            final String saveDir = SnapApp.getDefault().getPreferences().get(SaveProductAsAction.PREFERENCES_KEY_LAST_PRODUCT_DIR, homeDirPath);
             targetProductSelector.getModel().setProductDir(new File(saveDir));
             targetProductSelector.getOpenInAppCheckBox().setText("Open in " + theAppContext.getApplicationName());
             targetProductSelector.getOpenInAppCheckBox().setVisible(false);
@@ -303,7 +304,7 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
 
         File[] files = null;
         final File openDir = new File(SnapApp.getDefault().getPreferences().
-                get(BasicApp.PROPERTY_KEY_APP_LAST_OPEN_DIR, "."));
+                get(OpenProductAction.PREFERENCES_KEY_LAST_PRODUCT_DIR, "."));
         final JFileChooser chooser = FileChooserFactory.getInstance().createFileChooser(openDir);
         chooser.setMultiSelectionEnabled(true);
         chooser.setDialogTitle(title);
@@ -311,7 +312,7 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
             files = chooser.getSelectedFiles();
 
             SnapApp.getDefault().getPreferences().
-                    put(BasicApp.PROPERTY_KEY_APP_LAST_OPEN_DIR, chooser.getCurrentDirectory().getAbsolutePath());
+                    put(OpenProductAction.PREFERENCES_KEY_LAST_PRODUCT_DIR, chooser.getCurrentDirectory().getAbsolutePath());
         }
         return files;
     }
@@ -326,7 +327,7 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
     public void onApply() {
         if (targetProductSelector != null) {
             final String productDir = targetProductSelector.getModel().getProductDir().getAbsolutePath();
-            SnapApp.getDefault().getPreferences().put(BasicApp.PROPERTY_KEY_APP_LAST_SAVE_DIR, productDir);
+            SnapApp.getDefault().getPreferences().put(SaveProductAsAction.PREFERENCES_KEY_LAST_PRODUCT_DIR, productDir);
         }
     }
 
