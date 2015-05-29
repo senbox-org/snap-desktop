@@ -43,7 +43,7 @@
         <module>snap-scripting</module>
         <module>snap-ui</module>
         <module>snap-unmix-ui</module>
-        <module>snap-visat-rcp</module>
+        <!--<module>snap-visat-rcp</module>-->
         <module>snap-worldwind</module>
         <module>snap-sta-ui</module>
         <!--module>smart-configurator-ui</module-->
@@ -176,11 +176,6 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>snap-ui</artifactId>
-                <version>${snap.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.esa.snap</groupId>
-                <artifactId>snap-visat-rcp</artifactId>
                 <version>${snap.version}</version>
             </dependency>
             <dependency>
