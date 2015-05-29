@@ -285,12 +285,13 @@ public class Launcher {
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                 if (Files.exists(restartMarkerFile)) {
                     String processName = ManagementFactory.getRuntimeMXBean().getName();
+                    Logger.getLogger("").info("Shut down: " + processName);
                     String pid = processName.split("@")[0];
                     try {
                         new ProcessBuilder().command(_restartExeFile.toString(), pid).start();
                     } catch (IOException e) {
-                        Logger.getLogger("").log(Level.SEVERE, "Failed to restart", e);
-                        SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(null, "Failed to restart:\n" + e.getMessage()));
+                        Logger.getLogger("").log(Level.SEVERE, "Failed to restart: " + _restartExeFile.toString(), e);
+                        //SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(null, "Failed to restart:\n" + e.getMessage()));
                     }
                 }
             }));

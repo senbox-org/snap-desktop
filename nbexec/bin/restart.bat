@@ -1,6 +1,6 @@
 @echo off
 
-rem usage: execonexit <PID> <COMMAND>
+rem usage: restart <PID>
 
 rem How to find a PID for a given program:
 rem tasklist /fo csv | findstr /i "snap-desktop.exe"
@@ -13,6 +13,7 @@ for /F "tokens=2" %%i in ('tasklist') do (
 	)
 )
 
+cd "${installer:sys.installationDir}"
 call .\bin\${compiler:snapDesktopName}
 
 

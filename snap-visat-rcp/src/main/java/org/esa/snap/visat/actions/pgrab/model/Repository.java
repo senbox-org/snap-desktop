@@ -185,8 +185,8 @@ public class Repository {
     }
 
     private File createStorageDir() {
-        final File defaultBeamCacheDir = SystemUtils.getDefaultBeamCacheDir();
-        final File cacheDir = new File(defaultBeamCacheDir, REPOSITORY_CACHE_DIR_NAME);
+        final File defaultCacheDir = SystemUtils.getDefaultCacheDir();
+        final File cacheDir = new File(defaultCacheDir, REPOSITORY_CACHE_DIR_NAME);
         if(!cacheDir.exists()) {
             cacheDir.mkdirs();
         }
