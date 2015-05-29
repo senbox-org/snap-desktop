@@ -18,7 +18,6 @@ package org.esa.snap.framework.ui.application;
 
 /**
  * Provides descriptive information for applications.
- * @see org.esa.snap.framework.ui.BasicApp
  */
 public interface ApplicationDescriptor {
     String getApplicationId();

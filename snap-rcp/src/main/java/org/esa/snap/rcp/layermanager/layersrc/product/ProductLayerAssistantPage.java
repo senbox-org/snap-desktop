@@ -22,7 +22,6 @@ import com.bc.ceres.glayer.Layer;
 import com.bc.ceres.glayer.LayerType;
 import com.bc.ceres.glayer.LayerTypeRegistry;
 import com.bc.ceres.glayer.support.ImageLayer;
-import com.jidesoft.tree.AbstractTreeModel;
 import org.esa.snap.framework.datamodel.Band;
 import org.esa.snap.framework.datamodel.GeoCoding;
 import org.esa.snap.framework.datamodel.Product;
@@ -44,9 +43,12 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.TreeModelEvent;
+import javax.swing.event.TreeModelListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import java.awt.BorderLayout;
@@ -57,6 +59,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.WeakHashMap;
 
 class ProductLayerAssistantPage extends AbstractLayerSourceAssistantPage {
 
@@ -257,12 +260,13 @@ class ProductLayerAssistantPage extends AbstractLayerSourceAssistantPage {
         }
     }
 
-    private static class ProductTreeModel extends AbstractTreeModel {
-
+    private static class ProductTreeModel implements TreeModel {
+        private final WeakHashMap<TreeModelListener, Object> treeModelListeners;
         private final List<CompatibleNodeList> compatibleNodeLists;
 
         private ProductTreeModel(List<CompatibleNodeList> compatibleNodeLists) {
             this.compatibleNodeLists = compatibleNodeLists;
+            this.treeModelListeners = new WeakHashMap<>();
         }
 
         @Override
@@ -304,5 +308,28 @@ class ProductLayerAssistantPage extends AbstractLayerSourceAssistantPage {
             }
             return -1;
         }
+
+        @Override
+        public void valueForPathChanged(TreePath path, Object newValue) {
+            fireTreeNodeChanged(path);
+        }
+
+        @Override
+        public void addTreeModelListener(TreeModelListener l) {
+            treeModelListeners.put(l, "");
+        }
+
+        @Override
+        public void removeTreeModelListener(TreeModelListener l) {
+            treeModelListeners.remove(l);
+        }
+
+        protected void fireTreeNodeChanged(TreePath treePath) {
+            TreeModelEvent event = new TreeModelEvent(this, treePath);
+            for (TreeModelListener treeModelListener : treeModelListeners.keySet()) {
+                treeModelListener.treeNodesChanged(event);
+            }
+        }
+
     }
 }

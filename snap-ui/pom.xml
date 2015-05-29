@@ -72,22 +72,6 @@
             <version>${javahelp.version}</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>com.jidesoft</groupId>
-            <artifactId>jide-dock</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.jidesoft</groupId>
-            <artifactId>jide-action</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.jidesoft</groupId>
-            <artifactId>jide-grids</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.jidesoft</groupId>
-            <artifactId>jide-components</artifactId>
-        </dependency>
 
         <dependency>
             <groupId>junit</groupId>
@@ -115,14 +99,8 @@
                 <artifactId>nbm-maven-plugin</artifactId>
                 <configuration>
                     <publicPackages>
-                        <publicPackage>com.jidesoft.action</publicPackage>
-                        <publicPackage>com.jidesoft.docking</publicPackage>
-                        <publicPackage>com.jidesoft.docking.event</publicPackage>
-                        <publicPackage>com.jidesoft.list</publicPackage>
-                        <publicPackage>com.jidesoft.grid</publicPackage>
-                        <publicPackage>com.jidesoft.combobox</publicPackage>
-                        <publicPackage>com.jidesoft.tree</publicPackage>
-                        <publicPackage>com.jidesoft.status</publicPackage>
+                        <!-- should actually be deleted. jidesoft is already exported in ceres-ui -->
+                        <publicPackage>com.jidesoft.*</publicPackage>
                         <publicPackage>com.bc.ceres.swing</publicPackage>
                         <publicPackage>com.bc.ceres.swing.actions</publicPackage>
                         <publicPackage>com.bc.ceres.swing.binding</publicPackage>
