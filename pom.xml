@@ -26,6 +26,7 @@
         <module>snap-branding</module>
         <module>snap-rcp</module>
         <module>snap-tango</module>
+        <module>snap-main</module>
         <module>nbexec</module>
         <module>tiled-editors</module>
         <module>doc-windows</module>
