@@ -266,8 +266,8 @@ public class SnapApp {
     }
 
     public void onStart() {
-        WindowManager.getDefault().setRole("developer");
         engine = Engine.start(false);
+        WindowManager.getDefault().setRole("developer");
     }
 
     public void onStop() {
@@ -338,10 +338,10 @@ public class SnapApp {
         @Override
         public void run() {
             LOG.info("Starting SNAP Desktop");
+            SnapApp.getDefault().onStart();
             initImageIO();
             initJAI();
             initGPF();
-            SnapApp.getDefault().onStart();
         }
     }
 
