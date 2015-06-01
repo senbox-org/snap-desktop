@@ -17,7 +17,6 @@ package org.esa.snap.rcp.colormanip;
 
 import com.bc.ceres.core.Assert;
 import com.bc.ceres.core.ProgressMonitor;
-import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
 import org.esa.snap.BeamUiActivator;
 import org.esa.snap.framework.datamodel.Band;
 import org.esa.snap.framework.datamodel.ColorPaletteDef;
@@ -47,18 +46,8 @@ import org.esa.snap.util.io.SnapFileFilter;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
-import javax.swing.AbstractButton;
-import javax.swing.BorderFactory;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -69,7 +58,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Level;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.prefs.Preferences;
 
 
@@ -131,7 +121,8 @@ class ColorManipulationForm implements SelectionSupport.Handler<ProductSceneView
             initContentPanel();
         }
         if (!defaultColorPalettesInstalled) {
-            installDefaultColorPalettes();
+            ExecutorService executorService = Executors.newSingleThreadExecutor();
+            executorService.submit(new installDefaultColorPalettes());
         }
         return contentPanel;
     }
@@ -610,30 +601,25 @@ class ColorManipulationForm implements SelectionSupport.Handler<ProductSceneView
         }
     }
 
-    private void installDefaultColorPalettes() {
-        Path sourceBasePath = ResourceInstaller.findModuleCodeBasePath(BeamUiActivator.class);
-        final Path auxdataDir = getColorPalettesDir();
-        Path sourceDirPath = sourceBasePath.resolve("auxdata/color_palettes/");
-        final ResourceInstaller resourceInstaller = new ResourceInstaller(sourceDirPath, auxdataDir);
-        ProgressMonitorSwingWorker swingWorker = new ProgressMonitorSwingWorker(toolView, "Installing Auxdata...") {
-            @Override
-            protected Object doInBackground(ProgressMonitor progressMonitor) throws Exception {
-                resourceInstaller.install(".*.cpd", progressMonitor);
+    private class installDefaultColorPalettes implements Runnable {
+
+        private installDefaultColorPalettes() {
+        }
+
+        @Override
+        public void run() {
+            try {
+                Path sourceBasePath = ResourceInstaller.findModuleCodeBasePath(BeamUiActivator.class);
+                final Path auxdataDir = getColorPalettesDir();
+                Path sourceDirPath = sourceBasePath.resolve("auxdata/color_palettes/");
+                final ResourceInstaller resourceInstaller = new ResourceInstaller(sourceDirPath, auxdataDir);
+
+                resourceInstaller.install(".*.cpd", ProgressMonitor.NULL);
                 defaultColorPalettesInstalled = true;
-                return Boolean.TRUE;
+            } catch (IOException e) {
+                SnapApp.getDefault().handleError("Unable to install colour palettes", e);
             }
-
-            @Override
-            protected void done() {
-                try {
-                    get();
-                } catch (Exception e) {
-                    SnapApp.getDefault().getLogger().log(Level.SEVERE, "Could not install auxdata", e);
-                }
-            }
-        };
-        swingWorker.executeWithBlocking();
-
+        }
     }
 
     private Path getColorPalettesDir() {
