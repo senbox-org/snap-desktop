@@ -71,8 +71,8 @@ import java.util.stream.Collectors;
 public final class OpenProductAction extends AbstractAction {
 
     public static final String PREFERENCES_KEY_RECENTLY_OPENED_PRODUCTS = "recently_opened_products";
-    public static final String PREFERENCES_KEY_LAST_PRODUCT_DIR = "last_product_dir";
-    private static final String PREFERENCES_KEY_PREFIX_ALTERNATIVE_READER = "open.alternative.reader.";
+    public static final String PREFERENCES_KEY_LAST_PRODUCT_DIR = "last_product_open_dir";
+    private static final String PREFERENCES_KEY_PREFIX_ALTERNATIVE_READER = "open_alternative_reader.";
 
 
 
