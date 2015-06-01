@@ -104,6 +104,8 @@ public class OpenImageViewAction extends AbstractAction {
                     ProductSceneImage sceneImage = get();
                     UndoRedo.Manager undoManager = SnapApp.getDefault().getUndoManager(sceneImage.getProduct());
                     ProductSceneView view = new ProductSceneView(sceneImage, undoManager);
+                    // get the preferences: SnapApp.getInstance().getPreferences()
+                    // add the view (as listener) to it
                     openDocumentWindow(view);
                 } catch (Exception e) {
                     snapApp.handleError(MessageFormat.format("Failed to open image view.\n\n{0}", e.getMessage()), e);

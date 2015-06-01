@@ -26,6 +26,7 @@ import com.bc.ceres.binding.ValueSet;
 import com.bc.ceres.core.Assert;
 import com.bc.ceres.swing.binding.BindingContext;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.runtime.Config;
 import org.esa.snap.util.StringUtils;
 import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.Lookup;
@@ -45,7 +46,6 @@ import java.util.prefs.Preferences;
 public abstract class DefaultConfigController extends OptionsPanelController {
 
     private PreferencesPanel panel;
-    private Preferences preferences;
     private BindingContext bindingContext;
     private PropertyContainer originalState;
 
@@ -119,6 +119,7 @@ public abstract class DefaultConfigController extends OptionsPanelController {
             valueDescriptor.setDeprecated(isDeprecated);
             valueDescriptor.setAttribute("key", key);
             valueDescriptor.setAttribute("displayName", label);
+            valueDescriptor.setAttribute("configName", annotation.config());
             valueDescriptor.setAttribute("propertyValidator", validator);
 
             if (valueSet.length > 0) {
@@ -191,12 +192,20 @@ public abstract class DefaultConfigController extends OptionsPanelController {
     }
 
     private void init() {
-        preferences = NbPreferences.forModule(SnapApp.class);
         setupPanel(createPropertyContainer());
         initiallyFillPreferences();
         setupChangeListeners();
         panel.getComponent(); // trigger component initialisation
         configure(bindingContext);
+    }
+
+    Preferences getPreferences(PropertyDescriptor propertyDescriptor) {
+        Object configNameValue = propertyDescriptor.getAttribute("configName");
+        String configName = configNameValue != null ? configNameValue.toString().trim() : null;
+        if (configName == null || configName.isEmpty()) {
+            return SnapApp.getDefault().getPreferences();
+        }
+        return Config.instance(configName).load().preferences();
     }
 
     private void setOriginalState() {
@@ -230,14 +239,15 @@ public abstract class DefaultConfigController extends OptionsPanelController {
             property.addPropertyChangeListener(evt -> {
                 String key = property.getDescriptor().getAttribute("key").toString();
                 String value = evt.getNewValue().toString();
-                preferences.put(key, value);
+                getPreferences(property.getDescriptor()).put(key, value);
             });
         }
     }
 
     private void initiallyFillPreferences() {
         for (Property property : bindingContext.getPropertySet().getProperties()) {
-            preferences.put(property.getDescriptor().getAttribute("key").toString(), property.getValueAsText());
+            PropertyDescriptor descriptor = property.getDescriptor();
+            getPreferences(descriptor).put(descriptor.getAttribute("key").toString(), property.getValueAsText());
         }
     }
 

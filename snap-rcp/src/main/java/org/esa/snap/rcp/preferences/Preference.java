@@ -19,6 +19,7 @@ package org.esa.snap.rcp.preferences;
 import com.bc.ceres.binding.Property;
 import com.bc.ceres.binding.ValidationException;
 import com.bc.ceres.binding.Validator;
+import org.esa.snap.runtime.Config;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -49,6 +50,12 @@ public @interface Preference {
      * @return The property key. Must not be empty.
      */
     String key();
+
+    /**
+     * @return The configuration name. If not set, the NetBeans preferences are used, otherwise preferences from a
+     * named configuration are used ({@link Config#preferences() Config.instance(<i>config</i>).preferences()}).
+     */
+    String config() default "";
 
     /**
      * @return The set of allowed values.
