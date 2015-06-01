@@ -42,11 +42,11 @@
         </folder>
 
         <folder name="Operators">
-            <file name="org-esa-snap-dem-gpf-FillHoleOp-Action.instance">
+            <file name="org-esa-snap-dem-gpf-FillDEMHoleOp-Action.instance">
                 <attr name="instanceCreate" methodvalue="org.openide.awt.Actions.alwaysEnabled"/>
                 <attr name="delegate" methodvalue="org.esa.snap.graphbuilder.rcp.actions.OperatorAction.create"/>
                 <attr name="displayName" stringvalue="Fill DEM Hole"/>
-                <attr name="operatorName" stringvalue="Fill-Hole"/>
+                <attr name="operatorName" stringvalue="Fill-DEM-Hole"/>
                 <attr name="dialogTitle" stringvalue="Fill DEM Hole"/>
                 <attr name="ShortDescription" stringvalue="Fill holes in a DEM product"/>
                 <attr name="icon" stringvalue="esaIcon"/>
@@ -77,8 +77,8 @@
         <folder name="Tools">
             <folder name="DEM Tools">
                 <attr name="position" intvalue="400"/>
-                <file name="org-esa-snap-dem-gpf-FillHoleOp-Action.shadow">
-                    <attr name="originalFile" stringvalue="Actions/Operators/org-esa-snap-dem-gpf-FillHoleOp-Action.instance"/>
+                <file name="org-esa-snap-dem-gpf-FillDEMHoleOp-Action.shadow">
+                    <attr name="originalFile" stringvalue="Actions/Operators/org-esa-snap-dem-gpf-FillDEMHoleOp-Action.instance"/>
                 </file>
             </folder>
         </folder>
