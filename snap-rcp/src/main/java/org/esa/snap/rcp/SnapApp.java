@@ -2,8 +2,6 @@ package org.esa.snap.rcp;
 
 import com.bc.ceres.core.ExtensionFactory;
 import com.bc.ceres.core.ExtensionManager;
-import com.bc.ceres.jai.operator.ReinterpretDescriptor;
-import org.esa.snap.runtime.Engine;
 import org.esa.snap.framework.dataio.ProductReader;
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.ProductManager;
@@ -11,6 +9,7 @@ import org.esa.snap.framework.datamodel.ProductNode;
 import org.esa.snap.framework.gpf.GPF;
 import org.esa.snap.framework.gpf.OperatorSpi;
 import org.esa.snap.framework.gpf.OperatorSpiRegistry;
+import org.esa.snap.framework.gpf.main.GPT;
 import org.esa.snap.framework.ui.AppContext;
 import org.esa.snap.framework.ui.application.ApplicationPage;
 import org.esa.snap.framework.ui.product.ProductSceneView;
@@ -19,8 +18,10 @@ import org.esa.snap.rcp.util.CompatiblePropertyMap;
 import org.esa.snap.rcp.util.ContextGlobalExtenderImpl;
 import org.esa.snap.rcp.util.SelectionSupport;
 import org.esa.snap.rcp.util.internal.DefaultSelectionSupport;
+import org.esa.snap.runtime.Engine;
 import org.esa.snap.tango.TangoIcons;
 import org.esa.snap.util.PropertyMap;
+import org.esa.snap.util.SystemUtils;
 import org.openide.awt.NotificationDisplayer;
 import org.openide.awt.StatusDisplayer;
 import org.openide.awt.UndoRedo;
@@ -39,22 +40,12 @@ import org.openide.windows.WindowManager;
 import javax.imageio.spi.IIORegistry;
 import javax.imageio.spi.ImageReaderSpi;
 import javax.imageio.spi.ImageWriterSpi;
-import javax.media.jai.JAI;
-import javax.media.jai.OperationRegistry;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import java.awt.Desktop;
-import java.awt.Frame;
-import java.awt.Window;
-import java.io.ByteArrayOutputStream;
+import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -340,7 +331,7 @@ public class SnapApp {
             LOG.info("Starting SNAP Desktop");
             SnapApp.getDefault().onStart();
             initImageIO();
-            initJAI();
+            SystemUtils.init3rdPartyLibs(GPT.class);
             initGPF();
         }
     }
@@ -404,48 +395,6 @@ public class SnapApp {
             iioRegistry.registerServiceProviders(IIORegistry.lookupProviders(ImageWriterSpi.class, classLoader));
         }else {
             LOG.warning(String.format("Module '%s' not found. Not able to load image-IO services.", ceresJaiCodeName));
-        }
-    }
-
-
-    private static void initJAI() {
-        // Disable native libraries for JAI:
-        // This suppresses ugly (and harmless) JAI error messages saying that a JAI is going to
-        // continue in pure Java mode.
-        System.setProperty("com.sun.media.jai.disableMediaLib", "true");
-
-        // Set JAI tile scheduler parallelism
-        int processorCount = Runtime.getRuntime().availableProcessors();
-        int parallelism = Integer.getInteger("snap.jai.parallelism", processorCount);
-        JAI.getDefaultInstance().getTileScheduler().setParallelism(parallelism);
-        LOG.info(MessageFormat.format("JAI tile scheduler parallelism set to {0}", parallelism));
-
-        // Load JAI registry files.
-        // For some reason registry file loading must be done in this order: first our own, then JAI's descriptors (nf)
-        loadJaiRegistryFile(ReinterpretDescriptor.class, "/META-INF/registryFile.jai");
-        loadJaiRegistryFile(JAI.class, "/META-INF/javax.media.jai.registryFile.jai");
-    }
-
-    private static void loadJaiRegistryFile(Class<?> cls, String jaiRegistryPath) {
-        LOG.info("Reading JAI registry file from " + jaiRegistryPath);
-        // Must use a new operation registry in order to register JAI operators defined in Ceres and BEAM
-        OperationRegistry operationRegistry = OperationRegistry.getThreadSafeOperationRegistry();
-        InputStream is = cls.getResourceAsStream(jaiRegistryPath);
-        if (is != null) {
-            final PrintStream oldErr = System.err;
-            try {
-                // Suppress annoying and harmless JAI error messages saying that a descriptor is already registered.
-                System.setErr(new PrintStream(new ByteArrayOutputStream()));
-                operationRegistry.updateFromStream(is);
-                operationRegistry.registerServices(cls.getClassLoader());
-                JAI.getDefaultInstance().setOperationRegistry(operationRegistry);
-            } catch (IOException e) {
-                LOG.log(Level.SEVERE, MessageFormat.format("Error loading {0}: {1}", jaiRegistryPath, e.getMessage()), e);
-            } finally {
-                System.setErr(oldErr);
-            }
-        } else {
-            LOG.warning(MessageFormat.format("{0} not found", jaiRegistryPath));
         }
     }
 
