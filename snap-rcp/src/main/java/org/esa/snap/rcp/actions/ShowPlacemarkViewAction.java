@@ -51,7 +51,7 @@ import java.awt.event.ActionEvent;
         iconBase = "org/esa/snap/rcp/icons/RsVector16.gif"
 )
 @ActionReferences({
-        @ActionReference(path = "Menu/View", position = 120),
+        @ActionReference(path = "Menu/View", position = 125),
         @ActionReference(path = "Context/Product/VectorDataNode", position = 100),
 })
 @NbBundle.Messages("CTL_ShowPlacemarkViewAction=Open Placemark View")

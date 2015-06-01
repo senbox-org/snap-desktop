@@ -54,7 +54,7 @@ import java.awt.event.ActionEvent;
         lazy = true
 )
 @ActionReferences({
-        @ActionReference(path = "Menu/View", position = 120),
+        @ActionReference(path = "Menu/View", position = 115),
         @ActionReference(path = "Context/Product/Product",position = 420),
 })
 @NbBundle.Messages({
