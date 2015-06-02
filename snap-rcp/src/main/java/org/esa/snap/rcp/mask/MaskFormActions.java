@@ -480,7 +480,7 @@ class MaskFormActions {
                 final String description = propertyMap.getPropertyString("bitmaskDesc", null);
                 final String expression = propertyMap.getPropertyString("bitmaskExpr", "");
                 final Color color = propertyMap.getPropertyColor("bitmaskColor", Color.yellow);
-                final float transparency = (float) propertyMap.getPropertyDouble("bitmaskTransparency", 0.5);
+                final double transparency = propertyMap.getPropertyDouble("bitmaskTransparency", 0.5);
                 final Product product = getMaskForm().getProduct();
                 product.addMask(name, expression, description, color, transparency);
             } catch (Exception e) {
