@@ -116,12 +116,12 @@ public class AddElevationAction extends AbstractAction implements ContextAwareAc
     }
 
     public AddElevationAction(Lookup lkp) {
-        super("");//org.esa.snap.dem.Bundle.CTL_AddElevationAction_MenuText());
+        super(Bundle.CTL_AddElevationAction_MenuText());
         this.lkp = lkp;
         Lookup.Result<ProductNode> lkpContext = lkp.lookupResult(ProductNode.class);
         lkpContext.addLookupListener(WeakListeners.create(LookupListener.class, this, lkpContext));
         setEnableState();
-        putValue(Action.SHORT_DESCRIPTION, "");//org.esa.snap.rcp.actions.elevation.Bundle.CTL_AddElevationAction_ShortDescription());
+        putValue(Action.SHORT_DESCRIPTION, Bundle.CTL_AddElevationAction_ShortDescription());
     }
 
     @Override
