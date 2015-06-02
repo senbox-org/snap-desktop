@@ -21,7 +21,6 @@ import com.bc.ceres.binding.PropertyContainer;
 import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.PropertyEditorRegistry;
-import org.esa.snap.framework.ui.SuppressibleOptionPane;
 import org.esa.snap.rcp.pixelinfo.PixelInfoView;
 import org.esa.snap.rcp.preferences.DefaultConfigController;
 import org.esa.snap.rcp.preferences.Preference;
@@ -63,7 +62,7 @@ public final class UiBehaviorPanelController extends DefaultConfigController {
      * Preferences key for on-line version check
      */
     public static final String PROPERTY_KEY_VERSION_CHECK_ENABLED =
-            "versionCheck" + SuppressibleOptionPane.KEY_PREFIX_ENABLED;
+            "versionCheck.enabled";
     /**
      * Preferences key for showing a message after writing a GPF-processed product.
      */

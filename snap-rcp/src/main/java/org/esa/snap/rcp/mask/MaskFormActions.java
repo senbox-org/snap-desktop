@@ -474,7 +474,7 @@ class MaskFormActions {
         private void importMaskFromBmd(File file) {
             final PropertyMap propertyMap = new PropertyMap();
             try {
-                propertyMap.load(file); // Overwrite existing values
+                propertyMap.load(file.toPath()); // Overwrite existing values
                 final String name = propertyMap.getPropertyString("bitmaskName", "bitmask");
                 final String description = propertyMap.getPropertyString("bitmaskDesc", null);
                 final String expression = propertyMap.getPropertyString("bitmaskExpr", "");
