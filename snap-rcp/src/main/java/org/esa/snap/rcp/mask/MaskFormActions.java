@@ -40,6 +40,7 @@ import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.actions.tools.CreateVectorDataNodeAction;
 import org.esa.snap.rcp.util.internal.RasterDataNodeDeleter;
 import org.esa.snap.rcp.windows.ToolTopComponent;
+import org.esa.snap.util.DefaultPropertyMap;
 import org.esa.snap.util.PropertyMap;
 import org.esa.snap.util.StringUtils;
 import org.esa.snap.util.io.FileUtils;
@@ -472,7 +473,7 @@ class MaskFormActions {
         }
 
         private void importMaskFromBmd(File file) {
-            final PropertyMap propertyMap = new PropertyMap();
+            final PropertyMap propertyMap = new DefaultPropertyMap();
             try {
                 propertyMap.load(file.toPath()); // Overwrite existing values
                 final String name = propertyMap.getPropertyString("bitmaskName", "bitmask");

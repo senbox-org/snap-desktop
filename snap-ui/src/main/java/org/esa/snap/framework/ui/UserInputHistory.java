@@ -16,7 +16,6 @@
 package org.esa.snap.framework.ui;
 
 import org.esa.snap.util.Guardian;
-import org.esa.snap.util.PropertyMap;
 
 import java.util.LinkedList;
 import java.util.List;

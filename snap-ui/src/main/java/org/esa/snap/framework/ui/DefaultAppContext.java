@@ -20,6 +20,7 @@ import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.ProductManager;
 import org.esa.snap.framework.ui.application.ApplicationPage;
 import org.esa.snap.framework.ui.product.ProductSceneView;
+import org.esa.snap.util.DefaultPropertyMap;
 import org.esa.snap.util.PropertyMap;
 
 import javax.swing.JFrame;
@@ -43,7 +44,7 @@ public class DefaultAppContext implements AppContext {
         this(applicationName,
              new JFrame(applicationName),
              new ProductManager(),
-             new PropertyMap());
+             new DefaultPropertyMap());
     }
 
 

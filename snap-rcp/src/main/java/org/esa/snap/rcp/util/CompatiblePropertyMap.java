@@ -2,7 +2,7 @@ package org.esa.snap.rcp.util;
 
 import com.bc.ceres.core.Assert;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.util.PropertyMap;
+import org.esa.snap.util.DefaultPropertyMap;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -19,7 +19,7 @@ import java.util.prefs.Preferences;
  * @deprecated By default, since this class shall be replaced by direct usage of {@code java.util.prefs.Preferences},
  */
 @Deprecated
-public class CompatiblePropertyMap extends PropertyMap {
+public class CompatiblePropertyMap extends DefaultPropertyMap {
     private boolean adjusting;
 
     public CompatiblePropertyMap(Preferences preferences) {

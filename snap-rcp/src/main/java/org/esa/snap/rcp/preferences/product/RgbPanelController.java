@@ -19,7 +19,7 @@ package org.esa.snap.rcp.preferences.product;
 import com.bc.ceres.swing.binding.BindingContext;
 import org.esa.snap.framework.ui.RGBImageProfilePane;
 import org.esa.snap.rcp.preferences.DefaultConfigController;
-import org.esa.snap.util.PropertyMap;
+import org.esa.snap.util.DefaultPropertyMap;
 import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.HelpCtx;
 
@@ -44,7 +44,7 @@ public final class RgbPanelController extends DefaultConfigController {
 
     @Override
     protected JPanel createPanel(BindingContext context) {
-        return new RGBImageProfilePane(new PropertyMap());
+        return new RGBImageProfilePane(new DefaultPropertyMap());
     }
 
     @Override

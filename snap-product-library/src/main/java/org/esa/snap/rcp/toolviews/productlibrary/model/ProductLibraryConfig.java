@@ -16,6 +16,7 @@
 package org.esa.snap.rcp.toolviews.productlibrary.model;
 
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.util.DefaultPropertyMap;
 import org.esa.snap.util.Guardian;
 
 import java.awt.*;
@@ -38,10 +39,10 @@ public class ProductLibraryConfig {
     private final Preferences pref;
 
     /**
-     * Creates a new instance with the given {@link org.esa.snap.util.PropertyMap}.
+     * Creates a new instance with the given {@link DefaultPropertyMap}.
      * The property map which is used to load and store the configuration.
      *
-     * @param preferences the {@link org.esa.snap.util.PropertyMap}.
+     * @param preferences the {@link DefaultPropertyMap}.
      */
     public ProductLibraryConfig(final Preferences preferences) {
         Guardian.assertNotNull("preferences", preferences);

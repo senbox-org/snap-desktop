@@ -21,8 +21,7 @@ import org.esa.snap.framework.datamodel.ProductManager;
 import org.esa.snap.framework.ui.AppContext;
 import org.esa.snap.framework.ui.application.ApplicationPage;
 import org.esa.snap.framework.ui.product.ProductSceneView;
-import org.esa.snap.graphbuilder.gpf.ui.SourceUI;
-import org.esa.snap.graphbuilder.gpf.ui.UIValidation;
+import org.esa.snap.util.DefaultPropertyMap;
 import org.esa.snap.util.PropertyMap;
 import org.junit.Before;
 import org.junit.Test;
@@ -95,7 +94,7 @@ public class SourceUITest {
     }
 
     private class MockAppContext implements AppContext {
-        private PropertyMap preferences = new PropertyMap();
+        private PropertyMap preferences = new DefaultPropertyMap();
         private ProductManager prodMan = new ProductManager();
 
         public Window getApplicationWindow() {

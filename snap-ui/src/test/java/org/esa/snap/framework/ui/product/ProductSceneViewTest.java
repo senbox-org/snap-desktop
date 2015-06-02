@@ -20,7 +20,7 @@ import junit.framework.TestCase;
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.ProductData;
 import org.esa.snap.framework.datamodel.VirtualBand;
-import org.esa.snap.util.PropertyMap;
+import org.esa.snap.util.DefaultPropertyMap;
 
 import java.awt.geom.AffineTransform;
 
@@ -57,15 +57,15 @@ public class ProductSceneViewTest extends TestCase {
     public void testIsRGB() {
         ProductSceneView view;
 
-        view = new ProductSceneView(new ProductSceneImage(r, new PropertyMap(), ProgressMonitor.NULL));
+        view = new ProductSceneView(new ProductSceneImage(r, new DefaultPropertyMap(), ProgressMonitor.NULL));
         assertFalse(view.isRGB());
 
-        view = new ProductSceneView(new ProductSceneImage("RGB", r, g, b, new PropertyMap(), ProgressMonitor.NULL));
+        view = new ProductSceneView(new ProductSceneImage("RGB", r, g, b, new DefaultPropertyMap(), ProgressMonitor.NULL));
         assertTrue(view.isRGB());
     }
 
     public void testDispose() {
-        final ProductSceneView view = new ProductSceneView(new ProductSceneImage(r, new PropertyMap(), ProgressMonitor.NULL));
+        final ProductSceneView view = new ProductSceneView(new ProductSceneImage(r, new DefaultPropertyMap(), ProgressMonitor.NULL));
         view.dispose();
         assertNull(view.getSceneImage());
     }

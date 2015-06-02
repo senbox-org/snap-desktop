@@ -364,7 +364,7 @@ public class ProductSceneView extends BasicView
     }
 
     /**
-     * Called if the property map changed. Simply calls {@link #setLayerProperties(org.esa.snap.util.PropertyMap)}.
+     * Called if the property map changed. Simply calls {@link #setLayerProperties(PropertyMap)}.
      */
     @Override
     public void propertyMapChanged(PropertyMap propertyMap) {
