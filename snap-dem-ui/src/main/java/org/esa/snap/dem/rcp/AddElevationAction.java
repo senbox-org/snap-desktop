@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, see http://www.gnu.org/licenses/
  */
-package org.esa.snap.rcp.actions.elevation;
+package org.esa.snap.dem.rcp;
 
 import com.bc.ceres.binding.Property;
 import com.bc.ceres.binding.PropertyContainer;
@@ -116,12 +116,12 @@ public class AddElevationAction extends AbstractAction implements ContextAwareAc
     }
 
     public AddElevationAction(Lookup lkp) {
-        super(org.esa.snap.rcp.actions.elevation.Bundle.CTL_AddElevationAction_MenuText());
+        super("");//org.esa.snap.dem.Bundle.CTL_AddElevationAction_MenuText());
         this.lkp = lkp;
         Lookup.Result<ProductNode> lkpContext = lkp.lookupResult(ProductNode.class);
         lkpContext.addLookupListener(WeakListeners.create(LookupListener.class, this, lkpContext));
         setEnableState();
-        putValue(Action.SHORT_DESCRIPTION, org.esa.snap.rcp.actions.elevation.Bundle.CTL_AddElevationAction_ShortDescription());
+        putValue(Action.SHORT_DESCRIPTION, "");//org.esa.snap.rcp.actions.elevation.Bundle.CTL_AddElevationAction_ShortDescription());
     }
 
     @Override
