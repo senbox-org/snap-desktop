@@ -14,12 +14,12 @@ import org.esa.snap.framework.ui.AppContext;
 import org.esa.snap.framework.ui.application.ApplicationPage;
 import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.rcp.actions.file.SaveProductAction;
-import org.esa.snap.rcp.util.CompatiblePropertyMap;
 import org.esa.snap.rcp.util.ContextGlobalExtenderImpl;
 import org.esa.snap.rcp.util.SelectionSupport;
 import org.esa.snap.rcp.util.internal.DefaultSelectionSupport;
 import org.esa.snap.runtime.Engine;
 import org.esa.snap.tango.TangoIcons;
+import org.esa.snap.util.PreferencesPropertyMap;
 import org.esa.snap.util.PropertyMap;
 import org.esa.snap.util.SystemUtils;
 import org.openide.awt.NotificationDisplayer;
@@ -40,8 +40,12 @@ import org.openide.windows.WindowManager;
 import javax.imageio.spi.IIORegistry;
 import javax.imageio.spi.ImageReaderSpi;
 import javax.imageio.spi.ImageWriterSpi;
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import java.awt.Desktop;
+import java.awt.Frame;
+import java.awt.Window;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -117,7 +121,6 @@ public class SnapApp {
 
     /**
      * @return The (display) name of this application.
-     *
      * @deprecated use {@link #getInstanceName()}
      */
     @Deprecated
@@ -137,13 +140,14 @@ public class SnapApp {
     }
 
     /**
-     * @return The user's application preferences.
+     * Gets the {@link #getPreferences() preferences} wrapped by a {@link PropertyMap}.
+     * Using a {@link PropertyMap} for configuration of components is preferred over
+     * using Java {@link Preferences} because of easier unit-testing.
      *
-     * @deprecated this is for compatibility only, use #getPreferences()
+     * @return The user's application preferences as {@link PropertyMap} instance.
      */
-    @Deprecated
-    public PropertyMap getCompatiblePreferences() {
-        return new CompatiblePropertyMap(getPreferences());
+    public PropertyMap getPreferencesPropertyMap() {
+        return new PreferencesPropertyMap(getPreferences());
     }
 
     public Logger getLogger() {
@@ -393,7 +397,7 @@ public class SnapApp {
             IIORegistry iioRegistry = IIORegistry.getDefaultInstance();
             iioRegistry.registerServiceProviders(IIORegistry.lookupProviders(ImageReaderSpi.class, classLoader));
             iioRegistry.registerServiceProviders(IIORegistry.lookupProviders(ImageWriterSpi.class, classLoader));
-        }else {
+        } else {
             LOG.warning(String.format("Module '%s' not found. Not able to load image-IO services.", ceresJaiCodeName));
         }
     }
@@ -490,7 +494,7 @@ public class SnapApp {
         @Override
         @Deprecated
         public PropertyMap getPreferences() {
-            return app.getCompatiblePreferences();
+            return app.getPreferencesPropertyMap();
         }
 
         @Override

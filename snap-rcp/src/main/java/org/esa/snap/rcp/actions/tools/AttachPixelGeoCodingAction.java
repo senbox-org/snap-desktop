@@ -362,7 +362,7 @@ public class AttachPixelGeoCodingAction extends AbstractAction implements Contex
             final Window window = SwingUtilities.getWindowAncestor(snapApp.getMainFrame());
             final ExpressionPane pane = ProductExpressionPane.createBooleanExpressionPane(new Product[]{product},
                                                                                           product,
-                                                                                          snapApp.getCompatiblePreferences());
+                                                                                          snapApp.getPreferencesPropertyMap());
             pane.setCode(validMaskField.getText());
             final int status = pane.showModalDialog(window, "Edit Valid Mask Expression");
             if (status == ID_OK) {

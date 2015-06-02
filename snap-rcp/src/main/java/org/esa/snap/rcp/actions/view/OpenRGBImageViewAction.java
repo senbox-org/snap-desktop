@@ -89,7 +89,7 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
         final Product[] openedProducts = SnapApp.getDefault().getProductManager().getProducts();
         final int[] defaultBandIndices = getDefaultBandIndices(product);
 
-        final RGBImageProfilePane profilePane = new RGBImageProfilePane(SnapApp.getDefault().getCompatiblePreferences(), product,
+        final RGBImageProfilePane profilePane = new RGBImageProfilePane(SnapApp.getDefault().getPreferencesPropertyMap(), product,
                 openedProducts, defaultBandIndices);
 
         final String title = "Select RGB-Image Channels";
@@ -157,7 +157,7 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
                 String errorMsg = "The RGB image view could not be created.";
                 try {
                     ProductSceneView productSceneView = new ProductSceneView(get());
-                    productSceneView.setLayerProperties(SnapApp.getDefault().getCompatiblePreferences());
+                    productSceneView.setLayerProperties(SnapApp.getDefault().getPreferencesPropertyMap());
                     openDocumentWindow(productSceneView);
                 } catch (OutOfMemoryError e) {
                     SnapDialogs.showOutOfMemoryError(errorMsg);
@@ -177,7 +177,7 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
     public static ProductSceneViewTopComponent openDocumentWindow(final ProductSceneView view) {
         final SnapApp snapApp = SnapApp.getDefault();
 
-        view.setLayerProperties(snapApp.getCompatiblePreferences());
+        view.setLayerProperties(snapApp.getPreferencesPropertyMap());
 
         UndoRedo.Manager undoManager = SnapApp.getDefault().getUndoManager(view.getProduct());
         ProductSceneViewTopComponent psvTopComponent = new ProductSceneViewTopComponent(view, undoManager);
@@ -201,7 +201,7 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
             productSceneImage = new ProductSceneImage(name, rgbBands[0],
                                                       rgbBands[1],
                                                       rgbBands[2],
-                                                      visatApp.getCompatiblePreferences(),
+                                                      visatApp.getPreferencesPropertyMap(),
                                                       SubProgressMonitor.create(pm, 1));
             productSceneImage.initVectorDataCollectionLayer();
             productSceneImage.initMaskCollectionLayer();

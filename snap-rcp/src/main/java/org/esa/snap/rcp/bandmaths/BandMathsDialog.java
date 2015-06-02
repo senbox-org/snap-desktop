@@ -466,7 +466,7 @@ class BandMathsDialog extends ModalDialog {
             Product[] compatibleProducts = getCompatibleProducts();
             ProductExpressionPane pep = ProductExpressionPane.createGeneralExpressionPane(compatibleProducts,
                                                                                           targetProduct,
-                                                                                          SnapApp.getDefault().getCompatiblePreferences());
+                                                                                          SnapApp.getDefault().getPreferencesPropertyMap());
             pep.setCode(getExpression());
             int status = pep.showModalDialog(getJDialog(), "Band Maths Expression Editor");
             if (status == ModalDialog.ID_OK) {

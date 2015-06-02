@@ -62,7 +62,7 @@ class SpectraExportAction extends AbstractAction {
         DiagramGraphIO.writeGraphs(SwingUtilities.getWindowAncestor(spectrumTopComponent),
                                    "Export Pin Spectra",
                                    new SnapFileFilter[]{DiagramGraphIO.SPECTRA_CSV_FILE_FILTER},
-                                   SnapApp.getDefault().getCompatiblePreferences(),
+                                   SnapApp.getDefault().getPreferencesPropertyMap(),
                                    pinGraphs);
     }
 

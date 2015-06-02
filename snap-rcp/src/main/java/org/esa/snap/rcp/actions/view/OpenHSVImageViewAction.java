@@ -95,7 +95,7 @@ public class OpenHSVImageViewAction extends AbstractAction implements HelpCtx.Pr
         final Product[] openedProducts = SnapApp.getDefault().getProductManager().getProducts();
         final int[] defaultBandIndices = OpenRGBImageViewAction.getDefaultBandIndices(product);
 
-        final HSVImageProfilePane profilePane = new HSVImageProfilePane(SnapApp.getDefault().getCompatiblePreferences(), product,
+        final HSVImageProfilePane profilePane = new HSVImageProfilePane(SnapApp.getDefault().getPreferencesPropertyMap(), product,
                 openedProducts, defaultBandIndices);
 
         final String title = "Select HSV-Image Channels";
@@ -134,7 +134,7 @@ public class OpenHSVImageViewAction extends AbstractAction implements HelpCtx.Pr
                 String errorMsg = "The HSV image view could not be created.";
                 try {
                     final ProductSceneView productSceneView = new ProductSceneView(get());
-                    productSceneView.setLayerProperties(SnapApp.getDefault().getCompatiblePreferences());
+                    productSceneView.setLayerProperties(SnapApp.getDefault().getPreferencesPropertyMap());
                     OpenRGBImageViewAction.openDocumentWindow(productSceneView);
                 } catch (OutOfMemoryError e) {
                     SnapDialogs.showOutOfMemoryError(errorMsg);
@@ -167,7 +167,7 @@ public class OpenHSVImageViewAction extends AbstractAction implements HelpCtx.Pr
                     rgbBands[0],
                     rgbBands[1],
                     rgbBands[2],
-                    SnapApp.getDefault().getCompatiblePreferences(),
+                    SnapApp.getDefault().getPreferencesPropertyMap(),
                     SubProgressMonitor.create(pm, 1));
             productSceneImage.initVectorDataCollectionLayer();
             productSceneImage.initMaskCollectionLayer();

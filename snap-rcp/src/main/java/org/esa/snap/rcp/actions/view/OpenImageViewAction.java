@@ -124,7 +124,7 @@ public class OpenImageViewAction extends AbstractAction {
     }
 
     private ProductSceneViewTopComponent openDocumentWindow(final ProductSceneView view) {
-        view.setLayerProperties(SnapApp.getDefault().getCompatiblePreferences());
+        view.setLayerProperties(SnapApp.getDefault().getPreferencesPropertyMap());
 
         UndoRedo.Manager undoManager = SnapApp.getDefault().getUndoManager(view.getProduct());
         ProductSceneViewTopComponent productSceneViewWindow = new ProductSceneViewTopComponent(view, undoManager);
@@ -147,7 +147,7 @@ public class OpenImageViewAction extends AbstractAction {
                 sceneImage = new ProductSceneImage(raster, existingView);
             } else {
                 sceneImage = new ProductSceneImage(raster,
-                                                   SnapApp.getDefault().getCompatiblePreferences(),
+                                                   SnapApp.getDefault().getPreferencesPropertyMap(),
                                                    SubProgressMonitor.create(pm, 1));
             }
             sceneImage.initVectorDataCollectionLayer();
