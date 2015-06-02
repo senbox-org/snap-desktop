@@ -9,6 +9,7 @@ import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.nodes.ProductGroupNode;
 import org.esa.snap.rcp.util.TestProducts;
+import org.esa.snap.runtime.Config;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.explorer.ExplorerManager;
@@ -72,9 +73,11 @@ public class ProductExplorerTopComponent extends TopComponent implements Explore
         treeView.setRootVisible(false);
         add(treeView, BorderLayout.CENTER);
         // 2. Create a node hierarchy:
-        Product[] products = TestProducts.createProducts();
-        for (Product product : products) {
-            SnapApp.getDefault().getProductManager().addProduct(product);
+        if(Config.instance().preferences().getBoolean("snap.debug.loadTestProducts", false)){
+            Product[] products = TestProducts.createProducts();
+            for (Product product : products) {
+                SnapApp.getDefault().getProductManager().addProduct(product);
+            }
         }
         Node rootNode = new ProductGroupNode(SnapApp.getDefault().getProductManager());
         // 3. Set the root of the node hierarchy on the ExplorerManager:
