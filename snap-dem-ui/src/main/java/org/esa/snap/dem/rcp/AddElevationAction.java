@@ -76,8 +76,7 @@ import java.util.List;
 )
 @ActionRegistration(
         displayName = "#CTL_AddElevationAction_MenuText",
-        popupText = "#CTL_AddElevationAction_MenuText",
-        lazy = true
+        popupText = "#CTL_AddElevationAction_MenuText"
 )
 @ActionReferences({
         @ActionReference(
