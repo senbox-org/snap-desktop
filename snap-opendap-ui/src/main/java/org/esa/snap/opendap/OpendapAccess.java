@@ -6,6 +6,7 @@ import org.esa.snap.framework.ui.AppContext;
 import org.esa.snap.framework.ui.application.ApplicationPage;
 import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.opendap.ui.OpendapAccessPanel;
+import org.esa.snap.util.DefaultPropertyMap;
 import org.esa.snap.util.PropertyMap;
 
 import javax.swing.JFrame;
@@ -51,7 +52,7 @@ public class OpendapAccess {
             this(applicationName,
                  new JFrame(applicationName),
                  new ProductManager(),
-                 new PropertyMap());
+                 new DefaultPropertyMap());
         }
 
 
