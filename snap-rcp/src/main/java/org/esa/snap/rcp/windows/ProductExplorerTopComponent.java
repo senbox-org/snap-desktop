@@ -51,7 +51,6 @@ import java.text.SimpleDateFormat;
 )
 @NbBundle.Messages({
         "CTL_ProductExplorerTopComponentName=Product Explorer",
-        "CTL_ProductExplorerTopComponentComponentName=Product_Explorer",
         "CTL_ProductExplorerTopComponentDescription=Lists all open products",
 })
 public class ProductExplorerTopComponent extends TopComponent implements ExplorerManager.Provider {
@@ -60,7 +59,8 @@ public class ProductExplorerTopComponent extends TopComponent implements Explore
 
     public ProductExplorerTopComponent() {
         initComponents();
-        setName(Bundle.CTL_ProductExplorerTopComponentComponentName());
+        setName("Product_Explorer");
+        setDisplayName(Bundle.CTL_ProductExplorerTopComponentName());
         setToolTipText(Bundle.CTL_ProductExplorerTopComponentDescription());
         putClientProperty(TopComponent.PROP_MAXIMIZATION_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_KEEP_PREFERRED_SIZE_WHEN_SLIDED_IN, Boolean.TRUE);
