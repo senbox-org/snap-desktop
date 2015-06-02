@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 by Array Systems Computing Inc. http://www.array.ca
+ * Copyright (C) 2015 by Array Systems Computing Inc. http://www.array.ca
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -50,6 +50,7 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
@@ -81,7 +82,7 @@ public class BatchGraphDialog extends ModelessDialog {
     private final boolean closeOnDone;
 
     private boolean isProcessing = false;
-    protected File graphFile;
+    protected InputStream graphFileStream;
     protected boolean openProcessedProducts = true;
 
     public BatchGraphDialog(final AppContext theAppContext, final String title, final String helpID,
@@ -135,21 +136,11 @@ public class BatchGraphDialog extends ModelessDialog {
         getButton(ID_APPLY).setText("Run");
         getButton(ID_YES).setText("Load Graph");
 
-        graphFile = getDefaultGraphFile();
-        if (!graphFile.exists()) {
-            InputStream in = getClass().getResourceAsStream("graphs/ReadWriteGraph.xml");
-
-            final java.net.URL url = GraphBuilderDialog.class.getClassLoader().getResource("graphs/ReadWriteGraph.xml");
-            graphFile = new File(url.getFile());
-        }
-        LoadGraphFile(graphFile);
+        graphFileStream = getClass().getClassLoader().getResourceAsStream("graphs/ReadWriteGraph.xml");
+        LoadGraphFile(graphFileStream);
 
         setContent(mainPanel);
         super.getJDialog().setMinimumSize(new Dimension(400, 300));
-    }
-
-    protected File getDefaultGraphFile() {
-        return new File(defaultGraphPath + File.separator + "internal", "ReadWriteGraph.xml");
     }
 
     @Override
@@ -230,8 +221,17 @@ public class BatchGraphDialog extends ModelessDialog {
         productSetPanel.setTargetFolder(path);
     }
 
-    public void LoadGraphFile(File file) {
-        graphFile = file;
+    public void LoadGraphFile(final File file) {
+        try {
+            LoadGraphFile(new FileInputStream(file));
+        } catch (IOException e) {
+            SnapApp.getDefault().handleError("Unable to load graph "+file.toString(), e);
+            return;
+        }
+    }
+
+    public void LoadGraphFile(final InputStream stream) {
+        graphFileStream = stream;
 
         initGraphs();
         addGraphTabs("", true);
@@ -313,12 +313,12 @@ public class BatchGraphDialog extends ModelessDialog {
      * Loads a new graph from a file
      *
      * @param executer the GraphExcecuter
-     * @param file     the graph file to load
+     * @param graphFileStream     the graph file to load
      * @param addUI    add a user interface
      */
-    protected void LoadGraph(final GraphExecuter executer, final File file, final boolean addUI) {
+    protected void LoadGraph(final GraphExecuter executer, final InputStream graphFileStream, final boolean addUI) {
         try {
-            executer.loadGraph(file, addUI);
+            executer.loadGraph(graphFileStream, addUI);
 
         } catch (GraphException e) {
             showErrorDialog(e.getMessage());
@@ -378,7 +378,7 @@ public class BatchGraphDialog extends ModelessDialog {
     void createGraphs() throws GraphException {
         try {
             final GraphExecuter graphEx = new GraphExecuter();
-            LoadGraph(graphEx, graphFile, true);
+            LoadGraph(graphEx, graphFileStream, true);
             graphExecutorList.add(graphEx);
         } catch (Exception e) {
             throw new GraphException(e.getMessage());
@@ -506,7 +506,7 @@ public class BatchGraphDialog extends ModelessDialog {
         for (int graphIndex = 1; graphIndex < fileList.length; ++graphIndex) {
 
             final GraphExecuter cloneGraphEx = new GraphExecuter();
-            LoadGraph(cloneGraphEx, graphFile, false);
+            LoadGraph(cloneGraphEx, graphFileStream, false);
             graphExecutorList.add(cloneGraphEx);
 
             // copy UI parameter to clone

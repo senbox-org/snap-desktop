@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 by Array Systems Computing Inc. http://www.array.ca
+ * Copyright (C) 2015 by Array Systems Computing Inc. http://www.array.ca
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -25,7 +25,6 @@ import org.openide.util.NbBundle;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.io.File;
 import java.io.InputStream;
 
 @ActionID(
@@ -60,15 +59,9 @@ public class OpenGraphBuilderAction extends AbstractAction {
         //dialog.getJDialog().setIconImage(IconUtils.esaPlanetIcon.getImage());
         dialog.show();
 
-        final File graphPath = GraphBuilderDialog.getInternalGraphFolder();
-        File graphFile = new File(graphPath, "ReadWriteGraph.xml");
-        if (graphFile.exists()) {
-            dialog.LoadGraph(graphFile);
-        } else {
-            InputStream graphFileStream = getClass().getClassLoader().getResourceAsStream("graphs/ReadWriteGraph.xml");
+        InputStream graphFileStream = getClass().getClassLoader().getResourceAsStream("graphs/ReadWriteGraph.xml");
 
-            dialog.LoadGraph(graphFileStream);
-        }
+        dialog.LoadGraph(graphFileStream);
         dialog.EnableInitialInstructions(true);
     }
 }

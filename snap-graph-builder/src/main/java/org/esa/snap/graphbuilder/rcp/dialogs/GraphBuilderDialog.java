@@ -46,6 +46,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -337,13 +338,13 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer {
      */
     private void LoadGraph() {
         final SnapFileFilter fileFilter = new SnapFileFilter("XML", "xml", "Graph");
-        final File file = SnapDialogs.requestFileForOpen("Load Graph", false, fileFilter, LAST_GRAPH_PATH);
-        if (file == null) return;
+        final File graphFile = SnapDialogs.requestFileForOpen("Load Graph", false, fileFilter, LAST_GRAPH_PATH);
+        if (graphFile == null) return;
 
-        LoadGraph(file);
+        LoadGraph(graphFile);
 
         if (allowGraphBuilding)
-            this.setTitle("Graph Builder : " + file.getName());
+            this.setTitle("Graph Builder : " + graphFile.getName());
     }
 
     /**
@@ -353,16 +354,9 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer {
      */
     public void LoadGraph(final File file) {
         try {
-            initGraphEnabled = false;
-            tabbedPanel.removeAll();
-            graphEx.loadGraph(file, true);
-            if (allowGraphBuilding) {
-                graphPanel.showRightClickHelp(false);
-                graphPanel.repaint();
-            }
-            initGraphEnabled = true;
-        } catch (GraphException e) {
-            showErrorDialog(e.getMessage());
+            LoadGraph(new FileInputStream(file));
+        } catch (IOException e) {
+            SnapApp.getDefault().handleError("Unable to load graph "+file.toString(), e);
         }
     }
 
