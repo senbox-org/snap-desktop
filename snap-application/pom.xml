@@ -200,6 +200,10 @@
                                     <directory>../etc</directory>
                                     <filtering>false</filtering>
                                 </resource>
+                                <resource>
+                                    <directory>../../snap-engine/etc</directory>
+                                    <filtering>false</filtering>
+                                </resource>
                             </resources>
                         </configuration>
                     </execution>
