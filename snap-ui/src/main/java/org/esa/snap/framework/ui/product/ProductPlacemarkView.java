@@ -23,8 +23,10 @@ import org.esa.snap.framework.ui.BasicView;
 import org.esa.snap.framework.ui.PopupMenuHandler;
 import org.esa.snap.framework.ui.io.TableModelCsvEncoder;
 import org.esa.snap.util.SystemUtils;
+import org.openide.util.Utilities;
 
 import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.JLabel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
@@ -41,6 +43,7 @@ import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Enumeration;
+import java.util.List;
 
 /**
  * A view component used to display a product's metadata in tabular form.
@@ -91,11 +94,13 @@ public class ProductPlacemarkView extends BasicView implements ProductNodeView {
     @Override
     public JPopupMenu createPopupMenu(Component component) {
         JPopupMenu popupMenu = new JPopupMenu();
-        if (getCommandUIFactory() != null) {
-            getCommandUIFactory().addContextDependentMenuItems("placemark", popupMenu);
+        List<? extends Action> viewActions = Utilities.actionsForPath("Context/Placemark");
+        for (Action action : viewActions) {
+            popupMenu.add(action);
         }
         popupMenu.add(new CopyToClipboardAction());
         return popupMenu;
+
     }
 
     @Override

@@ -30,19 +30,39 @@ import com.bc.ceres.grender.Rendering;
 import com.bc.ceres.grender.Viewport;
 import com.bc.ceres.grender.ViewportAware;
 import com.bc.ceres.grender.support.DefaultViewport;
-import com.bc.ceres.swing.figure.*;
+import com.bc.ceres.swing.figure.Figure;
+import com.bc.ceres.swing.figure.FigureChangeListener;
+import com.bc.ceres.swing.figure.FigureCollection;
+import com.bc.ceres.swing.figure.FigureEditor;
+import com.bc.ceres.swing.figure.FigureEditorAware;
+import com.bc.ceres.swing.figure.FigureSelection;
+import com.bc.ceres.swing.figure.FigureStyle;
+import com.bc.ceres.swing.figure.Handle;
+import com.bc.ceres.swing.figure.ShapeFigure;
 import com.bc.ceres.swing.selection.AbstractSelectionChangeListener;
 import com.bc.ceres.swing.selection.Selection;
 import com.bc.ceres.swing.selection.SelectionChangeEvent;
 import com.bc.ceres.swing.selection.SelectionContext;
 import com.bc.ceres.swing.undo.UndoContext;
 import com.bc.ceres.swing.undo.support.DefaultUndoContext;
-import org.esa.snap.framework.datamodel.*;
+import org.esa.snap.framework.datamodel.GeoCoding;
+import org.esa.snap.framework.datamodel.GeoPos;
+import org.esa.snap.framework.datamodel.ImageInfo;
+import org.esa.snap.framework.datamodel.PixelPos;
+import org.esa.snap.framework.datamodel.Placemark;
+import org.esa.snap.framework.datamodel.PlacemarkGroup;
+import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.datamodel.ProductData;
+import org.esa.snap.framework.datamodel.ProductNode;
+import org.esa.snap.framework.datamodel.ProductNodeEvent;
+import org.esa.snap.framework.datamodel.ProductNodeListener;
+import org.esa.snap.framework.datamodel.RasterDataNode;
+import org.esa.snap.framework.datamodel.VectorDataNode;
+import org.esa.snap.framework.datamodel.VirtualBand;
 import org.esa.snap.framework.ui.BasicView;
 import org.esa.snap.framework.ui.PixelPositionListener;
 import org.esa.snap.framework.ui.PopupMenuHandler;
 import org.esa.snap.framework.ui.UIUtils;
-import org.esa.snap.framework.ui.command.CommandUIFactory;
 import org.esa.snap.framework.ui.tool.ToolButtonFactory;
 import org.esa.snap.glayer.GraticuleLayer;
 import org.esa.snap.glayer.MaskCollectionLayer;
@@ -51,13 +71,35 @@ import org.esa.snap.glayer.ProductLayerContext;
 import org.esa.snap.glevel.MaskImageMultiLevelSource;
 import org.esa.snap.util.PropertyMap;
 import org.esa.snap.util.SystemUtils;
+import org.openide.util.Utilities;
 
-import javax.swing.*;
+import javax.swing.AbstractButton;
+import javax.swing.Action;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
+import javax.swing.SwingUtilities;
 import javax.swing.event.MouseInputListener;
 import javax.swing.undo.UndoManager;
-import java.awt.*;
-import java.awt.event.*;
-import java.awt.geom.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.Shape;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Area;
+import java.awt.geom.NoninvertibleTransformException;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.RenderedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -363,16 +405,11 @@ public class ProductSceneView extends BasicView
     @Override
     public JPopupMenu createPopupMenu(MouseEvent event) {
         JPopupMenu popupMenu = new JPopupMenu();
-        addCopyPixelInfoToClipboardMenuItem(popupMenu);
-        CommandUIFactory commandUIFactory = getCommandUIFactory();
-        if (commandUIFactory != null) {
-            commandUIFactory.addContextDependentMenuItems("image", popupMenu);
-            Placemark[] selectedPins = getSelectedPins();
-            if (selectedPins.length > 0) {
-                commandUIFactory.addContextDependentMenuItems("pin", popupMenu);
-            }
-            commandUIFactory.addContextDependentMenuItems("subsetFromView", popupMenu);
+        List<? extends Action> viewActions = Utilities.actionsForPath("Context/View");
+        for (Action action : viewActions) {
+            popupMenu.add(action);
         }
+        addCopyPixelInfoToClipboardMenuItem(popupMenu);
         return popupMenu;
     }
 
