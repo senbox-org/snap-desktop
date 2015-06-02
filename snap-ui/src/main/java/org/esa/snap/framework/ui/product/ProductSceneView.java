@@ -30,35 +30,14 @@ import com.bc.ceres.grender.Rendering;
 import com.bc.ceres.grender.Viewport;
 import com.bc.ceres.grender.ViewportAware;
 import com.bc.ceres.grender.support.DefaultViewport;
-import com.bc.ceres.swing.figure.Figure;
-import com.bc.ceres.swing.figure.FigureChangeListener;
-import com.bc.ceres.swing.figure.FigureCollection;
-import com.bc.ceres.swing.figure.FigureEditor;
-import com.bc.ceres.swing.figure.FigureEditorAware;
-import com.bc.ceres.swing.figure.FigureSelection;
-import com.bc.ceres.swing.figure.FigureStyle;
-import com.bc.ceres.swing.figure.Handle;
-import com.bc.ceres.swing.figure.ShapeFigure;
+import com.bc.ceres.swing.figure.*;
 import com.bc.ceres.swing.selection.AbstractSelectionChangeListener;
 import com.bc.ceres.swing.selection.Selection;
 import com.bc.ceres.swing.selection.SelectionChangeEvent;
 import com.bc.ceres.swing.selection.SelectionContext;
 import com.bc.ceres.swing.undo.UndoContext;
 import com.bc.ceres.swing.undo.support.DefaultUndoContext;
-import org.esa.snap.framework.datamodel.GeoCoding;
-import org.esa.snap.framework.datamodel.GeoPos;
-import org.esa.snap.framework.datamodel.ImageInfo;
-import org.esa.snap.framework.datamodel.PixelPos;
-import org.esa.snap.framework.datamodel.Placemark;
-import org.esa.snap.framework.datamodel.PlacemarkGroup;
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductData;
-import org.esa.snap.framework.datamodel.ProductNode;
-import org.esa.snap.framework.datamodel.ProductNodeEvent;
-import org.esa.snap.framework.datamodel.ProductNodeListener;
-import org.esa.snap.framework.datamodel.RasterDataNode;
-import org.esa.snap.framework.datamodel.VectorDataNode;
-import org.esa.snap.framework.datamodel.VirtualBand;
+import org.esa.snap.framework.datamodel.*;
 import org.esa.snap.framework.ui.BasicView;
 import org.esa.snap.framework.ui.PixelPositionListener;
 import org.esa.snap.framework.ui.PopupMenuHandler;
@@ -71,41 +50,19 @@ import org.esa.snap.glayer.NoDataLayerType;
 import org.esa.snap.glayer.ProductLayerContext;
 import org.esa.snap.glevel.MaskImageMultiLevelSource;
 import org.esa.snap.util.PropertyMap;
-import org.esa.snap.util.PropertyMapChangeListener;
 import org.esa.snap.util.SystemUtils;
 
-import javax.swing.AbstractButton;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import javax.swing.event.MouseInputListener;
 import javax.swing.undo.UndoManager;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Area;
-import java.awt.geom.NoninvertibleTransformException;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.geom.*;
 import java.awt.image.RenderedImage;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.*;
 import java.util.List;
-import java.util.Vector;
 
 /**
  * The class <code>ProductSceneView</code> is a high-level image display component for color index/RGB images created
@@ -117,7 +74,7 @@ import java.util.Vector;
  * @author Norman Fomferra
  */
 public class ProductSceneView extends BasicView
-        implements FigureEditorAware, ProductNodeView, PropertyMapChangeListener, ProductLayerContext, ViewportAware {
+        implements FigureEditorAware, ProductNodeView, PropertyChangeListener, ProductLayerContext, ViewportAware {
 
     public static final String BASE_IMAGE_LAYER_ID = "org.esa.snap.layers.baseImage";
     public static final String NO_DATA_LAYER_ID = "org.esa.snap.layers.noData";
@@ -258,6 +215,17 @@ public class ProductSceneView extends BasicView
 
         setMaskOverlayEnabled(true);
         setName(sceneImage.getName());
+
+        appyLayerProperties(sceneImage.getConfiguration());
+        sceneImage.getConfiguration().addPropertyChangeListener(this);
+    }
+
+    /**
+     * Called if the property map changed. Simply calls {@link #appyLayerProperties(PropertyMap)}.
+     */
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        appyLayerProperties(sceneImage.getConfiguration());
     }
 
     public UndoContext getUndoContext() {
@@ -364,14 +332,6 @@ public class ProductSceneView extends BasicView
     }
 
     /**
-     * Called if the property map changed. Simply calls {@link #setLayerProperties(PropertyMap)}.
-     */
-    @Override
-    public void propertyMapChanged(PropertyMap propertyMap) {
-        setLayerProperties(propertyMap);
-    }
-
-    /**
      * If the <code>preferredSize</code> has been set to a
      * non-<code>null</code> value just returns it.
      * If the UI delegate's <code>getPreferredSize</code>
@@ -440,6 +400,10 @@ public class ProductSceneView extends BasicView
                 rgbChannel.dispose();
             }
             getSceneImage().getRasters()[i] = null;
+        }
+
+        if (sceneImage != null) {
+            sceneImage.getConfiguration().removePropertyChangeListener(this);
         }
         sceneImage = null;
 
@@ -660,12 +624,12 @@ public class ProductSceneView extends BasicView
     }
 
     /**
-     * Called after VISAT preferences have changed.
+     * Called after SNAP preferences have changed.
      * This behaviour is deprecated since we want to uswe separate style editors for each layers.
      *
      * @param configuration the configuration.
      */
-    public void setLayerProperties(PropertyMap configuration) {
+    public void appyLayerProperties(PropertyMap configuration) {
         setScrollBarsShown(configuration.getPropertyBool(PROPERTY_KEY_IMAGE_SCROLL_BARS_SHOWN, false));
         layerCanvas.setAntialiasing(true);
         layerCanvas.setNavControlShown(configuration.getPropertyBool(PROPERTY_KEY_IMAGE_NAV_CONTROL_SHOWN, true));
@@ -674,19 +638,19 @@ public class ProductSceneView extends BasicView
 
         final ImageLayer imageLayer = getBaseImageLayer();
         if (imageLayer != null) {
-            ProductSceneImage.setBaseImageLayerStyle(configuration, imageLayer);
+            ProductSceneImage.applyBaseImageLayerStyle(configuration, imageLayer);
         }
         final Layer noDataLayer = getNoDataLayer(false);
         if (noDataLayer != null) {
-            ProductSceneImage.setNoDataLayerStyle(configuration, noDataLayer);
+            ProductSceneImage.applyNoDataLayerStyle(configuration, noDataLayer);
         }
         final Layer collectionLayer = getVectorDataCollectionLayer(false);
         if (collectionLayer != null) {
-            ProductSceneImage.setFigureLayerStyle(configuration, collectionLayer);
+            ProductSceneImage.applyFigureLayerStyle(configuration, collectionLayer);
         }
         final GraticuleLayer graticuleLayer = getGraticuleLayer(false);
         if (graticuleLayer != null) {
-            ProductSceneImage.setGraticuleLayerStyle(configuration, graticuleLayer);
+            ProductSceneImage.applyGraticuleLayerStyle(configuration, graticuleLayer);
         }
     }
 

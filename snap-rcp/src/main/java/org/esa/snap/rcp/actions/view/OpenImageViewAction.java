@@ -124,7 +124,6 @@ public class OpenImageViewAction extends AbstractAction {
     }
 
     private ProductSceneViewTopComponent openDocumentWindow(final ProductSceneView view) {
-        view.setLayerProperties(SnapApp.getDefault().getPreferencesPropertyMap());
 
         UndoRedo.Manager undoManager = SnapApp.getDefault().getUndoManager(view.getProduct());
         ProductSceneViewTopComponent productSceneViewWindow = new ProductSceneViewTopComponent(view, undoManager);

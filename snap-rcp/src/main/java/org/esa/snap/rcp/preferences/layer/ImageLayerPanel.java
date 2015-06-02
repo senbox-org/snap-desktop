@@ -30,12 +30,8 @@ import org.esa.snap.rcp.preferences.PreferenceUtils;
 import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.HelpCtx;
 
-import javax.swing.Box;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Insets;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * * Panel handling image layer preferences. Sub-panel of the "Layer"-panel.
@@ -81,6 +77,7 @@ public final class ImageLayerPanel extends DefaultConfigController {
      * Preferences key for pixel border color
      */
     public static final String PROPERTY_KEY_PIXEL_BORDER_COLOR = "pixel.border.color";
+
     private JComponent[] imageBorderColorComponents;
     private JComponent[] pixelBorderColorComponents;
 

@@ -272,11 +272,11 @@ public class ProductSceneImage implements ProductLayerContext {
         layer.setName(getName());
         layer.setVisible(true);
         layer.setId(ProductSceneView.BASE_IMAGE_LAYER_ID);
-        setBaseImageLayerStyle(configuration, layer);
+        applyBaseImageLayerStyle(configuration, layer);
         return layer;
     }
 
-    static void setBaseImageLayerStyle(PropertyMap configuration, Layer layer) {
+    static void applyBaseImageLayerStyle(PropertyMap configuration, Layer layer) {
         final boolean borderShown = configuration.getPropertyBool("image.border.shown",
                                                                   ImageLayer.DEFAULT_BORDER_SHOWN);
         final double borderWidth = configuration.getPropertyDouble("image.border.size",
@@ -339,7 +339,7 @@ public class ProductSceneImage implements ProductLayerContext {
         return maskCollectionLayer;
     }
 
-    static void setNoDataLayerStyle(PropertyMap configuration, Layer layer) {
+    static void applyNoDataLayerStyle(PropertyMap configuration, Layer layer) {
         final PropertySet layerConfiguration = layer.getConfiguration();
         final Color color = configuration.getPropertyColor("noDataOverlay.color", NoDataLayerType.DEFAULT_COLOR);
         layerConfiguration.setValue(NoDataLayerType.PROPERTY_NAME_COLOR, color);
@@ -348,7 +348,7 @@ public class ProductSceneImage implements ProductLayerContext {
         layer.setTransparency(transparency);
     }
 
-    static void setFigureLayerStyle(PropertyMap configuration, Layer layer) {
+    static void applyFigureLayerStyle(PropertyMap configuration, Layer layer) {
         final PropertySet layerConfiguration = layer.getConfiguration();
 /*
         layerConfiguration.setValue(VectorDataLayer.PROPERTY_NAME_SHAPE_OUTLINED,
@@ -385,11 +385,11 @@ public class ProductSceneImage implements ProductLayerContext {
         graticuleLayer.setId(ProductSceneView.GRATICULE_LAYER_ID);
         graticuleLayer.setVisible(false);
         graticuleLayer.setName("Graticule");
-        setGraticuleLayerStyle(configuration, graticuleLayer);
+        applyGraticuleLayerStyle(configuration, graticuleLayer);
         return graticuleLayer;
     }
 
-    static void setGraticuleLayerStyle(PropertyMap configuration, Layer layer) {
+    static void applyGraticuleLayerStyle(PropertyMap configuration, Layer layer) {
         final PropertySet layerConfiguration = layer.getConfiguration();
 
         layerConfiguration.setValue(GraticuleLayerType.PROPERTY_NAME_RES_AUTO,

@@ -134,7 +134,6 @@ public class OpenHSVImageViewAction extends AbstractAction implements HelpCtx.Pr
                 String errorMsg = "The HSV image view could not be created.";
                 try {
                     final ProductSceneView productSceneView = new ProductSceneView(get());
-                    productSceneView.setLayerProperties(SnapApp.getDefault().getPreferencesPropertyMap());
                     OpenRGBImageViewAction.openDocumentWindow(productSceneView);
                 } catch (OutOfMemoryError e) {
                     SnapDialogs.showOutOfMemoryError(errorMsg);

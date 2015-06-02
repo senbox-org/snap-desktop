@@ -157,7 +157,6 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
                 String errorMsg = "The RGB image view could not be created.";
                 try {
                     ProductSceneView productSceneView = new ProductSceneView(get());
-                    productSceneView.setLayerProperties(SnapApp.getDefault().getPreferencesPropertyMap());
                     openDocumentWindow(productSceneView);
                 } catch (OutOfMemoryError e) {
                     SnapDialogs.showOutOfMemoryError(errorMsg);
@@ -176,8 +175,6 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
 
     public static ProductSceneViewTopComponent openDocumentWindow(final ProductSceneView view) {
         final SnapApp snapApp = SnapApp.getDefault();
-
-        view.setLayerProperties(snapApp.getPreferencesPropertyMap());
 
         UndoRedo.Manager undoManager = SnapApp.getDefault().getUndoManager(view.getProduct());
         ProductSceneViewTopComponent psvTopComponent = new ProductSceneViewTopComponent(view, undoManager);
