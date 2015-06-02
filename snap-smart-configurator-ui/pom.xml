@@ -6,8 +6,12 @@
         <artifactId>snap-desktop</artifactId>
         <version>2.0.0-SNAPSHOT</version>
     </parent>
-    <artifactId>smart-configurator-ui</artifactId>
+    <artifactId>snap-smart-configurator-ui</artifactId>
     <packaging>nbm</packaging>
+
+    <name>SNAP Smart Configurator UI</name>
+    <description>GUI to tune performance parameters</description>
+
     <build>
         <plugins>
             <plugin>
@@ -36,9 +40,14 @@
     </repositories>
     <dependencies>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>smart-configurator</artifactId>
-            <version>2.0.0-SNAPSHOT</version>
+            <groupId>org.esa.snap</groupId>
+            <artifactId>snap-smart-configurator</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.esa.snap</groupId>
+            <artifactId>snap-core</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.esa.snap</groupId>
@@ -69,6 +78,4 @@
             <version>${netbeans.version}</version>
         </dependency>
     </dependencies>
-    <name>SNAP Smart Configurator UI</name>
-    <description>GUI to tune performance parameters</description>
 </project>

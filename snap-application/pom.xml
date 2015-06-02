@@ -135,11 +135,11 @@
             <artifactId>snap-sta-ui</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!--dependency>
+        <dependency>
             <groupId>org.esa.snap</groupId>
-            <artifactId>smart-configurator-ui</artifactId>
+            <artifactId>snap-smart-configurator-ui</artifactId>
             <version>${project.version}</version>
-        </dependency-->
+        </dependency>
 
         <!-- disabled: these modules don't have the required maturity right now. -->
         <!--<dependency>-->
