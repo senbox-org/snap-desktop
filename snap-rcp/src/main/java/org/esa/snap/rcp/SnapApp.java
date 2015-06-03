@@ -2,6 +2,7 @@ package org.esa.snap.rcp;
 
 import com.bc.ceres.core.ExtensionFactory;
 import com.bc.ceres.core.ExtensionManager;
+import com.bc.ceres.jai.opimage.ReinterpretOpImage;
 import org.esa.snap.framework.dataio.ProductReader;
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.ProductManager;
@@ -33,6 +34,7 @@ import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
 import org.openide.util.NbPreferences;
 import org.openide.util.Utilities;
+import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ServiceProvider;
 import org.openide.windows.OnShowing;
 import org.openide.windows.WindowManager;
@@ -337,7 +339,8 @@ public class SnapApp {
             LOG.info("Starting SNAP Desktop");
             SnapApp.getDefault().onStart();
             initImageIO();
-            SystemUtils.init3rdPartyLibs(SnapApp.class);
+            SystemUtils.initGeoTools();
+            SystemUtils.initJAI(Lookup.getDefault().lookup(ClassLoader.class));
             // uncomment if we encounter problems with the stmt above
             //SystemUtils.init3rdPartyLibs(null);
             initGPF();
