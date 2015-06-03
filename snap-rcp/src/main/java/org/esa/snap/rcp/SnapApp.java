@@ -9,7 +9,6 @@ import org.esa.snap.framework.datamodel.ProductNode;
 import org.esa.snap.framework.gpf.GPF;
 import org.esa.snap.framework.gpf.OperatorSpi;
 import org.esa.snap.framework.gpf.OperatorSpiRegistry;
-import org.esa.snap.framework.gpf.main.GPT;
 import org.esa.snap.framework.ui.AppContext;
 import org.esa.snap.framework.ui.application.ApplicationPage;
 import org.esa.snap.framework.ui.product.ProductSceneView;
