@@ -1,26 +1,21 @@
 package org.esa.snap.rcp.actions.view.overlay;
 
 import org.esa.snap.framework.ui.product.ProductSceneView;
-import org.openide.util.ContextAwareAction;
-import org.openide.util.Lookup;
-import org.openide.util.LookupEvent;
-import org.openide.util.LookupListener;
-import org.openide.util.WeakListeners;
+import org.openide.util.*;
 import org.openide.util.actions.Presenter;
 
-import javax.swing.AbstractAction;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JMenuItem;
-import javax.swing.JToggleButton;
-import java.awt.Component;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.Collection;
 
 /**
  * @author Marco Peters
+ * @author Norman Fomferra
  */
-public abstract class AbstractOverlayAction extends AbstractAction implements ContextAwareAction, LookupListener,
-                                                                              Presenter.Toolbar, Presenter.Menu, Presenter.Popup {
+public abstract class AbstractOverlayAction extends AbstractAction
+        implements ContextAwareAction, LookupListener,
+        Presenter.Toolbar, Presenter.Menu, Presenter.Popup {
 
     private final Lookup.Result<ProductSceneView> result;
 
@@ -33,7 +28,7 @@ public abstract class AbstractOverlayAction extends AbstractAction implements Co
     }
 
     protected void updateActionState() {
-        ProductSceneView view = getSelectedView();
+        ProductSceneView view = getSelectedProductSceneView();
         if (view != null) {
             setEnabled(getActionEnableState(view));
             setSelected(getActionSelectionState(view));
@@ -41,11 +36,15 @@ public abstract class AbstractOverlayAction extends AbstractAction implements Co
             setEnabled(false);
             setSelected(false);
         }
+        selectedProductSceneViewChanged(view);
+    }
+
+    protected void selectedProductSceneViewChanged(ProductSceneView view) {
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        setOverlayEnableState(getSelectedView());
+        setOverlayEnableState(getSelectedProductSceneView());
         updateActionState();
     }
 
@@ -82,7 +81,7 @@ public abstract class AbstractOverlayAction extends AbstractAction implements Co
 
     protected abstract void setOverlayEnableState(ProductSceneView view);
 
-    protected ProductSceneView getSelectedView() {
+    protected ProductSceneView getSelectedProductSceneView() {
         Collection<? extends ProductSceneView> views = result.allInstances();
         return !views.isEmpty() ? views.stream().findFirst().get() : null;
     }
