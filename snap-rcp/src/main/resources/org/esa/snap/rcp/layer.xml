@@ -42,31 +42,12 @@
     <folder name="Services">
         <folder name="AutoupdateType">
             <file name="snap_update_center.instance">
-                <attr name="displayName" stringvalue="SNAP Engine Update Center"/>
+                <attr name="displayName" stringvalue="SNAP Update Center"/>
                 <attr name="enabled" boolvalue="true"/>
                 <attr name="instanceCreate"
                       methodvalue="org.netbeans.modules.autoupdate.updateprovider.AutoupdateCatalogFactory.createUpdateProvider"/>
                 <attr name="instanceOf" stringvalue="org.netbeans.spi.autoupdate.UpdateProvider"/>
-                <!--<attr name="url" urlvalue="http://step.esa.int/updatecenter/unstable/updates.xml.gz"/>-->
-                <attr name="url" urlvalue="http://www.senbox.net/snap/test_uc/snap-engine/updates.xml.gz"/>
-            </file>
-            <file name="snap_update_center.instance">
-                <attr name="displayName" stringvalue="SNAP Desktop Update Center"/>
-                <attr name="enabled" boolvalue="true"/>
-                <attr name="instanceCreate"
-                      methodvalue="org.netbeans.modules.autoupdate.updateprovider.AutoupdateCatalogFactory.createUpdateProvider"/>
-                <attr name="instanceOf" stringvalue="org.netbeans.spi.autoupdate.UpdateProvider"/>
-                <!--<attr name="url" urlvalue="http://step.esa.int/updatecenter/unstable/updates.xml.gz"/>-->
-                <attr name="url" urlvalue="http://www.senbox.net/snap/test_uc/snap-desktop/updates.xml.gz"/>
-            </file>
-            <file name="snap_update_center.instance">
-                <attr name="displayName" stringvalue="Sentinel-3 Toolbox Update Center"/>
-                <attr name="enabled" boolvalue="true"/>
-                <attr name="instanceCreate"
-                      methodvalue="org.netbeans.modules.autoupdate.updateprovider.AutoupdateCatalogFactory.createUpdateProvider"/>
-                <attr name="instanceOf" stringvalue="org.netbeans.spi.autoupdate.UpdateProvider"/>
-                <!--<attr name="url" urlvalue="http://step.esa.int/updatecenter/unstable/updates.xml.gz"/>-->
-                <attr name="url" urlvalue="http://www.senbox.net/snap/test_uc/s3tbx/updates.xml.gz"/>
+                <attr name="url" urlvalue="http://step.esa.int/updatecenter/unstable/updates.xml.gz"/>
             </file>
         </folder>
     </folder>
