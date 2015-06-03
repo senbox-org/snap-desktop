@@ -16,6 +16,7 @@ import org.esa.snap.framework.datamodel.ProductNodeEvent;
 import org.esa.snap.framework.datamodel.ProductNodeGroup;
 import org.esa.snap.framework.datamodel.TiePointGrid;
 import org.esa.snap.framework.datamodel.VectorDataNode;
+import org.esa.snap.framework.datamodel.VirtualBand;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.ShowPlacemarkViewAction;
 import org.esa.snap.rcp.actions.file.ShowMetadataViewAction;
@@ -349,7 +350,11 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
 
         public B(Band band) {
             super(band);
-            setIconBaseWithExtension("org/esa/snap/rcp/icons/RsBandAsSwath.gif");
+            if(band instanceof VirtualBand) {
+                setIconBaseWithExtension("org/esa/snap/rcp/icons/RsBandVirtual16.gif");
+            } else {
+                setIconBaseWithExtension("org/esa/snap/rcp/icons/RsBandAsSwath.gif");
+            }
         }
 
         @Override
