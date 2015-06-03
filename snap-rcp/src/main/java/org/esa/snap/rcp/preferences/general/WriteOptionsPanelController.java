@@ -16,7 +16,7 @@
 
 package org.esa.snap.rcp.preferences.general;
 
-import com.bc.ceres.binding.PropertyContainer;
+import com.bc.ceres.binding.PropertySet;
 import com.bc.ceres.binding.ValidationException;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.Enablement;
@@ -78,8 +78,8 @@ public final class WriteOptionsPanelController extends DefaultConfigController {
      */
     public static final boolean DEFAULT_VALUE_SAVE_INCREMENTAL = true;
 
-    protected PropertyContainer createPropertyContainer() {
-        return createPropertyContainer(new WriteOptionsBean());
+    protected PropertySet createPropertySet() {
+        return createPropertySet(new WriteOptionsBean());
     }
 
     @Override

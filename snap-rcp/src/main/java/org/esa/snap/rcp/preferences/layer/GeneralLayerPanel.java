@@ -17,7 +17,7 @@
 package org.esa.snap.rcp.preferences.layer;
 
 import com.bc.ceres.binding.Property;
-import com.bc.ceres.binding.PropertyContainer;
+import com.bc.ceres.binding.PropertySet;
 import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.PropertyEditorRegistry;
@@ -49,8 +49,8 @@ import static com.bc.ceres.swing.TableLayout.*;
         id = "LayerGeneral")
 public final class GeneralLayerPanel extends DefaultConfigController {
 
-    protected PropertyContainer createPropertyContainer() {
-        return createPropertyContainer(new GeneralLayerBean());
+    protected PropertySet createPropertySet() {
+        return createPropertySet(new GeneralLayerBean());
     }
 
     @Override

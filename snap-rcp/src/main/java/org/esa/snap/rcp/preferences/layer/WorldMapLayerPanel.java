@@ -17,7 +17,7 @@
 package org.esa.snap.rcp.preferences.layer;
 
 import com.bc.ceres.binding.Property;
-import com.bc.ceres.binding.PropertyContainer;
+import com.bc.ceres.binding.PropertySet;
 import com.bc.ceres.binding.ValidationException;
 import com.bc.ceres.glayer.LayerType;
 import com.bc.ceres.glayer.LayerTypeRegistry;
@@ -63,8 +63,8 @@ public final class WorldMapLayerPanel extends DefaultConfigController {
      */
     public static final String PROPERTY_KEY_WORLDMAP_TYPE = "worldmap.type";
 
-    protected PropertyContainer createPropertyContainer() {
-        return createPropertyContainer(new WorldMapBean());
+    protected PropertySet createPropertySet() {
+        return createPropertySet(new WorldMapBean());
     }
 
     @Override
@@ -134,8 +134,7 @@ public final class WorldMapLayerPanel extends DefaultConfigController {
     @SuppressWarnings("UnusedDeclaration")
     static class WorldMapBean {
 
-        @Preference(label = "World Map Layer",
-                key = PROPERTY_KEY_WORLDMAP_TYPE)
+        @Preference(label = "World Map Layer", key = PROPERTY_KEY_WORLDMAP_TYPE)
         String worldMapLayerType = "BlueMarbleLayerType";
     }
 
