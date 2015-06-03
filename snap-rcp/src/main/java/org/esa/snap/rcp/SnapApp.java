@@ -17,6 +17,7 @@ import org.esa.snap.rcp.actions.file.SaveProductAction;
 import org.esa.snap.rcp.util.ContextGlobalExtenderImpl;
 import org.esa.snap.rcp.util.SelectionSupport;
 import org.esa.snap.rcp.util.internal.DefaultSelectionSupport;
+import org.esa.snap.runtime.Config;
 import org.esa.snap.runtime.Engine;
 import org.esa.snap.tango.TangoIcons;
 import org.esa.snap.util.PreferencesPropertyMap;
@@ -262,7 +263,9 @@ public class SnapApp {
 
     public void onStart() {
         engine = Engine.start(false);
-        WindowManager.getDefault().setRole("developer");
+        if (Config.instance().debug()) {
+            WindowManager.getDefault().setRole("developer");
+        }
     }
 
     public void onStop() {
