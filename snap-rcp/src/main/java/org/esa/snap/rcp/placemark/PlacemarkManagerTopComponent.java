@@ -766,7 +766,6 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
                     }
                 }
                 addPlacemarksToProduct(placemarksCopy, selectedProduct, true);
-//                }
             }
         }
     }
@@ -822,6 +821,19 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
         for (List<Placemark> relatedPlacemarkList : relatedPlacemarks) {
             for (Placemark placemark : relatedPlacemarkList) {
                 if (placemark.getProduct() == removedProduct) {
+                    relatedPlacemarkList.remove(placemark);
+                    if (relatedPlacemarkList.size() == 1) {
+                        relatedPlacemarks.remove(relatedPlacemarkList);
+                    }
+                }
+            }
+        }
+    }
+
+    private void removePlacemarksFromRelatedPlacemarks(Placemark placemark) {
+        for (List<Placemark> relatedPlacemarkList : relatedPlacemarks) {
+            for (Placemark relatedPlacemark : relatedPlacemarkList) {
+                if (placemark == relatedPlacemark) {
                     relatedPlacemarkList.remove(placemark);
                     if (relatedPlacemarkList.size() == 1) {
                         relatedPlacemarks.remove(relatedPlacemarkList);
@@ -956,17 +968,20 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
         @Override
         public void nodeRemoved(ProductNodeEvent event) {
             ProductNode sourceNode = event.getSourceNode();
-            if (sourceNode instanceof Placemark && sourceNode.getOwner() == placemarkDescriptor.getPlacemarkGroup(
-                    product)) {
-                placemarkTableModel.removePlacemark((Placemark) sourceNode);
-                int selectedRow = placemarkTable.getSelectedRow();
-                if (selectedRow >= getPlacemarkGroup(product).getNodeCount()) {
-                    selectedRow = getPlacemarkGroup(product).getNodeCount() - 1;
+            if (sourceNode instanceof Placemark) {
+                final Placemark placemark = (Placemark) sourceNode;
+                removePlacemarksFromRelatedPlacemarks(placemark);
+                if (sourceNode.getOwner() == placemarkDescriptor.getPlacemarkGroup(product)) {
+                    placemarkTableModel.removePlacemark(placemark);
+                    int selectedRow = placemarkTable.getSelectedRow();
+                    if (selectedRow >= getPlacemarkGroup(product).getNodeCount()) {
+                        selectedRow = getPlacemarkGroup(product).getNodeCount() - 1;
+                    }
+                    if (selectedRow >= 0) {
+                        placemarkTable.getSelectionModel().setSelectionInterval(selectedRow, selectedRow);
+                    }
+                    updateUIState();
                 }
-                if (selectedRow >= 0) {
-                    placemarkTable.getSelectionModel().setSelectionInterval(selectedRow, selectedRow);
-                }
-                updateUIState();
             }
         }
 

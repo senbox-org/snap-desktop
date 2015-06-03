@@ -118,6 +118,10 @@
             </folder>
 
         </folder>
+        <folder name="View">
+        </folder>
+        <folder name="Placemark">
+        </folder>
     </folder>
 
     <!--
