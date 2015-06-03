@@ -17,7 +17,7 @@
 package org.esa.snap.rcp.preferences.layer;
 
 import com.bc.ceres.binding.Property;
-import com.bc.ceres.binding.PropertyContainer;
+import com.bc.ceres.binding.PropertySet;
 import com.bc.ceres.glayer.support.ImageLayer;
 import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
@@ -81,8 +81,8 @@ public final class ImageLayerPanel extends DefaultConfigController {
     private JComponent[] imageBorderColorComponents;
     private JComponent[] pixelBorderColorComponents;
 
-    protected PropertyContainer createPropertyContainer() {
-        return createPropertyContainer(new ImageLayerBean());
+    protected PropertySet createPropertySet() {
+        return createPropertySet(new ImageLayerBean());
     }
 
     @Override

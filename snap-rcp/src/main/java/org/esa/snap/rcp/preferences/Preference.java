@@ -29,8 +29,8 @@ import java.lang.annotation.Target;
 
 /**
  * Annotation for user preferences. Use is mandatory if preferences are supplied via a bean, see
- * {@link DefaultConfigController#createPropertyContainer()} and
- * {@link DefaultConfigController#createPropertyContainer(Object)}.
+ * {@link DefaultConfigController#createPropertySet()} and
+ * {@link DefaultConfigController#createPropertySet(Object)}.
  *
  * @see DefaultConfigController
  *

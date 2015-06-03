@@ -19,6 +19,7 @@ package org.esa.snap.rcp.preferences;
 import com.bc.ceres.binding.Property;
 import com.bc.ceres.binding.ValidationException;
 import com.bc.ceres.swing.TableLayout;
+import org.esa.snap.util.SystemUtils;
 import org.openide.awt.ColorComboBox;
 
 import javax.swing.*;
@@ -102,7 +103,7 @@ public class PreferenceUtils {
                 try {
                     property.setValue(colorComboBox.getSelectedColor());
                 } catch (ValidationException e1) {
-                    e1.printStackTrace(); // very basic exception handling because exception is not expected to be thrown
+                    SystemUtils.LOG.warning("Color preference conversion error: " + e1.getMessage());
                 }
             }
         });

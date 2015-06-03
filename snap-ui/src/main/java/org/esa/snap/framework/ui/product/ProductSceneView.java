@@ -673,19 +673,19 @@ public class ProductSceneView extends BasicView
         layerCanvas.setBackground(
                 configuration.getPropertyColor("image.background.color", DEFAULT_IMAGE_BACKGROUND_COLOR));
 
-        final ImageLayer imageLayer = getBaseImageLayer();
+        ImageLayer imageLayer = getBaseImageLayer();
         if (imageLayer != null) {
             ProductSceneImage.applyBaseImageLayerStyle(configuration, imageLayer);
         }
-        final Layer noDataLayer = getNoDataLayer(false);
+        Layer noDataLayer = getNoDataLayer(false);
         if (noDataLayer != null) {
             ProductSceneImage.applyNoDataLayerStyle(configuration, noDataLayer);
         }
-        final Layer collectionLayer = getVectorDataCollectionLayer(false);
+        Layer collectionLayer = getVectorDataCollectionLayer(false);
         if (collectionLayer != null) {
             ProductSceneImage.applyFigureLayerStyle(configuration, collectionLayer);
         }
-        final GraticuleLayer graticuleLayer = getGraticuleLayer(false);
+        GraticuleLayer graticuleLayer = getGraticuleLayer(false);
         if (graticuleLayer != null) {
             ProductSceneImage.applyGraticuleLayerStyle(configuration, graticuleLayer);
         }

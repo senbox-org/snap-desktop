@@ -17,7 +17,7 @@
 package org.esa.snap.rcp.preferences.layer;
 
 import com.bc.ceres.binding.Property;
-import com.bc.ceres.binding.PropertyContainer;
+import com.bc.ceres.binding.PropertySet;
 import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.PropertyEditorRegistry;
@@ -60,8 +60,8 @@ public final class NoDataLayerPanel extends DefaultConfigController {
      */
     public static final String PROPERTY_KEY_NO_DATA_OVERLAY_TRANSPARENCY = "noDataOverlay.transparency";
 
-    protected PropertyContainer createPropertyContainer() {
-        return createPropertyContainer(new NoDataBean());
+    protected PropertySet createPropertySet() {
+        return createPropertySet(new NoDataBean());
     }
 
     @Override
@@ -107,7 +107,7 @@ public final class NoDataLayerPanel extends DefaultConfigController {
 
         @Preference(label = "No-data overlay transparency",
                 key = PROPERTY_KEY_NO_DATA_OVERLAY_TRANSPARENCY,
-                interval = "[0.0,0.95]")
+                interval = "[0.0,1.0]")
         double noDataOverlayTransparency = 0.3;
     }
 

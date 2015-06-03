@@ -17,7 +17,7 @@
 package org.esa.snap.rcp.preferences.layer;
 
 import com.bc.ceres.binding.Property;
-import com.bc.ceres.binding.PropertyContainer;
+import com.bc.ceres.binding.PropertySet;
 import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.Enablement;
@@ -57,8 +57,8 @@ public final class GraticuleLayerPanel extends DefaultConfigController {
     private JComponent[] textFgColorComponents;
     private JComponent[] textBgColorComponents;
 
-    protected PropertyContainer createPropertyContainer() {
-        return createPropertyContainer(new GraticuleBean());
+    protected PropertySet createPropertySet() {
+        return createPropertySet(new GraticuleBean());
     }
 
     @Override

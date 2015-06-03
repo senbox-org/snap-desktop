@@ -17,7 +17,7 @@
 package org.esa.snap.rcp.preferences.layer;
 
 import com.bc.ceres.binding.Property;
-import com.bc.ceres.binding.PropertyContainer;
+import com.bc.ceres.binding.PropertySet;
 import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.PropertyEditorRegistry;
@@ -46,7 +46,7 @@ import java.awt.Insets;
         keywordsCategory = "Layer",
         id = "LayerMask")
 @org.openide.util.NbBundle.Messages({
-        "Options_DisplayName_LayerMask=Mask Layer",
+        "Options_DisplayName_LayerMask=New Masks",
         "Options_Keywords_LayerMask=layer, mask"
 })
 public final class MaskLayerPanel extends DefaultConfigController {
@@ -60,8 +60,8 @@ public final class MaskLayerPanel extends DefaultConfigController {
      */
     public static final String PROPERTY_KEY_MASK_TRANSPARENCY = "mask.transparency";
 
-    protected PropertyContainer createPropertyContainer() {
-        return createPropertyContainer(new MaskBean());
+    protected PropertySet createPropertySet() {
+        return createPropertySet(new MaskBean());
     }
 
     @Override
@@ -102,14 +102,14 @@ public final class MaskLayerPanel extends DefaultConfigController {
     static class MaskBean {
 
         @SuppressWarnings("AccessStaticViaInstance")
-        @Preference(label = "Mask overlay colour",
+        @Preference(label = "Default mask overlay colour",
                 key = PROPERTY_KEY_MASK_COLOR)
-        Color noDataOverlayColor = Mask.ImageType.DEFAULT_COLOR.RED;
+        Color maskOverlayColor = Mask.ImageType.DEFAULT_COLOR.RED;
 
-        @Preference(label = "Mask overlay transparency",
+        @Preference(label = "Default mask overlay transparency",
                 key = PROPERTY_KEY_MASK_TRANSPARENCY,
-                interval = "[0.0,0.95]")
-        double noDataOverlayTransparency = Mask.ImageType.DEFAULT_TRANSPARENCY;
+                interval = "[0.0,1.0]")
+        double maskOverlayTransparency = Mask.ImageType.DEFAULT_TRANSPARENCY;
     }
 
 }
