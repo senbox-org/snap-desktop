@@ -298,22 +298,20 @@ public final class OpenProductAction extends AbstractAction {
                                                     "The readers might interpret the data differently.<br>" +
                                                     "Please select one of the following:"));
         final JComboBox<ProductReaderPlugIn> pluginsCombobox = new JComboBox<>();
+        DefaultListCellRenderer cellRenderer = new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                setText(((ProductReaderPlugIn) value).getDescription(Locale.getDefault()));
+                return this;
+            }
+        };
+        pluginsCombobox.setRenderer(cellRenderer);
         for (PluginEntry plugin : intendedPlugins) {
             pluginsCombobox.addItem(plugin.plugin);
-            DefaultListCellRenderer cellRenderer = new DefaultListCellRenderer() {
-                @Override
-                public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-                    super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-                    setText(((ProductReaderPlugIn) value).getDescription(Locale.getDefault()));
-                    return this;
-                }
-            };
-            pluginsCombobox.setRenderer(cellRenderer);
         }
-        if (!intendedPlugins.isEmpty()) {
-            for (PluginEntry plugin : suitablePlugIns) {
-                pluginsCombobox.addItem(plugin.plugin);
-            }
+        for (PluginEntry plugin : suitablePlugIns) {
+            pluginsCombobox.addItem(plugin.plugin);
         }
         readerSelectionPanel.add(pluginsCombobox);
         JCheckBox decisionCheckBox = new JCheckBox("Remember my decision and don't ask again.", false);
