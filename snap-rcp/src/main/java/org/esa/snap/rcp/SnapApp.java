@@ -422,6 +422,7 @@ public class SnapApp {
      *
      * @see org.esa.snap.rcp.util.ContextGlobalExtenderImpl
      */
+
     @ServiceProvider(
             service = ContextGlobalProvider.class,
             supersedes = "org.netbeans.modules.openide.windows.GlobalActionContextImpl"
