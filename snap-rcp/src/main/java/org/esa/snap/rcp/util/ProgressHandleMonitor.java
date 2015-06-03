@@ -5,9 +5,36 @@ import com.bc.ceres.core.ProgressMonitor;
 import org.netbeans.api.progress.ProgressHandle;
 import org.netbeans.api.progress.ProgressHandleFactory;
 import org.openide.util.Cancellable;
+import org.openide.util.RequestProcessor;
 
 /**
  * A progress monitor that notifies a {@code ProgressHandle} instance (of the NetBeans Progress API).
+ * <p>
+ * Use case 1:
+ * <pre>
+ *     ProgressHandleMonitor pm = ProgressHandleMonitor.create("Training");
+ *     Runnable operation = () -> {
+ *         pm.beginTask("Classifier training...", 100);
+ *         try {
+ *             session.startTraining(queryPatches, pm);
+ *         } catch (Exception e) {
+ *             SnapApp.getDefault().handleError("Failed to train classifier", e);
+ *         } finally {
+ *             pm.done();
+ *         }
+ *    };
+ *    ProgressUtils.runOffEventThreadWithProgressDialog(operation, "Extracting Features", pm.getProgressHandle(), true, 50, 1000);
+ * </pre>
+ *
+ * <p>
+ * Use case 2:
+ * <pre>
+ *    RequestProcessor.getDefault().post(() -> {
+ *        ProgressHandle handle = ProgressHandleFactory.createHandle("Performing time consuming task");
+ *        ProgressMonitor pm = new ProgressHandleMonitor(handle);
+ *        performTimeConsumingTask(pm);
+ *    });
+ * </pre>
  *
  * @author Norman Fomferra
  * @since SNAP 2
@@ -23,6 +50,10 @@ public class ProgressHandleMonitor implements ProgressMonitor, Cancellable {
     private int currentWorkUnits;
     private double currentWorkUnitsRational;
 
+    public static ProgressHandleMonitor create(String displayName) {
+        return create(displayName, null);
+    }
+
     public static ProgressHandleMonitor create(String displayName, Cancellable cancellable) {
         ProgressHandleMonitor progressMonitor = new ProgressHandleMonitor(cancellable);
         ProgressHandle progressHandle = ProgressHandleFactory.createHandle(displayName, progressMonitor);
@@ -36,7 +67,6 @@ public class ProgressHandleMonitor implements ProgressMonitor, Cancellable {
     }
 
     private ProgressHandleMonitor(Cancellable cancellable) {
-        Assert.notNull(cancellable);
         this.cancellable = cancellable;
     }
 
@@ -126,4 +156,5 @@ public class ProgressHandleMonitor implements ProgressMonitor, Cancellable {
         }
         return isCanceled();
     }
+
 }
