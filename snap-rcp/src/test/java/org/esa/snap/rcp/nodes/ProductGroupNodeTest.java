@@ -28,7 +28,7 @@ public class ProductGroupNodeTest {
         PNode pNode = (PNode) rootNode.getChildren().getNodeAt(0);
 
         assertSame(product1, pNode.getProduct());
-        assertEquals("Test_Product_1", pNode.getDisplayName());
+        assertEquals("[1] Test_Product_1", pNode.getDisplayName());
 
         Children children = pNode.getChildren();
         assertNotNull(children);
