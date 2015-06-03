@@ -11,6 +11,7 @@ import org.esa.snap.framework.datamodel.IndexCoding;
 import org.esa.snap.framework.datamodel.Mask;
 import org.esa.snap.framework.datamodel.MetadataElement;
 import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.datamodel.ProductData;
 import org.esa.snap.framework.datamodel.ProductNode;
 import org.esa.snap.framework.datamodel.ProductNodeEvent;
 import org.esa.snap.framework.datamodel.ProductNodeGroup;
@@ -27,9 +28,10 @@ import org.openide.nodes.PropertySupport;
 import org.openide.nodes.Sheet;
 import org.openide.util.lookup.Lookups;
 
-import javax.swing.Action;
+import javax.swing.*;
 import java.awt.datatransfer.Transferable;
 import java.io.IOException;
+import java.util.stream.Stream;
 
 /**
  * A node that represents some {@link org.esa.snap.framework.datamodel.ProductNode} (=PN).
@@ -309,6 +311,29 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
         public Action getPreferredAction() {
             return new OpenImageViewAction(this.getProductNode());
         }
+
+        @Override
+        public PropertySet[] getPropertySets() {
+
+            Sheet.Set set = new Sheet.Set();
+            final TiePointGrid tpg = getProductNode();
+
+            set.setDisplayName("Tie Point Grid Properties");
+            set.put(new PropertySupport.ReadOnly<String>("unit", String.class, "Unit", "Geophysical Unit") {
+                @Override
+                public String getValue() {
+                    return tpg.getUnit();
+                }
+            });
+            set.put(new PropertySupport.ReadOnly<String>("dimensions", String.class, "Width x Height", "The width and height of raster") {
+                @Override
+                public String getValue() {
+                    return tpg.getRasterWidth()+" x "+tpg.getRasterHeight();
+                }
+            });
+
+            return Stream.concat(Stream.of(super.getPropertySets()), Stream.of(set)).toArray(PropertySet[]::new);
+        }
     }
 
     /**
@@ -392,6 +417,70 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
         @Override
         public Action getPreferredAction() {
             return new OpenImageViewAction(this.getProductNode());
+        }
+
+        @Override
+        public PropertySet[] getPropertySets() {
+
+            Sheet.Set set = new Sheet.Set();
+            final Band band = getProductNode();
+
+            set.setDisplayName("Raster Band Properties");
+            set.put(new PropertySupport.ReadOnly<String>("dataType", String.class, "Data Type", "The data type") {
+                @Override
+                public String getValue() {
+                    return ProductData.getTypeString(band.getDataType());
+                }
+            });
+            set.put(new PropertySupport.ReadOnly<String>("unit", String.class, "Unit", "Geophysical Unit") {
+                @Override
+                public String getValue() {
+                    return band.getUnit();
+                }
+            });
+            set.put(new PropertySupport.ReadOnly<String>("dimensions", String.class, "Width x Height", "The width and height of raster") {
+                @Override
+                public String getValue() {
+                    return band.getRasterWidth()+" x "+band.getRasterHeight();
+                }
+            });
+            set.put(new PropertySupport.ReadWrite<Boolean>("useNoDataValue", Boolean.class, "Use No-Data Value", "Use the no-data value") {
+                @Override
+                public Boolean getValue() {
+                    return band.isNoDataValueUsed();
+                }
+                @Override
+                public void setValue(Boolean val) {
+                    band.setNoDataValueUsed(val);
+                }
+            });
+            set.put(new PropertySupport.ReadWrite<Double>("noDataValue", Double.class, "No-Data Value", "The no-data value") {
+                @Override
+                public Double getValue() {
+                    return band.getNoDataValue();
+                }
+                @Override
+                public void setValue(Double val) {
+                    band.setNoDataValue(val);
+                }
+            });
+
+            if(band instanceof VirtualBand) {
+                final VirtualBand virtualBand = (VirtualBand)band;
+
+                set.put(new PropertySupport.ReadWrite<String>("expression", String.class, "Expression", "Band maths expression") {
+                    @Override
+                    public String getValue() {
+                        return virtualBand.getExpression();
+                    }
+                    @Override
+                    public void setValue(String val) {
+                        virtualBand.setExpression(val);
+                    }
+                });
+            }
+
+            return Stream.concat(Stream.of(super.getPropertySets()), Stream.of(set)).toArray(PropertySet[]::new);
         }
     }
 }

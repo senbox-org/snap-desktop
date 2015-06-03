@@ -17,7 +17,7 @@ import org.openide.nodes.PropertySupport;
 import org.openide.nodes.Sheet;
 import org.openide.util.WeakListeners;
 
-import javax.swing.Action;
+import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -45,7 +45,7 @@ class PNode extends PNNode<Product> implements PreferenceChangeListener {
         super(product, group);
         this.group = group;
         group.node = this;
-        setDisplayName(product.getName());
+        setDisplayName(product.getDisplayName());
         setShortDescription(product.getDescription());
         setIconBaseWithExtension("org/esa/snap/rcp/icons/RsProduct16.gif");
         Preferences preferences = SnapApp.getDefault().getPreferences();
@@ -102,8 +102,48 @@ class PNode extends PNNode<Product> implements PreferenceChangeListener {
                 return getProduct().getFileLocation();
             }
         });
+        set.put(new PropertySupport.ReadOnly<String>("productType", String.class, "Product Type", "The product type") {
+            @Override
+            public String getValue() {
+                return getProduct().getProductType();
+            }
+        });
+        set.put(new PropertySupport.ReadOnly<String>("startTime", String.class, "Start Time", "The product acquistion start time") {
+            @Override
+            public String getValue() {
+                return getProduct().getStartTime().format();
+            }
+        });
+        set.put(new PropertySupport.ReadOnly<String>("endTime", String.class, "End Time", "The product acquistion end time") {
+            @Override
+            public String getValue() {
+                return getProduct().getEndTime().format();
+            }
+        });
+        includeAbstractedMetadata(set);
 
         return Stream.concat(Stream.of(super.getPropertySets()), Stream.of(set)).toArray(PropertySet[]::new);
+    }
+
+    private void includeAbstractedMetadata(final Sheet.Set set) {
+        final MetadataElement root = getProduct().getMetadataRoot();
+        if(root != null) {
+            final MetadataElement absRoot = root.getElement("Abstracted_Metadata");
+            if(absRoot != null) {
+                set.put(new PropertySupport.ReadOnly<String>("mission", String.class, "Mission", "Earth Observation Mission") {
+                    @Override
+                    public String getValue() {
+                        return absRoot.getAttributeString("mission");
+                    }
+                });
+                set.put(new PropertySupport.ReadOnly<String>("pass", String.class, "Pass", "Orbital Pass") {
+                    @Override
+                    public String getValue() {
+                        return absRoot.getAttributeString("pass");
+                    }
+                });
+            }
+        }
     }
 
     private boolean isGroupByNodeType() {
