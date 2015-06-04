@@ -175,11 +175,11 @@
                 <version>${snap.version}</version>
             </dependency>
 
-            <!--<dependency>-->
-                <!--<groupId>${project.groupId}</groupId>-->
-                <!--<artifactId>snap-visat-rcp</artifactId>-->
-                <!--<version>${snap.version}</version>-->
-            <!--</dependency>-->
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>snap-visat-rcp</artifactId>
+                <version>${snap.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>${project.groupId}</groupId>

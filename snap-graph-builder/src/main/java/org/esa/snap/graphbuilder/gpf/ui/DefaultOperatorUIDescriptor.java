@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 by Array Systems Computing Inc. http://www.array.ca
+ * Copyright (C) 2015 by Array Systems Computing Inc. http://www.array.ca
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -24,13 +24,16 @@ public class DefaultOperatorUIDescriptor implements OperatorUIDescriptor {
 
     private String id;
     private String operatorName;
+    private Boolean disableFromGraphBuilder;
     private Class<? extends OperatorUI> operatorUIClass;
 
     public DefaultOperatorUIDescriptor(final String id, final String operatorName,
-                                       final Class<? extends OperatorUI> operatorUIClass) {
+                                       final Class<? extends OperatorUI> operatorUIClass,
+                                       final Boolean disableFromGraphBuilder) {
         this.id = id;
         this.operatorName = operatorName;
         this.operatorUIClass = operatorUIClass;
+        this.disableFromGraphBuilder = disableFromGraphBuilder;
     }
 
     public String getId() {
@@ -41,8 +44,14 @@ public class DefaultOperatorUIDescriptor implements OperatorUIDescriptor {
         return operatorName;
     }
 
+    public Boolean disableFromGraphBuilder() {
+        return disableFromGraphBuilder;
+    }
+
     public OperatorUI createOperatorUI() {
-        Assert.state(operatorUIClass != null, "operatorUIClass != null");
+        if(operatorUIClass == null) {
+            return new DefaultUI();
+        }
         Object object;
         try {
             object = operatorUIClass.newInstance();

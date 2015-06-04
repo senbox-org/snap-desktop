@@ -17,6 +17,7 @@ package org.esa.snap.graphbuilder.rcp.dialogs.support;
 
 import org.apache.commons.math3.util.FastMath;
 import org.esa.snap.framework.gpf.graph.NodeSource;
+import org.esa.snap.graphbuilder.gpf.ui.OperatorUIRegistry;
 import org.esa.snap.util.IconUtils;
 import org.esa.snap.util.StringUtils;
 
@@ -102,7 +103,7 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
 
         // add operators
         for (String anAlias : gpfOperatorList) {
-            if (!graphEx.isOperatorInternal(anAlias)) {
+            if (!graphEx.isOperatorInternal(anAlias) && OperatorUIRegistry.showInGraphBuilder(anAlias)) {
                 final String category = graphEx.getOperatorCategory(anAlias);
                 JMenu menu = addMenu;
                 if (!category.isEmpty()) {
