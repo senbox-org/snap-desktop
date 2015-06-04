@@ -15,31 +15,22 @@
  */
 package org.esa.snap.rcp.imgfilter;
 
-import org.esa.snap.framework.datamodel.Band;
-import org.esa.snap.framework.datamodel.ConvolutionFilterBand;
-import org.esa.snap.framework.datamodel.FilterBand;
-import org.esa.snap.framework.datamodel.GeneralFilterBand;
-import org.esa.snap.framework.datamodel.Kernel;
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductNode;
-import org.esa.snap.framework.datamodel.RasterDataNode;
+import org.esa.snap.framework.datamodel.*;
 import org.esa.snap.framework.ui.ModalDialog;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.actions.view.OpenImageViewAction;
 import org.esa.snap.rcp.imgfilter.model.Filter;
+import org.esa.snap.rcp.session.*;
 import org.esa.snap.util.ProductUtils;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
-import org.openide.util.NbBundle;
+import org.openide.util.*;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
-//import org.esa.snap.visat.VisatApp;
-
-
-
 
 
 @ActionID(
@@ -49,36 +40,52 @@ import java.awt.event.ActionEvent;
 @ActionRegistration(
         displayName = "#CTL_FilteredBandAction_MenuText",
         popupText = "#CTL_FilteredBandAction_MenuText",
-//        iconBase = "org/esa/snap/rcp/icons/BandMaths.gif",
-        lazy = true
+        lazy = false
 )
 @ActionReferences({
         @ActionReference(
                 path = "Menu/Tools",
-                position = 111
+                position = 112
         ),
         @ActionReference(
                 path = "Context/Product/RasterDataNode",
-                position = 201
+                position = 202
         )
 })
 @NbBundle.Messages({
         "CTL_FilteredBandAction_MenuText=Create Filtered Band...",
         "CTL_FilteredBandAction_ShortDescription=Applies a filter to the currently selected band and adds it as a new band."
 })
-public class FilteredBandAction extends AbstractAction  {
+public class FilteredBandAction extends AbstractAction  implements LookupListener, ContextAwareAction {
+
+    private RasterDataNode[] selectedRasters;
+    private Lookup lookup;
+    private Lookup.Result<Band> result;
 
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        createFilteredBand();
+    public FilteredBandAction() {
+        this(Utilities.actionsGlobalContext());
+    }
+
+    public FilteredBandAction(Lookup lookup){
+        super(Bundle.CTL_FilteredBandAction_MenuText());
+        this.lookup = lookup;
+        result = lookup.lookupResult(Band.class);
+        result.addLookupListener(WeakListeners.create(LookupListener.class, this, result));
+        setEnableState();
     }
 
 
-//    public void updateState(CommandEvent event) {
-//        final ProductNode node = SnapApp.getDefault().getSelectedProductNode();
-//        event.getCommand().setEnabled(node instanceof Band);
-//    }
+    private void setEnableState() {
+        Band band = lookup.lookup(Band.class);
+        setEnabled(band != null);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        SnapDialogs.showInformation(selectedRasters.length + " rasters selected!", null);
+        createFilteredBand();
+    }
 
     private void createFilteredBand() {
         ProductNode node = SnapApp.getDefault().getSelectedProductNode();
@@ -169,6 +176,16 @@ public class FilteredBandAction extends AbstractAction  {
             return dialog.getDialogData();
         }
         return null;
+    }
+
+    @Override
+    public Action createContextAwareInstance(Lookup actionContext) {
+        return new FilteredBandAction(actionContext);
+    }
+
+    @Override
+    public void resultChanged(LookupEvent ev) {
+        setEnableState();
     }
 }
 
