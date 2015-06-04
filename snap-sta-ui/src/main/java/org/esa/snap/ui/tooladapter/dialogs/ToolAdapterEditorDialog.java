@@ -430,15 +430,16 @@ public class ToolAdapterEditorDialog extends ModalDialog {
         panelToolFiles.add(new JLabel(Bundle.CTL_Label_WorkDir_Text()));
         panelToolFiles.add(editorComponent);
 
-        Dimension panelToolDimension = new Dimension(configPanel.getWidth(), 50);
+        /*Dimension panelToolDimension = new Dimension(configPanel.getWidth(), 50);
         panelToolFiles.setMinimumSize(panelToolDimension);
         panelToolFiles.setMaximumSize(panelToolDimension);
-        panelToolFiles.setPreferredSize(panelToolDimension);
+        panelToolFiles.setPreferredSize(panelToolDimension);*/
 
         SpringUtilities.makeCompactGrid(panelToolFiles, 2, 2, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING);
 
         configPanel.add(panelToolFiles);
-        configPanel.add(new JLabel(Bundle.CTL_Label_CmdLineTemplate_Text()));
+        JLabel label = new JLabel(Bundle.CTL_Label_CmdLineTemplate_Text());
+        configPanel.add(label);
 
         templateContent = new JTextArea("", 16, 9);
         try {
@@ -453,7 +454,8 @@ public class ToolAdapterEditorDialog extends ModalDialog {
             logger.warning(e.getMessage());
         }
         templateContent.setInputVerifier(new RequiredFieldValidator(MESSAGE_REQUIRED));
-        configPanel.add(new JScrollPane(templateContent));
+        JScrollPane scrollPane = new JScrollPane(templateContent);
+        configPanel.add(scrollPane);
 
         SpringUtilities.makeCompactGrid(configPanel, 3, 1, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING);
 
