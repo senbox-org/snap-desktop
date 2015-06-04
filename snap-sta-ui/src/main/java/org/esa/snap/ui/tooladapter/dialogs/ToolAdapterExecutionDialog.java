@@ -38,6 +38,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -97,23 +98,27 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
 
     @Override
     protected void onApply() {
-        if (!canApply()) {
-            onClose();
-            ToolAdapterEditorDialog dialog = new ToolAdapterEditorDialog(appContext, operatorDescriptor, false);
-            dialog.show();
+        final Product[] sourceProducts = form.getSourceProducts();
+        if (Arrays.stream(sourceProducts).anyMatch(p -> p == null)) {
+            SnapDialogs.showWarning("Please make sure you have selected the necessary input products");
         } else {
-            if (validateUserInput()) {
-                String productDir = targetProductSelector.getModel().getProductDir().getAbsolutePath();
-                appContext.getPreferences().setPropertyString(SaveProductAsAction.PREFERENCES_KEY_LAST_PRODUCT_DIR, productDir);
-                final Product[] sourceProducts = form.getSourceProducts();
-                Map<String, Product> sourceProductMap = new HashMap<>();
-                sourceProductMap.put(SOURCE_PRODUCT_FIELD, sourceProducts[0]);
-                Operator op = GPF.getDefaultInstance().createOperator(operatorDescriptor.getName(), parameterSupport.getParameterMap(), sourceProductMap, null);
-                op.setSourceProducts(sourceProducts);
-                operatorTask = new OperatorTask(op, ToolAdapterExecutionDialog.this::operatorCompleted);
-                ProgressHandle progressHandle = ProgressHandleFactory.createHandle(this.getTitle());
-                ((ToolAdapterOp) op).setProgressMonitor(progressHandle);
-                ProgressUtils.runOffEventThreadWithProgressDialog(operatorTask, this.getTitle(), progressHandle, true, 1, 1);
+            if (!canApply()) {
+                onClose();
+                ToolAdapterEditorDialog dialog = new ToolAdapterEditorDialog(appContext, operatorDescriptor, false);
+                dialog.show();
+            } else {
+                if (validateUserInput()) {
+                    String productDir = targetProductSelector.getModel().getProductDir().getAbsolutePath();
+                    appContext.getPreferences().setPropertyString(SaveProductAsAction.PREFERENCES_KEY_LAST_PRODUCT_DIR, productDir);
+                    Map<String, Product> sourceProductMap = new HashMap<>();
+                    sourceProductMap.put(SOURCE_PRODUCT_FIELD, sourceProducts[0]);
+                    Operator op = GPF.getDefaultInstance().createOperator(operatorDescriptor.getName(), parameterSupport.getParameterMap(), sourceProductMap, null);
+                    op.setSourceProducts(sourceProducts);
+                    operatorTask = new OperatorTask(op, ToolAdapterExecutionDialog.this::operatorCompleted);
+                    ProgressHandle progressHandle = ProgressHandleFactory.createHandle(this.getTitle());
+                    ((ToolAdapterOp) op).setProgressMonitor(progressHandle);
+                    ProgressUtils.runOffEventThreadWithProgressDialog(operatorTask, this.getTitle(), progressHandle, true, 1, 1);
+                }
             }
         }
     }
@@ -190,6 +195,8 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
         boolean isValid = true;
         File productDir = targetProductSelector.getModel().getProductDir();
         isValid &= (productDir != null) && productDir.exists();
+        Product[] sourceProducts = form.getSourceProducts();
+        isValid &= (sourceProducts != null) && sourceProducts.length > 0;
 
         return isValid;
     }
