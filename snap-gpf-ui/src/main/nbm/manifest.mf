@@ -3,6 +3,7 @@ AutoUpdate-Show-In-Client: false
 AutoUpdate-Essential-Module: true
 OpenIDE-Module-Java-Dependencies: Java > 1.8
 OpenIDE-Module-Display-Category: SNAP
+OpenIDE-Module-Layer: org/esa/snap/framework/gpf/layer.xml
 OpenIDE-Module-Long-Description: <p>The basic framework for processing
   using Operators and the GPT.</p><p><b>Vendor:</b> Brockmann Consult 
  GmbH</p><p><b>Contact address:</b> Max-Planck-Str. 2, 21502 Geesthach

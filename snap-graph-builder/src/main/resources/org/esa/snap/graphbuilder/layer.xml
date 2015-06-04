@@ -21,7 +21,6 @@
         <file name="org.esa.snap.graphbuilder.gpf.ui.SubsetUI">
             <attr name="operatorUIClass" stringvalue="org.esa.snap.graphbuilder.gpf.ui.SubsetUI"/>
             <attr name="operatorName" stringvalue="Subset"/>
-            <attr name="disableFromGraphBuilder" stringvalue="true"/>
         </file>
     </folder>
 
