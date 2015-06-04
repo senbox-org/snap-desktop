@@ -1,0 +1,10 @@
+<filesystem>
+
+    <folder name="OperatorUIs">
+        <file name="org.esa.snap.pixex.gpf.ui.PixEx">
+            <attr name="operatorName" stringvalue="PixEx"/>
+            <attr name="disableFromGraphBuilder" stringvalue="true"/>
+        </file>
+    </folder>
+
+</filesystem>
