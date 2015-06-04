@@ -24,21 +24,21 @@ import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle;
 
 import javax.swing.AbstractAction;
-import javax.swing.AbstractButton;
-import javax.swing.ButtonGroup;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
 import javax.swing.SwingConstants;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -73,7 +73,6 @@ public final class OpenProductAction extends AbstractAction {
     public static final String PREFERENCES_KEY_RECENTLY_OPENED_PRODUCTS = "recently_opened_products";
     public static final String PREFERENCES_KEY_LAST_PRODUCT_DIR = "last_product_open_dir";
     private static final String PREFERENCES_KEY_PREFIX_ALTERNATIVE_READER = "open_alternative_reader.";
-
 
 
     static RecentPaths getRecentProductPaths() {
@@ -197,8 +196,8 @@ public final class OpenProductAction extends AbstractAction {
         }
 
         String formatName = (fc.getFileFilter() instanceof SnapFileFilter)
-                            ? ((SnapFileFilter) fc.getFileFilter()).getFormatName()
-                            : null;
+                ? ((SnapFileFilter) fc.getFileFilter()).getFormatName()
+                : null;
 
         return openProductFilesCheckOpened(formatName, files);
     }
@@ -210,9 +209,9 @@ public final class OpenProductAction extends AbstractAction {
             if (openedFiles.contains(file)) {
                 SnapDialogs.Answer answer = SnapDialogs.requestDecision(Bundle.CTL_OpenProductActionName(),
                                                                         MessageFormat.format("Product\n" +
-                                                                                             "{0}\n" +
-                                                                                             "is already opened.\n" +
-                                                                                             "Do you want to open another instance?", file),
+                                                                                                     "{0}\n" +
+                                                                                                     "is already opened.\n" +
+                                                                                                     "Do you want to open another instance?", file),
                                                                         true, null);
                 if (answer == SnapDialogs.Answer.NO) {
                     fileList.remove(file);
@@ -226,17 +225,23 @@ public final class OpenProductAction extends AbstractAction {
         for (File file : fileList) {
             String fileFormatName;
             if (formatName == null) {
-                final List<PluginEntry> possiblePlugIns = getPossiblePluginsForFile(file);
-                if (possiblePlugIns.isEmpty()) {
+                final List<PluginEntry> intendedPlugIns = getPluginsForFile(file, DecodeQualification.INTENDED);
+                final List<PluginEntry> suitablePlugIns = getPluginsForFile(file, DecodeQualification.SUITABLE);
+
+                if (intendedPlugIns.isEmpty() && suitablePlugIns.isEmpty()) {
                     SnapDialogs.showError(Bundle.LBL_NoReaderFoundText() + String.format("%nFile '%s' can not be opened.", file));
                     continue;
-                } else if (possiblePlugIns.size() == 1) {
-                    PluginEntry entry = possiblePlugIns.get(0);
+                } else if (intendedPlugIns.size() == 1) {
+                    PluginEntry entry = intendedPlugIns.get(0);
+                    fileFormatName = entry.plugin.getFormatNames()[0];
+                } else if (intendedPlugIns.size() == 0 && suitablePlugIns.size() == 1) {
+                    PluginEntry entry = suitablePlugIns.get(0);
                     fileFormatName = entry.plugin.getFormatNames()[0];
                 } else {
-                    Collections.sort(possiblePlugIns);
-                    fileFormatName = getUserSelection(possiblePlugIns);
-                    if(fileFormatName == null) { // User clicked cancel
+                    Collections.sort(intendedPlugIns);
+                    Collections.sort(suitablePlugIns);
+                    fileFormatName = getUserSelection(intendedPlugIns, suitablePlugIns);
+                    if (fileFormatName == null) { // User clicked cancel
                         return null;
                     }
                 }
@@ -258,20 +263,25 @@ public final class OpenProductAction extends AbstractAction {
         return summaryStatus;
     }
 
-    private static List<PluginEntry> getPossiblePluginsForFile(File file) {
+    private static List<PluginEntry> getPluginsForFile(File file, DecodeQualification desiredQualification) {
         final Iterator<ProductReaderPlugIn> allReaderPlugIns = ProductIOPlugInManager.getInstance().getAllReaderPlugIns();
         final List<PluginEntry> possiblePlugIns = new ArrayList<>();
         allReaderPlugIns.forEachRemaining(plugIn -> {
             final DecodeQualification qualification = plugIn.getDecodeQualification(file);
-            if (qualification != DecodeQualification.UNABLE) {
+            if (qualification == desiredQualification) {
                 possiblePlugIns.add(new PluginEntry(plugIn, qualification));
             }
         });
         return possiblePlugIns;
     }
 
-    private static String getUserSelection(List<PluginEntry> possiblePlugIns) {
-        final PluginEntry leadPlugin = possiblePlugIns.get(0);
+    private static String getUserSelection(List<PluginEntry> intendedPlugins, List<PluginEntry> suitablePlugIns) {
+        final PluginEntry leadPlugin;
+        if (!intendedPlugins.isEmpty()) {
+            leadPlugin = intendedPlugins.get(0);
+        } else {
+            leadPlugin = suitablePlugIns.get(0);
+        }
         String preferencesKey = PREFERENCES_KEY_PREFIX_ALTERNATIVE_READER + leadPlugin.plugin.getClass().getSimpleName();
         final String storedSelection = SnapApp.getDefault().getPreferences().get(preferencesKey, null);
         if (storedSelection != null) {
@@ -285,18 +295,25 @@ public final class OpenProductAction extends AbstractAction {
 
         final JPanel readerSelectionPanel = new JPanel(layout);
         readerSelectionPanel.add(new JLabel("<html>Multiple readers are available for the selected file.<br>" +
-                                            "Please select one of the following:"));
-        final ButtonGroup bg = new ButtonGroup();
-
-        for (PluginEntry plugIn : possiblePlugIns) {
-            ProductReaderPlugIn readerPlugIn = plugIn.plugin;
-            final String labelText = String.format("<html>%s (<b>%s</b>)", readerPlugIn.getDescription(Locale.getDefault()), plugIn.qualification);
-            final JRadioButton readerButton = new JRadioButton(labelText);
-            readerButton.putClientProperty("plugin", readerPlugIn);
-            readerButton.setSelected(bg.getButtonCount() == 0);
-            bg.add(readerButton);
-            readerSelectionPanel.add(readerButton);
+                                                    "The readers might interpret the data differently.<br>" +
+                                                    "Please select one of the following:"));
+        final JComboBox<ProductReaderPlugIn> pluginsCombobox = new JComboBox<>();
+        DefaultListCellRenderer cellRenderer = new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                setText(((ProductReaderPlugIn) value).getDescription(Locale.getDefault()));
+                return this;
+            }
+        };
+        pluginsCombobox.setRenderer(cellRenderer);
+        for (PluginEntry plugin : intendedPlugins) {
+            pluginsCombobox.addItem(plugin.plugin);
         }
+        for (PluginEntry plugin : suitablePlugIns) {
+            pluginsCombobox.addItem(plugin.plugin);
+        }
+        readerSelectionPanel.add(pluginsCombobox);
         JCheckBox decisionCheckBox = new JCheckBox("Remember my decision and don't ask again.", false);
         decisionCheckBox.setHorizontalAlignment(SwingConstants.RIGHT);
         readerSelectionPanel.add(decisionCheckBox);
@@ -307,17 +324,11 @@ public final class OpenProductAction extends AbstractAction {
         Object answer = DialogDisplayer.getDefault().notify(d);
         if (NotifyDescriptor.OK_OPTION.equals(answer)) {
             boolean storeResult = decisionCheckBox.isSelected();
-            final Enumeration<AbstractButton> buttons = bg.getElements();
-            while (buttons.hasMoreElements()) {
-                AbstractButton abstractButton = buttons.nextElement();
-                if (abstractButton.isSelected()) {
-                    String selectedFormatName = ((ProductReaderPlugIn) abstractButton.getClientProperty("plugin")).getFormatNames()[0];
-                    if (storeResult) {
-                        SnapApp.getDefault().getPreferences().put(preferencesKey, selectedFormatName);
-                    }
-                    return selectedFormatName;
-                }
+            String selectedFormatName = ((ProductReaderPlugIn) pluginsCombobox.getSelectedItem()).getFormatNames()[0];
+            if (storeResult) {
+                SnapApp.getDefault().getPreferences().put(preferencesKey, selectedFormatName);
             }
+            return selectedFormatName;
         }
 
         return null;
@@ -340,7 +351,7 @@ public final class OpenProductAction extends AbstractAction {
         return operation.getStatus();
     }
 
-    private static class PluginEntry  implements Comparable<PluginEntry>{
+    private static class PluginEntry implements Comparable<PluginEntry> {
         ProductReaderPlugIn plugin;
         DecodeQualification qualification;
 
@@ -352,11 +363,11 @@ public final class OpenProductAction extends AbstractAction {
         @Override
         public int compareTo(PluginEntry other) {
             final int qualificationComparison = this.qualification.compareTo(other.qualification);
-            if(qualificationComparison == 0) {
+            if (qualificationComparison == 0) {
                 final String description1 = this.plugin.getDescription(Locale.getDefault());
                 final String description2 = other.plugin.getDescription(Locale.getDefault());
                 return description1.compareTo(description2);
-            }else {
+            } else {
                 return qualificationComparison;
             }
         }

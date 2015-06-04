@@ -17,7 +17,7 @@
 package org.esa.snap.rcp.preferences.general;
 
 import com.bc.ceres.binding.Property;
-import com.bc.ceres.binding.PropertyContainer;
+import com.bc.ceres.binding.PropertySet;
 import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.PropertyEditorRegistry;
@@ -94,8 +94,8 @@ public final class GeoLocationPanelController extends DefaultConfigController {
      */
     public static final boolean PROPERTY_DEFAULT_DISPLAY_GEOLOCATION_AS_DECIMAL = false;
 
-    protected PropertyContainer createPropertyContainer() {
-        return createPropertyContainer(new GeoLocationBean());
+    protected PropertySet createPropertySet() {
+        return createPropertySet(new GeoLocationBean());
     }
 
     @Override

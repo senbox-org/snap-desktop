@@ -17,7 +17,7 @@
 package org.esa.snap.rcp.preferences.general;
 
 import com.bc.ceres.binding.Property;
-import com.bc.ceres.binding.PropertyContainer;
+import com.bc.ceres.binding.PropertySet;
 import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.PropertyEditorRegistry;
@@ -76,8 +76,8 @@ public final class UiBehaviorPanelController extends DefaultConfigController {
      */
     public static final String PROPERTY_KEY_SAVE_AND_OPEN_IN_APP_INFO = "saveAndOpenInAppInfo";
 
-    protected PropertyContainer createPropertyContainer() {
-        return createPropertyContainer(new UiBehaviorBean());
+    protected PropertySet createPropertySet() {
+        return createPropertySet(new UiBehaviorBean());
     }
 
     @Override

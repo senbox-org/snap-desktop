@@ -16,24 +16,19 @@
 
 package org.esa.snap.rcp.preferences;
 
-import com.bc.ceres.binding.Property;
-import com.bc.ceres.binding.PropertyContainer;
-import com.bc.ceres.binding.PropertyDescriptor;
-import com.bc.ceres.binding.ValidationException;
-import com.bc.ceres.binding.Validator;
-import com.bc.ceres.binding.ValueRange;
-import com.bc.ceres.binding.ValueSet;
+import com.bc.ceres.binding.*;
 import com.bc.ceres.core.Assert;
 import com.bc.ceres.swing.binding.BindingContext;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.runtime.Config;
 import org.esa.snap.util.StringUtils;
+import org.esa.snap.util.SystemUtils;
 import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.Lookup;
-import org.openide.util.NbPreferences;
 
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import java.awt.*;
 import java.beans.PropertyChangeListener;
 import java.util.prefs.Preferences;
 
@@ -47,21 +42,16 @@ public abstract class DefaultConfigController extends OptionsPanelController {
 
     private PreferencesPanel panel;
     private BindingContext bindingContext;
-    private PropertyContainer originalState;
 
     /**
-     * Create a {@link PropertyContainer} object instance that holds all parameters.
-     * Clients that want to maintain properties need to overwrite this method. If
-     * the parameters are stored within a bean, use {@link #createPropertyContainer(Object)}
-     * in order to create a <code>PropertyContainer</code> instance.
+     * Create a {@link PropertySet} object instance that holds all parameters.
+     * Clients that want to maintain properties need to overwrite this method.
      *
-     * @return An instance of {@link PropertyContainer}, holding all configuration parameters.
+     * @return An instance of {@link PropertySet}, holding all configuration parameters.
      *
-     * @see #createPropertyContainer(Object)
+     * @see #createPropertySet(Object)
      */
-    protected PropertyContainer createPropertyContainer() {
-        return new PropertyContainer();
-    }
+    protected abstract PropertySet createPropertySet();
 
     /**
      * Create a panel that allows the user to set the parameters in the given {@link BindingContext}. Clients that want
@@ -72,6 +62,7 @@ public abstract class DefaultConfigController extends OptionsPanelController {
      * @return A JPanel instance for the given {@link BindingContext}, never <code>null</code>.
      */
     protected JPanel createPanel(BindingContext context) {
+        Assert.state(isInitialised());
         return new PreferencesPanel(null, bindingContext).getComponent();
     }
 
@@ -94,9 +85,9 @@ public abstract class DefaultConfigController extends OptionsPanelController {
      * @param bean a bean with fields annoted with {@link Preference}.
      *
      * @return an instance of {@link PropertyContainer}, fit for passing within overridden
-     * {@link #createPropertyContainer()}.
+     * {@link #createPropertySet()}.
      */
-    protected final PropertyContainer createPropertyContainer(Object bean) {
+    protected final PropertyContainer createPropertySet(Object bean) {
         return PropertyContainer.createObjectBacked(bean, field -> {
             Class<Preference> annotationClass = Preference.class;
             Preference annotation = field.getAnnotation(annotationClass);
@@ -134,27 +125,48 @@ public abstract class DefaultConfigController extends OptionsPanelController {
 
     @Override
     public void update() {
-        // Called when the panel is visited, so used to store the original state.
-        setOriginalState();
+        if (isInitialised()) {
+            for (Property property : bindingContext.getPropertySet().getProperties()) {
+                String key = property.getDescriptor().getAttribute("key").toString();
+                String preferencesValue = getPreferences(property.getDescriptor()).get(key, null);
+                if (preferencesValue != null) {
+                    try {
+                        property.setValueFromText(preferencesValue);
+                        SystemUtils.LOG.fine(String.format("Bean property value change: %s = %s", property.getName(), property.getValueAsText()));
+                    } catch (ValidationException e) {
+                        SystemUtils.LOG.severe("Failed to set bean value from preferences: " + e.getMessage());
+                    }
+                }
+            }
+        }
     }
 
     @Override
     public void applyChanges() {
-        panel.setChanged(false);
-        originalState = null;
+        if (isInitialised()) {
+            for (Property property : bindingContext.getPropertySet().getProperties()) {
+                String key = property.getDescriptor().getAttribute("key").toString();
+                String value = property.getValueAsText();
+                Preferences preferences = getPreferences(property.getDescriptor());
+                preferences.put(key, value);
+                SystemUtils.LOG.fine(String.format("Preferences value change: %s = %s", key, preferences.get(key, null)));
+            }
+            panel.setChanged(false);
+        }
     }
 
     @Override
     public void cancel() {
-        panel.setChanged(false);
-        if (originalState != null) {
-            restoreOriginalState();
+        if (isInitialised()) {
+            panel.setChanged(false);
         }
-        originalState = null;
     }
 
     @Override
     public boolean isValid() {
+        if (!isInitialised()) {
+            return false;
+        }
         for (Property property : bindingContext.getPropertySet().getProperties()) {
             Validator validator = (Validator) property.getDescriptor().getAttribute("propertyValidator");
             try {
@@ -168,92 +180,49 @@ public abstract class DefaultConfigController extends OptionsPanelController {
 
     @Override
     public boolean isChanged() {
-        return panel != null && panel.isChanged();
+        return isInitialised() && panel.isChanged();
     }
 
     @Override
     public JComponent getComponent(Lookup lookup) {
         if (!isInitialised()) {
-            init();
+            initialize();
         }
         return panel.getComponent();
     }
 
     @Override
     public void addPropertyChangeListener(PropertyChangeListener propertyChangeListener) {
+        if (bindingContext != null) {
+            bindingContext.addPropertyChangeListener(propertyChangeListener);
+        }
     }
 
     @Override
     public void removePropertyChangeListener(PropertyChangeListener propertyChangeListener) {
+        if (bindingContext != null) {
+            bindingContext.removePropertyChangeListener(propertyChangeListener);
+        }
     }
 
     private boolean isInitialised() {
-        return panel != null;
+        return bindingContext != null;
     }
 
-    private void init() {
-        setupPanel(createPropertyContainer());
-        initiallyFillPreferences();
-        setupChangeListeners();
+    private void initialize() {
+        bindingContext = new BindingContext(createPropertySet());
+        panel = new PreferencesPanel(createPanel(bindingContext), bindingContext);
         panel.getComponent(); // trigger component initialisation
         configure(bindingContext);
     }
 
-    Preferences getPreferences(PropertyDescriptor propertyDescriptor) {
+    private Preferences getPreferences(PropertyDescriptor propertyDescriptor) {
         Object configNameValue = propertyDescriptor.getAttribute("configName");
         String configName = configNameValue != null ? configNameValue.toString().trim() : null;
         if (configName == null || configName.isEmpty()) {
             return SnapApp.getDefault().getPreferences();
         }
         return Config.instance(configName).load().preferences();
-    }
-
-    private void setOriginalState() {
-        if (originalState == null) {
-            originalState = createPropertyContainer();
-            for (Property property : bindingContext.getPropertySet().getProperties()) {
-                String key = property.getName();
-                try {
-                    originalState.getProperty(key).setValue(property.getValue());
-                } catch (ValidationException e) {
-                    e.printStackTrace(); // very basic exception handling because exception is not expected to be thrown
-                }
-            }
-        }
-    }
-
-    private void restoreOriginalState() {
-        try {
-            for (Property originalProperty : originalState.getProperties()) {
-                Property property = bindingContext.getPropertySet().getProperty(originalProperty.getName());
-                property.setValue(originalProperty.getValue());
-            }
-            bindingContext.adjustComponents();
-        } catch (ValidationException e) {
-            e.printStackTrace();  // very basic exception handling because exception is not expected to be thrown
-        }
-    }
-
-    private void setupChangeListeners() {
-        for (Property property : bindingContext.getPropertySet().getProperties()) {
-            property.addPropertyChangeListener(evt -> {
-                String key = property.getDescriptor().getAttribute("key").toString();
-                String value = evt.getNewValue().toString();
-                getPreferences(property.getDescriptor()).put(key, value);
-            });
-        }
-    }
-
-    private void initiallyFillPreferences() {
-        for (Property property : bindingContext.getPropertySet().getProperties()) {
-            PropertyDescriptor descriptor = property.getDescriptor();
-            getPreferences(descriptor).put(descriptor.getAttribute("key").toString(), property.getValueAsText());
-        }
-    }
-
-    private void setupPanel(PropertyContainer propertyContainer) {
-        bindingContext = new BindingContext(propertyContainer);
-        panel = new PreferencesPanel(createPanel(bindingContext), bindingContext);
     }
 
     private Validator createValidator(Class<? extends Validator> validatorClass) {
@@ -265,5 +234,4 @@ public abstract class DefaultConfigController extends OptionsPanelController {
         }
         return validator;
     }
-
 }

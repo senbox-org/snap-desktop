@@ -7,7 +7,12 @@ package org.esa.snap.rcp.actions.view.overlay;
 
 import com.bc.ceres.glayer.Layer;
 import com.bc.ceres.glayer.LayerFilter;
+import com.bc.ceres.glayer.LayerListener;
+import com.bc.ceres.glayer.support.AbstractLayerListener;
 import com.bc.ceres.glayer.support.LayerUtils;
+import com.bc.ceres.swing.figure.FigureChangeEvent;
+import com.bc.ceres.swing.figure.FigureChangeListener;
+import com.bc.ceres.swing.selection.SelectionChangeListener;
 import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.framework.ui.product.VectorDataLayerFilterFactory;
 import org.openide.awt.ActionID;
@@ -20,10 +25,12 @@ import org.openide.util.NbBundle;
 import org.openide.util.Utilities;
 
 import javax.swing.Action;
+import java.lang.ref.WeakReference;
 import java.util.List;
 
 /**
  * @author Marco Peters
+ * @author Norman Fomferra
  */
 @ActionID(category = "View", id = "OverlayGeometryLayerAction")
 @ActionRegistration(displayName = "#CTL_OverlayGeometryLayerActionName", lazy = false)
@@ -36,10 +43,11 @@ import java.util.List;
         "CTL_OverlayGeometryLayerActionToolTip=Show/hide geometry overlay for the selected image"
 })
 public final class OverlayGeometryLayerAction extends AbstractOverlayAction {
-    // todo - does not detect if figure is added to a view or removed from it.
-
 
     private final LayerFilter geometryFilter = VectorDataLayerFilterFactory.createGeometryFilter();
+    private final LayerListener layerListener;
+    private WeakReference<ProductSceneView> lastView;
+
 
     public OverlayGeometryLayerAction() {
         this(Utilities.actionsGlobalContext());
@@ -47,6 +55,7 @@ public final class OverlayGeometryLayerAction extends AbstractOverlayAction {
 
     public OverlayGeometryLayerAction(Lookup lkp) {
         super(lkp);
+        layerListener = new MyLayerListener();
     }
 
     @Override
@@ -60,6 +69,26 @@ public final class OverlayGeometryLayerAction extends AbstractOverlayAction {
         putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/ShapeOverlay.gif", false));
         putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/ShapeOverlay24.gif", false));
         putValue(SHORT_DESCRIPTION, Bundle.CTL_OverlayGeometryLayerActionToolTip());
+    }
+
+    @Override
+    protected void selectedProductSceneViewChanged(ProductSceneView newView) {
+        ProductSceneView oldView = lastView != null ? lastView.get() : null;
+        if (oldView != null) {
+            oldView.getRootLayer().removeListener(layerListener);
+        }
+        if (newView != null) {
+            newView.getRootLayer().addListener(layerListener);
+        }
+
+        if (newView != null) {
+            lastView = new WeakReference<>(newView);
+        } else {
+            if (lastView != null) {
+                lastView.clear();
+                lastView = null;
+            }
+        }
     }
 
     @Override
@@ -87,4 +116,15 @@ public final class OverlayGeometryLayerAction extends AbstractOverlayAction {
         return LayerUtils.getChildLayers(sceneView.getRootLayer(), LayerUtils.SEARCH_DEEP, geometryFilter);
     }
 
+    private class MyLayerListener extends AbstractLayerListener {
+        @Override
+        public void handleLayersAdded(Layer parentLayer, Layer[] childLayers) {
+            updateActionState();
+        }
+
+        @Override
+        public void handleLayersRemoved(Layer parentLayer, Layer[] childLayers) {
+            updateActionState();
+        }
+    }
 }
