@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 by Array Systems Computing Inc. http://www.array.ca
+ * Copyright (C) 2015 by Array Systems Computing Inc. http://www.array.ca
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -87,12 +87,24 @@ public class OperatorUIRegistry {
 
     public static OperatorUIDescriptor createOperatorUIDescriptor(FileObject fileObject) {
         final String id = fileObject.getName();
-        final String operatorName = (String) fileObject.getAttribute("operatorName");
-        final Class<? extends OperatorUI> operatorUIClass = getClassAttribute(fileObject, "operatorUIClass", OperatorUI.class, false);
-        Assert.argument(operatorName != null && !operatorName.isEmpty(), "Missing attribute 'operatorName'");
-        Assert.argument(operatorUIClass != null, "Attribute 'class' must be provided");
 
-        return new DefaultOperatorUIDescriptor(id, operatorName, operatorUIClass);
+        final String operatorName = (String) fileObject.getAttribute("operatorName");
+        Assert.argument(operatorName != null && !operatorName.isEmpty(), "Missing attribute 'operatorName'");
+
+        final Class<? extends OperatorUI> operatorUIClass = getClassAttribute(fileObject, "operatorUIClass", OperatorUI.class, false);
+
+        Boolean disableFromGraphBuilder = false;
+        try {
+            final String disableFromGraphBuilderStr = (String) fileObject.getAttribute("disableFromGraphBuilder");
+            if (disableFromGraphBuilderStr != null) {
+                disableFromGraphBuilder = Boolean.parseBoolean(disableFromGraphBuilderStr);
+            }
+        } catch (Exception e) {
+            SystemUtils.LOG.severe("OperatorUIRegistry: Unable to parse disableFromGraphBuilder "+e.toString());
+            //continue
+        }
+
+        return new DefaultOperatorUIDescriptor(id, operatorName, operatorUIClass, disableFromGraphBuilder);
     }
 
     public static OperatorUI CreateOperatorUI(final String operatorName) {
@@ -109,6 +121,20 @@ public class OperatorUIRegistry {
             }
         }
         return new DefaultUI();
+    }
+
+    public static boolean showInGraphBuilder(final String operatorName) {
+        final OperatorUIRegistry reg = OperatorUIRegistry.getInstance();
+        if (reg != null) {
+            OperatorUIDescriptor desc = reg.getOperatorUIDescriptor(operatorName);
+            if (desc != null) {
+                if(desc.disableFromGraphBuilder()) {
+                    SystemUtils.LOG.warning(operatorName + " disabled from GraphBuilder");
+                }
+                return !desc.disableFromGraphBuilder();
+            }
+        }
+        return true;
     }
 
     public static <T> Class<T> getClassAttribute(FileObject fileObject,
