@@ -17,9 +17,6 @@ package org.esa.snap.graphbuilder.rcp.dialogs;
 
 import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.core.SubProgressMonitor;
-import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphExecuter;
-import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphNode;
-import org.esa.snap.graphbuilder.rcp.dialogs.support.ProgressBarProgressMonitor;
 import org.esa.snap.db.CommonReaders;
 import org.esa.snap.db.ProductEntry;
 import org.esa.snap.framework.datamodel.Product;
@@ -28,31 +25,23 @@ import org.esa.snap.framework.ui.AppContext;
 import org.esa.snap.framework.ui.ModelessDialog;
 import org.esa.snap.gpf.ProcessTimeMonitor;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.FileTable;
+import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphExecuter;
+import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphNode;
+import org.esa.snap.graphbuilder.rcp.dialogs.support.ProgressBarProgressMonitor;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.util.MemUtils;
 import org.esa.snap.util.ResourceUtils;
 import org.esa.snap.util.io.FileChooserFactory;
 import org.esa.snap.util.io.FileUtils;
 
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-import javax.swing.JTabbedPane;
-import javax.swing.SwingWorker;
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -82,7 +71,7 @@ public class BatchGraphDialog extends ModelessDialog {
     private final boolean closeOnDone;
 
     private boolean isProcessing = false;
-    protected InputStream graphFileStream;
+    protected File graphFile;
     protected boolean openProcessedProducts = true;
 
     public BatchGraphDialog(final AppContext theAppContext, final String title, final String helpID,
@@ -135,9 +124,6 @@ public class BatchGraphDialog extends ModelessDialog {
 
         getButton(ID_APPLY).setText("Run");
         getButton(ID_YES).setText("Load Graph");
-
-        graphFileStream = getClass().getClassLoader().getResourceAsStream("graphs/ReadWriteGraph.xml");
-        LoadGraphFile(graphFileStream);
 
         setContent(mainPanel);
         super.getJDialog().setMinimumSize(new Dimension(400, 300));
@@ -223,18 +209,14 @@ public class BatchGraphDialog extends ModelessDialog {
 
     public void LoadGraphFile(final File file) {
         try {
-            LoadGraphFile(new FileInputStream(file));
-        } catch (IOException e) {
+            graphFile = file;
+
+            initGraphs();
+            addGraphTabs("", true);
+        } catch (Exception e) {
             SnapApp.getDefault().handleError("Unable to load graph "+file.toString(), e);
             return;
         }
-    }
-
-    public void LoadGraphFile(final InputStream stream) {
-        graphFileStream = stream;
-
-        initGraphs();
-        addGraphTabs("", true);
     }
 
     private static File getFilePath(Component component, String title) {
@@ -313,12 +295,12 @@ public class BatchGraphDialog extends ModelessDialog {
      * Loads a new graph from a file
      *
      * @param executer the GraphExcecuter
-     * @param graphFileStream     the graph file to load
+     * @param graphFile     the graph file to load
      * @param addUI    add a user interface
      */
-    protected void LoadGraph(final GraphExecuter executer, final InputStream graphFileStream, final boolean addUI) {
+    protected void LoadGraph(final GraphExecuter executer, final File graphFile, final boolean addUI) {
         try {
-            executer.loadGraph(graphFileStream, addUI);
+            executer.loadGraph(graphFile, addUI);
 
         } catch (GraphException e) {
             showErrorDialog(e.getMessage());
@@ -378,7 +360,7 @@ public class BatchGraphDialog extends ModelessDialog {
     void createGraphs() throws GraphException {
         try {
             final GraphExecuter graphEx = new GraphExecuter();
-            LoadGraph(graphEx, graphFileStream, true);
+            LoadGraph(graphEx, graphFile, true);
             graphExecutorList.add(graphEx);
         } catch (Exception e) {
             throw new GraphException(e.getMessage());
@@ -506,7 +488,7 @@ public class BatchGraphDialog extends ModelessDialog {
         for (int graphIndex = 1; graphIndex < fileList.length; ++graphIndex) {
 
             final GraphExecuter cloneGraphEx = new GraphExecuter();
-            LoadGraph(cloneGraphEx, graphFileStream, false);
+            LoadGraph(cloneGraphEx, graphFile, false);
             graphExecutorList.add(cloneGraphEx);
 
             // copy UI parameter to clone
