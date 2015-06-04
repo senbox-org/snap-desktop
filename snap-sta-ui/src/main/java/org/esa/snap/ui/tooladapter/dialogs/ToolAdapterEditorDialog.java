@@ -310,15 +310,23 @@ public class ToolAdapterEditorDialog extends ModalDialog {
         toolDescriptorPanel.setPreferredSize(new Dimension(formWidth, formHeight));
 
         JPanel topLeftPanel = createDescriptorAndVariablesAndPreprocessingPanel();
-        topLeftPanel.setMinimumSize(new Dimension((formWidth - 3 * DEFAULT_PADDING) / 2, (formHeight - 3 * DEFAULT_PADDING) * 3 / 4));
+        Dimension topPanelDimension = new Dimension((int)((formWidth - 3 * DEFAULT_PADDING) * 0.5), (int)((formHeight - 3 * DEFAULT_PADDING) * 0.66 ));
+        topLeftPanel.setMinimumSize(topPanelDimension);
+        topLeftPanel.setMaximumSize(topPanelDimension);
+        topLeftPanel.setPreferredSize(topPanelDimension);
         toolDescriptorPanel.add(topLeftPanel);
 
         JPanel topRightPanel = createProcessingPanel();
-        topRightPanel.setMinimumSize(new Dimension((formWidth - 3 * DEFAULT_PADDING) / 2, (formHeight - 3 * DEFAULT_PADDING) * 3 / 4));
+        topRightPanel.setMinimumSize(topPanelDimension);
+        topRightPanel.setMaximumSize(topPanelDimension);
+        topRightPanel.setPreferredSize(topPanelDimension);
         toolDescriptorPanel.add(topRightPanel);
 
         JPanel bottomPannel = createParametersPanel();
-        bottomPannel.setMinimumSize(new Dimension(formWidth - 2 * DEFAULT_PADDING, (formHeight - 3 * DEFAULT_PADDING) / 4));
+        Dimension bottomPanelDimension = new Dimension((int)(formWidth - 2 * DEFAULT_PADDING), (int)((formHeight - 3 * DEFAULT_PADDING) * 0.34));
+        bottomPannel.setMinimumSize(bottomPanelDimension);
+        bottomPannel.setMaximumSize(bottomPanelDimension);
+        bottomPannel.setPreferredSize(bottomPanelDimension);
         toolDescriptorPanel.add(bottomPannel);
 
         springLayout.putConstraint(SpringLayout.WEST, topLeftPanel, DEFAULT_PADDING, SpringLayout.WEST, toolDescriptorPanel);
@@ -422,12 +430,17 @@ public class ToolAdapterEditorDialog extends ModalDialog {
         panelToolFiles.add(new JLabel(Bundle.CTL_Label_WorkDir_Text()));
         panelToolFiles.add(editorComponent);
 
+        Dimension panelToolDimension = new Dimension(configPanel.getWidth(), 50);
+        panelToolFiles.setMinimumSize(panelToolDimension);
+        panelToolFiles.setMaximumSize(panelToolDimension);
+        panelToolFiles.setPreferredSize(panelToolDimension);
+
         SpringUtilities.makeCompactGrid(panelToolFiles, 2, 2, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING);
 
         configPanel.add(panelToolFiles);
         configPanel.add(new JLabel(Bundle.CTL_Label_CmdLineTemplate_Text()));
 
-        templateContent = new JTextArea("", 15, 9);
+        templateContent = new JTextArea("", 16, 9);
         try {
             if (operatorIsNew) {
                 if (oldOperatorDescriptor.getTemplateFileLocation() != null) {
@@ -486,7 +499,10 @@ public class ToolAdapterEditorDialog extends ModalDialog {
         scrollPane.setAlignmentX(Component.LEFT_ALIGNMENT);
         variablesBorderPanel.add(scrollPane);
         variablesBorderPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        variablesBorderPanel.setMinimumSize(new Dimension((formWidth - 3 * DEFAULT_PADDING) / 2 - 2 * DEFAULT_PADDING, 80));
+        Dimension variablesPanelDimension = new Dimension((formWidth - 3 * DEFAULT_PADDING) / 2 - 2 * DEFAULT_PADDING, 120);
+        variablesBorderPanel.setMinimumSize(variablesPanelDimension);
+        variablesBorderPanel.setMaximumSize(variablesPanelDimension);
+        variablesBorderPanel.setPreferredSize(variablesPanelDimension);
 
         descriptorAndVariablesPanel.add(variablesBorderPanel);
 
