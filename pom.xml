@@ -163,6 +163,11 @@
                 <artifactId>org-openide-windows</artifactId>
                 <version>${netbeans.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.netbeans.external</groupId>
+                <artifactId>beansbinding-1.2.1</artifactId>
+                <version>${netbeans.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>org.esa.snap.netbeans</groupId>
@@ -172,12 +177,6 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>snap-rcp</artifactId>
-                <version>${snap.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>snap-visat-rcp</artifactId>
                 <version>${snap.version}</version>
             </dependency>
 

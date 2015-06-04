@@ -140,6 +140,11 @@
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-netbeans-modules-sendopts</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.netbeans.external</groupId>
+            <artifactId>beansbinding-1.2.1</artifactId>
+        </dependency>
+
 
         <!-- SNAP NetBeans Goodies -->
 
