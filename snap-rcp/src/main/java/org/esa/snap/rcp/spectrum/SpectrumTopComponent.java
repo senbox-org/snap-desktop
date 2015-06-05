@@ -569,12 +569,14 @@ public class SpectrumTopComponent extends ToolTopComponent {
 
     List<DisplayableSpectrum> getSelectedSpectra() {
         List<DisplayableSpectrum> selectedSpectra = new ArrayList<>();
-        final RasterDataNode currentRaster = currentView.getRaster();
-        if (currentProduct != null && rasterToSpectraMap.containsKey(currentRaster)) {
-            DisplayableSpectrum[] allSpectra = rasterToSpectraMap.get(currentRaster);
-            for (DisplayableSpectrum displayableSpectrum : allSpectra) {
-                if (displayableSpectrum.isSelected()) {
-                    selectedSpectra.add(displayableSpectrum);
+        if (currentView != null) {
+            final RasterDataNode currentRaster = currentView.getRaster();
+            if (currentProduct != null && rasterToSpectraMap.containsKey(currentRaster)) {
+                DisplayableSpectrum[] allSpectra = rasterToSpectraMap.get(currentRaster);
+                for (DisplayableSpectrum displayableSpectrum : allSpectra) {
+                    if (displayableSpectrum.isSelected()) {
+                        selectedSpectra.add(displayableSpectrum);
+                    }
                 }
             }
         }
