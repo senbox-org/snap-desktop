@@ -22,6 +22,8 @@ import org.esa.snap.framework.gpf.GPF;
 import org.esa.snap.framework.gpf.Operator;
 import org.esa.snap.framework.gpf.descriptor.ParameterDescriptor;
 import org.esa.snap.framework.gpf.descriptor.ToolAdapterOperatorDescriptor;
+import org.esa.snap.framework.gpf.operators.tooladapter.ToolAdapterConstants;
+import org.esa.snap.framework.gpf.operators.tooladapter.ToolAdapterIO;
 import org.esa.snap.framework.gpf.operators.tooladapter.ToolAdapterOp;
 import org.esa.snap.framework.gpf.ui.OperatorMenu;
 import org.esa.snap.framework.gpf.ui.OperatorParameterSupport;
@@ -35,13 +37,16 @@ import org.netbeans.api.progress.ProgressUtils;
 import org.openide.util.Cancellable;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * Form dialog for running a tool adapter operator.
@@ -99,8 +104,19 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
     @Override
     protected void onApply() {
         final Product[] sourceProducts = form.getSourceProducts();
+        List<ParameterDescriptor> descriptors = Arrays.stream(operatorDescriptor.getParameterDescriptors())
+                .filter(p -> ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE.equals(p.getName()))
+                .collect(Collectors.toList());
+        String templateContents = "";
+        try {
+            templateContents = ToolAdapterIO.readOperatorTemplate(operatorDescriptor.getName());
+        } catch (IOException ignored) {
+        }
         if (Arrays.stream(sourceProducts).anyMatch(p -> p == null)) {
             SnapDialogs.showWarning("Please make sure you have selected the necessary input products");
+        } else if (descriptors.size() == 1 && form.getPropertyValue(ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE) == null &&
+                templateContents.contains("$" + ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE)) {
+                SnapDialogs.showWarning("A target product is required in adapter's template, but none was provided");
         } else {
             if (!canApply()) {
                 onClose();
@@ -210,6 +226,7 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
     private void operatorCompleted(Product result) {
         this.result = result;
         super.onApply();
+        displayErrors();
     }
 
     private void tearDown(Throwable throwable) {
@@ -217,8 +234,25 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
         if (operatorTask != null) {
             operatorTask.cancel();
         }
-        if (throwable != null && !hasBeenCancelled) {
-            handleInitialisationError(throwable);
+        if (throwable != null) {
+            if (!hasBeenCancelled)
+                handleInitialisationError(throwable);
+            else
+                displayErrors();
+        }
+    }
+
+    private void displayErrors() {
+        if (operatorTask != null) {
+            List<String> errors = operatorTask.getErrors();
+            if (errors != null && errors.size() > 0) {
+                StringBuilder builder = new StringBuilder();
+                builder.append(String.format("The operator completed with the following errors:%n"));
+                for (int i = 0; i < errors.size(); i++) {
+                    builder.append(String.format("[%s] %s%n", i + 1, errors.get(i)));
+                }
+                SnapDialogs.showWarning(builder.toString());
+            }
         }
     }
 
@@ -261,13 +295,20 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
         @Override
         public void run() {
             try {
-
                 callbackMethod.accept(operator.getTargetProduct());
             } catch (Throwable t) {
                 tearDown(t);
             } finally {
                 hasCompleted = true;
             }
+        }
+
+        public List<String> getErrors() {
+            List<String> errors = null;
+            if (operator != null && operator instanceof ToolAdapterOp) {
+                errors = ((ToolAdapterOp) operator).getErrors();
+            }
+            return errors;
         }
     }
 

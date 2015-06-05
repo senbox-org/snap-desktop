@@ -146,7 +146,9 @@ public class ToolAdapterEditorDialog extends ModalDialog {
             newOperatorDescriptor.getToolParameterDescriptors().add(new TemplateParameterDescriptor(ToolAdapterConstants.TOOL_SOURCE_PRODUCT_FILE, File[].class));
         }
         if (newOperatorDescriptor.getToolParameterDescriptors().stream().filter(p -> p.getName().equals(ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE)).count() == 0){
-            newOperatorDescriptor.getToolParameterDescriptors().add(new TemplateParameterDescriptor(ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE, File.class));
+            TemplateParameterDescriptor parameterDescriptor = new TemplateParameterDescriptor(ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE, File.class);
+            parameterDescriptor.setNotNull(false);
+            newOperatorDescriptor.getToolParameterDescriptors().add(parameterDescriptor);
         }
 
         propertyContainer = PropertyContainer.createObjectBacked(newOperatorDescriptor);
