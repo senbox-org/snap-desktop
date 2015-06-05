@@ -259,11 +259,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
         }
     }
 
-    private SpectrumBand[] getAvailableSpectralBands() {
-        if (currentView == null) {
-            return new SpectrumBand[0];
-        }
-        final RasterDataNode currentRaster = currentView.getRaster();
+    private SpectrumBand[] getAvailableSpectralBands(RasterDataNode currentRaster) {
         if (!rasterToSpectralBandsMap.containsKey(currentRaster)) {
             rasterToSpectralBandsMap.put(currentRaster, new ArrayList<>());
         }
