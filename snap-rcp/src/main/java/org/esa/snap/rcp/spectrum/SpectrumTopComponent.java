@@ -561,7 +561,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
     }
 
     private DisplayableSpectrum[] getAllSpectra() {
-        if (currentView == null) {
+        if (currentView == null || !rasterToSpectraMap.containsKey(currentView.getRaster())) {
             return new DisplayableSpectrum[0];
         }
         return rasterToSpectraMap.get(currentView.getRaster());
@@ -645,6 +645,22 @@ public class SpectrumTopComponent extends ToolTopComponent {
     protected void productSceneViewDeselected(ProductSceneView view) {
         view.removePixelPositionListener(pixelPositionListener);
         setCurrentView(null);
+    }
+
+    @Override
+    protected void componentOpened() {
+        final ProductSceneView selectedProductSceneView = getSelectedProductSceneView();
+        if (selectedProductSceneView != null) {
+            selectedProductSceneView.removePixelPositionListener(pixelPositionListener);
+            setCurrentView(selectedProductSceneView);
+        }
+    }
+
+    @Override
+    protected void componentClosed() {
+        if (currentView != null) {
+            currentView.removePixelPositionListener(pixelPositionListener);
+        }
     }
 
     public boolean hasValidCursorPosition() {
