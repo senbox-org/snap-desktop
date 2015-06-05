@@ -46,8 +46,18 @@ import org.esa.snap.util.io.SnapFileFilter;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.AbstractButton;
+import javax.swing.BorderFactory;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -573,16 +583,14 @@ class ColorManipulationForm implements SelectionSupport.Handler<ProductSceneView
         }
         if (result == JFileChooser.APPROVE_OPTION) {
             if (file != null) {
-                Boolean decision = SnapDialogs.requestOverwriteDecision(titlePrefix, file);
-                if (decision == null || !decision) {
-                    return;
-                }
-                file = FileUtils.ensureExtension(file, FILE_EXTENSION);
-                try {
-                    final ColorPaletteDef colorPaletteDef = imageInfo.getColorPaletteDef();
-                    ColorPaletteDef.storeColorPaletteDef(colorPaletteDef, file);
-                } catch (IOException e) {
-                    showErrorDialog("Failed to export colour palette:\n" + e.getMessage());  /*I18N*/
+                if (Boolean.TRUE.equals(SnapDialogs.requestOverwriteDecision(titlePrefix, file))) {
+                    file = FileUtils.ensureExtension(file, FILE_EXTENSION);
+                    try {
+                        final ColorPaletteDef colorPaletteDef = imageInfo.getColorPaletteDef();
+                        ColorPaletteDef.storeColorPaletteDef(colorPaletteDef, file);
+                    } catch (IOException e) {
+                        showErrorDialog("Failed to export colour palette:\n" + e.getMessage());  /*I18N*/
+                    }
                 }
             }
         }

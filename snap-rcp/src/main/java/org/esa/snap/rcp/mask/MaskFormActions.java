@@ -498,8 +498,8 @@ class MaskFormActions {
                 final Product product = getMaskForm().getProduct();
                 for (Element element : children) {
                     Mask mask = Mask.BandMathsType.createFromBitmaskDef(element,
-                            product.getSceneRasterWidth(),
-                            product.getSceneRasterHeight());
+                                                                        product.getSceneRasterWidth(),
+                                                                        product.getSceneRasterHeight());
                     product.getMaskGroup().add(mask);
                 }
             } catch (Exception e) {
@@ -578,10 +578,11 @@ class MaskFormActions {
                 if (dialogApproved) {
                     File file = fileChooser.getSelectedFile();
                     if (file != null) {
-                        SnapDialogs.requestOverwriteDecision(ACTION_NAME, file);
-                        setDirectory(file.getAbsoluteFile().getParentFile());
-                        file = FileUtils.ensureExtension(file, ".xml");
-                        writeXml(file, document);
+                        if (Boolean.TRUE.equals(SnapDialogs.requestOverwriteDecision(ACTION_NAME, file))) {
+                            setDirectory(file.getAbsoluteFile().getParentFile());
+                            file = FileUtils.ensureExtension(file, ".xml");
+                            writeXml(file, document);
+                        }
                     }
                 }
             }
@@ -624,7 +625,7 @@ class MaskFormActions {
                 }
                 stringBuilder.append(" to XML.");
             }
-            SnapDialogs.showMessage(ACTION_NAME, stringBuilder.toString(), JOptionPane.INFORMATION_MESSAGE, null);
+            SnapDialogs.showInformation(ACTION_NAME, stringBuilder.toString(), null);
         }
 
         private static int countExportedMasks(boolean[] masksExported) {

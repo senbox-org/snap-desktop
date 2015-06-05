@@ -664,8 +664,7 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
         if (result == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
             if (file != null) {
-                final Boolean overwriteDecision = SnapDialogs.requestOverwriteDecision(getTitle(), file);
-                if (overwriteDecision == null || !overwriteDecision) {
+                if (Boolean.TRUE.equals(SnapDialogs.requestOverwriteDecision(getTitle(), file))) {
                     return;
                 }
                 setIODir(file.getAbsoluteFile().getParentFile());
@@ -861,8 +860,7 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
         if (result == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
             if (file != null) {
-                final Boolean overwriteDecision = SnapDialogs.requestOverwriteDecision(getTitle(), file);
-                if (overwriteDecision == null || !overwriteDecision) {
+                if (Boolean.TRUE.equals(SnapDialogs.requestOverwriteDecision(getTitle(), file))) {
                     return;
                 }
                 setIODir(file.getAbsoluteFile().getParentFile());
