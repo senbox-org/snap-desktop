@@ -103,8 +103,11 @@ public class CursorSpectrumPixelPositionListener implements PixelPositionListene
 
         @Override
         protected void done() {
-            topComponent.updateChart(adjustAxes);
-            support.removeWorkerAndStartNext(this);
+            try {
+                topComponent.updateChart(adjustAxes);
+            } finally {
+                support.removeWorkerAndStartNext(this);
+            }
         }
     }
 
