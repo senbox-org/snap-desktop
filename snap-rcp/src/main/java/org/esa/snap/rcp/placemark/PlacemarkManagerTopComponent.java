@@ -817,18 +817,18 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
         }
     }
 
-    private void removePlacemarksFromRemovedProducts(Product removedProduct) {
-        for (List<Placemark> relatedPlacemarkList : relatedPlacemarks) {
-            for (Placemark placemark : relatedPlacemarkList) {
-                if (placemark.getProduct() == removedProduct) {
-                    relatedPlacemarkList.remove(placemark);
-                    if (relatedPlacemarkList.size() == 1) {
-                        relatedPlacemarks.remove(relatedPlacemarkList);
-                    }
-                }
-            }
-        }
-    }
+//    private void removePlacemarksFromRemovedProducts(Product removedProduct) {
+//        for (List<Placemark> relatedPlacemarkList : relatedPlacemarks) {
+//            for (Placemark placemark : relatedPlacemarkList) {
+//                if (placemark.getProduct() == removedProduct) {
+//                    relatedPlacemarkList.remove(placemark);
+//                    if (relatedPlacemarkList.size() == 1) {
+//                        relatedPlacemarks.remove(relatedPlacemarkList);
+//                    }
+//                }
+//            }
+//        }
+//    }
 
     private void removePlacemarksFromRelatedPlacemarks(Placemark placemark) {
         for (List<Placemark> relatedPlacemarkList : relatedPlacemarks) {
@@ -1119,7 +1119,7 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
         public void productRemoved(ProductManager.Event event) {
             productToSelectedBands.remove(product);
             productToSelectedGrids.remove(product);
-            removePlacemarksFromRemovedProducts(product);
+//            removePlacemarksFromRemovedProducts(product);
         }
 
     }
