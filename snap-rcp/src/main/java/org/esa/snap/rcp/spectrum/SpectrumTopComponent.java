@@ -146,7 +146,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
     private AbstractButton showGridButton;
 
     private boolean tipShown;
-        private ProductSceneView currentView;
+    private ProductSceneView currentView;
     private Product currentProduct;
     private ChartPanel chartPanel;
     private ChartHandler chartHandler;
@@ -259,7 +259,11 @@ public class SpectrumTopComponent extends ToolTopComponent {
         }
     }
 
-    private SpectrumBand[] getAvailableSpectralBands(RasterDataNode currentRaster) {
+    private SpectrumBand[] getAvailableSpectralBands() {
+        if (currentView == null) {
+            return new SpectrumBand[0];
+        }
+        final RasterDataNode currentRaster = currentView.getRaster();
         if (!rasterToSpectralBandsMap.containsKey(currentRaster)) {
             rasterToSpectralBandsMap.put(currentRaster, new ArrayList<>());
         }
@@ -585,44 +589,6 @@ public class SpectrumTopComponent extends ToolTopComponent {
             }
         }
         return selectedSpectra;
-    }
-
-    private void addBandToSpectra(Band band) {
-        if (currentView != null) {
-            DisplayableSpectrum[] allSpectra = rasterToSpectraMap.get(currentView.getRaster());
-            Product.AutoGrouping autoGrouping = currentProduct.getAutoGrouping();
-            if (autoGrouping != null) {
-                final int bandIndex = autoGrouping.indexOf(band.getName());
-                final DisplayableSpectrum spectrum;
-                if (bandIndex != -1) {
-                    spectrum = allSpectra[bandIndex];
-                } else {
-                    spectrum = allSpectra[allSpectra.length - 1];
-                }
-                spectrum.addBand(new SpectrumBand(band, spectrum.isSelected()));
-            } else {
-                allSpectra[0].addBand(new SpectrumBand(band, true));
-            }
-        }
-    }
-
-    private void removeBandFromSpectra(Band band) {
-        if (currentView != null) {
-            DisplayableSpectrum[] allSpectra = rasterToSpectraMap.get(currentView.getRaster());
-            for (DisplayableSpectrum displayableSpectrum : allSpectra) {
-                Band[] spectralBands = displayableSpectrum.getSpectralBands();
-                for (int j = 0; j < spectralBands.length; j++) {
-                    Band spectralBand = spectralBands[j];
-                    if (spectralBand == band) {
-                        displayableSpectrum.remove(j);
-                        if (displayableSpectrum.getSelectedBands().length == 0) {
-                            displayableSpectrum.setSelected(false);
-                        }
-                        return;
-                    }
-                }
-            }
-        }
     }
 
     private void updateSpectraUnits() {
@@ -1144,6 +1110,42 @@ public class SpectrumTopComponent extends ToolTopComponent {
                 }
             }
         }
+
+        private void addBandToSpectra(Band band) {
+            DisplayableSpectrum[] allSpectra = rasterToSpectraMap.get(currentView.getRaster());
+            Product.AutoGrouping autoGrouping = currentProduct.getAutoGrouping();
+            if (autoGrouping != null) {
+                final int bandIndex = autoGrouping.indexOf(band.getName());
+                final DisplayableSpectrum spectrum;
+                if (bandIndex != -1) {
+                    spectrum = allSpectra[bandIndex];
+                } else {
+                    spectrum = allSpectra[allSpectra.length - 1];
+                }
+                spectrum.addBand(new SpectrumBand(band, spectrum.isSelected()));
+            } else {
+                allSpectra[0].addBand(new SpectrumBand(band, true));
+            }
+        }
+
+        private void removeBandFromSpectra(Band band) {
+            DisplayableSpectrum[] allSpectra = rasterToSpectraMap.get(currentView.getRaster());
+            for (DisplayableSpectrum displayableSpectrum : allSpectra) {
+                Band[] spectralBands = displayableSpectrum.getSpectralBands();
+                for (int j = 0; j < spectralBands.length; j++) {
+                    Band spectralBand = spectralBands[j];
+                    if (spectralBand == band) {
+                        displayableSpectrum.remove(j);
+                        if (displayableSpectrum.getSelectedBands().length == 0) {
+                            displayableSpectrum.setSelected(false);
+                        }
+                        return;
+                    }
+                }
+            }
+        }
+
+
 
         private boolean isActive() {
             return isVisible() && getCurrentProduct() != null;
