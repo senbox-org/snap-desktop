@@ -46,6 +46,7 @@ import org.esa.snap.ui.tooladapter.model.OperatorParametersTable;
 import org.esa.snap.ui.tooladapter.model.VariablesTable;
 import org.esa.snap.ui.tooladapter.validators.RequiredFieldValidator;
 import org.esa.snap.utils.JarPackager;
+import org.esa.snap.utils.SpringUtilities;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 import org.openide.util.NbBundle;
@@ -98,7 +99,7 @@ import java.util.stream.Collectors;
         "CTL_Panel_SysVar_Border_TitleText=System variables",
         "Icon_Add=/org/esa/snap/resources/images/icons/Add16.png",
         "CTL_Panel_OpParams_Border_TitleText=Operator Parameters",
-        "CTL_Button_Export_Text=Export as module",
+        "CTL_Button_Export_Text=Export as Jar",
         "MSG_Export_Complete_Text=The adapter was exported as a NetBeans module in %s",
         "MSG_Inexistent_Tool_Path_Text=The tool executable does not exist.\n" +
                 "Please specify the location of an existing executable.",
@@ -121,9 +122,12 @@ public class ToolAdapterEditorDialog extends ModalDialog {
     private Logger logger;
     public static final String helpID = "sta_editor";
 
+    private int formWidth;
+    private final int DEFAULT_PADDING = 3;
+    private final int DEFAULT_CONTROL_HEIGHT = 24;
+
     private ToolAdapterEditorDialog(AppContext appContext, String title) {
         super(appContext.getApplicationWindow(), title, ID_OK_CANCEL_HELP, new Object[] { new JButton(Bundle.CTL_Button_Export_Text()) }, helpID);
-        //super(appContext.getApplicationWindow(), title, ID_OK_CANCEL, null, helpID);
         this.logger = Logger.getLogger(ToolAdapterEditorDialog.class.getName());
         getJDialog().setResizable(false);
         this.registerButton(ID_OTHER, new JButton(Bundle.CTL_Button_Export_Text()));
@@ -196,12 +200,12 @@ public class ToolAdapterEditorDialog extends ModalDialog {
 
     @Override
     protected boolean verifyUserInput() {
-        Path toolLocation = newOperatorDescriptor.getMainToolFileLocation().toPath();
+        Path toolLocation = newOperatorDescriptor.getExpandedLocation(newOperatorDescriptor.getMainToolFileLocation()).toPath();
         if (!(Files.exists(toolLocation) && Files.isExecutable(toolLocation))) {
             SnapDialogs.showWarning(Bundle.MSG_Inexistent_Tool_Path_Text());
             return false;
         }
-        File workingDir = newOperatorDescriptor.getWorkingDir();
+        File workingDir = newOperatorDescriptor.getExpandedLocation(newOperatorDescriptor.getWorkingDir());
         if (!(workingDir != null && workingDir.exists() && workingDir.isDirectory())) {
             SnapDialogs.showWarning(Bundle.MSG_Inexistent_WorkDir_Text());
             return false;
@@ -295,60 +299,117 @@ public class ToolAdapterEditorDialog extends ModalDialog {
 
     private JPanel createMainPanel() {
         JPanel toolDescriptorPanel = new JPanel();
-        toolDescriptorPanel.setLayout(new BorderLayout());
-        toolDescriptorPanel.setPreferredSize(new Dimension(800, 550));
 
-        toolDescriptorPanel.add(createDescriptorAndVariablesAndPreprocessingPanel(), BorderLayout.LINE_START);
-        toolDescriptorPanel.add(createProcessingPanel(), BorderLayout.CENTER);
-        toolDescriptorPanel.add(createParametersPanel(), BorderLayout.PAGE_END);
+        SpringLayout springLayout = new SpringLayout();
+        toolDescriptorPanel.setLayout(springLayout);
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        double widthRatio = 0.5;
+        formWidth = Math.max((int) (screenSize.width * widthRatio), 720);
+        double heightRatio = 0.6;
+        int formHeight = Math.max((int) (screenSize.height * heightRatio), 580);
+        toolDescriptorPanel.setPreferredSize(new Dimension(formWidth, formHeight));
+
+        JPanel topLeftPanel = createDescriptorAndVariablesAndPreprocessingPanel();
+        Dimension topPanelDimension = new Dimension((int)((formWidth - 3 * DEFAULT_PADDING) * 0.5), (int)((formHeight - 3 * DEFAULT_PADDING) * 0.62));
+        topLeftPanel.setMinimumSize(topPanelDimension);
+        topLeftPanel.setPreferredSize(topPanelDimension);
+        toolDescriptorPanel.add(topLeftPanel);
+
+        JPanel topRightPanel = createProcessingPanel();
+        topRightPanel.setMinimumSize(topPanelDimension);
+        topRightPanel.setPreferredSize(topPanelDimension);
+        toolDescriptorPanel.add(topRightPanel);
+
+        JPanel middlePannel = createPreprocessAndPatternsPanel();
+        Dimension middlePanelDimension = new Dimension((int)(formWidth - 2 * DEFAULT_PADDING), (int)((formHeight - 3 * DEFAULT_PADDING) * 0.13));
+        middlePannel.setMinimumSize(middlePanelDimension);
+        middlePannel.setMaximumSize(middlePanelDimension);
+        middlePannel.setPreferredSize(middlePanelDimension);
+        toolDescriptorPanel.add(middlePannel);
+
+
+        JPanel bottomPannel = createParametersPanel();
+        Dimension bottomPanelDimension = new Dimension((int)(formWidth - 2 * DEFAULT_PADDING), (int)((formHeight - 3 * DEFAULT_PADDING) * 0.25));
+        bottomPannel.setMinimumSize(bottomPanelDimension);
+        bottomPannel.setMaximumSize(bottomPanelDimension);
+        bottomPannel.setPreferredSize(bottomPanelDimension);
+        toolDescriptorPanel.add(bottomPannel);
+
+        springLayout.putConstraint(SpringLayout.WEST, topLeftPanel, DEFAULT_PADDING, SpringLayout.WEST, toolDescriptorPanel);
+        springLayout.putConstraint(SpringLayout.WEST, topRightPanel, DEFAULT_PADDING, SpringLayout.EAST, topLeftPanel);
+        springLayout.putConstraint(SpringLayout.EAST, topRightPanel, DEFAULT_PADDING, SpringLayout.EAST, toolDescriptorPanel);
+        springLayout.putConstraint(SpringLayout.SOUTH, topLeftPanel, 0, SpringLayout.SOUTH, topRightPanel);
+        springLayout.putConstraint(SpringLayout.EAST, middlePannel, DEFAULT_PADDING, SpringLayout.EAST, toolDescriptorPanel);
+        springLayout.putConstraint(SpringLayout.WEST, middlePannel, DEFAULT_PADDING, SpringLayout.WEST, toolDescriptorPanel);
+        springLayout.putConstraint(SpringLayout.EAST, bottomPannel, DEFAULT_PADDING, SpringLayout.EAST, toolDescriptorPanel);
+        springLayout.putConstraint(SpringLayout.WEST, bottomPannel, DEFAULT_PADDING, SpringLayout.WEST, toolDescriptorPanel);
+
+        springLayout.putConstraint(SpringLayout.NORTH, topLeftPanel, DEFAULT_PADDING, SpringLayout.NORTH, toolDescriptorPanel);
+        springLayout.putConstraint(SpringLayout.NORTH, topRightPanel, DEFAULT_PADDING, SpringLayout.NORTH, toolDescriptorPanel);
+
+        springLayout.putConstraint(SpringLayout.NORTH, middlePannel, DEFAULT_PADDING, SpringLayout.SOUTH, topLeftPanel);
+        springLayout.putConstraint(SpringLayout.NORTH, middlePannel, DEFAULT_PADDING, SpringLayout.SOUTH, topRightPanel);
+        springLayout.putConstraint(SpringLayout.SOUTH, middlePannel, DEFAULT_PADDING, SpringLayout.NORTH, bottomPannel);
+
+        springLayout.putConstraint(SpringLayout.SOUTH, bottomPannel, DEFAULT_PADDING, SpringLayout.SOUTH, toolDescriptorPanel);
 
         return toolDescriptorPanel;
     }
 
     private JPanel createOperatorDescriptorPanel() {
-        GridBagLayout layout = new GridBagLayout();
-        layout.columnWidths = new int[]{100, 315};
-
-        final JPanel descriptorPanel = new JPanel(layout);
+        final JPanel descriptorPanel = new JPanel(new SpringLayout());
 
         TextFieldEditor textEditor = new TextFieldEditor();
 
-        addValidatedTextField(descriptorPanel, textEditor, Bundle.CTL_Label_Alias_Text(), "alias", 0, "[^\\\\\\?%\\*:\\|\"<>\\./]*");
-        addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_UniqueName_Text(), "name", 1, true);
-        addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_Label_Text(), "label", 2, true);
-        addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_Version_Text(), "version", 3, true);
-        addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_Copyright_Text(), "copyright", 4, false);
-        addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_Authors_Text(), "authors", 5, false);
-        addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_Description_Text(), "description", 6, false);
+        addValidatedTextField(descriptorPanel, textEditor, Bundle.CTL_Label_Alias_Text(), "alias", "[^\\\\\\?%\\*:\\|\"<>\\./]*");
+        addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_UniqueName_Text(), "name", true);
+        addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_Label_Text(), "label", true);
+        addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_Version_Text(), "version", true);
+        addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_Copyright_Text(), "copyright", false);
+        addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_Authors_Text(), "authors", false);
+        addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_Description_Text(), "description", false);
 
         java.util.List<String> menus = new ArrayList<>();
         getAvailableMenuOptions(null, menus);
-        addComboField(descriptorPanel, textEditor, Bundle.CTL_Label_MenuLocation_Text(), "menuLocation", menus, true, 7, true);
+        addComboField(descriptorPanel, textEditor, Bundle.CTL_Label_MenuLocation_Text(), "menuLocation", menus, true, true);
 
         TitledBorder title = BorderFactory.createTitledBorder(Bundle.CTL_Panel_OperatorDescriptor_Text());
         descriptorPanel.setBorder(title);
-        descriptorPanel.setPreferredSize(new Dimension(415, 232));
+        SpringUtilities.makeCompactGrid(descriptorPanel, 8, 2, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING);
 
         return descriptorPanel;
     }
 
-    private JPanel createPreProcessingPanel(){
-        GridBagLayout layout = new GridBagLayout();
-        layout.columnWidths = new int[]{35, 180, 200};
+    private JPanel createPreprocessAndPatternsPanel(){
+        JPanel preprocessAndPatternsPanel = new JPanel(new SpringLayout());
 
-        final JPanel preProcessingPanel = new JPanel(layout);
+        preprocessAndPatternsPanel.add(createPreProcessingPanel());
+        preprocessAndPatternsPanel.add(createProgressPatternsPanel());
+
+        SpringUtilities.makeCompactGrid(preprocessAndPatternsPanel, 1, 2, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING);
+
+        return preprocessAndPatternsPanel;
+    }
+
+
+    private JPanel createPreProcessingPanel(){
+        final JPanel preProcessingPanel = new JPanel(new SpringLayout());
 
         PropertyDescriptor propertyDescriptor = propertyContainer.getDescriptor("preprocessorExternalTool");
         PropertyEditor editor = PropertyEditorRegistry.getInstance().findPropertyEditor(propertyDescriptor);
         JComponent editorComponent = editor.createEditorComponent(propertyDescriptor, bindingContext);
+        editorComponent.setMaximumSize(new Dimension(editorComponent.getMaximumSize().width, DEFAULT_CONTROL_HEIGHT));
+        editorComponent.setPreferredSize(new Dimension(editorComponent.getPreferredSize().width, DEFAULT_CONTROL_HEIGHT));
 
-        preProcessingPanel.add(createCheckboxComponent("preprocessTool", editorComponent, newOperatorDescriptor.getPreprocessTool()), getConstraints(0, 0));
-        preProcessingPanel.add(new JLabel(Bundle.CTL_Label_PreprocessingTool_Text()), getConstraints(0, 1));
-        preProcessingPanel.add(editorComponent, getConstraints(0, 2));
+        preProcessingPanel.add(createCheckboxComponent("preprocessTool", editorComponent, newOperatorDescriptor.getPreprocessTool()));
+        preProcessingPanel.add(new JLabel(Bundle.CTL_Label_PreprocessingTool_Text()));
+        preProcessingPanel.add(editorComponent);
 
         propertyDescriptor = propertyContainer.getDescriptor("processingWriter");
         editor = PropertyEditorRegistry.getInstance().findPropertyEditor(propertyDescriptor);
         editorComponent = editor.createEditorComponent(propertyDescriptor, bindingContext);
+        editorComponent.setMaximumSize(new Dimension(editorComponent.getMaximumSize().width, DEFAULT_CONTROL_HEIGHT));
+        editorComponent.setPreferredSize(new Dimension(editorComponent.getPreferredSize().width, DEFAULT_CONTROL_HEIGHT));
 
         JComponent writeComponent = createCheckboxComponent("writeForProcessing", editorComponent, newOperatorDescriptor.shouldWriteBeforeProcessing());
         if(writeComponent instanceof JCheckBox){
@@ -359,53 +420,52 @@ public class ToolAdapterEditorDialog extends ModalDialog {
                 }
             });
         }
-        preProcessingPanel.add(writeComponent, getConstraints(1, 0));
-        preProcessingPanel.add(new JLabel(Bundle.CTL_Label_WriteBefore_Text()), getConstraints(1, 1));
-        preProcessingPanel.add(editorComponent, getConstraints(1, 2));
+        preProcessingPanel.add(writeComponent);
+        preProcessingPanel.add(new JLabel(Bundle.CTL_Label_WriteBefore_Text()));
+        preProcessingPanel.add(editorComponent);
 
         TitledBorder title = BorderFactory.createTitledBorder(Bundle.CTL_Panel_PreProcessing_Border_TitleText());
         preProcessingPanel.setBorder(title);
-        preProcessingPanel.setPreferredSize(new Dimension(415, 70));
+
+        SpringUtilities.makeCompactGrid(preProcessingPanel, 2, 3, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING);
 
         return preProcessingPanel;
     }
 
     private JPanel createProcessingPanel() {
-
-        final JPanel processingPanel = new JPanel();
-        processingPanel.setLayout(new BorderLayout());
-
-        JPanel configPanel = new JPanel();
-        configPanel.setLayout(new BorderLayout());
+        final JPanel configPanel = new JPanel(new SpringLayout());
         configPanel.setBorder(BorderFactory.createTitledBorder(Bundle.CTL_Panel_ConfigParams_Text()));
+
+        JPanel panelToolFiles = new JPanel(new SpringLayout());
 
         PropertyDescriptor propertyDescriptor = propertyContainer.getDescriptor("mainToolFileLocation");
         propertyDescriptor.setValidator(new NotEmptyValidator());
         PropertyEditor editor = PropertyEditorRegistry.getInstance().findPropertyEditor(propertyDescriptor);
         JComponent editorComponent = editor.createEditorComponent(propertyDescriptor, bindingContext);
+        editorComponent.setMaximumSize(new Dimension(editorComponent.getMaximumSize().width, DEFAULT_CONTROL_HEIGHT));
+        editorComponent.setPreferredSize(new Dimension(editorComponent.getPreferredSize().width, DEFAULT_CONTROL_HEIGHT));
 
-        JPanel panelToolFiles = new JPanel();
-        GridBagLayout layout = new GridBagLayout();
-        layout.columnWidths = new int[]{120, 250};
-        panelToolFiles.setLayout(layout);
-
-        panelToolFiles.add(new JLabel(Bundle.CTL_Label_ToolLocation_Text()), getConstraints(0, 0));
-        panelToolFiles.add(editorComponent, getConstraints(0, 1));
+        panelToolFiles.add(new JLabel(Bundle.CTL_Label_ToolLocation_Text()));
+        panelToolFiles.add(editorComponent);
 
         propertyDescriptor = propertyContainer.getDescriptor("workingDir");
         propertyDescriptor.setAttribute("directory", true);
         propertyDescriptor.setValidator(new NotEmptyValidator());
         editor = PropertyEditorRegistry.getInstance().findPropertyEditor(propertyDescriptor);
         editorComponent = editor.createEditorComponent(propertyDescriptor, bindingContext);
+        editorComponent.setMaximumSize(new Dimension(editorComponent.getMaximumSize().width, DEFAULT_CONTROL_HEIGHT));
+        editorComponent.setPreferredSize(new Dimension(editorComponent.getPreferredSize().width, DEFAULT_CONTROL_HEIGHT));
 
-        panelToolFiles.add(new JLabel(Bundle.CTL_Label_WorkDir_Text()), getConstraints(1, 0));
-        panelToolFiles.add(editorComponent, getConstraints(1, 1));
+        panelToolFiles.add(new JLabel(Bundle.CTL_Label_WorkDir_Text()));
+        panelToolFiles.add(editorComponent);
 
-        panelToolFiles.add(new JLabel(Bundle.CTL_Label_CmdLineTemplate_Text()), getConstraints(2, 0, 2));
+        SpringUtilities.makeCompactGrid(panelToolFiles, 2, 2, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING);
 
-        configPanel.add(panelToolFiles, BorderLayout.PAGE_START);
+        configPanel.add(panelToolFiles);
+        JLabel label = new JLabel(Bundle.CTL_Label_CmdLineTemplate_Text());
+        configPanel.add(label);
 
-        templateContent = new JTextArea("", 15, 9);
+        templateContent = new JTextArea("", 16, 9);
         try {
             if (operatorIsNew) {
                 if (oldOperatorDescriptor.getTemplateFileLocation() != null) {
@@ -418,69 +478,61 @@ public class ToolAdapterEditorDialog extends ModalDialog {
             logger.warning(e.getMessage());
         }
         templateContent.setInputVerifier(new RequiredFieldValidator(MESSAGE_REQUIRED));
-        configPanel.add(new JScrollPane(templateContent), BorderLayout.CENTER);
+        JScrollPane scrollPane = new JScrollPane(templateContent);
+        configPanel.add(scrollPane);
 
-        processingPanel.add(configPanel, BorderLayout.CENTER);
+        SpringUtilities.makeCompactGrid(configPanel, 3, 1, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING);
 
-        processingPanel.add(createProgressPatternsPanel(), BorderLayout.PAGE_END);
-
-        return processingPanel;
+        return configPanel;
     }
 
     private JPanel createProgressPatternsPanel(){
-        GridBagLayout layout = new GridBagLayout();
-        layout.columnWidths = new int[]{100, 280};
-
-        JPanel patternsPanel = new JPanel(layout);
+        JPanel patternsPanel = new JPanel(new SpringLayout());
         patternsPanel.setBorder(BorderFactory.createTitledBorder(Bundle.CTL_Panel_OutputPattern_Border_TitleText()));
 
         TextFieldEditor textEditor = new TextFieldEditor();
+        addTextField(patternsPanel, textEditor, Bundle.CTL_Label_ProgressPattern(), "progressPattern", false);
+        addTextField(patternsPanel, textEditor, Bundle.CTL_Label_ErrorPattern(), "errorPattern", false);
 
-        addTextField(patternsPanel, textEditor, Bundle.CTL_Label_ProgressPattern(), "progressPattern", 0, false);
-        addTextField(patternsPanel, textEditor, Bundle.CTL_Label_ErrorPattern(), "errorPattern", 1, false);
+        SpringUtilities.makeCompactGrid(patternsPanel, 2, 2, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING);
 
         return patternsPanel;
     }
 
     private JPanel createDescriptorAndVariablesAndPreprocessingPanel() {
-        JPanel descriptorAndVariablesPanel = new JPanel();
-        descriptorAndVariablesPanel.setPreferredSize(new Dimension(420, 512));
-        BoxLayout layout = new BoxLayout(descriptorAndVariablesPanel, BoxLayout.PAGE_AXIS);
-        descriptorAndVariablesPanel.setLayout(layout);
+        JPanel descriptorAndVariablesPanel = new JPanel(new SpringLayout());
 
         JPanel descriptorPanel = createOperatorDescriptorPanel();
-        descriptorPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        descriptorPanel.setMaximumSize(new Dimension(415, 420));
         descriptorAndVariablesPanel.add(descriptorPanel);
 
         JPanel variablesBorderPanel = new JPanel();
-        layout = new BoxLayout(variablesBorderPanel, BoxLayout.PAGE_AXIS);
+        BoxLayout layout = new BoxLayout(variablesBorderPanel, BoxLayout.PAGE_AXIS);
         variablesBorderPanel.setLayout(layout);
         variablesBorderPanel.setBorder(BorderFactory.createTitledBorder(Bundle.CTL_Panel_SysVar_Border_TitleText()));
-        AbstractButton addVariableBut = ToolButtonFactory.createButton(UIUtils.loadImageIcon(Bundle.Icon_Add()),
-                false);
+        AbstractButton addVariableBut = ToolButtonFactory.createButton(UIUtils.loadImageIcon(Bundle.Icon_Add()), false);
+        addVariableBut.setMaximumSize(new Dimension(20, 20));
         addVariableBut.setAlignmentX(Component.LEFT_ALIGNMENT);
         variablesBorderPanel.add(addVariableBut);
         VariablesTable varTable = new VariablesTable(newOperatorDescriptor.getVariables());
         varTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+        varTable.setRowHeight(20);
         JScrollPane scrollPane = new JScrollPane(varTable);
-        scrollPane.setPreferredSize(new Dimension(400, 80));
         scrollPane.setAlignmentX(Component.LEFT_ALIGNMENT);
         variablesBorderPanel.add(scrollPane);
         variablesBorderPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        variablesBorderPanel.setMaximumSize(new Dimension(415, 40));
-        variablesBorderPanel.setMinimumSize(new Dimension(415, 40));
-        descriptorAndVariablesPanel.add(variablesBorderPanel);
+        Dimension variablesPanelDimension = new Dimension((formWidth - 3 * DEFAULT_PADDING) / 2 - 2 * DEFAULT_PADDING, 130);
+        variablesBorderPanel.setMinimumSize(variablesPanelDimension);
+        variablesBorderPanel.setMaximumSize(variablesPanelDimension);
+        variablesBorderPanel.setPreferredSize(variablesPanelDimension);
 
-        JPanel preprocessingPanel = createPreProcessingPanel();
-        preprocessingPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        preprocessingPanel.setMaximumSize(new Dimension(415, 60));
-        descriptorAndVariablesPanel.add(preprocessingPanel);
+        descriptorAndVariablesPanel.add(variablesBorderPanel);
 
         addVariableBut.addActionListener(e -> {
             newOperatorDescriptor.getVariables().add(new SystemVariable("key", ""));
             varTable.revalidate();
         });
+
+        SpringUtilities.makeCompactGrid(descriptorAndVariablesPanel, 2, 1, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING);
 
         return descriptorAndVariablesPanel;
     }
@@ -489,12 +541,16 @@ public class ToolAdapterEditorDialog extends ModalDialog {
         JPanel paramsPanel = new JPanel();
         BoxLayout layout = new BoxLayout(paramsPanel, BoxLayout.PAGE_AXIS);
         paramsPanel.setLayout(layout);
-        AbstractButton addParamBut = ToolButtonFactory.createButton(UIUtils.loadImageIcon(Bundle.Icon_Add()),
-                false);
+        AbstractButton addParamBut = ToolButtonFactory.createButton(UIUtils.loadImageIcon(Bundle.Icon_Add()), false);
         addParamBut.setAlignmentX(Component.LEFT_ALIGNMENT);
         paramsPanel.add(addParamBut);
+        int tableWidth = (formWidth - 2 * DEFAULT_PADDING);
+        int widths[] = {27, 120, (int)(tableWidth * 0.25), (int)(tableWidth * 0.1), 100, (int)(tableWidth * 0.32), 30};
+        for(int i=0; i < widths.length; i++) {
+            paramsTable.getColumnModel().getColumn(i).setPreferredWidth(widths[i]);
+
+        }
         JScrollPane tableScrollPane = new JScrollPane(paramsTable);
-        tableScrollPane.setPreferredSize(new Dimension(500, 130));
         tableScrollPane.setAlignmentX(Component.LEFT_ALIGNMENT);
         paramsPanel.add(tableScrollPane);
         addParamBut.addActionListener(e -> paramsTable.addParameterToTable(new TemplateParameterDescriptor("parameterName", String.class)));
@@ -517,30 +573,34 @@ public class ToolAdapterEditorDialog extends ModalDialog {
         return editorComponent;
     }
 
-    private void addValidatedTextField(JPanel parent, TextFieldEditor textEditor, String labelText, String propertyName, int row, String validatorRegex) {
+    private void addValidatedTextField(JPanel parent, TextFieldEditor textEditor, String labelText, String propertyName, String validatorRegex) {
         if(validatorRegex == null || validatorRegex.isEmpty()){
-            addTextField(parent, textEditor, labelText, propertyName, row, false);
+            addTextField(parent, textEditor, labelText, propertyName, false);
         } else {
-            parent.add(new JLabel(labelText), getConstraints(row, 0));
+            parent.add(new JLabel(labelText));
             PropertyDescriptor propertyDescriptor = propertyContainer.getDescriptor(propertyName);
             propertyDescriptor.setValidator(new PatternValidator(Pattern.compile(validatorRegex)));
             JComponent editorComponent = textEditor.createEditorComponent(propertyDescriptor, bindingContext);
-            parent.add(editorComponent, getConstraints(row, 1));
+            editorComponent.setMaximumSize(new Dimension(editorComponent.getMaximumSize().width, DEFAULT_CONTROL_HEIGHT));
+            editorComponent.setPreferredSize(new Dimension(editorComponent.getPreferredSize().width, DEFAULT_CONTROL_HEIGHT));
+            parent.add(editorComponent);
         }
     }
 
-    private void addTextField(JPanel parent, TextFieldEditor textEditor, String labelText, String propertyName, int row, boolean isRequired) {
-        parent.add(new JLabel(labelText), getConstraints(row, 0));
+    private void addTextField(JPanel parent, TextFieldEditor textEditor, String labelText, String propertyName, boolean isRequired) {
+        parent.add(new JLabel(labelText));
         PropertyDescriptor propertyDescriptor = propertyContainer.getDescriptor(propertyName);
         if (isRequired) {
             propertyDescriptor.setValidator(new NotEmptyValidator());
         }
         JComponent editorComponent = textEditor.createEditorComponent(propertyDescriptor, bindingContext);
-        parent.add(editorComponent, getConstraints(row, 1));
+        editorComponent.setMaximumSize(new Dimension(editorComponent.getMaximumSize().width, DEFAULT_CONTROL_HEIGHT));
+        editorComponent.setPreferredSize(new Dimension(editorComponent.getPreferredSize().width, DEFAULT_CONTROL_HEIGHT));
+        parent.add(editorComponent);
     }
 
-    private void addComboField(JPanel parent, TextFieldEditor textEditor, String labelText, String propertyName, java.util.List<String> values, boolean sortValues, int row, boolean isRequired) {
-        parent.add(new JLabel(labelText), getConstraints(row, 0));
+    private void addComboField(JPanel parent, TextFieldEditor textEditor, String labelText, String propertyName, java.util.List<String> values, boolean sortValues, boolean isRequired) {
+        parent.add(new JLabel(labelText));
         PropertyDescriptor propertyDescriptor = propertyContainer.getDescriptor(propertyName);
         if (isRequired) {
             propertyDescriptor.setValidator(new NotEmptyValidator());
@@ -551,7 +611,9 @@ public class ToolAdapterEditorDialog extends ModalDialog {
         propertyDescriptor.setValueSet(new ValueSet(values.toArray()));
         PropertyEditor editor = PropertyEditorRegistry.getInstance().findPropertyEditor(propertyDescriptor);
         JComponent editorComp = editor.createEditorComponent(propertyDescriptor, bindingContext);
-        parent.add(editorComp, getConstraints(row, 1));
+        editorComp.setMaximumSize(new Dimension(editorComp.getMaximumSize().width, DEFAULT_CONTROL_HEIGHT));
+        editorComp.setPreferredSize(new Dimension(editorComp.getPreferredSize().width, DEFAULT_CONTROL_HEIGHT));
+        parent.add(editorComp);
     }
 
     private void getAvailableMenuOptions(FileObject current, java.util.List<String> resultList) {
@@ -571,27 +633,5 @@ public class ToolAdapterEditorDialog extends ModalDialog {
                 getAvailableMenuOptions(child, resultList);
             }
         }
-    }
-
-    private GridBagConstraints getConstraints(int row, int col) {
-        GridBagConstraints c = new GridBagConstraints();
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.gridx = col;
-        c.gridy = row;
-        if (col == 1) {
-            c.gridwidth = 1;
-        }
-        c.insets = new Insets(2, 10, 2, 10);
-        return c;
-    }
-
-    private GridBagConstraints getConstraints(int row, int col, int noCells) {
-        GridBagConstraints c = new GridBagConstraints();
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.gridx = col;
-        c.gridy = row;
-        c.gridwidth = noCells;
-        c.insets = new Insets(2, 10, 2, 10);
-        return c;
     }
 }

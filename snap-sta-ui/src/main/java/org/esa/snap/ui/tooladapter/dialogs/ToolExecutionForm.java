@@ -72,7 +72,7 @@ class ToolExecutionForm extends JTabbedPane {
 
         //initialise the target product's directory to the working directory
         final TargetProductSelectorModel targetProductSelectorModel = targetProductSelector.getModel();
-        targetProductSelectorModel.setProductDir(this.operatorDescriptor.getWorkingDir());
+        targetProductSelectorModel.setProductDir(operatorDescriptor.getExpandedLocation(operatorDescriptor.getWorkingDir()));
 
         ioParamPanel = createIOParamTab();
         addTab("I/O Parameters", ioParamPanel);

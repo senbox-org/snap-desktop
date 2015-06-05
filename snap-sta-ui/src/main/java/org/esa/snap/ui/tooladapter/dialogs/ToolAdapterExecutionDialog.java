@@ -20,12 +20,14 @@ package org.esa.snap.ui.tooladapter.dialogs;
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.gpf.GPF;
 import org.esa.snap.framework.gpf.Operator;
+import org.esa.snap.framework.gpf.descriptor.ParameterDescriptor;
 import org.esa.snap.framework.gpf.descriptor.ToolAdapterOperatorDescriptor;
 import org.esa.snap.framework.gpf.operators.tooladapter.ToolAdapterOp;
 import org.esa.snap.framework.gpf.ui.OperatorMenu;
 import org.esa.snap.framework.gpf.ui.OperatorParameterSupport;
 import org.esa.snap.framework.gpf.ui.SingleTargetProductDialog;
 import org.esa.snap.framework.ui.AppContext;
+import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.actions.file.SaveProductAsAction;
 import org.netbeans.api.progress.ProgressHandle;
 import org.netbeans.api.progress.ProgressHandleFactory;
@@ -33,6 +35,10 @@ import org.netbeans.api.progress.ProgressUtils;
 import org.openide.util.Cancellable;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -92,18 +98,28 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
 
     @Override
     protected void onApply() {
-        if (validateUserInput() && canApply()) {
-            String productDir = targetProductSelector.getModel().getProductDir().getAbsolutePath();
-            appContext.getPreferences().setPropertyString(SaveProductAsAction.PREFERENCES_KEY_LAST_PRODUCT_DIR, productDir);
-            final Product[] sourceProducts = form.getSourceProducts();
-            Map<String, Product> sourceProductMap = new HashMap<>();
-            sourceProductMap.put(SOURCE_PRODUCT_FIELD, sourceProducts[0]);
-            Operator op = GPF.getDefaultInstance().createOperator(operatorDescriptor.getName(), parameterSupport.getParameterMap(), sourceProductMap, null);
-            op.setSourceProducts(sourceProducts);
-            operatorTask = new OperatorTask(op, ToolAdapterExecutionDialog.this::operatorCompleted);
-            ProgressHandle progressHandle = ProgressHandleFactory.createHandle(this.getTitle());
-            ((ToolAdapterOp)op).setProgressMonitor(progressHandle);
-            ProgressUtils.runOffEventThreadWithProgressDialog(operatorTask, this.getTitle(), progressHandle, true, 1, 1);
+        final Product[] sourceProducts = form.getSourceProducts();
+        if (Arrays.stream(sourceProducts).anyMatch(p -> p == null)) {
+            SnapDialogs.showWarning("Please make sure you have selected the necessary input products");
+        } else {
+            if (!canApply()) {
+                onClose();
+                ToolAdapterEditorDialog dialog = new ToolAdapterEditorDialog(appContext, operatorDescriptor, false);
+                dialog.show();
+            } else {
+                if (validateUserInput()) {
+                    String productDir = targetProductSelector.getModel().getProductDir().getAbsolutePath();
+                    appContext.getPreferences().setPropertyString(SaveProductAsAction.PREFERENCES_KEY_LAST_PRODUCT_DIR, productDir);
+                    Map<String, Product> sourceProductMap = new HashMap<>();
+                    sourceProductMap.put(SOURCE_PRODUCT_FIELD, sourceProducts[0]);
+                    Operator op = GPF.getDefaultInstance().createOperator(operatorDescriptor.getName(), parameterSupport.getParameterMap(), sourceProductMap, null);
+                    op.setSourceProducts(sourceProducts);
+                    operatorTask = new OperatorTask(op, ToolAdapterExecutionDialog.this::operatorCompleted);
+                    ProgressHandle progressHandle = ProgressHandleFactory.createHandle(this.getTitle());
+                    ((ToolAdapterOp) op).setProgressMonitor(progressHandle);
+                    ProgressUtils.runOffEventThreadWithProgressDialog(operatorTask, this.getTitle(), progressHandle, true, 1, 1);
+                }
+            }
         }
     }
 
@@ -127,7 +143,35 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
 
     @Override
     protected boolean canApply() {
-        return true;
+        try {
+            Path toolLocation = operatorDescriptor.getExpandedLocation(operatorDescriptor.getMainToolFileLocation()).toPath();
+            if (!(Files.exists(toolLocation) && Files.isExecutable(toolLocation))) {
+                SnapDialogs.showWarning(Bundle.MSG_Inexistent_Tool_Path_Text());
+                return false;
+            }
+            File workingDir = operatorDescriptor.getExpandedLocation(operatorDescriptor.getWorkingDir());
+            if (!(workingDir != null && workingDir.exists() && workingDir.isDirectory())) {
+                SnapDialogs.showWarning(Bundle.MSG_Inexistent_WorkDir_Text());
+                return false;
+            }
+            ParameterDescriptor[] parameterDescriptors = operatorDescriptor.getParameterDescriptors();
+            if (parameterDescriptors != null && parameterDescriptors.length > 0) {
+                for (ParameterDescriptor parameterDescriptor : parameterDescriptors) {
+                    Class<?> dataType = parameterDescriptor.getDataType();
+                    String defaultValue = parameterDescriptor.getDefaultValue();
+                    if (File.class.isAssignableFrom(dataType) &&
+                            (parameterDescriptor.isNotNull() || parameterDescriptor.isNotEmpty()) &&
+                            (defaultValue == null || defaultValue.isEmpty() || !Files.exists(Paths.get(defaultValue)))) {
+                        SnapDialogs.showWarning(String.format(Bundle.MSG_Inexistem_Parameter_Value_Text(),
+                                parameterDescriptor.getName(), parameterDescriptor.isNotNull() ? "NotNull" : "NotEmpty"));
+                        return false;
+                    }
+                }
+            }
+            return true;
+        } catch (Exception ignored) {
+            return false;
+        }
     }
 
     @Override
@@ -151,6 +195,8 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
         boolean isValid = true;
         File productDir = targetProductSelector.getModel().getProductDir();
         isValid &= (productDir != null) && productDir.exists();
+        Product[] sourceProducts = form.getSourceProducts();
+        isValid &= (sourceProducts != null) && sourceProducts.length > 0;
 
         return isValid;
     }

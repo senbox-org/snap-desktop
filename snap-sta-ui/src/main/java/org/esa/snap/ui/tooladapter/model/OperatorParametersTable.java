@@ -126,6 +126,7 @@ public class OperatorParametersTable extends JTable {
         setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         for(int i=0; i < widths.length; i++) {
             getColumnModel().getColumn(i).setPreferredWidth(widths[i]);
+
         }
 
         this.putClientProperty("JComboBox.isTableCellEditor", Boolean.FALSE);
