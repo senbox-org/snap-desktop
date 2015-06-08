@@ -108,6 +108,14 @@ class ToolExecutionForm extends JTabbedPane {
         return sourceProducts.toArray(new Product[sourceProducts.size()]);
     }
 
+    public Object getPropertyValue(String propertyName) {
+        Object result = null;
+        if (propertySet.isPropertyDefined(propertyName)) {
+            result = propertySet.getProperty(propertyName).getValue();
+        }
+        return result;
+    }
+
     /**
      * Gets the target (destination) product file
      *
@@ -137,13 +145,17 @@ class ToolExecutionForm extends JTabbedPane {
     }
 
     private void updateTargetProductFields() {
-        File file = new File(propertySet.getProperty(ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE).getValueAsText());
-        String productName = FileUtils.getFilenameWithoutExtension(file);
-        if (fileExtension == null) {
-            fileExtension = FileUtils.getExtension(file);
-        }
         TargetProductSelectorModel model = targetProductSelector.getModel();
-        model.setProductName(productName);
+        Property property = propertySet.getProperty(ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE);
+        Object value = property.getValue();
+        if (value != null) {
+            File file = new File(property.getValueAsText());
+            String productName = FileUtils.getFilenameWithoutExtension(file);
+            if (fileExtension == null) {
+                fileExtension = FileUtils.getExtension(file);
+            }
+            model.setProductName(productName);
+        }
         model.setSaveToFileSelected(false);
         targetProductSelector.getProductDirTextField().setEnabled(false);
     }
@@ -154,18 +166,20 @@ class ToolExecutionForm extends JTabbedPane {
 
         @Override
         public void selectionChanged(SelectionChangeEvent event) {
-            String productName = "";
-            final Product selectedProduct = (Product) event.getSelection().getSelectedValue();
-            if (selectedProduct != null) {
-                productName = FileUtils.getFilenameWithoutExtension(selectedProduct.getName());
-            }
-            final TargetProductSelectorModel targetProductSelectorModel = targetProductSelector.getModel();
-            productName += TARGET_PRODUCT_NAME_SUFFIX;
-            targetProductSelectorModel.setProductName(productName);
             Property targetProperty = propertySet.getProperty(ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE);
             Object value = targetProperty.getValue();
-            File oldValue = value instanceof File ? (File) value : new File((String) value);
-            propertySet.setValue(ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE, new File(oldValue.getParentFile().getAbsolutePath(), productName + fileExtension));
+            if (value != null) {
+                String productName = "";
+                final Product selectedProduct = (Product) event.getSelection().getSelectedValue();
+                if (selectedProduct != null) {
+                    productName = FileUtils.getFilenameWithoutExtension(selectedProduct.getName());
+                }
+                final TargetProductSelectorModel targetProductSelectorModel = targetProductSelector.getModel();
+                productName += TARGET_PRODUCT_NAME_SUFFIX;
+                targetProductSelectorModel.setProductName(productName);
+                File oldValue = value instanceof File ? (File) value : new File((String) value);
+                propertySet.setValue(ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE, new File(oldValue.getParentFile().getAbsolutePath(), productName + fileExtension));
+            }
         }
     }
 

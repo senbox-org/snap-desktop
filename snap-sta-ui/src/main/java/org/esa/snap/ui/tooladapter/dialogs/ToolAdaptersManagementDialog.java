@@ -98,7 +98,7 @@ public class ToolAdaptersManagementDialog extends ModalDialog {
         AbstractButton newButton = ToolButtonFactory.createButton(TangoIcons.actions_document_new(TangoIcons.Res.R22), false);
         newButton.setToolTipText(Bundle.ToolTipNewOperator_Text());
         newButton.addActionListener(e -> {
-            ToolAdapterOperatorDescriptor newOperatorSpi = new ToolAdapterOperatorDescriptor(ToolAdapterConstants.OPERATOR_NAMESPACE + "DefaultOperatorName", ToolAdapterOp.class, "DefaultOperatorName", null, null, null, null, null, null);
+            ToolAdapterOperatorDescriptor newOperatorSpi = new ToolAdapterOperatorDescriptor(ToolAdapterConstants.OPERATOR_NAMESPACE + "NewOperator", ToolAdapterOp.class, "NewOperator", null, null, null, null, null, null);
             ToolAdapterEditorDialog dialog = new ToolAdapterEditorDialog(appContext, newOperatorSpi, true);
             dialog.show();
             setContent(createContentPanel());
@@ -209,9 +209,15 @@ public class ToolAdaptersManagementDialog extends ModalDialog {
             }
             if (path.exists()) {
                 try {
+                    File oldPath = ToolAdapterIO.getUserAdapterPath();
                     Preferences modulePrefs = NbPreferences.forModule(ToolAdapterIO.class);
                     modulePrefs.put("user.module.path", newPath);
                     modulePrefs.sync();
+                    if (!newPath.equals(oldPath.getAbsolutePath())) {
+                        ToolAdapterIO.searchAndRegisterAdapters();
+                        setContent(createContentPanel());
+                        getContent().repaint();
+                    }
                     //SnapDialogs.showInformation("The path for user adapters will be considered next time the application is opened.", "Don't show this dialog");
                 } catch (BackingStoreException e1) {
                     SnapDialogs.showError(e1.getMessage());

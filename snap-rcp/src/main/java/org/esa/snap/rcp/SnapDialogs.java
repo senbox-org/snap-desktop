@@ -202,7 +202,19 @@ public class SnapDialogs {
         }
     }
 
+    /**
+     * Opens question dialog asking the user whether or not to overwrite an existing file. If the given
+     * file does not exists, the question dialog is not shown.
+     *
+     * @param file the file to check for existance
+     * @return <code>True</code> if the user confirms the dialog with 'yes' or the given file does not exist.<br>
+     * <code>False</code> if the user does not want to overwrite the existing file.<br>
+     * <code>null</code> if the user canceled the operation.<br>
+     */
     public static Boolean requestOverwriteDecision(String title, File file) {
+        if (!file.exists()) {
+            return Boolean.TRUE;
+        }
         Answer answer = requestDecision(getDialogTitle(title),
                                         MessageFormat.format(
                                                 "The file ''{0}'' already exists.\nDo you wish to overwrite it?",
