@@ -248,11 +248,40 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
             if (errors != null && errors.size() > 0) {
                 StringBuilder builder = new StringBuilder();
                 builder.append(String.format("The operator completed with the following errors:%n"));
-                for (int i = 0; i < errors.size(); i++) {
-                    builder.append(String.format("[%s] %s%n", i + 1, errors.get(i)));
+                int messageCount = Math.min(errors.size(), 10);
+                for (int i = 0; i < messageCount; i++) {
+                    builder.append(String.format("[%s] %s%n", i + 1, shrinkText(errors.get(i))));
                 }
                 SnapDialogs.showWarning(builder.toString());
             }
+        }
+    }
+
+    private String shrinkText(String input) {
+        int charLimit = 80;
+        if (input.length() <= charLimit) {
+            return input;
+        } else {
+            StringBuilder builder= new StringBuilder();
+            boolean endOfString = false;
+            int start = 0, end = 0;
+            while (start < input.length() - 1) {
+                int charCount = 0, lastSpace = 0;
+                while (charCount < charLimit) {
+                    if (input.charAt(charCount + start) == ' ') {
+                        lastSpace = charCount;
+                    }
+                    charCount++;
+                    if (charCount + start == input.length()) {
+                        endOfString = true;
+                        break;
+                    }
+                }
+                end = endOfString ? input.length() : (lastSpace > 0) ? lastSpace + start : charCount + start;
+                builder.append(input.substring(start, end)).append(String.format("%n\t"));
+                start = end + 1;
+            }
+            return builder.toString();
         }
     }
 
