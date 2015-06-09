@@ -19,6 +19,7 @@ package org.esa.snap.ui.tooladapter.dialogs;
 
 import com.bc.ceres.binding.PropertyContainer;
 import com.bc.ceres.binding.PropertyDescriptor;
+import com.bc.ceres.binding.ValidationException;
 import com.bc.ceres.binding.ValueSet;
 import com.bc.ceres.binding.validators.NotEmptyValidator;
 import com.bc.ceres.binding.validators.PatternValidator;
@@ -59,6 +60,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -125,12 +127,16 @@ public class ToolAdapterEditorDialog extends ModalDialog {
     private int formWidth;
     private final int DEFAULT_PADDING = 3;
     private final int DEFAULT_CONTROL_HEIGHT = 24;
+    private final String[] systemPath;
 
     private ToolAdapterEditorDialog(AppContext appContext, String title) {
         super(appContext.getApplicationWindow(), title, ID_OK_CANCEL_HELP, new Object[] { new JButton(Bundle.CTL_Button_Export_Text()) }, helpID);
         this.logger = Logger.getLogger(ToolAdapterEditorDialog.class.getName());
         getJDialog().setResizable(false);
         this.registerButton(ID_OTHER, new JButton(Bundle.CTL_Button_Export_Text()));
+        String sysPath = System.getenv("PATH");
+        systemPath = sysPath.split(File.pathSeparator);
+
     }
 
     private ToolAdapterEditorDialog(AppContext appContext, ToolAdapterOperatorDescriptor operatorDescriptor) {
@@ -202,6 +208,11 @@ public class ToolAdapterEditorDialog extends ModalDialog {
 
     @Override
     protected boolean verifyUserInput() {
+        File file = newOperatorDescriptor.getMainToolFileLocation();
+        if (!file.exists()) {
+            newOperatorDescriptor.setMainToolFileLocation(resolvePathOnSystem(file));
+        }
+
         Path toolLocation = newOperatorDescriptor.getExpandedLocation(newOperatorDescriptor.getMainToolFileLocation()).toPath();
         if (!(Files.exists(toolLocation) && Files.isExecutable(toolLocation))) {
             SnapDialogs.showWarning(Bundle.MSG_Inexistent_Tool_Path_Text());
@@ -452,7 +463,12 @@ public class ToolAdapterEditorDialog extends ModalDialog {
 
         propertyDescriptor = propertyContainer.getDescriptor("workingDir");
         propertyDescriptor.setAttribute("directory", true);
-        propertyDescriptor.setValidator(new NotEmptyValidator());
+        propertyDescriptor.setValidator((property, value) -> {
+            if (value == null || value.toString().trim().isEmpty()) {
+                throw new ValidationException(MessageFormat.format("Value for ''{0}'' must not be empty.",
+                        property.getDescriptor().getDisplayName()));
+            }
+        });
         editor = PropertyEditorRegistry.getInstance().findPropertyEditor(propertyDescriptor);
         editorComponent = editor.createEditorComponent(propertyDescriptor, bindingContext);
         editorComponent.setMaximumSize(new Dimension(editorComponent.getMaximumSize().width, DEFAULT_CONTROL_HEIGHT));
@@ -635,5 +651,17 @@ public class ToolAdapterEditorDialog extends ModalDialog {
                 getAvailableMenuOptions(child, resultList);
             }
         }
+    }
+
+    private File resolvePathOnSystem(File path) {
+        File resolved = null, current = null;
+        for (String sysPath : systemPath) {
+            current = new File(sysPath, path.getPath());
+            if (current.exists()) {
+                resolved = current;
+                break;
+            }
+        }
+        return resolved;
     }
 }
