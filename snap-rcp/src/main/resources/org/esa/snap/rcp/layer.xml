@@ -67,10 +67,10 @@
             <attr name="position" intvalue="700"/>
         </folder>
         <folder name="Views">
-            <attr name="position" intvalue="900"/>
+            <attr name="position" intvalue="800"/>
         </folder>
         <folder name="Window"> <!-- defined by tiled-editors -->
-            <attr name="position" intvalue="1000"/>
+            <attr name="position" intvalue="1500"/>
         </folder>
     </folder>
 
