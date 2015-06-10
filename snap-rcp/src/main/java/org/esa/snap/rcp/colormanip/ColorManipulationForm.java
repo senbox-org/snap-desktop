@@ -132,7 +132,7 @@ class ColorManipulationForm implements SelectionSupport.Handler<ProductSceneView
         }
         if (!defaultColorPalettesInstalled) {
             ExecutorService executorService = Executors.newSingleThreadExecutor();
-            executorService.submit(new installDefaultColorPalettes());
+            executorService.submit(new InstallDefaultColorPalettes());
         }
         return contentPanel;
     }
@@ -609,9 +609,9 @@ class ColorManipulationForm implements SelectionSupport.Handler<ProductSceneView
         }
     }
 
-    private class installDefaultColorPalettes implements Runnable {
+    private class InstallDefaultColorPalettes implements Runnable {
 
-        private installDefaultColorPalettes() {
+        private InstallDefaultColorPalettes() {
         }
 
         @Override
