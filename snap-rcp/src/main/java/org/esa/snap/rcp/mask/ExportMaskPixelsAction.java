@@ -32,14 +32,14 @@ import org.esa.snap.framework.ui.SelectExportMethodDialog;
 import org.esa.snap.framework.ui.UIUtils;
 import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.util.SystemUtils;
 import org.esa.snap.util.io.FileUtils;
-import org.openide.util.ContextAwareAction;
-import org.openide.util.Lookup;
-import org.openide.util.LookupEvent;
-import org.openide.util.LookupListener;
-import org.openide.util.Utilities;
-import org.openide.util.WeakListeners;
+import org.openide.awt.ActionID;
+import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
+import org.openide.awt.ActionRegistration;
+import org.openide.util.*;
 
 import javax.swing.*;
 import java.awt.Rectangle;
@@ -55,9 +55,38 @@ import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
 
-public class ExportMaskPixelsAction extends AbstractAction implements ContextAwareAction, LookupListener {
+
+@ActionID(
+        category = "File",
+        id = "org.esa.snap.rcp.mask.ExportMaskPixelsAction"
+)
+@ActionRegistration(
+        displayName = "#CTL_ExportMaskPixelsAction_MenuText",
+        popupText = "#CTL_ExportMaskPixelsAction_MenuText"
+)
+@ActionReferences(
+        {
+                @ActionReference(
+                        path = "Menu/File/Export Others",
+                        position = 0,
+                        separatorAfter = 116
+                ),
+                @ActionReference(
+                        path = "Context/Product/RasterDataNode",
+                        position = 206
+                )
+        }
+)
+
+
+@NbBundle.Messages({
+        "CTL_ExportMaskPixelsAction_MenuText=Export Mask Pixels...",
+        "CTL_ExportMaskPixelsAction_ShortDescription=Applies a filter to the currently selected band and adds it as a new band."
+})
+public class ExportMaskPixelsAction extends AbstractAction implements ContextAwareAction, LookupListener, HelpCtx.Provider {
 
     private static final String DLG_TITLE = "Export Mask Pixels";
+    private static final String HELP_ID = "Export Mask Pixels";
     private static final String ERR_MSG_BASE = "Mask pixels cannot be exported:\n";
 
     private final Lookup lkp;
@@ -107,8 +136,8 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
     private void exportMaskPixels() {
 
         if (!hasSelectedRasterMasks()) {
-//            SnapApp.getDefault().showErrorDialog(DLG_TITLE,
-//                                             ERR_MSG_BASE + "There are no masks available in the currently selected product.");  /*I18N*/
+            SnapDialogs.showError(DLG_TITLE,
+                    ERR_MSG_BASE + "There are no masks available in the currently selected product.");  /*I18N*/
             return;
         }
 
@@ -119,7 +148,7 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
         }
         // Get the displayed raster data node (band or tie-point grid)
         final RasterDataNode raster = view.getRaster();
-        
+
         String[] maskNames = raster.getProduct().getMaskGroup().getNodeNames();
         final String maskName;
         if (maskNames.length == 1) {
@@ -131,19 +160,19 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
             panel.add(new JLabel("Select Mask: "));
             JComboBox maskCombo = new JComboBox(maskNames);
             panel.add(maskCombo);
-//            ModalDialog modalDialog = new ModalDialog(SnapApp.getDefault().getApplicationWindow(), DLG_TITLE, panel,
-//                                                      ModalDialog.ID_OK_CANCEL | ModalDialog.ID_HELP, getHelpId());
-//            if (modalDialog.show() == AbstractDialog.ID_OK) {
-//                maskName = (String) maskCombo.getSelectedItem();
-//            } else {
-//                return;
-//            }
+            ModalDialog modalDialog = new ModalDialog(SnapApp.getDefault().getMainFrame(), DLG_TITLE, panel,
+                    ModalDialog.ID_OK_CANCEL | ModalDialog.ID_HELP, getHelpCtx().getHelpID());
+            if (modalDialog.show() == AbstractDialog.ID_OK) {
+                maskName = (String) maskCombo.getSelectedItem();
+            } else {
+                return;
+            }
         }
-        Mask mask = raster.getProduct().getMaskGroup().get("--");
-        
+        Mask mask = raster.getProduct().getMaskGroup().get(maskName);
+
         final RenderedImage maskImage = mask.getSourceImage();
         if (maskImage == null) {
-//            VisatApp.getApp().showErrorDialog(DLG_TITLE, ERR_MSG_BASE + "No Mask image available.");
+            SnapDialogs.showError(DLG_TITLE, ERR_MSG_BASE + "No Mask image available.");
             return;
         }
         // Compute total number of Mask pixels
@@ -160,88 +189,89 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
         final JCheckBox createHeaderBox = new JCheckBox("Create header");
         final JCheckBox exportTiePointsBox = new JCheckBox("Export tie-points");
         final JCheckBox exportWavelengthsAndSFBox = new JCheckBox("Export wavelengths + solar fluxes");
-//        final int method = SelectExportMethodDialog.run(SnapApp.getDefault().getMainFrame(), getWindowTitle(),
-//                                                        questionText + numPixelsText, new JCheckBox[]{
-//                createHeaderBox,
-//                exportTiePointsBox,
-//                exportWavelengthsAndSFBox
-//        }, getHelpId());
+        final int method = SelectExportMethodDialog.run(SnapApp.getDefault().getMainFrame(), getWindowTitle(),
+                questionText + numPixelsText, new JCheckBox[]{
+                        createHeaderBox,
+                        exportTiePointsBox,
+                        exportWavelengthsAndSFBox
+                }, getHelpCtx().getHelpID());
 
-//        final boolean mustCreateHeader = createHeaderBox.isSelected();
-//        final boolean mustExportTiePoints = exportTiePointsBox.isSelected();
-//        final boolean mustExportWavelengthsAndSF = exportWavelengthsAndSFBox.isSelected();
+        final boolean mustCreateHeader = createHeaderBox.isSelected();
+        final boolean mustExportTiePoints = exportTiePointsBox.isSelected();
+        final boolean mustExportWavelengthsAndSF = exportWavelengthsAndSFBox.isSelected();
 //
-//        final PrintWriter out;
-//        final StringBuffer clipboardText;
-//        final int initialBufferSize = 256000;
-//        if (method == SelectExportMethodDialog.EXPORT_TO_CLIPBOARD) {
-//            // Write into string buffer
-//            final StringWriter stringWriter = new StringWriter(initialBufferSize);
-//            out = new PrintWriter(stringWriter);
-//            clipboardText = stringWriter.getBuffer();
-//        } else if (method == SelectExportMethodDialog.EXPORT_TO_FILE) {
-//            // Write into file, get file from user
-//            final File file = promptForFile(VisatApp.getApp(), createDefaultFileName(raster, maskName));
-//            if (file == null) {
-//                return; // Cancel
-//            }
-//            final FileWriter fileWriter;
-//            try {
-//                fileWriter = new FileWriter(file);
-//            } catch (IOException e) {
-//                VisatApp.getApp().showErrorDialog(DLG_TITLE,
-//                                                  ERR_MSG_BASE + "Failed to create file '" + file + "':\n" + e.getMessage()); /*I18N*/
-//                return; // Error
-//            }
-//            out = new PrintWriter(new BufferedWriter(fileWriter, initialBufferSize));
-//            clipboardText = null;
-//        } else {
-//            return; // Cancel
-//        }
-//
-//        final ProgressMonitorSwingWorker<Exception, Object> swingWorker = new ProgressMonitorSwingWorker<Exception, Object>(
-//                SnapApp.getDefault().getMainFrame(), DLG_TITLE) {
-//
-//            @Override
-//            protected Exception doInBackground(ProgressMonitor pm) throws Exception {
-//                Exception returnValue = null;
-//                try {
-//                    boolean success = exportMaskPixels(out, raster.getProduct(), maskImage, maskName, mustCreateHeader, mustExportTiePoints, mustExportWavelengthsAndSF, pm);
-//                    if (success && clipboardText != null) {
-//                        SystemUtils.copyToClipboard(clipboardText.toString());
-//                        clipboardText.setLength(0);
-//                    }
-//                } catch (Exception e) {
-//                    returnValue = e;
-//                } finally {
-//                    out.close();
-//                }
-//                return returnValue;
-//            }
-//
+        final PrintWriter out;
+        final StringBuffer clipboardText;
+        final int initialBufferSize = 256000;
+        if (method == SelectExportMethodDialog.EXPORT_TO_CLIPBOARD) {
+            // Write into string buffer
+            final StringWriter stringWriter = new StringWriter(initialBufferSize);
+            out = new PrintWriter(stringWriter);
+            clipboardText = stringWriter.getBuffer();
+        } else if (method == SelectExportMethodDialog.EXPORT_TO_FILE) {
+            // Write into file, get file from user
+            final File file = promptForFile(SnapApp.getDefault(), createDefaultFileName(raster, maskName));
+            if (file == null) {
+                return; // Cancel
+            }
+            final FileWriter fileWriter;
+            try {
+                fileWriter = new FileWriter(file);
+            } catch (IOException e) {
+                SnapDialogs.showError(DLG_TITLE,
+                        ERR_MSG_BASE + "Failed to create file '" + file + "':\n" + e.getMessage()); /*I18N*/
+                return; // Error
+            }
+            out = new PrintWriter(new BufferedWriter(fileWriter, initialBufferSize));
+            clipboardText = null;
+        } else {
+            return; // Cancel
+        }
+
+        final ProgressMonitorSwingWorker<Exception, Object> swingWorker = new ProgressMonitorSwingWorker<Exception, Object>(
+                SnapApp.getDefault().getMainFrame(), DLG_TITLE) {
+
+            @Override
+            protected Exception doInBackground(ProgressMonitor pm) throws Exception {
+                Exception returnValue = null;
+                try {
+                    boolean success = exportMaskPixels(out, raster.getProduct(), maskImage, maskName, mustCreateHeader, mustExportTiePoints, mustExportWavelengthsAndSF, pm);
+                    if (success && clipboardText != null) {
+                        SystemUtils.copyToClipboard(clipboardText.toString());
+                        clipboardText.setLength(0);
+                    }
+                } catch (Exception e) {
+                    returnValue = e;
+                } finally {
+                    out.close();
+                }
+                return returnValue;
+            }
+
+            //
 //            /**
 //             * Called on the event dispatching thread (not on the worker thread) after the <code>construct</code> method
 //             * has returned.
 //             */
-//            @Override
-//            public void done() {
-//                // clear status bar
-////                SnapApp.getDefault().
-//                // show default-cursor
-////                UIUtils.setRootFrameDefaultCursor(VisatApp.getApp().getMainFrame());
-//                // On error, show error message
-//                Exception exception;
-//                try {
-//                    exception = get();
-//                } catch (Exception e) {
-//                    exception = e;
-//                }
-//                if (exception != null) {
-////                    SnapApp.getDefault().showErrorDialog(DLG_TITLE,ERR_MSG_BASE + exception.getMessage());
-//                }
-//            }
-//
-//        };
+            @Override
+            public void done() {
+                // clear status bar
+//                SnapApp.getDefault().
+                // show default-cursor
+//                UIUtils.setRootFrameDefaultCursor(VisatApp.getApp().getMainFrame());
+                // On error, show error message
+                Exception exception;
+                try {
+                    exception = get();
+                } catch (Exception e) {
+                    exception = e;
+                }
+                if (exception != null) {
+//                    SnapApp.getDefault().showErrorDialog(DLG_TITLE,ERR_MSG_BASE + exception.getMessage());
+                }
+            }
+
+        };
 
         // show wait-cursor
         UIUtils.setRootFrameWaitCursor(SnapApp.getDefault().getMainFrame());
@@ -249,7 +279,7 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
         SnapApp.getDefault().setStatusBarMessage("Exporting Mask pixels..."); /*I18N*/
 
         // Start separate worker thread.
-//        swingWorker.execute();
+        swingWorker.execute();
     }
 
     private static String createDefaultFileName(final RasterDataNode raster, String maskName) {
@@ -293,17 +323,17 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
         final Band[] bands = product.getBands();
         final TiePointGrid[] tiePointGrids = product.getTiePointGrids();
         final GeoCoding geoCoding = product.getGeoCoding();
-        
+
         final int minTileX = maskImage.getMinTileX();
         final int minTileY = maskImage.getMinTileY();
-        
+
         final int numXTiles = maskImage.getNumXTiles();
         final int numYTiles = maskImage.getNumYTiles();
-        
+
         final int w = product.getSceneRasterWidth();
         final int h = product.getSceneRasterHeight();
         final Rectangle imageRect = new Rectangle(0, 0, w, h);
-        
+
         pm.beginTask("Writing pixel data...", numXTiles * numYTiles + 2);
         try {
             if (mustCreateHeader) {
@@ -319,8 +349,8 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
                         return false;
                     }
                     final Rectangle tileRectangle = new Rectangle(maskImage.getTileGridXOffset() + tileX * maskImage.getTileWidth(),
-                                                                  maskImage.getTileGridYOffset() + tileY * maskImage.getTileHeight(),
-                                                                  maskImage.getTileWidth(), maskImage.getTileHeight());
+                            maskImage.getTileGridYOffset() + tileY * maskImage.getTileHeight(),
+                            maskImage.getTileWidth(), maskImage.getTileHeight());
 
                     final Rectangle r = imageRect.intersection(tileRectangle);
                     if (!r.isEmpty()) {
@@ -345,7 +375,7 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
 
     private static void createHeader(PrintWriter out, Product product, String maskName, boolean mustExportWavelengthsAndSF) {
         out.write("# Exported mask '" + maskName + "' on " +
-                  new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss.mmmmmm").format(new GregorianCalendar().getTime()) + "\n");
+                new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss.mmmmmm").format(new GregorianCalendar().getTime()) + "\n");
         out.write("# Product name: " + product.getName() + "\n");
         if (product.getFileLocation() != null) {
             out.write("# Product file location: " + product.getFileLocation() + "\n");
@@ -483,8 +513,8 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
         for (int tileX = minTileX; tileX < minTileX + numXTiles; ++tileX) {
             for (int tileY = minTileY; tileY < minTileY + numYTiles; ++tileY) {
                 final Rectangle tileRectangle = new Rectangle(maskImage.getTileGridXOffset() + tileX * maskImage.getTileWidth(),
-                                                              maskImage.getTileGridYOffset() + tileY * maskImage.getTileHeight(),
-                                                              maskImage.getTileWidth(), maskImage.getTileHeight());
+                        maskImage.getTileGridYOffset() + tileY * maskImage.getTileHeight(),
+                        maskImage.getTileWidth(), maskImage.getTileHeight());
 
                 final Rectangle r = imageRect.intersection(tileRectangle);
                 if (!r.isEmpty()) {
@@ -522,4 +552,8 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
         return enabled;
     }
 
+    @Override
+    public HelpCtx getHelpCtx() {
+        return new HelpCtx(HELP_ID);
+    }
 }
