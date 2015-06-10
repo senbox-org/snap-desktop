@@ -20,10 +20,17 @@ import gov.nasa.worldwind.awt.WorldWindowGLCanvas;
 import org.esa.snap.util.SystemUtils;
 import org.esa.snap.worldwind.layers.DefaultProductLayer;
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
+import javax.swing.JCheckBox;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.TitledBorder;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 
 
@@ -73,11 +80,9 @@ class ProductPanel extends JPanel {
     }
 
     private void fill(WorldWindow wwd) {
-        System.out.println("fill");
         final String[] productNames = defaultProductLayer.getProductNames();
-        System.out.println("productNames: ");
-        for (int i = 0; i < productNames.length; i++) {
-            System.out.println(productNames[i]);
+        for (String productName : productNames) {
+            System.out.println(productName);
         }
         for (String name : productNames) {
             final LayerAction action = new LayerAction(defaultProductLayer, wwd, name, defaultProductLayer.getOpacity(name) != 0);
