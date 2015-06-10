@@ -81,9 +81,6 @@ class ProductPanel extends JPanel {
 
     private void fill(WorldWindow wwd) {
         final String[] productNames = defaultProductLayer.getProductNames();
-        for (String productName : productNames) {
-            System.out.println(productName);
-        }
         for (String name : productNames) {
             final LayerAction action = new LayerAction(defaultProductLayer, wwd, name, defaultProductLayer.getOpacity(name) != 0);
             final JCheckBox jcb = new JCheckBox(action);
