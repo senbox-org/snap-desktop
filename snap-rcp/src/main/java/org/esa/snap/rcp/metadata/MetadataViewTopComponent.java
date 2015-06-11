@@ -10,31 +10,10 @@ import org.netbeans.swing.outline.Outline;
 import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.view.OutlineView;
 import org.openide.nodes.Node;
-import org.openide.util.NbBundle;
-import org.openide.windows.TopComponent;
 
 import javax.swing.table.TableColumnModel;
 import java.awt.BorderLayout;
 
-/**
- * @author Tonio Fincke
- */
-@TopComponent.Description(
-        preferredID = "MetadataViewTopComponent",
-        persistenceType = TopComponent.PERSISTENCE_ALWAYS
-)
-@TopComponent.Registration(
-        mode = "navigator",
-        openAtStartup = true,
-        position = 0
-)
-@TopComponent.OpenActionRegistration(
-        displayName = "#CTL_MetadataViewTopComponentName",
-        preferredID = "MetadataViewTopComponent"
-)
-@NbBundle.Messages({
-        "CTL_MetadataViewTopComponentName=MetadataView",
-})
 public class MetadataViewTopComponent extends DocumentTopComponent<ProductNode> implements ExplorerManager.Provider {
 
     private static final String[] column_names = new String[]{"Value", "Value", "Type", "Type", "Unit", "Unit",

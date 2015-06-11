@@ -5,14 +5,9 @@
 package org.esa.snap.framework.ui;
 
 import org.esa.snap.framework.help.HelpSys;
+import org.openide.util.HelpCtx;
 
-import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JDialog;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
+import javax.swing.*;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
@@ -110,7 +105,7 @@ public class SelectExportMethodDialog {
         final JDialog dialog = optionPane.createDialog(parentComponent, title);
         dialog.getContentPane().setLayout(new BoxLayout(dialog.getContentPane(), BoxLayout.Y_AXIS));
         if (helpID != null) {
-            HelpSys.enableHelpKey(optionPane, helpID);
+            HelpCtx.setHelpIDString((JComponent) optionPane, helpID);
         }
 
         // Create action listener for all 3 buttons (as instance of an anonymous class)

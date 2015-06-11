@@ -1,13 +1,13 @@
 package org.esa.snap.framework.ui.color;
 
 import com.bc.ceres.core.Assert;
+import org.esa.snap.util.io.FileUtils;
 
 import java.awt.Color;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -33,7 +33,7 @@ public class ColorCodes {
         nameMap = new HashMap<>(512);
         colorMap = new HashMap<>(512);
         try {
-            Path path = Paths.get(ColorComboBox.class.getResource("color-codes.txt").toURI());
+            Path path = FileUtils.getPathFromURI(ColorComboBox.class.getResource("color-codes.txt").toURI());
             List<String> lines = Files.readAllLines(path);
             for (String line : lines) {
                 int i = line.indexOf('\t');
