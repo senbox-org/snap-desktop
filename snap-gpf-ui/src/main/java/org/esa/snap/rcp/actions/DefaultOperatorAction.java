@@ -40,7 +40,7 @@ import java.util.Set;
  */
 public class DefaultOperatorAction extends AbstractSnapAction {
 
-    private static final Set<String> KNOWN_KEYS = new HashSet<>(Arrays.asList("displayName", "operatorName", "dialogTitle", "targetProductNameSuffix"));
+    private static final Set<String> KNOWN_KEYS = new HashSet<>(Arrays.asList("displayName", "operatorName", "dialogTitle", "helpId", "targetProductNameSuffix"));
 
     private ModelessDialog dialog;
 
