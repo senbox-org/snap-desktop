@@ -41,12 +41,11 @@ import org.esa.snap.framework.ui.ModalDialog;
 import org.esa.snap.framework.ui.UIUtils;
 import org.esa.snap.framework.ui.tool.ToolButtonFactory;
 import org.esa.snap.rcp.SnapDialogs;
-import org.esa.snap.ui.tooladapter.actions.ExecuteToolAdapterAction;
 import org.esa.snap.ui.tooladapter.actions.ToolAdapterActionRegistrar;
 import org.esa.snap.ui.tooladapter.model.OperatorParametersTable;
 import org.esa.snap.ui.tooladapter.model.VariablesTable;
 import org.esa.snap.ui.tooladapter.validators.RequiredFieldValidator;
-import org.esa.snap.utils.JarPackager;
+import org.esa.snap.utils.ModulePackager;
 import org.esa.snap.utils.SpringUtilities;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
@@ -101,7 +100,7 @@ import java.util.stream.Collectors;
         "CTL_Panel_SysVar_Border_TitleText=System variables",
         "Icon_Add=/org/esa/snap/resources/images/icons/Add16.png",
         "CTL_Panel_OpParams_Border_TitleText=Operator Parameters",
-        "CTL_Button_Export_Text=Export as Jar",
+        "CTL_Button_Export_Text=Export as module",
         "MSG_Export_Complete_Text=The adapter was exported as a NetBeans module in %s",
         "MSG_Inexistent_Tool_Path_Text=The tool executable does not exist.\n" +
                 "Please specify the location of an existing executable.",
@@ -243,13 +242,12 @@ public class ToolAdapterEditorDialog extends ModalDialog {
     @Override
     protected void onOK() {
         if (!verifyUserInput()) {
-
             this.getJDialog().requestFocus();
         } else {
             super.onOK();
             if (!this.operatorIsNew) {
                 ToolAdapterActionRegistrar.removeOperatorMenu(oldOperatorDescriptor);
-                ToolAdapterIO.removeOperator(oldOperatorDescriptor);
+                ToolAdapterIO.removeOperator(oldOperatorDescriptor, false);
             }
             String oldOperatorName = oldOperatorDescriptor.getName();
             if (oldOperatorDescriptor.isSystem() && oldOperatorName.equals(newOperatorDescriptor.getName())) {
@@ -257,12 +255,24 @@ public class ToolAdapterEditorDialog extends ModalDialog {
                 newOperatorDescriptor.setAlias(newOperatorDescriptor.getAlias() + "-custom");
             }
             newOperatorDescriptor.setSystem(false);
+            if (!ToolAdapterOperatorDescriptor.SOURCE_PACKAGE.equals(newOperatorDescriptor.getSource())) {
+                newOperatorDescriptor.setSource(ToolAdapterOperatorDescriptor.SOURCE_USER);
+            }
             newOperatorDescriptor.setTemplateFileLocation(newOperatorDescriptor.getAlias() + ToolAdapterConstants.TOOL_VELO_TEMPLATE_SUFIX);
             java.util.List<TemplateParameterDescriptor> toolParameterDescriptors = newOperatorDescriptor.getToolParameterDescriptors();
             toolParameterDescriptors.stream().filter(param -> paramsTable.getBindingContext().getBinding(param.getName()) != null)
                     .filter(param -> paramsTable.getBindingContext().getBinding(param.getName()).getPropertyValue() != null)
-                    .forEach(param -> param.setDefaultValue(paramsTable.getBindingContext().getBinding(param.getName())
-                            .getPropertyValue().toString()));
+                    .forEach(param -> {
+                        if (param.isTemplateBefore() || param.isTemplateAfter()) {
+                            param.setDefaultValue(
+                                    ToolAdapterIO.prettifyTemplateParameterPath(
+                                            new File(paramsTable.getBindingContext().getBinding(param.getName()).getPropertyValue().toString()),
+                                            newOperatorDescriptor.getAlias()).toString());
+                        } else {
+                            param.setDefaultValue(paramsTable.getBindingContext().getBinding(param.getName())
+                                    .getPropertyValue().toString());
+                        }
+                    });
             java.util.List<TemplateParameterDescriptor> remParameters = toolParameterDescriptors.stream().filter(param -> ToolAdapterConstants.TOOL_SOURCE_PRODUCT_ID.equals(param.getName())).
                     collect(Collectors.toList());
             newOperatorDescriptor.removeParamDescriptors(remParameters);
@@ -297,11 +307,13 @@ public class ToolAdapterEditorDialog extends ModalDialog {
     @Override
     protected void onOther() {
         try {
+            onOK();
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             if (fileChooser.showOpenDialog(getButton(ID_OTHER)) == JFileChooser.APPROVE_OPTION) {
                 File targetFolder = fileChooser.getSelectedFile();
-                JarPackager.packAdapterJar(newOperatorDescriptor, new File(targetFolder, newOperatorDescriptor.getAlias() + ".jar"), ExecuteToolAdapterAction.class);
+                newOperatorDescriptor.setSource(ToolAdapterOperatorDescriptor.SOURCE_PACKAGE);
+                ModulePackager.packModule(newOperatorDescriptor, new File(targetFolder, newOperatorDescriptor.getAlias() + ".nbm"));
                 SnapDialogs.showInformation(String.format(Bundle.MSG_Export_Complete_Text(), targetFolder.getAbsolutePath()), null);
             }
         } catch (IOException e) {

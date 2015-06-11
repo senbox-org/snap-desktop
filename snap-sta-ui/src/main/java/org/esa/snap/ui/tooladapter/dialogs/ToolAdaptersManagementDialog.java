@@ -62,7 +62,11 @@ import java.util.stream.Collectors;
         "ToolTipEditOperator_Text=Edit the selected operator",
         "ToolTipExecuteOperator_Text=Execute the selected operator",
         "ToolTipDeleteOperator_Text=Delete the selected operator(s)",
-        "MessageNoSelection_Text=Please select an adapter first"
+        "MessageNoSelection_Text=Please select an adapter first",
+        "MessageConfirmRemoval_TitleText=Confirm removal",
+        "MessageConfirmRemoval_Text=Are you sure you want to remove the selected adapter(s)?\nThe operation will delete also the associated folder and files",
+        "MessageConfirmRemovalDontAsk_Text=Don't ask me in the future",
+        "MessagePackageModules_Text=The adapter%s %s %s installed as NetBeans module%s and cannot be removed from here.%nPlease uninstall %s module%s."
 
 })
 public class ToolAdaptersManagementDialog extends ModalDialog {
@@ -147,10 +151,34 @@ public class ToolAdaptersManagementDialog extends ModalDialog {
         delButton.addActionListener(e -> {
             java.util.List<ToolAdapterOperatorDescriptor> operatorDescriptors = ((OperatorsTableModel) operatorsTable.getModel()).getCheckedOperators();
             if (operatorDescriptors != null && operatorDescriptors.size() > 0) {
-                if (SnapDialogs.Answer.YES == SnapDialogs.requestDecision("Confirm removal", "Are you sure you want to remove the selected adapter(s)?\nThe operation will delete also the associated folder and files", true, "Don't ask me in the future")) {
-                    operatorDescriptors.stream().filter(descriptor -> descriptor != null).forEach(descriptor -> {
-                        ToolAdapterActionRegistrar.removeOperatorMenu(descriptor);
-                        ToolAdapterIO.removeOperator(descriptor);
+                if (SnapDialogs.Answer.YES == SnapDialogs.requestDecision(Bundle.MessageConfirmRemoval_TitleText(),
+                                                                            Bundle.MessageConfirmRemoval_Text(), true,
+                                                                            Bundle.MessageConfirmRemovalDontAsk_Text())) {
+                    java.util.List<ToolAdapterOperatorDescriptor> unableToRemove = operatorDescriptors.stream()
+                                                                                                      .filter(descriptor -> descriptor != null
+                                                                                                              && ToolAdapterOperatorDescriptor.SOURCE_PACKAGE.equals(descriptor.getSource()))
+                                                                                                      .collect(Collectors.toList());
+                    int notToRemoveCount = unableToRemove.size();
+                    if (notToRemoveCount > 0) {
+                        StringBuilder message = new StringBuilder();
+                        for (ToolAdapterOperatorDescriptor descriptor : unableToRemove) {
+                            message.append(descriptor.getAlias()).append(",");
+                        }
+                        String msg = message.toString();
+                        String pluralNoun = notToRemoveCount > 1 ? "s" : "";
+                        SnapDialogs.showWarning(String.format(Bundle.MessagePackageModules_Text(),
+                                                            pluralNoun,
+                                                            msg.substring(0, msg.length() - 1),
+                                                            notToRemoveCount > 1 ? "were" : "was",
+                                                            pluralNoun,
+                                                            notToRemoveCount > 1 ? "the respective" : "this",
+                                                            pluralNoun));
+                    }
+                    operatorDescriptors.stream()
+                            .filter(descriptor -> descriptor != null && ToolAdapterOperatorDescriptor.SOURCE_USER.equals(descriptor.getSource()))
+                            .forEach(descriptor -> {
+                                ToolAdapterActionRegistrar.removeOperatorMenu(descriptor);
+                                            ToolAdapterIO.removeOperator(descriptor);
                     });
                     setContent(createContentPanel());
                     getContent().repaint();
