@@ -24,14 +24,14 @@ import org.esa.snap.framework.gpf.descriptor.ToolAdapterOperatorDescriptor;
 import org.esa.snap.framework.gpf.operators.tooladapter.ToolAdapterIO;
 import org.esa.snap.framework.gpf.operators.tooladapter.ToolAdapterOpSpi;
 import org.esa.snap.rcp.SnapDialogs;
-import org.openide.filesystems.FileObject;
-import org.openide.filesystems.FileUtil;
+import org.openide.filesystems.*;
 import org.openide.modules.OnStart;
 
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * Helper class for creating menu entries for tool adapter operators.
@@ -103,32 +103,18 @@ public class ToolAdapterActionRegistrar {
                 menuFolder = root.createFolder(menuLocation.replace("Menu/", ""));
                 menuFolder.setAttribute("position", 9999);
             }
-            /*FileObject groupItem = null;
-            if (groupName != null) {
-                groupItem = menuFolder.getFileObject(groupName);
-                if (groupItem == null) {
-                    groupItem = menuFolder.createFolder(groupName);
-                    groupItem.setAttribute("position", 1001);
-                }
-            } else {
-                groupItem = menuFolder;
-            }*/
-            String candidateMenuKey = operator.getAlias();
-            /*FileObject newItem = groupItem.getFileObject(candidateMenuKey, "instance");
+            String menuKey = operator.getAlias();
+            FileObject newItem = menuFolder.getFileObject(menuKey, "instance");
             if (newItem == null) {
-                newItem = groupItem.createData(candidateMenuKey, "instance");
-            }*/
-            FileObject newItem = menuFolder.getFileObject(candidateMenuKey, "instance");
-            if (newItem == null) {
-                newItem = menuFolder.createData(candidateMenuKey, "instance");
+                newItem = menuFolder.createData(menuKey, "instance");
             }
-            ExecuteToolAdapterAction action = new ExecuteToolAdapterAction(candidateMenuKey);
+            ExecuteToolAdapterAction action = new ExecuteToolAdapterAction(menuKey);
             newItem.setAttribute("instanceCreate", action);
             newItem.setAttribute("instanceClass", action.getClass().getName());
-            if (actionMap.containsKey(candidateMenuKey)) {
-                actionMap.remove(candidateMenuKey);
+            if (actionMap.containsKey(menuKey)) {
+                actionMap.remove(menuKey);
             }
-            actionMap.put(candidateMenuKey, operator);
+            actionMap.put(menuKey, operator);
         } catch (IOException e) {
             SnapDialogs.showError("Error:" + e.getMessage());
         }
@@ -138,8 +124,6 @@ public class ToolAdapterActionRegistrar {
         if (!operator.isSystem()) {
             FileObject menuFolder = FileUtil.getConfigFile(operator.getMenuLocation());
             try {
-                /*FileObject groupItem = groupName != null ? menuFolder.getFileObject(groupName) : menuFolder;
-                if (groupItem != null) {*/
                 if (menuFolder != null) {
                     String operatorAlias = operator.getAlias();
                     FileObject newItem = menuFolder.getFileObject(operatorAlias, "instance");
@@ -175,6 +159,37 @@ public class ToolAdapterActionRegistrar {
                         registerOperatorMenu(operatorDescriptor, false);
                     });
                 }
+                FileUtil.addFileChangeListener(new FileChangeListener() {
+                    @Override
+                    public void fileFolderCreated(FileEvent fileEvent) {
+                        Logger.getLogger(ToolAdapterActionRegistrar.class.getName()).info(fileEvent.toString() + " added");
+                    }
+
+                    @Override
+                    public void fileDataCreated(FileEvent fileEvent) {
+
+                    }
+
+                    @Override
+                    public void fileChanged(FileEvent fileEvent) {
+
+                    }
+
+                    @Override
+                    public void fileDeleted(FileEvent fileEvent) {
+                        Logger.getLogger(ToolAdapterActionRegistrar.class.getName()).info(fileEvent.toString() + " deleted");
+                    }
+
+                    @Override
+                    public void fileRenamed(FileRenameEvent fileRenameEvent) {
+
+                    }
+
+                    @Override
+                    public void fileAttributeChanged(FileAttributeEvent fileAttributeEvent) {
+
+                    }
+                });
             }
         }
     }

@@ -324,7 +324,7 @@ public class OperatorParametersTable extends JTable {
                     //edit details
                     if(!descriptor.isParameter() && descriptor.getDataType().equals(File.class)){
                         try {
-                            TemplateParameterEditorDialog editor = new TemplateParameterEditorDialog(appContext, "", descriptor, propertiesValueUIDescriptorMap.get(descriptor));
+                            TemplateParameterEditorDialog editor = new TemplateParameterEditorDialog(appContext, "", descriptor, propertiesValueUIDescriptorMap.get(descriptor), operator);
                             editor.show();
                         }catch (Exception ex){
                             SnapDialogs.showError(ex.getMessage());

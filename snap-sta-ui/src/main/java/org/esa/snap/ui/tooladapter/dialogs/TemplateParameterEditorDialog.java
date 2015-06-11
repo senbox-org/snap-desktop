@@ -49,12 +49,14 @@ import java.util.logging.Logger;
 public class TemplateParameterEditorDialog extends ModalDialog {
 
     private TemplateParameterDescriptor parameter;
-    private ToolAdapterOperatorDescriptor operator;
+    private ToolAdapterOperatorDescriptor fakeDescriptor;
+    private ToolAdapterOperatorDescriptor parentDescriptor;
     private PropertyMemberUIWrapper fileWrapper;
     private AppContext appContext;
     private JTextArea fileContentArea = new JTextArea("", 10, 10);
     OperatorParametersTable paramsTable;
     private Logger logger;
+    private File path;
 
     public TemplateParameterEditorDialog(AppContext appContext, String title, String helpID) {
         super(appContext.getApplicationWindow(), title, ID_OK_CANCEL, helpID);
@@ -62,14 +64,16 @@ public class TemplateParameterEditorDialog extends ModalDialog {
         this.logger = Logger.getLogger(TemplateParameterEditorDialog.class.getName());
     }
 
-    public TemplateParameterEditorDialog(AppContext appContext, String helpID, TemplateParameterDescriptor parameter, PropertyMemberUIWrapper fileWrapper) {
+    public TemplateParameterEditorDialog(AppContext appContext, String helpID, TemplateParameterDescriptor parameter, PropertyMemberUIWrapper fileWrapper, ToolAdapterOperatorDescriptor parent) {
         this(appContext, parameter.getName(), helpID);
         this.parameter = parameter;
-        this.operator = new ToolAdapterOperatorDescriptor("OperatorForParameters", ToolAdapterOp.class);
+        this.parentDescriptor = parent;
+        this.fakeDescriptor = new ToolAdapterOperatorDescriptor("OperatorForParameters", ToolAdapterOp.class);
         for(ToolParameterDescriptor param : parameter.getToolParameterDescriptors()) {
-            this.operator.getToolParameterDescriptors().add(new TemplateParameterDescriptor(param));
+            this.fakeDescriptor.getToolParameterDescriptors().add(new TemplateParameterDescriptor(param));
         }
         this.fileWrapper = fileWrapper;
+        this.path = new File(ToolAdapterIO.getUserAdapterPath().getAbsolutePath(), parentDescriptor.getAlias());
         setContent(createMainPanel());
     }
 
@@ -82,7 +86,7 @@ public class TemplateParameterEditorDialog extends ModalDialog {
         addParamBut.setAlignmentX(Component.LEFT_ALIGNMENT);
         paramsPanel.add(addParamBut);
 
-        paramsTable =  new OperatorParametersTable(this.operator, appContext);
+        paramsTable =  new OperatorParametersTable(this.fakeDescriptor, appContext);
         JScrollPane tableScrollPane = new JScrollPane(paramsTable);
         tableScrollPane.setPreferredSize(new Dimension(500, 130));
         tableScrollPane.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -126,12 +130,13 @@ public class TemplateParameterEditorDialog extends ModalDialog {
     }
 
     private void updateFileAreaContent(){
-        byte[] encoded = new byte[0];
         String result = null;
         try {
-            File defaultValue = fileWrapper.getContext().getPropertySet().getProperty(this.parameter.getName()).getValue();
+            File defaultValue = ToolAdapterIO.ensureLocalCopy(fileWrapper.getContext().getPropertySet().getProperty(this.parameter.getName()).getValue(),
+                                                              parentDescriptor.getAlias());
+            fileWrapper.getContext().getPropertySet().getProperty(this.parameter.getName()).setValue(defaultValue);
             if(defaultValue.exists()) {
-                encoded = Files.readAllBytes(Paths.get((defaultValue).getAbsolutePath()));
+                byte[] encoded = Files.readAllBytes(Paths.get((defaultValue).getAbsolutePath()));
                 result = new String(encoded, Charset.defaultCharset());
             } else {
                 //if the file does not exist, it keeps the old content, in case the user wants to save in the new file
@@ -153,11 +158,15 @@ public class TemplateParameterEditorDialog extends ModalDialog {
     protected void onOK() {
         super.onOK();
         //set value
-        File defaultValue = fileWrapper.getContext().getPropertySet().getProperty(this.parameter.getName()).getValue();
+        File defaultValue = ToolAdapterIO.prettifyTemplateParameterPath(
+                ToolAdapterIO.ensureLocalCopy(
+                        fileWrapper.getContext().getPropertySet().getProperty(this.parameter.getName()).getValue(),
+                        parentDescriptor.getAlias()),
+                parentDescriptor.getAlias());
         this.parameter.setDefaultValue(defaultValue.getAbsolutePath());
         //save parameters
         parameter.getToolParameterDescriptors().clear();
-        for (TemplateParameterDescriptor subparameter : operator.getToolParameterDescriptors()){
+        for (TemplateParameterDescriptor subparameter : fakeDescriptor.getToolParameterDescriptors()){
             if (paramsTable.getBindingContext().getBinding(subparameter.getName()) != null){
                 if(paramsTable.getBindingContext().getBinding(subparameter.getName()).getPropertyValue() != null) {
                     subparameter.setDefaultValue(paramsTable.getBindingContext().getBinding(subparameter.getName()).getPropertyValue().toString());
