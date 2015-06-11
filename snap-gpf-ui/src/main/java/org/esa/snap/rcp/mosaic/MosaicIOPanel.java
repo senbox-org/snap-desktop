@@ -395,16 +395,18 @@ class MosaicIOPanel extends JPanel {
         @Override
         public boolean accept(Product product) {
             ProductReader productReader = product.getProductReader();
-            final String formatName = productReader.getReaderPlugIn().getFormatNames()[0];
-            final ProductIOPlugInManager ioPlugInManager = ProductIOPlugInManager.getInstance();
-            final Iterator<ProductWriterPlugIn> writerIterator = ioPlugInManager.getWriterPlugIns(formatName);
-            if (writerIterator.hasNext()) {
-                try {
-                    MosaicOp.getOperatorParameters(product);
-                } catch (OperatorException e) {
-                    return false;
+            if (productReader != null) {
+                final String formatName = productReader.getReaderPlugIn().getFormatNames()[0];
+                final ProductIOPlugInManager ioPlugInManager = ProductIOPlugInManager.getInstance();
+                final Iterator<ProductWriterPlugIn> writerIterator = ioPlugInManager.getWriterPlugIns(formatName);
+                if (writerIterator.hasNext()) {
+                    try {
+                        MosaicOp.getOperatorParameters(product);
+                    } catch (OperatorException e) {
+                        return false;
+                    }
+                    return true;
                 }
-                return true;
             }
             return false;
         }
