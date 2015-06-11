@@ -23,18 +23,13 @@ import org.esa.snap.framework.datamodel.RasterDataNode;
 import org.esa.snap.framework.datamodel.VectorDataNode;
 import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.util.SelectionSupport;
 import org.esa.snap.rcp.windows.ToolTopComponent;
 import org.netbeans.api.annotations.common.NonNull;
-import org.netbeans.api.annotations.common.NullAllowed;
 import org.openide.util.HelpCtx;
 
 import javax.swing.AbstractButton;
-import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public abstract class MaskToolTopComponent extends ToolTopComponent implements HelpCtx.Provider {
 
@@ -42,17 +37,14 @@ public abstract class MaskToolTopComponent extends ToolTopComponent implements H
 
     public void initUI() {
         setLayout(new BorderLayout());
-        maskForm = createMaskForm(this, new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                final ProductSceneView sceneView = getSelectedProductSceneView();
-                if (sceneView != null) {
-                    Mask selectedMask = maskForm.getSelectedMask();
-                    if (selectedMask != null) {
-                        VectorDataNode vectorDataNode = Mask.VectorDataType.getVectorData(selectedMask);
-                        if (vectorDataNode != null) {
-                            sceneView.selectVectorDataLayer(vectorDataNode);
-                        }
+        maskForm = createMaskForm(this, e -> {
+            final ProductSceneView sceneView = getSelectedProductSceneView();
+            if (sceneView != null) {
+                Mask selectedMask = maskForm.getSelectedMask();
+                if (selectedMask != null) {
+                    VectorDataNode vectorDataNode = Mask.VectorDataType.getVectorData(selectedMask);
+                    if (vectorDataNode != null) {
+                        sceneView.selectVectorDataLayer(vectorDataNode);
                     }
                 }
             }
@@ -60,24 +52,14 @@ public abstract class MaskToolTopComponent extends ToolTopComponent implements H
 
         AbstractButton helpButton = maskForm.getHelpButton();
         if (helpButton != null) {
-            helpButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    getHelpCtx().display();
-                }
-            });
+            helpButton.addActionListener(e -> getHelpCtx().display());
             helpButton.setName("helpButton");
         }
 
         updateMaskForm(getSelectedProductSceneView());
 
         SnapApp.getDefault().getProductManager().addListener(new MaskPTL());
-        SnapApp.getDefault().getSelectionSupport(Product.class).addHandler(new SelectionSupport.Handler<Product>() {
-            @Override
-            public void selectionChange(@NullAllowed Product oldValue, @NullAllowed Product newValue) {
-                updateMaskForm(getSelectedProductSceneView());
-            }
-        });
+        SnapApp.getDefault().getSelectionSupport(Product.class).addHandler((oldValue, newValue) -> updateMaskForm(getSelectedProductSceneView()));
         maskForm.updateState();
         setDisplayName(getTitle());
         add(maskForm.createContentPanel(), BorderLayout.CENTER);
