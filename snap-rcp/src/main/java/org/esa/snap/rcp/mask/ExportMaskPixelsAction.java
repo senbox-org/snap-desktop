@@ -35,6 +35,7 @@ import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.util.SystemUtils;
 import org.esa.snap.util.io.FileUtils;
+import org.esa.snap.util.io.SnapFileFilter;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -62,7 +63,7 @@ import java.util.GregorianCalendar;
 )
 @ActionRegistration(
         displayName = "#CTL_ExportMaskPixelsAction_MenuText",
-        popupText = "#CTL_ExportMaskPixelsAction_MenuText"
+        popupText = "#CTL_ExportMaskPixelsAction_ShortDescription"
 )
 @ActionReferences(
         {
@@ -80,13 +81,13 @@ import java.util.GregorianCalendar;
 
 
 @NbBundle.Messages({
-        "CTL_ExportMaskPixelsAction_MenuText=Export Mask Pixels...",
-        "CTL_ExportMaskPixelsAction_ShortDescription=Applies a filter to the currently selected band and adds it as a new band."
+        "CTL_ExportMaskPixelsAction_MenuText=Mask Pixels",
+        "CTL_ExportMaskPixelsAction_ShortDescription=Export Mask Pixels"
 })
 public class ExportMaskPixelsAction extends AbstractAction implements ContextAwareAction, LookupListener, HelpCtx.Provider {
 
     private static final String DLG_TITLE = "Export Mask Pixels";
-    private static final String HELP_ID = "Export Mask Pixels";
+    private static final String HELP_ID = "exportMaskPixels";
     private static final String ERR_MSG_BASE = "Mask pixels cannot be exported:\n";
 
     private final Lookup lkp;
@@ -97,8 +98,7 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
     }
 
     public ExportMaskPixelsAction(Lookup lkp) {
-//        super(Bundle.CTL_CompareBandActionName());
-        super(DLG_TITLE);
+        super(Bundle.CTL_ExportMaskPixelsAction_MenuText());
         this.lkp = lkp;
         result = lkp.lookupResult(Band.class);
         result.addLookupListener(WeakListeners.create(LookupListener.class, this, result));
@@ -210,7 +210,7 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
             clipboardText = stringWriter.getBuffer();
         } else if (method == SelectExportMethodDialog.EXPORT_TO_FILE) {
             // Write into file, get file from user
-            final File file = promptForFile(SnapApp.getDefault(), createDefaultFileName(raster, maskName));
+            final File file = promptForFile( createDefaultFileName(raster, maskName));
             if (file == null) {
                 return; // Cancel
             }
@@ -298,14 +298,15 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
      * @param visatApp the VISAT application
      * @return the selected file, <code>null</code> means "Cancel"
      */
-    private static File promptForFile(final SnapApp visatApp, String defaultFileName) {
-        return null;
-//                visatApp.showFileSaveDialog(DLG_TITLE,
-//                                           false,
-//                                           null,
-//                                           ".txt",
-//                                           defaultFileName,
-//                                           "exportMaskPixels.lastDir");
+    private static File promptForFile(String defaultFileName) {
+        final SnapFileFilter fileFilter = new SnapFileFilter("TXT", "txt", "Text");
+        return SnapDialogs.requestFileForSave(DLG_TITLE,
+                                            false,
+                                            fileFilter,
+                                            ".txt",
+                                            defaultFileName,
+                                            null,
+                                            "exportMaskPixels.lastDir");
     }
 
     /*
@@ -316,9 +317,14 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
      * @param maskImage the mask image for the Mask
      * @return <code>true</code> for success, <code>false</code> if export has been terminated (by user)
      */
-    private static boolean exportMaskPixels(final PrintWriter out, final Product product, final RenderedImage maskImage,
-                                            String maskName, boolean mustCreateHeader, boolean mustExportTiePoints,
-                                            boolean mustExportWavelengthsAndSF, ProgressMonitor pm) throws IOException {
+    private static boolean exportMaskPixels(final PrintWriter out,
+                                            final Product product,
+                                            final RenderedImage maskImage,
+                                            String maskName,
+                                            boolean mustCreateHeader,
+                                            boolean mustExportTiePoints,
+                                            boolean mustExportWavelengthsAndSF,
+                                            ProgressMonitor pm) throws IOException {
 
         final Band[] bands = product.getBands();
         final TiePointGrid[] tiePointGrids = product.getTiePointGrids();

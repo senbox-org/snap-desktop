@@ -17,18 +17,11 @@
 package org.esa.snap.rcp.mask;
 
 import com.bc.ceres.core.ProgressMonitor;
+import com.bc.ceres.swing.figure.Figure;
+import com.bc.ceres.swing.figure.FigureSelection;
 import com.bc.ceres.swing.figure.ShapeFigure;
 import com.bc.ceres.swing.progress.DialogProgressMonitor;
-import org.esa.snap.framework.datamodel.Band;
-import org.esa.snap.framework.datamodel.GeoCoding;
-import org.esa.snap.framework.datamodel.GeoPos;
-import org.esa.snap.framework.datamodel.PixelPos;
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductData;
-import org.esa.snap.framework.datamodel.RasterDataNode;
-import org.esa.snap.framework.datamodel.TiePointGrid;
-import org.esa.snap.framework.datamodel.TransectProfileData;
-import org.esa.snap.framework.datamodel.TransectProfileDataBuilder;
+import org.esa.snap.framework.datamodel.*;
 import org.esa.snap.framework.ui.SelectExportMethodDialog;
 import org.esa.snap.framework.ui.UIUtils;
 import org.esa.snap.framework.ui.product.ProductSceneView;
@@ -38,6 +31,7 @@ import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.util.StringUtils;
 import org.esa.snap.util.SystemUtils;
 import org.esa.snap.util.io.FileUtils;
+import org.esa.snap.util.io.SnapFileFilter;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -45,19 +39,12 @@ import org.openide.awt.ActionRegistration;
 import org.openide.util.*;
 
 import javax.swing.*;
-import java.awt.Dialog;
-import java.awt.Shape;
+import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.io.*;
 import java.util.Date;
 
 
@@ -76,7 +63,7 @@ import java.util.Date;
         {
                 @ActionReference(
                         path = "Menu/File/Export Others",
-                        position = 0
+                        position = 2
                 ),
                 @ActionReference(
                         path = "Context/Product/RasterDataNode",
@@ -91,12 +78,18 @@ import java.util.Date;
         "CTL_ExportTransectPixelsAction_ShortDescription=Export Transect Pixels..."
 })
 
-public class ExportTransectPixelsAction extends AbstractAction implements ContextAwareAction,LookupListener,HelpCtx.Provider {
+public class ExportTransectPixelsAction extends AbstractAction implements HelpCtx.Provider {
 
     private static final String DLG_TITLE = "Export Transect Pixels";
     private static final String ERR_MSG_BASE = "Transect pixels cannot be exported:\n";
     private static final String HELP_ID = "exportTransectPixels";
+    private FigureSelection selection;
 
+
+    public ExportTransectPixelsAction(FigureSelection selection) {
+        super(Bundle.CTL_ExportMaskPixelsAction_MenuText());
+        this.selection = selection;
+    }
 
     /**
      * Invoked when a command action is performed.
@@ -109,25 +102,16 @@ public class ExportTransectPixelsAction extends AbstractAction implements Contex
         exportTransectPixels();
     }
 
-    /**
-     * Called when a command should update its state.
-     * <p> This method can contain some code which analyzes the underlying element and makes a decision whether
-     * this item or group should be made visible/invisible or enabled/disabled etc.
-     *
-     * @param event the command event
-     */
-
-    public void resultChanged(LookupEvent event) {
-        ensureListenerIsRegistered();
-        ProductSceneView view = SnapApp.getDefault().getSelectedProductSceneView();
-        boolean enabled = view != null && view.getCurrentShapeFigure() != null && view.getCurrentShapeFigure().isSelected();
-        setEnabled(enabled);
+    @Override
+    public HelpCtx getHelpCtx() {
+        return new HelpCtx(HELP_ID);
     }
 
     private void ensureListenerIsRegistered() {
+
 //        if(!listenerIsRegistered) {
-//            SelectionManager selectionManager = getAppContext().getApplicationPage().getSelectionManager();
-//            selectionManager.addSelectionChangeListener(this);cd
+//            SelectionManager selectionManager = SnapApp.getDefault().getApplicationPage().getSelectionManager();
+//            selectionManager.addSelectionChangeListener(this);
 //            listenerIsRegistered = true;
 //        }
     }
@@ -142,7 +126,14 @@ public class ExportTransectPixelsAction extends AbstractAction implements Contex
         // Get the displayed raster data node (band or tie-point grid)
         final RasterDataNode raster = view.getRaster();
         // Get the transect of the displayed raster data node
-        final ShapeFigure transect = view.getCurrentShapeFigure();
+        ShapeFigure transect = null;
+        if (selection.getFigureCount() > 0) {
+            Figure figure = selection.getFigure(0);
+            if (figure instanceof ShapeFigure) {
+                transect = (ShapeFigure) figure;
+            }
+        }
+
         if (transect == null) {
             SnapDialogs.showError(DLG_TITLE,
                     ERR_MSG_BASE + "There is no transect defined in the selected band.");  /*I18N*/
@@ -290,12 +281,14 @@ public class ExportTransectPixelsAction extends AbstractAction implements Contex
      * @return the selected file, <code>null</code> means "Cancel"
      */
     private static File promptForFile(String defaultFileName) {
+        final SnapFileFilter fileFilter = new SnapFileFilter("TXT", "txt", "Text");
         return    SnapDialogs.requestFileForSave(DLG_TITLE,
-                false, null,
-                ".txt",
-                defaultFileName,
-                null,
-                "exportTransectPixels.lastDir");
+                                                false,
+                                                fileFilter,
+                                                ".txt",
+                                                defaultFileName,
+                                                null,
+                                                "exportTransectPixels.lastDir");
     }
 
     private static int getNumTransectPixels(final Product product,
@@ -315,15 +308,7 @@ public class ExportTransectPixelsAction extends AbstractAction implements Contex
     }
 
 
-    @Override
-    public HelpCtx getHelpCtx() {
-        return new HelpCtx(HELP_ID);
-    }
 
-    @Override
-    public Action createContextAwareInstance(Lookup lookup) {
-        return null;
-    }
 
 
     static class TransectExporter {
