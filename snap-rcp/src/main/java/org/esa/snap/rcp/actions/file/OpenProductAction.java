@@ -60,7 +60,7 @@ import java.util.stream.Collectors;
 )
 @ActionReferences({
         @ActionReference(path = "Menu/File", position = 10),
-        @ActionReference(path = "Toolbars/File")
+        @ActionReference(path = "Toolbars/File", position = 10)
 })
 @NbBundle.Messages({
         "CTL_OpenProductActionName=Open Product",

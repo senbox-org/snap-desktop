@@ -35,8 +35,6 @@ import org.esa.snap.util.io.FileUtils;
 
 import javax.swing.AbstractButton;
 import javax.swing.JOptionPane;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.text.MessageFormat;
 import java.util.concurrent.ExecutionException;
@@ -192,7 +190,7 @@ public abstract class SingleTargetProductDialog extends ModelessDialog {
             final Product existingProduct = appContext.getProductManager().getProduct(productName);
             if (existingProduct != null) {
                 String message = MessageFormat.format(
-                        "A product with the name ''{0}'' is already opened in {1}.\n\n" +
+                        "<html>A product with the name ''{0}'' is already opened in {1}.<br><br>" +
                                 "Do you want to continue?",
                         productName, appContext.getApplicationName()
                 );
@@ -207,7 +205,7 @@ public abstract class SingleTargetProductDialog extends ModelessDialog {
             File productFile = targetProductSelector.getModel().getProductFile();
             if (productFile.exists()) {
                 String message = MessageFormat.format(
-                        "The specified output file\n\"{0}\"\n already exists.\n\n" +
+                        "<html>The specified output file<br>\"{0}\"<br> already exists.<br><br>" +
                                 "Do you want to overwrite the existing file?",
                         productFile.getPath()
                 );
@@ -224,7 +222,7 @@ public abstract class SingleTargetProductDialog extends ModelessDialog {
     private void showSaveInfo(long saveTime) {
         File productFile = getTargetProductSelector().getModel().getProductFile();
         final String message = MessageFormat.format(
-                "The target product has been successfully written to\n{0}\n" +
+                "<html>The target product has been successfully written to<br>{0}<br>" +
                         "Total time spend for processing: {1}",
                 formatFile(productFile),
                 formatDuration(saveTime)
@@ -234,8 +232,8 @@ public abstract class SingleTargetProductDialog extends ModelessDialog {
 
     protected void showOpenInAppInfo() {
         final String message = MessageFormat.format(
-                "The target product has successfully been created and opened in {0}.\n\n" +
-                        "Actual processing of source to target data will be performed only on demand,\n" +
+                "<html>The target product has successfully been created and opened in {0}.<br><br>" +
+                        "Actual processing of source to target data will be performed only on demand,<br>" +
                         "for example, if the target product is saved or an image view is opened.",
                 appContext.getApplicationName()
         );
@@ -245,10 +243,10 @@ public abstract class SingleTargetProductDialog extends ModelessDialog {
     private void showSaveAndOpenInAppInfo(long saveTime) {
         File productFile = getTargetProductSelector().getModel().getProductFile();
         final String message = MessageFormat.format(
-                "The target product has been successfully written to\n" +
-                        "{0}\n" +
-                        "and has been opened in {1}.\n" +
-                        "Total time spend for processing: {2}\n",
+                "<html>The target product has been successfully written to<br>" +
+                        "<p>{0}</p><br>" +
+                        "and has been opened in {1}.<br><br>" +
+                        "Total time spend for processing: {2}<br>",
                 formatFile(productFile),
                 appContext.getApplicationName(),
                 formatDuration(saveTime)

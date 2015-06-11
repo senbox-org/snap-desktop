@@ -13,7 +13,10 @@
             </folder>
             <folder name="Export">
                 <attr name="position" intvalue="150"/>
-                <attr name="seperatorAfter" intvalue="151"/>
+            </folder>
+            <folder name="Export Others">
+                <attr name="position" intvalue="155"/>
+                <attr name="seperatorAfter" intvalue="160"/>
             </folder>
         </folder>
         <folder name="Edit">
@@ -33,6 +36,44 @@
         </folder>
         <folder name="Help">
             <attr name="position" intvalue="700"/>
+        </folder>
+    </folder>
+
+    <!--
+    SNAP's toolbar groups
+    -->
+    <folder name="Toolbars">
+        <folder name="File"> <!-- defined by NetBeans -->
+            <attr name="position" intvalue="100"/>
+        </folder>
+        <folder name="Clipboard"> <!-- defined by NetBeans -->
+            <attr name="position" intvalue="200"/>
+        </folder>
+        <folder name="UndoRedo"> <!-- defined by NetBeans -->
+            <attr name="position" intvalue="300"/>
+        </folder>
+        <folder name="Memory">
+            <!-- defined by NetBeans; not sure about the exact position number but is always shown after UndoRedo.
+            It seems it can't be easily changed -->
+            <attr name="position" intvalue="350"/>
+        </folder>
+        <folder name="Analysis">
+            <attr name="position" intvalue="400"/>
+        </folder>
+        <folder name="Overlay">
+            <attr name="position" intvalue="500"/>
+        </folder>
+        <folder name="Processing">
+            <attr name="position" intvalue="600"/>
+        </folder>
+        <folder name="Tools">
+            <attr name="position" intvalue="700"/>
+        </folder>
+        <folder name="Views">
+            <attr name="position" intvalue="800"/>
+        </folder>
+        <folder name="Window"> <!-- defined by tiled-editors -->
+            <attr name="position" intvalue="1500"/>
         </folder>
     </folder>
 

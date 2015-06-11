@@ -5,6 +5,7 @@
  */
 package org.esa.snap.rcp.actions.view.overlay;
 
+import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -60,7 +61,8 @@ public final class OverlayPinLayerAction extends AbstractOverlayAction {
 
     @Override
     protected boolean getActionEnableState(ProductSceneView view) {
-        return view.getProduct().getPinGroup().getNodeCount() > 0;
+        final Product product = view.getProduct();
+        return product != null && product.getPinGroup().getNodeCount() > 0;
     }
 
     @Override
