@@ -21,6 +21,7 @@ import com.bc.ceres.binding.PropertyContainer;
 import com.bc.ceres.binding.PropertyDescriptor;
 import com.bc.ceres.binding.ValidationException;
 import com.bc.ceres.binding.ValueSet;
+import com.bc.ceres.binding.converters.ArrayConverter;
 import com.bc.ceres.binding.validators.NotEmptyValidator;
 import com.bc.ceres.binding.validators.PatternValidator;
 import com.bc.ceres.swing.binding.BindingContext;
@@ -66,6 +67,7 @@ import java.util.Comparator;
 import java.util.Set;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 /**
@@ -269,8 +271,17 @@ public class ToolAdapterEditorDialog extends ModalDialog {
                                             new File(paramsTable.getBindingContext().getBinding(param.getName()).getPropertyValue().toString()),
                                             newOperatorDescriptor.getAlias()).toString());
                         } else {
-                            param.setDefaultValue(paramsTable.getBindingContext().getBinding(param.getName())
-                                    .getPropertyValue().toString());
+                             Object defaultValue = paramsTable.getBindingContext().getBinding(param.getName())
+                                    .getPropertyValue();
+                            String defaultValueString = "";
+                            if(defaultValue.getClass().isArray()){
+                                //defaultValueString = Arrays.toString((Object[])defaultValue);
+                                defaultValueString = String.join(ArrayConverter.SEPARATOR,
+                                        Arrays.asList((Object[]) defaultValue).stream().map(value -> value.toString()).collect(Collectors.toList()));
+                            } else {
+                                defaultValueString = defaultValue.toString();
+                            }
+                            param.setDefaultValue(defaultValueString);
                         }
                     });
             java.util.List<TemplateParameterDescriptor> remParameters = toolParameterDescriptors.stream().filter(param -> ToolAdapterConstants.TOOL_SOURCE_PRODUCT_ID.equals(param.getName())).
