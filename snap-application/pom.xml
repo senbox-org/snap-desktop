@@ -130,11 +130,11 @@
             <artifactId>snap-worldwind</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!--dependency>
+        <dependency>
             <groupId>org.esa.snap</groupId>
             <artifactId>snap-sta-ui</artifactId>
             <version>${project.version}</version>
-        </dependency-->
+        </dependency>
         <dependency>
             <groupId>org.esa.snap</groupId>
             <artifactId>snap-smart-configurator-ui</artifactId>

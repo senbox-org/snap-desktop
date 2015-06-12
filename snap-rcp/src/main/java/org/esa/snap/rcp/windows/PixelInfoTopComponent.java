@@ -24,8 +24,6 @@ import org.openide.windows.TopComponent;
 import javax.swing.JCheckBox;
 import javax.swing.SwingUtilities;
 import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -74,12 +72,7 @@ public final class PixelInfoTopComponent extends ToolTopComponent {
         pinCheckbox = new JCheckBox("Snap to selected pin");
         pinCheckbox.setName("pinCheckbox");
         pinCheckbox.setSelected(false);
-        pinCheckbox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                updatePixelInfo();
-            }
-        });
+        pinCheckbox.addActionListener(e -> updatePixelInfo());
         setLayout(new BorderLayout());
         add(pixelInfoView, BorderLayout.CENTER);
         add(pinCheckbox, BorderLayout.SOUTH);
@@ -101,7 +94,7 @@ public final class PixelInfoTopComponent extends ToolTopComponent {
         if (currentView == view) {
             return;
         }
-        if (currentView != null) {
+        if (currentView != null && currentView.getProduct() != null) {
             currentView.removePixelPositionListener(pixelPositionListener);
             currentView.removePropertyChangeListener(ProductSceneView.PROPERTY_NAME_SELECTED_PIN,
                                                      pinSelectionChangeListener);
@@ -110,7 +103,7 @@ public final class PixelInfoTopComponent extends ToolTopComponent {
             pixelInfoView.clearProductNodeRefs();
         }
         currentView = view;
-        if (currentView != null) {
+        if (currentView != null  && currentView.getProduct() != null) {
             currentView.addPixelPositionListener(pixelPositionListener);
             currentView.addPropertyChangeListener(ProductSceneView.PROPERTY_NAME_SELECTED_PIN,
                                                   pinSelectionChangeListener);
@@ -120,12 +113,7 @@ public final class PixelInfoTopComponent extends ToolTopComponent {
 
     private void updatePixelInfo() {
         if (isSnapToSelectedPin()) {
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    snapToSelectedPin();
-                }
-            });
+            SwingUtilities.invokeLater(this::snapToSelectedPin);
         } else {
             pixelInfoView.updatePixelValues(currentView, -1, -1, 0, false);
         }
@@ -146,11 +134,6 @@ public final class PixelInfoTopComponent extends ToolTopComponent {
             pixelInfoView.updatePixelValues(currentView, -1, -1, 0, false);
         }
     }
-
-//    @Override
-//    public boolean isVisible() {
-//        return super.isVisible() || pixelInfoView.isAnyCollapsiblePaneVisible();
-//    }
 
     private class PinSelectionChangeListener implements PropertyChangeListener {
 

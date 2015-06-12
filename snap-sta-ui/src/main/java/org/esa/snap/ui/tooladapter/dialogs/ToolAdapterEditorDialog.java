@@ -33,7 +33,6 @@ import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.gpf.GPF;
 import org.esa.snap.framework.gpf.OperatorException;
 import org.esa.snap.framework.gpf.OperatorSpi;
-import org.esa.snap.framework.gpf.descriptor.*;
 import org.esa.snap.framework.gpf.operators.tooladapter.ToolAdapterConstants;
 import org.esa.snap.framework.gpf.operators.tooladapter.ToolAdapterIO;
 import org.esa.snap.framework.gpf.operators.tooladapter.ToolAdapterOpSpi;
@@ -210,6 +209,17 @@ public class ToolAdapterEditorDialog extends ModalDialog {
     @Override
     protected boolean verifyUserInput() {
         File file = newOperatorDescriptor.getMainToolFileLocation();
+        if (file == null) {
+            // should not come here unless, somehow, the property value was not set by binding
+            Object value = bindingContext.getBinding("mainToolFileLocation").getPropertyValue();
+            if (value != null) {
+                file = value instanceof File ? (File)value : new File(value.toString());
+            }
+        }
+        if (file == null) {
+            SnapDialogs.showWarning(Bundle.MSG_Inexistent_Tool_Path_Text());
+            return false;
+        }
         if (!file.exists()) {
             newOperatorDescriptor.setMainToolFileLocation(resolvePathOnSystem(file));
         }
@@ -265,11 +275,9 @@ public class ToolAdapterEditorDialog extends ModalDialog {
             toolParameterDescriptors.stream().filter(param -> paramsTable.getBindingContext().getBinding(param.getName()) != null)
                     .filter(param -> paramsTable.getBindingContext().getBinding(param.getName()).getPropertyValue() != null)
                     .forEach(param -> {
+                        Object propertyValue = paramsTable.getBindingContext().getBinding(param.getName()).getPropertyValue();
                         if (param.isTemplateBefore() || param.isTemplateAfter()) {
-                            param.setDefaultValue(
-                                    ToolAdapterIO.prettifyTemplateParameterPath(
-                                            new File(paramsTable.getBindingContext().getBinding(param.getName()).getPropertyValue().toString()),
-                                            newOperatorDescriptor.getAlias()).toString());
+                            param.setDefaultValue(new File(propertyValue.toString()).getName());
                         } else {
                              Object defaultValue = paramsTable.getBindingContext().getBinding(param.getName())
                                     .getPropertyValue();

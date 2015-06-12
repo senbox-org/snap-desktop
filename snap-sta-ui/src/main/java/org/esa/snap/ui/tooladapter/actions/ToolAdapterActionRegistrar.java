@@ -24,7 +24,6 @@ import org.esa.snap.framework.gpf.descriptor.ToolAdapterOperatorDescriptor;
 import org.esa.snap.framework.gpf.operators.tooladapter.ToolAdapterIO;
 import org.esa.snap.framework.gpf.operators.tooladapter.ToolAdapterOpSpi;
 import org.esa.snap.rcp.SnapDialogs;
-import org.openide.filesystems.*;
 import org.openide.modules.OnStart;
 
 import java.io.IOException;
@@ -99,9 +98,12 @@ public class ToolAdapterActionRegistrar {
         FileObject menuFolder = FileUtil.getConfigFile(menuLocation);
         try {
             if (menuFolder == null) {
-                FileObject root = FileUtil.getConfigFile("Menu");
-                menuFolder = root.createFolder(menuLocation.replace("Menu/", ""));
-                menuFolder.setAttribute("position", 9999);
+                menuFolder = FileUtil.getConfigFile("Menu");
+                String[] menuTokens = menuLocation.split("/");
+                for (int i = 1; i < menuTokens.length; i++) {
+                    menuFolder = menuFolder.createFolder(menuTokens[i]);
+                    menuFolder.setAttribute("position", 9999);
+                }
             }
             String menuKey = operator.getAlias();
             FileObject newItem = menuFolder.getFileObject(menuKey, "instance");

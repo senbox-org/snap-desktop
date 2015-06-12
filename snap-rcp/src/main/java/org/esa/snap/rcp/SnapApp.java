@@ -131,7 +131,11 @@ public class SnapApp {
     }
 
     public String getInstanceName() {
-        return NbBundle.getBundle("org.netbeans.core.ui.Bundle").getString("LBL_ProductInformation");
+        try{
+            return NbBundle.getBundle("org.netbeans.core.ui.Bundle").getString("LBL_ProductInformation");
+        }catch(Exception e){
+            return "SNAP";
+        }
     }
 
     /**

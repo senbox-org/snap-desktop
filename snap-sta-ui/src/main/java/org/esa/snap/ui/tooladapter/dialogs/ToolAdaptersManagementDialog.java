@@ -31,7 +31,6 @@ import org.esa.snap.tango.TangoIcons;
 import org.esa.snap.ui.tooladapter.actions.ToolAdapterActionRegistrar;
 import org.esa.snap.ui.tooladapter.model.OperatorsTableModel;
 import org.openide.util.NbBundle;
-import org.openide.util.NbPreferences;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -44,9 +43,8 @@ import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.prefs.BackingStoreException;
-import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
 
 /**
@@ -236,19 +234,12 @@ public class ToolAdaptersManagementDialog extends ModalDialog {
                 }
             }
             if (path.exists()) {
-                try {
-                    File oldPath = ToolAdapterIO.getUserAdapterPath();
-                    Preferences modulePrefs = NbPreferences.forModule(ToolAdapterIO.class);
-                    modulePrefs.put("user.module.path", newPath);
-                    modulePrefs.sync();
-                    if (!newPath.equals(oldPath.getAbsolutePath())) {
-                        ToolAdapterIO.searchAndRegisterAdapters();
-                        setContent(createContentPanel());
-                        getContent().repaint();
-                    }
-                    //SnapDialogs.showInformation("The path for user adapters will be considered next time the application is opened.", "Don't show this dialog");
-                } catch (BackingStoreException e1) {
-                    SnapDialogs.showError(e1.getMessage());
+                File oldPath = ToolAdapterIO.getUserAdapterPath();
+                ToolAdapterIO.setAdaptersPath(Paths.get(newPath));
+                if (!newPath.equals(oldPath.getAbsolutePath())) {
+                    ToolAdapterIO.searchAndRegisterAdapters();
+                    setContent(createContentPanel());
+                    getContent().repaint();
                 }
             }
         });
