@@ -17,6 +17,7 @@
  */
 package org.esa.snap.ui.tooladapter.dialogs;
 
+import com.bc.ceres.core.ProgressMonitor;
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.gpf.GPF;
 import org.esa.snap.framework.gpf.Operator;
@@ -132,7 +133,7 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
                     op.setSourceProducts(sourceProducts);
                     operatorTask = new OperatorTask(op, ToolAdapterExecutionDialog.this::operatorCompleted);
                     ProgressHandle progressHandle = ProgressHandleFactory.createHandle(this.getTitle());
-                    ((ToolAdapterOp) op).setProgressMonitor(progressHandle);
+                    ((ToolAdapterOp) op).setProgressMonitor(new ProgressWrapper(progressHandle));
                     ProgressUtils.runOffEventThreadWithProgressDialog(operatorTask, this.getTitle(), progressHandle, true, 1, 1);
                 }
             }
@@ -341,4 +342,53 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
         }
     }
 
+    class ProgressWrapper implements ProgressMonitor {
+
+        private ProgressHandle progressHandle;
+
+        ProgressWrapper(ProgressHandle handle) {
+            this.progressHandle = handle;
+        }
+
+        @Override
+        public void beginTask(String taskName, int totalWork) {
+            this.progressHandle.setDisplayName(taskName);
+            this.progressHandle.start(totalWork, -1);
+        }
+
+        @Override
+        public void done() {
+            this.progressHandle.finish();
+        }
+
+        @Override
+        public void internalWorked(double work) {
+            this.progressHandle.progress((int)work);
+        }
+
+        @Override
+        public boolean isCanceled() {
+            return false;
+        }
+
+        @Override
+        public void setCanceled(boolean canceled) {
+            this.progressHandle.suspend("Cancelled");
+        }
+
+        @Override
+        public void setTaskName(String taskName) {
+            this.progressHandle.progress(taskName);
+        }
+
+        @Override
+        public void setSubTaskName(String subTaskName) {
+            this.progressHandle.progress(subTaskName);
+        }
+
+        @Override
+        public void worked(int work) {
+            internalWorked(work);
+        }
+    }
 }
