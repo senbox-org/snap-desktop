@@ -203,27 +203,31 @@ public class ProductSceneImage implements ProductLayerContext {
     }
 
     Layer getGcpLayer(boolean create) {
-        final VectorDataNode vectorDataNode = getProduct().getGcpGroup().getVectorDataNode();
-        final Layer vectorDataCollectionLayer = getVectorDataCollectionLayer(create);
-        if (vectorDataCollectionLayer != null) {
-            return LayerUtils.getChildLayer(getRootLayer(),
-                                            LayerUtils.SEARCH_DEEP,
-                                            VectorDataLayerFilterFactory.createNodeFilter(vectorDataNode));
-        } else {
-            return null;
+        final Product product = getProduct();
+        if (product != null) {
+            final VectorDataNode vectorDataNode = product.getGcpGroup().getVectorDataNode();
+            final Layer vectorDataCollectionLayer = getVectorDataCollectionLayer(create);
+            if (vectorDataCollectionLayer != null) {
+                return LayerUtils.getChildLayer(getRootLayer(),
+                                                LayerUtils.SEARCH_DEEP,
+                                                VectorDataLayerFilterFactory.createNodeFilter(vectorDataNode));
+            }
         }
+        return null;
     }
 
     Layer getPinLayer(boolean create) {
-        final VectorDataNode vectorDataNode = getProduct().getPinGroup().getVectorDataNode();
-        final Layer vectorDataCollectionLayer = getVectorDataCollectionLayer(create);
-        if (vectorDataCollectionLayer != null) {
-            return LayerUtils.getChildLayer(getRootLayer(),
-                                            LayerUtils.SEARCH_DEEP,
-                                            VectorDataLayerFilterFactory.createNodeFilter(vectorDataNode));
-        } else {
-            return null;
+        final Product product = getProduct();
+        if (product != null) {
+            final VectorDataNode vectorDataNode = product.getPinGroup().getVectorDataNode();
+            final Layer vectorDataCollectionLayer = getVectorDataCollectionLayer(create);
+            if (vectorDataCollectionLayer != null) {
+                return LayerUtils.getChildLayer(getRootLayer(),
+                                                LayerUtils.SEARCH_DEEP,
+                                                VectorDataLayerFilterFactory.createNodeFilter(vectorDataNode));
+            }
         }
+        return null;
     }
 
     private RasterDataNode getRaster() {
