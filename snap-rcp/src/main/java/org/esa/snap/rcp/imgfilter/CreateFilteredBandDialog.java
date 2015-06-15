@@ -7,6 +7,7 @@ import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.imgfilter.model.Filter;
 import org.esa.snap.rcp.imgfilter.model.FilterSet;
 import org.esa.snap.rcp.imgfilter.model.StandardFilters;
+import org.esa.snap.util.SystemUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -129,8 +130,7 @@ public class CreateFilteredBandDialog extends ModalDialog implements FilterSetFo
 
 
     private File getFiltersDir() {
-        String userHome = System.getProperty("user.home");
-        return new File(userHome, ".beam/beam-ui/auxdata/image-filters");
+        return new File(SystemUtils.getAuxDataPath().toFile(), "image-filters");
     }
 
     public static class DialogData {

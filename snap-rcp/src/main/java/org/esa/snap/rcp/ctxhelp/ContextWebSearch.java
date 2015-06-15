@@ -116,7 +116,7 @@ public class ContextWebSearch {
     private Path getConfigPath() throws IOException {
         FileSystem fs = FileSystems.getDefault();
         // todo: fix SystemUtils.getApplicationDataDir() (nf, 201502059)
-        Path dir = fs.getPath(SystemUtils.getApplicationDataDir().getPath(), "snap-ui", "auxdata");
+        Path dir = SystemUtils.getAuxDataPath();
         if (Files.notExists(dir)) {
             Files.createDirectories(dir);
         }

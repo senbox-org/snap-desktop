@@ -52,8 +52,7 @@ public class LoadSaveRasterDataNodesConfigurationsProvider {
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     private static File getSystemAuxDataDir() {
-        File file = new File(SystemUtils.getApplicationDataDir(), "snap-ui" + File.separator + "auxdata" +
-                File.separator + "band-sets");
+        File file = new File(SystemUtils.getAuxDataPath().toFile(), "band-sets");
         if (!file.exists()) {
             file.mkdirs();
         }

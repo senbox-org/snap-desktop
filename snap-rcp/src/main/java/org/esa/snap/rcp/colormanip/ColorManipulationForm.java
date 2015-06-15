@@ -631,7 +631,7 @@ class ColorManipulationForm implements SelectionSupport.Handler<ProductSceneView
     }
 
     private Path getColorPalettesDir() {
-        return SystemUtils.getApplicationDataDir().toPath().resolve("snap-rcp/auxdata/color_palettes");
+        return SystemUtils.getAuxDataPath().resolve("color_palettes");
     }
 
     private ImageInfo createDefaultImageInfo() {

@@ -65,7 +65,7 @@ class EndmemberFormModel {
     private PropertyChangeSupport propertyChangeSupport;
 
     private Color[] defaultColors = new Color[]{Color.BLACK, Color.RED.darker(), Color.GREEN.darker(), Color.BLUE.darker(), Color.YELLOW};
-    private static Path defaultEndmemberDir = SystemUtils.getApplicationDataDir().toPath().resolve("beam-unmix/auxdata");
+    private static Path defaultEndmemberDir = SystemUtils.getAuxDataPath();
 
     public EndmemberFormModel(AppContext appContext) {
         this.appContext = appContext;
