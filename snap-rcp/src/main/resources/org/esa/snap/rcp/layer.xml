@@ -14,7 +14,7 @@
             <folder name="Export">
                 <attr name="position" intvalue="150"/>
             </folder>
-            <folder name="Export Others">
+            <folder name="Other Exports">
                 <attr name="position" intvalue="155"/>
                 <attr name="seperatorAfter" intvalue="160"/>
             </folder>
