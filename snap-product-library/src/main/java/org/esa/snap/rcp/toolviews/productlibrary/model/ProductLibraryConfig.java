@@ -64,7 +64,7 @@ public class ProductLibraryConfig {
      * @param baseDir the repository base directory.
      */
     public void removeBaseDir(final File baseDir) {
-        pref.put(BASE_DIR + baseDir.getAbsolutePath(), null);
+        pref.remove(BASE_DIR + baseDir.getAbsolutePath());
     }
 
     /**
