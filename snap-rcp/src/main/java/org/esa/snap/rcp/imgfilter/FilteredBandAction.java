@@ -15,19 +15,31 @@
  */
 package org.esa.snap.rcp.imgfilter;
 
-import org.esa.snap.framework.datamodel.*;
+import org.esa.snap.framework.datamodel.Band;
+import org.esa.snap.framework.datamodel.ConvolutionFilterBand;
+import org.esa.snap.framework.datamodel.FilterBand;
+import org.esa.snap.framework.datamodel.GeneralFilterBand;
+import org.esa.snap.framework.datamodel.Kernel;
+import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.datamodel.ProductNode;
+import org.esa.snap.framework.datamodel.RasterDataNode;
 import org.esa.snap.framework.ui.ModalDialog;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.actions.view.OpenImageViewAction;
 import org.esa.snap.rcp.imgfilter.model.Filter;
-import org.esa.snap.rcp.session.*;
 import org.esa.snap.util.ProductUtils;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
-import org.openide.util.*;
+import org.openide.util.ContextAwareAction;
+import org.openide.util.Lookup;
+import org.openide.util.LookupEvent;
+import org.openide.util.LookupListener;
+import org.openide.util.NbBundle;
+import org.openide.util.Utilities;
+import org.openide.util.WeakListeners;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
