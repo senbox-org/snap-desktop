@@ -213,8 +213,8 @@ class MaskTableModel extends AbstractTableModel {
     private void updateModeIdxs() {
         this.modeIdxs =
                 inManagmentMode
-                        ? (this.visibleBand != null ? IDXS_MODE_MANAG_BAND : IDXS_MODE_MANAG_NO_BAND)
-                        : (this.visibleBand != null ? IDXS_MODE_NO_MANAG_BAND : IDXS_MODE_NO_MANAG_NO_BAND);
+                ? (this.visibleBand != null ? IDXS_MODE_MANAG_BAND : IDXS_MODE_MANAG_NO_BAND)
+                : (this.visibleBand != null ? IDXS_MODE_NO_MANAG_BAND : IDXS_MODE_NO_MANAG_NO_BAND);
     }
 
     void clear() {
@@ -335,8 +335,9 @@ class MaskTableModel extends AbstractTableModel {
                 fireTableDataChanged();
             } else if (event.getSourceNode() instanceof Placemark) {
                 fireTableDataChanged();
-            } else if (event.getSourceNode() == visibleBand
-                    && event.getPropertyName().equals(RasterDataNode.PROPERTY_NAME_IMAGE_INFO)) {
+            } else if (event.getSourceNode() == visibleBand &&
+                       event.getPropertyName() != null &&
+                       event.getPropertyName().equals(RasterDataNode.PROPERTY_NAME_IMAGE_INFO)) {
                 fireTableDataChanged();
             }
         }
