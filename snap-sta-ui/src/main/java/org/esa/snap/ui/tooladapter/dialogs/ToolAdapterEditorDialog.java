@@ -125,18 +125,18 @@ public class ToolAdapterEditorDialog extends ModalDialog {
     public static final String helpID = "sta_editor";
 
     private int formWidth;
-    private final int DEFAULT_PADDING = 3;
-    private final int DEFAULT_CONTROL_HEIGHT = 24;
+    private final int DEFAULT_PADDING = 2;
+    private int controlHeight = 24;
     private final String[] systemPath;
 
     private ToolAdapterEditorDialog(AppContext appContext, String title) {
         super(appContext.getApplicationWindow(), title, ID_OK_CANCEL_HELP, new Object[] { new JButton(Bundle.CTL_Button_Export_Text()) }, helpID);
         this.logger = Logger.getLogger(ToolAdapterEditorDialog.class.getName());
-        getJDialog().setResizable(false);
+        //getJDialog().setResizable(false);
         this.registerButton(ID_OTHER, new JButton(Bundle.CTL_Button_Export_Text()));
         String sysPath = System.getenv("PATH");
         systemPath = sysPath.split(File.pathSeparator);
-
+        controlHeight = (getJDialog().getFont().getSize() + 1) * 2;
     }
 
     private ToolAdapterEditorDialog(AppContext appContext, ToolAdapterOperatorDescriptor operatorDescriptor) {
@@ -349,6 +349,7 @@ public class ToolAdapterEditorDialog extends ModalDialog {
         double heightRatio = 0.6;
         int formHeight = Math.max((int) (screenSize.height * heightRatio), 580);
         toolDescriptorPanel.setPreferredSize(new Dimension(formWidth, formHeight));
+        getJDialog().setMinimumSize(new Dimension(formWidth + 16, formHeight + 72));
 
         JPanel topLeftPanel = createDescriptorAndVariablesAndPreprocessingPanel();
         Dimension topPanelDimension = new Dimension((int)((formWidth - 3 * DEFAULT_PADDING) * 0.5), (int)((formHeight - 3 * DEFAULT_PADDING) * 0.62));
@@ -372,7 +373,7 @@ public class ToolAdapterEditorDialog extends ModalDialog {
         JPanel bottomPannel = createParametersPanel();
         Dimension bottomPanelDimension = new Dimension((int)(formWidth - 2 * DEFAULT_PADDING), (int)((formHeight - 3 * DEFAULT_PADDING) * 0.25));
         bottomPannel.setMinimumSize(bottomPanelDimension);
-        bottomPannel.setMaximumSize(bottomPanelDimension);
+        //bottomPannel.setMaximumSize(bottomPanelDimension);
         bottomPannel.setPreferredSize(bottomPanelDimension);
         toolDescriptorPanel.add(bottomPannel);
 
@@ -390,7 +391,7 @@ public class ToolAdapterEditorDialog extends ModalDialog {
 
         springLayout.putConstraint(SpringLayout.NORTH, middlePannel, DEFAULT_PADDING, SpringLayout.SOUTH, topLeftPanel);
         springLayout.putConstraint(SpringLayout.NORTH, middlePannel, DEFAULT_PADDING, SpringLayout.SOUTH, topRightPanel);
-        springLayout.putConstraint(SpringLayout.SOUTH, middlePannel, DEFAULT_PADDING, SpringLayout.NORTH, bottomPannel);
+        springLayout.putConstraint(SpringLayout.NORTH, bottomPannel, DEFAULT_PADDING, SpringLayout.SOUTH, middlePannel);
 
         springLayout.putConstraint(SpringLayout.SOUTH, bottomPannel, DEFAULT_PADDING, SpringLayout.SOUTH, toolDescriptorPanel);
 
@@ -429,6 +430,8 @@ public class ToolAdapterEditorDialog extends ModalDialog {
 
         SpringUtilities.makeCompactGrid(preprocessAndPatternsPanel, 1, 2, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING);
 
+        preprocessAndPatternsPanel.setMaximumSize(preprocessAndPatternsPanel.getSize());
+
         return preprocessAndPatternsPanel;
     }
 
@@ -439,8 +442,8 @@ public class ToolAdapterEditorDialog extends ModalDialog {
         PropertyDescriptor propertyDescriptor = propertyContainer.getDescriptor("preprocessorExternalTool");
         PropertyEditor editor = PropertyEditorRegistry.getInstance().findPropertyEditor(propertyDescriptor);
         JComponent editorComponent = editor.createEditorComponent(propertyDescriptor, bindingContext);
-        editorComponent.setMaximumSize(new Dimension(editorComponent.getMaximumSize().width, DEFAULT_CONTROL_HEIGHT));
-        editorComponent.setPreferredSize(new Dimension(editorComponent.getPreferredSize().width, DEFAULT_CONTROL_HEIGHT));
+        editorComponent.setMaximumSize(new Dimension(editorComponent.getMaximumSize().width, controlHeight));
+        editorComponent.setPreferredSize(new Dimension(editorComponent.getPreferredSize().width, controlHeight));
 
         preProcessingPanel.add(createCheckboxComponent("preprocessTool", editorComponent, newOperatorDescriptor.getPreprocessTool()));
         preProcessingPanel.add(new JLabel(Bundle.CTL_Label_PreprocessingTool_Text()));
@@ -449,8 +452,8 @@ public class ToolAdapterEditorDialog extends ModalDialog {
         propertyDescriptor = propertyContainer.getDescriptor("processingWriter");
         editor = PropertyEditorRegistry.getInstance().findPropertyEditor(propertyDescriptor);
         editorComponent = editor.createEditorComponent(propertyDescriptor, bindingContext);
-        editorComponent.setMaximumSize(new Dimension(editorComponent.getMaximumSize().width, DEFAULT_CONTROL_HEIGHT));
-        editorComponent.setPreferredSize(new Dimension(editorComponent.getPreferredSize().width, DEFAULT_CONTROL_HEIGHT));
+        editorComponent.setMaximumSize(new Dimension(editorComponent.getMaximumSize().width, controlHeight));
+        editorComponent.setPreferredSize(new Dimension(editorComponent.getPreferredSize().width, controlHeight));
 
         JComponent writeComponent = createCheckboxComponent("writeForProcessing", editorComponent, newOperatorDescriptor.shouldWriteBeforeProcessing());
         if(writeComponent instanceof JCheckBox){
@@ -483,8 +486,8 @@ public class ToolAdapterEditorDialog extends ModalDialog {
         propertyDescriptor.setValidator(new NotEmptyValidator());
         PropertyEditor editor = PropertyEditorRegistry.getInstance().findPropertyEditor(propertyDescriptor);
         JComponent editorComponent = editor.createEditorComponent(propertyDescriptor, bindingContext);
-        editorComponent.setMaximumSize(new Dimension(editorComponent.getMaximumSize().width, DEFAULT_CONTROL_HEIGHT));
-        editorComponent.setPreferredSize(new Dimension(editorComponent.getPreferredSize().width, DEFAULT_CONTROL_HEIGHT));
+        editorComponent.setMaximumSize(new Dimension(editorComponent.getMaximumSize().width, controlHeight));
+        editorComponent.setPreferredSize(new Dimension(editorComponent.getPreferredSize().width, controlHeight));
 
         panelToolFiles.add(new JLabel(Bundle.CTL_Label_ToolLocation_Text()));
         panelToolFiles.add(editorComponent);
@@ -499,8 +502,8 @@ public class ToolAdapterEditorDialog extends ModalDialog {
         });
         editor = PropertyEditorRegistry.getInstance().findPropertyEditor(propertyDescriptor);
         editorComponent = editor.createEditorComponent(propertyDescriptor, bindingContext);
-        editorComponent.setMaximumSize(new Dimension(editorComponent.getMaximumSize().width, DEFAULT_CONTROL_HEIGHT));
-        editorComponent.setPreferredSize(new Dimension(editorComponent.getPreferredSize().width, DEFAULT_CONTROL_HEIGHT));
+        editorComponent.setMaximumSize(new Dimension(editorComponent.getMaximumSize().width, controlHeight));
+        editorComponent.setPreferredSize(new Dimension(editorComponent.getPreferredSize().width, controlHeight));
 
         panelToolFiles.add(new JLabel(Bundle.CTL_Label_WorkDir_Text()));
         panelToolFiles.add(editorComponent);
@@ -589,6 +592,7 @@ public class ToolAdapterEditorDialog extends ModalDialog {
         paramsPanel.setLayout(layout);
         AbstractButton addParamBut = ToolButtonFactory.createButton(UIUtils.loadImageIcon(Bundle.Icon_Add()), false);
         addParamBut.setAlignmentX(Component.LEFT_ALIGNMENT);
+        addParamBut.setAlignmentY(Component.TOP_ALIGNMENT);
         paramsPanel.add(addParamBut);
         int tableWidth = (formWidth - 2 * DEFAULT_PADDING);
         int widths[] = {27, 120, (int)(tableWidth * 0.25), (int)(tableWidth * 0.1), 100, (int)(tableWidth * 0.32), 30};
@@ -627,8 +631,8 @@ public class ToolAdapterEditorDialog extends ModalDialog {
             PropertyDescriptor propertyDescriptor = propertyContainer.getDescriptor(propertyName);
             propertyDescriptor.setValidator(new PatternValidator(Pattern.compile(validatorRegex)));
             JComponent editorComponent = textEditor.createEditorComponent(propertyDescriptor, bindingContext);
-            editorComponent.setMaximumSize(new Dimension(editorComponent.getMaximumSize().width, DEFAULT_CONTROL_HEIGHT));
-            editorComponent.setPreferredSize(new Dimension(editorComponent.getPreferredSize().width, DEFAULT_CONTROL_HEIGHT));
+            editorComponent.setMaximumSize(new Dimension(editorComponent.getMaximumSize().width, controlHeight));
+            editorComponent.setPreferredSize(new Dimension(editorComponent.getPreferredSize().width, controlHeight));
             parent.add(editorComponent);
         }
     }
@@ -640,8 +644,8 @@ public class ToolAdapterEditorDialog extends ModalDialog {
             propertyDescriptor.setValidator(new NotEmptyValidator());
         }
         JComponent editorComponent = textEditor.createEditorComponent(propertyDescriptor, bindingContext);
-        editorComponent.setMaximumSize(new Dimension(editorComponent.getMaximumSize().width, DEFAULT_CONTROL_HEIGHT));
-        editorComponent.setPreferredSize(new Dimension(editorComponent.getPreferredSize().width, DEFAULT_CONTROL_HEIGHT));
+        editorComponent.setMaximumSize(new Dimension(editorComponent.getMaximumSize().width, controlHeight));
+        editorComponent.setPreferredSize(new Dimension(editorComponent.getPreferredSize().width, controlHeight));
         parent.add(editorComponent);
     }
 
@@ -657,8 +661,8 @@ public class ToolAdapterEditorDialog extends ModalDialog {
         propertyDescriptor.setValueSet(new ValueSet(values.toArray()));
         PropertyEditor editor = PropertyEditorRegistry.getInstance().findPropertyEditor(propertyDescriptor);
         JComponent editorComp = editor.createEditorComponent(propertyDescriptor, bindingContext);
-        editorComp.setMaximumSize(new Dimension(editorComp.getMaximumSize().width, DEFAULT_CONTROL_HEIGHT));
-        editorComp.setPreferredSize(new Dimension(editorComp.getPreferredSize().width, DEFAULT_CONTROL_HEIGHT));
+        editorComp.setMaximumSize(new Dimension(editorComp.getMaximumSize().width, controlHeight));
+        editorComp.setPreferredSize(new Dimension(editorComp.getPreferredSize().width, controlHeight));
         parent.add(editorComp);
     }
 

@@ -149,7 +149,6 @@ class ToolExecutionForm extends JTabbedPane {
     }
 
     private JScrollPane createProcessingParamTab() {
-
         PropertyPane parametersPane = new PropertyPane(propertySet);
         final JPanel parametersPanel = parametersPane.createPanel();
         parametersPanel.setBorder(new EmptyBorder(4, 4, 4, 4));
