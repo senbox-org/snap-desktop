@@ -154,7 +154,7 @@ public class ToolAdaptersManagementDialog extends ModalDialog {
                                                                             Bundle.MessageConfirmRemovalDontAsk_Text())) {
                     java.util.List<ToolAdapterOperatorDescriptor> unableToRemove = operatorDescriptors.stream()
                                                                                                       .filter(descriptor -> descriptor != null
-                                                                                                              && ToolAdapterOperatorDescriptor.SOURCE_PACKAGE.equals(descriptor.getSource()))
+                                                                                                              && descriptor.isFromPackage())
                                                                                                       .collect(Collectors.toList());
                     int notToRemoveCount = unableToRemove.size();
                     if (notToRemoveCount > 0) {
@@ -173,7 +173,7 @@ public class ToolAdaptersManagementDialog extends ModalDialog {
                                                             pluralNoun));
                     }
                     operatorDescriptors.stream()
-                            .filter(descriptor -> descriptor != null && ToolAdapterOperatorDescriptor.SOURCE_USER.equals(descriptor.getSource()))
+                            .filter(descriptor -> descriptor != null && !descriptor.isFromPackage())
                             .forEach(descriptor -> {
                                 ToolAdapterActionRegistrar.removeOperatorMenu(descriptor);
                                             ToolAdapterIO.removeOperator(descriptor);

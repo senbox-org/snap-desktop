@@ -64,7 +64,7 @@ public class ToolParameterEditorDialog extends ModalDialog {
     }
 
 
-    public ToolParameterEditorDialog(AppContext appContext, String title, ToolParameterDescriptor parameter, PropertyMemberUIWrapper uiWrapper) {
+    public ToolParameterEditorDialog(AppContext appContext, ToolParameterDescriptor parameter, PropertyMemberUIWrapper uiWrapper) {
         super(appContext.getApplicationWindow(), parameter.getName(), ID_OK_CANCEL, helpID);
         this.oldParameter = parameter;
         this.parameter = new ToolParameterDescriptor(parameter);

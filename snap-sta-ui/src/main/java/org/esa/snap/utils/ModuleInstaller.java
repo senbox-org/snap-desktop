@@ -77,7 +77,7 @@ public class ModuleInstaller extends ModuleInstall {
         registeredDescriptors.addAll(ToolAdapterRegistry.INSTANCE.getOperatorMap().values()
                             .stream()
                             .map(e -> (ToolAdapterOperatorDescriptor) e.getOperatorDescriptor())
-                            .filter(o -> ToolAdapterOperatorDescriptor.SOURCE_PACKAGE.equals(o.getSource()))
+                            .filter(ToolAdapterOperatorDescriptor::isFromPackage)
                             .collect(Collectors.toList()));
         Map<String, File> jarAdapters = getJarAdapters(nbUserModulesPath.toFile());
         // we have a "package" adapter, but no jar was found in NB modules folder

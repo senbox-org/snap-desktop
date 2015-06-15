@@ -36,6 +36,7 @@ import org.netbeans.api.progress.ProgressHandle;
 import org.netbeans.api.progress.ProgressHandleFactory;
 import org.netbeans.api.progress.ProgressUtils;
 import org.openide.util.Cancellable;
+import org.openide.util.NbBundle;
 
 import java.io.File;
 import java.io.IOException;
@@ -55,6 +56,13 @@ import java.util.stream.Collectors;
  * @author Lucian Barbulescu.
  * @author Cosmin Cara
  */
+@NbBundle.Messages({
+        "NoSourceProductWarning_Text=Please make sure you have selected the necessary input products",
+        "RequiredTargetProductMissingWarning_Text=A target product is required in adapter's template, but none was provided",
+        "NoOutput_Text=The operator did not produce any output",
+        "BeginOfErrorMessages_Text=The operator completed with the following errors:\n",
+        "OutputTitle_Text=Process output"
+})
 public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
 
     public static final String SOURCE_PRODUCT_FIELD = "sourceProduct";
@@ -80,20 +88,20 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
     /**
      * Constructor.
      *
-     * @param operatorSpi
-     * @param appContext
-     * @param title
+     * @param descriptor    The operator descriptor
+     * @param appContext    The application context
+     * @param title         The dialog title
      */
-    public ToolAdapterExecutionDialog(ToolAdapterOperatorDescriptor operatorSpi, AppContext appContext, String title) {
+    public ToolAdapterExecutionDialog(ToolAdapterOperatorDescriptor descriptor, AppContext appContext, String title) {
         super(appContext, title, helpID);
-        this.operatorDescriptor = operatorSpi;
+        this.operatorDescriptor = descriptor;
 
-        this.parameterSupport = new OperatorParameterSupport(operatorSpi);
+        this.parameterSupport = new OperatorParameterSupport(descriptor);
 
-        form = new ToolExecutionForm(appContext, operatorSpi, parameterSupport.getPropertySet(),
+        form = new ToolExecutionForm(appContext, descriptor, parameterSupport.getPropertySet(),
                 getTargetProductSelector());
         OperatorMenu operatorMenu = new OperatorMenu(this.getJDialog(),
-                operatorSpi,
+                descriptor,
                 parameterSupport,
                 appContext,
                 helpID);
@@ -114,10 +122,10 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
         } catch (IOException ignored) {
         }
         if (Arrays.stream(sourceProducts).anyMatch(p -> p == null)) {
-            SnapDialogs.showWarning("Please make sure you have selected the necessary input products");
+            SnapDialogs.showWarning(Bundle.NoSourceProductWarning_Text());
         } else if (descriptors.size() == 1 && form.getPropertyValue(ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE) == null &&
                 templateContents.contains("$" + ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE)) {
-                SnapDialogs.showWarning("A target product is required in adapter's template, but none was provided");
+                SnapDialogs.showWarning(Bundle.RequiredTargetProductMissingWarning_Text());
         } else {
             if (!canApply()) {
                 onClose();
@@ -209,9 +217,9 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
      * @return  <code>true</code> if the input is valid, <code>false</code> otherwise
      */
     private boolean validateUserInput() {
-        boolean isValid = true;
+        boolean isValid;
         File productDir = targetProductSelector.getModel().getProductDir();
-        isValid &= (productDir != null) && productDir.exists();
+        isValid = (productDir != null) && productDir.exists();
         Product[] sourceProducts = form.getSourceProducts();
         isValid &= (sourceProducts != null) && sourceProducts.length > 0;
 
@@ -244,11 +252,22 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
     }
 
     private void displayErrors() {
-        if (operatorTask != null) {
+        if (form.shouldDisplayOutput()) {
+            List<String> output = operatorTask.getOutput();
+            StringBuilder builder = new StringBuilder();
+            if (output.size() > 0) {
+                for (String anOutput : output) {
+                    builder.append(String.format("%s%n", shrinkText(anOutput)));
+                }
+                SnapDialogs.showInformation(Bundle.OutputTitle_Text(), builder.toString(), null);
+            } else {
+                builder.append(Bundle.NoOutput_Text());
+            }
+        } else if (operatorTask != null) {
             List<String> errors = operatorTask.getErrors();
             if (errors != null && errors.size() > 0) {
                 StringBuilder builder = new StringBuilder();
-                builder.append(String.format("The operator completed with the following errors:%n"));
+                builder.append(Bundle.BeginOfErrorMessages_Text());
                 int messageCount = Math.min(errors.size(), 10);
                 for (int i = 0; i < messageCount; i++) {
                     builder.append(String.format("[%s] %s%n", i + 1, shrinkText(errors.get(i))));
@@ -265,7 +284,7 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
         } else {
             StringBuilder builder= new StringBuilder();
             boolean endOfString = false;
-            int start = 0, end = 0;
+            int start = 0, end;
             while (start < input.length() - 1) {
                 int charCount = 0, lastSpace = 0;
                 while (charCount < charLimit) {
@@ -295,7 +314,6 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
 
         private Operator operator;
         private Consumer<Product> callbackMethod;
-        private Product result;
         private boolean hasCompleted;
 
         /**
@@ -339,6 +357,14 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
                 errors = ((ToolAdapterOp) operator).getErrors();
             }
             return errors;
+        }
+
+        public List<String> getOutput() {
+            List<String> allMessages = null;
+            if (operator != null && operator instanceof ToolAdapterOp) {
+                allMessages = ((ToolAdapterOp) operator).getExecutionOutput();
+            }
+            return allMessages;
         }
     }
 

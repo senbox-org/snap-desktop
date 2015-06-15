@@ -32,6 +32,7 @@ import org.esa.snap.ui.tooladapter.model.PropertyMemberUIWrapper;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -54,7 +55,6 @@ public class TemplateParameterEditorDialog extends ModalDialog {
     private JTextArea fileContentArea = new JTextArea("", 10, 10);
     OperatorParametersTable paramsTable;
     private Logger logger;
-    private File path;
 
     public TemplateParameterEditorDialog(AppContext appContext, String title, String helpID) {
         super(appContext.getApplicationWindow(), title, ID_OK_CANCEL, helpID);
@@ -71,7 +71,6 @@ public class TemplateParameterEditorDialog extends ModalDialog {
             this.fakeDescriptor.getToolParameterDescriptors().add(new TemplateParameterDescriptor(param));
         }
         this.fileWrapper = fileWrapper;
-        this.path = new File(ToolAdapterIO.getUserAdapterPath().getAbsolutePath(), parentDescriptor.getAlias());
         setContent(createMainPanel());
     }
 
@@ -89,9 +88,7 @@ public class TemplateParameterEditorDialog extends ModalDialog {
         tableScrollPane.setPreferredSize(new Dimension(500, 130));
         tableScrollPane.setAlignmentX(Component.LEFT_ALIGNMENT);
         paramsPanel.add(tableScrollPane);
-        addParamBut.addActionListener(e -> {
-            paramsTable.addParameterToTable(new TemplateParameterDescriptor("parameterName", String.class));
-        });
+        addParamBut.addActionListener((ActionEvent e) -> paramsTable.addParameterToTable(new TemplateParameterDescriptor("parameterName", String.class)));
         TitledBorder title = BorderFactory.createTitledBorder("Template Parameters");
         paramsPanel.setBorder(title);
         return paramsPanel;
