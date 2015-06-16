@@ -379,6 +379,8 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
             super(band);
             if(band instanceof VirtualBand) {
                 setIconBaseWithExtension("org/esa/snap/rcp/icons/RsBandVirtual16.gif");
+            }else if(band.isFlagBand()) {
+                setIconBaseWithExtension("org/esa/snap/rcp/icons/RsBandFlags16.gif");
             } else {
                 setIconBaseWithExtension("org/esa/snap/rcp/icons/RsBandAsSwath.gif");
             }
