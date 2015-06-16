@@ -16,7 +16,15 @@
 
 package org.esa.snap.rcp.session;
 
-import org.esa.snap.framework.datamodel.*;
+import org.esa.snap.framework.datamodel.Band;
+import org.esa.snap.framework.datamodel.FilterBand;
+import org.esa.snap.framework.datamodel.ImageInfo;
+import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.datamodel.ProductData;
+import org.esa.snap.framework.datamodel.ProductNode;
+import org.esa.snap.framework.datamodel.ProductNodeGroup;
+import org.esa.snap.framework.datamodel.RasterDataNode;
+import org.esa.snap.framework.datamodel.VirtualBand;
 import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
@@ -24,9 +32,16 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
-import org.openide.util.*;
+import org.openide.util.ContextAwareAction;
+import org.openide.util.Lookup;
+import org.openide.util.LookupEvent;
+import org.openide.util.LookupListener;
+import org.openide.util.NbBundle;
+import org.openide.util.Utilities;
+import org.openide.util.WeakListeners;
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import java.awt.event.ActionEvent;
 
 /**
@@ -42,17 +57,10 @@ import java.awt.event.ActionEvent;
 @ActionRegistration(
         displayName = "#CTL_ConvertComputedBandIntoBandAction_MenuText",
         popupText = "#CTL_ConvertComputedBandIntoBandAction_MenuText"
-//        iconBase = "org/esa/snap/rcp/icons/BandMaths.gif",
 )
 @ActionReferences({
-        @ActionReference(
-                path = "Menu/Tools",
-                position = 114
-        ),
-        @ActionReference(
-                path = "Context/Product/RasterDataNode",
-                position = 204
-        )
+        @ActionReference(path = "Menu/Tools", position = 110),
+        @ActionReference(path = "Context/Product/RasterDataNode", position = 220)
 })
 @NbBundle.Messages({
         "CTL_ConvertComputedBandIntoBandAction_MenuText=Convert Computed Band",

@@ -34,7 +34,6 @@ import org.esa.snap.util.math.MathUtils;
 import org.esa.snap.util.math.RsMathUtils;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
-import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.ContextAwareAction;
 import org.openide.util.HelpCtx;
@@ -45,8 +44,17 @@ import org.openide.util.NbBundle;
 import org.openide.util.Utilities;
 import org.openide.util.WeakListeners;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.BoxLayout;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.SwingWorker;
+import java.awt.Dialog;
+import java.awt.GridBagConstraints;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
@@ -63,13 +71,7 @@ import java.util.concurrent.ExecutionException;
         popupText = "#CTL_ComputeMaskAreaAction_ShortDescription",
         lazy = false
 )
-@ActionReferences({
-        @ActionReference(
-                path = "Menu/Tools",
-                position = 116,
-                separatorBefore = 114
-        )
-})
+@ActionReference(path = "Menu/Tools", position = 520)
 @NbBundle.Messages({
         "CTL_ComputeMaskAreaAction_MenuText=Compute Mask Area...",
         "CTL_ComputeMaskAreaAction_DialogTitle=Compute Mask Area",

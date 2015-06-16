@@ -13,10 +13,8 @@
             </folder>
             <folder name="Export">
                 <attr name="position" intvalue="150"/>
-                <folder name="Other">
-                    <attr name="position" intvalue="0"/>
-                </folder>
                 <attr name="seperatorAfter" intvalue="160"/>
+                <folder name="Other"/>
             </folder>
         </folder>
         <folder name="Edit">
@@ -24,6 +22,9 @@
         </folder>
         <folder name="View">
             <attr name="position" intvalue="300"/>
+            <folder name="Overlay">
+                <attr name="position" intvalue="300"/>
+            </folder>
         </folder>
         <folder name="Tools">
             <attr name="position" intvalue="400"/>

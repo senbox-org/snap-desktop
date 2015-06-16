@@ -55,14 +55,8 @@ import java.awt.event.ActionEvent;
         lazy = false
 )
 @ActionReferences({
-        @ActionReference(
-                path = "Menu/Tools",
-                position = 112
-        ),
-        @ActionReference(
-                path = "Context/Product/RasterDataNode",
-                position = 202
-        )
+        @ActionReference(path = "Menu/Tools", position = 120),
+        @ActionReference(path = "Context/Product/RasterDataNode", position = 210)
 })
 @NbBundle.Messages({
         "CTL_FilteredBandAction_MenuText=Create Filtered Band...",
