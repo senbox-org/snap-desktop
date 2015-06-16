@@ -181,6 +181,11 @@ public class ProductLibraryActions {
         notifySelectionChanged();
     }
 
+    private void performSelectNoneAction() {
+        productEntryTable.clearSelection();
+        notifySelectionChanged();
+    }
+
     /**
      * Copy the selected file list to the clipboard
      */
@@ -262,6 +267,7 @@ public class ProductLibraryActions {
 
     public JPopupMenu createEntryTablePopup() {
         final JPopupMenu popup = new JPopupMenu();
+
         final JMenuItem selectAllItem = new JMenuItem("Select All");
         selectAllItem.addActionListener(new ActionListener() {
             public void actionPerformed(final ActionEvent e) {
@@ -269,6 +275,13 @@ public class ProductLibraryActions {
             }
         });
         popup.add(selectAllItem);
+        final JMenuItem selectNoneItem = new JMenuItem("Select None");
+        selectNoneItem.addActionListener(new ActionListener() {
+            public void actionPerformed(final ActionEvent e) {
+                performSelectNoneAction();
+            }
+        });
+        popup.add(selectNoneItem);
 
         final JMenuItem openSelectedItem = new JMenuItem("Open Selected");
         openSelectedItem.addActionListener(new ActionListener() {
@@ -457,8 +470,8 @@ public class ProductLibraryActions {
 
     public interface ProductLibraryActionListener {
 
-        public void notifyDirectoryChanged();
-        public void notifySelectionChanged();
+        void notifyDirectoryChanged();
+        void notifySelectionChanged();
     }
 
     private class MyFileHandlerListener implements ProductFileHandler.ProductFileHandlerListener {
