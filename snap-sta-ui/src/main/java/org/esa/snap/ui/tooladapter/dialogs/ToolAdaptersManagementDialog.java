@@ -19,10 +19,7 @@ package org.esa.snap.ui.tooladapter.dialogs;
 
 import org.esa.snap.framework.gpf.GPF;
 import org.esa.snap.framework.gpf.descriptor.ToolAdapterOperatorDescriptor;
-import org.esa.snap.framework.gpf.operators.tooladapter.ToolAdapterConstants;
-import org.esa.snap.framework.gpf.operators.tooladapter.ToolAdapterIO;
-import org.esa.snap.framework.gpf.operators.tooladapter.ToolAdapterOp;
-import org.esa.snap.framework.gpf.operators.tooladapter.ToolAdapterRegistry;
+import org.esa.snap.framework.gpf.operators.tooladapter.*;
 import org.esa.snap.framework.ui.AppContext;
 import org.esa.snap.framework.ui.ModalDialog;
 import org.esa.snap.framework.ui.tool.ToolButtonFactory;
@@ -45,6 +42,7 @@ import java.awt.event.MouseListener;
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.stream.Collectors;
 
 /**
@@ -60,6 +58,7 @@ import java.util.stream.Collectors;
         "ToolTipEditOperator_Text=Edit the selected operator",
         "ToolTipExecuteOperator_Text=Execute the selected operator",
         "ToolTipDeleteOperator_Text=Delete the selected operator(s)",
+        "PathLabel_Text=Adapters location",
         "MessageNoSelection_Text=Please select an adapter first",
         "MessageConfirmRemoval_TitleText=Confirm removal",
         "MessageConfirmRemoval_Text=Are you sure you want to remove the selected adapter(s)?\nThe operation will delete also the associated folder and files",
@@ -69,6 +68,9 @@ import java.util.stream.Collectors;
 })
 public class ToolAdaptersManagementDialog extends ModalDialog {
 
+    public static final int PATH_LABEL_COLUMN_WIDTH = 250;
+    public static final int PATH_COLUMN_WIDTH = 570;
+    public static final int PATH_ROW_HEIGHT = 20;
     private AppContext appContext;
     private JTable operatorsTable = null;
 
@@ -150,12 +152,12 @@ public class ToolAdaptersManagementDialog extends ModalDialog {
             java.util.List<ToolAdapterOperatorDescriptor> operatorDescriptors = ((OperatorsTableModel) operatorsTable.getModel()).getCheckedOperators();
             if (operatorDescriptors != null && operatorDescriptors.size() > 0) {
                 if (SnapDialogs.Answer.YES == SnapDialogs.requestDecision(Bundle.MessageConfirmRemoval_TitleText(),
-                                                                            Bundle.MessageConfirmRemoval_Text(), true,
-                                                                            Bundle.MessageConfirmRemovalDontAsk_Text())) {
+                        Bundle.MessageConfirmRemoval_Text(), true,
+                        Bundle.MessageConfirmRemovalDontAsk_Text())) {
                     java.util.List<ToolAdapterOperatorDescriptor> unableToRemove = operatorDescriptors.stream()
-                                                                                                      .filter(descriptor -> descriptor != null
-                                                                                                              && descriptor.isFromPackage())
-                                                                                                      .collect(Collectors.toList());
+                            .filter(descriptor -> descriptor != null
+                                    && descriptor.isFromPackage())
+                            .collect(Collectors.toList());
                     int notToRemoveCount = unableToRemove.size();
                     if (notToRemoveCount > 0) {
                         StringBuilder message = new StringBuilder();
@@ -165,19 +167,19 @@ public class ToolAdaptersManagementDialog extends ModalDialog {
                         String msg = message.toString();
                         String pluralNoun = notToRemoveCount > 1 ? "s" : "";
                         SnapDialogs.showWarning(String.format(Bundle.MessagePackageModules_Text(),
-                                                            pluralNoun,
-                                                            msg.substring(0, msg.length() - 1),
-                                                            notToRemoveCount > 1 ? "were" : "was",
-                                                            pluralNoun,
-                                                            notToRemoveCount > 1 ? "the respective" : "this",
-                                                            pluralNoun));
+                                pluralNoun,
+                                msg.substring(0, msg.length() - 1),
+                                notToRemoveCount > 1 ? "were" : "was",
+                                pluralNoun,
+                                notToRemoveCount > 1 ? "the respective" : "this",
+                                pluralNoun));
                     }
                     operatorDescriptors.stream()
                             .filter(descriptor -> descriptor != null && !descriptor.isFromPackage())
                             .forEach(descriptor -> {
                                 ToolAdapterActionRegistrar.removeOperatorMenu(descriptor);
-                                            ToolAdapterIO.removeOperator(descriptor);
-                    });
+                                ToolAdapterIO.removeOperator(descriptor);
+                            });
                     setContent(createContentPanel());
                     getContent().repaint();
                 }
@@ -222,7 +224,7 @@ public class ToolAdaptersManagementDialog extends ModalDialog {
                 return column == 1;
             }
         };
-        model.setValueAt("Adapters location", 0, 0);
+        model.setValueAt(Bundle.PathLabel_Text(), 0, 0);
         model.setValueAt(ToolAdapterIO.getUserAdapterPath(), 0, 1);
         model.addTableModelListener(l -> {
             String newPath = model.getValueAt(0, 1).toString();
@@ -235,21 +237,29 @@ public class ToolAdaptersManagementDialog extends ModalDialog {
             }
             if (path.exists()) {
                 File oldPath = ToolAdapterIO.getUserAdapterPath();
+                ToolAdapterOperatorDescriptor[] operatorDescriptors = ToolAdapterActionRegistrar.getActionMap().values()
+                        .toArray(new ToolAdapterOperatorDescriptor[ToolAdapterActionRegistrar.getActionMap().values().size()]);
+                for (ToolAdapterOperatorDescriptor descriptor : operatorDescriptors) {
+                    ToolAdapterActionRegistrar.removeOperatorMenu(descriptor);
+                }
                 ToolAdapterIO.setAdaptersPath(Paths.get(newPath));
                 if (!newPath.equals(oldPath.getAbsolutePath())) {
-                    ToolAdapterIO.searchAndRegisterAdapters();
+                    Collection<ToolAdapterOpSpi> toolAdapterOpSpis = ToolAdapterIO.searchAndRegisterAdapters();
+                    for (ToolAdapterOpSpi spi : toolAdapterOpSpis) {
+                        ToolAdapterActionRegistrar.registerOperatorMenu((ToolAdapterOperatorDescriptor)spi.getOperatorDescriptor());
+                    }
                     setContent(createContentPanel());
                     getContent().repaint();
                 }
             }
         });
         JTable table = new JTable(model);
-        table.getColumnModel().getColumn(0).setMaxWidth(250);
+        table.getColumnModel().getColumn(0).setMaxWidth(PATH_LABEL_COLUMN_WIDTH);
         TableColumn pathColumn = table.getColumnModel().getColumn(1);
-        pathColumn.setMaxWidth(570);
+        pathColumn.setMaxWidth(PATH_COLUMN_WIDTH);
         pathColumn.setCellEditor(new FileChooserCellEditor());
         table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
-        table.setRowHeight(20);
+        table.setRowHeight(PATH_ROW_HEIGHT);
         table.setBorder(BorderFactory.createLineBorder(Color.black));
         table.addFocusListener(new FocusListener() {
             @Override

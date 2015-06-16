@@ -55,6 +55,7 @@ class ToolExecutionForm extends JTabbedPane {
     private DefaultIOParametersPanel ioParamPanel;
     private String fileExtension;
     private JCheckBox checkDisplayOutput;
+    private final String TIF_EXTENSION = ".tif";
 
     public ToolExecutionForm(AppContext appContext, ToolAdapterOperatorDescriptor descriptor, PropertySet propertySet,
                              TargetProductSelector targetProductSelector) {
@@ -190,11 +191,13 @@ class ToolExecutionForm extends JTabbedPane {
             targetProductSelectorModel.setProductName(productName);
             if (value != null) {
                 File oldValue = value instanceof File ? (File) value : new File((String) value);
+                if (fileExtension == null)
+                    fileExtension = TIF_EXTENSION;
                 propertySet.setValue(ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE, new File(oldValue.getParentFile().getAbsolutePath(), productName + fileExtension));
             } else {
                 File workingDir = operatorDescriptor.getExpandedLocation(operatorDescriptor.getWorkingDir());
                 try {
-                    targetProperty.setValue(new File(workingDir, productName+".tif"));
+                    targetProperty.setValue(new File(workingDir, productName + TIF_EXTENSION));
                 } catch (ValidationException ignored) {
                 }
             }

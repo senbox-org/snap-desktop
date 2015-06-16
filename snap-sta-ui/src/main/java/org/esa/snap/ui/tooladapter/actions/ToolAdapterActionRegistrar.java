@@ -124,7 +124,7 @@ public class ToolAdapterActionRegistrar {
     }
 
     public static void removeOperatorMenu(ToolAdapterOperatorDescriptor operator) {
-        if (!operator.isSystem()) {
+        if (!operator.isFromPackage()) {
             FileObject menuFolder = FileUtil.getConfigFile(operator.getMenuLocation());
             try {
                 if (menuFolder != null) {
