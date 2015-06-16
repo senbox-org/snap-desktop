@@ -472,7 +472,11 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
                                                           "Boolean expression which is used to identify valid pixels") {
                 @Override
                 public String getValue() {
-                    return band.getValidPixelExpression();
+                    final String expression = band.getValidPixelExpression();
+                    if (expression != null) {
+                        return expression;
+                    }
+                    return "";
                 }
                 @Override
                 public void setValue(String val) {
