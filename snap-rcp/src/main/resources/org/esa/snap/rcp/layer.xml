@@ -246,6 +246,10 @@
             <!-- Enable, once we know how to print an image view, etc. -->
             <file name="org-netbeans-modules-print-action-PageSetupAction.shadow_hidden"/>
             <file name="org-netbeans-modules-print-action-PrintAction.shadow_hidden"/>
+
+            <file name="org-openide-actions-SaveAction.shadow_hidden"/>
+            <file name="org-openide-actions-SaveAsAction.shadow_hidden"/>
+            <file name="org-openide-actions-SaveAllAction.shadow_hidden"/>
         </folder>
         <folder name="View">
             <file name="org-netbeans-core-actions-LogAction.shadow_hidden"/>
