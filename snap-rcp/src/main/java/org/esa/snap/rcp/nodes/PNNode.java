@@ -5,7 +5,20 @@
  */
 package org.esa.snap.rcp.nodes;
 
-import org.esa.snap.framework.datamodel.*;
+import org.esa.snap.framework.datamodel.Band;
+import org.esa.snap.framework.datamodel.FlagCoding;
+import org.esa.snap.framework.datamodel.IndexCoding;
+import org.esa.snap.framework.datamodel.Mask;
+import org.esa.snap.framework.datamodel.MetadataElement;
+import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.datamodel.ProductData;
+import org.esa.snap.framework.datamodel.ProductNode;
+import org.esa.snap.framework.datamodel.ProductNodeEvent;
+import org.esa.snap.framework.datamodel.ProductNodeGroup;
+import org.esa.snap.framework.datamodel.RasterDataNode;
+import org.esa.snap.framework.datamodel.TiePointGrid;
+import org.esa.snap.framework.datamodel.VectorDataNode;
+import org.esa.snap.framework.datamodel.VirtualBand;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.ShowPlacemarkViewAction;
 import org.esa.snap.rcp.actions.file.ShowMetadataViewAction;
@@ -16,10 +29,9 @@ import org.openide.nodes.PropertySupport;
 import org.openide.nodes.Sheet;
 import org.openide.util.lookup.Lookups;
 
-import javax.swing.*;
+import javax.swing.Action;
 import java.awt.datatransfer.Transferable;
 import java.io.IOException;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
@@ -453,6 +465,33 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
                 public void setValue(Double val) {
                     band.setNoDataValue(val);
                 }
+            });
+            set.put(new PropertySupport.ReadWrite<String>("validPixelExpression", String.class, "Valid Pixel Expression",
+                                                          "Boolean expression which is used to identify valid pixels") {
+                @Override
+                public String getValue() {
+                    return band.getValidPixelExpression();
+                }
+                @Override
+                public void setValue(String val) {
+                    band.setValidPixelExpression(val);
+                }
+            });
+            set.put(new PropertySupport.ReadWrite<Float>("spectralWavelength", Float.class, "Spectral Wavelength", "The spectral wavelength in nanometers") {
+                @Override
+                public Float getValue() {
+                    return band.getSpectralWavelength();
+                }
+                @Override
+                public void setValue(Float val)  {band.setSpectralWavelength(val);}
+            });
+            set.put(new PropertySupport.ReadWrite<Float>("spectralBandWidth", Float.class, "Spectral BandWidth", "The spectral bandwidth in nanometers") {
+                @Override
+                public Float getValue() {
+                    return band.getSpectralBandwidth();
+                }
+                @Override
+                public void setValue(Float val)  {band.setSpectralBandwidth(val);}
             });
             AtomicReference<String> roleName = new AtomicReference<>("uncertainty");
             set.put(new PropertySupport.ReadWrite<String>("ancillaryRole", String.class, "Ancilliary Role", "Role of the ancilllary band") {
