@@ -137,10 +137,28 @@ class PNode extends PNNode<Product> implements PreferenceChangeListener {
                         return absRoot.getAttributeString("mission");
                     }
                 });
+                set.put(new PropertySupport.ReadOnly<String>("mode", String.class, "Acquisition Mode", "Sensor Acquisition Mode") {
+                    @Override
+                    public String getValue() {
+                        return absRoot.getAttributeString("ACQUISITION_MODE");
+                    }
+                });
                 set.put(new PropertySupport.ReadOnly<String>("pass", String.class, "Pass", "Orbital Pass") {
                     @Override
                     public String getValue() {
                         return absRoot.getAttributeString("pass");
+                    }
+                });
+                set.put(new PropertySupport.ReadOnly<String>("track", String.class, "Track", "Relative Orbit") {
+                    @Override
+                    public String getValue() {
+                        return absRoot.getAttributeString("REL_ORBIT");
+                    }
+                });
+                set.put(new PropertySupport.ReadOnly<String>("orbit", String.class, "Orbit", "Absolute Orbit") {
+                    @Override
+                    public String getValue() {
+                        return absRoot.getAttributeString("ABS_ORBIT");
                     }
                 });
             }
