@@ -172,11 +172,7 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
             public void actionPerformed(final ActionEvent e) {
                 final File[] files = GetFilePath(addButton, "Add Product");
                 if (files != null) {
-                    for (File file : files) {
-                        if (ProductFunctions.isValidProduct(file)) {
-                            tableModel.addFile(file);
-                        }
-                    }
+                    addProducts(tableModel, files);
                 }
             }
         });
@@ -227,7 +223,6 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
                     tableModel.removeFile(index);
                 }
             }
-
         });
 
         moveUpButton = DialogUtils.createButton("moveUpButton", "Move Up", null, panel, DialogUtils.ButtonStyle.Text);
@@ -246,7 +241,6 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
                     }
                 }
             }
-
         });
 
         moveDownButton = DialogUtils.createButton("moveDownButton", "Move Down", null, panel, DialogUtils.ButtonStyle.Text);
@@ -265,7 +259,6 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
                     }
                 }
             }
-
         });
 
         clearButton = DialogUtils.createButton("clearButton", "Clear", null, panel, DialogUtils.ButtonStyle.Text);
@@ -288,20 +281,38 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
         return panel;
     }
 
+    private void addProducts(final FileTableModel tableModel, final File[] files) {
+        final ProgressHandleMonitor pm = ProgressHandleMonitor.create("Populating table");
+        Runnable operation = () -> {
+            pm.beginTask("Populating table...", files.length);
+            for (File file : files) {
+                if (ProductFunctions.isValidProduct(file)) {
+                    tableModel.addFile(file);
+                }
+                pm.worked(1);
+            }
+            pm.done();
+        };
+
+        ProgressUtils.runOffEventThreadWithProgressDialog(operation, "Adding Products", pm.getProgressHandle(), true, 50, 1000);
+    }
+
     private void addAllOpenProducts(final FileTableModel tableModel) {
         final ProgressHandleMonitor pm = ProgressHandleMonitor.create("Populating table");
         Runnable operation = () -> {
-            pm.beginTask("Populating table...", 100);
             final Product[] products = SnapApp.getDefault().getProductManager().getProducts();
+            pm.beginTask("Populating table...", products.length);
             for (Product prod : products) {
                 final File file = prod.getFileLocation();
                 if (file != null && file.exists()) {
                     tableModel.addFile(file);
                 }
+                pm.worked(1);
             }
+            pm.done();
         };
 
-        ProgressUtils.runOffEventThreadWithProgressDialog(operation, "Populating table", pm.getProgressHandle(), true, 50, 1000);
+        ProgressUtils.runOffEventThreadWithProgressDialog(operation, "Adding Products", pm.getProgressHandle(), true, 50, 1000);
     }
 
     /**
