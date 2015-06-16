@@ -34,7 +34,6 @@ import org.esa.snap.framework.datamodel.TransectProfileDataBuilder;
 import org.esa.snap.framework.ui.SelectExportMethodDialog;
 import org.esa.snap.framework.ui.UIUtils;
 import org.esa.snap.framework.ui.product.ProductSceneView;
-import org.esa.snap.jai.ImageManager;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.util.StringUtils;
@@ -48,14 +47,9 @@ import org.openide.awt.ActionRegistration;
 import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle;
 
-import javax.swing.AbstractAction;
-import javax.swing.JCheckBox;
-import javax.swing.SwingWorker;
-import java.awt.Dialog;
-import java.awt.Shape;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -75,28 +69,24 @@ import java.util.Date;
         popupText = "#CTL_ExportTransectPixelsAction_MenuText",
         lazy = true
 )
-@ActionReferences(
-        {
-                @ActionReference(
-                        path = "Menu/File/Other Exports",
-                        position = 60
-                ),
-                @ActionReference(
-                        path = "Context/Product/RasterDataNode",
-                        position = 208
-                )
-        }
-)
-
-
+@ActionReferences({
+        @ActionReference(
+                path = "Menu/File/Export/Other",
+                position = 60
+        ),
+        @ActionReference(
+                path = "Context/Product/RasterDataNode",
+                position = 208
+        )
+})
 @NbBundle.Messages({
         "CTL_ExportTransectPixelsAction_MenuText=Transect Pixels",
+        "CTL_ExportTransectPixelsAction_DialogTitle=Export Transect Pixels",
         "CTL_ExportTransectPixelsAction_ShortDescription=Export Transect Pixels."
 })
 
 public class ExportTransectPixelsAction extends AbstractAction implements HelpCtx.Provider {
 
-    private static final String DLG_TITLE = "Export Transect Pixels";
     private static final String ERR_MSG_BASE = "Transect pixels cannot be exported:\n";
     private static final String HELP_ID = "exportTransectPixels";
     private FigureSelection selection;
@@ -123,15 +113,6 @@ public class ExportTransectPixelsAction extends AbstractAction implements HelpCt
         return new HelpCtx(HELP_ID);
     }
 
-    private void ensureListenerIsRegistered() {
-
-//        if(!listenerIsRegistered) {
-//            SelectionManager selectionManager = SnapApp.getDefault().getApplicationPage().getSelectionManager();
-//            selectionManager.addSelectionChangeListener(this);
-//            listenerIsRegistered = true;
-//        }
-    }
-
     private void exportTransectPixels() {
 
         // Get current VISAT view showing a product's band
@@ -151,8 +132,8 @@ public class ExportTransectPixelsAction extends AbstractAction implements HelpCt
         }
 
         if (transect == null) {
-            SnapDialogs.showError(DLG_TITLE,
-                                  ERR_MSG_BASE + "There is no transect defined in the selected band.");  /*I18N*/
+            SnapDialogs.showError(Bundle.CTL_ExportTransectPixelsAction_DialogTitle(),
+                                  ERR_MSG_BASE + "There is no transect defined in the selected band.");  
             return;
         }
 
@@ -163,8 +144,8 @@ public class ExportTransectPixelsAction extends AbstractAction implements HelpCt
                     .path(transect.getShape())
                     .build();
         } catch (IOException e) {
-            SnapDialogs.showError(DLG_TITLE,
-                                  ERR_MSG_BASE + "An I/O error occurred:\n" + e.getMessage());   /*I18N*/
+            SnapDialogs.showError(Bundle.CTL_ExportTransectPixelsAction_DialogTitle(),
+                                  ERR_MSG_BASE + "An I/O error occurred:\n" + e.getMessage());   
             return;
         }
 
@@ -173,12 +154,12 @@ public class ExportTransectPixelsAction extends AbstractAction implements HelpCt
 
         String numPixelsText;
         if (numTransectPixels == 1) {
-            numPixelsText = "One transect pixel will be exported.\n"; /*I18N*/
+            numPixelsText = "One transect pixel will be exported.\n"; 
         } else {
-            numPixelsText = numTransectPixels + " transect pixels will be exported.\n"; /*I18N*/
+            numPixelsText = numTransectPixels + " transect pixels will be exported.\n"; 
         }
         // Get export method from user
-        final String questionText = "How do you want to export the pixel values?\n"; /*I18N*/
+        final String questionText = "How do you want to export the pixel values?\n"; 
         final JCheckBox createHeaderBox = new JCheckBox("Create header");
         final JCheckBox exportTiePointsBox = new JCheckBox("export tie-points");
         final JCheckBox exportWavelengthsAndSFBox = new JCheckBox("export wavelengths + solar fluxes");
@@ -207,8 +188,8 @@ public class ExportTransectPixelsAction extends AbstractAction implements HelpCt
             try {
                 fileWriter = new FileWriter(file);
             } catch (IOException e) {
-                SnapDialogs.showError(DLG_TITLE,
-                                      ERR_MSG_BASE + "Failed to create file '" + file + "':\n" + e.getMessage()); /*I18N*/
+                SnapDialogs.showError(Bundle.CTL_ExportTransectPixelsAction_DialogTitle(),
+                                      ERR_MSG_BASE + "Failed to create file '" + file + "':\n" + e.getMessage()); 
                 return; // Error
             }
             out = new PrintWriter(new BufferedWriter(fileWriter, initialBufferSize));
@@ -222,7 +203,7 @@ public class ExportTransectPixelsAction extends AbstractAction implements HelpCt
             @Override
             protected Exception doInBackground() throws Exception {
                 Exception returnValue = null;
-                ProgressMonitor pm = new DialogProgressMonitor(SnapApp.getDefault().getMainFrame(), DLG_TITLE,
+                ProgressMonitor pm = new DialogProgressMonitor(SnapApp.getDefault().getMainFrame(), Bundle.CTL_ExportTransectPixelsAction_DialogTitle(),
                                                                Dialog.ModalityType.APPLICATION_MODAL);
                 try {
                     final boolean mustCreateHeader = createHeaderBox.isSelected();
@@ -248,7 +229,7 @@ public class ExportTransectPixelsAction extends AbstractAction implements HelpCt
             @Override
             public void done() {
                 // clear status bar
-//                SnapApp.getDefault().clearStatusBarMessage();
+                SnapApp.getDefault().setStatusBarMessage("");
                 // show default-cursor
                 UIUtils.setRootFrameDefaultCursor(SnapApp.getDefault().getMainFrame());
                 // On error, show error message
@@ -259,7 +240,7 @@ public class ExportTransectPixelsAction extends AbstractAction implements HelpCt
                     exception = e;
                 }
                 if (exception != null) {
-                    SnapDialogs.showError(DLG_TITLE,
+                    SnapDialogs.showError(Bundle.CTL_ExportTransectPixelsAction_DialogTitle(),
                                           ERR_MSG_BASE + exception.getMessage());
                 }
             }
@@ -268,20 +249,10 @@ public class ExportTransectPixelsAction extends AbstractAction implements HelpCt
         // show wait-cursor
         UIUtils.setRootFrameWaitCursor(SnapApp.getDefault().getMainFrame());
         // show message in status bar
-        SnapApp.getDefault().setStatusBarMessage("Exporting transect pixels..."); /*I18N*/
+        SnapApp.getDefault().setStatusBarMessage("Exporting transect pixels..."); 
 
         // Start separate worker thread.
         swingWorker.execute();
-    }
-
-    private static Shape convertToImageCoordinates(Shape shape, GeoCoding geoCoding) {
-        AffineTransform m2iTransform;
-        try {
-            m2iTransform = ImageManager.getImageToModelTransform(geoCoding).createInverse();
-        } catch (NoninvertibleTransformException ignored) {
-            m2iTransform = new AffineTransform();
-        }
-        return m2iTransform.createTransformedShape(shape);
     }
 
     private static String createDefaultFileName(final RasterDataNode raster) {
@@ -289,7 +260,7 @@ public class ExportTransectPixelsAction extends AbstractAction implements HelpCt
     }
 
     private static String getWindowTitle() {
-        return SnapApp.getDefault().getInstanceName() + " - " + DLG_TITLE;
+        return SnapApp.getDefault().getInstanceName() + " - " + Bundle.CTL_ExportTransectPixelsAction_DialogTitle();
     }
 
     /**
@@ -299,7 +270,7 @@ public class ExportTransectPixelsAction extends AbstractAction implements HelpCt
      */
     private static File promptForFile(String defaultFileName) {
         final SnapFileFilter fileFilter = new SnapFileFilter("TXT", "txt", "Text");
-        return SnapDialogs.requestFileForSave(DLG_TITLE,
+        return SnapDialogs.requestFileForSave(Bundle.CTL_ExportTransectPixelsAction_DialogTitle(),
                                               false,
                                               fileFilter,
                                               ".txt",

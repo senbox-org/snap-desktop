@@ -46,8 +46,7 @@ import org.openide.awt.ActionRegistration;
 import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle;
 
-import javax.swing.AbstractAction;
-import javax.swing.SwingWorker;
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
@@ -69,15 +68,13 @@ import java.util.concurrent.ExecutionException;
         popupText = "#CTL_ExportGeometryAction_ShortDescription",
         lazy = true
 )
-
 @ActionReference(
-        path = "Menu/File/Other Exports",
+        path = "Menu/File/Export/Other",
         position = 40
 )
-
-
 @NbBundle.Messages({
         "CTL_ExportGeometryAction_MenuText=Geometry as Shape file",
+        "CTL_ExportGeometryAction_DialogTitle=Export Geometry as ESRI Shapefile",
         "CTL_ExportGeometryAction_ShortDescription=Exports the currently selected geometry as ESRI Shapefile."
 })
 
@@ -85,7 +82,6 @@ public class ExportGeometryAction extends AbstractAction implements HelpCtx.Prov
 
     private static final String ESRI_SHAPEFILE = "ESRI Shapefile";
     private static final String FILE_EXTENSION_SHAPEFILE = ".shp";
-    private static final String DLG_TITLE = "Export Geometry as " + ESRI_SHAPEFILE;
     private static final String HELP_ID= "exportShapefile";
     private VectorDataNode vectorDataNode;
 
@@ -114,7 +110,8 @@ public class ExportGeometryAction extends AbstractAction implements HelpCtx.Prov
     private void exportVectorDataNode() {
         SnapApp snapApp = SnapApp.getDefault();
         if (vectorDataNode.getFeatureCollection().isEmpty()) {
-           SnapDialogs.showInformation(DLG_TITLE, "The selected geometry is empty. Nothing to export.", null);
+           SnapDialogs.showInformation(Bundle.CTL_ExportGeometryAction_DialogTitle(),
+                                       "The selected geometry is empty. Nothing to export.", null);
             return;
         }
 
@@ -138,7 +135,7 @@ public class ExportGeometryAction extends AbstractAction implements HelpCtx.Prov
      */
 
     private static File promptForFile(final SnapApp snapApp, String defaultFileName) {
-        return SnapDialogs.requestFileForSave(DLG_TITLE, false,
+        return SnapDialogs.requestFileForSave(Bundle.CTL_ExportGeometryAction_DialogTitle(), false,
                                 new SnapFileFilter(ESRI_SHAPEFILE, FILE_EXTENSION_SHAPEFILE, ESRI_SHAPEFILE),
                                 FILE_EXTENSION_SHAPEFILE,
                                 defaultFileName,
@@ -154,7 +151,8 @@ public class ExportGeometryAction extends AbstractAction implements HelpCtx.Prov
         if (featureListMap.size() > 1) {
             final String msg = "The selected geometry contains different types of shapes.\n" +
                     "Each type of shape will be exported as a separate shapefile.";
-            SnapDialogs.showInformation(DLG_TITLE, msg, ExportGeometryAction.class.getName() + ".exportInfo");
+            SnapDialogs.showInformation(Bundle.CTL_ExportGeometryAction_DialogTitle(),
+                                        msg, ExportGeometryAction.class.getName() + ".exportInfo");
         }
 
         Set<Map.Entry<Class<?>, List<SimpleFeature>>> entries = featureListMap.entrySet();
@@ -259,7 +257,7 @@ public class ExportGeometryAction extends AbstractAction implements HelpCtx.Prov
         private final File file;
 
         private ExportVectorNodeSwingWorker(SnapApp snapApp, VectorDataNode vectorDataNode, File file) {
-            super(snapApp.getMainFrame(), ExportGeometryAction.DLG_TITLE);
+            super(snapApp.getMainFrame(), Bundle.CTL_ExportGeometryAction_DialogTitle());
             this.snapApp = snapApp;
             this.vectorDataNode = vectorDataNode;
             this.file = file;
@@ -293,7 +291,8 @@ public class ExportGeometryAction extends AbstractAction implements HelpCtx.Prov
             } finally {
                 if (exception != null) {
                     exception.printStackTrace();
-                    SnapDialogs.showError(DLG_TITLE, "Can not export geometry.\n" + exception.getMessage());
+                    SnapDialogs.showError(Bundle.CTL_ExportGeometryAction_DialogTitle(),
+                                          "Can not export geometry.\n" + exception.getMessage());
                 }
             }
         }

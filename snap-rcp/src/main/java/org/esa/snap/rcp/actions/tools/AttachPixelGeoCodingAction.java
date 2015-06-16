@@ -79,11 +79,7 @@ import java.util.logging.Level;
         displayName = "#CTL_AttachPixelGeoCodingActionText",
         popupText = "#CTL_AttachPixelGeoCodingActionText"
 )
-@ActionReference(
-        path = "Menu/Tools",
-        position = 153,
-        separatorBefore = 150
-)
+@ActionReference(path = "Menu/Tools", position = 210, separatorBefore = 200 )
 @Messages({
         "CTL_AttachPixelGeoCodingActionText=Attach Pixel Geo-Coding...",
         "CTL_AttachPixelGeoCodingDialogTitle=Attach Pixel Geo-Coding",

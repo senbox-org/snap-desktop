@@ -15,7 +15,6 @@
  */
 package org.esa.snap.rcp.actions.file.export;
 
-import org.esa.snap.framework.datamodel.Band;
 import org.esa.snap.framework.datamodel.ColorPaletteDef;
 import org.esa.snap.framework.datamodel.ImageInfo;
 import org.esa.snap.framework.datamodel.RasterDataNode;
@@ -39,23 +38,19 @@ import org.openide.util.NbBundle;
 import org.openide.util.Utilities;
 import org.openide.util.WeakListeners;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.JFileChooser;
-import java.awt.Color;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Optional;
 
 /**
  * This action exports the color palette of the selected product.
  *
  * @author Marco Peters
- * @version $Revision$ $Date$
  */
-
-
 @ActionID(
         category = "File",
         id = "org.esa.snap.rcp.actions.file.export.ExportColorPaletteAction"
@@ -65,24 +60,20 @@ import java.io.IOException;
         popupText = "#CTL_ExportColorPaletteAction_ShortDescription",
         lazy = false
 )
-
-
 @ActionReference(
-        path = "Menu/File/Other Exports",
+        path = "Menu/File/Export/Other",
         position = 20
 )
-
 @NbBundle.Messages({
         "CTL_ExportColorPaletteAction_MenuText=Colour Palette as File",
+        "CTL_ExportColorPaletteAction_DialogTitle=Export Colour Palette",
         "CTL_ExportColorPaletteAction_ShortDescription=Export Colour Palette as File..."
 })
-
 public class ExportColorPaletteAction extends AbstractAction implements LookupListener, ContextAwareAction, HelpCtx.Provider {
 
     private static final String KEY_LAST_OPEN = "ExportColorPaletteVPI.path";
-    private static final String DLG_TITLE = "Export Color Palette";
-    private final String HELP_ID = "exportColorPalette";
-    private final Lookup.Result<Band> result;
+    private static final String HELP_ID = "exportColorPalette";
+    private final Lookup.Result<ProductSceneView> result;
 
 
     public ExportColorPaletteAction() {
@@ -91,11 +82,10 @@ public class ExportColorPaletteAction extends AbstractAction implements LookupLi
 
     public ExportColorPaletteAction(Lookup lookup) {
         super(Bundle.CTL_ExportColorPaletteAction_MenuText());
-        result = lookup.lookupResult(Band.class);
+        result = lookup.lookupResult(ProductSceneView.class);
         result.addLookupListener(WeakListeners.create(LookupListener.class, this, result));
         setEnabled(false);
     }
-
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -111,7 +101,7 @@ public class ExportColorPaletteAction extends AbstractAction implements LookupLi
         fileChooser.addChoosableFileFilter(fileFilter2);
         fileChooser.setFileFilter(fileFilter1);
         fileChooser.setMultiSelectionEnabled(true);
-        fileChooser.setDialogTitle(DLG_TITLE);
+        fileChooser.setDialogTitle(Bundle.CTL_ExportColorPaletteAction_DialogTitle());
         if (fileChooser.showSaveDialog(SnapApp.getDefault().getMainFrame()) == JFileChooser.APPROVE_OPTION
                 && fileChooser.getSelectedFile() != null) {
             getPreferences().setPropertyString(KEY_LAST_OPEN, fileChooser.getCurrentDirectory().getAbsolutePath());
@@ -123,7 +113,8 @@ public class ExportColorPaletteAction extends AbstractAction implements LookupLi
             try {
                 writeColorPalette(raster, file);
             } catch (IOException ie) {
-                SnapDialogs.showError(DLG_TITLE, "Failed to export colour palette:\n" + ie.getMessage());
+                SnapDialogs.showError(Bundle.CTL_ExportColorPaletteAction_DialogTitle(),
+                                      "Failed to export colour palette:\n" + ie.getMessage());
             }
         }
     }
@@ -144,11 +135,8 @@ public class ExportColorPaletteAction extends AbstractAction implements LookupLi
     }
 
     private static void writeColorPalette(RasterDataNode raster, File file) throws IOException {
-        FileWriter writer = new FileWriter(file);
-        try {
+        try (FileWriter writer = new FileWriter(file)) {
             writeColorPalette(raster, writer);
-        } finally {
-            writer.close();
         }
     }
 
@@ -156,7 +144,6 @@ public class ExportColorPaletteAction extends AbstractAction implements LookupLi
         ImageInfo imageInfo = raster.getImageInfo();
         final ColorPaletteDef paletteDef = imageInfo.getColorPaletteDef();
         final Color[] colorPalette = ImageManager.createColorPalette(imageInfo);
-//        Color[] colorPalette = paletteDef.createColorPalette(raster);
         double s1 = paletteDef.getMinDisplaySample();
         double s2 = paletteDef.getMaxDisplaySample();
         int numColors = colorPalette.length;
@@ -174,15 +161,15 @@ public class ExportColorPaletteAction extends AbstractAction implements LookupLi
         }
     }
 
-    private static RasterDataNode getSelectedRaster() {
-        ProductSceneView sceneView = SnapApp.getDefault().getSelectedProductSceneView();
-        if (sceneView != null) {
-            return sceneView.getRaster();
+    private RasterDataNode getSelectedRaster() {
+        Optional<? extends ProductSceneView> first = result.allInstances().stream().findFirst();
+        if(first.isPresent()) {
+            return first.get().getRaster();
         }
         return null;
     }
 
-    private static ImageInfo getSelectedImageInfo() {
+    private ImageInfo getSelectedImageInfo() {
         RasterDataNode raster = getSelectedRaster();
         if (raster != null) {
             return raster.getImageInfo();

@@ -23,7 +23,7 @@ import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle;
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
 import java.io.InputStream;
 
@@ -38,11 +38,8 @@ import java.io.InputStream;
         lazy = true
 )
 @ActionReferences({
-        @ActionReference(
-                path = "Menu/Tools",
-                position = 110
-        ),
-        @ActionReference(path = "Toolbars/Processing")
+        @ActionReference(path = "Menu/Tools",position = 310, separatorBefore = 300),
+        @ActionReference(path = "Toolbars/Processing", position = 10)
 })
 @NbBundle.Messages({
         "CTL_GraphBuilderAction_MenuText=GraphBuilder",

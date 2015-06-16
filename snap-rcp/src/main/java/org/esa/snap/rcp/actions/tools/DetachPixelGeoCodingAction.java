@@ -52,11 +52,7 @@ import java.awt.event.ActionEvent;
         displayName = "#CTL_DetachPixelGeoCodingActionText",
         popupText = "#CTL_DetachPixelGeoCodingActionText"
 )
-@ActionReference(
-        path = "Menu/Tools",
-        position = 156,
-        separatorAfter = 160
-)
+@ActionReference(path = "Menu/Tools", position = 220)
 @Messages({
         "CTL_DetachPixelGeoCodingActionText=Detach Pixel Geo-Coding...",
         "CTL_DetachPixelGeoCodingDialogTitle=Detach Pixel Geo-Coding"

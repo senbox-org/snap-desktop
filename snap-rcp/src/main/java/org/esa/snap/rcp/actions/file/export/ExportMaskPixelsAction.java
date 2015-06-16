@@ -24,12 +24,12 @@ import org.esa.snap.framework.datamodel.GeoPos;
 import org.esa.snap.framework.datamodel.Mask;
 import org.esa.snap.framework.datamodel.PixelPos;
 import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductNode;
 import org.esa.snap.framework.datamodel.TiePointGrid;
 import org.esa.snap.framework.ui.AbstractDialog;
 import org.esa.snap.framework.ui.ModalDialog;
 import org.esa.snap.framework.ui.SelectExportMethodDialog;
 import org.esa.snap.framework.ui.UIUtils;
+import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.util.SystemUtils;
@@ -47,14 +47,8 @@ import org.openide.util.NbBundle;
 import org.openide.util.Utilities;
 import org.openide.util.WeakListeners;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.BoxLayout;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import java.awt.Rectangle;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
@@ -65,9 +59,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
-import java.util.Collection;
 import java.util.GregorianCalendar;
-import java.util.Optional;
 
 
 @ActionID(
@@ -76,25 +68,26 @@ import java.util.Optional;
 )
 @ActionRegistration(
         displayName = "#CTL_ExportMaskPixelsAction_MenuText",
-        popupText = "#CTL_ExportMaskPixelsAction_ShortDescription"
+        popupText = "#CTL_ExportMaskPixelsAction_ShortDescription",
+        lazy = true
 )
 
 @ActionReference(
-        path = "Menu/File/Other Exports",
+        path = "Menu/File/Export/Other",
         position = 50
 )
 
 @NbBundle.Messages({
         "CTL_ExportMaskPixelsAction_MenuText=Mask Pixels",
+        "CTL_ExportMaskPixelsAction_DialogTitle=Export Mask Pixels",
         "CTL_ExportMaskPixelsAction_ShortDescription=Export Mask Pixels."
 })
 public class ExportMaskPixelsAction extends AbstractAction implements ContextAwareAction, LookupListener, HelpCtx.Provider {
 
-    private static final String DLG_TITLE = "Export Mask Pixels";
     private static final String HELP_ID = "exportMaskPixels";
     private static final String ERR_MSG_BASE = "Mask pixels cannot be exported:\n";
 
-    private final Lookup.Result<ProductNode> result;
+    private final Lookup.Result<ProductSceneView> result;
 
     public ExportMaskPixelsAction() {
         this(Utilities.actionsGlobalContext());
@@ -102,7 +95,7 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
 
     public ExportMaskPixelsAction(Lookup lkp) {
         super(Bundle.CTL_ExportMaskPixelsAction_MenuText());
-        result = lkp.lookupResult(ProductNode.class);
+        result = lkp.lookupResult(ProductSceneView.class);
         result.addLookupListener(WeakListeners.create(LookupListener.class, this, result));
         setEnabled(false);
     }
@@ -119,16 +112,15 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
 
     @Override
     public Action createContextAwareInstance(Lookup lkp) {
-        return new org.esa.snap.rcp.actions.file.export.ExportMaskPixelsAction(lkp);
+        return new ExportMaskPixelsAction(lkp);
     }
 
     @Override
     public void resultChanged(LookupEvent le) {
-        Collection<? extends ProductNode> productNodes = result.allInstances();
-        Optional<? extends ProductNode> first = productNodes.stream().findFirst();
+        ProductSceneView sceneView = SnapApp.getDefault().getSelectedProductSceneView();
         boolean enabled = false;
-        if (first.isPresent()) {
-            Product product = first.get().getProduct();
+        if (sceneView != null) {
+            Product product = sceneView.getProduct();
             enabled = product.getMaskGroup().getNodeCount() > 0;
         }
         setEnabled(enabled);
@@ -142,14 +134,8 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
      * Performs the actual "export Mask Pixels" command.
      */
     private void exportMaskPixels() {
-
-        Collection<? extends ProductNode> productNodes = result.allInstances();
-        Optional<? extends ProductNode> first = productNodes.stream().findFirst();
-        if (!first.isPresent()) {
-            SnapDialogs.showError(DLG_TITLE, ERR_MSG_BASE + "There are no masks available in the currently selected product");
-        }
-        ProductNode productNode = first.get();
-        Product product = productNode.getProduct();
+        ProductSceneView sceneView = SnapApp.getDefault().getSelectedProductSceneView();
+        Product product = sceneView.getProduct();
         String[] maskNames = product.getMaskGroup().getNodeNames();
         final String maskName;
         if (maskNames.length == 1) {
@@ -160,11 +146,9 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
             panel.setLayout(boxLayout);
             panel.add(new JLabel("Select Mask: "));
             JComboBox<String> maskCombo = new JComboBox<>(maskNames);
-            if(productNode instanceof Mask) {
-                maskCombo.setSelectedItem(productNode.getName());
-            }
             panel.add(maskCombo);
-            ModalDialog modalDialog = new ModalDialog(SnapApp.getDefault().getMainFrame(), DLG_TITLE, panel,
+            ModalDialog modalDialog = new ModalDialog(SnapApp.getDefault().getMainFrame(),
+                                                      Bundle.CTL_ExportMaskPixelsAction_DialogTitle(), panel,
                                                       ModalDialog.ID_OK_CANCEL | ModalDialog.ID_HELP, getHelpCtx().getHelpID());
             if (modalDialog.show() == AbstractDialog.ID_OK) {
                 maskName = (String) maskCombo.getSelectedItem();
@@ -176,7 +160,8 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
 
         final RenderedImage maskImage = mask.getSourceImage();
         if (maskImage == null) {
-            SnapDialogs.showError(DLG_TITLE, ERR_MSG_BASE + "No Mask image available.");
+            SnapDialogs.showError(Bundle.CTL_ExportMaskPixelsAction_DialogTitle(),
+                                  ERR_MSG_BASE + "No Mask image available.");
             return;
         }
         // Compute total number of Mask pixels
@@ -222,7 +207,8 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
             try {
                 fileWriter = new FileWriter(file);
             } catch (IOException e) {
-                SnapDialogs.showError(DLG_TITLE, ERR_MSG_BASE + "Failed to create file '" + file + "':\n" + e.getMessage());
+                SnapDialogs.showError(Bundle.CTL_ExportMaskPixelsAction_DialogTitle(),
+                                      ERR_MSG_BASE + "Failed to create file '" + file + "':\n" + e.getMessage());
                 return; // Error
             }
             out = new PrintWriter(new BufferedWriter(fileWriter, initialBufferSize));
@@ -232,7 +218,7 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
         }
 
         final ProgressMonitorSwingWorker<Exception, Object> swingWorker = new ProgressMonitorSwingWorker<Exception, Object>(
-                SnapApp.getDefault().getMainFrame(), DLG_TITLE) {
+                SnapApp.getDefault().getMainFrame(), Bundle.CTL_ExportMaskPixelsAction_DialogTitle()) {
 
             @Override
             protected Exception doInBackground(ProgressMonitor pm) throws Exception {
@@ -252,11 +238,6 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
                 return returnValue;
             }
 
-            //
-//            /**
-//             * Called on the event dispatching thread (not on the worker thread) after the <code>construct</code> method
-//             * has returned.
-//             */
             @Override
             public void done() {
 //                 clear status bar
@@ -271,7 +252,8 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
                     exception = e;
                 }
                 if (exception != null) {
-                    SnapDialogs.showError(DLG_TITLE, ERR_MSG_BASE + exception.getMessage());
+                    SnapDialogs.showError(Bundle.CTL_ExportMaskPixelsAction_DialogTitle(),
+                                          ERR_MSG_BASE + exception.getMessage());
                 }
             }
 
@@ -292,7 +274,7 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
     }
 
     private static String getWindowTitle() {
-        return SnapApp.getDefault().getInstanceName() + " - " + DLG_TITLE;
+        return SnapApp.getDefault().getInstanceName() + " - " + Bundle.CTL_ExportMaskPixelsAction_DialogTitle();
     }
 
     /*
@@ -303,7 +285,7 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
      */
     private static File promptForFile(String defaultFileName) {
         final SnapFileFilter fileFilter = new SnapFileFilter("TXT", "txt", "Text");
-        return SnapDialogs.requestFileForSave(DLG_TITLE,
+        return SnapDialogs.requestFileForSave(Bundle.CTL_ExportMaskPixelsAction_DialogTitle(),
                                               false,
                                               fileFilter,
                                               ".txt",

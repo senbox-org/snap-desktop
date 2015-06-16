@@ -387,6 +387,7 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
                     repositoryListCombo.removeItemAt(1);
                 }
                 removeProducts(null); // remove all
+                UpdateUI();
             }
         } else if (selectedItem instanceof File) {
             final File baseDir = (File) selectedItem;
@@ -398,6 +399,7 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
                 libConfig.removeBaseDir(baseDir);
                 repositoryListCombo.removeItemAt(index);
                 removeProducts(baseDir);
+                UpdateUI();
             }
         }
     }

@@ -26,10 +26,12 @@ import org.esa.snap.graphbuilder.rcp.dialogs.support.TargetFolderSelector;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.file.OpenProductAction;
 import org.esa.snap.rcp.actions.file.SaveProductAsAction;
+import org.esa.snap.rcp.util.ProgressHandleMonitor;
 import org.esa.snap.util.DialogUtils;
 import org.esa.snap.util.ProductFunctions;
 import org.esa.snap.util.SystemUtils;
 import org.esa.snap.util.io.FileChooserFactory;
+import org.netbeans.api.progress.ProgressUtils;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -183,13 +185,7 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
         addAllOpenButton.addActionListener(new ActionListener() {
 
             public void actionPerformed(final ActionEvent e) {
-                final Product[] products = SnapApp.getDefault().getProductManager().getProducts();
-                for (Product prod : products) {
-                    final File file = prod.getFileLocation();
-                    if (file != null && file.exists()) {
-                        tableModel.addFile(file);
-                    }
-                }
+                addAllOpenProducts(tableModel);
             }
         });
 
@@ -290,6 +286,22 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
         panel.add(countLabel);
 
         return panel;
+    }
+
+    private void addAllOpenProducts(final FileTableModel tableModel) {
+        final ProgressHandleMonitor pm = ProgressHandleMonitor.create("Populating table");
+        Runnable operation = () -> {
+            pm.beginTask("Populating table...", 100);
+            final Product[] products = SnapApp.getDefault().getProductManager().getProducts();
+            for (Product prod : products) {
+                final File file = prod.getFileLocation();
+                if (file != null && file.exists()) {
+                    tableModel.addFile(file);
+                }
+            }
+        };
+
+        ProgressUtils.runOffEventThreadWithProgressDialog(operation, "Populating table", pm.getProgressHandle(), true, 50, 1000);
     }
 
     /**

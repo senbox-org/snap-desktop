@@ -13,10 +13,8 @@
             </folder>
             <folder name="Export">
                 <attr name="position" intvalue="150"/>
-            </folder>
-            <folder name="Other Exports">
-                <attr name="position" intvalue="155"/>
                 <attr name="seperatorAfter" intvalue="160"/>
+                <folder name="Other"/>
             </folder>
         </folder>
         <folder name="Edit">
@@ -24,6 +22,9 @@
         </folder>
         <folder name="View">
             <attr name="position" intvalue="300"/>
+            <folder name="Overlay">
+                <attr name="position" intvalue="300"/>
+            </folder>
         </folder>
         <folder name="Tools">
             <attr name="position" intvalue="400"/>
@@ -246,6 +247,10 @@
             <!-- Enable, once we know how to print an image view, etc. -->
             <file name="org-netbeans-modules-print-action-PageSetupAction.shadow_hidden"/>
             <file name="org-netbeans-modules-print-action-PrintAction.shadow_hidden"/>
+
+            <file name="org-openide-actions-SaveAction.shadow_hidden"/>
+            <file name="org-openide-actions-SaveAsAction.shadow_hidden"/>
+            <file name="org-openide-actions-SaveAllAction.shadow_hidden"/>
         </folder>
         <folder name="View">
             <file name="org-netbeans-core-actions-LogAction.shadow_hidden"/>

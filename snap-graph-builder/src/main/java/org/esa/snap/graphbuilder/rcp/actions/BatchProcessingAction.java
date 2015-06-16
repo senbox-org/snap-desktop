@@ -23,7 +23,7 @@ import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle;
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
 
 @ActionID(
@@ -37,11 +37,8 @@ import java.awt.event.ActionEvent;
         lazy = true
 )
 @ActionReferences({
-        @ActionReference(
-                path = "Menu/Tools",
-                position = 111
-        ),
-        @ActionReference(path = "Toolbars/Processing")
+        @ActionReference(path = "Menu/Tools", position = 320, separatorAfter = 399),
+        @ActionReference(path = "Toolbars/Processing", position = 20)
 })
 @NbBundle.Messages({
         "CTL_BatchProcessingAction_MenuText=Batch Processing",

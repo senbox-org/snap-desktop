@@ -261,12 +261,6 @@ public class ToolAdapterEditorDialog extends ModalDialog {
                 ToolAdapterActionRegistrar.removeOperatorMenu(oldOperatorDescriptor);
                 ToolAdapterIO.removeOperator(oldOperatorDescriptor, false);
             }
-            /*String oldOperatorName = oldOperatorDescriptor.getName();
-            if (oldOperatorDescriptor.isSystem() && oldOperatorName.equals(newOperatorDescriptor.getName())) {
-                newOperatorDescriptor.setName(newOperatorDescriptor.getName() + ".custom");
-                newOperatorDescriptor.setAlias(newOperatorDescriptor.getAlias() + "-custom");
-            }*/
-            newOperatorDescriptor.setSystem(false);
             if (!newOperatorDescriptor.isFromPackage()) {
                 newOperatorDescriptor.setSource(ToolAdapterOperatorDescriptor.SOURCE_USER);
             }
