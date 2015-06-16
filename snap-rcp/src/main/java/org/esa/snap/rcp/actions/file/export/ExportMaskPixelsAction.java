@@ -47,14 +47,8 @@ import org.openide.util.NbBundle;
 import org.openide.util.Utilities;
 import org.openide.util.WeakListeners;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.BoxLayout;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import java.awt.Rectangle;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
@@ -80,17 +74,17 @@ import java.util.Optional;
 )
 
 @ActionReference(
-        path = "Menu/File/Other Exports",
+        path = "Menu/File/Export/Other",
         position = 50
 )
 
 @NbBundle.Messages({
         "CTL_ExportMaskPixelsAction_MenuText=Mask Pixels",
+        "CTL_ExportMaskPixelsAction_DialogTitle=Export Mask Pixels",
         "CTL_ExportMaskPixelsAction_ShortDescription=Export Mask Pixels."
 })
 public class ExportMaskPixelsAction extends AbstractAction implements ContextAwareAction, LookupListener, HelpCtx.Provider {
 
-    private static final String DLG_TITLE = "Export Mask Pixels";
     private static final String HELP_ID = "exportMaskPixels";
     private static final String ERR_MSG_BASE = "Mask pixels cannot be exported:\n";
 
@@ -146,7 +140,8 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
         Collection<? extends ProductNode> productNodes = result.allInstances();
         Optional<? extends ProductNode> first = productNodes.stream().findFirst();
         if (!first.isPresent()) {
-            SnapDialogs.showError(DLG_TITLE, ERR_MSG_BASE + "There are no masks available in the currently selected product");
+            SnapDialogs.showError(Bundle.CTL_ExportMaskPixelsAction_DialogTitle(),
+                                  ERR_MSG_BASE + "There are no masks available in the currently selected product");
         }
         ProductNode productNode = first.get();
         Product product = productNode.getProduct();
@@ -164,7 +159,8 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
                 maskCombo.setSelectedItem(productNode.getName());
             }
             panel.add(maskCombo);
-            ModalDialog modalDialog = new ModalDialog(SnapApp.getDefault().getMainFrame(), DLG_TITLE, panel,
+            ModalDialog modalDialog = new ModalDialog(SnapApp.getDefault().getMainFrame(),
+                                                      Bundle.CTL_ExportMaskPixelsAction_DialogTitle(), panel,
                                                       ModalDialog.ID_OK_CANCEL | ModalDialog.ID_HELP, getHelpCtx().getHelpID());
             if (modalDialog.show() == AbstractDialog.ID_OK) {
                 maskName = (String) maskCombo.getSelectedItem();
@@ -176,7 +172,8 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
 
         final RenderedImage maskImage = mask.getSourceImage();
         if (maskImage == null) {
-            SnapDialogs.showError(DLG_TITLE, ERR_MSG_BASE + "No Mask image available.");
+            SnapDialogs.showError(Bundle.CTL_ExportMaskPixelsAction_DialogTitle(),
+                                  ERR_MSG_BASE + "No Mask image available.");
             return;
         }
         // Compute total number of Mask pixels
@@ -222,7 +219,8 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
             try {
                 fileWriter = new FileWriter(file);
             } catch (IOException e) {
-                SnapDialogs.showError(DLG_TITLE, ERR_MSG_BASE + "Failed to create file '" + file + "':\n" + e.getMessage());
+                SnapDialogs.showError(Bundle.CTL_ExportMaskPixelsAction_DialogTitle(),
+                                      ERR_MSG_BASE + "Failed to create file '" + file + "':\n" + e.getMessage());
                 return; // Error
             }
             out = new PrintWriter(new BufferedWriter(fileWriter, initialBufferSize));
@@ -232,7 +230,7 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
         }
 
         final ProgressMonitorSwingWorker<Exception, Object> swingWorker = new ProgressMonitorSwingWorker<Exception, Object>(
-                SnapApp.getDefault().getMainFrame(), DLG_TITLE) {
+                SnapApp.getDefault().getMainFrame(), Bundle.CTL_ExportMaskPixelsAction_DialogTitle()) {
 
             @Override
             protected Exception doInBackground(ProgressMonitor pm) throws Exception {
@@ -252,11 +250,6 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
                 return returnValue;
             }
 
-            //
-//            /**
-//             * Called on the event dispatching thread (not on the worker thread) after the <code>construct</code> method
-//             * has returned.
-//             */
             @Override
             public void done() {
 //                 clear status bar
@@ -271,7 +264,8 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
                     exception = e;
                 }
                 if (exception != null) {
-                    SnapDialogs.showError(DLG_TITLE, ERR_MSG_BASE + exception.getMessage());
+                    SnapDialogs.showError(Bundle.CTL_ExportMaskPixelsAction_DialogTitle(),
+                                          ERR_MSG_BASE + exception.getMessage());
                 }
             }
 
@@ -292,7 +286,7 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
     }
 
     private static String getWindowTitle() {
-        return SnapApp.getDefault().getInstanceName() + " - " + DLG_TITLE;
+        return SnapApp.getDefault().getInstanceName() + " - " + Bundle.CTL_ExportMaskPixelsAction_DialogTitle();
     }
 
     /*
@@ -303,7 +297,7 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
      */
     private static File promptForFile(String defaultFileName) {
         final SnapFileFilter fileFilter = new SnapFileFilter("TXT", "txt", "Text");
-        return SnapDialogs.requestFileForSave(DLG_TITLE,
+        return SnapDialogs.requestFileForSave(Bundle.CTL_ExportMaskPixelsAction_DialogTitle(),
                                               false,
                                               fileFilter,
                                               ".txt",

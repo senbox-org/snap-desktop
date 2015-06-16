@@ -43,17 +43,8 @@ import org.openide.util.NbBundle;
 import org.openide.util.Utilities;
 import org.openide.util.WeakListeners;
 
-import javax.swing.Action;
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import java.awt.Dimension;
-import java.awt.Graphics2D;
-import java.awt.GridLayout;
-import java.awt.Rectangle;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
@@ -66,10 +57,7 @@ import java.awt.image.RenderedImage;
  *
  * @author Marco Peters
  * @author Ralf Quast
- * @version $Revision$ $Date$
  */
-
-
 @ActionID(
         category = "File",
         id = "org.esa.snap.rcp.actions.file.export.ExportImageAction"
@@ -79,13 +67,10 @@ import java.awt.image.RenderedImage;
         popupText = "#CTL_ExportImageAction_ShortDescription",
         lazy = false
 )
-
-
 @ActionReference(
-        path = "Menu/File/Other Exports",
+        path = "Menu/File/Export/Other",
         position = 80
 )
-
 @NbBundle.Messages({
         "CTL_ExportImageAction_MenuText=View as Image",
         "CTL_ExportImageAction_ShortDescription=Export the current view as an image."
@@ -173,7 +158,6 @@ public class ExportImageAction extends org.esa.snap.rcp.actions.file.export.Abst
 
     }
 
-    //    @Override
     protected RenderedImage createImage(String imageFormat, ProductSceneView view) {
         final boolean useAlpha = !BMP_FORMAT_DESCRIPTION[0].equals(imageFormat) && !JPEG_FORMAT_DESCRIPTION[0].equals(imageFormat);
         final boolean entireImage = isEntireImageSelected();

@@ -54,12 +54,8 @@ import org.openide.util.NbBundle;
 import org.openide.util.Utilities;
 import org.openide.util.WeakListeners;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.JFileChooser;
-import javax.swing.JInternalFrame;
-import java.awt.Cursor;
-import java.awt.Dimension;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.image.RenderedImage;
 import java.io.File;
@@ -76,17 +72,14 @@ import java.util.zip.ZipOutputStream;
         popupText = "#CTL_ExportKmzFileAction_MenuText",
         lazy = false
 )
-
 @ActionReference(
-        path = "Menu/File/Other Exports",
+        path = "Menu/File/Export/Other",
         position = 70
 )
-
 @NbBundle.Messages({
         "CTL_ExportKmzFileAction_MenuText=View as Google Earth KMZ",
         "CTL_ExportKmzFileAction_ShortDescription=Export View as Google Earth KMZ."
 })
-
 public class ExportKmzFileAction extends AbstractAction implements HelpCtx.Provider, ContextAwareAction, LookupListener {
     private static final String OVERLAY_KML = "overlay.kml";
     private static final String OVERLAY_PNG = "overlay.png";
