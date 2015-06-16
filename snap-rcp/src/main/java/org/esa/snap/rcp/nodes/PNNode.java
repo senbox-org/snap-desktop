@@ -265,6 +265,16 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
         public VDN(VectorDataNode vectorDataNode) {
             super(vectorDataNode);
             setIconBaseWithExtension("org/esa/snap/rcp/icons/RsVectorData16.gif");
+            setShortDescription(createToolTip(vectorDataNode));
+        }
+
+        private String createToolTip(final VectorDataNode vectorDataNode) {
+            final StringBuilder tooltip = new StringBuilder();
+            if(vectorDataNode.getDescription() != null)
+                tooltip.append(vectorDataNode.getDescription() + ": ");
+            tooltip.append("type = " + vectorDataNode.getFeatureType().getTypeName() + ", ");
+            tooltip.append("#feature = " + vectorDataNode.getFeatureCollection().size());
+            return tooltip.toString();
         }
 
         @Override
@@ -295,6 +305,17 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
         public TPG(TiePointGrid tiePointGrid) {
             super(tiePointGrid);
             setIconBaseWithExtension("org/esa/snap/rcp/icons/RsBandAsTiePoint16.gif");
+            setShortDescription(createToolTip(tiePointGrid));
+        }
+
+        private String createToolTip(final TiePointGrid tiePointGrid) {
+            StringBuilder tooltip = new StringBuilder();
+            if(tiePointGrid.getDescription() != null)
+                tooltip.append(tiePointGrid.getDescription() + ": ");
+            tooltip.append(tiePointGrid.getRasterWidth()+" x "+tiePointGrid.getRasterHeight());
+            tooltip.append(" -> "+tiePointGrid.getSceneRasterWidth()+"x"+tiePointGrid.getSceneRasterHeight());
+            tooltip.append(" ["+tiePointGrid.getUnit()+"]");
+            return tooltip.toString();
         }
 
         @Override
@@ -384,6 +405,26 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
             } else {
                 setIconBaseWithExtension("org/esa/snap/rcp/icons/RsBandAsSwath.gif");
             }
+            setShortDescription(createToolTip(band));
+        }
+
+        private String createToolTip(final Band band) {
+            StringBuilder tooltip = new StringBuilder();
+            if(band.getDescription() != null)
+                tooltip.append(band.getDescription() + ": ");
+            if(band instanceof VirtualBand) {
+                tooltip.append("expr = " + ((VirtualBand) band).getExpression() + ", ");
+            }
+            if (band.getSpectralWavelength() > 0.0) {
+                tooltip.append("wavelength = ");
+                tooltip.append(band.getSpectralWavelength());
+                tooltip.append(" nm, bandwidth = ");
+                tooltip.append(band.getSpectralBandwidth());
+                tooltip.append(" nm, ");
+            }
+            tooltip.append(band.getRasterWidth()+" x "+band.getRasterHeight());
+            tooltip.append(" ["+band.getUnit()+"]");
+            return tooltip.toString();
         }
 
         @Override
