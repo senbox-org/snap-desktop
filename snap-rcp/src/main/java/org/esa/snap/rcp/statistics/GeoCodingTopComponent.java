@@ -19,6 +19,7 @@ package org.esa.snap.rcp.statistics;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
+import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
@@ -52,11 +53,14 @@ import org.openide.windows.TopComponent;
  */
 public class GeoCodingTopComponent extends AbstractStatisticsTopComponent {
 
-    public static final String ID = GeoCodingTopComponent.class.getName();
-
     @Override
     protected PagePanel createPagePanel() {
         return new GeoCodingPanel(this, Bundle.CTL_GeoCodingTopComponent_HelpId());
+    }
+
+    @Override
+    public HelpCtx getHelpCtx() {
+        return new HelpCtx(Bundle.CTL_GeoCodingTopComponent_HelpId());
     }
 
 

@@ -56,15 +56,13 @@ import javax.swing.Icon;
  */
 public class ScatterPlotTopComponent extends AbstractStatisticsTopComponent {
 
-    public static final String ID = ScatterPlotTopComponent.class.getName();
-    public static final String tableHelpID = "tableView";
 
     @Override
     protected PagePanel createPagePanel() {
         final Icon largeIcon = UIUtils.loadImageIcon("icons/ScatterPlot24.gif");
         final String chartTitle = ScatterPlotPanel.CHART_TITLE;
         final ScatterPlotPanel scatterPlotPanel = new ScatterPlotPanel(this, Bundle.CTL_ScatterPlotTopComponent_HelpId());
-        final TableViewPagePanel tableViewPanel = new TableViewPagePanel(this, tableHelpID, chartTitle, largeIcon);
+        final TableViewPagePanel tableViewPanel = new TableViewPagePanel(this, Bundle.CTL_ScatterPlotTopComponent_HelpId(), chartTitle, largeIcon);
         scatterPlotPanel.setAlternativeView(tableViewPanel);
         tableViewPanel.setAlternativeView(scatterPlotPanel);
         return scatterPlotPanel;

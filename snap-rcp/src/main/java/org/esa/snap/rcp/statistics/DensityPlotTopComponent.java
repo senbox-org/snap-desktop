@@ -53,8 +53,6 @@ import org.openide.windows.TopComponent;
  */
 public class DensityPlotTopComponent extends AbstractStatisticsTopComponent {
 
-    public static final String ID = DensityPlotTopComponent.class.getName();
-
     @Override
     protected PagePanel createPagePanel() {
         return new DensityPlotPanel(this, Bundle.CTL_DensityPlotTopComponent_HelpId());
