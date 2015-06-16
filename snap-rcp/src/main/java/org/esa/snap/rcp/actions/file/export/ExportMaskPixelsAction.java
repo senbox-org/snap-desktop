@@ -24,12 +24,12 @@ import org.esa.snap.framework.datamodel.GeoPos;
 import org.esa.snap.framework.datamodel.Mask;
 import org.esa.snap.framework.datamodel.PixelPos;
 import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductNode;
 import org.esa.snap.framework.datamodel.TiePointGrid;
 import org.esa.snap.framework.ui.AbstractDialog;
 import org.esa.snap.framework.ui.ModalDialog;
 import org.esa.snap.framework.ui.SelectExportMethodDialog;
 import org.esa.snap.framework.ui.UIUtils;
+import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.util.SystemUtils;
@@ -59,9 +59,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
-import java.util.Collection;
 import java.util.GregorianCalendar;
-import java.util.Optional;
 
 
 @ActionID(
@@ -70,7 +68,8 @@ import java.util.Optional;
 )
 @ActionRegistration(
         displayName = "#CTL_ExportMaskPixelsAction_MenuText",
-        popupText = "#CTL_ExportMaskPixelsAction_ShortDescription"
+        popupText = "#CTL_ExportMaskPixelsAction_ShortDescription",
+        lazy = true
 )
 
 @ActionReference(
@@ -88,7 +87,7 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
     private static final String HELP_ID = "exportMaskPixels";
     private static final String ERR_MSG_BASE = "Mask pixels cannot be exported:\n";
 
-    private final Lookup.Result<ProductNode> result;
+    private final Lookup.Result<ProductSceneView> result;
 
     public ExportMaskPixelsAction() {
         this(Utilities.actionsGlobalContext());
@@ -96,7 +95,7 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
 
     public ExportMaskPixelsAction(Lookup lkp) {
         super(Bundle.CTL_ExportMaskPixelsAction_MenuText());
-        result = lkp.lookupResult(ProductNode.class);
+        result = lkp.lookupResult(ProductSceneView.class);
         result.addLookupListener(WeakListeners.create(LookupListener.class, this, result));
         setEnabled(false);
     }
@@ -113,16 +112,15 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
 
     @Override
     public Action createContextAwareInstance(Lookup lkp) {
-        return new org.esa.snap.rcp.actions.file.export.ExportMaskPixelsAction(lkp);
+        return new ExportMaskPixelsAction(lkp);
     }
 
     @Override
     public void resultChanged(LookupEvent le) {
-        Collection<? extends ProductNode> productNodes = result.allInstances();
-        Optional<? extends ProductNode> first = productNodes.stream().findFirst();
+        ProductSceneView sceneView = SnapApp.getDefault().getSelectedProductSceneView();
         boolean enabled = false;
-        if (first.isPresent()) {
-            Product product = first.get().getProduct();
+        if (sceneView != null) {
+            Product product = sceneView.getProduct();
             enabled = product.getMaskGroup().getNodeCount() > 0;
         }
         setEnabled(enabled);
@@ -136,15 +134,8 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
      * Performs the actual "export Mask Pixels" command.
      */
     private void exportMaskPixels() {
-
-        Collection<? extends ProductNode> productNodes = result.allInstances();
-        Optional<? extends ProductNode> first = productNodes.stream().findFirst();
-        if (!first.isPresent()) {
-            SnapDialogs.showError(Bundle.CTL_ExportMaskPixelsAction_DialogTitle(),
-                                  ERR_MSG_BASE + "There are no masks available in the currently selected product");
-        }
-        ProductNode productNode = first.get();
-        Product product = productNode.getProduct();
+        ProductSceneView sceneView = SnapApp.getDefault().getSelectedProductSceneView();
+        Product product = sceneView.getProduct();
         String[] maskNames = product.getMaskGroup().getNodeNames();
         final String maskName;
         if (maskNames.length == 1) {
@@ -155,9 +146,6 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
             panel.setLayout(boxLayout);
             panel.add(new JLabel("Select Mask: "));
             JComboBox<String> maskCombo = new JComboBox<>(maskNames);
-            if(productNode instanceof Mask) {
-                maskCombo.setSelectedItem(productNode.getName());
-            }
             panel.add(maskCombo);
             ModalDialog modalDialog = new ModalDialog(SnapApp.getDefault().getMainFrame(),
                                                       Bundle.CTL_ExportMaskPixelsAction_DialogTitle(), panel,
