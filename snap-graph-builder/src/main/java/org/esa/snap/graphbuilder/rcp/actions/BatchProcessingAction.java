@@ -39,7 +39,7 @@ import java.awt.event.ActionEvent;
 @ActionReferences({
         @ActionReference(
                 path = "Menu/Tools",
-                position = 120
+                position = 111
         ),
         @ActionReference(path = "Toolbars/Processing")
 })
