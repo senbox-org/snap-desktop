@@ -262,7 +262,7 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
         }
 
         Position centerPos = new Position(Angle.fromDegreesLatitude(centreLat), Angle.fromDegreesLongitude(centreLon), 0.0);
-        System.out.println("centerPos: " + centerPos);
+
         PointPlacemark ppm = getLabelPlacemark(centerPos, product.getProductRefString());
 
         addRenderable(ppm);
