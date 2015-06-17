@@ -37,9 +37,19 @@ import org.openide.util.NbBundle;
 import org.openide.util.Utilities;
 import org.openide.util.WeakListeners;
 
-import javax.swing.*;
+import javax.swing.Action;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.border.EmptyBorder;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -81,7 +91,8 @@ public class ExportLegendImageAction extends org.esa.snap.rcp.actions.file.expor
 
     private ParamGroup legendParamGroup;
     private ImageLegend imageLegend;
-    private Lookup.Result<RasterDataNode> result;
+    @SuppressWarnings("FieldCanBeLocal")
+    private Lookup.Result<ProductSceneView> result;
 
 
     public ExportLegendImageAction() {
@@ -95,7 +106,7 @@ public class ExportLegendImageAction extends org.esa.snap.rcp.actions.file.expor
             imageFileFilters[i] = createFileFilter(IMAGE_FORMAT_DESCRIPTIONS[i]);
         }
 
-        result = lookup.lookupResult(RasterDataNode.class);
+        result = lookup.lookupResult(ProductSceneView.class);
         result.addLookupListener(WeakListeners.create(LookupListener.class, this, result));
         setEnabled(false);
     }
