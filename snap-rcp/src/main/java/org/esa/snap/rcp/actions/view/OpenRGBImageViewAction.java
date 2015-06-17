@@ -186,7 +186,6 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
 
     private ProductSceneImage createProductSceneImageRGB(String name, final Product product, String[] rgbaExpressions,
                                                          ProgressMonitor pm) throws Exception {
-        final SnapApp visatApp = SnapApp.getDefault();
         Band[] rgbBands = null;
         boolean errorOccurred = false;
         ProductSceneImage productSceneImage = null;
@@ -196,7 +195,7 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
             productSceneImage = new ProductSceneImage(name, rgbBands[0],
                                                       rgbBands[1],
                                                       rgbBands[2],
-                                                      visatApp.getPreferencesPropertyMap(),
+                                                      SnapApp.getDefault().getPreferencesPropertyMap(),
                                                       SubProgressMonitor.create(pm, 1));
             productSceneImage.initVectorDataCollectionLayer();
             productSceneImage.initMaskCollectionLayer();
