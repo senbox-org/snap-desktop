@@ -174,8 +174,6 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
     }
 
     public static ProductSceneViewTopComponent openDocumentWindow(final ProductSceneView view) {
-        final SnapApp snapApp = SnapApp.getDefault();
-
         UndoRedo.Manager undoManager = SnapApp.getDefault().getUndoManager(view.getProduct());
         ProductSceneViewTopComponent psvTopComponent = new ProductSceneViewTopComponent(view, undoManager);
 
