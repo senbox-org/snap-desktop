@@ -245,10 +245,10 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
         }
         if (throwable != null) {
             if (!hasBeenCancelled)
-                handleInitialisationError(throwable);
-            else
-                displayErrors();
+                SnapDialogs.showError("Execution failed", throwable.getMessage());
+                //handleInitialisationError(throwable);
         }
+        displayErrors();
     }
 
     private void displayErrors() {

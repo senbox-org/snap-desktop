@@ -72,7 +72,9 @@ public abstract class AbstractStatisticsTopComponent extends TopComponent implem
         add(pagePanel, BorderLayout.CENTER);
     }
 
-    abstract protected PagePanel createPagePanel();
+    protected abstract PagePanel createPagePanel();
+    public abstract HelpCtx getHelpCtx();
+
 
     @Override
     public void componentShowing() {

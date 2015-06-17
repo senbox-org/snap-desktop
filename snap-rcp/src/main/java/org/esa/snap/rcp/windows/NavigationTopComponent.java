@@ -296,16 +296,24 @@ public class NavigationTopComponent extends TopComponent {
         if (currentView != newView) {
             final ProductSceneView oldView = currentView;
             if (oldView != null) {
-                oldView.getProduct().removeProductNodeListener(productNodeChangeHandler);
-                if (oldView.getLayerCanvas() != null) {
-                    oldView.getLayerCanvas().getModel().removeChangeListener(layerCanvasModelChangeChangeHandler);
+                Product product = oldView.getProduct();
+                if (product != null) {
+                    product.removeProductNodeListener(productNodeChangeHandler);
+                }
+                LayerCanvas layerCanvas = oldView.getLayerCanvas();
+                if (layerCanvas != null) {
+                    layerCanvas.getModel().removeChangeListener(layerCanvasModelChangeChangeHandler);
                 }
             }
             currentView = newView;
             if (currentView != null) {
-                currentView.getProduct().addProductNodeListener(productNodeChangeHandler);
-                if (currentView.getLayerCanvas() != null) {
-                    currentView.getLayerCanvas().getModel().addChangeListener(layerCanvasModelChangeChangeHandler);
+                Product product = currentView.getProduct();
+                if (product != null) {
+                    product.addProductNodeListener(productNodeChangeHandler);
+                }
+                LayerCanvas layerCanvas = currentView.getLayerCanvas();
+                if (layerCanvas != null) {
+                    layerCanvas.getModel().addChangeListener(layerCanvasModelChangeChangeHandler);
                 }
             }
             canvas.handleViewChanged(oldView, newView);

@@ -57,10 +57,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.Shape;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
@@ -79,10 +76,10 @@ import java.util.concurrent.ExecutionException;
 class DensityPlotPanel extends ChartPagePanel {
 
     private static final String NO_DATA_MESSAGE = "No scatter plot computed yet.\n" +
-            "To create a scatter plot, select bands in both combo boxes.\n" +
-            "The plot will be computed when you hit the 'Refresh View' button.\n" +
-            HELP_TIP_MESSAGE + "\n" +
-            ZOOM_TIP_MESSAGE;
+                                                  "To create a scatter plot, select bands in both combo boxes.\n" +
+                                                  "The plot will be computed when you hit the 'Refresh View' button.\n" +
+                                                  HELP_TIP_MESSAGE + "\n" +
+                                                  ZOOM_TIP_MESSAGE;
     private static final String CHART_TITLE = "Scatter Plot";
 
     private final static String PROPERTY_NAME_AUTO_MIN_MAX = "autoMinMax";
@@ -198,8 +195,9 @@ class DensityPlotPanel extends ChartPagePanel {
     }
 
     private void updateBandList(final Product product, final Property bandProperty) {
-        if (product == null)
+        if (product == null) {
             return;
+        }
 
         final ValueSet bandValueSet = new ValueSet(createAvailableBandList(product));
         bandProperty.getDescriptor().setValueSet(bandValueSet);
@@ -225,11 +223,9 @@ class DensityPlotPanel extends ChartPagePanel {
         bindingContext = new BindingContext(PropertyContainer.createObjectBacked(dataSourceConfig));
 
         xProductList = new JComboBox<>();
-        xProductList.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent event) {
-                if (event.getStateChange() == ItemEvent.SELECTED) {
-                    updateBandList((Product) event.getItem(), xBandProperty);
-                }
+        xProductList.addItemListener(event -> {
+            if (event.getStateChange() == ItemEvent.SELECTED) {
+                updateBandList((Product) event.getItem(), xBandProperty);
             }
         });
         xProductList.setRenderer(new DefaultListCellRenderer() {
@@ -246,11 +242,9 @@ class DensityPlotPanel extends ChartPagePanel {
         xProductProperty = bindingContext.getPropertySet().getProperty(PROPERTY_NAME_X_PRODUCT);
 
         yProductList = new JComboBox<>();
-        yProductList.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent event) {
-                if (event.getStateChange() == ItemEvent.SELECTED) {
-                    updateBandList((Product) event.getItem(), yBandProperty);
-                }
+        yProductList.addItemListener(event -> {
+            if (event.getStateChange() == ItemEvent.SELECTED) {
+                updateBandList((Product) event.getItem(), yBandProperty);
             }
         });
         yProductList.setRenderer(new DefaultListCellRenderer() {
@@ -297,8 +291,9 @@ class DensityPlotPanel extends ChartPagePanel {
 
     private static String formatProductName(final Product product) {
         String name = product.getName().substring(0, Math.min(10, product.getName().length()));
-        if (product.getName().length() > 10)
+        if (product.getName().length() > 10) {
             name += "...";
+        }
         return product.getProductRefString() + name;
     }
 
@@ -381,12 +376,7 @@ class DensityPlotPanel extends ChartPagePanel {
 
     private JPanel createOptionsPanel() {
         toggleColorCheckBox = new JCheckBox("Invert plot colors");
-        toggleColorCheckBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                toggleColor();
-            }
-        });
+        toggleColorCheckBox.addActionListener(e -> toggleColor());
         toggleColorCheckBox.setEnabled(false);
         final JPanel optionsPanel = GridBagUtils.createPanel();
         final GridBagConstraints gbc = GridBagUtils.createConstraints("anchor=NORTHWEST,fill=HORIZONTAL,insets.top=0,weightx=1,gridx=0");
@@ -457,7 +447,7 @@ class DensityPlotPanel extends ChartPagePanel {
 
     private static void checkBandsForRange() throws IllegalArgumentException {
         if (axisRangeControls[X_VAR].getMin().equals(axisRangeControls[X_VAR].getMax()) &&
-                axisRangeControls[Y_VAR].getMin().equals(axisRangeControls[Y_VAR].getMax())) {
+            axisRangeControls[Y_VAR].getMin().equals(axisRangeControls[Y_VAR].getMax())) {
             throw new IllegalArgumentException("Value range of at least one band must be larger than one");
         }
     }
@@ -514,7 +504,7 @@ class DensityPlotPanel extends ChartPagePanel {
                     if (minX > maxX || minY > maxY) {
                         SnapDialogs.showMessage(/*I18N*/ CHART_TITLE, /*I18N*/
                                                 "Failed to compute scatter plot.\n" +
-                                                        "No Pixels considered..",
+                                                "No Pixels considered..",
                                                 JOptionPane.ERROR_MESSAGE,
                                                 null
                         );
@@ -540,18 +530,18 @@ class DensityPlotPanel extends ChartPagePanel {
                     toggleColorCheckBox.setEnabled(true);
                 } catch (InterruptedException | CancellationException e) {
                     e.printStackTrace();
-                    SnapDialogs.showMessage(/*I18N*/ CHART_TITLE, /*I18N*/
+                    SnapDialogs.showMessage(CHART_TITLE,
                                             "Failed to compute scatter plot.\n" +
-                                                    "Calculation canceled.",
+                                            "Calculation canceled.",
                                             JOptionPane.ERROR_MESSAGE,
                                             null
                     );
                 } catch (ExecutionException | IllegalArgumentException e) {
                     e.printStackTrace();
-                    SnapDialogs.showMessage(/*I18N*/ CHART_TITLE, /*I18N*/
+                    SnapDialogs.showMessage(CHART_TITLE,
                                             "Failed to compute scatter plot.\n" +
-                                                    "An error occurred:\n" +
-                                                    e.getCause().getMessage(),
+                                            "An error occurred:\n" +
+                                            e.getCause().getMessage(),
                                             JOptionPane.ERROR_MESSAGE,
                                             null
                     );
@@ -607,12 +597,12 @@ class DensityPlotPanel extends ChartPagePanel {
             String excelNote = "";
             if (numNonEmptyBins > excelLimit - 100) {
                 excelNote = "Note that e.g., Microsoft® Excel 2002 only supports a total of "
-                        + excelLimit + " rows in a sheet.\n";   /*I18N*/
+                            + excelLimit + " rows in a sheet.\n";   /*I18N*/
             }
             final String message = MessageFormat.format(
                     "This scatter plot contains {0} non-empty bins.\n" +
-                            "For each bin, a text data row containing an x, y and z value will be created.\n" +
-                            "{1}\nPress ''Yes'' if you really want to copy this amount of data to the system clipboard.\n",
+                    "For each bin, a text data row containing an x, y and z value will be created.\n" +
+                    "{1}\nPress ''Yes'' if you really want to copy this amount of data to the system clipboard.\n",
                     numNonEmptyBins, excelNote);
             final int status = JOptionPane.showConfirmDialog(this,
                                                              message, /*I18N*/
@@ -628,8 +618,8 @@ class DensityPlotPanel extends ChartPagePanel {
 
     private static byte[] getValidData(BufferedImage image) {
         if (image != null &&
-                image.getColorModel() instanceof IndexColorModel &&
-                image.getData().getDataBuffer() instanceof DataBufferByte) {
+            image.getColorModel() instanceof IndexColorModel &&
+            image.getData().getDataBuffer() instanceof DataBufferByte) {
             return ((DataBufferByte) image.getData().getDataBuffer()).getData();
         }
         return null;
@@ -665,11 +655,13 @@ class DensityPlotPanel extends ChartPagePanel {
         final int h = image.getHeight();
 
         final RasterDataNode rasterX = getRaster(X_VAR);
+        assert rasterX != null;
         final String nameX = rasterX.getName();
         final double sampleMinX = bounds.getMinX();
         final double sampleMaxX = bounds.getMaxX();
 
         final RasterDataNode rasterY = getRaster(Y_VAR);
+        assert rasterY != null;
         final String nameY = rasterY.getName();
         final double sampleMinY = bounds.getMinY();
         final double sampleMaxY = bounds.getMaxY();
@@ -726,7 +718,9 @@ class DensityPlotPanel extends ChartPagePanel {
         return sb.toString();
     }
 
+    @SuppressWarnings("unused")
     private static class DataSourceConfig {
+
         public boolean useRoiMask;
         public Mask roiMask;
         private Product xProduct;

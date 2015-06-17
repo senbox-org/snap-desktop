@@ -37,39 +37,14 @@ import org.openide.util.NbBundle;
 import org.openide.util.Utilities;
 import org.openide.util.WeakListeners;
 
-import javax.swing.Action;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.GridBagConstraints;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
-
-//
-
-//<action>
-//        <parent>exportOther</parent>
-//        <id>exportLegendImageFile</id>
-//        <class>org.esa.snap.visat.actions.ExportLegendImageAction</class>
-//<text>Colour Legend as Image</text>
-//<mnemonic>C</mnemonic>
-//<shortDescr>export the colour legend of the current view as an image.</shortDescr>
-//<context>image</context>
-//<popuptext>export Colour Legend as Image...</popuptext>
-//<helpId>exportLegendImageFile</helpId>
-//</action>
-
 
 @ActionID(
         category = "File",
@@ -81,13 +56,10 @@ import java.awt.image.RenderedImage;
         lazy = false
 
 )
-
-
 @ActionReference(
-        path = "Menu/File/Other Exports",
+        path = "Menu/File/Export/Other",
         position = 10
 )
-
 @NbBundle.Messages({
         "CTL_ExportLegendImageAction_MenuText=Colour Legend as Image",
         "CTL_ExportLegendImageAction_ShortDescription=Export the colour legend of the current view as an image."

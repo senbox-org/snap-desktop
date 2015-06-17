@@ -42,10 +42,7 @@ import java.awt.event.ActionEvent;
         lazy = true
 )
 @ActionReferences({
-        @ActionReference(
-                path = "Menu/Tools",
-                position = 110
-        ),
+        @ActionReference(path = "Menu/Tools", position = 100),
         @ActionReference(
                 path = "Shortcuts",
                 name = "D-M"

@@ -39,9 +39,7 @@ import org.openide.util.NbBundle;
 import org.openide.util.Utilities;
 import org.openide.util.WeakListeners;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.JFileChooser;
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileWriter;
@@ -60,15 +58,13 @@ import java.io.IOException;
         popupText = "#CTL_ExportEnviGcpFileAction_ShortDescription",
         lazy = false
 )
-
 @ActionReference(
-        path = "Menu/File/Other Exports",
+        path = "Menu/File/Export/Other",
         position = 30
 )
-
-
 @NbBundle.Messages({
         "CTL_ExportEnviGcpFileAction_MenuText=Geo-Coding as ENVI GCP File",
+        "CTL_ExportEnviGcpFileAction_DialogTitle=Export ENVI Ground Control Points",
         "CTL_ExportEnviGcpFileAction_ShortDescription=Exports the currently selected geometry as ESRI Shapefile."
 })
 public class ExportEnviGcpFileAction extends AbstractAction implements LookupListener, ContextAwareAction, HelpCtx.Provider {
@@ -77,7 +73,6 @@ public class ExportEnviGcpFileAction extends AbstractAction implements LookupLis
     private static final String GCP_FILE_EXTENSION = ".pts";
     private static final String GCP_LINE_SEPARATOR = System.getProperty("line.separator");
     private static final String GCP_EXPORT_DIR_PREFERENCES_KEY = "user.gcp.export.dir";
-    private static final String DIALOG_TITLE = "Export ENVI Ground Control Points";
     private static final String HELP_ID = "exportEnviGcpFile";
     private final Lookup.Result<ProductNode> result;
 
@@ -138,7 +133,7 @@ public class ExportEnviGcpFileAction extends AbstractAction implements LookupLis
         if (geoCoding == null) {
             return;
         }
-        if (!SnapDialogs.requestOverwriteDecision(DIALOG_TITLE, absoluteFile)) {
+        if (!SnapDialogs.requestOverwriteDecision(Bundle.CTL_ExportEnviGcpFileAction_DialogTitle(), absoluteFile)) {
             return;
         }
         if (absoluteFile.exists()) {
@@ -172,7 +167,8 @@ public class ExportEnviGcpFileAction extends AbstractAction implements LookupLis
                 }
             }
         } catch (IOException e) {
-            SnapDialogs.showInformation(DIALOG_TITLE, "An I/O error occurred:\n" + e.getMessage());
+            SnapDialogs.showInformation(Bundle.CTL_ExportEnviGcpFileAction_DialogTitle(),
+                                        "An I/O error occurred:\n" + e.getMessage());
         }
     }
 
@@ -195,7 +191,7 @@ public class ExportEnviGcpFileAction extends AbstractAction implements LookupLis
 
         fileChooser.setFileFilter(
                 new SnapFileFilter(GCP_FILE_DESCRIPTION, GCP_FILE_EXTENSION, GCP_FILE_DESCRIPTION));
-        fileChooser.setDialogTitle(DIALOG_TITLE);
+        fileChooser.setDialogTitle(Bundle.CTL_ExportEnviGcpFileAction_DialogTitle());
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         return fileChooser;
     }
