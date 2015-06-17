@@ -89,7 +89,7 @@ public class ProductExpressionPane extends ExpressionPane {
         final int defaultIndex = Arrays.asList(products).indexOf(currentProduct);
         Namespace namespace = BandArithmetic.createDefaultNamespace(products,
                                                                     defaultIndex == -1 ? 0 : defaultIndex);
-        // todo - make type checking an option (checkbox) in UI
+        // We may make type checking an option (checkbox) in UI
         setParser(new ParserImpl(namespace, false));
 
         final ActionListener resetNodeListAL = new ActionListener() {
