@@ -5,6 +5,8 @@
  */
 package org.esa.snap.rcp.nodes;
 
+import com.bc.jexp.ParseException;
+import com.bc.jexp.impl.ParserImpl;
 import org.esa.snap.framework.datamodel.Band;
 import org.esa.snap.framework.datamodel.FlagCoding;
 import org.esa.snap.framework.datamodel.IndexCoding;
@@ -20,6 +22,7 @@ import org.esa.snap.framework.datamodel.TiePointGrid;
 import org.esa.snap.framework.datamodel.VectorDataNode;
 import org.esa.snap.framework.datamodel.VirtualBand;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.actions.ShowPlacemarkViewAction;
 import org.esa.snap.rcp.actions.file.ShowMetadataViewAction;
 import org.esa.snap.rcp.actions.view.OpenImageViewAction;
@@ -521,7 +524,12 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
                 }
                 @Override
                 public void setValue(String val) {
-                    band.setValidPixelExpression(val);
+                    try {
+                        new ParserImpl().parse(val);
+                        band.setValidPixelExpression(val);
+                    } catch (ParseException e) {
+                        SnapDialogs.showError("Expression is invalid: " + e.getMessage());
+                    }
                 }
             });
             set.put(new PropertySupport.ReadWrite<Float>("spectralWavelength", Float.class, "Spectral Wavelength", "The spectral wavelength in nanometers") {
