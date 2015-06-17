@@ -39,8 +39,10 @@ import org.openide.awt.ActionRegistration;
 import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.SwingWorker;
+import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 
 /**
@@ -104,6 +106,12 @@ public class OpenHSVImageViewAction extends AbstractAction implements HelpCtx.Pr
             return;
         }
         final String[] hsvExpressions = profilePane.getRgbaExpressions();
+        for (String hsvExpression : hsvExpressions) {
+            if (!product.isCompatibleBandArithmeticExpression(hsvExpression)) {
+                SnapDialogs.showInformation(title, "Referenced rasters are incompatible", null);
+                return;
+            }
+        }
         nomalizeHSVExpressions(product, hsvExpressions);
         if (profilePane.getStoreProfileInProduct()) {
             RGBImageProfile.storeRgbaExpressions(product, hsvExpressions, HSVImageProfilePane.HSV_COMP_NAMES);

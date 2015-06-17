@@ -98,6 +98,12 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
             return;
         }
         final String[] rgbaExpressions = profilePane.getRgbaExpressions();
+        for (String rgbaExpression : rgbaExpressions) {
+            if (!product.isCompatibleBandArithmeticExpression(rgbaExpression)) {
+                SnapDialogs.showInformation(title, "Referenced rasters are incompatible", null);
+                return;
+            }
+        }
         if (profilePane.getStoreProfileInProduct()) {
             RGBImageProfile.storeRgbaExpressions(product, rgbaExpressions);
         }
