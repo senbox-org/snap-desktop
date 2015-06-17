@@ -50,7 +50,8 @@ import java.awt.event.ActionEvent;
 )
 @ActionRegistration(
         displayName = "#CTL_DetachPixelGeoCodingActionText",
-        popupText = "#CTL_DetachPixelGeoCodingActionText"
+        popupText = "#CTL_DetachPixelGeoCodingActionText",
+        lazy = false
 )
 @ActionReference(path = "Menu/Tools", position = 220)
 @Messages({

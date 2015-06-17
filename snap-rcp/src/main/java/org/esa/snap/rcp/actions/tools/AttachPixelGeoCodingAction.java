@@ -77,7 +77,8 @@ import java.util.logging.Level;
 )
 @ActionRegistration(
         displayName = "#CTL_AttachPixelGeoCodingActionText",
-        popupText = "#CTL_AttachPixelGeoCodingActionText"
+        popupText = "#CTL_AttachPixelGeoCodingActionText",
+        lazy = false
 )
 @ActionReference(path = "Menu/Tools", position = 210, separatorBefore = 200 )
 @Messages({
@@ -100,8 +101,8 @@ public class AttachPixelGeoCodingAction extends AbstractAction implements Contex
         this.lkp = lkp;
         Lookup.Result<ProductNode> lkpContext = lkp.lookupResult(ProductNode.class);
         lkpContext.addLookupListener(WeakListeners.create(LookupListener.class, this, lkpContext));
-        setEnableState();
         putValue(Action.SHORT_DESCRIPTION, Bundle.CTL_AttachPixelGeoCodingDialogDescription());
+        setEnableState();
     }
 
     @Override

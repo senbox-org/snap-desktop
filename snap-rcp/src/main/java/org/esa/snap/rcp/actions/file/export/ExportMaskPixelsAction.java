@@ -47,8 +47,14 @@ import org.openide.util.NbBundle;
 import org.openide.util.Utilities;
 import org.openide.util.WeakListeners;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.BoxLayout;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
@@ -69,7 +75,7 @@ import java.util.GregorianCalendar;
 @ActionRegistration(
         displayName = "#CTL_ExportMaskPixelsAction_MenuText",
         popupText = "#CTL_ExportMaskPixelsAction_ShortDescription",
-        lazy = true
+        lazy = false
 )
 
 @ActionReference(
