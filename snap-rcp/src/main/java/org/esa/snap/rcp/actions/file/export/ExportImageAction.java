@@ -26,7 +26,6 @@ import com.bc.ceres.grender.support.BufferedImageRendering;
 import com.bc.ceres.grender.support.DefaultViewport;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.PropertyPane;
-import org.esa.snap.framework.datamodel.Band;
 import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
@@ -43,8 +42,17 @@ import org.openide.util.NbBundle;
 import org.openide.util.Utilities;
 import org.openide.util.WeakListeners;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.Action;
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
+import java.awt.GridLayout;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
@@ -89,7 +97,8 @@ public class ExportImageAction extends org.esa.snap.rcp.actions.file.export.Abst
 
     private JRadioButton buttonFullScene;
     private SizeComponent sizeComponent;
-    private Lookup.Result<Band> result;
+    @SuppressWarnings("FieldCanBeLocal")
+    private Lookup.Result<ProductSceneView> result;
 
 
     public ExportImageAction() {
@@ -103,7 +112,7 @@ public class ExportImageAction extends org.esa.snap.rcp.actions.file.export.Abst
             sceneImageFileFilters[i] = createFileFilter(SCENE_IMAGE_FORMAT_DESCRIPTIONS[i]);
         }
 
-        result = lookup.lookupResult(Band.class);
+        result = lookup.lookupResult(ProductSceneView.class);
         result.addLookupListener(WeakListeners.create(LookupListener.class, this, result));
         setEnabled(false);
     }
@@ -122,8 +131,7 @@ public class ExportImageAction extends org.esa.snap.rcp.actions.file.export.Abst
 
     @Override
     public void resultChanged(LookupEvent lookupEvent) {
-        boolean enabled = SnapApp.getDefault().getSelectedProductSceneView() != null;
-        setEnabled(enabled);
+        setEnabled(SnapApp.getDefault().getSelectedProductSceneView() != null);
     }
 
 
