@@ -186,7 +186,23 @@ class MaskTableModel extends AbstractTableModel {
     }
 
     private ProductNodeGroup<Mask> getMaskGroup() {
-        return product != null ? product.getMaskGroup() : null;
+        if (product == null) {
+            return null;
+        } else if (visibleBand == null) {
+            return product.getMaskGroup();
+        } else {
+            final ProductNodeGroup<Mask> visibleMasks = new ProductNodeGroup<Mask>("Masks for " + visibleBand.getName());
+            final ProductNodeGroup<Mask> maskGroup = product.getMaskGroup();
+            for (int i = 0; i < maskGroup.getNodeCount(); i++) {
+                final Mask mask = maskGroup.get(i);
+                //todo ask ImageGeometry whether mask and band have the same scenerastertransform
+                if (mask.getSceneRasterWidth() == visibleBand.getSceneRasterWidth() &&
+                    mask.getSceneRasterHeight() == visibleBand.getSceneRasterHeight()) {
+                    visibleMasks.add(mask);
+                }
+            }
+            return visibleMasks;
+        }
     }
 
     boolean isInManagmentMode() {
