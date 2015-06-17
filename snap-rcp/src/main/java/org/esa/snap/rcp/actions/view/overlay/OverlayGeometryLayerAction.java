@@ -10,9 +10,6 @@ import com.bc.ceres.glayer.LayerFilter;
 import com.bc.ceres.glayer.LayerListener;
 import com.bc.ceres.glayer.support.AbstractLayerListener;
 import com.bc.ceres.glayer.support.LayerUtils;
-import com.bc.ceres.swing.figure.FigureChangeEvent;
-import com.bc.ceres.swing.figure.FigureChangeListener;
-import com.bc.ceres.swing.selection.SelectionChangeListener;
 import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.framework.ui.product.VectorDataLayerFilterFactory;
 import org.openide.awt.ActionID;
@@ -36,7 +33,8 @@ import java.util.List;
 @ActionRegistration(displayName = "#CTL_OverlayGeometryLayerActionName", lazy = false)
 @ActionReferences({
         @ActionReference(path = "Menu/View/Overlay", position = 10),
-        @ActionReference(path = "Toolbars/Overlay", position = 10)
+        @ActionReference(path = "Toolbars/Overlay", position = 10),
+        @ActionReference(path = "Context/View", position = 10)
 })
 @NbBundle.Messages({
         "CTL_OverlayGeometryLayerActionName=Toggle Geometry Overlay",

@@ -103,8 +103,11 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.RenderedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Vector;
 
 /**
  * The class <code>ProductSceneView</code> is a high-level image display component for color index/RGB images created
@@ -410,7 +413,8 @@ public class ProductSceneView extends BasicView
             popupMenu.add(action);
         }
         addCopyPixelInfoToClipboardMenuItem(popupMenu);
-        return popupMenu;
+//        addShowGeometryOverlayAction(popupMenu);
+      return popupMenu;
     }
 
     /**
@@ -1078,7 +1082,15 @@ public class ProductSceneView extends BasicView
         menuItem.setMnemonic('C');
         menuItem.addActionListener(e -> copyPixelInfoStringToClipboard());
         popupMenu.add(menuItem);
-        popupMenu.addSeparator();
+    }
+
+
+
+    private void addShowGeometryOverlayAction(JPopupMenu popupMenu) {
+        JMenuItem menuItem = new JMenuItem("ShowGeometryOverplayaction");
+        menuItem.setMnemonic('C');
+//        menuItem.addActionListener();
+        popupMenu.add(menuItem);
     }
 
     public int getFirstImageLayerIndex() {

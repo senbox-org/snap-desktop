@@ -44,6 +44,7 @@ import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.ContextAwareAction;
 import org.openide.util.HelpCtx;
@@ -75,10 +76,10 @@ import java.util.zip.ZipOutputStream;
         popupText = "#CTL_ExportKmzFileAction_MenuText",
         lazy = false
 )
-@ActionReference(
-        path = "Menu/File/Export/Other",
-        position = 70
-)
+@ActionReferences({
+        @ActionReference(path = "Menu/File/Export/Other", position = 70),
+        @ActionReference(path = "Context/View", position = 60)
+})
 @NbBundle.Messages({
         "CTL_ExportKmzFileAction_MenuText=View as Google Earth KMZ",
         "CTL_ExportKmzFileAction_ShortDescription=Export View as Google Earth KMZ."
@@ -159,7 +160,7 @@ public class ExportKmzFileAction extends AbstractAction implements HelpCtx.Provi
 
         final SnapFileChooser fileChooser = new SnapFileChooser();
 
-        HelpCtx.setHelpIDString(fileChooser , getHelpCtx().getHelpID());
+        HelpCtx.setHelpIDString(fileChooser, getHelpCtx().getHelpID());
 
         SnapFileFilter kmzFileFilter = new SnapFileFilter(KMZ_FORMAT_DESCRIPTION[0],
                                                           KMZ_FORMAT_DESCRIPTION[1],

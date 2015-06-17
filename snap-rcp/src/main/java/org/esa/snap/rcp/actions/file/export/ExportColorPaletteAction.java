@@ -28,6 +28,7 @@ import org.esa.snap.util.io.FileUtils;
 import org.esa.snap.util.io.SnapFileFilter;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.ContextAwareAction;
 import org.openide.util.HelpCtx;
@@ -38,8 +39,10 @@ import org.openide.util.NbBundle;
 import org.openide.util.Utilities;
 import org.openide.util.WeakListeners;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JFileChooser;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileWriter;
@@ -60,10 +63,10 @@ import java.util.Optional;
         popupText = "#CTL_ExportColorPaletteAction_ShortDescription",
         lazy = false
 )
-@ActionReference(
-        path = "Menu/File/Export/Other",
-        position = 20
-)
+@ActionReferences({
+        @ActionReference(path = "Menu/File/Export/Other", position = 20),
+        @ActionReference(path = "Context/View" ,position = 20)
+})
 @NbBundle.Messages({
         "CTL_ExportColorPaletteAction_MenuText=Colour Palette as File",
         "CTL_ExportColorPaletteAction_DialogTitle=Export Colour Palette",
@@ -163,7 +166,7 @@ public class ExportColorPaletteAction extends AbstractAction implements LookupLi
 
     private RasterDataNode getSelectedRaster() {
         Optional<? extends ProductSceneView> first = result.allInstances().stream().findFirst();
-        if(first.isPresent()) {
+        if (first.isPresent()) {
             return first.get().getRaster();
         }
         return null;

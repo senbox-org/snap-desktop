@@ -34,6 +34,7 @@ import org.esa.snap.util.io.SnapFileFilter;
 import org.esa.snap.util.math.MathUtils;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
@@ -75,10 +76,10 @@ import java.awt.image.RenderedImage;
         popupText = "#CTL_ExportImageAction_ShortDescription",
         lazy = false
 )
-@ActionReference(
-        path = "Menu/File/Export/Other",
-        position = 80
-)
+@ActionReferences({
+        @ActionReference(path = "Menu/File/Export/Other", position = 80),
+        @ActionReference(path = "Context/View",position = 70)
+})
 @NbBundle.Messages({
         "CTL_ExportImageAction_MenuText=View as Image",
         "CTL_ExportImageAction_ShortDescription=Export the current view as an image."

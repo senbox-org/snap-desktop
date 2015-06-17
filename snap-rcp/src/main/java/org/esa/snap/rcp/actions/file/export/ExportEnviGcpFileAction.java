@@ -29,6 +29,7 @@ import org.esa.snap.util.io.SnapFileChooser;
 import org.esa.snap.util.io.SnapFileFilter;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.ContextAwareAction;
 import org.openide.util.HelpCtx;
@@ -39,7 +40,9 @@ import org.openide.util.NbBundle;
 import org.openide.util.Utilities;
 import org.openide.util.WeakListeners;
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JFileChooser;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileWriter;
@@ -58,10 +61,10 @@ import java.io.IOException;
         popupText = "#CTL_ExportEnviGcpFileAction_ShortDescription",
         lazy = false
 )
-@ActionReference(
-        path = "Menu/File/Export/Other",
-        position = 30
-)
+@ActionReferences({
+        @ActionReference(path = "Menu/File/Export/Other", position = 30),
+        @ActionReference(path = "Context/View",position = 30)
+})
 @NbBundle.Messages({
         "CTL_ExportEnviGcpFileAction_MenuText=Geo-Coding as ENVI GCP File",
         "CTL_ExportEnviGcpFileAction_DialogTitle=Export ENVI Ground Control Points",

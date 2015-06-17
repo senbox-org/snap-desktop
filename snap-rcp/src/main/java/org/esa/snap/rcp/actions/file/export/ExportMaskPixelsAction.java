@@ -37,6 +37,7 @@ import org.esa.snap.util.io.FileUtils;
 import org.esa.snap.util.io.SnapFileFilter;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.ContextAwareAction;
 import org.openide.util.HelpCtx;
@@ -77,11 +78,10 @@ import java.util.GregorianCalendar;
         popupText = "#CTL_ExportMaskPixelsAction_ShortDescription",
         lazy = false
 )
-
-@ActionReference(
-        path = "Menu/File/Export/Other",
-        position = 50
-)
+@ActionReferences({
+        @ActionReference(path = "Menu/File/Export/Other", position = 50),
+        @ActionReference(path = "Context/View", position = 40)
+})
 
 @NbBundle.Messages({
         "CTL_ExportMaskPixelsAction_MenuText=Mask Pixels",

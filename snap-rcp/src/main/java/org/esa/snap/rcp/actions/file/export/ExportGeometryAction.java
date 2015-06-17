@@ -42,11 +42,13 @@ import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle;
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.SwingWorker;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
@@ -68,10 +70,11 @@ import java.util.concurrent.ExecutionException;
         popupText = "#CTL_ExportGeometryAction_ShortDescription",
         lazy = true
 )
-@ActionReference(
-        path = "Menu/File/Export/Other",
-        position = 40
-)
+@ActionReferences({
+        @ActionReference( path = "Menu/File/Export/Other" , position = 40) ,
+        @ActionReference(path = "Context/View",position = 40)
+})
+
 @NbBundle.Messages({
         "CTL_ExportGeometryAction_MenuText=Geometry as Shape file",
         "CTL_ExportGeometryAction_DialogTitle=Export Geometry as ESRI Shapefile",

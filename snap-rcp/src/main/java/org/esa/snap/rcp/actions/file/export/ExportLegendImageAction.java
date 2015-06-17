@@ -29,6 +29,7 @@ import org.esa.snap.util.io.SnapFileChooser;
 import org.esa.snap.util.io.SnapFileFilter;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
@@ -37,9 +38,19 @@ import org.openide.util.NbBundle;
 import org.openide.util.Utilities;
 import org.openide.util.WeakListeners;
 
-import javax.swing.*;
+import javax.swing.Action;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.border.EmptyBorder;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -52,14 +63,14 @@ import java.awt.image.RenderedImage;
 )
 @ActionRegistration(
         displayName = "#CTL_ExportLegendImageAction_MenuText",
-        popupText = "#CTL_ExportLegendImageAction_ShortDescription" ,
+        popupText = "#CTL_ExportLegendImageAction_ShortDescription",
         lazy = false
 
 )
-@ActionReference(
-        path = "Menu/File/Export/Other",
-        position = 10
-)
+@ActionReferences({
+        @ActionReference(path = "Menu/File/Export/Other", position = 10),
+        @ActionReference(path = "Context/View", position = 50)
+})
 @NbBundle.Messages({
         "CTL_ExportLegendImageAction_MenuText=Colour Legend as Image",
         "CTL_ExportLegendImageAction_ShortDescription=Export the colour legend of the current view as an image."
@@ -410,9 +421,9 @@ public class ExportLegendImageAction extends org.esa.snap.rcp.actions.file.expor
                 }
             });
             final ModalDialog dialog = new ModalDialog(getParent(),
-                    SnapApp.getDefault().getInstanceName() + " - Colour Legend Preview",
-                    imageDisplay,
-                    ID_OK, null);
+                                                       SnapApp.getDefault().getInstanceName() + " - Colour Legend Preview",
+                                                       imageDisplay,
+                                                       ID_OK, null);
             dialog.getJDialog().setResizable(false);
             dialog.show();
         }

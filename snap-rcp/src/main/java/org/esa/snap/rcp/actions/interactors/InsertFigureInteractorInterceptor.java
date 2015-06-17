@@ -47,7 +47,7 @@ public class InsertFigureInteractorInterceptor extends AbstractInteractorInterce
         return getActiveVectorDataLayer(productSceneView) != null;
     }
 
-    static VectorDataLayer getActiveVectorDataLayer(ProductSceneView productSceneView) {
+    public static VectorDataLayer getActiveVectorDataLayer(ProductSceneView productSceneView) {
         if (productSceneView == null) {
             return null;
         }
