@@ -54,8 +54,11 @@ import org.openide.util.NbBundle;
 import org.openide.util.Utilities;
 import org.openide.util.WeakListeners;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JFileChooser;
+import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.image.RenderedImage;
 import java.io.File;
@@ -89,6 +92,7 @@ public class ExportKmzFileAction extends AbstractAction implements HelpCtx.Provi
     private static final String IMAGE_EXPORT_DIR_PREFERENCES_KEY = "user.image.export.dir";
     private static final String HELP_ID = "exportKmzFile";
 
+    @SuppressWarnings("FieldCanBeLocal")
     private final Lookup.Result<ProductSceneView> result;
 
 
@@ -142,8 +146,7 @@ public class ExportKmzFileAction extends AbstractAction implements HelpCtx.Provi
 
     @Override
     public void resultChanged(LookupEvent lookupEvent) {
-        ProductSceneView view = SnapApp.getDefault().getSelectedProductSceneView();
-        setEnabled(view != null);
+        setEnabled(SnapApp.getDefault().getSelectedProductSceneView() != null);
     }
 
 
@@ -166,8 +169,9 @@ public class ExportKmzFileAction extends AbstractAction implements HelpCtx.Provi
         fileChooser.addChoosableFileFilter(kmzFileFilter);
         fileChooser.setAcceptAllFileFilterUsed(false);
 
-        fileChooser.setDialogTitle(snapApp.getInstanceName() + " - " + "export KMZ"); /* I18N */
-        fileChooser.setCurrentFilename(sceneView.getRaster().getName());
+        fileChooser.setDialogTitle(snapApp.getInstanceName() + " - " + "export KMZ");
+        final String currentFilename = sceneView.isRGB() ? "RGB" : sceneView.getRaster().getName();
+        fileChooser.setCurrentFilename(currentFilename);
 
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
@@ -199,7 +203,7 @@ public class ExportKmzFileAction extends AbstractAction implements HelpCtx.Provi
         }
 
         if (!SnapDialogs.requestOverwriteDecision("h", file)) {
-            return;             //(Bundle.CTL_ExportKmzFileAction_MenuText()
+            return;
         }
 
         final SaveKMLSwingWorker worker = new SaveKMLSwingWorker(snapApp, "Save KMZ", sceneView, file);
@@ -249,8 +253,7 @@ public class ExportKmzFileAction extends AbstractAction implements HelpCtx.Provi
         String legendKml = "";
         if (view.isRGB()) {
             name = "RGB";
-            JInternalFrame parent = (JInternalFrame) view.getParent().getParent().getParent();
-            description = parent.getTitle() + "\n" + product.getName();
+            description = view.getSceneName() + "\n" + product.getName();
         } else {
             name = raster.getName();
             description = raster.getDescription() + "\n" + product.getName();
