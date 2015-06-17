@@ -548,7 +548,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
                 @Override
                 public void setValue(Float val)  {band.setSpectralBandwidth(val);}
             });
-            AtomicReference<String> roleName = new AtomicReference<>("uncertainty");
+            AtomicReference<String> roleName = new AtomicReference<>("");
             set.put(new PropertySupport.ReadWrite<String>("ancillaryRole", String.class, "Ancilliary Role", "Role of the ancilllary band") {
                 @Override
                 public String getValue() {
