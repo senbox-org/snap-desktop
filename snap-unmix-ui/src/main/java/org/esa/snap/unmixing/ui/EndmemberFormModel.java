@@ -22,9 +22,9 @@ import org.esa.snap.framework.ui.diagram.Diagram;
 import org.esa.snap.framework.ui.diagram.DiagramAxis;
 import org.esa.snap.framework.ui.diagram.DiagramGraph;
 import org.esa.snap.framework.ui.diagram.DiagramGraphIO;
+import org.esa.snap.runtime.Config;
 import org.esa.snap.tango.TangoIcons;
 import org.esa.snap.unmixing.Endmember;
-import org.esa.snap.util.PropertyMap;
 import org.esa.snap.util.ResourceInstaller;
 import org.esa.snap.util.SystemUtils;
 import org.esa.snap.util.io.SnapFileFilter;
@@ -46,6 +46,7 @@ import java.beans.PropertyChangeSupport;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.prefs.Preferences;
 
 class EndmemberFormModel {
 
@@ -65,7 +66,7 @@ class EndmemberFormModel {
     private PropertyChangeSupport propertyChangeSupport;
 
     private Color[] defaultColors = new Color[]{Color.BLACK, Color.RED.darker(), Color.GREEN.darker(), Color.BLUE.darker(), Color.YELLOW};
-    private static Path defaultEndmemberDir = SystemUtils.getAuxDataPath();
+    private static Path defaultEndmemberDir = SystemUtils.getAuxDataPath().resolve("unmix");
 
     public EndmemberFormModel(AppContext appContext) {
         this.appContext = appContext;
@@ -174,9 +175,9 @@ class EndmemberFormModel {
         }
 
         final String key = DiagramGraphIO.DIAGRAM_GRAPH_IO_LAST_DIR_KEY;
-        final PropertyMap preferences = appContext.getPreferences();
-        if (preferences.getPropertyString(key, null) == null) {
-            preferences.setPropertyString(key, defaultEndmemberDir.toFile().getPath());
+        final Preferences preferences = Config.instance().preferences();
+        if (preferences.get(key, null) == null) {
+            preferences.put(key, defaultEndmemberDir.toAbsolutePath().toString());
         }
     }
 

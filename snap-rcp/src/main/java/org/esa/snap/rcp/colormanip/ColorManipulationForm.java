@@ -37,6 +37,7 @@ import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.util.SelectionSupport;
 import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
+import org.esa.snap.runtime.Config;
 import org.esa.snap.util.ProductUtils;
 import org.esa.snap.util.ResourceInstaller;
 import org.esa.snap.util.SystemUtils;
@@ -70,7 +71,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.prefs.Preferences;
 
 
 /**
@@ -81,10 +81,9 @@ import java.util.prefs.Preferences;
 })
 class ColorManipulationForm implements SelectionSupport.Handler<ProductSceneView> {
 
-    private final static String PREFERENCES_KEY_IO_DIR = "visat.color_palettes.dir";
+    private final static String PREFERENCES_KEY_IO_DIR = "snap.color_palettes.dir";
 
     private final static String FILE_EXTENSION = ".cpd";
-    private Preferences preferences;
     private AbstractButton resetButton;
     private AbstractButton multiApplyButton;
     private AbstractButton importButton;
@@ -115,7 +114,6 @@ class ColorManipulationForm implements SelectionSupport.Handler<ProductSceneView
         Assert.notNull(formModel);
         this.toolView = colorManipulationToolView;
         this.formModel = formModel;
-        preferences = SnapApp.getDefault().getPreferences();
         productNodeListener = new ColorManipulationPNL();
         sceneViewChangeListener = new SceneViewImageInfoChangeListener();
         titlePrefix = this.formModel.getTitlePrefix();
@@ -467,18 +465,12 @@ class ColorManipulationForm implements SelectionSupport.Handler<ProductSceneView
 
     private void setIODir(final File dir) {
         ioDir = dir.toPath();
-        if (preferences != null) {
-            preferences.put(PREFERENCES_KEY_IO_DIR, ioDir.toString());
-        }
+        Config.instance().preferences().put(PREFERENCES_KEY_IO_DIR, ioDir.toString());
     }
 
     protected Path getIODir() {
         if (ioDir == null) {
-            if (preferences != null) {
-                ioDir = Paths.get(preferences.get(PREFERENCES_KEY_IO_DIR, getColorPalettesDir().toString()));
-            } else {
-                ioDir = getColorPalettesDir();
-            }
+            ioDir = Paths.get(Config.instance().preferences().get(PREFERENCES_KEY_IO_DIR, getColorPalettesDir().toString()));
         }
         return ioDir;
     }
