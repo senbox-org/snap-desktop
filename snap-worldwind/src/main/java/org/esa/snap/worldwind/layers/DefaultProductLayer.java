@@ -263,12 +263,31 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
 
         Position centerPos = new Position(Angle.fromDegreesLatitude(centreLat), Angle.fromDegreesLongitude(centreLon), 0.0);
 
-        PointPlacemark ppm = getLabelPlacemark(centerPos, product.getProductRefString());
 
+        PointPlacemark ppm = getLabelPlacemark(centerPos, product.getProductRefString());
+        ppm.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
+        ppm.setEnableDecluttering(true);
         addRenderable(ppm);
 
         outlineTable.put(getUniqueName(product), polyLineList);
         labelTable.put(getUniqueName(product), ppm);
+
+        /*
+        GeographicText gt = new UserFacingText(product.getProductRefString(), centerPos);
+        ArrayList<GeographicText> al = new ArrayList<GeographicText>();
+        al.add(gt);
+
+        theWWD.getSceneController().getDrawContext().getDeclutteringTextRenderer().render(theWWD.getSceneController().getDrawContext(), al);
+        */
+        /*
+        Renderable renderable = new Renderable() {
+            public void render (DrawContext dc) {
+                dc.getDeclutteringTextRenderer().render(dc, al);
+
+            }
+        };
+        */
+        //addRenderable(renderable);
     }
 
     private void addWaveProduct(final Product product) {
@@ -331,6 +350,8 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
         Position centerPos = new Position(Angle.fromDegreesLatitude(centreLat), Angle.fromDegreesLongitude(centreLon), 0.0);
 
         PointPlacemark ppm = getLabelPlacemark(centerPos, product.getProductRefString());
+        ppm.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
+        ppm.setEnableDecluttering(true);
         addRenderable(ppm);
 
         outlineTable.put(getUniqueName(product), lineList);

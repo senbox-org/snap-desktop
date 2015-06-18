@@ -37,6 +37,7 @@ import gov.nasa.worldwind.ogc.wms.WMSCapabilities;
 import gov.nasa.worldwind.terrain.CompoundElevationModel;
 import gov.nasa.worldwind.terrain.WMSBasicElevationModel;
 import gov.nasa.worldwind.util.Logging;
+import gov.nasa.worldwind.util.PlacemarkClutterFilter;
 import gov.nasa.worldwind.util.StatusBar;
 import gov.nasa.worldwind.view.orbit.BasicOrbitView;
 import gov.nasa.worldwind.view.orbit.FlatOrbitView;
@@ -90,6 +91,8 @@ public class AppPanel extends JPanel {
 
         // Setup a select listener for the worldmap click-and-go feature
         this.wwd.addSelectListener(new ClickAndGoSelectListener(wwd, WorldMapLayer.class));
+
+        this.wwd.getSceneController().setClutterFilter(new PlacemarkClutterFilter());
 
         this.add(this.wwd, BorderLayout.CENTER);
 
