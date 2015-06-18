@@ -60,17 +60,18 @@ import java.util.Optional;
 )
 @ActionRegistration(
         displayName = "#CTL_ExportColorPaletteAction_MenuText",
-        popupText = "#CTL_ExportColorPaletteAction_ShortDescription",
+        popupText = "#CTL_ExportColorPaletteAction_PopupText",
         lazy = false
 )
 @ActionReferences({
         @ActionReference(path = "Menu/File/Export/Other", position = 20),
-        @ActionReference(path = "Context/View" ,position = 20)
+        @ActionReference(path = "Context/View" ,position = 80)
 })
 @NbBundle.Messages({
         "CTL_ExportColorPaletteAction_MenuText=Colour Palette as File",
+        "CTL_ExportColorPaletteAction_PopupText=Export Colour Palette as File",
         "CTL_ExportColorPaletteAction_DialogTitle=Export Colour Palette",
-        "CTL_ExportColorPaletteAction_ShortDescription=Export Colour Palette as File..."
+        "CTL_ExportColorPaletteAction_ShortDescription=Export Colour Palette as File."
 })
 public class ExportColorPaletteAction extends AbstractAction implements LookupListener, ContextAwareAction, HelpCtx.Provider {
 
@@ -85,6 +86,7 @@ public class ExportColorPaletteAction extends AbstractAction implements LookupLi
 
     public ExportColorPaletteAction(Lookup lookup) {
         super(Bundle.CTL_ExportColorPaletteAction_MenuText());
+        putValue("popupText", Bundle.CTL_ExportColorPaletteAction_PopupText());
         result = lookup.lookupResult(ProductSceneView.class);
         result.addLookupListener(WeakListeners.create(LookupListener.class, this, result));
         setEnabled(false);

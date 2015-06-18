@@ -73,7 +73,7 @@ import java.util.zip.ZipOutputStream;
 )
 @ActionRegistration(
         displayName = "#CTL_ExportKmzFileAction_MenuText",
-        popupText = "#CTL_ExportKmzFileAction_MenuText",
+        popupText = "#CTL_ExportKmzFileAction_PopupText",
         lazy = false
 )
 @ActionReferences({
@@ -82,6 +82,7 @@ import java.util.zip.ZipOutputStream;
 })
 @NbBundle.Messages({
         "CTL_ExportKmzFileAction_MenuText=View as Google Earth KMZ",
+        "CTL_ExportKmzFileAction_PopupText=Export View as Google Earth KMZ",
         "CTL_ExportKmzFileAction_ShortDescription=Export View as Google Earth KMZ."
 })
 public class ExportKmzFileAction extends AbstractAction implements HelpCtx.Provider, ContextAwareAction, LookupListener {
@@ -103,6 +104,7 @@ public class ExportKmzFileAction extends AbstractAction implements HelpCtx.Provi
 
     public ExportKmzFileAction(Lookup lookup) {
         super(Bundle.CTL_ExportKmzFileAction_MenuText());
+        putValue("popupText",Bundle.CTL_ExportKmzFileAction_PopupText());
         result = lookup.lookupResult(ProductSceneView.class);
         result.addLookupListener(WeakListeners.create(LookupListener.class, this, result));
         setEnabled(false);

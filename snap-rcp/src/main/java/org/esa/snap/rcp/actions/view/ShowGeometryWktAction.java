@@ -65,10 +65,9 @@ import java.awt.event.ActionEvent;
 )
 @ActionRegistration(
         displayName = "#CTL_ShowGeometryWktAction_MenuText",
-        popupText = "#CTL_ShowGeometryWktAction_MenuText",
-        lazy = false
+        lazy = true
 )
-@ActionReference(path = "Context/View", position = 10)
+@ActionReference(path = "Context/View", position = 20)
 
 @NbBundle.Messages({
         "CTL_ShowGeometryWktAction_MenuText=WKT from Geometry...",

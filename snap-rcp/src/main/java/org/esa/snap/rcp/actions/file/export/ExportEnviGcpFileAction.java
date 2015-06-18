@@ -29,7 +29,6 @@ import org.esa.snap.util.io.SnapFileChooser;
 import org.esa.snap.util.io.SnapFileFilter;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
-import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.ContextAwareAction;
 import org.openide.util.HelpCtx;
@@ -58,17 +57,15 @@ import java.io.IOException;
 )
 @ActionRegistration(
         displayName = "#CTL_ExportEnviGcpFileAction_MenuText",
-        popupText = "#CTL_ExportEnviGcpFileAction_ShortDescription",
+        popupText =  "#CTL_ExportEnviGcpFileAction_PopupText",
         lazy = false
 )
-@ActionReferences({
-        @ActionReference(path = "Menu/File/Export/Other", position = 30),
-        @ActionReference(path = "Context/View",position = 30)
-})
+@ActionReference(path = "Menu/File/Export/Other", position = 30)
 @NbBundle.Messages({
         "CTL_ExportEnviGcpFileAction_MenuText=Geo-Coding as ENVI GCP File",
+        "CTL_ExportEnviGcpFileAction_PopupText=Export Geo-Coding as ENVI GCP File",
         "CTL_ExportEnviGcpFileAction_DialogTitle=Export ENVI Ground Control Points",
-        "CTL_ExportEnviGcpFileAction_ShortDescription=Exports the currently selected geometry as ESRI Shapefile."
+        "CTL_ExportEnviGcpFileAction_ShortDescription=Export an ENVI GCP (ground control points) file for image registration"
 })
 public class ExportEnviGcpFileAction extends AbstractAction implements LookupListener, ContextAwareAction, HelpCtx.Provider {
 
@@ -86,6 +83,7 @@ public class ExportEnviGcpFileAction extends AbstractAction implements LookupLis
 
     public ExportEnviGcpFileAction(Lookup lookup) {
         super(Bundle.CTL_ExportEnviGcpFileAction_MenuText());
+//        putValue("popupText", Bundle.CTL_ExportEnviGcpFileAction_PopupText());
         result = lookup.lookupResult(ProductNode.class);
         result.addLookupListener(WeakListeners.create(LookupListener.class, this, result));
         setEnabled(false);

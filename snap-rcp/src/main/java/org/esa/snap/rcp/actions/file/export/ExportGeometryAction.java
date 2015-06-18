@@ -67,29 +67,32 @@ import java.util.concurrent.ExecutionException;
 )
 @ActionRegistration(
         displayName = "#CTL_ExportGeometryAction_MenuText",
-        popupText = "#CTL_ExportGeometryAction_ShortDescription",
+        popupText = "#CTL_ExportGeometryAction_PopupText",
         lazy = true
 )
 @ActionReferences({
-        @ActionReference( path = "Menu/File/Export/Other" , position = 40) ,
-        @ActionReference(path = "Context/View",position = 40)
+        @ActionReference(path = "Menu/File/Export/Other", position = 40),
+        @ActionReference(path = "Context/Product/RasterDataNode", position = 208),
+        @ActionReference(path = "Context/View", position = 30)
 })
 
 @NbBundle.Messages({
         "CTL_ExportGeometryAction_MenuText=Geometry as Shape file",
+        "CTL_ExportGeometryAction_PopupText=Export Geometry as Shape file",
         "CTL_ExportGeometryAction_DialogTitle=Export Geometry as ESRI Shapefile",
         "CTL_ExportGeometryAction_ShortDescription=Exports the currently selected geometry as ESRI Shapefile."
 })
 
-public class ExportGeometryAction extends AbstractAction implements HelpCtx.Provider{
+public class ExportGeometryAction extends AbstractAction implements HelpCtx.Provider {
 
     private static final String ESRI_SHAPEFILE = "ESRI Shapefile";
     private static final String FILE_EXTENSION_SHAPEFILE = ".shp";
-    private static final String HELP_ID= "exportShapefile";
+    private String HELP_ID = "exportShapefile";
     private VectorDataNode vectorDataNode;
 
 
     public ExportGeometryAction(VectorDataNode vectorDataNode) {
+        super(Bundle.CTL_ExportGeometryAction_MenuText());
         this.vectorDataNode = vectorDataNode;
     }
 
@@ -113,8 +116,8 @@ public class ExportGeometryAction extends AbstractAction implements HelpCtx.Prov
     private void exportVectorDataNode() {
         SnapApp snapApp = SnapApp.getDefault();
         if (vectorDataNode.getFeatureCollection().isEmpty()) {
-           SnapDialogs.showInformation(Bundle.CTL_ExportGeometryAction_DialogTitle(),
-                                       "The selected geometry is empty. Nothing to export.", null);
+            SnapDialogs.showInformation(Bundle.CTL_ExportGeometryAction_DialogTitle(),
+                                        "The selected geometry is empty. Nothing to export.", null);
             return;
         }
 
@@ -136,14 +139,13 @@ public class ExportGeometryAction extends AbstractAction implements HelpCtx.Prov
      * @param visatApp the VISAT application
      * @return the selected file, <code>null</code> means "Cancel"
      */
-
     private static File promptForFile(final SnapApp snapApp, String defaultFileName) {
         return SnapDialogs.requestFileForSave(Bundle.CTL_ExportGeometryAction_DialogTitle(), false,
-                                new SnapFileFilter(ESRI_SHAPEFILE, FILE_EXTENSION_SHAPEFILE, ESRI_SHAPEFILE),
-                                FILE_EXTENSION_SHAPEFILE,
-                                defaultFileName,
-                                null,
-                                "exportVectorDataNode.lastDir");
+                                              new SnapFileFilter(ESRI_SHAPEFILE, FILE_EXTENSION_SHAPEFILE, ESRI_SHAPEFILE),
+                                              FILE_EXTENSION_SHAPEFILE,
+                                              defaultFileName,
+                                              null,
+                                              "exportVectorDataNode.lastDir");
     }
 
     private static void exportVectorDataNode(VectorDataNode vectorNode, File file, ProgressMonitor pm) throws
@@ -170,8 +172,7 @@ public class ExportGeometryAction extends AbstractAction implements HelpCtx.Prov
         }
     }
 
-    public static void writeEsriShapefile(Class<?> geomType, List<SimpleFeature> features, File file) throws
-            IOException {
+    private static void writeEsriShapefile(Class<?> geomType, List<SimpleFeature> features, File file) throws IOException {
         String geomName = geomType.getSimpleName();
         String basename = file.getName();
         if (basename.endsWith(FILE_EXTENSION_SHAPEFILE)) {
@@ -249,8 +250,6 @@ public class ExportGeometryAction extends AbstractAction implements HelpCtx.Prov
         sftb.setName("FT_" + geometryType.getSimpleName());
         return sftb.buildFeatureType();
     }
-
-
 
 
     private static class ExportVectorNodeSwingWorker extends ProgressMonitorSwingWorker<Exception, Object> {

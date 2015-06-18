@@ -68,18 +68,19 @@ import java.util.Date;
 )
 @ActionRegistration(
         displayName = "#CTL_ExportTransectPixelsAction_MenuText",
-        popupText = "#CTL_ExportTransectPixelsAction_MenuText",
+        popupText = "#CTL_ExportTransectPixelsAction_PopupText",
         lazy = true
 )
 
 @ActionReferences({
         @ActionReference(path = "Menu/File/Export/Other",position = 60 ),
         @ActionReference(path = "Context/Product/RasterDataNode", position = 208),
-        @ActionReference(path = "Context/View" , position = 10)
+        @ActionReference(path = "Context/View" , position = 40)
 })
 
 @NbBundle.Messages({
         "CTL_ExportTransectPixelsAction_MenuText=Transect Pixels",
+        "CTL_ExportTransectPixelsAction_PopupText=Export Transect Pixels",
         "CTL_ExportTransectPixelsAction_DialogTitle=Export Transect Pixels",
         "CTL_ExportTransectPixelsAction_ShortDescription=Export Transect Pixels."
 })

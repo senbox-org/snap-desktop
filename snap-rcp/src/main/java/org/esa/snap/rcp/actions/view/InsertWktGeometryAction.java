@@ -60,7 +60,6 @@ import java.awt.event.ActionEvent;
 )
 @ActionRegistration(
         displayName = "#CTL_InsertWktGeometryAction_MenuText",
-        popupText = "#CTL_InsertWktGeometryAction_MenuText",
         lazy = true
 )
 @ActionReference(path = "Context/View", position = 10)

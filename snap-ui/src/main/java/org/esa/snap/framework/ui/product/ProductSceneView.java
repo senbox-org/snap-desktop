@@ -70,6 +70,7 @@ import org.esa.snap.glayer.NoDataLayerType;
 import org.esa.snap.glayer.ProductLayerContext;
 import org.esa.snap.glevel.MaskImageMultiLevelSource;
 import org.esa.snap.util.PropertyMap;
+import org.esa.snap.util.StringUtils;
 import org.esa.snap.util.SystemUtils;
 import org.openide.util.Utilities;
 
@@ -410,10 +411,13 @@ public class ProductSceneView extends BasicView
         JPopupMenu popupMenu = new JPopupMenu();
         List<? extends Action> viewActions = Utilities.actionsForPath("Context/View");
         for (Action action : viewActions) {
-            popupMenu.add(action);
+            JMenuItem menuItem = popupMenu.add(action);
+            String popupText = (String) action.getValue("popupText");
+            if (StringUtils.isNotNullAndNotEmpty(popupText)) {
+                menuItem.setText(popupText);
+            }
         }
         addCopyPixelInfoToClipboardMenuItem(popupMenu);
-//        addShowGeometryOverlayAction(popupMenu);
       return popupMenu;
     }
 
