@@ -85,7 +85,7 @@ public class OperatorAction extends DefaultOperatorAction {
     protected void addIcon(final ModelessDialog dlg) {
         String iconName = getIcon();
         if (iconName == null) {
-            setIcon(dlg, IconUtils.esaPlanetIcon);
+            //setIcon(dlg, IconUtils.esaPlanetIcon);
         } else if (iconName.equals("esaIcon")) {
             setIcon(dlg, IconUtils.esaPlanetIcon);
         } else if (iconName.equals("rstbIcon")) {

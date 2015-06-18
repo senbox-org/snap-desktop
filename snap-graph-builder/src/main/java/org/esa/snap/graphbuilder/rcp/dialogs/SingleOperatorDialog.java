@@ -55,18 +55,12 @@ import org.esa.snap.graphbuilder.gpf.ui.UIValidation;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.actions.file.SaveProductAsAction;
-import org.esa.snap.util.IconUtils;
 import org.esa.snap.util.ProductFunctions;
 
 import javax.media.jai.JAI;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
+import java.awt.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -136,7 +130,6 @@ public class SingleOperatorDialog extends SingleTargetProductDialog {
         addParameters();
 
         getJDialog().setMinimumSize(new Dimension(450, 450));
-        getJDialog().setIconImage(IconUtils.esaPlanetIcon.getImage());
 
         statusLabel = new JLabel("");
         statusLabel.setForeground(new Color(255, 0, 0));
