@@ -15,14 +15,17 @@
  */
 package org.esa.snap.worldwind.layers;
 
-import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.awt.WorldWindowGLCanvas;
 import gov.nasa.worldwind.event.SelectEvent;
 import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.geom.Sector;
-import gov.nasa.worldwind.render.*;
+import gov.nasa.worldwind.render.Offset;
+import gov.nasa.worldwind.render.PointPlacemark;
+import gov.nasa.worldwind.render.PointPlacemarkAttributes;
+import gov.nasa.worldwind.render.Polyline;
+import gov.nasa.worldwind.render.SurfaceImage;
 import org.esa.snap.datamodel.AbstractMetadata;
 import org.esa.snap.eo.Constants;
 import org.esa.snap.eo.GeoUtils;
@@ -263,7 +266,7 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
 
         Position centerPos = new Position(Angle.fromDegreesLatitude(centreLat), Angle.fromDegreesLongitude(centreLon), 0.0);
 
-        PointPlacemark ppm = getLabelPlacemark(centerPos, product.getProductRefString());
+        PointPlacemark ppm = getLabelPlacemark(centerPos, String.valueOf(product.getRefNo()));
 
         addRenderable(ppm);
 
