@@ -34,7 +34,6 @@ import java.util.List;
 @ActionReferences({
         @ActionReference(path = "Menu/View/Overlay", position = 10),
         @ActionReference(path = "Toolbars/Overlay", position = 10),
-        @ActionReference(path = "Context/View", position = 10)
 })
 @NbBundle.Messages({
         "CTL_OverlayGeometryLayerActionName=Toggle Geometry Overlay",
