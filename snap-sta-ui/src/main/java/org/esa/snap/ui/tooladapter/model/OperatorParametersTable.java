@@ -25,6 +25,7 @@ import org.esa.snap.framework.gpf.annotations.ParameterDescriptorFactory;
 import org.esa.snap.framework.gpf.descriptor.*;
 import org.esa.snap.framework.gpf.operators.tooladapter.ToolAdapterConstants;
 import org.esa.snap.framework.gpf.ui.OperatorParameterSupport;
+import org.esa.snap.framework.ui.AbstractDialog;
 import org.esa.snap.framework.ui.AppContext;
 import org.esa.snap.framework.ui.UIUtils;
 import org.esa.snap.framework.ui.tool.ToolButtonFactory;
@@ -288,33 +289,7 @@ public class OperatorParametersTable extends JTable {
                     if(descriptor.getDataType() != customClass.getParameterClass()) {
                         descriptor.setDataType(customClass.getParameterClass());
                         descriptor.setDefaultValue(descriptor.getDefaultValue());
-                        context.getPropertySet().removeProperty(context.getPropertySet().getProperty(descriptor.getName()));
-                        PropertyDescriptor property;
-                        try {
-                            try {
-                                property =  ParameterDescriptorFactory.convert(descriptor, new ParameterDescriptorFactory().getSourceProductMap());
-                            } catch (Exception ex){
-                                logger.warning(ex.getMessage());
-                                descriptor.setDefaultValue("");
-                                property =  ParameterDescriptorFactory.convert(descriptor, new ParameterDescriptorFactory().getSourceProductMap());
-                            }
-                            try {
-                                property.setDefaultValue(descriptor.getDefaultValue());
-                            } catch (Exception ex){
-                                logger.warning(ex.getMessage());
-                            }
-                            DefaultPropertySetDescriptor propertySetDescriptor = new DefaultPropertySetDescriptor();
-                            propertySetDescriptor.addPropertyDescriptor(property);
-                            PropertyContainer container = PropertyContainer.createMapBacked(new HashMap<>(), propertySetDescriptor);
-                            context.getPropertySet().addProperties(container.getProperties());
-                            propertiesValueUIDescriptorMap.put(descriptor, PropertyMemberUIWrapperFactory.buildPropertyWrapper("defaultValue", descriptor, operator, context, null));
-
-                            revalidate();
-                            repaint();
-                        } catch (ConversionException e) {
-                            logger.warning(e.getMessage());
-                            SnapDialogs.showError(e.getMessage());
-                        }
+                        rebuildEditorCell(descriptor);
                     }
                     break;
                 case 5:
@@ -322,16 +297,26 @@ public class OperatorParametersTable extends JTable {
                     break;
                 case 6:
                     //edit details
+                    int returnCode = -1;
                     if(!descriptor.isParameter() && descriptor.getDataType().equals(File.class)){
                         try {
                             TemplateParameterEditorDialog editor = new TemplateParameterEditorDialog(appContext, "", descriptor, propertiesValueUIDescriptorMap.get(descriptor), operator);
-                            editor.show();
+                            returnCode = editor.show();
                         }catch (Exception ex){
                             SnapDialogs.showError(ex.getMessage());
                         }
                     } else {
-                        ToolParameterEditorDialog editor = new ToolParameterEditorDialog(appContext, descriptor, propertiesValueUIDescriptorMap.get(descriptor));
-                        editor.show();
+                        Object value = getBindingContext().getBinding(descriptor.getName()).getPropertyValue();
+                        try {
+                            ToolParameterEditorDialog editor = new ToolParameterEditorDialog(appContext, "Parameter editor for " + descriptor.getName(), descriptor, value);
+                            returnCode = editor.show();
+                        }catch (Exception ex){
+                            logger.warning(ex.getMessage());
+                            SnapDialogs.showError("Could not edit parameter " + descriptor.getName() + " : " + ex.getMessage());
+                        }
+                    }
+                    if(returnCode == AbstractDialog.ID_OK){
+                        rebuildEditorCell(descriptor);
                     }
                     break;
                 default:
@@ -343,6 +328,47 @@ public class OperatorParametersTable extends JTable {
             }
         }
     }
+
+    private void rebuildEditorCell(TemplateParameterDescriptor descriptor){
+
+        context.getPropertySet().removeProperty(context.getPropertySet().getProperty(descriptor.getName()));
+        PropertyDescriptor property;
+        try {
+            try {
+                property =  ParameterDescriptorFactory.convert(descriptor, new ParameterDescriptorFactory().getSourceProductMap());
+            } catch (Exception ex){
+                logger.warning(ex.getMessage());
+                descriptor.setDefaultValue("");
+                property =  ParameterDescriptorFactory.convert(descriptor, new ParameterDescriptorFactory().getSourceProductMap());
+            }
+            try {
+                property.setDefaultValue(descriptor.getDefaultValue());
+            } catch (Exception ex){
+                logger.warning(ex.getMessage());
+                property.setDefaultValue("");
+            }
+            DefaultPropertySetDescriptor propertySetDescriptor = new DefaultPropertySetDescriptor();
+            propertySetDescriptor.addPropertyDescriptor(property);
+            PropertyContainer container = PropertyContainer.createMapBacked(new HashMap<>(), propertySetDescriptor);
+            try {
+                container.getProperty(property.getName()).setValue(descriptor.getDefaultValue());
+            } catch (Exception ex){
+                logger.warning(ex.getMessage());
+                try {
+                    container.getProperty(property.getName()).setValue("");
+                } catch (Exception exx){}
+            }
+            context.getPropertySet().addProperties(container.getProperties());
+            propertiesValueUIDescriptorMap.put(descriptor, PropertyMemberUIWrapperFactory.buildPropertyWrapper("defaultValue", descriptor, operator, context, null));
+
+            revalidate();
+            repaint();
+        } catch (ConversionException e) {
+            logger.warning(e.getMessage());
+            SnapDialogs.showError(e.getMessage());
+        }
+    }
+
 
     class MultiRenderer extends AbstractCellEditor implements TableCellEditor, TableCellRenderer {
         private TableCellRenderer defaultRenderer = new DefaultTableCellRenderer();
