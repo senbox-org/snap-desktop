@@ -15,6 +15,7 @@
  */
 package org.esa.snap.worldwind.layers;
 
+import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.awt.WorldWindowGLCanvas;
 import gov.nasa.worldwind.event.SelectEvent;
@@ -264,9 +265,11 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
             ++i;
         }
 
-        Position centerPos = new Position(Angle.fromDegreesLatitude(centreLat), Angle.fromDegreesLongitude(centreLon), 0.0);
+        Position centrePos = new Position(Angle.fromDegreesLatitude(centreLat), Angle.fromDegreesLongitude(centreLon), 0.0);
 
-        PointPlacemark ppm = getLabelPlacemark(centerPos, String.valueOf(product.getRefNo()));
+        PointPlacemark ppm = getLabelPlacemark(centrePos, String.valueOf(product.getRefNo()));
+        ppm.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
+        ppm.setEnableDecluttering(true);
 
         addRenderable(ppm);
 
@@ -331,9 +334,11 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
 
         centreLat = centreLat / numPoints;
         centreLon = centreLon / numPoints;
-        Position centerPos = new Position(Angle.fromDegreesLatitude(centreLat), Angle.fromDegreesLongitude(centreLon), 0.0);
+        Position centrePos = new Position(Angle.fromDegreesLatitude(centreLat), Angle.fromDegreesLongitude(centreLon), 0.0);
 
-        PointPlacemark ppm = getLabelPlacemark(centerPos, product.getProductRefString());
+        PointPlacemark ppm = getLabelPlacemark(centrePos, String.valueOf(product.getRefNo()));
+        ppm.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
+        ppm.setEnableDecluttering(true);
         addRenderable(ppm);
 
         outlineTable.put(getUniqueName(product), lineList);
