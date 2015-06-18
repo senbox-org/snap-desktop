@@ -25,6 +25,7 @@ import org.esa.snap.framework.datamodel.ProductNode;
 import org.esa.snap.framework.datamodel.RGBImageProfile;
 import org.esa.snap.framework.datamodel.Stx;
 import org.esa.snap.framework.datamodel.VirtualBand;
+import org.esa.snap.framework.dataop.barithm.BandArithmetic;
 import org.esa.snap.framework.ui.HSVImageProfilePane;
 import org.esa.snap.framework.ui.UIUtils;
 import org.esa.snap.framework.ui.product.ProductSceneImage;
@@ -57,7 +58,7 @@ import java.awt.event.ActionEvent;
 )
 @ActionReferences({
         @ActionReference(path = "Menu/View", position = 115),
-        @ActionReference(path = "Context/Product/Product",position = 420),
+        @ActionReference(path = "Context/Product/Product", position = 420),
 })
 @NbBundle.Messages({
         "CTL_OpenHSVImageViewAction_MenuText=Open HSV Image View",
@@ -98,7 +99,7 @@ public class OpenHSVImageViewAction extends AbstractAction implements HelpCtx.Pr
         final int[] defaultBandIndices = OpenRGBImageViewAction.getDefaultBandIndices(product);
 
         final HSVImageProfilePane profilePane = new HSVImageProfilePane(SnapApp.getDefault().getPreferencesPropertyMap(), product,
-                openedProducts, defaultBandIndices);
+                                                                        openedProducts, defaultBandIndices);
 
         final String title = "Select HSV-Image Channels";
         final boolean ok = profilePane.showDialog(SnapApp.getDefault().getMainFrame(), title, helpId);
@@ -106,11 +107,9 @@ public class OpenHSVImageViewAction extends AbstractAction implements HelpCtx.Pr
             return;
         }
         final String[] hsvExpressions = profilePane.getRgbaExpressions();
-        for (String hsvExpression : hsvExpressions) {
-            if (!product.isCompatibleBandArithmeticExpression(hsvExpression)) {
-                SnapDialogs.showInformation(title, "Referenced rasters are incompatible", null);
-                return;
-            }
+        if (!BandArithmetic.areReferencedRastersCompatible(product, hsvExpressions)) {
+            SnapDialogs.showInformation(title, "Referenced rasters are incompatible", null);
+            return;
         }
         nomalizeHSVExpressions(product, hsvExpressions);
         if (profilePane.getStoreProfileInProduct()) {
@@ -171,11 +170,11 @@ public class OpenHSVImageViewAction extends AbstractAction implements HelpCtx.Pr
             rgbBands = OpenRGBImageViewAction.allocateRgbBands(product, rgbaExpressions);
 
             productSceneImage = new ProductSceneImage(name,
-                    rgbBands[0],
-                    rgbBands[1],
-                    rgbBands[2],
-                    SnapApp.getDefault().getPreferencesPropertyMap(),
-                    SubProgressMonitor.create(pm, 1));
+                                                      rgbBands[0],
+                                                      rgbBands[1],
+                                                      rgbBands[2],
+                                                      SnapApp.getDefault().getPreferencesPropertyMap(),
+                                                      SubProgressMonitor.create(pm, 1));
             productSceneImage.initVectorDataCollectionLayer();
             productSceneImage.initMaskCollectionLayer();
         } catch (Exception e) {
@@ -231,10 +230,10 @@ public class OpenHSVImageViewAction extends AbstractAction implements HelpCtx.Pr
     public static Band createVirtualBand(final Product product, final String expression, final String name) {
 
         final VirtualBand virtBand = new VirtualBand(name,
-                ProductData.TYPE_FLOAT64,
-                product.getSceneRasterWidth(),
-                product.getSceneRasterHeight(),
-                expression);
+                                                     ProductData.TYPE_FLOAT64,
+                                                     product.getSceneRasterWidth(),
+                                                     product.getSceneRasterHeight(),
+                                                     expression);
         virtBand.setNoDataValueUsed(true);
         product.addBand(virtBand);
         return virtBand;

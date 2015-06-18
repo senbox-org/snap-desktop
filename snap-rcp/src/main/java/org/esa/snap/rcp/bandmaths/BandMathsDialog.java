@@ -170,7 +170,7 @@ class BandMathsDialog extends ModalDialog {
             }
             uncertaintyExpression = new TermDecompiler().decompile(term);
         }
-
+        //todo determine width and height from referenced rasters
         final int width = targetProduct.getSceneRasterWidth();
         final int height = targetProduct.getSceneRasterHeight();
 
@@ -235,29 +235,7 @@ class BandMathsDialog extends ModalDialog {
             showErrorDialog(Bundle.CTL_BandMathsDialog_ErrBandCannotBeReferenced(getBandName()));
             return false;
         }
-
-        if (!referencedRastersHaveEqualSize()) {
-            showErrorDialog("The size of one of the referenced rasters is not equal to the size of the other rasters.");
-            return false;
-        }
-
         return super.verifyUserInput();
-    }
-
-    private boolean referencedRastersHaveEqualSize() {
-        Product[] compatibleProducts = getCompatibleProducts();
-        int defaultProductIndex = Arrays.asList(compatibleProducts).indexOf(targetProduct);
-        try {
-            RasterDataNode[] rasters = BandArithmetic.getRefRasters(getExpression(), compatibleProducts, defaultProductIndex);
-            for (RasterDataNode raster : rasters) {
-                if (!raster.getRasterSize().equals(targetProduct.getSceneRasterSize())) {
-                    return false;
-                }
-            }
-        } catch (ParseException e) {
-            return false;
-        }
-        return true;
     }
 
     private void makeUI() {
@@ -553,11 +531,11 @@ class BandMathsDialog extends ModalDialog {
                                                                           defaultIndex == -1 ? 0 : defaultIndex);
         final Parser parser = new ParserImpl(namespace, false);
         try {
-            parser.parse(getExpression());
+            final Term term = parser.parse(getExpression());
+            return BandArithmetic.areReferencedRastersCompatible(term);
         } catch (ParseException e) {
             return false;
         }
-        return true;
     }
 
     private boolean isTargetBandReferencedInExpression() {
