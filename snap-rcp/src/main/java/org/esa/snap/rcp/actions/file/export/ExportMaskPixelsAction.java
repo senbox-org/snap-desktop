@@ -37,6 +37,7 @@ import org.esa.snap.util.io.FileUtils;
 import org.esa.snap.util.io.SnapFileFilter;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.ContextAwareAction;
 import org.openide.util.HelpCtx;
@@ -74,17 +75,17 @@ import java.util.GregorianCalendar;
 )
 @ActionRegistration(
         displayName = "#CTL_ExportMaskPixelsAction_MenuText",
-        popupText = "#CTL_ExportMaskPixelsAction_ShortDescription",
+        popupText = "#CTL_ExportMaskPixelsAction_PopupText",
         lazy = false
 )
-
-@ActionReference(
-        path = "Menu/File/Export/Other",
-        position = 50
-)
+@ActionReferences({
+        @ActionReference(path = "Menu/File/Export/Other", position = 50),
+        @ActionReference(path = "Context/View", position = 50)
+})
 
 @NbBundle.Messages({
         "CTL_ExportMaskPixelsAction_MenuText=Mask Pixels",
+        "CTL_ExportMaskPixelsAction_PopupText=Export Mask Pixels",
         "CTL_ExportMaskPixelsAction_DialogTitle=Export Mask Pixels",
         "CTL_ExportMaskPixelsAction_ShortDescription=Export Mask Pixels."
 })
@@ -101,6 +102,7 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
 
     public ExportMaskPixelsAction(Lookup lkp) {
         super(Bundle.CTL_ExportMaskPixelsAction_MenuText());
+        putValue("popupText",Bundle.CTL_ExportMaskPixelsAction_PopupText());
         result = lkp.lookupResult(ProductSceneView.class);
         result.addLookupListener(WeakListeners.create(LookupListener.class, this, result));
         setEnabled(false);

@@ -47,8 +47,10 @@ import org.openide.awt.ActionRegistration;
 import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.AbstractAction;
+import javax.swing.JCheckBox;
+import javax.swing.SwingWorker;
+import java.awt.Dialog;
 import java.awt.event.ActionEvent;
 import java.awt.geom.Point2D;
 import java.io.BufferedWriter;
@@ -66,21 +68,19 @@ import java.util.Date;
 )
 @ActionRegistration(
         displayName = "#CTL_ExportTransectPixelsAction_MenuText",
-        popupText = "#CTL_ExportTransectPixelsAction_MenuText",
+        popupText = "#CTL_ExportTransectPixelsAction_PopupText",
         lazy = true
 )
+
 @ActionReferences({
-        @ActionReference(
-                path = "Menu/File/Export/Other",
-                position = 60
-        ),
-        @ActionReference(
-                path = "Context/Product/RasterDataNode",
-                position = 208
-        )
+        @ActionReference(path = "Menu/File/Export/Other",position = 60 ),
+        @ActionReference(path = "Context/Product/RasterDataNode", position = 208),
+        @ActionReference(path = "Context/View" , position = 40)
 })
+
 @NbBundle.Messages({
         "CTL_ExportTransectPixelsAction_MenuText=Transect Pixels",
+        "CTL_ExportTransectPixelsAction_PopupText=Export Transect Pixels",
         "CTL_ExportTransectPixelsAction_DialogTitle=Export Transect Pixels",
         "CTL_ExportTransectPixelsAction_ShortDescription=Export Transect Pixels."
 })
@@ -133,7 +133,7 @@ public class ExportTransectPixelsAction extends AbstractAction implements HelpCt
 
         if (transect == null) {
             SnapDialogs.showError(Bundle.CTL_ExportTransectPixelsAction_DialogTitle(),
-                                  ERR_MSG_BASE + "There is no transect defined in the selected band.");  
+                                  ERR_MSG_BASE + "There is no transect defined in the selected band.");
             return;
         }
 
@@ -145,7 +145,7 @@ public class ExportTransectPixelsAction extends AbstractAction implements HelpCt
                     .build();
         } catch (IOException e) {
             SnapDialogs.showError(Bundle.CTL_ExportTransectPixelsAction_DialogTitle(),
-                                  ERR_MSG_BASE + "An I/O error occurred:\n" + e.getMessage());   
+                                  ERR_MSG_BASE + "An I/O error occurred:\n" + e.getMessage());
             return;
         }
 
@@ -154,12 +154,12 @@ public class ExportTransectPixelsAction extends AbstractAction implements HelpCt
 
         String numPixelsText;
         if (numTransectPixels == 1) {
-            numPixelsText = "One transect pixel will be exported.\n"; 
+            numPixelsText = "One transect pixel will be exported.\n";
         } else {
-            numPixelsText = numTransectPixels + " transect pixels will be exported.\n"; 
+            numPixelsText = numTransectPixels + " transect pixels will be exported.\n";
         }
         // Get export method from user
-        final String questionText = "How do you want to export the pixel values?\n"; 
+        final String questionText = "How do you want to export the pixel values?\n";
         final JCheckBox createHeaderBox = new JCheckBox("Create header");
         final JCheckBox exportTiePointsBox = new JCheckBox("export tie-points");
         final JCheckBox exportWavelengthsAndSFBox = new JCheckBox("export wavelengths + solar fluxes");
@@ -189,7 +189,7 @@ public class ExportTransectPixelsAction extends AbstractAction implements HelpCt
                 fileWriter = new FileWriter(file);
             } catch (IOException e) {
                 SnapDialogs.showError(Bundle.CTL_ExportTransectPixelsAction_DialogTitle(),
-                                      ERR_MSG_BASE + "Failed to create file '" + file + "':\n" + e.getMessage()); 
+                                      ERR_MSG_BASE + "Failed to create file '" + file + "':\n" + e.getMessage());
                 return; // Error
             }
             out = new PrintWriter(new BufferedWriter(fileWriter, initialBufferSize));
@@ -249,7 +249,7 @@ public class ExportTransectPixelsAction extends AbstractAction implements HelpCt
         // show wait-cursor
         UIUtils.setRootFrameWaitCursor(SnapApp.getDefault().getMainFrame());
         // show message in status bar
-        SnapApp.getDefault().setStatusBarMessage("Exporting transect pixels..."); 
+        SnapApp.getDefault().setStatusBarMessage("Exporting transect pixels...");
 
         // Start separate worker thread.
         swingWorker.execute();

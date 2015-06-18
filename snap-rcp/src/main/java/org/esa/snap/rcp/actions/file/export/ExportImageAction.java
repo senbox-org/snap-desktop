@@ -34,6 +34,7 @@ import org.esa.snap.util.io.SnapFileFilter;
 import org.esa.snap.util.math.MathUtils;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
@@ -72,18 +73,19 @@ import java.awt.image.RenderedImage;
 )
 @ActionRegistration(
         displayName = "#CTL_ExportImageAction_MenuText",
-        popupText = "#CTL_ExportImageAction_ShortDescription",
+        popupText = "#CTL_ExportImageAction_PopupText",
         lazy = false
 )
-@ActionReference(
-        path = "Menu/File/Export/Other",
-        position = 80
-)
+@ActionReferences({
+        @ActionReference(path = "Menu/File/Export/Other", position = 80),
+        @ActionReference(path = "Context/View",position = 70)
+})
 @NbBundle.Messages({
         "CTL_ExportImageAction_MenuText=View as Image",
+        "CTL_ExportImageAction_PopupText=Export View as Image",
         "CTL_ExportImageAction_ShortDescription=Export the current view as an image."
 })
-public class ExportImageAction extends org.esa.snap.rcp.actions.file.export.AbstractExportImageAction {
+public class ExportImageAction extends AbstractExportImageAction {
     private final static String[][] SCENE_IMAGE_FORMAT_DESCRIPTIONS = {
             BMP_FORMAT_DESCRIPTION,
             PNG_FORMAT_DESCRIPTION,
@@ -107,6 +109,7 @@ public class ExportImageAction extends org.esa.snap.rcp.actions.file.export.Abst
 
     public ExportImageAction(Lookup lookup) {
         super(Bundle.CTL_ExportImageAction_MenuText(), HELP_ID);
+        putValue("popupText",Bundle.CTL_ExportImageAction_PopupText());
         sceneImageFileFilters = new SnapFileFilter[SCENE_IMAGE_FORMAT_DESCRIPTIONS.length];
         for (int i = 0; i < SCENE_IMAGE_FORMAT_DESCRIPTIONS.length; i++) {
             sceneImageFileFilters[i] = createFileFilter(SCENE_IMAGE_FORMAT_DESCRIPTIONS[i]);
