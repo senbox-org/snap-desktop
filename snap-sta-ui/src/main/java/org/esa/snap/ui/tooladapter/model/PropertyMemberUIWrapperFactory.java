@@ -19,6 +19,7 @@ package org.esa.snap.ui.tooladapter.model;
 
 import com.bc.ceres.binding.*;
 import com.bc.ceres.binding.converters.ArrayConverter;
+import com.bc.ceres.binding.converters.StringConverter;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.PropertyEditor;
 import com.bc.ceres.swing.binding.PropertyEditorRegistry;
@@ -318,6 +319,11 @@ public class PropertyMemberUIWrapperFactory {
                 descriptor.setDefaultConverter();
                 try {
                     descriptor.setDefaultValue(property.getDefaultValue());
+                } catch (Exception ex) {
+                    Logger.getLogger(PropertyMemberUIWrapper.class.getName()).warning(ex.getMessage());
+                }
+                try {
+                    descriptor.setValueSet(ValueSet.parseValueSet(property.getValueSet(), new StringConverter()));
                 } catch (Exception ex) {
                     Logger.getLogger(PropertyMemberUIWrapper.class.getName()).warning(ex.getMessage());
                 }
