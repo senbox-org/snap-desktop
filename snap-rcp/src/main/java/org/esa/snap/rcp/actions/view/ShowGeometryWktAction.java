@@ -16,12 +16,11 @@
 
 package org.esa.snap.rcp.actions.view;
 
-import com.bc.ceres.swing.selection.SelectionChangeEvent;
-import com.bc.ceres.swing.selection.SelectionChangeListener;
+import com.bc.ceres.swing.figure.Figure;
+import com.bc.ceres.swing.figure.FigureSelection;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKTWriter;
 import org.esa.snap.framework.ui.ModalDialog;
-import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.framework.ui.product.SimpleFeatureFigure;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
@@ -36,9 +35,16 @@ import org.opengis.referencing.operation.TransformException;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
+import org.openide.util.ContextAwareAction;
+import org.openide.util.Lookup;
+import org.openide.util.LookupEvent;
+import org.openide.util.LookupListener;
 import org.openide.util.NbBundle;
+import org.openide.util.Utilities;
+import org.openide.util.WeakListeners;
 
 import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -60,7 +66,7 @@ import java.awt.event.ActionEvent;
 @ActionRegistration(
         displayName = "#CTL_ShowGeometryWktAction_MenuText",
         popupText = "#CTL_ShowGeometryWktAction_MenuText",
-        lazy = true
+        lazy = false
 )
 @ActionReference(path = "Context/View", position = 10)
 
@@ -70,16 +76,22 @@ import java.awt.event.ActionEvent;
 })
 
 
-public class ShowGeometryWktAction extends AbstractAction implements SelectionChangeListener {
+public class ShowGeometryWktAction extends AbstractAction implements LookupListener, ContextAwareAction {
 
     private static final String DLG_TITLE = "WKT from Geometry";
-    private SimpleFeatureFigure selectedFeatureFigure;
-    private ProductSceneView productSceneView;
+    private Lookup.Result<FigureSelection> result;
+    private Lookup lookup;
 
+    public ShowGeometryWktAction() {
+        this(Utilities.actionsGlobalContext());
+    }
 
-    public ShowGeometryWktAction(ProductSceneView productSceneView) {
+    public ShowGeometryWktAction(Lookup lookup) {
         super(Bundle.CTL_ShowGeometryWktAction_MenuText());
-        this.productSceneView = productSceneView;
+        this.lookup = lookup;
+        result = lookup.lookupResult(FigureSelection.class);
+        result.addLookupListener(WeakListeners.create(LookupListener.class, this, result));
+        setEnabled(false);
     }
 
     @Override
@@ -87,14 +99,19 @@ public class ShowGeometryWktAction extends AbstractAction implements SelectionCh
         exportToWkt();
     }
 
-    private boolean hasSelectedFeatureFigure() {
-        return getSelectedFeatureFigure() != null;
+    @Override
+    public Action createContextAwareInstance(Lookup actionContext) {
+        return new ShowGeometryWktAction(actionContext);
+    }
+
+    @Override
+    public void resultChanged(LookupEvent lookupEvent) {
+        FigureSelection selection = this.lookup.lookup(FigureSelection.class);
+        setEnabled(selection.getFigureCount() > 0);
     }
 
     private void exportToWkt() {
-       // ProductSceneView productSceneView = SnapApp.getDefault().getSelectedProductSceneView();
-
-        selectedFeatureFigure = productSceneView.getSelectedFeatureFigure();
+        SimpleFeatureFigure selectedFeatureFigure = getSimpleFeatureFigure();
         if (selectedFeatureFigure == null) {
             SnapDialogs.showInformation(DLG_TITLE, "Please select a geometry.", null);
             return;
@@ -136,6 +153,18 @@ public class ShowGeometryWktAction extends AbstractAction implements SelectionCh
         modalDialog.show();
     }
 
+    private SimpleFeatureFigure getSimpleFeatureFigure() {
+        FigureSelection selection = this.lookup.lookup(FigureSelection.class);
+        SimpleFeatureFigure selectedFeatureFigure = null;
+        Figure[] figures = selection.getFigures();
+        for (Figure figure : figures) {
+            if (figure instanceof SimpleFeatureFigure) {
+                selectedFeatureFigure = (SimpleFeatureFigure) figure;
+            }
+        }
+        return selectedFeatureFigure;
+    }
+
     private Geometry transformGeometry(Geometry sourceGeom,
                                        CoordinateReferenceSystem sourceCrs,
                                        CoordinateReferenceSystem targetCrs) throws FactoryException, TransformException {
@@ -145,21 +174,4 @@ public class ShowGeometryWktAction extends AbstractAction implements SelectionCh
         return gcst.transform(sourceGeom);
     }
 
-
-    /////////////////////////////////////////////////////////////////////////////////
-    // Implementation of the SelectionChangeListener interface
-
-    @Override
-    public void selectionChanged(SelectionChangeEvent event) {
-        setEnabled(hasSelectedFeatureFigure());
-    }
-
-    @Override
-    public void selectionContextChanged(SelectionChangeEvent event) {
-        setEnabled(hasSelectedFeatureFigure());
-    }
-
-    public SimpleFeatureFigure getSelectedFeatureFigure() {
-        return selectedFeatureFigure;
-    }
 }
