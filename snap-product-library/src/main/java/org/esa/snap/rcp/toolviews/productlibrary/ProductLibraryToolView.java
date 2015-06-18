@@ -106,15 +106,24 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
     private DatabasePane dbPane;
     private ProductLibraryActions productLibraryActions;
 
+    private boolean initialized = false;
+
     public ProductLibraryToolView() {
         setDisplayName("Product Library");
-        initDatabase();
-        initUI();
     }
 
-    @Override
-    public void componentOpened() {
+    protected void componentShowing() {
+        if(!initialized) {
+            initialize();
+        }
+    }
+
+    private void initialize() {
+        initDatabase();
+        initUI();
         dbPane.getDB();
+
+        initialized = true;
     }
 
     private void initDatabase() {

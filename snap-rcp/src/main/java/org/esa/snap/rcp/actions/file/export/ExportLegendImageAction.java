@@ -29,6 +29,7 @@ import org.esa.snap.util.io.SnapFileChooser;
 import org.esa.snap.util.io.SnapFileFilter;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
@@ -62,20 +63,21 @@ import java.awt.image.RenderedImage;
 )
 @ActionRegistration(
         displayName = "#CTL_ExportLegendImageAction_MenuText",
-        popupText = "#CTL_ExportLegendImageAction_ShortDescription" ,
+        popupText = "#CTL_ExportLegendImageAction_PopupText",
         lazy = false
 
 )
-@ActionReference(
-        path = "Menu/File/Export/Other",
-        position = 10
-)
+@ActionReferences({
+        @ActionReference(path = "Menu/File/Export/Other", position = 10),
+        @ActionReference(path = "Context/View", position = 90)
+})
 @NbBundle.Messages({
         "CTL_ExportLegendImageAction_MenuText=Colour Legend as Image",
+        "CTL_ExportLegendImageAction_PopupText=Export Colour Legend as Image",
         "CTL_ExportLegendImageAction_ShortDescription=Export the colour legend of the current view as an image."
 })
 
-public class ExportLegendImageAction extends org.esa.snap.rcp.actions.file.export.AbstractExportImageAction {
+public class ExportLegendImageAction extends AbstractExportImageAction {
     private final static String[][] IMAGE_FORMAT_DESCRIPTIONS = {
             BMP_FORMAT_DESCRIPTION,
             PNG_FORMAT_DESCRIPTION,
@@ -101,6 +103,7 @@ public class ExportLegendImageAction extends org.esa.snap.rcp.actions.file.expor
 
     public ExportLegendImageAction(Lookup lookup) {
         super(Bundle.CTL_ExportLegendImageAction_MenuText(), HELP_ID);
+        putValue("popupText",Bundle.CTL_ExportLegendImageAction_PopupText());
         imageFileFilters = new SnapFileFilter[IMAGE_FORMAT_DESCRIPTIONS.length];
         for (int i = 0; i < IMAGE_FORMAT_DESCRIPTIONS.length; i++) {
             imageFileFilters[i] = createFileFilter(IMAGE_FORMAT_DESCRIPTIONS[i]);
@@ -421,9 +424,9 @@ public class ExportLegendImageAction extends org.esa.snap.rcp.actions.file.expor
                 }
             });
             final ModalDialog dialog = new ModalDialog(getParent(),
-                    SnapApp.getDefault().getInstanceName() + " - Colour Legend Preview",
-                    imageDisplay,
-                    ID_OK, null);
+                                                       SnapApp.getDefault().getInstanceName() + " - Colour Legend Preview",
+                                                       imageDisplay,
+                                                       ID_OK, null);
             dialog.getJDialog().setResizable(false);
             dialog.show();
         }

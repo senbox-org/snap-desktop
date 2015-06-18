@@ -70,6 +70,7 @@ import org.esa.snap.glayer.NoDataLayerType;
 import org.esa.snap.glayer.ProductLayerContext;
 import org.esa.snap.glevel.MaskImageMultiLevelSource;
 import org.esa.snap.util.PropertyMap;
+import org.esa.snap.util.StringUtils;
 import org.esa.snap.util.SystemUtils;
 import org.openide.util.Utilities;
 
@@ -103,8 +104,11 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.RenderedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Vector;
 
 /**
  * The class <code>ProductSceneView</code> is a high-level image display component for color index/RGB images created
@@ -407,10 +411,14 @@ public class ProductSceneView extends BasicView
         JPopupMenu popupMenu = new JPopupMenu();
         List<? extends Action> viewActions = Utilities.actionsForPath("Context/View");
         for (Action action : viewActions) {
-            popupMenu.add(action);
+            JMenuItem menuItem = popupMenu.add(action);
+            String popupText = (String) action.getValue("popupText");
+            if (StringUtils.isNotNullAndNotEmpty(popupText)) {
+                menuItem.setText(popupText);
+            }
         }
         addCopyPixelInfoToClipboardMenuItem(popupMenu);
-        return popupMenu;
+      return popupMenu;
     }
 
     /**
@@ -1078,7 +1086,15 @@ public class ProductSceneView extends BasicView
         menuItem.setMnemonic('C');
         menuItem.addActionListener(e -> copyPixelInfoStringToClipboard());
         popupMenu.add(menuItem);
-        popupMenu.addSeparator();
+    }
+
+
+
+    private void addShowGeometryOverlayAction(JPopupMenu popupMenu) {
+        JMenuItem menuItem = new JMenuItem("ShowGeometryOverplayaction");
+        menuItem.setMnemonic('C');
+//        menuItem.addActionListener();
+        popupMenu.add(menuItem);
     }
 
     public int getFirstImageLayerIndex() {
