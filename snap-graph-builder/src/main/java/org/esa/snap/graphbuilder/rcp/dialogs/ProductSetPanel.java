@@ -161,11 +161,12 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
             addAllOpenButton.setEnabled(SnapApp.getDefault().getProductManager().getProducts().length > 0);
         }
 
-        String cntMsg = "";
-        if (rowCount == 1)
+        String cntMsg;
+        if (rowCount == 1) {
             cntMsg = rowCount + " Product";
-        else if (rowCount > 1)
+        } else {
             cntMsg = rowCount + " Products";
+        }
         countLabel.setText(cntMsg);
     }
 
