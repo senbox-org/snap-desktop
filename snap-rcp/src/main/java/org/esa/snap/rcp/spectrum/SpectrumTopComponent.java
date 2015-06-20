@@ -40,6 +40,7 @@ import org.esa.snap.framework.ui.tool.ToolButtonFactory;
 import org.esa.snap.jai.ImageManager;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.actions.help.HelpAction;
 import org.esa.snap.rcp.placemark.PlacemarkUtils;
 import org.esa.snap.rcp.statistics.XYPlotMarker;
 import org.esa.snap.rcp.windows.ToolTopComponent;
@@ -374,9 +375,10 @@ public class SpectrumTopComponent extends ToolTopComponent {
         exportSpectraButton.setToolTipText("Export spectra to text file.");
         exportSpectraButton.setName("exportSpectraButton");
 
-        AbstractButton helpButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon("icons/Help22.png"), false);
+        AbstractButton helpButton = ToolButtonFactory.createButton(new HelpAction(this), false);
         helpButton.setName("helpButton");
-        helpButton.setToolTipText("Help."); /*I18N*/
+        helpButton.setToolTipText("Help.");
+
 
         final JPanel buttonPane = GridBagUtils.createPanel();
         final GridBagConstraints gbc = new GridBagConstraints();
@@ -420,8 +422,6 @@ public class SpectrumTopComponent extends ToolTopComponent {
         mainPane.add(BorderLayout.CENTER, chartPanel);
         mainPane.add(BorderLayout.EAST, buttonPane);
         mainPane.setPreferredSize(new Dimension(320, 200));
-
-        helpButton.addActionListener(e -> getHelpCtx());
 
         SnapApp.getDefault().getProductManager().addListener(new ProductManager.Listener() {
             @Override
