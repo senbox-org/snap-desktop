@@ -17,12 +17,8 @@ package org.esa.snap.graphbuilder.rcp.dialogs.support;
 
 import com.bc.ceres.core.Assert;
 import com.bc.ceres.core.ProgressMonitor;
-import org.esa.snap.gpf.ProgressMonitorList;
 
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 
 /**
  * A {@link com.bc.ceres.core.ProgressMonitor} which uses a
@@ -74,8 +70,6 @@ public class ProgressBarProgressMonitor implements ProgressMonitor {
         setVisibility(true);
         progressBar.setMaximum(totalWork);
         //toggleUpdateButton(stopCommand);
-
-        ProgressMonitorList.instance().add(this);
     }
 
     /**
@@ -93,9 +87,7 @@ public class ProgressBarProgressMonitor implements ProgressMonitor {
                 }
             }
         });
-        ProgressMonitorList.instance().remove(this);
     }
-
 
     /**
      * Internal method to handle scaling correctly. This method

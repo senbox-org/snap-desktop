@@ -47,7 +47,6 @@ import org.esa.snap.framework.gpf.ui.SourceProductSelector;
 import org.esa.snap.framework.gpf.ui.TargetProductSelectorModel;
 import org.esa.snap.framework.ui.AppContext;
 import org.esa.snap.framework.ui.UIUtils;
-import org.esa.snap.gpf.ProgressMonitorList;
 import org.esa.snap.gpf.operators.standard.WriteOp;
 import org.esa.snap.graphbuilder.gpf.ui.OperatorUI;
 import org.esa.snap.graphbuilder.gpf.ui.OperatorUIRegistry;
@@ -315,7 +314,7 @@ public class SingleOperatorDialog extends SingleTargetProductDialog {
         protected Product doInBackground(com.bc.ceres.core.ProgressMonitor pm) throws Exception {
             final TargetProductSelectorModel model = getTargetProductSelector().getModel();
             pm.beginTask("Writing...", model.isOpenInAppSelected() ? 100 : 95);
-            ProgressMonitorList.instance().add(pm);
+
             Product product = null;
             try {
                 // free cache	// NESTMOD
@@ -355,7 +354,7 @@ public class SingleOperatorDialog extends SingleTargetProductDialog {
                 System.gc();
 
                 pm.done();
-                ProgressMonitorList.instance().remove(pm);
+
                 if (product != targetProduct) {
                     targetProduct.dispose();
                 }
