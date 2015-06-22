@@ -108,7 +108,11 @@ import java.util.stream.Collectors;
         "MSG_Inexistent_WorkDir_Text=The working directory does not exist.\n" +
                 "Please specify a valid location.",
         "MSG_Inexistem_Parameter_Value_Text=The file or folder for parameter %s does not exist.\n" +
-                "Please specify a valid location or change the %s property of the parameter."
+                "Please specify a valid location or change the %s property of the parameter.",
+        "MSG_Wrong_Value_Text=One or more form parameters have invalid values.\n" +
+                "Please correct them before saving the adapter.",
+        "MSG_Wrong_Usage_Array_Text=You have used array notation for source products, but only one product will be used.\n" +
+                "Please correct the problem before saving the adapter."
 })
 public class ToolAdapterEditorDialog extends ModalDialog {
 
@@ -221,7 +225,8 @@ public class ToolAdapterEditorDialog extends ModalDialog {
             return false;
         }
         if (!file.exists()) {
-            newOperatorDescriptor.setMainToolFileLocation(resolvePathOnSystem(file));
+            File resolvedFile = resolvePathOnSystem(file);
+            newOperatorDescriptor.setMainToolFileLocation(resolvedFile == null ? file : resolvedFile);
         }
 
         Path toolLocation = newOperatorDescriptor.getExpandedLocation(newOperatorDescriptor.getMainToolFileLocation()).toPath();
@@ -254,62 +259,55 @@ public class ToolAdapterEditorDialog extends ModalDialog {
     @Override
     protected void onOK() {
         if (!verifyUserInput()) {
+            SnapDialogs.showWarning(Bundle.MSG_Wrong_Value_Text());
             this.getJDialog().requestFocus();
         } else {
-            super.onOK();
-            if (!this.operatorIsNew) {
-                ToolAdapterActionRegistrar.removeOperatorMenu(oldOperatorDescriptor);
-                ToolAdapterIO.removeOperator(oldOperatorDescriptor, false);
-            }
-            if (!newOperatorDescriptor.isFromPackage()) {
-                newOperatorDescriptor.setSource(ToolAdapterOperatorDescriptor.SOURCE_USER);
-            }
-            newOperatorDescriptor.setTemplateFileLocation(newOperatorDescriptor.getAlias() + ToolAdapterConstants.TOOL_VELO_TEMPLATE_SUFIX);
-            java.util.List<TemplateParameterDescriptor> toolParameterDescriptors = newOperatorDescriptor.getToolParameterDescriptors();
-            toolParameterDescriptors.stream().filter(param -> paramsTable.getBindingContext().getBinding(param.getName()) != null)
-                    .filter(param -> paramsTable.getBindingContext().getBinding(param.getName()).getPropertyValue() != null)
-                    .forEach(param -> {
-                        Object propertyValue = paramsTable.getBindingContext().getBinding(param.getName()).getPropertyValue();
-                        if (param.isTemplateBefore() || param.isTemplateAfter()) {
-                            param.setDefaultValue(new File(propertyValue.toString()).getName());
-                        } else {
-                            String defaultValueString = "";
-                            if(propertyValue.getClass().isArray()){
-                                defaultValueString = String.join(ArrayConverter.SEPARATOR,
-                                        Arrays.asList((Object[]) propertyValue).stream().map(Object::toString).collect(Collectors.toList()));
+            String templateContent = this.templateContent.getText();
+            if (!resolveTemplateProductCount(templateContent)) {
+                SnapDialogs.showWarning(Bundle.MSG_Wrong_Usage_Array_Text());
+                this.getJDialog().requestFocus();
+            } else {
+                super.onOK();
+                if (!this.operatorIsNew) {
+                    ToolAdapterActionRegistrar.removeOperatorMenu(oldOperatorDescriptor);
+                    ToolAdapterIO.removeOperator(oldOperatorDescriptor, false);
+                }
+                if (!newOperatorDescriptor.isFromPackage()) {
+                    newOperatorDescriptor.setSource(ToolAdapterOperatorDescriptor.SOURCE_USER);
+                }
+                newOperatorDescriptor.setTemplateFileLocation(newOperatorDescriptor.getAlias() + ToolAdapterConstants.TOOL_VELO_TEMPLATE_SUFIX);
+                java.util.List<TemplateParameterDescriptor> toolParameterDescriptors = newOperatorDescriptor.getToolParameterDescriptors();
+                toolParameterDescriptors.stream().filter(param -> paramsTable.getBindingContext().getBinding(param.getName()) != null)
+                        .filter(param -> paramsTable.getBindingContext().getBinding(param.getName()).getPropertyValue() != null)
+                        .forEach(param -> {
+                            Object propertyValue = paramsTable.getBindingContext().getBinding(param.getName()).getPropertyValue();
+                            if (param.isTemplateBefore() || param.isTemplateAfter()) {
+                                param.setDefaultValue(new File(propertyValue.toString()).getName());
                             } else {
-                                defaultValueString = propertyValue.toString();
+                                String defaultValueString = "";
+                                if (propertyValue.getClass().isArray()) {
+                                    defaultValueString = String.join(ArrayConverter.SEPARATOR,
+                                            Arrays.asList((Object[]) propertyValue).stream().map(Object::toString).collect(Collectors.toList()));
+                                } else {
+                                    defaultValueString = propertyValue.toString();
+                                }
+                                param.setDefaultValue(defaultValueString);
                             }
-                            param.setDefaultValue(defaultValueString);
-                        }
-                    });
-            java.util.List<TemplateParameterDescriptor> remParameters = toolParameterDescriptors.stream().filter(param -> ToolAdapterConstants.TOOL_SOURCE_PRODUCT_ID.equals(param.getName())).
-                    collect(Collectors.toList());
-            newOperatorDescriptor.removeParamDescriptors(remParameters);
-            try {
-                String menuLocation = newOperatorDescriptor.getMenuLocation();
-                if (menuLocation != null && !menuLocation.startsWith("Menu/")) {
-                    newOperatorDescriptor.setMenuLocation("Menu/" + menuLocation);
-                }
-                String templateContent = this.templateContent.getText();
-                int idx = templateContent.lastIndexOf(ToolAdapterConstants.TOOL_SOURCE_PRODUCT_ID + "[");
-                if (idx > 0) {
-                    String value = templateContent.substring(idx + (ToolAdapterConstants.TOOL_SOURCE_PRODUCT_ID + "[").length(), templateContent.indexOf("]", idx));
-                    int maxNum = Integer.valueOf(value) + 1;
-                    newOperatorDescriptor.setSourceProductCount(maxNum);
-                } else {
-                    idx = templateContent.lastIndexOf(ToolAdapterConstants.TOOL_SOURCE_PRODUCT_FILE + "[");
-                    if (idx > 0) {
-                        String value = templateContent.substring(idx + (ToolAdapterConstants.TOOL_SOURCE_PRODUCT_FILE + "[").length(), templateContent.indexOf("]", idx));
-                        int maxNum = Integer.valueOf(value) + 1;
-                        newOperatorDescriptor.setSourceProductCount(maxNum);
+                        });
+                java.util.List<TemplateParameterDescriptor> remParameters = toolParameterDescriptors.stream().filter(param -> ToolAdapterConstants.TOOL_SOURCE_PRODUCT_ID.equals(param.getName())).
+                        collect(Collectors.toList());
+                newOperatorDescriptor.removeParamDescriptors(remParameters);
+                try {
+                    String menuLocation = newOperatorDescriptor.getMenuLocation();
+                    if (menuLocation != null && !menuLocation.startsWith("Menu/")) {
+                        newOperatorDescriptor.setMenuLocation("Menu/" + menuLocation);
                     }
+                    ToolAdapterIO.saveAndRegisterOperator(newOperatorDescriptor, templateContent);
+                    ToolAdapterActionRegistrar.registerOperatorMenu(newOperatorDescriptor);
+                } catch (Exception e) {
+                    logger.warning(e.getMessage());
+                    SnapDialogs.showError(e.getMessage());
                 }
-                ToolAdapterIO.saveAndRegisterOperator(newOperatorDescriptor, templateContent);
-                ToolAdapterActionRegistrar.registerOperatorMenu(newOperatorDescriptor);
-            } catch (Exception e) {
-                logger.warning(e.getMessage());
-                SnapDialogs.showError(e.getMessage());
             }
         }
     }
@@ -689,5 +687,33 @@ public class ToolAdapterEditorDialog extends ModalDialog {
             }
         }
         return resolved;
+    }
+
+    private boolean resolveTemplateProductCount(String templateContent) {
+        boolean success = true;
+        int idx = templateContent.lastIndexOf(ToolAdapterConstants.TOOL_SOURCE_PRODUCT_ID + "[");
+        if (idx > 0) {
+            String value = templateContent.substring(idx + (ToolAdapterConstants.TOOL_SOURCE_PRODUCT_ID + "[").length(), templateContent.indexOf("]", idx));
+            int maxNum = Integer.valueOf(value) + 1;
+            if (maxNum > 1) {
+                newOperatorDescriptor.setSourceProductCount(maxNum);
+            } else {
+                success = false;
+            }
+        } else {
+            idx = templateContent.lastIndexOf(ToolAdapterConstants.TOOL_SOURCE_PRODUCT_FILE + "[");
+            if (idx > 0) {
+                String value = templateContent.substring(idx + (ToolAdapterConstants.TOOL_SOURCE_PRODUCT_FILE + "[").length(), templateContent.indexOf("]", idx));
+                int maxNum = Integer.valueOf(value) + 1;
+                if (maxNum > 1) {
+                    newOperatorDescriptor.setSourceProductCount(maxNum);
+                } else {
+                    success = false;
+                }
+            } else {
+                newOperatorDescriptor.setSourceProductCount(1);
+            }
+        }
+        return success;
     }
 }
