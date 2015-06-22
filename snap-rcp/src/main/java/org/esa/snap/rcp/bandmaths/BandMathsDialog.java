@@ -147,10 +147,17 @@ class BandMathsDialog extends ModalDialog {
     @Override
     protected void onOK() {
         final String validMaskExpression;
+        int width = targetProduct.getSceneRasterWidth();
+        int height = targetProduct.getSceneRasterHeight();
         try {
             Product[] products = getCompatibleProducts();
             int defaultProductIndex = Arrays.asList(products).indexOf(targetProduct);
             validMaskExpression = BandArithmetic.getValidMaskExpression(getExpression(), products, defaultProductIndex, null);
+            final RasterDataNode[] refRasters = BandArithmetic.getRefRasters(getExpression(), products, defaultProductIndex);
+            if (refRasters.length > 0) {
+                width = refRasters[0].getRasterWidth();
+                height = refRasters[0].getRasterHeight();
+            }
         } catch (ParseException e) {
             String errorMessage = Bundle.CTL_BandMathsDialog_ErrBandNotCreated() + e.getMessage();
             SnapDialogs.showError(Bundle.CTL_BandMathsDialog_Title() + " - Error", errorMessage);
@@ -170,10 +177,6 @@ class BandMathsDialog extends ModalDialog {
             }
             uncertaintyExpression = new TermDecompiler().decompile(term);
         }
-        //todo determine width and height from referenced rasters
-        final int width = targetProduct.getSceneRasterWidth();
-        final int height = targetProduct.getSceneRasterHeight();
-
         Band band;
         if (saveExpressionOnly) {
             band = new VirtualBand(getBandName(), ProductData.TYPE_FLOAT32, width, height, getExpression());
