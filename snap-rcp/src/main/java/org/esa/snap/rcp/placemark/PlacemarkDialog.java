@@ -35,6 +35,9 @@ import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
 
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import java.awt.BorderLayout;
 import java.awt.Window;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -138,7 +141,11 @@ public class PlacemarkDialog extends ModalDialog {
                 symbolLabel.setPreferredSize(new Dimension(40, 40));
         */
 
-        setContent(new PropertyPane(bindingContext).createPanel());
+        final JPanel panel = new PropertyPane(bindingContext).createPanel();
+        final JPanel content = new JPanel(new BorderLayout());
+        content.add(panel, BorderLayout.CENTER);
+        content.add(new JLabel("Pixel position is given in product raster coordinates"), BorderLayout.SOUTH);
+        setContent(content);
         if (switchGeoAndPixelPositionsEditable) {
             bindingContext.bindEnabledState(PROPERTY_NAME_LAT, false, PROPERTY_NAME_USE_PIXEL_POS, true);
             bindingContext.bindEnabledState(PROPERTY_NAME_LON, false, PROPERTY_NAME_USE_PIXEL_POS, true);
