@@ -45,6 +45,7 @@ import com.bc.ceres.swing.selection.SelectionChangeEvent;
 import com.bc.ceres.swing.selection.SelectionContext;
 import com.bc.ceres.swing.undo.UndoContext;
 import com.bc.ceres.swing.undo.support.DefaultUndoContext;
+import com.bc.jexp.ParseException;
 import org.esa.snap.framework.datamodel.GeoCoding;
 import org.esa.snap.framework.datamodel.GeoPos;
 import org.esa.snap.framework.datamodel.ImageInfo;
@@ -59,6 +60,7 @@ import org.esa.snap.framework.datamodel.ProductNodeListener;
 import org.esa.snap.framework.datamodel.RasterDataNode;
 import org.esa.snap.framework.datamodel.VectorDataNode;
 import org.esa.snap.framework.datamodel.VirtualBand;
+import org.esa.snap.framework.dataop.barithm.BandArithmetic;
 import org.esa.snap.framework.ui.BasicView;
 import org.esa.snap.framework.ui.PixelPositionListener;
 import org.esa.snap.framework.ui.PopupMenuHandler;
@@ -1119,12 +1121,40 @@ public class ProductSceneView extends BasicView
         public RGBChannel(final Product product, final String name, final String expression) {
             super(name,
                   ProductData.TYPE_FLOAT32,
-                  product.getSceneRasterWidth(),
-                  product.getSceneRasterHeight(),
+                  determineWidth(expression, product),
+                  determineHeight(expression, product),
                   expression);
             setOwner(product);
             setModified(false);
         }
+    }
+
+    private static int determineWidth(String expression, Product product) {
+        int width = product.getSceneRasterWidth();
+        try {
+            final RasterDataNode[] refRasters = BandArithmetic.getRefRasters(expression, product);
+            if (refRasters.length > 0) {
+                width = refRasters[0].getRasterWidth();
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+            //should not come here
+        }
+        return width;
+    }
+
+    private static int determineHeight(String expression, Product product) {
+        int height = product.getSceneRasterHeight();
+        try {
+            final RasterDataNode[] refRasters = BandArithmetic.getRefRasters(expression, product);
+            if (refRasters.length > 0) {
+                height = refRasters[0].getRasterHeight();
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+            //should not come here
+        }
+        return height;
     }
 
     private final class RasterChangeHandler implements ProductNodeListener {

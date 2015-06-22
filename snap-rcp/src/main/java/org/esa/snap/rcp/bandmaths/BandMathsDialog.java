@@ -147,10 +147,17 @@ class BandMathsDialog extends ModalDialog {
     @Override
     protected void onOK() {
         final String validMaskExpression;
+        int width = targetProduct.getSceneRasterWidth();
+        int height = targetProduct.getSceneRasterHeight();
         try {
             Product[] products = getCompatibleProducts();
             int defaultProductIndex = Arrays.asList(products).indexOf(targetProduct);
             validMaskExpression = BandArithmetic.getValidMaskExpression(getExpression(), products, defaultProductIndex, null);
+            final RasterDataNode[] refRasters = BandArithmetic.getRefRasters(getExpression(), products, defaultProductIndex);
+            if (refRasters.length > 0) {
+                width = refRasters[0].getRasterWidth();
+                height = refRasters[0].getRasterHeight();
+            }
         } catch (ParseException e) {
             String errorMessage = Bundle.CTL_BandMathsDialog_ErrBandNotCreated() + e.getMessage();
             SnapDialogs.showError(Bundle.CTL_BandMathsDialog_Title() + " - Error", errorMessage);
@@ -170,10 +177,6 @@ class BandMathsDialog extends ModalDialog {
             }
             uncertaintyExpression = new TermDecompiler().decompile(term);
         }
-
-        final int width = targetProduct.getSceneRasterWidth();
-        final int height = targetProduct.getSceneRasterHeight();
-
         Band band;
         if (saveExpressionOnly) {
             band = new VirtualBand(getBandName(), ProductData.TYPE_FLOAT32, width, height, getExpression());
@@ -235,29 +238,7 @@ class BandMathsDialog extends ModalDialog {
             showErrorDialog(Bundle.CTL_BandMathsDialog_ErrBandCannotBeReferenced(getBandName()));
             return false;
         }
-
-        if (!referencedRastersHaveEqualSize()) {
-            showErrorDialog("The size of one of the referenced rasters is not equal to the size of the other rasters.");
-            return false;
-        }
-
         return super.verifyUserInput();
-    }
-
-    private boolean referencedRastersHaveEqualSize() {
-        Product[] compatibleProducts = getCompatibleProducts();
-        int defaultProductIndex = Arrays.asList(compatibleProducts).indexOf(targetProduct);
-        try {
-            RasterDataNode[] rasters = BandArithmetic.getRefRasters(getExpression(), compatibleProducts, defaultProductIndex);
-            for (RasterDataNode raster : rasters) {
-                if (!raster.getRasterSize().equals(targetProduct.getSceneRasterSize())) {
-                    return false;
-                }
-            }
-        } catch (ParseException e) {
-            return false;
-        }
-        return true;
     }
 
     private void makeUI() {
@@ -553,11 +534,11 @@ class BandMathsDialog extends ModalDialog {
                                                                           defaultIndex == -1 ? 0 : defaultIndex);
         final Parser parser = new ParserImpl(namespace, false);
         try {
-            parser.parse(getExpression());
+            final Term term = parser.parse(getExpression());
+            return BandArithmetic.areReferencedRastersCompatible(term);
         } catch (ParseException e) {
             return false;
         }
-        return true;
     }
 
     private boolean isTargetBandReferencedInExpression() {
