@@ -18,11 +18,13 @@ package org.esa.snap.rcp.actions.view;
 import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.core.SubProgressMonitor;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
+import com.bc.jexp.ParseException;
 import org.esa.snap.framework.datamodel.Band;
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.ProductData;
 import org.esa.snap.framework.datamodel.ProductNode;
 import org.esa.snap.framework.datamodel.RGBImageProfile;
+import org.esa.snap.framework.datamodel.RasterDataNode;
 import org.esa.snap.framework.datamodel.Stx;
 import org.esa.snap.framework.datamodel.VirtualBand;
 import org.esa.snap.framework.dataop.barithm.BandArithmetic;
@@ -228,11 +230,21 @@ public class OpenHSVImageViewAction extends AbstractAction implements HelpCtx.Pr
     }
 
     public static Band createVirtualBand(final Product product, final String expression, final String name) {
+        int width = product.getSceneRasterWidth();
+        int height = product.getSceneRasterHeight();
+        try {
+            final RasterDataNode[] refRasters = BandArithmetic.getRefRasters(expression, product);
+            width = refRasters[0].getRasterWidth();
+            height = refRasters[0].getRasterHeight();
+        } catch (ParseException e) {
+            e.printStackTrace();
+            //should not come here
+        }
 
         final VirtualBand virtBand = new VirtualBand(name,
                                                      ProductData.TYPE_FLOAT64,
-                                                     product.getSceneRasterWidth(),
-                                                     product.getSceneRasterHeight(),
+                                                     width,
+                                                     height,
                                                      expression);
         virtBand.setNoDataValueUsed(true);
         product.addBand(virtBand);
