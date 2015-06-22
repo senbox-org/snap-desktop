@@ -162,8 +162,11 @@ class ProductLayerAssistantPage extends AbstractLayerSourceAssistantPage {
 
         ArrayList<CompatibleNodeList> compatibleNodeLists = new ArrayList<>(3);
         List<RasterDataNode> compatibleNodes = new ArrayList<>();
-        collectCompatibleRasterDataNodes(raster, selectedProduct.getBands(), compatibleNodes);
-        compatibleNodes.addAll(Arrays.asList(selectedProduct.getTiePointGrids()));
+        collectCompatibleBands(raster, selectedProduct.getBands(), compatibleNodes);
+        if (raster.getRasterWidth() == selectedProduct.getSceneRasterWidth() &&
+            raster.getRasterHeight() == selectedProduct.getSceneRasterHeight()) {
+            compatibleNodes.addAll(Arrays.asList(selectedProduct.getTiePointGrids()));
+        }
         if (!compatibleNodes.isEmpty()) {
             compatibleNodeLists.add(new CompatibleNodeList(selectedProduct.getDisplayName(), compatibleNodes));
         }
@@ -186,7 +189,7 @@ class ProductLayerAssistantPage extends AbstractLayerSourceAssistantPage {
         return new ProductTreeModel(compatibleNodeLists);
     }
 
-    private void collectCompatibleRasterDataNodes(RasterDataNode referenceRaster, RasterDataNode[] dataNodes,
+    private void collectCompatibleBands(RasterDataNode referenceRaster, RasterDataNode[] dataNodes,
                                                   Collection<RasterDataNode> rasterDataNodes) {
         //todo ask for scenerastertransform instead of width and height
         final Dimension referenceRasterSize = referenceRaster.getRasterSize();
