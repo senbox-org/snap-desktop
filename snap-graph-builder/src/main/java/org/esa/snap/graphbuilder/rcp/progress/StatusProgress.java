@@ -15,8 +15,8 @@
  */
 package org.esa.snap.graphbuilder.rcp.progress;
 
-import org.esa.snap.gpf.ProgressMonitorList;
-import org.esa.snap.gpf.StatusProgressMonitor;
+import org.esa.snap.framework.dataop.downloadable.ProgressMonitorList;
+import org.esa.snap.framework.dataop.downloadable.StatusProgressMonitor;
 import org.openide.awt.StatusLineElementProvider;
 import org.openide.util.lookup.ServiceProvider;
 

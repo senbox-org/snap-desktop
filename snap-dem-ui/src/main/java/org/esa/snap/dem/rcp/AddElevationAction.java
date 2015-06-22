@@ -104,6 +104,7 @@ public class AddElevationAction extends AbstractAction implements ContextAwareAc
 
     private static final String HELP_ID = "createElevation";
     private final Lookup lkp;
+    private Product product;
 
     public static final String DIALOG_TITLE = "Add Elevation Band";
     public static final String DEFAULT_ELEVATION_BAND_NAME = "elevation";
@@ -137,7 +138,7 @@ public class AddElevationAction extends AbstractAction implements ContextAwareAc
         ProductNode productNode = lkp.lookup(ProductNode.class);
         boolean state = false;
         if (productNode != null) {
-            Product product = productNode.getProduct();
+            product = productNode.getProduct();
             state = product.getGeoCoding() != null;
         }
         setEnabled(state);
@@ -145,11 +146,6 @@ public class AddElevationAction extends AbstractAction implements ContextAwareAc
 
     @Override
     public void actionPerformed(ActionEvent event) {
-        final Product product = SnapApp.getDefault().getSelectedProduct();
-        if(product == null) {
-            SnapDialogs.showError("Unable to add an elevation band. Please select a product first.");
-            return;
-        }
 
         final DialogData dialogData = requestDialogData(product);
         if (dialogData == null) {
