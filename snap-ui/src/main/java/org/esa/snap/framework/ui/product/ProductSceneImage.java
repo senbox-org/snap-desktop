@@ -336,9 +336,14 @@ public class ProductSceneImage implements ProductLayerContext {
         layerConfig.setValue(MaskCollectionLayerType.PROPERTY_NAME_RASTER, getRaster());
         final Layer maskCollectionLayer = maskCollectionType.createLayer(this, layerConfig);
         ProductNodeGroup<Mask> productNodeGroup = getRaster().getProduct().getMaskGroup();
+        final RasterDataNode raster = getRaster();
         for (int i = 0; i < productNodeGroup.getNodeCount(); i++) {
-            Layer layer = MaskLayerType.createLayer(getRaster(), productNodeGroup.get(i));
-            maskCollectionLayer.getChildren().add(layer);
+            final Mask mask = productNodeGroup.get(i);
+            //todo add all mask layers as soon as the masks have been scaled to fit the raster
+            if (raster.getRasterSize().equals(mask.getRasterSize())) {
+                Layer layer = MaskLayerType.createLayer(raster, mask);
+                maskCollectionLayer.getChildren().add(layer);
+            }
         }
         return maskCollectionLayer;
     }
