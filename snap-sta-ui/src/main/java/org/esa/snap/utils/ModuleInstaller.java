@@ -20,6 +20,7 @@ package org.esa.snap.utils;
 import org.esa.snap.framework.gpf.descriptor.ToolAdapterOperatorDescriptor;
 import org.esa.snap.framework.gpf.operators.tooladapter.ToolAdapterIO;
 import org.esa.snap.framework.gpf.operators.tooladapter.ToolAdapterRegistry;
+import org.esa.snap.modules.ModulePackager;
 import org.openide.modules.ModuleInstall;
 import org.openide.modules.Places;
 

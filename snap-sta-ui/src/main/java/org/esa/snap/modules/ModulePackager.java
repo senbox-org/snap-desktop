@@ -13,10 +13,11 @@
  * You should have received a copy of the GNU General Public License along
  *  with this program; if not, see http://www.gnu.org/licenses/
  */
-package org.esa.snap.utils;
+package org.esa.snap.modules;
 
 import org.esa.snap.framework.gpf.descriptor.ToolAdapterOperatorDescriptor;
 import org.esa.snap.framework.gpf.operators.tooladapter.ToolAdapterIO;
+import org.esa.snap.utils.ModuleInstaller;
 
 import java.io.*;
 import java.net.URL;
