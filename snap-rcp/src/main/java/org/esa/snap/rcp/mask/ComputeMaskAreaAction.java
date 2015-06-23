@@ -18,11 +18,15 @@ package org.esa.snap.rcp.mask;
 import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.glevel.MultiLevelImage;
 import com.bc.ceres.swing.progress.DialogProgressMonitor;
+import org.esa.snap.framework.datamodel.Band;
 import org.esa.snap.framework.datamodel.GeoCoding;
 import org.esa.snap.framework.datamodel.GeoPos;
 import org.esa.snap.framework.datamodel.Mask;
 import org.esa.snap.framework.datamodel.PixelPos;
+import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.datamodel.ProductNodeGroup;
 import org.esa.snap.framework.datamodel.RasterDataNode;
+import org.esa.snap.framework.datamodel.TiePointGrid;
 import org.esa.snap.framework.ui.AbstractDialog;
 import org.esa.snap.framework.ui.GridBagUtils;
 import org.esa.snap.framework.ui.ModalDialog;
@@ -59,6 +63,8 @@ import java.awt.event.ActionEvent;
 import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 
@@ -121,7 +127,18 @@ public class ComputeMaskAreaAction extends AbstractAction implements LookupListe
         final RasterDataNode raster = view.getRaster();
         assert raster != null;
 
-        final String[] maskNames = raster.getProduct().getMaskGroup().getNodeNames();
+        final Product product = raster.getProduct();
+        final ProductNodeGroup<Mask> maskGroup = product.getMaskGroup();
+        final List<String> maskNameList = new ArrayList<>();
+        for (int i = 0; i < maskGroup.getNodeCount(); i++) {
+            final Mask mask = maskGroup.get(i);
+            //todo ask about scenerastertransform, not size
+            if ((raster instanceof Band && raster.getRasterSize().equals(mask.getRasterSize())) ||
+                    (raster instanceof TiePointGrid && mask.getRasterSize().equals(product.getSceneRasterSize()))) {
+                maskNameList.add(mask.getName());
+            }
+        }
+        String[] maskNames = maskNameList.toArray(new String[maskNameList.size()]);
         String maskName;
         if (maskNames.length == 1) {
             maskName = maskNames[0];
@@ -142,7 +159,7 @@ public class ComputeMaskAreaAction extends AbstractAction implements LookupListe
                 return;
             }
         }
-        final Mask mask = raster.getProduct().getMaskGroup().get(maskName);
+        final Mask mask = maskGroup.get(maskName);
 
         RenderedImage maskImage = mask.getSourceImage();
         if (maskImage == null) {
