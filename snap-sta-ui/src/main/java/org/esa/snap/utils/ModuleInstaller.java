@@ -19,8 +19,10 @@ package org.esa.snap.utils;
 
 import org.esa.snap.framework.gpf.descriptor.ToolAdapterOperatorDescriptor;
 import org.esa.snap.framework.gpf.operators.tooladapter.ToolAdapterIO;
+import org.esa.snap.framework.gpf.operators.tooladapter.ToolAdapterOpSpi;
 import org.esa.snap.framework.gpf.operators.tooladapter.ToolAdapterRegistry;
 import org.esa.snap.modules.ModulePackager;
+import org.esa.snap.ui.tooladapter.actions.ToolAdapterActionRegistrar;
 import org.openide.modules.ModuleInstall;
 import org.openide.modules.Places;
 
@@ -28,10 +30,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
@@ -69,7 +68,13 @@ public class ModuleInstaller extends ModuleInstall {
                 logger.severe(e.getMessage());
             }
         }
-        ToolAdapterIO.searchAndRegisterAdapters();
+        Collection<ToolAdapterOpSpi> toolAdapterOpSpis = ToolAdapterIO.searchAndRegisterAdapters();
+        for (ToolAdapterOpSpi opSpi : toolAdapterOpSpis) {
+            ToolAdapterOperatorDescriptor operatorDescriptor = (ToolAdapterOperatorDescriptor) opSpi.getOperatorDescriptor();
+            if (operatorDescriptor != null) {
+                ToolAdapterActionRegistrar.registerOperatorMenu(operatorDescriptor);
+            }
+        }
     }
 
     @Override
@@ -85,6 +90,7 @@ public class ModuleInstaller extends ModuleInstall {
         registeredDescriptors.stream()
                              .filter(descriptor -> !jarAdapters.containsKey(descriptor.getAlias()))
                              .forEach(descriptor -> {
+                                 ToolAdapterActionRegistrar.removeOperatorMenu(descriptor);
                                  ToolAdapterIO.removeOperator(descriptor);
                                  logger.info(String.format("%s was removed from adapter user location", descriptor.getAlias()));
                              });
