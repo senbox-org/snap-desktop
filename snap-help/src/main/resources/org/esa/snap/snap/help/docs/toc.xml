@@ -34,7 +34,7 @@
             <tocitem text="Main Toolbar" target="mainToolbar"/>
         </tocitem>
         <tocitem text="Product View">
-            <tocitem text="Product Browser" target="productBrowser"/>
+            <tocitem text="Product Explorer" target="productExplorer"/>
             <tocitem text="Imaging Tools">
                 <tocitem text="Image View" target="imageView"/>
                 <tocitem text="Pixel Info View" target="pixelInfoView"/>
