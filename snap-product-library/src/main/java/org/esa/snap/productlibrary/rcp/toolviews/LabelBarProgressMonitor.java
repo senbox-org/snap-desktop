@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, see http://www.gnu.org/licenses/
  */
-package org.esa.snap.rcp.toolviews.productlibrary;
+package org.esa.snap.productlibrary.rcp.toolviews;
 
 import com.bc.ceres.core.Assert;
 import com.bc.ceres.core.ProgressMonitor;
@@ -220,8 +220,8 @@ public class LabelBarProgressMonitor implements ProgressMonitor {
 
     public interface ProgressBarListener {
 
-        public void notifyStart();
+        void notifyStart();
 
-        public void notifyDone();
+        void notifyDone();
     }
 }

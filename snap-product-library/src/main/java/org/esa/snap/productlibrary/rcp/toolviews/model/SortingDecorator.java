@@ -13,10 +13,10 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, see http://www.gnu.org/licenses/
  */
-package org.esa.snap.rcp.toolviews.productlibrary.model;
+package org.esa.snap.productlibrary.rcp.toolviews.model;
 
 import org.apache.commons.math3.util.FastMath;
-import org.esa.snap.rcp.toolviews.productlibrary.model.dataprovider.DataProvider;
+import org.esa.snap.productlibrary.rcp.toolviews.model.dataprovider.DataProvider;
 import org.esa.snap.db.ProductEntry;
 import org.esa.snap.util.Guardian;
 

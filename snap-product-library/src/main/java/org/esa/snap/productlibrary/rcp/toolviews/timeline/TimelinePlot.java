@@ -1,6 +1,6 @@
-package org.esa.snap.rcp.toolviews.productlibrary.timeline;
+package org.esa.snap.productlibrary.rcp.toolviews.timeline;
 
-import org.esa.snap.rcp.toolviews.productlibrary.model.DatabaseStatistics;
+import org.esa.snap.productlibrary.rcp.toolviews.model.DatabaseStatistics;
 
 import javax.swing.JPanel;
 import java.awt.Color;

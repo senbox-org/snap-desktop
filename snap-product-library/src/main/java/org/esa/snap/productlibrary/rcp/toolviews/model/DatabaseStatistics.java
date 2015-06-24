@@ -1,6 +1,6 @@
-package org.esa.snap.rcp.toolviews.productlibrary.model;
+package org.esa.snap.productlibrary.rcp.toolviews.model;
 
-import org.esa.snap.rcp.toolviews.productlibrary.DatabasePane;
+import org.esa.snap.productlibrary.rcp.toolviews.DatabasePane;
 import org.esa.snap.db.ProductEntry;
 import org.esa.snap.framework.datamodel.ProductData;
 

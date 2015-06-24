@@ -1,4 +1,4 @@
-package org.esa.snap.rcp.toolviews.productlibrary;
+package org.esa.snap.productlibrary.rcp.toolviews;
 
 import org.esa.snap.datamodel.AbstractMetadata;
 import org.esa.snap.db.ProductEntry;
@@ -6,7 +6,7 @@ import org.esa.snap.framework.ui.UIUtils;
 import org.esa.snap.graphbuilder.rcp.dialogs.BatchGraphDialog;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
-import org.esa.snap.rcp.toolviews.productlibrary.model.SortingDecorator;
+import org.esa.snap.productlibrary.rcp.toolviews.model.SortingDecorator;
 import org.esa.snap.util.ClipboardUtils;
 import org.esa.snap.util.DialogUtils;
 import org.esa.snap.util.ProductOpener;
@@ -40,12 +40,12 @@ import java.util.ArrayList;
  */
 public class ProductLibraryActions {
 
-    private static final ImageIcon selectAllIcon = UIUtils.loadImageIcon("/org/esa/snap/icons/select-all24.png", ProductLibraryToolView.class);
-    private static final ImageIcon openIcon = UIUtils.loadImageIcon("/org/esa/snap/icons/open24.png", ProductLibraryToolView.class);
-    private static final ImageIcon copyIcon = UIUtils.loadImageIcon("/org/esa/snap/icons/copy24.png", ProductLibraryToolView.class);
-    private static final ImageIcon findSlicesIcon = UIUtils.loadImageIcon("/org/esa/snap/icons/slices24.png", ProductLibraryToolView.class);
-    private static final ImageIcon batchIcon = UIUtils.loadImageIcon("/org/esa/snap/icons/batch24.png", ProductLibraryToolView.class);
-    //private static final ImageIcon stackIcon = UIUtils.loadImageIcon("/org/esa/snap/icons/stack24.png", ProductLibraryToolView.class);
+    private static final ImageIcon selectAllIcon = UIUtils.loadImageIcon("/org/esa/snap/productlibrary/icons/select-all24.png", ProductLibraryToolView.class);
+    private static final ImageIcon openIcon = UIUtils.loadImageIcon("/org/esa/snap/productlibrary/icons/open24.png", ProductLibraryToolView.class);
+    private static final ImageIcon copyIcon = UIUtils.loadImageIcon("/org/esa/snap/productlibrary/icons/copy24.png", ProductLibraryToolView.class);
+    private static final ImageIcon findSlicesIcon = UIUtils.loadImageIcon("/org/esa/productlibrary/snap/icons/slices24.png", ProductLibraryToolView.class);
+    private static final ImageIcon batchIcon = UIUtils.loadImageIcon("/org/esa/snap/productlibrary/icons/batch24.png", ProductLibraryToolView.class);
+    //private static final ImageIcon stackIcon = UIUtils.loadImageIcon("/org/esa/snap/productlibrary/icons/stack24.png", ProductLibraryToolView.class);
 
     private final JTable productEntryTable;
     private final ProductLibraryToolView toolView;

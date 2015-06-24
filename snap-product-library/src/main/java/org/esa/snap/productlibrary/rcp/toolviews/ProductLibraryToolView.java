@@ -13,14 +13,14 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, see http://www.gnu.org/licenses/
  */
-package org.esa.snap.rcp.toolviews.productlibrary;
+package org.esa.snap.productlibrary.rcp.toolviews;
 
-import org.esa.snap.rcp.toolviews.productlibrary.model.DatabaseQueryListener;
-import org.esa.snap.rcp.toolviews.productlibrary.model.DatabaseStatistics;
-import org.esa.snap.rcp.toolviews.productlibrary.model.ProductEntryTableModel;
-import org.esa.snap.rcp.toolviews.productlibrary.model.ProductLibraryConfig;
-import org.esa.snap.rcp.toolviews.productlibrary.model.SortingDecorator;
-import org.esa.snap.rcp.toolviews.productlibrary.timeline.TimelinePanel;
+import org.esa.snap.productlibrary.rcp.toolviews.model.DatabaseQueryListener;
+import org.esa.snap.productlibrary.rcp.toolviews.model.DatabaseStatistics;
+import org.esa.snap.productlibrary.rcp.toolviews.model.ProductEntryTableModel;
+import org.esa.snap.productlibrary.rcp.toolviews.model.ProductLibraryConfig;
+import org.esa.snap.productlibrary.rcp.toolviews.model.SortingDecorator;
+import org.esa.snap.productlibrary.rcp.toolviews.timeline.TimelinePanel;
 import org.esa.snap.dat.dialogs.CheckListDialog;
 import org.esa.snap.db.DBQuery;
 import org.esa.snap.db.ProductEntry;
@@ -63,7 +63,7 @@ import java.util.Map;
         openAtStartup = true,
         position = 0
 )
-@ActionID(category = "Window", id = "org.esa.snap.rcp.toolviews.productlibrary.ProductLibraryToolView")
+@ActionID(category = "Window", id = "org.esa.snap.productlibrary.rcp.toolviews.ProductLibraryToolView")
 @ActionReferences({
         @ActionReference(path = "Menu/Window/Tool Windows")
 })
@@ -78,7 +78,7 @@ import java.util.Map;
 public class ProductLibraryToolView extends ToolTopComponent implements LabelBarProgressMonitor.ProgressBarListener,
         DatabaseQueryListener, ProductLibraryActions.ProductLibraryActionListener {
 
-    private static final ImageIcon updateIcon = UIUtils.loadImageIcon("/org/esa/snap/icons/refresh24.png", ProductLibraryToolView.class);
+    private static final ImageIcon updateIcon = UIUtils.loadImageIcon("/org/esa/snap/productlibrary/icons/refresh24.png", ProductLibraryToolView.class);
     private static final ImageIcon updateRolloverIcon = ToolButtonFactory.createRolloverIcon(updateIcon);
     private static final ImageIcon stopIcon = UIUtils.loadImageIcon("icons/Stop24.gif");
     private static final ImageIcon stopRolloverIcon = ToolButtonFactory.createRolloverIcon(stopIcon);

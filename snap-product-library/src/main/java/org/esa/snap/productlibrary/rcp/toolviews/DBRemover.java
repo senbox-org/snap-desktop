@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, see http://www.gnu.org/licenses/
  */
-package org.esa.snap.rcp.toolviews.productlibrary;
+package org.esa.snap.productlibrary.rcp.toolviews;
 
 import org.esa.snap.db.ProductDB;
 
