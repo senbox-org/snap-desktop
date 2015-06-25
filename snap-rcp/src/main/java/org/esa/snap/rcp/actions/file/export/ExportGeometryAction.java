@@ -97,43 +97,6 @@ public class ExportGeometryAction extends AbstractAction implements HelpCtx.Prov
         this.vectorDataNode = vectorDataNode;
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        exportVectorDataNode();
-    }
-
-    @Override
-    public HelpCtx getHelpCtx() {
-        return new HelpCtx(HELP_ID);
-    }
-
-    /////////////////////////////////////////////////////////////////////////
-    // Private implementations for the "export Mask Pixels" command
-    /////////////////////////////////////////////////////////////////////////
-
-    /**
-     * Performs the actual "export Mask Pixels" command.
-     */
-    private void exportVectorDataNode() {
-        SnapApp snapApp = SnapApp.getDefault();
-        if (vectorDataNode.getFeatureCollection().isEmpty()) {
-            SnapDialogs.showInformation(Bundle.CTL_ExportGeometryAction_DialogTitle(),
-                                        "The selected geometry is empty. Nothing to export.", null);
-            return;
-        }
-
-        final File file = promptForFile(snapApp, vectorDataNode.getName());
-        if (file == null) {
-            return;
-        }
-        final SwingWorker<Exception, Object> swingWorker = new ExportVectorNodeSwingWorker(snapApp, vectorDataNode, file);
-
-        UIUtils.setRootFrameWaitCursor(snapApp.getMainFrame());
-        snapApp.setStatusBarMessage("Exporting Geometry...");
-
-        swingWorker.execute();
-    }
-
     /*
      * Opens a modal file chooser dialog that prompts the user to select the output file name.
      *
@@ -172,6 +135,10 @@ public class ExportGeometryAction extends AbstractAction implements HelpCtx.Prov
             pm.done();
         }
     }
+
+    /////////////////////////////////////////////////////////////////////////
+    // Private implementations for the "export Mask Pixels" command
+    /////////////////////////////////////////////////////////////////////////
 
     private static void writeEsriShapefile(Class<?> geomType, List<SimpleFeature> features, File file) throws IOException {
         String geomName = geomType.getSimpleName();
@@ -252,6 +219,38 @@ public class ExportGeometryAction extends AbstractAction implements HelpCtx.Prov
         return sftb.buildFeatureType();
     }
 
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        exportVectorDataNode();
+    }
+
+    @Override
+    public HelpCtx getHelpCtx() {
+        return new HelpCtx(HELP_ID);
+    }
+
+    /**
+     * Performs the actual "export Mask Pixels" command.
+     */
+    private void exportVectorDataNode() {
+        SnapApp snapApp = SnapApp.getDefault();
+        if (vectorDataNode.getFeatureCollection().isEmpty()) {
+            SnapDialogs.showInformation(Bundle.CTL_ExportGeometryAction_DialogTitle(),
+                                        "The selected geometry is empty. Nothing to export.", null);
+            return;
+        }
+
+        final File file = promptForFile(snapApp, vectorDataNode.getName());
+        if (file == null) {
+            return;
+        }
+        final SwingWorker<Exception, Object> swingWorker = new ExportVectorNodeSwingWorker(snapApp, vectorDataNode, file);
+
+        UIUtils.setRootFrameWaitCursor(snapApp.getMainFrame());
+        snapApp.setStatusBarMessage("Exporting Geometry...");
+
+        swingWorker.execute();
+    }
 
     private static class ExportVectorNodeSwingWorker extends ProgressMonitorSwingWorker<Exception, Object> {
 
