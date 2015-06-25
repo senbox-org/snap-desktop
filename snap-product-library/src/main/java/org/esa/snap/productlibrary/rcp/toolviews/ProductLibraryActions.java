@@ -43,7 +43,7 @@ public class ProductLibraryActions {
     private static final ImageIcon selectAllIcon = UIUtils.loadImageIcon("/org/esa/snap/productlibrary/icons/select-all24.png", ProductLibraryToolView.class);
     private static final ImageIcon openIcon = UIUtils.loadImageIcon("/org/esa/snap/productlibrary/icons/open24.png", ProductLibraryToolView.class);
     private static final ImageIcon copyIcon = UIUtils.loadImageIcon("/org/esa/snap/productlibrary/icons/copy24.png", ProductLibraryToolView.class);
-    private static final ImageIcon findSlicesIcon = UIUtils.loadImageIcon("/org/esa/productlibrary/snap/icons/slices24.png", ProductLibraryToolView.class);
+    private static final ImageIcon findSlicesIcon = UIUtils.loadImageIcon("/org/esa/snap/productlibrary/icons/slices24.png", ProductLibraryToolView.class);
     private static final ImageIcon batchIcon = UIUtils.loadImageIcon("/org/esa/snap/productlibrary/icons/batch24.png", ProductLibraryToolView.class);
     //private static final ImageIcon stackIcon = UIUtils.loadImageIcon("/org/esa/snap/productlibrary/icons/stack24.png", ProductLibraryToolView.class);
 
