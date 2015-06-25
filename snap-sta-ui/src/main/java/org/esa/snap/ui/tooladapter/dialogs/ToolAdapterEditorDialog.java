@@ -224,6 +224,9 @@ public class ToolAdapterEditorDialog extends ModalDialog {
             SnapDialogs.showWarning(Bundle.MSG_Inexistent_Tool_Path_Text());
             return false;
         }
+        /*if (file.getPath().endsWith(ToolAdapterConstants.SHELL_EXT)) {
+            file = new File(file.getPath().replace(ToolAdapterConstants.SHELL_EXT, ToolAdapterIO.getShellExtension()));
+        }*/
         if (!file.exists()) {
             File resolvedFile = resolvePathOnSystem(file);
             newOperatorDescriptor.setMainToolFileLocation(resolvedFile == null ? file : resolvedFile);
