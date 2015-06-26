@@ -39,23 +39,13 @@ import java.util.List;
 /**
  * This action closes all opened products other than the one selected.
  */
-@ActionID(
-        category = "File",
-        id = "CloseAllOthersAction"
-)
-@ActionRegistration(
-        displayName = "#CTL_CloseAllOthersActionName"
-)
+@ActionID(category = "File", id = "CloseAllOthersAction")
+@ActionRegistration(displayName = "#CTL_CloseAllOthersActionName" )
 @ActionReferences({
         @ActionReference(path = "Menu/File", position = 30),
-        @ActionReference(
-                path = "Context/Product/Product",
-                position = 850
-        ),
+        @ActionReference(path = "Context/Product/Product",position = 850),
 })
-@NbBundle.Messages({
-        "CTL_CloseAllOthersActionName=Close All Other Products"
-})
+@NbBundle.Messages({"CTL_CloseAllOthersActionName=Close All Other Products"})
 public class CloseAllOthersAction extends AbstractAction implements ContextAwareAction, LookupListener {
 
     private final Lookup lkp;
@@ -65,7 +55,7 @@ public class CloseAllOthersAction extends AbstractAction implements ContextAware
     }
 
     public CloseAllOthersAction(Lookup lkp) {
-        super("Close All Other Products");
+        super(Bundle.CTL_CloseAllOthersActionName());
         this.lkp = lkp;
         Lookup.Result<ProductNode> lkpContext = lkp.lookupResult(ProductNode.class);
         lkpContext.addLookupListener(WeakListeners.create(LookupListener.class, this, lkpContext));
