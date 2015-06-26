@@ -54,6 +54,7 @@ import org.esa.snap.graphbuilder.gpf.ui.UIValidation;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.actions.file.SaveProductAsAction;
+import org.esa.snap.util.MemUtils;
 import org.esa.snap.util.ProductFunctions;
 
 import javax.media.jai.JAI;
@@ -159,6 +160,8 @@ public class SingleOperatorDialog extends SingleTargetProductDialog {
     @Override
     protected Product createTargetProduct() throws Exception {
         if (validateUI()) {
+            MemUtils.freeAllMemory();
+
             opUI.updateParameters();
 
             final HashMap<String, Product> sourceProducts = ioParametersPanel.createSourceProductsMap();

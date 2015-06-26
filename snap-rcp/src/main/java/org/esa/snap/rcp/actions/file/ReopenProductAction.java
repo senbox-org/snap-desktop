@@ -31,7 +31,7 @@ import static org.esa.snap.rcp.actions.file.OpenProductAction.getRecentProductPa
         menuText = "#CTL_ReopenProductActionMenuText",
         lazy = false
 )
-@ActionReference(path = "Menu/File", position = 20)
+@ActionReference(path = "Menu/File", position = 10)
 @NbBundle.Messages({
         "CTL_ReopenProductActionName=Reopen Product",
         "CTL_ReopenProductActionMenuText=Reopen Product",

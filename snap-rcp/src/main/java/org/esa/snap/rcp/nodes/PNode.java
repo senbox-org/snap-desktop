@@ -225,10 +225,10 @@ class PNode extends PNNode<Product> implements PreferenceChangeListener {
                     list.add(new PNGGroup.VDN(product.getVectorDataGroup()));
                 }
                 if (product.getTiePointGridGroup().getNodeCount() > 0) {
-                    list.add(new PNGGroup.TPG(product.getTiePointGridGroup()));
+                    list.add(new PNGroupingGroup.TPG(product.getTiePointGridGroup()));
                 }
                 if (product.getBandGroup().getNodeCount() > 0) {
-                    list.add(new PNGGroup.B(product.getBandGroup()));
+                    list.add(new PNGroupingGroup.B(product.getBandGroup()));
                 }
                 if (product.getMaskGroup().getNodeCount() > 0) {
                     list.add(new PNGGroup.M(product.getMaskGroup()));
@@ -253,7 +253,7 @@ class PNode extends PNNode<Product> implements PreferenceChangeListener {
             if (key instanceof ProductNode) {
                 return PNNode.create((ProductNode) key);
             } else {
-                return new PNGroupNode((PNGGroup) key);
+                return new PNGroupNode((PNGroup) key);
             }
         }
     }

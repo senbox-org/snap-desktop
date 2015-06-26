@@ -32,15 +32,15 @@ public class StatusProgressPanel extends JPanel implements StatusProgressMonitor
         pm.addListener(this);
 
         p = ProgressHandleFactory.createHandle(pm.getName());
-        p.start(pm.getMax());
-        p.switchToDeterminate(pm.getMax());
+        p.start(100);
+        p.switchToDeterminate(100);
     }
 
     private void update() {
         runInUI(new Runnable() {
             public void run() {
                 if (pm != null) {
-                    p.progress(pm.getText(), pm.getWorked());
+                    p.progress(pm.getText(), pm.getPercentComplete());
                 }
             }
         });

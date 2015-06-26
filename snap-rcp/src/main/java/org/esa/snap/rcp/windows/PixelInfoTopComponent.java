@@ -8,6 +8,7 @@ package org.esa.snap.rcp.windows;
 import com.bc.ceres.glayer.support.ImageLayer;
 import org.esa.snap.framework.datamodel.PixelPos;
 import org.esa.snap.framework.datamodel.Placemark;
+import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.ProductNodeEvent;
 import org.esa.snap.framework.datamodel.ProductNodeListener;
 import org.esa.snap.framework.ui.PixelPositionListener;
@@ -94,20 +95,26 @@ public final class PixelInfoTopComponent extends ToolTopComponent {
         if (currentView == view) {
             return;
         }
-        if (currentView != null && currentView.getProduct() != null) {
+        if (currentView != null) {
             currentView.removePixelPositionListener(pixelPositionListener);
             currentView.removePropertyChangeListener(ProductSceneView.PROPERTY_NAME_SELECTED_PIN,
                                                      pinSelectionChangeListener);
-            currentView.getProduct().removeProductNodeListener(pinChangedListener);
+            Product product = currentView.getProduct();
+            if (product != null) {
+                product.removeProductNodeListener(pinChangedListener);
+            }
         } else {
             pixelInfoView.clearProductNodeRefs();
         }
         currentView = view;
-        if (currentView != null  && currentView.getProduct() != null) {
+        if (currentView != null) {
             currentView.addPixelPositionListener(pixelPositionListener);
             currentView.addPropertyChangeListener(ProductSceneView.PROPERTY_NAME_SELECTED_PIN,
                                                   pinSelectionChangeListener);
-            currentView.getProduct().addProductNodeListener(pinChangedListener);
+            Product product = currentView.getProduct();
+            if (product != null) {
+                product.addProductNodeListener(pinChangedListener);
+            }
         }
     }
 

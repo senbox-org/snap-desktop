@@ -1018,7 +1018,9 @@ public class ProductSceneView extends BasicView
         final Product thisProduct = thisRaster.getProduct();
         final Product thatProduct = thatRaster.getProduct();
 
-        if (thatProduct == thisProduct || thatProduct.isCompatibleProduct(thisProduct, 1.0e-3f)) {
+        //todo ask for scenerastertransform instead
+        if ((thatProduct == thisProduct || thatProduct.isCompatibleProduct(thisProduct, 1.0e-3f))
+                && thisRaster.getRasterSize().equals(thatRaster.getRasterSize())) {
             final Viewport thisViewport = layerCanvas.getViewport();
             final Viewport thatViewport = thatView.layerCanvas.getViewport();
             thatViewport.setTransform(thisViewport);

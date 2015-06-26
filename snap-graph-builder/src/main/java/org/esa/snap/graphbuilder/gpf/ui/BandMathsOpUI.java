@@ -35,6 +35,7 @@ public class BandMathsOpUI extends BaseOperatorUI {
     private static final String _PARAM_NAME_BAND = "targetBand";
 
     private Parameter paramBand = null;
+    private Parameter paramBandType = null;
     private Parameter paramBandUnit = null;
     private Parameter paramNoDataValue = null;
     private Parameter paramExpression = null;
@@ -71,6 +72,7 @@ public class BandMathsOpUI extends BaseOperatorUI {
 
             try {
                 paramBand.setValueAsText(bandDesc.name);
+                paramBandType.setValueAsText(bandDesc.type);
                 paramBandUnit.setValueAsText(bandDesc.unit);
                 paramNoDataValue.setValueAsText(String.valueOf(bandDesc.noDataValue));
                 paramExpression.setValueAsText(bandDesc.expression);
@@ -108,6 +110,7 @@ public class BandMathsOpUI extends BaseOperatorUI {
     public void updateParameters() {
 
         bandDesc.name = paramBand.getValueAsText();
+        bandDesc.type = paramBandType.getValueAsText();
         bandDesc.unit = paramBandUnit.getValueAsText();
         String noDataValueStr = paramNoDataValue.getValueAsText();
         bandDesc.noDataValue = noDataValueStr.isEmpty() ? 0 : Double.parseDouble(noDataValueStr);
@@ -116,44 +119,40 @@ public class BandMathsOpUI extends BaseOperatorUI {
         final BandMathsOp.BandDescriptor[] bandDescriptors = new BandMathsOp.BandDescriptor[1];
         bandDescriptors[0] = bandDesc;
         paramMap.put("targetBandDescriptors", bandDescriptors);
-        paramMap.put("bandName", bandDesc.name);
-        paramMap.put("bandUnit", bandDesc.unit);
-        paramMap.put("bandNodataValue", bandDesc.noDataValue);
-        paramMap.put("bandExpression", bandDesc.expression);
     }
 
     private void initVariables() {
         final ParamChangeListener paramChangeListener = createParamChangeListener();
 
-        String bandName = (String)paramMap.get("bandName");
-        if(bandName == null)
-            bandName = "new_band";
-        String bandUnit = (String)paramMap.get("bandUnit");
-        if(bandUnit == null)
-            bandUnit = "";
-        String bandNodataValue = (String)paramMap.get("bandNodataValue");
-        if(bandNodataValue == null)
-            bandNodataValue = "";
-        String expression = (String)paramMap.get("bandExpression");
-        if(expression == null)
-            expression = " ";
+        BandMathsOp.BandDescriptor[] bandDescriptors = (BandMathsOp.BandDescriptor[])paramMap.get("targetBandDescriptors");
+        if(bandDescriptors != null && bandDescriptors.length > 0) {
+            bandDesc = bandDescriptors[1];
+        } else {
+            bandDesc.name = "newVirtualBand";
+            bandDesc.type = "float32";
+        }
 
-        paramBand = new Parameter(_PARAM_NAME_BAND, bandName);
+        paramBand = new Parameter(_PARAM_NAME_BAND, bandDesc.name);
         paramBand.getProperties().setValueSetBound(false);
         paramBand.getProperties().setLabel("Target Band"); /*I18N*/
         paramBand.addParamChangeListener(paramChangeListener);
 
-        paramBandUnit = new Parameter("bandUnit", bandUnit);
+        paramBandType = new Parameter("bandType", bandDesc.type);
+        paramBandType.getProperties().setValueSetBound(false);
+        paramBandType.getProperties().setLabel("Target Band Type"); /*I18N*/
+        paramBandType.addParamChangeListener(paramChangeListener);
+
+        paramBandUnit = new Parameter("bandUnit", bandDesc.unit);
         paramBandUnit.getProperties().setValueSetBound(false);
         paramBandUnit.getProperties().setLabel("Band Unit"); /*I18N*/
         paramBandUnit.addParamChangeListener(paramChangeListener);
 
-        paramNoDataValue = new Parameter("bandNodataValue", bandNodataValue);
+        paramNoDataValue = new Parameter("bandNodataValue", bandDesc.noDataValue);
         paramNoDataValue.getProperties().setValueSetBound(false);
         paramNoDataValue.getProperties().setLabel("No-Data Value"); /*I18N*/
         paramNoDataValue.addParamChangeListener(paramChangeListener);
 
-        paramExpression = new Parameter("arithmetikExpr", expression);
+        paramExpression = new Parameter("arithmetikExpr", bandDesc.expression);
         paramExpression.getProperties().setLabel("Expression"); /*I18N*/
         paramExpression.getProperties().setDescription("Arithmetic expression"); /*I18N*/
         paramExpression.getProperties().setNumRows(5);
@@ -177,6 +176,12 @@ public class BandMathsOpUI extends BaseOperatorUI {
         GridBagUtils.addToPanel(gridPanel, paramBand.getEditor().getLabelComponent(), gbc,
                                 "weightx=0, insets.top=3, gridwidth=1, fill=HORIZONTAL, anchor=WEST");
         GridBagUtils.addToPanel(gridPanel, paramBand.getEditor().getComponent(), gbc,
+                                "weightx=1, insets.top=3, gridwidth=2, fill=HORIZONTAL, anchor=WEST");
+
+        gbc.gridy = ++line;
+        GridBagUtils.addToPanel(gridPanel, paramBandType.getEditor().getLabelComponent(), gbc,
+                                "weightx=0, insets.top=3, gridwidth=1, fill=HORIZONTAL, anchor=WEST");
+        GridBagUtils.addToPanel(gridPanel, paramBandType.getEditor().getComponent(), gbc,
                                 "weightx=1, insets.top=3, gridwidth=2, fill=HORIZONTAL, anchor=WEST");
 
         gbc.gridy = ++line;
@@ -298,6 +303,7 @@ public class BandMathsOpUI extends BaseOperatorUI {
             paramExpression.setUIEnabled(b);
             editExpressionButton.setEnabled(b);
             paramBand.setUIEnabled(b);
+            paramBandType.setUIEnabled(b);
             paramBandUnit.setUIEnabled(b);
             paramNoDataValue.setUIEnabled(b);
             if (b) {

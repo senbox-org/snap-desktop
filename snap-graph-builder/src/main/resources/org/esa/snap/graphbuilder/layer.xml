@@ -25,7 +25,7 @@
         <file name="org.esa.snap.graphbuilder.gpf.ui.BandMathsOpUI">
             <attr name="operatorUIClass" stringvalue="org.esa.snap.graphbuilder.gpf.ui.BandMathsOpUI"/>
             <attr name="operatorName" stringvalue="BandMaths"/>
-            <attr name="disableFromGraphBuilder" stringvalue="true"/>
+            <!--attr name="disableFromGraphBuilder" stringvalue="true"/-->
         </file>
     </folder>
 

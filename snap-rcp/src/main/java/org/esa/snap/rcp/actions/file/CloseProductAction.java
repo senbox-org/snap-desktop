@@ -44,11 +44,11 @@ import java.util.Set;
 @ActionRegistration(
         displayName = "#CTL_CloseProductActionName"
 )
-@ActionReference(path = "Menu/File", position = 30)
+@ActionReference(path = "Menu/File", position = 20, separatorBefore = 18)
 @NbBundle.Messages({
         "CTL_CloseProductActionName=Close Product"
 })
-public final class CloseProductAction extends AbstractAction {
+public final class CloseProductAction extends AbstractAction{
 
     private final WeakSet<Product> productSet;
 
@@ -56,6 +56,7 @@ public final class CloseProductAction extends AbstractAction {
         productSet = new WeakSet<>();
         productSet.addAll(products);
     }
+
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -190,4 +191,6 @@ public final class CloseProductAction extends AbstractAction {
         }
         return null;
     }
+
+
 }

@@ -77,7 +77,7 @@ import java.awt.image.RenderedImage;
         lazy = false
 )
 @ActionReferences({
-        @ActionReference(path = "Menu/File/Export/Other", position = 80),
+        @ActionReference(path = "Menu/File/Export/Other", position = 80, separatorAfter = 200),
         @ActionReference(path = "Context/View",position = 70)
 })
 @NbBundle.Messages({

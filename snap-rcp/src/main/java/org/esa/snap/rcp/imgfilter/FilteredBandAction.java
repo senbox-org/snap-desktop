@@ -77,7 +77,9 @@ public class FilteredBandAction extends AbstractAction  implements LookupListene
         this.lookup = lookup;
         result = lookup.lookupResult(RasterDataNode.class);
         result.addLookupListener(WeakListeners.create(LookupListener.class, this, result));
-        setEnabled(this.lookup.lookup(RasterDataNode.class) != null);
+        final RasterDataNode node = this.lookup.lookup(RasterDataNode.class);
+        //todo compare scenerastertransform rather than size
+        setEnabled(node != null && node.getRasterSize().equals(node.getProduct().getSceneRasterSize()));
     }
 
     @Override
@@ -87,7 +89,9 @@ public class FilteredBandAction extends AbstractAction  implements LookupListene
 
     @Override
     public void resultChanged(LookupEvent ev) {
-        setEnabled(!result.allInstances().isEmpty());
+        final RasterDataNode node = this.lookup.lookup(RasterDataNode.class);
+        //todo compare scenerastertransform rather than size
+        setEnabled(node != null && node.getRasterSize().equals(node.getProduct().getSceneRasterSize()));
     }
 
     @Override
