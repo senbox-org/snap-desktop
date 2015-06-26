@@ -14,7 +14,7 @@
  * with this program; if not, see http://www.gnu.org/licenses/
  */
 
-package org.esa.snap.rcp.session;
+package org.esa.snap.rcp.actions;
 
 import org.esa.snap.framework.datamodel.Band;
 import org.esa.snap.framework.datamodel.FilterBand;

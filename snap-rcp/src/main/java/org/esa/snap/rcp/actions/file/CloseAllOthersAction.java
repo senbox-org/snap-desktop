@@ -30,7 +30,8 @@ import org.openide.util.NbBundle;
 import org.openide.util.Utilities;
 import org.openide.util.WeakListeners;
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +47,7 @@ import java.util.List;
         displayName = "#CTL_CloseAllOthersActionName"
 )
 @ActionReferences({
-        @ActionReference(path = "Menu/File", position = 41),
+        @ActionReference(path = "Menu/File", position = 30),
         @ActionReference(
                 path = "Context/Product/Product",
                 position = 850

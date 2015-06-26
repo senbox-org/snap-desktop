@@ -378,7 +378,7 @@ public class VisatApp extends BasicApp implements AppContext {
 
             pm.setTaskName("Loading commands");
             loadCommands();
-            pm.worked(1);
+            pm.worked(1);F
 
             pm.setTaskName("Loading tool windows");
             loadToolViews();

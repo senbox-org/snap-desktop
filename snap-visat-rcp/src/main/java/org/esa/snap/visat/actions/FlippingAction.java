@@ -21,7 +21,7 @@ import org.esa.snap.framework.ui.ModalDialog;
 import org.esa.snap.framework.ui.command.CommandEvent;
 import org.esa.snap.framework.ui.command.ExecCommand;
 import org.esa.snap.visat.VisatApp;
-import org.esa.snap.visat.dialogs.ProductFlipDialog;
+import org.esa.snap.visat.dialogs.   ProductFlipDialog;
 
 public class FlippingAction extends ExecCommand {
 
