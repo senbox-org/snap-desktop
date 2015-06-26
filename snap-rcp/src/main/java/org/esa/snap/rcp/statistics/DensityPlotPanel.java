@@ -24,6 +24,7 @@ import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.core.SubProgressMonitor;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
+import org.esa.snap.framework.datamodel.Band;
 import org.esa.snap.framework.datamodel.Mask;
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.ProductNode;
@@ -55,12 +56,12 @@ import javax.swing.JSeparator;
 import javax.swing.ListCellRenderer;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.Shape;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
@@ -80,7 +81,7 @@ class DensityPlotPanel extends ChartPagePanel {
 
     private static final String NO_DATA_MESSAGE = "No scatter plot computed yet.\n" +
             "To create a scatter plot, select bands in both combo boxes.\n" +
-            "The plot will be computed when you hit the 'Refresh View' button.\n" +
+            "The plot will be computed when you click the 'Refresh View' button.\n" +
             HELP_TIP_MESSAGE + "\n" +
             ZOOM_TIP_MESSAGE;
     private static final String CHART_TITLE = "Scatter Plot";
@@ -110,6 +111,8 @@ class DensityPlotPanel extends ChartPagePanel {
     private JComboBox<ListCellRenderer> yProductList;
     private JComboBox<ListCellRenderer> xBandList;
     private JComboBox<ListCellRenderer> yBandList;
+    //todo instead using referenceSize, use referenceSceneRasterTransform
+    private Dimension referenceSize;
 
     private static AxisRangeControl[] axisRangeControls = new AxisRangeControl[2];
     private IndexColorModel toggledColorModel;
@@ -189,19 +192,20 @@ class DensityPlotPanel extends ChartPagePanel {
                 }
             }
 
-            updateBandList(getProduct(), xBandProperty);
-            updateBandList(getProduct(), yBandProperty);
+            updateBandList(getProduct(), xBandProperty, false);
+            updateBandList(getProduct(), yBandProperty, true);
 
             toggleColorCheckBox.setEnabled(false);
         }
         refreshButton.setEnabled(xBandProperty.getValue() != null && yBandProperty.getValue() != null);
     }
 
-    private void updateBandList(final Product product, final Property bandProperty) {
-        if (product == null)
+    private void updateBandList(final Product product, final Property bandProperty, boolean considerReferenceSize) {
+        if (product == null) {
             return;
+        }
 
-        final ValueSet bandValueSet = new ValueSet(createAvailableBandList(product));
+        final ValueSet bandValueSet = new ValueSet(createAvailableBandList(product, considerReferenceSize));
         bandProperty.getDescriptor().setValueSet(bandValueSet);
         if (bandValueSet.getItems().length > 0) {
             RasterDataNode currentRaster = getRaster();
@@ -225,11 +229,9 @@ class DensityPlotPanel extends ChartPagePanel {
         bindingContext = new BindingContext(PropertyContainer.createObjectBacked(dataSourceConfig));
 
         xProductList = new JComboBox<>();
-        xProductList.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent event) {
-                if (event.getStateChange() == ItemEvent.SELECTED) {
-                    updateBandList((Product) event.getItem(), xBandProperty);
-                }
+        xProductList.addItemListener(event -> {
+            if (event.getStateChange() == ItemEvent.SELECTED) {
+                updateBandList((Product) event.getItem(), xBandProperty, false);
             }
         });
         xProductList.setRenderer(new DefaultListCellRenderer() {
@@ -246,11 +248,9 @@ class DensityPlotPanel extends ChartPagePanel {
         xProductProperty = bindingContext.getPropertySet().getProperty(PROPERTY_NAME_X_PRODUCT);
 
         yProductList = new JComboBox<>();
-        yProductList.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent event) {
-                if (event.getStateChange() == ItemEvent.SELECTED) {
-                    updateBandList((Product) event.getItem(), yBandProperty);
-                }
+        yProductList.addItemListener(event -> {
+            if (event.getStateChange() == ItemEvent.SELECTED) {
+                updateBandList((Product) event.getItem(), yBandProperty, true);
             }
         });
         yProductList.setRenderer(new DefaultListCellRenderer() {
@@ -278,6 +278,19 @@ class DensityPlotPanel extends ChartPagePanel {
             }
         });
         bindingContext.bind(PROPERTY_NAME_X_BAND, xBandList);
+        xBandList.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                final Object value = xBandList.getSelectedItem();
+                if (value != null) {
+                    final Dimension rasterSize = ((RasterDataNode) value).getRasterSize();
+                    if (rasterSize != referenceSize) {
+                        referenceSize = rasterSize;
+                        updateBandList(getProduct(), yBandProperty, true);
+                    }
+                }
+            }
+        });
         xBandProperty = bindingContext.getPropertySet().getProperty(PROPERTY_NAME_X_BAND);
 
         yBandList = new JComboBox<>();
@@ -297,8 +310,9 @@ class DensityPlotPanel extends ChartPagePanel {
 
     private static String formatProductName(final Product product) {
         String name = product.getName().substring(0, Math.min(10, product.getName().length()));
-        if (product.getName().length() > 10)
+        if (product.getName().length() > 10) {
             name += "...";
+        }
         return product.getProductRefString() + name;
     }
 
@@ -381,12 +395,7 @@ class DensityPlotPanel extends ChartPagePanel {
 
     private JPanel createOptionsPanel() {
         toggleColorCheckBox = new JCheckBox("Invert plot colors");
-        toggleColorCheckBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                toggleColor();
-            }
-        });
+        toggleColorCheckBox.addActionListener(e -> toggleColor());
         toggleColorCheckBox.setEnabled(false);
         final JPanel optionsPanel = GridBagUtils.createPanel();
         final GridBagConstraints gbc = GridBagUtils.createConstraints("anchor=NORTHWEST,fill=HORIZONTAL,insets.top=0,weightx=1,gridx=0");
@@ -540,7 +549,7 @@ class DensityPlotPanel extends ChartPagePanel {
                     toggleColorCheckBox.setEnabled(true);
                 } catch (InterruptedException | CancellationException e) {
                     e.printStackTrace();
-                    SnapDialogs.showMessage(/*I18N*/ CHART_TITLE, /*I18N*/
+                    SnapDialogs.showMessage(CHART_TITLE,
                                             "Failed to compute scatter plot.\n" +
                                                     "Calculation canceled.",
                                             JOptionPane.ERROR_MESSAGE,
@@ -548,7 +557,7 @@ class DensityPlotPanel extends ChartPagePanel {
                     );
                 } catch (ExecutionException | IllegalArgumentException e) {
                     e.printStackTrace();
-                    SnapDialogs.showMessage(/*I18N*/ CHART_TITLE, /*I18N*/
+                    SnapDialogs.showMessage(CHART_TITLE,
                                             "Failed to compute scatter plot.\n" +
                                                     "An error occurred:\n" +
                                                     e.getCause().getMessage(),
@@ -578,19 +587,25 @@ class DensityPlotPanel extends ChartPagePanel {
         return SnapApp.getDefault().getProductManager().getProducts();
     }
 
-    private RasterDataNode[] createAvailableBandList(final Product product) {
+    private RasterDataNode[] createAvailableBandList(final Product product, boolean considerReferenceSize) {
         final List<RasterDataNode> availableBandList = new ArrayList<>(17);
         if (product != null) {
             for (int i = 0; i < product.getNumBands(); i++) {
-                availableBandList.add(product.getBandAt(i));
+                final Band band = product.getBandAt(i);
+                if (!considerReferenceSize || band.getRasterSize().equals(referenceSize)) {
+                    availableBandList.add(band);
+                }
             }
-            for (int i = 0; i < product.getNumTiePointGrids(); i++) {
-                availableBandList.add(product.getTiePointGridAt(i));
+            if (!considerReferenceSize || product.getSceneRasterSize().equals(referenceSize)) {
+                for (int i = 0; i < product.getNumTiePointGrids(); i++) {
+                    availableBandList.add(product.getTiePointGridAt(i));
+                }
             }
         }
         // if raster is only bound to the product and does not belong to it
         final RasterDataNode raster = getRaster();
-        if (raster != null && raster.getProduct() == product) {
+        if (raster != null && raster.getProduct() == product &&
+                (!considerReferenceSize || raster.getRasterSize().equals(raster.getProduct().getSceneRasterSize()))) {
             if (!availableBandList.contains(raster)) {
                 availableBandList.add(raster);
             }
@@ -665,11 +680,13 @@ class DensityPlotPanel extends ChartPagePanel {
         final int h = image.getHeight();
 
         final RasterDataNode rasterX = getRaster(X_VAR);
+        assert rasterX != null;
         final String nameX = rasterX.getName();
         final double sampleMinX = bounds.getMinX();
         final double sampleMaxX = bounds.getMaxX();
 
         final RasterDataNode rasterY = getRaster(Y_VAR);
+        assert rasterY != null;
         final String nameY = rasterY.getName();
         final double sampleMinY = bounds.getMinY();
         final double sampleMaxY = bounds.getMaxY();
@@ -726,7 +743,9 @@ class DensityPlotPanel extends ChartPagePanel {
         return sb.toString();
     }
 
+    @SuppressWarnings("unused")
     private static class DataSourceConfig {
+
         public boolean useRoiMask;
         public Mask roiMask;
         private Product xProduct;

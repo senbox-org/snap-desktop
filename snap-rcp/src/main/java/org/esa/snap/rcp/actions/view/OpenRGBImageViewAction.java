@@ -22,6 +22,7 @@ import org.esa.snap.framework.datamodel.Band;
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.ProductNode;
 import org.esa.snap.framework.datamodel.RGBImageProfile;
+import org.esa.snap.framework.dataop.barithm.BandArithmetic;
 import org.esa.snap.framework.ui.RGBImageProfilePane;
 import org.esa.snap.framework.ui.UIUtils;
 import org.esa.snap.framework.ui.product.ProductSceneImage;
@@ -58,7 +59,7 @@ import java.awt.event.ActionEvent;
 )
 @ActionReferences({
         @ActionReference(path = "Menu/View", position = 110),
-        @ActionReference(path = "Context/Product/Product",position = 400),
+        @ActionReference(path = "Context/Product/Product", position = 400),
 })
 @NbBundle.Messages({
         "CTL_OpenRGBImageViewAction_MenuText=Open RGB Image View",
@@ -90,7 +91,7 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
         final int[] defaultBandIndices = getDefaultBandIndices(product);
 
         final RGBImageProfilePane profilePane = new RGBImageProfilePane(SnapApp.getDefault().getPreferencesPropertyMap(), product,
-                openedProducts, defaultBandIndices);
+                                                                        openedProducts, defaultBandIndices);
 
         final String title = "Select RGB-Image Channels";
         final boolean ok = profilePane.showDialog(SnapApp.getDefault().getMainFrame(), title, helpId);
@@ -98,6 +99,10 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
             return;
         }
         final String[] rgbaExpressions = profilePane.getRgbaExpressions();
+        if (!BandArithmetic.areReferencedRastersCompatible(product, rgbaExpressions)) {
+            SnapDialogs.showInformation(title, "Referenced rasters are incompatible", null);
+            return;
+        }
         if (profilePane.getStoreProfileInProduct()) {
             RGBImageProfile.storeRgbaExpressions(product, rgbaExpressions);
         }
@@ -110,37 +115,37 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
 
         int[] bandIndices = null;
         final Band[] bands = product.getBands();
-        if(bands.length == 1) {
+        if (bands.length == 1) {
             return new int[]{0};
-        } else if(bands.length == 2) {
-            return new int[] {0, 1};
-        } else if(bands.length > 2) {
+        } else if (bands.length == 2) {
+            return new int[]{0, 1};
+        } else if (bands.length > 2) {
             bandIndices = new int[3];
             int cnt = 0, i = 0;
-            for(Band band : product.getBands()) {
+            for (Band band : product.getBands()) {
                 final String unit = band.getUnit();
-                if(unit != null && unit.contains("intensity")) {
+                if (unit != null && unit.contains("intensity")) {
                     bandIndices[i++] = cnt;
                 }
-                if(i >= bandIndices.length)
+                if (i >= bandIndices.length)
                     break;
                 ++cnt;
             }
-            if(i ==  0) {
+            if (i == 0) {
                 while (i < 3) {
                     bandIndices[i] = i++;
                 }
             }
-            if(i == 1) {
-                return new int[] {bandIndices[0]};
-            } else if(i == 2) {
-                return new int[] {bandIndices[0], bandIndices[1]};
+            if (i == 1) {
+                return new int[]{bandIndices[0]};
+            } else if (i == 2) {
+                return new int[]{bandIndices[0], bandIndices[1]};
             }
         }
         return bandIndices;
     }
 
-    private  void openProductSceneViewRGB(final String name, final Product product, final String[] rgbaExpressions) {
+    private void openProductSceneViewRGB(final String name, final Product product, final String[] rgbaExpressions) {
         final SwingWorker<ProductSceneImage, Object> worker = new ProgressMonitorSwingWorker<ProductSceneImage, Object>(
                 SnapApp.getDefault().getMainFrame(),
                 SnapApp.getDefault().getInstanceName() + " - Creating image for '" + name + "'") {
@@ -174,8 +179,6 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
     }
 
     public static ProductSceneViewTopComponent openDocumentWindow(final ProductSceneView view) {
-        final SnapApp snapApp = SnapApp.getDefault();
-
         UndoRedo.Manager undoManager = SnapApp.getDefault().getUndoManager(view.getProduct());
         ProductSceneViewTopComponent psvTopComponent = new ProductSceneViewTopComponent(view, undoManager);
 
@@ -188,7 +191,6 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
 
     private ProductSceneImage createProductSceneImageRGB(String name, final Product product, String[] rgbaExpressions,
                                                          ProgressMonitor pm) throws Exception {
-        final SnapApp visatApp = SnapApp.getDefault();
         Band[] rgbBands = null;
         boolean errorOccurred = false;
         ProductSceneImage productSceneImage = null;
@@ -198,7 +200,7 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
             productSceneImage = new ProductSceneImage(name, rgbBands[0],
                                                       rgbBands[1],
                                                       rgbBands[2],
-                                                      visatApp.getPreferencesPropertyMap(),
+                                                      SnapApp.getDefault().getPreferencesPropertyMap(),
                                                       SubProgressMonitor.create(pm, 1));
             productSceneImage.initVectorDataCollectionLayer();
             productSceneImage.initMaskCollectionLayer();

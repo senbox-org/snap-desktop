@@ -48,7 +48,8 @@ import java.io.IOException;
         id = "ImportVectorDataNodeFromCsvAction"
 )
 @ActionRegistration(
-        displayName = "#CTL_ImportVectorDataNodeFromCsvActionName"
+        displayName = "#CTL_ImportVectorDataNodeFromCsvActionName",
+        lazy=true
 )
 @ActionReference(path = "Menu/File/Import/Vector Data", position = 10)
 @NbBundle.Messages({

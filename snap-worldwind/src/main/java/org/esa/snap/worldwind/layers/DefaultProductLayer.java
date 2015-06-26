@@ -15,11 +15,16 @@
  */
 package org.esa.snap.worldwind.layers;
 
+import gov.nasa.worldwind.WorldWind;
+import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.awt.WorldWindowGLCanvas;
 import gov.nasa.worldwind.event.SelectEvent;
 import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.geom.Sector;
+import gov.nasa.worldwind.render.Offset;
+import gov.nasa.worldwind.render.PointPlacemark;
+import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import gov.nasa.worldwind.render.Polyline;
 import gov.nasa.worldwind.render.SurfaceImage;
 import org.esa.snap.datamodel.AbstractMetadata;
@@ -62,6 +67,7 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
 
     private final ConcurrentHashMap<String, Polyline[]> outlineTable = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, SurfaceImage> imageTable = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, PointPlacemark> labelTable = new ConcurrentHashMap<>();
 
     public WorldWindowGLCanvas theWWD = null;
 
@@ -212,6 +218,10 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
 
         final Polyline[] polyLineList = new Polyline[boundaryPaths.length];
         int i = 0;
+        int numPoints = 0;
+        float centreLat = 0;
+        float centreLon = 0;
+
         for (GeneralPath boundaryPath : boundaryPaths) {
             final PathIterator it = boundaryPath.getPathIterator(null);
             final float[] floats = new float[2];
@@ -221,16 +231,27 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
             final Position firstPosition = new Position(Angle.fromDegreesLatitude(floats[1]),
                     Angle.fromDegreesLongitude(floats[0]), 0.0);
             positions.add(firstPosition);
+            centreLat += floats[1];
+            centreLon += floats[0];
             it.next();
+            numPoints++;
 
             while (!it.isDone()) {
                 it.currentSegment(floats);
                 positions.add(new Position(Angle.fromDegreesLatitude(floats[1]),
                         Angle.fromDegreesLongitude(floats[0]), 0.0));
+
+                centreLat += floats[1];
+                centreLon += floats[0];
                 it.next();
+                numPoints++;
             }
             // close the loop
             positions.add(firstPosition);
+
+            centreLat = centreLat / numPoints;
+            centreLon = centreLon / numPoints;
+
 
             polyLineList[i] = new Polyline();
             polyLineList[i].setFollowTerrain(true);
@@ -243,7 +264,17 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
             addRenderable(polyLineList[i]);
             ++i;
         }
+
+        Position centrePos = new Position(Angle.fromDegreesLatitude(centreLat), Angle.fromDegreesLongitude(centreLon), 0.0);
+
+        PointPlacemark ppm = getLabelPlacemark(centrePos, String.valueOf(product.getRefNo()));
+        ppm.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
+        ppm.setEnableDecluttering(true);
+
+        addRenderable(ppm);
+
         outlineTable.put(getUniqueName(product), polyLineList);
+        labelTable.put(getUniqueName(product), ppm);
     }
 
     private void addWaveProduct(final Product product) {
@@ -254,6 +285,11 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
         final MetadataElement[] geoElemList = ggADS.getElements();
         final Polyline[] lineList = new Polyline[geoElemList.length];
         int cnt = 0;
+
+        int numPoints = 0;
+        float centreLat = 0;
+        float centreLon = 0;
+
         for (MetadataElement geoElem : geoElemList) {
             final double lat = geoElem.getAttributeDouble("center_lat", 0.0) / Constants.oneMillion;
             final double lon = geoElem.getAttributeDouble("center_long", 0.0) / Constants.oneMillion;
@@ -274,6 +310,20 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
             positions.add(new Position(Angle.fromDegreesLatitude(corner3.lat), Angle.fromDegreesLongitude(corner3.lon), 0.0));
             positions.add(new Position(Angle.fromDegreesLatitude(corner1.lat), Angle.fromDegreesLongitude(corner1.lon), 0.0));
 
+            centreLat += corner1.lat;
+            centreLon += corner1.lon;
+
+            centreLat += corner2.lat;
+            centreLon += corner2.lon;
+
+            centreLat += corner3.lat;
+            centreLon += corner3.lon;
+
+            centreLat += corner4.lat;
+            centreLon += corner4.lon;
+
+            numPoints += 4;
+
             final Polyline line = new Polyline();
             line.setFollowTerrain(true);
             line.setPositions(positions);
@@ -281,12 +331,35 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
             addRenderable(line);
             lineList[cnt++] = line;
         }
+
+        centreLat = centreLat / numPoints;
+        centreLon = centreLon / numPoints;
+        Position centrePos = new Position(Angle.fromDegreesLatitude(centreLat), Angle.fromDegreesLongitude(centreLon), 0.0);
+
+        PointPlacemark ppm = getLabelPlacemark(centrePos, String.valueOf(product.getRefNo()));
+        ppm.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
+        ppm.setEnableDecluttering(true);
+        addRenderable(ppm);
+
         outlineTable.put(getUniqueName(product), lineList);
+        labelTable.put(getUniqueName(product), ppm);
+    }
+
+    private PointPlacemark getLabelPlacemark (Position pos, String label) {
+        PointPlacemarkAttributes ppmAtttrs = new PointPlacemarkAttributes();
+        ppmAtttrs.setLabelOffset(new Offset (0.0, 0.0, AVKey.PIXELS, AVKey.PIXELS));
+        ppmAtttrs.setScale(0.0);
+
+        PointPlacemark ppm = new PointPlacemark(pos);
+        ppm.setAttributes(ppmAtttrs);
+        ppm.setLabelText(label);
+        return ppm;
     }
 
     public void removeProduct(final Product product) {
         removeOutline(getUniqueName(product));
         removeImage(getUniqueName(product));
+        removeLabel(getUniqueName(product));
     }
 
     private void removeOutline(String imagePath) {
@@ -304,6 +377,14 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
         if (si != null) {
             this.removeRenderable(si);
             this.imageTable.remove(imagePath);
+        }
+    }
+
+    private void removeLabel(String imagePath) {
+        final PointPlacemark ppm = this.labelTable.get(imagePath);
+        if (ppm != null) {
+            this.removeRenderable(ppm);
+            this.labelTable.remove(ppm);
         }
     }
 

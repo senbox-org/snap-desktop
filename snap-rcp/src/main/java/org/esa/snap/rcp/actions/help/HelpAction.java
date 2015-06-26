@@ -4,7 +4,7 @@ import org.esa.snap.tango.TangoIcons;
 import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle;
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
 
 /**
@@ -51,13 +51,6 @@ public class HelpAction extends AbstractAction implements HelpCtx.Provider {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        // TODO: Invoke help system, maybe extract common SNAP (context) Help action
-        // see http://bits.netbeans.org/dev/javadoc/org-netbeans-modules-javahelp/org/netbeans/api/javahelp/Help.html
-        /*
-        Help help = Lookup.getDefault().lookup(Help.class);
-        if (help != null) {
-            help.showHelp(getHelpCtx());
-        }
-        */
+        getHelpCtx().display();
     }
 }

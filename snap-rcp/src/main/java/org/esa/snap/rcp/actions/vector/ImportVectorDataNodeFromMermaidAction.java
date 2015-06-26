@@ -47,7 +47,8 @@ import java.io.IOException;
         id = "ImportVectorDataNodeFromMermaidAction"
 )
 @ActionRegistration(
-        displayName = "#CTL_ImportVectorDataNodeFromMermaidActionName"
+        displayName = "#CTL_ImportVectorDataNodeFromMermaidActionName",
+        lazy=true
 )
 @ActionReference(path = "Menu/File/Import/Vector Data", position = 30)
 @NbBundle.Messages({

@@ -32,8 +32,7 @@ import org.esa.snap.ui.tooladapter.model.PropertyMemberUIWrapper;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
+import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -56,7 +55,6 @@ public class TemplateParameterEditorDialog extends ModalDialog {
     private JTextArea fileContentArea = new JTextArea("", 10, 10);
     OperatorParametersTable paramsTable;
     private Logger logger;
-    private File path;
 
     public TemplateParameterEditorDialog(AppContext appContext, String title, String helpID) {
         super(appContext.getApplicationWindow(), title, ID_OK_CANCEL, helpID);
@@ -73,7 +71,6 @@ public class TemplateParameterEditorDialog extends ModalDialog {
             this.fakeDescriptor.getToolParameterDescriptors().add(new TemplateParameterDescriptor(param));
         }
         this.fileWrapper = fileWrapper;
-        this.path = new File(ToolAdapterIO.getUserAdapterPath().getAbsolutePath(), parentDescriptor.getAlias());
         setContent(createMainPanel());
     }
 
@@ -91,9 +88,7 @@ public class TemplateParameterEditorDialog extends ModalDialog {
         tableScrollPane.setPreferredSize(new Dimension(500, 130));
         tableScrollPane.setAlignmentX(Component.LEFT_ALIGNMENT);
         paramsPanel.add(tableScrollPane);
-        addParamBut.addActionListener(e -> {
-            paramsTable.addParameterToTable(new TemplateParameterDescriptor("parameterName", String.class));
-        });
+        addParamBut.addActionListener((ActionEvent e) -> paramsTable.addParameterToTable(new TemplateParameterDescriptor("parameterName", String.class)));
         TitledBorder title = BorderFactory.createTitledBorder("Template Parameters");
         paramsPanel.setBorder(title);
         return paramsPanel;
@@ -114,12 +109,7 @@ public class TemplateParameterEditorDialog extends ModalDialog {
         } catch (Exception e) {
             logger.warning(e.getMessage());
         }
-        this.fileWrapper.getContext().addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                updateFileAreaContent();
-            }
-        });
+        this.fileWrapper.getContext().addPropertyChangeListener(evt -> updateFileAreaContent());
 
         mainPanel.add(filePanel, BorderLayout.PAGE_START);
         mainPanel.add(new JScrollPane(fileContentArea), BorderLayout.CENTER);
@@ -149,8 +139,7 @@ public class TemplateParameterEditorDialog extends ModalDialog {
             fileContentArea.setText(result);
             fileContentArea.setCaretPosition(0);
         } else {
-            //TODO error message
-            fileContentArea.setText("ERROR!!!");
+            fileContentArea.setText("[no content]");
         }
     }
 
@@ -158,18 +147,16 @@ public class TemplateParameterEditorDialog extends ModalDialog {
     protected void onOK() {
         super.onOK();
         //set value
-        File defaultValue = ToolAdapterIO.prettifyTemplateParameterPath(
-                ToolAdapterIO.ensureLocalCopy(
-                        fileWrapper.getContext().getPropertySet().getProperty(this.parameter.getName()).getValue(),
-                        parentDescriptor.getAlias()),
+        File defaultValue = ToolAdapterIO.ensureLocalCopy(fileWrapper.getContext().getPropertySet().getProperty(this.parameter.getName()).getValue(),
                 parentDescriptor.getAlias());
-        this.parameter.setDefaultValue(defaultValue.getAbsolutePath());
+        this.parameter.setDefaultValue(defaultValue.getName());
         //save parameters
         parameter.getToolParameterDescriptors().clear();
         for (TemplateParameterDescriptor subparameter : fakeDescriptor.getToolParameterDescriptors()){
             if (paramsTable.getBindingContext().getBinding(subparameter.getName()) != null){
-                if(paramsTable.getBindingContext().getBinding(subparameter.getName()).getPropertyValue() != null) {
-                    subparameter.setDefaultValue(paramsTable.getBindingContext().getBinding(subparameter.getName()).getPropertyValue().toString());
+                Object propertyValue = paramsTable.getBindingContext().getBinding(subparameter.getName()).getPropertyValue();
+                if (propertyValue != null) {
+                    subparameter.setDefaultValue(propertyValue.toString());
                 }
             }
             parameter.addParameterDescriptor(subparameter);

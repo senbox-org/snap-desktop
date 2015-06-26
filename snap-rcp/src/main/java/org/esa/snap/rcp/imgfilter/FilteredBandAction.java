@@ -15,21 +15,33 @@
  */
 package org.esa.snap.rcp.imgfilter;
 
-import org.esa.snap.framework.datamodel.*;
+import org.esa.snap.framework.datamodel.Band;
+import org.esa.snap.framework.datamodel.ConvolutionFilterBand;
+import org.esa.snap.framework.datamodel.FilterBand;
+import org.esa.snap.framework.datamodel.GeneralFilterBand;
+import org.esa.snap.framework.datamodel.Kernel;
+import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.datamodel.ProductNode;
+import org.esa.snap.framework.datamodel.RasterDataNode;
 import org.esa.snap.framework.ui.ModalDialog;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.actions.view.OpenImageViewAction;
 import org.esa.snap.rcp.imgfilter.model.Filter;
-import org.esa.snap.rcp.session.*;
 import org.esa.snap.util.ProductUtils;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
-import org.openide.util.*;
+import org.openide.util.ContextAwareAction;
+import org.openide.util.Lookup;
+import org.openide.util.LookupEvent;
+import org.openide.util.LookupListener;
+import org.openide.util.NbBundle;
+import org.openide.util.Utilities;
+import org.openide.util.WeakListeners;
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import java.awt.event.ActionEvent;
 
 
@@ -43,14 +55,8 @@ import java.awt.event.ActionEvent;
         lazy = false
 )
 @ActionReferences({
-        @ActionReference(
-                path = "Menu/Tools",
-                position = 112
-        ),
-        @ActionReference(
-                path = "Context/Product/RasterDataNode",
-                position = 202
-        )
+        @ActionReference(path = "Menu/Tools", position = 120),
+        @ActionReference(path = "Context/Product/RasterDataNode", position = 210)
 })
 @NbBundle.Messages({
         "CTL_FilteredBandAction_MenuText=Create Filtered Band...",
@@ -58,9 +64,8 @@ import java.awt.event.ActionEvent;
 })
 public class FilteredBandAction extends AbstractAction  implements LookupListener, ContextAwareAction {
 
-    private RasterDataNode[] selectedRasters;
     private Lookup lookup;
-    private Lookup.Result<Band> result;
+    private Lookup.Result<RasterDataNode> result;
 
 
     public FilteredBandAction() {
@@ -70,41 +75,68 @@ public class FilteredBandAction extends AbstractAction  implements LookupListene
     public FilteredBandAction(Lookup lookup){
         super(Bundle.CTL_FilteredBandAction_MenuText());
         this.lookup = lookup;
-        result = lookup.lookupResult(Band.class);
+        result = lookup.lookupResult(RasterDataNode.class);
         result.addLookupListener(WeakListeners.create(LookupListener.class, this, result));
-        setEnableState();
+        final RasterDataNode node = this.lookup.lookup(RasterDataNode.class);
+        //todo compare scenerastertransform rather than size
+        setEnabled(node != null && node.getRasterSize().equals(node.getProduct().getSceneRasterSize()));
     }
 
+    @Override
+    public Action createContextAwareInstance(Lookup actionContext) {
+        return new FilteredBandAction(actionContext);
+    }
 
-    private void setEnableState() {
-        Band band = lookup.lookup(Band.class);
-        setEnabled(band != null);
+    @Override
+    public void resultChanged(LookupEvent ev) {
+        final RasterDataNode node = this.lookup.lookup(RasterDataNode.class);
+        //todo compare scenerastertransform rather than size
+        setEnabled(node != null && node.getRasterSize().equals(node.getProduct().getSceneRasterSize()));
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        SnapDialogs.showInformation(selectedRasters.length + " rasters selected!", null);
         createFilteredBand();
     }
 
-    private void createFilteredBand() {
-        ProductNode node = SnapApp.getDefault().getSelectedProductNode();
-        if (node instanceof RasterDataNode) {
-            RasterDataNode sourceRaster = (RasterDataNode) node;
-
-            final CreateFilteredBandDialog.DialogData dialogData = promptForFilter();
-            if (dialogData == null) {
-                return;
-            }
-
-            final FilterBand filterBand = getFilterBand(sourceRaster,
-                    dialogData.getBandName(),
-                    dialogData.getFilter(),
-                    dialogData.getIterationCount());
-
-            new OpenImageViewAction(filterBand).openProductSceneView();
-
+    static GeneralFilterBand.OpType getOpType(Filter.Operation operation) {
+        if (operation == Filter.Operation.OPEN) {
+            return GeneralFilterBand.OpType.OPENING;
+        } else if (operation == Filter.Operation.CLOSE) {
+            return GeneralFilterBand.OpType.CLOSING;
+        } else if (operation == Filter.Operation.ERODE) {
+            return GeneralFilterBand.OpType.EROSION;
+        } else if (operation == Filter.Operation.DILATE) {
+            return GeneralFilterBand.OpType.DILATION;
+        } else if (operation == Filter.Operation.MIN) {
+            return GeneralFilterBand.OpType.MIN;
+        } else if (operation == Filter.Operation.MAX) {
+            return GeneralFilterBand.OpType.MAX;
+        } else if (operation == Filter.Operation.MEAN) {
+            return GeneralFilterBand.OpType.MEAN;
+        } else if (operation == Filter.Operation.MEDIAN) {
+            return GeneralFilterBand.OpType.MEDIAN;
+        } else if (operation == Filter.Operation.STDDEV) {
+            return GeneralFilterBand.OpType.STDDEV;
+        } else {
+            throw new IllegalArgumentException("illegal operation: " + operation);
         }
+    }
+
+    private void createFilteredBand() {
+        RasterDataNode node = lookup.lookup(RasterDataNode.class);
+
+        final CreateFilteredBandDialog.DialogData dialogData = promptForFilter();
+        if (dialogData == null) {
+            return;
+        }
+
+        final FilterBand filterBand = getFilterBand(node,
+                dialogData.getBandName(),
+                dialogData.getFilter(),
+                dialogData.getIterationCount());
+
+        new OpenImageViewAction(filterBand).openProductSceneView();
     }
 
     private static FilterBand getFilterBand(RasterDataNode sourceRaster, String bandName, Filter filter, int iterationCount) {
@@ -144,30 +176,6 @@ public class FilteredBandAction extends AbstractAction  implements LookupListene
                 filter.getKernelElements());
     }
 
-    static GeneralFilterBand.OpType getOpType(Filter.Operation operation) {
-        if (operation == Filter.Operation.OPEN) {
-            return GeneralFilterBand.OpType.OPENING;
-        } else if (operation == Filter.Operation.CLOSE) {
-            return GeneralFilterBand.OpType.CLOSING;
-        } else if (operation == Filter.Operation.ERODE) {
-            return GeneralFilterBand.OpType.EROSION;
-        } else if (operation == Filter.Operation.DILATE) {
-            return GeneralFilterBand.OpType.DILATION;
-        } else if (operation == Filter.Operation.MIN) {
-            return GeneralFilterBand.OpType.MIN;
-        } else if (operation == Filter.Operation.MAX) {
-            return GeneralFilterBand.OpType.MAX;
-        } else if (operation == Filter.Operation.MEAN) {
-            return GeneralFilterBand.OpType.MEAN;
-        } else if (operation == Filter.Operation.MEDIAN) {
-            return GeneralFilterBand.OpType.MEDIAN;
-        } else if (operation == Filter.Operation.STDDEV) {
-            return GeneralFilterBand.OpType.STDDEV;
-        } else {
-            throw new IllegalArgumentException("illegal operation: " + operation);
-        }
-    }
-
     private CreateFilteredBandDialog.DialogData promptForFilter() {
         final ProductNode selectedNode = SnapApp.getDefault().getSelectedProductNode();
         final Product product = selectedNode.getProduct();
@@ -178,15 +186,6 @@ public class FilteredBandAction extends AbstractAction  implements LookupListene
         return null;
     }
 
-    @Override
-    public Action createContextAwareInstance(Lookup actionContext) {
-        return new FilteredBandAction(actionContext);
-    }
-
-    @Override
-    public void resultChanged(LookupEvent ev) {
-        setEnableState();
-    }
 }
 
 

@@ -47,7 +47,6 @@ import org.esa.snap.framework.gpf.ui.SourceProductSelector;
 import org.esa.snap.framework.gpf.ui.TargetProductSelectorModel;
 import org.esa.snap.framework.ui.AppContext;
 import org.esa.snap.framework.ui.UIUtils;
-import org.esa.snap.gpf.ProgressMonitorList;
 import org.esa.snap.gpf.operators.standard.WriteOp;
 import org.esa.snap.graphbuilder.gpf.ui.OperatorUI;
 import org.esa.snap.graphbuilder.gpf.ui.OperatorUIRegistry;
@@ -55,18 +54,13 @@ import org.esa.snap.graphbuilder.gpf.ui.UIValidation;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.actions.file.SaveProductAsAction;
-import org.esa.snap.util.IconUtils;
+import org.esa.snap.util.MemUtils;
 import org.esa.snap.util.ProductFunctions;
 
 import javax.media.jai.JAI;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
+import java.awt.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -136,7 +130,6 @@ public class SingleOperatorDialog extends SingleTargetProductDialog {
         addParameters();
 
         getJDialog().setMinimumSize(new Dimension(450, 450));
-        getJDialog().setIconImage(IconUtils.esaPlanetIcon.getImage());
 
         statusLabel = new JLabel("");
         statusLabel.setForeground(new Color(255, 0, 0));
@@ -167,6 +160,8 @@ public class SingleOperatorDialog extends SingleTargetProductDialog {
     @Override
     protected Product createTargetProduct() throws Exception {
         if (validateUI()) {
+            MemUtils.freeAllMemory();
+
             opUI.updateParameters();
 
             final HashMap<String, Product> sourceProducts = ioParametersPanel.createSourceProductsMap();
@@ -322,7 +317,7 @@ public class SingleOperatorDialog extends SingleTargetProductDialog {
         protected Product doInBackground(com.bc.ceres.core.ProgressMonitor pm) throws Exception {
             final TargetProductSelectorModel model = getTargetProductSelector().getModel();
             pm.beginTask("Writing...", model.isOpenInAppSelected() ? 100 : 95);
-            ProgressMonitorList.instance().add(pm);
+
             Product product = null;
             try {
                 // free cache	// NESTMOD
@@ -362,7 +357,7 @@ public class SingleOperatorDialog extends SingleTargetProductDialog {
                 System.gc();
 
                 pm.done();
-                ProgressMonitorList.instance().remove(pm);
+
                 if (product != targetProduct) {
                     targetProduct.dispose();
                 }

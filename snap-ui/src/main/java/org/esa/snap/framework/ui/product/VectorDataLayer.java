@@ -28,6 +28,7 @@ import com.bc.ceres.swing.figure.FigureStyle;
 import com.bc.ceres.swing.figure.support.DefaultFigureCollection;
 import com.bc.ceres.swing.figure.support.DefaultFigureStyle;
 import org.esa.snap.framework.datamodel.Placemark;
+import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.ProductNode;
 import org.esa.snap.framework.datamodel.ProductNodeEvent;
 import org.esa.snap.framework.datamodel.ProductNodeListenerAdapter;
@@ -94,7 +95,10 @@ public class VectorDataLayer extends Layer {
 
     @Override
     protected void disposeLayer() {
-        vectorDataNode.getProduct().removeProductNodeListener(vectorDataChangeHandler);
+        Product product = vectorDataNode.getProduct();
+        if (product != null) {
+            product.removeProductNodeListener(vectorDataChangeHandler);
+        }
         vectorDataNode = null;
         super.disposeLayer();
     }

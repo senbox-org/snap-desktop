@@ -17,10 +17,11 @@ import org.openide.nodes.PropertySupport;
 import org.openide.nodes.Sheet;
 import org.openide.util.WeakListeners;
 
-import javax.swing.*;
+import javax.swing.Action;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
@@ -68,7 +69,7 @@ class PNode extends PNNode<Product> implements PreferenceChangeListener {
 
     @Override
     public void destroy() throws IOException {
-        new CloseProductAction(Arrays.asList(getProduct())).execute();
+        new CloseProductAction(Collections.singletonList(getProduct())).execute();
     }
 
     @Override
@@ -136,10 +137,28 @@ class PNode extends PNNode<Product> implements PreferenceChangeListener {
                         return absRoot.getAttributeString("mission");
                     }
                 });
+                set.put(new PropertySupport.ReadOnly<String>("mode", String.class, "Acquisition Mode", "Sensor Acquisition Mode") {
+                    @Override
+                    public String getValue() {
+                        return absRoot.getAttributeString("ACQUISITION_MODE");
+                    }
+                });
                 set.put(new PropertySupport.ReadOnly<String>("pass", String.class, "Pass", "Orbital Pass") {
                     @Override
                     public String getValue() {
                         return absRoot.getAttributeString("pass");
+                    }
+                });
+                set.put(new PropertySupport.ReadOnly<String>("track", String.class, "Track", "Relative Orbit") {
+                    @Override
+                    public String getValue() {
+                        return absRoot.getAttributeString("REL_ORBIT");
+                    }
+                });
+                set.put(new PropertySupport.ReadOnly<String>("orbit", String.class, "Orbit", "Absolute Orbit") {
+                    @Override
+                    public String getValue() {
+                        return absRoot.getAttributeString("ABS_ORBIT");
                     }
                 });
             }
@@ -206,10 +225,10 @@ class PNode extends PNNode<Product> implements PreferenceChangeListener {
                     list.add(new PNGGroup.VDN(product.getVectorDataGroup()));
                 }
                 if (product.getTiePointGridGroup().getNodeCount() > 0) {
-                    list.add(new PNGGroup.TPG(product.getTiePointGridGroup()));
+                    list.add(new PNGroupingGroup.TPG(product.getTiePointGridGroup()));
                 }
                 if (product.getBandGroup().getNodeCount() > 0) {
-                    list.add(new PNGGroup.B(product.getBandGroup()));
+                    list.add(new PNGroupingGroup.B(product.getBandGroup()));
                 }
                 if (product.getMaskGroup().getNodeCount() > 0) {
                     list.add(new PNGGroup.M(product.getMaskGroup()));
@@ -234,7 +253,7 @@ class PNode extends PNNode<Product> implements PreferenceChangeListener {
             if (key instanceof ProductNode) {
                 return PNNode.create((ProductNode) key);
             } else {
-                return new PNGroupNode((PNGGroup) key);
+                return new PNGroupNode((PNGroup) key);
             }
         }
     }

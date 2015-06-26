@@ -61,7 +61,6 @@ import java.beans.PropertyChangeEvent;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 class LayerManagerForm implements AbstractLayerForm {
 
@@ -456,8 +455,6 @@ class LayerManagerForm implements AbstractLayerForm {
         public void actionPerformed(ActionEvent e) {
             LayerSourceAssistantPane pane = new LayerSourceAssistantPane(SwingUtilities.getWindowAncestor(control),
                                                                          "Add Layer");
-            //todo remove BEAMUIActivator
-//            LayerSourceDescriptor[] layerSourceDescriptors = BeamUiActivator.getInstance().getLayerSources();
             final Map<String, LayerSourceDescriptor> layerSourceDescriptors1 =
                     LayerManager.getDefault().getLayerSourceDescriptors();
             final LayerSourceDescriptor[] layerSourceDescriptors2 =

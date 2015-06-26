@@ -20,6 +20,7 @@ import com.bc.jexp.Namespace;
 import com.bc.jexp.ParseException;
 import com.bc.jexp.Parser;
 import com.bc.jexp.Term;
+import com.bc.jexp.impl.Functions;
 import com.bc.jexp.impl.NamespaceImpl;
 import org.esa.snap.framework.dataop.barithm.BandArithmetic;
 import org.esa.snap.framework.ui.tool.ToolButtonFactory;
@@ -95,7 +96,7 @@ public class ExpressionPane extends JPanel {
             "Y",
             "LAT",
             "LON",
-            "MJD",
+            "TIME",
             "0.5",
             "0.0",
             "1.0",
@@ -134,27 +135,7 @@ public class ExpressionPane extends JPanel {
             "not @"
     };
 
-    private static final String[] FUNCTION_NAMES = new String[]{
-            "sqrt(@)",
-            "pow(@,@)",
-            "exp(@)",
-            "log(@)",
-            "min(@,@)",
-            "max(@,@)",
-            "rad(@)",
-            "deg(@)",
-            "sign(@)",
-            "abs(@)",
-            "sin(@)",
-            "cos(@)",
-            "tan(@)",
-            "asin(@)",
-            "acos(@)",
-            "atan(@)",
-            "atan2(@,@)",
-            "ampl(@,@)",
-            "phase(@,@)"
-    };
+    private static final String[] FUNCTION_CALL_PATTERNS;
 
     private static Font exprTextAreaFont = new Font("Courier", Font.PLAIN, 12);
     private static Font insertCompFont = new Font("Courier", Font.PLAIN, 11);
@@ -174,6 +155,14 @@ public class ExpressionPane extends JPanel {
     private List<String> history;
     private int historyIndex;
     private boolean emptyExpressionAllowed;
+
+    static {
+        List<Function> functions = Functions.getAll();
+        FUNCTION_CALL_PATTERNS = new String[functions.size()];
+        for (int i = 0; i < FUNCTION_CALL_PATTERNS.length; i++) {
+            FUNCTION_CALL_PATTERNS[i] = getFunctionCallPattern(functions.get(i));
+        }
+    }
 
     /**
      * Constructs a new expression pane.
@@ -671,7 +660,7 @@ public class ExpressionPane extends JPanel {
                 functionNames[i] = createFunctionTemplate(functions[i]);
             }
         } else {
-            functionNames = FUNCTION_NAMES;
+            functionNames = FUNCTION_CALL_PATTERNS;
         }
         // remove double values
         Set<String> set = new HashSet<String>();
@@ -751,7 +740,10 @@ public class ExpressionPane extends JPanel {
             if (parser != null) {
                 try {
                     Term term = parser.parse(code);
-                    if (term == null || !booleanExpressionPreferred || term.isB()) {
+                    if (term != null && !BandArithmetic.areReferencedRastersCompatible(term)) {
+                        message = "Referenced rasters are not compatible";
+                        foreground = warnMsgColor;
+                    } else if (term == null || !booleanExpressionPreferred || term.isB()) {
                         message = "Ok, no errors.";  /*I18N*/
                         foreground = okMsgColor;
                     } else {
@@ -813,6 +805,22 @@ public class ExpressionPane extends JPanel {
         }
         sb.append(')');
         return sb.toString();
+    }
+
+    private static String getFunctionCallPattern(Function function) {
+        String functionName = function.getName();
+        int numArgs = function.getNumArgs();
+        if (numArgs == -1) {
+            return function.getName() + "(@, @, ...)";
+        } else if (numArgs == 0) {
+            return function.getName() + "()";
+        } else {
+            functionName += function.getName() + "(@";
+            for (int j = 1; j < numArgs; j++) {
+                functionName += ", @";
+            }
+            return functionName + ")";
+        }
     }
 
     class ActionPane extends JPanel {

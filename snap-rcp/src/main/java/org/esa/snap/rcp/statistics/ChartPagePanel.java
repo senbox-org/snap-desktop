@@ -83,12 +83,9 @@ public abstract class ChartPagePanel extends PagePanel {
                 false);
         refreshButton.setToolTipText("Refresh View");
         refreshButton.setName("refreshButton");
-        refreshButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                updateChartData();
-                refreshButton.setEnabled(false);
-            }
+        refreshButton.addActionListener(e -> {
+            updateChartData();
+            refreshButton.setEnabled(false);
         });
 
         AbstractButton switchToTableButton = ToolButtonFactory.createButton(
@@ -97,14 +94,7 @@ public abstract class ChartPagePanel extends PagePanel {
         switchToTableButton.setToolTipText("Switch to Table View");
         switchToTableButton.setName("switchToTableButton");
         switchToTableButton.setEnabled(hasAlternativeView());
-        switchToTableButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-                showAlternativeView();
-
-            }
-        });
+        switchToTableButton.addActionListener(e -> showAlternativeView());
 
         final TableLayout tableLayout = new TableLayout(6);
         tableLayout.setColumnFill(2, TableLayout.Fill.HORIZONTAL);
@@ -131,12 +121,9 @@ public abstract class ChartPagePanel extends PagePanel {
                 false);
         zoomAllButton.setToolTipText("Zoom all.");
         zoomAllButton.setName("zoomAllButton.");
-        zoomAllButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                chartPanel.restoreAutoBounds();
-                chartPanel.repaint();
-            }
+        zoomAllButton.addActionListener(e -> {
+            chartPanel.restoreAutoBounds();
+            chartPanel.repaint();
         });
 
         final AbstractButton propertiesButton = ToolButtonFactory.createButton(
@@ -144,29 +131,21 @@ public abstract class ChartPagePanel extends PagePanel {
                 false);
         propertiesButton.setToolTipText("Edit properties.");
         propertiesButton.setName("propertiesButton.");
-        propertiesButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                chartPanel.doEditChartProperties();
-            }
-        });
+        propertiesButton.addActionListener(e -> chartPanel.doEditChartProperties());
 
         final AbstractButton saveButton = ToolButtonFactory.createButton(
                 UIUtils.loadImageIcon("icons/Export24.gif"),
                 false);
         saveButton.setToolTipText("Save chart as image.");
         saveButton.setName("saveButton.");
-        saveButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    chartPanel.doSaveAs();
-                } catch (IOException e1) {
-                    JOptionPane.showMessageDialog(chartPanel,
-                                                  "Could not save chart:\n" + e1.getMessage(),
-                                                  "Error",
-                                                  JOptionPane.ERROR_MESSAGE);
-                }
+        saveButton.addActionListener(e -> {
+            try {
+                chartPanel.doSaveAs();
+            } catch (IOException e1) {
+                JOptionPane.showMessageDialog(chartPanel,
+                                              "Could not save chart:\n" + e1.getMessage(),
+                                              "Error",
+                                              JOptionPane.ERROR_MESSAGE);
             }
         });
 
@@ -175,12 +154,7 @@ public abstract class ChartPagePanel extends PagePanel {
                 false);
         printButton.setToolTipText("Print chart.");
         printButton.setName("printButton.");
-        printButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                chartPanel.createChartPrintJob();
-            }
-        });
+        printButton.addActionListener(e -> chartPanel.createChartPrintJob());
 
         final TableLayout tableLayout = new TableLayout(6);
         tableLayout.setColumnFill(4, TableLayout.Fill.HORIZONTAL);

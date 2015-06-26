@@ -96,7 +96,7 @@ public class SubsetUI extends BaseOperatorUI {
     @Override
     public void initParameters() {
 
-        OperatorUIUtils.initParamList(bandList, getBandNames());
+        OperatorUIUtils.initParamList(bandList, getBandNames(), (Object[])paramMap.get("sourceBands"));
 
         final Rectangle region = (Rectangle)paramMap.get("region");
         if(region != null) {

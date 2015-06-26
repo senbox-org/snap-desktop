@@ -21,6 +21,7 @@ import com.bc.ceres.binding.PropertyContainer;
 import com.bc.ceres.binding.PropertyDescriptor;
 import com.bc.ceres.binding.ValidationException;
 import com.bc.ceres.binding.ValueSet;
+import com.bc.ceres.binding.converters.ArrayConverter;
 import com.bc.ceres.binding.validators.NotEmptyValidator;
 import com.bc.ceres.binding.validators.PatternValidator;
 import com.bc.ceres.swing.binding.BindingContext;
@@ -40,12 +41,12 @@ import org.esa.snap.framework.ui.AppContext;
 import org.esa.snap.framework.ui.ModalDialog;
 import org.esa.snap.framework.ui.UIUtils;
 import org.esa.snap.framework.ui.tool.ToolButtonFactory;
+import org.esa.snap.modules.ModulePackager;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.ui.tooladapter.actions.ToolAdapterActionRegistrar;
 import org.esa.snap.ui.tooladapter.model.OperatorParametersTable;
 import org.esa.snap.ui.tooladapter.model.VariablesTable;
 import org.esa.snap.ui.tooladapter.validators.RequiredFieldValidator;
-import org.esa.snap.utils.ModulePackager;
 import org.esa.snap.utils.SpringUtilities;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
@@ -107,7 +108,11 @@ import java.util.stream.Collectors;
         "MSG_Inexistent_WorkDir_Text=The working directory does not exist.\n" +
                 "Please specify a valid location.",
         "MSG_Inexistem_Parameter_Value_Text=The file or folder for parameter %s does not exist.\n" +
-                "Please specify a valid location or change the %s property of the parameter."
+                "Please specify a valid location or change the %s property of the parameter.",
+        "MSG_Wrong_Value_Text=One or more form parameters have invalid values.\n" +
+                "Please correct them before saving the adapter.",
+        "MSG_Wrong_Usage_Array_Text=You have used array notation for source products, but only one product will be used.\n" +
+                "Please correct the problem before saving the adapter."
 })
 public class ToolAdapterEditorDialog extends ModalDialog {
 
@@ -124,18 +129,18 @@ public class ToolAdapterEditorDialog extends ModalDialog {
     public static final String helpID = "sta_editor";
 
     private int formWidth;
-    private final int DEFAULT_PADDING = 3;
-    private final int DEFAULT_CONTROL_HEIGHT = 24;
+    private final int DEFAULT_PADDING = 2;
+    private int controlHeight = 24;
     private final String[] systemPath;
 
     private ToolAdapterEditorDialog(AppContext appContext, String title) {
         super(appContext.getApplicationWindow(), title, ID_OK_CANCEL_HELP, new Object[] { new JButton(Bundle.CTL_Button_Export_Text()) }, helpID);
         this.logger = Logger.getLogger(ToolAdapterEditorDialog.class.getName());
-        getJDialog().setResizable(false);
+        //getJDialog().setResizable(false);
         this.registerButton(ID_OTHER, new JButton(Bundle.CTL_Button_Export_Text()));
         String sysPath = System.getenv("PATH");
         systemPath = sysPath.split(File.pathSeparator);
-
+        controlHeight = (getJDialog().getFont().getSize() + 1) * 2;
     }
 
     private ToolAdapterEditorDialog(AppContext appContext, ToolAdapterOperatorDescriptor operatorDescriptor) {
@@ -160,7 +165,7 @@ public class ToolAdapterEditorDialog extends ModalDialog {
         ProductIOPlugInManager registry = ProductIOPlugInManager.getInstance();
         String[] writers = registry.getAllProductWriterFormatStrings();
         Arrays.sort(writers);
-        propertyContainer.getDescriptor("processingWriter").setValueSet(new ValueSet(writers));
+        propertyContainer.getDescriptor(ToolAdapterConstants.PROCESSING_WRITER).setValueSet(new ValueSet(writers));
         Set<OperatorSpi> spis = GPF.getDefaultInstance().getOperatorSpiRegistry().getOperatorSpis();
         java.util.List<String> toolboxSpis = new ArrayList<>();
         spis.stream().filter(p -> (p instanceof ToolAdapterOpSpi)
@@ -168,7 +173,7 @@ public class ToolAdapterEditorDialog extends ModalDialog {
                                 && !p.getOperatorAlias().equals(oldOperatorDescriptor.getAlias()))
                      .forEach(operator -> toolboxSpis.add(operator.getOperatorDescriptor().getAlias()));
         toolboxSpis.sort(Comparator.<String>naturalOrder());
-        propertyContainer.getDescriptor("preprocessorExternalTool").setValueSet(new ValueSet(toolboxSpis.toArray(new String[toolboxSpis.size()])));
+        propertyContainer.getDescriptor(ToolAdapterConstants.PREPROCESSOR_EXTERNAL_TOOL).setValueSet(new ValueSet(toolboxSpis.toArray(new String[toolboxSpis.size()])));
 
         bindingContext = new BindingContext(propertyContainer);
 
@@ -208,8 +213,23 @@ public class ToolAdapterEditorDialog extends ModalDialog {
     @Override
     protected boolean verifyUserInput() {
         File file = newOperatorDescriptor.getMainToolFileLocation();
+        if (file == null) {
+            // should not come here unless, somehow, the property value was not set by binding
+            Object value = bindingContext.getBinding(ToolAdapterConstants.MAIN_TOOL_FILE_LOCATION).getPropertyValue();
+            if (value != null) {
+                file = value instanceof File ? (File)value : new File(value.toString());
+            }
+        }
+        if (file == null) {
+            SnapDialogs.showWarning(Bundle.MSG_Inexistent_Tool_Path_Text());
+            return false;
+        }
+        /*if (file.getPath().endsWith(ToolAdapterConstants.SHELL_EXT)) {
+            file = new File(file.getPath().replace(ToolAdapterConstants.SHELL_EXT, ToolAdapterIO.getShellExtension()));
+        }*/
         if (!file.exists()) {
-            newOperatorDescriptor.setMainToolFileLocation(resolvePathOnSystem(file));
+            File resolvedFile = resolvePathOnSystem(file);
+            newOperatorDescriptor.setMainToolFileLocation(resolvedFile == null ? file : resolvedFile);
         }
 
         Path toolLocation = newOperatorDescriptor.getExpandedLocation(newOperatorDescriptor.getMainToolFileLocation()).toPath();
@@ -231,7 +251,7 @@ public class ToolAdapterEditorDialog extends ModalDialog {
                         (parameterDescriptor.isNotNull() || parameterDescriptor.isNotEmpty()) &&
                         (defaultValue == null || defaultValue.isEmpty() || !Files.exists(Paths.get(defaultValue)))) {
                     SnapDialogs.showWarning(String.format(Bundle.MSG_Inexistem_Parameter_Value_Text(),
-                            parameterDescriptor.getName(), parameterDescriptor.isNotNull() ? "NotNull" : "NotEmpty"));
+                            parameterDescriptor.getName(), parameterDescriptor.isNotNull() ? ToolAdapterConstants.NOT_NULL : ToolAdapterConstants.NOT_EMPTY));
                     return false;
                 }
             }
@@ -242,64 +262,55 @@ public class ToolAdapterEditorDialog extends ModalDialog {
     @Override
     protected void onOK() {
         if (!verifyUserInput()) {
+            SnapDialogs.showWarning(Bundle.MSG_Wrong_Value_Text());
             this.getJDialog().requestFocus();
         } else {
-            super.onOK();
-            if (!this.operatorIsNew) {
-                ToolAdapterActionRegistrar.removeOperatorMenu(oldOperatorDescriptor);
-                ToolAdapterIO.removeOperator(oldOperatorDescriptor, false);
-            }
-            String oldOperatorName = oldOperatorDescriptor.getName();
-            if (oldOperatorDescriptor.isSystem() && oldOperatorName.equals(newOperatorDescriptor.getName())) {
-                newOperatorDescriptor.setName(newOperatorDescriptor.getName() + ".custom");
-                newOperatorDescriptor.setAlias(newOperatorDescriptor.getAlias() + "-custom");
-            }
-            newOperatorDescriptor.setSystem(false);
-            if (!ToolAdapterOperatorDescriptor.SOURCE_PACKAGE.equals(newOperatorDescriptor.getSource())) {
-                newOperatorDescriptor.setSource(ToolAdapterOperatorDescriptor.SOURCE_USER);
-            }
-            newOperatorDescriptor.setTemplateFileLocation(newOperatorDescriptor.getAlias() + ToolAdapterConstants.TOOL_VELO_TEMPLATE_SUFIX);
-            java.util.List<TemplateParameterDescriptor> toolParameterDescriptors = newOperatorDescriptor.getToolParameterDescriptors();
-            toolParameterDescriptors.stream().filter(param -> paramsTable.getBindingContext().getBinding(param.getName()) != null)
-                    .filter(param -> paramsTable.getBindingContext().getBinding(param.getName()).getPropertyValue() != null)
-                    .forEach(param -> {
-                        if (param.isTemplateBefore() || param.isTemplateAfter()) {
-                            param.setDefaultValue(
-                                    ToolAdapterIO.prettifyTemplateParameterPath(
-                                            new File(paramsTable.getBindingContext().getBinding(param.getName()).getPropertyValue().toString()),
-                                            newOperatorDescriptor.getAlias()).toString());
-                        } else {
-                            param.setDefaultValue(paramsTable.getBindingContext().getBinding(param.getName())
-                                    .getPropertyValue().toString());
-                        }
-                    });
-            java.util.List<TemplateParameterDescriptor> remParameters = toolParameterDescriptors.stream().filter(param -> ToolAdapterConstants.TOOL_SOURCE_PRODUCT_ID.equals(param.getName())).
-                    collect(Collectors.toList());
-            newOperatorDescriptor.removeParamDescriptors(remParameters);
-            try {
-                String menuLocation = newOperatorDescriptor.getMenuLocation();
-                if (menuLocation != null && !menuLocation.startsWith("Menu/")) {
-                    newOperatorDescriptor.setMenuLocation("Menu/" + menuLocation);
+            String templateContent = this.templateContent.getText();
+            if (!resolveTemplateProductCount(templateContent)) {
+                SnapDialogs.showWarning(Bundle.MSG_Wrong_Usage_Array_Text());
+                this.getJDialog().requestFocus();
+            } else {
+                super.onOK();
+                if (!this.operatorIsNew) {
+                    ToolAdapterActionRegistrar.removeOperatorMenu(oldOperatorDescriptor);
+                    ToolAdapterIO.removeOperator(oldOperatorDescriptor, false);
                 }
-                String templateContent = this.templateContent.getText();
-                int idx = templateContent.lastIndexOf(ToolAdapterConstants.TOOL_SOURCE_PRODUCT_ID + "[");
-                if (idx > 0) {
-                    String value = templateContent.substring(idx + (ToolAdapterConstants.TOOL_SOURCE_PRODUCT_ID + "[").length(), templateContent.indexOf("]", idx));
-                    int maxNum = Integer.valueOf(value) + 1;
-                    newOperatorDescriptor.setSourceProductCount(maxNum);
-                } else {
-                    idx = templateContent.lastIndexOf(ToolAdapterConstants.TOOL_SOURCE_PRODUCT_FILE + "[");
-                    if (idx > 0) {
-                        String value = templateContent.substring(idx + (ToolAdapterConstants.TOOL_SOURCE_PRODUCT_FILE + "[").length(), templateContent.indexOf("]", idx));
-                        int maxNum = Integer.valueOf(value) + 1;
-                        newOperatorDescriptor.setSourceProductCount(maxNum);
+                if (!newOperatorDescriptor.isFromPackage()) {
+                    newOperatorDescriptor.setSource(ToolAdapterOperatorDescriptor.SOURCE_USER);
+                }
+                newOperatorDescriptor.setTemplateFileLocation(newOperatorDescriptor.getAlias() + ToolAdapterConstants.TOOL_VELO_TEMPLATE_SUFIX);
+                java.util.List<TemplateParameterDescriptor> toolParameterDescriptors = newOperatorDescriptor.getToolParameterDescriptors();
+                toolParameterDescriptors.stream().filter(param -> paramsTable.getBindingContext().getBinding(param.getName()) != null)
+                        .filter(param -> paramsTable.getBindingContext().getBinding(param.getName()).getPropertyValue() != null)
+                        .forEach(param -> {
+                            Object propertyValue = paramsTable.getBindingContext().getBinding(param.getName()).getPropertyValue();
+                            if (param.isTemplateBefore() || param.isTemplateAfter()) {
+                                param.setDefaultValue(new File(propertyValue.toString()).getName());
+                            } else {
+                                String defaultValueString = "";
+                                if (propertyValue.getClass().isArray()) {
+                                    defaultValueString = String.join(ArrayConverter.SEPARATOR,
+                                            Arrays.asList((Object[]) propertyValue).stream().map(Object::toString).collect(Collectors.toList()));
+                                } else {
+                                    defaultValueString = propertyValue.toString();
+                                }
+                                param.setDefaultValue(defaultValueString);
+                            }
+                        });
+                java.util.List<TemplateParameterDescriptor> remParameters = toolParameterDescriptors.stream().filter(param -> ToolAdapterConstants.TOOL_SOURCE_PRODUCT_ID.equals(param.getName())).
+                        collect(Collectors.toList());
+                newOperatorDescriptor.removeParamDescriptors(remParameters);
+                try {
+                    String menuLocation = newOperatorDescriptor.getMenuLocation();
+                    if (menuLocation != null && !menuLocation.startsWith("Menu/")) {
+                        newOperatorDescriptor.setMenuLocation("Menu/" + menuLocation);
                     }
+                    ToolAdapterIO.saveAndRegisterOperator(newOperatorDescriptor, templateContent);
+                    ToolAdapterActionRegistrar.registerOperatorMenu(newOperatorDescriptor);
+                } catch (Exception e) {
+                    logger.warning(e.getMessage());
+                    SnapDialogs.showError(e.getMessage());
                 }
-                ToolAdapterIO.saveAndRegisterOperator(newOperatorDescriptor, templateContent);
-                ToolAdapterActionRegistrar.registerOperatorMenu(newOperatorDescriptor);
-            } catch (Exception e) {
-                logger.warning(e.getMessage());
-                SnapDialogs.showError(e.getMessage());
             }
         }
     }
@@ -333,6 +344,7 @@ public class ToolAdapterEditorDialog extends ModalDialog {
         double heightRatio = 0.6;
         int formHeight = Math.max((int) (screenSize.height * heightRatio), 580);
         toolDescriptorPanel.setPreferredSize(new Dimension(formWidth, formHeight));
+        getJDialog().setMinimumSize(new Dimension(formWidth + 16, formHeight + 72));
 
         JPanel topLeftPanel = createDescriptorAndVariablesAndPreprocessingPanel();
         Dimension topPanelDimension = new Dimension((int)((formWidth - 3 * DEFAULT_PADDING) * 0.5), (int)((formHeight - 3 * DEFAULT_PADDING) * 0.62));
@@ -356,7 +368,7 @@ public class ToolAdapterEditorDialog extends ModalDialog {
         JPanel bottomPannel = createParametersPanel();
         Dimension bottomPanelDimension = new Dimension((int)(formWidth - 2 * DEFAULT_PADDING), (int)((formHeight - 3 * DEFAULT_PADDING) * 0.25));
         bottomPannel.setMinimumSize(bottomPanelDimension);
-        bottomPannel.setMaximumSize(bottomPanelDimension);
+        //bottomPannel.setMaximumSize(bottomPanelDimension);
         bottomPannel.setPreferredSize(bottomPanelDimension);
         toolDescriptorPanel.add(bottomPannel);
 
@@ -374,7 +386,7 @@ public class ToolAdapterEditorDialog extends ModalDialog {
 
         springLayout.putConstraint(SpringLayout.NORTH, middlePannel, DEFAULT_PADDING, SpringLayout.SOUTH, topLeftPanel);
         springLayout.putConstraint(SpringLayout.NORTH, middlePannel, DEFAULT_PADDING, SpringLayout.SOUTH, topRightPanel);
-        springLayout.putConstraint(SpringLayout.SOUTH, middlePannel, DEFAULT_PADDING, SpringLayout.NORTH, bottomPannel);
+        springLayout.putConstraint(SpringLayout.NORTH, bottomPannel, DEFAULT_PADDING, SpringLayout.SOUTH, middlePannel);
 
         springLayout.putConstraint(SpringLayout.SOUTH, bottomPannel, DEFAULT_PADDING, SpringLayout.SOUTH, toolDescriptorPanel);
 
@@ -386,17 +398,17 @@ public class ToolAdapterEditorDialog extends ModalDialog {
 
         TextFieldEditor textEditor = new TextFieldEditor();
 
-        addValidatedTextField(descriptorPanel, textEditor, Bundle.CTL_Label_Alias_Text(), "alias", "[^\\\\\\?%\\*:\\|\"<>\\./]*");
-        addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_UniqueName_Text(), "name", true);
-        addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_Label_Text(), "label", true);
-        addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_Version_Text(), "version", true);
-        addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_Copyright_Text(), "copyright", false);
-        addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_Authors_Text(), "authors", false);
-        addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_Description_Text(), "description", false);
+        addValidatedTextField(descriptorPanel, textEditor, Bundle.CTL_Label_Alias_Text(), ToolAdapterConstants.ALIAS, "[^\\\\\\?%\\*:\\|\"<>\\./]*");
+        addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_UniqueName_Text(), ToolAdapterConstants.NAME, true);
+        addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_Label_Text(), ToolAdapterConstants.LABEL, true);
+        addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_Version_Text(), ToolAdapterConstants.VERSION, true);
+        addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_Copyright_Text(), ToolAdapterConstants.COPYRIGHT, false);
+        addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_Authors_Text(), ToolAdapterConstants.AUTHORS, false);
+        addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_Description_Text(), ToolAdapterConstants.DESCRIPTION, false);
 
         java.util.List<String> menus = new ArrayList<>();
         getAvailableMenuOptions(null, menus);
-        addComboField(descriptorPanel, textEditor, Bundle.CTL_Label_MenuLocation_Text(), "menuLocation", menus, true, true);
+        addComboField(descriptorPanel, textEditor, Bundle.CTL_Label_MenuLocation_Text(), ToolAdapterConstants.MENU_LOCATION, menus, true, true);
 
         TitledBorder title = BorderFactory.createTitledBorder(Bundle.CTL_Panel_OperatorDescriptor_Text());
         descriptorPanel.setBorder(title);
@@ -413,6 +425,8 @@ public class ToolAdapterEditorDialog extends ModalDialog {
 
         SpringUtilities.makeCompactGrid(preprocessAndPatternsPanel, 1, 2, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING);
 
+        preprocessAndPatternsPanel.setMaximumSize(preprocessAndPatternsPanel.getSize());
+
         return preprocessAndPatternsPanel;
     }
 
@@ -423,8 +437,8 @@ public class ToolAdapterEditorDialog extends ModalDialog {
         PropertyDescriptor propertyDescriptor = propertyContainer.getDescriptor("preprocessorExternalTool");
         PropertyEditor editor = PropertyEditorRegistry.getInstance().findPropertyEditor(propertyDescriptor);
         JComponent editorComponent = editor.createEditorComponent(propertyDescriptor, bindingContext);
-        editorComponent.setMaximumSize(new Dimension(editorComponent.getMaximumSize().width, DEFAULT_CONTROL_HEIGHT));
-        editorComponent.setPreferredSize(new Dimension(editorComponent.getPreferredSize().width, DEFAULT_CONTROL_HEIGHT));
+        editorComponent.setMaximumSize(new Dimension(editorComponent.getMaximumSize().width, controlHeight));
+        editorComponent.setPreferredSize(new Dimension(editorComponent.getPreferredSize().width, controlHeight));
 
         preProcessingPanel.add(createCheckboxComponent("preprocessTool", editorComponent, newOperatorDescriptor.getPreprocessTool()));
         preProcessingPanel.add(new JLabel(Bundle.CTL_Label_PreprocessingTool_Text()));
@@ -433,8 +447,8 @@ public class ToolAdapterEditorDialog extends ModalDialog {
         propertyDescriptor = propertyContainer.getDescriptor("processingWriter");
         editor = PropertyEditorRegistry.getInstance().findPropertyEditor(propertyDescriptor);
         editorComponent = editor.createEditorComponent(propertyDescriptor, bindingContext);
-        editorComponent.setMaximumSize(new Dimension(editorComponent.getMaximumSize().width, DEFAULT_CONTROL_HEIGHT));
-        editorComponent.setPreferredSize(new Dimension(editorComponent.getPreferredSize().width, DEFAULT_CONTROL_HEIGHT));
+        editorComponent.setMaximumSize(new Dimension(editorComponent.getMaximumSize().width, controlHeight));
+        editorComponent.setPreferredSize(new Dimension(editorComponent.getPreferredSize().width, controlHeight));
 
         JComponent writeComponent = createCheckboxComponent("writeForProcessing", editorComponent, newOperatorDescriptor.shouldWriteBeforeProcessing());
         if(writeComponent instanceof JCheckBox){
@@ -463,17 +477,17 @@ public class ToolAdapterEditorDialog extends ModalDialog {
 
         JPanel panelToolFiles = new JPanel(new SpringLayout());
 
-        PropertyDescriptor propertyDescriptor = propertyContainer.getDescriptor("mainToolFileLocation");
+        PropertyDescriptor propertyDescriptor = propertyContainer.getDescriptor(ToolAdapterConstants.MAIN_TOOL_FILE_LOCATION);
         propertyDescriptor.setValidator(new NotEmptyValidator());
         PropertyEditor editor = PropertyEditorRegistry.getInstance().findPropertyEditor(propertyDescriptor);
         JComponent editorComponent = editor.createEditorComponent(propertyDescriptor, bindingContext);
-        editorComponent.setMaximumSize(new Dimension(editorComponent.getMaximumSize().width, DEFAULT_CONTROL_HEIGHT));
-        editorComponent.setPreferredSize(new Dimension(editorComponent.getPreferredSize().width, DEFAULT_CONTROL_HEIGHT));
+        editorComponent.setMaximumSize(new Dimension(editorComponent.getMaximumSize().width, controlHeight));
+        editorComponent.setPreferredSize(new Dimension(editorComponent.getPreferredSize().width, controlHeight));
 
         panelToolFiles.add(new JLabel(Bundle.CTL_Label_ToolLocation_Text()));
         panelToolFiles.add(editorComponent);
 
-        propertyDescriptor = propertyContainer.getDescriptor("workingDir");
+        propertyDescriptor = propertyContainer.getDescriptor(ToolAdapterConstants.WORKING_DIR);
         propertyDescriptor.setAttribute("directory", true);
         propertyDescriptor.setValidator((property, value) -> {
             if (value == null || value.toString().trim().isEmpty()) {
@@ -483,8 +497,8 @@ public class ToolAdapterEditorDialog extends ModalDialog {
         });
         editor = PropertyEditorRegistry.getInstance().findPropertyEditor(propertyDescriptor);
         editorComponent = editor.createEditorComponent(propertyDescriptor, bindingContext);
-        editorComponent.setMaximumSize(new Dimension(editorComponent.getMaximumSize().width, DEFAULT_CONTROL_HEIGHT));
-        editorComponent.setPreferredSize(new Dimension(editorComponent.getPreferredSize().width, DEFAULT_CONTROL_HEIGHT));
+        editorComponent.setMaximumSize(new Dimension(editorComponent.getMaximumSize().width, controlHeight));
+        editorComponent.setPreferredSize(new Dimension(editorComponent.getPreferredSize().width, controlHeight));
 
         panelToolFiles.add(new JLabel(Bundle.CTL_Label_WorkDir_Text()));
         panelToolFiles.add(editorComponent);
@@ -521,8 +535,8 @@ public class ToolAdapterEditorDialog extends ModalDialog {
         patternsPanel.setBorder(BorderFactory.createTitledBorder(Bundle.CTL_Panel_OutputPattern_Border_TitleText()));
 
         TextFieldEditor textEditor = new TextFieldEditor();
-        addTextField(patternsPanel, textEditor, Bundle.CTL_Label_ProgressPattern(), "progressPattern", false);
-        addTextField(patternsPanel, textEditor, Bundle.CTL_Label_ErrorPattern(), "errorPattern", false);
+        addTextField(patternsPanel, textEditor, Bundle.CTL_Label_ProgressPattern(), ToolAdapterConstants.PROGRESS_PATTERN, false);
+        addTextField(patternsPanel, textEditor, Bundle.CTL_Label_ErrorPattern(), ToolAdapterConstants.ERROR_PATTERN, false);
 
         SpringUtilities.makeCompactGrid(patternsPanel, 2, 2, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING);
 
@@ -573,6 +587,7 @@ public class ToolAdapterEditorDialog extends ModalDialog {
         paramsPanel.setLayout(layout);
         AbstractButton addParamBut = ToolButtonFactory.createButton(UIUtils.loadImageIcon(Bundle.Icon_Add()), false);
         addParamBut.setAlignmentX(Component.LEFT_ALIGNMENT);
+        addParamBut.setAlignmentY(Component.TOP_ALIGNMENT);
         paramsPanel.add(addParamBut);
         int tableWidth = (formWidth - 2 * DEFAULT_PADDING);
         int widths[] = {27, 120, (int)(tableWidth * 0.25), (int)(tableWidth * 0.1), 100, (int)(tableWidth * 0.32), 30};
@@ -611,8 +626,8 @@ public class ToolAdapterEditorDialog extends ModalDialog {
             PropertyDescriptor propertyDescriptor = propertyContainer.getDescriptor(propertyName);
             propertyDescriptor.setValidator(new PatternValidator(Pattern.compile(validatorRegex)));
             JComponent editorComponent = textEditor.createEditorComponent(propertyDescriptor, bindingContext);
-            editorComponent.setMaximumSize(new Dimension(editorComponent.getMaximumSize().width, DEFAULT_CONTROL_HEIGHT));
-            editorComponent.setPreferredSize(new Dimension(editorComponent.getPreferredSize().width, DEFAULT_CONTROL_HEIGHT));
+            editorComponent.setMaximumSize(new Dimension(editorComponent.getMaximumSize().width, controlHeight));
+            editorComponent.setPreferredSize(new Dimension(editorComponent.getPreferredSize().width, controlHeight));
             parent.add(editorComponent);
         }
     }
@@ -624,8 +639,8 @@ public class ToolAdapterEditorDialog extends ModalDialog {
             propertyDescriptor.setValidator(new NotEmptyValidator());
         }
         JComponent editorComponent = textEditor.createEditorComponent(propertyDescriptor, bindingContext);
-        editorComponent.setMaximumSize(new Dimension(editorComponent.getMaximumSize().width, DEFAULT_CONTROL_HEIGHT));
-        editorComponent.setPreferredSize(new Dimension(editorComponent.getPreferredSize().width, DEFAULT_CONTROL_HEIGHT));
+        editorComponent.setMaximumSize(new Dimension(editorComponent.getMaximumSize().width, controlHeight));
+        editorComponent.setPreferredSize(new Dimension(editorComponent.getPreferredSize().width, controlHeight));
         parent.add(editorComponent);
     }
 
@@ -641,8 +656,8 @@ public class ToolAdapterEditorDialog extends ModalDialog {
         propertyDescriptor.setValueSet(new ValueSet(values.toArray()));
         PropertyEditor editor = PropertyEditorRegistry.getInstance().findPropertyEditor(propertyDescriptor);
         JComponent editorComp = editor.createEditorComponent(propertyDescriptor, bindingContext);
-        editorComp.setMaximumSize(new Dimension(editorComp.getMaximumSize().width, DEFAULT_CONTROL_HEIGHT));
-        editorComp.setPreferredSize(new Dimension(editorComp.getPreferredSize().width, DEFAULT_CONTROL_HEIGHT));
+        editorComp.setMaximumSize(new Dimension(editorComp.getMaximumSize().width, controlHeight));
+        editorComp.setPreferredSize(new Dimension(editorComp.getPreferredSize().width, controlHeight));
         parent.add(editorComp);
     }
 
@@ -675,5 +690,33 @@ public class ToolAdapterEditorDialog extends ModalDialog {
             }
         }
         return resolved;
+    }
+
+    private boolean resolveTemplateProductCount(String templateContent) {
+        boolean success = true;
+        int idx = templateContent.lastIndexOf(ToolAdapterConstants.TOOL_SOURCE_PRODUCT_ID + "[");
+        if (idx > 0) {
+            String value = templateContent.substring(idx + (ToolAdapterConstants.TOOL_SOURCE_PRODUCT_ID + "[").length(), templateContent.indexOf("]", idx));
+            int maxNum = Integer.valueOf(value) + 1;
+            if (maxNum > 1) {
+                newOperatorDescriptor.setSourceProductCount(maxNum);
+            } else {
+                success = false;
+            }
+        } else {
+            idx = templateContent.lastIndexOf(ToolAdapterConstants.TOOL_SOURCE_PRODUCT_FILE + "[");
+            if (idx > 0) {
+                String value = templateContent.substring(idx + (ToolAdapterConstants.TOOL_SOURCE_PRODUCT_FILE + "[").length(), templateContent.indexOf("]", idx));
+                int maxNum = Integer.valueOf(value) + 1;
+                if (maxNum > 1) {
+                    newOperatorDescriptor.setSourceProductCount(maxNum);
+                } else {
+                    success = false;
+                }
+            } else {
+                newOperatorDescriptor.setSourceProductCount(1);
+            }
+        }
+        return success;
     }
 }

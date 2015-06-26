@@ -18,13 +18,16 @@ package org.esa.snap.rcp.actions.view;
 import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.core.SubProgressMonitor;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
+import com.bc.jexp.ParseException;
 import org.esa.snap.framework.datamodel.Band;
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.ProductData;
 import org.esa.snap.framework.datamodel.ProductNode;
 import org.esa.snap.framework.datamodel.RGBImageProfile;
+import org.esa.snap.framework.datamodel.RasterDataNode;
 import org.esa.snap.framework.datamodel.Stx;
 import org.esa.snap.framework.datamodel.VirtualBand;
+import org.esa.snap.framework.dataop.barithm.BandArithmetic;
 import org.esa.snap.framework.ui.HSVImageProfilePane;
 import org.esa.snap.framework.ui.UIUtils;
 import org.esa.snap.framework.ui.product.ProductSceneImage;
@@ -39,8 +42,10 @@ import org.openide.awt.ActionRegistration;
 import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.SwingWorker;
+import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 
 /**
@@ -55,7 +60,7 @@ import java.awt.event.ActionEvent;
 )
 @ActionReferences({
         @ActionReference(path = "Menu/View", position = 115),
-        @ActionReference(path = "Context/Product/Product",position = 420),
+        @ActionReference(path = "Context/Product/Product", position = 420),
 })
 @NbBundle.Messages({
         "CTL_OpenHSVImageViewAction_MenuText=Open HSV Image View",
@@ -96,7 +101,7 @@ public class OpenHSVImageViewAction extends AbstractAction implements HelpCtx.Pr
         final int[] defaultBandIndices = OpenRGBImageViewAction.getDefaultBandIndices(product);
 
         final HSVImageProfilePane profilePane = new HSVImageProfilePane(SnapApp.getDefault().getPreferencesPropertyMap(), product,
-                openedProducts, defaultBandIndices);
+                                                                        openedProducts, defaultBandIndices);
 
         final String title = "Select HSV-Image Channels";
         final boolean ok = profilePane.showDialog(SnapApp.getDefault().getMainFrame(), title, helpId);
@@ -104,6 +109,10 @@ public class OpenHSVImageViewAction extends AbstractAction implements HelpCtx.Pr
             return;
         }
         final String[] hsvExpressions = profilePane.getRgbaExpressions();
+        if (!BandArithmetic.areReferencedRastersCompatible(product, hsvExpressions)) {
+            SnapDialogs.showInformation(title, "Referenced rasters are incompatible", null);
+            return;
+        }
         nomalizeHSVExpressions(product, hsvExpressions);
         if (profilePane.getStoreProfileInProduct()) {
             RGBImageProfile.storeRgbaExpressions(product, hsvExpressions, HSVImageProfilePane.HSV_COMP_NAMES);
@@ -163,11 +172,11 @@ public class OpenHSVImageViewAction extends AbstractAction implements HelpCtx.Pr
             rgbBands = OpenRGBImageViewAction.allocateRgbBands(product, rgbaExpressions);
 
             productSceneImage = new ProductSceneImage(name,
-                    rgbBands[0],
-                    rgbBands[1],
-                    rgbBands[2],
-                    SnapApp.getDefault().getPreferencesPropertyMap(),
-                    SubProgressMonitor.create(pm, 1));
+                                                      rgbBands[0],
+                                                      rgbBands[1],
+                                                      rgbBands[2],
+                                                      SnapApp.getDefault().getPreferencesPropertyMap(),
+                                                      SubProgressMonitor.create(pm, 1));
             productSceneImage.initVectorDataCollectionLayer();
             productSceneImage.initMaskCollectionLayer();
         } catch (Exception e) {
@@ -221,12 +230,22 @@ public class OpenHSVImageViewAction extends AbstractAction implements HelpCtx.Pr
     }
 
     public static Band createVirtualBand(final Product product, final String expression, final String name) {
+        int width = product.getSceneRasterWidth();
+        int height = product.getSceneRasterHeight();
+        try {
+            final RasterDataNode[] refRasters = BandArithmetic.getRefRasters(expression, product);
+            width = refRasters[0].getRasterWidth();
+            height = refRasters[0].getRasterHeight();
+        } catch (ParseException e) {
+            e.printStackTrace();
+            //should not come here
+        }
 
         final VirtualBand virtBand = new VirtualBand(name,
-                ProductData.TYPE_FLOAT64,
-                product.getSceneRasterWidth(),
-                product.getSceneRasterHeight(),
-                expression);
+                                                     ProductData.TYPE_FLOAT64,
+                                                     width,
+                                                     height,
+                                                     expression);
         virtBand.setNoDataValueUsed(true);
         product.addBand(virtBand);
         return virtBand;

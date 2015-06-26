@@ -70,7 +70,7 @@ public class ShowPlacemarkViewAction extends AbstractAction implements ContextAw
         result.addLookupListener(
                 WeakListeners.create(LookupListener.class, this, result));
         setEnableState();
-        putValue(Action.NAME, org.esa.snap.rcp.actions.Bundle.CTL_ShowPlacemarkViewAction());
+        putValue(Action.NAME, Bundle.CTL_ShowPlacemarkViewAction());
     }
 
     @Override

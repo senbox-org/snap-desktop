@@ -17,24 +17,33 @@
  */
 package org.esa.snap.ui.tooladapter.dialogs;
 
-import com.bc.ceres.binding.PropertyContainer;
-import com.bc.ceres.binding.PropertyDescriptor;
+import com.bc.ceres.binding.*;
+import com.bc.ceres.binding.converters.ArrayConverter;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.internal.CheckBoxEditor;
 import com.bc.ceres.swing.binding.internal.TextFieldEditor;
 import org.apache.commons.collections.BidiMap;
 import org.apache.commons.collections.bidimap.DualHashBidiMap;
+import org.esa.snap.framework.gpf.annotations.ParameterDescriptorFactory;
 import org.esa.snap.framework.gpf.descriptor.ToolParameterDescriptor;
 import org.esa.snap.framework.ui.AppContext;
 import org.esa.snap.framework.ui.ModalDialog;
+import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.ui.tooladapter.model.PropertyMemberUIWrapper;
+import org.esa.snap.ui.tooladapter.model.PropertyMemberUIWrapperFactory;
 import org.esa.snap.ui.tooladapter.validators.RequiredFieldValidator;
 import org.esa.snap.ui.tooladapter.validators.TypedValueValidator;
 import org.esa.snap.util.StringUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.util.HashMap;
+import java.util.logging.Logger;
 
 /**
  * Form for displaying and editing details of a tool adapter parameter.
@@ -46,11 +55,13 @@ public class ToolParameterEditorDialog extends ModalDialog {
     private ToolParameterDescriptor parameter;
     private ToolParameterDescriptor oldParameter;
     private PropertyContainer container;
-    private BindingContext context;
+    private BindingContext valuesContext;
+    private BindingContext paramContext;
     private PropertyMemberUIWrapper uiWrapper;
     private JComponent editorComponent;
     private JPanel mainPanel;
     public static final String helpID = "sta_editor";
+    private Logger logger;
 
     private static final BidiMap typesMap;
 
@@ -64,13 +75,37 @@ public class ToolParameterEditorDialog extends ModalDialog {
     }
 
 
-    public ToolParameterEditorDialog(AppContext appContext, String title, ToolParameterDescriptor parameter, PropertyMemberUIWrapper uiWrapper) {
+    public ToolParameterEditorDialog(AppContext appContext, String title, ToolParameterDescriptor parameter, Object value) throws Exception{
         super(appContext.getApplicationWindow(), parameter.getName(), ID_OK_CANCEL, helpID);
         this.oldParameter = parameter;
         this.parameter = new ToolParameterDescriptor(parameter);
-        this.uiWrapper = uiWrapper;
+        if(value != null) {
+            this.parameter.setDefaultValue(value.toString());
+        }
+        container = PropertyContainer.createObjectBacked(parameter);
+        valuesContext = new BindingContext(container);
+        createContextForValueEditor();
+
+        this.logger = Logger.getLogger(ToolAdapterEditorDialog.class.getName());
         setContent(createMainPanel());
         getJDialog().setPreferredSize(new Dimension(500, 500));
+    }
+
+    private void createContextForValueEditor() throws Exception{
+        PropertyDescriptor property = ParameterDescriptorFactory.convert(this.parameter, new ParameterDescriptorFactory().getSourceProductMap());
+        DefaultPropertySetDescriptor propertySetDescriptor = new DefaultPropertySetDescriptor();
+        try {
+            property.setDefaultValue(this.parameter.getDefaultValue());
+        } catch (Exception ex){
+            logger.warning(ex.getMessage());
+        }
+        propertySetDescriptor.addPropertyDescriptor(property);
+        PropertyContainer container = PropertyContainer.createMapBacked(new HashMap<>(), propertySetDescriptor);
+        container.getProperty(property.getName()).setValue(this.parameter.getDefaultValue());
+        paramContext = new BindingContext(container);
+
+        this.uiWrapper = PropertyMemberUIWrapperFactory.buildPropertyWrapper("defaultValue", this.parameter, null, paramContext, null);
+        this.editorComponent = this.uiWrapper.getUIComponent();
     }
 
     public JPanel createMainPanel(){
@@ -79,22 +114,26 @@ public class ToolParameterEditorDialog extends ModalDialog {
 
         mainPanel = new JPanel(layout);
 
-        container = PropertyContainer.createObjectBacked(parameter);
-        context = new BindingContext(container);
-
         addTextPropertyEditor(mainPanel, "Name: ", "name", parameter.getName(), 0, true);
         addTextPropertyEditor(mainPanel, "Alias: ", "alias", parameter.getAlias(), 1, true);
-
 
         //dataType
         mainPanel.add(new JLabel("Type"), getConstraints(2, 0, 1));
         JComboBox comboEditor = new JComboBox(typesMap.keySet().toArray());
         comboEditor.setSelectedItem(typesMap.getKey(parameter.getDataType()));
-        comboEditor.addActionListener(e -> {
-            JComboBox cb = (JComboBox) e.getSource();
+        comboEditor.addActionListener(ev -> {
+            JComboBox cb = (JComboBox) ev.getSource();
             String typeName = (String) cb.getSelectedItem();
             if (!parameter.getDataType().equals((Class<?>) typesMap.get(typeName))) {
                 parameter.setDataType((Class<?>) typesMap.get(typeName));
+                //reset value set
+                parameter.setValueSet(null);
+                paramContext.getPropertySet().getProperty(parameter.getName()).getDescriptor().setValueSet(null);
+                try {
+                    valuesContext.getPropertySet().getProperty("valueSet").setValue(null);
+                } catch (ValidationException e) {
+                    logger.warning(e.getMessage());
+                }
                 //editor must updated
                 try {
                     if(editorComponent != null) {
@@ -106,9 +145,9 @@ public class ToolParameterEditorDialog extends ModalDialog {
                     }
                     mainPanel.add(editorComponent, getConstraints(3, 1, 1));
                     mainPanel.revalidate();
-                } catch (Exception e1) {
-                    //TODO
-                    e1.printStackTrace();
+                } catch (Exception e) {
+                    logger.warning(e.getMessage());
+                    SnapDialogs.showError(e.getMessage());
                 }
             }
         });
@@ -127,7 +166,39 @@ public class ToolParameterEditorDialog extends ModalDialog {
         addTextPropertyEditor(mainPanel, "Label: ", "label", parameter.getLabel(), 5, false);
         addTextPropertyEditor(mainPanel, "Unit: ", "unit", parameter.getUnit(), 6, false);
         addTextPropertyEditor(mainPanel, "Interval: ", "interval", parameter.getInterval(), 7, false);
-        addTextPropertyEditor(mainPanel, "Value set: ", "valueSet", StringUtils.join(parameter.getValueSet(), ","), 8, false);
+        JComponent valueSetEditor =  addTextPropertyEditor(mainPanel, "Value set: ", "valueSet", StringUtils.join(parameter.getValueSet(), ArrayConverter.SEPARATOR), 8, false);
+        valueSetEditor.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+            }
+
+            @Override
+            public void focusLost(FocusEvent ev) {
+                //the value set may impact the editor
+                try {
+                    String newValueSet = ((JTextField) valueSetEditor).getText();
+                    if (newValueSet.isEmpty()) {
+                        parameter.setValueSet(null);
+                        valuesContext.getPropertySet().getProperty("valueSet").setValue(null);
+                    } else {
+                        parameter.setValueSet(newValueSet.split(ArrayConverter.SEPARATOR));
+                        valuesContext.getPropertySet().getProperty("valueSet").setValue(newValueSet.split(ArrayConverter.SEPARATOR));
+                    }
+                    if (editorComponent != null) {
+                        mainPanel.remove(editorComponent);
+                    }
+                    createContextForValueEditor();
+                    if (!(File.class.equals(parameter.getDataType()) || parameter.getDataType().isArray())) {
+                        editorComponent.setInputVerifier(new TypedValueValidator("The value entered is not of the specified data type", parameter.getDataType()));
+                    }
+                    mainPanel.add(editorComponent, getConstraints(3, 1, 1));
+                    mainPanel.revalidate();
+                } catch (Exception e) {
+                    logger.warning(e.getMessage());
+                    SnapDialogs.showError(e.getMessage());
+                }
+            }
+        });
         addTextPropertyEditor(mainPanel, "Condition: ", "condition", parameter.getCondition(), 9, false);
         addTextPropertyEditor(mainPanel, "Pattern: ", "pattern", parameter.getPattern(), 10, false);
         addTextPropertyEditor(mainPanel, "Format: ", "format", parameter.getFormat(), 11, false);
@@ -143,7 +214,7 @@ public class ToolParameterEditorDialog extends ModalDialog {
         parent.add(new JLabel(label), getConstraints(line, 0, 1));
         PropertyDescriptor propertyDescriptor = container.getDescriptor(propertyName);
         TextFieldEditor textEditor = new TextFieldEditor();
-        JComponent editorComponent = textEditor.createEditorComponent(propertyDescriptor, context);
+        JComponent editorComponent = textEditor.createEditorComponent(propertyDescriptor, valuesContext);
         ((JTextField) editorComponent).setText(value);
         if (isRequired) {
             editorComponent.setInputVerifier(new RequiredFieldValidator("This field is required"));
@@ -156,7 +227,7 @@ public class ToolParameterEditorDialog extends ModalDialog {
         parent.add(new JLabel(label), getConstraints(line, 1, 1));
         PropertyDescriptor propertyDescriptor = container.getDescriptor(propertyName);
         CheckBoxEditor boolEditor = new CheckBoxEditor();
-        JComponent editorComponent = boolEditor.createEditorComponent(propertyDescriptor, context);
+        JComponent editorComponent = boolEditor.createEditorComponent(propertyDescriptor, valuesContext);
         ((JCheckBox) editorComponent).setSelected(value);
         editorComponent.setPreferredSize(new Dimension(30, 30));
         GridBagConstraints constraints = getConstraints(line, 0, 1);
@@ -189,8 +260,8 @@ public class ToolParameterEditorDialog extends ModalDialog {
         if(parameter.getDataType() != null) {
             oldParameter.setDataType(parameter.getDataType());
         }
-        if(parameter.getDefaultValue() != null) {
-            oldParameter.setDefaultValue(parameter.getDefaultValue());
+        if(paramContext.getBinding(parameter.getName()).getPropertyValue() != null) {
+            oldParameter.setDefaultValue(paramContext.getBinding(parameter.getName()).getPropertyValue().toString());
         }
         if(parameter.getDescription() != null) {
             oldParameter.setDescription(parameter.getDescription());

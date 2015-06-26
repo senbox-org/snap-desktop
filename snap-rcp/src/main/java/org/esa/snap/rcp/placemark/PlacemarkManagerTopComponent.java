@@ -163,9 +163,12 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
         content.add(BorderLayout.CENTER, mainPane);
         content.add(BorderLayout.EAST, buttonPane);
         Component southExtension = getSouthExtension();
+        final JPanel southPanel = new JPanel(new BorderLayout());
+        southPanel.add(new JLabel("Pixel position is given in product raster coordinates"), BorderLayout.SOUTH);
         if (southExtension != null) {
-            content.add(BorderLayout.SOUTH, southExtension);
+            southPanel.add(southExtension, BorderLayout.CENTER);
         }
+        content.add(BorderLayout.SOUTH, southPanel);
         content.setPreferredSize(new Dimension(420, 200));
 
         setCurrentView(snapApp.getSelectedProductSceneView());
@@ -652,8 +655,7 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
 
     void exportPlacemarks() {
         final SnapFileChooser fileChooser = new SnapFileChooser();
-        fileChooser.setDialogTitle(MessageFormat.format("Export {0}(s)",
-                StringUtils.firstLetterUp(placemarkDescriptor.getRoleLabel())));   /*I18N*/
+        fileChooser.setDialogTitle(MessageFormat.format("Export {0}(s)", StringUtils.firstLetterUp(placemarkDescriptor.getRoleLabel())));
         setComponentName(fileChooser, "Export_Selected");
         fileChooser.addChoosableFileFilter(PlacemarkIO.createTextFileFilter());
         fileChooser.setFileFilter(PlacemarkIO.createPlacemarkFileFilter());
@@ -665,29 +667,28 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
             File file = fileChooser.getSelectedFile();
             if (file != null) {
                 if (Boolean.TRUE.equals(SnapDialogs.requestOverwriteDecision(getTitle(), file))) {
-                    return;
-                }
-                setIODir(file.getAbsoluteFile().getParentFile());
-                SnapFileFilter snapFileFilter = fileChooser.getSnapFileFilter();
-                String fileExtension = FileUtils.getExtension(file);
-                if (fileExtension == null || !StringUtils.contains(snapFileFilter.getExtensions(), fileExtension)) {
-                    file = FileUtils.ensureExtension(file, snapFileFilter.getDefaultExtension());
-                }
-                try {
-                    if (snapFileFilter.getFormatName().equals(
-                            PlacemarkIO.createPlacemarkFileFilter().getFormatName())) {
-
-                        final List<Placemark> placemarkList = getPlacemarksForExport();
-                        PlacemarkIO.writePlacemarksFile(new FileWriter(file), placemarkList);
-                    } else {
-                        try (Writer writer = new FileWriter(file)) {
-                            writePlacemarkDataTableText(writer);
-                        }
+                    setIODir(file.getAbsoluteFile().getParentFile());
+                    SnapFileFilter snapFileFilter = fileChooser.getSnapFileFilter();
+                    String fileExtension = FileUtils.getExtension(file);
+                    if (fileExtension == null || !StringUtils.contains(snapFileFilter.getExtensions(), fileExtension)) {
+                        file = FileUtils.ensureExtension(file, snapFileFilter.getDefaultExtension());
                     }
-                } catch (IOException ioe) {
-                    SnapDialogs.showError(String.format("I/O Error.\n   Failed to export %ss.\n%s",
-                            placemarkDescriptor.getRoleLabel(), ioe.getMessage()));
-                    ioe.printStackTrace();
+                    try {
+                        if (snapFileFilter.getFormatName().equals(
+                                PlacemarkIO.createPlacemarkFileFilter().getFormatName())) {
+
+                            final List<Placemark> placemarkList = getPlacemarksForExport();
+                            PlacemarkIO.writePlacemarksFile(new FileWriter(file), placemarkList);
+                        } else {
+                            try (Writer writer = new FileWriter(file)) {
+                                writePlacemarkDataTableText(writer);
+                            }
+                        }
+                    } catch (IOException ioe) {
+                        SnapDialogs.showError(String.format("I/O Error.\n   Failed to export %ss.\n%s",
+                                                            placemarkDescriptor.getRoleLabel(), ioe.getMessage()));
+                        ioe.printStackTrace();
+                    }
                 }
             }
         }
@@ -861,17 +862,16 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
             File file = fileChooser.getSelectedFile();
             if (file != null) {
                 if (Boolean.TRUE.equals(SnapDialogs.requestOverwriteDecision(getTitle(), file))) {
-                    return;
-                }
-                setIODir(file.getAbsoluteFile().getParentFile());
-                file = FileUtils.ensureExtension(file, PlacemarkIO.FILE_EXTENSION_FLAT_TEXT);
-                try {
-                    try (Writer writer = new FileWriter(file)) {
-                        writePlacemarkDataTableText(writer);
+                    setIODir(file.getAbsoluteFile().getParentFile());
+                    file = FileUtils.ensureExtension(file, PlacemarkIO.FILE_EXTENSION_FLAT_TEXT);
+                    try {
+                        try (Writer writer = new FileWriter(file)) {
+                            writePlacemarkDataTableText(writer);
+                        }
+                    } catch (IOException ignored) {
+                        SnapDialogs.showError(MessageFormat.format("I/O Error.\nFailed to export {0} data table.",  /*I18N*/
+                                                                   placemarkDescriptor.getRoleLabel()));
                     }
-                } catch (IOException ignored) {
-                    SnapDialogs.showError(MessageFormat.format("I/O Error.\nFailed to export {0} data table.",  /*I18N*/
-                            placemarkDescriptor.getRoleLabel()));
                 }
             }
         }

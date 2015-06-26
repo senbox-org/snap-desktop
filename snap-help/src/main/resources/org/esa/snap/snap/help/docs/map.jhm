@@ -32,8 +32,8 @@
     <mapID target="windowMenu" url="desktop/WindowMenu.html"/>
     <mapID target="helpMenu" url="desktop/HelpMenu.html"/>
     <mapID target="moduleManager" url="desktop/ModuleManager.html"/>
-    <mapID target="productBrowser" url="desktop/ProductBrowser.html"/>
-    <mapID target="pixelInfoView" url="desktop/ProductBrowser.html#pixelView"/>
+    <mapID target="productExplorer" url="desktop/ProductExplorer.html"/>
+    <mapID target="pixelInfoView" url="desktop/ProductExplorer.html#pixelView"/>
     <mapID target="propertyEditor" url="desktop/PropertyEditor.html"/>
     <mapID target="productGrabber" url="desktop/ProductGrabber.html"/>
     <mapID target="subsetDialog" url="desktop/ProductSubsetDialog.html"/>

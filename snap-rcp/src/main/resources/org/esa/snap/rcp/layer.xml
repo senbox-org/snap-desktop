@@ -13,10 +13,8 @@
             </folder>
             <folder name="Export">
                 <attr name="position" intvalue="150"/>
-            </folder>
-            <folder name="Export Others">
-                <attr name="position" intvalue="155"/>
                 <attr name="seperatorAfter" intvalue="160"/>
+                <folder name="Other"/>
             </folder>
         </folder>
         <folder name="Edit">
@@ -24,6 +22,9 @@
         </folder>
         <folder name="View">
             <attr name="position" intvalue="300"/>
+            <folder name="Overlay">
+                <attr name="position" intvalue="300"/>
+            </folder>
         </folder>
         <folder name="Tools">
             <attr name="position" intvalue="400"/>
@@ -121,6 +122,14 @@
                       methodvalue="org.netbeans.modules.autoupdate.updateprovider.AutoupdateCatalogFactory.createUpdateProvider"/>
                 <attr name="instanceOf" stringvalue="org.netbeans.spi.autoupdate.UpdateProvider"/>
                 <attr name="url" urlvalue="http://step.esa.int/updatecenter/2.0/s3tbx/updates.xml.gz"/>
+            </file>
+            <file name="smos_update_center.instance">
+                <attr name="displayName" stringvalue="SMOS-Box Update Center"/>
+                <attr name="enabled" boolvalue="true"/>
+                <attr name="instanceCreate"
+                      methodvalue="org.netbeans.modules.autoupdate.updateprovider.AutoupdateCatalogFactory.createUpdateProvider"/>
+                <attr name="instanceOf" stringvalue="org.netbeans.spi.autoupdate.UpdateProvider"/>
+                <attr name="url" urlvalue="http://step.esa.int/updatecenter/2.0/smos/updates.xml.gz"/>
             </file>
         </folder>
     </folder>
@@ -246,6 +255,10 @@
             <!-- Enable, once we know how to print an image view, etc. -->
             <file name="org-netbeans-modules-print-action-PageSetupAction.shadow_hidden"/>
             <file name="org-netbeans-modules-print-action-PrintAction.shadow_hidden"/>
+
+            <file name="org-openide-actions-SaveAction.shadow_hidden"/>
+            <file name="org-openide-actions-SaveAsAction.shadow_hidden"/>
+            <file name="org-openide-actions-SaveAllAction.shadow_hidden"/>
         </folder>
         <folder name="View">
             <file name="org-netbeans-core-actions-LogAction.shadow_hidden"/>

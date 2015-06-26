@@ -20,6 +20,7 @@ import com.bc.ceres.binding.*;
 import com.bc.ceres.core.Assert;
 import com.bc.ceres.swing.binding.BindingContext;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.runtime.Config;
 import org.esa.snap.util.StringUtils;
 import org.esa.snap.util.SystemUtils;
@@ -30,6 +31,8 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import java.awt.*;
 import java.beans.PropertyChangeListener;
+import java.util.HashSet;
+import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 /**
@@ -144,12 +147,21 @@ public abstract class DefaultConfigController extends OptionsPanelController {
     @Override
     public void applyChanges() {
         if (isInitialised()) {
+            HashSet<Preferences> set = new HashSet<Preferences>();
             for (Property property : bindingContext.getPropertySet().getProperties()) {
                 String key = property.getDescriptor().getAttribute("key").toString();
                 String value = property.getValueAsText();
                 Preferences preferences = getPreferences(property.getDescriptor());
                 preferences.put(key, value);
+                set.add(preferences);
                 SystemUtils.LOG.fine(String.format("Preferences value change: %s = %s", key, preferences.get(key, null)));
+            }
+            for (Preferences preferences : set) {
+                try {
+                    preferences.flush();
+                } catch (BackingStoreException e) {
+                    SnapApp.getDefault().handleError("Failed to store user preferences.", e);
+                }
             }
             panel.setChanged(false);
         }

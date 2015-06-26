@@ -158,12 +158,7 @@ public abstract class BaseOperatorUI implements OperatorUI {
                         throw new GraphException(operatorName+" BaseOperatorUI: no coverter found for parameter "+descriptor.getName());
                     }
 
-                    final String alias = descriptor.getAlias();
-
                     String text = converter.format(childValue);
-                    if(alias != null && alias.equals("sourceBands")) {
-                        text = "";
-                    }
                     if (text != null && !text.isEmpty()) {
                         childElement.setValue(text);
                     }

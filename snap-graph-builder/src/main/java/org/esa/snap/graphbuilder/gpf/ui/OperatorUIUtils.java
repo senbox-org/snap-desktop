@@ -37,7 +37,7 @@ public final class OperatorUIUtils {
         initParamList(paramList, availNames, null);
     }
 
-    public static void initParamList(final JList paramList, final String[] availNames, final String[] defaultSelection) {
+    public static void initParamList(final JList paramList, final String[] availNames, final Object[] defaultSelection) {
         final List selectedValues = paramList.getSelectedValuesList();
 
         paramList.removeAll();
@@ -62,8 +62,8 @@ public final class OperatorUIUtils {
         if (selectedValues.isEmpty() && defaultSelection != null) {
             int j = 0;
             for (String name : availNames) {
-                for (String defaultSel : defaultSelection) {
-                    if (name.equals(defaultSel)) {
+                for (Object defaultSel : defaultSelection) {
+                    if (name.equals(defaultSel.toString())) {
                         indices.add(j);
                     }
                 }

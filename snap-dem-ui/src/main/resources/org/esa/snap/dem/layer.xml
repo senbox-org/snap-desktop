@@ -30,6 +30,15 @@
                 <attr name="helpId" stringvalue="importSRTMProduct"/>
                 <attr name="ShortDescription" stringvalue="Import a SRTM ArcInfo Grid DEM tile"/>
             </file>
+            <file name="org-esa-snap-dem-dataio-importSRTMHGTDEMProduct.instance">
+                <attr name="instanceCreate" methodvalue="org.openide.awt.Actions.alwaysEnabled"/>
+                <attr name="delegate" methodvalue="org.esa.snap.rcp.actions.file.ImportProductAction.create"/>
+                <attr name="displayName" stringvalue="SRTM HGT DEM Tile"/>
+                <attr name="formatName" stringvalue="HGT"/>
+                <attr name="useAllFileFilter" boolvalue="false"/>
+                <attr name="helpId" stringvalue="importSRTMProduct"/>
+                <attr name="ShortDescription" stringvalue="Import a SRTM HGT DEM tile"/>
+            </file>
             <file name="org-esa-snap-dem-dataio-importAsterDEMProduct.instance">
                 <attr name="instanceCreate" methodvalue="org.openide.awt.Actions.alwaysEnabled"/>
                 <attr name="delegate" methodvalue="org.esa.snap.rcp.actions.file.ImportProductAction.create"/>

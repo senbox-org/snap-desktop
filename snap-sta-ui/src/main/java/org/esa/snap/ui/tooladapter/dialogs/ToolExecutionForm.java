@@ -19,6 +19,7 @@ package org.esa.snap.ui.tooladapter.dialogs;
 
 import com.bc.ceres.binding.Property;
 import com.bc.ceres.binding.PropertySet;
+import com.bc.ceres.binding.ValidationException;
 import com.bc.ceres.swing.binding.PropertyPane;
 import com.bc.ceres.swing.selection.AbstractSelectionChangeListener;
 import com.bc.ceres.swing.selection.SelectionChangeEvent;
@@ -31,6 +32,7 @@ import org.esa.snap.framework.gpf.ui.TargetProductSelector;
 import org.esa.snap.framework.gpf.ui.TargetProductSelectorModel;
 import org.esa.snap.framework.ui.AppContext;
 import org.esa.snap.util.io.FileUtils;
+import org.esa.snap.utils.SpringUtilities;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -52,6 +54,8 @@ class ToolExecutionForm extends JTabbedPane {
     private TargetProductSelector targetProductSelector;
     private DefaultIOParametersPanel ioParamPanel;
     private String fileExtension;
+    private JCheckBox checkDisplayOutput;
+    private final String TIF_EXTENSION = ".tif";
 
     public ToolExecutionForm(AppContext appContext, ToolAdapterOperatorDescriptor descriptor, PropertySet propertySet,
                              TargetProductSelector targetProductSelector) {
@@ -76,7 +80,12 @@ class ToolExecutionForm extends JTabbedPane {
 
         ioParamPanel = createIOParamTab();
         addTab("I/O Parameters", ioParamPanel);
-        addTab("Processing Parameters", createProcessingParamTab());
+        JPanel processingParamPanel = new JPanel(new SpringLayout());
+        checkDisplayOutput = new JCheckBox("Display execution output");
+        processingParamPanel.add(checkDisplayOutput);
+        processingParamPanel.add(createProcessingParamTab());
+        SpringUtilities.makeCompactGrid(processingParamPanel, 2, 1, 2, 2, 2, 2);
+        addTab("Processing Parameters", processingParamPanel);
         updateTargetProductFields();
     }
 
@@ -125,6 +134,10 @@ class ToolExecutionForm extends JTabbedPane {
         return targetProductSelector.getModel().getProductFile();
     }
 
+    public boolean shouldDisplayOutput() {
+        return checkDisplayOutput.isSelected();
+    }
+
     private DefaultIOParametersPanel createIOParamTab() {
         final DefaultIOParametersPanel ioPanel = new DefaultIOParametersPanel(appContext, operatorDescriptor,
                 targetProductSelector);
@@ -137,10 +150,10 @@ class ToolExecutionForm extends JTabbedPane {
     }
 
     private JScrollPane createProcessingParamTab() {
-
         PropertyPane parametersPane = new PropertyPane(propertySet);
         final JPanel parametersPanel = parametersPane.createPanel();
         parametersPanel.setBorder(new EmptyBorder(4, 4, 4, 4));
+        parametersPanel.setPreferredSize(ioParamPanel.getPreferredSize());
         return new JScrollPane(parametersPanel);
     }
 
@@ -168,17 +181,25 @@ class ToolExecutionForm extends JTabbedPane {
         public void selectionChanged(SelectionChangeEvent event) {
             Property targetProperty = propertySet.getProperty(ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE);
             Object value = targetProperty.getValue();
+            String productName = "";
+            final Product selectedProduct = (Product) event.getSelection().getSelectedValue();
+            if (selectedProduct != null) {
+                productName = FileUtils.getFilenameWithoutExtension(selectedProduct.getName());
+            }
+            final TargetProductSelectorModel targetProductSelectorModel = targetProductSelector.getModel();
+            productName += TARGET_PRODUCT_NAME_SUFFIX;
+            targetProductSelectorModel.setProductName(productName);
             if (value != null) {
-                String productName = "";
-                final Product selectedProduct = (Product) event.getSelection().getSelectedValue();
-                if (selectedProduct != null) {
-                    productName = FileUtils.getFilenameWithoutExtension(selectedProduct.getName());
-                }
-                final TargetProductSelectorModel targetProductSelectorModel = targetProductSelector.getModel();
-                productName += TARGET_PRODUCT_NAME_SUFFIX;
-                targetProductSelectorModel.setProductName(productName);
                 File oldValue = value instanceof File ? (File) value : new File((String) value);
+                if (fileExtension == null)
+                    fileExtension = TIF_EXTENSION;
                 propertySet.setValue(ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE, new File(oldValue.getParentFile().getAbsolutePath(), productName + fileExtension));
+            } else {
+                File workingDir = operatorDescriptor.getExpandedLocation(operatorDescriptor.getWorkingDir());
+                try {
+                    targetProperty.setValue(new File(workingDir, productName + TIF_EXTENSION));
+                } catch (ValidationException ignored) {
+                }
             }
         }
     }

@@ -17,6 +17,8 @@ package org.esa.snap.dem.gpf.ui;
 
 
 import org.esa.snap.dem.dataio.DEMFactory;
+import org.esa.snap.framework.dataop.dem.ElevationModelDescriptor;
+import org.esa.snap.framework.dataop.dem.ElevationModelRegistry;
 import org.esa.snap.framework.ui.AppContext;
 import org.esa.snap.graphbuilder.gpf.ui.BaseOperatorUI;
 import org.esa.snap.graphbuilder.gpf.ui.UIValidation;
@@ -52,8 +54,10 @@ public class AddElevationOpUI extends BaseOperatorUI {
     public void initParameters() {
 
         final String demNameParam = (String) paramMap.get("demName");
-        if (demNameParam != null)
-            demName.setSelectedItem(DEMFactory.appendAutoDEM(demNameParam));
+        if (demNameParam != null) {
+            ElevationModelDescriptor descriptor = ElevationModelRegistry.getInstance().getDescriptor(demNameParam);
+            demName.setSelectedItem(DEMFactory.getDEMDisplayName(descriptor));
+        }
         elevationBandName.setText(String.valueOf(paramMap.get("elevationBandName")));
         externalDEM.setText(String.valueOf(paramMap.get("externalDEM")));
         demResamplingMethod.setSelectedItem(paramMap.get("resamplingMethod"));

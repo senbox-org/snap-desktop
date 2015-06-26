@@ -53,6 +53,7 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -155,17 +156,21 @@ class ProductLayerAssistantPage extends AbstractLayerSourceAssistantPage {
         final ProductSceneView selectedProductSceneView = SnapApp.getDefault().getSelectedProductSceneView();
         Product selectedProduct = selectedProductSceneView.getProduct();
 
+        RasterDataNode raster = selectedProductSceneView.getRaster();
+        GeoCoding geoCoding = raster.getGeoCoding();
+        CoordinateReferenceSystem modelCRS = ImageManager.getModelCrs(geoCoding);
+
         ArrayList<CompatibleNodeList> compatibleNodeLists = new ArrayList<>(3);
         List<RasterDataNode> compatibleNodes = new ArrayList<>();
-        compatibleNodes.addAll(Arrays.asList(selectedProduct.getBands()));
-        compatibleNodes.addAll(Arrays.asList(selectedProduct.getTiePointGrids()));
+        collectCompatibleBands(raster, selectedProduct.getBands(), compatibleNodes);
+        if (raster.getRasterWidth() == selectedProduct.getSceneRasterWidth() &&
+            raster.getRasterHeight() == selectedProduct.getSceneRasterHeight()) {
+            compatibleNodes.addAll(Arrays.asList(selectedProduct.getTiePointGrids()));
+        }
         if (!compatibleNodes.isEmpty()) {
             compatibleNodeLists.add(new CompatibleNodeList(selectedProduct.getDisplayName(), compatibleNodes));
         }
 
-        RasterDataNode raster = selectedProductSceneView.getRaster();
-        GeoCoding geoCoding = raster.getGeoCoding();
-        CoordinateReferenceSystem modelCRS = ImageManager.getModelCrs(geoCoding);
         if (modelCRS != null) {
             final ProductManager productManager = SnapApp.getDefault().getProductManager();
             final Product[] products = productManager.getProducts();
@@ -184,8 +189,19 @@ class ProductLayerAssistantPage extends AbstractLayerSourceAssistantPage {
         return new ProductTreeModel(compatibleNodeLists);
     }
 
-    private void collectCompatibleRasterDataNodes(CoordinateReferenceSystem thisCrs, RasterDataNode[] bands,
+    private void collectCompatibleBands(RasterDataNode referenceRaster, RasterDataNode[] dataNodes,
                                                   Collection<RasterDataNode> rasterDataNodes) {
+        //todo ask for scenerastertransform instead of width and height
+        final Dimension referenceRasterSize = referenceRaster.getRasterSize();
+        for (RasterDataNode node : dataNodes) {
+            if (node.getRasterSize().equals(referenceRasterSize)) {
+                rasterDataNodes.add(node);
+            }
+        }
+    }
+
+    private void collectCompatibleRasterDataNodes(CoordinateReferenceSystem thisCrs,
+                                                  RasterDataNode[] bands, Collection<RasterDataNode> rasterDataNodes) {
         for (RasterDataNode node : bands) {
             CoordinateReferenceSystem otherCrs = ImageManager.getModelCrs(node.getGeoCoding());
             // For GeoTools, two CRS where unequal if the authorities of their CS only differ in version

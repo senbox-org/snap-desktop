@@ -50,7 +50,8 @@ import java.io.IOException;
         id = "ImportVectorDataNodeFromShapefileAction"
 )
 @ActionRegistration(
-        displayName = "#CTL_ImportVectorDataNodeFromShapefileActionText"
+        displayName = "#CTL_ImportVectorDataNodeFromShapefileActionText",
+        lazy = true
 )
 @ActionReference(path = "Menu/File/Import/Vector Data", position = 20)
 @NbBundle.Messages({

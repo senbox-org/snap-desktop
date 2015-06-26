@@ -18,26 +18,44 @@ package org.esa.snap.rcp.mask;
 import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.glevel.MultiLevelImage;
 import com.bc.ceres.swing.progress.DialogProgressMonitor;
-import org.esa.snap.framework.datamodel.*;
+import org.esa.snap.framework.datamodel.Band;
+import org.esa.snap.framework.datamodel.GeoCoding;
+import org.esa.snap.framework.datamodel.GeoPos;
+import org.esa.snap.framework.datamodel.Mask;
+import org.esa.snap.framework.datamodel.PixelPos;
+import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.datamodel.ProductNodeGroup;
+import org.esa.snap.framework.datamodel.RasterDataNode;
+import org.esa.snap.framework.datamodel.TiePointGrid;
 import org.esa.snap.framework.ui.AbstractDialog;
 import org.esa.snap.framework.ui.GridBagUtils;
 import org.esa.snap.framework.ui.ModalDialog;
-import org.esa.snap.framework.ui.command.CommandEvent;
-import org.esa.snap.framework.ui.command.ExecCommand;
 import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
-import org.esa.snap.rcp.imgfilter.*;
 import org.esa.snap.util.Debug;
 import org.esa.snap.util.math.MathUtils;
 import org.esa.snap.util.math.RsMathUtils;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
-import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
-import org.openide.util.*;
+import org.openide.util.ContextAwareAction;
+import org.openide.util.HelpCtx;
+import org.openide.util.Lookup;
+import org.openide.util.LookupEvent;
+import org.openide.util.LookupListener;
+import org.openide.util.NbBundle;
+import org.openide.util.Utilities;
+import org.openide.util.WeakListeners;
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.BoxLayout;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.SwingWorker;
 import java.awt.Dialog;
 import java.awt.GridBagConstraints;
 import java.awt.Rectangle;
@@ -45,8 +63,9 @@ import java.awt.event.ActionEvent;
 import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
-
 
 
 @ActionID(
@@ -58,45 +77,34 @@ import java.util.concurrent.ExecutionException;
         popupText = "#CTL_ComputeMaskAreaAction_ShortDescription",
         lazy = false
 )
-@ActionReferences({
-        @ActionReference(
-                path = "Menu/Tools",
-                position = 116,
-                separatorBefore = 114
-        ),
-        @ActionReference(
-                path = "Context/Product/RasterDataNode",
-                position = 206
-        )
-})
+@ActionReference(path = "Menu/Tools", position = 520)
 @NbBundle.Messages({
         "CTL_ComputeMaskAreaAction_MenuText=Compute Mask Area...",
+        "CTL_ComputeMaskAreaAction_DialogTitle=Compute Mask Area",
         "CTL_ComputeMaskAreaAction_ShortDescription=Displays information about the spatial area of the mask."
 })
 
-public class ComputeMaskAreaAction extends AbstractAction implements LookupListener,ContextAwareAction,HelpCtx.Provider{
+public class ComputeMaskAreaAction extends AbstractAction implements LookupListener, ContextAwareAction, HelpCtx.Provider {
 
-    private static final String DIALOG_TITLE = "Compute Mask Area"; /*I18N*/
+    private static final String HELP_ID = "computeMaskArea";
     private final Lookup lookup;
-    private static final String HELP_ID = "Compute Mask Area";
-    private  Lookup.Result<Band> result;
+    private Lookup.Result<ProductSceneView> result;
 
     public ComputeMaskAreaAction() {
         this(Utilities.actionsGlobalContext());
     }
+
     public ComputeMaskAreaAction(Lookup lookup) {
 
         super(Bundle.CTL_ComputeMaskAreaAction_MenuText());
         this.lookup = lookup;
-        result = lookup.lookupResult(Band.class);
+        result = lookup.lookupResult(ProductSceneView.class);
         result.addLookupListener(WeakListeners.create(LookupListener.class, this, result));
         setEnableState();
-
     }
 
     private void setEnableState() {
-        Band band = lookup.lookup(Band.class);
-        setEnabled(band != null);
+        setEnabled(lookup.lookup(ProductSceneView.class) != null);
     }
 
     @Override
@@ -105,14 +113,13 @@ public class ComputeMaskAreaAction extends AbstractAction implements LookupListe
     }
 
 
-
     private void computeMaskArea() {
         final String errMsgBase = "Failed to compute Mask area:\n";
 
         // Get selected Snap view showing a product's band
-        final ProductSceneView view = SnapApp.getDefault().getSelectedProductSceneView();
+        final ProductSceneView view = lookup.lookup(ProductSceneView.class);
         if (view == null) {
-            SnapDialogs.showError(DIALOG_TITLE, errMsgBase + "No view.");
+            SnapDialogs.showError(Bundle.CTL_ComputeMaskAreaAction_DialogTitle(), errMsgBase + "No view.");
             return;
         }
 
@@ -120,7 +127,18 @@ public class ComputeMaskAreaAction extends AbstractAction implements LookupListe
         final RasterDataNode raster = view.getRaster();
         assert raster != null;
 
-        final String[] maskNames = raster.getProduct().getMaskGroup().getNodeNames();
+        final Product product = raster.getProduct();
+        final ProductNodeGroup<Mask> maskGroup = product.getMaskGroup();
+        final List<String> maskNameList = new ArrayList<>();
+        for (int i = 0; i < maskGroup.getNodeCount(); i++) {
+            final Mask mask = maskGroup.get(i);
+            //todo ask about scenerastertransform, not size
+            if ((raster instanceof Band && raster.getRasterSize().equals(mask.getRasterSize())) ||
+                    (raster instanceof TiePointGrid && mask.getRasterSize().equals(product.getSceneRasterSize()))) {
+                maskNameList.add(mask.getName());
+            }
+        }
+        String[] maskNames = maskNameList.toArray(new String[maskNameList.size()]);
         String maskName;
         if (maskNames.length == 1) {
             maskName = maskNames[0];
@@ -129,29 +147,30 @@ public class ComputeMaskAreaAction extends AbstractAction implements LookupListe
             BoxLayout boxLayout = new BoxLayout(panel, BoxLayout.X_AXIS);
             panel.setLayout(boxLayout);
             panel.add(new JLabel("Select Mask: "));
-            JComboBox maskCombo = new JComboBox(maskNames);
+            JComboBox<String> maskCombo = new JComboBox<>(maskNames);
             panel.add(maskCombo);
-            ModalDialog modalDialog = new ModalDialog(SnapApp.getDefault().getMainFrame(), DIALOG_TITLE, panel,
-                    ModalDialog.ID_OK_CANCEL | ModalDialog.ID_HELP, getHelpCtx().getHelpID());
+            ModalDialog modalDialog = new ModalDialog(SnapApp.getDefault().getMainFrame(),
+                                                      Bundle.CTL_ComputeMaskAreaAction_DialogTitle(), panel,
+                                                      ModalDialog.ID_OK_CANCEL | ModalDialog.ID_HELP,
+                                                      getHelpCtx().getHelpID());
             if (modalDialog.show() == AbstractDialog.ID_OK) {
                 maskName = (String) maskCombo.getSelectedItem();
             } else {
                 return;
             }
-            final Mask mask = raster.getProduct().getMaskGroup().get(maskName);
+        }
+        final Mask mask = maskGroup.get(maskName);
 
-            RenderedImage maskImage = mask.getSourceImage();
-            if (maskImage == null) {
-                SnapDialogs.showError(DIALOG_TITLE, errMsgBase + "No Mask image available.");
-                return;
-            }
-
-            final SwingWorker<MaskAreaStatistics, Object> swingWorker = new MaskAreaSwingWorker(mask, errMsgBase);
-            swingWorker.execute();
+        RenderedImage maskImage = mask.getSourceImage();
+        if (maskImage == null) {
+            SnapDialogs.showError(Bundle.CTL_ComputeMaskAreaAction_DialogTitle(),
+                                  errMsgBase + "No Mask image available.");
+            return;
         }
 
+        final SwingWorker<MaskAreaStatistics, Object> swingWorker = new MaskAreaSwingWorker(mask, errMsgBase);
+        swingWorker.execute();
     }
-
 
 
     @Override
@@ -161,7 +180,7 @@ public class ComputeMaskAreaAction extends AbstractAction implements LookupListe
 
     @Override
     public void resultChanged(LookupEvent ev) {
-         setEnableState();
+        setEnableState();
     }
 
 
@@ -327,17 +346,13 @@ public class ComputeMaskAreaAction extends AbstractAction implements LookupListe
                 final MaskAreaStatistics areaStatistics = get();
                 if (areaStatistics.getNumPixels() == 0) {
                     final String message = MessageFormat.format("{0}Mask is empty.", errMsgBase);
-                    SnapDialogs.showError(DIALOG_TITLE, message);
+                    SnapDialogs.showError(Bundle.CTL_ComputeMaskAreaAction_DialogTitle(), message);
                 } else {
                     showResults(areaStatistics);
                 }
-            } catch (ExecutionException e) {
+            } catch (ExecutionException | InterruptedException e) {
                 final String message = MessageFormat.format("An internal Error occurred:\n{0}", e.getMessage());
-                SnapDialogs.showError(DIALOG_TITLE, message);
-                Debug.trace(e);
-            } catch (InterruptedException e) {
-                final String message = MessageFormat.format("An internal Error occurred:\n{0}", e.getMessage());
-                SnapDialogs.showError(DIALOG_TITLE, message);
+                SnapDialogs.showError(Bundle.CTL_ComputeMaskAreaAction_DialogTitle(), message);
                 Debug.trace(e);
             }
         }
@@ -367,7 +382,7 @@ public class ComputeMaskAreaAction extends AbstractAction implements LookupListe
             gbc.insets.top = 8;
             addField(content, gbc, "Mean earth radius:", String.format("%15.3f", areaStatistics.getEarthRadius()), "km");
             final ModalDialog dialog = new ModalDialog(SnapApp.getDefault().getMainFrame(),
-                                                       DIALOG_TITLE + " - " + mask.getDisplayName(),
+                                                       Bundle.CTL_ComputeMaskAreaAction_DialogTitle() + " - " + mask.getDisplayName(),
                                                        content,
                                                        ModalDialog.ID_OK | ModalDialog.ID_HELP,
                                                        getHelpCtx().getHelpID());

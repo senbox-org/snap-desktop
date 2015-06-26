@@ -45,6 +45,7 @@ import com.bc.ceres.swing.selection.SelectionChangeEvent;
 import com.bc.ceres.swing.selection.SelectionContext;
 import com.bc.ceres.swing.undo.UndoContext;
 import com.bc.ceres.swing.undo.support.DefaultUndoContext;
+import com.bc.jexp.ParseException;
 import org.esa.snap.framework.datamodel.GeoCoding;
 import org.esa.snap.framework.datamodel.GeoPos;
 import org.esa.snap.framework.datamodel.ImageInfo;
@@ -59,6 +60,7 @@ import org.esa.snap.framework.datamodel.ProductNodeListener;
 import org.esa.snap.framework.datamodel.RasterDataNode;
 import org.esa.snap.framework.datamodel.VectorDataNode;
 import org.esa.snap.framework.datamodel.VirtualBand;
+import org.esa.snap.framework.dataop.barithm.BandArithmetic;
 import org.esa.snap.framework.ui.BasicView;
 import org.esa.snap.framework.ui.PixelPositionListener;
 import org.esa.snap.framework.ui.PopupMenuHandler;
@@ -70,6 +72,7 @@ import org.esa.snap.glayer.NoDataLayerType;
 import org.esa.snap.glayer.ProductLayerContext;
 import org.esa.snap.glevel.MaskImageMultiLevelSource;
 import org.esa.snap.util.PropertyMap;
+import org.esa.snap.util.StringUtils;
 import org.esa.snap.util.SystemUtils;
 import org.openide.util.Utilities;
 
@@ -103,8 +106,11 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.RenderedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Vector;
 
 /**
  * The class <code>ProductSceneView</code> is a high-level image display component for color index/RGB images created
@@ -407,10 +413,14 @@ public class ProductSceneView extends BasicView
         JPopupMenu popupMenu = new JPopupMenu();
         List<? extends Action> viewActions = Utilities.actionsForPath("Context/View");
         for (Action action : viewActions) {
-            popupMenu.add(action);
+            JMenuItem menuItem = popupMenu.add(action);
+            String popupText = (String) action.getValue("popupText");
+            if (StringUtils.isNotNullAndNotEmpty(popupText)) {
+                menuItem.setText(popupText);
+            }
         }
         addCopyPixelInfoToClipboardMenuItem(popupMenu);
-        return popupMenu;
+      return popupMenu;
     }
 
     /**
@@ -1008,7 +1018,9 @@ public class ProductSceneView extends BasicView
         final Product thisProduct = thisRaster.getProduct();
         final Product thatProduct = thatRaster.getProduct();
 
-        if (thatProduct == thisProduct || thatProduct.isCompatibleProduct(thisProduct, 1.0e-3f)) {
+        //todo ask for scenerastertransform instead
+        if ((thatProduct == thisProduct || thatProduct.isCompatibleProduct(thisProduct, 1.0e-3f))
+                && thisRaster.getRasterSize().equals(thatRaster.getRasterSize())) {
             final Viewport thisViewport = layerCanvas.getViewport();
             final Viewport thatViewport = thatView.layerCanvas.getViewport();
             thatViewport.setTransform(thisViewport);
@@ -1078,7 +1090,15 @@ public class ProductSceneView extends BasicView
         menuItem.setMnemonic('C');
         menuItem.addActionListener(e -> copyPixelInfoStringToClipboard());
         popupMenu.add(menuItem);
-        popupMenu.addSeparator();
+    }
+
+
+
+    private void addShowGeometryOverlayAction(JPopupMenu popupMenu) {
+        JMenuItem menuItem = new JMenuItem("ShowGeometryOverplayaction");
+        menuItem.setMnemonic('C');
+//        menuItem.addActionListener();
+        popupMenu.add(menuItem);
     }
 
     public int getFirstImageLayerIndex() {
@@ -1103,12 +1123,40 @@ public class ProductSceneView extends BasicView
         public RGBChannel(final Product product, final String name, final String expression) {
             super(name,
                   ProductData.TYPE_FLOAT32,
-                  product.getSceneRasterWidth(),
-                  product.getSceneRasterHeight(),
+                  determineWidth(expression, product),
+                  determineHeight(expression, product),
                   expression);
             setOwner(product);
             setModified(false);
         }
+    }
+
+    private static int determineWidth(String expression, Product product) {
+        int width = product.getSceneRasterWidth();
+        try {
+            final RasterDataNode[] refRasters = BandArithmetic.getRefRasters(expression, product);
+            if (refRasters.length > 0) {
+                width = refRasters[0].getRasterWidth();
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+            //should not come here
+        }
+        return width;
+    }
+
+    private static int determineHeight(String expression, Product product) {
+        int height = product.getSceneRasterHeight();
+        try {
+            final RasterDataNode[] refRasters = BandArithmetic.getRefRasters(expression, product);
+            if (refRasters.length > 0) {
+                height = refRasters[0].getRasterHeight();
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+            //should not come here
+        }
+        return height;
     }
 
     private final class RasterChangeHandler implements ProductNodeListener {

@@ -59,7 +59,7 @@ import java.util.stream.Collectors;
         iconBase = "org/esa/snap/rcp/icons/Open.gif"
 )
 @ActionReferences({
-        @ActionReference(path = "Menu/File", position = 10),
+        @ActionReference(path = "Menu/File", position = 5),
         @ActionReference(path = "Toolbars/File", position = 10)
 })
 @NbBundle.Messages({

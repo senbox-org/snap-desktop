@@ -186,7 +186,23 @@ class MaskTableModel extends AbstractTableModel {
     }
 
     private ProductNodeGroup<Mask> getMaskGroup() {
-        return product != null ? product.getMaskGroup() : null;
+        if (product == null) {
+            return null;
+        } else if (visibleBand == null) {
+            return product.getMaskGroup();
+        } else {
+            final ProductNodeGroup<Mask> visibleMasks = new ProductNodeGroup<Mask>("Masks for " + visibleBand.getName());
+            final ProductNodeGroup<Mask> maskGroup = product.getMaskGroup();
+            for (int i = 0; i < maskGroup.getNodeCount(); i++) {
+                final Mask mask = maskGroup.get(i);
+                //todo ask ImageGeometry whether mask and band have the same scenerastertransform
+                if (mask.getSceneRasterWidth() == visibleBand.getSceneRasterWidth() &&
+                    mask.getSceneRasterHeight() == visibleBand.getSceneRasterHeight()) {
+                    visibleMasks.add(mask);
+                }
+            }
+            return visibleMasks;
+        }
     }
 
     boolean isInManagmentMode() {
@@ -213,8 +229,8 @@ class MaskTableModel extends AbstractTableModel {
     private void updateModeIdxs() {
         this.modeIdxs =
                 inManagmentMode
-                        ? (this.visibleBand != null ? IDXS_MODE_MANAG_BAND : IDXS_MODE_MANAG_NO_BAND)
-                        : (this.visibleBand != null ? IDXS_MODE_NO_MANAG_BAND : IDXS_MODE_NO_MANAG_NO_BAND);
+                ? (this.visibleBand != null ? IDXS_MODE_MANAG_BAND : IDXS_MODE_MANAG_NO_BAND)
+                : (this.visibleBand != null ? IDXS_MODE_NO_MANAG_BAND : IDXS_MODE_NO_MANAG_NO_BAND);
     }
 
     void clear() {
@@ -335,8 +351,9 @@ class MaskTableModel extends AbstractTableModel {
                 fireTableDataChanged();
             } else if (event.getSourceNode() instanceof Placemark) {
                 fireTableDataChanged();
-            } else if (event.getSourceNode() == visibleBand
-                    && event.getPropertyName().equals(RasterDataNode.PROPERTY_NAME_IMAGE_INFO)) {
+            } else if (event.getSourceNode() == visibleBand &&
+                       event.getPropertyName() != null &&
+                       event.getPropertyName().equals(RasterDataNode.PROPERTY_NAME_IMAGE_INFO)) {
                 fireTableDataChanged();
             }
         }

@@ -99,9 +99,12 @@ public class ToolAdapterActionRegistrar {
         FileObject menuFolder = FileUtil.getConfigFile(menuLocation);
         try {
             if (menuFolder == null) {
-                FileObject root = FileUtil.getConfigFile("Menu");
-                menuFolder = root.createFolder(menuLocation.replace("Menu/", ""));
-                menuFolder.setAttribute("position", 9999);
+                menuFolder = FileUtil.getConfigFile("Menu");
+                String[] menuTokens = menuLocation.split("/");
+                for (int i = 1; i < menuTokens.length; i++) {
+                    menuFolder = menuFolder.createFolder(menuTokens[i]);
+                    menuFolder.setAttribute("position", 9999);
+                }
             }
             String menuKey = operator.getAlias();
             FileObject newItem = menuFolder.getFileObject(menuKey, "instance");
@@ -121,7 +124,7 @@ public class ToolAdapterActionRegistrar {
     }
 
     public static void removeOperatorMenu(ToolAdapterOperatorDescriptor operator) {
-        if (!operator.isSystem()) {
+        if (!operator.isFromPackage()) {
             FileObject menuFolder = FileUtil.getConfigFile(operator.getMenuLocation());
             try {
                 if (menuFolder != null) {
