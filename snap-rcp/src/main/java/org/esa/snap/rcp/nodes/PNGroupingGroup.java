@@ -58,6 +58,12 @@ abstract class PNGroupingGroup extends PNGroup<Object> {
         return false;
     }
 
+    /**
+     * A group that represents a {@link org.esa.snap.framework.datamodel.ProductNodeGroup}
+     * of {@link org.esa.snap.framework.datamodel.Band} members
+     *
+     * @author Tonio
+     */
     static class B extends PNGroupingGroup {
 
         private final ProductNodeGroup<Band> group;
@@ -79,6 +85,12 @@ abstract class PNGroupingGroup extends PNGroup<Object> {
         @Override
         protected boolean createKeys(List<Object> list) {
             final Product.AutoGrouping autoGrouping = getProduct().getAutoGrouping();
+            if (autoGrouping == null) {
+                for (int i = 0; i < group.getNodeCount(); i++) {
+                    list.add(group.get(i));
+                }
+                return true;
+            }
             ProductNodeGroup<Band>[] autogroupingNodes = new ProductNodeGroup[autoGrouping.size() + 1];
             for (int i = 0; i < autoGrouping.size(); i++) {
                 autogroupingNodes[i] = new ProductNodeGroup<>(autoGrouping.get(i)[0]);
@@ -106,6 +118,12 @@ abstract class PNGroupingGroup extends PNGroup<Object> {
 
     }
 
+    /**
+     * A group that represents a {@link org.esa.snap.framework.datamodel.ProductNodeGroup}
+     * of {@link org.esa.snap.framework.datamodel.TiePointGrid} members
+     *
+     * @author Tonio
+     */
     static class TPG extends PNGroupingGroup {
 
         private final ProductNodeGroup<TiePointGrid> group;
@@ -127,6 +145,12 @@ abstract class PNGroupingGroup extends PNGroup<Object> {
         @Override
         protected boolean createKeys(List<Object> list) {
             final Product.AutoGrouping autoGrouping = getProduct().getAutoGrouping();
+            if (autoGrouping == null) {
+                for (int i = 0; i < group.getNodeCount(); i++) {
+                    list.add(group.get(i));
+                }
+                return true;
+            }
             ProductNodeGroup<TiePointGrid>[] autogroupingNodes = new ProductNodeGroup[autoGrouping.size() + 1];
             for (int i = 0; i < autoGrouping.size(); i++) {
                 autogroupingNodes[i] = new ProductNodeGroup<>(autoGrouping.get(i)[0]);
