@@ -153,7 +153,11 @@ class ColorManipulationForm implements SelectionSupport.Handler<ProductSceneView
     private void setProductSceneView(final ProductSceneView productSceneView) {
         ProductSceneView productSceneViewOld = getFormModel().getProductSceneView();
         if (productSceneViewOld != null) {
-            productSceneViewOld.getProduct().removeProductNodeListener(productNodeListener);
+            Product product = productSceneViewOld.getProduct();
+            if (product != null) {
+                // Product may already been gone.
+                product.removeProductNodeListener(productNodeListener);
+            }
             productSceneViewOld.removePropertyChangeListener(sceneViewChangeListener);
         }
         getFormModel().setProductSceneView(productSceneView);
