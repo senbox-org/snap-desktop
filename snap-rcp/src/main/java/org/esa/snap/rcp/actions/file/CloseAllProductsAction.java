@@ -30,17 +30,10 @@ import java.util.List;
  *
  * @author Norman
  */
-@ActionID(
-        category = "File",
-        id = "CloseAllProductsAction"
-)
-@ActionRegistration(
-        displayName = "#CTL_CloseAllProductsActionName"
-)
+@ActionID(category = "File", id = "CloseAllProductsAction")
+@ActionRegistration(displayName = "#CTL_CloseAllProductsActionName")
 @ActionReference(path = "Menu/File", position = 25)
-@NbBundle.Messages({
-        "CTL_CloseAllProductsActionName=Close All Products"
-})
+@NbBundle.Messages({"CTL_CloseAllProductsActionName=Close All Products"})
 public final class CloseAllProductsAction extends AbstractAction implements LookupListener,ContextAwareAction{
 
     private final Lookup lkp;
@@ -50,7 +43,7 @@ public final class CloseAllProductsAction extends AbstractAction implements Look
     }
 
     public CloseAllProductsAction(Lookup lkp) {
-        super("Close All Other Products");
+        super(Bundle.CTL_CloseAllProductsActionName());
         this.lkp = lkp;
         Lookup.Result<ProductNode> lkpContext = lkp.lookupResult(ProductNode.class);
         lkpContext.addLookupListener(WeakListeners.create(LookupListener.class, this, lkpContext));
