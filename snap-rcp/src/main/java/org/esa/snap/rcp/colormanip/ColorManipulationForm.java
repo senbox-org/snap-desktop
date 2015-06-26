@@ -611,7 +611,7 @@ class ColorManipulationForm implements SelectionSupport.Handler<ProductSceneView
             try {
                 Path sourceBasePath = ResourceInstaller.findModuleCodeBasePath(BeamUiActivator.class);
                 final Path auxdataDir = getColorPalettesDir();
-                Path sourceDirPath = sourceBasePath.resolve("auxdata/color_palettes/");
+                Path sourceDirPath = sourceBasePath.resolve("auxdata/color_palettes");
                 final ResourceInstaller resourceInstaller = new ResourceInstaller(sourceDirPath, auxdataDir);
 
                 resourceInstaller.install(".*.cpd", ProgressMonitor.NULL);
