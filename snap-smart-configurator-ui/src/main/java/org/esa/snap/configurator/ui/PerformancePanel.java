@@ -285,6 +285,7 @@ final class PerformancePanel extends javax.swing.JPanel {
         processingParametersPanel.add(nbThreadsLabel, gridBagConstraints);
 
         defaultTileSizeTextField.setText(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.defaultTileSizeTextField.text")); // NOI18N
+        defaultTileSizeTextField.setMinimumSize(new java.awt.Dimension(100, 20));
         defaultTileSizeTextField.setPreferredSize(new java.awt.Dimension(100, 20));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -306,6 +307,7 @@ final class PerformancePanel extends javax.swing.JPanel {
         processingParametersPanel.add(cacheSizeTextField, gridBagConstraints);
 
         nbThreadsTextField.setText(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.nbThreadsTextField.text")); // NOI18N
+        nbThreadsTextField.setMinimumSize(new java.awt.Dimension(100, 20));
         nbThreadsTextField.setPreferredSize(new java.awt.Dimension(100, 20));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
