@@ -16,9 +16,7 @@
 
 package org.esa.snap.rcp.mosaic;
 
-import com.bc.jexp.Namespace;
 import com.bc.jexp.ParseException;
-import com.bc.jexp.impl.ParserImpl;
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.dataop.barithm.BandArithmetic;
 import org.esa.snap.framework.dataop.dem.ElevationModelDescriptor;
@@ -123,11 +121,10 @@ class MosaicDialog extends SingleTargetProductDialog {
         final MosaicOp.Variable[] variables = mosaicModel.getVariables();
         final MosaicOp.Condition[] conditions = mosaicModel.getConditions();
         for (Map.Entry<String, Product> entry : sourceProductMap.entrySet()) {
-            Namespace namespace = BandArithmetic.createDefaultNamespace(new Product[]{entry.getValue()}, 0);
             if (conditions != null) {
                 for (MosaicOp.Variable variable : variables) {
                     try {
-                        new ParserImpl(namespace, false).parse(variable.getExpression());
+                        BandArithmetic.parseExpression(variable.getExpression(), new Product[]{entry.getValue()}, 0);
                     } catch (ParseException e) {
                         final String msg = String.format("Expression '%s' is invalid for product '%s'.\n%s",
                                                          variable.getName(),
@@ -142,7 +139,7 @@ class MosaicDialog extends SingleTargetProductDialog {
             if (conditions != null) {
                 for (MosaicOp.Condition condition : conditions) {
                     try {
-                        new ParserImpl(namespace, false).parse(condition.getExpression());
+                        BandArithmetic.parseExpression(condition.getExpression(), new Product[]{entry.getValue()}, 0);
                     } catch (ParseException e) {
                         final String msg = String.format("Expression '%s' is invalid for product '%s'.\n%s",
                                                          condition.getName(),
