@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.logging.Level;
+import java.util.prefs.BackingStoreException;
 import javax.swing.*;
 
 import org.esa.snap.configurator.ConfigurationOptimizer;
@@ -383,8 +384,9 @@ final class PerformancePanel extends javax.swing.JPanel {
             confOptimizer.updateCustomisedParameters(updatedPerformanceParams);
             try {
                 confOptimizer.saveCustomisedParameters();
-            } catch (IOException e) {
+            } catch (IOException|BackingStoreException e) {
                 SystemUtils.LOG.severe("Could not save performance parameters: " + e.getMessage());
+                setSystemPerformanceParametersToActualValues();
             }
         }
     }
