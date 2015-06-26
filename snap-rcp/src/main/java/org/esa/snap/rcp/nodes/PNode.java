@@ -20,6 +20,7 @@ import org.openide.util.WeakListeners;
 import javax.swing.Action;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -121,6 +122,22 @@ class PNode extends PNNode<Product> implements PreferenceChangeListener {
                 return getProduct().getEndTime().format();
             }
         });
+        set.put(new PropertySupport.ReadWrite<String>("autoGrouping", String.class, "Band grouping", "The product's band grouping") {
+            @Override
+            public String getValue() {
+                final Product.AutoGrouping autoGrouping = getProduct().getAutoGrouping();
+                if (autoGrouping == null) {
+                    return "";
+                } else {
+                    return autoGrouping.toString();
+                }
+            }
+
+            @Override
+            public void setValue(String s) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+                getProduct().setAutoGrouping(s);
+            }
+        });
         includeAbstractedMetadata(set);
 
         return Stream.concat(Stream.of(super.getPropertySets()), Stream.of(set)).toArray(PropertySet[]::new);
@@ -128,9 +145,9 @@ class PNode extends PNNode<Product> implements PreferenceChangeListener {
 
     private void includeAbstractedMetadata(final Sheet.Set set) {
         final MetadataElement root = getProduct().getMetadataRoot();
-        if(root != null) {
+        if (root != null) {
             final MetadataElement absRoot = root.getElement("Abstracted_Metadata");
-            if(absRoot != null) {
+            if (absRoot != null) {
                 set.put(new PropertySupport.ReadOnly<String>("mission", String.class, "Mission", "Earth Observation Mission") {
                     @Override
                     public String getValue() {
