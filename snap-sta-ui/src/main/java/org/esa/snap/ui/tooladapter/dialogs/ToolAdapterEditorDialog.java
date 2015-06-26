@@ -297,8 +297,9 @@ public class ToolAdapterEditorDialog extends ModalDialog {
                                 param.setDefaultValue(defaultValueString);
                             }
                         });
-                java.util.List<TemplateParameterDescriptor> remParameters = toolParameterDescriptors.stream().filter(param -> ToolAdapterConstants.TOOL_SOURCE_PRODUCT_ID.equals(param.getName())).
-                        collect(Collectors.toList());
+                java.util.List<TemplateParameterDescriptor> remParameters = toolParameterDescriptors.stream().filter(param ->
+                        (ToolAdapterConstants.TOOL_SOURCE_PRODUCT_ID.equals(param.getName()) || ToolAdapterConstants.TOOL_SOURCE_PRODUCT_FILE.equals(param.getName()))).
+                                collect(Collectors.toList());
                 newOperatorDescriptor.removeParamDescriptors(remParameters);
                 try {
                     String menuLocation = newOperatorDescriptor.getMenuLocation();
