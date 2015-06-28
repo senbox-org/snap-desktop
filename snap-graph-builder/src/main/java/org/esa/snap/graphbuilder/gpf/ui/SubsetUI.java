@@ -27,15 +27,7 @@ import org.esa.snap.graphbuilder.gpf.ui.worldmap.WorldMapUI;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.util.DialogUtils;
 
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
+import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -58,6 +50,7 @@ public class SubsetUI extends BaseOperatorUI {
     private final JTextField height = new JTextField("");
     private final JTextField subSamplingX = new JTextField("");
     private final JTextField subSamplingY = new JTextField("");
+    private final JCheckBox copyMetadata = new JCheckBox("Copy Metadata", true);
 
     private final JRadioButton pixelCoordRadio = new JRadioButton("Pixel Coordinates");
     private final JRadioButton geoCoordRadio = new JRadioButton("Geographic Coordinates");
@@ -172,6 +165,8 @@ public class SubsetUI extends BaseOperatorUI {
         if (geoCoordRadio.isSelected() && geoRegion != null) {
             paramMap.put("geoRegion", geoRegion);
         }
+
+        paramMap.put("copyMetadata", copyMetadata.isSelected());
     }
 
     private JComponent createPanel() {
@@ -186,6 +181,9 @@ public class SubsetUI extends BaseOperatorUI {
 
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.gridx = 0;
+        gbc.gridy++;
+        contentPane.add(copyMetadata, gbc);
+
         gbc.gridy++;
         contentPane.add(pixelCoordRadio, gbc);
         gbc.gridx = 1;

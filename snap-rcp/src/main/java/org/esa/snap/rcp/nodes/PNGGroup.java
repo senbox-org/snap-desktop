@@ -16,6 +16,7 @@ import org.esa.snap.framework.datamodel.ProductNode;
 import org.esa.snap.framework.datamodel.ProductNodeGroup;
 import org.esa.snap.framework.datamodel.TiePointGrid;
 import org.esa.snap.framework.datamodel.VectorDataNode;
+import org.openide.nodes.Node;
 import org.openide.util.NbBundle;
 
 import java.util.List;
@@ -31,8 +32,6 @@ import java.util.List;
         "LBL_FlagCodingGroupName=Flag Codings",
         "LBL_IndexCodingGroupName=Index Codings",
         "LBL_VectorDataGroupName=Vector Data",
-        "LBL_TiePointGroupName=Tie-Point Grids",
-        "LBL_BandGroupName=Bands",
         "LBL_MaskGroupName=Masks",
 })
 abstract class PNGGroup<T extends ProductNode> extends PNGroup<T> {
@@ -78,30 +77,45 @@ abstract class PNGGroup<T extends ProductNode> extends PNGroup<T> {
     }
 
     @Override
-    protected abstract PNNode createNodeForKey(T key);
-
+    protected abstract Node createNodeForKey(T key);
 
     public static class B extends PNGGroup<Band> {
 
-        public B(ProductNodeGroup<Band> group) {
-            super(Bundle.LBL_BandGroupName(), group);
+        private final Product product;
+
+        public B(String displayName, ProductNodeGroup<Band> group, Product product) {
+            super(displayName, group);
+            this.product = product;
         }
 
         @Override
         protected PNNode createNodeForKey(Band key) {
             return new PNNode.B(key);
         }
+
+        @Override
+        public Product getProduct() {
+            return product;
+        }
     }
 
     public static class TPG extends PNGGroup<TiePointGrid> {
 
-        public TPG(ProductNodeGroup<TiePointGrid> group) {
-            super(Bundle.LBL_TiePointGroupName(), group);
+        private final Product product;
+
+        public TPG(String displayName, ProductNodeGroup<TiePointGrid> group, Product product) {
+            super(displayName, group);
+            this.product = product;
         }
 
         @Override
         protected PNNode createNodeForKey(TiePointGrid key) {
             return new PNNode.TPG(key);
+        }
+
+        @Override
+        public Product getProduct() {
+            return product;
         }
     }
 

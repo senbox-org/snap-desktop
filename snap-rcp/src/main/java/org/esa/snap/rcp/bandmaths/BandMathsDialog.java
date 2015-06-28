@@ -29,11 +29,8 @@ import com.bc.ceres.swing.binding.internal.NumericEditor;
 import com.bc.ceres.swing.binding.internal.SingleSelectionEditor;
 import com.bc.ceres.swing.binding.internal.TextComponentAdapter;
 import com.bc.ceres.swing.binding.internal.TextFieldEditor;
-import com.bc.jexp.Namespace;
 import com.bc.jexp.ParseException;
-import com.bc.jexp.Parser;
 import com.bc.jexp.Term;
-import com.bc.jexp.impl.ParserImpl;
 import com.bc.jexp.impl.TermDecompiler;
 import org.esa.snap.framework.datamodel.Band;
 import org.esa.snap.framework.datamodel.Product;
@@ -530,12 +527,9 @@ class BandMathsDialog extends ModalDialog {
         }
 
         final int defaultIndex = Arrays.asList(products).indexOf(targetProduct);
-        final Namespace namespace = BandArithmetic.createDefaultNamespace(products,
-                                                                          defaultIndex == -1 ? 0 : defaultIndex);
-        final Parser parser = new ParserImpl(namespace, false);
         try {
-            final Term term = parser.parse(getExpression());
-            return BandArithmetic.areReferencedRastersCompatible(term);
+            BandArithmetic.parseExpression(getExpression(), products, defaultIndex == -1 ? 0 : defaultIndex);
+            return true;
         } catch (ParseException e) {
             return false;
         }
@@ -545,11 +539,9 @@ class BandMathsDialog extends ModalDialog {
         final Product[] products = getCompatibleProducts();
 
         final int defaultIndex = Arrays.asList(products).indexOf(SnapApp.getDefault().getSelectedProduct());
-        final Namespace namespace = BandArithmetic.createDefaultNamespace(products,
-                                                                          defaultIndex == -1 ? 0 : defaultIndex);
-        final Parser parser = new ParserImpl(namespace, false);
         try {
-            final Term term = parser.parse(getExpression());
+            final Term term = BandArithmetic.parseExpression(getExpression(),
+                                                             products, defaultIndex == -1 ? 0 : defaultIndex);
             final RasterDataSymbol[] refRasterDataSymbols = BandArithmetic.getRefRasterDataSymbols(term);
             String bName = getBandName();
             if (targetProduct.containsRasterDataNode(bName)) {

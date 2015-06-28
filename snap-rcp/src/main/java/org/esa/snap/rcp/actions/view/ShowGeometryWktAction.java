@@ -18,6 +18,7 @@ package org.esa.snap.rcp.actions.view;
 
 import com.bc.ceres.swing.figure.Figure;
 import com.bc.ceres.swing.figure.FigureSelection;
+import com.bc.ceres.swing.figure.support.DefaultFigureSelection;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKTWriter;
 import org.esa.snap.framework.ui.ModalDialog;
@@ -65,7 +66,7 @@ import java.awt.event.ActionEvent;
 )
 @ActionRegistration(
         displayName = "#CTL_ShowGeometryWktAction_MenuText",
-        lazy = true
+        lazy = false
 )
 @ActionReference(path = "Context/View", position = 20)
 
@@ -78,7 +79,7 @@ import java.awt.event.ActionEvent;
 public class ShowGeometryWktAction extends AbstractAction implements LookupListener, ContextAwareAction {
 
     private static final String DLG_TITLE = "WKT from Geometry";
-    private Lookup.Result<FigureSelection> result;
+    private Lookup.Result<DefaultFigureSelection> result;
     private Lookup lookup;
 
     public ShowGeometryWktAction() {
@@ -88,7 +89,7 @@ public class ShowGeometryWktAction extends AbstractAction implements LookupListe
     public ShowGeometryWktAction(Lookup lookup) {
         super(Bundle.CTL_ShowGeometryWktAction_MenuText());
         this.lookup = lookup;
-        result = lookup.lookupResult(FigureSelection.class);
+        result = lookup.lookupResult(DefaultFigureSelection.class);
         result.addLookupListener(WeakListeners.create(LookupListener.class, this, result));
         setEnabled(false);
     }
@@ -105,8 +106,8 @@ public class ShowGeometryWktAction extends AbstractAction implements LookupListe
 
     @Override
     public void resultChanged(LookupEvent lookupEvent) {
-        FigureSelection selection = this.lookup.lookup(FigureSelection.class);
-        setEnabled(selection.getFigureCount() > 0);
+        DefaultFigureSelection selection = this.lookup.lookup(DefaultFigureSelection.class);
+        setEnabled(selection!=null);
     }
 
     private void exportToWkt() {
@@ -153,7 +154,7 @@ public class ShowGeometryWktAction extends AbstractAction implements LookupListe
     }
 
     private SimpleFeatureFigure getSimpleFeatureFigure() {
-        FigureSelection selection = this.lookup.lookup(FigureSelection.class);
+        DefaultFigureSelection selection = this.lookup.lookup(DefaultFigureSelection.class);
         SimpleFeatureFigure selectedFeatureFigure = null;
         Figure[] figures = selection.getFigures();
         for (Figure figure : figures) {

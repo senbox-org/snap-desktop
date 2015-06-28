@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.logging.Level;
+import java.util.prefs.BackingStoreException;
 import javax.swing.*;
 
 import org.esa.snap.configurator.ConfigurationOptimizer;
@@ -285,6 +286,7 @@ final class PerformancePanel extends javax.swing.JPanel {
         processingParametersPanel.add(nbThreadsLabel, gridBagConstraints);
 
         defaultTileSizeTextField.setText(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.defaultTileSizeTextField.text")); // NOI18N
+        defaultTileSizeTextField.setMinimumSize(new java.awt.Dimension(100, 20));
         defaultTileSizeTextField.setPreferredSize(new java.awt.Dimension(100, 20));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -306,6 +308,7 @@ final class PerformancePanel extends javax.swing.JPanel {
         processingParametersPanel.add(cacheSizeTextField, gridBagConstraints);
 
         nbThreadsTextField.setText(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.nbThreadsTextField.text")); // NOI18N
+        nbThreadsTextField.setMinimumSize(new java.awt.Dimension(100, 20));
         nbThreadsTextField.setPreferredSize(new java.awt.Dimension(100, 20));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -383,8 +386,9 @@ final class PerformancePanel extends javax.swing.JPanel {
             confOptimizer.updateCustomisedParameters(updatedPerformanceParams);
             try {
                 confOptimizer.saveCustomisedParameters();
-            } catch (IOException e) {
+            } catch (IOException|BackingStoreException e) {
                 SystemUtils.LOG.severe("Could not save performance parameters: " + e.getMessage());
+                setSystemPerformanceParametersToActualValues();
             }
         }
     }

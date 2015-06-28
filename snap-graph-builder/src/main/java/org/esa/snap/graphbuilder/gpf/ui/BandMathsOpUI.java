@@ -1,9 +1,6 @@
 package org.esa.snap.graphbuilder.gpf.ui;
 
-import com.bc.jexp.Namespace;
 import com.bc.jexp.ParseException;
-import com.bc.jexp.Parser;
-import com.bc.jexp.impl.ParserImpl;
 import org.esa.snap.framework.datamodel.Band;
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.ProductData;
@@ -20,8 +17,11 @@ import org.esa.snap.framework.ui.product.ProductExpressionPane;
 import org.esa.snap.gpf.operators.standard.BandMathsOp;
 import org.esa.snap.util.Debug;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Map;
@@ -279,12 +279,8 @@ public class BandMathsOpUI extends BaseOperatorUI {
             return false;
         }
 
-        final int defaultIndex = 0;//Arrays.asList(products).indexOf(_visatApp.getSelectedProduct());
-        final Namespace namespace = BandArithmetic.createDefaultNamespace(products,
-                                                                          defaultIndex == -1 ? 0 : defaultIndex);
-        final Parser parser = new ParserImpl(namespace, false);
         try {
-            parser.parse(expression);
+            BandArithmetic.parseExpression(expression, products, 0);
         } catch (ParseException e) {
             errorText = e.getMessage();
             return false;

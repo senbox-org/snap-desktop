@@ -153,7 +153,11 @@ class ColorManipulationForm implements SelectionSupport.Handler<ProductSceneView
     private void setProductSceneView(final ProductSceneView productSceneView) {
         ProductSceneView productSceneViewOld = getFormModel().getProductSceneView();
         if (productSceneViewOld != null) {
-            productSceneViewOld.getProduct().removeProductNodeListener(productNodeListener);
+            Product product = productSceneViewOld.getProduct();
+            if (product != null) {
+                // Product may already been gone.
+                product.removeProductNodeListener(productNodeListener);
+            }
             productSceneViewOld.removePropertyChangeListener(sceneViewChangeListener);
         }
         getFormModel().setProductSceneView(productSceneView);
@@ -611,7 +615,7 @@ class ColorManipulationForm implements SelectionSupport.Handler<ProductSceneView
             try {
                 Path sourceBasePath = ResourceInstaller.findModuleCodeBasePath(BeamUiActivator.class);
                 final Path auxdataDir = getColorPalettesDir();
-                Path sourceDirPath = sourceBasePath.resolve("auxdata/color_palettes/");
+                Path sourceDirPath = sourceBasePath.resolve("auxdata/color_palettes");
                 final ResourceInstaller resourceInstaller = new ResourceInstaller(sourceDirPath, auxdataDir);
 
                 resourceInstaller.install(".*.cpd", ProgressMonitor.NULL);
