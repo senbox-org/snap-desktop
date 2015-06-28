@@ -44,6 +44,7 @@ import org.esa.snap.framework.ui.tool.ToolButtonFactory;
 import org.esa.snap.modules.ModulePackager;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.ui.tooladapter.actions.ToolAdapterActionRegistrar;
+import org.esa.snap.ui.tooladapter.model.InputOptionsPanel;
 import org.esa.snap.ui.tooladapter.model.OperatorParametersTable;
 import org.esa.snap.ui.tooladapter.model.VariablesTable;
 import org.esa.snap.ui.tooladapter.validators.RequiredFieldValidator;
@@ -54,7 +55,10 @@ import org.openide.util.NbBundle;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
+import javax.swing.text.BadLocationException;
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -132,6 +136,7 @@ public class ToolAdapterEditorDialog extends ModalDialog {
     private final int DEFAULT_PADDING = 2;
     private int controlHeight = 24;
     private final String[] systemPath;
+    private InputOptionsPanel suggestion;
 
     private ToolAdapterEditorDialog(AppContext appContext, String title) {
         super(appContext.getApplicationWindow(), title, ID_OK_CANCEL_HELP, new Object[] { new JButton(Bundle.CTL_Button_Export_Text()) }, helpID);
@@ -224,8 +229,8 @@ public class ToolAdapterEditorDialog extends ModalDialog {
             SnapDialogs.showWarning(Bundle.MSG_Inexistent_Tool_Path_Text());
             return false;
         }
-        /*if (file.getPath().endsWith(ToolAdapterConstants.SHELL_EXT)) {
-            file = new File(file.getPath().replace(ToolAdapterConstants.SHELL_EXT, ToolAdapterIO.getShellExtension()));
+        /*if (file.getPath().endsWith(ToolAdapterConstants.SHELL_EXT_VAR)) {
+            file = new File(file.getPath().replace(ToolAdapterConstants.SHELL_EXT_VAR, ToolAdapterIO.getShellExtension()));
         }*/
         if (!file.exists()) {
             File resolvedFile = resolvePathOnSystem(file);
@@ -522,6 +527,51 @@ public class ToolAdapterEditorDialog extends ModalDialog {
             logger.warning(e.getMessage());
         }
         templateContent.setInputVerifier(new RequiredFieldValidator(MESSAGE_REQUIRED));
+        templateContent.addKeyListener(new KeyListener() {
+            private boolean dollarPressed;
+
+            @Override
+            public void keyTyped(KeyEvent e) {
+                if (e.getKeyChar() == KeyEvent.VK_ENTER || e.getKeyChar() == KeyEvent.VK_TAB) {
+                    if (suggestion != null && dollarPressed) {
+                        if (suggestion.insertSelection()) {
+                            e.consume();
+                            final int position = templateContent.getCaretPosition();
+                            SwingUtilities.invokeLater(() -> {
+                                try {
+                                    templateContent.getDocument().remove(position - 1, 1);
+                                } catch (BadLocationException ex) {
+                                    ex.printStackTrace();
+                                }
+                            });
+                        }
+                    }
+                    dollarPressed = false;
+                }
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_DOWN && suggestion != null && dollarPressed) {
+                    suggestion.moveDown();
+                } else if (e.getKeyCode() == KeyEvent.VK_UP && suggestion != null && dollarPressed) {
+                    suggestion.moveUp();
+                } else if (e.getKeyChar() == '$') {
+                    dollarPressed = true;
+                    SwingUtilities.invokeLater(ToolAdapterEditorDialog.this::showSuggestion);
+                } else if (Character.isLetterOrDigit(e.getKeyChar()) && dollarPressed) {
+                    SwingUtilities.invokeLater(ToolAdapterEditorDialog.this::showSuggestion);
+                } else if (Character.isWhitespace(e.getKeyChar()) || e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+                    dollarPressed = false;
+                    hideSuggestion();
+                }
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+
+            }
+        });
         JScrollPane scrollPane = new JScrollPane(templateContent);
         configPanel.add(scrollPane);
 
@@ -718,5 +768,44 @@ public class ToolAdapterEditorDialog extends ModalDialog {
             }
         }
         return success;
+    }
+
+    protected void showSuggestion() {
+        hideSuggestion();
+        final int position = templateContent.getCaretPosition();
+        Point location;
+        try {
+            location = templateContent.modelToView(position).getLocation();
+        } catch (BadLocationException e) {
+            return;
+        }
+        String text = templateContent.getText();
+        int start = Math.max(0, text.lastIndexOf("$", position));
+        if (start + 1 > position) {
+            return;
+        }
+        final String subWord = text.substring(start + 1, position);
+        if (suggestion == null) {
+            suggestion = new InputOptionsPanel(templateContent);
+        }
+        suggestion.setSuggestionList(getAutocompleteEntries(), subWord);
+        suggestion.show(position, location);
+        SwingUtilities.invokeLater(templateContent::requestFocusInWindow);
+    }
+
+    protected void hideSuggestion() {
+        if (suggestion != null) {
+            suggestion.hide();
+        }
+    }
+
+    private java.util.List<String> getAutocompleteEntries() {
+        java.util.List<String> entries = new ArrayList<>();
+        entries.addAll(newOperatorDescriptor.getVariables().stream().map(SystemVariable::getKey).collect(Collectors.toList()));
+        for (ParameterDescriptor parameterDescriptor : newOperatorDescriptor.getParameterDescriptors()) {
+            entries.add(parameterDescriptor.getName());
+        }
+        entries.sort(Comparator.<String>naturalOrder());
+        return entries;
     }
 }

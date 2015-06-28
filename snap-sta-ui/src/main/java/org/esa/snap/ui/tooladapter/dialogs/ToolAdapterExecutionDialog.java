@@ -141,7 +141,8 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
                     op.setSourceProducts(sourceProducts);
                     operatorTask = new OperatorTask(op, ToolAdapterExecutionDialog.this::operatorCompleted);
                     ProgressHandle progressHandle = ProgressHandleFactory.createHandle(this.getTitle());
-                    ((ToolAdapterOp) op).setProgressMonitor(new ProgressWrapper(progressHandle));
+                    String progressPattern = operatorDescriptor.getProgressPattern();
+                    ((ToolAdapterOp) op).setProgressMonitor(new ProgressWrapper(progressHandle, progressPattern == null || progressPattern.isEmpty()));
                     ProgressUtils.runOffEventThreadWithProgressDialog(operatorTask, this.getTitle(), progressHandle, true, 1, 1);
                 }
             }
@@ -371,15 +372,20 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
     class ProgressWrapper implements ProgressMonitor {
 
         private ProgressHandle progressHandle;
+        private boolean isIndeterminate;
 
-        ProgressWrapper(ProgressHandle handle) {
+        ProgressWrapper(ProgressHandle handle, boolean indeterminate) {
             this.progressHandle = handle;
+            this.isIndeterminate = indeterminate;
         }
 
         @Override
         public void beginTask(String taskName, int totalWork) {
             this.progressHandle.setDisplayName(taskName);
             this.progressHandle.start(totalWork, -1);
+            if (this.isIndeterminate) {
+                this.progressHandle.switchToIndeterminate();
+            }
         }
 
         @Override

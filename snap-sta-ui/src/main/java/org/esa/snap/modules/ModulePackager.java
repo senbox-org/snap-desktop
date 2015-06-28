@@ -40,6 +40,7 @@ public final class ModulePackager {
     private static final Attributes.Name ATTR_DESCRIPTION_NAME;
     private static final Attributes.Name ATTR_MODULE_NAME;
     private static final Attributes.Name ATTR_MODULE_TYPE;
+    private static final Attributes.Name ATTR_MODULE_VERSION;
     private static final File modulesPath;
     private static final String layerXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
             "<!DOCTYPE filesystem PUBLIC \"-//NetBeans//DTD Filesystem 1.1//EN\" \"http://www.netbeans.org/dtds/filesystem-1_1.dtd\">\n" +
@@ -70,6 +71,7 @@ public final class ModulePackager {
         ATTR_DESCRIPTION_NAME = new Attributes.Name("OpenIDE-Module-Short-Description");
         ATTR_MODULE_NAME = new Attributes.Name("OpenIDE-Module");
         ATTR_MODULE_TYPE = new Attributes.Name("OpenIDE-Module-Type");
+        ATTR_MODULE_VERSION = new Attributes.Name("OpenIDE-Module-Implementation-Version");
         attributes.put(Attributes.Name.MANIFEST_VERSION, "1.0");
         attributes.put(new Attributes.Name("OpenIDE-Module-Java-Dependencies"), "Java > 1.8");
         attributes.put(new Attributes.Name("OpenIDE-Module-Module-Dependencies"), "org.esa.snap.snap.sta, org.esa.snap.snap.sta.ui");
@@ -111,7 +113,7 @@ public final class ModulePackager {
                       .append(new SimpleDateFormat("yyyyMMdd").format(new Date()))
                       .append("\" OpenIDE-Module-Java-Dependencies=\"Java &gt; 1.8\" OpenIDE-Module-Long-Description=\"&lt;p&gt;")
                       .append(descriptor.getDescription())
-                      .append("&lt;/p&gt;\" OpenIDE-Module-Module-Dependencies=\"org.esa.snap.snap.sta &gt; 2.0.0, org.esa.snap.snap.sta.ui &gt; 2.0.0, org.esa.snap.snap.rcp &gt; 2.0.0\" OpenIDE-Module-Name=\"")
+                      .append("&lt;/p&gt;\" OpenIDE-Module-Module-Dependencies=\"org.esa.snap.snap.sta &gt; 2.0.0, org.esa.snap.snap.sta.ui &gt; 2.0.0, org.esa.snap.snap.rcp &gt; 2.0.0, org.esa.snap.snap.core &gt; 2.0.0\" OpenIDE-Module-Name=\"")
                       .append(descriptor.getName())
                       .append("\" OpenIDE-Module-Requires=\"org.openide.modules.ModuleFormat1\" OpenIDE-Module-Short-Description=\"")
                       .append(descriptor.getDescription())
@@ -177,6 +179,15 @@ public final class ModulePackager {
         }
         if (!unpackFolder.exists())
             unpackFolder.mkdir();
+        Attributes attributes = jar.getManifest().getMainAttributes();
+        if (attributes.containsKey(ATTR_MODULE_VERSION)) {
+            String version = attributes.getValue(ATTR_MODULE_VERSION);
+            File versionFile = new File(unpackFolder, "version.txt");
+            try (FileOutputStream fos = new FileOutputStream(versionFile)) {
+                fos.write(version.getBytes());
+                fos.close();
+            }
+        }
         while (enumEntries.hasMoreElements()) {
             JarEntry file = (JarEntry) enumEntries.nextElement();
             File f = new File(unpackFolder, file.getName());
@@ -198,9 +209,21 @@ public final class ModulePackager {
         }
     }
 
+    public static String getAdapterVersion(File jarFile) throws IOException {
+        String version = null;
+        JarFile jar = new JarFile(jarFile);
+        Attributes attributes = jar.getManifest().getMainAttributes();
+        if (attributes.containsKey(ATTR_MODULE_VERSION)) {
+            version = attributes.getValue(ATTR_MODULE_VERSION);
+        }
+        jar.close();
+        return version;
+    }
+
     private static byte[] packAdapterJar(ToolAdapterOperatorDescriptor descriptor) throws IOException {
         _manifest.getMainAttributes().put(ATTR_DESCRIPTION_NAME, descriptor.getAlias());
         _manifest.getMainAttributes().put(ATTR_MODULE_NAME, descriptor.getName());
+        _manifest.getMainAttributes().put(ATTR_MODULE_VERSION, descriptor.getVersion());
         File moduleFolder = new File(modulesPath, descriptor.getAlias());
         ByteArrayOutputStream fOut = new ByteArrayOutputStream();
         _manifest.getMainAttributes().put(new Attributes.Name("OpenIDE-Module-Install"), ModuleInstaller.class.getName().replace('.', '/') + ".class");
@@ -213,7 +236,11 @@ public final class ModulePackager {
                     } catch (Exception ignored) {
                     }
                 }
-                addFile(ModuleInstaller.class, jarOut);
+                try {
+                    addFile(ModuleInstaller.class, jarOut);
+                } catch (Exception ignored) {
+                    // the module possibly had ModuleInsteller.class
+                }
             }
             try {
                 String contents = layerXml.replace("#NAME#", descriptor.getLabel());
