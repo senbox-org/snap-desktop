@@ -1,8 +1,0 @@
-otbapp_BandMath
--il
-$sourceProductFile[0].getAbsoulutePath()
-$sourceProductFile[1].getAbsolutePath()
--exp
-$expression
--out
-$targetProductFile.getAbsolutePath()
