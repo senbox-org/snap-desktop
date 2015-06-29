@@ -167,7 +167,7 @@
          -->
         <dependency>
             <groupId>org.esa.snap</groupId>
-            <artifactId>nbexec</artifactId>
+            <artifactId>snap-main</artifactId>
             <version>${snap.version}</version>
         </dependency>
 

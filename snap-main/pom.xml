@@ -19,6 +19,12 @@
     </description>
 
     <dependencies>
+        <!-- nbexec provides the actual main class (org.esa.snap.nbexec.Launcher) to be called from the IDE. -->
+        <dependency>
+            <groupId>org.esa.snap</groupId>
+            <artifactId>nbexec</artifactId>
+            <version>${snap.version}</version>
+        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
