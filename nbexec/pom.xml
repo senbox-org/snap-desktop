@@ -5,6 +5,7 @@
 
     <groupId>org.esa.snap</groupId>
     <artifactId>nbexec</artifactId>
+    <!-- packaging must be "jar", not "nbm" -->
     <packaging>jar</packaging>
     <version>2.0.0-SNAPSHOT</version>
 
@@ -23,6 +24,10 @@
             <version>4.12</version>
             <scope>test</scope>
         </dependency>
+        <!--
+            WARNING: This module is NOT supposed to have any other dependencies.
+            Don't add any dependencies to this module unless you exactly know what you are doing!
+        -->
     </dependencies>
 
     <repositories>
