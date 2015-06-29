@@ -44,7 +44,7 @@ import org.esa.snap.framework.ui.tool.ToolButtonFactory;
 import org.esa.snap.modules.ModulePackager;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.ui.tooladapter.actions.ToolAdapterActionRegistrar;
-import org.esa.snap.ui.tooladapter.model.InputOptionsPanel;
+import org.esa.snap.ui.tooladapter.model.AutoCompleteTextArea;
 import org.esa.snap.ui.tooladapter.model.OperatorParametersTable;
 import org.esa.snap.ui.tooladapter.model.VariablesTable;
 import org.esa.snap.ui.tooladapter.validators.RequiredFieldValidator;
@@ -55,10 +55,7 @@ import org.openide.util.NbBundle;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
-import javax.swing.text.BadLocationException;
 import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -127,7 +124,7 @@ public class ToolAdapterEditorDialog extends ModalDialog {
     private int newNameIndex = -1;
     private PropertyContainer propertyContainer;
     private BindingContext bindingContext;
-    private JTextArea templateContent;
+    private AutoCompleteTextArea templateContent;
     private OperatorParametersTable paramsTable;
     private Logger logger;
     public static final String helpID = "sta_editor";
@@ -136,7 +133,6 @@ public class ToolAdapterEditorDialog extends ModalDialog {
     private final int DEFAULT_PADDING = 2;
     private int controlHeight = 24;
     private final String[] systemPath;
-    private InputOptionsPanel suggestion;
 
     private ToolAdapterEditorDialog(AppContext appContext, String title) {
         super(appContext.getApplicationWindow(), title, ID_OK_CANCEL_HELP, new Object[] { new JButton(Bundle.CTL_Button_Export_Text()) }, helpID);
@@ -364,7 +360,7 @@ public class ToolAdapterEditorDialog extends ModalDialog {
         toolDescriptorPanel.add(topRightPanel);
 
         JPanel middlePannel = createPreprocessAndPatternsPanel();
-        Dimension middlePanelDimension = new Dimension((int)(formWidth - 2 * DEFAULT_PADDING), (int)((formHeight - 3 * DEFAULT_PADDING) * 0.13));
+        Dimension middlePanelDimension = new Dimension(formWidth - 2 * DEFAULT_PADDING, (int)((formHeight - 3 * DEFAULT_PADDING) * 0.13));
         middlePannel.setMinimumSize(middlePanelDimension);
         middlePannel.setMaximumSize(middlePanelDimension);
         middlePannel.setPreferredSize(middlePanelDimension);
@@ -372,7 +368,7 @@ public class ToolAdapterEditorDialog extends ModalDialog {
 
 
         JPanel bottomPannel = createParametersPanel();
-        Dimension bottomPanelDimension = new Dimension((int)(formWidth - 2 * DEFAULT_PADDING), (int)((formHeight - 3 * DEFAULT_PADDING) * 0.25));
+        Dimension bottomPanelDimension = new Dimension(formWidth - 2 * DEFAULT_PADDING, (int)((formHeight - 3 * DEFAULT_PADDING) * 0.25));
         bottomPannel.setMinimumSize(bottomPanelDimension);
         //bottomPannel.setMaximumSize(bottomPanelDimension);
         bottomPannel.setPreferredSize(bottomPanelDimension);
@@ -414,7 +410,7 @@ public class ToolAdapterEditorDialog extends ModalDialog {
 
         java.util.List<String> menus = new ArrayList<>();
         getAvailableMenuOptions(null, menus);
-        addComboField(descriptorPanel, textEditor, Bundle.CTL_Label_MenuLocation_Text(), ToolAdapterConstants.MENU_LOCATION, menus, true, true);
+        addComboField(descriptorPanel, Bundle.CTL_Label_MenuLocation_Text(), ToolAdapterConstants.MENU_LOCATION, menus, true, true);
 
         TitledBorder title = BorderFactory.createTitledBorder(Bundle.CTL_Panel_OperatorDescriptor_Text());
         descriptorPanel.setBorder(title);
@@ -515,7 +511,8 @@ public class ToolAdapterEditorDialog extends ModalDialog {
         JLabel label = new JLabel(Bundle.CTL_Label_CmdLineTemplate_Text());
         configPanel.add(label);
 
-        templateContent = new JTextArea("", 16, 9);
+        //templateContent = new JTextArea("", 16, 9);
+        templateContent = new AutoCompleteTextArea("", 16, 9);
         try {
             if (operatorIsNew) {
                 if (oldOperatorDescriptor.getTemplateFileLocation() != null) {
@@ -528,51 +525,54 @@ public class ToolAdapterEditorDialog extends ModalDialog {
             logger.warning(e.getMessage());
         }
         templateContent.setInputVerifier(new RequiredFieldValidator(MESSAGE_REQUIRED));
-        templateContent.addKeyListener(new KeyListener() {
-            private boolean dollarPressed;
+        templateContent.setAutoCompleteEntries(getAutocompleteEntries());
+        templateContent.setTriggerChar('$');
 
-            @Override
-            public void keyTyped(KeyEvent e) {
-                if (e.getKeyChar() == KeyEvent.VK_ENTER || e.getKeyChar() == KeyEvent.VK_TAB) {
-                    if (suggestion != null && dollarPressed) {
-                        if (suggestion.insertSelection()) {
-                            e.consume();
-                            final int position = templateContent.getCaretPosition();
-                            SwingUtilities.invokeLater(() -> {
-                                try {
-                                    templateContent.getDocument().remove(position - 1, 1);
-                                } catch (BadLocationException ex) {
-                                    ex.printStackTrace();
-                                }
-                            });
-                        }
-                    }
-                    dollarPressed = false;
-                }
-            }
-
-            @Override
-            public void keyReleased(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_DOWN && suggestion != null && dollarPressed) {
-                    suggestion.moveDown();
-                } else if (e.getKeyCode() == KeyEvent.VK_UP && suggestion != null && dollarPressed) {
-                    suggestion.moveUp();
-                } else if (e.getKeyChar() == '$') {
-                    dollarPressed = true;
-                    SwingUtilities.invokeLater(ToolAdapterEditorDialog.this::showSuggestion);
-                } else if (Character.isLetterOrDigit(e.getKeyChar()) && dollarPressed) {
-                    SwingUtilities.invokeLater(ToolAdapterEditorDialog.this::showSuggestion);
-                } else if (Character.isWhitespace(e.getKeyChar()) || e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-                    dollarPressed = false;
-                    hideSuggestion();
-                }
-            }
-
-            @Override
-            public void keyPressed(KeyEvent e) {
-
-            }
-        });
+//        templateContent.addKeyListener(new KeyListener() {
+//            private boolean dollarPressed;
+//
+//            @Override
+//            public void keyTyped(KeyEvent e) {
+//                if (e.getKeyChar() == KeyEvent.VK_ENTER || e.getKeyChar() == KeyEvent.VK_TAB) {
+//                    if (suggestion != null && dollarPressed) {
+//                        if (suggestion.insertSelection()) {
+//                            e.consume();
+//                            final int position = templateContent.getCaretPosition();
+//                            SwingUtilities.invokeLater(() -> {
+//                                try {
+//                                    templateContent.getDocument().remove(position - 1, 1);
+//                                } catch (BadLocationException ex) {
+//                                    ex.printStackTrace();
+//                                }
+//                            });
+//                        }
+//                    }
+//                    dollarPressed = false;
+//                }
+//            }
+//
+//            @Override
+//            public void keyReleased(KeyEvent e) {
+//                if (e.getKeyCode() == KeyEvent.VK_DOWN && suggestion != null && dollarPressed) {
+//                    suggestion.moveDown();
+//                } else if (e.getKeyCode() == KeyEvent.VK_UP && suggestion != null && dollarPressed) {
+//                    suggestion.moveUp();
+//                } else if (e.getKeyChar() == '$') {
+//                    dollarPressed = true;
+//                    SwingUtilities.invokeLater(ToolAdapterEditorDialog.this::showSuggestion);
+//                } else if (Character.isLetterOrDigit(e.getKeyChar()) && dollarPressed) {
+//                    SwingUtilities.invokeLater(ToolAdapterEditorDialog.this::showSuggestion);
+//                } else if (Character.isWhitespace(e.getKeyChar()) || e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+//                    dollarPressed = false;
+//                    hideSuggestion();
+//                }
+//            }
+//
+//            @Override
+//            public void keyPressed(KeyEvent e) {
+//
+//            }
+//        });
         JScrollPane scrollPane = new JScrollPane(templateContent);
         configPanel.add(scrollPane);
 
@@ -695,7 +695,7 @@ public class ToolAdapterEditorDialog extends ModalDialog {
         parent.add(editorComponent);
     }
 
-    private void addComboField(JPanel parent, TextFieldEditor textEditor, String labelText, String propertyName, java.util.List<String> values, boolean sortValues, boolean isRequired) {
+    private void addComboField(JPanel parent, String labelText, String propertyName, java.util.List<String> values, boolean sortValues, boolean isRequired) {
         parent.add(new JLabel(labelText));
         PropertyDescriptor propertyDescriptor = propertyContainer.getDescriptor(propertyName);
         if (isRequired) {
@@ -732,9 +732,9 @@ public class ToolAdapterEditorDialog extends ModalDialog {
     }
 
     private File resolvePathOnSystem(File path) {
-        File resolved = null, current = null;
+        File resolved = null;
         for (String sysPath : systemPath) {
-            current = new File(sysPath, path.getPath());
+            File current = new File(sysPath, path.getPath());
             if (current.exists()) {
                 resolved = current;
                 break;
@@ -771,34 +771,34 @@ public class ToolAdapterEditorDialog extends ModalDialog {
         return success;
     }
 
-    protected void showSuggestion() {
-        hideSuggestion();
-        final int position = templateContent.getCaretPosition();
-        Point location;
-        try {
-            location = templateContent.modelToView(position).getLocation();
-        } catch (BadLocationException e) {
-            return;
-        }
-        String text = templateContent.getText();
-        int start = Math.max(0, text.lastIndexOf("$", position));
-        if (start + 1 > position) {
-            return;
-        }
-        final String subWord = text.substring(start + 1, position);
-        if (suggestion == null) {
-            suggestion = new InputOptionsPanel(templateContent);
-        }
-        suggestion.setSuggestionList(getAutocompleteEntries(), subWord);
-        suggestion.show(position, location);
-        SwingUtilities.invokeLater(templateContent::requestFocusInWindow);
-    }
-
-    protected void hideSuggestion() {
-        if (suggestion != null) {
-            suggestion.hide();
-        }
-    }
+//    protected void showSuggestion() {
+//        hideSuggestion();
+//        final int position = templateContent.getCaretPosition();
+//        Point location;
+//        try {
+//            location = templateContent.modelToView(position).getLocation();
+//        } catch (BadLocationException e) {
+//            return;
+//        }
+//        String text = templateContent.getText();
+//        int start = Math.max(0, text.lastIndexOf("$", position));
+//        if (start + 1 > position) {
+//            return;
+//        }
+//        final String subWord = text.substring(start + 1, position);
+//        if (suggestion == null) {
+//            suggestion = new InputOptionsPanel(templateContent);
+//        }
+//        suggestion.setSuggestionList(getAutocompleteEntries(), subWord);
+//        suggestion.show(position, location);
+//        SwingUtilities.invokeLater(templateContent::requestFocusInWindow);
+//    }
+//
+//    protected void hideSuggestion() {
+//        if (suggestion != null) {
+//            suggestion.hide();
+//        }
+//    }
 
     private java.util.List<String> getAutocompleteEntries() {
         java.util.List<String> entries = new ArrayList<>();

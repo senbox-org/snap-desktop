@@ -17,15 +17,14 @@
  */
 package org.esa.snap.ui.tooladapter.dialogs;
 
-import org.esa.snap.framework.gpf.descriptor.TemplateParameterDescriptor;
-import org.esa.snap.framework.gpf.descriptor.ToolAdapterOperatorDescriptor;
-import org.esa.snap.framework.gpf.descriptor.ToolParameterDescriptor;
+import org.esa.snap.framework.gpf.descriptor.*;
 import org.esa.snap.framework.gpf.operators.tooladapter.ToolAdapterIO;
 import org.esa.snap.framework.gpf.operators.tooladapter.ToolAdapterOp;
 import org.esa.snap.framework.ui.AppContext;
 import org.esa.snap.framework.ui.ModalDialog;
 import org.esa.snap.framework.ui.UIUtils;
 import org.esa.snap.framework.ui.tool.ToolButtonFactory;
+import org.esa.snap.ui.tooladapter.model.AutoCompleteTextArea;
 import org.esa.snap.ui.tooladapter.model.OperatorParametersTable;
 import org.esa.snap.ui.tooladapter.model.PropertyMemberUIWrapper;
 
@@ -38,7 +37,10 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * Form for displaying and editing details of a tool adapter parameter of File Template type.
@@ -52,7 +54,8 @@ public class TemplateParameterEditorDialog extends ModalDialog {
     private ToolAdapterOperatorDescriptor parentDescriptor;
     private PropertyMemberUIWrapper fileWrapper;
     private AppContext appContext;
-    private JTextArea fileContentArea = new JTextArea("", 10, 10);
+    //private JTextArea fileContentArea = new JTextArea("", 10, 10);
+    private AutoCompleteTextArea fileContentArea = new AutoCompleteTextArea("", 10, 10);
     OperatorParametersTable paramsTable;
     private Logger logger;
 
@@ -112,6 +115,8 @@ public class TemplateParameterEditorDialog extends ModalDialog {
         this.fileWrapper.getContext().addPropertyChangeListener(evt -> updateFileAreaContent());
 
         mainPanel.add(filePanel, BorderLayout.PAGE_START);
+        fileContentArea.setAutoCompleteEntries(getAutocompleteEntries());
+        fileContentArea.setTriggerChar('$');
         mainPanel.add(new JScrollPane(fileContentArea), BorderLayout.CENTER);
         updateFileAreaContent();
         mainPanel.add(createParametersPanel(), BorderLayout.PAGE_END);
@@ -167,5 +172,15 @@ public class TemplateParameterEditorDialog extends ModalDialog {
         } catch (IOException e) {
             logger.warning(e.getMessage());
         }
+    }
+
+    private java.util.List<String> getAutocompleteEntries() {
+        java.util.List<String> entries = new ArrayList<>();
+        entries.addAll(parentDescriptor.getVariables().stream().map(SystemVariable::getKey).collect(Collectors.toList()));
+        for (ParameterDescriptor parameterDescriptor : fakeDescriptor.getParameterDescriptors()) {
+            entries.add(parameterDescriptor.getName());
+        }
+        entries.sort(Comparator.<String>naturalOrder());
+        return entries;
     }
 }
