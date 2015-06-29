@@ -162,13 +162,22 @@
             <artifactId>snap-tango</artifactId>
         </dependency>
         <!--
-             The following will end up in snap/modules/ext/org.esa.snap.snap-rcp/org.esa.snap/nbexec.jar
+             The following will end up in snap/modules/ext/org.esa.snap.snap-rcp/org.esa.snap/snap-main.jar
              where it can be used to launch and debug SNAP in IDEs other than NetBeans, e.g. IDEA or Eclipse
          -->
         <dependency>
             <groupId>org.esa.snap</groupId>
             <artifactId>snap-main</artifactId>
             <version>${snap.version}</version>
+            <exclusions>
+                <!--
+                     We exclude nbexec here, because it is already expanded into snap-main.jar
+                 -->
+                <exclusion>
+                    <groupId>org.esa.snap</groupId>
+                    <artifactId>nbexec</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- SNAP Engine -->
