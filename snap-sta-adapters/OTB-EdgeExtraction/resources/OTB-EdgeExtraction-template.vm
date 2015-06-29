@@ -1,0 +1,9 @@
+EdgeExtraction
+-in
+$sourceProductFile.getAbsolutePath()
+-channel
+1
+-filter
+$filter
+-out
+$targetProductFile.getAbsolutePath()

@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+OpenIDE-Module-Display-Category: SNAP
+OpenIDE-Module-Implementation-Version: 1
+OpenIDE-Module-Java-Dependencies: Java > 1.8
+OpenIDE-Module-Type: STA
+OpenIDE-Module-Short-Description: OTB Edge Extraction
+OpenIDE-Module: org.esa.snap.framework.gpf.operators.tooladapter.OTB_EE
+OpenIDE-Module-Module-Dependencies: org.esa.snap.snap.sta, org.esa.snap.snap.sta.ui
+OpenIDE-Module-Install: org/esa/snap/utils/ModuleInstaller.class
+

@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+OpenIDE-Module-Display-Category: SNAP
+OpenIDE-Module-Implementation-Version: 1
+OpenIDE-Module-Java-Dependencies: Java > 1.8
+OpenIDE-Module-Type: STA
+OpenIDE-Module-Short-Description: OTB-BandMath
+OpenIDE-Module: org.esa.snap.framework.gpf.operators.tooladapter.OTB_B
+ M
+OpenIDE-Module-Module-Dependencies: org.esa.snap.snap.sta, org.esa.sna
+ p.snap.sta.ui
+OpenIDE-Module-Install: org/esa/snap/utils/ModuleInstaller.class
+

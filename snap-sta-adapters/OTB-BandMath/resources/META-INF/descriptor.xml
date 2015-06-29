@@ -1,0 +1,76 @@
+<operator>
+  <name>org.esa.snap.framework.gpf.operators.tooladapter.OTB_BM</name>
+  <operatorClass>org.esa.snap.framework.gpf.operators.tooladapter.ToolAdapterOp</operatorClass>
+  <alias>OTB-BandMath</alias>
+  <label>OTB Band Math</label>
+  <version>1</version>
+  <description>OTB Band Math</description>
+  <authors>Cosmin Cara</authors>
+  <copyright>(C)2015 CS SI</copyright>
+  <internal>false</internal>
+  <autoWriteSuppressed>false</autoWriteSuppressed>
+  <menuLocation>Menu/Processing/Image Analysis</menuLocation>
+  <preprocessTool>false</preprocessTool>
+  <writeForProcessing>false</writeForProcessing>
+  <processingWriter>GeoTIFF</processingWriter>
+  <mainToolFileLocation>$OTB_BIN_PATH\otbApplicationLauncherCommandLine.exe</mainToolFileLocation>
+  <workingDir>$OUTPUT_DIR</workingDir>
+  <templateFileLocation>OTB-BandMath-template.vm</templateFileLocation>
+  <progressPattern>(?:.+): (\d{1,3})% (?:.+)</progressPattern>
+  <errorPattern>ERROR: (.+)</errorPattern>
+  <variables>
+    <variable>
+      <key>ITK_AUTOLOAD_PATH</key>
+      <value></value>
+    </variable>
+    <variable>
+      <key>OTB_BIN_PATH</key>
+      <value></value>
+    </variable>
+    <variable>
+      <key>OUTPUT_DIR</key>
+      <value></value>
+    </variable>
+  </variables>
+  <parameters>
+    <parameter>
+      <name>targetProductFile</name>
+      <dataType>java.io.File</dataType>
+      <defaultValue>$OUTPUT_DIR/bandmathoutput.tif</defaultValue>
+      <description></description>
+      <valueSet/>
+      <notNull>false</notNull>
+      <notEmpty>false</notEmpty>
+      <parameterType>RegularParameter</parameterType>
+      <toolParameterDescriptors/>
+    </parameter>
+    <parameter>
+      <name>expression</name>
+      <alias></alias>
+      <dataType>java.lang.String</dataType>
+      <defaultValue>if((im1b2-im1b1)/(im1b2+im1b1)&gt;0.4,255,0)</defaultValue>
+      <valueSet/>
+      <notNull>false</notNull>
+      <notEmpty>false</notEmpty>
+      <parameterType>RegularParameter</parameterType>
+      <toolParameterDescriptors/>
+    </parameter>
+  </parameters>
+  <source>user</source>
+  <isSystem>false</isSystem>
+  <osdependent>
+    <property>
+      <name>SHELL_EXT</name>
+      <windows>.bat</windows>
+      <linux></linux>
+      <macosx></macosx>
+    </property>
+  </osdependent>
+  <sourceProductDescriptors>
+    <org.esa.snap.framework.gpf.descriptor.DefaultSourceProductDescriptor>
+      <name>sourceProduct.0</name>
+    </org.esa.snap.framework.gpf.descriptor.DefaultSourceProductDescriptor>
+  </sourceProductDescriptors>
+  <targetPropertyDescriptors/>
+  <numSourceProducts>1</numSourceProducts>
+</operator>
