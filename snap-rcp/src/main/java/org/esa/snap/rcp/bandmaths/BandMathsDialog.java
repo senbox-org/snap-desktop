@@ -15,11 +15,8 @@
  */
 package org.esa.snap.rcp.bandmaths;
 
-import com.bc.ceres.binding.Property;
 import com.bc.ceres.binding.PropertyContainer;
 import com.bc.ceres.binding.PropertyDescriptor;
-import com.bc.ceres.binding.ValidationException;
-import com.bc.ceres.binding.Validator;
 import com.bc.ceres.binding.ValueSet;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.PropertyEditor;
@@ -35,7 +32,6 @@ import com.bc.jexp.impl.TermDecompiler;
 import org.esa.snap.framework.datamodel.Band;
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.ProductData;
-import org.esa.snap.framework.datamodel.ProductNode;
 import org.esa.snap.framework.datamodel.ProductNodeGroup;
 import org.esa.snap.framework.datamodel.ProductNodeList;
 import org.esa.snap.framework.datamodel.RasterDataNode;
@@ -50,7 +46,6 @@ import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.actions.view.OpenImageViewAction;
 import org.esa.snap.rcp.nodes.UndoableProductNodeInsertion;
-import org.esa.snap.util.Debug;
 import org.esa.snap.util.Guardian;
 import org.esa.snap.util.ProductUtils;
 import org.openide.awt.UndoRedo;
@@ -84,8 +79,8 @@ import java.util.Set;
 })
 class BandMathsDialog extends ModalDialog {
 
-    private static final String PREF_KEY_AUTO_SHOW_NEW_BANDS = "BandMaths.autoShowNewBands";
-    private static final String PREF_KEY_LAST_EXPRESSION_PATH = "BandMaths.lastExpressionPath";
+    static final String PREF_KEY_AUTO_SHOW_NEW_BANDS = "BandMaths.autoShowNewBands";
+    static final String PREF_KEY_LAST_EXPRESSION_PATH = "BandMaths.lastExpressionPath";
 
     private static final String PROPERTY_NAME_PRODUCT = "productName";
     private static final String PROPERTY_NAME_EXPRESSION = "expression";
@@ -119,7 +114,7 @@ class BandMathsDialog extends ModalDialog {
     private String bandDescription;
     @SuppressWarnings("FieldCanBeLocal")
     private String bandUnit;
-    @SuppressWarnings("FieldCanBeLocal")
+    @SuppressWarnings("UnusedDeclaration")
     private float bandWavelength;
 
     private static int numNewBands = 0;
@@ -385,7 +380,7 @@ class BandMathsDialog extends ModalDialog {
         descriptor.setDisplayName("Name");
         descriptor.setDescription("The name for the new band.");
         descriptor.setNotEmpty(true);
-        descriptor.setValidator(new ProductNodeNameValidator());
+        descriptor.setValidator(new ProductNodeNameValidator(targetProduct));
         String newBandName;
         do {
             numNewBands++;
@@ -545,25 +540,4 @@ class BandMathsDialog extends ModalDialog {
         return false;
     }
 
-    @NbBundle.Messages({
-            "CTL_PNNV_ExMsg_UniqueBandName=The band name must be unique within the product scope.\n"
-                    + "The scope comprises bands and tie-point grids.",
-            "CTL_PNNV_ExMsg_ContainedCharacter=The band name ''{0}'' is not valid.\n\n"
-                    + "Names must not start with a dot and must not\n"
-                    + "contain any of the following characters: \\/:*?\"<>|"
-
-    })
-    private class ProductNodeNameValidator implements Validator {
-
-        @Override
-        public void validateValue(Property property, Object value) throws ValidationException {
-            final String name = (String) value;
-            if (!ProductNode.isValidNodeName(name)) {
-                throw new ValidationException(Bundle.CTL_PNNV_ExMsg_ContainedCharacter(name));
-            }
-            if (targetProduct.containsRasterDataNode(name)) {
-                throw new ValidationException(Bundle.CTL_PNNV_ExMsg_UniqueBandName());
-            }
-        }
-    }
 }
