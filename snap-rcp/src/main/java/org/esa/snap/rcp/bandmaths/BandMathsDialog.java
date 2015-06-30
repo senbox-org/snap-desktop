@@ -154,18 +154,6 @@ class BandMathsDialog extends ModalDialog {
             return;
         }
 
-        String uncertaintyExpression = null;
-        if (generateUncertaintyBand) {
-            GaussianUncertaintyPropagator propagator = new GaussianUncertaintyPropagator();
-            Term term;
-            try {
-                term = propagator.propagateUncertainties(targetProduct, getExpression());
-            } catch (ParseException | UnsupportedOperationException e) {
-                SnapDialogs.showError(Bundle.CTL_BandMathsDialog_Title() + " - Error", e.getMessage());
-                return;
-            }
-            uncertaintyExpression = new TermDecompiler().decompile(term);
-        }
         Band band;
         if (saveExpressionOnly) {
             band = new VirtualBand(getBandName(), ProductData.TYPE_FLOAT32, width, height, getExpression());
@@ -177,15 +165,6 @@ class BandMathsDialog extends ModalDialog {
 
         ProductNodeGroup<Band> bandGroup = targetProduct.getBandGroup();
         bandGroup.add(band);
-
-        if (uncertaintyExpression != null) {
-            VirtualBand uncertaintyBand = new VirtualBand(getBandName() + "_unc", ProductData.TYPE_FLOAT32, width, height, uncertaintyExpression);
-            bandGroup.add(uncertaintyBand);
-            uncertaintyBand.setDescription("Uncertainty propagated from band '" + band.getName() + "', Expr.: " + getExpression());
-            uncertaintyBand.setUnit(band.getUnit());
-            ProductUtils.copySpectralBandProperties(band, uncertaintyBand);
-            band.addAncillaryVariable(uncertaintyBand, "uncertainty");
-        }
 
         if (saveExpressionOnly) {
             checkExpressionForExternalReferences(getExpression());
@@ -206,6 +185,14 @@ class BandMathsDialog extends ModalDialog {
         band.setModified(true);
         if (SnapApp.getDefault().getPreferences().getBoolean(PREF_KEY_AUTO_SHOW_NEW_BANDS, true)) {
             new OpenImageViewAction(band).openProductSceneView();
+        }
+
+        if (generateUncertaintyBand) {
+            if (band instanceof VirtualBand) {
+                VirtualBand virtualBand = (VirtualBand) band;
+                PropagateUncertaintyAction uncertaintyAction = new PropagateUncertaintyAction(virtualBand);
+                uncertaintyAction.actionPerformed(null);
+            }
         }
     }
 
@@ -433,6 +420,8 @@ class BandMathsDialog extends ModalDialog {
                                  PROPERTY_NAME_SAVE_EXPRESSION_ONLY, Boolean.FALSE);
         context.bindEnabledState(PROPERTY_NAME_NO_DATA_VALUE, true,
                                  PROPERTY_NAME_NO_DATA_VALUE_USED, Boolean.TRUE);
+        context.bindEnabledState(PROPERTY_NAME_GENERATE_UNCERTAINTY_BAND, true,
+                                 PROPERTY_NAME_SAVE_EXPRESSION_ONLY, Boolean.TRUE);
 
         return context;
     }
