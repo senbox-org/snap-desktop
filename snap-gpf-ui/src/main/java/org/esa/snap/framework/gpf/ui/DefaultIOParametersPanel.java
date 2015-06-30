@@ -38,7 +38,7 @@ public class DefaultIOParametersPanel extends JPanel {
     private HashMap<SourceProductDescriptor, SourceProductSelector> sourceProductSelectorMap;
     private AppContext appContext;
 
-    public DefaultIOParametersPanel(AppContext appContext, OperatorDescriptor descriptor, TargetProductSelector targetProductSelector) {
+    public DefaultIOParametersPanel(AppContext appContext, OperatorDescriptor descriptor, TargetProductSelector targetProductSelector, boolean targetProductSelectorDisplay) {
         this.appContext = appContext;
         sourceProductSelectorList = new ArrayList<>(3);
         sourceProductSelectorMap = new HashMap<>(3);
@@ -59,8 +59,14 @@ public class DefaultIOParametersPanel extends JPanel {
         for (SourceProductSelector selector : sourceProductSelectorList) {
             add(selector.createDefaultPanel());
         }
-        add(targetProductSelector.createDefaultPanel());
+        if(targetProductSelectorDisplay){
+            add(targetProductSelector.createDefaultPanel());
+        }
         add(tableLayout.createVerticalSpacer());
+    }
+
+    public DefaultIOParametersPanel(AppContext appContext, OperatorDescriptor descriptor, TargetProductSelector targetProductSelector) {
+        this(appContext, descriptor, targetProductSelector, true);
     }
 
     /**

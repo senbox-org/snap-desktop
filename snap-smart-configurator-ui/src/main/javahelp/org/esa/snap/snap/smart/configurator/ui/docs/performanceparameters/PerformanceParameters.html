@@ -1,0 +1,55 @@
+<!--
+  ~ Copyright (C) 2015 CS SI
+  ~
+  ~ This program is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU General Public License as published by the Free
+  ~ Software Foundation; either version 3 of the License, or (at your option)
+  ~ any later version.
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+  ~ more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License along
+  ~ with this program; if not, see http://www.gnu.org/licenses/
+  -->
+
+<html>
+<head>
+    <title>Sentinel Toolbox Help - The Performance Tab</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+
+<h4><a name="processingParameters">Processing parameters</a></h4>
+
+<p>This preferences page provides options to customize processing parameters.</p>
+<ul>
+    <li><b>SNAP Values</b><br>
+        There are three processing parameters that may affect processing performance:
+        <ul>
+            <li><b>Tile size</b><br>
+                Defines the default tile size in pixels.
+            </li>
+            <li><b>Cache size</b><br>
+                Defines the default cache size in MB.
+            </li>
+            <li><b>Nb threads</b><br>
+                Sets the available number of threads.
+            </li>
+        </ul>
+    </li>
+    <li><b>Benchmark</b><br>
+        To help you to define faster processing parameters, you can launch benchmarks.
+
+        You need to define a list of possible processing parameters for each values (tile size, cache size and nb threads).
+        Each list must have at least one value, otherwise each values must be separated by a semi-colon (;).
+        Then choose in the <b>Proc. graph</b> combobox the processing that will be used by the benchmark.
+        Finally, press the button <b>Compute</b> to launch the processing dialog, sets processing parameters and <b>Run</b>.
+        The benchmark will compute the processing with all given parameters and save the better result in <b>SNAP Values</b>.
+    </li>
+</ul>
+
+</body>
+</html>

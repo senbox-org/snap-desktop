@@ -1,3 +1,4 @@
 Manifest-Version: 1.0
 OpenIDE-Module-Localizing-Bundle: org/esa/snap/configurator/ui/Bundle.properties
+OpenIDE-Module-Layer: org/esa/snap/smart/configurator/ui/layer.xml
 

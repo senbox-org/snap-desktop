@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.esa.snap.configurator.ui;
+package org.esa.snap.smart.configurator.ui;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -15,7 +15,7 @@ import org.openide.util.Lookup;
 
 @OptionsPanelController.TopLevelRegistration(
         categoryName = "#OptionsCategory_Name_Performance",
-        iconBase = "org/esa/snap/configurator/ui/Performance32.png",
+        iconBase = "org/esa/snap/smart/configurator/ui/Performance32.png",
         keywords = "#OptionsCategory_Keywords_Performance_Optim",
         keywordsCategory = "Performance"
 )
