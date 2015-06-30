@@ -15,7 +15,7 @@ import org.esa.snap.framework.gpf.pointop.SampleOperator;
 import org.esa.snap.framework.gpf.pointop.WritableSample;
 
 @OperatorMetadata(alias = "Simple",
-                  category = "Optical Processing",
+                  category = "Optical",
                   version = "1.0",
                   description = "Example operator with a custom UI.")
 public class SimpleExampleOp extends SampleOperator {
