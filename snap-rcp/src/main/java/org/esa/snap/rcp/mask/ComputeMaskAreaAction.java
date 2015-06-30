@@ -79,7 +79,7 @@ import java.util.concurrent.ExecutionException;
 )
 @ActionReference(path = "Menu/Tools", position = 520)
 @NbBundle.Messages({
-        "CTL_ComputeMaskAreaAction_MenuText=Compute Mask Area...",
+        "CTL_ComputeMaskAreaAction_MenuText=Mask Area...",
         "CTL_ComputeMaskAreaAction_DialogTitle=Compute Mask Area",
         "CTL_ComputeMaskAreaAction_ShortDescription=Displays information about the spatial area of the mask."
 })

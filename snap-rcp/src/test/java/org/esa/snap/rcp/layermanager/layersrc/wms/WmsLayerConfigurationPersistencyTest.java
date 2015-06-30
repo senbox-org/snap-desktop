@@ -30,7 +30,7 @@ import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.ProductData;
 import org.esa.snap.framework.datamodel.ProductManager;
 import org.esa.snap.framework.datamodel.VirtualBand;
-import org.esa.snap.rcp.actions.session.dom.SessionDomConverter;
+import org.esa.snap.rcp.session.dom.SessionDomConverter;
 import org.geotools.data.ows.CRSEnvelope;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,8 +44,6 @@ import java.net.URL;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertSame;
 import static org.junit.Assert.assertNotNull;
-
-//import org.esa.snap.visat.actions.session.dom.SessionDomConverter;
 
 public class WmsLayerConfigurationPersistencyTest {
 

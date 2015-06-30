@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.esa.snap.rcp.actions.view.overlay;
+package org.esa.snap.rcp.actions.layer.overlay;
 
 import com.bc.ceres.binding.PropertySet;
 import com.bc.ceres.glayer.Layer;
@@ -38,11 +38,11 @@ import javax.swing.Action;
 @ActionID(category = "View", id = "OverlayWorldMapLayerAction")
 @ActionRegistration(displayName = "#CTL_OverlayWorldMapLayerActionName", lazy = false)
 @ActionReferences({
-        @ActionReference(path = "Menu/View/Overlay", position = 50),
+        @ActionReference(path = "Menu/Layer", position = 50),
         @ActionReference(path = "Toolbars/Overlay", position = 50)
 })
 @NbBundle.Messages({
-        "CTL_OverlayWorldMapLayerActionName=Toggle World Map Overlay",
+        "CTL_OverlayWorldMapLayerActionName=World Map Overlay",
         "CTL_OverlayWorldMapLayerActionToolTip=Show/hide world map overlay for the selected image"
 })
 public final class OverlayWorldMapLayerAction extends AbstractOverlayAction {

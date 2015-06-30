@@ -16,9 +16,6 @@
 package org.esa.snap.rcp.session;
 
 import org.esa.snap.framework.ui.product.ProductSceneView;
-import org.openide.awt.ActionID;
-import org.openide.awt.ActionReference;
-import org.openide.awt.ActionRegistration;
 import org.openide.util.ContextAwareAction;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
@@ -31,31 +28,18 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import java.awt.event.ActionEvent;
 
+/*
+Not used now.
+Session handling is not implemented yet.
 
-/**
- * Saves a VISAT session with a new filename.
- *
- * @author Norman Fomferra
- * @version $Revision$ $Date$
- * @since BEAM 4.6
- */
-
-
-@ActionID(
-        category = "File",
-        id = "org.esa.snap.rcp.session.SaveSessionAsAction"
-)
-@ActionRegistration(
-        displayName = "#CTL_SaveSessionAsAction_MenuText",
-        lazy = false
-)
+@ActionID( category = "File", id = "org.esa.snap.rcp.session.SaveSessionAsAction" )
+@ActionRegistration( displayName = "#CTL_SaveSessionAsAction_MenuText", lazy = false )
 @ActionReference(path = "Menu/File", position = 55,separatorAfter = 57)
-
+*/
 @NbBundle.Messages({
         "CTL_SaveSessionAsAction_MenuText=Save Session As...",
         "CTL_SaveSessionAsAction_ShortDescription=Save the current SNAP session using a different name."
 })
-
 public class SaveSessionAsAction extends AbstractAction implements ContextAwareAction, LookupListener {
     public static final String ID = "saveSessionAs";
     private final Lookup.Result<ProductSceneView> result;

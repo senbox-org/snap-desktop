@@ -22,21 +22,36 @@
         </folder>
         <folder name="View">
             <attr name="position" intvalue="300"/>
+        </folder>
+        <folder name="Analysis">
+            <attr name="position" intvalue="400"/>
+        </folder>
+        <folder name="Layer">
+            <attr name="position" intvalue="420"/>
             <folder name="Overlay">
                 <attr name="position" intvalue="300"/>
             </folder>
         </folder>
-        <folder name="Tools">
-            <attr name="position" intvalue="400"/>
+        <folder name="Vector">
+            <attr name="position" intvalue="450"/>
         </folder>
-        <folder name="Processing">
+        <folder name="Raster">
+            <attr name="position" intvalue="470"/>
+        </folder>
+        <folder name="Optical">
             <attr name="position" intvalue="500"/>
         </folder>
-        <folder name="Window">
+        <folder name="Radar">
+            <attr name="position" intvalue="510"/>
+        </folder>
+        <folder name="Tools">
             <attr name="position" intvalue="600"/>
         </folder>
-        <folder name="Help">
+        <folder name="Window">
             <attr name="position" intvalue="700"/>
+        </folder>
+        <folder name="Help">
+            <attr name="position" intvalue="9000"/>
         </folder>
     </folder>
 
@@ -262,6 +277,19 @@
         </folder>
         <folder name="View">
             <file name="org-netbeans-core-actions-LogAction.shadow_hidden"/>
+            <folder name="Tool Windows">
+                <!-- Action to open a properties window, moved here from Window/Tools menu-->
+                <file name="org-netbeans-core-windows-actions-GlobalPropertiesAction.shadow">
+                    <attr name="originalFile"
+                          stringvalue="Actions/Window/org-netbeans-core-windows-actions-GlobalPropertiesAction.instance"/>
+                    <attr name="position" intvalue="200"/>
+                </file>
+                <file name="org-netbeans-core-io-ui-IOWindowAction.shadow">
+                    <attr name="originalFile"
+                          stringvalue="Actions/Window/org-netbeans-core-io-ui-IOWindowAction.instance"/>
+                    <attr name="position" intvalue="10000"/>
+                </file>
+            </folder>
         </folder>
         <folder name="Edit">
             <!--A CallbackSystemAction, allows to search for something (e.g. in text files), Only enabled if key is mapped to an implementation -->
@@ -284,20 +312,6 @@
         <folder name="Window">
             <!-- Moved on level down in the menu hierarchy-->
             <file name="org-netbeans-core-io-ui-IOWindowAction.shadow_hidden"/>
-            <folder name="Tool Windows">
-                <!-- Action to open a properties window, moved here from Window/Tools menu-->
-                <file name="org-netbeans-core-windows-actions-GlobalPropertiesAction.shadow">
-                    <attr name="originalFile"
-                          stringvalue="Actions/Window/org-netbeans-core-windows-actions-GlobalPropertiesAction.instance"/>
-                    <attr name="position" intvalue="200"/>
-                </file>
-                <file name="org-netbeans-core-io-ui-IOWindowAction.shadow">
-                    <attr name="originalFile"
-                          stringvalue="Actions/Window/org-netbeans-core-io-ui-IOWindowAction.instance"/>
-                    <attr name="position" intvalue="10000"/>
-                </file>
-            </folder>
-
             <!--Simply navigates back to the previous active document -->
             <file name="SwitchToRecentDocumentAction.shadow_hidden"/>
             <!-- The favorites window which we can't use right now, because we can't open files from there. -->
@@ -311,7 +325,7 @@
                 <file name="org-netbeans-core-actions-HTMLViewAction.shadow_hidden"/>
             </folder>
             <folder name="Tools_hidden">
-                <!-- Action to open a properties window, moved into 'Window/Tool Windows' menu-->
+                <!-- Action to open a properties window, moved into 'View/Tool Windows' menu-->
                 <file name="org-netbeans-core-windows-actions-GlobalPropertiesAction.shadow_hidden"/>
             </folder>
 

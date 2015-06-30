@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.esa.snap.rcp.actions.view.overlay;
+package org.esa.snap.rcp.actions.layer.overlay;
 
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.ui.product.ProductSceneView;
@@ -24,11 +24,11 @@ import javax.swing.Action;
 @ActionID(category = "View", id = "OverlayPinLayerAction")
 @ActionRegistration(displayName = "#CTL_OverlayPinLayerActionName", lazy = false)
 @ActionReferences({
-        @ActionReference(path = "Menu/View/Overlay", position = 30),
+        @ActionReference(path = "Menu/Layer", position = 30),
         @ActionReference(path = "Toolbars/Overlay", position = 30)
 })
 @NbBundle.Messages({
-        "CTL_OverlayPinLayerActionName=Toggle Pin Overlay",
+        "CTL_OverlayPinLayerActionName=Pin Overlay",
         "CTL_OverlayPinLayerActionToolTip=Show/hide pin overlay for the selected image"
 })
 public final class OverlayPinLayerAction extends AbstractOverlayAction {

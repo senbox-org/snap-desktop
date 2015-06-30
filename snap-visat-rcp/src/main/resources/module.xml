@@ -1112,7 +1112,7 @@
             <!--<id>showMetadataView</id>-->
             <!--<placeAfter>showImageViewRGB</placeAfter>-->
             <!--<text>Open Metadata View</text>-->
-            <!--<class>org.esa.snap.rcp.actions.file.ShowMetadataViewAction</class>-->
+            <!--<class>org.esa.snap.rcp.actions.window.ShowMetadataViewAction</class>-->
             <!--<mnemonic>M</mnemonic>-->
             <!--<accellerator>control alt M</accellerator>-->
             <!--<shortDescr>Open a metadata view for the selected metadata node.</shortDescr>-->

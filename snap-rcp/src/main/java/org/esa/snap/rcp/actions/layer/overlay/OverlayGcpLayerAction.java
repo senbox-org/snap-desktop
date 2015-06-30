@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.esa.snap.rcp.actions.view.overlay;
+package org.esa.snap.rcp.actions.layer.overlay;
 
 import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.openide.awt.ActionID;
@@ -23,11 +23,11 @@ import javax.swing.Action;
 @ActionID(category = "View", id = "OverlayGcpLayerAction")
 @ActionRegistration(displayName = "#CTL_OverlayGcpLayerActionName", lazy = false)
 @ActionReferences({
-        @ActionReference(path = "Menu/View/Overlay", position = 40),
+        @ActionReference(path = "Menu/Layer", position = 40),
         @ActionReference(path = "Toolbars/Overlay", position = 40)
 })
 @NbBundle.Messages({
-        "CTL_OverlayGcpLayerActionName=Toggle GCP Overlay",
+        "CTL_OverlayGcpLayerActionName=GCP Overlay",
         "CTL_OverlayGcpLayerActionToolTip=Show/hide GCP overlay for the selected image"
 })
 public final class OverlayGcpLayerAction extends AbstractOverlayAction {

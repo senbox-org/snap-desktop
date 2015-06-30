@@ -38,6 +38,7 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.awt.UndoRedo;
 import org.openide.util.HelpCtx;
@@ -60,13 +61,13 @@ import java.text.MessageFormat;
         popupText = "#CTL_CreateVectorDataNodeActionPopupText",
         iconBase = "org/esa/snap/rcp/icons/NewVectorDataNode24.gif"
 )
-@ActionReference(
-        path = "Toolbars/Tools",
-        position = 191
-)
+@ActionReferences({
+        @ActionReference(path = "Menu/Vector", position = 110),
+        @ActionReference(path = "Toolbars/Tools", position = 191)
+})
 @Messages({
-        "CTL_CreateVectorDataNodeActionText=Create Vector Data Container...",
-        "CTL_CreateVectorDataNodeActionPopupText=Create Vector Data Container..."
+        "CTL_CreateVectorDataNodeActionText=Vector Data Container",
+        "CTL_CreateVectorDataNodeActionPopupText=Vector Data Container"
 })
 public class CreateVectorDataNodeAction extends AbstractAction implements HelpCtx.Provider {
 

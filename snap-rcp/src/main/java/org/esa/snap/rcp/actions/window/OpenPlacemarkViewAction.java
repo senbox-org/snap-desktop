@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, see http://www.gnu.org/licenses/
  */
-package org.esa.snap.rcp.actions;
+package org.esa.snap.rcp.actions.window;
 
 import org.esa.snap.framework.datamodel.ProductNode;
 import org.esa.snap.framework.datamodel.VectorDataNode;
@@ -36,46 +36,37 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import java.awt.event.ActionEvent;
 
-/**
- * This action opens a placemark view.
- *
- * @author Norman Fomferra
- * @since BEAM 4.10
- */
-@ActionID(
-        category = "View",
-        id = "ShowPlacemarkViewAction"
-)
+@ActionID(category = "View", id = "OpenPlacemarkViewAction" )
 @ActionRegistration(
-        displayName = "#CTL_ShowPlacemarkViewAction",
+        displayName = "#CTL_OpenPlacemarkViewAction_MenuText",
         iconBase = "org/esa/snap/rcp/icons/RsVector16.gif"
 )
 @ActionReferences({
-        @ActionReference(path = "Menu/View", position = 125),
+        @ActionReference(path = "Menu/Window", position = 125),
         @ActionReference(path = "Context/Product/VectorDataNode", position = 100),
 })
-@NbBundle.Messages("CTL_ShowPlacemarkViewAction=Open Placemark View")
-public class ShowPlacemarkViewAction extends AbstractAction implements ContextAwareAction, LookupListener {
+@NbBundle.Messages("CTL_OpenPlacemarkViewAction_MenuText=Open Placemark View")
+public class OpenPlacemarkViewAction extends AbstractAction implements ContextAwareAction, LookupListener {
 
     private Lookup lookup;
     private final Lookup.Result<VectorDataNode> result;
 
-    public ShowPlacemarkViewAction() {
+    public OpenPlacemarkViewAction() {
         this(Utilities.actionsGlobalContext());
     }
 
-    public ShowPlacemarkViewAction(Lookup lookup) {
+    public OpenPlacemarkViewAction(Lookup lookup) {
         this.lookup = lookup;
         result = lookup.lookupResult(VectorDataNode.class);
         result.addLookupListener(
                 WeakListeners.create(LookupListener.class, this, result));
         setEnableState();
-        putValue(Action.NAME, Bundle.CTL_ShowPlacemarkViewAction());
+        putValue(Action.NAME, Bundle.CTL_OpenPlacemarkViewAction_MenuText());
     }
 
     @Override
     public Action createContextAwareInstance(Lookup lookup) {
-        return new ShowPlacemarkViewAction(lookup);
+        return new OpenPlacemarkViewAction(lookup);
     }
 
     @Override

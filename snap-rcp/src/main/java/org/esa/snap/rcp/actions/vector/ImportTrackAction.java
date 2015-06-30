@@ -48,6 +48,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.TransformException;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.ContextAwareAction;
 import org.openide.util.Lookup;
@@ -90,7 +91,10 @@ import java.io.Reader;
 @ActionRegistration(
         displayName = "#CTL_ImportSeadasTrackActionName"
 )
-@ActionReference(path = "Menu/File/Import/Vector Data", position = 50)
+@ActionReferences({
+        @ActionReference(path = "Menu/File/Import/Vector Data", position = 50),
+        @ActionReference(path = "Menu/Vector", position = 30)
+})
 @NbBundle.Messages({
         "CTL_ImportSeadasTrackActionText=SeaDAS 6.x Track",
         "CTL_ImportSeadasTrackActionName=Import SeaDAS Track",

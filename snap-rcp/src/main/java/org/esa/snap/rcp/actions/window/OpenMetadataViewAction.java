@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, see http://www.gnu.org/licenses/
  */
-package org.esa.snap.rcp.actions.file;
+package org.esa.snap.rcp.actions.window;
 
 import org.esa.snap.framework.datamodel.MetadataElement;
 import org.esa.snap.framework.datamodel.ProductNode;
@@ -38,44 +38,35 @@ import java.awt.event.ActionEvent;
 
 /**
  * This action opens an Metadata View of the currently selected Metadata Node
- *
- * @author Marco Zuehlke
- * @version $Revision$ $Date$
- * @since BEAM 4.6
  */
-@ActionID(
-        category = "File",
-        id = "ShowMetadataViewAction"
-)
-@ActionRegistration(
-        displayName = "#CTL_ShowMetadataViewActionName"
-)
+@ActionID(category = "File", id = "OpenMetadataViewAction" )
+@ActionRegistration(displayName = "#CTL_OpenMetadataViewAction_MenuText" )
 @ActionReferences({
         @ActionReference(path = "Context/Product/MetadataElement", position = 100),
-        @ActionReference(path = "Menu/View", position = 120)
+        @ActionReference(path = "Menu/Window", position = 120)
 })
-@NbBundle.Messages("CTL_ShowMetadataViewActionName=Open Metadata View")
-public class ShowMetadataViewAction extends AbstractAction implements ContextAwareAction, LookupListener {
+@NbBundle.Messages("CTL_OpenMetadataViewAction_MenuText=Open Metadata View")
+public class OpenMetadataViewAction extends AbstractAction implements ContextAwareAction, LookupListener {
 
     private Lookup lookup;
     private final Lookup.Result<ProductNode> result;
 
-    public ShowMetadataViewAction() {
+    public OpenMetadataViewAction() {
         this(Utilities.actionsGlobalContext());
     }
 
-    public ShowMetadataViewAction(Lookup lookup) {
+    public OpenMetadataViewAction(Lookup lookup) {
         this.lookup = lookup;
         result = lookup.lookupResult(ProductNode.class);
         result.addLookupListener(
                 WeakListeners.create(LookupListener.class, this, result));
         setEnableState();
-        putValue(Action.NAME, org.esa.snap.rcp.actions.file.Bundle.CTL_ShowMetadataViewActionName());
+        putValue(Action.NAME, Bundle.CTL_OpenMetadataViewAction_MenuText());
     }
 
     @Override
     public Action createContextAwareInstance(Lookup lookup) {
-        return new ShowMetadataViewAction(lookup);
+        return new OpenMetadataViewAction(lookup);
     }
 
     @Override

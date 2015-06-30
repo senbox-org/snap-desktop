@@ -23,9 +23,9 @@ import org.esa.snap.framework.datamodel.VirtualBand;
 import org.esa.snap.framework.dataop.barithm.BandArithmetic;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
-import org.esa.snap.rcp.actions.ShowPlacemarkViewAction;
-import org.esa.snap.rcp.actions.file.ShowMetadataViewAction;
-import org.esa.snap.rcp.actions.view.OpenImageViewAction;
+import org.esa.snap.rcp.actions.window.OpenImageViewAction;
+import org.esa.snap.rcp.actions.window.OpenMetadataViewAction;
+import org.esa.snap.rcp.actions.window.OpenPlacemarkViewAction;
 import org.openide.awt.UndoRedo;
 import org.openide.nodes.Node;
 import org.openide.nodes.PropertySupport;
@@ -194,7 +194,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
         @Override
         public Action getPreferredAction() {
 //            return new ShowMetadataViewAction(this.getProductNode());
-            return new ShowMetadataViewAction();
+            return new OpenMetadataViewAction();
         }
     }
 
@@ -224,7 +224,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
 
         @Override
         public Action getPreferredAction() {
-            return new ShowMetadataViewAction();
+            return new OpenMetadataViewAction();
         }
     }
 
@@ -254,7 +254,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
 
         @Override
         public Action getPreferredAction() {
-            return new ShowMetadataViewAction();
+            return new OpenMetadataViewAction();
         }
     }
 
@@ -294,7 +294,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
 
         @Override
         public Action getPreferredAction() {
-            return new ShowPlacemarkViewAction();
+            return new OpenPlacemarkViewAction();
         }
     }
 

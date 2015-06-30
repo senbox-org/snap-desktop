@@ -14,10 +14,9 @@
  * with this program; if not, see http://www.gnu.org/licenses/
  */
 
-package org.esa.snap.rcp.actions.view;
+package org.esa.snap.rcp.actions.vector;
 
 import com.bc.ceres.swing.figure.Figure;
-import com.bc.ceres.swing.figure.FigureSelection;
 import com.bc.ceres.swing.figure.support.DefaultFigureSelection;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKTWriter;
@@ -35,6 +34,7 @@ import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.ContextAwareAction;
 import org.openide.util.Lookup;
@@ -60,22 +60,16 @@ import java.awt.event.ActionEvent;
  * @since BEAM 5
  */
 
-@ActionID(
-        category = "File",
-        id = "org.esa.snap.rcp.actions.view.ShowGeometryWktAction"
-)
-@ActionRegistration(
-        displayName = "#CTL_ShowGeometryWktAction_MenuText",
-        lazy = false
-)
-@ActionReference(path = "Context/View", position = 20)
-
+@ActionID(category = "File", id = "org.esa.snap.rcp.actions.vector.ShowGeometryWktAction" )
+@ActionRegistration(displayName = "#CTL_ShowGeometryWktAction_MenuText", lazy = false )
+@ActionReferences({
+        @ActionReference(path = "Menu/Vector", position = 20),
+        @ActionReference(path = "Context/View", position = 20)
+})
 @NbBundle.Messages({
-        "CTL_ShowGeometryWktAction_MenuText=WKT from Geometry...",
+        "CTL_ShowGeometryWktAction_MenuText=WKT from Geometry",
         "CTL_ShowGeometryWktAction_ShortDescription=Get the well-known-text (WKT) representation of a selected geometry."
 })
-
-
 public class ShowGeometryWktAction extends AbstractAction implements LookupListener, ContextAwareAction {
 
     private static final String DLG_TITLE = "WKT from Geometry";

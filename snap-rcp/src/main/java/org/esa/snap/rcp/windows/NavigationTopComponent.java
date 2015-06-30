@@ -32,8 +32,8 @@ import org.esa.snap.framework.ui.tool.ToolButtonFactory;
 import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.help.HelpAction;
-import org.esa.snap.rcp.actions.view.SyncImageCursorsAction;
-import org.esa.snap.rcp.actions.view.SyncImageViewsAction;
+import org.esa.snap.rcp.actions.tools.SyncImageCursorsAction;
+import org.esa.snap.rcp.actions.tools.SyncImageViewsAction;
 import org.esa.snap.rcp.nav.NavigationCanvas;
 import org.esa.snap.util.math.MathUtils;
 import org.openide.awt.ActionID;
@@ -78,7 +78,7 @@ import static java.lang.Math.*;
         position = 0
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.window.NavigationTopComponent")
-@ActionReference(path = "Menu/Window/Tool Windows", position = 0)
+@ActionReference(path = "Menu/View/Tool Windows", position = 0)
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_NavigationTopComponentName",
         preferredID = "NavigationTopComponent"

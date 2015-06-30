@@ -40,7 +40,8 @@ import java.beans.PropertyChangeEvent;
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.layermanager.LayerEditorTopComponent")
 @ActionReferences({
-        @ActionReference(path = "Menu/Window/Tool Windows"),
+        @ActionReference(path = "Menu/View/Tool Windows"),
+        @ActionReference(path = "Menu/Layer", position = 410)
 })
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_LayerEditorTopComponent_Name",

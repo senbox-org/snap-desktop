@@ -14,7 +14,7 @@
  * with this program; if not, see http://www.gnu.org/licenses/
  */
 
-package org.esa.snap.rcp.actions.tools;
+package org.esa.snap.rcp.actions.raster;
 
 import com.bc.ceres.core.Assert;
 import com.bc.ceres.core.ProgressMonitor;
@@ -63,10 +63,10 @@ import java.util.concurrent.ExecutionException;
         displayName = "#CTL_CreateGeoCodingDisplacementBandsActionText",
         popupText = "#CTL_CreateGeoCodingDisplacementBandsActionText"
 )
-@ActionReference(path = "Menu/Tools", position = 130 )
+@ActionReference(path = "Menu/Raster", position = 130 )
 @NbBundle.Messages({
-                  "CTL_CreateGeoCodingDisplacementBandsActionText=Create Geo-Coding Displacement Bands...",
-                  "CTL_CreateGeoCodingDisplacementBandsDialogTitle=Create Geo-Coding Displacement Bands",
+                  "CTL_CreateGeoCodingDisplacementBandsActionText=Geo-Coding Displacement Bands...",
+                  "CTL_CreateGeoCodingDisplacementBandsDialogTitle=Geo-Coding Displacement Bands",
                   "CTL_CreateGeoCodingDisplacementBandsDescription=&lt;html&gt;Computes actual pixel position minus pixel position computed from inverse\n" +
                           "                geo-coding&lt;br/&gt;\n" +
                           "                and adds displacements as new bands (test for geo-coding accuracy)."

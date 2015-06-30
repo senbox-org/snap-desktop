@@ -31,6 +31,7 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.ContextAwareAction;
 import org.openide.util.Lookup;
@@ -53,7 +54,10 @@ import java.io.IOException;
         displayName = "#CTL_ImportVectorDataNodeFromShapefileActionText",
         lazy = true
 )
-@ActionReference(path = "Menu/File/Import/Vector Data", position = 20)
+@ActionReferences({
+        @ActionReference(path = "Menu/File/Import/Vector Data", position = 20),
+        @ActionReference(path = "Menu/Vector", position = 70)
+})
 @NbBundle.Messages({
         "CTL_ImportVectorDataNodeFromShapefileActionText=ESRI Shapefile",
         "CTL_ImportVectorDataNodeFromShapefileActionName=Import Vector Data Node From Shapefile",

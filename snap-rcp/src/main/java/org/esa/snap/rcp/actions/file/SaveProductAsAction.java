@@ -34,7 +34,7 @@ import java.text.MessageFormat;
  */
 @ActionID(category = "File", id = "SaveProductAsAction")
 @ActionRegistration(displayName = "#CTL_SaveProductAsActionName")
-@ActionReference(path = "Menu/File", position = 45)
+@ActionReference(path = "Menu/File", position = 45, separatorAfter = 46)
 @NbBundle.Messages({"CTL_SaveProductAsActionName=Save Product As..."})
 public final class SaveProductAsAction extends AbstractAction {
 

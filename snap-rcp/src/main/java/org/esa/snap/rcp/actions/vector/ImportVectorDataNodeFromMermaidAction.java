@@ -27,6 +27,7 @@ import org.esa.snap.util.io.SnapFileFilter;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.ContextAwareAction;
 import org.openide.util.Lookup;
@@ -46,11 +47,11 @@ import java.io.IOException;
         category = "File",
         id = "ImportVectorDataNodeFromMermaidAction"
 )
-@ActionRegistration(
-        displayName = "#CTL_ImportVectorDataNodeFromMermaidActionName",
-        lazy=true
-)
-@ActionReference(path = "Menu/File/Import/Vector Data", position = 30)
+@ActionRegistration(displayName = "#CTL_ImportVectorDataNodeFromMermaidActionName", lazy=true)
+@ActionReferences({
+        @ActionReference(path = "Menu/File/Import/Vector Data", position = 30),
+        @ActionReference(path = "Menu/Vector", position = 60)
+})
 @NbBundle.Messages({
         "CTL_ImportVectorDataNodeFromMermaidActionText=MERMAID Extraction File",
         "CTL_ImportVectorDataNodeFromMermaidActionName=Import Vector Data Node From Mermaid",

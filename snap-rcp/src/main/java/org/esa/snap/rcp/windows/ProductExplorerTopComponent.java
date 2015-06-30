@@ -44,7 +44,7 @@ import java.text.SimpleDateFormat;
         openAtStartup = true,
         position = 1)
 @ActionID(category = "Window", id = "org.esa.snap.rcp.window.ProductExplorerTopComponent")
-@ActionReference(path = "Menu/Window/Tool Windows", position = 0)
+@ActionReference(path = "Menu/View/Tool Windows", position = 0)
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_ProductExplorerTopComponentName",
         preferredID = "ProductExplorerTopComponent"

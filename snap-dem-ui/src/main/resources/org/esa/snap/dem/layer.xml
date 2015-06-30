@@ -1,4 +1,3 @@
-
 <filesystem>
 
     <folder name="Actions">
@@ -83,7 +82,7 @@
             </folder>
         </folder>
 
-        <folder name="Tools">
+        <folder name="Raster">
             <folder name="DEM Tools">
                 <attr name="position" intvalue="400"/>
                 <file name="org-esa-snap-dem-gpf-FillDEMHoleOp-Action.shadow">

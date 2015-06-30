@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.esa.snap.rcp.actions.view;
+package org.esa.snap.rcp.actions.tools;
 
 import org.esa.snap.rcp.util.BooleanPreferenceKeyAction;
 import org.openide.awt.ActionID;
@@ -24,7 +24,7 @@ import org.openide.util.NbBundle;
         lazy = false
 )
 @ActionReference(
-        path = "Menu/View",
+        path = "Menu/Tools",
         position = 1010
 )
 @NbBundle.Messages({

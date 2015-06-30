@@ -48,7 +48,7 @@ import org.esa.snap.framework.ui.ModalDialog;
 import org.esa.snap.framework.ui.product.ProductExpressionPane;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
-import org.esa.snap.rcp.actions.view.OpenImageViewAction;
+import org.esa.snap.rcp.actions.window.OpenImageViewAction;
 import org.esa.snap.rcp.nodes.UndoableProductNodeInsertion;
 import org.esa.snap.util.Debug;
 import org.esa.snap.util.Guardian;

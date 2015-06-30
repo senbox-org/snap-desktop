@@ -22,9 +22,6 @@ import org.esa.snap.framework.ui.product.ProductNodeView;
 import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
-import org.openide.awt.ActionID;
-import org.openide.awt.ActionReference;
-import org.openide.awt.ActionRegistration;
 import org.openide.util.ContextAwareAction;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
@@ -41,25 +38,14 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 
 
-/**
- * Saves a VISAT session.
- *
- * @author Norman Fomferra
- * @version $Revision$ $Date$
- * @since BEAM 4.6
- */
+/*
+Not used now.
+Session handling is not implemented yet.
 
-
-@ActionID(
-        category = "File",
-        id = "org.esa.snap.rcp.session.SaveSessionAction"
-)
-@ActionRegistration(
-        displayName = "#CTL_SaveSessionAction_MenuText",
-        lazy = false
-)
+@ActionID( category = "File", id = "org.esa.snap.rcp.session.SaveSessionAction" )
+@ActionRegistration( displayName = "#CTL_SaveSessionAction_MenuText", lazy = false )
 @ActionReference(path = "Menu/File", position = 50)
-
+*/
 @NbBundle.Messages({
         "CTL_SaveSessionAction_MenuText=Save Session",
         "CTL_SaveSessionAction_ShortDescription=Save the current SNAP session."
