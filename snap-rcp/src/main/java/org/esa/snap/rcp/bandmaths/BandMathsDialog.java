@@ -84,13 +84,8 @@ import java.util.Set;
 })
 class BandMathsDialog extends ModalDialog {
 
-    // see also: org.esa.snap.rcp.util.FakeUncertaintyGenerator
-    private static final boolean UNCERTAINTY_TEST = Boolean.getBoolean("snap.uncertainty.test");
-
-    public static final String PREF_KEY_AUTO_SHOW_NEW_BANDS = "bandmaths_autoshowbands_enabled";
-    public static final String PREF_KEY_GEOLOCATION_EPS = "geolocation_eps";
-    public static final double PREF_VALUE_GEOLOCATION_EPS = 1.0e-4;
-
+    private static final String PREF_KEY_AUTO_SHOW_NEW_BANDS = "BandMaths.autoShowNewBands";
+    private static final String PREF_KEY_LAST_EXPRESSION_PATH = "BandMaths.lastExpressionPath";
 
     private static final String PROPERTY_NAME_PRODUCT = "productName";
     private static final String PROPERTY_NAME_EXPRESSION = "expression";
@@ -102,7 +97,6 @@ class BandMathsDialog extends ModalDialog {
     private static final String PROPERTY_NAME_BAND_DESC = "bandDescription";
     private static final String PROPERTY_NAME_BAND_UNIT = "bandUnit";
     private static final String PROPERTY_NAME_BAND_WAVELENGTH = "bandWavelength";
-    private static final String PREF_KEY_LAST_EXPRESSION_PATH = "BandMathsDialog.last_expression_path";
 
     private final ProductNodeList<Product> productsList;
     private final BindingContext bindingContext;
@@ -110,7 +104,7 @@ class BandMathsDialog extends ModalDialog {
 
     private String productName;
     @SuppressWarnings("FieldCanBeLocal")
-    private String expression = "";
+    private String expression;
     @SuppressWarnings("UnusedDeclaration")
     private double noDataValue;
     @SuppressWarnings("UnusedDeclaration")
@@ -122,11 +116,11 @@ class BandMathsDialog extends ModalDialog {
     @SuppressWarnings("UnusedDeclaration")
     private String bandName;
     @SuppressWarnings("FieldCanBeLocal")
-    private String bandDescription = "";
+    private String bandDescription;
     @SuppressWarnings("FieldCanBeLocal")
-    private String bandUnit = "";
+    private String bandUnit;
     @SuppressWarnings("FieldCanBeLocal")
-    private float bandWavelength = 0;
+    private float bandWavelength;
 
     private static int numNewBands = 0;
 
@@ -138,6 +132,9 @@ class BandMathsDialog extends ModalDialog {
         targetProduct = currentProduct;
         this.productsList = productsList;
         bindingContext = createBindingContext();
+        expression = "";
+        bandDescription = "";
+        bandUnit = "";
         makeUI();
     }
 
@@ -163,7 +160,7 @@ class BandMathsDialog extends ModalDialog {
         }
 
         String uncertaintyExpression = null;
-        if (generateUncertaintyBand && UNCERTAINTY_TEST) {
+        if (generateUncertaintyBand) {
             GaussianUncertaintyPropagator propagator = new GaussianUncertaintyPropagator();
             Term term;
             try {
@@ -187,8 +184,10 @@ class BandMathsDialog extends ModalDialog {
         bandGroup.add(band);
 
         if (uncertaintyExpression != null) {
-            Band uncertaintyBand = new VirtualBand(getBandName() + "_unc", ProductData.TYPE_FLOAT32, width, height, uncertaintyExpression);
+            VirtualBand uncertaintyBand = new VirtualBand(getBandName() + "_unc", ProductData.TYPE_FLOAT32, width, height, uncertaintyExpression);
             bandGroup.add(uncertaintyBand);
+            uncertaintyBand.setDescription("Uncertainty propagated from band '" + band.getName() + "', Expr.: " + getExpression());
+            uncertaintyBand.setUnit(band.getUnit());
             ProductUtils.copySpectralBandProperties(band, uncertaintyBand);
             band.addAncillaryVariable(uncertaintyBand, "uncertainty");
         }
@@ -302,11 +301,9 @@ class BandMathsDialog extends ModalDialog {
         GridBagUtils.addToPanel(panel, nodataPanel, gbc,
                                 "weightx=1, insets.top=3, gridwidth=3, fill=HORIZONTAL, anchor=WEST");
 
-        if (UNCERTAINTY_TEST) {
-            gbc.gridy = ++line;
-            components = createComponents(PROPERTY_NAME_GENERATE_UNCERTAINTY_BAND, CheckBoxEditor.class);
-            GridBagUtils.addToPanel(panel, components[0], gbc, "insets.top=3, gridwidth=3, fill=HORIZONTAL, anchor=EAST");
-        }
+        gbc.gridy = ++line;
+        components = createComponents(PROPERTY_NAME_GENERATE_UNCERTAINTY_BAND, CheckBoxEditor.class);
+        GridBagUtils.addToPanel(panel, components[0], gbc, "insets.top=3, gridwidth=3, fill=HORIZONTAL, anchor=EAST");
 
         gbc.gridy = ++line;
         JLabel expressionLabel = new JLabel(Bundle.CTL_BandMathsDialog_LblExpression());
@@ -456,26 +453,16 @@ class BandMathsDialog extends ModalDialog {
     private Product[] getCompatibleProducts() {
         List<Product> compatibleProducts = new ArrayList<>(productsList.size());
         compatibleProducts.add(targetProduct);
-        final float geolocationEps = getGeolocationEps();
-        Debug.trace("BandMathsDialog.geolocationEps = " + geolocationEps);
-        Debug.trace("BandMathsDialog.getCompatibleProducts:");
-        Debug.trace("  comparing: " + targetProduct.getName());
         for (int i = 0; i < productsList.size(); i++) {
             final Product product = productsList.getAt(i);
             if (targetProduct != product) {
-                Debug.trace("  with:      " + product.getDisplayName());
-                final boolean isCompatibleProduct = targetProduct.isCompatibleProduct(product, geolocationEps);
-                Debug.trace("  result:    " + isCompatibleProduct);
-                if (isCompatibleProduct) {
+                if (targetProduct.getSceneRasterWidth() == product.getSceneRasterWidth()
+                        && targetProduct.getSceneRasterHeight() == product.getSceneRasterHeight()) {
                     compatibleProducts.add(product);
                 }
             }
         }
         return compatibleProducts.toArray(new Product[compatibleProducts.size()]);
-    }
-
-    private float getGeolocationEps() {
-        return (float) SnapApp.getDefault().getPreferences().getDouble(PREF_KEY_GEOLOCATION_EPS, PREF_VALUE_GEOLOCATION_EPS);
     }
 
     private ActionListener createEditExpressionButtonListener() {
