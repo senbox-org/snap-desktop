@@ -170,12 +170,12 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
     @Override
     protected boolean canApply() {
         try {
-            Path toolLocation = operatorDescriptor.getExpandedLocation(operatorDescriptor.getMainToolFileLocation()).toPath();
+            Path toolLocation = operatorDescriptor.resolveVariables(operatorDescriptor.getMainToolFileLocation()).toPath();
             if (!(Files.exists(toolLocation) && Files.isExecutable(toolLocation))) {
                 SnapDialogs.showWarning(Bundle.MSG_Inexistent_Tool_Path_Text());
                 return false;
             }
-            File workingDir = operatorDescriptor.getExpandedLocation(operatorDescriptor.getWorkingDir());
+            File workingDir = operatorDescriptor.resolveVariables(operatorDescriptor.getWorkingDir());
             if (!(workingDir != null && workingDir.exists() && workingDir.isDirectory())) {
                 SnapDialogs.showWarning(Bundle.MSG_Inexistent_WorkDir_Text());
                 return false;

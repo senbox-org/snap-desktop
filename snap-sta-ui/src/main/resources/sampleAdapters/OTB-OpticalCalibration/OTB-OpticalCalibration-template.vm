@@ -1,5 +1,0 @@
-OpticalCalibration
--in
-$sourceProductFile.AbsolutePath
--out
-$targetProductFile.AbsolutePath

@@ -76,7 +76,7 @@ class ToolExecutionForm extends JTabbedPane {
 
         //initialise the target product's directory to the working directory
         final TargetProductSelectorModel targetProductSelectorModel = targetProductSelector.getModel();
-        targetProductSelectorModel.setProductDir(operatorDescriptor.getExpandedLocation(operatorDescriptor.getWorkingDir()));
+        targetProductSelectorModel.setProductDir(operatorDescriptor.resolveVariables(operatorDescriptor.getWorkingDir()));
 
         ioParamPanel = createIOParamTab();
         addTab("I/O Parameters", ioParamPanel);
@@ -195,7 +195,7 @@ class ToolExecutionForm extends JTabbedPane {
                     fileExtension = TIF_EXTENSION;
                 propertySet.setValue(ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE, new File(oldValue.getParentFile().getAbsolutePath(), productName + fileExtension));
             } else {
-                File workingDir = operatorDescriptor.getExpandedLocation(operatorDescriptor.getWorkingDir());
+                File workingDir = operatorDescriptor.resolveVariables(operatorDescriptor.getWorkingDir());
                 try {
                     targetProperty.setValue(new File(workingDir, productName + TIF_EXTENSION));
                 } catch (ValidationException ignored) {
