@@ -190,7 +190,7 @@ class BandMathsDialog extends ModalDialog {
             Band uncertaintyBand = new VirtualBand(getBandName() + "_unc", ProductData.TYPE_FLOAT32, width, height, uncertaintyExpression);
             bandGroup.add(uncertaintyBand);
             ProductUtils.copySpectralBandProperties(band, uncertaintyBand);
-            band.setAncillaryBand("uncertainty", uncertaintyBand);
+            band.addAncillaryVariable(uncertaintyBand, "uncertainty");
         }
 
         if (saveExpressionOnly) {
