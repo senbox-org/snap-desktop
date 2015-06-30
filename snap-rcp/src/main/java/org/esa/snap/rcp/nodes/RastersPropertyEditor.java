@@ -11,6 +11,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
+import javax.swing.border.EmptyBorder;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.beans.PropertyChangeEvent;
@@ -123,6 +124,7 @@ class RastersPropertyEditor extends PropertyEditorSupport implements ExPropertyE
 
         public CustomEditor() {
             super(new BorderLayout(4, 4));
+            setBorder(new EmptyBorder(8, 8, 8, 8));
 
             listModel = new DefaultListModel<>();
             list = new JList<>(listModel);
