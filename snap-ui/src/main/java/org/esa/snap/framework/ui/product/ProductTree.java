@@ -19,6 +19,7 @@ import com.bc.ceres.swing.TreeCellExtender;
 import org.esa.snap.dataio.dimap.DimapProductReader;
 import org.esa.snap.framework.dataio.ProductIO;
 import org.esa.snap.framework.datamodel.Band;
+import org.esa.snap.framework.datamodel.FilterBand;
 import org.esa.snap.framework.datamodel.MetadataElement;
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.ProductManager;
@@ -551,6 +552,12 @@ public class ProductTree extends JTree implements PopupMenuFactory {
                 int componentCountBefore = popup.getComponentCount();
                 if (commandUIFactory != null) {
                     commandUIFactory.addContextDependentMenuItems("virtualBand", popup);
+                }
+                addSeparatorIfAnyComponentsAdded(popup, componentCountBefore);
+            } else if (context instanceof FilterBand) {
+                int componentCountBefore = popup.getComponentCount();
+                if (commandUIFactory != null) {
+                    commandUIFactory.addContextDependentMenuItems("filterBand", popup);
                 }
                 addSeparatorIfAnyComponentsAdded(popup, componentCountBefore);
             }
