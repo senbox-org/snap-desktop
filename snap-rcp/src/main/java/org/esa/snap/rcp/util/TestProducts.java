@@ -59,6 +59,12 @@ public class TestProducts {
         product.addBand("Band_1", "cos(X/100)-sin(Y/100)");
         product.addBand("Band_2", "sin(X/100)+cos(Y/100)");
         product.addBand("Band_3", "cos(X/100)*cos(Y/100)");
+        product.addBand("Band_1_Unc", "cos(3*X/100)-sin(3*Y/100)");
+        product.addBand("Band_2_Unc", "sin(3*X/100)+cos(3*Y/100)");
+        product.addBand("Band_3_Unc", "cos(3*X/100)*cos(3*Y/100)");
+        product.getBand("Band_1").addAncillaryVariable(product.getBand("Band_1_Unc"), "uncertainty");
+        product.getBand("Band_2").addAncillaryVariable(product.getBand("Band_2_Unc"), "uncertainty");
+        product.getBand("Band_3").addAncillaryVariable(product.getBand("Band_3_Unc"), "uncertainty");
         product.addMask("Mask_1", "Band_1 > 0.5", "I am Mask 1", Color.GREEN, 0.5);
         product.addMask("Mask_2", "Band_2 < 0.0", "I am Mask 2", Color.CYAN, 0.5);
         product.addMask("Mask_3", "Band_3 > -0.1 && Band_3 < 0.1", "I am Mask 3", Color.BLUE, 0.5);
@@ -82,6 +88,10 @@ public class TestProducts {
         band4.setNoDataValue(-1.0);
         band4.setNoDataValueUsed(true);
 
+        product.addBand("A", "Band_1");
+        product.addBand("B", "Band_1 + Band_2 + Band_3)");
+        product.addBand("C", "Band_1 / (2.3 + Band_2 + Band_3)");
+        product.addBand("D", "pow(Band_1, 3) / (pow(Band_1, 3) + pow(Band_3, 3))");
         return product;
     }
 
