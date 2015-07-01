@@ -49,7 +49,7 @@ import java.awt.Component;
         position = 1
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.colormanip.UncertaintyVisualisationTopComponent")
-@ActionReference(path = "Menu/Window/Tool Windows")
+@ActionReference(path = "Menu/View/Tool Windows")
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_UncertaintyVisualisationTopComponent_Name",
         preferredID = "UncertaintyVisualisationTopComponent"

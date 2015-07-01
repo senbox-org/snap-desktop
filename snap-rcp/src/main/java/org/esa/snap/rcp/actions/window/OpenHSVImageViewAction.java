@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, see http://www.gnu.org/licenses/
  */
-package org.esa.snap.rcp.actions.view;
+package org.esa.snap.rcp.actions.window;
 
 import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.core.SubProgressMonitor;
@@ -59,11 +59,11 @@ import java.awt.event.ActionEvent;
         lazy = true
 )
 @ActionReferences({
-        @ActionReference(path = "Menu/View", position = 115),
+        @ActionReference(path = "Menu/Window", position = 115),
         @ActionReference(path = "Context/Product/Product", position = 420),
 })
 @NbBundle.Messages({
-        "CTL_OpenHSVImageViewAction_MenuText=Open HSV Image View",
+        "CTL_OpenHSVImageViewAction_MenuText=Open HSV Image Window",
         "CTL_OpenHSVImageViewAction_ShortDescription=Open an HSV image view for the selected product"
 })
 public class OpenHSVImageViewAction extends AbstractAction implements HelpCtx.Provider {

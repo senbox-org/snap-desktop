@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, see http://www.gnu.org/licenses/
  */
-package org.esa.snap.rcp.actions.view;
+package org.esa.snap.rcp.actions.window;
 
 import com.bc.ceres.core.SubProgressMonitor;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
@@ -45,20 +45,16 @@ import java.text.MessageFormat;
  * @author Marco Peters
  * @author Norman Fomferra
  */
-@ActionID(
-        category = "View",
-        id = "OpenImageViewAction"
-)
+@ActionID(category = "View", id = "OpenImageViewAction" )
 @ActionRegistration(
         displayName = "#CTL_OpenImageViewActionName",
         iconBase = "org/esa/snap/rcp/icons/RsBandAsSwath.gif"
 )
 @ActionReferences({
-        @ActionReference(path = "Menu/View", position = 100),
+        @ActionReference(path = "Menu/Window", position = 100),
         @ActionReference(path = "Context/Product/RasterDataNode", position = 100),
-        @ActionReference(path = "Menu/View", position = 100)
 })
-@NbBundle.Messages("CTL_OpenImageViewActionName=Open in Image View")
+@NbBundle.Messages("CTL_OpenImageViewActionName=Open in Image Window")
 public class OpenImageViewAction extends AbstractAction {
 
     RasterDataNode raster;

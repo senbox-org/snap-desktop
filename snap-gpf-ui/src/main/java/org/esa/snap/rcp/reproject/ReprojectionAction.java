@@ -32,7 +32,7 @@ import java.awt.event.ActionEvent;
  */
 @ActionID(category = "Operators", id = "org.esa.snap.rcp.reproject.ReprojectionAction")
 @ActionRegistration(displayName = "#CTL_ReprojectionAction_Name")
-@ActionReference(path = "Menu/Processing/Geometric Operations")
+@ActionReference(path = "Menu/Raster/Geometric Operations")
 @NbBundle.Messages("CTL_ReprojectionAction_Name=Reprojection")
 public class ReprojectionAction extends AbstractSnapAction {
 

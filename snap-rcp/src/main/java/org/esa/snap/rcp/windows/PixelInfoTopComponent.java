@@ -42,7 +42,7 @@ import java.beans.PropertyChangeListener;
                            position = 3
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.window.PixelInfoTopComponent")
-@ActionReference(path = "Menu/Window/Tool Windows", position = 0)
+@ActionReference(path = "Menu/View/Tool Windows", position = 0)
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_PixelInfoTopComponentName",
         preferredID = "PixelInfoTopComponent"

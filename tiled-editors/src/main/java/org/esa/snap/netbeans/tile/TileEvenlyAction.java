@@ -17,13 +17,14 @@ package org.esa.snap.netbeans.tile;
 
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
 import org.openide.util.Utilities;
 
-import javax.swing.*;
+import javax.swing.Action;
 import java.awt.event.ActionEvent;
 
 /**
@@ -32,18 +33,12 @@ import java.awt.event.ActionEvent;
  * @author Norman Fomferra
  * @since 1.0
  */
-@ActionID(
-        category = "Window",
-        id = "org.esa.snap.netbeans.tile.TileEvenlyAction"
-)
-@ActionReference(
-        path = "Toolbars/Window",
-        position = 20
-)
-@ActionRegistration(
-        displayName = "#CTL_TileEvenlyActionName",
-        lazy = false
-)
+@ActionID(category = "Window", id = "org.esa.snap.netbeans.tile.TileEvenlyAction" )
+@ActionReferences({
+        @ActionReference(path = "Menu/Window", position = 20),
+        @ActionReference(path = "Toolbars/Window", position = 20)
+})
+@ActionRegistration(displayName = "#CTL_TileEvenlyActionName", lazy = false )
 @NbBundle.Messages("CTL_TileEvenlyActionName=Tile Evenly")
 public class TileEvenlyAction extends TileAction {
 

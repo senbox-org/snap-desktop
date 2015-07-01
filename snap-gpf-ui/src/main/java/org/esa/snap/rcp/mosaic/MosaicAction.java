@@ -33,7 +33,7 @@ import java.awt.event.ActionEvent;
  */
 @ActionID(category = "Operators", id = "org.esa.snap.rcp.mosaic.MosaicAction")
 @ActionRegistration(displayName = "#CTL_MosaicAction_Name")
-@ActionReference(path = "Menu/Processing/Geometric Operations")
+@ActionReference(path = "Menu/Raster/Geometric Operations")
 @NbBundle.Messages("CTL_MosaicAction_Name=Mosaicing")
 public class MosaicAction extends AbstractSnapAction {
 

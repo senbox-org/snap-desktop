@@ -28,6 +28,7 @@ import org.esa.snap.util.io.SnapFileFilter;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.ContextAwareAction;
 import org.openide.util.Lookup;
@@ -43,18 +44,15 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
-@ActionID(
-        category = "File",
-        id = "ImportVectorDataNodeFromCsvAction"
-)
-@ActionRegistration(
-        displayName = "#CTL_ImportVectorDataNodeFromCsvActionName",
-        lazy=true
-)
-@ActionReference(path = "Menu/File/Import/Vector Data", position = 10)
+@ActionID(category = "File", id = "ImportVectorDataNodeFromCsvAction" )
+@ActionRegistration(displayName = "#CTL_ImportVectorDataNodeFromCsvActionText", lazy = true )
+@ActionReferences({
+        @ActionReference(path = "Menu/File/Import/Vector Data", position = 10),
+        @ActionReference(path = "Menu/Vector", position = 40)
+})
 @NbBundle.Messages({
-        "CTL_ImportVectorDataNodeFromCsvActionText=CSV",
-        "CTL_ImportVectorDataNodeFromCsvActionName=Import Vector Data Node From CSV",
+        "CTL_ImportVectorDataNodeFromCsvActionText=Vector from CSV",
+        "CTL_ImportVectorDataNodeFromCsvActionDescription=Import Vector Data Node From CSV",
         "CTL_ImportVectorDataNodeFromCsvActionHelp=importCSV"
 })
 public class ImportVectorDataNodeFromCsvAction extends AbstractImportVectorDataNodeAction
@@ -77,7 +75,7 @@ public class ImportVectorDataNodeFromCsvAction extends AbstractImportVectorDataN
         setEnableState();
         setHelpId(Bundle.CTL_ImportVectorDataNodeFromCsvActionHelp());
         putValue(Action.NAME, Bundle.CTL_ImportVectorDataNodeFromCsvActionText());
-        putValue(Action.SHORT_DESCRIPTION, Bundle.CTL_ImportVectorDataNodeFromCsvActionName());
+        putValue(Action.SHORT_DESCRIPTION, Bundle.CTL_ImportVectorDataNodeFromCsvActionDescription());
     }
 
     @Override

@@ -41,25 +41,9 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 
 
-/**
- * Saves a VISAT session.
- *
- * @author Norman Fomferra
- * @version $Revision$ $Date$
- * @since BEAM 4.6
- */
-
-
-@ActionID(
-        category = "File",
-        id = "org.esa.snap.rcp.session.SaveSessionAction"
-)
-@ActionRegistration(
-        displayName = "#CTL_SaveSessionAction_MenuText",
-        lazy = false
-)
+@ActionID( category = "File", id = "org.esa.snap.rcp.session.SaveSessionAction" )
+@ActionRegistration( displayName = "#CTL_SaveSessionAction_MenuText", lazy = false )
 @ActionReference(path = "Menu/File", position = 50)
-
 @NbBundle.Messages({
         "CTL_SaveSessionAction_MenuText=Save Session",
         "CTL_SaveSessionAction_ShortDescription=Save the current SNAP session."

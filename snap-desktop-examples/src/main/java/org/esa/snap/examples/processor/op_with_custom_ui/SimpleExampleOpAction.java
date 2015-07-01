@@ -11,7 +11,7 @@ import java.awt.event.ActionEvent;
 
 @ActionID(category = "Processors", id = "org.esa.snap.examples.gpf.dialog.SimpleExampleOpAction")
 @ActionRegistration(displayName = "#CTL_SimpleExampleOpActionText", lazy = false)
-@ActionReference(path = "Menu/Processing/Examples", position = 10)
+@ActionReference(path = "Menu/Raster/Examples", position = 10)
 @NbBundle.Messages({
         "CTL_SimpleExampleOpActionText=Simple Example Processor",
         "CTL_SimpleExampleOpActionDescription=Simple example processor with custom user interface."

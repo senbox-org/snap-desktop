@@ -53,30 +53,13 @@ import java.text.MessageFormat;
 import java.util.concurrent.ExecutionException;
 
 
-/**
- * Opens a VISAT session.
- *
- * @author Norman Fomferra
- * @version $Revision$ $Date$
- * @since BEAM 4.6
- */
-
-@ActionID(
-        category = "File",
-        id = "org.esa.snap.rcp.session.OpenSessionAction"
-)
-@ActionRegistration(
-        displayName = "#CTL_OpenSessionAction_MenuText",
-        lazy = false
-)
+@ActionID( category = "File", id = "org.esa.snap.rcp.session.OpenSessionAction" )
+@ActionRegistration( displayName = "#CTL_OpenSessionAction_MenuText", lazy = false )
 @ActionReference(path = "Menu/File", position = 15)
-
 @NbBundle.Messages({
         "CTL_OpenSessionAction_MenuText=Open Session...",
         "CTL_OpenSessionAction_ShortDescription=Open a SNAP session."
 })
-
-
 public class OpenSessionAction extends AbstractAction implements LookupListener, ContextAwareAction {
 
     public static final String ID = "openSession";

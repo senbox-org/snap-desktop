@@ -30,7 +30,7 @@ import java.util.Collection;
         preferredID = "ExampleSelectionTopComponent"
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.window.ExampleSelectionTopComponent")
-@ActionReference(path = "Menu/Window/Tool Windows/Examples", position = 0)
+@ActionReference(path = "Menu/View/Tool Windows/Examples", position = 0)
 @NbBundle.Messages({
         "CTL_ExampleSelectionTopComponentName=Example Selection",
         "CTL_ExampleSelectionTopComponentDescription=Displays info about global selection",

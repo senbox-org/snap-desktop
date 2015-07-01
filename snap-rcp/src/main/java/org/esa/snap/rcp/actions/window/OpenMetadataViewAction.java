@@ -13,13 +13,13 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, see http://www.gnu.org/licenses/
  */
-package org.esa.snap.rcp.actions;
+package org.esa.snap.rcp.actions.window;
 
+import org.esa.snap.framework.datamodel.MetadataElement;
 import org.esa.snap.framework.datamodel.ProductNode;
-import org.esa.snap.framework.datamodel.VectorDataNode;
 import org.esa.snap.netbeans.docwin.DocumentWindowManager;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.placemark.PlacemarkViewTopComponent;
+import org.esa.snap.rcp.metadata.MetadataViewTopComponent;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -37,45 +37,36 @@ import javax.swing.Action;
 import java.awt.event.ActionEvent;
 
 /**
- * This action opens a placemark view.
- *
- * @author Norman Fomferra
- * @since BEAM 4.10
+ * This action opens an Metadata View of the currently selected Metadata Node
  */
-@ActionID(
-        category = "View",
-        id = "ShowPlacemarkViewAction"
-)
-@ActionRegistration(
-        displayName = "#CTL_ShowPlacemarkViewAction",
-        iconBase = "org/esa/snap/rcp/icons/RsVector16.gif"
-)
+@ActionID(category = "File", id = "OpenMetadataViewAction" )
+@ActionRegistration(displayName = "#CTL_OpenMetadataViewAction_MenuText" )
 @ActionReferences({
-        @ActionReference(path = "Menu/View", position = 125),
-        @ActionReference(path = "Context/Product/VectorDataNode", position = 100),
+        @ActionReference(path = "Context/Product/MetadataElement", position = 100),
+        @ActionReference(path = "Menu/Window", position = 120)
 })
-@NbBundle.Messages("CTL_ShowPlacemarkViewAction=Open Placemark View")
-public class ShowPlacemarkViewAction extends AbstractAction implements ContextAwareAction, LookupListener {
+@NbBundle.Messages("CTL_OpenMetadataViewAction_MenuText=Open Metadata Window")
+public class OpenMetadataViewAction extends AbstractAction implements ContextAwareAction, LookupListener {
 
     private Lookup lookup;
-    private final Lookup.Result<VectorDataNode> result;
+    private final Lookup.Result<ProductNode> result;
 
-    public ShowPlacemarkViewAction() {
+    public OpenMetadataViewAction() {
         this(Utilities.actionsGlobalContext());
     }
 
-    public ShowPlacemarkViewAction(Lookup lookup) {
+    public OpenMetadataViewAction(Lookup lookup) {
         this.lookup = lookup;
-        result = lookup.lookupResult(VectorDataNode.class);
+        result = lookup.lookupResult(ProductNode.class);
         result.addLookupListener(
                 WeakListeners.create(LookupListener.class, this, result));
         setEnableState();
-        putValue(Action.NAME, Bundle.CTL_ShowPlacemarkViewAction());
+        putValue(Action.NAME, Bundle.CTL_OpenMetadataViewAction_MenuText());
     }
 
     @Override
     public Action createContextAwareInstance(Lookup lookup) {
-        return new ShowPlacemarkViewAction(lookup);
+        return new OpenMetadataViewAction(lookup);
     }
 
     @Override
@@ -84,21 +75,23 @@ public class ShowPlacemarkViewAction extends AbstractAction implements ContextAw
     }
 
     private void setEnableState() {
-        setEnabled(lookup.lookup(VectorDataNode.class) != null);
+        ProductNode productNode = lookup.lookup(ProductNode.class);
+        setEnabled(productNode != null && productNode instanceof MetadataElement);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        ProductNode selectedProductNode = SnapApp.getDefault().getSelectedProductNode();
-        if (selectedProductNode instanceof VectorDataNode) {
-            VectorDataNode vectorDataNode = (VectorDataNode) selectedProductNode;
-            openView(vectorDataNode);
-        }
+        openMetadataView((MetadataElement) SnapApp.getDefault().getSelectedProductNode());
+    }
+    
+    public void openMetadataView(final MetadataElement element) {
+        openDocumentWindow(element);
     }
 
-    public void openView(final VectorDataNode vectorDataNode) {
-        final PlacemarkViewTopComponent placemarkViewTopComponent = new PlacemarkViewTopComponent(vectorDataNode);
-        DocumentWindowManager.getDefault().openWindow(placemarkViewTopComponent);
-        placemarkViewTopComponent.requestSelected();
+    private MetadataViewTopComponent openDocumentWindow(final MetadataElement element) {
+        final MetadataViewTopComponent metadataViewTopComponent = new MetadataViewTopComponent(element);
+        DocumentWindowManager.getDefault().openWindow(metadataViewTopComponent);
+        metadataViewTopComponent.requestSelected();
+        return metadataViewTopComponent;
     }
 }

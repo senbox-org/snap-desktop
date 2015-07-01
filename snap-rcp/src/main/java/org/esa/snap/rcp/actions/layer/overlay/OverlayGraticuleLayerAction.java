@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.esa.snap.rcp.actions.view.overlay;
+package org.esa.snap.rcp.actions.layer.overlay;
 
 import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.util.ProductUtils;
@@ -24,11 +24,11 @@ import javax.swing.Action;
 @ActionID(category = "View", id = "OverlayGraticuleLayerAction")
 @ActionRegistration(displayName = "#CTL_OverlayGraticuleLayerActionName", lazy = false)
 @ActionReferences({
-        @ActionReference(path = "Menu/View/Overlay", position = 20),
+        @ActionReference(path = "Menu/Layer", position = 20),
         @ActionReference(path = "Toolbars/Overlay", position = 20)
 })
 @NbBundle.Messages({
-        "CTL_OverlayGraticuleLayerActionName=Toggle Graticule Overlay",
+        "CTL_OverlayGraticuleLayerActionName=Graticule Overlay",
         "CTL_OverlayGraticuleLayerActionToolTip=Show/hide graticule overlay for the selected image"
 })
 public final class OverlayGraticuleLayerAction extends AbstractOverlayAction {

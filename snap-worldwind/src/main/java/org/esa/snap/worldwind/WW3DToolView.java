@@ -40,11 +40,19 @@ import org.openide.awt.ActionReferences;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
-import javax.swing.*;
+import javax.swing.JComponent;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.Window;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.net.URISyntaxException;
@@ -61,7 +69,7 @@ import java.net.URISyntaxException;
 )
 @ActionID(category = "Window", id = "org.esa.snap.worldwind.WW3DToolView")
 @ActionReferences({
-        @ActionReference(path = "Menu/Window/Tool Windows"),
+        @ActionReference(path = "Menu/View/Tool Windows"),
         @ActionReference(path = "Toolbars/Views")
 })
 @TopComponent.OpenActionRegistration(

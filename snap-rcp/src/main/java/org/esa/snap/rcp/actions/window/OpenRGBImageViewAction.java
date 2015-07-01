@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, see http://www.gnu.org/licenses/
  */
-package org.esa.snap.rcp.actions.view;
+package org.esa.snap.rcp.actions.window;
 
 import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.core.SubProgressMonitor;
@@ -58,11 +58,11 @@ import java.awt.event.ActionEvent;
         lazy = true
 )
 @ActionReferences({
-        @ActionReference(path = "Menu/View", position = 110),
+        @ActionReference(path = "Menu/Window", position = 110),
         @ActionReference(path = "Context/Product/Product", position = 400),
 })
 @NbBundle.Messages({
-        "CTL_OpenRGBImageViewAction_MenuText=Open RGB Image View",
+        "CTL_OpenRGBImageViewAction_MenuText=Open RGB Image Window",
         "CTL_OpenRGBImageViewAction_ShortDescription=Open an RGB image view for the selected product"
 })
 public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Provider {

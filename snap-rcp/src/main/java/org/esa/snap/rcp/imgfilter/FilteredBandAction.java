@@ -25,7 +25,7 @@ import org.esa.snap.framework.datamodel.ProductNode;
 import org.esa.snap.framework.datamodel.RasterDataNode;
 import org.esa.snap.framework.ui.ModalDialog;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.actions.view.OpenImageViewAction;
+import org.esa.snap.rcp.actions.window.OpenImageViewAction;
 import org.esa.snap.rcp.imgfilter.model.Filter;
 import org.esa.snap.util.ProductUtils;
 import org.openide.awt.ActionID;
@@ -55,11 +55,11 @@ import java.awt.event.ActionEvent;
         lazy = false
 )
 @ActionReferences({
-        @ActionReference(path = "Menu/Tools", position = 120),
+        @ActionReference(path = "Menu/Raster", position = 120),
         @ActionReference(path = "Context/Product/RasterDataNode", position = 210)
 })
 @NbBundle.Messages({
-        "CTL_FilteredBandAction_MenuText=Create Filtered Band...",
+        "CTL_FilteredBandAction_MenuText=Filtered Band...",
         "CTL_FilteredBandAction_ShortDescription=Applies a filter to the currently selected band and adds it as a new band."
 })
 public class FilteredBandAction extends AbstractAction  implements LookupListener, ContextAwareAction {

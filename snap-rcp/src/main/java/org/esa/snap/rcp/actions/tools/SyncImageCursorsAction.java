@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.esa.snap.rcp.actions.view;
+package org.esa.snap.rcp.actions.tools;
 
 import org.esa.snap.rcp.util.BooleanPreferenceKeyAction;
 import org.openide.awt.ActionID;
@@ -15,21 +15,12 @@ import org.openide.util.NbBundle;
 /**
  * @author Norman
  */
-@ActionID(
-        category = "View",
-        id = "SyncImageCursorsAction"
-)
-@ActionRegistration(
-        displayName = "#CTL_SyncImageCursorsActionName",
-        lazy = false
-)
-@ActionReference(
-        path = "Menu/View",
-        position = 1010
-)
+@ActionID(category = "View", id = "SyncImageCursorsAction" )
+@ActionRegistration(displayName = "#CTL_SyncImageCursorsActionName", lazy = false )
+@ActionReference(path = "Menu/Window", position = 130, separatorBefore = 129 )
 @NbBundle.Messages({
         "CTL_SyncImageCursorsActionName=Synchronise Image Cursors",
-        "CTL_SyncImageCursorsActionToolTip=Synchronises cursor positions across multiple image views."
+        "CTL_SyncImageCursorsActionToolTip=Synchronises cursor positions across multiple image windows."
 })
 public final class SyncImageCursorsAction extends BooleanPreferenceKeyAction {
 

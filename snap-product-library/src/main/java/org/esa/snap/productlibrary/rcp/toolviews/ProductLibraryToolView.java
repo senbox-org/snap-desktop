@@ -15,17 +15,17 @@
  */
 package org.esa.snap.productlibrary.rcp.toolviews;
 
+import org.esa.snap.dat.dialogs.CheckListDialog;
+import org.esa.snap.db.DBQuery;
+import org.esa.snap.db.ProductEntry;
+import org.esa.snap.framework.ui.UIUtils;
+import org.esa.snap.framework.ui.tool.ToolButtonFactory;
 import org.esa.snap.productlibrary.rcp.toolviews.model.DatabaseQueryListener;
 import org.esa.snap.productlibrary.rcp.toolviews.model.DatabaseStatistics;
 import org.esa.snap.productlibrary.rcp.toolviews.model.ProductEntryTableModel;
 import org.esa.snap.productlibrary.rcp.toolviews.model.ProductLibraryConfig;
 import org.esa.snap.productlibrary.rcp.toolviews.model.SortingDecorator;
 import org.esa.snap.productlibrary.rcp.toolviews.timeline.TimelinePanel;
-import org.esa.snap.dat.dialogs.CheckListDialog;
-import org.esa.snap.db.DBQuery;
-import org.esa.snap.db.ProductEntry;
-import org.esa.snap.framework.ui.UIUtils;
-import org.esa.snap.framework.ui.tool.ToolButtonFactory;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.windows.ToolTopComponent;
@@ -37,8 +37,23 @@ import org.openide.awt.ActionReferences;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import java.awt.BorderLayout;
+import java.awt.Cursor;
+import java.awt.Desktop;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
@@ -65,7 +80,8 @@ import java.util.Map;
 )
 @ActionID(category = "Window", id = "org.esa.snap.productlibrary.rcp.toolviews.ProductLibraryToolView")
 @ActionReferences({
-        @ActionReference(path = "Menu/Window/Tool Windows")
+        @ActionReference(path = "Menu/View/Tool Windows"),
+        @ActionReference(path = "Menu/File", position = 15)
 })
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_ProductLibraryTopComponentName",

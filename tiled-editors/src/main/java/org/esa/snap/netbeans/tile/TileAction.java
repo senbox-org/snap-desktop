@@ -20,10 +20,12 @@ import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
 import org.openide.util.WeakListeners;
+import org.openide.util.actions.Presenter;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.JMenuItem;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Collection;
@@ -37,7 +39,8 @@ import java.util.Collection;
  * @author Norman Fomferra
  * @since 1.0
  */
-public abstract class TileAction extends AbstractAction implements ContextAwareAction, LookupListener, PropertyChangeListener {
+public abstract class TileAction extends AbstractAction implements
+                                                        ContextAwareAction, LookupListener, PropertyChangeListener, Presenter.Menu {
 
     private Lookup.Result<Tileable> tileableResult;
     private final Tileable defaultTileable;
@@ -78,4 +81,12 @@ public abstract class TileAction extends AbstractAction implements ContextAwareA
     private void updateState() {
         setEnabled(getTileable().canTile());
     }
+
+    @Override
+    public JMenuItem getMenuPresenter() {
+        final JMenuItem jMenuItem = new JMenuItem(this);
+        jMenuItem.setIcon(null);
+        return jMenuItem;
+    }
+
 }

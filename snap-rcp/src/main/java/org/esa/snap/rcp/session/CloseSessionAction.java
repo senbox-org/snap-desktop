@@ -16,8 +16,6 @@
 package org.esa.snap.rcp.session;
 
 import org.esa.snap.framework.datamodel.ProductNode;
-import org.esa.snap.framework.ui.product.ProductSceneView;
-import org.esa.snap.rcp.SnapApp;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
@@ -34,29 +32,13 @@ import javax.swing.Action;
 import java.awt.event.ActionEvent;
 
 
-/**
- * Closes a VISAT session.
- *
- * @author Norman Fomferra
- * @version $Revision$ $Date$
- * @since BEAM 4.6
- */
-
-@ActionID(
-        category = "File",
-        id = "org.esa.snap.rcp.session.CloseSessionAction"
-)
-@ActionRegistration(
-        displayName = "#CTL_CloseSessionAction_MenuText",
-        lazy = false
-)
+@ActionID( category = "File", id = "org.esa.snap.rcp.session.CloseSessionAction" )
+@ActionRegistration( displayName = "#CTL_CloseSessionAction_MenuText", lazy = false )
 @ActionReference(path = "Menu/File", position = 35,separatorAfter = 37)
-
 @NbBundle.Messages({
         "CTL_CloseSessionAction_MenuText=Close Session",
         "CTL_CloseSessionAction_ShortDescription=Close the current SNAP session."
 })
-
 public class CloseSessionAction extends AbstractAction implements LookupListener,ContextAwareAction {
 
     public static final String ID = "closeSession";

@@ -80,6 +80,7 @@ import java.util.GregorianCalendar;
 )
 @ActionReferences({
         @ActionReference(path = "Menu/File/Export/Other", position = 50),
+        @ActionReference(path = "Menu/Raster/Export", position = 10),
         @ActionReference(path = "Context/View", position = 50)
 })
 

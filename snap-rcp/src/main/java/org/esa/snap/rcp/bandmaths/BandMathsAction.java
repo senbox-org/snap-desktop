@@ -38,26 +38,16 @@ import java.awt.event.ActionEvent;
 @ActionRegistration(
         displayName = "#CTL_BandMathsAction_MenuText",
         popupText = "#CTL_BandMathsAction_MenuText",
-        iconBase = "org/esa/snap/rcp/icons/BandMaths.gif",
+//        iconBase = "org/esa/snap/rcp/icons/BandMaths.gif", // icon is not nice
         lazy = true
 )
 @ActionReferences({
-        @ActionReference(path = "Menu/Tools", position = 100),
-        @ActionReference(
-                path = "Shortcuts",
-                name = "D-M"
-        ),
-        @ActionReference(
-                path = "Context/Product/Product",
-                position = 200
-        ),
-        @ActionReference(
-                path = "Context/Product/RasterDataNode",
-                position = 200
-        ),
+        @ActionReference(path = "Menu/Raster", position = 100),
+        @ActionReference(path = "Context/Product/Product", position = 200),
+        @ActionReference(path = "Context/Product/RasterDataNode", position = 200),
 })
 @Messages({
-        "CTL_BandMathsAction_MenuText=Create Band from Math Expression...",
+        "CTL_BandMathsAction_MenuText=Band Maths...",
         "CTL_BandMathsAction_ShortDescription=Create a new band using an arbitrary mathematical expression"
 })
 public class BandMathsAction extends AbstractAction implements HelpCtx.Provider {

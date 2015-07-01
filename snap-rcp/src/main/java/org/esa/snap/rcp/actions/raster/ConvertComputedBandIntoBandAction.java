@@ -14,7 +14,7 @@
  * with this program; if not, see http://www.gnu.org/licenses/
  */
 
-package org.esa.snap.rcp.actions;
+package org.esa.snap.rcp.actions.raster;
 
 import org.esa.snap.framework.datamodel.Band;
 import org.esa.snap.framework.datamodel.FilterBand;
@@ -49,27 +49,26 @@ import java.awt.event.ActionEvent;
  *
  * @author marcoz
  */
-
-@ActionID(
-        category = "Tools",
-        id = "ConvertComputedBandIntoBandAction"
-)
+@ActionID(category = "Tools", id = "ConvertComputedBandIntoBandAction" )
 @ActionRegistration(
         displayName = "#CTL_ConvertComputedBandIntoBandAction_MenuText",
         popupText = "#CTL_ConvertComputedBandIntoBandAction_MenuText"
 )
 @ActionReferences({
-        @ActionReference(path = "Menu/Tools", position = 110),
+        @ActionReference(path = "Menu/Raster", position = 110),
         @ActionReference(path = "Context/Product/RasterDataNode", position = 220)
 })
 @NbBundle.Messages({
-        "CTL_ConvertComputedBandIntoBandAction_MenuText=Convert Computed Band",
-        "CTL_ConvertComputedBandIntoBandAction_ShortDescription=Computes a \"real\" band from a virtual band or filtered ban"
+        "CTL_ConvertComputedBandIntoBandAction_MenuText=Convert Band",
+        "CTL_ConvertComputedBandIntoBandAction_ShortDescription=Computes a \"real\" band from a virtual band or filtered band"
 })
 public class ConvertComputedBandIntoBandAction extends AbstractAction implements ContextAwareAction, LookupListener {
 
     private final Lookup lookup;
-    private final Lookup.Result<VirtualBand> result;
+    @SuppressWarnings("FieldCanBeLocal")
+    private final Lookup.Result<VirtualBand> vbResult;
+    @SuppressWarnings("FieldCanBeLocal")
+    private final Lookup.Result<FilterBand> fbResult;
 
     public ConvertComputedBandIntoBandAction() {
         this(Utilities.actionsGlobalContext());
@@ -78,15 +77,18 @@ public class ConvertComputedBandIntoBandAction extends AbstractAction implements
     public ConvertComputedBandIntoBandAction(Lookup lookup) {
         super(Bundle.CTL_ConvertComputedBandIntoBandAction_MenuText());
         this.lookup = lookup;
-        result = lookup.lookupResult(VirtualBand.class);
-        result.addLookupListener(WeakListeners.create(LookupListener.class, this, result));
+        vbResult = lookup.lookupResult(VirtualBand.class);
+        vbResult.addLookupListener(WeakListeners.create(LookupListener.class, this, vbResult));
+        fbResult = lookup.lookupResult(FilterBand.class);
+        fbResult.addLookupListener(WeakListeners.create(LookupListener.class, this, fbResult));
         setEnableState();
     }
 
 
     private void setEnableState() {
-        VirtualBand band = lookup.lookup(VirtualBand.class);
-        setEnabled(band != null);
+        VirtualBand virtualBand = lookup.lookup(VirtualBand.class);
+        FilterBand filterBand = lookup.lookup(FilterBand.class);
+        setEnabled(virtualBand != null || filterBand != null);
     }
 
     @Override
@@ -134,7 +136,6 @@ public class ConvertComputedBandIntoBandAction extends AbstractAction implements
 
         //--- Check if all the frame with the raster data are close
         Product product = computedBand.getProduct();
-        boolean productSceneViewOpen = false;
         ProductSceneViewTopComponent topComponent = getProductSceneViewTopComponent(computedBand);
         if (topComponent != null) {
             topComponent.close();
@@ -146,10 +147,6 @@ public class ConvertComputedBandIntoBandAction extends AbstractAction implements
         bandGroup.add(bandIndex, realBand);
 
         realBand.setModified(true);
-
-        if (productSceneViewOpen) {
-            snapApp.getSelectedProductSceneView();
-        }
     }
 
     //copied from TimeSeriesManagerForm

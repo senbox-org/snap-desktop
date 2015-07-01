@@ -17,13 +17,14 @@ package org.esa.snap.netbeans.tile;
 
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
 import org.openide.util.Utilities;
 
-import javax.swing.*;
+import javax.swing.Action;
 import java.awt.event.ActionEvent;
 
 /**
@@ -32,18 +33,12 @@ import java.awt.event.ActionEvent;
  * @author Norman Fomferra
  * @since 1.0
  */
-@ActionID(
-        category = "Window",
-        id = "org.esa.snap.netbeans.tile.TileVerticallyAction"
-)
-@ActionReference(
-        path = "Toolbars/Window",
-        position = 10
-)
-@ActionRegistration(
-        displayName = "#CTL_TileVerticallyActionName",
-        lazy = false
-)
+@ActionID(category = "Window", id = "org.esa.snap.netbeans.tile.TileVerticallyAction" )
+@ActionRegistration(displayName = "#CTL_TileVerticallyActionName", lazy = false)
+@ActionReferences({
+        @ActionReference(path = "Menu/Window", position = 10),
+        @ActionReference(path = "Toolbars/Window", position = 10 )
+})
 @NbBundle.Messages("CTL_TileVerticallyActionName=Tile Vertically")
 public class TileVerticallyAction extends TileAction {
 

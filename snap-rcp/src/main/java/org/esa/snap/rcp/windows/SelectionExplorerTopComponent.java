@@ -31,7 +31,7 @@ import java.util.Collection;
 )
 @TopComponent.Registration(mode = "explorer", openAtStartup = true, position = 2, roles={"developer"})
 @ActionID(category = "Window", id = "org.esa.snap.rcp.window.SelectionExplorerTopComponent")
-@ActionReference(path = "Menu/Window/Tool Windows", position = 0)
+@ActionReference(path = "Menu/View/Tool Windows", position = 0)
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_SelectionExplorerTopComponentName",
         preferredID = "SelectionExplorerTopComponent"

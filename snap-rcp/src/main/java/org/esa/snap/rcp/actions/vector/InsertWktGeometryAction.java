@@ -14,7 +14,7 @@
  * with this program; if not, see http://www.gnu.org/licenses/
  */
 
-package org.esa.snap.rcp.actions.view;
+package org.esa.snap.rcp.actions.vector;
 
 import com.bc.ceres.core.ProgressMonitor;
 import com.vividsolutions.jts.geom.Geometry;
@@ -36,6 +36,7 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle;
 
@@ -56,13 +57,16 @@ import java.awt.event.ActionEvent;
 
 @ActionID(
         category = "File",
-        id = "org.esa.snap.rcp.actions.view.InsertWktGeometryAction"
+        id = "org.esa.snap.rcp.actions.vector.InsertWktGeometryAction"
 )
 @ActionRegistration(
         displayName = "#CTL_InsertWktGeometryAction_MenuText",
         lazy = true
 )
-@ActionReference(path = "Context/View", position = 10)
+@ActionReferences({
+        @ActionReference(path = "Menu/Vector", position = 10),
+        @ActionReference(path = "Context/View", position = 10)
+})
 
 @NbBundle.Messages({
         "CTL_InsertWktGeometryAction_DialogTitle=Geometry from WKT...",

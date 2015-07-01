@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.esa.snap.rcp.actions.view.overlay;
+package org.esa.snap.rcp.actions.layer.overlay;
 
 import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.openide.awt.ActionID;
@@ -23,11 +23,11 @@ import javax.swing.Action;
 @ActionID(category = "View", id = "OverlayNoDataLayerAction")
 @ActionRegistration(displayName = "#CTL_OverlayNoDataLayerActionName", lazy = false)
 @ActionReferences({
-        @ActionReference(path = "Menu/View/Overlay", position = 0),
+        @ActionReference(path = "Menu/Layer", position = 0),
         @ActionReference(path = "Toolbars/Overlay", position = 0)
 })
 @NbBundle.Messages({
-        "CTL_OverlayNoDataLayerActionName=Toggle No-Data Overlay",
+        "CTL_OverlayNoDataLayerActionName=No-Data Overlay",
         "CTL_OverlayNoDataLayerActionToolTip=Show/hide no-data overlay for the selected image"
 })
 public final class OverlayNoDataLayerAction extends AbstractOverlayAction {

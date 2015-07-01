@@ -34,9 +34,14 @@ import org.openide.awt.ActionReferences;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
-import javax.swing.*;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.border.EmptyBorder;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Window;
 
 @TopComponent.Description(
         preferredID = "WWWorldMapToolView",
@@ -50,7 +55,7 @@ import java.awt.*;
 )
 @ActionID(category = "Window", id = "org.esa.snap.worldwind.WWWorldMapToolView")
 @ActionReferences({
-        @ActionReference(path = "Menu/Window/Tool Windows")
+        @ActionReference(path = "Menu/View/Tool Windows")
 })
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_WorldWindTopComponentName",

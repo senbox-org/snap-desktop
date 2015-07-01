@@ -41,7 +41,8 @@ import java.util.WeakHashMap;
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.layermanager.LayerManagerTopComponent")
 @ActionReferences({
-        @ActionReference(path = "Menu/Window/Tool Windows"),
+        @ActionReference(path = "Menu/Layer", position = 400, separatorBefore = 399),
+        @ActionReference(path = "Menu/View/Tool Windows"),
         @ActionReference(path = "Toolbars/Views")
 })
 @TopComponent.OpenActionRegistration(

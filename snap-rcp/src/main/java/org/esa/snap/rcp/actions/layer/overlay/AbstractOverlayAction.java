@@ -1,11 +1,18 @@
-package org.esa.snap.rcp.actions.view.overlay;
+package org.esa.snap.rcp.actions.layer.overlay;
 
 import org.esa.snap.framework.ui.product.ProductSceneView;
-import org.openide.util.*;
+import org.openide.util.ContextAwareAction;
+import org.openide.util.Lookup;
+import org.openide.util.LookupEvent;
+import org.openide.util.LookupListener;
+import org.openide.util.WeakListeners;
 import org.openide.util.actions.Presenter;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.AbstractAction;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JMenuItem;
+import javax.swing.JToggleButton;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.util.Collection;
 

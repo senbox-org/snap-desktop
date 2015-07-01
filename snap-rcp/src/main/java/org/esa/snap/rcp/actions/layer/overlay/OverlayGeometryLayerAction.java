@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.esa.snap.rcp.actions.view.overlay;
+package org.esa.snap.rcp.actions.layer.overlay;
 
 import com.bc.ceres.glayer.Layer;
 import com.bc.ceres.glayer.LayerFilter;
@@ -32,11 +32,11 @@ import java.util.List;
 @ActionID(category = "View", id = "OverlayGeometryLayerAction")
 @ActionRegistration(displayName = "#CTL_OverlayGeometryLayerActionName", lazy = false)
 @ActionReferences({
-        @ActionReference(path = "Menu/View/Overlay", position = 10),
+        @ActionReference(path = "Menu/Layer", position = 10),
         @ActionReference(path = "Toolbars/Overlay", position = 10),
 })
 @NbBundle.Messages({
-        "CTL_OverlayGeometryLayerActionName=Toggle Geometry Overlay",
+        "CTL_OverlayGeometryLayerActionName=Geometry Overlay",
         "CTL_OverlayGeometryLayerActionToolTip=Show/hide geometry overlay for the selected image"
 })
 public final class OverlayGeometryLayerAction extends AbstractOverlayAction {
