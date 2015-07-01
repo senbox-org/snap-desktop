@@ -74,7 +74,7 @@ import java.util.Date;
 
 @ActionReferences({
         @ActionReference(path = "Menu/File/Export/Other",position = 60 ),
-        @ActionReference(path = "Menu/Vector",position = 10 ),
+        @ActionReference(path = "Menu/Raster", position = 70 ,name="Honolulu"),
         @ActionReference(path = "Context/Product/RasterDataNode", position = 208),
         @ActionReference(path = "Context/View" , position = 40)
 })
