@@ -29,7 +29,7 @@ import java.awt.event.ActionEvent;
         id = "org.esa.snap.pixex.visat.PixelExtractionAction"
 )
 @ActionRegistration(displayName = "#CTL_PixelExtractionAction_Text")
-@ActionReference(path = "Menu/Tools", position = 510, separatorBefore = 500)
+@ActionReference(path = "Menu/Raster", position = 510, separatorBefore = 500)
 @NbBundle.Messages({"CTL_PixelExtractionAction_Text=Extract Pixel Values"})
 public class PixelExtractionAction extends AbstractSnapAction {
 
