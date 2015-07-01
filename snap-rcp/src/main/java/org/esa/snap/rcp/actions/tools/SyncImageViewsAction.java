@@ -15,21 +15,12 @@ import org.openide.util.NbBundle;
 /**
  * @author Norman
  */
-@ActionID(
-        category = "View",
-        id = "SyncImageViewsAction"
-)
-@ActionRegistration(
-        displayName = "#CTL_SyncImageViewsActionName",
-        lazy = false
-)
-@ActionReference(
-        path = "Menu/Tools",
-        position = 1000
-)
+@ActionID(category = "View", id = "SyncImageViewsAction" )
+@ActionRegistration(displayName = "#CTL_SyncImageViewsActionName", lazy = false )
+@ActionReference(path = "Menu/Tools", position = 135, separatorAfter = 136 )
 @NbBundle.Messages({
-        "CTL_SyncImageViewsActionName=Synchronise Image Views",
-        "CTL_SyncImageViewsActionToolTip=Synchronises cursor positions across multiple image views."
+        "CTL_SyncImageViewsActionName=Synchronise Image Windows",
+        "CTL_SyncImageViewsActionToolTip=Synchronises cursor positions across multiple image windows."
 })
 public final class SyncImageViewsAction extends BooleanPreferenceKeyAction {
 
