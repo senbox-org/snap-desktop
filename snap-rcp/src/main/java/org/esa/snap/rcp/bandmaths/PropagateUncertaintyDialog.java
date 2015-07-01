@@ -16,7 +16,7 @@ import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.ProductData;
 import org.esa.snap.framework.datamodel.ProductNodeGroup;
 import org.esa.snap.framework.datamodel.VirtualBand;
-import org.esa.snap.framework.dataop.barithm.GaussianUncertaintyPropagator;
+import org.esa.snap.framework.dataop.barithm.StandardUncertaintyGenerator;
 import org.esa.snap.framework.ui.GridBagUtils;
 import org.esa.snap.framework.ui.ModalDialog;
 import org.esa.snap.rcp.SnapApp;
@@ -67,10 +67,10 @@ public class PropagateUncertaintyDialog extends ModalDialog {
         int width = targetProduct.getSceneRasterWidth();
         int height = targetProduct.getSceneRasterHeight();
 
-        GaussianUncertaintyPropagator propagator = new GaussianUncertaintyPropagator();
+        StandardUncertaintyGenerator propagator = new StandardUncertaintyGenerator();
         Term term;
         try {
-            term = propagator.propagateUncertainties(targetProduct, sourceBand.getExpression());
+            term = propagator.generateUncertainty(targetProduct, sourceBand.getExpression());
         } catch (ParseException | UnsupportedOperationException e) {
             SnapDialogs.showError(Bundle.CTL_PropagateUncertaintyDialog_Title() + " - Error", e.getMessage());
             return;
