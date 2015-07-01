@@ -28,9 +28,6 @@
         </folder>
         <folder name="Layer">
             <attr name="position" intvalue="420"/>
-            <folder name="Overlay">
-                <attr name="position" intvalue="300"/>
-            </folder>
         </folder>
         <folder name="Vector">
             <attr name="position" intvalue="450"/>
