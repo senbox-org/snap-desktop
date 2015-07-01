@@ -63,7 +63,7 @@ import java.awt.event.ActionEvent;
         @ActionReference(path = "Context/Product/Product", position = 420),
 })
 @NbBundle.Messages({
-        "CTL_OpenHSVImageViewAction_MenuText=Open HSV Image View",
+        "CTL_OpenHSVImageViewAction_MenuText=Open HSV Image Window",
         "CTL_OpenHSVImageViewAction_ShortDescription=Open an HSV image view for the selected product"
 })
 public class OpenHSVImageViewAction extends AbstractAction implements HelpCtx.Provider {

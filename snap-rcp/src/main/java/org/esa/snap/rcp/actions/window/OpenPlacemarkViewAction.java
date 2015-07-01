@@ -45,7 +45,7 @@ import java.awt.event.ActionEvent;
         @ActionReference(path = "Menu/Window", position = 125),
         @ActionReference(path = "Context/Product/VectorDataNode", position = 100),
 })
-@NbBundle.Messages("CTL_OpenPlacemarkViewAction_MenuText=Open Placemark View")
+@NbBundle.Messages("CTL_OpenPlacemarkViewAction_MenuText=Open Placemark Window")
 public class OpenPlacemarkViewAction extends AbstractAction implements ContextAwareAction, LookupListener {
 
     private Lookup lookup;

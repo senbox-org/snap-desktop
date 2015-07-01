@@ -62,7 +62,7 @@ import java.awt.event.ActionEvent;
         @ActionReference(path = "Context/Product/Product", position = 400),
 })
 @NbBundle.Messages({
-        "CTL_OpenRGBImageViewAction_MenuText=Open RGB Image View",
+        "CTL_OpenRGBImageViewAction_MenuText=Open RGB Image Window",
         "CTL_OpenRGBImageViewAction_ShortDescription=Open an RGB image view for the selected product"
 })
 public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Provider {

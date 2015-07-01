@@ -45,10 +45,7 @@ import java.text.MessageFormat;
  * @author Marco Peters
  * @author Norman Fomferra
  */
-@ActionID(
-        category = "View",
-        id = "OpenImageViewAction"
-)
+@ActionID(category = "View", id = "OpenImageViewAction" )
 @ActionRegistration(
         displayName = "#CTL_OpenImageViewActionName",
         iconBase = "org/esa/snap/rcp/icons/RsBandAsSwath.gif"
@@ -57,7 +54,7 @@ import java.text.MessageFormat;
         @ActionReference(path = "Menu/Window", position = 100),
         @ActionReference(path = "Context/Product/RasterDataNode", position = 100),
 })
-@NbBundle.Messages("CTL_OpenImageViewActionName=Open in Image View")
+@NbBundle.Messages("CTL_OpenImageViewActionName=Open in Image Window")
 public class OpenImageViewAction extends AbstractAction {
 
     RasterDataNode raster;

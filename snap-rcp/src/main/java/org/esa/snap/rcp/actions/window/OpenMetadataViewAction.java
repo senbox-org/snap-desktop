@@ -45,7 +45,7 @@ import java.awt.event.ActionEvent;
         @ActionReference(path = "Context/Product/MetadataElement", position = 100),
         @ActionReference(path = "Menu/Window", position = 120)
 })
-@NbBundle.Messages("CTL_OpenMetadataViewAction_MenuText=Open Metadata View")
+@NbBundle.Messages("CTL_OpenMetadataViewAction_MenuText=Open Metadata Window")
 public class OpenMetadataViewAction extends AbstractAction implements ContextAwareAction, LookupListener {
 
     private Lookup lookup;
