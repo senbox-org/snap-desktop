@@ -38,7 +38,7 @@ import java.awt.event.ActionEvent;
 @ActionRegistration(
         displayName = "#CTL_BandMathsAction_MenuText",
         popupText = "#CTL_BandMathsAction_MenuText",
-        iconBase = "org/esa/snap/rcp/icons/BandMaths.gif",
+//        iconBase = "org/esa/snap/rcp/icons/BandMaths.gif", // icon is not nice
         lazy = true
 )
 @ActionReferences({
