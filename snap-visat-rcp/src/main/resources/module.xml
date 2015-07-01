@@ -573,6 +573,7 @@
             <smallIcon>icons/Save16.gif</smallIcon>
             <largeIcon>icons/Save24.gif</largeIcon>
             <helpId>save</helpId>
+            <context>product</context>
         </action>
 
         <action>
@@ -1262,7 +1263,7 @@
             <text>Convert Computed Band</text>
             <class>org.esa.snap.visat.actions.ConvertComputedBandIntoBandAction</class>
             <shortDescr>Computes a "real" band from a virtual band or filtered band</shortDescr>
-            <context>virtualBand</context>
+            <context>virtualBand,filterBand</context>
             <helpId>convertComputedBand2Band</helpId>
         </action>
 
