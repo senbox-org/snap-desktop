@@ -24,10 +24,7 @@ import org.openide.util.NbBundle;
 
 import java.awt.event.ActionEvent;
 
-@ActionID(
-        category = "Tools",
-        id = "org.esa.snap.pixex.visat.PixelExtractionAction"
-)
+@ActionID(category = "Tools", id = "org.esa.snap.pixex.visat.PixelExtractionAction" )
 @ActionRegistration(displayName = "#CTL_PixelExtractionAction_Text")
 @ActionReference(path = "Menu/Raster", position = 510, separatorBefore = 500)
 @NbBundle.Messages({"CTL_PixelExtractionAction_Text=Extract Pixel Values"})
