@@ -43,18 +43,15 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
-@ActionID(
-        category = "File",
-        id = "ImportVectorDataNodeFromMermaidAction"
-)
-@ActionRegistration(displayName = "#CTL_ImportVectorDataNodeFromMermaidActionName", lazy=true)
+@ActionID(category = "File", id = "ImportVectorDataNodeFromMermaidAction" )
+@ActionRegistration(displayName = "#CTL_ImportVectorDataNodeFromMermaidActionText", lazy=true)
 @ActionReferences({
         @ActionReference(path = "Menu/File/Import/Vector Data", position = 30),
         @ActionReference(path = "Menu/Vector", position = 60)
 })
 @NbBundle.Messages({
         "CTL_ImportVectorDataNodeFromMermaidActionText=MERMAID Extraction File",
-        "CTL_ImportVectorDataNodeFromMermaidActionName=Import Vector Data Node From Mermaid",
+        "CTL_ImportVectorDataNodeFromMermaidActionDescription=Import Vector Data Node from Mermaid",
         "CTL_ImportVectorDataNodeFromMermaidActionHelp=importMermaid"
 })
 public class ImportVectorDataNodeFromMermaidAction extends AbstractImportVectorDataNodeAction implements ContextAwareAction, LookupListener {
@@ -76,7 +73,7 @@ public class ImportVectorDataNodeFromMermaidAction extends AbstractImportVectorD
         setEnableState();
         setHelpId(Bundle.CTL_ImportVectorDataNodeFromMermaidActionHelp());
         putValue(Action.NAME, Bundle.CTL_ImportVectorDataNodeFromMermaidActionText());
-        putValue(Action.SHORT_DESCRIPTION, Bundle.CTL_ImportVectorDataNodeFromMermaidActionName());
+        putValue(Action.SHORT_DESCRIPTION, Bundle.CTL_ImportVectorDataNodeFromMermaidActionDescription());
     }
 
     @Override
