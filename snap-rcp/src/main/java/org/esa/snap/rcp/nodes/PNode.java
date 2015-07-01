@@ -65,7 +65,7 @@ class PNode extends PNNode<Product> implements PreferenceChangeListener {
 
     @Override
     public boolean canDestroy() {
-        return true;
+        return false;
     }
 
     @Override
