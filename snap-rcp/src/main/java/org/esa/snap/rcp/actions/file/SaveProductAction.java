@@ -8,15 +8,23 @@ package org.esa.snap.rcp.actions.file;
 import com.bc.ceres.core.Assert;
 import org.esa.snap.dataio.dimap.DimapProductReader;
 import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.datamodel.ProductNode;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.netbeans.api.progress.ProgressUtils;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
+import org.openide.util.ContextAwareAction;
+import org.openide.util.Lookup;
+import org.openide.util.LookupEvent;
+import org.openide.util.LookupListener;
 import org.openide.util.NbBundle;
+import org.openide.util.Utilities;
+import org.openide.util.WeakListeners;
 
 import javax.swing.AbstractAction;
+import javax.swing.Action;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -32,49 +40,38 @@ import java.text.MessageFormat;
         id = "SaveProductAction"
 )
 @ActionRegistration(
-        displayName = "#CTL_SaveProductActionName"
+        displayName = "#CTL_SaveProductActionName",
+        lazy = false
 )
-@ActionReference(path = "Menu/File", position = 40)
+@ActionReference(path = "Menu/File", position = 40, separatorBefore = 38)
 @NbBundle.Messages({"CTL_SaveProductActionName=Save Product"})
-public final class SaveProductAction extends AbstractAction {
+public final class SaveProductAction extends AbstractAction implements ContextAwareAction, LookupListener {
 
 
-    private final WeakReference<Product> productRef;
+    private WeakReference<Product> productRef;
+    private Lookup lookup;
+    private Lookup.Result<ProductNode> result;
 
 
     public SaveProductAction(Product products) {
         productRef = new WeakReference<>(products);
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        execute();
+
+    public SaveProductAction() {
+        this(Utilities.actionsGlobalContext());
     }
 
-    /**
-     * Executes the action command.
-     *
-     * @return {@code Boolean.TRUE} on success, {@code Boolean.FALSE} on failure, or {@code null} on cancellation.
-     */
-    public Boolean execute() {
-        Product product = productRef.get();
-        if (product != null) {
-            if (product.getFileLocation() != null && (product.getProductReader() == null ||product.getProductReader() instanceof DimapProductReader)) {
-                return saveProduct(product);
-            } else {
-                // if file location not set, delegate to save-as
-                return new SaveProductAsAction(product).execute();
-            }
-        } else {
-            // reference was garbage collected, that's fine, no need to save.
-            return true;
-        }
+    public SaveProductAction(Lookup actionContext) {
+        super(Bundle.CTL_SaveProductActionName());
+        this.lookup = actionContext;
+        result = lookup.lookupResult(ProductNode.class);
+        result.addLookupListener(WeakListeners.create(LookupListener.class, this, result));
+        setEnabled(false);
     }
 
     static Boolean saveProduct(Product product) {
-
         Assert.notNull(product.getFileLocation());
-
         final File file = product.getFileLocation();
         if (file.isFile() && !file.canWrite()) {
             SnapDialogs.showWarning(Bundle.CTL_SaveProductActionName(),
@@ -102,5 +99,47 @@ public final class SaveProductAction extends AbstractAction {
 
         return operation.getStatus();
     }
+
+    @Override
+    public Action createContextAwareInstance(Lookup actionContext) {
+        return new SaveProductAction(actionContext);
+    }
+
+    @Override
+    public void resultChanged(LookupEvent lookupEvent) {
+        ProductNode productNode = lookup.lookup(ProductNode.class);
+        setEnabled(productNode != null);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        execute();
+    }
+
+    /**
+     * Executes the action command.
+     *
+     * @return {@code Boolean.TRUE} on success, {@code Boolean.FALSE} on failure, or {@code null} on cancellation.
+     */
+    public Boolean execute() {
+        Product product = null;
+        if (productRef != null) {
+            product = productRef.get();
+        } else {
+            product = SnapApp.getDefault().getSelectedProduct();
+        }
+        if (product != null) {
+            if (product.getFileLocation() != null && (product.getProductReader() == null || product.getProductReader() instanceof DimapProductReader)) {
+                return saveProduct(product);
+            } else {
+                // if file location not set, delegate to save-as
+                return new SaveProductAsAction(product).execute();
+            }
+        } else {
+            // reference was garbage collected, that's fine, no need to save.
+            return true;
+        }
+    }
+
 
 }

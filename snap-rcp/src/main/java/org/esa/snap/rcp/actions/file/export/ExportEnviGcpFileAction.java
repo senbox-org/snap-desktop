@@ -83,7 +83,6 @@ public class ExportEnviGcpFileAction extends AbstractAction implements LookupLis
 
     public ExportEnviGcpFileAction(Lookup lookup) {
         super(Bundle.CTL_ExportEnviGcpFileAction_MenuText());
-//        putValue("popupText", Bundle.CTL_ExportEnviGcpFileAction_PopupText());
         result = lookup.lookupResult(ProductNode.class);
         result.addLookupListener(WeakListeners.create(LookupListener.class, this, result));
         setEnabled(false);

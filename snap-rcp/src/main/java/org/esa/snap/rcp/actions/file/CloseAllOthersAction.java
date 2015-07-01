@@ -40,7 +40,7 @@ import java.util.List;
  * This action closes all opened products other than the one selected.
  */
 @ActionID(category = "File", id = "CloseAllOthersAction")
-@ActionRegistration(displayName = "#CTL_CloseAllOthersActionName" )
+@ActionRegistration(displayName = "#CTL_CloseAllOthersActionName",lazy = false)
 @ActionReferences({
         @ActionReference(path = "Menu/File", position = 30),
         @ActionReference(path = "Context/Product/Product", position = 850, separatorAfter = 851),
