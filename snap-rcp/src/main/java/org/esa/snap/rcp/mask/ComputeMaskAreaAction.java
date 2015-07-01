@@ -68,16 +68,13 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 
-@ActionID(
-        category = "Tools",
-        id = "ComputeMaskAreaAction"
-)
+@ActionID(category = "Tools", id = "ComputeMaskAreaAction" )
 @ActionRegistration(
         displayName = "#CTL_ComputeMaskAreaAction_MenuText",
         popupText = "#CTL_ComputeMaskAreaAction_ShortDescription",
         lazy = false
 )
-@ActionReference(path = "Menu/Tools", position = 520)
+@ActionReference(path = "Menu/Raster", position = 425)
 @NbBundle.Messages({
         "CTL_ComputeMaskAreaAction_MenuText=Mask Area...",
         "CTL_ComputeMaskAreaAction_DialogTitle=Compute Mask Area",
