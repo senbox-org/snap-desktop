@@ -80,7 +80,8 @@ import java.util.Map;
 )
 @ActionID(category = "Window", id = "org.esa.snap.productlibrary.rcp.toolviews.ProductLibraryToolView")
 @ActionReferences({
-        @ActionReference(path = "Menu/View/Tool Windows")
+        @ActionReference(path = "Menu/View/Tool Windows"),
+        @ActionReference(path = "Menu/File", position = 15)
 })
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_ProductLibraryTopComponentName",
