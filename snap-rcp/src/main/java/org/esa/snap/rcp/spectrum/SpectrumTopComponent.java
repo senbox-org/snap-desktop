@@ -113,6 +113,7 @@ import java.util.Map;
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.statistics.SpectrumTopComponent")
 @ActionReferences({
+        @ActionReference(path = "Menu/Optical/Spectral Tools"),
         @ActionReference(path = "Menu/View/Tool Windows"),
         @ActionReference(path = "Toolbars/Views")
 })
