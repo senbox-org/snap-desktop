@@ -3,6 +3,7 @@ package org.esa.snap.rcp.bandmaths;
 import com.bc.ceres.binding.PropertyContainer;
 import com.bc.ceres.binding.PropertyDescriptor;
 import com.bc.ceres.binding.ValueRange;
+import com.bc.ceres.binding.ValueSet;
 import com.bc.ceres.core.Assert;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.PropertyEditor;
@@ -28,8 +29,13 @@ import org.openide.awt.UndoRedo;
 import org.openide.util.NbBundle;
 
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import java.awt.GridBagConstraints;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 /**
  * @author Norman Fomferra
@@ -41,7 +47,8 @@ public class PropagateUncertaintyDialog extends ModalDialog {
 
 
     private static final String PROPERTY_NAME_BAND_NAME = "bandName";
-    private static final String PROPERTY_NAME_TAYLOR_SERIES_TERM_COUNT = "taylorSeriesTermCount";
+    private static final String PROPERTY_NAME_ORDER = "order";
+    private static final String ERROR_PREFIX = "Error: ";
 
     private final BindingContext bindingContext;
     private VirtualBand sourceBand;
@@ -49,7 +56,9 @@ public class PropagateUncertaintyDialog extends ModalDialog {
     @SuppressWarnings("UnusedDeclaration")
     private String bandName;
     @SuppressWarnings("UnusedDeclaration")
-    private int taylorSeriesTermCount;
+    private int order;
+    private JTextArea sourceExprArea;
+    private JTextArea targetExprArea;
 
     public PropagateUncertaintyDialog(VirtualBand virtualBand) {
         super(SnapApp.getDefault().getMainFrame(), Bundle.CTL_PropagateUncertaintyDialog_Title(), ID_OK_CANCEL_HELP, "propagateUncertainty");
@@ -57,31 +66,23 @@ public class PropagateUncertaintyDialog extends ModalDialog {
         this.sourceBand = virtualBand;
         bindingContext = createBindingContext();
         bandName = virtualBand.getName() + "_unc";
-        taylorSeriesTermCount = 1;
-        makeUI();
+        order = 1;
+        initUI();
     }
 
     @Override
     protected void onOK() {
+        String uncertaintyExpression = targetExprArea.getText();
+
         Product targetProduct = sourceBand.getProduct();
         int width = targetProduct.getSceneRasterWidth();
         int height = targetProduct.getSceneRasterHeight();
 
-        StandardUncertaintyGenerator propagator = new StandardUncertaintyGenerator();
-        Term term;
-        try {
-            term = propagator.generateUncertainty(targetProduct, sourceBand.getExpression());
-        } catch (ParseException | UnsupportedOperationException e) {
-            SnapDialogs.showError(Bundle.CTL_PropagateUncertaintyDialog_Title() + " - Error", e.getMessage());
-            return;
-        }
-        String uncertaintyExpression = new TermDecompiler().decompile(term);
-
         ProductNodeGroup<Band> bandGroup = targetProduct.getBandGroup();
 
-        VirtualBand uncertaintyBand = new VirtualBand(getBandName() + "_unc", ProductData.TYPE_FLOAT32, width, height, uncertaintyExpression);
+        VirtualBand uncertaintyBand = new VirtualBand(getBandName(), ProductData.TYPE_FLOAT32, width, height, uncertaintyExpression);
         bandGroup.add(uncertaintyBand);
-        uncertaintyBand.setDescription("Uncertainty propagated from band '" + sourceBand.getName() + "', Expr.: " + sourceBand.getExpression());
+        uncertaintyBand.setDescription("Uncertainty propagated from band " + sourceBand.getName() + " = " + sourceBand.getExpression());
         uncertaintyBand.setUnit(sourceBand.getUnit());
         ProductUtils.copySpectralBandProperties(sourceBand, uncertaintyBand);
         sourceBand.addAncillaryVariable(uncertaintyBand, "uncertainty");
@@ -98,42 +99,93 @@ public class PropagateUncertaintyDialog extends ModalDialog {
         }
     }
 
+    private String generateUncertaintyExpression() throws ParseException, UnsupportedOperationException {
+        StandardUncertaintyGenerator propagator = new StandardUncertaintyGenerator(order, false);
+        Term term = propagator.generateUncertainty(sourceBand.getProduct(), sourceBand.getExpression());
+        return new TermDecompiler().decompile(term);
+    }
+
     @Override
     protected boolean verifyUserInput() {
+
+        String uncertaintyExpression = targetExprArea.getText();
+        if (uncertaintyExpression == null || uncertaintyExpression.trim().isEmpty()) {
+            SnapDialogs.showError("Uncertainty expression is empty.");
+            return false;
+        }
+
+        if (uncertaintyExpression.startsWith(ERROR_PREFIX)) {
+            SnapDialogs.showError(uncertaintyExpression.substring(ERROR_PREFIX.length()));
+            return false;
+        }
+
         if (sourceBand.getProduct().containsBand(getBandName())) {
             SnapDialogs.showError("A raster with name '" + getBandName() + "' already exists.");
             return false;
         }
+
         return super.verifyUserInput();
     }
 
-    private void makeUI() {
+    private void initUI() {
         JComponent[] components;
         final JPanel panel = GridBagUtils.createPanel();
         int line = 0;
         GridBagConstraints gbc = new GridBagConstraints();
 
+        sourceExprArea = new JTextArea(3, 40);
+        sourceExprArea.setEditable(false);
+        sourceExprArea.setEnabled(false);
+        sourceExprArea.setText(sourceBand.getExpression());
+
+        targetExprArea = new JTextArea(6, 40);
+        targetExprArea.setEditable(true);
+        updateTargetExprArea();
+
+
         gbc.gridy = ++line;
-        components = createComponents(PROPERTY_NAME_BAND_NAME, TextFieldEditor.class);
+        components = createComponents(PROPERTY_NAME_BAND_NAME);
         GridBagUtils.addToPanel(panel, components[1], gbc,
                                 "weightx=0, insets.top=3, gridwidth=1, fill=HORIZONTAL, anchor=WEST");
         GridBagUtils.addToPanel(panel, components[0], gbc,
                                 "weightx=1, insets.top=3, gridwidth=2, fill=HORIZONTAL, anchor=WEST");
 
         gbc.gridy = ++line;
-        components = createComponents(PROPERTY_NAME_TAYLOR_SERIES_TERM_COUNT, TextFieldEditor.class);
+        components = createComponents(PROPERTY_NAME_ORDER);
         GridBagUtils.addToPanel(panel, components[1], gbc,
                                 "weightx=0, insets.top=3, gridwidth=1, fill=HORIZONTAL, anchor=WEST");
         GridBagUtils.addToPanel(panel, components[0], gbc,
                                 "weightx=1, insets.top=3, gridwidth=2, fill=HORIZONTAL, anchor=WEST");
 
+        gbc.gridy = ++line;
+        GridBagUtils.addToPanel(panel, new JLabel("Source expression:"), gbc,
+                                "weightx=1, insets.top=8, gridwidth=3, fill=HORIZONTAL, anchor=WEST");
+        gbc.gridy = ++line;
+        GridBagUtils.addToPanel(panel, new JScrollPane(sourceExprArea), gbc,
+                                "weightx=1, insets.top=3, gridwidth=3, fill=HORIZONTAL, anchor=WEST");
+
+        gbc.gridy = ++line;
+        GridBagUtils.addToPanel(panel, new JLabel("Uncertainty expression:"), gbc,
+                                "weightx=1, insets.top=3, gridwidth=3, fill=HORIZONTAL, anchor=WEST");
+        gbc.gridy = ++line;
+        GridBagUtils.addToPanel(panel, new JScrollPane(targetExprArea), gbc,
+                                "weightx=1, weighty=1, insets.top=3, gridwidth=3, fill=BOTH, anchor=WEST");
         setContent(panel);
     }
 
-    private JComponent[] createComponents(String propertyName, Class<? extends PropertyEditor> editorClass) {
+    private void updateTargetExprArea() {
+        try {
+            String uncertaintyExpression= generateUncertaintyExpression();
+            targetExprArea.setText(uncertaintyExpression);
+        } catch (ParseException | UnsupportedOperationException e) {
+            targetExprArea.setText(ERROR_PREFIX + e.getMessage());
+        }
+    }
+
+    private JComponent[] createComponents(String propertyName) {
         PropertyDescriptor descriptor = bindingContext.getPropertySet().getDescriptor(propertyName);
-        PropertyEditor editor = PropertyEditorRegistry.getInstance().getPropertyEditor(editorClass.getName());
-        return editor.createComponents(descriptor, bindingContext);
+        PropertyEditor propertyEditor = PropertyEditorRegistry.getInstance().findPropertyEditor(descriptor);
+        return propertyEditor.createComponents(descriptor, bindingContext);
     }
 
     private BindingContext createBindingContext() {
@@ -146,18 +198,33 @@ public class PropagateUncertaintyDialog extends ModalDialog {
         descriptor.setDescription("The name for the new uncertainty band.");
         descriptor.setNotEmpty(true);
         descriptor.setValidator(new ProductNodeNameValidator(sourceBand.getProduct()));
-        descriptor.setDefaultValue(sourceBand.getName() + "_unc");
+        descriptor.setDefaultValue(getDefaultBandName(sourceBand.getName() + "_unc"));
 
-        descriptor = container.getDescriptor(PROPERTY_NAME_TAYLOR_SERIES_TERM_COUNT);
-        descriptor.setDisplayName("Number of Taylor terms");
-        descriptor.setDescription("The number of terms used in the Taylor series expansion.");
+        descriptor = container.getDescriptor(PROPERTY_NAME_ORDER);
+        descriptor.setDisplayName("Order of Taylor polynomial");
+        descriptor.setDescription("The number of Taylor series expansion terms used.");
         descriptor.setDefaultValue(1);
-        descriptor.setValueRange(new ValueRange(1, 5, true, true));
+        descriptor.setValueSet(new ValueSet(new Integer[]{1, 2, 3}));
 
         container.setDefaultValues();
 
+        context.addPropertyChangeListener(PROPERTY_NAME_ORDER, evt -> {
+            updateTargetExprArea();
+        });
+
         return context;
     }
+
+    private String getDefaultBandName(String nameBase) {
+        String defaultName = nameBase;
+        Product product = sourceBand.getProduct();
+        int i = 0;
+        while (product.getRasterDataNode(defaultName) != null) {
+            defaultName = nameBase + (++i);
+        }
+        return defaultName;
+    }
+
 
     private String getBandName() {
         return bandName.trim();
