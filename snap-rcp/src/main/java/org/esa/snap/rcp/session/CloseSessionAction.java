@@ -16,6 +16,9 @@
 package org.esa.snap.rcp.session;
 
 import org.esa.snap.framework.datamodel.ProductNode;
+import org.openide.awt.ActionID;
+import org.openide.awt.ActionReference;
+import org.openide.awt.ActionRegistration;
 import org.openide.util.ContextAwareAction;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
@@ -29,14 +32,9 @@ import javax.swing.Action;
 import java.awt.event.ActionEvent;
 
 
-/*
-Not used now.
-Session handling is not implemented yet.
-
 @ActionID( category = "File", id = "org.esa.snap.rcp.session.CloseSessionAction" )
 @ActionRegistration( displayName = "#CTL_CloseSessionAction_MenuText", lazy = false )
 @ActionReference(path = "Menu/File", position = 35,separatorAfter = 37)
-*/
 @NbBundle.Messages({
         "CTL_CloseSessionAction_MenuText=Close Session",
         "CTL_CloseSessionAction_ShortDescription=Close the current SNAP session."

@@ -16,6 +16,9 @@
 package org.esa.snap.rcp.session;
 
 import org.esa.snap.framework.ui.product.ProductSceneView;
+import org.openide.awt.ActionID;
+import org.openide.awt.ActionReference;
+import org.openide.awt.ActionRegistration;
 import org.openide.util.ContextAwareAction;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
@@ -28,14 +31,9 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import java.awt.event.ActionEvent;
 
-/*
-Not used now.
-Session handling is not implemented yet.
-
 @ActionID( category = "File", id = "org.esa.snap.rcp.session.SaveSessionAsAction" )
 @ActionRegistration( displayName = "#CTL_SaveSessionAsAction_MenuText", lazy = false )
 @ActionReference(path = "Menu/File", position = 55,separatorAfter = 57)
-*/
 @NbBundle.Messages({
         "CTL_SaveSessionAsAction_MenuText=Save Session As...",
         "CTL_SaveSessionAsAction_ShortDescription=Save the current SNAP session using a different name."

@@ -27,6 +27,9 @@ import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.util.SystemUtils;
 import org.esa.snap.util.io.SnapFileFilter;
+import org.openide.awt.ActionID;
+import org.openide.awt.ActionReference;
+import org.openide.awt.ActionRegistration;
 import org.openide.util.ContextAwareAction;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
@@ -50,14 +53,9 @@ import java.text.MessageFormat;
 import java.util.concurrent.ExecutionException;
 
 
-/*
-Not used now.
-Session handling is not implemented yet.
-
 @ActionID( category = "File", id = "org.esa.snap.rcp.session.OpenSessionAction" )
 @ActionRegistration( displayName = "#CTL_OpenSessionAction_MenuText", lazy = false )
 @ActionReference(path = "Menu/File", position = 15)
-*/
 @NbBundle.Messages({
         "CTL_OpenSessionAction_MenuText=Open Session...",
         "CTL_OpenSessionAction_ShortDescription=Open a SNAP session."
