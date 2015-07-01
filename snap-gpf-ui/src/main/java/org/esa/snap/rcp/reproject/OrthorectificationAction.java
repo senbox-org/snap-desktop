@@ -32,7 +32,7 @@ import java.awt.event.ActionEvent;
  */
 @ActionID(category = "Operators", id = "org.esa.snap.rcp.reproject.OrthorectificationAction")
 @ActionRegistration(displayName = "#CTL_OrthorectificationAction_Name")
-@ActionReference(path = "Menu/Raster/Geometric Operations")
+@ActionReference(path = "Menu/Optical/Geometric")
 @NbBundle.Messages("CTL_OrthorectificationAction_Name=Orthorectification")
 public class OrthorectificationAction extends AbstractSnapAction {
 
