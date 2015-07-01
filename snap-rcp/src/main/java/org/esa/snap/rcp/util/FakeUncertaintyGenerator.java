@@ -87,8 +87,8 @@ public class FakeUncertaintyGenerator {
                         confidenceBand = addConfidenceBand(product, band, varianceBand);
                     }
                 }
-                band.setAncillaryBand("variance", varianceBand);
-                band.setAncillaryBand("confidence", confidenceBand);
+                band.addAncillaryVariable(varianceBand, "variance");
+                band.addAncillaryVariable(confidenceBand, "confidence");
             }
         }
         return bandCount;

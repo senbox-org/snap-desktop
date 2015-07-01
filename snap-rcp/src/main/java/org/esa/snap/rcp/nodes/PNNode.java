@@ -26,6 +26,7 @@ import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.actions.window.OpenImageViewAction;
 import org.esa.snap.rcp.actions.window.OpenMetadataViewAction;
 import org.esa.snap.rcp.actions.window.OpenPlacemarkViewAction;
+import org.esa.snap.util.StringUtils;
 import org.openide.awt.UndoRedo;
 import org.openide.nodes.Node;
 import org.openide.nodes.PropertySupport;
@@ -34,8 +35,11 @@ import org.openide.util.lookup.Lookups;
 
 import javax.swing.Action;
 import java.awt.datatransfer.Transferable;
+import java.beans.PropertyEditor;
 import java.io.IOException;
-import java.util.concurrent.atomic.AtomicReference;
+import java.lang.ref.WeakReference;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.stream.Stream;
 
 /**
@@ -108,7 +112,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
                 // todo - add undoable edit
             }
         });
-        set.put(new PropertySupport.ReadWrite<String>("description", String.class, "Description", "Short description of the element") {
+        set.put(new PropertySupport.ReadWrite<String>("description", String.class, "Description", "Human-readable description of the element") {
             @Override
             public String getValue() {
                 return getProductNode().getDescription();
@@ -167,6 +171,17 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
         }
     }
 
+    private static StringBuilder append(StringBuilder stringBuilder, String text) {
+        if (StringUtils.isNotNullAndNotEmpty(text)) {
+            if (stringBuilder.length() > 0) {
+                stringBuilder.append(", ");
+            }
+            stringBuilder.append(text);
+        }
+        return stringBuilder;
+    }
+
+
     /**
      * A node that represents a {@link org.esa.snap.framework.datamodel.MetadataElement} (=ME).
      *
@@ -193,7 +208,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
 
         @Override
         public Action getPreferredAction() {
-//            return new ShowMetadataViewAction(this.getProductNode());
+//            return new OpenMetadataViewAction(this.getProductNode());
             return new OpenMetadataViewAction();
         }
     }
@@ -273,10 +288,8 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
 
         private String createToolTip(final VectorDataNode vectorDataNode) {
             final StringBuilder tooltip = new StringBuilder();
-            if (vectorDataNode.getDescription() != null)
-                tooltip.append(vectorDataNode.getDescription() + ": ");
-            tooltip.append("type = " + vectorDataNode.getFeatureType().getTypeName() + ", ");
-            tooltip.append("#feature = " + vectorDataNode.getFeatureCollection().size());
+            append(tooltip, vectorDataNode.getDescription());
+            append(tooltip, String.format("type %s, %d feature(s)", vectorDataNode.getFeatureType().getTypeName(), vectorDataNode.getFeatureCollection().size()));
             return tooltip.toString();
         }
 
@@ -313,11 +326,11 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
 
         private String createToolTip(final TiePointGrid tiePointGrid) {
             StringBuilder tooltip = new StringBuilder();
-            if (tiePointGrid.getDescription() != null)
-                tooltip.append(tiePointGrid.getDescription() + ": ");
-            tooltip.append(tiePointGrid.getRasterWidth() + " x " + tiePointGrid.getRasterHeight());
-            tooltip.append(" -> " + tiePointGrid.getSceneRasterWidth() + "x" + tiePointGrid.getSceneRasterHeight());
-            tooltip.append(" [" + tiePointGrid.getUnit() + "]");
+            append(tooltip, tiePointGrid.getDescription());
+            append(tooltip, String.format("%d x %d --> %d x %d pixels", tiePointGrid.getRasterWidth(), tiePointGrid.getRasterHeight(), tiePointGrid.getSceneRasterWidth(), tiePointGrid.getSceneRasterHeight()));
+            if (tiePointGrid.getUnit() != null) {
+                append(tooltip, String.format(" (%s)", tiePointGrid.getUnit()));
+            }
             return tooltip.toString();
         }
 
@@ -344,17 +357,22 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
             Sheet.Set set = new Sheet.Set();
             final TiePointGrid tpg = getProductNode();
 
-            set.setDisplayName("Tie Point Grid Properties");
-            set.put(new PropertySupport.ReadOnly<String>("unit", String.class, "Unit", "Geophysical Unit") {
+            set.setDisplayName("Tie-Point Grid Properties");
+            set.put(new PropertySupport.ReadWrite<String>("unit", String.class, "Unit", "Geophysical unit") {
                 @Override
                 public String getValue() {
                     return tpg.getUnit();
                 }
+
+                @Override
+                public void setValue(String s) {
+                    tpg.setUnit(s);
+                }
             });
-            set.put(new PropertySupport.ReadOnly<String>("dimensions", String.class, "Width x Height", "The width and height of raster") {
+            set.put(new PropertySupport.ReadOnly<String>("dimensions", String.class, "Width x Height", "The width and height of the raster in pixels") {
                 @Override
                 public String getValue() {
-                    return tpg.getRasterWidth() + " x " + tpg.getRasterHeight();
+                    return String.format("%d x %d", tpg.getRasterWidth(), tpg.getRasterHeight());
                 }
             });
 
@@ -413,20 +431,20 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
 
         private String createToolTip(final Band band) {
             StringBuilder tooltip = new StringBuilder();
-            if (band.getDescription() != null)
-                tooltip.append(band.getDescription() + ": ");
-            if (band instanceof VirtualBand) {
-                tooltip.append("expr = " + ((VirtualBand) band).getExpression() + ", ");
-            }
+            append(tooltip, band.getDescription());
             if (band.getSpectralWavelength() > 0.0) {
-                tooltip.append("wavelength = ");
-                tooltip.append(band.getSpectralWavelength());
-                tooltip.append(" nm, bandwidth = ");
-                tooltip.append(band.getSpectralBandwidth());
-                tooltip.append(" nm, ");
+                append(tooltip, String.format("%s nm", band.getSpectralWavelength()));
+                if (band.getSpectralBandwidth() > 0.0) {
+                    append(tooltip, String.format("+/-%s nm", 0.5 * band.getSpectralBandwidth()));
+                }
             }
-            tooltip.append(band.getRasterWidth() + " x " + band.getRasterHeight());
-            tooltip.append(" [" + band.getUnit() + "]");
+            append(tooltip, String.format("%d x %d pixels", band.getRasterWidth(), band.getRasterHeight()));
+            if (band instanceof VirtualBand) {
+                append(tooltip, String.format("Expr.: %s", ((VirtualBand) band).getExpression()));
+            }
+            if (band.getUnit() != null) {
+                append(tooltip, String.format(" (%s)", band.getUnit()));
+            }
             return tooltip.toString();
         }
 
@@ -474,25 +492,31 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
             final Band band = getProductNode();
 
             set.setDisplayName("Raster Band Properties");
-            set.put(new PropertySupport.ReadOnly<String>("dataType", String.class, "Data Type", "The data type") {
+            set.put(new PropertySupport.ReadWrite<String>("unit", String.class, "Unit", "Geophysical Unit") {
+                @Override
+                public String getValue() {
+                    return band.getUnit();
+                }
+
+                @Override
+                public void setValue(String s) {
+                    band.setUnit(s);
+                    // todo - add undoable edit
+                }
+            });
+            set.put(new PropertySupport.ReadOnly<String>("dataType", String.class, "Data Type", "Raster data type") {
                 @Override
                 public String getValue() {
                     return ProductData.getTypeString(band.getDataType());
                 }
             });
-            set.put(new PropertySupport.ReadOnly<String>("unit", String.class, "Unit", "Geophysical Unit") {
+            set.put(new PropertySupport.ReadOnly<String>("dimensions", String.class, "Width x Height", "Width and height of the raster in pixels") {
                 @Override
                 public String getValue() {
-                    return band.getUnit();
+                    return String.format("%d x %d", band.getRasterWidth(), band.getRasterHeight());
                 }
             });
-            set.put(new PropertySupport.ReadOnly<String>("dimensions", String.class, "Width x Height", "The width and height of raster") {
-                @Override
-                public String getValue() {
-                    return band.getRasterWidth() + " x " + band.getRasterHeight();
-                }
-            });
-            set.put(new PropertySupport.ReadWrite<Boolean>("useNoDataValue", Boolean.class, "Use No-Data Value", "Use the no-data value") {
+            set.put(new PropertySupport.ReadWrite<Boolean>("useNoDataValue", Boolean.class, "Use No-Data Value", "Is no-data value used?") {
                 @Override
                 public Boolean getValue() {
                     return band.isNoDataValueUsed();
@@ -501,9 +525,10 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
                 @Override
                 public void setValue(Boolean val) {
                     band.setNoDataValueUsed(val);
+                    // todo - add undoable edit
                 }
             });
-            set.put(new PropertySupport.ReadWrite<Double>("noDataValue", Double.class, "No-Data Value", "The no-data value") {
+            set.put(new PropertySupport.ReadWrite<Double>("noDataValue", Double.class, "No-Data Value", "No-data value used to indicate missing pixels") {
                 @Override
                 public Double getValue() {
                     return band.getNoDataValue();
@@ -512,6 +537,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
                 @Override
                 public void setValue(Double val) {
                     band.setNoDataValue(val);
+                    // todo - add undoable edit
                 }
             });
             set.put(new PropertySupport.ReadWrite<String>("validPixelExpression", String.class, "Valid Pixel Expression",
@@ -538,6 +564,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
                         } else {
                             band.setValidPixelExpression(val);
                         }
+                        // todo - add undoable edit
                     } catch (ParseException e) {
                         SnapDialogs.showError("Expression is invalid: " + e.getMessage());
                     }
@@ -552,9 +579,10 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
                 @Override
                 public void setValue(Float val) {
                     band.setSpectralWavelength(val);
+                    // todo - add undoable edit
                 }
             });
-            set.put(new PropertySupport.ReadWrite<Float>("spectralBandWidth", Float.class, "Spectral BandWidth", "The spectral bandwidth in nanometers") {
+            set.put(new PropertySupport.ReadWrite<Float>("spectralBandWidth", Float.class, "Spectral Bandwidth", "The spectral bandwidth in nanometers") {
                 @Override
                 public Float getValue() {
                     return band.getSpectralBandwidth();
@@ -563,45 +591,70 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
                 @Override
                 public void setValue(Float val) {
                     band.setSpectralBandwidth(val);
+                    // todo - add undoable edit
                 }
             });
-            AtomicReference<String> roleName = new AtomicReference<>("uncertainty");
-            set.put(new PropertySupport.ReadWrite<String>("ancillaryRole", String.class, "Ancilliary Role", "Role of the ancilllary band") {
+            Property<RasterDataNode[]> ancillaryVariables = new PropertySupport.ReadWrite<RasterDataNode[]>("ancillaryVariables",
+                                                                                                            RasterDataNode[].class,
+                                                                                                            "Ancillary Variables",
+                                                                                                            "Names of rasters that serve as ancillary variables, e.g. provide uncertainty") {
+                private WeakReference<RastersPropertyEditor> propertyEditorRef;
+
+                @Override
+                public RasterDataNode[] getValue() {
+                    return band.getAncillaryVariables();
+                }
+
+                @Override
+                public void setValue(RasterDataNode[] ancillaryVariablesNew) {
+                    RasterDataNode[] ancillaryVariablesOld = band.getAncillaryVariables();
+                    for (RasterDataNode newVar : ancillaryVariablesNew) {
+                        band.addAncillaryVariable(newVar);
+                    }
+                    HashSet<RasterDataNode> newSet = new HashSet<>(Arrays.asList(ancillaryVariablesNew));
+                    for (RasterDataNode oldVar : ancillaryVariablesOld) {
+                        if (!newSet.contains(oldVar)) {
+                            band.removeAncillaryVariable(oldVar);
+                        }
+                    }
+                    // todo - add undoable edit
+                }
+
+                @Override
+                public PropertyEditor getPropertyEditor() {
+                    RastersPropertyEditor propertyEditor = null;
+                    if (propertyEditorRef != null) {
+                        propertyEditor = propertyEditorRef.get();
+                    }
+                    if (propertyEditor == null) {
+                        propertyEditor = new RastersPropertyEditor(band.getProduct().getBands());
+                        propertyEditorRef = new WeakReference<>(propertyEditor);
+                    }
+                    return propertyEditor;
+                }
+            };
+            set.put(ancillaryVariables);
+
+            set.put(new PropertySupport.ReadWrite<String>("ancillaryRelation",
+                                                          String.class,
+                                                          "Ancillary Relation",
+                                                          "Relation name used if this raster is an ancillary variable") {
                 @Override
                 public String getValue() {
-                    return roleName.get();
+                    return band.getAncillaryRelation();
                 }
 
                 @Override
                 public void setValue(String val) {
-                    roleName.set(val);
-                }
-            });
-            set.put(new PropertySupport.ReadWrite<String>("ancillaryBand", String.class, "Ancilliary Band", "Name of an ancilliary band") {
-                @Override
-                public String getValue() {
-                    RasterDataNode ancillaryBand = band.getAncillaryBand(roleName.get());
-                    if (ancillaryBand != null) {
-                        return ancillaryBand.getName();
-                    }
-                    return "";
-                }
-
-                @Override
-                public void setValue(String val) {
-                    Band ancillaryBand = band.getProduct().getBand(val);
-                    if (ancillaryBand != null) {
-                        band.setAncillaryBand(roleName.get(), ancillaryBand);
-                    } else {
-                        // todo - add dialog
-                    }
+                    band.setAncillaryRelation(val);
+                    // todo - add undoable edit
                 }
             });
 
             if (band instanceof VirtualBand) {
                 final VirtualBand virtualBand = (VirtualBand) band;
 
-                set.put(new PropertySupport.ReadWrite<String>("expression", String.class, "Expression", "Band maths expression") {
+                set.put(new PropertySupport.ReadWrite<String>("expression", String.class, "Expression", "Mathematical expression used to compute the raster's pixel values") {
                     @Override
                     public String getValue() {
                         return virtualBand.getExpression();
@@ -610,6 +663,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
                     @Override
                     public void setValue(String val) {
                         virtualBand.setExpression(val);
+                        // todo - add undoable edit
                     }
                 });
             }
@@ -617,4 +671,5 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
             return Stream.concat(Stream.of(super.getPropertySets()), Stream.of(set)).toArray(PropertySet[]::new);
         }
     }
+
 }

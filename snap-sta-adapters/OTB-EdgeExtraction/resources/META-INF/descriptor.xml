@@ -15,7 +15,7 @@
   <processingWriter>GeoTIFF</processingWriter>
   <mainToolFileLocation>$OTB_BIN_PATH\otbApplicationLauncherCommandLine.exe</mainToolFileLocation>
   <workingDir>$OUTPUT_DIR</workingDir>
-  <templateFileLocation>OTB EdgeExtraction-template.vm</templateFileLocation>
+  <templateFileLocation>OTB-EdgeExtraction-template.vm</templateFileLocation>
   <progressPattern>(?:.+): (\d{1,3})% (?:.+)</progressPattern>
   <errorPattern>ERROR: (.+)</errorPattern>
   <variables>

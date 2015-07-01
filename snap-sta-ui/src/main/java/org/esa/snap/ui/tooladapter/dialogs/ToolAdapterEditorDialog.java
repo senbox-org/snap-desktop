@@ -33,7 +33,12 @@ import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.gpf.GPF;
 import org.esa.snap.framework.gpf.OperatorException;
 import org.esa.snap.framework.gpf.OperatorSpi;
-import org.esa.snap.framework.gpf.descriptor.*;
+import org.esa.snap.framework.gpf.descriptor.AnnotationOperatorDescriptor;
+import org.esa.snap.framework.gpf.descriptor.ParameterDescriptor;
+import org.esa.snap.framework.gpf.descriptor.SystemDependentVariable;
+import org.esa.snap.framework.gpf.descriptor.SystemVariable;
+import org.esa.snap.framework.gpf.descriptor.TemplateParameterDescriptor;
+import org.esa.snap.framework.gpf.descriptor.ToolAdapterOperatorDescriptor;
 import org.esa.snap.framework.gpf.operators.tooladapter.ToolAdapterConstants;
 import org.esa.snap.framework.gpf.operators.tooladapter.ToolAdapterIO;
 import org.esa.snap.framework.gpf.operators.tooladapter.ToolAdapterOpSpi;
@@ -53,9 +58,22 @@ import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 import org.openide.util.NbBundle;
 
-import javax.swing.*;
+import javax.swing.AbstractButton;
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.SpringLayout;
 import javax.swing.border.TitledBorder;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -113,7 +131,8 @@ import java.util.stream.Collectors;
         "MSG_Wrong_Value_Text=One or more form parameters have invalid values.\n" +
                 "Please correct them before saving the adapter.",
         "MSG_Wrong_Usage_Array_Text=You have used array notation for source products, but only one product will be used.\n" +
-                "Please correct the problem before saving the adapter."
+                "Please correct the problem before saving the adapter.",
+        "MSG_Empty_Variable_Text=The variable %s has no value set"
 })
 public class ToolAdapterEditorDialog extends ModalDialog {
 
@@ -126,6 +145,7 @@ public class ToolAdapterEditorDialog extends ModalDialog {
     private BindingContext bindingContext;
     private AutoCompleteTextArea templateContent;
     private OperatorParametersTable paramsTable;
+    private AppContext context;
     private Logger logger;
     public static final String helpID = "sta_editor";
 
@@ -136,6 +156,7 @@ public class ToolAdapterEditorDialog extends ModalDialog {
 
     private ToolAdapterEditorDialog(AppContext appContext, String title) {
         super(appContext.getApplicationWindow(), title, ID_OK_CANCEL_HELP, new Object[] { new JButton(Bundle.CTL_Button_Export_Text()) }, helpID);
+        this.context = appContext;
         this.logger = Logger.getLogger(ToolAdapterEditorDialog.class.getName());
         //getJDialog().setResizable(false);
         this.registerButton(ID_OTHER, new JButton(Bundle.CTL_Button_Export_Text()));
@@ -213,6 +234,9 @@ public class ToolAdapterEditorDialog extends ModalDialog {
 
     @Override
     protected boolean verifyUserInput() {
+        /**
+         * Verify the existence of the tool executable
+         */
         File file = newOperatorDescriptor.getMainToolFileLocation();
         if (file == null) {
             // should not come here unless, somehow, the property value was not set by binding
@@ -225,24 +249,39 @@ public class ToolAdapterEditorDialog extends ModalDialog {
             SnapDialogs.showWarning(Bundle.MSG_Inexistent_Tool_Path_Text());
             return false;
         }
-        /*if (file.getPath().endsWith(ToolAdapterConstants.SHELL_EXT_VAR)) {
-            file = new File(file.getPath().replace(ToolAdapterConstants.SHELL_EXT_VAR, ToolAdapterIO.getShellExtension()));
-        }*/
         if (!file.exists()) {
             File resolvedFile = resolvePathOnSystem(file);
             newOperatorDescriptor.setMainToolFileLocation(resolvedFile == null ? file : resolvedFile);
         }
-
-        Path toolLocation = newOperatorDescriptor.getExpandedLocation(newOperatorDescriptor.getMainToolFileLocation()).toPath();
+        Path toolLocation = newOperatorDescriptor.resolveVariables(newOperatorDescriptor.getMainToolFileLocation()).toPath();
         if (!(Files.exists(toolLocation) && Files.isExecutable(toolLocation))) {
             SnapDialogs.showWarning(Bundle.MSG_Inexistent_Tool_Path_Text());
             return false;
         }
-        File workingDir = newOperatorDescriptor.getExpandedLocation(newOperatorDescriptor.getWorkingDir());
+        /**
+         * Verify the existence of the working directory
+         */
+        File workingDir = newOperatorDescriptor.resolveVariables(newOperatorDescriptor.getWorkingDir());
         if (!(workingDir != null && workingDir.exists() && workingDir.isDirectory())) {
             SnapDialogs.showWarning(Bundle.MSG_Inexistent_WorkDir_Text());
             return false;
         }
+        /**
+         * Verify that there is no System Variable without value
+         */
+        java.util.List<SystemVariable> variables = newOperatorDescriptor.getVariables();
+        if (variables != null) {
+            for (SystemVariable variable : variables) {
+                String value = variable.getValue();
+                if (value == null || value.isEmpty()) {
+                    SnapDialogs.showWarning(String.format(Bundle.MSG_Empty_Variable_Text(), variable.getKey()));
+                    return false;
+                }
+            }
+        }
+        /**
+         * Verify the existence of files for File parameter values that are marked as Not Null or Not Empty
+         */
         ParameterDescriptor[] parameterDescriptors = newOperatorDescriptor.getParameterDescriptors();
         if (parameterDescriptors != null && parameterDescriptors.length > 0) {
             for (ParameterDescriptor parameterDescriptor : parameterDescriptors) {
@@ -511,7 +550,6 @@ public class ToolAdapterEditorDialog extends ModalDialog {
         JLabel label = new JLabel(Bundle.CTL_Label_CmdLineTemplate_Text());
         configPanel.add(label);
 
-        //templateContent = new JTextArea("", 16, 9);
         templateContent = new AutoCompleteTextArea("", 16, 9);
         try {
             if (operatorIsNew) {
@@ -527,52 +565,6 @@ public class ToolAdapterEditorDialog extends ModalDialog {
         templateContent.setInputVerifier(new RequiredFieldValidator(MESSAGE_REQUIRED));
         templateContent.setAutoCompleteEntries(getAutocompleteEntries());
         templateContent.setTriggerChar('$');
-
-//        templateContent.addKeyListener(new KeyListener() {
-//            private boolean dollarPressed;
-//
-//            @Override
-//            public void keyTyped(KeyEvent e) {
-//                if (e.getKeyChar() == KeyEvent.VK_ENTER || e.getKeyChar() == KeyEvent.VK_TAB) {
-//                    if (suggestion != null && dollarPressed) {
-//                        if (suggestion.insertSelection()) {
-//                            e.consume();
-//                            final int position = templateContent.getCaretPosition();
-//                            SwingUtilities.invokeLater(() -> {
-//                                try {
-//                                    templateContent.getDocument().remove(position - 1, 1);
-//                                } catch (BadLocationException ex) {
-//                                    ex.printStackTrace();
-//                                }
-//                            });
-//                        }
-//                    }
-//                    dollarPressed = false;
-//                }
-//            }
-//
-//            @Override
-//            public void keyReleased(KeyEvent e) {
-//                if (e.getKeyCode() == KeyEvent.VK_DOWN && suggestion != null && dollarPressed) {
-//                    suggestion.moveDown();
-//                } else if (e.getKeyCode() == KeyEvent.VK_UP && suggestion != null && dollarPressed) {
-//                    suggestion.moveUp();
-//                } else if (e.getKeyChar() == '$') {
-//                    dollarPressed = true;
-//                    SwingUtilities.invokeLater(ToolAdapterEditorDialog.this::showSuggestion);
-//                } else if (Character.isLetterOrDigit(e.getKeyChar()) && dollarPressed) {
-//                    SwingUtilities.invokeLater(ToolAdapterEditorDialog.this::showSuggestion);
-//                } else if (Character.isWhitespace(e.getKeyChar()) || e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-//                    dollarPressed = false;
-//                    hideSuggestion();
-//                }
-//            }
-//
-//            @Override
-//            public void keyPressed(KeyEvent e) {
-//
-//            }
-//        });
         JScrollPane scrollPane = new JScrollPane(templateContent);
         configPanel.add(scrollPane);
 
@@ -604,11 +596,27 @@ public class ToolAdapterEditorDialog extends ModalDialog {
         BoxLayout layout = new BoxLayout(variablesBorderPanel, BoxLayout.PAGE_AXIS);
         variablesBorderPanel.setLayout(layout);
         variablesBorderPanel.setBorder(BorderFactory.createTitledBorder(Bundle.CTL_Panel_SysVar_Border_TitleText()));
-        AbstractButton addVariableBut = ToolButtonFactory.createButton(UIUtils.loadImageIcon(Bundle.Icon_Add()), false);
-        addVariableBut.setMaximumSize(new Dimension(20, 20));
-        addVariableBut.setAlignmentX(Component.LEFT_ALIGNMENT);
-        variablesBorderPanel.add(addVariableBut);
-        VariablesTable varTable = new VariablesTable(newOperatorDescriptor.getVariables());
+
+        AbstractButton addVariableButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon(Bundle.Icon_Add()), false);
+        addVariableButton.setText("Add Variable");
+        addVariableButton.setMaximumSize(new Dimension(100, 20));
+        addVariableButton.setAlignmentX(Component.LEFT_ALIGNMENT);
+        //variablesBorderPanel.add(addVariableButton);
+
+        AbstractButton addDependentVariableButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon(Bundle.Icon_Add()), false);
+        addDependentVariableButton.setText("Add System-Dependent Variable");
+        addDependentVariableButton.setMaximumSize(new Dimension(200, 20));
+        addDependentVariableButton.setAlignmentX(Component.LEFT_ALIGNMENT);
+        //variablesBorderPanel.add(addDependentVariableButton);
+
+        JPanel buttonsPannel = new JPanel(new SpringLayout());
+        buttonsPannel.add(addVariableButton);
+        buttonsPannel.add(addDependentVariableButton);
+        SpringUtilities.makeCompactGrid(buttonsPannel, 1, 2, 0, 0, 0, 0);
+        buttonsPannel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        variablesBorderPanel.add(buttonsPannel);
+
+        VariablesTable varTable = new VariablesTable(newOperatorDescriptor.getVariables(), context);
         varTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
         varTable.setRowHeight(20);
         JScrollPane scrollPane = new JScrollPane(varTable);
@@ -622,8 +630,13 @@ public class ToolAdapterEditorDialog extends ModalDialog {
 
         descriptorAndVariablesPanel.add(variablesBorderPanel);
 
-        addVariableBut.addActionListener(e -> {
+        addVariableButton.addActionListener(e -> {
             newOperatorDescriptor.getVariables().add(new SystemVariable("key", ""));
+            varTable.revalidate();
+        });
+
+        addDependentVariableButton.addActionListener(e -> {
+            newOperatorDescriptor.getVariables().add(new SystemDependentVariable("key", ""));
             varTable.revalidate();
         });
 
@@ -770,35 +783,6 @@ public class ToolAdapterEditorDialog extends ModalDialog {
         }
         return success;
     }
-
-//    protected void showSuggestion() {
-//        hideSuggestion();
-//        final int position = templateContent.getCaretPosition();
-//        Point location;
-//        try {
-//            location = templateContent.modelToView(position).getLocation();
-//        } catch (BadLocationException e) {
-//            return;
-//        }
-//        String text = templateContent.getText();
-//        int start = Math.max(0, text.lastIndexOf("$", position));
-//        if (start + 1 > position) {
-//            return;
-//        }
-//        final String subWord = text.substring(start + 1, position);
-//        if (suggestion == null) {
-//            suggestion = new InputOptionsPanel(templateContent);
-//        }
-//        suggestion.setSuggestionList(getAutocompleteEntries(), subWord);
-//        suggestion.show(position, location);
-//        SwingUtilities.invokeLater(templateContent::requestFocusInWindow);
-//    }
-//
-//    protected void hideSuggestion() {
-//        if (suggestion != null) {
-//            suggestion.hide();
-//        }
-//    }
 
     private java.util.List<String> getAutocompleteEntries() {
         java.util.List<String> entries = new ArrayList<>();

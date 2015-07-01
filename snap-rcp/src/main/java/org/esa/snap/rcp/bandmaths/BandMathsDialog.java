@@ -15,11 +15,8 @@
  */
 package org.esa.snap.rcp.bandmaths;
 
-import com.bc.ceres.binding.Property;
 import com.bc.ceres.binding.PropertyContainer;
 import com.bc.ceres.binding.PropertyDescriptor;
-import com.bc.ceres.binding.ValidationException;
-import com.bc.ceres.binding.Validator;
 import com.bc.ceres.binding.ValueSet;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.PropertyEditor;
@@ -35,7 +32,6 @@ import com.bc.jexp.impl.TermDecompiler;
 import org.esa.snap.framework.datamodel.Band;
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.ProductData;
-import org.esa.snap.framework.datamodel.ProductNode;
 import org.esa.snap.framework.datamodel.ProductNodeGroup;
 import org.esa.snap.framework.datamodel.ProductNodeList;
 import org.esa.snap.framework.datamodel.RasterDataNode;
@@ -50,7 +46,6 @@ import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.actions.window.OpenImageViewAction;
 import org.esa.snap.rcp.nodes.UndoableProductNodeInsertion;
-import org.esa.snap.util.Debug;
 import org.esa.snap.util.Guardian;
 import org.esa.snap.util.ProductUtils;
 import org.openide.awt.UndoRedo;
@@ -84,13 +79,8 @@ import java.util.Set;
 })
 class BandMathsDialog extends ModalDialog {
 
-    // see also: org.esa.snap.rcp.util.FakeUncertaintyGenerator
-    private static final boolean UNCERTAINTY_TEST = Boolean.getBoolean("snap.uncertainty.test");
-
-    public static final String PREF_KEY_AUTO_SHOW_NEW_BANDS = "bandmaths_autoshowbands_enabled";
-    public static final String PREF_KEY_GEOLOCATION_EPS = "geolocation_eps";
-    public static final double PREF_VALUE_GEOLOCATION_EPS = 1.0e-4;
-
+    static final String PREF_KEY_AUTO_SHOW_NEW_BANDS = "BandMaths.autoShowNewBands";
+    static final String PREF_KEY_LAST_EXPRESSION_PATH = "BandMaths.lastExpressionPath";
 
     private static final String PROPERTY_NAME_PRODUCT = "productName";
     private static final String PROPERTY_NAME_EXPRESSION = "expression";
@@ -102,7 +92,6 @@ class BandMathsDialog extends ModalDialog {
     private static final String PROPERTY_NAME_BAND_DESC = "bandDescription";
     private static final String PROPERTY_NAME_BAND_UNIT = "bandUnit";
     private static final String PROPERTY_NAME_BAND_WAVELENGTH = "bandWavelength";
-    private static final String PREF_KEY_LAST_EXPRESSION_PATH = "BandMathsDialog.last_expression_path";
 
     private final ProductNodeList<Product> productsList;
     private final BindingContext bindingContext;
@@ -110,7 +99,7 @@ class BandMathsDialog extends ModalDialog {
 
     private String productName;
     @SuppressWarnings("FieldCanBeLocal")
-    private String expression = "";
+    private String expression;
     @SuppressWarnings("UnusedDeclaration")
     private double noDataValue;
     @SuppressWarnings("UnusedDeclaration")
@@ -122,11 +111,11 @@ class BandMathsDialog extends ModalDialog {
     @SuppressWarnings("UnusedDeclaration")
     private String bandName;
     @SuppressWarnings("FieldCanBeLocal")
-    private String bandDescription = "";
+    private String bandDescription;
     @SuppressWarnings("FieldCanBeLocal")
-    private String bandUnit = "";
-    @SuppressWarnings("FieldCanBeLocal")
-    private float bandWavelength = 0;
+    private String bandUnit;
+    @SuppressWarnings("UnusedDeclaration")
+    private float bandWavelength;
 
     private static int numNewBands = 0;
 
@@ -138,6 +127,9 @@ class BandMathsDialog extends ModalDialog {
         targetProduct = currentProduct;
         this.productsList = productsList;
         bindingContext = createBindingContext();
+        expression = "";
+        bandDescription = "";
+        bandUnit = "";
         makeUI();
     }
 
@@ -162,18 +154,6 @@ class BandMathsDialog extends ModalDialog {
             return;
         }
 
-        String uncertaintyExpression = null;
-        if (generateUncertaintyBand && UNCERTAINTY_TEST) {
-            GaussianUncertaintyPropagator propagator = new GaussianUncertaintyPropagator();
-            Term term;
-            try {
-                term = propagator.propagateUncertainties(targetProduct, getExpression());
-            } catch (ParseException | UnsupportedOperationException e) {
-                SnapDialogs.showError(Bundle.CTL_BandMathsDialog_Title() + " - Error", e.getMessage());
-                return;
-            }
-            uncertaintyExpression = new TermDecompiler().decompile(term);
-        }
         Band band;
         if (saveExpressionOnly) {
             band = new VirtualBand(getBandName(), ProductData.TYPE_FLOAT32, width, height, getExpression());
@@ -185,13 +165,6 @@ class BandMathsDialog extends ModalDialog {
 
         ProductNodeGroup<Band> bandGroup = targetProduct.getBandGroup();
         bandGroup.add(band);
-
-        if (uncertaintyExpression != null) {
-            Band uncertaintyBand = new VirtualBand(getBandName() + "_unc", ProductData.TYPE_FLOAT32, width, height, uncertaintyExpression);
-            bandGroup.add(uncertaintyBand);
-            ProductUtils.copySpectralBandProperties(band, uncertaintyBand);
-            band.setAncillaryBand("uncertainty", uncertaintyBand);
-        }
 
         if (saveExpressionOnly) {
             checkExpressionForExternalReferences(getExpression());
@@ -212,6 +185,14 @@ class BandMathsDialog extends ModalDialog {
         band.setModified(true);
         if (SnapApp.getDefault().getPreferences().getBoolean(PREF_KEY_AUTO_SHOW_NEW_BANDS, true)) {
             new OpenImageViewAction(band).openProductSceneView();
+        }
+
+        if (generateUncertaintyBand) {
+            if (band instanceof VirtualBand) {
+                VirtualBand virtualBand = (VirtualBand) band;
+                PropagateUncertaintyAction uncertaintyAction = new PropagateUncertaintyAction(virtualBand);
+                uncertaintyAction.actionPerformed(null);
+            }
         }
     }
 
@@ -302,11 +283,9 @@ class BandMathsDialog extends ModalDialog {
         GridBagUtils.addToPanel(panel, nodataPanel, gbc,
                                 "weightx=1, insets.top=3, gridwidth=3, fill=HORIZONTAL, anchor=WEST");
 
-        if (UNCERTAINTY_TEST) {
-            gbc.gridy = ++line;
-            components = createComponents(PROPERTY_NAME_GENERATE_UNCERTAINTY_BAND, CheckBoxEditor.class);
-            GridBagUtils.addToPanel(panel, components[0], gbc, "insets.top=3, gridwidth=3, fill=HORIZONTAL, anchor=EAST");
-        }
+        gbc.gridy = ++line;
+        components = createComponents(PROPERTY_NAME_GENERATE_UNCERTAINTY_BAND, CheckBoxEditor.class);
+        GridBagUtils.addToPanel(panel, components[0], gbc, "insets.top=3, gridwidth=3, fill=HORIZONTAL, anchor=EAST");
 
         gbc.gridy = ++line;
         JLabel expressionLabel = new JLabel(Bundle.CTL_BandMathsDialog_LblExpression());
@@ -388,7 +367,7 @@ class BandMathsDialog extends ModalDialog {
         descriptor.setDisplayName("Name");
         descriptor.setDescription("The name for the new band.");
         descriptor.setNotEmpty(true);
-        descriptor.setValidator(new ProductNodeNameValidator());
+        descriptor.setValidator(new ProductNodeNameValidator(targetProduct));
         String newBandName;
         do {
             numNewBands++;
@@ -441,6 +420,8 @@ class BandMathsDialog extends ModalDialog {
                                  PROPERTY_NAME_SAVE_EXPRESSION_ONLY, Boolean.FALSE);
         context.bindEnabledState(PROPERTY_NAME_NO_DATA_VALUE, true,
                                  PROPERTY_NAME_NO_DATA_VALUE_USED, Boolean.TRUE);
+        context.bindEnabledState(PROPERTY_NAME_GENERATE_UNCERTAINTY_BAND, true,
+                                 PROPERTY_NAME_SAVE_EXPRESSION_ONLY, Boolean.TRUE);
 
         return context;
     }
@@ -456,26 +437,16 @@ class BandMathsDialog extends ModalDialog {
     private Product[] getCompatibleProducts() {
         List<Product> compatibleProducts = new ArrayList<>(productsList.size());
         compatibleProducts.add(targetProduct);
-        final float geolocationEps = getGeolocationEps();
-        Debug.trace("BandMathsDialog.geolocationEps = " + geolocationEps);
-        Debug.trace("BandMathsDialog.getCompatibleProducts:");
-        Debug.trace("  comparing: " + targetProduct.getName());
         for (int i = 0; i < productsList.size(); i++) {
             final Product product = productsList.getAt(i);
             if (targetProduct != product) {
-                Debug.trace("  with:      " + product.getDisplayName());
-                final boolean isCompatibleProduct = targetProduct.isCompatibleProduct(product, geolocationEps);
-                Debug.trace("  result:    " + isCompatibleProduct);
-                if (isCompatibleProduct) {
+                if (targetProduct.getSceneRasterWidth() == product.getSceneRasterWidth()
+                        && targetProduct.getSceneRasterHeight() == product.getSceneRasterHeight()) {
                     compatibleProducts.add(product);
                 }
             }
         }
         return compatibleProducts.toArray(new Product[compatibleProducts.size()]);
-    }
-
-    private float getGeolocationEps() {
-        return (float) SnapApp.getDefault().getPreferences().getDouble(PREF_KEY_GEOLOCATION_EPS, PREF_VALUE_GEOLOCATION_EPS);
     }
 
     private ActionListener createEditExpressionButtonListener() {
@@ -558,25 +529,4 @@ class BandMathsDialog extends ModalDialog {
         return false;
     }
 
-    @NbBundle.Messages({
-            "CTL_PNNV_ExMsg_UniqueBandName=The band name must be unique within the product scope.\n"
-                    + "The scope comprises bands and tie-point grids.",
-            "CTL_PNNV_ExMsg_ContainedCharacter=The band name ''{0}'' is not valid.\n\n"
-                    + "Names must not start with a dot and must not\n"
-                    + "contain any of the following characters: \\/:*?\"<>|"
-
-    })
-    private class ProductNodeNameValidator implements Validator {
-
-        @Override
-        public void validateValue(Property property, Object value) throws ValidationException {
-            final String name = (String) value;
-            if (!ProductNode.isValidNodeName(name)) {
-                throw new ValidationException(Bundle.CTL_PNNV_ExMsg_ContainedCharacter(name));
-            }
-            if (targetProduct.containsRasterDataNode(name)) {
-                throw new ValidationException(Bundle.CTL_PNNV_ExMsg_UniqueBandName());
-            }
-        }
-    }
 }

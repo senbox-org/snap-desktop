@@ -663,7 +663,7 @@ class ColorManipulationForm implements SelectionSupport.Handler<ProductSceneView
                 if (ProductNode.PROPERTY_NAME_NAME.equalsIgnoreCase(propertyName)) {
                     updateTitle();
                     childForm.handleRasterPropertyChange(event, raster);
-                } else if (RasterDataNode.PROPERTY_NAME_ANCILLARY_BANDS.equalsIgnoreCase(propertyName)) {
+                } else if (RasterDataNode.PROPERTY_NAME_ANCILLARY_VARIABLES.equalsIgnoreCase(propertyName)) {
                     updateTitle();
                     childForm.handleRasterPropertyChange(event, raster);
                 } else if (RasterDataNode.PROPERTY_NAME_UNIT.equalsIgnoreCase(propertyName)) {
