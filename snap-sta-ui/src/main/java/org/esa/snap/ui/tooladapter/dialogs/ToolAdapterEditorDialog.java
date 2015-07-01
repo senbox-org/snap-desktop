@@ -33,7 +33,12 @@ import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.gpf.GPF;
 import org.esa.snap.framework.gpf.OperatorException;
 import org.esa.snap.framework.gpf.OperatorSpi;
-import org.esa.snap.framework.gpf.descriptor.*;
+import org.esa.snap.framework.gpf.descriptor.AnnotationOperatorDescriptor;
+import org.esa.snap.framework.gpf.descriptor.ParameterDescriptor;
+import org.esa.snap.framework.gpf.descriptor.SystemDependentVariable;
+import org.esa.snap.framework.gpf.descriptor.SystemVariable;
+import org.esa.snap.framework.gpf.descriptor.TemplateParameterDescriptor;
+import org.esa.snap.framework.gpf.descriptor.ToolAdapterOperatorDescriptor;
 import org.esa.snap.framework.gpf.operators.tooladapter.ToolAdapterConstants;
 import org.esa.snap.framework.gpf.operators.tooladapter.ToolAdapterIO;
 import org.esa.snap.framework.gpf.operators.tooladapter.ToolAdapterOpSpi;
@@ -53,9 +58,22 @@ import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 import org.openide.util.NbBundle;
 
-import javax.swing.*;
+import javax.swing.AbstractButton;
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.SpringLayout;
 import javax.swing.border.TitledBorder;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -114,7 +132,7 @@ import java.util.stream.Collectors;
                 "Please correct them before saving the adapter.",
         "MSG_Wrong_Usage_Array_Text=You have used array notation for source products, but only one product will be used.\n" +
                 "Please correct the problem before saving the adapter.",
-        "MSG_Empty_Varialble_Text=The variable %s has no value set"
+        "MSG_Empty_Variable_Text=The variable %s has no value set"
 })
 public class ToolAdapterEditorDialog extends ModalDialog {
 
@@ -256,7 +274,7 @@ public class ToolAdapterEditorDialog extends ModalDialog {
             for (SystemVariable variable : variables) {
                 String value = variable.getValue();
                 if (value == null || value.isEmpty()) {
-                    SnapDialogs.showWarning(String.format(Bundle.MSG_Empty_Varialble_Text(), variable.getKey()));
+                    SnapDialogs.showWarning(String.format(Bundle.MSG_Empty_Variable_Text(), variable.getKey()));
                     return false;
                 }
             }
