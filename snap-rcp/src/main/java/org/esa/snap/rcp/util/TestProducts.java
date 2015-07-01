@@ -36,7 +36,7 @@ public class TestProducts {
         Product product = new Product("Test_Product_1", "Test_Type_1", 2048, 1024);
         product.addTiePointGrid(new TiePointGrid("Grid_A", 32, 16, 0, 0, 2048f / 32, 1024f / 16, createRandomPoints(32 * 16)));
         product.addTiePointGrid(new TiePointGrid("Grid_B", 32, 16, 0, 0, 2048f / 32, 1024f / 16, createRandomPoints(32 * 16)));
-        product.addBand("Band_A", "sin(4 * PI * sqrt( sqr(X/1000.0 - 1) + sqr(Y/500.0 - 1) ))");
+        product.addBand("Band_A", "sin(4 * PI * sqrt( sq(X/1000.0 - 1) + sq(Y/500.0 - 1) ))");
         product.addBand("Band_B", "sin(4 * PI * sqrt( 2.0 * abs(X/1000.0 * Y/500.0) ))");
         product.addMask("Mask_A", "Band_A > 0.5", "I am Mask A", Color.ORANGE, 0.5);
         product.addMask("Mask_B", "Band_B < 0.0", "I am Mask B", Color.RED, 0.5);

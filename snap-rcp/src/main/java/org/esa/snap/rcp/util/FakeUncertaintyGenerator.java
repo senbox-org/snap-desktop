@@ -82,7 +82,7 @@ public class FakeUncertaintyGenerator {
                         int h2 = product.getSceneRasterHeight() / 2;
                         int s = Math.min(w2, h2);
 
-                        String varianceExpr = String.format("100 * 0.5 * (1 + sin(4 * PI * sqrt(sqr(X-%d) + sqr(Y-%d)) / %d))", w2, h2, s);
+                        String varianceExpr = String.format("100 * 0.5 * (1 + sin(4 * PI * sqrt(sq(X-%d) + sq(Y-%d)) / %d))", w2, h2, s);
                         varianceBand = addVarianceBand(product, band, varianceExpr);
                         confidenceBand = addConfidenceBand(product, band, varianceBand);
                     }

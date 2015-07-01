@@ -427,7 +427,7 @@ class DensityPlotPanel extends ChartPagePanel {
             }
 
             protected String createMaskExpression(double x0, double y0, double dx, double dy) {
-                return String.format("sqrt(sqr((%s - %s)/%s) + sqr((%s - %s)/%s)) < 1.0",
+                return String.format("sqrt(sq((%s - %s)/%s) + sq((%s - %s)/%s)) < 1.0",
                                      BandArithmetic.createExternalName(dataSourceConfig.xBand.getName()),
                                      x0,
                                      dx,
