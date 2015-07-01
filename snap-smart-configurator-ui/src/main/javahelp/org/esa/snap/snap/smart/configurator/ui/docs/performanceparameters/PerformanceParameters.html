@@ -24,7 +24,10 @@
 
 <h4><a name="processingParameters">Processing parameters</a></h4>
 
-<p>This preferences page provides options to customize processing parameters.</p>
+<p>
+    This preferences page provides options to customize processing parameters.
+    You can manually set processing parameters in SNAP Values or use the benchmark to compute faster processing parameters.
+</p>
 <ul>
     <li><b>SNAP Values</b><br>
         There are three processing parameters that may affect processing performance:
@@ -36,18 +39,17 @@
                 Defines the default cache size in MB.
             </li>
             <li><b>Nb threads</b><br>
-                Sets the available number of threads.
+                Sets the available number of threads. This value must not exceed your hardware number of cores.
             </li>
         </ul>
     </li>
     <li><b>Benchmark</b><br>
-        To help you to define faster processing parameters, you can launch benchmarks.
-
+        To help you to define faster processing parameters, you can launch benchmarks.<br>
         You need to define a list of possible processing parameters for each values (tile size, cache size and nb threads).
-        Each list must have at least one value, otherwise each values must be separated by a semi-colon (;).
+        Each list must have at least one value, otherwise each values must be separated by a semi-colon (;).<br>
         Then choose in the <b>Proc. graph</b> combobox the processing that will be used by the benchmark.
-        Finally, press the button <b>Compute</b> to launch the processing dialog, sets processing parameters and <b>Run</b>.
-        The benchmark will compute the processing with all given parameters and save the better result in <b>SNAP Values</b>.
+        Finally, press the button <b>Compute</b> to launch the processing dialog, sets processing parameters and <b>Run</b>.<br>
+        The benchmark will compute the processing with all given parameters, display results and save the faster parameters in <b>SNAP Values</b>.
     </li>
 </ul>
 
