@@ -17,7 +17,7 @@
 package org.esa.snap.rcp.bandmaths;
 
 import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductNode;
+import org.esa.snap.framework.datamodel.ProductManager;
 import org.esa.snap.framework.datamodel.ProductNodeList;
 import org.esa.snap.rcp.SnapApp;
 import org.openide.awt.ActionID;
@@ -39,7 +39,7 @@ import java.awt.event.ActionEvent;
         displayName = "#CTL_BandMathsAction_MenuText",
         popupText = "#CTL_BandMathsAction_MenuText",
 //        iconBase = "org/esa/snap/rcp/icons/BandMaths.gif", // icon is not nice
-        lazy = true
+        lazy = false
 )
 @ActionReferences({
         @ActionReference(path = "Menu/Raster", position = 0),
@@ -53,12 +53,14 @@ import java.awt.event.ActionEvent;
 public class BandMathsAction extends AbstractAction implements HelpCtx.Provider {
 
     private static final String HELP_ID = "bandArithmetic";
-    private final Product product;
 
-    public BandMathsAction(ProductNode node) {
+    public BandMathsAction() {
         super(Bundle.CTL_BandMathsAction_MenuText());
-        product = node.getProduct();
         putValue(Action.SHORT_DESCRIPTION, Bundle.CTL_BandMathsAction_ShortDescription());
+        final SnapApp snapApp = SnapApp.getDefault();
+        setEnabled(false);
+        final ProductManager productManager = snapApp.getProductManager();
+        productManager.addListener(new PMListener(productManager));
     }
 
     @Override
@@ -69,14 +71,42 @@ public class BandMathsAction extends AbstractAction implements HelpCtx.Provider 
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
         final ProductNodeList<Product> products = new ProductNodeList<>();
-        Product[] openedProducts = SnapApp.getDefault().getProductManager().getProducts();
+        final SnapApp snapApp = SnapApp.getDefault();
+        Product[] openedProducts = snapApp.getProductManager().getProducts();
         for (Product prod : openedProducts) {
             products.add(prod);
         }
 
+        Product product = snapApp.getSelectedProduct();
+        if (product == null) {
+            product = products.getAt(0);
+        }
         BandMathsDialog bandMathsDialog = new BandMathsDialog(product, products, HELP_ID);
         bandMathsDialog.show();
 
     }
 
+    private class PMListener implements ProductManager.Listener {
+
+        private final ProductManager productManager;
+
+        public PMListener(ProductManager productManager) {
+            this.productManager = productManager;
+        }
+
+        @Override
+        public void productAdded(ProductManager.Event event) {
+            updateEnableState();
+        }
+
+        @Override
+        public void productRemoved(ProductManager.Event event) {
+            updateEnableState();
+        }
+
+        private void updateEnableState() {
+            setEnabled(productManager.getProductCount() > 0);
+        }
+
+    }
 }
