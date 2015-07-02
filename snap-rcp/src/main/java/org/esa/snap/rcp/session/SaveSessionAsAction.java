@@ -33,7 +33,7 @@ import java.awt.event.ActionEvent;
 
 @ActionID(category = "File", id = "org.esa.snap.rcp.session.SaveSessionAsAction")
 @ActionRegistration(displayName = "#CTL_SaveSessionAsAction_MenuText", lazy = false)
-@ActionReference(path = "Menu/File/Session", position = 35, separatorAfter = 40)
+@ActionReference(path = "Menu/File/Session", position = 35)
 @NbBundle.Messages({
         "CTL_SaveSessionAsAction_MenuText=Save Session As...",
         "CTL_SaveSessionAsAction_ShortDescription=Save the current SNAP session using a different name."

@@ -42,7 +42,7 @@ import java.util.ArrayList;
 
 @ActionID( category = "File", id = "org.esa.snap.rcp.session.SaveSessionAction" )
 @ActionRegistration( displayName = "#CTL_SaveSessionAction_MenuText", lazy = false )
-@ActionReference(path = "Menu/File/Session", position = 20,separatorAfter = 25)
+@ActionReference(path = "Menu/File/Session", position = 20)
 @NbBundle.Messages({
         "CTL_SaveSessionAction_MenuText=Save Session",
         "CTL_SaveSessionAction_ShortDescription=Save the current SNAP session."
