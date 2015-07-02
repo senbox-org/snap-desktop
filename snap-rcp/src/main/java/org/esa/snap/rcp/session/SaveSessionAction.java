@@ -19,7 +19,6 @@ import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.ProductManager;
 import org.esa.snap.framework.datamodel.ProductNode;
 import org.esa.snap.framework.ui.product.ProductNodeView;
-import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.openide.awt.ActionID;
@@ -43,7 +42,7 @@ import java.util.ArrayList;
 
 @ActionID( category = "File", id = "org.esa.snap.rcp.session.SaveSessionAction" )
 @ActionRegistration( displayName = "#CTL_SaveSessionAction_MenuText", lazy = false )
-@ActionReference(path = "Menu/File", position = 50)
+@ActionReference(path = "Menu/File/Session", position = 20,separatorAfter = 25)
 @NbBundle.Messages({
         "CTL_SaveSessionAction_MenuText=Save Session",
         "CTL_SaveSessionAction_ShortDescription=Save the current SNAP session."
@@ -52,7 +51,7 @@ public class SaveSessionAction extends AbstractAction implements ContextAwareAct
 
     public static final String ID = "saveSession";
     private static final String TITLE = "Save Session As";
-    private final Lookup.Result<ProductSceneView> result;
+    private final Lookup.Result<ProductNode> result;
     private final Lookup lookup;
     private ProductManager productManager;
 
@@ -64,7 +63,7 @@ public class SaveSessionAction extends AbstractAction implements ContextAwareAct
     public SaveSessionAction(Lookup lookup) {
         super(Bundle.CTL_SaveSessionAction_MenuText());
         this.lookup = lookup;
-        result = lookup.lookupResult(ProductSceneView.class);
+        result = lookup.lookupResult(ProductNode.class);
         result.addLookupListener(WeakListeners.create(LookupListener.class, this, result));
         setEnabled(false);
 

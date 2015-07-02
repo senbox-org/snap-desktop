@@ -15,7 +15,7 @@
  */
 package org.esa.snap.rcp.session;
 
-import org.esa.snap.framework.ui.product.ProductSceneView;
+import org.esa.snap.framework.datamodel.ProductNode;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
@@ -31,16 +31,16 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import java.awt.event.ActionEvent;
 
-@ActionID( category = "File", id = "org.esa.snap.rcp.session.SaveSessionAsAction" )
-@ActionRegistration( displayName = "#CTL_SaveSessionAsAction_MenuText", lazy = false )
-@ActionReference(path = "Menu/File", position = 55,separatorAfter = 57)
+@ActionID(category = "File", id = "org.esa.snap.rcp.session.SaveSessionAsAction")
+@ActionRegistration(displayName = "#CTL_SaveSessionAsAction_MenuText", lazy = false)
+@ActionReference(path = "Menu/File/Session", position = 35, separatorAfter = 40)
 @NbBundle.Messages({
         "CTL_SaveSessionAsAction_MenuText=Save Session As...",
         "CTL_SaveSessionAsAction_ShortDescription=Save the current SNAP session using a different name."
 })
 public class SaveSessionAsAction extends AbstractAction implements ContextAwareAction, LookupListener {
     public static final String ID = "saveSessionAs";
-    private final Lookup.Result<ProductSceneView> result;
+    private final Lookup.Result<ProductNode> result;
     private final Lookup lookup;
 
     public SaveSessionAsAction() {
@@ -50,7 +50,7 @@ public class SaveSessionAsAction extends AbstractAction implements ContextAwareA
     public SaveSessionAsAction(Lookup lookup) {
         super(Bundle.CTL_SaveSessionAsAction_MenuText());
         this.lookup = lookup;
-        result = lookup.lookupResult(ProductSceneView.class);
+        result = lookup.lookupResult(ProductNode.class);
         result.addLookupListener(WeakListeners.create(LookupListener.class, this, result));
         setEnabled(false);
     }
@@ -69,6 +69,7 @@ public class SaveSessionAsAction extends AbstractAction implements ContextAwareA
     @Override
     public void resultChanged(LookupEvent ev) {
         final VisatApp app = VisatApp.getApp();
-        setEnabled(app.getSessionFile() != null);
+        ProductNode productNode = lookup.lookup(ProductNode.class);
+        setEnabled(productNode != null);
     }
 }

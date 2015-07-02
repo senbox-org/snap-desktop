@@ -34,7 +34,7 @@ import java.awt.event.ActionEvent;
 
 @ActionID( category = "File", id = "org.esa.snap.rcp.session.CloseSessionAction" )
 @ActionRegistration( displayName = "#CTL_CloseSessionAction_MenuText", lazy = false )
-@ActionReference(path = "Menu/File", position = 35,separatorAfter = 37)
+@ActionReference(path = "Menu/File/Session", position = 45)
 @NbBundle.Messages({
         "CTL_CloseSessionAction_MenuText=Close Session",
         "CTL_CloseSessionAction_ShortDescription=Close the current SNAP session."

@@ -55,7 +55,7 @@ import java.util.concurrent.ExecutionException;
 
 @ActionID( category = "File", id = "org.esa.snap.rcp.session.OpenSessionAction" )
 @ActionRegistration( displayName = "#CTL_OpenSessionAction_MenuText", lazy = false )
-@ActionReference(path = "Menu/File", position = 15)
+@ActionReference(path = "Menu/File/Session", position = 15,separatorAfter = 17)
 @NbBundle.Messages({
         "CTL_OpenSessionAction_MenuText=Open Session...",
         "CTL_OpenSessionAction_ShortDescription=Open a SNAP session."
