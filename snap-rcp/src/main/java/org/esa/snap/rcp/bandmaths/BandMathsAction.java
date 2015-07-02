@@ -57,10 +57,9 @@ public class BandMathsAction extends AbstractAction implements HelpCtx.Provider 
     public BandMathsAction() {
         super(Bundle.CTL_BandMathsAction_MenuText());
         putValue(Action.SHORT_DESCRIPTION, Bundle.CTL_BandMathsAction_ShortDescription());
-        final SnapApp snapApp = SnapApp.getDefault();
-        setEnabled(false);
-        final ProductManager productManager = snapApp.getProductManager();
-        productManager.addListener(new PMListener(productManager));
+        final ProductManager productManager = SnapApp.getDefault().getProductManager();
+        setEnabled(productManager.getProductCount() > 0);
+        productManager.addListener(new PMListener());
     }
 
     @Override
@@ -71,28 +70,20 @@ public class BandMathsAction extends AbstractAction implements HelpCtx.Provider 
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
         final ProductNodeList<Product> products = new ProductNodeList<>();
-        final SnapApp snapApp = SnapApp.getDefault();
-        Product[] openedProducts = snapApp.getProductManager().getProducts();
+        Product[] openedProducts = SnapApp.getDefault().getProductManager().getProducts();
         for (Product prod : openedProducts) {
             products.add(prod);
         }
 
-        Product product = snapApp.getSelectedProduct();
+        Product product = SnapApp.getDefault().getSelectedProduct();
         if (product == null) {
             product = products.getAt(0);
         }
         BandMathsDialog bandMathsDialog = new BandMathsDialog(product, products, HELP_ID);
         bandMathsDialog.show();
-
     }
 
     private class PMListener implements ProductManager.Listener {
-
-        private final ProductManager productManager;
-
-        public PMListener(ProductManager productManager) {
-            this.productManager = productManager;
-        }
 
         @Override
         public void productAdded(ProductManager.Event event) {
@@ -105,7 +96,7 @@ public class BandMathsAction extends AbstractAction implements HelpCtx.Provider 
         }
 
         private void updateEnableState() {
-            setEnabled(productManager.getProductCount() > 0);
+            setEnabled(SnapApp.getDefault().getProductManager().getProductCount() > 0);
         }
 
     }
