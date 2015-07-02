@@ -21,6 +21,7 @@ import org.esa.snap.framework.datamodel.ProductNode;
 import org.esa.snap.framework.ui.product.ProductNodeView;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.actions.file.SaveProductAction;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
@@ -89,7 +90,7 @@ public class SaveSessionAction extends AbstractAction implements ContextAwareAct
     }
 
     public void saveSession(boolean saveAs) {
-        final VisatApp app = VisatApp.getApp();
+        final SessionManager app = SessionManager.getDefault();
 
         File sessionFile = app.getSessionFile();
         if (sessionFile == null || saveAs) {
@@ -138,7 +139,8 @@ public class SaveSessionAction extends AbstractAction implements ContextAwareAct
                 if (answer == SnapDialogs.Answer.YES) {
                     File sessionDir = sessionFile.getAbsoluteFile().getParentFile();
                     product.setFileLocation(new File(sessionDir, product.getName() + ".dim"));
-                    VisatApp.getApp().saveProduct(product);
+                    SaveProductAction saveProductAction = new SaveProductAction(product);
+                    saveProductAction.execute();
                 } else {
                     return false;
                 }
@@ -157,7 +159,8 @@ public class SaveSessionAction extends AbstractAction implements ContextAwareAct
                 // Here: Yes, No + Cancel, its because we have file location for the session XML
                 SnapDialogs.Answer answer = SnapDialogs.requestDecision(TITLE, message, false, null);
                 if (answer == SnapDialogs.Answer.YES) {
-                    VisatApp.getApp().saveProduct(product);
+                    SaveProductAction saveProductAction = new SaveProductAction(product);
+                    saveProductAction.execute();
                 } else if (answer == SnapDialogs.Answer.YES) {
                     return false;
                 }
@@ -167,7 +170,7 @@ public class SaveSessionAction extends AbstractAction implements ContextAwareAct
         return true;
     }
 
-    private Session createSession(VisatApp app) {
+    private Session createSession(SessionManager app) {
         ArrayList<ProductNodeView> nodeViews = new ArrayList<ProductNodeView>();
 //        final JInternalFrame[] internalFrames = app.getAllInternalFrames();
 //        for (JInternalFrame internalFrame : internalFrames) {

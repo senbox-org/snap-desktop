@@ -25,6 +25,7 @@ import org.esa.snap.framework.ui.product.ProductNodeView;
 import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.actions.file.CloseAllProductsAction;
 import org.esa.snap.util.SystemUtils;
 import org.esa.snap.util.io.SnapFileFilter;
 import org.openide.awt.ActionID;
@@ -102,7 +103,7 @@ public class OpenSessionAction extends AbstractAction implements LookupListener,
     @Override
     public void actionPerformed(ActionEvent event) {
 
-        final VisatApp app = VisatApp.getApp();
+        final SessionManager app = SessionManager.getDefault();
 
         if (app.getSessionFile() != null) {
             SnapDialogs.Answer answer = SnapDialogs.requestDecision(TITLE,
@@ -125,9 +126,10 @@ public class OpenSessionAction extends AbstractAction implements LookupListener,
         openSession(app, sessionFile);
     }
 
-    public void openSession(VisatApp app, File sessionFile) {
+    public void openSession(SessionManager app, File sessionFile) {
         app.setSessionFile(sessionFile);
-        app.closeAllProducts();
+        CloseAllProductsAction closeProductAction = new CloseAllProductsAction();
+        closeProductAction.execute();
         SwingWorker<RestoredSession, Object> worker = new OpenSessionWorker(app, sessionFile);
         worker.execute();
     }
@@ -135,10 +137,10 @@ public class OpenSessionAction extends AbstractAction implements LookupListener,
 
     private static class OpenSessionWorker extends ProgressMonitorSwingWorker<RestoredSession, Object> {
 
-        private final VisatApp app;
+        private final SessionManager app;
         private final File sessionFile;
 
-        public OpenSessionWorker(VisatApp app, File sessionFile) {
+        public OpenSessionWorker(SessionManager app, File sessionFile) {
             super(SnapApp.getDefault().getMainFrame(), TITLE);
             this.app = app;
             this.sessionFile = sessionFile;

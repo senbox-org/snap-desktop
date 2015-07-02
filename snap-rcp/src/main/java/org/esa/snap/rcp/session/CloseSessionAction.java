@@ -16,6 +16,7 @@
 package org.esa.snap.rcp.session;
 
 import org.esa.snap.framework.datamodel.ProductNode;
+import org.esa.snap.rcp.actions.file.CloseAllProductsAction;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
@@ -58,8 +59,9 @@ public class CloseSessionAction extends AbstractAction implements LookupListener
 
     @Override
     public void actionPerformed(ActionEvent event) {
-        final VisatApp app = VisatApp.getApp();
-        app.closeAllProducts();
+        final SessionManager app = SessionManager.getDefault();
+        CloseAllProductsAction closeProductAction = new CloseAllProductsAction();
+        closeProductAction.execute();
         app.setSessionFile(null);
     }
 
