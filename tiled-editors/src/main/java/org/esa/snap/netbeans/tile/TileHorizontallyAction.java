@@ -36,7 +36,7 @@ import java.awt.event.ActionEvent;
 @ActionID(category = "Window", id = "org.esa.snap.netbeans.tile.TileHorizontallyAction" )
 @ActionRegistration(displayName = "#CTL_TileHorizontallyActionName", lazy = false )
 @ActionReferences({
-        @ActionReference(path = "Menu/Window", position = 0),
+        @ActionReference(path = "Menu/Window", position = 201, separatorBefore = 200),
         @ActionReference(path = "Toolbars/Window", position = 0 )
 })
 @NbBundle.Messages("CTL_TileHorizontallyActionName=Tile Horizontally")

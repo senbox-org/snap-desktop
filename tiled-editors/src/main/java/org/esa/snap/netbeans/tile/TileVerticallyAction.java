@@ -36,7 +36,7 @@ import java.awt.event.ActionEvent;
 @ActionID(category = "Window", id = "org.esa.snap.netbeans.tile.TileVerticallyAction" )
 @ActionRegistration(displayName = "#CTL_TileVerticallyActionName", lazy = false)
 @ActionReferences({
-        @ActionReference(path = "Menu/Window", position = 10),
+        @ActionReference(path = "Menu/Window", position = 210),
         @ActionReference(path = "Toolbars/Window", position = 10 )
 })
 @NbBundle.Messages("CTL_TileVerticallyActionName=Tile Vertically")

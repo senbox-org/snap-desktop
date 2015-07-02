@@ -36,7 +36,7 @@ import java.awt.event.ActionEvent;
 @ActionID(category = "Window", id = "org.esa.snap.netbeans.tile.TileSingleAction" )
 @ActionRegistration(displayName = "#CTL_TileSingleActionName", lazy = false )
 @ActionReferences({
-        @ActionReference(path = "Menu/Window", position = 30, separatorAfter = 35),
+        @ActionReference(path = "Menu/Window", position = 230, separatorAfter = 235),
         @ActionReference(path = "Toolbars/Window", position = 30 )
 })
 @NbBundle.Messages("CTL_TileSingleActionName=Tile Single")
