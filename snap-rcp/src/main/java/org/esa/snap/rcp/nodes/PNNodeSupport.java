@@ -5,9 +5,11 @@
  */
 package org.esa.snap.rcp.nodes;
 
+import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.ProductNode;
 import org.esa.snap.framework.datamodel.ProductNodeEvent;
 import org.esa.snap.framework.datamodel.ProductNodeListener;
+import org.esa.snap.rcp.SnapApp;
 import org.openide.awt.UndoRedo;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
@@ -62,6 +64,19 @@ abstract class PNNodeSupport implements ProductNodeListener {
         } while (type != null && ProductNode.class.isAssignableFrom(type));
 
         return actionList.toArray(new Action[actionList.size()]);
+    }
+
+    static <T extends ProductNode> void performUndoableProductNodeEdit(String name, T productNode, UndoableProductNodeEdit.Edit<T> action, UndoableProductNodeEdit.Edit<T> undo) {
+        action.edit(productNode);
+        Product product = productNode.getProduct();
+        // be paranoid
+        if (product != null) {
+            UndoRedo.Manager undoManager = SnapApp.getDefault().getUndoManager(product);
+            // be paranoid again
+            if (undoManager != null) {
+                undoManager.addEdit(new UndoableProductNodeEdit<>(name, productNode, undo, action));
+            }
+        }
     }
 
     static class PNNodeSupportImpl extends PNNodeSupport {

@@ -7,6 +7,7 @@ package org.esa.snap.rcp.nodes;
 
 import org.esa.snap.framework.datamodel.MetadataElement;
 import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.datamodel.ProductData;
 import org.esa.snap.framework.datamodel.ProductNode;
 import org.esa.snap.framework.datamodel.ProductNodeGroup;
 import org.esa.snap.rcp.SnapApp;
@@ -21,6 +22,7 @@ import javax.swing.Action;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -28,6 +30,8 @@ import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
 import java.util.prefs.Preferences;
 import java.util.stream.Stream;
+
+import static org.esa.snap.rcp.nodes.PNNodeSupport.performUndoableProductNodeEdit;
 
 /**
  * A node that represents a {@link org.esa.snap.framework.datamodel.Product} (=P).
@@ -104,25 +108,65 @@ class PNode extends PNNode<Product> implements PreferenceChangeListener {
                 return getProduct().getFileLocation();
             }
         });
-        set.put(new PropertySupport.ReadOnly<String>("productType", String.class, "Product Type", "The product type") {
+        set.put(new PropertySupport.ReadWrite<String>("productType", String.class, "Product Type", "The product type identifier") {
             @Override
             public String getValue() {
                 return getProduct().getProductType();
             }
-        });
-        set.put(new PropertySupport.ReadOnly<String>("startTime", String.class, "Start Time", "The product acquistion start time") {
+
             @Override
-            public String getValue() {
-                return getProduct().getStartTime().format();
+            public void setValue(String newValue) throws IllegalArgumentException {
+                String oldValue = getProduct().getProductType();
+                performUndoableProductNodeEdit("Edit Product Type",
+                                               getProduct(),
+                                               node -> node.setProductType(newValue),
+                                               node -> node.setProductType(oldValue));
             }
         });
-        set.put(new PropertySupport.ReadOnly<String>("endTime", String.class, "End Time", "The product acquistion end time") {
+        set.put(new PropertySupport.ReadWrite<String>("startTime", String.class, "Sensing Start Time", "The product's sensing start time") {
             @Override
             public String getValue() {
-                return getProduct().getEndTime().format();
+                ProductData.UTC startTime = getProduct().getStartTime();
+                return startTime != null ? startTime.format() : "";
+            }
+
+            @Override
+            public void setValue(String s) throws IllegalArgumentException {
+                ProductData.UTC oldValue = getProduct().getStartTime();
+                try {
+                    ProductData.UTC newValue = ProductData.UTC.parse(s);
+                    performUndoableProductNodeEdit("Edit Sensing Start Time",
+                                                   getProduct(),
+                                                   node -> node.setStartTime(newValue),
+                                                   node -> node.setStartTime(oldValue));
+                } catch (ParseException e) {
+                    throw new IllegalArgumentException(e.getMessage());
+                }
             }
         });
-        set.put(new PropertySupport.ReadWrite<String>("autoGrouping", String.class, "Band grouping", "The product's band grouping") {
+        set.put(new PropertySupport.ReadWrite<String>("endTime", String.class, "Sensing Stop Time", "The product's sensing stop time") {
+            @Override
+            public String getValue() {
+                ProductData.UTC endTime = getProduct().getEndTime();
+                return endTime != null ? endTime.format() : "";
+            }
+
+            @Override
+            public void setValue(String s) throws IllegalArgumentException {
+                Product product = getProduct();
+                ProductData.UTC oldValue = product.getEndTime();
+                try {
+                    ProductData.UTC newValue = ProductData.UTC.parse(s);
+                    performUndoableProductNodeEdit("Edit Sensing Stop Time",
+                                                   product,
+                                                   node -> node.setEndTime(newValue),
+                                                   node -> node.setEndTime(oldValue));
+                } catch (ParseException e) {
+                    throw new IllegalArgumentException(e.getMessage());
+                }
+            }
+        });
+        set.put(new PropertySupport.ReadWrite<String>("bandGrouping", String.class, "Band Grouping", "The product's band grouping") {
             @Override
             public String getValue() {
                 final Product.AutoGrouping autoGrouping = getProduct().getAutoGrouping();
@@ -135,7 +179,13 @@ class PNode extends PNNode<Product> implements PreferenceChangeListener {
 
             @Override
             public void setValue(String s) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-                getProduct().setAutoGrouping(s);
+                Product.AutoGrouping oldValue = getProduct().getAutoGrouping();
+                Product.AutoGrouping newValue = Product.AutoGrouping.parse(s);
+                performUndoableProductNodeEdit("Edit Band-Grouping",
+                                               getProduct(),
+                                               node -> node.setAutoGrouping(newValue),
+                                               node -> node.setAutoGrouping(oldValue));
+
             }
         });
         includeAbstractedMetadata(set);

@@ -32,13 +32,15 @@ import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.awt.UndoRedo;
 import org.openide.util.NbBundle;
-import org.openide.windows.WindowManager;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import java.awt.event.ActionEvent;
 import java.text.MessageFormat;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * This action opens an image view of the currently selected raster.
@@ -46,7 +48,7 @@ import java.text.MessageFormat;
  * @author Marco Peters
  * @author Norman Fomferra
  */
-@ActionID(category = "View", id = "OpenImageViewAction" )
+@ActionID(category = "View", id = "OpenImageViewAction")
 @ActionRegistration(
         displayName = "#CTL_OpenImageViewActionName",
         iconBase = "org/esa/snap/rcp/icons/RsBandAsSwath.gif"
@@ -110,7 +112,7 @@ public class OpenImageViewAction extends AbstractAction {
         }
     }
 
-    public void openProductSceneView() {
+    private void openProductSceneView() {
         SnapApp snapApp = SnapApp.getDefault();
         snapApp.setStatusBarMessage("Opening image view...");
 
@@ -152,18 +154,6 @@ public class OpenImageViewAction extends AbstractAction {
         worker.execute();
     }
 
-    public static ProductSceneViewTopComponent getProductSceneViewTopComponent(RasterDataNode raster) {
-        return WindowUtilities.getOpened(ProductSceneViewTopComponent.class)
-                .filter(topComponent -> topComponent.getView().getNumRasters() == 1 && raster == topComponent.getView().getRaster())
-                .findFirst()
-                .orElse(null);
-    }
-
-    public static ProductSceneView getProductSceneView(RasterDataNode raster) {
-        ProductSceneViewTopComponent component = getProductSceneViewTopComponent(raster);
-        return component != null ? component.getView() : null;
-    }
-
     private ProductSceneViewTopComponent openDocumentWindow(final ProductSceneView view) {
 
         UndoRedo.Manager undoManager = SnapApp.getDefault().getUndoManager(view.getProduct());
@@ -196,8 +186,57 @@ public class OpenImageViewAction extends AbstractAction {
         } finally {
             pm.done();
         }
-
     }
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // ProductSceneView helper methods
+
+    public static ProductSceneViewTopComponent getProductSceneViewTopComponent(RasterDataNode raster) {
+        return WindowUtilities.getOpened(ProductSceneViewTopComponent.class)
+                .filter(topComponent -> topComponent.getView().getNumRasters() == 1 && raster == topComponent.getView().getRaster())
+                .findFirst()
+                .orElse(null);
+    }
+
+    public static ProductSceneView getProductSceneView(RasterDataNode raster) {
+        ProductSceneViewTopComponent component = getProductSceneViewTopComponent(raster);
+        return component != null ? component.getView() : null;
+    }
+
+    public static void updateProductSceneViewImage(final ProductSceneView view) {
+        SwingUtilities.invokeLater(view::updateImage);
+    }
+
+    public static void updateProductSceneViewImages(final RasterDataNode[] rasters) {
+        updateProductSceneViewImages(rasters, ProductSceneViewImageUpdater.DEFAULT);
+    }
+
+    public static void updateProductSceneViewImages(final RasterDataNode[] rasters, ProductSceneViewImageUpdater updateMethod) {
+        List<ProductSceneView> views = WindowUtilities.getOpened(ProductSceneViewTopComponent.class).map(ProductSceneViewTopComponent::getView).collect(Collectors.toList());
+        for (ProductSceneView view : views) {
+            boolean updateView = false;
+            for (int j = 0; j < rasters.length && !updateView; j++) {
+                final RasterDataNode raster = rasters[j];
+                for (int k = 0; k < view.getNumRasters() && !updateView; k++) {
+                    if (view.getRaster(k) == raster) {
+                        updateView = true;
+                    }
+                }
+            }
+            if (updateView) {
+                SwingUtilities.invokeLater(() -> updateMethod.updateView(view));
+            }
+        }
+    }
+
+    /**
+     * A method used to update a <code>ProductSceneView</code>.
+     */
+    public interface ProductSceneViewImageUpdater {
+
+        ProductSceneViewImageUpdater DEFAULT = ProductSceneView::updateImage;
+
+        void updateView(ProductSceneView view);
+    }
 
 }
