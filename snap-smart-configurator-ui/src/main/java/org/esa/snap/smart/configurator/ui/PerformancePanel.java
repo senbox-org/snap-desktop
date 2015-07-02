@@ -17,9 +17,7 @@ import java.util.regex.Pattern;
 import javax.swing.*;
 
 import org.apache.commons.lang.StringUtils;
-import org.esa.snap.configurator.ConfigurationOptimizer;
-import org.esa.snap.configurator.JavaSystemInfos;
-import org.esa.snap.configurator.PerformanceParameters;
+import org.esa.snap.configurator.*;
 import org.esa.snap.framework.gpf.GPF;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.util.SystemUtils;

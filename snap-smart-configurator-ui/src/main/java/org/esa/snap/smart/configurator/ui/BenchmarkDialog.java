@@ -20,6 +20,8 @@ import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.core.SubProgressMonitor;
 import com.bc.ceres.core.VirtualDir;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
+import org.esa.snap.configurator.Benchmark;
+import org.esa.snap.configurator.BenchmarkSingleCalcul;
 import org.esa.snap.configurator.ConfigurationOptimizer;
 import org.esa.snap.configurator.PerformanceParameters;
 import org.esa.snap.framework.datamodel.Product;
@@ -33,10 +35,8 @@ import org.esa.snap.framework.ui.AppContext;
 import org.esa.snap.gpf.operators.standard.WriteOp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.actions.file.SaveProductAsAction;
-import org.esa.snap.util.SystemUtils;
 
 import java.io.File;
-import java.io.IOException;
 
 /**
  * Dialog to launch performance parameters benchmark.
@@ -72,13 +72,11 @@ public class BenchmarkDialog extends DefaultSingleTargetProductDialog {
     private class ProductWriterSwingWorker extends ProgressMonitorSwingWorker<Product, Object> {
 
         private final Product targetProduct;
-        private BenchmarkSingleCalcul currentBenchmarkCalcul;
         private String benchmarkCounter;
 
-        private ProductWriterSwingWorker(Product targetProduct, BenchmarkSingleCalcul currentBenchmarkCalcul, String benchmarkCounter) {
+        private ProductWriterSwingWorker(Product targetProduct, String benchmarkCounter) {
             super(getJDialog(), "Benchmark Tests");
             this.targetProduct = targetProduct;
-            this.currentBenchmarkCalcul = currentBenchmarkCalcul;
             this.benchmarkCounter = benchmarkCounter;
         }
 
@@ -89,7 +87,6 @@ public class BenchmarkDialog extends DefaultSingleTargetProductDialog {
 
             Product product = null;
             try {
-                long startTime = System.currentTimeMillis();
                 Operator execOp = null;
                 if (targetProduct.getProductReader() instanceof OperatorProductReader) {
                     final OperatorProductReader opReader = (OperatorProductReader) targetProduct.getProductReader();
@@ -109,8 +106,6 @@ public class BenchmarkDialog extends DefaultSingleTargetProductDialog {
                 }
                 final OperatorExecutor executor = OperatorExecutor.create(execOp);
                 executor.execute(SubProgressMonitor.create(pm, 95));
-                //save execution time
-                this.currentBenchmarkCalcul.setExecutionTime(System.currentTimeMillis() - startTime);
             } finally {
                 if (product != targetProduct) {
                     targetProduct.dispose();
@@ -128,49 +123,45 @@ public class BenchmarkDialog extends DefaultSingleTargetProductDialog {
         //save current performance parameters
         PerformanceParameters defaultPerformanceParameters = ConfigurationOptimizer.getInstance().getActualPerformanceParameters();
         PerformanceParameters benchmarkPerformanceParameters = new PerformanceParameters(defaultPerformanceParameters);
+        //benchmark counter initialization
         int benchmarkCounterIndex = 1;
-        for(BenchmarkSingleCalcul benchmarkSingleCalcul : this.benchmarkModel.getBenchmarkCalculs()){
-            Product targetProduct = null;
-            //load performance parameters for current benchmark
-            benchmarkPerformanceParameters.setDefaultTileSize(benchmarkSingleCalcul.getTileSize());
-            benchmarkPerformanceParameters.setCacheSize(benchmarkSingleCalcul.getCacheSize());
-            benchmarkPerformanceParameters.setNbThreads(benchmarkSingleCalcul.getNbThreads());
-            loadBenchmarkPerfParams(benchmarkPerformanceParameters);
-            try {
-                targetProduct = createTargetProduct();
-                if (targetProduct == null) {
-                    throw new NullPointerException("Target product is null.");
+        //benchmark loop
+        try{
+            for(BenchmarkSingleCalcul benchmarkSingleCalcul : this.benchmarkModel.getBenchmarkCalculs()){
+                Product targetProduct = null;
+                try {
+                    targetProduct = createTargetProduct();
+                    if (targetProduct == null) {
+                        throw new NullPointerException("Target product is null.");
+                    }
+                } catch (Throwable t) {
+                    handleInitialisationError(t);
                 }
-            } catch (Throwable t) {
-                handleInitialisationError(t);
+                //load performance parameters for current benchmark
+                benchmarkPerformanceParameters.setDefaultTileSize(benchmarkSingleCalcul.getTileSize());
+                benchmarkPerformanceParameters.setCacheSize(benchmarkSingleCalcul.getCacheSize());
+                benchmarkPerformanceParameters.setNbThreads(benchmarkSingleCalcul.getNbThreads());
+                this.benchmarkModel.loadBenchmarkPerfParams(benchmarkPerformanceParameters);
+                //benchmark counter display
+                String benchmarkCounter = benchmarkCounterIndex++ + "/"+this.benchmarkModel.getBenchmarkCalculs().size();
+                //processing start time
+                long startTime = System.currentTimeMillis();
+                //launch processing with a progress bar
+                final ProgressMonitorSwingWorker worker = new ProductWriterSwingWorker(targetProduct, benchmarkCounter);
+                worker.executeWithBlocking();
+                //save execution time
+                benchmarkSingleCalcul.setExecutionTime(System.currentTimeMillis() - startTime);
             }
-            String benchmarkCounter = benchmarkCounterIndex++ + "/"+this.benchmarkModel.getBenchmarkCalculs().size();
-            final ProgressMonitorSwingWorker worker = new ProductWriterSwingWorker(targetProduct, benchmarkSingleCalcul, benchmarkCounter);
-            worker.executeWithBlocking();
-        }
-        //sort benchmark results and return the faster
-        BenchmarkSingleCalcul bestBenchmarkSingleCalcul = this.benchmarkModel.getFasterBenchmarkSingleCalcul();
-        SnapDialogs.showInformation("Benchmark results", this.benchmarkModel.toString(), null);
-        //load old params (before benchmark)
-        loadBenchmarkPerfParams(defaultPerformanceParameters);
-        //update parent panel with best values
-        this.perfPanel.updatePerformanceParameters(bestBenchmarkSingleCalcul);
-        //delete benchmark TMP directory
-        VirtualDir.deleteFileTree(new File(tmpdirPath));
-    }
-
-    /**
-     * Load performance parameters.
-     *
-     * @param performanceParameters
-     */
-    private void loadBenchmarkPerfParams(PerformanceParameters performanceParameters){
-        ConfigurationOptimizer confOptimizer = ConfigurationOptimizer.getInstance();
-        confOptimizer.updateCustomisedParameters(performanceParameters);
-        try {
-            confOptimizer.saveCustomisedParameters();
-        } catch (IOException e) {
-            SystemUtils.LOG.severe("Could not save performance parameters: " + e.getMessage());
+            //sort benchmark results and return the faster
+            BenchmarkSingleCalcul bestBenchmarkSingleCalcul = this.benchmarkModel.getFasterBenchmarkSingleCalcul();
+            SnapDialogs.showInformation("Benchmark results", this.benchmarkModel.toString(), null);
+            //update parent panel with best values
+            this.perfPanel.updatePerformanceParameters(bestBenchmarkSingleCalcul);
+        }finally {
+            //load old params (before benchmark)
+            this.benchmarkModel.loadBenchmarkPerfParams(defaultPerformanceParameters);
+            //delete benchmark TMP directory
+            VirtualDir.deleteFileTree(new File(tmpdirPath));
         }
     }
 }
