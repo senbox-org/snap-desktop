@@ -7,13 +7,16 @@
     <folder name="Menu">
         <folder name="File">
             <attr name="position" intvalue="100"/>
-            <folder name="Import">
+            <folder name="Session">
                 <attr name="position" intvalue="100"/>
                 <attr name="seperatorBefore" intvalue="99"/>
             </folder>
-            <folder name="Export">
+            <folder name="Import">
                 <attr name="position" intvalue="150"/>
-                <attr name="seperatorAfter" intvalue="160"/>
+            </folder>
+            <folder name="Export">
+                <attr name="position" intvalue="200"/>
+                <attr name="seperatorAfter" intvalue="260"/>
                 <folder name="Other"/>
             </folder>
         </folder>
