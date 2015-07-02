@@ -63,7 +63,7 @@ import java.awt.event.ActionEvent;
 @ActionID(category = "File", id = "org.esa.snap.rcp.actions.vector.ShowGeometryWktAction" )
 @ActionRegistration(displayName = "#CTL_ShowGeometryWktAction_MenuText", lazy = false )
 @ActionReferences({
-        @ActionReference(path = "Menu/Vector", position = 10),
+        @ActionReference(path = "Menu/Vector", position = 19, separatorAfter = 20),
         @ActionReference(path = "Context/View", position = 10)
 })
 @NbBundle.Messages({

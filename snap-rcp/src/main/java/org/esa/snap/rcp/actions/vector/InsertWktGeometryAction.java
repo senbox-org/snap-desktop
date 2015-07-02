@@ -64,7 +64,7 @@ import java.awt.event.ActionEvent;
         lazy = true
 )
 @ActionReferences({
-        @ActionReference(path = "Menu/Vector", position = 0),
+        @ActionReference(path = "Menu/Vector", position = 11, separatorBefore = 10),
         @ActionReference(path = "Context/View", position = 0)
 })
 

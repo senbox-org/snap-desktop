@@ -62,7 +62,7 @@ import java.text.MessageFormat;
         iconBase = "org/esa/snap/rcp/icons/NewVectorDataNode24.gif"
 )
 @ActionReferences({
-        @ActionReference(path = "Menu/Vector", position = 20),
+        @ActionReference(path = "Menu/Vector", position = 0),
         @ActionReference(path = "Toolbars/Tools", position = 191)
 })
 @Messages({
