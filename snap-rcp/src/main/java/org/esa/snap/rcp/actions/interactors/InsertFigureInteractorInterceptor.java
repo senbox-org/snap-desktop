@@ -26,7 +26,7 @@ import org.esa.snap.framework.ui.ModalDialog;
 import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.framework.ui.product.VectorDataLayer;
 import org.esa.snap.framework.ui.product.VectorDataLayerFilterFactory;
-import org.esa.snap.rcp.actions.tools.CreateVectorDataNodeAction;
+import org.esa.snap.rcp.actions.vector.CreateVectorDataNodeAction;
 
 import javax.swing.JLabel;
 import javax.swing.JList;

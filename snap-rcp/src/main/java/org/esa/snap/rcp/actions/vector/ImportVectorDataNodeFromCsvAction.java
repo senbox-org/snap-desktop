@@ -48,7 +48,7 @@ import java.io.IOException;
 @ActionRegistration(displayName = "#CTL_ImportVectorDataNodeFromCsvActionText", lazy = true )
 @ActionReferences({
         @ActionReference(path = "Menu/File/Import/Vector Data", position = 10),
-        @ActionReference(path = "Menu/Vector", position = 40)
+        @ActionReference(path = "Menu/Vector/Import")
 })
 @NbBundle.Messages({
         "CTL_ImportVectorDataNodeFromCsvActionText=Vector from CSV",

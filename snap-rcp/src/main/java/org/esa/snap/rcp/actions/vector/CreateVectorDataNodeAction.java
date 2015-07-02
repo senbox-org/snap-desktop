@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, see http://www.gnu.org/licenses/
  */
-package org.esa.snap.rcp.actions.tools;
+package org.esa.snap.rcp.actions.vector;
 
 import com.bc.ceres.binding.Property;
 import com.bc.ceres.binding.PropertyContainer;
@@ -62,7 +62,7 @@ import java.text.MessageFormat;
         iconBase = "org/esa/snap/rcp/icons/NewVectorDataNode24.gif"
 )
 @ActionReferences({
-        @ActionReference(path = "Menu/Vector", position = 110),
+        @ActionReference(path = "Menu/Vector", position = 20),
         @ActionReference(path = "Toolbars/Tools", position = 191)
 })
 @Messages({

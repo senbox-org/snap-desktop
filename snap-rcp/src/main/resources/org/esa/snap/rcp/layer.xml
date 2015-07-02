@@ -31,6 +31,12 @@
         </folder>
         <folder name="Vector">
             <attr name="position" intvalue="450"/>
+            <folder name="Import">
+                <attr name="position" intvalue="200"/>
+            </folder>
+            <folder name="Export">
+                <attr name="position" intvalue="300"/>
+            </folder>
         </folder>
         <folder name="Raster">
             <attr name="position" intvalue="470"/>
