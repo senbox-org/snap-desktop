@@ -84,7 +84,7 @@
 
         <folder name="Raster">
             <folder name="DEM Tools">
-                <attr name="position" intvalue="400"/>
+                <attr name="position" intvalue="200"/>
                 <file name="org-esa-snap-dem-gpf-FillDEMHoleOp-Action.shadow">
                     <attr name="originalFile" stringvalue="Actions/Operators/org-esa-snap-dem-gpf-FillDEMHoleOp-Action.instance"/>
                 </file>

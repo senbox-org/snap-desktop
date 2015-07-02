@@ -34,6 +34,15 @@
         </folder>
         <folder name="Raster">
             <attr name="position" intvalue="470"/>
+            <folder name="Geometric Operations">
+                <attr name="position" intvalue="100"/>
+            </folder>
+            <folder name="Masks">
+                <attr name="position" intvalue="300"/>
+            </folder>
+            <folder name="Export">
+                <attr name="position" intvalue="500"/>
+            </folder>
         </folder>
         <folder name="Optical">
             <attr name="position" intvalue="500"/>

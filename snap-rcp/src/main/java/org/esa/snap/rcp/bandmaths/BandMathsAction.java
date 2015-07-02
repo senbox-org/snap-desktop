@@ -42,7 +42,7 @@ import java.awt.event.ActionEvent;
         lazy = true
 )
 @ActionReferences({
-        @ActionReference(path = "Menu/Raster", position = 100),
+        @ActionReference(path = "Menu/Raster", position = 0),
         @ActionReference(path = "Context/Product/Product", position = 200),
         @ActionReference(path = "Context/Product/RasterDataNode", position = 200),
 })

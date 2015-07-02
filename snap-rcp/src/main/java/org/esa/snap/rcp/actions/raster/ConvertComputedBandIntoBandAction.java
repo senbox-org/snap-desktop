@@ -55,7 +55,7 @@ import java.awt.event.ActionEvent;
         popupText = "#CTL_ConvertComputedBandIntoBandAction_MenuText"
 )
 @ActionReferences({
-        @ActionReference(path = "Menu/Raster", position = 110),
+        @ActionReference(path = "Menu/Raster", position = 20),
         @ActionReference(path = "Context/Product/RasterDataNode", position = 220)
 })
 @NbBundle.Messages({
