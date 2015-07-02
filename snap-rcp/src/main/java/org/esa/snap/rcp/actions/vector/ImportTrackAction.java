@@ -93,7 +93,7 @@ import java.io.Reader;
 )
 @ActionReferences({
         @ActionReference(path = "Menu/File/Import/Vector Data", position = 50),
-        @ActionReference(path = "Menu/Vector", position = 30)
+        @ActionReference(path = "Menu/Vector/Import")
 })
 @NbBundle.Messages({
         "CTL_ImportSeadasTrackActionText=SeaDAS 6.x Track",

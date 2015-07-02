@@ -63,7 +63,7 @@ import java.util.concurrent.ExecutionException;
         displayName = "#CTL_CreateGeoCodingDisplacementBandsActionText",
         popupText = "#CTL_CreateGeoCodingDisplacementBandsActionText"
 )
-@ActionReference(path = "Menu/Raster", position = 130 )
+@ActionReference(path = "Menu/Raster", position = 30 )
 @NbBundle.Messages({
                   "CTL_CreateGeoCodingDisplacementBandsActionText=Geo-Coding Displacement Bands...",
                   "CTL_CreateGeoCodingDisplacementBandsDialogTitle=Geo-Coding Displacement Bands",

@@ -72,7 +72,7 @@ import java.util.concurrent.ExecutionException;
 )
 @ActionReferences({
         @ActionReference(path = "Menu/File/Export/Other", position = 40),
-        @ActionReference(path = "Menu/Vector", position = 20),
+        @ActionReference(path = "Menu/Vector/Export"),
         @ActionReference(path = "Context/Product/RasterDataNode", position = 208),
         @ActionReference(path = "Context/View", position = 30)
 })

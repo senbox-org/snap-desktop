@@ -37,7 +37,7 @@ import org.esa.snap.framework.ui.product.ProductExpressionPane;
 import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
-import org.esa.snap.rcp.actions.tools.CreateVectorDataNodeAction;
+import org.esa.snap.rcp.actions.vector.CreateVectorDataNodeAction;
 import org.esa.snap.rcp.util.internal.RasterDataNodeDeleter;
 import org.esa.snap.rcp.windows.ToolTopComponent;
 import org.esa.snap.util.DefaultPropertyMap;

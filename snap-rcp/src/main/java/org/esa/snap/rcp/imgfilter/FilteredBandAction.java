@@ -55,7 +55,7 @@ import java.awt.event.ActionEvent;
         lazy = false
 )
 @ActionReferences({
-        @ActionReference(path = "Menu/Raster", position = 120),
+        @ActionReference(path = "Menu/Raster", position = 10),
         @ActionReference(path = "Context/Product/RasterDataNode", position = 210)
 })
 @NbBundle.Messages({

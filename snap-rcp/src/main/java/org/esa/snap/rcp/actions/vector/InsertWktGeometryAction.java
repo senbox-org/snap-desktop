@@ -64,13 +64,13 @@ import java.awt.event.ActionEvent;
         lazy = true
 )
 @ActionReferences({
-        @ActionReference(path = "Menu/Vector", position = 10),
-        @ActionReference(path = "Context/View", position = 10)
+        @ActionReference(path = "Menu/Vector", position = 0),
+        @ActionReference(path = "Context/View", position = 0)
 })
 
 @NbBundle.Messages({
-        "CTL_InsertWktGeometryAction_DialogTitle=Geometry from WKT...",
-        "CTL_InsertWktGeometryAction_MenuText=Geometry from WKT...",
+        "CTL_InsertWktGeometryAction_DialogTitle=Geometry from WKT",
+        "CTL_InsertWktGeometryAction_MenuText=Geometry from WKT",
         "CTL_InsertWktGeometryAction_ShortDescription=Creates a geomtry from well-known-text (WKT) representation."
 })
 

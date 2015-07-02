@@ -50,7 +50,7 @@ import java.io.IOException;
 @ActionRegistration(displayName = "#CTL_ImportVectorDataNodeFromShapefileActionText", lazy = true )
 @ActionReferences({
         @ActionReference(path = "Menu/File/Import/Vector Data", position = 20),
-        @ActionReference(path = "Menu/Vector", position = 70)
+        @ActionReference(path = "Menu/Vector/Import")
 })
 @NbBundle.Messages({
         "CTL_ImportVectorDataNodeFromShapefileActionText=ESRI Shapefile",

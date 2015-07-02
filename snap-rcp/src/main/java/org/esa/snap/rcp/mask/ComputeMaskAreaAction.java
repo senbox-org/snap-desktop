@@ -74,7 +74,7 @@ import java.util.concurrent.ExecutionException;
         popupText = "#CTL_ComputeMaskAreaAction_ShortDescription",
         lazy = false
 )
-@ActionReference(path = "Menu/Raster", position = 425)
+@ActionReference(path = "Menu/Raster/Masks", position = 300)
 @NbBundle.Messages({
         "CTL_ComputeMaskAreaAction_MenuText=Mask Area...",
         "CTL_ComputeMaskAreaAction_DialogTitle=Compute Mask Area",
