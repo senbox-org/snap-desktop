@@ -126,38 +126,6 @@
                 <attr name="instanceOf" stringvalue="org.netbeans.spi.autoupdate.UpdateProvider"/>
                 <attr name="url" urlvalue="http://step.esa.int/updatecenter/2.0/snap-desktop/updates.xml.gz"/>
             </file>
-            <file name="s1tbx_update_center.instance">
-                <attr name="displayName" stringvalue="Sentinel-1 Toolbox Update Center"/>
-                <attr name="enabled" boolvalue="true"/>
-                <attr name="instanceCreate"
-                      methodvalue="org.netbeans.modules.autoupdate.updateprovider.AutoupdateCatalogFactory.createUpdateProvider"/>
-                <attr name="instanceOf" stringvalue="org.netbeans.spi.autoupdate.UpdateProvider"/>
-                <attr name="url" urlvalue="http://step.esa.int/updatecenter/2.0/s1tbx/updates.xml.gz"/>
-            </file>
-            <file name="s2tbx_update_center.instance">
-                <attr name="displayName" stringvalue="Sentinel-2 Toolbox Update Center"/>
-                <attr name="enabled" boolvalue="true"/>
-                <attr name="instanceCreate"
-                      methodvalue="org.netbeans.modules.autoupdate.updateprovider.AutoupdateCatalogFactory.createUpdateProvider"/>
-                <attr name="instanceOf" stringvalue="org.netbeans.spi.autoupdate.UpdateProvider"/>
-                <attr name="url" urlvalue="http://step.esa.int/updatecenter/2.0/s2tbx/updates.xml.gz"/>
-            </file>
-            <file name="s3tbx_update_center.instance">
-                <attr name="displayName" stringvalue="Sentinel-3 Toolbox Update Center"/>
-                <attr name="enabled" boolvalue="true"/>
-                <attr name="instanceCreate"
-                      methodvalue="org.netbeans.modules.autoupdate.updateprovider.AutoupdateCatalogFactory.createUpdateProvider"/>
-                <attr name="instanceOf" stringvalue="org.netbeans.spi.autoupdate.UpdateProvider"/>
-                <attr name="url" urlvalue="http://step.esa.int/updatecenter/2.0/s3tbx/updates.xml.gz"/>
-            </file>
-            <file name="smos_update_center.instance">
-                <attr name="displayName" stringvalue="SMOS-Box Update Center"/>
-                <attr name="enabled" boolvalue="true"/>
-                <attr name="instanceCreate"
-                      methodvalue="org.netbeans.modules.autoupdate.updateprovider.AutoupdateCatalogFactory.createUpdateProvider"/>
-                <attr name="instanceOf" stringvalue="org.netbeans.spi.autoupdate.UpdateProvider"/>
-                <attr name="url" urlvalue="http://step.esa.int/updatecenter/2.0/smos/updates.xml.gz"/>
-            </file>
         </folder>
     </folder>
 
