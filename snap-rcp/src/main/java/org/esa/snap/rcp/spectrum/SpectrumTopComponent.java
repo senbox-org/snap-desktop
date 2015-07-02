@@ -101,30 +101,16 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-@TopComponent.Description(
-        preferredID = "SpectrumTopComponent",
-        iconBase = "org/esa/snap/rcp/icons/Spectrum.gif",
-        persistenceType = TopComponent.PERSISTENCE_ALWAYS //todo define
-)
-@TopComponent.Registration(
-        mode = "navigator",
-        openAtStartup = false,
-        position = 1
-)
+@TopComponent.Description(preferredID = "SpectrumTopComponent", iconBase = "org/esa/snap/rcp/icons/Spectrum.gif" )
+@TopComponent.Registration(mode = "navigator", openAtStartup = false, position = 1 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.statistics.SpectrumTopComponent")
 @ActionReferences({
-        @ActionReference(path = "Menu/Optical/Spectral Tools"),
+        @ActionReference(path = "Menu/Optical", position = 0),
         @ActionReference(path = "Menu/View/Tool Windows/Optical"),
         @ActionReference(path = "Toolbars/Views")
 })
-@TopComponent.OpenActionRegistration(
-        displayName = "#CTL_SpectrumTopComponent_Name",
-        preferredID = "SpectrumTopComponent"
-)
-@NbBundle.Messages({
-        "CTL_SpectrumTopComponent_Name=Spectrum View",
-        "CTL_SpectrumTopComponent_HelpId=showSpectrumWnd"
-})
+@TopComponent.OpenActionRegistration(displayName = "#CTL_SpectrumTopComponent_Name", preferredID = "SpectrumTopComponent" )
+@NbBundle.Messages({ "CTL_SpectrumTopComponent_Name=Spectrum View", "CTL_SpectrumTopComponent_HelpId=showSpectrumWnd" })
 /**
  * A window which displays spectra at selected pixel positions.
  */

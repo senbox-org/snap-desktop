@@ -17,7 +17,7 @@ import org.openide.util.NbBundle;
  */
 @ActionID(category = "View", id = "SyncImageCursorsAction" )
 @ActionRegistration(displayName = "#CTL_SyncImageCursorsActionName", lazy = false )
-@ActionReference(path = "Menu/Window", position = 130, separatorBefore = 129 )
+@ActionReference(path = "Menu/View", position = 311, separatorBefore = 310 )
 @NbBundle.Messages({
         "CTL_SyncImageCursorsActionName=Synchronise Image Cursors",
         "CTL_SyncImageCursorsActionToolTip=Synchronises cursor positions across multiple image windows."

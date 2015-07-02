@@ -54,7 +54,7 @@ import java.text.MessageFormat;
         @ActionReference(path = "Menu/Window", position = 100),
         @ActionReference(path = "Context/Product/RasterDataNode", position = 100),
 })
-@NbBundle.Messages("CTL_OpenImageViewActionName=Open in Image Window")
+@NbBundle.Messages("CTL_OpenImageViewActionName=Open Image Window")
 public class OpenImageViewAction extends AbstractAction {
 
     RasterDataNode raster;

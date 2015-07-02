@@ -27,22 +27,11 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import java.awt.event.ActionEvent;
 
-@ActionID(
-        category = "Tools",
-        id = "PropagateUncertaintyAction"
-)
-@ActionRegistration(
-        displayName = "#CTL_PropagateUncertaintyAction_MenuText",
-        popupText = "#CTL_PropagateUncertaintyAction_MenuText",
-        lazy = true
-)
+@ActionID(category = "Tools", id = "PropagateUncertaintyAction" )
+@ActionRegistration(displayName = "#CTL_PropagateUncertaintyAction_MenuText", lazy = true )
 @ActionReferences({
-        @ActionReference(path = "Menu/Tools", position = 105),
-        @ActionReference(
-                path = "Context/Product/VirtualBand",
-                position = 200
-        ),
-})
+        @ActionReference(path = "Menu/Raster", position = 25),
+        @ActionReference(path = "Context/Product/VirtualBand", position = 200), })
 @Messages({
         "CTL_PropagateUncertaintyAction_MenuText=Propagate Uncertainty...",
         "CTL_PropagateUncertaintyAction_ShortDescription=Perform Gaussian uncertainty propagation from virtual band according to GUM 1995, chapter 5"

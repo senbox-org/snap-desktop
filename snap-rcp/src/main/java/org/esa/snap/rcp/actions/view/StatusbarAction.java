@@ -16,10 +16,10 @@ import org.openide.util.NbBundle;
  */
 @ActionID(category = "View", id = "StatusbarAction" )
 @ActionRegistration(displayName = "#CTL_StatusbarAction_Text", lazy = false )
-@ActionReference(path = "Menu/View", position = 900 )
+@ActionReference(path = "Menu/View", position = 300)
 @NbBundle.Messages({
-        "CTL_StatusbarAction_Text=Synchronise Image Cursors",
-        "CTL_StatusbarAction_ToolTip=Synchronises cursor positions across multiple image views."
+        "CTL_StatusbarAction_Text=Statusbar",
+        "CTL_StatusbarAction_ToolTip=Change visibility of the Statusbar."
 })
 public final class StatusbarAction extends BooleanPreferenceKeyAction {
 

@@ -31,10 +31,8 @@ import java.awt.event.ActionEvent;
  */
 @ActionID(category = "Processors", id = "org.esa.snap.unmixing.ui.SpectralUnmixingAction")
 @ActionRegistration(displayName = "#CTL_SpectralUnmixingAction_Text")
-@ActionReference(path = "Menu/Optical/Spectral Tools", position = 10000)
-@NbBundle.Messages({
-        "CTL_SpectralUnmixingAction_Text=Spectral Unmixing"
-})
+@ActionReference(path = "Menu/Optical", position = 10)
+@NbBundle.Messages({ "CTL_SpectralUnmixingAction_Text=Spectral Unmixing" })
 public class SpectralUnmixingAction extends AbstractSnapAction {
     private SpectralUnmixingDialog dialog;
 
