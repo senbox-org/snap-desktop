@@ -181,7 +181,7 @@ class BandMathsDialog extends ModalDialog {
         hide();
         band.setModified(true);
         if (SnapApp.getDefault().getPreferences().getBoolean(PREF_KEY_AUTO_SHOW_NEW_BANDS, true)) {
-            new OpenImageViewAction(band).openProductSceneView();
+            OpenImageViewAction.openImageView(band);
         }
 
         if (generateUncertaintyBand) {

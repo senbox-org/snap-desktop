@@ -102,7 +102,7 @@ public class PropagateUncertaintyDialog extends ModalDialog {
         hide();
         uncertaintyBand.setModified(true);
         if (SnapApp.getDefault().getPreferences().getBoolean(BandMathsDialog.PREF_KEY_AUTO_SHOW_NEW_BANDS, true)) {
-            new OpenImageViewAction(uncertaintyBand).openProductSceneView();
+            OpenImageViewAction.openImageView(uncertaintyBand);
         }
     }
 

@@ -136,7 +136,7 @@ public class FilteredBandAction extends AbstractAction  implements LookupListene
                 dialogData.getFilter(),
                 dialogData.getIterationCount());
 
-        new OpenImageViewAction(filterBand).openProductSceneView();
+        OpenImageViewAction.openImageView(filterBand);
     }
 
     private static FilterBand getFilterBand(RasterDataNode sourceRaster, String bandName, Filter filter, int iterationCount) {

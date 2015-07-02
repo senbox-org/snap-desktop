@@ -32,6 +32,7 @@ import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.awt.UndoRedo;
 import org.openide.util.NbBundle;
+import org.openide.windows.WindowManager;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -62,11 +63,51 @@ public class OpenImageViewAction extends AbstractAction {
     public OpenImageViewAction(RasterDataNode rasterDataNode) {
         this.raster = rasterDataNode;
         putValue(Action.NAME, Bundle.CTL_OpenImageViewActionName());
+        setActivateIfExists(true);
+    }
+
+    public static OpenImageViewAction create(RasterDataNode rasterDataNode, boolean activateIfExists) {
+        OpenImageViewAction action = new OpenImageViewAction(rasterDataNode);
+        action.setActivateIfExists(activateIfExists);
+        return action;
+    }
+
+    public static void showImageView(RasterDataNode rasterDataNode) {
+        create(rasterDataNode, true).execute();
+    }
+
+    public static void openImageView(RasterDataNode rasterDataNode) {
+        create(rasterDataNode, false).execute();
+    }
+
+    public boolean getActivateIfExists() {
+        Object value = getValue("activateIfExists");
+        if (value instanceof Boolean) {
+            return (Boolean) value;
+        }
+        return false;
+    }
+
+    public void setActivateIfExists(boolean value) {
+        putValue("activateIfExists", value);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        openProductSceneView();
+        execute();
+    }
+
+    public void execute() {
+        if (getActivateIfExists()) {
+            ProductSceneViewTopComponent tc = getProductSceneViewTopComponent(raster);
+            if (tc != null) {
+                tc.requestSelected();
+            } else {
+                openProductSceneView();
+            }
+        } else {
+            openProductSceneView();
+        }
     }
 
     public void openProductSceneView() {
@@ -111,12 +152,16 @@ public class OpenImageViewAction extends AbstractAction {
         worker.execute();
     }
 
-    private ProductSceneView getProductSceneView(RasterDataNode raster) {
+    public static ProductSceneViewTopComponent getProductSceneViewTopComponent(RasterDataNode raster) {
         return WindowUtilities.getOpened(ProductSceneViewTopComponent.class)
-                .filter(topComponent -> topComponent.getView().getNumRasters() == 1 && raster == topComponent.getView().getRaster() )
-                .map(ProductSceneViewTopComponent::getView)
+                .filter(topComponent -> topComponent.getView().getNumRasters() == 1 && raster == topComponent.getView().getRaster())
                 .findFirst()
                 .orElse(null);
+    }
+
+    public static ProductSceneView getProductSceneView(RasterDataNode raster) {
+        ProductSceneViewTopComponent component = getProductSceneViewTopComponent(raster);
+        return component != null ? component.getView() : null;
     }
 
     private ProductSceneViewTopComponent openDocumentWindow(final ProductSceneView view) {
