@@ -56,9 +56,6 @@
         <folder name="Optical">
             <attr name="position" intvalue="500"/>
         </folder>
-        <folder name="Radar">
-            <attr name="position" intvalue="510"/>
-        </folder>
         <folder name="Tools">
             <attr name="position" intvalue="600"/>
         </folder>
