@@ -89,7 +89,7 @@ public class TestProducts {
         band4.setNoDataValueUsed(true);
 
         product.addBand("A", "Band_1");
-        product.addBand("B", "Band_1 + Band_2 + Band_3)");
+        product.addBand("B", "Band_1 + Band_2 + Band_3");
         product.addBand("C", "Band_1 / (2.3 + Band_2 + Band_3)");
         product.addBand("D", "pow(Band_1, 3) / (pow(Band_1, 3) + pow(Band_3, 3))");
         return product;
