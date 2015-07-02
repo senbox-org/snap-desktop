@@ -54,7 +54,7 @@ public final class PerformanceOptionsPanelController extends OptionsPanelControl
     }
 
     public HelpCtx getHelpCtx() {
-        return null; // new HelpCtx("...ID") if you have a help set
+        return new HelpCtx("performanceParameters");
     }
 
     public JComponent getComponent(Lookup masterLookup) {

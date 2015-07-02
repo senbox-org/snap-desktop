@@ -16,11 +16,39 @@
 
 <html>
 <head>
-    <title>Sentinel Toolbox Help - The Performance Tab</title>
+    <title>Sentinel Toolbox Help - Performance parameters</title>
     <link rel="stylesheet" href="../style.css">
 </head>
 
 <body>
+
+<table class="header">
+    <tr class="header">
+        <td class="header">&nbsp;
+            Performance parameters</td>
+
+        <td class="header" align="right"><a href="../general/overview/SnapOverview.html"><img src="../images/snap_header.jpg" border=0></a></td>
+    </tr>
+</table>
+
+<h3>Performance parameters</h3>
+
+<p>
+
+</p>
+
+<img src="images/snap-smart-configurator-ui-preferences.jpg" border=0/>
+
+<h4><a name="systemParameters">System parameters</a></h4>
+
+<ul>
+    <li><b>VM Parameters</b><br>
+        Parameters for the virtual machine
+    </li>
+    <li><b>Data path</b><br>
+        SNAP application data path
+    </li>
+</ul>
 
 <h4><a name="processingParameters">Processing parameters</a></h4>
 
@@ -44,12 +72,34 @@
         </ul>
     </li>
     <li><b>Benchmark</b><br>
-        To help you to define faster processing parameters, you can launch benchmarks.<br>
-        You need to define a list of possible processing parameters for each values (tile size, cache size and nb threads).
-        Each list must have at least one value, otherwise each values must be separated by a semi-colon (;).<br>
-        Then choose in the <b>Proc. graph</b> combobox the processing that will be used by the benchmark.
-        Finally, press the button <b>Compute</b> to launch the processing dialog, sets processing parameters and <b>Run</b>.<br>
-        The benchmark will compute the processing with all given parameters, display results and save the faster parameters in <b>SNAP Values</b>.
+        <p> To help you to define faster processing parameters, you can launch benchmarks.<br>
+            Follow these steps:
+        </p>
+        <ul>
+            <li><b>Select potential values</b><br>
+                <p>You need to define a list of potential processing parameters for each values (tile size, cache size and nb threads).<br>
+                Each list must have at least one value, otherwise each values must be separated by a semi-colon (;).</p>
+                <img src="images/snap-smart-configurator-ui-preferences-benchmark-param.jpg" border=0/>
+            </li>
+            <li><b>Select a processing</b><br>
+                Select in the <b>Proc. graph</b> combobox the processing that will be used by the benchmark.
+            </li>
+            <li><b>Set processing parameters</b><br>
+                <p>Press the button <b>Compute</b> to launch the processing dialog, sets processing parameters and click <b>Run</b>.</p>
+                <img src="images/snap-smart-configurator-ui-preferences-benchmark-procparam.jpg" border=0/>
+            </li>
+            <li><b>Results</b><br>
+                <p>The benchmark will compute the processing with all given parameters.</p>
+                <img src="images/snap-smart-configurator-ui-preferences-benchmark-run.jpg" border=0/>
+                <p>It will display all results in a dialog windows and save the faster parameters in <b>SNAP Values</b>.</p>
+                <img src="images/snap-smart-configurator-ui-preferences-benchmark-result.jpg" border=0/>
+            </li>
+        </ul>
+    </li>
+    <li>
+        <b>Reset</b><br>
+        <p>The reset button reload the initial parameters. After apply or valid your inputs, you can't reset to previous version.
+        </p>
     </li>
 </ul>
 
