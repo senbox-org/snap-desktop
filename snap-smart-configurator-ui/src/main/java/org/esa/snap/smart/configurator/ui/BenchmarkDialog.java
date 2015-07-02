@@ -120,9 +120,10 @@ public class BenchmarkDialog extends DefaultSingleTargetProductDialog {
         //temporary directory for benchmark
         String tmpdirPath = System.getProperty("java.io.tmpdir") + "\\snap-benchmark-tmp";
         appContext.getPreferences().setPropertyString(SaveProductAsAction.PREFERENCES_KEY_LAST_PRODUCT_DIR, tmpdirPath);
-        //save current performance parameters
-        PerformanceParameters defaultPerformanceParameters = ConfigurationOptimizer.getInstance().getActualPerformanceParameters();
-        PerformanceParameters benchmarkPerformanceParameters = new PerformanceParameters(defaultPerformanceParameters);
+        //add current performance parameters to benchmark
+        PerformanceParameters currentPerformanceParameters = ConfigurationOptimizer.getInstance().getActualPerformanceParameters();
+        BenchmarkSingleCalcul currentBenchmarkSingleCalcul = new BenchmarkSingleCalcul(currentPerformanceParameters.getDefaultTileSize(), currentPerformanceParameters.getCacheSize(), currentPerformanceParameters.getNbThreads());
+        this.benchmarkModel.addBenchmarkCalcul(currentBenchmarkSingleCalcul);
         //benchmark counter initialization
         int benchmarkCounterIndex = 1;
         //benchmark loop
@@ -138,10 +139,7 @@ public class BenchmarkDialog extends DefaultSingleTargetProductDialog {
                     handleInitialisationError(t);
                 }
                 //load performance parameters for current benchmark
-                benchmarkPerformanceParameters.setDefaultTileSize(benchmarkSingleCalcul.getTileSize());
-                benchmarkPerformanceParameters.setCacheSize(benchmarkSingleCalcul.getCacheSize());
-                benchmarkPerformanceParameters.setNbThreads(benchmarkSingleCalcul.getNbThreads());
-                this.benchmarkModel.loadBenchmarkPerfParams(benchmarkPerformanceParameters);
+                this.benchmarkModel.loadBenchmarkPerfParams(benchmarkSingleCalcul);
                 //benchmark counter display
                 String benchmarkCounter = benchmarkCounterIndex++ + "/"+this.benchmarkModel.getBenchmarkCalculs().size();
                 //processing start time
@@ -159,7 +157,7 @@ public class BenchmarkDialog extends DefaultSingleTargetProductDialog {
             this.perfPanel.updatePerformanceParameters(bestBenchmarkSingleCalcul);
         }finally {
             //load old params (before benchmark)
-            this.benchmarkModel.loadBenchmarkPerfParams(defaultPerformanceParameters);
+            this.benchmarkModel.loadBenchmarkPerfParams(currentBenchmarkSingleCalcul);
             //delete benchmark TMP directory
             VirtualDir.deleteFileTree(new File(tmpdirPath));
         }
