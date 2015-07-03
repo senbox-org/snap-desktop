@@ -47,7 +47,7 @@ import java.io.File;
 import java.io.IOException;
 
 @ActionID(category = "File", id = "ImportVectorDataNodeFromShapefileAction" )
-@ActionRegistration(displayName = "#CTL_ImportVectorDataNodeFromShapefileActionText", lazy = true )
+@ActionRegistration(displayName = "#CTL_ImportVectorDataNodeFromShapefileActionText", lazy = false )
 @ActionReferences({
         @ActionReference(path = "Menu/File/Import/Vector Data", position = 20),
         @ActionReference(path = "Menu/Vector/Import")

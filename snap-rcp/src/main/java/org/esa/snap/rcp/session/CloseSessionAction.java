@@ -15,65 +15,60 @@
  */
 package org.esa.snap.rcp.session;
 
-import org.esa.snap.framework.datamodel.ProductNode;
+import org.esa.snap.framework.datamodel.ProductManager;
+import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.file.CloseAllProductsAction;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
-import org.openide.util.ContextAwareAction;
-import org.openide.util.Lookup;
-import org.openide.util.LookupEvent;
-import org.openide.util.LookupListener;
 import org.openide.util.NbBundle;
-import org.openide.util.Utilities;
-import org.openide.util.WeakListeners;
 
 import javax.swing.AbstractAction;
-import javax.swing.Action;
 import java.awt.event.ActionEvent;
+import java.io.File;
 
 
-@ActionID( category = "File", id = "org.esa.snap.rcp.session.CloseSessionAction" )
-@ActionRegistration( displayName = "#CTL_CloseSessionAction_MenuText", lazy = false )
+@ActionID(category = "File", id = "org.esa.snap.rcp.session.CloseSessionAction")
+@ActionRegistration(displayName = "#CTL_CloseSessionAction_MenuText", lazy = false)
 @ActionReference(path = "Menu/File/Session", position = 45)
 @NbBundle.Messages({
         "CTL_CloseSessionAction_MenuText=Close Session",
         "CTL_CloseSessionAction_ShortDescription=Close the current SNAP session."
 })
-public class CloseSessionAction extends AbstractAction implements LookupListener,ContextAwareAction {
+public class CloseSessionAction extends AbstractAction {
 
     public static final String ID = "closeSession";
-    private final Lookup.Result<ProductNode> result;
-    private final Lookup lookup;
+    final SessionManager sessionManager = SessionManager.getDefault();
 
-
-    public CloseSessionAction(){this(Utilities.actionsGlobalContext());}
-    public CloseSessionAction(Lookup lookup) {
-
+    public CloseSessionAction() {
         super(Bundle.CTL_CloseSessionAction_MenuText());
-        this.lookup = lookup;
-        result = lookup.lookupResult(ProductNode.class);
-        result.addLookupListener(WeakListeners.create(LookupListener.class,this,result));
+        ProductManager productManager = SnapApp.getDefault().getProductManager();
+        productManager.addListener(new SCListener());
         setEnabled(false);
     }
 
+
     @Override
     public void actionPerformed(ActionEvent event) {
-        final SessionManager app = SessionManager.getDefault();
         CloseAllProductsAction closeProductAction = new CloseAllProductsAction();
         closeProductAction.execute();
-        app.setSessionFile(null);
+        sessionManager.setSessionFile((File) null);
     }
 
-    @Override
-    public Action createContextAwareInstance(Lookup actionContext) {
-        return new CloseSessionAction(actionContext);
-    }
+    private class SCListener implements ProductManager.Listener {
 
+        @Override
+        public void productAdded(ProductManager.Event event) {
+            updateEnableState();
+        }
 
-    @Override
-    public void resultChanged(LookupEvent ev) {
-        ProductNode productNode = lookup.lookup(ProductNode.class);
-        setEnabled(productNode != null);
+        @Override
+        public void productRemoved(ProductManager.Event event) {
+            updateEnableState();
+        }
+
+        private void updateEnableState() {
+            setEnabled((SnapApp.getDefault().getProductManager().getProductCount()) > 0 || (sessionManager.getSessionFile()!=null));
+        }
     }
 }

@@ -45,7 +45,7 @@ import java.io.FileReader;
 import java.io.IOException;
 
 @ActionID(category = "File", id = "ImportVectorDataNodeFromCsvAction" )
-@ActionRegistration(displayName = "#CTL_ImportVectorDataNodeFromCsvActionText", lazy = true )
+@ActionRegistration(displayName = "#CTL_ImportVectorDataNodeFromCsvActionText", lazy = false )
 @ActionReferences({
         @ActionReference(path = "Menu/File/Import/Vector Data", position = 10),
         @ActionReference(path = "Menu/Vector/Import")
