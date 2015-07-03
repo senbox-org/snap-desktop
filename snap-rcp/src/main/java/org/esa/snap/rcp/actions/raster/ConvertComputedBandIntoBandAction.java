@@ -20,7 +20,6 @@ import org.esa.snap.framework.datamodel.Band;
 import org.esa.snap.framework.datamodel.FilterBand;
 import org.esa.snap.framework.datamodel.ImageInfo;
 import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductData;
 import org.esa.snap.framework.datamodel.ProductNode;
 import org.esa.snap.framework.datamodel.ProductNodeGroup;
 import org.esa.snap.framework.datamodel.RasterDataNode;
@@ -104,23 +103,10 @@ public class ConvertComputedBandIntoBandAction extends AbstractAction implements
         int width = computedBand.getSceneRasterWidth();
         int height = computedBand.getSceneRasterHeight();
 
-        Band realBand;
-        if (selectedProductNode instanceof VirtualBand) {
-            VirtualBand virtualBand = (VirtualBand) selectedProductNode;
-            String expression = virtualBand.getExpression();
-            realBand = new Band(bandName, ProductData.TYPE_FLOAT32, width, height);
-            realBand.setDescription(createDescription(virtualBand.getDescription(), expression));
-            realBand.setSourceImage(virtualBand.getSourceImage());
-        } else if (selectedProductNode instanceof FilterBand) {
-            FilterBand filterBand = (FilterBand) selectedProductNode;
-            realBand = new Band(bandName, filterBand.getDataType(), width, height);
-            realBand.setDescription(filterBand.getDescription());
-            realBand.setValidPixelExpression(filterBand.getValidPixelExpression());
-            realBand.setSourceImage(filterBand.getSourceImage());
-        } else {
-            throw new IllegalStateException();
-        }
-
+        Band realBand = new Band(bandName, computedBand.getDataType(), width, height);
+        realBand.setDescription(createDescription(computedBand));
+        realBand.setValidPixelExpression(computedBand.getValidPixelExpression());
+        realBand.setSourceImage(computedBand.getSourceImage());
         realBand.setUnit(computedBand.getUnit());
         realBand.setSpectralWavelength(computedBand.getSpectralWavelength());
         realBand.setGeophysicalNoDataValue(computedBand.getGeophysicalNoDataValue());
@@ -149,6 +135,19 @@ public class ConvertComputedBandIntoBandAction extends AbstractAction implements
         realBand.setModified(true);
     }
 
+    private String createDescription(Band computedBand) {
+        if (computedBand instanceof VirtualBand) {
+            VirtualBand virtualBand = (VirtualBand) computedBand;
+            String oldDescription = virtualBand.getDescription();
+            String newDescription = oldDescription == null ? "" : oldDescription.trim();
+            String formerExpressionDescription = "(expression was '" + virtualBand.getExpression() + "')";
+            newDescription = newDescription.isEmpty() ? formerExpressionDescription : newDescription + " " + formerExpressionDescription;
+            return newDescription;
+        } else {
+            return computedBand.getDescription();
+        }
+    }
+
     //copied from TimeSeriesManagerForm
     private ProductSceneViewTopComponent getProductSceneViewTopComponent(RasterDataNode raster) {
         return WindowUtilities.getOpened(ProductSceneViewTopComponent.class)
@@ -157,13 +156,6 @@ public class ConvertComputedBandIntoBandAction extends AbstractAction implements
                 .orElse(null);
     }
 
-
-    private String createDescription(String oldDescription, String expression) {
-        String newDescription = oldDescription == null ? "" : oldDescription.trim();
-        String formerExpressionDescription = "(expression was '" + expression + "')";
-        newDescription = newDescription.isEmpty() ? formerExpressionDescription : newDescription + " " + formerExpressionDescription;
-        return newDescription;
-    }
 
     private boolean isComputedBand(ProductNode selectedProductNode) {
         return selectedProductNode instanceof VirtualBand || selectedProductNode instanceof FilterBand;
