@@ -108,8 +108,7 @@ public class PropagateUncertaintyDialog extends ModalDialog {
 
     private String generateUncertaintyExpression() throws ParseException, UnsupportedOperationException {
         StandardUncertaintyGenerator propagator = new StandardUncertaintyGenerator(order, false);
-        Term term = propagator.generateUncertainty(sourceBand.getProduct(), relation, sourceBand.getExpression());
-        return new TermDecompiler().decompile(term);
+        return propagator.generateUncertainty(sourceBand.getProduct(), relation, sourceBand.getExpression());
     }
 
     @Override
