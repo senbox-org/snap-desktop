@@ -717,22 +717,22 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
             };
             set.put(ancillaryVariables);
 
-            set.put(new PropertySupport.ReadWrite<String>("ancillaryRelation",
-                                                          String.class,
-                                                          "Ancillary Relation",
-                                                          "Relation name used if this raster is an ancillary variable (NetCDF-U 'rel' attribute)") {
+            set.put(new PropertySupport.ReadWrite<String[]>("ancillaryRelations",
+                                                          String[].class,
+                                                          "Ancillary Relations",
+                                                          "Relation names if this raster is an ancillary variable (NetCDF-U 'rel' attribute)") {
                         @Override
-                        public String getValue() {
-                            return band.getAncillaryRelation();
+                        public String[] getValue() {
+                            return band.getAncillaryRelations();
                         }
 
                         @Override
-                        public void setValue(String newValue) {
-                            String oldValue = band.getAncillaryRelation();
-                            performUndoableProductNodeEdit("Edit Ancillary Relation",
+                        public void setValue(String[] newValue) {
+                            String[] oldValue = band.getAncillaryRelations();
+                            performUndoableProductNodeEdit("Edit Ancillary Relations",
                                                            band,
-                                                           node -> node.setAncillaryRelation(newValue),
-                                                           node -> node.setAncillaryRelation(oldValue));
+                                                           node -> node.setAncillaryRelations(newValue),
+                                                           node -> node.setAncillaryRelations(oldValue));
                         }
                     }
 
