@@ -5,7 +5,7 @@ import java.io.File;
 /**
  * Created by Samurai on 25/06/15.
  */
-class SessionManager {
+class SessionManager  {
     private static SessionManager instance = new SessionManager();
 
     private File sessionFile;

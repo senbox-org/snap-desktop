@@ -50,9 +50,10 @@ public class CloseSessionAction extends AbstractAction {
 
     @Override
     public void actionPerformed(ActionEvent event) {
+        sessionManager.setSessionFile((File) null);
         CloseAllProductsAction closeProductAction = new CloseAllProductsAction();
         closeProductAction.execute();
-        sessionManager.setSessionFile((File) null);
+
     }
 
     private class SCListener implements ProductManager.Listener {
@@ -68,7 +69,7 @@ public class CloseSessionAction extends AbstractAction {
         }
 
         private void updateEnableState() {
-            setEnabled((SnapApp.getDefault().getProductManager().getProductCount()) > 0 || (sessionManager.getSessionFile()!=null));
+            setEnabled(SnapApp.getDefault().getProductManager().getProductCount() > 0 || sessionManager.getSessionFile()!=null);
         }
     }
 }

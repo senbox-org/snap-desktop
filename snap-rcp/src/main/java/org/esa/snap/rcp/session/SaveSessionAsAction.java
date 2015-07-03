@@ -68,7 +68,7 @@ public class SaveSessionAsAction extends AbstractAction implements ContextAwareA
 
     @Override
     public void resultChanged(LookupEvent ev) {
-        final VisatApp app = VisatApp.getApp();
+        final SessionManager app = SessionManager.getDefault();
         ProductNode productNode = lookup.lookup(ProductNode.class);
         setEnabled(productNode != null);
     }

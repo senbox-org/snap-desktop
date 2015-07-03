@@ -84,7 +84,7 @@ public class OpenSessionAction extends AbstractAction implements LookupListener,
 
     public static SnapFileFilter getSessionFileFilter() {
         return new SnapFileFilter("SESSION",
-                new String[]{String.format(".%s", SystemUtils.getApplicationContextId()), ".beam"},
+                new String[]{String.format(".%s", SystemUtils.getApplicationContextId()), ".snap"},
                 String.format("%s Session file", SystemUtils.getApplicationName()));
     }
 
