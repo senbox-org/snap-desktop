@@ -16,6 +16,7 @@
 
 package org.esa.snap.rcp.actions.raster;
 
+import com.bc.ceres.glevel.MultiLevelImage;
 import org.esa.snap.framework.datamodel.Band;
 import org.esa.snap.framework.datamodel.FilterBand;
 import org.esa.snap.framework.datamodel.ImageInfo;
@@ -106,7 +107,6 @@ public class ConvertComputedBandIntoBandAction extends AbstractAction implements
         Band realBand = new Band(bandName, computedBand.getDataType(), width, height);
         realBand.setDescription(createDescription(computedBand));
         realBand.setValidPixelExpression(computedBand.getValidPixelExpression());
-        realBand.setSourceImage(computedBand.getSourceImage());
         realBand.setUnit(computedBand.getUnit());
         realBand.setSpectralWavelength(computedBand.getSpectralWavelength());
         realBand.setGeophysicalNoDataValue(computedBand.getGeophysicalNoDataValue());
@@ -132,7 +132,17 @@ public class ConvertComputedBandIntoBandAction extends AbstractAction implements
         bandGroup.remove(computedBand);
         bandGroup.add(bandIndex, realBand);
 
+        realBand.setSourceImage(createSourceImage(computedBand, realBand));
+
         realBand.setModified(true);
+    }
+
+    MultiLevelImage createSourceImage(Band computedBand, Band realBand) {
+        if(computedBand instanceof VirtualBand) {
+            return VirtualBand.createVirtualSourceImage(realBand, ((VirtualBand) computedBand).getExpression());
+        }else {
+            return computedBand.getSourceImage();
+        }
     }
 
     private String createDescription(Band computedBand) {
