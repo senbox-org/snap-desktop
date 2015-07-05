@@ -10,14 +10,15 @@ import org.esa.snap.framework.gpf.annotations.Parameter;
 import org.esa.snap.framework.gpf.annotations.SourceProduct;
 import org.esa.snap.framework.gpf.pointop.ProductConfigurer;
 import org.esa.snap.framework.gpf.pointop.Sample;
-import org.esa.snap.framework.gpf.pointop.SampleConfigurer;
 import org.esa.snap.framework.gpf.pointop.SampleOperator;
+import org.esa.snap.framework.gpf.pointop.SourceSampleConfigurer;
+import org.esa.snap.framework.gpf.pointop.TargetSampleConfigurer;
 import org.esa.snap.framework.gpf.pointop.WritableSample;
 
 @OperatorMetadata(alias = "Simple",
-                  category = "Optical",
-                  version = "1.0",
-                  description = "Example operator with a custom UI.")
+        category = "Optical",
+        version = "1.0",
+        description = "Example operator with a custom UI.")
 public class SimpleExampleOp extends SampleOperator {
     private static final String OUTPUT_BAND_NAME = "output";
     private static final String[] REQUIRED_RASTER_NAMES = new String[]{
@@ -25,18 +26,18 @@ public class SimpleExampleOp extends SampleOperator {
             "altitude", "sun_zenith", "view_zenith"};
 
     @SourceProduct(label = "Select source product",
-                   description = "The source product used for the processing.")
+            description = "The source product used for the processing.")
     Product source;
 
     @Parameter(label = "Switch between THIS and THAT", valueSet = {"THIS", "THAT"}, defaultValue = "THIS",
-               description = "Switch between THIS and THAT algorithm.")
+            description = "Switch between THIS and THAT algorithm.")
     private Algorithm doThisOrThat;
 
     @Parameter(label = "Apply factor on input", defaultValue = "false", description = "Apply the factor on input values or not.")
     private boolean includeInputFactor;
 
     @Parameter(label = "Input factor", defaultValue = "1.04", interval = "(0,2)",
-               description = "Factor applied to the input.")
+            description = "Factor applied to the input.")
     private double inputFactor;
 
     @Override
@@ -51,7 +52,7 @@ public class SimpleExampleOp extends SampleOperator {
     }
 
     @Override
-    protected void configureSourceSamples(SampleConfigurer sampleConfigurer) throws OperatorException {
+    protected void configureSourceSamples(SourceSampleConfigurer sampleConfigurer) throws OperatorException {
         int index = 0;
         for (String rasterName : REQUIRED_RASTER_NAMES) {
             sampleConfigurer.defineSample(index++, rasterName);
@@ -59,7 +60,7 @@ public class SimpleExampleOp extends SampleOperator {
     }
 
     @Override
-    protected void configureTargetSamples(SampleConfigurer sampleConfigurer) throws OperatorException {
+    protected void configureTargetSamples(TargetSampleConfigurer sampleConfigurer) throws OperatorException {
         sampleConfigurer.defineSample(0, OUTPUT_BAND_NAME);
     }
 
