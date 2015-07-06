@@ -43,7 +43,7 @@ import java.awt.event.ActionEvent;
 )
 @ActionReferences({
         @ActionReference(path = "Menu/Raster", position = 0),
-        @ActionReference(path = "Context/Product/Product", position = 200),
+        @ActionReference(path = "Context/Product/Product", position = 10),
         @ActionReference(path = "Context/Product/RasterDataNode", position = 200),
 })
 @Messages({

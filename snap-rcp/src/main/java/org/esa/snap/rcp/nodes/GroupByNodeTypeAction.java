@@ -25,7 +25,7 @@ import org.openide.util.NbBundle;
 )
 @ActionReference(
         path = "Context/Product/Product",
-        position = 300
+        position = 30
 )
 @NbBundle.Messages({
         "CTL_GroupByNodeTypeActionName=Group Nodes by Type"

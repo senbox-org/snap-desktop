@@ -43,7 +43,7 @@ public class CloseSessionAction extends AbstractAction {
     public CloseSessionAction() {
         super(Bundle.CTL_CloseSessionAction_MenuText());
         ProductManager productManager = SnapApp.getDefault().getProductManager();
-        productManager.addListener(new SCListener());
+        productManager.addListener(new CloseSessionListener());
         setEnabled(false);
     }
 
@@ -55,7 +55,7 @@ public class CloseSessionAction extends AbstractAction {
         closeProductAction.execute();
     }
 
-    private class SCListener implements ProductManager.Listener {
+    private class CloseSessionListener implements ProductManager.Listener {
 
         @Override
         public void productAdded(ProductManager.Event event) {

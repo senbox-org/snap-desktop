@@ -43,7 +43,7 @@ import java.util.List;
 @ActionRegistration(displayName = "#CTL_CloseAllOthersActionName",lazy = false)
 @ActionReferences({
         @ActionReference(path = "Menu/File", position = 30),
-        @ActionReference(path = "Context/Product/Product", position = 850, separatorAfter = 851),
+        @ActionReference(path = "Context/Product/Product", position = 80, separatorAfter = 85),
 })
 @NbBundle.Messages({"CTL_CloseAllOthersActionName=Close All Other Products"})
 public class CloseAllOthersAction extends AbstractAction implements ContextAwareAction, LookupListener {
