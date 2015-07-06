@@ -44,7 +44,7 @@ import java.io.FileReader;
 import java.io.IOException;
 
 @ActionID(category = "File", id = "ImportVectorDataNodeFromMermaidAction" )
-@ActionRegistration(displayName = "#CTL_ImportVectorDataNodeFromMermaidActionText", lazy=true)
+@ActionRegistration(displayName = "#CTL_ImportVectorDataNodeFromMermaidActionText", lazy=false)
 @ActionReferences({
         @ActionReference(path = "Menu/File/Import/Vector Data", position = 30),
         @ActionReference(path = "Menu/Vector/Import")

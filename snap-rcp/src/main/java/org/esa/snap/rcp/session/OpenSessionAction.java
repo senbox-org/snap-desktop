@@ -25,8 +25,7 @@ import org.esa.snap.framework.ui.product.ProductNodeView;
 import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
-import org.esa.snap.util.SystemUtils;
-import org.esa.snap.util.io.SnapFileFilter;
+import org.esa.snap.rcp.actions.file.CloseAllProductsAction;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
@@ -45,7 +44,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
-import java.beans.PropertyVetoException;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -53,8 +51,8 @@ import java.text.MessageFormat;
 import java.util.concurrent.ExecutionException;
 
 
-@ActionID( category = "File", id = "org.esa.snap.rcp.session.OpenSessionAction" )
-@ActionRegistration( displayName = "#CTL_OpenSessionAction_MenuText", lazy = false )
+@ActionID(category = "File", id = "org.esa.snap.rcp.session.OpenSessionAction")
+@ActionRegistration(displayName = "#CTL_OpenSessionAction_MenuText", lazy = false)
 @ActionReference(path = "Menu/File/Session", position = 15)
 @NbBundle.Messages({
         "CTL_OpenSessionAction_MenuText=Open Session...",
@@ -70,21 +68,16 @@ public class OpenSessionAction extends AbstractAction implements LookupListener,
     private final Lookup lookup;
 
 
-    public OpenSessionAction(){
+    public OpenSessionAction() {
         this(Utilities.actionsGlobalContext());
     }
+
     public OpenSessionAction(Lookup lookup) {
         super(Bundle.CTL_OpenSessionAction_MenuText());
         this.lookup = lookup;
         result = lookup.lookupResult(ProductSceneView.class);
         result.addLookupListener(WeakListeners.create(LookupListener.class, this, result));
         //setEnabled(false);
-    }
-
-    public static SnapFileFilter getSessionFileFilter() {
-        return new SnapFileFilter("SESSION",
-                new String[]{String.format(".%s", SystemUtils.getApplicationContextId()), ".beam"},
-                String.format("%s Session file", SystemUtils.getApplicationName()));
     }
 
 
@@ -96,25 +89,24 @@ public class OpenSessionAction extends AbstractAction implements LookupListener,
     @Override
     public void resultChanged(LookupEvent ev) {
         ProductSceneView productSceneView = lookup.lookup(ProductSceneView.class);
-        //setEnabled(productSceneView!=null);
     }
 
     @Override
     public void actionPerformed(ActionEvent event) {
 
-        final VisatApp app = VisatApp.getApp();
+        final SessionManager app = SessionManager.getDefault();
 
         if (app.getSessionFile() != null) {
             SnapDialogs.Answer answer = SnapDialogs.requestDecision(TITLE,
-                    "This will close the current session.\n" +
-                            "Do you want to continue?", true, null);
+                                                                    "This will close the current session.\n" +
+                                                                            "Do you want to continue?", true, null);
             if (answer != SnapDialogs.Answer.YES) {
                 return;
             }
         }
         final File sessionFile = SnapDialogs.requestFileForOpen(TITLE, false,
-                getSessionFileFilter(),
-                LAST_SESSION_DIR_KEY);
+                                                                SessionManager.getDefault().getSessionFileFilter(),
+                                                                LAST_SESSION_DIR_KEY);
         if (sessionFile == null) {
             return;
         }
@@ -125,9 +117,10 @@ public class OpenSessionAction extends AbstractAction implements LookupListener,
         openSession(app, sessionFile);
     }
 
-    public void openSession(VisatApp app, File sessionFile) {
+    public void openSession(SessionManager app, File sessionFile) {
         app.setSessionFile(sessionFile);
-        app.closeAllProducts();
+        CloseAllProductsAction closeProductAction = new CloseAllProductsAction();
+        closeProductAction.execute();
         SwingWorker<RestoredSession, Object> worker = new OpenSessionWorker(app, sessionFile);
         worker.execute();
     }
@@ -135,10 +128,10 @@ public class OpenSessionAction extends AbstractAction implements LookupListener,
 
     private static class OpenSessionWorker extends ProgressMonitorSwingWorker<RestoredSession, Object> {
 
-        private final VisatApp app;
+        private final SessionManager app;
         private final File sessionFile;
 
-        public OpenSessionWorker(VisatApp app, File sessionFile) {
+        public OpenSessionWorker(SessionManager app, File sessionFile) {
             super(SnapApp.getDefault().getMainFrame(), TITLE);
             this.app = app;
             this.sessionFile = sessionFile;
@@ -154,7 +147,6 @@ public class OpenSessionAction extends AbstractAction implements LookupListener,
             } else {
                 rootURI = new File(".").toURI();
             }
-
             return session.restore(new SnapApp.SnapContext(), rootURI, pm, new SessionProblemSolver());
         }
 
@@ -170,7 +162,7 @@ public class OpenSessionAction extends AbstractAction implements LookupListener,
                     return;
                 }
                 SnapDialogs.showError(MessageFormat.format("An unexpected exception occurred!\nMessage: {0}",
-                        e.getCause().getMessage()));
+                                                           e.getCause().getMessage()));
                 e.printStackTrace();
                 return;
             }
@@ -196,10 +188,6 @@ public class OpenSessionAction extends AbstractAction implements LookupListener,
             // todo - Handle view persistence in a generic way. (nf - 08.05.2009)
             //        These are the only 3 views currently known in BEAM.
             //        NEST already uses another view type which cannot be stored/restored.
-            //
-//            ShowImageViewAction showImageViewAction = getAction(ShowImageViewAction.ID);
-//            ShowImageViewRGBAction showImageViewRGBAction = getAction(ShowImageViewRGBAction.ID);
-//            ShowMetadataViewAction showMetadataViewAction = getAction(ShowMetadataViewAction.ID);
 
             final ProductNodeView[] nodeViews = restoredSession.getViews();
             for (ProductNodeView nodeView : nodeViews) {
@@ -210,24 +198,28 @@ public class OpenSessionAction extends AbstractAction implements LookupListener,
 
                     sceneView.getLayerCanvas().setInitiallyZoomingAll(false);
                     Viewport viewport = sceneView.getLayerCanvas().getViewport().clone();
-                    if (sceneView.isRGB()) {
-                        internalFrame = null;// showImageViewRGBAction.openInternalFrame(sceneView, false);
-                    } else {
-                        internalFrame = null;//showImageViewAction.openInternalFrame(sceneView, false);
-                    }
-                    sceneView.getLayerCanvas().getViewport().setTransform(viewport);
+
+//        ######### 06.07.2015 ########
+//        Comment out by Muhammad until Internal view is solved for NetBeans platform
+
+//                    if (sceneView.isRGB()) {
+//                        internalFrame = null;// showImageViewRGBAction.openInternalFrame(sceneView, false);
+//                    } else {
+//                        internalFrame = null;//showImageViewAction.openInternalFrame(sceneView, false);
+//                    }
+//                    sceneView.getLayerCanvas().getViewport().setTransform(viewport);
 //                } else if (nodeView instanceof ProductMetadataView) {
 //                    ProductMetadataView metadataView = (ProductMetadataView) nodeView;
-//
 //                    internalFrame = showMetadataViewAction.openInternalFrame(metadataView);
-                }
-                if (internalFrame != null) {
-                    try {
-                        internalFrame.setMaximum(false);
-                    } catch (PropertyVetoException e) {
-                        // ok to ignore
-                    }
-                    internalFrame.setBounds(bounds);
+//                }
+//                if (internalFrame != null) {
+//                    try {
+//                        internalFrame.setMaximum(false);
+//                    } catch (PropertyVetoException e) {
+//                        // ok to ignore
+//                    }
+//                    internalFrame.setBounds(bounds);
+//                }
                 }
             }
         }
@@ -247,10 +239,10 @@ public class OpenSessionAction extends AbstractAction implements LookupListener,
                 final SnapDialogs.Answer[] answer = new SnapDialogs.Answer[1];
                 final String title = MessageFormat.format(TITLE + " - Resolving [{0}]", file);
                 final String msg = MessageFormat.format("Product [{0}] has been renamed or (re-)moved.\n" +
-                                "Its location was [{1}].\n" +
-                                "Do you wish to provide its new location?\n" +
-                                "(Select ''No'' if the product shall no longer be part of the session.)",
-                        id, file);
+                                                                "Its location was [{1}].\n" +
+                                                                "Do you wish to provide its new location?\n" +
+                                                                "(Select ''No'' if the product shall no longer be part of the session.)",
+                                                        id, file);
                 try {
                     SwingUtilities.invokeAndWait(new Runnable() {
 

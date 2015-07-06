@@ -185,8 +185,8 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
         // Get export method from user
         final String questionText = "How do you want to export the pixel values?\n";
         final JCheckBox createHeaderBox = new JCheckBox("Create header");
-        final JCheckBox exportTiePointsBox = new JCheckBox("export tie-points");
-        final JCheckBox exportWavelengthsAndSFBox = new JCheckBox("export wavelengths + solar fluxes");
+        final JCheckBox exportTiePointsBox = new JCheckBox("Export tie-points");
+        final JCheckBox exportWavelengthsAndSFBox = new JCheckBox("Export wavelengths + solar fluxes");
         final int method = SelectExportMethodDialog.run(SnapApp.getDefault().getMainFrame(), getWindowTitle(),
                                                         questionText + numPixelsText, new JCheckBox[]{
                         createHeaderBox,

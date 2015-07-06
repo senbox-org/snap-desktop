@@ -44,10 +44,17 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
+import org.openide.util.ContextAwareAction;
 import org.openide.util.HelpCtx;
+import org.openide.util.Lookup;
+import org.openide.util.LookupEvent;
+import org.openide.util.LookupListener;
 import org.openide.util.NbBundle;
+import org.openide.util.Utilities;
+import org.openide.util.WeakListeners;
 
 import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.SwingWorker;
 import java.awt.event.ActionEvent;
 import java.io.File;
@@ -68,7 +75,7 @@ import java.util.concurrent.ExecutionException;
 @ActionRegistration(
         displayName = "#CTL_ExportGeometryAction_MenuText",
         popupText = "#CTL_ExportGeometryAction_PopupText",
-        lazy = true
+        lazy = false
 )
 @ActionReferences({
         @ActionReference(path = "Menu/File/Export/Other", position = 40),
@@ -84,17 +91,26 @@ import java.util.concurrent.ExecutionException;
         "CTL_ExportGeometryAction_ShortDescription=Exports the currently selected geometry as ESRI Shapefile."
 })
 
-public class ExportGeometryAction extends AbstractAction implements HelpCtx.Provider {
+public class ExportGeometryAction extends AbstractAction implements ContextAwareAction, LookupListener, HelpCtx.Provider {
 
     private static final String ESRI_SHAPEFILE = "ESRI Shapefile";
     private static final String FILE_EXTENSION_SHAPEFILE = ".shp";
+    private final Lookup.Result<VectorDataNode> result;
+    private final Lookup lookup;
     private String HELP_ID = "exportShapefile";
     private VectorDataNode vectorDataNode;
 
 
-    public ExportGeometryAction(VectorDataNode vectorDataNode) {
+    public ExportGeometryAction() {
+        this(Utilities.actionsGlobalContext());
+    }
+
+    public ExportGeometryAction(Lookup lookup) {
         super(Bundle.CTL_ExportGeometryAction_MenuText());
-        this.vectorDataNode = vectorDataNode;
+        this.lookup = lookup;
+        result = lookup.lookupResult(VectorDataNode.class);
+        result.addLookupListener(WeakListeners.create(LookupListener.class, this, result));
+        setEnabled(false);
     }
 
     /*
@@ -111,6 +127,10 @@ public class ExportGeometryAction extends AbstractAction implements HelpCtx.Prov
                                               null,
                                               "exportVectorDataNode.lastDir");
     }
+
+    /////////////////////////////////////////////////////////////////////////
+    // Private implementations for the "export Mask Pixels" command
+    /////////////////////////////////////////////////////////////////////////
 
     private static void exportVectorDataNode(VectorDataNode vectorNode, File file, ProgressMonitor pm) throws
             IOException {
@@ -135,10 +155,6 @@ public class ExportGeometryAction extends AbstractAction implements HelpCtx.Prov
             pm.done();
         }
     }
-
-    /////////////////////////////////////////////////////////////////////////
-    // Private implementations for the "export Mask Pixels" command
-    /////////////////////////////////////////////////////////////////////////
 
     private static void writeEsriShapefile(Class<?> geomType, List<SimpleFeature> features, File file) throws IOException {
         String geomName = geomType.getSimpleName();
@@ -229,6 +245,17 @@ public class ExportGeometryAction extends AbstractAction implements HelpCtx.Prov
         return new HelpCtx(HELP_ID);
     }
 
+    @Override
+    public Action createContextAwareInstance(Lookup actionContext) {
+        return new ExportGeometryAction(actionContext);
+    }
+
+    @Override
+    public void resultChanged(LookupEvent lookupEvent) {
+        VectorDataNode vectorDataNode = lookup.lookup(VectorDataNode.class);
+        setEnabled(vectorDataNode != null);
+    }
+
     /**
      * Performs the actual "export Mask Pixels" command.
      */
@@ -251,6 +278,7 @@ public class ExportGeometryAction extends AbstractAction implements HelpCtx.Prov
 
         swingWorker.execute();
     }
+
 
     private static class ExportVectorNodeSwingWorker extends ProgressMonitorSwingWorker<Exception, Object> {
 
