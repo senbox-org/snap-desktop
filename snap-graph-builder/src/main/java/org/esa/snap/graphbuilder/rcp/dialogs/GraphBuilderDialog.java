@@ -25,9 +25,11 @@ import org.esa.snap.gpf.operators.standard.ReadOp;
 import org.esa.snap.graphbuilder.gpf.ui.ProductSetReaderOpUI;
 import org.esa.snap.graphbuilder.gpf.ui.SourceUI;
 import org.esa.snap.graphbuilder.gpf.ui.UIValidation;
+import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphDialog;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphExecuter;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphNode;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphPanel;
+import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphsMenu;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.ProgressBarProgressMonitor;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
@@ -59,7 +61,7 @@ import java.util.Observer;
 /**
  * Provides the User Interface for creating, loading and saving Graphs
  */
-public class GraphBuilderDialog extends ModelessDialog implements Observer {
+public class GraphBuilderDialog extends ModelessDialog implements Observer, GraphDialog {
 
     private static final ImageIcon processIcon = TangoIcons.actions_media_playback_start(TangoIcons.Res.R22);
     private static final ImageIcon saveIcon = TangoIcons.actions_document_save_as(TangoIcons.Res.R22);
@@ -86,7 +88,6 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer {
 
     private final static String LAST_GRAPH_PATH = "graphbuilder.last_graph_path";
 
-    //TabbedPanel
     private JTabbedPane tabbedPanel = null;
 
     public GraphBuilderDialog(final AppContext theAppContext, final String title, final String helpID) {
@@ -185,6 +186,12 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer {
 
         mainPanel.add(southPanel, BorderLayout.SOUTH);
         mainPanel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+
+        if (getJDialog().getJMenuBar() == null && allowGraphBuilding) {
+            final GraphsMenu operatorMenu =  new GraphsMenu(getJDialog(), this);
+
+            getJDialog().setJMenuBar(operatorMenu.createDefaultMenu());
+        }
 
         setContent(mainPanel);
     }
@@ -315,10 +322,14 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer {
         return result;
     }
 
+    public boolean canSaveGraphs() {
+        return true;
+    }
+
     /**
      * Validates the input and then saves the current graph to a file
      */
-    private void SaveGraph() {
+    public void SaveGraph() {
 
         //if(ValidateAllNodes()) {
         try {
@@ -336,7 +347,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer {
     /**
      * Loads a new graph from a file
      */
-    private void LoadGraph() {
+    public void LoadGraph() {
         final SnapFileFilter fileFilter = new SnapFileFilter("XML", "xml", "Graph");
         final File graphFile = SnapDialogs.requestFileForOpen("Load Graph", false, fileFilter, LAST_GRAPH_PATH);
         if (graphFile == null) return;
@@ -378,6 +389,10 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer {
         } catch (GraphException e) {
             showErrorDialog(e.getMessage());
         }
+    }
+
+    public String getGraphAsString() throws GraphException, IOException {
+        return graphEx.getGraphAsString();
     }
 
     public void EnableInitialInstructions(final boolean flag) {
@@ -651,10 +666,10 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer {
 
     public interface ProcessingListener {
 
-        public enum MSG {DONE, UPDATE}
+        enum MSG {DONE, UPDATE}
 
-        public void notifyMSG(final MSG msg, final File[] fileList);
+        void notifyMSG(final MSG msg, final File[] fileList);
 
-        public void notifyMSG(final MSG msg, final String text);
+        void notifyMSG(final MSG msg, final String text);
     }
 }

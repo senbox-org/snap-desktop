@@ -25,8 +25,10 @@ import org.esa.snap.framework.ui.AppContext;
 import org.esa.snap.framework.ui.ModelessDialog;
 import org.esa.snap.gpf.ProcessTimeMonitor;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.FileTable;
+import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphDialog;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphExecuter;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphNode;
+import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphsMenu;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.ProgressBarProgressMonitor;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.util.MemUtils;
@@ -50,7 +52,7 @@ import java.util.Map;
 /**
  * Provides the dialog for executing a graph on a list of products
  */
-public class BatchGraphDialog extends ModelessDialog {
+public class BatchGraphDialog extends ModelessDialog implements GraphDialog {
 
     private final AppContext appContext;
     protected final ProductSetPanel productSetPanel;
@@ -125,6 +127,12 @@ public class BatchGraphDialog extends ModelessDialog {
         getButton(ID_APPLY).setText("Run");
         getButton(ID_YES).setText("Load Graph");
 
+        if (getJDialog().getJMenuBar() == null) {
+            final GraphsMenu operatorMenu =  new GraphsMenu(getJDialog(), this);
+
+            getJDialog().setJMenuBar(operatorMenu.createDefaultMenu());
+        }
+
         setContent(mainPanel);
         super.getJDialog().setMinimumSize(new Dimension(400, 300));
     }
@@ -187,12 +195,7 @@ public class BatchGraphDialog extends ModelessDialog {
      */
     @Override
     protected void onYes() {
-        if (isProcessing) return;
-
-        final File file = getFilePath(this.getContent(), "Graph File");
-        if (file != null) {
-            LoadGraphFile(file);
-        }
+        LoadGraph();
     }
 
     public void setInputFiles(final File[] productFileList) {
@@ -207,7 +210,16 @@ public class BatchGraphDialog extends ModelessDialog {
         productSetPanel.setTargetFolder(path);
     }
 
-    public void LoadGraphFile(final File file) {
+    public void LoadGraph() {
+        if (isProcessing) return;
+
+        final File file = getFilePath(this.getContent(), "Graph File");
+        if (file != null) {
+            LoadGraph(file);
+        }
+    }
+
+    public void LoadGraph(final File file) {
         try {
             graphFile = file;
 
@@ -217,6 +229,20 @@ public class BatchGraphDialog extends ModelessDialog {
             SnapApp.getDefault().handleError("Unable to load graph "+file.toString(), e);
             return;
         }
+    }
+
+    public boolean canSaveGraphs() {
+        return false;
+    }
+
+    public void SaveGraph() {
+    }
+
+    public String getGraphAsString() throws GraphException, IOException {
+        if(graphExecutorList.size() > 0) {
+            return graphExecutorList.get(0).getGraphAsString();
+        }
+        return "";
     }
 
     private static File getFilePath(Component component, String title) {

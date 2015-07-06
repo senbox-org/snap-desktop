@@ -41,8 +41,10 @@ import org.esa.snap.util.io.SnapFileFilter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
@@ -279,6 +281,19 @@ public class GraphExecuter extends Observable {
         } catch (Exception e) {
             throw new GraphException("Unable to write graph to " + filePath + '\n' + e.getMessage());
         }
+    }
+
+    public String getGraphAsString() throws GraphException, IOException {
+        final StringWriter stringWriter = new StringWriter();
+        try {
+            AssignAllParameters();
+            GraphIO.write(graph, stringWriter);
+        } catch (Exception e) {
+            throw new GraphException("Unable to write graph to string" + '\n' + e.getMessage());
+        } finally {
+            stringWriter.close();
+        }
+        return stringWriter.toString();
     }
 
     public void loadGraph(final File filePath, final boolean addUI) throws GraphException {

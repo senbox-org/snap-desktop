@@ -128,7 +128,7 @@ public class ProductLibraryActions {
                 "Batch Processing", "batchProcessing", false);
         batchDlg.setInputFiles(productEntryList);
         if (graphFile != null) {
-            batchDlg.LoadGraphFile(graphFile);
+            batchDlg.LoadGraph(graphFile);
         }
         batchDlg.show();
     }
