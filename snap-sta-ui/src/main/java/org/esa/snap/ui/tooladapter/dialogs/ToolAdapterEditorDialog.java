@@ -33,12 +33,7 @@ import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.gpf.GPF;
 import org.esa.snap.framework.gpf.OperatorException;
 import org.esa.snap.framework.gpf.OperatorSpi;
-import org.esa.snap.framework.gpf.descriptor.AnnotationOperatorDescriptor;
-import org.esa.snap.framework.gpf.descriptor.ParameterDescriptor;
-import org.esa.snap.framework.gpf.descriptor.SystemDependentVariable;
-import org.esa.snap.framework.gpf.descriptor.SystemVariable;
-import org.esa.snap.framework.gpf.descriptor.TemplateParameterDescriptor;
-import org.esa.snap.framework.gpf.descriptor.ToolAdapterOperatorDescriptor;
+import org.esa.snap.framework.gpf.descriptor.*;
 import org.esa.snap.framework.gpf.operators.tooladapter.ToolAdapterConstants;
 import org.esa.snap.framework.gpf.operators.tooladapter.ToolAdapterIO;
 import org.esa.snap.framework.gpf.operators.tooladapter.ToolAdapterOpSpi;
@@ -58,22 +53,9 @@ import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 import org.openide.util.NbBundle;
 
-import javax.swing.AbstractButton;
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComponent;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.SpringLayout;
+import javax.swing.*;
 import javax.swing.border.TitledBorder;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -249,10 +231,10 @@ public class ToolAdapterEditorDialog extends ModalDialog {
             SnapDialogs.showWarning(Bundle.MSG_Inexistent_Tool_Path_Text());
             return false;
         }
-        if (!file.exists()) {
+        /*if (!file.exists()) {
             File resolvedFile = resolvePathOnSystem(file);
             newOperatorDescriptor.setMainToolFileLocation(resolvedFile == null ? file : resolvedFile);
-        }
+        }*/
         Path toolLocation = newOperatorDescriptor.resolveVariables(newOperatorDescriptor.getMainToolFileLocation()).toPath();
         if (!(Files.exists(toolLocation) && Files.isExecutable(toolLocation))) {
             SnapDialogs.showWarning(Bundle.MSG_Inexistent_Tool_Path_Text());
@@ -744,7 +726,7 @@ public class ToolAdapterEditorDialog extends ModalDialog {
         }
     }
 
-    private File resolvePathOnSystem(File path) {
+    /*private File resolvePathOnSystem(File path) {
         File resolved = null;
         for (String sysPath : systemPath) {
             File current = new File(sysPath, path.getPath());
@@ -754,7 +736,7 @@ public class ToolAdapterEditorDialog extends ModalDialog {
             }
         }
         return resolved;
-    }
+    }*/
 
     private boolean resolveTemplateProductCount(String templateContent) {
         boolean success = true;
