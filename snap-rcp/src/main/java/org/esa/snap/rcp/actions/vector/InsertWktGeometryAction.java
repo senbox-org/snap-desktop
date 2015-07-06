@@ -38,9 +38,16 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
+import org.openide.util.ContextAwareAction;
+import org.openide.util.Lookup;
+import org.openide.util.LookupEvent;
+import org.openide.util.LookupListener;
 import org.openide.util.NbBundle;
+import org.openide.util.Utilities;
+import org.openide.util.WeakListeners;
 
 import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -61,7 +68,7 @@ import java.awt.event.ActionEvent;
 )
 @ActionRegistration(
         displayName = "#CTL_InsertWktGeometryAction_MenuText",
-        lazy = true
+        lazy = false
 )
 @ActionReferences({
         @ActionReference(path = "Menu/Vector", position = 11, separatorBefore = 10),
@@ -75,16 +82,36 @@ import java.awt.event.ActionEvent;
 })
 
 
-public class InsertWktGeometryAction extends AbstractAction {
+public class InsertWktGeometryAction extends AbstractAction implements ContextAwareAction,LookupListener {
 
     private static final String DLG_TITLE = "Geometry from WKT";
+    private  Lookup.Result<ProductSceneView> result;
+    private  Lookup lookup;
     private long currentFeatureId = System.nanoTime();
 
 
     public InsertWktGeometryAction(){
-        setEnabled(SnapApp.getDefault().getSelectedProductSceneView() != null);
+        this(Utilities.actionsGlobalContext());
     }
 
+    public InsertWktGeometryAction(Lookup lookup) {
+        super(Bundle.CTL_InsertWktGeometryAction_MenuText());
+        this.lookup = lookup;
+        result = lookup.lookupResult(ProductSceneView.class);
+        result.addLookupListener(WeakListeners.create(LookupListener.class,this,result));
+        setEnabled(false);
+    }
+
+    @Override
+    public Action createContextAwareInstance(Lookup actionContext) {
+        return new InsertWktGeometryAction(actionContext);
+    }
+
+    @Override
+    public void resultChanged(LookupEvent lookupEvent) {
+        ProductSceneView productSceneView = lookup.lookup(ProductSceneView.class);
+        setEnabled(productSceneView != null);
+    }
 
     @Override
     public void actionPerformed(ActionEvent event) {
@@ -132,11 +159,13 @@ public class InsertWktGeometryAction extends AbstractAction {
                     null,
                     ProgressMonitor.NULL);
             if (productFeatures.isEmpty()) {
-                SnapDialogs.showError(DLG_TITLE, "The geometry is not contained in the product.");
+                SnapDialogs.showError(Bundle.CTL_InsertWktGeometryAction_MenuText(),
+                                      "The geometry is not contained in the product.");
             } else {
                 vectorDataLayer.getVectorDataNode().getFeatureCollection().addAll(productFeatures);
             }
         }
     }
+
 
 }

@@ -194,7 +194,10 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
                     }
                 }
             }
-            return true;
+            return operatorDescriptor.getVariables().stream().filter(variable -> {
+                String value = variable.getValue();
+                return value == null || value.isEmpty();
+            }).count() == 0;
         } catch (Exception ignored) {
             return false;
         }

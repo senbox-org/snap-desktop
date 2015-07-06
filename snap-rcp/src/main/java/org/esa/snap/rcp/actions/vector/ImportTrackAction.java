@@ -89,7 +89,8 @@ import java.io.Reader;
         id = "ImportTrackAction"
 )
 @ActionRegistration(
-        displayName = "#CTL_ImportSeadasTrackActionName"
+        displayName = "#CTL_ImportSeadasTrackActionName",
+        lazy = false
 )
 @ActionReferences({
         @ActionReference(path = "Menu/File/Import/Vector Data", position = 50),
