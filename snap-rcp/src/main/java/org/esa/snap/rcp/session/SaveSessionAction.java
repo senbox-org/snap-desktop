@@ -172,6 +172,9 @@ public class SaveSessionAction extends AbstractAction implements ContextAwareAct
 
     private Session createSession(SessionManager app) {
         ArrayList<ProductNodeView> nodeViews = new ArrayList<ProductNodeView>();
+
+//        ######### 06.07.02015########
+//        Comment out by Muhammad until view persistence is solved for NetBeans platform
 //        final JInternalFrame[] internalFrames = app.getAllInternalFrames();
 //        for (JInternalFrame internalFrame : internalFrames) {
 //            final Container contentPane = internalFrame.getContentPane();

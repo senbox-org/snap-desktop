@@ -54,8 +54,8 @@ import java.text.MessageFormat;
 import java.util.concurrent.ExecutionException;
 
 
-@ActionID( category = "File", id = "org.esa.snap.rcp.session.OpenSessionAction" )
-@ActionRegistration( displayName = "#CTL_OpenSessionAction_MenuText", lazy = false )
+@ActionID(category = "File", id = "org.esa.snap.rcp.session.OpenSessionAction")
+@ActionRegistration(displayName = "#CTL_OpenSessionAction_MenuText", lazy = false)
 @ActionReference(path = "Menu/File/Session", position = 15)
 @NbBundle.Messages({
         "CTL_OpenSessionAction_MenuText=Open Session...",
@@ -71,9 +71,10 @@ public class OpenSessionAction extends AbstractAction implements LookupListener,
     private final Lookup lookup;
 
 
-    public OpenSessionAction(){
+    public OpenSessionAction() {
         this(Utilities.actionsGlobalContext());
     }
+
     public OpenSessionAction(Lookup lookup) {
         super(Bundle.CTL_OpenSessionAction_MenuText());
         this.lookup = lookup;
@@ -84,8 +85,8 @@ public class OpenSessionAction extends AbstractAction implements LookupListener,
 
     public static SnapFileFilter getSessionFileFilter() {
         return new SnapFileFilter("SESSION",
-                new String[]{String.format(".%s", SystemUtils.getApplicationContextId()), ".snap"},
-                String.format("%s Session file", SystemUtils.getApplicationName()));
+                                  new String[]{String.format(".%s", SystemUtils.getApplicationContextId()), ".snap"},
+                                  String.format("%s Session file", SystemUtils.getApplicationName()));
     }
 
 
@@ -107,15 +108,15 @@ public class OpenSessionAction extends AbstractAction implements LookupListener,
 
         if (app.getSessionFile() != null) {
             SnapDialogs.Answer answer = SnapDialogs.requestDecision(TITLE,
-                    "This will close the current session.\n" +
-                            "Do you want to continue?", true, null);
+                                                                    "This will close the current session.\n" +
+                                                                            "Do you want to continue?", true, null);
             if (answer != SnapDialogs.Answer.YES) {
                 return;
             }
         }
         final File sessionFile = SnapDialogs.requestFileForOpen(TITLE, false,
-                getSessionFileFilter(),
-                LAST_SESSION_DIR_KEY);
+                                                                getSessionFileFilter(),
+                                                                LAST_SESSION_DIR_KEY);
         if (sessionFile == null) {
             return;
         }
@@ -172,7 +173,7 @@ public class OpenSessionAction extends AbstractAction implements LookupListener,
                     return;
                 }
                 SnapDialogs.showError(MessageFormat.format("An unexpected exception occurred!\nMessage: {0}",
-                        e.getCause().getMessage()));
+                                                           e.getCause().getMessage()));
                 e.printStackTrace();
                 return;
             }
@@ -249,10 +250,10 @@ public class OpenSessionAction extends AbstractAction implements LookupListener,
                 final SnapDialogs.Answer[] answer = new SnapDialogs.Answer[1];
                 final String title = MessageFormat.format(TITLE + " - Resolving [{0}]", file);
                 final String msg = MessageFormat.format("Product [{0}] has been renamed or (re-)moved.\n" +
-                                "Its location was [{1}].\n" +
-                                "Do you wish to provide its new location?\n" +
-                                "(Select ''No'' if the product shall no longer be part of the session.)",
-                        id, file);
+                                                                "Its location was [{1}].\n" +
+                                                                "Do you wish to provide its new location?\n" +
+                                                                "(Select ''No'' if the product shall no longer be part of the session.)",
+                                                        id, file);
                 try {
                     SwingUtilities.invokeAndWait(new Runnable() {
 

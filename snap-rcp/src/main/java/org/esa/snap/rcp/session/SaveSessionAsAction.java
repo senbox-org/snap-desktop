@@ -70,6 +70,6 @@ public class SaveSessionAsAction extends AbstractAction implements ContextAwareA
     public void resultChanged(LookupEvent ev) {
         final SessionManager app = SessionManager.getDefault();
         ProductNode productNode = lookup.lookup(ProductNode.class);
-        setEnabled(productNode != null);
+        setEnabled(productNode != null || app.getSessionFile() != null);
     }
 }

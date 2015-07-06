@@ -53,7 +53,6 @@ public class CloseSessionAction extends AbstractAction {
         sessionManager.setSessionFile((File) null);
         CloseAllProductsAction closeProductAction = new CloseAllProductsAction();
         closeProductAction.execute();
-
     }
 
     private class SCListener implements ProductManager.Listener {
