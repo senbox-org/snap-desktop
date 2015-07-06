@@ -95,8 +95,8 @@ public class SaveSessionAction extends AbstractAction implements ContextAwareAct
         File sessionFile = app.getSessionFile();
         if (sessionFile == null || saveAs) {
             sessionFile = SnapDialogs.requestFileForSave(TITLE, false,
-                    OpenSessionAction.getSessionFileFilter(),
-                    OpenSessionAction.getSessionFileFilter().getDefaultExtension(),
+                                                         SessionManager.getDefault().getSessionFileFilter(),
+                                                         SessionManager.getDefault().getSessionFileFilter().getDefaultExtension(),
                     sessionFile != null ? sessionFile.getName() : System.getProperty("user.name", "noname"),
                     null,
                     OpenSessionAction.LAST_SESSION_DIR_KEY);
@@ -173,8 +173,9 @@ public class SaveSessionAction extends AbstractAction implements ContextAwareAct
     private Session createSession(SessionManager app) {
         ArrayList<ProductNodeView> nodeViews = new ArrayList<ProductNodeView>();
 
-//        ######### 06.07.02015########
+//        ######### 06.07.2015 ########
 //        Comment out by Muhammad until view persistence is solved for NetBeans platform
+//
 //        final JInternalFrame[] internalFrames = app.getAllInternalFrames();
 //        for (JInternalFrame internalFrame : internalFrames) {
 //            final Container contentPane = internalFrame.getContentPane();
