@@ -111,7 +111,6 @@ public class ExportGeometryAction extends AbstractAction implements ContextAware
         result = lookup.lookupResult(VectorDataNode.class);
         result.addLookupListener(WeakListeners.create(LookupListener.class, this, result));
         setEnabled(false);
-//        this.vectorDataNode = vectorDataNode;
     }
 
     /*
