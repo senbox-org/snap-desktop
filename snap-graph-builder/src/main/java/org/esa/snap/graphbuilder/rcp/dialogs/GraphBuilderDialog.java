@@ -129,7 +129,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         if (allowGraphBuilding) {
             graphPanel = new GraphPanel(graphEx);
             graphPanel.setBackground(Color.WHITE);
-            graphPanel.setPreferredSize(new Dimension(500, 500));
+            graphPanel.setPreferredSize(new Dimension(1500, 1000));
             final JScrollPane scrollPane = new JScrollPane(graphPanel);
             scrollPane.setPreferredSize(new Dimension(300, 300));
             northPanel.add(scrollPane, BorderLayout.CENTER);
