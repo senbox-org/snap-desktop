@@ -19,6 +19,7 @@ import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle;
 import org.openide.util.WeakSet;
@@ -44,7 +45,11 @@ import java.util.Set;
 @ActionRegistration(
         displayName = "#CTL_CloseProductActionName"
 )
-@ActionReference(path = "Menu/File", position = 20, separatorBefore = 18)
+
+@ActionReferences({
+        @ActionReference(path = "Menu/File", position = 20, separatorBefore = 18),
+        @ActionReference(path = "Context/Product/Product", position = 60)
+})
 @NbBundle.Messages({
         "CTL_CloseProductActionName=Close Product"
 })

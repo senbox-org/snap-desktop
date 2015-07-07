@@ -59,7 +59,7 @@ import java.awt.event.ActionEvent;
 )
 @ActionReferences({
         @ActionReference(path = "Menu/Window", position = 110),
-        @ActionReference(path = "Context/Product/Product", position = 400),
+        @ActionReference(path = "Context/Product/Product", position = 40, separatorBefore = 35),
 })
 @NbBundle.Messages({
         "CTL_OpenRGBImageViewAction_MenuText=Open RGB Image Window",

@@ -60,7 +60,7 @@ import java.awt.event.ActionEvent;
 )
 @ActionReferences({
         @ActionReference(path = "Menu/Window", position = 115),
-        @ActionReference(path = "Context/Product/Product", position = 420),
+        @ActionReference(path = "Context/Product/Product", position = 50, separatorAfter = 55),
 })
 @NbBundle.Messages({
         "CTL_OpenHSVImageViewAction_MenuText=Open HSV Image Window",

@@ -99,7 +99,7 @@ import java.util.List;
         ),
         @ActionReference(
                 path = "Context/Product/Product",
-                position = 250
+                position = 20
         ),
         @ActionReference(
                 path = "Context/Product/RasterDataNode",
