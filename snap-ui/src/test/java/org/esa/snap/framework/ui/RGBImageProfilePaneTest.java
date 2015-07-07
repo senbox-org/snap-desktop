@@ -110,4 +110,16 @@ public class RGBImageProfilePaneTest {
         RGBImageProfile profile = RGBImageProfilePane.findProfileForProductPattern(rgbImageProfiles, product);
         assertNull(profile);
     }
+
+    // Added by nf after NPE with Landsat 5 products
+    @Test
+    public void testNoDescriptionSet() throws Exception {
+        RGBImageProfile[] rgbImageProfiles = new RGBImageProfile[] {
+                new RGBImageProfile("p1", new String[]{"", "", ""}, new String[]{"matches", "not at", "all"}),
+        };
+        Product product = new Product("some_name_123", "some_type_123", 1, 1);
+        product.setDescription(null);
+        RGBImageProfile profile = RGBImageProfilePane.findProfileForProductPattern(rgbImageProfiles, product);
+        assertNotNull(profile);
+    }
 }
