@@ -54,10 +54,7 @@ public class ManageToolAdaptersAction extends AbstractSnapAction {
      */
     @Override
     public void actionPerformed(ActionEvent event) {
-        ToolAdaptersManagementDialog operatorDialog = new ToolAdaptersManagementDialog(getAppContext(),
-                Bundle.CTL_ExternalOperatorsEditorDialog_Title(),
-                event.getActionCommand());
-        operatorDialog.show();
+        ToolAdaptersManagementDialog.showDialog(getAppContext(), event.getActionCommand());
     }
 
 }

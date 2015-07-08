@@ -21,8 +21,7 @@ import org.esa.snap.framework.gpf.GPF;
 import org.esa.snap.framework.gpf.descriptor.ToolAdapterOperatorDescriptor;
 import org.esa.snap.framework.gpf.operators.tooladapter.*;
 import org.esa.snap.framework.ui.AppContext;
-import org.esa.snap.framework.ui.ModalDialog;
-import org.esa.snap.framework.ui.tool.ToolButtonFactory;
+import org.esa.snap.framework.ui.ModelessDialog;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.tango.TangoIcons;
 import org.esa.snap.ui.tooladapter.actions.ToolAdapterActionRegistrar;
@@ -35,15 +34,15 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
 import java.awt.*;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.*;
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.stream.Collectors;
+
+import static org.esa.snap.utils.SpringUtilities.DEFAULT_PADDING;
+import static org.esa.snap.utils.SpringUtilities.makeCompactGrid;
 
 /**
  * Dialog that allows the management (create, edit, remove and execute) of external
@@ -53,168 +52,184 @@ import java.util.stream.Collectors;
  * @author Cosmin Cara
  */
 @NbBundle.Messages({
+        "Dialog_Title=External Tools",
         "ToolTipNewOperator_Text=Define new operator",
         "ToolTipCopyOperator_Text=Duplicate the selected operator",
         "ToolTipEditOperator_Text=Edit the selected operator",
         "ToolTipExecuteOperator_Text=Execute the selected operator",
-        "ToolTipDeleteOperator_Text=Delete the selected operator(s)",
+        "ToolTipDeleteOperator_Text=Delete the selected operator",
         "PathLabel_Text=Adapters location",
         "MessageNoSelection_Text=Please select an adapter first",
         "MessageConfirmRemoval_TitleText=Confirm removal",
-        "MessageConfirmRemoval_Text=Are you sure you want to remove the selected adapter(s)?\nThe operation will delete also the associated folder and files",
+        "MessageConfirmRemoval_Text=Are you sure you want to remove the selected adapter?\nThe operation will delete also the associated folder and files",
         "MessageConfirmRemovalDontAsk_Text=Don't ask me in the future",
-        "MessagePackageModules_Text=The adapter%s %s %s installed as NetBeans module%s and cannot be removed from here.%nPlease uninstall %s module%s."
+        "MessagePackageModules_Text=The adapter %s was installed as a NetBeans module and cannot be removed from here.%nPlease uninstall the module."
 
 })
-public class ToolAdaptersManagementDialog extends ModalDialog {
+public class ToolAdaptersManagementDialog extends ModelessDialog{
 
-    public static final int PATH_LABEL_COLUMN_WIDTH = 250;
-    public static final int PATH_COLUMN_WIDTH = 570;
-    public static final int PATH_ROW_HEIGHT = 20;
+    final int CHECK_COLUMN_WIDTH = 20;
+    final int LABEL_COLUMN_WIDTH = 250;
+    final int COLUMN_WIDTH = 270;
+    final int PATH_ROW_HEIGHT = 20;
+    final int BUTTON_HEIGHT = 32;
+    final Dimension buttonDimension = new Dimension((CHECK_COLUMN_WIDTH + LABEL_COLUMN_WIDTH + COLUMN_WIDTH) / 5, BUTTON_HEIGHT);
     private AppContext appContext;
     private JTable operatorsTable = null;
 
-    public ToolAdaptersManagementDialog(AppContext appContext, String title, String helpID) {
-        super(appContext.getApplicationWindow(), title, ID_CLOSE, helpID);
-        this.appContext = appContext;
+    private static ToolAdaptersManagementDialog instance;
 
-        setContent(createContentPanel());
+    public static void showDialog(AppContext appContext, String helpID) {
+        if (instance == null) {
+            instance = new ToolAdaptersManagementDialog(appContext, Bundle.Dialog_Title(), helpID);
+        }
+        instance.show();
+    }
+
+    ToolAdaptersManagementDialog(AppContext appContext, String title, String helpID) {
+        super(appContext.getApplicationWindow(), title, 0, helpID);
+        this.appContext = appContext;
+        JPanel contentPanel = createContentPanel();
+        setContent(contentPanel);
+        super.getJDialog().setMinimumSize(contentPanel.getPreferredSize());
     }
 
     private JPanel createContentPanel() {
         //compute content and other buttons
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
+        SpringLayout springLayout = new SpringLayout();
+        JPanel panel = new JPanel(springLayout);
+        int panelHeight = 0;
+        JTable propertiesPanel = createPropertiesPanel();
+        panelHeight += propertiesPanel.getPreferredSize().getHeight();
+        panel.add(propertiesPanel);
+        panelHeight += 10;
+        panel.add(Box.createVerticalStrut(10));
+        JScrollPane scrollPane = new JScrollPane(createAdaptersPanel());
+        panelHeight += scrollPane.getPreferredSize().getHeight();
+        panel.add(scrollPane);
+        panelHeight += 10;
+        panel.add(Box.createVerticalStrut(10));
         JPanel buttonsPanel = createButtonsPanel();
-        buttonsPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        panelHeight += buttonsPanel.getPreferredSize().getHeight();
         panel.add(buttonsPanel);
-        panel.add(Box.createVerticalStrut(10));
-        panel.add(createPropertiesPanel());
-        panel.add(Box.createVerticalStrut(10));
-        panel.add(new JScrollPane(createAdaptersPanel()));
+
+        springLayout.putConstraint(SpringLayout.WEST, propertiesPanel, DEFAULT_PADDING, SpringLayout.WEST, panel);
+        springLayout.putConstraint(SpringLayout.EAST, propertiesPanel, DEFAULT_PADDING, SpringLayout.EAST, panel);
+        springLayout.putConstraint(SpringLayout.WEST, scrollPane, DEFAULT_PADDING, SpringLayout.WEST, panel);
+        springLayout.putConstraint(SpringLayout.EAST, scrollPane, DEFAULT_PADDING, SpringLayout.EAST, panel);
+        springLayout.putConstraint(SpringLayout.WEST, buttonsPanel, DEFAULT_PADDING, SpringLayout.WEST, panel);
+        springLayout.putConstraint(SpringLayout.EAST, buttonsPanel, DEFAULT_PADDING, SpringLayout.EAST, panel);
+
+        panel.setPreferredSize(new Dimension(CHECK_COLUMN_WIDTH + LABEL_COLUMN_WIDTH + COLUMN_WIDTH - 32, panelHeight + DEFAULT_PADDING));
+        makeCompactGrid(panel, 5, 1, 0, 0, 0, 0);
         return panel;
     }
 
     private JPanel createButtonsPanel() {
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
+        JPanel panel = new JPanel(new SpringLayout());
 
-        AbstractButton newButton = ToolButtonFactory.createButton(TangoIcons.actions_document_new(TangoIcons.Res.R22), false);
-        newButton.setToolTipText(Bundle.ToolTipNewOperator_Text());
-        newButton.addActionListener(e -> {
-            ToolAdapterOperatorDescriptor newOperatorSpi = new ToolAdapterOperatorDescriptor(ToolAdapterConstants.OPERATOR_NAMESPACE + "NewOperator", ToolAdapterOp.class, "NewOperator", null, null, null, null, null, null);
-            ToolAdapterEditorDialog dialog = new ToolAdapterEditorDialog(appContext, newOperatorSpi, true);
-            dialog.show();
-            setContent(createContentPanel());
-            getContent().repaint();
-        });
-        panel.add(newButton);
-
-        AbstractButton copyButton = ToolButtonFactory.createButton(TangoIcons.actions_edit_copy(TangoIcons.Res.R22), false);
-        copyButton.setToolTipText(Bundle.ToolTipCopyOperator_Text());
-        copyButton.addActionListener(e -> {
-            ToolAdapterOperatorDescriptor operatorDesc = ((OperatorsTableModel) operatorsTable.getModel()).getFirstCheckedOperator();
-            if (operatorDesc != null) {
-                String opName = operatorDesc.getName();
-                int newNameIndex = 0;
-                while (GPF.getDefaultInstance().getOperatorSpiRegistry().getOperatorSpi(opName) != null) {
-                    newNameIndex++;
-                    opName = operatorDesc.getName() + ToolAdapterConstants.OPERATOR_GENERATED_NAME_SEPARATOR + newNameIndex;
-                }
-                ToolAdapterEditorDialog dialog = new ToolAdapterEditorDialog(appContext, operatorDesc, newNameIndex);
-                dialog.show();
-                setContent(createContentPanel());
-                getContent().repaint();
-            } else {
-                SnapDialogs.showWarning(Bundle.MessageNoSelection_Text());
-            }
-        });
-        panel.add(copyButton);
-
-        AbstractButton editButton = ToolButtonFactory.createButton(TangoIcons.actions_document_open(TangoIcons.Res.R22), false);
-        editButton.setToolTipText(Bundle.ToolTipEditOperator_Text());
-        editButton.addActionListener(e -> {
-            ToolAdapterOperatorDescriptor operatorDesc = ((OperatorsTableModel) operatorsTable.getModel()).getFirstCheckedOperator();
-            if (operatorDesc != null) {
-                ToolAdapterEditorDialog dialog = new ToolAdapterEditorDialog(appContext, operatorDesc, false);
-                dialog.show();
-                setContent(createContentPanel());
-                getContent().repaint();
-            } else {
-                SnapDialogs.showWarning(Bundle.MessageNoSelection_Text());
-            }
-        });
-        panel.add(editButton);
-
-        AbstractButton delButton = ToolButtonFactory.createButton(TangoIcons.actions_edit_delete(TangoIcons.Res.R22), false);
-        delButton.setToolTipText(Bundle.ToolTipDeleteOperator_Text());
-        delButton.addActionListener(e -> {
-            java.util.List<ToolAdapterOperatorDescriptor> operatorDescriptors = ((OperatorsTableModel) operatorsTable.getModel()).getCheckedOperators();
-            if (operatorDescriptors != null && operatorDescriptors.size() > 0) {
-                if (SnapDialogs.Answer.YES == SnapDialogs.requestDecision(Bundle.MessageConfirmRemoval_TitleText(),
-                        Bundle.MessageConfirmRemoval_Text(), true,
-                        Bundle.MessageConfirmRemovalDontAsk_Text())) {
-                    java.util.List<ToolAdapterOperatorDescriptor> unableToRemove = operatorDescriptors.stream()
-                            .filter(descriptor -> descriptor != null
-                                    && descriptor.isFromPackage())
-                            .collect(Collectors.toList());
-                    int notToRemoveCount = unableToRemove.size();
-                    if (notToRemoveCount > 0) {
-                        StringBuilder message = new StringBuilder();
-                        for (ToolAdapterOperatorDescriptor descriptor : unableToRemove) {
-                            message.append(descriptor.getAlias()).append(",");
+        /**
+         * New adapter button
+         */
+        panel.add(createButton("New",
+                    TangoIcons.actions_document_new(TangoIcons.Res.R22),
+                    Bundle.ToolTipNewOperator_Text(),
+                    e -> {
+                        ToolAdapterOperatorDescriptor newOperatorSpi = new ToolAdapterOperatorDescriptor(ToolAdapterConstants.OPERATOR_NAMESPACE + "NewOperator", ToolAdapterOp.class, "NewOperator", null, null, null, null, null, null);
+                        ToolAdapterEditorDialog dialog = new ToolAdapterEditorDialog(appContext, newOperatorSpi, true);
+                        dialog.show();
+                        refreshContent();
+                    }));
+        /**
+         * Duplicate adapter button
+         */
+        panel.add(createButton("Copy",
+                    TangoIcons.actions_edit_copy(TangoIcons.Res.R22),
+                    Bundle.ToolTipCopyOperator_Text(),
+                    e -> {
+                        ToolAdapterOperatorDescriptor operatorDesc = requestSelection();
+                        if (operatorDesc != null) {
+                            String opName = operatorDesc.getName();
+                            int newNameIndex = 0;
+                            while (GPF.getDefaultInstance().getOperatorSpiRegistry().getOperatorSpi(opName) != null) {
+                                newNameIndex++;
+                                opName = operatorDesc.getName() + ToolAdapterConstants.OPERATOR_GENERATED_NAME_SEPARATOR + newNameIndex;
+                            }
+                            ToolAdapterEditorDialog dialog = new ToolAdapterEditorDialog(appContext, operatorDesc, newNameIndex);
+                            dialog.show();
+                            refreshContent();
                         }
-                        String msg = message.toString();
-                        String pluralNoun = notToRemoveCount > 1 ? "s" : "";
-                        SnapDialogs.showWarning(String.format(Bundle.MessagePackageModules_Text(),
-                                pluralNoun,
-                                msg.substring(0, msg.length() - 1),
-                                notToRemoveCount > 1 ? "were" : "was",
-                                pluralNoun,
-                                notToRemoveCount > 1 ? "the respective" : "this",
-                                pluralNoun));
+                    }));
+        /**
+         * Edit adapter button
+         */
+        panel.add(createButton("Edit",
+                TangoIcons.apps_accessories_text_editor(TangoIcons.Res.R22),
+                Bundle.ToolTipEditOperator_Text(),
+                e -> {
+                    ToolAdapterOperatorDescriptor operatorDesc = requestSelection();
+                    if (operatorDesc != null) {
+                        ToolAdapterEditorDialog dialog = new ToolAdapterEditorDialog(appContext, operatorDesc, false);
+                        dialog.show();
+                        refreshContent();
                     }
-                    operatorDescriptors.stream()
-                            .filter(descriptor -> descriptor != null && !descriptor.isFromPackage())
-                            .forEach(descriptor -> {
-                                ToolAdapterActionRegistrar.removeOperatorMenu(descriptor);
-                                ToolAdapterIO.removeOperator(descriptor);
-                            });
-                    setContent(createContentPanel());
-                    getContent().repaint();
-                }
-            } else {
-                SnapDialogs.showWarning(Bundle.MessageNoSelection_Text());
-            }
-        });
-        panel.add(delButton);
+                }));
+        /**
+         * Delete adapter button
+         */
+        panel.add(createButton("Delete",
+                TangoIcons.actions_edit_clear(TangoIcons.Res.R22),
+                Bundle.ToolTipDeleteOperator_Text(),
+                e -> {
+                    ToolAdapterOperatorDescriptor operatorDescriptor = requestSelection();
+                    if (operatorDescriptor != null) {
+                        if (SnapDialogs.Answer.YES == SnapDialogs.requestDecision(Bundle.MessageConfirmRemoval_TitleText(),
+                                Bundle.MessageConfirmRemoval_Text(), true,
+                                Bundle.MessageConfirmRemovalDontAsk_Text())) {
+                            if (operatorDescriptor.isFromPackage()) {
+                                SnapDialogs.showWarning(String.format(Bundle.MessagePackageModules_Text(), operatorDescriptor.getName()));
+                            } else {
+                                ToolAdapterActionRegistrar.removeOperatorMenu(operatorDescriptor);
+                                ToolAdapterIO.removeOperator(operatorDescriptor);
+                            }
+                            refreshContent();
+                        }
+                    }
+                }));
+        /**
+         * Execute adapter button
+         */
+        panel.add(createButton("Run",
+                TangoIcons.actions_media_playback_start(TangoIcons.Res.R22),
+                Bundle.ToolTipExecuteOperator_Text(),
+                e -> {
+                    ToolAdapterOperatorDescriptor operatorDesc = requestSelection();
+                    if (operatorDesc != null) {
+                        //close();
+                        final ToolAdapterExecutionDialog operatorDialog = new ToolAdapterExecutionDialog(
+                                operatorDesc,
+                                appContext,
+                                operatorDesc.getLabel());
+                        operatorDialog.show();
+                    }
+                }));
 
-        panel.add(Box.createHorizontalStrut(22));
-
-        AbstractButton runButton = ToolButtonFactory.createButton(TangoIcons.actions_view_refresh(TangoIcons.Res.R22), false);
-        runButton.setToolTipText(Bundle.ToolTipExecuteOperator_Text());
-        runButton.addActionListener(e -> {
-            ToolAdapterOperatorDescriptor operatorDesc = null;
-            int[] selectedRows = operatorsTable.getSelectedRows();
-            if (selectedRows != null && selectedRows.length > 0) {
-                operatorDesc = ((OperatorsTableModel) operatorsTable.getModel()).getObjectAt(selectedRows[0]);
-            } else {
-                operatorDesc = ((OperatorsTableModel) operatorsTable.getModel()).getFirstCheckedOperator();
-            }
-            if (operatorDesc != null) {
-                close();
-                final ToolAdapterExecutionDialog operatorDialog = new ToolAdapterExecutionDialog(
-                        operatorDesc,
-                        appContext,
-                        operatorDesc.getLabel());
-                operatorDialog.show();
-            } else {
-                SnapDialogs.showWarning(Bundle.MessageNoSelection_Text());
-            }
-        });
-        panel.add(runButton);
+        makeCompactGrid(panel, 1, 5, 0, 0, DEFAULT_PADDING, DEFAULT_PADDING);
 
         return panel;
+    }
+
+    private AbstractButton createButton(String text, ImageIcon icon, String toolTip, ActionListener actionListener) {
+        AbstractButton button = new JButton(text, icon);
+        button.setMaximumSize(buttonDimension);
+        button.setPreferredSize(buttonDimension);
+        if (toolTip != null) {
+            button.setToolTipText(toolTip);
+        }
+        if (actionListener != null) {
+            button.addActionListener(actionListener);
+        }
+        return button;
     }
 
     private JTable createPropertiesPanel() {
@@ -248,15 +263,15 @@ public class ToolAdaptersManagementDialog extends ModalDialog {
                     for (ToolAdapterOpSpi spi : toolAdapterOpSpis) {
                         ToolAdapterActionRegistrar.registerOperatorMenu((ToolAdapterOperatorDescriptor)spi.getOperatorDescriptor());
                     }
-                    setContent(createContentPanel());
-                    getContent().repaint();
+                    refreshContent();
                 }
             }
         });
         JTable table = new JTable(model);
-        table.getColumnModel().getColumn(0).setMaxWidth(PATH_LABEL_COLUMN_WIDTH);
+        TableColumn labelColumn = table.getColumnModel().getColumn(0);
+        labelColumn.setPreferredWidth((CHECK_COLUMN_WIDTH + LABEL_COLUMN_WIDTH)/2);
         TableColumn pathColumn = table.getColumnModel().getColumn(1);
-        pathColumn.setMaxWidth(PATH_COLUMN_WIDTH);
+        pathColumn.setPreferredWidth(COLUMN_WIDTH);
         pathColumn.setCellEditor(new FileChooserCellEditor());
         table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
         table.setRowHeight(PATH_ROW_HEIGHT);
@@ -281,28 +296,26 @@ public class ToolAdaptersManagementDialog extends ModalDialog {
     private JTable createAdaptersPanel() {
         java.util.List<ToolAdapterOperatorDescriptor> toolboxSpis = new ArrayList<>();
         toolboxSpis.addAll(ToolAdapterRegistry.INSTANCE.getOperatorMap().values()
-                                .stream()
-                                .map(e -> (ToolAdapterOperatorDescriptor)e.getOperatorDescriptor())
-                                .collect(Collectors.toList()));
+                .stream()
+                .map(e -> (ToolAdapterOperatorDescriptor) e.getOperatorDescriptor())
+                .collect(Collectors.toList()));
         toolboxSpis.sort((o1, o2) -> o1.getAlias().compareTo(o2.getAlias()));
         OperatorsTableModel model = new OperatorsTableModel(toolboxSpis);
         operatorsTable = new JTable(model);
-        operatorsTable.getColumnModel().getColumn(0).setMaxWidth(20);
-        operatorsTable.getColumnModel().getColumn(1).setMaxWidth(250);
-        operatorsTable.getColumnModel().getColumn(2).setMaxWidth(500);
+        operatorsTable.getColumnModel().getColumn(0).setMaxWidth(250);
+        operatorsTable.getColumnModel().getColumn(1).setMaxWidth(LABEL_COLUMN_WIDTH);
         operatorsTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
         operatorsTable.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() >= 2) {
                     int selectedRow = operatorsTable.getSelectedRow();
-                    operatorsTable.getModel().setValueAt(true, selectedRow, 0);
+                    //operatorsTable.getModel().setValueAt(true, selectedRow, 0);
                     operatorsTable.repaint();
-                    ToolAdapterOperatorDescriptor operatorDesc = ((OperatorsTableModel) operatorsTable.getModel()).getFirstCheckedOperator();
+                    ToolAdapterOperatorDescriptor operatorDesc = ((OperatorsTableModel) operatorsTable.getModel()).getObjectAt(selectedRow);
                     ToolAdapterEditorDialog dialog = new ToolAdapterEditorDialog(appContext, operatorDesc, false);
                     dialog.show();
-                    setContent(createContentPanel());
-                    getContent().repaint();
+                    refreshContent();
                 }
             }
 
@@ -323,6 +336,22 @@ public class ToolAdaptersManagementDialog extends ModalDialog {
             }
         });
         return operatorsTable;
+    }
+
+    private ToolAdapterOperatorDescriptor requestSelection() {
+        ToolAdapterOperatorDescriptor selected = null;
+        int selectedRow = operatorsTable.getSelectedRow();
+        if (selectedRow >= 0) {
+             selected = ((OperatorsTableModel) operatorsTable.getModel()).getObjectAt(selectedRow);
+        } else {
+            SnapDialogs.showWarning(Bundle.MessageNoSelection_Text());
+        }
+        return selected;
+    }
+
+    private void refreshContent() {
+        setContent(createContentPanel());
+        getContent().repaint();
     }
 
     public class FileChooserCellEditor extends DefaultCellEditor implements TableCellEditor {

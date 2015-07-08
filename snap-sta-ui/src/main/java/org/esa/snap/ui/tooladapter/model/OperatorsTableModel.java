@@ -3,7 +3,6 @@ package org.esa.snap.ui.tooladapter.model;
 import org.esa.snap.framework.gpf.descriptor.ToolAdapterOperatorDescriptor;
 
 import javax.swing.table.AbstractTableModel;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -11,13 +10,13 @@ import java.util.List;
  */
 public class OperatorsTableModel extends AbstractTableModel {
 
-    private String[] columnNames = {"", "Tool name", "Tool description"};
-    private boolean[] toolsChecked = null;
+    private String[] columnNames = {"Alias", "Description"};
+    //private boolean[] toolsChecked = null;
     private List<ToolAdapterOperatorDescriptor> data = null;
 
     public OperatorsTableModel(List<ToolAdapterOperatorDescriptor> operators) {
         this.data = operators;
-        this.toolsChecked = new boolean[this.data.size()];
+        //this.toolsChecked = new boolean[this.data.size()];
     }
 
     @Override
@@ -34,11 +33,13 @@ public class OperatorsTableModel extends AbstractTableModel {
     public Object getValueAt(int rowIndex, int columnIndex) {
         switch (columnIndex) {
             case 0:
-                return toolsChecked[rowIndex];
-            case 1:
+                //return toolsChecked[rowIndex];
                 return data.get(rowIndex).getAlias();
-            case 2:
+            case 1:
+                //return data.get(rowIndex).getAlias();
                 return data.get(rowIndex).getDescription();
+            /*case 2:
+                return data.get(rowIndex).getDescription();*/
         }
         return "";
     }
@@ -50,39 +51,37 @@ public class OperatorsTableModel extends AbstractTableModel {
 
     @Override
     public Class getColumnClass(int c) {
-        if (c == 0) {
-            return Boolean.class;
-        } else {
+//        if (c == 0) {
+//            return Boolean.class;
+//        } else {
             return String.class;
-        }
+//        }
     }
 
     @Override
     public boolean isCellEditable(int row, int col) {
-        if (col == 0) {
+        /*if (col == 0) {
             return true;
-        } else {
+        } else {*/
             return false;
-        }
+//        }
     }
 
     @Override
     public void setValueAt(Object value, int row, int col) {
-
-        //TODO
-        this.toolsChecked[row] = (boolean) value;
+        //this.toolsChecked[row] = (boolean) value;
     }
 
-    public ToolAdapterOperatorDescriptor getFirstCheckedOperator() {
+    /*public ToolAdapterOperatorDescriptor getFirstCheckedOperator() {
         for (int i = 0; i < this.toolsChecked.length; i++) {
             if (this.toolsChecked[i]) {
                 return this.data.get(i);
             }
         }
         return null;
-    }
+    }*/
 
-    public List<ToolAdapterOperatorDescriptor> getCheckedOperators() {
+   /* public List<ToolAdapterOperatorDescriptor> getCheckedOperators() {
         List<ToolAdapterOperatorDescriptor> result = new ArrayList<>();
         for (int i = 0; i < this.toolsChecked.length; i++) {
             if (this.toolsChecked[i]) {
@@ -90,7 +89,7 @@ public class OperatorsTableModel extends AbstractTableModel {
             }
         }
         return result;
-    }
+    }*/
 
     public ToolAdapterOperatorDescriptor getObjectAt(int rowIndex) {
         ToolAdapterOperatorDescriptor result = null;

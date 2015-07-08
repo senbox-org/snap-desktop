@@ -41,6 +41,7 @@ import java.awt.*;
  * SpringBox and SpringCompactGrid.
  */
 public class SpringUtilities {
+    public static final int DEFAULT_PADDING = 2;
     /**
      * A debugging utility that prints to stdout the component's
      * minimum, preferred, and maximum sizes.

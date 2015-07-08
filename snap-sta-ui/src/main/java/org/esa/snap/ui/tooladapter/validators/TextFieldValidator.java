@@ -1,17 +1,17 @@
 package org.esa.snap.ui.tooladapter.validators;
 
+import org.esa.snap.rcp.SnapDialogs;
+
 import javax.swing.*;
-import javax.swing.border.Border;
 import javax.swing.text.JTextComponent;
-import java.awt.*;
 
 /**
- * Created by kraftek on 5/5/2015.
+ * Base validator for text-input components
+ *
+ * @author Cosmin Cara
  */
 public abstract class TextFieldValidator extends InputVerifier {
 
-    private Border initialBorder;
-    private String initialToolTipText;
     private String errorMessage;
 
     public TextFieldValidator(String message) {
@@ -20,25 +20,15 @@ public abstract class TextFieldValidator extends InputVerifier {
 
     @Override
     public boolean verify(JComponent input) {
-        if (initialBorder == null) {
-            initialBorder = input.getBorder();
-            initialToolTipText = input.getToolTipText();
-        }
         if (input instanceof JTextComponent) {
             boolean isValid = false;
             String text = ((JTextComponent) input).getText();
             isValid = verifyValue(text);
             if (!isValid) {
-                input.setBorder(BorderFactory.createLineBorder(Color.RED, 1));
-                input.setToolTipText(errorMessage);
-            } else {
-                input.setBorder(initialBorder);
-                input.setToolTipText(initialToolTipText);
+                SnapDialogs.showError(errorMessage);
             }
             return isValid;
         } else {
-            input.setBorder(initialBorder);
-            input.setToolTipText(initialToolTipText);
             return true;
         }
     }

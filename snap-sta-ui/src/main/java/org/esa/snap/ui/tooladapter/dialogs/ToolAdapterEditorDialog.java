@@ -56,6 +56,7 @@ import org.openide.util.NbBundle;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
+import java.awt.event.ItemEvent;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -69,6 +70,9 @@ import java.util.Set;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import static org.esa.snap.utils.SpringUtilities.DEFAULT_PADDING;
+import static org.esa.snap.utils.SpringUtilities.makeCompactGrid;
 
 /**
  * A dialog window used to edit an operator, or to create a new operator.
@@ -99,10 +103,14 @@ import java.util.stream.Collectors;
         "CTL_Panel_OutputPattern_Border_TitleText=Tool Output Patterns",
         "CTL_Label_ProgressPattern=Progress pattern:",
         "CTL_Label_ErrorPattern=Error pattern:",
-        "CTL_Panel_SysVar_Border_TitleText=System variables",
+        "CTL_Panel_SysVar_Border_TitleText=System Variables",
+        "CTL_Label_RadioButton_ExistingMenus=Existing Menus",
+        "CTL_Label_RadioButton_NewMenu=Create Menu",
         "Icon_Add=/org/esa/snap/resources/images/icons/Add16.png",
         "CTL_Panel_OpParams_Border_TitleText=Operator Parameters",
-        "CTL_Button_Export_Text=Export as module",
+        "CTL_Button_Export_Text=Export as Module",
+        "CTL_Button_Add_Variable_Text=Add Variable",
+        "CTL_Button_Add_PDVariable_Text=Add Platform-Dependent Variable",
         "MSG_Export_Complete_Text=The adapter was exported as a NetBeans module in %s",
         "MSG_Inexistent_Tool_Path_Text=The tool executable does not exist.\n" +
                 "Please specify the location of an existing executable.",
@@ -114,7 +122,8 @@ import java.util.stream.Collectors;
                 "Please correct them before saving the adapter.",
         "MSG_Wrong_Usage_Array_Text=You have used array notation for source products, but only one product will be used.\n" +
                 "Please correct the problem before saving the adapter.",
-        "MSG_Empty_Variable_Text=The variable %s has no value set"
+        "MSG_Empty_Variable_Text=The variable %s has no value set",
+        "MSG_Empty_MenuLocation_Text=Value of 'Menu location' cannot be empty"
 })
 public class ToolAdapterEditorDialog extends ModalDialog {
 
@@ -129,12 +138,12 @@ public class ToolAdapterEditorDialog extends ModalDialog {
     private OperatorParametersTable paramsTable;
     private AppContext context;
     private Logger logger;
+    private JTextField customMenuLocation;
+    private JRadioButton rbMenuNew;
     public static final String helpID = "sta_editor";
 
     private int formWidth;
-    private final int DEFAULT_PADDING = 2;
     private int controlHeight = 24;
-    private final String[] systemPath;
 
     private ToolAdapterEditorDialog(AppContext appContext, String title) {
         super(appContext.getApplicationWindow(), title, ID_OK_CANCEL_HELP, new Object[] { new JButton(Bundle.CTL_Button_Export_Text()) }, helpID);
@@ -142,8 +151,6 @@ public class ToolAdapterEditorDialog extends ModalDialog {
         this.logger = Logger.getLogger(ToolAdapterEditorDialog.class.getName());
         //getJDialog().setResizable(false);
         this.registerButton(ID_OTHER, new JButton(Bundle.CTL_Button_Export_Text()));
-        String sysPath = System.getenv("PATH");
-        systemPath = sysPath.split(File.pathSeparator);
         controlHeight = (getJDialog().getFont().getSize() + 1) * 2;
     }
 
@@ -231,10 +238,7 @@ public class ToolAdapterEditorDialog extends ModalDialog {
             SnapDialogs.showWarning(Bundle.MSG_Inexistent_Tool_Path_Text());
             return false;
         }
-        /*if (!file.exists()) {
-            File resolvedFile = resolvePathOnSystem(file);
-            newOperatorDescriptor.setMainToolFileLocation(resolvedFile == null ? file : resolvedFile);
-        }*/
+
         Path toolLocation = newOperatorDescriptor.resolveVariables(newOperatorDescriptor.getMainToolFileLocation()).toPath();
         if (!(Files.exists(toolLocation) && Files.isExecutable(toolLocation))) {
             SnapDialogs.showWarning(Bundle.MSG_Inexistent_Tool_Path_Text());
@@ -324,6 +328,12 @@ public class ToolAdapterEditorDialog extends ModalDialog {
                                 collect(Collectors.toList());
                 newOperatorDescriptor.removeParamDescriptors(remParameters);
                 try {
+                    if (rbMenuNew.isSelected()) {
+                        String customMenuLocationText = customMenuLocation.getText();
+                        if (customMenuLocationText != null && !customMenuLocationText.isEmpty()) {
+                            newOperatorDescriptor.setMenuLocation(customMenuLocationText);
+                        }
+                    }
                     String menuLocation = newOperatorDescriptor.getMenuLocation();
                     if (menuLocation != null && !menuLocation.startsWith("Menu/")) {
                         newOperatorDescriptor.setMenuLocation("Menu/" + menuLocation);
@@ -429,8 +439,7 @@ public class ToolAdapterEditorDialog extends ModalDialog {
         addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_Authors_Text(), ToolAdapterConstants.AUTHORS, false);
         addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_Description_Text(), ToolAdapterConstants.DESCRIPTION, false);
 
-        java.util.List<String> menus = new ArrayList<>();
-        getAvailableMenuOptions(null, menus);
+        java.util.List<String> menus = getAvailableMenuOptions(null);
         addComboField(descriptorPanel, Bundle.CTL_Label_MenuLocation_Text(), ToolAdapterConstants.MENU_LOCATION, menus, true, true);
 
         TitledBorder title = BorderFactory.createTitledBorder(Bundle.CTL_Panel_OperatorDescriptor_Text());
@@ -580,16 +589,14 @@ public class ToolAdapterEditorDialog extends ModalDialog {
         variablesBorderPanel.setBorder(BorderFactory.createTitledBorder(Bundle.CTL_Panel_SysVar_Border_TitleText()));
 
         AbstractButton addVariableButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon(Bundle.Icon_Add()), false);
-        addVariableButton.setText("Add Variable");
+        addVariableButton.setText(Bundle.CTL_Button_Add_Variable_Text());
         addVariableButton.setMaximumSize(new Dimension(100, 20));
         addVariableButton.setAlignmentX(Component.LEFT_ALIGNMENT);
-        //variablesBorderPanel.add(addVariableButton);
 
         AbstractButton addDependentVariableButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon(Bundle.Icon_Add()), false);
-        addDependentVariableButton.setText("Add System-Dependent Variable");
+        addDependentVariableButton.setText(Bundle.CTL_Button_Add_PDVariable_Text());
         addDependentVariableButton.setMaximumSize(new Dimension(200, 20));
         addDependentVariableButton.setAlignmentX(Component.LEFT_ALIGNMENT);
-        //variablesBorderPanel.add(addDependentVariableButton);
 
         JPanel buttonsPannel = new JPanel(new SpringLayout());
         buttonsPannel.add(addVariableButton);
@@ -692,25 +699,51 @@ public class ToolAdapterEditorDialog extends ModalDialog {
 
     private void addComboField(JPanel parent, String labelText, String propertyName, java.util.List<String> values, boolean sortValues, boolean isRequired) {
         parent.add(new JLabel(labelText));
+
         PropertyDescriptor propertyDescriptor = propertyContainer.getDescriptor(propertyName);
-        if (isRequired) {
-            propertyDescriptor.setValidator(new NotEmptyValidator());
-        }
+        propertyDescriptor.setNotEmpty(isRequired);
+
         if (sortValues) {
             values.sort(Comparator.<String>naturalOrder());
         }
         propertyDescriptor.setValueSet(new ValueSet(values.toArray()));
         PropertyEditor editor = PropertyEditorRegistry.getInstance().findPropertyEditor(propertyDescriptor);
         JComponent editorComp = editor.createEditorComponent(propertyDescriptor, bindingContext);
+        if (editorComp instanceof JComboBox) {
+            JComboBox comboBox = (JComboBox)editorComp;
+            comboBox.setEditable(true);
+        }
         editorComp.setMaximumSize(new Dimension(editorComp.getMaximumSize().width, controlHeight));
         editorComp.setPreferredSize(new Dimension(editorComp.getPreferredSize().width, controlHeight));
-        parent.add(editorComp);
+
+        customMenuLocation = new JTextField();
+        customMenuLocation.setInputVerifier(new RequiredFieldValidator(Bundle.MSG_Empty_MenuLocation_Text()));
+        customMenuLocation.setPreferredSize(new Dimension(250, controlHeight));
+        customMenuLocation.setEnabled(false);
+
+        JPanel subPanel = new JPanel(new SpringLayout());
+        subPanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+        JRadioButton rbExistingMenu = new JRadioButton(Bundle.CTL_Label_RadioButton_ExistingMenus(), true);
+        rbMenuNew = new JRadioButton(Bundle.CTL_Label_RadioButton_NewMenu());
+        ButtonGroup rbGroup = new ButtonGroup();
+        rbGroup.add(rbExistingMenu);
+        rbGroup.add(rbMenuNew);
+        rbExistingMenu.addItemListener(e -> {
+            editorComp.setEnabled(e.getStateChange() == ItemEvent.SELECTED);
+            customMenuLocation.setEnabled(e.getStateChange() == ItemEvent.DESELECTED);
+        });
+        subPanel.add(rbExistingMenu);
+        subPanel.add(rbMenuNew);
+        subPanel.add(editorComp);
+        subPanel.add(customMenuLocation);
+
+        makeCompactGrid(subPanel, 2, 2, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING);
+
+        parent.add(subPanel);
     }
 
-    private void getAvailableMenuOptions(FileObject current, java.util.List<String> resultList) {
-        if (resultList == null) {
-            resultList = new ArrayList<>();
-        }
+    private java.util.List<String> getAvailableMenuOptions(FileObject current) {
+        java.util.List<String> resultList = new ArrayList<>();
         if (current == null) {
             current = FileUtil.getConfigRoot().getFileObject("Menu");
         }
@@ -721,22 +754,11 @@ public class ToolAdapterEditorDialog extends ModalDialog {
                     entry.endsWith(".shadow") ||
                     entry.endsWith(".xml"))) {
                 resultList.add(entry);
-                getAvailableMenuOptions(child, resultList);
+                resultList.addAll(getAvailableMenuOptions(child));
             }
         }
+        return resultList;
     }
-
-    /*private File resolvePathOnSystem(File path) {
-        File resolved = null;
-        for (String sysPath : systemPath) {
-            File current = new File(sysPath, path.getPath());
-            if (current.exists()) {
-                resolved = current;
-                break;
-            }
-        }
-        return resolved;
-    }*/
 
     private boolean resolveTemplateProductCount(String templateContent) {
         boolean success = true;

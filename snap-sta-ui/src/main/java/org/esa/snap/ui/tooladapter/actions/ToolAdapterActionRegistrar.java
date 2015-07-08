@@ -102,9 +102,14 @@ public class ToolAdapterActionRegistrar {
                 menuFolder = FileUtil.getConfigFile("Menu");
                 String[] menuTokens = menuLocation.split("/");
                 for (int i = 1; i < menuTokens.length; i++) {
-                    menuFolder = menuFolder.createFolder(menuTokens[i]);
-                    menuFolder.setAttribute("position", 9999);
+                    FileObject subMenu = menuFolder.getFileObject(menuTokens[i]);
+                    if (subMenu == null) {
+                        menuFolder = menuFolder.createFolder(menuTokens[i]);
+                    } else {
+                        menuFolder = subMenu;
+                    }
                 }
+                menuFolder.setAttribute("position", 9999);
             }
             String menuKey = operator.getAlias();
             FileObject newItem = menuFolder.getFileObject(menuKey, "instance");
