@@ -660,9 +660,11 @@ public class RGBImageProfilePane extends JPanel {
         return bestProfile;
     }
 
-    private static boolean matches(String s, String pattern) {
-        return pattern != null &&
-               s.matches(pattern.replace("*", ".*").replace("?", "."));
+
+    private static boolean matches(String textValue, String pattern) {
+        return textValue != null
+                && pattern != null
+                && textValue.matches(pattern.replace("*", ".*").replace("?", "."));
     }
 
 

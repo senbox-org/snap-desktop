@@ -162,7 +162,7 @@ class ToolExecutionForm extends JTabbedPane {
         Property property = propertySet.getProperty(ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE);
         Object value = property.getValue();
         if (value != null) {
-            File file = new File(property.getValueAsText());
+            File file = operatorDescriptor.resolveVariables(new File(property.getValueAsText()));
             String productName = FileUtils.getFilenameWithoutExtension(file);
             if (fileExtension == null) {
                 fileExtension = FileUtils.getExtension(file);
@@ -190,7 +190,7 @@ class ToolExecutionForm extends JTabbedPane {
             productName += TARGET_PRODUCT_NAME_SUFFIX;
             targetProductSelectorModel.setProductName(productName);
             if (value != null) {
-                File oldValue = value instanceof File ? (File) value : new File((String) value);
+                File oldValue = operatorDescriptor.resolveVariables(value instanceof File ? (File) value : new File((String) value));
                 if (fileExtension == null)
                     fileExtension = TIF_EXTENSION;
                 propertySet.setValue(ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE, new File(oldValue.getParentFile().getAbsolutePath(), productName + fileExtension));

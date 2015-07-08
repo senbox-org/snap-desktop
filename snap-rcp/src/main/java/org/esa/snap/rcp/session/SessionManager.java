@@ -1,9 +1,13 @@
 package org.esa.snap.rcp.session;
 
+import org.esa.snap.util.SystemUtils;
+import org.esa.snap.util.io.SnapFileFilter;
+
 import java.io.File;
 
 /**
- * Created by Samurai on 25/06/15.
+ * Session Manager handling one and only active session file
+ * @author Muhammad
  */
 class SessionManager  {
     private static SessionManager instance = new SessionManager();
@@ -12,6 +16,12 @@ class SessionManager  {
 
     public static SessionManager getDefault() {
         return instance;
+    }
+
+    public SnapFileFilter getSessionFileFilter() {
+        return new SnapFileFilter("SESSION",
+                                  new String[]{String.format(".%s", SystemUtils.getApplicationContextId()), ".snap"},
+                                  String.format("%s Session file", SystemUtils.getApplicationName()));
     }
 
     public File getSessionFile() {

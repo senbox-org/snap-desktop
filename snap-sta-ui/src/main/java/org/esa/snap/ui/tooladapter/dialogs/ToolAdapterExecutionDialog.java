@@ -38,6 +38,7 @@ import org.netbeans.api.progress.ProgressUtils;
 import org.openide.util.Cancellable;
 import org.openide.util.NbBundle;
 
+import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -57,7 +58,7 @@ import java.util.stream.Collectors;
  * @author Cosmin Cara
  */
 @NbBundle.Messages({
-        "NoSourceProductWarning_Text=Please make sure you have selected the necessary input products",
+        "NoSourceProductWarning_Text=No input product was selected.\nAre you sure you want to continue?",
         "RequiredTargetProductMissingWarning_Text=A target product is required in adapter's template, but none was provided",
         "NoOutput_Text=The operator did not produce any output",
         "BeginOfErrorMessages_Text=The operator completed with the following errors:\n",
@@ -122,8 +123,12 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
         } catch (IOException ignored) {
         }
         if (Arrays.stream(sourceProducts).anyMatch(p -> p == null)) {
-            SnapDialogs.showWarning(Bundle.NoSourceProductWarning_Text());
-        } else if (descriptors.size() == 1 && form.getPropertyValue(ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE) == null &&
+            SnapDialogs.Answer decision = SnapDialogs.requestDecision("No Product Selected", Bundle.NoSourceProductWarning_Text(), false, null);
+            if (SnapDialogs.Answer.NO.equals(decision.equals(SnapDialogs.Answer.YES))) {
+                return;
+            }
+        }
+        if (descriptors.size() == 1 && form.getPropertyValue(ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE) == null &&
                 templateContents.contains("$" + ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE)) {
                 SnapDialogs.showWarning(Bundle.RequiredTargetProductMissingWarning_Text());
         } else {
@@ -194,7 +199,10 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
                     }
                 }
             }
-            return true;
+            return operatorDescriptor.getVariables().stream().filter(variable -> {
+                String value = variable.getValue();
+                return value == null || value.isEmpty();
+            }).count() == 0;
         } catch (Exception ignored) {
             return false;
         }
@@ -415,7 +423,7 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
 
         @Override
         public void setSubTaskName(String subTaskName) {
-            this.progressHandle.progress(subTaskName);
+            SwingUtilities.invokeLater(() -> ProgressWrapper.this.progressHandle.progress(subTaskName));
         }
 
         @Override

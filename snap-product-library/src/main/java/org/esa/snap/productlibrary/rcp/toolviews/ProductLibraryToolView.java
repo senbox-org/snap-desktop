@@ -70,7 +70,7 @@ import java.util.Map;
 
 @TopComponent.Description(
         preferredID = "ProductLibraryTopComponent",
-        iconBase = "org/esa/snap/icons/search24.png",
+        iconBase = "org/esa/snap/productlibrary/icons/search24.png",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(

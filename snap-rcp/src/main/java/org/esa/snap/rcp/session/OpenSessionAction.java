@@ -26,8 +26,6 @@ import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.actions.file.CloseAllProductsAction;
-import org.esa.snap.util.SystemUtils;
-import org.esa.snap.util.io.SnapFileFilter;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
@@ -46,7 +44,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
-import java.beans.PropertyVetoException;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -83,12 +80,6 @@ public class OpenSessionAction extends AbstractAction implements LookupListener,
         //setEnabled(false);
     }
 
-    public static SnapFileFilter getSessionFileFilter() {
-        return new SnapFileFilter("SESSION",
-                                  new String[]{String.format(".%s", SystemUtils.getApplicationContextId()), ".snap"},
-                                  String.format("%s Session file", SystemUtils.getApplicationName()));
-    }
-
 
     @Override
     public Action createContextAwareInstance(Lookup actionContext) {
@@ -98,7 +89,6 @@ public class OpenSessionAction extends AbstractAction implements LookupListener,
     @Override
     public void resultChanged(LookupEvent ev) {
         ProductSceneView productSceneView = lookup.lookup(ProductSceneView.class);
-        //setEnabled(productSceneView!=null);
     }
 
     @Override
@@ -115,7 +105,7 @@ public class OpenSessionAction extends AbstractAction implements LookupListener,
             }
         }
         final File sessionFile = SnapDialogs.requestFileForOpen(TITLE, false,
-                                                                getSessionFileFilter(),
+                                                                SessionManager.getDefault().getSessionFileFilter(),
                                                                 LAST_SESSION_DIR_KEY);
         if (sessionFile == null) {
             return;
@@ -157,7 +147,6 @@ public class OpenSessionAction extends AbstractAction implements LookupListener,
             } else {
                 rootURI = new File(".").toURI();
             }
-
             return session.restore(new SnapApp.SnapContext(), rootURI, pm, new SessionProblemSolver());
         }
 
@@ -199,10 +188,6 @@ public class OpenSessionAction extends AbstractAction implements LookupListener,
             // todo - Handle view persistence in a generic way. (nf - 08.05.2009)
             //        These are the only 3 views currently known in BEAM.
             //        NEST already uses another view type which cannot be stored/restored.
-            //
-//            ShowImageViewAction showImageViewAction = getAction(ShowImageViewAction.ID);
-//            ShowImageViewRGBAction showImageViewRGBAction = getAction(ShowImageViewRGBAction.ID);
-//            ShowMetadataViewAction showMetadataViewAction = getAction(ShowMetadataViewAction.ID);
 
             final ProductNodeView[] nodeViews = restoredSession.getViews();
             for (ProductNodeView nodeView : nodeViews) {
@@ -213,24 +198,28 @@ public class OpenSessionAction extends AbstractAction implements LookupListener,
 
                     sceneView.getLayerCanvas().setInitiallyZoomingAll(false);
                     Viewport viewport = sceneView.getLayerCanvas().getViewport().clone();
-                    if (sceneView.isRGB()) {
-                        internalFrame = null;// showImageViewRGBAction.openInternalFrame(sceneView, false);
-                    } else {
-                        internalFrame = null;//showImageViewAction.openInternalFrame(sceneView, false);
-                    }
-                    sceneView.getLayerCanvas().getViewport().setTransform(viewport);
+
+//        ######### 06.07.2015 ########
+//        Comment out by Muhammad until Internal view is solved for NetBeans platform
+
+//                    if (sceneView.isRGB()) {
+//                        internalFrame = null;// showImageViewRGBAction.openInternalFrame(sceneView, false);
+//                    } else {
+//                        internalFrame = null;//showImageViewAction.openInternalFrame(sceneView, false);
+//                    }
+//                    sceneView.getLayerCanvas().getViewport().setTransform(viewport);
 //                } else if (nodeView instanceof ProductMetadataView) {
 //                    ProductMetadataView metadataView = (ProductMetadataView) nodeView;
-//
 //                    internalFrame = showMetadataViewAction.openInternalFrame(metadataView);
-                }
-                if (internalFrame != null) {
-                    try {
-                        internalFrame.setMaximum(false);
-                    } catch (PropertyVetoException e) {
-                        // ok to ignore
-                    }
-                    internalFrame.setBounds(bounds);
+//                }
+//                if (internalFrame != null) {
+//                    try {
+//                        internalFrame.setMaximum(false);
+//                    } catch (PropertyVetoException e) {
+//                        // ok to ignore
+//                    }
+//                    internalFrame.setBounds(bounds);
+//                }
                 }
             }
         }

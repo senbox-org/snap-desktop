@@ -10,6 +10,7 @@ import org.esa.snap.framework.datamodel.ProductNode;
 import org.esa.snap.rcp.SnapApp;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.ContextAwareAction;
 import org.openide.util.Lookup;
@@ -32,9 +33,13 @@ import java.util.List;
  */
 @ActionID(category = "File", id = "CloseAllProductsAction")
 @ActionRegistration(displayName = "#CTL_CloseAllProductsActionName")
-@ActionReference(path = "Menu/File", position = 25)
+
+@ActionReferences({
+        @ActionReference(path = "Menu/File", position = 25)
+//        @ActionReference(path = "Context/Product/Product", position = 70)
+})
 @NbBundle.Messages({"CTL_CloseAllProductsActionName=Close All Products"})
-public final class CloseAllProductsAction extends AbstractAction implements LookupListener,ContextAwareAction{
+public final class CloseAllProductsAction extends AbstractAction implements LookupListener, ContextAwareAction {
 
     private final Lookup lkp;
 
@@ -60,6 +65,7 @@ public final class CloseAllProductsAction extends AbstractAction implements Look
         ProductNode productNode = lkp.lookup(ProductNode.class);
         setEnabled(productNode != null);
     }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         execute();

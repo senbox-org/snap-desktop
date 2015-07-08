@@ -225,10 +225,16 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog {
 
             initGraphs();
             addGraphTabs("", true);
+
+            setTitle(file.getName());
         } catch (Exception e) {
             SnapApp.getDefault().handleError("Unable to load graph "+file.toString(), e);
-            return;
         }
+    }
+
+    @Override
+    public void setTitle(final String title) {
+        super.setTitle("Batch Processing : " + title);
     }
 
     public boolean canSaveGraphs() {
