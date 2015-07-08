@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.esa.snap.configurator.ui;
+package org.esa.snap.smart.configurator.ui;
 
 import java.awt.*;
 import java.awt.event.KeyAdapter;
@@ -11,13 +11,16 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.prefs.BackingStoreException;
+import java.util.regex.Pattern;
 import javax.swing.*;
 
-import org.esa.snap.configurator.ConfigurationOptimizer;
-import org.esa.snap.configurator.JavaSystemInfos;
-import org.esa.snap.configurator.PerformanceParameters;
+import org.apache.commons.lang.StringUtils;
+import org.esa.snap.configurator.*;
+import org.esa.snap.framework.gpf.GPF;
+import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.util.SystemUtils;
 import org.esa.snap.util.io.FileUtils;
 
@@ -65,7 +68,7 @@ final class PerformancePanel extends javax.swing.JPanel {
         this.controller = controller;
         initComponents();
         
-        confOptimizer = new ConfigurationOptimizer();
+        confOptimizer = ConfigurationOptimizer.getInstance();
 
         vmParametersTextField.addKeyListener(new KeyAdapter() {
             @Override
@@ -139,18 +142,34 @@ final class PerformancePanel extends javax.swing.JPanel {
         largeCacheInfoLabel = new javax.swing.JLabel();
         vmParametersInfoLabel = new javax.swing.JLabel();
         processingParametersPanel = new javax.swing.JPanel();
+        jPanel2 = new javax.swing.JPanel();
         tileWidthLabel = new javax.swing.JLabel();
         cacheSizeLabel = new javax.swing.JLabel();
         nbThreadsLabel = new javax.swing.JLabel();
+        jPanel1 = new javax.swing.JPanel();
         defaultTileSizeTextField = new javax.swing.JTextField();
         cacheSizeTextField = new javax.swing.JTextField();
         nbThreadsTextField = new javax.swing.JTextField();
+        jPanel4 = new javax.swing.JPanel();
+        benchmarkTileSizeTextField = new javax.swing.JTextField();
+        benchmarkCacheSizeTextField = new javax.swing.JTextField();
+        benchmarkNbThreadsTextField = new javax.swing.JTextField();
+        jLabel1 = new javax.swing.JLabel();
+        GPF gpf = GPF.getDefaultInstance();
+        if (gpf.getOperatorSpiRegistry().getOperatorSpis().isEmpty()) {
+            gpf.getOperatorSpiRegistry().loadOperatorSpis();
+        }
+        Set<String> operatorLists = new TreeSet<String>(gpf.getOperatorSpiRegistry().getAliases());
+        procGraphJComboBox = new javax.swing.JComboBox(operatorLists.toArray(new String[operatorLists.size()]));
+        jPanel3 = new javax.swing.JPanel();
+        processingParamsComputeButton = new javax.swing.JButton();
         processingParamsResetButton = new javax.swing.JButton();
         filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 3000), new java.awt.Dimension(0, 32767));
 
         setLayout(new javax.swing.BoxLayout(this, javax.swing.BoxLayout.PAGE_AXIS));
 
         systemParametersPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.systemParametersPanel.border.title"))); // NOI18N
+        systemParametersPanel.setMinimumSize(new java.awt.Dimension(283, 115));
         systemParametersPanel.setLayout(new java.awt.GridBagLayout());
 
         org.openide.awt.Mnemonics.setLocalizedText(jLabel2, org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.jLabel2.text")); // NOI18N
@@ -253,70 +272,110 @@ final class PerformancePanel extends javax.swing.JPanel {
 
         add(systemParametersPanel);
 
-        processingParametersPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.processingParametersPanel.border.title"))); // NOI18N
+        processingParametersPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.border.title"))); // NOI18N
+        processingParametersPanel.setMinimumSize(new java.awt.Dimension(450, 185));
+        processingParametersPanel.setName(""); // NOI18N
+        processingParametersPanel.setPreferredSize(new java.awt.Dimension(400, 350));
         processingParametersPanel.setLayout(new java.awt.GridBagLayout());
+
+        jPanel2.setLayout(new java.awt.GridLayout(3, 0, 0, 15));
 
         org.openide.awt.Mnemonics.setLocalizedText(tileWidthLabel, org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.tileWidthLabel.text")); // NOI18N
         tileWidthLabel.setMaximumSize(new java.awt.Dimension(120, 14));
         tileWidthLabel.setPreferredSize(new java.awt.Dimension(100, 14));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 10, 2, 5);
-        processingParametersPanel.add(tileWidthLabel, gridBagConstraints);
+        jPanel2.add(tileWidthLabel);
 
         org.openide.awt.Mnemonics.setLocalizedText(cacheSizeLabel, org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.cacheSizeLabel.text")); // NOI18N
         cacheSizeLabel.setMaximumSize(new java.awt.Dimension(100, 14));
         cacheSizeLabel.setPreferredSize(new java.awt.Dimension(80, 14));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 10, 2, 5);
-        processingParametersPanel.add(cacheSizeLabel, gridBagConstraints);
+        jPanel2.add(cacheSizeLabel);
 
         org.openide.awt.Mnemonics.setLocalizedText(nbThreadsLabel, org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.nbThreadsLabel.text")); // NOI18N
         nbThreadsLabel.setMaximumSize(new java.awt.Dimension(100, 14));
+        jPanel2.add(nbThreadsLabel);
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 10, 2, 5);
-        processingParametersPanel.add(nbThreadsLabel, gridBagConstraints);
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 0);
+        processingParametersPanel.add(jPanel2, gridBagConstraints);
+
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.jPanel1.border.title"))); // NOI18N
+        jPanel1.setMinimumSize(new java.awt.Dimension(100, 100));
+        jPanel1.setLayout(new java.awt.GridLayout(3, 1, 0, 10));
 
         defaultTileSizeTextField.setText(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.defaultTileSizeTextField.text")); // NOI18N
         defaultTileSizeTextField.setMinimumSize(new java.awt.Dimension(100, 20));
         defaultTileSizeTextField.setPreferredSize(new java.awt.Dimension(100, 20));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 10);
-        processingParametersPanel.add(defaultTileSizeTextField, gridBagConstraints);
+        jPanel1.add(defaultTileSizeTextField);
 
         cacheSizeTextField.setText(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.cacheSizeTextField.text")); // NOI18N
         cacheSizeTextField.setMinimumSize(new java.awt.Dimension(100, 20));
         cacheSizeTextField.setName(""); // NOI18N
         cacheSizeTextField.setPreferredSize(new java.awt.Dimension(100, 20));
+        jPanel1.add(cacheSizeTextField);
+
+        nbThreadsTextField.setText(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.nbThreadsTextField.text")); // NOI18N
+        nbThreadsTextField.setPreferredSize(new java.awt.Dimension(100, 20));
+        jPanel1.add(nbThreadsTextField);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        processingParametersPanel.add(jPanel1, gridBagConstraints);
+
+        jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.jPanel4.border.title"))); // NOI18N
+        jPanel4.setMinimumSize(new java.awt.Dimension(190, 107));
+        jPanel4.setLayout(new java.awt.GridLayout(3, 1, 0, 10));
+
+        benchmarkTileSizeTextField.setText(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.benchmarkTileSizeTextField.text")); // NOI18N
+        benchmarkTileSizeTextField.setPreferredSize(new java.awt.Dimension(150, 20));
+        jPanel4.add(benchmarkTileSizeTextField);
+
+        benchmarkCacheSizeTextField.setText(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.benchmarkCacheSizeTextField.text")); // NOI18N
+        benchmarkCacheSizeTextField.setMinimumSize(new java.awt.Dimension(100, 20));
+        benchmarkCacheSizeTextField.setName(""); // NOI18N
+        benchmarkCacheSizeTextField.setPreferredSize(new java.awt.Dimension(150, 20));
+        jPanel4.add(benchmarkCacheSizeTextField);
+
+        benchmarkNbThreadsTextField.setText(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.benchmarkNbThreadsTextField.text")); // NOI18N
+        benchmarkNbThreadsTextField.setPreferredSize(new java.awt.Dimension(150, 20));
+        jPanel4.add(benchmarkNbThreadsTextField);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 2.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 10);
+        processingParametersPanel.add(jPanel4, gridBagConstraints);
+
+        org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.jLabel1.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 0);
+        processingParametersPanel.add(jLabel1, gridBagConstraints);
+
+        procGraphJComboBox.setMinimumSize(new java.awt.Dimension(180, 22));
+        nbThreadsTextField.setMinimumSize(new java.awt.Dimension(100, 20));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.weightx = 0.2;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 10);
-        processingParametersPanel.add(cacheSizeTextField, gridBagConstraints);
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 10);
+        processingParametersPanel.add(procGraphJComboBox, gridBagConstraints);
 
-        nbThreadsTextField.setText(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.nbThreadsTextField.text")); // NOI18N
-        nbThreadsTextField.setMinimumSize(new java.awt.Dimension(100, 20));
-        nbThreadsTextField.setPreferredSize(new java.awt.Dimension(100, 20));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.weightx = 0.2;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 10);
-        processingParametersPanel.add(nbThreadsTextField, gridBagConstraints);
+        org.openide.awt.Mnemonics.setLocalizedText(processingParamsComputeButton, org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.text")); // NOI18N
+        processingParamsComputeButton.setName(""); // NOI18N
+        processingParamsComputeButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                processingParamsComputeButtonActionPerformed(evt);
+            }
+        });
+        jPanel3.add(processingParamsComputeButton);
 
         org.openide.awt.Mnemonics.setLocalizedText(processingParamsResetButton, org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.processingParamsResetButton.text")); // NOI18N
         processingParamsResetButton.addActionListener(new java.awt.event.ActionListener() {
@@ -324,11 +383,14 @@ final class PerformancePanel extends javax.swing.JPanel {
                 processingParamsResetButtonActionPerformed(evt);
             }
         });
+        jPanel3.add(processingParamsResetButton);
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.insets = new java.awt.Insets(10, 3, 0, 10);
-        processingParametersPanel.add(processingParamsResetButton, gridBagConstraints);
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 5);
+        processingParametersPanel.add(jPanel3, gridBagConstraints);
 
         add(processingParametersPanel);
         add(filler1);
@@ -360,10 +422,6 @@ final class PerformancePanel extends javax.swing.JPanel {
         controller.changed();
     }//GEN-LAST:event_sysComputeButtonActionPerformed
 
-    private void processingParamsResetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_processingParamsResetButtonActionPerformed
-        setProcessingPerformanceParametersToActualValues();
-    }//GEN-LAST:event_processingParamsResetButtonActionPerformed
-
     private void browseUserDirButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseUserDirButtonActionPerformed
         JFileChooser fileChooser = new JFileChooser(userDirTextField.getText());
         fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -375,9 +433,72 @@ final class PerformancePanel extends javax.swing.JPanel {
             controller.changed();
         }    }//GEN-LAST:event_browseUserDirButtonActionPerformed
 
+    private void processingParamsComputeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_processingParamsComputeButtonActionPerformed
+        if(validCompute()){
+            //Create performance parameters benchmark lists
+            java.util.List<Integer> tileSizesList = new ArrayList<Integer>();
+            java.util.List<Integer> cacheSizesList = new ArrayList<Integer>();
+            java.util.List<Integer> nbThreadsList = new ArrayList<Integer>();
+            for(String tileSize : StringUtils.split(benchmarkTileSizeTextField.getText(), ';')){
+                tileSizesList.add(Integer.parseInt(tileSize));
+            }
+            for(String cacheSize : StringUtils.split(benchmarkCacheSizeTextField.getText(), ';')){
+                cacheSizesList.add(Integer.parseInt(cacheSize));
+            }
+            for(String nbThread : StringUtils.split(benchmarkNbThreadsTextField.getText(), ';')){
+                nbThreadsList.add(Integer.parseInt(nbThread));
+            }
+            Benchmark benchmarkModel = new Benchmark(tileSizesList, cacheSizesList, nbThreadsList);
+            String opName = procGraphJComboBox.getSelectedItem().toString();
+            SnapApp.SnapContext appContext = new SnapApp.SnapContext();
+            //launch Benchmark dialog
+            BenchmarkDialog productDialog = new BenchmarkDialog(this, opName, benchmarkModel, appContext);
+            productDialog.show();
+        }
+    }//GEN-LAST:event_processingParamsComputeButtonActionPerformed
+
+    private void processingParamsResetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_processingParamsResetButtonActionPerformed
+        setProcessingPerformanceParametersToActualValues();
+    }//GEN-LAST:event_processingParamsResetButtonActionPerformed
+
+    private void benchmarkCacheSizeTextFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_benchmarkCacheSizeTextFieldFocusLost
+        if(benchmarkCacheSizeTextField.getText().equals("")){
+            benchmarkCacheSizeTextField.setText(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.benchmarkCacheSizeTextField.text"));
+            benchmarkCacheSizeTextField.setForeground(Color.GRAY);
+        }
+    }//GEN-LAST:event_benchmarkCacheSizeTextFieldFocusLost
+
+    private void benchmarkNbThreadsTextFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_benchmarkNbThreadsTextFieldFocusGained
+        if(benchmarkNbThreadsTextField.getText().equals(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.benchmarkNbThreadsTextField.text"))){
+            benchmarkNbThreadsTextField.setText("");
+            benchmarkNbThreadsTextField.setForeground(CURRENT_VALUES_COLOR);
+        }
+
+    }//GEN-LAST:event_benchmarkNbThreadsTextFieldFocusGained
+
+    private void benchmarkNbThreadsTextFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_benchmarkNbThreadsTextFieldFocusLost
+        if(benchmarkNbThreadsTextField.getText().equals("")){
+            benchmarkNbThreadsTextField.setText(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.benchmarkNbThreadsTextField.text"));
+            benchmarkNbThreadsTextField.setForeground(Color.GRAY);
+        }
+    }//GEN-LAST:event_benchmarkNbThreadsTextFieldFocusLost
+
     void load() {
         setSystemPerformanceParametersToActualValues();
         setProcessingPerformanceParametersToActualValues();
+    }
+
+    public void updatePerformanceParameters(BenchmarkSingleCalcul benchmarkSingleCalcul){
+        defaultTileSizeTextField.setText(Integer.toString(benchmarkSingleCalcul.getTileSize()));
+        defaultTileSizeTextField.setForeground(MODIFIED_VALUES_COLOR);
+
+        cacheSizeTextField.setText(Integer.toString(benchmarkSingleCalcul.getCacheSize()));
+        cacheSizeTextField.setForeground(MODIFIED_VALUES_COLOR);
+
+        nbThreadsTextField.setText(Integer.toString(benchmarkSingleCalcul.getNbThreads()));
+        nbThreadsTextField.setForeground(MODIFIED_VALUES_COLOR);
+
+        this.controller.changed();
     }
 
     void store() {
@@ -448,6 +569,46 @@ final class PerformancePanel extends javax.swing.JPanel {
         return isValid;
     }
 
+    private boolean validCompute() {
+        boolean isValid = true;
+        Pattern patternBenchmarkValues = Pattern.compile("([0-9]+[\\;]*)+");
+        if (!patternBenchmarkValues.matcher(benchmarkTileSizeTextField.getText()).matches()) {
+            benchmarkTileSizeTextField.setForeground(ERROR_VALUES_COLOR);
+            isValid = false;
+        } else {
+            benchmarkTileSizeTextField.setForeground(CURRENT_VALUES_COLOR);
+        }
+        if (!patternBenchmarkValues.matcher(benchmarkCacheSizeTextField.getText()).matches()) {
+            benchmarkCacheSizeTextField.setForeground(ERROR_VALUES_COLOR);
+            isValid = false;
+        } else {
+            benchmarkCacheSizeTextField.setForeground(CURRENT_VALUES_COLOR);
+        }
+        if (!patternBenchmarkValues.matcher(benchmarkNbThreadsTextField.getText()).matches() || !validBenchmarkNbThreads(benchmarkNbThreadsTextField.getText())) {
+            benchmarkNbThreadsTextField.setForeground(ERROR_VALUES_COLOR);
+            isValid = false;
+        } else {
+            benchmarkNbThreadsTextField.setForeground(CURRENT_VALUES_COLOR);
+        }
+        return isValid;
+    }
+
+    private boolean validBenchmarkNbThreads(String nbThreads){
+        boolean valid = true;
+        for(String nbThread : StringUtils.split(benchmarkNbThreadsTextField.getText(), ';')){
+            try {
+                if(Integer.parseInt(nbThread) > JavaSystemInfos.getInstance().getNbCPUs()){
+                    valid = false;
+                    break;
+                }
+            } catch (NumberFormatException e){
+                valid = false;
+                break;
+            }
+        }
+        return valid;
+    }
+
     private void setSystemPerformanceParametersToActualValues() {
         PerformanceParameters actualPerformanceParameters = confOptimizer.getActualPerformanceParameters();
 
@@ -473,17 +634,27 @@ final class PerformancePanel extends javax.swing.JPanel {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextField benchmarkCacheSizeTextField;
+    private javax.swing.JTextField benchmarkNbThreadsTextField;
+    private javax.swing.JTextField benchmarkTileSizeTextField;
     private javax.swing.JButton browseUserDirButton;
     private javax.swing.JLabel cacheSizeLabel;
     private javax.swing.JTextField cacheSizeTextField;
     private javax.swing.JTextField defaultTileSizeTextField;
     private javax.swing.Box.Filler filler1;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
     private javax.swing.JLabel largeCacheInfoLabel;
     private javax.swing.JLabel nbThreadsLabel;
     private javax.swing.JTextField nbThreadsTextField;
+    private javax.swing.JComboBox procGraphJComboBox;
     private javax.swing.JPanel processingParametersPanel;
+    private javax.swing.JButton processingParamsComputeButton;
     private javax.swing.JButton processingParamsResetButton;
     private javax.swing.JButton sysComputeButton;
     private javax.swing.JButton sysResetButton;
