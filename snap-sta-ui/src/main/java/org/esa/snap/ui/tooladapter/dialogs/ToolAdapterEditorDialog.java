@@ -728,6 +728,9 @@ public class ToolAdapterEditorDialog extends ModalDialog {
         ButtonGroup rbGroup = new ButtonGroup();
         rbGroup.add(rbExistingMenu);
         rbGroup.add(rbMenuNew);
+        // this radio button should be able to capture focus even when the validator
+        // of the rbMenuNew says otherwise
+        rbExistingMenu.setVerifyInputWhenFocusTarget(false);
         rbExistingMenu.addItemListener(e -> {
             editorComp.setEnabled(e.getStateChange() == ItemEvent.SELECTED);
             customMenuLocation.setEnabled(e.getStateChange() == ItemEvent.DESELECTED);
