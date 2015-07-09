@@ -151,7 +151,10 @@ public final class OpenProductAction extends AbstractAction {
         List<SnapFileFilter> filters = new ArrayList<>();
         while (readerPlugIns.hasNext()) {
             ProductReaderPlugIn readerPlugIn = readerPlugIns.next();
-            filters.add(readerPlugIn.getProductFileFilter());
+            SnapFileFilter snapFileFilter = readerPlugIn.getProductFileFilter();
+            if(snapFileFilter != null) {
+                filters.add(snapFileFilter);
+            }
         }
         Collections.sort(filters, (f1, f2) -> {
             String d1 = f1.getDescription();
@@ -371,6 +374,5 @@ public final class OpenProductAction extends AbstractAction {
                 return qualificationComparison;
             }
         }
-
     }
 }

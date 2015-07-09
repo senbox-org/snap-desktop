@@ -21,7 +21,7 @@ import com.bc.ceres.core.SubProgressMonitor;
 import com.bc.ceres.core.VirtualDir;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
 import org.esa.snap.configurator.Benchmark;
-import org.esa.snap.configurator.BenchmarkSingleCalcul;
+import org.esa.snap.configurator.BenchmarkSingleCalculus;
 import org.esa.snap.configurator.ConfigurationOptimizer;
 import org.esa.snap.configurator.PerformanceParameters;
 import org.esa.snap.framework.datamodel.Product;
@@ -122,13 +122,13 @@ public class BenchmarkDialog extends DefaultSingleTargetProductDialog {
         appContext.getPreferences().setPropertyString(SaveProductAsAction.PREFERENCES_KEY_LAST_PRODUCT_DIR, tmpdirPath);
         //add current performance parameters to benchmark
         PerformanceParameters currentPerformanceParameters = ConfigurationOptimizer.getInstance().getActualPerformanceParameters();
-        BenchmarkSingleCalcul currentBenchmarkSingleCalcul = new BenchmarkSingleCalcul(currentPerformanceParameters.getDefaultTileSize(), currentPerformanceParameters.getCacheSize(), currentPerformanceParameters.getNbThreads());
+        BenchmarkSingleCalculus currentBenchmarkSingleCalcul = new BenchmarkSingleCalculus(currentPerformanceParameters.getDefaultTileSize(), currentPerformanceParameters.getCacheSize(), currentPerformanceParameters.getNbThreads());
         this.benchmarkModel.addBenchmarkCalcul(currentBenchmarkSingleCalcul);
         //benchmark counter initialization
         int benchmarkCounterIndex = 1;
         //benchmark loop
         try{
-            for(BenchmarkSingleCalcul benchmarkSingleCalcul : this.benchmarkModel.getBenchmarkCalculs()){
+            for(BenchmarkSingleCalculus benchmarkSingleCalcul : this.benchmarkModel.getBenchmarkCalculus()){
                 Product targetProduct = null;
                 try {
                     targetProduct = createTargetProduct();
@@ -141,7 +141,7 @@ public class BenchmarkDialog extends DefaultSingleTargetProductDialog {
                 //load performance parameters for current benchmark
                 this.benchmarkModel.loadBenchmarkPerfParams(benchmarkSingleCalcul);
                 //benchmark counter display
-                String benchmarkCounter = benchmarkCounterIndex++ + "/"+this.benchmarkModel.getBenchmarkCalculs().size();
+                String benchmarkCounter = benchmarkCounterIndex++ + "/"+this.benchmarkModel.getBenchmarkCalculus().size();
                 //processing start time
                 long startTime = System.currentTimeMillis();
                 //launch processing with a progress bar
@@ -151,7 +151,7 @@ public class BenchmarkDialog extends DefaultSingleTargetProductDialog {
                 benchmarkSingleCalcul.setExecutionTime(System.currentTimeMillis() - startTime);
             }
             //sort benchmark results and return the faster
-            BenchmarkSingleCalcul bestBenchmarkSingleCalcul = this.benchmarkModel.getFasterBenchmarkSingleCalcul();
+            BenchmarkSingleCalculus bestBenchmarkSingleCalcul = this.benchmarkModel.getFasterBenchmarkSingleCalculus();
             SnapDialogs.showInformation("Benchmark results", this.benchmarkModel.toString(), null);
             //update parent panel with best values
             this.perfPanel.updatePerformanceParameters(bestBenchmarkSingleCalcul);
