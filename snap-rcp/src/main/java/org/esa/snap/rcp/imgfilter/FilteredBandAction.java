@@ -56,7 +56,7 @@ import java.awt.event.ActionEvent;
 )
 @ActionReferences({
         @ActionReference(path = "Menu/Raster", position = 10),
-        @ActionReference(path = "Context/Product/RasterDataNode", position = 210)
+        @ActionReference(path = "Context/Product/RasterDataNode", position = 40,separatorAfter = 45)
 })
 @NbBundle.Messages({
         "CTL_FilteredBandAction_MenuText=Filtered Band...",
