@@ -18,7 +18,9 @@ package org.esa.snap.rcp.bandmaths;
 
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.ProductManager;
+import org.esa.snap.framework.datamodel.ProductNode;
 import org.esa.snap.framework.datamodel.ProductNodeList;
+import org.esa.snap.framework.datamodel.RasterDataNode;
 import org.esa.snap.rcp.SnapApp;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -26,10 +28,13 @@ import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle.Messages;
+import org.openide.util.Utilities;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import java.awt.event.ActionEvent;
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 @ActionID(
         category = "Tools",
@@ -44,7 +49,7 @@ import java.awt.event.ActionEvent;
 @ActionReferences({
         @ActionReference(path = "Menu/Raster", position = 0),
         @ActionReference(path = "Context/Product/Product", position = 10),
-        @ActionReference(path = "Context/Product/RasterDataNode", position = 200),
+        @ActionReference(path = "Context/Product/RasterDataNode", position = 20)
 })
 @Messages({
         "CTL_BandMathsAction_MenuText=Band Maths...",
@@ -79,7 +84,10 @@ public class BandMathsAction extends AbstractAction implements HelpCtx.Provider 
         if (product == null) {
             product = products.getAt(0);
         }
-        BandMathsDialog bandMathsDialog = new BandMathsDialog(product, products, HELP_ID);
+
+        Collection<? extends RasterDataNode> selectedRasters = Utilities.actionsGlobalContext().lookupAll(RasterDataNode.class);
+        String expression = selectedRasters.stream().map(ProductNode::getName).collect(Collectors.joining(" + "));
+        BandMathsDialog bandMathsDialog = new BandMathsDialog(product, products, expression, HELP_ID);
         bandMathsDialog.show();
     }
 
