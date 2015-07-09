@@ -4,6 +4,7 @@ import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.ProductNode;
 import org.esa.snap.framework.ui.ModalDialog;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.imgfilter.model.Filter;
 import org.esa.snap.rcp.imgfilter.model.FilterSet;
 import org.esa.snap.rcp.imgfilter.model.StandardFilters;
@@ -14,6 +15,7 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 /**
  * The dialog that lets users select existing or define new image filters.
@@ -49,8 +51,8 @@ public class CreateFilteredBandDialog extends ModalDialog implements FilterSetFo
             userFilterSets = filterSetStore.loadFilterSetModels();
         } catch (IOException e) {
             userFilterSets = new ArrayList<>();
-            // todo
-            e.printStackTrace();
+            SnapDialogs.showError(TITLE, "Failed to load filter sets:\n" + e.getMessage());
+            SystemUtils.LOG.log(Level.WARNING, "Failed to load filter sets", e);
         }
 
         ArrayList<FilterSet> filterSets = new ArrayList<>();
@@ -76,8 +78,7 @@ public class CreateFilteredBandDialog extends ModalDialog implements FilterSetFo
             try {
                 filterSetStore.storeFilterSetModel(userFilterSet);
             } catch (IOException e) {
-                // todo
-                e.printStackTrace();
+                SnapDialogs.showError(TITLE, "Failed to store filter sets:\n" + e.getMessage());
             }
         }
     }
@@ -102,7 +103,7 @@ public class CreateFilteredBandDialog extends ModalDialog implements FilterSetFo
             message = "Please select an image filter.";    /*I18N*/
         }
         if (message != null) {
-
+            SnapDialogs.showError(TITLE, message);
             return false;
         }
         return true;
@@ -110,27 +111,27 @@ public class CreateFilteredBandDialog extends ModalDialog implements FilterSetFo
 
     @Override
     public void filterSelected(FilterSet filterSet, Filter filter) {
-        System.out.println("filterModelSelected: filterModel = " + filter);
+        //System.out.println("filterModelSelected: filterModel = " + filter);
     }
 
     @Override
     public void filterAdded(FilterSet filterSet, Filter filter) {
-        System.out.println("filterModelAdded: filterModel = " + filter);
+        //System.out.println("filterModelAdded: filterModel = " + filter);
     }
 
     @Override
     public void filterRemoved(FilterSet filterSet, Filter filter) {
-        System.out.println("filterModelRemoved: filterModel = " + filter);
+        //System.out.println("filterModelRemoved: filterModel = " + filter);
     }
 
     @Override
     public void filterChanged(FilterSet filterSet, Filter filter, String propertyName) {
-        System.out.println("filterModelChanged: filterModel = " + filter + ", propertyName = \"" + propertyName + "\"");
+        //System.out.println("filterModelChanged: filterModel = " + filter + ", propertyName = \"" + propertyName + "\"");
     }
 
 
     private File getFiltersDir() {
-        return new File(SystemUtils.getAuxDataPath().toFile(), "image-filters");
+        return new File(SystemUtils.getAuxDataPath().toFile(), "image_filters");
     }
 
     public static class DialogData {
