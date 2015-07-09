@@ -7,6 +7,8 @@ import org.esa.snap.framework.dataio.ProductReader;
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.ProductManager;
 import org.esa.snap.framework.datamodel.ProductNode;
+import org.esa.snap.framework.datamodel.ProductNodeEvent;
+import org.esa.snap.framework.datamodel.ProductNodeListener;
 import org.esa.snap.framework.gpf.GPF;
 import org.esa.snap.framework.gpf.OperatorSpi;
 import org.esa.snap.framework.gpf.OperatorSpiRegistry;
@@ -279,6 +281,19 @@ public class SnapApp {
 
     public void onShowing() {
         updateMainFrameTitle();
+        MainFrameTitleUpdater updater = new MainFrameTitleUpdater();
+        getSelectionSupport(ProductNode.class).addHandler(updater);
+        getProductManager().addListener(new ProductManager.Listener() {
+            @Override
+            public void productAdded(ProductManager.Event event) {
+                event.getProduct().addProductNodeListener(updater);
+            }
+
+            @Override
+            public void productRemoved(ProductManager.Event event) {
+                event.getProduct().removeProductNodeListener(updater);
+            }
+        });
     }
 
     public boolean onTryStop() {
@@ -515,11 +530,30 @@ public class SnapApp {
         }
     }
 
-    private class MainFrameTitleUpdater implements SelectionSupport.Handler<ProductNode> {
+    private class MainFrameTitleUpdater implements SelectionSupport.Handler<ProductNode>, ProductNodeListener {
 
         @Override
         public void selectionChange(ProductNode oldValue, ProductNode newValue) {
             updateMainFrameTitle();
+        }
+
+        @Override
+        public void nodeChanged(ProductNodeEvent event) {
+            if (ProductNode.PROPERTY_NAME_NAME.equals(event.getPropertyName())) {
+                updateMainFrameTitle();
+            }
+        }
+
+        @Override
+        public void nodeDataChanged(ProductNodeEvent event) {
+        }
+
+        @Override
+        public void nodeAdded(ProductNodeEvent event) {
+        }
+
+        @Override
+        public void nodeRemoved(ProductNodeEvent event) {
         }
     }
 }
