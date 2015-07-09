@@ -600,7 +600,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
     protected void componentOpened() {
         final ProductSceneView selectedProductSceneView = getSelectedProductSceneView();
         if (selectedProductSceneView != null) {
-            selectedProductSceneView.removePixelPositionListener(pixelPositionListener);
+            selectedProductSceneView.addPixelPositionListener(pixelPositionListener);
             setCurrentView(selectedProductSceneView);
         }
     }
