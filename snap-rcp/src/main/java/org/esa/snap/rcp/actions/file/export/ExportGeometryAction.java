@@ -80,8 +80,7 @@ import java.util.concurrent.ExecutionException;
 @ActionReferences({
         @ActionReference(path = "Menu/File/Export/Other", position = 40),
         @ActionReference(path = "Menu/Vector/Export"),
-        @ActionReference(path = "Context/Product/RasterDataNode", position = 208),
-        @ActionReference(path = "Context/View", position = 30)
+        @ActionReference(path = "Context/Product/VectorDataNode", position = 208)
 })
 
 @NbBundle.Messages({
@@ -110,7 +109,8 @@ public class ExportGeometryAction extends AbstractAction implements ContextAware
         this.lookup = lookup;
         result = lookup.lookupResult(VectorDataNode.class);
         result.addLookupListener(WeakListeners.create(LookupListener.class, this, result));
-        setEnabled(false);
+        vectorDataNode = lookup.lookup(VectorDataNode.class);
+        setEnabled(vectorDataNode != null);
     }
 
     /*
@@ -119,7 +119,7 @@ public class ExportGeometryAction extends AbstractAction implements ContextAware
      * @param visatApp the VISAT application
      * @return the selected file, <code>null</code> means "Cancel"
      */
-    private static File promptForFile(final SnapApp snapApp, String defaultFileName) {
+    private static File promptForFile(String defaultFileName) {
         return SnapDialogs.requestFileForSave(Bundle.CTL_ExportGeometryAction_DialogTitle(), false,
                                               new SnapFileFilter(ESRI_SHAPEFILE, FILE_EXTENSION_SHAPEFILE, ESRI_SHAPEFILE),
                                               FILE_EXTENSION_SHAPEFILE,
@@ -252,7 +252,7 @@ public class ExportGeometryAction extends AbstractAction implements ContextAware
 
     @Override
     public void resultChanged(LookupEvent lookupEvent) {
-        VectorDataNode vectorDataNode = lookup.lookup(VectorDataNode.class);
+        vectorDataNode = lookup.lookup(VectorDataNode.class);
         setEnabled(vectorDataNode != null);
     }
 
@@ -267,7 +267,7 @@ public class ExportGeometryAction extends AbstractAction implements ContextAware
             return;
         }
 
-        final File file = promptForFile(snapApp, vectorDataNode.getName());
+        final File file = promptForFile(vectorDataNode.getName());
         if (file == null) {
             return;
         }
