@@ -93,6 +93,7 @@ abstract class PNGroupingGroup extends PNGroup<Object> {
             }
             ProductNodeGroup<Band>[] autogroupingNodes = new ProductNodeGroup[autoGrouping.size() + 1];
             for (int i = 0; i < autoGrouping.size(); i++) {
+                //todo insert undoable remove action here
                 autogroupingNodes[i] = new ProductNodeGroup<>(autoGrouping.get(i)[0]);
             }
             autogroupingNodes[autoGrouping.size()] = new ProductNodeGroup<>(Bundle.LBL_BandGroupName());
@@ -153,6 +154,7 @@ abstract class PNGroupingGroup extends PNGroup<Object> {
             }
             ProductNodeGroup<TiePointGrid>[] autogroupingNodes = new ProductNodeGroup[autoGrouping.size() + 1];
             for (int i = 0; i < autoGrouping.size(); i++) {
+                //todo insert undoable remove action here
                 autogroupingNodes[i] = new ProductNodeGroup<>(autoGrouping.get(i)[0]);
             }
             autogroupingNodes[autoGrouping.size()] = new ProductNodeGroup<>(Bundle.LBL_TiePointGroupName());
