@@ -41,6 +41,7 @@ public final class ModulePackager {
     private static final Attributes.Name ATTR_MODULE_NAME;
     private static final Attributes.Name ATTR_MODULE_TYPE;
     private static final Attributes.Name ATTR_MODULE_VERSION;
+    private static final Attributes.Name ATTR_MODULE_ALIAS;
     private static final File modulesPath;
     private static final String layerXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
             "<!DOCTYPE filesystem PUBLIC \"-//NetBeans//DTD Filesystem 1.1//EN\" \"http://www.netbeans.org/dtds/filesystem-1_1.dtd\">\n" +
@@ -72,6 +73,7 @@ public final class ModulePackager {
         ATTR_MODULE_NAME = new Attributes.Name("OpenIDE-Module");
         ATTR_MODULE_TYPE = new Attributes.Name("OpenIDE-Module-Type");
         ATTR_MODULE_VERSION = new Attributes.Name("OpenIDE-Module-Implementation-Version");
+        ATTR_MODULE_ALIAS = new Attributes.Name("OpenIDE-Module-Alias");
         attributes.put(Attributes.Name.MANIFEST_VERSION, "1.0");
         attributes.put(new Attributes.Name("OpenIDE-Module-Java-Dependencies"), "Java > 1.8");
         attributes.put(new Attributes.Name("OpenIDE-Module-Module-Dependencies"), "org.esa.snap.snap.sta, org.esa.snap.snap.sta.ui");
@@ -220,10 +222,22 @@ public final class ModulePackager {
         return version;
     }
 
+    public static String getAdapterAlias(File jarFile) throws IOException {
+        String version = null;
+        JarFile jar = new JarFile(jarFile);
+        Attributes attributes = jar.getManifest().getMainAttributes();
+        if (attributes.containsKey(ATTR_MODULE_ALIAS)) {
+            version = attributes.getValue(ATTR_MODULE_ALIAS);
+        }
+        jar.close();
+        return version;
+    }
+
     private static byte[] packAdapterJar(ToolAdapterOperatorDescriptor descriptor) throws IOException {
         _manifest.getMainAttributes().put(ATTR_DESCRIPTION_NAME, descriptor.getAlias());
         _manifest.getMainAttributes().put(ATTR_MODULE_NAME, descriptor.getName());
         _manifest.getMainAttributes().put(ATTR_MODULE_VERSION, descriptor.getVersion());
+        _manifest.getMainAttributes().put(ATTR_MODULE_ALIAS, descriptor.getAlias());
         File moduleFolder = new File(modulesPath, descriptor.getAlias());
         ByteArrayOutputStream fOut = new ByteArrayOutputStream();
         _manifest.getMainAttributes().put(new Attributes.Name("OpenIDE-Module-Install"), ModuleInstaller.class.getName().replace('.', '/') + ".class");

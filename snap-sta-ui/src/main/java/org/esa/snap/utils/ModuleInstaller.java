@@ -23,12 +23,15 @@ import org.esa.snap.framework.gpf.operators.tooladapter.ToolAdapterOpSpi;
 import org.esa.snap.framework.gpf.operators.tooladapter.ToolAdapterRegistry;
 import org.esa.snap.modules.ModulePackager;
 import org.esa.snap.ui.tooladapter.actions.ToolAdapterActionRegistrar;
-import org.esa.snap.util.io.FileUtils;
 import org.openide.modules.ModuleInstall;
 import org.openide.modules.Places;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
+import java.net.JarURLConnection;
+import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -49,7 +52,6 @@ public class ModuleInstaller extends ModuleInstall {
     private final static String descriptionKeyName = "OpenIDE-Module-Short-Description";
     private final static Attributes.Name typeKey = new Attributes.Name("OpenIDE-Module-Type");
     private final static FilenameFilter jarFilter = (dir, name) -> name.endsWith("jar");
-    private final static Set<String> processedJars = new HashSet<>();
 
     private final Logger logger = Logger.getGlobal();
     private final Path nbUserModulesPath = Paths.get(Places.getUserDirectory().getAbsolutePath(), "modules");
@@ -57,39 +59,23 @@ public class ModuleInstaller extends ModuleInstall {
 
     @Override
     public void restored() {
-        Map<String, File> jarAdapters = getJarAdapters(nbUserModulesPath.toFile());
-        jarAdapters.keySet().stream().filter(key -> !processedJars.contains(key)).forEach(key -> {
-            try {
-                File destination = new File(userModulePath, key);
-                if (!destination.exists()) {
-                    ModulePackager.unpackAdapterJar(jarAdapters.get(key), destination);
-                } else {
-                    File versionFile = new File(destination, "version.txt");
-                    if (versionFile.exists()) {
-                        String versionText = FileUtils.readText(versionFile);
-                        String jarVersion = ModulePackager.getAdapterVersion(jarAdapters.get(key));
-                        if (jarVersion != null && !versionText.equals(jarVersion)) {
-                            ModulePackager.unpackAdapterJar(jarAdapters.get(key), destination);
-                            logger.info(String.format("The adapter with the name %s and version %s was replaced by version %s", key, versionText, jarVersion));
-                        } else {
-                            logger.info(String.format("An adapter with the name %s and version %s already exists", key, versionText));
-                        }
-                    } else {
-                        ModulePackager.unpackAdapterJar(jarAdapters.get(key), destination);
-                    }
-                }
-            } catch (Exception e) {
-                logger.severe(e.getMessage());
+        String jarFile = getCurrentJarPath();
+        if (jarFile != null) {
+            File unpackLocation = processJarFile(new File(jarFile));
+            if (unpackLocation != null) {
+                registerAdapterAction(ToolAdapterIO.registerAdapter(unpackLocation));
+            } else {
+                logger.warning(String.format("Jar %s could not be unpacked. See previous exception.", jarFile));
             }
-            processedJars.add(key);
-        });
-        synchronized (ToolAdapterIO.class) {
-            Collection<ToolAdapterOpSpi> toolAdapterOpSpis = ToolAdapterIO.searchAndRegisterAdapters();
-            for (ToolAdapterOpSpi opSpi : toolAdapterOpSpis) {
-                ToolAdapterOperatorDescriptor operatorDescriptor = (ToolAdapterOperatorDescriptor) opSpi.getOperatorDescriptor();
-                if (operatorDescriptor != null) {
-                    ToolAdapterActionRegistrar.registerOperatorMenu(operatorDescriptor);
-                }
+        } else {
+            Map<String, File> jarAdapters = getJarAdapters(nbUserModulesPath.toFile());
+            jarAdapters.keySet().stream().forEach(key -> {
+                File destination = new File(userModulePath, key);
+                processJarFile(destination);
+            });
+            synchronized (ToolAdapterIO.class) {
+                Collection<ToolAdapterOpSpi> toolAdapterOpSpis = ToolAdapterIO.searchAndRegisterAdapters();
+                toolAdapterOpSpis.forEach(this::registerAdapterAction);
             }
         }
     }
@@ -136,5 +122,57 @@ public class ModuleInstaller extends ModuleInstall {
             }
         }
         return output;
+    }
+
+    private String getCurrentJarPath() {
+        String path = null;
+        try {
+            URL url = this.getClass().getProtectionDomain().getCodeSource().getLocation();
+            JarURLConnection connection = (JarURLConnection) url.openConnection();
+            JarFile jarFile = connection.getJarFile();
+            path = jarFile.getName();
+        } catch (IOException e) {
+            logger.severe(e.getMessage());
+        }
+        return path;
+    }
+
+    private File processJarFile(File jarFile) {
+        String unpackPath = jarFile.getName().replace(".jar", "");
+        try {
+            unpackPath = ModulePackager.getAdapterAlias(jarFile);
+        } catch (IOException e) {
+            logger.warning(e.getMessage());
+        }
+        File destination = new File(userModulePath, unpackPath);
+        try{
+            if (!destination.exists()) {
+                ModulePackager.unpackAdapterJar(jarFile, destination);
+            } else {
+                File versionFile = new File(destination, "version.txt");
+                if (versionFile.exists()) {
+                    String versionText = new String(Files.readAllBytes(Paths.get(versionFile.toURI()))); //FileUtils.readText(versionFile);
+                    String jarVersion = ModulePackager.getAdapterVersion(jarFile);
+                    if (jarVersion != null && !versionText.equals(jarVersion)) {
+                        ModulePackager.unpackAdapterJar(jarFile, destination);
+                        logger.info(String.format("The adapter with the name %s and version %s was replaced by version %s", unpackPath, versionText, jarVersion));
+                    } else {
+                        logger.info(String.format("An adapter with the name %s and version %s already exists", unpackPath, versionText));
+                    }
+                } else {
+                    ModulePackager.unpackAdapterJar(jarFile, destination);
+                }
+            }
+        } catch (Exception e) {
+            logger.severe(e.getMessage());
+        }
+        return destination;
+    }
+
+    private void registerAdapterAction(ToolAdapterOpSpi opSpi) {
+        ToolAdapterOperatorDescriptor operatorDescriptor = (ToolAdapterOperatorDescriptor) opSpi.getOperatorDescriptor();
+        if (operatorDescriptor != null) {
+            ToolAdapterActionRegistrar.registerOperatorMenu(operatorDescriptor);
+        }
     }
 }
