@@ -51,8 +51,8 @@ public class LoadSaveRasterDataNodesConfigurationsProvider {
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    private static File getSystemAuxDataDir() {
-        File file = new File(SystemUtils.getAuxDataPath().toFile(), "band-sets");
+    private static File getBandSetsDataDir() {
+        File file = new File(SystemUtils.getAuxDataPath().toFile(), "band_sets");
         if (!file.exists()) {
             file.mkdirs();
         }
@@ -63,7 +63,7 @@ public class LoadSaveRasterDataNodesConfigurationsProvider {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            File currentDirectory = getSystemAuxDataDir();
+            File currentDirectory = getBandSetsDataDir();
             JFileChooser fileChooser = new JFileChooser(currentDirectory);
             if (fileChooser.showOpenDialog(component.getParent()) == JFileChooser.APPROVE_OPTION) {
                 File file = fileChooser.getSelectedFile();
@@ -88,7 +88,7 @@ public class LoadSaveRasterDataNodesConfigurationsProvider {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            File currentDirectory = getSystemAuxDataDir();
+            File currentDirectory = getBandSetsDataDir();
             JFileChooser fileChooser = new JFileChooser(currentDirectory);
             File suggestedFile = new File(currentDirectory + File.separator + "config.txt");
             int fileCounter = 1;
