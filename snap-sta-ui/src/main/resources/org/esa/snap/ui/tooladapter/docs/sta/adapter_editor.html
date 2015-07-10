@@ -60,8 +60,9 @@
     <li>Copyright:</li>
     <li>Authors:</li>
     <li>Description:</li>
-    <li>Menu Location: this represents the path to the menu where the tool shortcut will be placed. Usually,
-        this should be <i>Tool/External tools/ToolAlias</i></li>
+    <li>Menu Location: this represents the path to the menu where the tool shortcut will be placed. The user can choose
+        between placing the adapter action in one of the already existing menus, or to create a new menu.
+    </li>
 </ul>
 <h5>System variables</h5>
 <p>System variables are values that must be set when the tools is executed. Such a variable
@@ -152,18 +153,18 @@ is marked as 'Not Null' or 'Not Empty' will be checked for pointing to existing 
     </tr>
     <tr>
         <td>Template Parameter</td>
-        <td>the template parameters are velocity templates that need to be interpreted
+        <td>The template parameters are velocity templates that need to be interpreted
             before the execution of the tool. The interpreted result will be saved on local disk, in the temporary folder
             of the adapter. The full path of the result file will be saved as this parameter's value, so when the parameter is
             used in the tool template, it will be replaced with the full path of the interpreted result.</td>
         <td>N/A</td>
     </tr>
     <tr><td>Template Before</td>
-        <td>this is a velocity template which will be interpreted before the execution of the tool.</td>
+        <td>This is a velocity template which will be interpreted before the execution of the tool.</td>
         <td>It can be used to create/copy some files necessary for the execution, or to...</td>
     </tr>
     <tr>
-        <td>Template After</td><td>this is a velocity template which will be executed after the tool execution.</td>
+        <td>Template After</td><td>This is a velocity template which will be executed after the tool execution.</td>
         <td>It can be used to delete some temporary files that were used to the actual execution (for example
             temporary products - see ... parameter type), or to do some operations with the result of the execution
             (like renaming the file containing the final product)
