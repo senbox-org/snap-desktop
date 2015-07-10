@@ -246,7 +246,13 @@ public final class ModulePackager {
             if (files != null) {
                 for (File child : files) {
                     try {
-                        addFile(child, jarOut);
+                        // ModuleInstaller from adapter folder should not be included
+                        // because it may be an older version.
+                        if (child.getName().endsWith("ModuleInstaller.class")) {
+                            child.delete();
+                        } else {
+                            addFile(child, jarOut);
+                        }
                     } catch (Exception ignored) {
                     }
                 }
