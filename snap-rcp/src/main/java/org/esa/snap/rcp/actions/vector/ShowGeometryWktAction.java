@@ -17,6 +17,7 @@
 package org.esa.snap.rcp.actions.vector;
 
 import com.bc.ceres.swing.figure.Figure;
+import com.bc.ceres.swing.figure.FigureSelection;
 import com.bc.ceres.swing.figure.support.DefaultFigureSelection;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKTWriter;
@@ -60,8 +61,8 @@ import java.awt.event.ActionEvent;
  * @since BEAM 5
  */
 
-@ActionID(category = "File", id = "org.esa.snap.rcp.actions.vector.ShowGeometryWktAction" )
-@ActionRegistration(displayName = "#CTL_ShowGeometryWktAction_MenuText", lazy = false )
+@ActionID(category = "File", id = "org.esa.snap.rcp.actions.vector.ShowGeometryWktAction")
+@ActionRegistration(displayName = "#CTL_ShowGeometryWktAction_MenuText", lazy = false)
 @ActionReferences({
         @ActionReference(path = "Menu/Vector", position = 19, separatorAfter = 20),
         @ActionReference(path = "Context/View", position = 10)
@@ -73,7 +74,7 @@ import java.awt.event.ActionEvent;
 public class ShowGeometryWktAction extends AbstractAction implements LookupListener, ContextAwareAction {
 
     private static final String DLG_TITLE = "WKT from Geometry";
-    private Lookup.Result<DefaultFigureSelection> result;
+    private Lookup.Result<FigureSelection> result;
     private Lookup lookup;
 
     public ShowGeometryWktAction() {
@@ -83,7 +84,7 @@ public class ShowGeometryWktAction extends AbstractAction implements LookupListe
     public ShowGeometryWktAction(Lookup lookup) {
         super(Bundle.CTL_ShowGeometryWktAction_MenuText());
         this.lookup = lookup;
-        result = lookup.lookupResult(DefaultFigureSelection.class);
+        result = lookup.lookupResult(FigureSelection.class);
         result.addLookupListener(WeakListeners.create(LookupListener.class, this, result));
         setEnabled(false);
     }
@@ -100,8 +101,8 @@ public class ShowGeometryWktAction extends AbstractAction implements LookupListe
 
     @Override
     public void resultChanged(LookupEvent lookupEvent) {
-        DefaultFigureSelection selection = this.lookup.lookup(DefaultFigureSelection.class);
-        setEnabled(selection!=null);
+        FigureSelection selection = this.lookup.lookup(FigureSelection.class);
+        setEnabled(selection != null);
     }
 
     private void exportToWkt() {
