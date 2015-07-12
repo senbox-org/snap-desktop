@@ -32,12 +32,9 @@ public final class PerformanceOptionsPanelController extends OptionsPanelControl
     }
 
     public void applyChanges() {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                getPanel().store();
-                changed = false;
-            }
+        SwingUtilities.invokeLater(() -> {
+            getPanel().store();
+            changed = false;
         });
     }
 

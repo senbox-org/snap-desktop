@@ -26,7 +26,6 @@ import org.esa.snap.configurator.ConfigurationOptimizer;
 import org.esa.snap.configurator.PerformanceParameters;
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.gpf.Operator;
-import org.esa.snap.framework.gpf.experimental.Output;
 import org.esa.snap.framework.gpf.internal.OperatorExecutor;
 import org.esa.snap.framework.gpf.internal.OperatorProductReader;
 import org.esa.snap.framework.gpf.ui.DefaultSingleTargetProductDialog;
@@ -46,7 +45,7 @@ import java.io.File;
 public class BenchmarkDialog extends DefaultSingleTargetProductDialog {
 
     /**
-     * Benchmark calculs model
+     * Benchmark calculus model
      */
     private Benchmark benchmarkModel;
     /**
@@ -85,33 +84,26 @@ public class BenchmarkDialog extends DefaultSingleTargetProductDialog {
             final TargetProductSelectorModel model = getTargetProductSelector().getModel();
             pm.beginTask("Benchmark running... ("+this.benchmarkCounter+")", model.isOpenInAppSelected() ? 100 : 95);
 
-            Product product = null;
-            try {
-                Operator execOp = null;
-                if (targetProduct.getProductReader() instanceof OperatorProductReader) {
-                    final OperatorProductReader opReader = (OperatorProductReader) targetProduct.getProductReader();
-                    Operator operator = opReader.getOperatorContext().getOperator();
-                    boolean autoWriteDisabled = operator instanceof Output
-                            || operator.getSpi().getOperatorDescriptor().isAutoWriteDisabled();
-                    if (autoWriteDisabled) {
-                        execOp = operator;
-                    }
-                }
-                if (execOp == null) {
-                    WriteOp writeOp = new WriteOp(targetProduct, model.getProductFile(), model.getFormatName());
-                    writeOp.setDeleteOutputOnFailure(true);
-                    writeOp.setWriteEntireTileRows(true);
-                    writeOp.setClearCacheAfterRowWrite(false);
-                    execOp = writeOp;
-                }
-                final OperatorExecutor executor = OperatorExecutor.create(execOp);
-                executor.execute(SubProgressMonitor.create(pm, 95));
-            } finally {
-                if (product != targetProduct) {
-                    targetProduct.dispose();
+            Operator execOp = null;
+            if (targetProduct.getProductReader() instanceof OperatorProductReader) {
+                final OperatorProductReader opReader = (OperatorProductReader) targetProduct.getProductReader();
+                Operator operator = opReader.getOperatorContext().getOperator();
+                boolean autoWriteDisabled = operator.getSpi().getOperatorDescriptor().isAutoWriteDisabled();
+                if (autoWriteDisabled) {
+                    execOp = operator;
                 }
             }
-            return product;
+            if (execOp == null) {
+                WriteOp writeOp = new WriteOp(targetProduct, model.getProductFile(), model.getFormatName());
+                writeOp.setDeleteOutputOnFailure(true);
+                writeOp.setWriteEntireTileRows(true);
+                writeOp.setClearCacheAfterRowWrite(false);
+                execOp = writeOp;
+            }
+            final OperatorExecutor executor = OperatorExecutor.create(execOp);
+            executor.execute(SubProgressMonitor.create(pm, 95));
+
+            return null;
         }
     }
 

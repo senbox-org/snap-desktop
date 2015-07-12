@@ -39,18 +39,42 @@
 
 <img src="images/snap-smart-configurator-ui-preferences.jpg" border=0/>
 
-<h4><a name="systemParameters">System parameters</a></h4>
+<h4><a name="systemParameters">System</a></h4>
 
 <ul>
     <li><b>VM Parameters</b><br>
-        Parameters for the virtual machine
+        Parameters for the java virtual machine. These parameters are for advanced users only.
+        They are taken into account after the application restarts. Most effective parameters
+        for performance are -Xmx (maximum memory) and -Xms (initial memory), they are optimised
+        when pressing the Compute button.
     </li>
-    <li><b>Data path</b><br>
-        SNAP application data path
+    <li><b>Data cache path</b><br>
+        SNAP application data cache path path. This path is used by SNAP processors and readers to
+        store temporary files. Changing this path to a faster drive or RAM Drive can drastically
+        improve performances for some operations.
     </li>
 </ul>
 
-<h4><a name="processingParameters">Processing parameters</a></h4>
+<li>
+    <b>Compute</b><br>
+    <p>The compute button is calculating optimum memory and cache path parameters for your system
+        <li>For Virtual Machine parameters, it compute "optimum" memory parameters:<br>
+            It sets the minumal memory to 2GB if enough memory is available.
+            It computes the maximal memory using total memory for the system, the memory taken by SNAP
+            and the memory taken by other processes (OS, other applications, etc.). If the actual free
+            ram is higher the the "minimum free ram" (fixed to 512Mb), then the maximum memory is configured
+            so that SNAP can use all the free ram but the "minimum free ram". If the free ram is lower than
+            the "minimum free ram", the SNAP is configured to take at most the ram it takes plus half of
+            the free ram<br> </li>
+    </p>
+</li>
+<li>
+    <b>Reset</b><br>
+    <p>The reset button reload the initial parameters. After apply or valid your inputs, you can't reset to previous version.
+    </p>
+</li>
+
+<h4><a name="processingParameters">Processing</a></h4>
 
 <p>
     This preferences page provides options to customize processing parameters.

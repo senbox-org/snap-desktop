@@ -6,13 +6,13 @@
 package org.esa.snap.smart.configurator.ui;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.prefs.BackingStoreException;
 import java.util.regex.Pattern;
@@ -144,6 +144,7 @@ final class PerformancePanel extends javax.swing.JPanel {
         systemParametersPanel = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         vmParametersTextField = new javax.swing.JTextField();
+        editVMParametersButton = new javax.swing.JButton();
         userDirTextField = new javax.swing.JTextField();
         browseUserDirButton = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
@@ -193,12 +194,21 @@ final class PerformancePanel extends javax.swing.JPanel {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.RELATIVE;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHEAST;
         gridBagConstraints.weightx = 2.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 10);
+        gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
         systemParametersPanel.add(vmParametersTextField, gridBagConstraints);
+
+        org.openide.awt.Mnemonics.setLocalizedText(editVMParametersButton, org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.editVMParametersButton.text"));
+        editVMParametersButton.addActionListener(this::editVMParametersButtonActionPerformed);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 2, 0, 10);
+        systemParametersPanel.add(editVMParametersButton, gridBagConstraints);
+
 
         userDirTextField.setText(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.userDirTextField.text")); 
         userDirTextField.setToolTipText(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.userDirTextField.toolTipText")); 
@@ -207,7 +217,7 @@ final class PerformancePanel extends javax.swing.JPanel {
         gridBagConstraints.gridy = 2;
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.RELATIVE;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 0.3;
+        gridBagConstraints.weightx = 2.0;
         gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
         systemParametersPanel.add(userDirTextField, gridBagConstraints);
 
@@ -380,6 +390,23 @@ final class PerformancePanel extends javax.swing.JPanel {
 
         add(processingParametersPanel);
         add(filler1);
+    }
+
+    private void editVMParametersButtonActionPerformed(ActionEvent e) {
+        Object source = e.getSource();
+        Window window = null;
+        if (source instanceof Component) {
+            Component component = (Component) source;
+            window = SwingUtilities.getWindowAncestor(component);
+        }
+
+        String vmParametersAsBlankSeparatedString = vmParametersTextField.getText();
+
+        LineSplitTextEditDialog vmParamsEditDialog =
+                new LineSplitTextEditDialog(window,  vmParametersAsBlankSeparatedString, " ", "VM Parameters");
+        vmParamsEditDialog.show();
+
+        vmParametersTextField.setText(vmParamsEditDialog.getTextWithSeparators());
     }
 
     private Object[] getBenchmarkOperators() {
@@ -620,6 +647,7 @@ final class PerformancePanel extends javax.swing.JPanel {
     private javax.swing.JTextField benchmarkCacheSizeTextField;
     private javax.swing.JTextField benchmarkNbThreadsTextField;
     private javax.swing.JTextField benchmarkTileSizeTextField;
+    private javax.swing.JButton editVMParametersButton;
     private javax.swing.JButton browseUserDirButton;
     private javax.swing.JLabel cacheSizeLabel;
     private javax.swing.JTextField cacheSizeTextField;
