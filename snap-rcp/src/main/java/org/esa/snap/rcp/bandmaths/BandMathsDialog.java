@@ -45,7 +45,6 @@ import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.actions.window.OpenImageViewAction;
 import org.esa.snap.rcp.nodes.UndoableProductNodeInsertion;
-import org.esa.snap.util.Guardian;
 import org.openide.awt.UndoRedo;
 import org.openide.util.NbBundle;
 
@@ -145,8 +144,8 @@ class BandMathsDialog extends ModalDialog {
             validMaskExpression = BandArithmetic.getValidMaskExpression(getExpression(), products, defaultProductIndex, null);
             final RasterDataNode[] refRasters = BandArithmetic.getRefRasters(getExpression(), products, defaultProductIndex);
             if (refRasters.length > 0) {
-                width = refRasters[0].getRasterWidth();
-                height = refRasters[0].getRasterHeight();
+                width = refRasters[0].getSceneRasterWidth();
+                height = refRasters[0].getSceneRasterHeight();
             }
         } catch (ParseException e) {
             String errorMessage = Bundle.CTL_BandMathsDialog_ErrBandNotCreated() + e.getMessage();
