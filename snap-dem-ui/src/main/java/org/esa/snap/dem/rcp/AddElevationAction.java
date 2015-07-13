@@ -103,7 +103,7 @@ import java.util.List;
         ),
         @ActionReference(
                 path = "Context/Product/RasterDataNode",
-                position = 250
+                position = 10
         ),
 })
 @NbBundle.Messages({
