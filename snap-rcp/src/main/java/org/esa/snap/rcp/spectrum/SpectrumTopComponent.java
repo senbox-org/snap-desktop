@@ -876,9 +876,11 @@ public class SpectrumTopComponent extends ToolTopComponent {
                     final Band[] spectralBands = spectrum.getSelectedBands();
                     for (Band spectralBand : spectralBands) {
                         final float wavelength = spectralBand.getSpectralWavelength();
-                        final double energy = ProductUtils.getGeophysicalSampleDouble(spectralBand, pixelX, pixelY, level);
-                        if (energy != spectralBand.getGeophysicalNoDataValue()) {
-                            series.add(wavelength, energy);
+                        if (spectralBand.isPixelValid(pixelX, pixelY)) {
+                            final double energy = ProductUtils.getGeophysicalSampleDouble(spectralBand, pixelX, pixelY, level);
+                            if (energy != spectralBand.getGeophysicalNoDataValue()) {
+                                series.add(wavelength, energy);
+                            }
                         }
                     }
                     updateRenderer(dataset.getSeriesCount(), Color.BLACK, spectrum, chart);
@@ -945,7 +947,10 @@ public class SpectrumTopComponent extends ToolTopComponent {
             final Point2D imagePixel = m2iTransform.transform(modelPixel, null);
             int pinPixelX = (int) Math.floor(imagePixel.getX());
             int pinPixelY = (int) Math.floor(imagePixel.getY());
-            return ProductUtils.getGeophysicalSampleDouble(spectralBand, pinPixelX, pinPixelY, level);
+            if (spectralBand.isPixelValid(pinPixelX, pinPixelY)) {
+                return ProductUtils.getGeophysicalSampleDouble(spectralBand, pinPixelX, pinPixelY, level);
+            }
+            return spectralBand.getGeophysicalNoDataValue();
         }
 
         private void removePinInformation(Placemark pin) {
