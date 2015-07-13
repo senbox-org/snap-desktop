@@ -21,6 +21,7 @@ import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.ProductNode;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.util.io.SnapFileFilter;
 import org.netbeans.api.progress.ProgressUtils;
 import org.openide.util.ContextAwareAction;
 import org.openide.util.HelpCtx;
@@ -189,10 +190,14 @@ public class ExportProductAction extends AbstractAction implements HelpCtx.Provi
 
     private String getFileExtension(String formatName) {
         Iterator<ProductWriterPlugIn> writerPlugIns = ProductIOPlugInManager.getInstance().getWriterPlugIns(formatName);
+        String fileExtension = null;
         if(writerPlugIns.hasNext()) {
-            return writerPlugIns.next().getProductFileFilter().getDefaultExtension();
+            SnapFileFilter fileFilter = writerPlugIns.next().getProductFileFilter();
+            if(fileFilter != null) {
+                fileExtension = fileFilter.getDefaultExtension();
+            }
         }
-        return null;
+        return fileExtension;
     }
 
 }

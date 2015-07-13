@@ -56,7 +56,7 @@ import java.awt.event.ActionEvent;
 )
 @ActionReferences({
         @ActionReference(path = "Menu/Raster", position = 20),
-        @ActionReference(path = "Context/Product/RasterDataNode", position = 220)
+        @ActionReference(path = "Context/Product/RasterDataNode", position = 30)
 })
 @NbBundle.Messages({
         "CTL_ConvertComputedBandIntoBandAction_MenuText=Convert Band",

@@ -71,7 +71,7 @@ import java.util.Date;
 @ActionReferences({
         @ActionReference(path = "Menu/File/Export/Other",position = 60 ),
         @ActionReference(path = "Menu/Raster/Export", position = 0),
-        @ActionReference(path = "Context/Product/RasterDataNode", position = 208),
+        @ActionReference(path = "Context/Product/RasterDataNode", position = 50,separatorAfter = 55),
         @ActionReference(path = "Context/View" , position = 40)
 })
 @NbBundle.Messages({

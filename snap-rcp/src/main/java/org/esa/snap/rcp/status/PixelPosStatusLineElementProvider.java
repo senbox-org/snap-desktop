@@ -54,7 +54,7 @@ public class PixelPosStatusLineElementProvider
 
     @Override
     public Component getStatusLineElement() {
-        return label;
+        return null;
     }
 
     @Override

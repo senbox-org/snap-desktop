@@ -18,6 +18,7 @@ package org.esa.snap.rcp.bandmaths;
 import com.bc.ceres.binding.PropertyContainer;
 import com.bc.ceres.binding.PropertyDescriptor;
 import com.bc.ceres.binding.ValueSet;
+import com.bc.ceres.core.Assert;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.PropertyEditor;
 import com.bc.ceres.swing.binding.PropertyEditorRegistry;
@@ -97,6 +98,7 @@ class BandMathsDialog extends ModalDialog {
     private String productName;
     @SuppressWarnings("FieldCanBeLocal")
     private String expression;
+
     @SuppressWarnings("UnusedDeclaration")
     private double noDataValue;
     @SuppressWarnings("UnusedDeclaration")
@@ -116,15 +118,17 @@ class BandMathsDialog extends ModalDialog {
 
     private static int numNewBands = 0;
 
-    public BandMathsDialog(Product currentProduct, ProductNodeList<Product> productsList, String helpId) {
+    public BandMathsDialog(Product currentProduct, ProductNodeList<Product> productsList, String expression, String helpId) {
         super(SnapApp.getDefault().getMainFrame(), Bundle.CTL_BandMathsDialog_Title(), ID_OK_CANCEL_HELP, helpId);
-        Guardian.assertNotNull("currentProduct", currentProduct);
-        Guardian.assertNotNull("productsList", productsList);
-        Guardian.assertGreaterThan("productsList must be not empty", productsList.size(), 0);
+        Assert.notNull(expression, "expression");
+        Assert.notNull(currentProduct, "currentProduct");
+        Assert.notNull(productsList, "productsList");
+        Assert.argument(productsList.size() > 0, "productsList must be not empty");
         targetProduct = currentProduct;
         this.productsList = productsList;
         bindingContext = createBindingContext();
-        expression = "";
+
+        this.expression = expression;
         bandDescription = "";
         bandUnit = "";
         makeUI();
@@ -290,6 +294,7 @@ class BandMathsDialog extends ModalDialog {
         expressionArea.setRows(3);
         TextComponentAdapter textComponentAdapter = new TextComponentAdapter(expressionArea);
         bindingContext.bind(PROPERTY_NAME_EXPRESSION, textComponentAdapter);
+
         GridBagUtils.addToPanel(panel, expressionLabel, gbc, "insets.top=3, gridwidth=3, anchor=WEST");
         gbc.gridy = ++line;
         GridBagUtils.addToPanel(panel, expressionArea, gbc,
@@ -308,6 +313,9 @@ class BandMathsDialog extends ModalDialog {
                                 "insets.top=10, weightx=1, weighty=1, gridwidth=3, fill=BOTH, anchor=WEST");
 
         setContent(panel);
+
+        expressionArea.selectAll();
+        expressionArea.requestFocus();
     }
 
     private ActionListener createLoadExpressionButtonListener() {
@@ -405,6 +413,7 @@ class BandMathsDialog extends ModalDialog {
         descriptor.setDefaultValue(Boolean.FALSE);
 
         container.setDefaultValues();
+
 
         context.addPropertyChangeListener(PROPERTY_NAME_SAVE_EXPRESSION_ONLY, evt -> {
             final boolean saveExpressionOnly1 = (Boolean) context.getBinding(

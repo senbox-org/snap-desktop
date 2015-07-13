@@ -68,7 +68,7 @@ public class DefaultSingleTargetProductDialog extends SingleTargetProductDialog 
         return new DefaultSingleTargetProductDialog(operatorName, appContext, operatorName, null);
     }
 
-    public DefaultSingleTargetProductDialog(String operatorName, AppContext appContext, String title, String helpID) {
+    public DefaultSingleTargetProductDialog(String operatorName, AppContext appContext, String title, String helpID, boolean targetProductSelectorDisplay) {
         super(appContext, title, ID_APPLY_CLOSE, helpID);
         this.operatorName = operatorName;
         targetProductNameSuffix = "";
@@ -79,7 +79,7 @@ public class DefaultSingleTargetProductDialog extends SingleTargetProductDialog 
         }
 
         operatorDescriptor = operatorSpi.getOperatorDescriptor();
-        ioParametersPanel = new DefaultIOParametersPanel(getAppContext(), operatorDescriptor, getTargetProductSelector());
+        ioParametersPanel = new DefaultIOParametersPanel(getAppContext(), operatorDescriptor, getTargetProductSelector(), targetProductSelectorDisplay);
 
         parameterSupport = new OperatorParameterSupport(operatorDescriptor);
         final ArrayList<SourceProductSelector> sourceProductSelectorList = ioParametersPanel.getSourceProductSelectorList();
@@ -104,6 +104,10 @@ public class DefaultSingleTargetProductDialog extends SingleTargetProductDialog 
         if (!sourceProductSelectorList.isEmpty()) {
             sourceProductSelectorList.get(0).addSelectionChangeListener(productChangedHandler);
         }
+    }
+
+    public DefaultSingleTargetProductDialog(String operatorName, AppContext appContext, String title, String helpID) {
+        this(operatorName, appContext, title, helpID, true);
     }
 
     @Override
@@ -202,7 +206,9 @@ public class DefaultSingleTargetProductDialog extends SingleTargetProductDialog 
                     if (currentProduct != null) {
                         currentProduct.addProductNodeListener(this);
                     }
-                    updateTargetProductName();
+                    if(getTargetProductSelector() != null){
+                        updateTargetProductName();
+                    }
                     updateValueSets(currentProduct);
                     updateSourceProduct();
                 }
