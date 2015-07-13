@@ -49,6 +49,10 @@ abstract class PNGroupingGroup extends PNGroup<Object> {
 
     @Override
     boolean isDirectChild(org.esa.snap.framework.datamodel.ProductNode productNode) {
+        final Product.AutoGrouping autoGrouping = getProduct().getAutoGrouping();
+        if (autoGrouping != null) {
+            return autoGrouping.indexOf(productNode.getName()) == -1;
+        }
         int nodeCount = group.getNodeCount();
         for (int i = 0; i < nodeCount; i++) {
             if (group.get(i) == productNode) {

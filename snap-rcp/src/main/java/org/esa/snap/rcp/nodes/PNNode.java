@@ -174,15 +174,18 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
         throw new IllegalStateException("unhandled product node type: " + productNode.getClass() + " named '" + productNode.getName() + "'");
     }
 
-    static <T extends ProductNode> void deleteProductNode(Product product, ProductNodeGroup<T> group, T productNode) {
+    private static <T extends ProductNode> void deleteProductNode(Product product, ProductNodeGroup<T>[] groups,
+                                                                  T productNode) {
         // todo - close all document windows / layers that refer to productNode (nf/mp - 14.01.2015)
-        int index = group.indexOf(productNode);
-        if (group.remove(productNode)) {
+        int indexes[] = new int[groups.length];
+        for (int i = 0; i < groups.length; i++) {
+            indexes[i] = groups[i].indexOf(productNode);
+            groups[i].remove(productNode);
+        }
             UndoRedo.Manager manager = SnapApp.getDefault().getUndoManager(product);
             if (manager != null) {
-                manager.addEdit(new UndoableProductNodeDeletion<>(group, productNode, index));
+                manager.addEdit(new UndoableProductNodeDeletion<>(groups, productNode, indexes));
             }
-        }
     }
 
     private static StringBuilder append(StringBuilder stringBuilder, String text) {
@@ -216,7 +219,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
         @Override
         public void destroy() throws IOException {
             deleteProductNode(getProductNode().getProduct(),
-                              getProductNode().getParentElement().getElementGroup(),
+                              new ProductNodeGroup[]{getProductNode().getParentElement().getElementGroup()},
                               getProductNode());
         }
 
@@ -247,7 +250,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
         @Override
         public void destroy() throws IOException {
             deleteProductNode(getProductNode().getProduct(),
-                              getProductNode().getProduct().getIndexCodingGroup(),
+                              new ProductNodeGroup[]{getProductNode().getProduct().getIndexCodingGroup()},
                               getProductNode());
         }
 
@@ -277,7 +280,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
         @Override
         public void destroy() throws IOException {
             deleteProductNode(getProductNode().getProduct(),
-                              getProductNode().getProduct().getFlagCodingGroup(),
+                              new ProductNodeGroup[]{getProductNode().getProduct().getFlagCodingGroup()},
                               getProductNode());
         }
 
@@ -315,7 +318,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
         @Override
         public void destroy() throws IOException {
             deleteProductNode(getProductNode().getProduct(),
-                              getProductNode().getProduct().getVectorDataGroup(),
+                              new ProductNodeGroup[]{getProductNode().getProduct().getVectorDataGroup()},
                               getProductNode());
         }
 
@@ -332,10 +335,18 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
      */
     static class TPG extends PNNode<TiePointGrid> {
 
+        private ProductNodeGroup[] groups;
+
+        public TPG(TiePointGrid tiePointGrid, ProductNodeGroup<TiePointGrid> additionalGroup) {
+            this(tiePointGrid);
+            groups = new ProductNodeGroup[]{additionalGroup, getProductNode().getProduct().getTiePointGridGroup()};
+        }
+
         public TPG(TiePointGrid tiePointGrid) {
             super(tiePointGrid);
             setIconBaseWithExtension("org/esa/snap/rcp/icons/RsBandAsTiePoint16.gif");
             setShortDescription(createToolTip(tiePointGrid));
+            groups = new ProductNodeGroup[]{getProductNode().getProduct().getTiePointGridGroup()};
         }
 
         private String createToolTip(final TiePointGrid tiePointGrid) {
@@ -355,9 +366,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
 
         @Override
         public void destroy() throws IOException {
-            deleteProductNode(getProductNode().getProduct(),
-                              getProductNode().getProduct().getTiePointGridGroup(),
-                              getProductNode());
+            deleteProductNode(getProductNode().getProduct(), groups, getProductNode());
         }
 
         @Override
@@ -414,7 +423,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
         @Override
         public void destroy() throws IOException {
             deleteProductNode(getProductNode().getProduct(),
-                              getProductNode().getProduct().getMaskGroup(),
+                              new ProductNodeGroup[]{getProductNode().getProduct().getMaskGroup()},
                               getProductNode());
         }
 
@@ -431,6 +440,8 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
      */
     static class B extends PNNode<Band> {
 
+        private ProductNodeGroup[] groups;
+
         public B(Band band) {
             super(band);
             if (band instanceof VirtualBand) {
@@ -441,6 +452,12 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
                 setIconBaseWithExtension("org/esa/snap/rcp/icons/RsBandAsSwath.gif");
             }
             setShortDescription(createToolTip(band));
+            groups = new ProductNodeGroup[]{band.getProduct().getBandGroup()};
+        }
+
+        public B(Band band, ProductNodeGroup<Band> additionalGroup) {
+            this(band);
+            groups = new ProductNodeGroup[]{additionalGroup, band.getProduct().getBandGroup()};
         }
 
         private String createToolTip(final Band band) {
@@ -469,9 +486,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
 
         @Override
         public void destroy() throws IOException {
-            deleteProductNode(getProductNode().getProduct(),
-                              getProductNode().getProduct().getBandGroup(),
-                              getProductNode());
+            deleteProductNode(getProductNode().getProduct(), groups, getProductNode());
         }
 
         @Override
@@ -718,9 +733,9 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
             set.put(ancillaryVariables);
 
             set.put(new PropertySupport.ReadWrite<String[]>("ancillaryRelations",
-                                                          String[].class,
-                                                          "Ancillary Relations",
-                                                          "Relation names if this raster is an ancillary variable (NetCDF-U 'rel' attribute)") {
+                                                            String[].class,
+                                                            "Ancillary Relations",
+                                                            "Relation names if this raster is an ancillary variable (NetCDF-U 'rel' attribute)") {
                         @Override
                         public String[] getValue() {
                             return band.getAncillaryRelations();

@@ -82,15 +82,21 @@ abstract class PNGGroup<T extends ProductNode> extends PNGroup<T> {
     public static class B extends PNGGroup<Band> {
 
         private final Product product;
+        private final ProductNodeGroup<Band> group;
 
         public B(String displayName, ProductNodeGroup<Band> group, Product product) {
             super(displayName, group);
             this.product = product;
+            this.group = group;
         }
 
         @Override
         protected PNNode createNodeForKey(Band key) {
-            return new PNNode.B(key);
+            if (group != product.getBandGroup()) {
+                return new PNNode.B(key, group);
+            } else {
+                return new PNNode.B(key);
+            }
         }
 
         @Override
@@ -102,15 +108,21 @@ abstract class PNGGroup<T extends ProductNode> extends PNGroup<T> {
     public static class TPG extends PNGGroup<TiePointGrid> {
 
         private final Product product;
+        private final ProductNodeGroup<TiePointGrid> group;
 
         public TPG(String displayName, ProductNodeGroup<TiePointGrid> group, Product product) {
             super(displayName, group);
             this.product = product;
+            this.group = group;
         }
 
         @Override
         protected PNNode createNodeForKey(TiePointGrid key) {
-            return new PNNode.TPG(key);
+            if (group != product.getTiePointGridGroup()) {
+                return new PNNode.TPG(key, group);
+            } else {
+                return new PNNode.TPG(key);
+            }
         }
 
         @Override

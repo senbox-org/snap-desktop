@@ -18,16 +18,16 @@ import javax.swing.undo.CannotUndoException;
 @NbBundle.Messages("LBL_UndoableProductNodeDeletionName=Delete ''{0}''")
 public class UndoableProductNodeDeletion<T extends ProductNode> extends AbstractUndoableEdit {
 
-    private ProductNodeGroup<T> productNodeGroup;
+    private ProductNodeGroup<T>[] productNodeGroups;
     private T productNode;
-    private final int index;
+    private final int[] indexes;
 
-    public UndoableProductNodeDeletion(ProductNodeGroup<T> productNodeGroup, T productNode, int index) {
-        Assert.notNull(productNodeGroup, "group");
+    public UndoableProductNodeDeletion(ProductNodeGroup<T>[] productNodeGroups, T productNode, int[] indexes) {
+        Assert.notNull(productNodeGroups, "group");
         Assert.notNull(productNode, "node");
-        this.productNodeGroup = productNodeGroup;
+        this.productNodeGroups = productNodeGroups;
         this.productNode = productNode;
-        this.index = index;
+        this.indexes = indexes;
     }
 
     public T getProductNode() {
@@ -42,10 +42,12 @@ public class UndoableProductNodeDeletion<T extends ProductNode> extends Abstract
     @Override
     public void undo() throws CannotUndoException {
         super.undo();
-        if (index < productNodeGroup.getNodeCount()) {
-            productNodeGroup.add(productNode);
-        } else {
-            productNodeGroup.add(index, productNode);
+        for (int i = 0; i < productNodeGroups.length; i++) {
+            if (indexes[i] < productNodeGroups[i].getNodeCount()) {
+                productNodeGroups[i].add(indexes[i], productNode);
+            } else {
+                productNodeGroups[i].add(productNode);
+            }
         }
     }
 
@@ -53,12 +55,14 @@ public class UndoableProductNodeDeletion<T extends ProductNode> extends Abstract
     public void redo() throws CannotRedoException {
         super.redo();
         // todo - close all open document windows
-        productNodeGroup.remove(productNode);
+        for(ProductNodeGroup<T> group : productNodeGroups) {
+            group.remove(productNode);
+        }
     }
 
     @Override
     public void die() {
-        productNodeGroup = null;
+        productNodeGroups = null;
         productNode = null;
     }
 }
