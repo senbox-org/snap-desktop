@@ -152,7 +152,7 @@ public final class OpenProductAction extends AbstractAction {
         while (readerPlugIns.hasNext()) {
             ProductReaderPlugIn readerPlugIn = readerPlugIns.next();
             SnapFileFilter snapFileFilter = readerPlugIn.getProductFileFilter();
-            if(snapFileFilter != null) {
+            if (snapFileFilter != null) {
                 filters.add(snapFileFilter);
             }
         }
