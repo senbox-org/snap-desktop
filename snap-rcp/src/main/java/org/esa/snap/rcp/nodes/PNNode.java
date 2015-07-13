@@ -182,10 +182,10 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
             indexes[i] = groups[i].indexOf(productNode);
             groups[i].remove(productNode);
         }
-            UndoRedo.Manager manager = SnapApp.getDefault().getUndoManager(product);
-            if (manager != null) {
-                manager.addEdit(new UndoableProductNodeDeletion<>(groups, productNode, indexes));
-            }
+        UndoRedo.Manager manager = SnapApp.getDefault().getUndoManager(product);
+        if (manager != null) {
+            manager.addEdit(new UndoableProductNodeDeletion<>(groups, productNode, indexes));
+        }
     }
 
     private static StringBuilder append(StringBuilder stringBuilder, String text) {
