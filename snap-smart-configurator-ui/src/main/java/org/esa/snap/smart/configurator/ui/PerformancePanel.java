@@ -24,6 +24,7 @@ import org.esa.snap.configurator.JavaSystemInfos;
 import org.esa.snap.configurator.PerformanceParameters;
 import org.esa.snap.configurator.Benchmark;
 import org.esa.snap.configurator.ConfigurationOptimizer;
+import org.esa.snap.configurator.VMParameters;
 import org.esa.snap.framework.gpf.GPF;
 import org.esa.snap.framework.gpf.OperatorSpi;
 import org.esa.snap.rcp.SnapApp;
@@ -36,11 +37,7 @@ final class PerformancePanel extends javax.swing.JPanel {
      * Color for fields filed with values in place in the application
      */
     private static final Color CURRENT_VALUES_COLOR = Color.BLACK;
-
-    /**
-     * Color for modified fields
-     */
-    private static final Color MODIFIED_VALUES_COLOR = Color.BLUE;
+    
 
     /**
      * Color for error fields
@@ -86,40 +83,28 @@ final class PerformancePanel extends javax.swing.JPanel {
         vmParametersTextField.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
-                if (vmParametersTextField.getForeground() != MODIFIED_VALUES_COLOR) {
-                    vmParametersTextField.setForeground(MODIFIED_VALUES_COLOR);
-                    controller.changed();
-                }
+                controller.changed();
             }
         });
 
         userDirTextField.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
-                if (userDirTextField.getForeground() != MODIFIED_VALUES_COLOR) {
-                    userDirTextField.setForeground(MODIFIED_VALUES_COLOR);
-                    controller.changed();
-                }
+                controller.changed();
             }
         });
 
         nbThreadsTextField.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
-                if (nbThreadsTextField.getForeground() != MODIFIED_VALUES_COLOR) {
-                    nbThreadsTextField.setForeground(MODIFIED_VALUES_COLOR);
                     controller.changed();
-                }
             }
         });
 
         defaultTileSizeTextField.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
-                if (defaultTileSizeTextField.getForeground() != MODIFIED_VALUES_COLOR) {
-                    defaultTileSizeTextField.setForeground(MODIFIED_VALUES_COLOR);
                     controller.changed();
-                }
             }
         });
 
@@ -127,10 +112,7 @@ final class PerformancePanel extends javax.swing.JPanel {
         cacheSizeTextField.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
-                if (cacheSizeTextField.getForeground() != MODIFIED_VALUES_COLOR) {
-                    cacheSizeTextField.setForeground(MODIFIED_VALUES_COLOR);
                     controller.changed();
-                }
             }
         });
     }
@@ -142,12 +124,12 @@ final class PerformancePanel extends javax.swing.JPanel {
         java.awt.GridBagConstraints gridBagConstraints;
 
         systemParametersPanel = new javax.swing.JPanel();
-        jLabel2 = new javax.swing.JLabel();
+        dataPathLabel = new javax.swing.JLabel();
         vmParametersTextField = new javax.swing.JTextField();
         editVMParametersButton = new javax.swing.JButton();
         userDirTextField = new javax.swing.JTextField();
         browseUserDirButton = new javax.swing.JButton();
-        jLabel3 = new javax.swing.JLabel();
+        vmParametersLabel = new javax.swing.JLabel();
         sysResetButton = new javax.swing.JButton();
         sysComputeButton = new javax.swing.JButton();
         largeCacheInfoLabel = new javax.swing.JLabel();
@@ -179,18 +161,21 @@ final class PerformancePanel extends javax.swing.JPanel {
         systemParametersPanel.setMinimumSize(new java.awt.Dimension(283, 115));
         systemParametersPanel.setLayout(new java.awt.GridBagLayout());
 
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel2, org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.jLabel2.text")); 
-        jLabel2.setMaximumSize(new java.awt.Dimension(100, 14));
-        jLabel2.setPreferredSize(new java.awt.Dimension(80, 14));
+        org.openide.awt.Mnemonics.setLocalizedText(dataPathLabel, org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.jLabel2.text"));
+        dataPathLabel.setMaximumSize(new java.awt.Dimension(100, 14));
+        dataPathLabel.setPreferredSize(new java.awt.Dimension(80, 14));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 5);
-        systemParametersPanel.add(jLabel2, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 0);
+        systemParametersPanel.add(dataPathLabel, gridBagConstraints);
 
         vmParametersTextField.setText(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.vmParametersTextField.text")); 
-        vmParametersTextField.setToolTipText(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.vmParametersTextField.toolTipText")); 
+        vmParametersTextField.setToolTipText(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.vmParametersTextField.toolTipText"));
+        if(!VMParameters.canSave()) {
+            vmParametersTextField.setEditable(false);
+        }
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
@@ -230,16 +215,16 @@ final class PerformancePanel extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(5, 2, 0, 10);
         systemParametersPanel.add(browseUserDirButton, gridBagConstraints);
 
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel3, org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.jLabel3.text")); 
-        jLabel3.setMaximumSize(new java.awt.Dimension(200, 14));
-        jLabel3.setMinimumSize(new java.awt.Dimension(100, 14));
-        jLabel3.setPreferredSize(new java.awt.Dimension(80, 14));
+        org.openide.awt.Mnemonics.setLocalizedText(vmParametersLabel, org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.jLabel3.text"));
+        vmParametersLabel.setMaximumSize(new java.awt.Dimension(200, 14));
+        vmParametersLabel.setMinimumSize(new java.awt.Dimension(100, 14));
+        vmParametersLabel.setPreferredSize(new java.awt.Dimension(80, 14));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 10, 2, 5);
-        systemParametersPanel.add(jLabel3, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 0);
+        systemParametersPanel.add(vmParametersLabel, gridBagConstraints);
 
         org.openide.awt.Mnemonics.setLocalizedText(sysResetButton, org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.sysResetButton.text")); 
         sysResetButton.addActionListener(evt -> sysResetButtonActionPerformed());
@@ -403,10 +388,15 @@ final class PerformancePanel extends javax.swing.JPanel {
         String vmParametersAsBlankSeparatedString = vmParametersTextField.getText();
 
         LineSplitTextEditDialog vmParamsEditDialog =
-                new LineSplitTextEditDialog(window,  vmParametersAsBlankSeparatedString, " ", "VM Parameters");
+                new LineSplitTextEditDialog(window,
+                                            vmParametersAsBlankSeparatedString,
+                                            " ",
+                                            "VM Parameters",
+                                            VMParameters.canSave());
         vmParamsEditDialog.show();
 
         vmParametersTextField.setText(vmParamsEditDialog.getTextWithSeparators());
+        controller.changed();
     }
 
     private Object[] getBenchmarkOperators() {
@@ -438,13 +428,13 @@ final class PerformancePanel extends javax.swing.JPanel {
 
         if(!vmParametersTextField.getText().equals(optimizedParameters.getVMParameters())) {
             vmParametersTextField.setText(optimizedParameters.getVMParameters());
-            vmParametersTextField.setForeground(MODIFIED_VALUES_COLOR);
+            vmParametersTextField.setForeground(CURRENT_VALUES_COLOR);
             vmParametersTextField.setCaretPosition(0);
         }
 
         if(!userDirTextField.getText().equals(optimizedParameters.getUserDir().toString())) {
             userDirTextField.setText(optimizedParameters.getUserDir().toString());
-            userDirTextField.setForeground(MODIFIED_VALUES_COLOR);
+            userDirTextField.setForeground(CURRENT_VALUES_COLOR);
         }
 
         setCursor(Cursor.getDefaultCursor());
@@ -459,7 +449,7 @@ final class PerformancePanel extends javax.swing.JPanel {
         if (returnValue == JFileChooser.APPROVE_OPTION) {
             File selectedDir = fileChooser.getSelectedFile();
             userDirTextField.setText(selectedDir.getAbsolutePath());
-            userDirTextField.setForeground(MODIFIED_VALUES_COLOR);
+            userDirTextField.setForeground(CURRENT_VALUES_COLOR);
             controller.changed();
         }
     }
@@ -470,6 +460,7 @@ final class PerformancePanel extends javax.swing.JPanel {
             java.util.List<Integer> tileSizesList = new ArrayList<>();
             java.util.List<Integer> cacheSizesList = new ArrayList<>();
             java.util.List<Integer> nbThreadsList = new ArrayList<>();
+
             for(String tileSize : StringUtils.split(benchmarkTileSizeTextField.getText(), ';')){
                 tileSizesList.add(Integer.parseInt(tileSize));
             }
@@ -501,13 +492,13 @@ final class PerformancePanel extends javax.swing.JPanel {
 
     void updatePerformanceParameters(BenchmarkSingleCalculus benchmarkSingleCalcul){
         defaultTileSizeTextField.setText(Integer.toString(benchmarkSingleCalcul.getTileSize()));
-        defaultTileSizeTextField.setForeground(MODIFIED_VALUES_COLOR);
+        defaultTileSizeTextField.setForeground(CURRENT_VALUES_COLOR);
 
         cacheSizeTextField.setText(Integer.toString(benchmarkSingleCalcul.getCacheSize()));
-        cacheSizeTextField.setForeground(MODIFIED_VALUES_COLOR);
+        cacheSizeTextField.setForeground(CURRENT_VALUES_COLOR);
 
         nbThreadsTextField.setText(Integer.toString(benchmarkSingleCalcul.getNbThreads()));
-        nbThreadsTextField.setForeground(MODIFIED_VALUES_COLOR);
+        nbThreadsTextField.setForeground(CURRENT_VALUES_COLOR);
 
         this.controller.changed();
     }
@@ -544,11 +535,14 @@ final class PerformancePanel extends javax.swing.JPanel {
         if(!userDir.exists() || !userDir.isDirectory()) {
             userDirTextField.setForeground(ERROR_VALUES_COLOR);
             isValid = false;
+        } else {
+            userDirTextField.setForeground(CURRENT_VALUES_COLOR);
         }
 
         String defaultTileSize = this.defaultTileSizeTextField.getText();
         try{
             Integer.parseInt(defaultTileSize);
+            defaultTileSizeTextField.setForeground(CURRENT_VALUES_COLOR);
         } catch (NumberFormatException ex) {
             this.defaultTileSizeTextField.setForeground(ERROR_VALUES_COLOR);
             isValid = false;
@@ -557,6 +551,7 @@ final class PerformancePanel extends javax.swing.JPanel {
         String readerCacheSize = this.cacheSizeTextField.getText();
         try{
             Integer.parseInt(readerCacheSize);
+            cacheSizeTextField.setForeground(CURRENT_VALUES_COLOR);
         } catch (NumberFormatException ex) {
             this.cacheSizeTextField.setForeground(ERROR_VALUES_COLOR);
             isValid = false;
@@ -571,6 +566,8 @@ final class PerformancePanel extends javax.swing.JPanel {
             if(nbThreads > nbCores) {
                 nbThreadsTextField.setForeground(ERROR_VALUES_COLOR);
                 isValid = false;
+            } else {
+                nbThreadsTextField.setForeground(CURRENT_VALUES_COLOR);
             }
         } catch (NumberFormatException ex) {
             nbThreadsTextField.setForeground(ERROR_VALUES_COLOR);
@@ -654,8 +651,8 @@ final class PerformancePanel extends javax.swing.JPanel {
     private javax.swing.JTextField defaultTileSizeTextField;
     private javax.swing.Box.Filler filler1;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel dataPathLabel;
+    private javax.swing.JLabel vmParametersLabel;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;

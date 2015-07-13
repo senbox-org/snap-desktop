@@ -3,6 +3,8 @@ package org.esa.snap.smart.configurator.ui;
 
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+
 
 /**
  * @author Nicolas Ducoin
@@ -15,7 +17,7 @@ public class LineSplitBySeparatorTest {
         String multiLineString = LineSplitTextEditDialog.toMultiLine(stringWithBlanks, " ");
         String[] linesArray = multiLineString.split(System.lineSeparator());
 
-        assert (linesArray.length == 5);
+        assertEquals (5, linesArray.length);
     }
 
     @Test
@@ -24,7 +26,7 @@ public class LineSplitBySeparatorTest {
         String multiLineString = LineSplitTextEditDialog.toMultiLine(stringWithBlanks, ",");
         String[] linesArray = multiLineString.split(System.lineSeparator());
 
-        assert (linesArray.length == 5);
+        assertEquals (5, linesArray.length);
     }
 
 }

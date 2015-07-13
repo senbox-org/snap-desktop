@@ -114,7 +114,11 @@ public class BenchmarkDialog extends DefaultSingleTargetProductDialog {
         appContext.getPreferences().setPropertyString(SaveProductAsAction.PREFERENCES_KEY_LAST_PRODUCT_DIR, tmpdirPath);
         //add current performance parameters to benchmark
         PerformanceParameters currentPerformanceParameters = ConfigurationOptimizer.getInstance().getActualPerformanceParameters();
-        BenchmarkSingleCalculus currentBenchmarkSingleCalcul = new BenchmarkSingleCalculus(currentPerformanceParameters.getDefaultTileSize(), currentPerformanceParameters.getCacheSize(), currentPerformanceParameters.getNbThreads());
+        BenchmarkSingleCalculus currentBenchmarkSingleCalcul = new BenchmarkSingleCalculus(
+                currentPerformanceParameters.getDefaultTileSize(),
+                currentPerformanceParameters.getCacheSize(),
+                currentPerformanceParameters.getNbThreads());
+
         this.benchmarkModel.addBenchmarkCalcul(currentBenchmarkSingleCalcul);
         //benchmark counter initialization
         int benchmarkCounterIndex = 1;

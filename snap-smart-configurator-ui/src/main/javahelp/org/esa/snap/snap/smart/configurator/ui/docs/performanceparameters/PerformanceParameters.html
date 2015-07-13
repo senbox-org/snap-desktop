@@ -27,7 +27,7 @@
         <td class="header">&nbsp;
             Performance parameters</td>
 
-        <td class="header" align="right"><a href="../general/overview/SnapOverview.html"><img src="../images/snap_header.jpg" border=0></a></td>
+        <td class="header" align="right"><a href="nbdocs://org.esa.snap.snap.help/org/esa/snap/snap/help/docs/general/overview/SnapOverview.html"><img src="../images/snap_header.jpg" border=0></a></td>
     </tr>
 </table>
 
@@ -43,36 +43,48 @@
 
 <ul>
     <li><b>VM Parameters</b><br>
-        Parameters for the java virtual machine. These parameters are for advanced users only.
+        Parameters for the java virtual machine. These parameters are for advanced users and can be
+        modified only by users having write access on the snap.conf file.
         They are taken into account after the application restarts. Most effective parameters
         for performance are -Xmx (maximum memory) and -Xms (initial memory), they are optimised
-        when pressing the Compute button.
+        when pressing the Compute button.<br>
+        To manually edit  VM Parameters press the <img src="images/ThreeDotsButton.jpg" border=0/> button.
     </li>
     <li><b>Data cache path</b><br>
         SNAP application data cache path path. This path is used by SNAP processors and readers to
         store temporary files. Changing this path to a faster drive or RAM Drive can drastically
-        improve performances for some operations.
+        improve performances for some operations.<br>
+        To browse threw the file system to manually change the data path, press the <img src="images/ThreeDotsButton.jpg" border=0/> button
     </li>
+    <li>
+        <b>Compute</b><br>
+
+        <p>The compute button is calculating optimum memory and cache path parameters for your system
+        <ul>
+            <li>
+                For Virtual Machine parameters, it compute "optimum" memory parameters:<br>
+                It sets the minumal memory to 2GB if enough memory is available.
+                It computes the maximal memory using the total memory of the system, the memory taken by SNAP
+                and the memory taken by other processes (OS, other applications, etc.). If the actual free
+                ram is higher the the "minimum free ram" (fixed to 512Mb), then the maximum memory is configured
+                so that SNAP can use all the free ram but the "minimum free ram". If the free ram is lower than
+                the "minimum free ram", the SNAP is configured to take at most the ram it takes plus half of
+                the free ram
+            </li>
+            <li>
+                For Data Path parameters, it computes the fastest directory by performing a benchmark on all drives,
+                including network drives. The drive have to have enough free space and be significantly faster than the
+                actual drive to be selected.
+            </li>
+    </ul>
+    <li>
+        <b>Reset</b><br>
+
+        <p>The reset button reload the initial parameters. After apply or valid your inputs, you can't reset to previous
+            version.
+        </p></li>
 </ul>
 
-<li>
-    <b>Compute</b><br>
-    <p>The compute button is calculating optimum memory and cache path parameters for your system
-        <li>For Virtual Machine parameters, it compute "optimum" memory parameters:<br>
-            It sets the minumal memory to 2GB if enough memory is available.
-            It computes the maximal memory using total memory for the system, the memory taken by SNAP
-            and the memory taken by other processes (OS, other applications, etc.). If the actual free
-            ram is higher the the "minimum free ram" (fixed to 512Mb), then the maximum memory is configured
-            so that SNAP can use all the free ram but the "minimum free ram". If the free ram is lower than
-            the "minimum free ram", the SNAP is configured to take at most the ram it takes plus half of
-            the free ram<br> </li>
-    </p>
-</li>
-<li>
-    <b>Reset</b><br>
-    <p>The reset button reload the initial parameters. After apply or valid your inputs, you can't reset to previous version.
-    </p>
-</li>
 
 <h4><a name="processingParameters">Processing</a></h4>
 
