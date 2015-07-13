@@ -113,12 +113,15 @@ public class ToolAdaptersManagementDialog extends ModelessDialog{
         panelHeight += buttonsPanel.getPreferredSize().getHeight();
         panel.add(buttonsPanel);
 
-        springLayout.putConstraint(SpringLayout.WEST, propertiesPanel, DEFAULT_PADDING, SpringLayout.WEST, panel);
-        springLayout.putConstraint(SpringLayout.EAST, propertiesPanel, DEFAULT_PADDING, SpringLayout.EAST, panel);
-        springLayout.putConstraint(SpringLayout.WEST, scrollPane, DEFAULT_PADDING, SpringLayout.WEST, panel);
-        springLayout.putConstraint(SpringLayout.EAST, scrollPane, DEFAULT_PADDING, SpringLayout.EAST, panel);
-        springLayout.putConstraint(SpringLayout.WEST, buttonsPanel, DEFAULT_PADDING, SpringLayout.WEST, panel);
-        springLayout.putConstraint(SpringLayout.EAST, buttonsPanel, DEFAULT_PADDING, SpringLayout.EAST, panel);
+        springLayout.putConstraint(SpringLayout.NORTH, panel, DEFAULT_PADDING, SpringLayout.NORTH, propertiesPanel);
+        springLayout.putConstraint(SpringLayout.WEST, panel, DEFAULT_PADDING, SpringLayout.WEST, propertiesPanel);
+        springLayout.putConstraint(SpringLayout.EAST, panel, DEFAULT_PADDING, SpringLayout.EAST, propertiesPanel);
+        springLayout.putConstraint(SpringLayout.NORTH, scrollPane, DEFAULT_PADDING, SpringLayout.SOUTH, propertiesPanel);
+        springLayout.putConstraint(SpringLayout.WEST, panel, DEFAULT_PADDING, SpringLayout.WEST, scrollPane );
+        springLayout.putConstraint(SpringLayout.EAST, panel, DEFAULT_PADDING, SpringLayout.EAST, scrollPane);
+        springLayout.putConstraint(SpringLayout.NORTH, scrollPane, DEFAULT_PADDING, SpringLayout.SOUTH, buttonsPanel);
+        springLayout.putConstraint(SpringLayout.WEST, panel, DEFAULT_PADDING, SpringLayout.WEST, buttonsPanel);
+        springLayout.putConstraint(SpringLayout.EAST, panel, DEFAULT_PADDING, SpringLayout.EAST, buttonsPanel);
 
         panel.setPreferredSize(new Dimension(CHECK_COLUMN_WIDTH + LABEL_COLUMN_WIDTH + COLUMN_WIDTH - 32, panelHeight + DEFAULT_PADDING));
         makeCompactGrid(panel, 5, 1, 0, 0, 0, 0);
