@@ -152,7 +152,7 @@ public final class CloseProductAction extends AbstractAction{
                         return openProduct;
                     } else {
                         Product indirectSourceProduct = findFirstDirectSourceProduct(sourceProduct, productsStillOpen);
-                        if (indirectSourceProduct != null) {
+                        if (indirectSourceProduct != null && productToBeClosed.equals(indirectSourceProduct)) {
                             return openProduct;
                         }
                     }
@@ -163,7 +163,7 @@ public final class CloseProductAction extends AbstractAction{
                                 return openProduct;
                             }
                             Product indirectSourceProduct = findFirstDirectSourceProduct(sourceProduct, productsStillOpen);
-                            if (indirectSourceProduct != null) {
+                            if (indirectSourceProduct != null && productToBeClosed.equals(indirectSourceProduct)) {
                                 return openProduct;
                             }
                         }
