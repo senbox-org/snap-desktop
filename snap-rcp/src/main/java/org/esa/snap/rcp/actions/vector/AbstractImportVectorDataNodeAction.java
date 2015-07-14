@@ -81,7 +81,7 @@ abstract class AbstractImportVectorDataNodeAction extends AbstractSnapAction {
             Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
-                    featureCrsBuffer[0] = promptForFeatureCrs(SnapApp.getDefault(), product);
+                    featureCrsBuffer[0] = promptForFeatureCrs(product);
                 }
             };
             if (!SwingUtilities.isEventDispatchThread()) {
@@ -99,8 +99,8 @@ abstract class AbstractImportVectorDataNodeAction extends AbstractSnapAction {
             return featureCrs != null ? featureCrs : DefaultGeographicCRS.WGS84;
         }
 
-        private CoordinateReferenceSystem promptForFeatureCrs(SnapApp snapApp, Product product) {
-            final FeatureCrsDialog dialog = new FeatureCrsDialog(snapApp, product, "Import " + getVectorDataType() + " Data");
+        private CoordinateReferenceSystem promptForFeatureCrs(Product product) {
+            final FeatureCrsDialog dialog = new FeatureCrsDialog(product, "Import " + getVectorDataType() + " Data");
 
             featureCrsDialogResult = dialog.show();
             if (featureCrsDialogResult == ModalDialog.ID_OK) {

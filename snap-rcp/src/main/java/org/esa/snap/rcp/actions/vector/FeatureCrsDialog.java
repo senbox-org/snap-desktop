@@ -28,8 +28,8 @@ public class FeatureCrsDialog extends ModalDialog {
     private Product product;
     private String title;
 
-    public FeatureCrsDialog(SnapApp snapApp, Product product, String title) {
-        super(snapApp.getMainFrame(), title, ModalDialog.ID_OK_CANCEL_HELP, "importCSV");
+    public FeatureCrsDialog(Product product, String title) {
+        super(SnapApp.getDefault().getMainFrame(), title, ModalDialog.ID_OK_CANCEL_HELP, "importCSV");
         this.product = product;
         this.title = title;
         createUI();
