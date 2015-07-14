@@ -81,7 +81,7 @@ abstract class AbstractImportVectorDataNodeAction extends AbstractSnapAction {
             Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
-                    featureCrsBuffer[0] = promptForFeatureCrs(new SnapApp(), product);
+                    featureCrsBuffer[0] = promptForFeatureCrs(SnapApp.getDefault(), product);
                 }
             };
             if (!SwingUtilities.isEventDispatchThread()) {
