@@ -2,7 +2,6 @@ package org.esa.snap.rcp;
 
 import com.bc.ceres.core.ExtensionFactory;
 import com.bc.ceres.core.ExtensionManager;
-import com.bc.ceres.jai.opimage.ReinterpretOpImage;
 import org.esa.snap.framework.dataio.ProductReader;
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.ProductManager;
@@ -36,7 +35,6 @@ import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
 import org.openide.util.NbPreferences;
 import org.openide.util.Utilities;
-import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ServiceProvider;
 import org.openide.windows.OnShowing;
 import org.openide.windows.WindowManager;
@@ -89,6 +87,15 @@ public class SnapApp {
     private Map<Class<?>, SelectionSupport<?>> selectionChangeSupports;
     private Engine engine;
 
+    /**
+     * Gets the SNAP application singleton which provides access to various SNAP APIs and resources.
+     * <p>
+     * The the method basically returns
+     * <pre>
+     *    Lookup.getDefault().lookup(SnapApp.class)
+     * </pre>
+     * @return The SNAP applications global singleton instance.
+     */
     public static SnapApp getDefault() {
         SnapApp instance = Lookup.getDefault().lookup(SnapApp.class);
         if (instance == null) {
@@ -107,18 +114,32 @@ public class SnapApp {
         selectionChangeSupports = new HashMap<>();
     }
 
+    /**
+     * @return SNAP's global product manager.
+     */
     public ProductManager getProductManager() {
         return productManager;
     }
 
+    /**
+     * @return SNAP's global undo / redo manager.
+     */
     public UndoRedo.Manager getUndoManager(Product product) {
         return product.getExtension(UndoRedo.Manager.class);
     }
 
+    /**
+     * @return SNAP's main frame window.
+     */
     public Frame getMainFrame() {
         return WindowManager.getDefault().getMainWindow();
     }
 
+    /**
+     * Sets the current status bar message.
+     *
+     * @param message The new status bar message.
+     */
     public void setStatusBarMessage(String message) {
         StatusDisplayer.getDefault().setStatusText(message);
     }
@@ -133,9 +154,9 @@ public class SnapApp {
     }
 
     public String getInstanceName() {
-        try{
+        try {
             return NbBundle.getBundle("org.netbeans.core.ui.Bundle").getString("LBL_ProductInformation");
-        }catch(Exception e){
+        } catch (Exception e) {
             return "SNAP";
         }
     }
@@ -158,10 +179,19 @@ public class SnapApp {
         return new PreferencesPropertyMap(getPreferences());
     }
 
+    /**
+     * @return The SNAP logger.
+     */
     public Logger getLogger() {
         return LOG;
     }
 
+    /**
+     * Handles an error.
+     *
+     * @param message An error message.
+     * @param t       An exception or {@code null}.
+     */
     public void handleError(String message, Throwable t) {
         if (t != null) {
             t.printStackTrace();
@@ -171,11 +201,10 @@ public class SnapApp {
 
         ImageIcon icon = TangoIcons.status_dialog_error(TangoIcons.Res.R16);
         JLabel balloonDetails = new JLabel(message);
-        JButton popupDetails = new JButton("Send Report");
+        JButton popupDetails = new JButton("Report");
         popupDetails.addActionListener(e -> {
             try {
-                // todo - discuss with STDF how to exactly deal with this
-                Desktop.getDesktop().browse(new URI("https://senbox.atlassian.net/browse/SNAP/"));
+                Desktop.getDesktop().browse(new URI("http://forum.step.esa.int/"));
             } catch (URISyntaxException | IOException e1) {
                 getLogger().log(Level.SEVERE, message, e1);
             }
@@ -188,6 +217,12 @@ public class SnapApp {
                                                   NotificationDisplayer.Category.ERROR);
     }
 
+    /**
+     * Provides a {@link SelectionSupport} instance for object selections.
+     *
+     * @param type The type of selected objects whose selection state to observe.
+     * @return A selection support instance for the given object type, or {@code null}.
+     */
     public <T> SelectionSupport<T> getSelectionSupport(Class<T> type) {
         @SuppressWarnings("unchecked")
         DefaultSelectionSupport<T> selectionChangeSupport = (DefaultSelectionSupport<T>) selectionChangeSupports.get(type);
@@ -198,10 +233,16 @@ public class SnapApp {
         return selectionChangeSupport;
     }
 
+    /**
+     * @return The currently selected product scene view, or {@code null}.
+     */
     public ProductSceneView getSelectedProductSceneView() {
         return Utilities.actionsGlobalContext().lookup(ProductSceneView.class);
     }
 
+    /**
+     * @return The currently selected product node, or {@code null}.
+     */
     public ProductNode getSelectedProductNode() {
         return Utilities.actionsGlobalContext().lookup(ProductNode.class);
     }
