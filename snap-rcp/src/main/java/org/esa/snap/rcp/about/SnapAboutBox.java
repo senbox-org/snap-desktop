@@ -14,7 +14,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
-import java.awt.Dimension;
+import java.awt.Font;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -24,7 +24,6 @@ import java.util.logging.Level;
 /**
  * @author Norman
  */
-@AboutBox(displayName = "SNAP", position = 0)
 public class SnapAboutBox extends JPanel {
 
     public SnapAboutBox() {
@@ -33,33 +32,43 @@ public class SnapAboutBox extends JPanel {
         ModuleInfo engineModuleInfo = Modules.getDefault().ownerOf(Product.class);
         ImageIcon image = new ImageIcon(SnapAboutBox.class.getResource("SNAP_Banner.png"));
         JLabel banner = new JLabel(image);
+        JLabel versionText = new JLabel("<html><b>SNAP " + getVersionString() + "</b>");
+
         JLabel infoText = new JLabel("<html>"
-                                             + "<b>ESA SNAP </b>" + getVersionString() + "<br><br>"
-                                             + "This program is free software: you can redistribute it and/or modify\n"
-                                            + "    it under the terms of the GNU General Public License as published by\n"
-                                            + "    the Free Software Foundation, either version 3 of the License, or\n"
-                                            + "    (at your option) any later version.<br><br>"
-                + "<br>"
+                                             + "This program is free software: you can redistribute it and/or modify it<br>"
+                                             + "under the terms of the <b>GNU General Public License</b> as published by<br>"
+                                             + "the Free Software Foundation, either version 3 of the License, or<br>"
+                                             + "(at your option) any later version.<br>"
+                                             + "<br>"
                                              + "<b>SNAP Desktop version: </b>" + desktopModuleInfo.getImplementationVersion() + "<br>"
                                              + "<b>SNAP Engine version: </b>" + engineModuleInfo.getImplementationVersion() + "<br>"
-                                              + "<b>Home directory: </b>" + SystemUtils.getApplicationHomeDir() + "<br>"
-                                              + "<b>User directory: </b>" + SystemUtils.getApplicationDataDir() + "<br>"
-                                              + "<b>Cache directory: </b>" + SystemUtils.getCacheDir() + "<br>"
-                                              + "<b>JRE: </b>" + System.getProperty("java.runtime.name") + " " + System.getProperty("java.runtime.version") + "<br>"
-                                              + "<b>Java VM: </b>" + System.getProperty("java.vm.name") + "<br>"
-                                              + "<b>Memory: </b>" + Math.round(Runtime.getRuntime().maxMemory() / 1024. / 1024.) + " MiB<br>"
+                /*
+                                             + "<b>Home directory: </b>" + SystemUtils.getApplicationHomeDir() + "<br>"
+                                             + "<b>User directory: </b>" + SystemUtils.getApplicationDataDir() + "<br>"
+                                             + "<b>Cache directory: </b>" + SystemUtils.getCacheDir() + "<br>"
+                */
+                                             + "<b>JRE: </b>" + System.getProperty("java.runtime.name") + " " + System.getProperty("java.runtime.version") + "<br>"
+                                             + "<b>JVM: </b>" + System.getProperty("java.vm.name") + " by " + System.getProperty("java.vendor") + "<br>"
+                                             + "<b>Memory: </b>" + Math.round(Runtime.getRuntime().maxMemory() / 1024. / 1024.) + " MiB<br>"
         );
 
-        add(banner, BorderLayout.WEST);
-        add(infoText, BorderLayout.CENTER);
-        setPreferredSize(new Dimension(image.getIconWidth() + 200, image.getIconHeight()));
+        Font font = versionText.getFont();
+        if (font != null) {
+            infoText.setFont(font.deriveFont(font.getSize() * 0.9f));
+        }
 
-        /*
+        JPanel innerPanel = new JPanel(new BorderLayout(4, 4));
+        innerPanel.add(versionText, BorderLayout.NORTH);
+        innerPanel.add(infoText, BorderLayout.SOUTH);
+
+        add(banner, BorderLayout.WEST);
+        add(innerPanel, BorderLayout.CENTER);
+/*
         final Properties properties = System.getProperties();
         for (String name : properties.stringPropertyNames()) {
             System.out.println(name + " = " + properties.getProperty(name));
         }
-        */
+*/
     }
 
     private String getVersionString() {

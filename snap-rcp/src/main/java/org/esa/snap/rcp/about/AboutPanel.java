@@ -35,6 +35,7 @@ class AboutPanel extends JPanel {
         FileObject configFile = FileUtil.getConfigFile("AboutBox");
         if (configFile != null) {
             JTabbedPane tabbedPane = new JTabbedPane();
+            tabbedPane.add("SNAP", new SnapAboutBox());
             FileObject aboutBoxPanels[] = configFile.getChildren();
             List<FileObject> orderedAboutBoxPanels = FileUtil.getOrder(Arrays.asList(aboutBoxPanels), true);
             for (FileObject aboutBoxFileObject : orderedAboutBoxPanels) {
