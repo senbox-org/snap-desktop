@@ -104,7 +104,7 @@ public class SnapApp {
         return instance;
     }
 
-    protected SnapApp() {
+    public SnapApp() {
         productManager = new ProductManager();
         // Register a provider that delivers an UndoManager for a Product instance.
         UndoManagerProvider undoManagerProvider = new UndoManagerProvider();
