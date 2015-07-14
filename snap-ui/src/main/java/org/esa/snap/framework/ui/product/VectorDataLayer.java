@@ -199,6 +199,8 @@ public class VectorDataLayer extends Layer {
                         updateFigureCollection();
                     } else if (event.getPropertyName().equals("geoPos")) {
                         updateFigureCollection();
+                    }else if (event.getPropertyName().equals("pixelPos")) {
+                        updateFigureCollection();
                     }
                 }
             }
