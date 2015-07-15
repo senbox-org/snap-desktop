@@ -59,9 +59,9 @@ public class StatusLevel implements StatusLineElementProvider, DocumentWindowMan
                                 MouseEvent e) {
         if (pixelPosValid) {
             label.setForeground(Color.black);
-            label.setText(String.format("Level=%d", currentLevel));
+            label.setText(String.format("Level %d", currentLevel));
         } else {
-            label.setForeground(Color.red);
+            label.setText(String.format("Level %s", "--"));
         }
     }
 
@@ -101,6 +101,6 @@ public class StatusLevel implements StatusLineElementProvider, DocumentWindowMan
 
     @Override
     public Component getStatusLineElement() {
-        return panel;
+        return null;
     }
 }

@@ -22,32 +22,35 @@ import java.awt.event.MouseEvent;
 
 /**
  * @author muhammad.bc on 7/8/2015.
- * To add the level of band on the status bar.
+ * To add the level and zoom of band on the status bar.
  */
-@ServiceProvider(service = StatusLineElementProvider.class, position = 30)
+@ServiceProvider(service = StatusLineElementProvider.class, position = 90)
 public class StatusZoom implements StatusLineElementProvider, DocumentWindowManager.Listener, PixelPositionListener {
 
     private final Dimension dimension;
     private final JSeparator separator;
-    private final JLabel label;
+    private final JLabel zoom;
     private final JPanel panel;
+
 
     public StatusZoom() {
         DocumentWindowManager.getDefault().addListener(this);
         separator = new JSeparator(SwingConstants.VERTICAL);
         dimension = new Dimension();
-        label = new JLabel();
-        dimension.setSize(100, 20);
-        label.setPreferredSize(dimension);
-        label.setHorizontalAlignment(SwingConstants.CENTER);
+        zoom = new JLabel();
+
+        dimension.setSize(200, 20);
+
+        zoom.setPreferredSize(dimension);
+        zoom.setHorizontalAlignment(SwingConstants.CENTER);
 
         panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.LINE_AXIS));
         panel.add(Box.createHorizontalGlue());
         panel.add(separator);
-        dimension.setSize(100, 20);
+        dimension.setSize(200, 20);
         panel.setPreferredSize(dimension);
-        panel.add(label);
+        panel.add(zoom);
     }
 
     @Override
@@ -68,16 +71,16 @@ public class StatusZoom implements StatusLineElementProvider, DocumentWindowMana
                 double v = Math.round(10.0 / zoomFactor) / 10.0;
                 scaleStr = "1:" + ((int) v == v ? (int) v : v);
             }
-            label.setForeground(Color.black);
-            label.setText(String.format("Zoom=%s", scaleStr));
+            zoom.setText(String.format("Zoom %s  : Level %s", scaleStr, currentLevel));
+
         } else {
-            label.setForeground(Color.red);
+            zoom.setText(String.format("Zoom %s  : Level %s", "--","--"));
         }
     }
 
     @Override
     public void pixelPosNotAvailable() {
-        label.setForeground(Color.RED);
+        zoom.setText(String.format("Zoom %s  : Level %s", "--","--"));
     }
 
 

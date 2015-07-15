@@ -25,7 +25,7 @@ import java.awt.geom.Point2D;
  * @author muhammad.bc on 7/8/2015.
  * To add the level of band on the status bar.
  */
-@ServiceProvider(service = StatusLineElementProvider.class, position = 60)
+@ServiceProvider(service = StatusLineElementProvider.class, position = 30)
 public class StatusPixelPos implements StatusLineElementProvider, DocumentWindowManager.Listener, PixelPositionListener {
 
     private final Dimension dimension;
@@ -67,13 +67,13 @@ public class StatusPixelPos implements StatusLineElementProvider, DocumentWindow
             label.setForeground(Color.black);
             label.setText(String.format("X%6d : Y%6d", (int) Math.floor(imageP.getX()), (int) Math.floor(imageP.getY())));
         } else {
-            label.setForeground(Color.red);
+            label.setText(String.format("X%6s : Y%6s","--","--"));
         }
     }
 
     @Override
     public void pixelPosNotAvailable() {
-        label.setForeground(Color.RED);
+        label.setText(String.format("X%6s : Y%6s", "--", "--"));
     }
 
 
