@@ -41,45 +41,43 @@ public class PixelPosStatusLineElementProvider
         PixelPositionListener,
         PreferenceChangeListener {
 
-    public final static String PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_X = "";
-    public final static String PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_Y = "";
-    public final static String PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_SHOW_DECIMALS = "";
+
+    private static final String GEO_POS_FORMAT = "Lat %s  Lon %s";
+    private static final String PIXEL_POS_FORMAT = "X %6s  Y %6s";
+    private static final String ZOOM_LEVEL_FORMAT = "Zoom %s  Level %s";
 
 
-
-    private final JLabel zoomLevel;
-    private final JLabel geoPost;
-    private final JLabel pixel;
+    private final JLabel zoomLevelLabel;
+    private final JLabel geoPosLabel;
+    private final JLabel pixelPosLabel;
     private final JPanel panel;
 
     public PixelPosStatusLineElementProvider() {
         DocumentWindowManager.getDefault().addListener(this);
         SnapApp.getDefault().getPreferences().addPreferenceChangeListener(this);
 
-        pixel = new JLabel();
-        pixel.setPreferredSize(new Dimension(200, 20));
-        pixel.setHorizontalAlignment(SwingConstants.CENTER);
+        pixelPosLabel = new JLabel();
+        pixelPosLabel.setPreferredSize(new Dimension(200, 20));
+        pixelPosLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
-        geoPost = new JLabel();
-        geoPost.setPreferredSize(new Dimension(200, 20));
-        geoPost.setHorizontalAlignment(SwingConstants.CENTER);
+        geoPosLabel = new JLabel();
+        geoPosLabel.setPreferredSize(new Dimension(200, 20));
+        geoPosLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
-        zoomLevel = new JLabel();
-        zoomLevel.setPreferredSize(new Dimension(250, 20));
-        zoomLevel.setHorizontalAlignment(SwingConstants.CENTER);
-
+        zoomLevelLabel = new JLabel();
+        zoomLevelLabel.setPreferredSize(new Dimension(250, 20));
+        zoomLevelLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
         panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.LINE_AXIS));
         panel.add(Box.createHorizontalGlue());
 
-
         panel.add(new JSeparator(SwingConstants.VERTICAL));
-        panel.add(zoomLevel);
+        panel.add(pixelPosLabel);
         panel.add(new JSeparator(SwingConstants.VERTICAL));
-        panel.add(pixel);
+        panel.add(geoPosLabel);
         panel.add(new JSeparator(SwingConstants.VERTICAL));
-        panel.add(geoPost);
+        panel.add(zoomLevelLabel);
 
     }
 
@@ -132,10 +130,9 @@ public class PixelPosStatusLineElementProvider
             }
             GeoPos geoPos = geoCoding.getGeoPos(pixelPos, null);
 
-
-            geoPost.setText(String.format("Lat %6s : Lon %6s", geoPos.getLatString(), geoPos.getLonString()));
-            pixel.setText(String.format("X %6d : Y %6d", (int) Math.floor(imageP.getX()), (int) Math.floor(imageP.getY())));
-            zoomLevel.setText(String.format("Zoom %s : Level %s", scaleStr, currentLevel));
+            geoPosLabel.setText(String.format(GEO_POS_FORMAT, geoPos.getLatString(), geoPos.getLonString()));
+            pixelPosLabel.setText(String.format(PIXEL_POS_FORMAT, (int) Math.floor(imageP.getX()), (int) Math.floor(imageP.getY())));
+            zoomLevelLabel.setText(String.format(ZOOM_LEVEL_FORMAT, scaleStr, currentLevel));
 
         } else {
             setDefault();
@@ -145,27 +142,20 @@ public class PixelPosStatusLineElementProvider
     }
 
     private void setDefault() {
-        geoPost.setText(String.format("Lat %6s : Lon %6s", "--", "--"));
-        pixel.setText(String.format("X %6s : Y %6s", "--", "--"));
-        zoomLevel.setText(String.format("Zoom %s . Level %s", "--", "--"));
+        geoPosLabel.setText(String.format(GEO_POS_FORMAT, "--", "--"));
+        pixelPosLabel.setText(String.format(PIXEL_POS_FORMAT, "--", "--"));
+        zoomLevelLabel.setText(String.format(ZOOM_LEVEL_FORMAT, "--", "--"));
     }
 
 
     @Override
     public void pixelPosNotAvailable() {
-        geoPost.setText(String.format("Lat %6s : Lon %6s", "--", "--"));
-        pixel.setText(String.format("X %6s : Y %6s", "--", "--"));
-        zoomLevel.setText(String.format("Zoom %s : Level %s", "--", "--"));
+        setDefault();
     }
 
     @Override
     public void preferenceChange(PreferenceChangeEvent evt) {
-        final String propertyName = evt.getKey();
-        if (PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_X.equals(propertyName)
-                || PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_Y.equals(propertyName)
-                || PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_SHOW_DECIMALS.equals(propertyName)) {
-
-        }
+        // Called if SNAP preferences change, adjust any status bar setting here.
     }
 
 
