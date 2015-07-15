@@ -117,6 +117,7 @@ public class PixelPosStatusLineElementProvider
             PixelPos pixelPos = new PixelPos(imageP.getX(), imageP.getY());
             ProductSceneView productSceneView = SnapApp.getDefault().getSelectedProductSceneView();
             if (productSceneView == null) {
+                setDefault();
                 return;
             }
             RasterDataNode rasterDataNode = productSceneView.getRaster();
