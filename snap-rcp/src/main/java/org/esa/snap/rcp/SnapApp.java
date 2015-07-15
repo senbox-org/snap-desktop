@@ -61,6 +61,7 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 /**
@@ -317,6 +318,11 @@ public class SnapApp {
 
     public void onStop() {
         engine.stop();
+        try {
+            getPreferences().flush();
+        } catch (BackingStoreException e) {
+            getLogger().log(Level.SEVERE, e.getMessage(), e);
+        }
     }
 
     public void onShowing() {
