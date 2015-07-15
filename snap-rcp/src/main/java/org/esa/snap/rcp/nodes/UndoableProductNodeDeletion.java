@@ -14,6 +14,7 @@ import javax.swing.undo.CannotUndoException;
  *
  * @param <T> The product node type.
  * @author Norman Fomferra
+ * @author Tonio Fincke
  */
 @NbBundle.Messages("LBL_UndoableProductNodeDeletionName=Delete ''{0}''")
 public class UndoableProductNodeDeletion<T extends ProductNode> extends AbstractUndoableEdit {
@@ -22,7 +23,12 @@ public class UndoableProductNodeDeletion<T extends ProductNode> extends Abstract
     private T productNode;
     private final int[] indexes;
 
-    public UndoableProductNodeDeletion(ProductNodeGroup<T>[] productNodeGroups, T productNode, int[] indexes) {
+    @SuppressWarnings("unchecked")
+    public UndoableProductNodeDeletion(ProductNodeGroup<T> productNodeGroup, T productNode, int[] indexes) {
+       this(new ProductNodeGroup[] {productNodeGroup}, productNode, indexes);
+    }
+
+    UndoableProductNodeDeletion(ProductNodeGroup<T>[] productNodeGroups, T productNode, int[] indexes) {
         Assert.notNull(productNodeGroups, "group");
         Assert.notNull(productNode, "node");
         this.productNodeGroups = productNodeGroups;
