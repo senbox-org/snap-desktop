@@ -199,7 +199,7 @@ public class VectorDataLayer extends Layer {
                         updateFigureCollection();
                     } else if (event.getPropertyName().equals(Placemark.PROPERTY_NAME_GEOPOS)) {
                         updateFigureCollection();
-                    }else {
+                    } else if (event.getPropertyName().equals(Placemark.PROPERTY_NAME_PIXELPOS)) {
                         updateFigureCollection();
                     }
             }
