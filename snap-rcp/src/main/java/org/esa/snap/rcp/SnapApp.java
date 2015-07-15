@@ -261,7 +261,7 @@ public class SnapApp {
         return null;
     }
 
-    public String getMainFrameTitle() {
+    private String getMainFrameTitle() {
 
         ProductNode selectedProductNode = getSelectedProductNode();
         Product selectedProduct = null;
