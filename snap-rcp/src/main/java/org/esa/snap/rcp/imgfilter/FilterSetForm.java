@@ -4,6 +4,7 @@ import org.esa.snap.framework.ui.UIUtils;
 import org.esa.snap.rcp.imgfilter.model.Filter;
 import org.esa.snap.rcp.imgfilter.model.FilterSet;
 import org.esa.snap.rcp.imgfilter.model.FilterSetStore;
+import org.esa.snap.tango.TangoIcons;
 
 import javax.swing.DropMode;
 import javax.swing.Icon;
@@ -114,7 +115,7 @@ public class FilterSetForm extends JPanel {
 
     private void initUI() {
 
-        addButton = new JButton(UIUtils.loadImageIcon("/com/bc/ceres/swing/actions/icons_22x22/list-add.png"));
+        addButton = new JButton(TangoIcons.actions_list_add(TangoIcons.Res.R22));
         addButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -128,7 +129,7 @@ public class FilterSetForm extends JPanel {
         });
         addButton.setToolTipText("Add user-defined filter");
 
-        removeButton = new JButton(UIUtils.loadImageIcon("/com/bc/ceres/swing/actions/icons_22x22/list-remove.png"));
+        removeButton = new JButton(TangoIcons.actions_list_remove(TangoIcons.Res.R22));
         removeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -137,7 +138,7 @@ public class FilterSetForm extends JPanel {
         });
         removeButton.setToolTipText("Remove user-defined filter");
 
-        editButton = new JButton(UIUtils.loadImageIcon("/com/bc/ceres/swing/actions/icons_22x22/document-properties.png"));
+        editButton = new JButton(TangoIcons.actions_document_properties(TangoIcons.Res.R22));
         editButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -150,7 +151,7 @@ public class FilterSetForm extends JPanel {
         });
         editButton.setToolTipText("Show or edit properties of selected filter");
 
-        saveButton = new JButton(UIUtils.loadImageIcon("/com/bc/ceres/swing/actions/icons_22x22/document-save.png"));
+        saveButton = new JButton(TangoIcons.actions_document_save(TangoIcons.Res.R22));
         saveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
