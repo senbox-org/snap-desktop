@@ -2,7 +2,12 @@ package org.esa.snap.rcp.status;
 
 import com.bc.ceres.glayer.support.ImageLayer;
 import com.bc.ceres.glayer.swing.LayerCanvas;
+import org.esa.snap.framework.datamodel.GeoCoding;
+import org.esa.snap.framework.datamodel.GeoPos;
+import org.esa.snap.framework.datamodel.PixelPos;
+import org.esa.snap.framework.datamodel.RasterDataNode;
 import org.esa.snap.framework.ui.PixelPositionListener;
+import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.netbeans.docwin.DocumentWindowManager;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
@@ -10,15 +15,19 @@ import org.openide.awt.StatusLineElementProvider;
 import org.openide.util.lookup.ServiceProvider;
 import org.openide.windows.TopComponent;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JLabel;
-import java.awt.Color;
+import javax.swing.JPanel;
+import javax.swing.JSeparator;
+import javax.swing.SwingConstants;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
-import java.util.prefs.Preferences;
 
 /**
  * Displays current pixel position in the status bar.
@@ -36,25 +45,47 @@ public class PixelPosStatusLineElementProvider
     public final static String PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_Y = "";
     public final static String PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_SHOW_DECIMALS = "";
 
-    public final static double PROPERTY_DEFAULT_PIXEL_OFFSET_FOR_DISPLAY_X = 0;
-    public final static double PROPERTY_DEFAULT_PIXEL_OFFSET_FOR_DISPLAY_Y = 0;
-    public final static boolean PROPERTY_DEFAULT_PIXEL_OFFSET_FOR_DISPLAY_SHOW_DECIMALS = false;
 
-    private double pixelOffsetX;
-    private double pixelOffsetY;
-    private boolean showPixelOffsetDecimals;
-    private JLabel label;
+
+    private final JLabel zoomLevel;
+    private final JLabel geoPost;
+    private final JLabel pixel;
+    private final JPanel panel;
 
     public PixelPosStatusLineElementProvider() {
         DocumentWindowManager.getDefault().addListener(this);
         SnapApp.getDefault().getPreferences().addPreferenceChangeListener(this);
-        updateSettings();
-        label = new JLabel();
+
+        pixel = new JLabel();
+        pixel.setPreferredSize(new Dimension(200, 20));
+        pixel.setHorizontalAlignment(SwingConstants.CENTER);
+
+        geoPost = new JLabel();
+        geoPost.setPreferredSize(new Dimension(200, 20));
+        geoPost.setHorizontalAlignment(SwingConstants.CENTER);
+
+        zoomLevel = new JLabel();
+        zoomLevel.setPreferredSize(new Dimension(250, 20));
+        zoomLevel.setHorizontalAlignment(SwingConstants.CENTER);
+
+
+        panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.LINE_AXIS));
+        panel.add(Box.createHorizontalGlue());
+
+
+        panel.add(new JSeparator(SwingConstants.VERTICAL));
+        panel.add(zoomLevel);
+        panel.add(new JSeparator(SwingConstants.VERTICAL));
+        panel.add(pixel);
+        panel.add(new JSeparator(SwingConstants.VERTICAL));
+        panel.add(geoPost);
+
     }
 
     @Override
     public Component getStatusLineElement() {
-        return null;
+        return panel;
     }
 
     @Override
@@ -69,7 +100,8 @@ public class PixelPosStatusLineElementProvider
             Point2D modelP = i2mTransform.transform(new Point2D.Double(pixelX + 0.5, pixelY + 0.5), null);
             AffineTransform m2iTransform = imageLayer.getModelToImageTransform();
             Point2D imageP = m2iTransform.transform(modelP, null);
-            label.setForeground(Color.BLACK);
+
+
             LayerCanvas layerCanvas = (LayerCanvas) e.getSource();
             double zoomFactor = layerCanvas.getViewport().getZoomFactor();
             String scaleStr;
@@ -80,19 +112,49 @@ public class PixelPosStatusLineElementProvider
                 double v = Math.round(10.0 / zoomFactor) / 10.0;
                 scaleStr = "1:" + ((int) v == v ? (int) v : v);
             }
-            label.setText(String.format("x=%d y=%d zoom=%s level=%d",
-                                        (int) Math.floor(imageP.getX()),
-                                        (int) Math.floor(imageP.getY()),
-                                        scaleStr, currentLevel));
+
+
+            PixelPos pixelPos = new PixelPos(imageP.getX(), imageP.getY());
+            ProductSceneView productSceneView = SnapApp.getDefault().getSelectedProductSceneView();
+            if (productSceneView == null) {
+                return;
+            }
+            RasterDataNode rasterDataNode = productSceneView.getRaster();
+            if (rasterDataNode == null) {
+                setDefault();
+                return;
+            }
+            GeoCoding geoCoding = rasterDataNode.getGeoCoding();
+            if (geoCoding == null) {
+                setDefault();
+                return;
+            }
+            GeoPos geoPos = geoCoding.getGeoPos(pixelPos, null);
+
+
+            geoPost.setText(String.format("Lat %6s : Lon %6s", geoPos.getLatString(), geoPos.getLonString()));
+            pixel.setText(String.format("X %6d : Y %6d", (int) Math.floor(imageP.getX()), (int) Math.floor(imageP.getY())));
+            zoomLevel.setText(String.format("Zoom %s : Level %s", scaleStr, currentLevel));
+
         } else {
-            label.setForeground(Color.BLUE);
+            setDefault();
+
         }
 
     }
 
+    private void setDefault() {
+        geoPost.setText(String.format("Lat %6s : Lon %6s", "--", "--"));
+        pixel.setText(String.format("X %6s : Y %6s", "--", "--"));
+        zoomLevel.setText(String.format("Zoom %s . Level %s", "--", "--"));
+    }
+
+
     @Override
     public void pixelPosNotAvailable() {
-        label.setForeground(Color.RED);
+        geoPost.setText(String.format("Lat %6s : Lon %6s", "--", "--"));
+        pixel.setText(String.format("X %6s : Y %6s", "--", "--"));
+        zoomLevel.setText(String.format("Zoom %s : Level %s", "--", "--"));
     }
 
     @Override
@@ -101,7 +163,7 @@ public class PixelPosStatusLineElementProvider
         if (PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_X.equals(propertyName)
                 || PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_Y.equals(propertyName)
                 || PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_SHOW_DECIMALS.equals(propertyName)) {
-            updateSettings();
+
         }
     }
 
@@ -132,15 +194,5 @@ public class PixelPosStatusLineElementProvider
     public void windowDeselected(DocumentWindowManager.Event e) {
     }
 
-    private void updateSettings() {
-        final Preferences preferences = SnapApp.getDefault().getPreferences();
-        pixelOffsetY = preferences.getDouble(PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_Y,
-                                             PROPERTY_DEFAULT_PIXEL_OFFSET_FOR_DISPLAY_X);
-        pixelOffsetX = preferences.getDouble(PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_X,
-                                             PROPERTY_DEFAULT_PIXEL_OFFSET_FOR_DISPLAY_Y);
-        showPixelOffsetDecimals = preferences.getBoolean(
-                PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_SHOW_DECIMALS,
-                PROPERTY_DEFAULT_PIXEL_OFFSET_FOR_DISPLAY_SHOW_DECIMALS);
-    }
 }
 
