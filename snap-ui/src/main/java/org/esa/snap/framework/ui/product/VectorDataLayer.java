@@ -192,17 +192,16 @@ public class VectorDataLayer extends Layer {
                 }
             } else if (event.getSourceNode() instanceof Placemark) {
                 final Placemark sourceNode = (Placemark) event.getSourceNode();
-                if (getVectorDataNode().getPlacemarkGroup().contains(sourceNode)) {
+                if (getVectorDataNode().getPlacemarkGroup().contains(sourceNode))
                     if (event.getPropertyName().equals(Placemark.PROPERTY_NAME_STYLE_CSS)) {
                         updateFigureCollection();
                     } else if (event.getPropertyName().equals("geometry")) {
                         updateFigureCollection();
-                    } else if (event.getPropertyName().equals("geoPos")) {
+                    } else if (event.getPropertyName().equals(Placemark.PROPERTY_NAME_GEOPOS)) {
                         updateFigureCollection();
-                    }else if (event.getPropertyName().equals("pixelPos")) {
+                    }else {
                         updateFigureCollection();
                     }
-                }
             }
         }
     }
