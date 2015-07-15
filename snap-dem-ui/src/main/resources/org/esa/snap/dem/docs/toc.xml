@@ -14,8 +14,10 @@
                 </tocitem>
             </tocitem>
         </tocitem>
-        <tocitem text="Tools">
-            <tocitem text="Fill DEM Hole" target="FillHoleOp"/>
+        <tocitem text="Raster">
+            <tocitem text="DEM Tools">
+                <tocitem text="Fill DEM Hole" target="FillHoleOp"/>
+            </tocitem>
         </tocitem>
     </tocitem>
 

@@ -5,9 +5,11 @@
 <toc version="2.0" categoryclosedimage="folder" categoryopenimage="folder" topicimage="doc">
 
     <tocitem text="Sentinel Toolbox Application">
-        <tocitem text="Product View">
-            <tocitem text="Analysis Tools">
-                <tocitem text="World Wind" target="WorldWind"/>
+        <tocitem text="General concepts">
+            <tocitem text="Product View">
+                <tocitem text="Analysis Tools">
+                    <tocitem text="World Wind" target="WorldWind"/>
+                </tocitem>
             </tocitem>
         </tocitem>
     </tocitem>
