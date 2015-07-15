@@ -2,6 +2,7 @@ package org.esa.snap.rcp.imgfilter;
 
 
 import org.esa.snap.rcp.imgfilter.model.Filter;
+
 import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
@@ -14,8 +15,6 @@ import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -24,10 +23,6 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
@@ -44,7 +39,7 @@ public class FilterKernelForm extends JPanel implements Filter.Listener {
     private FilterKernelCanvas kernelCanvas;
     private JSpinner kernelWidthSpinner;
     private JSpinner kernelHeightSpinner;
-    private JComboBox fillValueCombo;
+    private JComboBox<Number> fillValueCombo;
     private double fillValue;
 
     private final DefaultComboBoxModel<Number> structuringFillValueModel = new DefaultComboBoxModel<>(new Number[]{0, 1});
@@ -152,44 +147,33 @@ public class FilterKernelForm extends JPanel implements Filter.Listener {
         if (filter.isEditable()) {
             boolean structureElement = filter.getOperation() != Filter.Operation.CONVOLVE;
             if (structureElement) {
-                fillValueCombo = new JComboBox(structuringFillValueModel);
+                fillValueCombo = new JComboBox<>(structuringFillValueModel);
                 ((JTextField) fillValueCombo.getEditor().getEditorComponent()).setColumns(1);
                 fillValueCombo.setEditable(false);
                 fillValueCombo.setSelectedItem((int) getFillValue());
             } else {
-                fillValueCombo = new JComboBox(kernelFillValueModel);
+                fillValueCombo = new JComboBox<>(kernelFillValueModel);
                 ((JTextField) fillValueCombo.getEditor().getEditorComponent()).setColumns(3);
                 fillValueCombo.setEditable(true);
                 fillValueCombo.setSelectedItem(getFillValue());
             }
-            fillValueCombo.addItemListener(new ItemListener() {
-                @Override
-                public void itemStateChanged(ItemEvent e) {
-                    setFillValue(((Number) fillValueCombo.getSelectedItem()).doubleValue());
-                }
-            });
+            fillValueCombo.addItemListener(e -> setFillValue(((Number) fillValueCombo.getSelectedItem()).doubleValue()));
             fillValueCombo.setToolTipText("Value that will be used to set a kernel element when clicking into the matrix");
 
             kernelWidthSpinner = new JSpinner(new SpinnerNumberModel(1, 1, 100, 1));
             kernelWidthSpinner.setValue(filter.getKernelHeight());
-            kernelWidthSpinner.addChangeListener(new ChangeListener() {
-                @Override
-                public void stateChanged(ChangeEvent e) {
-                    Integer kernelWidth = (Integer) kernelWidthSpinner.getValue();
-                    filter.setKernelSize(kernelWidth, filter.getKernelHeight());
-                }
+            kernelWidthSpinner.addChangeListener(e -> {
+                Integer kernelWidth = (Integer) kernelWidthSpinner.getValue();
+                filter.setKernelSize(kernelWidth, filter.getKernelHeight());
             });
             kernelWidthSpinner.setToolTipText("Width of the kernel (number of matrix columns)");
 
 
             kernelHeightSpinner = new JSpinner(new SpinnerNumberModel(1, 1, 100, 1));
             kernelHeightSpinner.setValue(filter.getKernelWidth());
-            kernelHeightSpinner.addChangeListener(new ChangeListener() {
-                @Override
-                public void stateChanged(ChangeEvent e) {
-                    Integer kernelHeight = (Integer) kernelHeightSpinner.getValue();
-                    filter.setKernelSize(filter.getKernelWidth(), kernelHeight);
-                }
+            kernelHeightSpinner.addChangeListener(e -> {
+                Integer kernelHeight = (Integer) kernelHeightSpinner.getValue();
+                filter.setKernelSize(filter.getKernelWidth(), kernelHeight);
             });
             kernelHeightSpinner.setToolTipText("Height of the kernel (number of matrix rows)");
 
@@ -265,12 +249,9 @@ public class FilterKernelForm extends JPanel implements Filter.Listener {
 
         JPopupMenu popupMenu = new JPopupMenu();
         JMenuItem copyItem = new JMenuItem("Copy");
-        copyItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Clipboard systemClip = Toolkit.getDefaultToolkit().getSystemClipboard();
-                systemClip.setContents(new StringSelection(kernelCanvas.getFilter().getKernelElementsAsText()), null);
-            }
+        copyItem.addActionListener(e -> {
+            Clipboard systemClip = Toolkit.getDefaultToolkit().getSystemClipboard();
+            systemClip.setContents(new StringSelection(kernelCanvas.getFilter().getKernelElementsAsText()), null);
         });
         popupMenu.add(copyItem);
 
@@ -280,32 +261,24 @@ public class FilterKernelForm extends JPanel implements Filter.Listener {
 
         JMenuItem pasteItem = new JMenuItem("Paste");
         pasteItem.setEnabled(isPastePossible());
-        pasteItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Clipboard systemClip = Toolkit.getDefaultToolkit().getSystemClipboard();
-                Transferable transfer = systemClip.getContents(null);
-                try {
-                    String data = (String) transfer.getTransferData(DataFlavor.stringFlavor);
-                    kernelCanvas.getFilter().setKernelElementsFromText(data);
-                    kernelCanvas.getFilter().adjustKernelQuotient();
-                } catch (Error | RuntimeException e1) {
-                    e1.printStackTrace();
-                    throw e1;
-                } catch (Throwable e1) {
-                    e1.printStackTrace();
-                }
+        pasteItem.addActionListener(e -> {
+            Clipboard systemClip = Toolkit.getDefaultToolkit().getSystemClipboard();
+            Transferable transfer = systemClip.getContents(null);
+            try {
+                String data = (String) transfer.getTransferData(DataFlavor.stringFlavor);
+                kernelCanvas.getFilter().setKernelElementsFromText(data);
+                kernelCanvas.getFilter().adjustKernelQuotient();
+            } catch (Error | RuntimeException e1) {
+                e1.printStackTrace();
+                throw e1;
+            } catch (Throwable e1) {
+                e1.printStackTrace();
             }
         });
         popupMenu.add(pasteItem);
 
         JMenuItem clearItem = new JMenuItem("Clear");
-        clearItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                kernelCanvas.getFilter().fillRectangle(0.0);
-            }
-        });
+        clearItem.addActionListener(e -> kernelCanvas.getFilter().fillRectangle(0.0));
         popupMenu.add(clearItem);
 
         popupMenu.addSeparator();
@@ -314,52 +287,37 @@ public class FilterKernelForm extends JPanel implements Filter.Listener {
         String fillValueText = fillValue == (int) fillValue ? String.valueOf((int) fillValue) : String.valueOf(fillValue);
 
         JMenuItem fillRectangleItem = new JMenuItem(String.format("Fill Rectangle by <%s>", fillValueText));
-        fillRectangleItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                kernelCanvas.getFilter().fillRectangle(fillValue);
-                kernelCanvas.getFilter().adjustKernelQuotient();
-            }
+        fillRectangleItem.addActionListener(e -> {
+            kernelCanvas.getFilter().fillRectangle(fillValue);
+            kernelCanvas.getFilter().adjustKernelQuotient();
         });
         popupMenu.add(fillRectangleItem);
 
         JMenuItem fillEllipseItem = new JMenuItem(String.format("Fill Ellipse by <%s>", fillValueText));
-        fillEllipseItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                kernelCanvas.getFilter().fillEllipse(fillValue);
-                kernelCanvas.getFilter().adjustKernelQuotient();
-            }
+        fillEllipseItem.addActionListener(e -> {
+            kernelCanvas.getFilter().fillEllipse(fillValue);
+            kernelCanvas.getFilter().adjustKernelQuotient();
         });
         popupMenu.add(fillEllipseItem);
 
         JMenuItem fillGaussItem = new JMenuItem("Fill Gaussian");
-        fillGaussItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                kernelCanvas.getFilter().fillGaussian();
-                kernelCanvas.getFilter().adjustKernelQuotient();
-            }
+        fillGaussItem.addActionListener(e -> {
+            kernelCanvas.getFilter().fillGaussian();
+            kernelCanvas.getFilter().adjustKernelQuotient();
         });
         popupMenu.add(fillGaussItem);
 
         JMenuItem fillLaplaceItem = new JMenuItem("Fill Laplacian");
-        fillLaplaceItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                kernelCanvas.getFilter().fillLaplacian();
-                kernelCanvas.getFilter().adjustKernelQuotient();
-            }
+        fillLaplaceItem.addActionListener(e -> {
+            kernelCanvas.getFilter().fillLaplacian();
+            kernelCanvas.getFilter().adjustKernelQuotient();
         });
         popupMenu.add(fillLaplaceItem);
 
         JMenuItem fillRandomItem = new JMenuItem("Fill Random");
-        fillRandomItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                kernelCanvas.getFilter().fillRandom();
-                kernelCanvas.getFilter().adjustKernelQuotient();
-            }
+        fillRandomItem.addActionListener(e -> {
+            kernelCanvas.getFilter().fillRandom();
+            kernelCanvas.getFilter().adjustKernelQuotient();
         });
         popupMenu.add(fillRandomItem);
 
