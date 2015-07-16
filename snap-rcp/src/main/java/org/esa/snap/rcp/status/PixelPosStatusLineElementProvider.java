@@ -57,7 +57,7 @@ public class PixelPosStatusLineElementProvider
         SnapApp.getDefault().getPreferences().addPreferenceChangeListener(this);
 
         pixelPosLabel = new JLabel();
-        pixelPosLabel.setPreferredSize(new Dimension(200, 20));
+        pixelPosLabel.setPreferredSize(new Dimension(120, 20));
         pixelPosLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
         geoPosLabel = new JLabel();
@@ -65,7 +65,7 @@ public class PixelPosStatusLineElementProvider
         geoPosLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
         zoomLevelLabel = new JLabel();
-        zoomLevelLabel.setPreferredSize(new Dimension(250, 20));
+        zoomLevelLabel.setPreferredSize(new Dimension(150, 20));
         zoomLevelLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
         panel = new JPanel();
