@@ -318,7 +318,6 @@ public class PlacemarkDialog extends ModalDialog {
             placemark.setLabel(dialog.getLabel());
             placemark.setDescription(dialog.getDescription());
             placemark.setGeoPos(dialog.getGeoPos());
-            placemark.setPixelPos(dialog.getPixelPos());
             placemark.setStyleCss(dialog.getStyleCss());
         }
         return ok;
