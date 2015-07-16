@@ -39,7 +39,7 @@ import org.esa.snap.framework.datamodel.PixelPos;
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.RasterDataNode;
 import org.esa.snap.framework.gpf.GPF;
-import org.esa.snap.gpf.OperatorUtils;
+import org.esa.snap.gpf.InputProductValidator;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.util.ProductUtils;
 
@@ -401,7 +401,8 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
         productSubsetDef.setNodeNames(new String[]{quicklookBandName});
         Product productSubset = product.createSubset(productSubsetDef, quicklookBandName, null);
 
-        if (!OperatorUtils.isMapProjected(product) && productSubset.getGeoCoding() != null) {
+        final InputProductValidator validator = new InputProductValidator(product);
+        if (!validator.isMapProjected() && productSubset.getGeoCoding() != null) {
             try {
                 final Map<String, Object> projParameters = new HashMap<>();
                 Map<String, Product> projProducts = new HashMap<>();
