@@ -38,7 +38,7 @@ import java.awt.*;
  *
  * @author thomas
  */
-@OptionsPanelController.SubRegistration(location = "GeneralPreferences",
+@OptionsPanelController.SubRegistration(location = "LayerPreferences",
         displayName = "#Options_DisplayName_LayerImage",
         keywords = "#Options_Keywords_LayerImage",
         keywordsCategory = "Layer",
@@ -48,6 +48,7 @@ import java.awt.*;
         "Options_Keywords_LayerImage=layer, image"
 })
 public final class ImageLayerPanel extends DefaultConfigController {
+
 
     /**
      * Preferences key for the background color

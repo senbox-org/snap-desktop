@@ -9,7 +9,7 @@
         iconBase = "org/esa/snap/rcp/icons/generalOptions1.png",
         keywords = "#OptionsCategory_Keywords_General",
         keywordsCategory = "#OptionsCategory_Keywords_Category_General",
-        position = 7)
+        position = 1)
 @org.openide.util.NbBundle.Messages({
         "OptionsCategory_Name_General=General",
         "OptionsCategory_Keywords_General=general",

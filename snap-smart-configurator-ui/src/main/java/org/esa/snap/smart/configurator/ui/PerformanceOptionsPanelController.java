@@ -17,7 +17,8 @@ import org.openide.util.Lookup;
         categoryName = "#OptionsCategory_Name_Performance",
         iconBase = "org/esa/snap/smart/configurator/ui/Performance32.png",
         keywords = "#OptionsCategory_Keywords_Performance_Optim",
-        keywordsCategory = "Performance"
+        keywordsCategory = "Performance",
+        position = 3
 )
 @org.openide.util.NbBundle.Messages({"OptionsCategory_Name_Performance=Performance", "OptionsCategory_Keywords_Performance_Optim=Performance optimization smart configurator"})
 public final class PerformanceOptionsPanelController extends OptionsPanelController {
