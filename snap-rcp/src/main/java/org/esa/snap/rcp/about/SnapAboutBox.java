@@ -32,7 +32,7 @@ public class SnapAboutBox extends JPanel {
         ModuleInfo engineModuleInfo = Modules.getDefault().ownerOf(Product.class);
         ImageIcon image = new ImageIcon(SnapAboutBox.class.getResource("SNAP_Banner.png"));
         JLabel banner = new JLabel(image);
-        JLabel versionText = new JLabel("<html><b>SNAP " + getVersionString() + "</b>");
+        JLabel versionText = new JLabel("<html><b>SNAP release version " + getReleaseVersion() + "</b>");
 
         JLabel infoText = new JLabel("<html>"
                                              + "This program is free software: you can redistribute it and/or modify it<br>"
@@ -40,8 +40,8 @@ public class SnapAboutBox extends JPanel {
                                              + "the Free Software Foundation, either version 3 of the License, or<br>"
                                              + "(at your option) any later version.<br>"
                                              + "<br>"
-                                             + "<b>SNAP Desktop version: </b>" + desktopModuleInfo.getImplementationVersion() + "<br>"
-                                             + "<b>SNAP Engine version: </b>" + engineModuleInfo.getImplementationVersion() + "<br>"
+                                             + "<b>SNAP Desktop implementation version: </b>" + desktopModuleInfo.getImplementationVersion() + "<br>"
+                                             + "<b>SNAP Engine implementation version: </b>" + engineModuleInfo.getImplementationVersion() + "<br>"
                 /*
                                              + "<b>Home directory: </b>" + SystemUtils.getApplicationHomeDir() + "<br>"
                                              + "<b>User directory: </b>" + SystemUtils.getApplicationDataDir() + "<br>"
@@ -71,7 +71,7 @@ public class SnapAboutBox extends JPanel {
 */
     }
 
-    private String getVersionString() {
+    private String getReleaseVersion() {
         String version = null;
         Path versionFile = SystemUtils.getApplicationHomeDir().toPath().resolve("VERSION.txt");
         if (Files.exists(versionFile)) {
@@ -87,6 +87,6 @@ public class SnapAboutBox extends JPanel {
         if (version != null) {
             return version;
         }
-        return "<i>not available</i>";
+        return "<i>(no version info, missing ${SNAP_HOME}/VERSION.txt)</i>";
     }
 }
