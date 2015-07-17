@@ -19,8 +19,8 @@ import java.util.List;
 /**
  * Extra SNAP Desktop command-line arguments:
  * <ul>
- * <li>{@code open <session-file> | <data-file> ...} </li>
- * <li>{@code python <python-interpreter> [<snappy-python-module-dir>]}</li>
+ * <li>{@code --open  [<session-file>] [<file-1> <file-2> ...]} </li>
+ * <li>{@code --python <python-interpreter> [<snappy-python-module-dir>]}</li>
  * </ul>
  *
  * @author Norman Fomferra
