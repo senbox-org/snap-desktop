@@ -53,6 +53,8 @@ public final class GeneralLayerPanel extends DefaultConfigController {
         return createPropertySet(new GeneralLayerBean());
     }
 
+
+
     @Override
     public HelpCtx getHelpCtx() {
         return new HelpCtx("layer");
