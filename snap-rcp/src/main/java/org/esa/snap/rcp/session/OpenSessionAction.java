@@ -94,9 +94,9 @@ public class OpenSessionAction extends AbstractAction implements LookupListener,
     @Override
     public void actionPerformed(ActionEvent event) {
 
-        final SessionManager app = SessionManager.getDefault();
+        final SessionManager manager = SessionManager.getDefault();
 
-        if (app.getSessionFile() != null) {
+        if (manager.getSessionFile() != null) {
             SnapDialogs.Answer answer = SnapDialogs.requestDecision(TITLE,
                                                                     "This will close the current session.\n" +
                                                                             "Do you want to continue?", true, null);
@@ -110,18 +110,19 @@ public class OpenSessionAction extends AbstractAction implements LookupListener,
         if (sessionFile == null) {
             return;
         }
-        if (sessionFile.equals(app.getSessionFile())) {
+        if (sessionFile.equals(manager.getSessionFile())) {
             SnapDialogs.showError(TITLE, "Session has already been opened.");
             return;
         }
-        openSession(app, sessionFile);
+        openSession(sessionFile);
     }
 
-    public void openSession(SessionManager app, File sessionFile) {
-        app.setSessionFile(sessionFile);
+    public void openSession(File sessionFile) {
+        final SessionManager manager = SessionManager.getDefault();
+        manager.setSessionFile(sessionFile);
         CloseAllProductsAction closeProductAction = new CloseAllProductsAction();
         closeProductAction.execute();
-        SwingWorker<RestoredSession, Object> worker = new OpenSessionWorker(app, sessionFile);
+        SwingWorker<RestoredSession, Object> worker = new OpenSessionWorker(manager, sessionFile);
         worker.execute();
     }
 
