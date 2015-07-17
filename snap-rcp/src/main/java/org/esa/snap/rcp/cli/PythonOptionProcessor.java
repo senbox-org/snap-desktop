@@ -1,4 +1,4 @@
-package org.esa.snap.rcp.python;
+package org.esa.snap.rcp.cli;
 
 import org.esa.snap.python.PyBridge;
 import org.netbeans.api.sendopts.CommandException;
@@ -27,10 +27,10 @@ import java.util.Set;
         "LBL_PythonConfigurator_Name=python <python-interpreter>",
         "LBL_PythonConfigurator_Description=Configures the SNAP Java-Python adapter 'snappy'",
 })
-public class PythonConfigurator extends OptionProcessor {
+public class PythonOptionProcessor extends OptionProcessor {
     private final Option pythonOption;
 
-    public PythonConfigurator() {
+    public PythonOptionProcessor() {
         this.pythonOption = Option.additionalArguments(Option.NO_SHORT_NAME, "python");
         Option.displayName(this.pythonOption, "org.esa.snap.rcp.python.Bundle", "LBL_PythonConfigurator_Name");
         Option.shortDescription(this.pythonOption, "org.esa.snap.rcp.python.Bundle", "LBL_PythonConfigurator_Description");
