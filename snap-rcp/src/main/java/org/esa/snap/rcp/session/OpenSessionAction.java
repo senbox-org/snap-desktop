@@ -29,16 +29,9 @@ import org.esa.snap.rcp.actions.file.CloseAllProductsAction;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
-import org.openide.util.ContextAwareAction;
-import org.openide.util.Lookup;
-import org.openide.util.LookupEvent;
-import org.openide.util.LookupListener;
 import org.openide.util.NbBundle;
-import org.openide.util.Utilities;
-import org.openide.util.WeakListeners;
 
 import javax.swing.AbstractAction;
-import javax.swing.Action;
 import javax.swing.JInternalFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
@@ -52,44 +45,18 @@ import java.util.concurrent.ExecutionException;
 
 
 @ActionID(category = "File", id = "org.esa.snap.rcp.session.OpenSessionAction")
-@ActionRegistration(displayName = "#CTL_OpenSessionAction_MenuText", lazy = false)
+@ActionRegistration(displayName = "#CTL_OpenSessionAction_MenuText")
 @ActionReference(path = "Menu/File/Session", position = 15)
 @NbBundle.Messages({
         "CTL_OpenSessionAction_MenuText=Open Session...",
         "CTL_OpenSessionAction_ShortDescription=Open a SNAP session."
 })
-public class OpenSessionAction extends AbstractAction implements LookupListener, ContextAwareAction {
+public class OpenSessionAction extends AbstractAction {
 
     public static final String ID = "openSession";
 
     public static final String LAST_SESSION_DIR_KEY = "beam.lastSessionDir";
     private static final String TITLE = "Open Session";
-    private final Lookup.Result<ProductSceneView> result;
-    private final Lookup lookup;
-
-
-    public OpenSessionAction() {
-        this(Utilities.actionsGlobalContext());
-    }
-
-    public OpenSessionAction(Lookup lookup) {
-        super(Bundle.CTL_OpenSessionAction_MenuText());
-        this.lookup = lookup;
-        result = lookup.lookupResult(ProductSceneView.class);
-        result.addLookupListener(WeakListeners.create(LookupListener.class, this, result));
-        //setEnabled(false);
-    }
-
-
-    @Override
-    public Action createContextAwareInstance(Lookup actionContext) {
-        return new OpenSessionAction(actionContext);
-    }
-
-    @Override
-    public void resultChanged(LookupEvent ev) {
-        ProductSceneView productSceneView = lookup.lookup(ProductSceneView.class);
-    }
 
     @Override
     public void actionPerformed(ActionEvent event) {
