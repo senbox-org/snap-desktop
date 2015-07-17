@@ -33,7 +33,7 @@ import java.beans.PropertyChangeListener;
  *
  * @author thomas
  */
-@OptionsPanelController.SubRegistration(location = "Advanced",
+@OptionsPanelController.SubRegistration(location = "GeneralPreferences",
         displayName = "#Options_DisplayName_WriteOptions",
         keywords = "#Options_Keywords_WriteOptions",
         keywordsCategory = "Write Options",

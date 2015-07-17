@@ -40,7 +40,7 @@ import java.awt.Insets;
  *
  * @author thomas
  */
-@OptionsPanelController.SubRegistration(location = "LayerPreferences",
+@OptionsPanelController.SubRegistration(location = "GeneralPreferences",
         displayName = "#Options_DisplayName_LayerMask",
         keywords = "#Options_Keywords_LayerMask",
         keywordsCategory = "Layer",

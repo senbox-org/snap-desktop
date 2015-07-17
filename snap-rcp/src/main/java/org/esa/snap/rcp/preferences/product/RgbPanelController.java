@@ -41,7 +41,8 @@ import javax.swing.JPanel;
         displayName = "#Options_DisplayName_RGB",
         keywords = "#Options_Keywords_RGB",
         keywordsCategory = "RGB",
-        id = "rgb-image-profiles")
+        id = "rgb-image-profiles"
+        )
 public final class RgbPanelController extends DefaultConfigController {
 
     @Override

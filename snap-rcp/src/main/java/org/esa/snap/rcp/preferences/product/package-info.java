@@ -4,15 +4,16 @@
  * @author thomas
  */
 @OptionsPanelController.ContainerRegistration(
-        id = "ProductPreferences",
-        categoryName = "#OptionsCategory_Name_Product",
-        iconBase = "org/esa/snap/rcp/icons/Product32.png",
-        keywords = "#OptionsCategory_Keywords_Product",
-        keywordsCategory = "#OptionsCategory_Keywords_Category_Product")
+        id = "GeneralPreferences",
+        categoryName = "#OptionsCategory_Name_General",
+        iconBase = "org/esa/snap/rcp/icons/generalOptions1.png",
+        keywords = "#OptionsCategory_Keywords_General",
+        keywordsCategory = "#OptionsCategory_Keywords_Category_General",
+        position = 7)
 @org.openide.util.NbBundle.Messages({
-        "OptionsCategory_Name_Product=Product Profiles",
-        "OptionsCategory_Keywords_Product=product",
-        "OptionsCategory_Keywords_Category_Product=product"
+        "OptionsCategory_Name_General=General",
+        "OptionsCategory_Keywords_General=general",
+        "OptionsCategory_Keywords_Category_General=general"
 }) package org.esa.snap.rcp.preferences.product;
 
 import org.netbeans.spi.options.OptionsPanelController;

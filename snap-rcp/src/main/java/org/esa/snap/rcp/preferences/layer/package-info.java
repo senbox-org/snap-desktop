@@ -6,7 +6,7 @@
 @OptionsPanelController.ContainerRegistration(
         id = "LayerPreferences",
         categoryName = "#OptionsCategory_Name_Layer",
-        iconBase = "org/esa/snap/rcp/icons/Layers32.png",
+        iconBase = "org/esa/snap/rcp/icons/Layers_32x32.png",
         keywords = "#OptionsCategory_Keywords_Layers",
         keywordsCategory = "#OptionsCategory_Keywords_Layer_Prefs")
 @org.openide.util.NbBundle.Messages({

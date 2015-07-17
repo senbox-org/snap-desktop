@@ -39,7 +39,7 @@ import static com.bc.ceres.swing.TableLayout.*;
  * @author thomas
  */
 @org.openide.util.NbBundle.Messages({
-        "Options_DisplayName_LayerGeneral=General",
+        "Options_DisplayName_LayerGeneral=Image View",
         "Options_Keywords_LayerGeneral=layer, general"
 })
 @OptionsPanelController.SubRegistration(location = "LayerPreferences",
