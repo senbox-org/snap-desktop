@@ -6,10 +6,11 @@ import org.esa.snap.util.io.SnapFileFilter;
 import java.io.File;
 
 /**
- * Session Manager handling one and only active session file
+ * A session manager is handling the one and only active session file.
+ *
  * @author Muhammad
  */
-class SessionManager  {
+public class SessionManager {
     private static SessionManager instance = new SessionManager();
 
     private File sessionFile;

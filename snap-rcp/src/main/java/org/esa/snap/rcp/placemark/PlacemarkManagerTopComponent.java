@@ -543,15 +543,11 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
 
             // from here on we only handle GCPs and valid Pins
 
-            if (canGetPixelPos) {
-                placemarkDescriptor.updatePixelPos(geoCoding, placemark.getGeoPos(), pixelPos);
-            }
-
             if (!productContainsPixelPos && isPin) {
                 numPinsOutOfBounds++;
             } else {
                 getPlacemarkGroup(targetProduct).add(placemark);
-                placemark.setPixelPos(pixelPos);
+                placemark.setGeoPos(placemark.getGeoPos());
             }
 
             if (!allPlacemarks) {

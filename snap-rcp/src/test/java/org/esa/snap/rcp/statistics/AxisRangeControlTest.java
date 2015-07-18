@@ -45,12 +45,35 @@ public class AxisRangeControlTest {
     @Test
     public void testVerySmallValues() {
         final AxisRangeControl axisRangeControl = new AxisRangeControl("");
+        axisRangeControl.getPanel();
 
         int numDecimalPlaces = 2;
         axisRangeControl.adjustComponents(-5e-9, 5e-9, numDecimalPlaces);
 
         assertEquals(0.0, axisRangeControl.getMin(), 1e-7);
         assertEquals(Math.pow(10, -numDecimalPlaces), axisRangeControl.getMax(), 1e-7);
+    }
+
+    @Test
+    public void testAdjustcomponents_valueChanges() {
+        final AxisRangeControl axisRangeControl = new AxisRangeControl("");
+        axisRangeControl.getPanel();
+
+        int numDecimalPlaces = 2;
+        axisRangeControl.adjustComponents(1.0, 2.0, numDecimalPlaces);
+
+        assertEquals(1.0, axisRangeControl.getMin(), 1e-7);
+        assertEquals(2.0, axisRangeControl.getMax(), 1e-7);
+
+        axisRangeControl.adjustComponents(1.99999999999, 2.5, numDecimalPlaces);
+
+        assertEquals(2.0, axisRangeControl.getMin(), 1e-7);
+        assertEquals(2.5, axisRangeControl.getMax(), 1e-7);
+
+        axisRangeControl.adjustComponents(1.0, 2.0000000000001, numDecimalPlaces);
+
+        assertEquals(1.0, axisRangeControl.getMin(), 1e-7);
+        assertEquals(2.0, axisRangeControl.getMax(), 1e-7);
     }
 
     @Test

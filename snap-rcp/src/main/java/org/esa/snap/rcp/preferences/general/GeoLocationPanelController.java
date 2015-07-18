@@ -48,7 +48,7 @@ import static com.bc.ceres.swing.TableLayout.*;
  *
  * @author thomas
  */
-@OptionsPanelController.SubRegistration(location = "Advanced",
+@OptionsPanelController.SubRegistration(location = "GeneralPreferences",
         displayName = "#Options_DisplayName_GeoLocation",
         keywords = "#Options_Keywords_GeoLocation",
         keywordsCategory = "Geo-Location",

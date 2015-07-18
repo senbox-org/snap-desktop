@@ -14,7 +14,10 @@ import org.esa.snap.framework.gpf.OperatorSpiRegistry;
 import org.esa.snap.framework.ui.AppContext;
 import org.esa.snap.framework.ui.application.ApplicationPage;
 import org.esa.snap.framework.ui.product.ProductSceneView;
+import org.esa.snap.rcp.actions.file.OpenProductAction;
 import org.esa.snap.rcp.actions.file.SaveProductAction;
+import org.esa.snap.rcp.cli.SnapArgs;
+import org.esa.snap.rcp.session.OpenSessionAction;
 import org.esa.snap.rcp.util.ContextGlobalExtenderImpl;
 import org.esa.snap.rcp.util.SelectionSupport;
 import org.esa.snap.rcp.util.internal.DefaultSelectionSupport;
@@ -52,15 +55,18 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 /**
@@ -261,7 +267,7 @@ public class SnapApp {
         return null;
     }
 
-    public String getMainFrameTitle() {
+    private String getMainFrameTitle() {
 
         ProductNode selectedProductNode = getSelectedProductNode();
         Product selectedProduct = null;
@@ -317,6 +323,11 @@ public class SnapApp {
 
     public void onStop() {
         engine.stop();
+        try {
+            getPreferences().flush();
+        } catch (BackingStoreException e) {
+            getLogger().log(Level.SEVERE, e.getMessage(), e);
+        }
     }
 
     public void onShowing() {
@@ -334,6 +345,19 @@ public class SnapApp {
                 event.getProduct().removeProductNodeListener(updater);
             }
         });
+        if (SnapArgs.getDefault().getSessionFile() != null) {
+            File sessionFile = SnapArgs.getDefault().getSessionFile().toFile();
+            if (sessionFile!= null) {
+                new OpenSessionAction().openSession(sessionFile);
+            }
+        }
+        List<Path> fileList = SnapArgs.getDefault().getFileList();
+        if (!fileList.isEmpty()) {
+            OpenProductAction productAction = new OpenProductAction();
+            File[] files = fileList.stream().map(Path::toFile).filter(file -> file != null).toArray(File[]::new);
+            productAction.setFiles(files);
+            productAction.execute();
+        }
     }
 
     public boolean onTryStop() {

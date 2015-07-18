@@ -163,7 +163,6 @@ class UndoablePlacemarkActionFactory {
             placemarkInView.setLabel(oldPlacemark.getLabel());
             placemarkInView.setDescription(oldPlacemark.getDescription());
             placemarkInView.setGeoPos(oldPlacemark.getGeoPos());
-            placemarkInView.setPixelPos(oldPlacemark.getPixelPos());
             placemarkInView.setStyleCss(oldPlacemark.getStyleCss());
         }
 
@@ -173,7 +172,6 @@ class UndoablePlacemarkActionFactory {
             placemarkInView.setLabel(newPlacemark.getLabel());
             placemarkInView.setDescription(newPlacemark.getDescription());
             placemarkInView.setGeoPos(newPlacemark.getGeoPos());
-            placemarkInView.setPixelPos(newPlacemark.getPixelPos());
             placemarkInView.setStyleCss(newPlacemark.getStyleCss());
         }
 

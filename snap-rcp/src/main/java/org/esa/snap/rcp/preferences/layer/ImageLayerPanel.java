@@ -49,6 +49,7 @@ import java.awt.*;
 })
 public final class ImageLayerPanel extends DefaultConfigController {
 
+
     /**
      * Preferences key for the background color
      */
@@ -93,8 +94,8 @@ public final class ImageLayerPanel extends DefaultConfigController {
         tableLayout.setTableFill(TableLayout.Fill.BOTH);
         tableLayout.setColumnWeightX(1, 1.0);
 
-        tableLayout.setCellColspan(2, 0, 2);
-        tableLayout.setCellColspan(5, 0, 2);
+        tableLayout.setCellColspan(1, 0, 2);
+        tableLayout.setCellColspan(4, 0, 2);
 
         JPanel pageUI = new JPanel(tableLayout);
 
@@ -115,18 +116,33 @@ public final class ImageLayerPanel extends DefaultConfigController {
         JComponent[] pixelBorderSizeComponents = registry.findPropertyEditor(pixelBorderSize.getDescriptor()).createComponents(pixelBorderSize.getDescriptor(), context);
         pixelBorderColorComponents = PreferenceUtils.createColorComponents(pixelBorderColor);
 
+        // row 0
         pageUI.add(backgroundColorComponents[0]);
         pageUI.add(backgroundColorComponents[1]);
+
+        // row 1
         pageUI.add(showImageBorderComponents[0]);
+
+        // row 2
         pageUI.add(imageBorderSizeComponents[1]);
         pageUI.add(imageBorderSizeComponents[0]);
+
+        // row 3
         pageUI.add(imageBorderColorComponents[0]);
         pageUI.add(imageBorderColorComponents[1]);
+
+        // row 4
         pageUI.add(showPixelBorderComponents[0]);
+
+        // row 5
         pageUI.add(pixelBorderSizeComponents[1]);
         pageUI.add(pixelBorderSizeComponents[0]);
+
+        // row 6
         pageUI.add(pixelBorderColorComponents[0]);
         pageUI.add(pixelBorderColorComponents[1]);
+
+        // row 7+
         pageUI.add(tableLayout.createVerticalSpacer());
 
         JPanel parent = new JPanel(new BorderLayout());

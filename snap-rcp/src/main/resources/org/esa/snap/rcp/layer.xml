@@ -5,7 +5,7 @@
     SNAP's main menu entries
     -->
     <folder name="Menu">
-	
+
         <folder name="File">
             <!-- Enable, once we know how to print an image view, etc. -->
             <file name="org-netbeans-modules-print-action-PageSetupAction.shadow_hidden"/>
@@ -29,7 +29,7 @@
                 <folder name="Other"/>
             </folder>
         </folder>
-		
+
         <folder name="Edit">
             <attr name="position" intvalue="200"/>
             <!--A CallbackSystemAction, allows to search for something (e.g. in text files), Only enabled if key is mapped to an implementation -->
@@ -45,7 +45,7 @@
             </file>
 
         </folder>
-		
+
         <folder name="View">
             <attr name="position" intvalue="300"/>
             <file name="org-netbeans-core-actions-LogAction.shadow_hidden"/>
@@ -67,15 +67,15 @@
                 <attr name="position" intvalue="200"/>
             </file>
         </folder>
-		
+
         <folder name="Analysis">
             <attr name="position" intvalue="400"/>
         </folder>
-		
+
         <folder name="Layer">
             <attr name="position" intvalue="420"/>
         </folder>
-		
+
         <folder name="Vector">
             <attr name="position" intvalue="450"/>
             <folder name="Import">
@@ -84,8 +84,8 @@
             <folder name="Export">
                 <attr name="position" intvalue="300"/>
             </folder>
-        </folder>		
-		
+        </folder>
+
         <folder name="Raster">
             <attr name="position" intvalue="470"/>
             <folder name="Geometric Operations">
@@ -98,7 +98,7 @@
                 <attr name="position" intvalue="500"/>
             </folder>
         </folder>
-		
+
         <folder name="Optical">
             <attr name="position" intvalue="500"/>
             <folder name="Geometric">
@@ -108,13 +108,13 @@
                 <attr name="position" intvalue="300"/>
             </folder>
         </folder>
-		
+
         <folder name="Tools">
             <attr name="position" intvalue="600"/>
             <!-- Allows to manage file templates (e.g. java, xml html, etc.), not applicable for us.-->
             <file name="org-netbeans-modules-templates-actions-TemplatesAction.shadow_hidden"/>
         </folder>
-		
+
         <folder name="Window">
             <attr name="position" intvalue="700"/>
             <!-- Moved on level down in the menu hierarchy-->
@@ -144,12 +144,12 @@
             </file>
 
         </folder>
-		
+
         <folder name="Help">
             <attr name="position" intvalue="9000"/>
-			<file name="org-netbeans-core-actions-AboutAction.shadow_hidden"/>
+            <file name="org-netbeans-core-actions-AboutAction.shadow_hidden"/>
         </folder>
-		
+
         <file name="Spacer.instance">
             <attr name="instanceCreate"
                   methodvalue="javax.swing.Box.createHorizontalGlue"/>
@@ -170,7 +170,7 @@
             <file name="org-netbeans-modules-favorites-SelectInFavorites.shadow_hidden"/>
         </folder>
 
-	</folder>
+    </folder>
 
     <!--
     SNAP's toolbar groups
@@ -345,10 +345,10 @@
             <file name="org-netbeans-core-windows-actions-NewTabGroupAction.instance_hidden"/>
             <file name="org-netbeans-core-windows-actions-CollapseTabGroupAction.instance_hidden"/>
         </folder>
-         <folder name="Help">
+        <folder name="Help">
             <file name="org-netbeans-core-actions-AboutAction.instance_hidden"/>
         </folder>
-   </folder>
+    </folder>
 
     <!--
     Re-configure some of the default options.
@@ -360,17 +360,22 @@
             <file name="org-netbeans-core-ui-options-filetypes-FileAssociationsOptionsPanelController.instance_hidden"/>
         </folder>
         <file name="General.instance_hidden"/>
+        <file name="Advanced.instance_hidden"/>
 
-        <file name="Proxy.instance">
-            <attr methodvalue="org.netbeans.spi.options.OptionsCategory.createCategory" name="instanceCreate"/>
-            <attr name="controller" newvalue="org.netbeans.core.ui.options.general.GeneralOptionsPanelController"/>
-            <!--<attr bundlevalue="org.netbeans.core.ui.options.general.Bundle#CTL_General_Options" name="categoryName"/>-->
-            <attr bundlevalue="org.esa.snap.rcp.Bundle#ProxyOptionsTabName" name="categoryName"/>
-            <attr intvalue="5" name="position"/>
-            <attr name="iconBase" stringvalue="org/netbeans/core/ui/options/general/generalOptions.png"/>
-            <attr bundlevalue="org.esa.snap.rcp.Bundle#ProxyOptionsKW" name="keywords"/>
-            <attr bundlevalue="org.esa.snap.rcp.Bundle#ProxyOptionsKWCategory" name="keywordsCategory"/>
-        </file>
+            <file name="Proxy.instance">
+                <attr methodvalue="org.netbeans.spi.options.OptionsCategory.createCategory" name="instanceCreate"/>
+                <attr name="controller" newvalue="org.netbeans.core.ui.options.general.GeneralOptionsPanelController"/>
+                <!--<attr bundlevalue="org.netbeans.core.ui.options.general.Bundle#CTL_General_Options" name="categoryName"/>-->
+                <attr bundlevalue="org.esa.snap.rcp.Bundle#ProxyOptionsTabName" name="categoryName"/>
+                <attr intvalue="4" name="position"/>
+                <attr name="iconBase" stringvalue="org/esa/snap/rcp/icons/web_32.png"/>
+                <attr bundlevalue="org.esa.snap.rcp.Bundle#ProxyOptionsKW" name="keywords"/>
+                <attr bundlevalue="org.esa.snap.rcp.Bundle#ProxyOptionsKWCategory" name="keywordsCategory"/>
+            </file>
+
+        <!--<file name="Advanced.instance_hidden"/>-->
+
+
     </folder>
 
     <!--

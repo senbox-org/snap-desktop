@@ -104,6 +104,10 @@ public class AxisRangeControl {
         return panel;
     }
 
+    void addValidators() {
+
+    }
+
     public void setTitleSuffix(String suffix) {
         final JLabel label = titledSeparator.getLabelComponent();
         if (suffix == null || suffix.trim().length() == 0) {
@@ -151,7 +155,7 @@ public class AxisRangeControl {
             newMax += Math.pow(10, -numDecimalPlaces);
         }
 
-        if (min >= oldMax) {
+        if (newMin >= oldMax) {
             setMax(newMax);
             setMin(newMin);
         } else {

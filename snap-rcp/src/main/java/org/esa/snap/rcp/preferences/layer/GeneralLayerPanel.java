@@ -39,13 +39,13 @@ import static com.bc.ceres.swing.TableLayout.*;
  * @author thomas
  */
 @org.openide.util.NbBundle.Messages({
-        "Options_DisplayName_LayerGeneral=General",
+        "Options_DisplayName_LayerGeneral=Image View",
         "Options_Keywords_LayerGeneral=layer, general"
 })
-@OptionsPanelController.SubRegistration(location = "LayerPreferences",
+@OptionsPanelController.SubRegistration(location = "GeneralPreferences",
         displayName = "#Options_DisplayName_LayerGeneral",
         keywords = "#Options_Keywords_LayerGeneral",
-        keywordsCategory = "Layer",
+        keywordsCategory = "Image,Layer",
         id = "LayerGeneral")
 public final class GeneralLayerPanel extends DefaultConfigController {
 

@@ -1,7 +1,10 @@
 package org.esa.snap.rcp.imgfilter;
 
 
+import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.imgfilter.model.Filter;
+import org.openide.util.NbBundle;
 
 import javax.swing.JDialog;
 import javax.swing.JTabbedPane;
@@ -17,6 +20,13 @@ import java.util.prefs.Preferences;
  *
  * @author Norman
  */
+@NbBundle.Messages({
+        "LBL_FilterWindow_Title=Image Filter",
+        "LBL_FilterWindow_Kernel=Filter Kernel",
+        "LBL_FilterWindow_Properties=Filter Properties",
+        "TXT_FilterWindow_Hint=<html>Right-clicking into the kernel editor canvas<br>" +
+                "opens a context menu with <b>more options</b>",
+})
 public class FilterWindow implements FilterEditor {
 
     private Window parentWindow;
@@ -24,11 +34,9 @@ public class FilterWindow implements FilterEditor {
     private FilterKernelForm kernelForm;
     private Filter filter;
     private FilterPropertiesForm propertiesForm;
-    private Preferences preferences;
 
     public FilterWindow(Window parentWindow) {
         this.parentWindow = parentWindow;
-        this.preferences = Preferences.userRoot().node("beam").node("filterWindow");
     }
 
     @Override
@@ -52,26 +60,32 @@ public class FilterWindow implements FilterEditor {
         if (dialog == null) {
             kernelForm = new FilterKernelForm(filter);
             propertiesForm = new FilterPropertiesForm(filter);
-            dialog = new JDialog(parentWindow, "Filter", Dialog.ModalityType.MODELESS);
+            dialog = new JDialog(parentWindow, Bundle.LBL_FilterWindow_Title(), Dialog.ModalityType.MODELESS);
             JTabbedPane tabbedPane = new JTabbedPane();
-            tabbedPane.addTab("Filter Kernel", kernelForm);
-            tabbedPane.addTab("Filter Properties", propertiesForm);
+            tabbedPane.addTab(Bundle.LBL_FilterWindow_Kernel(), kernelForm);
+            tabbedPane.addTab(Bundle.LBL_FilterWindow_Properties(), propertiesForm);
             dialog.setContentPane(tabbedPane);
+
+            Preferences filterWindowPrefs = SnapApp.getDefault().getPreferences().node("filterWindow");
             dialog.addWindowListener(new WindowAdapter() {
                 @Override
                 public void windowClosing(WindowEvent e) {
-                    preferences.putInt("x", e.getWindow().getX());
-                    preferences.putInt("y", e.getWindow().getY());
-                    preferences.putInt("width", e.getWindow().getWidth());
-                    preferences.putInt("height", e.getWindow().getHeight());
+                    filterWindowPrefs.putInt("x", e.getWindow().getX());
+                    filterWindowPrefs.putInt("y", e.getWindow().getY());
+                    filterWindowPrefs.putInt("width", e.getWindow().getWidth());
+                    filterWindowPrefs.putInt("height", e.getWindow().getHeight());
                 }
             });
             Dimension preferredSize = dialog.getPreferredSize();
-            int x = preferences.getInt("x", 100);
-            int y = preferences.getInt("y", 100);
-            int w = preferences.getInt("width", preferredSize.width);
-            int h = preferences.getInt("height", preferredSize.height);
+            int x = filterWindowPrefs.getInt("x", 100);
+            int y = filterWindowPrefs.getInt("y", 100);
+            int w = filterWindowPrefs.getInt("width", preferredSize.width);
+            int h = filterWindowPrefs.getInt("height", preferredSize.height);
             dialog.setBounds(x, y, w, h);
+
+            SnapDialogs.showInformation(Bundle.LBL_FilterWindow_Title(),
+                                        Bundle.TXT_FilterWindow_Hint(),
+                                        "filterWindow.moreOptions");
         }
         dialog.setVisible(true);
     }
