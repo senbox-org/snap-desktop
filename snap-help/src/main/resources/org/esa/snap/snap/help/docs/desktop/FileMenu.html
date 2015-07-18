@@ -38,31 +38,11 @@
 <h3>File Menu</h3>
 
 
-<h4><a name="new">New Product&nbsp;&nbsp;<img src="images/icons/New24.gif"></a></h4>
-
-<p>The new-command allows you to create a new product. The command is enabled only if you have
-    already opened or imported a product from which the new product can derive it's geo-coding information.
-    The primary use of this command is to create a <a href="ProductSubsetDialog.html">spectral or spatial subset</a> of
-    another, open product.</p>
-
-<h4><a name="newTS">New Time Series&nbsp;&nbsp;<img src="images/icons/New24.gif"></a></h4>
-
-<p>The command allows the creation of a time-series product. Multiple source products can build up a time-series. All source must share a common
-    coordinate reference system (CRS). If this is not the case the products are reprojected on th fly.</p>
-
-
 <h4><a name="open">Open Product (Control-O)&nbsp;&nbsp;<img src="images/icons/Open24.gif"></a></h4>
 
 <p>Opens one or multiple data products stored on the hard disk in the Sentinel Toolbox.
     You can select more than one product, e.g. by pressing the <b>CTRL</b> and select the desired products with the mouse.</p>
 
-<h4><a name="openSession">Open Session (Control-Shift-O)</a></h4>
-
-<p>Opens a SNAP <a href="Session.html">Session</a> file stored on the hard disk in the Sentinel Toolbox. A session is termed the
-    collection of all products and image views open in the Sentinel Toolbox, including any layers added to a view. When a session
-    file is opened, a previously saved session (see <a href="#saveSession">Save Session</a>) is restored.
-    Note that all open products will be closed before a session file is opened.
-</p>
 
 <h4>Reopen&nbsp;&nbsp;<img src="images/icons/History24.gif"></h4>
 
@@ -71,7 +51,7 @@
 
 <h4>OPeNDAP Access&nbsp;&nbsp;<img src="images/icons/RsProduct24.gif"></h4>
 
-<p>An <a href="../opendapclient/Overview.html">OPeNDAP client</a> for accessing a OPeNDAP server is shown a new dialogue. The provided
+<p>An <a href="nbdocs://org.esa.snap.snap.opendap.ui/org/esa/snap/opendap/docs/opendapclient/Overview.html">OPeNDAP client</a> for accessing a OPeNDAP server is shown a new dialogue. The provided
     data products of the server can be downloaded to the hard disk and opened in the Sentinel Toolbox.</p>
 
 <h4>Product Grabber&nbsp;&nbsp;<img src="images/icons/RsProduct24.gif"></h4>
@@ -84,6 +64,24 @@
 
 <p>Closes the currently selected product. This commands is also available in the
     context menu when you right-click over the open product list.</p>
+
+<h4><a name="openSession">Open Session (Control-Shift-O)</a></h4>
+
+<p>Opens a SNAP <a href="Session.html">Session</a> file stored on the hard disk in the Sentinel Toolbox. A session is termed the
+    collection of all products and image views open in the Sentinel Toolbox, including any layers added to a view. When a session
+    file is opened, a previously saved session (see <a href="#saveSession">Save Session</a>) is restored.
+    Note that all open products will be closed before a session file is opened.
+</p>
+
+<h4><a name="saveSession">Save Session (Control-Shift-S)</a></h4>
+
+<p>Saves the current <a href="Session.html">Session</a> to the associated SNAP session file. If the current session is
+    not associated with a SNAP session file, you are asked to specify a storage location for the session file.</p>
+
+<h4>Save Session As</h4>
+
+<p>Saves the current session to a new SNAP session file. You are asked to specify a storage location for the new
+    session file.</p>
 
 <h4><a name="closeSession">Close Session (Control-Shift-W)</a></h4>
 
@@ -105,17 +103,6 @@
 
 <p>Saves the currently selected product to a different location. You are asked to specify a new storage location
     for the selected product.</p>
-
-<h4><a name="saveSession">Save Session (Control-Shift-S)</a></h4>
-
-<p>Saves the current <a href="Session.html">Session</a> to the associated SNAP session file. If the current session is
-    not associated with a SNAP session file, you are asked to specify a storage location for the session file.</p>
-
-<h4>Save Session As</h4>
-
-<p>Saves the current session to a new SNAP session file. You are asked to specify a storage location for the new
-    session file.</p>
-
 
 <h4>Import Raster Data</h4>
 

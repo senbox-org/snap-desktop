@@ -96,7 +96,7 @@
         <tocitem text="File Menu" target="fileMenu"/>
         <tocitem text="Edit Menu" target="editMenu"/>
         <tocitem text="View Menu" target="viewMenu"/>
-        <tocitem text="Analysis" target="analysisMenu">
+        <tocitem text="Analysis Menu" target="analysisMenu">
             <tocitem text="Band Scatter Plot" target="densityPlotDialog"/>
             <tocitem text="Product/Band Geo-Coding Information" target="geoCodingInfoDialog"/>
             <tocitem text="Band Histogram" target="histogramDialog"/>
@@ -105,12 +105,12 @@
             <tocitem text="Correlative Plot" target="correlativePlotDialog"/>
             <tocitem text="Band Statistics" target="statisticsDialog"/>
         </tocitem>
-        <tocitem text="Layer">
+        <tocitem text="Layer Menu">
             <tocitem text="The Layer menu" target="layerMenu"/>
             <tocitem text="No-Data Overlay" target="noDataOverlay"/>
             <tocitem text="Layer Manager" target="showLayerManagerWnd"/>
         </tocitem>
-        <tocitem text="Vector">
+        <tocitem text="Vector Menu">
             <tocitem text="Vector Data Management" target="vectorDataManagement"/>
             <tocitem text="Geometry from/to WKT" target="geometryWKT"/>
             <tocitem text="Import">
@@ -119,11 +119,11 @@
                 <tocitem text="MERMAID Extraction File" target="importMermaid"/>
                 <tocitem text="SeaDAS 6.x Track" target="importSeaDASTrack"/>
             </tocitem>
-            <tocitem text="Export">
+            <tocitem text="Export Menu">
                 <tocitem text="Geometry as Shapefile" target="exportShapefile"/>
             </tocitem>
         </tocitem>
-        <tocitem text="Raster">
+        <tocitem text="Raster Menu">
             <tocitem text="Band Maths" target="bandArithmetic"/>
             <tocitem text="Band Maths Expression Editor" target="expressionEditor"/>
             <tocitem text="Filtered Band" target="createFilteredBand"/>
@@ -151,7 +151,7 @@
                 <tocitem text="Transect Pixels" target="exportTransectPixels"/>
             </tocitem>
         </tocitem>
-        <tocitem text="Optical">
+        <tocitem text="Optical Menu">
             <tocitem text="Product Spectrum" target="showSpectrumWnd"/>
             <tocitem text="Geometric">
                 <tocitem text="Orthorectification" target="orthorectificationAction">
@@ -161,10 +161,8 @@
                 </tocitem>
             </tocitem>
         </tocitem>
-        <tocitem text="Tools">
+        <tocitem text="Tools Menu">
             <tocitem text="Attach Pixel-based Geo-Coding" target="pixelGeoCodingSetup"/>
-            <tocitem text="Module Manager" target="moduleManager"/>
-            <tocitem text="Preferences Dialog" target="preferences"/>
         </tocitem>
         <tocitem text="Window Menu" target="windowMenu"/>
         <tocitem text="Help Menu" target="helpMenu"/>
