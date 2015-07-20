@@ -60,8 +60,6 @@ public class PixelPosStatusLineElementProvider
     private final JLabel pixelPosLabel;
     private final JPanel panel;
 
-    private double pixelOffsetY;
-    private double pixelOffsetX;
     private boolean showPixelOffsetDecimals;
 
     public PixelPosStatusLineElementProvider() {
@@ -112,25 +110,13 @@ public class PixelPosStatusLineElementProvider
             AffineTransform m2iTransform = imageLayer.getModelToImageTransform();
             Point2D imageP = m2iTransform.transform(modelP, null);
 
-
-            LayerCanvas layerCanvas = (LayerCanvas) e.getSource();
-            double zoomFactor = layerCanvas.getViewport().getZoomFactor();
-            String scaleStr;
-            if (zoomFactor > 1.0) {
-                double v = Math.round(10.0 * zoomFactor) / 10.0;
-                scaleStr = ((int) v == v ? (int) v : v) + ":1";
-            } else {
-                double v = Math.round(10.0 / zoomFactor) / 10.0;
-                scaleStr = "1:" + ((int) v == v ? (int) v : v);
-            }
-
-
             PixelPos pixelPos = new PixelPos(imageP.getX(), imageP.getY());
             ProductSceneView productSceneView = SnapApp.getDefault().getSelectedProductSceneView();
             if (productSceneView == null) {
                 setDefault();
                 return;
             }
+
             RasterDataNode rasterDataNode = productSceneView.getRaster();
             if (rasterDataNode == null) {
                 setDefault();
@@ -142,16 +128,29 @@ public class PixelPosStatusLineElementProvider
                 return;
             }
             GeoPos geoPos = geoCoding.getGeoPos(pixelPos, null);
-
             if (showPixelOffsetDecimals) {
                 geoPosLabel.setText(String.format("Lat %.5f  Lon %.5f", geoPos.getLat(), geoPos.getLon()));
-                pixelPosLabel.setText(String.format(PIXEL_POS_FORMAT, imageP.getX(), imageP.getY()));
-                zoomLevelLabel.setText(String.format(ZOOM_LEVEL_FORMAT, scaleStr, currentLevel));
             } else {
                 geoPosLabel.setText(String.format(GEO_POS_FORMAT, geoPos.getLatString(), geoPos.getLonString()));
-                pixelPosLabel.setText(String.format(PIXEL_POS_FORMAT, (int) Math.floor(imageP.getX()), (int) Math.floor(imageP.getY())));
-                zoomLevelLabel.setText(String.format(ZOOM_LEVEL_FORMAT, scaleStr, currentLevel));
             }
+
+            if (showPixelOffsetDecimals) {
+                pixelPosLabel.setText(String.format(PIXEL_POS_FORMAT, imageP.getX(), imageP.getY()));
+            } else {
+                pixelPosLabel.setText(String.format(PIXEL_POS_FORMAT, (int) Math.floor(imageP.getX()), (int) Math.floor(imageP.getY())));
+            }
+
+            LayerCanvas layerCanvas = (LayerCanvas) e.getSource();
+            double zoomFactor = layerCanvas.getViewport().getZoomFactor();
+            String scaleStr;
+            if (zoomFactor > 1.0) {
+                double v = Math.round(10.0 * zoomFactor) / 10.0;
+                scaleStr = ((int) v == v ? (int) v : v) + ":1";
+            } else {
+                double v = Math.round(10.0 / zoomFactor) / 10.0;
+                scaleStr = "1:" + ((int) v == v ? (int) v : v);
+            }
+            zoomLevelLabel.setText(String.format(ZOOM_LEVEL_FORMAT, scaleStr, currentLevel));
 
         } else {
             setDefault();
@@ -212,11 +211,11 @@ public class PixelPosStatusLineElementProvider
 
     private void updateSettings() {
         final Preferences preferences = SnapApp.getDefault().getPreferences();
-        pixelOffsetY = preferences.getDouble(PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_Y,
-                                             PROPERTY_DEFAULT_PIXEL_OFFSET_FOR_DISPLAY_X);
+        double pixelOffsetY = preferences.getDouble(PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_Y,
+                                                    PROPERTY_DEFAULT_PIXEL_OFFSET_FOR_DISPLAY_X);
 
-        pixelOffsetX = preferences.getDouble(PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_X,
-                                             PROPERTY_DEFAULT_PIXEL_OFFSET_FOR_DISPLAY_Y);
+        double pixelOffsetX = preferences.getDouble(PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_X,
+                                                    PROPERTY_DEFAULT_PIXEL_OFFSET_FOR_DISPLAY_Y);
         showPixelOffsetDecimals = preferences.getBoolean(
                 PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_SHOW_DECIMALS,
                 PROPERTY_DEFAULT_PIXEL_OFFSET_FOR_DISPLAY_SHOW_DECIMALS);
