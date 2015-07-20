@@ -157,12 +157,10 @@ public class PixelInfoView extends JPanel {
     }
 
     private PropertyChangeListener createDisplayFilterListener() {
-        return new PropertyChangeListener() {
-            public void propertyChange(PropertyChangeEvent evt) {
-                if (getCurrentProduct() != null) {
-                    updateService.requestUpdate();
-                    clearSelectionInRasterTables();
-                }
+        return evt -> {
+            if (getCurrentProduct() != null) {
+                updateService.requestUpdate();
+                clearSelectionInRasterTables();
             }
         };
     }
@@ -258,7 +256,7 @@ public class PixelInfoView extends JPanel {
     }
 
     public boolean isAnyCollapsiblePaneVisible() {
-        for(int i = 0; i < 5; i++) {
+        for (int i = 0; i < 5; i++) {
             if (isCollapsiblePaneVisible(i)) {
                 return true;
             }
@@ -281,6 +279,14 @@ public class PixelInfoView extends JPanel {
     }
 
     private void createUI() {
+        DefaultTableCellRenderer pixelValueRenderer = new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                Component component = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                setHorizontalAlignment(RIGHT);
+                return component;
+            }
+        };
         setLayout(new BorderLayout());
         CollapsibleItemsPanel.Item<JTable> positionItem = CollapsibleItemsPanel.createTableItem("Position", 6, 3);
         positionItem.getComponent().setModel(positionTableModel);
@@ -288,8 +294,10 @@ public class PixelInfoView extends JPanel {
         timeItem.getComponent().setModel(timeTableModel);
         CollapsibleItemsPanel.Item<JTable> tiePointGridsItem = CollapsibleItemsPanel.createTableItem("Tie Point Grids", 0, 3);
         tiePointGridsItem.getComponent().setModel(tiePointGridsTableModel);
+        tiePointGridsItem.getComponent().setDefaultRenderer(String.class, pixelValueRenderer);
         CollapsibleItemsPanel.Item<JTable> bandsItem = CollapsibleItemsPanel.createTableItem("Bands", 18, 3);
         bandsItem.getComponent().setModel(bandsTableModel);
+        bandsItem.getComponent().setDefaultRenderer(String.class, pixelValueRenderer);
         CollapsibleItemsPanel.Item<JTable> flagsItem = CollapsibleItemsPanel.createTableItem("Flags", 0, 2);
         flagsItem.getComponent().setModel(flagsTableModel);
         flagsItem.getComponent().setDefaultRenderer(String.class, new FlagCellRenderer());
@@ -297,9 +305,10 @@ public class PixelInfoView extends JPanel {
         collapsibleItemsPanel = new CollapsibleItemsPanel(
                 positionItem,
                 timeItem,
-                tiePointGridsItem,
                 bandsItem,
-                flagsItem);
+                flagsItem,
+                tiePointGridsItem
+        );
         collapsibleItemsPanel.setCollapsed(FLAGS_INDEX, true);
         JScrollPane scrollPane = new JScrollPane(collapsibleItemsPanel,
                                                  ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
@@ -413,7 +422,7 @@ public class PixelInfoView extends JPanel {
 
     public static class DisplayFilter {
 
-        private final Vector<PropertyChangeListener> propertyChangeListeners = new Vector<PropertyChangeListener>();
+        private final Vector<PropertyChangeListener> propertyChangeListeners = new Vector<>();
         private boolean showOnlyLoadedOrDisplayedBands;
 
         public void addPropertyChangeListener(PropertyChangeListener displayFilterListener) {
