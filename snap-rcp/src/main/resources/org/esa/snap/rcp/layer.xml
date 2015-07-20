@@ -368,7 +368,7 @@
                 <!--<attr bundlevalue="org.netbeans.core.ui.options.general.Bundle#CTL_General_Options" name="categoryName"/>-->
                 <attr bundlevalue="org.esa.snap.rcp.Bundle#ProxyOptionsTabName" name="categoryName"/>
                 <attr intvalue="4" name="position"/>
-                <attr name="iconBase" stringvalue="org/esa/snap/rcp/icons/web_32.png"/>
+                <attr name="iconBase" stringvalue="org/esa/snap/rcp/icons/www_32x32.png"/>
                 <attr bundlevalue="org.esa.snap.rcp.Bundle#ProxyOptionsKW" name="keywords"/>
                 <attr bundlevalue="org.esa.snap.rcp.Bundle#ProxyOptionsKWCategory" name="keywordsCategory"/>
             </file>
