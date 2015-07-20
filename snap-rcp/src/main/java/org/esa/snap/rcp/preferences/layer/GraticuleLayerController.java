@@ -52,7 +52,7 @@ import static org.esa.snap.rcp.preferences.PreferenceUtils.*;
         "Options_DisplayName_LayerGraticule=Graticule Layer",
         "Options_Keywords_LayerGraticule=layer, graticule"
 })
-public final class GraticuleLayerPanel extends DefaultConfigController {
+public final class GraticuleLayerController extends DefaultConfigController {
 
     private JComponent[] textFgColorComponents;
     private JComponent[] textBgColorComponents;

@@ -56,7 +56,7 @@ import java.util.List;
         "Options_DisplayName_LayerWorldMap=World Map Layer",
         "Options_Keywords_LayerWorldMap=layer, worldmap"
 })
-public final class WorldMapLayerPanel extends DefaultConfigController {
+public final class WorldMapLayerController extends DefaultConfigController {
 
     /**
      * Preferences key for the world map type

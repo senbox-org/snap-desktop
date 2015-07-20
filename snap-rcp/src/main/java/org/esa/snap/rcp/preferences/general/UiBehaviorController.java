@@ -43,12 +43,13 @@ import java.awt.Insets;
         displayName = "#AdvancedOption_DisplayName_UiBehavior",
         keywords = "#AdvancedOption_Keywords_UiBehavior",
         keywordsCategory = "Advanced, UiBehavior",
-        id = "UiBehavior")
+        id = "UiBehavior",
+        position = 1)
 @org.openide.util.NbBundle.Messages({
         "AdvancedOption_DisplayName_UiBehavior=UI Behavior",
         "AdvancedOption_Keywords_UiBehavior=UI, behavior"
 })
-public final class UiBehaviorPanelController extends DefaultConfigController {
+public final class UiBehaviorController extends DefaultConfigController {
 
     /**
      * Preferences key for automatically showing navigation

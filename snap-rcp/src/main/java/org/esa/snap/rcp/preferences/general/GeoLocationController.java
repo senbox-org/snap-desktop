@@ -52,12 +52,13 @@ import static com.bc.ceres.swing.TableLayout.*;
         displayName = "#Options_DisplayName_GeoLocation",
         keywords = "#Options_Keywords_GeoLocation",
         keywordsCategory = "Geo-Location",
-        id = "GeoLocation")
+        id = "GeoLocation",
+        position = 2)
 @org.openide.util.NbBundle.Messages({
         "Options_DisplayName_GeoLocation=Geo-Location",
         "Options_Keywords_GeoLocation=geo, location, geo-location, compatibility, differ"
 })
-public final class GeoLocationPanelController extends DefaultConfigController {
+public final class GeoLocationController extends DefaultConfigController {
 
     /**
      * Preferences key for pixel offset-X for display pixel positions

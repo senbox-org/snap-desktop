@@ -14,7 +14,7 @@
  * with this program; if not, see http://www.gnu.org/licenses/
  */
 
-package org.esa.snap.rcp.preferences.layer;
+package org.esa.snap.rcp.preferences.general;
 
 import com.bc.ceres.binding.Property;
 import com.bc.ceres.binding.PropertySet;
@@ -44,12 +44,13 @@ import java.awt.Insets;
         displayName = "#Options_DisplayName_LayerMask",
         keywords = "#Options_Keywords_LayerMask",
         keywordsCategory = "Layer",
-        id = "LayerMask")
+        id = "LayerMask",
+position = 6)
 @org.openide.util.NbBundle.Messages({
         "Options_DisplayName_LayerMask=New Masks",
         "Options_Keywords_LayerMask=layer, mask"
 })
-public final class MaskLayerPanel extends DefaultConfigController {
+public final class MaskLayerController extends DefaultConfigController {
 
     /**
      * Preferences key for the mask overlay color
