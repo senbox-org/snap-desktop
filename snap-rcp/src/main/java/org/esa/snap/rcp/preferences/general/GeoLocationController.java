@@ -258,8 +258,8 @@ public final class GeoLocationController extends DefaultConfigController {
         @Preference(label = "Show floating-point image coordinates", key = PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_SHOW_DECIMALS)
         boolean paramShowDecimals = PROPERTY_DEFAULT_PIXEL_OFFSET_FOR_DISPLAY_SHOW_DECIMALS;
 
-        @Preference(label = "Pixel coordinate starting at (1,1)", key = PROPERTY_KEY_PIXEL_COORINATE_STARTING,
-                description = "Uses a pixel coordinate where the upper left plug pixel has coordinate (1,1) instead of (0,0)")
+        @Preference(label = "Display pixel coordinate starting at (1,1)", key = PROPERTY_KEY_PIXEL_COORINATE_STARTING,
+                description = "Pixel coordinate with the upper left plug pixel of (1,1) coordinate, instead of (0,0).")
         boolean pixelCoordinateStart = PROPERTY_DEFAULT_KEY_PIXEL_COORINATE_STARTING;
 
         @Preference(label = "Show geo-location coordinates in decimal degrees", key = PROPERTY_KEY_DISPLAY_GEOLOCATION_AS_DECIMAL)
