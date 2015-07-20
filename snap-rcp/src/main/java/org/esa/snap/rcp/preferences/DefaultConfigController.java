@@ -102,6 +102,8 @@ public abstract class DefaultConfigController extends OptionsPanelController {
             String key = annotation.key();
             String[] valueSet = annotation.valueSet();
             String valueRange = annotation.interval();
+            String description = annotation.description();
+
             Validator validator = createValidator(annotation.validatorClass());
             Assert.state(StringUtils.isNotNullAndNotEmpty(label),
                          "Label of field '" + field.getName() + "' must not be null or empty.");
@@ -115,6 +117,8 @@ public abstract class DefaultConfigController extends OptionsPanelController {
             valueDescriptor.setAttribute("displayName", label);
             valueDescriptor.setAttribute("configName", annotation.config());
             valueDescriptor.setAttribute("propertyValidator", validator);
+            valueDescriptor.setDescription(description);
+
 
             if (valueSet.length > 0) {
                 valueDescriptor.setValueSet(new ValueSet(valueSet));
