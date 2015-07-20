@@ -30,9 +30,11 @@ import org.openide.util.HelpCtx;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
@@ -68,6 +70,11 @@ public final class GeoLocationController extends DefaultConfigController {
      * Preferences key for pixel offset-Y for display pixel positions
      */
     public static final String PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_Y = "pixel.offset.display.y";
+
+    /**
+     * Preference key for coorddinate starting with (1,1)
+     */
+    public static final String PROPERTY_KEY_PIXEL_COORINATE_STARTING = "pixel.coordinate.start.XY";
     /**
      * Preferences key for showing floating-point image coordinates
      */
@@ -95,6 +102,11 @@ public final class GeoLocationController extends DefaultConfigController {
      */
     public static final boolean PROPERTY_DEFAULT_DISPLAY_GEOLOCATION_AS_DECIMAL = false;
 
+    /**
+     * Default value for steeing the starting point for pixel coordinate
+     */
+    public static final boolean PROPERTY_DEFAULT_KEY_PIXEL_COORINATE_STARTING = true;
+
     protected PropertySet createPropertySet() {
         return createPropertySet(new GeoLocationBean());
     }
@@ -111,45 +123,63 @@ public final class GeoLocationController extends DefaultConfigController {
         visualizer.setOpaque(true);
         visualizer.setBorder(BorderFactory.createLoweredBevelBorder());
 
-        final TableLayout tableLayout = new TableLayout(3);
-        tableLayout.setTableAnchor(TableLayout.Anchor.WEST);
-        tableLayout.setTablePadding(4, 4);
-        tableLayout.setTableFill(TableLayout.Fill.HORIZONTAL);
-
         final PropertyEditorRegistry registry = PropertyEditorRegistry.getInstance();
         Property paramOffsetX = context.getPropertySet().getProperty(PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_X);
         Property paramOffsetY = context.getPropertySet().getProperty(PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_Y);
         Property paramShowDecimals = context.getPropertySet().getProperty(PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_SHOW_DECIMALS);
+        Property paramPixelCoordinateStarting = context.getPropertySet().getProperty(PROPERTY_KEY_PIXEL_COORINATE_STARTING);
         Property paramGeolocationAsDecimal = context.getPropertySet().getProperty(PROPERTY_KEY_DISPLAY_GEOLOCATION_AS_DECIMAL);
         PropertyChangeListener listener = evt -> visualizer.repaint();
+        paramPixelCoordinateStarting.addPropertyChangeListener(listener);
+
         paramOffsetX.addPropertyChangeListener(listener);
         paramOffsetY.addPropertyChangeListener(listener);
 
         JComponent[] xComponents = registry.findPropertyEditor(paramOffsetX.getDescriptor()).createComponents(paramOffsetX.getDescriptor(), context);
         JComponent[] yComponents = registry.findPropertyEditor(paramOffsetY.getDescriptor()).createComponents(paramOffsetY.getDescriptor(), context);
         JComponent[] showDecimalComponents = registry.findPropertyEditor(paramShowDecimals.getDescriptor()).createComponents(paramShowDecimals.getDescriptor(), context);
+
+        JComponent[] pixelCoordinateStart = registry.findPropertyEditor(paramShowDecimals.getDescriptor()).createComponents(paramPixelCoordinateStarting.getDescriptor(), context);
+
         JComponent[] geolocationAsDecimalComponents = registry.findPropertyEditor(paramGeolocationAsDecimal.getDescriptor()).createComponents(paramGeolocationAsDecimal.getDescriptor(), context);
+
+        TableLayout tableLayout = new TableLayout(1);
+        tableLayout.setTableAnchor(Anchor.NORTHWEST);
+        tableLayout.setTablePadding(4, 10);
+        tableLayout.setTableFill(Fill.BOTH);
+        tableLayout.setTableWeightX(1.0);
+        tableLayout.setRowWeightY(4, 1.0);
 
         final JPanel pageUI = new JPanel(tableLayout);
 
-        pageUI.add(xComponents[1]);
-        tableLayout.setCellWeightX(0, 1, 1.0);
-        pageUI.add(xComponents[0]);
+        tableLayout.setRowPadding(0, new Insets(10, 80, 10, 4));
+        pageUI.add(pixelCoordinateStart[0]);
+        pageUI.add(showDecimalComponents[0]);
+        pageUI.add(geolocationAsDecimalComponents[0]);
+        pageUI.add(tableLayout.createVerticalSpacer());
 
-        tableLayout.setCellRowspan(0, 2, 2);
-        tableLayout.setCellWeightX(0, 2, 1.0);
-        tableLayout.setCellAnchor(0, 2, TableLayout.Anchor.CENTER);
-        tableLayout.setCellFill(0, 2, TableLayout.Fill.NONE);
-        pageUI.add(visualizer);
+//        pageUI.add(xComponents[1]);
+//        tableLayout.setCellWeightX(0, 1, 1.0);
+//        pageUI.add(xComponents[0]);
 
-        pageUI.add(yComponents[1]);
-        tableLayout.setCellWeightX(1, 1, 1.0);
-        pageUI.add(yComponents[0]);
+//        tableLayout.setCellRowspan(0, 1, 2);
+//        tableLayout.setCellColspan(0, 1, 2);
+//        tableLayout.setCellWeightX(0, 1, 1.0);
+//        tableLayout.setCellAnchor(0, 1, TableLayout.Anchor.CENTER);
+//        tableLayout.setCellFill(0, 1, TableLayout.Fill.NONE);
+//        pageUI.add(visualizer);
 
-        tableLayout.setRowPadding(1, new Insets(10, 0, 4, 4));
-        pageUI.add(showDecimalComponents[0], cell(3, 0, 1, 3));
-        tableLayout.setRowPadding(2, new Insets(10, 0, 4, 4));
-        pageUI.add(geolocationAsDecimalComponents[0], cell(4, 0, 1, 3));
+//        pageUI.add(yComponents[1]);
+//        tableLayout.setCellWeightX(1, 1, 1.0);
+//        pageUI.add(yComponents[0]);
+//        tableLayout.setCellWeightX(0, 0, 1.0);
+
+//        tableLayout.setRowPadding(1, new Insets(10, 0, 4, 4));
+//        pageUI.add(showDecimalComponents[0], cell(2, 0, 1, 3));
+//        tableLayout.setRowPadding(2, new Insets(10, 0, 4, 4));
+//        pageUI.add(geolocationAsDecimalComponents[0], cell(3, 0, 1, 3));
+
+
 
         return createPageUIContentPane(pageUI);
     }
@@ -184,9 +214,10 @@ public final class GeoLocationController extends DefaultConfigController {
                 g2d.drawRect(pixel.x, pixel.y, pixel.width, pixel.height);
                 Property paramOffsetX = context.getPropertySet().getProperty(PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_X);
                 Property paramOffsetY = context.getPropertySet().getProperty(PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_Y);
-                float offsetX = paramOffsetX.getValue();
 
+                float offsetX = paramOffsetX.getValue();
                 float offsetY = paramOffsetY.getValue();
+
                 int posX = Math.round(pixelSize * offsetX + pixel.x);
                 int posY = Math.round(pixelSize * offsetY + pixel.y);
                 drawPos(g2d, posX, posY);
@@ -226,6 +257,10 @@ public final class GeoLocationController extends DefaultConfigController {
 
         @Preference(label = "Show floating-point image coordinates", key = PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_SHOW_DECIMALS)
         boolean paramShowDecimals = PROPERTY_DEFAULT_PIXEL_OFFSET_FOR_DISPLAY_SHOW_DECIMALS;
+
+        @Preference(label = "Pixel coordinate starting at (1,1)", key = PROPERTY_KEY_PIXEL_COORINATE_STARTING,
+                description = "Uses a pixel coordinate where the upper left plug pixel has coordinate (1,1) instead of (0,0)")
+        boolean pixelCoordinateStart = PROPERTY_DEFAULT_KEY_PIXEL_COORINATE_STARTING;
 
         @Preference(label = "Show geo-location coordinates in decimal degrees", key = PROPERTY_KEY_DISPLAY_GEOLOCATION_AS_DECIMAL)
         boolean paramGeolocationAsDecimal = PROPERTY_DEFAULT_DISPLAY_GEOLOCATION_AS_DECIMAL;
