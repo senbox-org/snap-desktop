@@ -44,11 +44,13 @@ public class PixelPosStatusLineElementProvider
 
     public final static String PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_X = "pixel.offset.display.x";
     public final static String PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_Y = "pixel.offset.display.y";
-    public final static String PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_SHOW_DECIMALS = "geolocation.display.decimal";
+    public final static String PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_SHOW_DECIMALS = "pixel.offset.display.show.decimals";
+    public final static String PROPERTY_KEY_GEOLOCATION_OFFSET_FOR_DISPLAY_SHOW_DECIMALS = "geolocation.display.decimal";
 
     public final static double PROPERTY_DEFAULT_PIXEL_OFFSET_FOR_DISPLAY_X = 0;
     public final static double PROPERTY_DEFAULT_PIXEL_OFFSET_FOR_DISPLAY_Y = 0;
     public final static boolean PROPERTY_DEFAULT_PIXEL_OFFSET_FOR_DISPLAY_SHOW_DECIMALS = false;
+    public final static boolean PROPERTY_DEFAULT_DISPLAY_GEOLOCATION_AS_DECIMAL = false;
 
     private static final String GEO_POS_FORMAT = "Lat %8s  Lon %8s";
     private static final String PIXEL_POS_FORMAT = "X %6s  Y %6s";
@@ -61,6 +63,7 @@ public class PixelPosStatusLineElementProvider
     private final JPanel panel;
 
     private boolean showPixelOffsetDecimals;
+    private boolean showGeoPosOffsetDecimals;
 
     public PixelPosStatusLineElementProvider() {
         DocumentWindowManager.getDefault().addListener(this);
@@ -128,7 +131,7 @@ public class PixelPosStatusLineElementProvider
                 return;
             }
             GeoPos geoPos = geoCoding.getGeoPos(pixelPos, null);
-            if (showPixelOffsetDecimals) {
+            if (showGeoPosOffsetDecimals) {
                 geoPosLabel.setText(String.format("Lat %.5f  Lon %.5f", geoPos.getLat(), geoPos.getLon()));
             } else {
                 geoPosLabel.setText(String.format(GEO_POS_FORMAT, geoPos.getLatString(), geoPos.getLonString()));
@@ -177,7 +180,8 @@ public class PixelPosStatusLineElementProvider
         final String propertyName = evt.getKey();
         if (PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_X.equals(propertyName)
                 || PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_Y.equals(propertyName)
-                || PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_SHOW_DECIMALS.equals(propertyName)) {
+                || PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_SHOW_DECIMALS.equals(propertyName)
+                || PROPERTY_KEY_GEOLOCATION_OFFSET_FOR_DISPLAY_SHOW_DECIMALS.equals(propertyName)) {
             updateSettings();
         }
     }
@@ -211,6 +215,8 @@ public class PixelPosStatusLineElementProvider
 
     private void updateSettings() {
         final Preferences preferences = SnapApp.getDefault().getPreferences();
+        //Todo @Muhammad bc
+        // Will be implement for calculate the pixels in the setting.
         double pixelOffsetY = preferences.getDouble(PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_Y,
                                                     PROPERTY_DEFAULT_PIXEL_OFFSET_FOR_DISPLAY_X);
 
@@ -219,6 +225,10 @@ public class PixelPosStatusLineElementProvider
         showPixelOffsetDecimals = preferences.getBoolean(
                 PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_SHOW_DECIMALS,
                 PROPERTY_DEFAULT_PIXEL_OFFSET_FOR_DISPLAY_SHOW_DECIMALS);
+
+        showGeoPosOffsetDecimals = preferences.getBoolean(
+                PROPERTY_KEY_GEOLOCATION_OFFSET_FOR_DISPLAY_SHOW_DECIMALS,
+                PROPERTY_DEFAULT_DISPLAY_GEOLOCATION_AS_DECIMAL);
     }
 }
 
