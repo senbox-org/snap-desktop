@@ -57,8 +57,8 @@ public class PixelInfoViewModelUpdater {
 
     private static final String _INVALID_POS_TEXT = "Invalid pos.";
 
-    private final PixelInfoViewTableModel geolocModel;
-    private final PixelInfoViewTableModel scanlineModel;
+    private final PixelInfoViewTableModel positionModel;
+    private final PixelInfoViewTableModel timeModel;
     private final PixelInfoViewTableModel bandModel;
     private final PixelInfoViewTableModel tiePointModel;
     private final PixelInfoViewTableModel flagModel;
@@ -77,11 +77,14 @@ public class PixelInfoViewModelUpdater {
 
     private final PixelInfoView pixelInfoView;
 
-    PixelInfoViewModelUpdater(PixelInfoViewTableModel geolocModel, PixelInfoViewTableModel scanlineModel,
-                              PixelInfoViewTableModel bandModel, PixelInfoViewTableModel tiePointModel,
-                              PixelInfoViewTableModel flagModel, PixelInfoView pixelInfoView) {
-        this.geolocModel = geolocModel;
-        this.scanlineModel = scanlineModel;
+    PixelInfoViewModelUpdater(PixelInfoViewTableModel positionModel,
+                              PixelInfoViewTableModel timeModel,
+                              PixelInfoViewTableModel bandModel,
+                              PixelInfoViewTableModel tiePointModel,
+                              PixelInfoViewTableModel flagModel,
+                              PixelInfoView pixelInfoView) {
+        this.positionModel = positionModel;
+        this.timeModel = timeModel;
         this.bandModel = bandModel;
         this.tiePointModel = tiePointModel;
         this.flagModel = flagModel;
@@ -144,8 +147,8 @@ public class PixelInfoViewModelUpdater {
     }
 
     private void resetTableModels() {
-        resetGeolocTableModel();
-        resetScanLineTableModel();
+        resetPositionTableModel();
+        resetTimeTableModel();
         resetBandTableModel();
         resetTiePointGridTableModel();
         resetFlagTableModel();
@@ -156,8 +159,8 @@ public class PixelInfoViewModelUpdater {
             if (clearRasterTableSelection) {
                 pixelInfoView.clearSelectionInRasterTables();
             }
-            geolocModel.fireTableDataChanged();
-            scanlineModel.fireTableDataChanged();
+            positionModel.fireTableDataChanged();
+            timeModel.fireTableDataChanged();
             bandModel.fireTableDataChanged();
             tiePointModel.fireTableDataChanged();
             flagModel.fireTableDataChanged();
@@ -168,11 +171,11 @@ public class PixelInfoViewModelUpdater {
         if (currentRaster == null) {
             return;
         }
-        if (pixelInfoView.isCollapsiblePaneVisible(PixelInfoView.GEOLOCATION_INDEX)) {
-            updateGeolocValues();
+        if (pixelInfoView.isCollapsiblePaneVisible(PixelInfoView.POSITION_INDEX)) {
+            updatePositionValues();
         }
         if (pixelInfoView.isCollapsiblePaneVisible(PixelInfoView.TIME_INDEX)) {
-            updateScanLineValues();
+            updateTimeValues();
         }
         if (pixelInfoView.isCollapsiblePaneVisible(PixelInfoView.BANDS_INDEX)) {
             updateBandPixelValues();
@@ -186,35 +189,35 @@ public class PixelInfoViewModelUpdater {
         fireTableChanged(clearRasterTableSelection);
     }
 
-    private void resetGeolocTableModel() {
-        geolocModel.clear();
+    private void resetPositionTableModel() {
+        positionModel.clear();
         if (currentRaster != null) {
             final GeoCoding geoCoding = currentRaster.getGeoCoding();
-            geolocModel.addRow("Image-X", "", "pixel");
-            geolocModel.addRow("Image-Y", "", "pixel");
+            positionModel.addRow("Image-X", "", "pixel");
+            positionModel.addRow("Image-Y", "", "pixel");
 
             if (geoCoding != null) {
-                geolocModel.addRow("Longitude", "", "degree");
-                geolocModel.addRow("Latitude", "", "degree");
+                positionModel.addRow("Longitude", "", "degree");
+                positionModel.addRow("Latitude", "", "degree");
 
                 if (geoCoding instanceof MapGeoCoding) {
                     final MapGeoCoding mapGeoCoding = (MapGeoCoding) geoCoding;
                     final String mapUnit = mapGeoCoding.getMapInfo().getMapProjection().getMapUnit();
 
-                    geolocModel.addRow("Map-X", "", mapUnit);
-                    geolocModel.addRow("Map-Y", "", mapUnit);
+                    positionModel.addRow("Map-X", "", mapUnit);
+                    positionModel.addRow("Map-Y", "", mapUnit);
                 } else if (geoCoding instanceof CrsGeoCoding) {
                     String xAxisUnit = geoCoding.getMapCRS().getCoordinateSystem().getAxis(0).getUnit().toString();
                     String yAxisUnit = geoCoding.getMapCRS().getCoordinateSystem().getAxis(1).getUnit().toString();
-                    geolocModel.addRow("Map-X", "", xAxisUnit);
-                    geolocModel.addRow("Map-Y", "", yAxisUnit);
+                    positionModel.addRow("Map-X", "", xAxisUnit);
+                    positionModel.addRow("Map-Y", "", yAxisUnit);
 
                 }
             }
         }
     }
 
-    private void updateGeolocValues() {
+    private void updatePositionValues() {
         final boolean available = isSampleValueAvailable(levelZeroX, levelZeroY, pixelPosValid);
         final float pX = levelZeroX + pixelInfoView.getPixelOffsetX();
         final float pY = levelZeroY + pixelInfoView.getPixelOffsetY();
@@ -259,35 +262,35 @@ public class PixelInfoViewModelUpdater {
                 }
             }
         }
-        geolocModel.updateValue(tix, 0);
-        geolocModel.updateValue(tiy, 1);
+        positionModel.updateValue(tix, 0);
+        positionModel.updateValue(tiy, 1);
         if (geoCoding != null) {
-            geolocModel.updateValue(tgx, 2);
-            geolocModel.updateValue(tgy, 3);
+            positionModel.updateValue(tgx, 2);
+            positionModel.updateValue(tgy, 3);
             if (geoCoding instanceof MapGeoCoding || geoCoding instanceof CrsGeoCoding) {
-                geolocModel.updateValue(tmx, 4);
-                geolocModel.updateValue(tmy, 5);
+                positionModel.updateValue(tmx, 4);
+                positionModel.updateValue(tmy, 5);
             }
         }
     }
 
-    private void resetScanLineTableModel() {
-        scanlineModel.clear();
+    private void resetTimeTableModel() {
+        timeModel.clear();
         if (currentRaster != null) {
-            scanlineModel.addRow("Date", "", "YYYY-MM-DD");
-            scanlineModel.addRow("Time (UTC)", "", "HH:MM:SS:mm [AM/PM]");
+            timeModel.addRow("Date", "", "YYYY-MM-DD");
+            timeModel.addRow("Time (UTC)", "", "HH:MM:SS:mm [AM/PM]");
         }
     }
 
-    private void updateScanLineValues() {
+    private void updateTimeValues() {
         final ProductData.UTC utcStartTime = currentProduct.getStartTime();
         final ProductData.UTC utcEndTime = currentProduct.getEndTime();
 
         if (utcStartTime == null || utcEndTime == null ||
-            !isSampleValueAvailable(0, levelZeroY, true) ||
-            !equalsViewRasterSize(currentProduct.getSceneRasterSize())) {
-            scanlineModel.updateValue("No date information", 0);
-            scanlineModel.updateValue("No time information", 1);
+                !isSampleValueAvailable(0, levelZeroY, true) ||
+                !equalsViewRasterSize(currentProduct.getSceneRasterSize())) {
+            timeModel.updateValue("No date information", 0);
+            timeModel.updateValue("No time information", 1);
         } else {
             final float pY = levelZeroY + pixelInfoView.getPixelOffsetY();
             final ProductData.UTC utcCurrentLine = ProductUtils.getScanLineTime(currentProduct, pY);
@@ -296,8 +299,8 @@ public class PixelInfoViewModelUpdater {
             final String dateString = String.format("%1$tF", currentLineTime);
             final String timeString = String.format("%1$tI:%1$tM:%1$tS:%1$tL %1$Tp", currentLineTime);
 
-            scanlineModel.updateValue(dateString, 0);
-            scanlineModel.updateValue(timeString, 1);
+            timeModel.updateValue(dateString, 0);
+            timeModel.updateValue(timeString, 1);
         }
     }
 
@@ -441,24 +444,29 @@ public class PixelInfoViewModelUpdater {
     }
 
 
-    private String getPixelString(Band band) {
+    private String getPixelString(RasterDataNode raster) {
         if (!pixelPosValid) {
             return RasterDataNode.INVALID_POS_TEXT;
         }
-        if (isPixelValid(band, pixelX, pixelY, level)) {
-            if (band.isFloatingPointType()) {
-                return String.valueOf((float) ProductUtils.getGeophysicalSampleDouble(band, pixelX, pixelY, level));
+        if (isPixelValid(raster, pixelX, pixelY, level)) {
+            int geophysicalDataType = raster.getGeophysicalDataType();
+            if (geophysicalDataType == ProductData.TYPE_FLOAT64) {
+                double pixel = ProductUtils.getGeophysicalSampleDouble(raster, pixelX, pixelY, level);
+                return String.format("%.10f", pixel);
+            } else if (geophysicalDataType == ProductData.TYPE_FLOAT32) {
+                double pixel = ProductUtils.getGeophysicalSampleDouble(raster, pixelX, pixelY, level);
+                return String.format("%.5f", pixel);
             } else {
-                return String.valueOf(ProductUtils.getGeophysicalSampleLong(band, pixelX, pixelY, level));
+                return String.valueOf(ProductUtils.getGeophysicalSampleLong(raster, pixelX, pixelY, level));
             }
         } else {
             return RasterDataNode.NO_DATA_TEXT;
         }
     }
 
-    private boolean isPixelValid(Band band, int pixelX, int pixelY, int level) {
-        if (band.isValidMaskUsed()) {
-            PlanarImage image = ImageManager.getInstance().getValidMaskImage(band, level);
+    private boolean isPixelValid(RasterDataNode raster, int pixelX, int pixelY, int level) {
+        if (raster.isValidMaskUsed()) {
+            PlanarImage image = ImageManager.getInstance().getValidMaskImage(raster, level);
             Raster data = getRasterTile(image, pixelX, pixelY);
             return data.getSample(pixelX, pixelY, 0) != 0;
         } else {
@@ -475,11 +483,11 @@ public class PixelInfoViewModelUpdater {
 
     private boolean isSampleValueAvailable(int pixelX, int pixelY, boolean pixelValid) {
         return currentRaster != null
-               && pixelValid
-               && pixelX >= 0
-               && pixelY >= 0
-               && pixelX < currentRaster.getRasterWidth()
-               && pixelY < currentRaster.getRasterHeight();
+                && pixelValid
+                && pixelX >= 0
+                && pixelY >= 0
+                && pixelX < currentRaster.getRasterWidth()
+                && pixelY < currentRaster.getRasterHeight();
     }
 
     void clearProductNodeRefs() {
