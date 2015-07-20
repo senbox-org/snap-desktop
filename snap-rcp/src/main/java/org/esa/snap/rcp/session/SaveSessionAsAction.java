@@ -15,7 +15,9 @@
  */
 package org.esa.snap.rcp.session;
 
+import org.esa.snap.framework.datamodel.ProductManager;
 import org.esa.snap.framework.datamodel.ProductNode;
+import org.esa.snap.rcp.SnapApp;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
@@ -40,7 +42,6 @@ import java.awt.event.ActionEvent;
 })
 public class SaveSessionAsAction extends AbstractAction implements ContextAwareAction, LookupListener {
     public static final String ID = "saveSessionAs";
-    private final Lookup.Result<ProductNode> result;
     private final Lookup lookup;
 
     public SaveSessionAsAction() {
@@ -50,7 +51,9 @@ public class SaveSessionAsAction extends AbstractAction implements ContextAwareA
     public SaveSessionAsAction(Lookup lookup) {
         super(Bundle.CTL_SaveSessionAsAction_MenuText());
         this.lookup = lookup;
-        result = lookup.lookupResult(ProductNode.class);
+        ProductManager productManager = SnapApp.getDefault().getProductManager();
+        productManager.addListener(new SaveAsSessionListener());
+        Lookup.Result<ProductNode> result = lookup.lookupResult(ProductNode.class);
         result.addLookupListener(WeakListeners.create(LookupListener.class, this, result));
         setEnabled(false);
     }
@@ -71,4 +74,22 @@ public class SaveSessionAsAction extends AbstractAction implements ContextAwareA
         ProductNode productNode = lookup.lookup(ProductNode.class);
         setEnabled(productNode != null || SessionManager.getDefault().getSessionFile() != null);
     }
+
+    private class SaveAsSessionListener implements ProductManager.Listener {
+
+        @Override
+        public void productAdded(ProductManager.Event event) {
+            updateEnableState();
+        }
+
+        @Override
+        public void productRemoved(ProductManager.Event event) {
+            updateEnableState();
+        }
+
+        private void updateEnableState() {
+            setEnabled(SnapApp.getDefault().getProductManager().getProductCount() > 0 && SessionManager.getDefault().getSessionFile() != null);
+        }
+    }
+
 }

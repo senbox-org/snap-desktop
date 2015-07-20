@@ -35,11 +35,16 @@ public class PixelInfoViewTableModel extends AbstractTableModel {
 
     public PixelInfoViewTableModel(String[] columnNames) {
         this.columnNames = columnNames;
-        names = Collections.synchronizedList(new ArrayList<String>(32));
-        values = Collections.synchronizedList(new ArrayList<String>(32));
-        units = Collections.synchronizedList(new ArrayList<String>(32));
+        names = Collections.synchronizedList(new ArrayList<>(32));
+        values = Collections.synchronizedList(new ArrayList<>(32));
+        units = Collections.synchronizedList(new ArrayList<>(32));
     }
-    
+
+    @Override
+    public Class<?> getColumnClass(int columnIndex) {
+        return String.class;
+    }
+
     @Override
     public String getColumnName(int column) {
         return columnNames[column];

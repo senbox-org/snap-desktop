@@ -65,6 +65,8 @@ public class SaveSessionAction extends AbstractAction implements ContextAwareAct
         super(Bundle.CTL_SaveSessionAction_MenuText());
         this.lookup = lookup;
         result = lookup.lookupResult(ProductNode.class);
+        ProductManager productManager = SnapApp.getDefault().getProductManager();
+        productManager.addListener(new SaveSessionListener());
         result.addLookupListener(WeakListeners.create(LookupListener.class, this, result));
         setEnabled(false);
 
@@ -187,6 +189,21 @@ public class SaveSessionAction extends AbstractAction implements ContextAwareAct
                 SnapApp.getDefault().getProductManager().getProducts(),
                 nodeViews.toArray(new ProductNodeView[nodeViews.size()]));
     }
+    private class SaveSessionListener implements ProductManager.Listener {
 
+        @Override
+        public void productAdded(ProductManager.Event event) {
+            updateEnableState();
+        }
+
+        @Override
+        public void productRemoved(ProductManager.Event event) {
+            updateEnableState();
+        }
+
+        private void updateEnableState() {
+            setEnabled(SnapApp.getDefault().getProductManager().getProductCount() > 0);
+        }
+    }
 
 }

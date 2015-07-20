@@ -47,7 +47,7 @@ import java.awt.*;
         "Options_DisplayName_LayerImage=Image Layer",
         "Options_Keywords_LayerImage=layer, image"
 })
-public final class ImageLayerPanel extends DefaultConfigController {
+public final class ImageLayerController extends DefaultConfigController {
 
 
     /**

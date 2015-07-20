@@ -14,7 +14,7 @@
  * with this program; if not, see http://www.gnu.org/licenses/
  */
 
-package org.esa.snap.rcp.preferences.product;
+package org.esa.snap.rcp.preferences.general;
 
 import com.bc.ceres.binding.PropertyContainer;
 import com.bc.ceres.binding.PropertySet;
@@ -37,13 +37,14 @@ import javax.swing.JPanel;
         "Options_Keywords_RGB=RGB, profile"
 })
 @OptionsPanelController.SubRegistration(
-        location = "ProductPreferences",
+        location = "GeneralPreferences",
         displayName = "#Options_DisplayName_RGB",
         keywords = "#Options_Keywords_RGB",
         keywordsCategory = "RGB",
-        id = "rgb-image-profiles"
-        )
-public final class RgbPanelController extends DefaultConfigController {
+        id = "rgb-image-profiles",
+        position = 4
+)
+public final class RgbController extends DefaultConfigController {
 
     @Override
     protected PropertySet createPropertySet() {

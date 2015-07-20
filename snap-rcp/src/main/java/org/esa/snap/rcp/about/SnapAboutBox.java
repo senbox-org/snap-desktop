@@ -32,7 +32,7 @@ public class SnapAboutBox extends JPanel {
         ModuleInfo engineModuleInfo = Modules.getDefault().ownerOf(Product.class);
         ImageIcon image = new ImageIcon(SnapAboutBox.class.getResource("SNAP_Banner.png"));
         JLabel banner = new JLabel(image);
-        JLabel versionText = new JLabel("<html><b>SNAP release version " + getReleaseVersion() + "</b>");
+        JLabel versionText = new JLabel("<html><b>SNAP " + getReleaseVersion() + "</b>");
 
         JLabel infoText = new JLabel("<html>"
                                              + "This program is free software: you can redistribute it and/or modify it<br>"
@@ -87,6 +87,6 @@ public class SnapAboutBox extends JPanel {
         if (version != null) {
             return version;
         }
-        return "<i>(no version info, missing ${SNAP_HOME}/VERSION.txt)</i>";
+        return "[no version info, missing ${SNAP_HOME}/VERSION.txt]";
     }
 }

@@ -37,12 +37,13 @@ import java.beans.PropertyChangeListener;
         displayName = "#Options_DisplayName_WriteOptions",
         keywords = "#Options_Keywords_WriteOptions",
         keywordsCategory = "Write Options",
-        id = "WriteOptions")
+        id = "WriteOptions",
+        position = 5)
 @org.openide.util.NbBundle.Messages({
         "Options_DisplayName_WriteOptions=Write Options",
         "Options_Keywords_WriteOptions=write, writing, save, header, MPH, SPH, history, annotation, incremental"
 })
-public final class WriteOptionsPanelController extends DefaultConfigController {
+public final class WriteOptionsController extends DefaultConfigController {
 
     /**
      * Preferences key for save product headers (MPH, SPH) or not

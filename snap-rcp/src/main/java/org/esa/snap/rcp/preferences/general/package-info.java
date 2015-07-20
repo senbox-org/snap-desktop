@@ -14,6 +14,6 @@
         "OptionsCategory_Name_General=General",
         "OptionsCategory_Keywords_General=general",
         "OptionsCategory_Keywords_Category_General=general"
-}) package org.esa.snap.rcp.preferences.product;
+}) package org.esa.snap.rcp.preferences.general;
 
 import org.netbeans.spi.options.OptionsPanelController;

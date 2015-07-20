@@ -70,6 +70,11 @@ public @interface Preference {
     String interval() default "";
 
     /**
+     * Description as Tooltips
+     */
+    String description() default "";
+
+    /**
      * @return The validator class.
      */
     Class<? extends Validator> validatorClass() default NullValidator.class;

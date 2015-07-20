@@ -49,7 +49,7 @@ import java.awt.Insets;
         "Options_DisplayName_LayerNoData=No-Data Layer",
         "Options_Keywords_LayerNoData=layer, no-data"
 })
-public final class NoDataLayerPanel extends DefaultConfigController {
+public final class NoDataLayerController extends DefaultConfigController {
 
     /**
      * Preferences key for the no-data overlay color

@@ -31,7 +31,7 @@ import org.esa.snap.framework.datamodel.VirtualBand;
 import org.esa.snap.framework.ui.UIUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
-import org.esa.snap.rcp.preferences.general.UiBehaviorPanelController;
+import org.esa.snap.rcp.preferences.general.UiBehaviorController;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
@@ -145,7 +145,7 @@ public class CreateGeoCodingDisplacementBandsAction extends AbstractAction imple
 
             @Override
             public void done() {
-                if (snapApp.getPreferences().getBoolean(UiBehaviorPanelController.PROPERTY_KEY_AUTO_SHOW_NEW_BANDS, true)) {
+                if (snapApp.getPreferences().getBoolean(UiBehaviorController.PROPERTY_KEY_AUTO_SHOW_NEW_BANDS, true)) {
                     try {
                         Band[] bands = get();
                         if (bands == null) {

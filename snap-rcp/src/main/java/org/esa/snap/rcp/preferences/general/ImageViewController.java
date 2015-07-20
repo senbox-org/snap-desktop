@@ -14,7 +14,7 @@
  * with this program; if not, see http://www.gnu.org/licenses/
  */
 
-package org.esa.snap.rcp.preferences.layer;
+package org.esa.snap.rcp.preferences.general;
 
 import com.bc.ceres.binding.Property;
 import com.bc.ceres.binding.PropertySet;
@@ -46,12 +46,14 @@ import static com.bc.ceres.swing.TableLayout.*;
         displayName = "#Options_DisplayName_LayerGeneral",
         keywords = "#Options_Keywords_LayerGeneral",
         keywordsCategory = "Image,Layer",
-        id = "LayerGeneral")
-public final class GeneralLayerPanel extends DefaultConfigController {
+        id = "LayerGeneral",
+        position = 3)
+public final class ImageViewController extends DefaultConfigController {
 
     protected PropertySet createPropertySet() {
         return createPropertySet(new GeneralLayerBean());
     }
+
 
     @Override
     public HelpCtx getHelpCtx() {

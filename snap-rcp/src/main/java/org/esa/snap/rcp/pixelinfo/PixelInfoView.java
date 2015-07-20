@@ -25,7 +25,7 @@ import org.esa.snap.framework.ui.UIUtils;
 import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.preferences.general.GeoLocationPanelController;
+import org.esa.snap.rcp.preferences.general.GeoLocationController;
 import org.esa.snap.rcp.util.CollapsibleItemsPanel;
 import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
 
@@ -38,6 +38,7 @@ import javax.swing.table.TableModel;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Font;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Vector;
@@ -67,10 +68,10 @@ public class PixelInfoView extends JPanel {
     private static final int unit_column = 2;
     private boolean showGeoPosDecimal;
 
-    public static final int GEOLOCATION_INDEX = 0;
+    public static final int POSITION_INDEX = 0;
     public static final int TIME_INDEX = 1;
-    public static final int TIE_POINT_GRIDS_INDEX = 2;
-    public static final int BANDS_INDEX = 3;
+    public static final int BANDS_INDEX = 2;
+    public static final int TIE_POINT_GRIDS_INDEX = 3;
     public static final int FLAGS_INDEX = 4;
 
     private final PropertyChangeListener displayFilterListener;
@@ -98,12 +99,16 @@ public class PixelInfoView extends JPanel {
         super(new BorderLayout());
         displayFilterListener = createDisplayFilterListener();
         productNodeListener = createProductNodeListener();
-        positionTableModel = new PixelInfoViewTableModel(new String[]{"Coordinate", "Value", "Unit"});
+        positionTableModel = new PixelInfoViewTableModel(new String[]{"Position", "Value", "Unit"});
         timeTableModel = new PixelInfoViewTableModel(new String[]{"Time", "Value", "Unit"});
         bandsTableModel = new PixelInfoViewTableModel(new String[]{"Band", "Value", "Unit"});
-        tiePointGridsTableModel = new PixelInfoViewTableModel(new String[]{"Tie Point Grid", "Value", "Unit"});
+        tiePointGridsTableModel = new PixelInfoViewTableModel(new String[]{"Tie-Point Grid", "Value", "Unit"});
         flagsTableModel = new PixelInfoViewTableModel(new String[]{"Flag", "Value",});
-        modelUpdater = new PixelInfoViewModelUpdater(positionTableModel, timeTableModel, bandsTableModel, tiePointGridsTableModel, flagsTableModel,
+        modelUpdater = new PixelInfoViewModelUpdater(positionTableModel,
+                                                     timeTableModel,
+                                                     bandsTableModel,
+                                                     tiePointGridsTableModel,
+                                                     flagsTableModel,
                                                      this);
         updateService = new PixelInfoUpdateService(modelUpdater);
         setDisplayFilter(new DisplayFilter());
@@ -114,13 +119,13 @@ public class PixelInfoView extends JPanel {
                 final String propertyName = evt.getKey();
                 if (PixelInfoView.PROPERTY_KEY_SHOW_ONLY_DISPLAYED_BAND_PIXEL_VALUES.equals(propertyName)) {
                     setShowOnlyLoadedBands(preferences);
-                } else if (GeoLocationPanelController.PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_SHOW_DECIMALS.equals(propertyName)) {
+                } else if (GeoLocationController.PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_SHOW_DECIMALS.equals(propertyName)) {
                     setShowPixelPosDecimals(preferences);
-                } else if (GeoLocationPanelController.PROPERTY_KEY_DISPLAY_GEOLOCATION_AS_DECIMAL.equals(propertyName)) {
+                } else if (GeoLocationController.PROPERTY_KEY_DISPLAY_GEOLOCATION_AS_DECIMAL.equals(propertyName)) {
                     setShowGeoPosDecimal(preferences);
-                } else if (GeoLocationPanelController.PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_X.equals(propertyName)) {
+                } else if (GeoLocationController.PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_X.equals(propertyName)) {
                     setPixelOffsetX(preferences);
-                } else if (GeoLocationPanelController.PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_Y.equals(propertyName)) {
+                } else if (GeoLocationController.PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_Y.equals(propertyName)) {
                     setPixelOffsetY(preferences);
                 }
             }
@@ -157,12 +162,10 @@ public class PixelInfoView extends JPanel {
     }
 
     private PropertyChangeListener createDisplayFilterListener() {
-        return new PropertyChangeListener() {
-            public void propertyChange(PropertyChangeEvent evt) {
-                if (getCurrentProduct() != null) {
-                    updateService.requestUpdate();
-                    clearSelectionInRasterTables();
-                }
+        return evt -> {
+            if (getCurrentProduct() != null) {
+                updateService.requestUpdate();
+                clearSelectionInRasterTables();
             }
         };
     }
@@ -257,49 +260,43 @@ public class PixelInfoView extends JPanel {
         updateService.updateState(view, pixelX, pixelY, level, pixelPosValid);
     }
 
-    public boolean isAnyCollapsiblePaneVisible() {
-        for(int i = 0; i < 5; i++) {
-            if (isCollapsiblePaneVisible(i)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public void showCollapsibleItem(int index, boolean show) {
-
-
-//        final DockablePane dockablePane = dockablePaneMap.get(key);
-//        if (multiSplitPane.indexOfPane(dockablePane) < 0 && show) {
-//            multiSplitPane.addPane(dockablePane);
-//            multiSplitPane.invalidate();
-//        }
-//        dockablePane.setShown(show);
-
-        collapsibleItemsPanel.setCollapsed(index, !show);
-
-    }
-
     private void createUI() {
+        DefaultTableCellRenderer pixelValueRenderer = new ValueCellRenderer();
+        FlagCellRenderer flagCellRenderer = new FlagCellRenderer();
+
         setLayout(new BorderLayout());
+
         CollapsibleItemsPanel.Item<JTable> positionItem = CollapsibleItemsPanel.createTableItem("Position", 6, 3);
         positionItem.getComponent().setModel(positionTableModel);
+        positionItem.getComponent().getColumnModel().getColumn(1).setCellRenderer(pixelValueRenderer);
+
         CollapsibleItemsPanel.Item<JTable> timeItem = CollapsibleItemsPanel.createTableItem("Time", 2, 3);
         timeItem.getComponent().setModel(timeTableModel);
-        CollapsibleItemsPanel.Item<JTable> tiePointGridsItem = CollapsibleItemsPanel.createTableItem("Tie Point Grids", 0, 3);
+        timeItem.getComponent().getColumnModel().getColumn(1).setCellRenderer(pixelValueRenderer);
+
+        CollapsibleItemsPanel.Item<JTable> tiePointGridsItem = CollapsibleItemsPanel.createTableItem("Tie-Point Grids", 0, 3);
         tiePointGridsItem.getComponent().setModel(tiePointGridsTableModel);
+        tiePointGridsItem.getComponent().getColumnModel().getColumn(1).setCellRenderer(pixelValueRenderer);
+
         CollapsibleItemsPanel.Item<JTable> bandsItem = CollapsibleItemsPanel.createTableItem("Bands", 18, 3);
         bandsItem.getComponent().setModel(bandsTableModel);
+        bandsItem.getComponent().getColumnModel().getColumn(1).setCellRenderer(pixelValueRenderer);
+
         CollapsibleItemsPanel.Item<JTable> flagsItem = CollapsibleItemsPanel.createTableItem("Flags", 0, 2);
         flagsItem.getComponent().setModel(flagsTableModel);
-        flagsItem.getComponent().setDefaultRenderer(String.class, new FlagCellRenderer());
-        flagsItem.getComponent().setDefaultRenderer(Object.class, new FlagCellRenderer());
+        flagsItem.getComponent().getColumnModel().getColumn(1).setCellRenderer(flagCellRenderer);
+
         collapsibleItemsPanel = new CollapsibleItemsPanel(
                 positionItem,
                 timeItem,
-                tiePointGridsItem,
                 bandsItem,
-                flagsItem);
+                flagsItem,
+                tiePointGridsItem
+        );
+        collapsibleItemsPanel.setCollapsed(POSITION_INDEX, false);
+        collapsibleItemsPanel.setCollapsed(TIME_INDEX, true);
+        collapsibleItemsPanel.setCollapsed(BANDS_INDEX, false);
+        collapsibleItemsPanel.setCollapsed(TIE_POINT_GRIDS_INDEX, true);
         collapsibleItemsPanel.setCollapsed(FLAGS_INDEX, true);
         JScrollPane scrollPane = new JScrollPane(collapsibleItemsPanel,
                                                  ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
@@ -351,41 +348,49 @@ public class PixelInfoView extends JPanel {
 
     private void setPixelOffsetY(final Preferences preferences) {
         setPixelOffsetY((float) preferences.getDouble(
-                GeoLocationPanelController.PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_Y,
-                GeoLocationPanelController.PROPERTY_DEFAULT_PIXEL_OFFSET_FOR_DISPLAY));
+                GeoLocationController.PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_Y,
+                GeoLocationController.PROPERTY_DEFAULT_PIXEL_OFFSET_FOR_DISPLAY));
     }
 
     private void setPixelOffsetX(final Preferences preferences) {
         setPixelOffsetX((float) preferences.getDouble(
-                GeoLocationPanelController.PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_X,
-                GeoLocationPanelController.PROPERTY_DEFAULT_PIXEL_OFFSET_FOR_DISPLAY));
+                GeoLocationController.PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_X,
+                GeoLocationController.PROPERTY_DEFAULT_PIXEL_OFFSET_FOR_DISPLAY));
     }
 
     private void setShowPixelPosDecimals(final Preferences preferences) {
         setShowPixelPosDecimals(preferences.getBoolean(
-                GeoLocationPanelController.PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_SHOW_DECIMALS,
-                GeoLocationPanelController.PROPERTY_DEFAULT_PIXEL_OFFSET_FOR_DISPLAY_SHOW_DECIMALS));
+                GeoLocationController.PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_SHOW_DECIMALS,
+                GeoLocationController.PROPERTY_DEFAULT_PIXEL_OFFSET_FOR_DISPLAY_SHOW_DECIMALS));
     }
 
     private void setShowGeoPosDecimal(final Preferences preferences) {
         setShowGeoPosDecimal(preferences.getBoolean(
-                GeoLocationPanelController.PROPERTY_KEY_DISPLAY_GEOLOCATION_AS_DECIMAL,
-                GeoLocationPanelController.PROPERTY_DEFAULT_DISPLAY_GEOLOCATION_AS_DECIMAL));
+                GeoLocationController.PROPERTY_KEY_DISPLAY_GEOLOCATION_AS_DECIMAL,
+                GeoLocationController.PROPERTY_DEFAULT_DISPLAY_GEOLOCATION_AS_DECIMAL));
     }
 
-    private static class FlagCellRenderer extends DefaultTableCellRenderer {
+    private static class ValueCellRenderer extends DefaultTableCellRenderer {
+        Font valueFont;
 
-        /**
-         * Returns the default table cell renderer.
-         *
-         * @param table      the <code>JTable</code>
-         * @param value      the value to assign to the cell at <code>[row, column]</code>
-         * @param isSelected true if cell is selected
-         * @param hasFocus   true if cell has focus
-         * @param row        the row of the cell to render
-         * @param column     the column of the cell to render
-         * @return the default table cell renderer
-         */
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            if (valueFont == null) {
+                Font font = getFont();
+                valueFont = new Font(Font.MONOSPACED, Font.PLAIN, font != null ? font.getSize() : 12);
+            }
+            setFont(valueFont);
+            setHorizontalAlignment(RIGHT);
+            return this;
+        }
+    }
+
+    private static class FlagCellRenderer extends ValueCellRenderer {
+
+        static final Color VERY_LIGHT_BLUE = new Color(230, 230, 255);
+        static final Color VERY_LIGHT_RED = new Color(255, 230, 230);
+
         @Override
         public Component getTableCellRendererComponent(JTable table,
                                                        Object value,
@@ -393,27 +398,25 @@ public class PixelInfoView extends JPanel {
                                                        boolean hasFocus,
                                                        int row,
                                                        int column) {
-            Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            c.setForeground(Color.black);
-            c.setBackground(Color.white);
+            super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            setForeground(Color.black);
+            setBackground(Color.white);
             if (column == value_column && value != null) {
                 if (value.equals("true")) {
-                    c.setForeground(UIUtils.COLOR_DARK_RED);
-                    final Color very_light_blue = new Color(230, 230, 255);
-                    c.setBackground(very_light_blue);
+                    setForeground(UIUtils.COLOR_DARK_RED);
+                    setBackground(VERY_LIGHT_BLUE);
                 } else if (value.equals("false")) {
-                    c.setForeground(UIUtils.COLOR_DARK_BLUE);
-                    final Color very_light_red = new Color(255, 230, 230);
-                    c.setBackground(very_light_red);
+                    setForeground(UIUtils.COLOR_DARK_BLUE);
+                    setBackground(VERY_LIGHT_RED);
                 }
             }
-            return c;
+            return this;
         }
     }
 
     public static class DisplayFilter {
 
-        private final Vector<PropertyChangeListener> propertyChangeListeners = new Vector<PropertyChangeListener>();
+        private final Vector<PropertyChangeListener> propertyChangeListeners = new Vector<>();
         private boolean showOnlyLoadedOrDisplayedBands;
 
         public void addPropertyChangeListener(PropertyChangeListener displayFilterListener) {
