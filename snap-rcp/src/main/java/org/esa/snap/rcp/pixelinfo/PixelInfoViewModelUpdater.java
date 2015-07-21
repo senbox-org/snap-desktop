@@ -77,18 +77,18 @@ public class PixelInfoViewModelUpdater {
 
     private final PixelInfoView pixelInfoView;
 
-    PixelInfoViewModelUpdater(PixelInfoViewTableModel positionModel,
+    PixelInfoViewModelUpdater(PixelInfoView pixelInfoView,
+                              PixelInfoViewTableModel positionModel,
                               PixelInfoViewTableModel timeModel,
                               PixelInfoViewTableModel bandModel,
                               PixelInfoViewTableModel tiePointModel,
-                              PixelInfoViewTableModel flagModel,
-                              PixelInfoView pixelInfoView) {
+                              PixelInfoViewTableModel flagModel) {
+        this.pixelInfoView = pixelInfoView;
         this.positionModel = positionModel;
         this.timeModel = timeModel;
         this.bandModel = bandModel;
         this.tiePointModel = tiePointModel;
         this.flagModel = flagModel;
-        this.pixelInfoView = pixelInfoView;
     }
 
     Product getCurrentProduct() {
