@@ -15,6 +15,7 @@
  */
 package org.esa.snap.rcp.pixelinfo;
 
+import com.bc.ceres.core.Assert;
 import org.esa.snap.framework.datamodel.Band;
 import org.esa.snap.framework.datamodel.CrsGeoCoding;
 import org.esa.snap.framework.datamodel.FlagCoding;
@@ -211,7 +212,6 @@ public class PixelInfoViewModelUpdater {
                     String yAxisUnit = geoCoding.getMapCRS().getCoordinateSystem().getAxis(1).getUnit().toString();
                     positionModel.addRow("Map-X", "", xAxisUnit);
                     positionModel.addRow("Map-Y", "", yAxisUnit);
-
                 }
             }
         }
@@ -219,24 +219,25 @@ public class PixelInfoViewModelUpdater {
 
     private void updatePositionValues() {
         final boolean available = isSampleValueAvailable(levelZeroX, levelZeroY, pixelPosValid);
-        final float pX = levelZeroX + pixelInfoView.getPixelOffsetX();
-        final float pY = levelZeroY + pixelInfoView.getPixelOffsetY();
+        final double offset = 0.5 + (pixelInfoView.getShowPixelPosOffset1() ? 1.0 : 0.0);
+        final double pX = levelZeroX + offset;
+        final double pY = levelZeroY + offset;
 
         String tix, tiy, tmx, tmy, tgx, tgy;
         tix = tiy = tmx = tmy = tgx = tgy = _INVALID_POS_TEXT;
         GeoCoding geoCoding = currentRaster.getGeoCoding();
         if (available) {
             PixelPos pixelPos = new PixelPos(pX, pY);
-            if (pixelInfoView.showPixelPosDecimal()) {
+            if (pixelInfoView.getShowPixelPosDecimal()) {
                 tix = String.valueOf(pX);
                 tiy = String.valueOf(pY);
             } else {
-                tix = String.valueOf(levelZeroX);
-                tiy = String.valueOf(levelZeroY);
+                tix = String.valueOf((int) Math.floor(pX));
+                tiy = String.valueOf((int) Math.floor(pY));
             }
             if (geoCoding != null) {
                 GeoPos geoPos = geoCoding.getGeoPos(pixelPos, null);
-                if (pixelInfoView.showGeoPosDecimal()) {
+                if (pixelInfoView.getShowGeoPosDecimals()) {
                     tgx = String.valueOf(geoPos.getLon());
                     tgy = String.valueOf(geoPos.getLat());
                 } else {
@@ -258,7 +259,6 @@ public class PixelInfoViewModelUpdater {
                         tmy = String.valueOf(coordinate[1]);
                     } catch (TransformException ignore) {
                     }
-
                 }
             }
         }
@@ -292,8 +292,8 @@ public class PixelInfoViewModelUpdater {
             timeModel.updateValue("No date information", 0);
             timeModel.updateValue("No time information", 1);
         } else {
-            final float pY = levelZeroY + pixelInfoView.getPixelOffsetY();
-            final ProductData.UTC utcCurrentLine = ProductUtils.getScanLineTime(currentProduct, pY);
+            final ProductData.UTC utcCurrentLine = ProductUtils.getScanLineTime(currentProduct, levelZeroY + 0.5);
+            Assert.notNull(utcCurrentLine, "utcCurrentLine");
             final Calendar currentLineTime = utcCurrentLine.getAsCalendar();
 
             final String dateString = String.format("%1$tF", currentLineTime);
@@ -403,7 +403,7 @@ public class PixelInfoViewModelUpdater {
         }
         int rowIndex = 0;
         for (Band band : currentFlagBands) {
-            long pixelValue = available ? ProductUtils.getGeophysicalSampleLong(band, pixelX, pixelY, level) : 0;
+            long pixelValue = available ? ProductUtils.getGeophysicalSampleAsLong(band, pixelX, pixelY, level) : 0;
 
             for (int j = 0; j < band.getFlagCoding().getNumAttributes(); j++) {
                 if (available) {
@@ -459,7 +459,7 @@ public class PixelInfoViewModelUpdater {
                     return String.format("%.5f", pixel);
                 }
             }
-            return String.valueOf(ProductUtils.getGeophysicalSampleLong(raster, pixelX, pixelY, level));
+            return String.valueOf(ProductUtils.getGeophysicalSampleAsLong(raster, pixelX, pixelY, level));
         } else {
             return RasterDataNode.NO_DATA_TEXT;
         }

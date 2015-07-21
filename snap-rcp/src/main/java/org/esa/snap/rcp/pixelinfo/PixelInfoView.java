@@ -25,7 +25,6 @@ import org.esa.snap.framework.ui.UIUtils;
 import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.preferences.general.GeoLocationController;
 import org.esa.snap.rcp.util.CollapsibleItemsPanel;
 import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
 
@@ -57,16 +56,36 @@ import java.util.prefs.Preferences;
 public class PixelInfoView extends JPanel {
 
     public static final String HELP_ID = "pixelInfoView";
+
     /**
-     * Preferences key for show all band pixel values in pixel info view
+     * Preferences key for showing all band pixel values in pixel info view
      */
     public static final String PROPERTY_KEY_SHOW_ONLY_DISPLAYED_BAND_PIXEL_VALUES = "pixelview.showOnlyDisplayedBands";
+
+    /**
+     * Preferences key for display style of geo-locations
+     */
+    public static final String PROPERTY_KEY_SHOW_GEO_POS_DECIMALS = "pixelview.showGeoPosDecimals";
+
+    /**
+     * Preferences key for showing floating-point image coordinates
+     */
+    public static final String PROPERTY_KEY_SHOW_PIXEL_POS_DECIMALS = "pixelview.showPixelPosDecimals";
+
+    /**
+     * Preferences key for coordinate system starting at (1,1)
+     */
+    public static final String PROPERTY_KEY_SHOW_PIXEL_POS_OFFSET_ONE = "pixelview.showPixelPosOffsetOne";
+
     public static final boolean PROPERTY_DEFAULT_SHOW_DISPLAYED_BAND_PIXEL_VALUES = true;
+    public static final boolean PROPERTY_DEFAULT_SHOW_GEO_POS_DECIMALS = false;
+    public static final boolean PROPERTY_DEFAULT_SHOW_PIXEL_POS_DECIMALS = false;
+    public static final boolean PROPERTY_DEFAULT_SHOW_PIXEL_POS_OFFSET_1 = false;
 
     private static final int NAME_COLUMN = 0;
     private static final int VALUE_COLUMN = 1;
     private static final int UNIT_COLUMN = 2;
-    private boolean showGeoPosDecimal;
+    private boolean showGeoPosDecimals;
 
     public static final int POSITION_INDEX = 0;
     public static final int TIME_INDEX = 1;
@@ -78,7 +97,8 @@ public class PixelInfoView extends JPanel {
     private final ProductNodeListener productNodeListener;
 
     private boolean showPixelPosDecimals;
-    private boolean pixelOffsetOne;
+    private boolean showPixelPosOffset1;
+
     private DisplayFilter displayFilter;
 
     private final PixelInfoViewTableModel positionTableModel;
@@ -116,21 +136,21 @@ public class PixelInfoView extends JPanel {
             @Override
             public void preferenceChange(PreferenceChangeEvent evt) {
                 final String propertyName = evt.getKey();
-                if (PixelInfoView.PROPERTY_KEY_SHOW_ONLY_DISPLAYED_BAND_PIXEL_VALUES.equals(propertyName)) {
+                if (PROPERTY_KEY_SHOW_ONLY_DISPLAYED_BAND_PIXEL_VALUES.equals(propertyName)) {
                     setShowOnlyLoadedBands(preferences);
-                } else if (GeoLocationController.PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_SHOW_DECIMALS.equals(propertyName)) {
+                } else if (PROPERTY_KEY_SHOW_PIXEL_POS_DECIMALS.equals(propertyName)) {
                     setShowPixelPosDecimals(preferences);
-                } else if (GeoLocationController.PROPERTY_KEY_DISPLAY_GEOLOCATION_AS_DECIMAL.equals(propertyName)) {
-                    setShowGeoPosDecimal(preferences);
-                } else if (GeoLocationController.PROPERTY_KEY_PIXEL_OFFSET_IS_ONE.equals(propertyName)) {
-                    setPixelOffsetIsOne(preferences);
+                } else if (PROPERTY_KEY_SHOW_GEO_POS_DECIMALS.equals(propertyName)) {
+                    setShowGeoPosDecimals(preferences);
+                } else if (PROPERTY_KEY_SHOW_PIXEL_POS_OFFSET_ONE.equals(propertyName)) {
+                    setShowPixelPosOffset1(preferences);
                 }
             }
         });
         setShowOnlyLoadedBands(preferences);
         setShowPixelPosDecimals(preferences);
-        setShowGeoPosDecimal(preferences);
-        setPixelOffsetIsOne(preferences);
+        setShowGeoPosDecimals(preferences);
+        setShowPixelPosOffset1(preferences);
         createUI();
     }
 
@@ -206,26 +226,30 @@ public class PixelInfoView extends JPanel {
         }
     }
 
-    boolean showPixelPosDecimal() {
+    boolean getShowPixelPosDecimal() {
         return showPixelPosDecimals;
     }
 
-    private void setShowGeoPosDecimal(boolean showGeoPosDecimal) {
-        if (this.showGeoPosDecimal != showGeoPosDecimal) {
-            this.showGeoPosDecimal = showGeoPosDecimal;
+    private void setShowGeoPosDecimals(boolean showGeoPosDecimals) {
+        if (this.showGeoPosDecimals != showGeoPosDecimals) {
+            this.showGeoPosDecimals = showGeoPosDecimals;
             updateService.requestUpdate();
         }
     }
 
-    boolean showGeoPosDecimal() {
-        return showGeoPosDecimal;
+    boolean getShowGeoPosDecimals() {
+        return showGeoPosDecimals;
     }
 
-    private void setPixelOffsetOne(boolean pixelOffsetOne) {
-        if (this.pixelOffsetOne != pixelOffsetOne) {
-            this.pixelOffsetOne = pixelOffsetOne;
+    private void setShowPixelPosOffset1(boolean showPixelPosOffset1) {
+        if (this.showPixelPosOffset1 != showPixelPosOffset1) {
+            this.showPixelPosOffset1 = showPixelPosOffset1;
             updateService.requestUpdate();
         }
+    }
+
+    public boolean getShowPixelPosOffset1() {
+        return showPixelPosOffset1;
     }
 
     public void updatePixelValues(ProductSceneView view, int pixelX, int pixelY, int level, boolean pixelPosValid) {
@@ -319,22 +343,22 @@ public class PixelInfoView extends JPanel {
         displayFilter.setShowOnlyLoadedOrDisplayedBands(showOnlyLoadedOrDisplayedBands);
     }
 
-    private void setPixelOffsetIsOne(final Preferences preferences) {
-        setPixelOffsetOne(preferences.getBoolean(
-                GeoLocationController.PROPERTY_KEY_PIXEL_OFFSET_IS_ONE,
-                GeoLocationController.PROPERTY_DEFAULT_PIXEL_OFFSET_IS_ONE));
+    private void setShowPixelPosOffset1(final Preferences preferences) {
+        setShowPixelPosOffset1(preferences.getBoolean(
+                PROPERTY_KEY_SHOW_PIXEL_POS_OFFSET_ONE,
+                PROPERTY_DEFAULT_SHOW_PIXEL_POS_OFFSET_1));
     }
 
     private void setShowPixelPosDecimals(final Preferences preferences) {
         setShowPixelPosDecimals(preferences.getBoolean(
-                GeoLocationController.PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_SHOW_DECIMALS,
-                GeoLocationController.PROPERTY_DEFAULT_PIXEL_OFFSET_FOR_DISPLAY_SHOW_DECIMALS));
+                PROPERTY_KEY_SHOW_PIXEL_POS_DECIMALS,
+                PROPERTY_DEFAULT_SHOW_PIXEL_POS_DECIMALS));
     }
 
-    private void setShowGeoPosDecimal(final Preferences preferences) {
-        setShowGeoPosDecimal(preferences.getBoolean(
-                GeoLocationController.PROPERTY_KEY_DISPLAY_GEOLOCATION_AS_DECIMAL,
-                GeoLocationController.PROPERTY_DEFAULT_DISPLAY_GEOLOCATION_AS_DECIMAL));
+    private void setShowGeoPosDecimals(final Preferences preferences) {
+        setShowGeoPosDecimals(preferences.getBoolean(
+                PROPERTY_KEY_SHOW_GEO_POS_DECIMALS,
+                PROPERTY_DEFAULT_SHOW_GEO_POS_DECIMALS));
     }
 
     private static class ValueCellRenderer extends DefaultTableCellRenderer {
