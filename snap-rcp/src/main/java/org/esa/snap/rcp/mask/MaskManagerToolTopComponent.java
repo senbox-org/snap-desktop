@@ -31,9 +31,9 @@ import javax.swing.event.ListSelectionListener;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS //todo define
 )
 @TopComponent.Registration(
-        mode = "right",
-        openAtStartup = false,
-        position = 1
+        mode = "rightSlidingSide",
+        openAtStartup = true,
+        position = 20
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.mask.MaskManagerTopComponent")
 @ActionReferences({

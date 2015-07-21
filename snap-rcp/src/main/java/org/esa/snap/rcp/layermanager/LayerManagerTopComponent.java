@@ -35,9 +35,9 @@ import java.util.WeakHashMap;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS //todo define
 )
 @TopComponent.Registration(
-        mode = "right",
-        openAtStartup = false,
-        position = 1
+        mode = "rightSlidingSide",
+        openAtStartup = true,
+        position = 10
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.layermanager.LayerManagerTopComponent")
 @ActionReferences({
