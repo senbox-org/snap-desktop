@@ -207,12 +207,15 @@ public class ProductSubsetDialog extends ModalDialog {
     }
 
     private boolean checkReferencedRastersIncluded() {
-        final Set<String> notIncludedNames = new TreeSet<String>();
-        final List<String> includedNodeNames = Arrays.asList(productSubsetDef.getNodeNames());
-        for (final String nodeName : includedNodeNames) {
-            final RasterDataNode rasterDataNode = product.getRasterDataNode(nodeName);
-            if (rasterDataNode != null) {
-                collectNotIncludedReferences(rasterDataNode, notIncludedNames);
+        final Set<String> notIncludedNames = new TreeSet<>();
+        String[] nodeNames = productSubsetDef.getNodeNames();
+        if (nodeNames != null) {
+            final List<String> includedNodeNames = Arrays.asList(nodeNames);
+            for (final String nodeName : includedNodeNames) {
+                final RasterDataNode rasterDataNode = product.getRasterDataNode(nodeName);
+                if (rasterDataNode != null) {
+                    collectNotIncludedReferences(rasterDataNode, notIncludedNames);
+                }
             }
         }
 
@@ -263,7 +266,7 @@ public class ProductSubsetDialog extends ModalDialog {
     private static RasterDataNode[] getReferencedNodes(final RasterDataNode node) {
         final Product product = node.getProduct();
         if (product != null) {
-            final List<String> expressions = new ArrayList<String>(10);
+            final List<String> expressions = new ArrayList<>(10);
             if (node.getValidPixelExpression() != null) {
                 expressions.add(node.getValidPixelExpression());
             }
@@ -289,7 +292,7 @@ public class ProductSubsetDialog extends ModalDialog {
                 expressions.add(virtualBand.getExpression());
             }
 
-            final ArrayList<Term> termList = new ArrayList<Term>(10);
+            final ArrayList<Term> termList = new ArrayList<>(10);
             for (final String expression : expressions) {
                 try {
                     final Term term = product.parseExpression(expression);
@@ -311,7 +314,7 @@ public class ProductSubsetDialog extends ModalDialog {
 
     private boolean checkFlagDatasetIncluded() {
         final String[] nodeNames = productSubsetDef.getNodeNames();
-        final List<String> flagDsNameList = new ArrayList<String>(10);
+        final List<String> flagDsNameList = new ArrayList<>(10);
         boolean flagDsInSubset = false;
         for (int i = 0; i < product.getNumBands(); i++) {
             Band band = product.getBandAt(i);
@@ -538,10 +541,7 @@ public class ProductSubsetDialog extends ModalDialog {
                     BufferedImage thumbnail = null;
                     try {
                         thumbnail = get();
-                    } catch (Exception e) {
-                        if (e instanceof IOException) {
-                            showErrorDialog("Failed to load thumbnail image:\n" + e.getMessage());
-                        }
+                    } catch (Exception ignored) {
                     }
 
                     if (thumbnail != null) {
@@ -1072,15 +1072,9 @@ public class ProductSubsetDialog extends ModalDialog {
 
         private void createUI() {
 
-            ActionListener productNodeCheckListener = new ActionListener() {
+            ActionListener productNodeCheckListener = e -> updateUIState();
 
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    updateUIState();
-                }
-            };
-
-            checkers = new ArrayList<JCheckBox>(10);
+            checkers = new ArrayList<>(10);
             JPanel checkersPane = GridBagUtils.createPanel();
             setComponentName(checkersPane, "CheckersPane");
 
@@ -1114,17 +1108,13 @@ public class ProductSubsetDialog extends ModalDialog {
             GridBagUtils.addToPanel(checkersPane, new JLabel(" "), gbc,
                                     "gridwidth=2,weightx=1,weighty=1,gridx=0,gridy=" + productNodes.length);
 
-            ActionListener allCheckListener = new ActionListener() {
-
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    if (e.getSource() == allCheck) {
-                        checkAllProductNodes(true);
-                    } else if (e.getSource() == noneCheck) {
-                        checkAllProductNodes(false);
-                    }
-                    updateUIState();
+            ActionListener allCheckListener = e -> {
+                if (e.getSource() == allCheck) {
+                    checkAllProductNodes(true);
+                } else if (e.getSource() == noneCheck) {
+                    checkAllProductNodes(false);
                 }
+                updateUIState();
             };
 
             allCheck = new JCheckBox("Select all");
