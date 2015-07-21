@@ -135,7 +135,7 @@ public final class GeoLocationController extends DefaultConfigController {
         boolean paramShowDecimals = PROPERTY_DEFAULT_PIXEL_OFFSET_FOR_DISPLAY_SHOW_DECIMALS;
 
         @Preference(label = "Display pixel coordinate starting at (1,1)", key = PROPERTY_KEY_PIXEL_OFFSET_IS_ONE,
-                description = "Pixel coordinate with the upper left plug pixel of (1,1) coordinate, instead of (0,0).")
+                description = "Pixel coordinate with the upper left image pixel of (1,1) coordinate, instead of (0,0).")
         boolean pixelCoordinateStart = PROPERTY_DEFAULT_PIXEL_OFFSET_IS_ONE;
 
         @Preference(label = "Show geo-location coordinates in decimal degrees", key = PROPERTY_KEY_DISPLAY_GEOLOCATION_AS_DECIMAL)

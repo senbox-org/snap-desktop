@@ -78,8 +78,7 @@ public class PixelInfoView extends JPanel {
     private final ProductNodeListener productNodeListener;
 
     private boolean showPixelPosDecimals;
-    private float pixelOffsetX;
-    private float pixelOffsetY;
+    private boolean pixelOffsetOne;
     private DisplayFilter displayFilter;
 
     private final PixelInfoViewTableModel positionTableModel;
@@ -123,18 +122,15 @@ public class PixelInfoView extends JPanel {
                     setShowPixelPosDecimals(preferences);
                 } else if (GeoLocationController.PROPERTY_KEY_DISPLAY_GEOLOCATION_AS_DECIMAL.equals(propertyName)) {
                     setShowGeoPosDecimal(preferences);
-                } else if (GeoLocationController.PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_X.equals(propertyName)) {
-                    setPixelOffsetX(preferences);
-                } else if (GeoLocationController.PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_Y.equals(propertyName)) {
-                    setPixelOffsetY(preferences);
+                } else if (GeoLocationController.PROPERTY_KEY_PIXEL_OFFSET_IS_ONE.equals(propertyName)) {
+                    setPixelOffsetIsOne(preferences);
                 }
             }
         });
         setShowOnlyLoadedBands(preferences);
         setShowPixelPosDecimals(preferences);
         setShowGeoPosDecimal(preferences);
-        setPixelOffsetX(preferences);
-        setPixelOffsetY(preferences);
+        setPixelOffsetIsOne(preferences);
         createUI();
     }
 
@@ -225,26 +221,11 @@ public class PixelInfoView extends JPanel {
         return showGeoPosDecimal;
     }
 
-    private void setPixelOffsetX(float pixelOffsetX) {
-        if (this.pixelOffsetX != pixelOffsetX) {
-            this.pixelOffsetX = pixelOffsetX;
+    private void setPixelOffsetOne(boolean pixelOffsetOne) {
+        if (this.pixelOffsetOne != pixelOffsetOne) {
+            this.pixelOffsetOne = pixelOffsetOne;
             updateService.requestUpdate();
         }
-    }
-
-    float getPixelOffsetX() {
-        return pixelOffsetX;
-    }
-
-    private void setPixelOffsetY(float pixelOffsetY) {
-        if (this.pixelOffsetY != pixelOffsetY) {
-            this.pixelOffsetY = pixelOffsetY;
-            updateService.requestUpdate();
-        }
-    }
-
-    float getPixelOffsetY() {
-        return pixelOffsetY;
     }
 
     public void updatePixelValues(ProductSceneView view, int pixelX, int pixelY, int level, boolean pixelPosValid) {
@@ -338,16 +319,10 @@ public class PixelInfoView extends JPanel {
         displayFilter.setShowOnlyLoadedOrDisplayedBands(showOnlyLoadedOrDisplayedBands);
     }
 
-    private void setPixelOffsetY(final Preferences preferences) {
-        setPixelOffsetY((float) preferences.getDouble(
-                GeoLocationController.PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_Y,
-                GeoLocationController.PROPERTY_DEFAULT_PIXEL_OFFSET_FOR_DISPLAY));
-    }
-
-    private void setPixelOffsetX(final Preferences preferences) {
-        setPixelOffsetX((float) preferences.getDouble(
-                GeoLocationController.PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_X,
-                GeoLocationController.PROPERTY_DEFAULT_PIXEL_OFFSET_FOR_DISPLAY));
+    private void setPixelOffsetIsOne(final Preferences preferences) {
+        setPixelOffsetOne(preferences.getBoolean(
+                GeoLocationController.PROPERTY_KEY_PIXEL_OFFSET_IS_ONE,
+                GeoLocationController.PROPERTY_DEFAULT_PIXEL_OFFSET_IS_ONE));
     }
 
     private void setShowPixelPosDecimals(final Preferences preferences) {
