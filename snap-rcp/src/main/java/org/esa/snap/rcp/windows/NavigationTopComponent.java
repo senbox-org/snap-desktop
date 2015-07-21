@@ -87,9 +87,6 @@ import static java.lang.Math.*;
         "CTL_NavigationTopComponentName=Navigation",
         "CTL_NavigationTopComponentDescription=Navigates through the currently selected image view",
 })
-/**
- * A window which displays product spectra.
- */
 public class NavigationTopComponent extends TopComponent {
 
     public static final String ID = NavigationTopComponent.class.getName();
