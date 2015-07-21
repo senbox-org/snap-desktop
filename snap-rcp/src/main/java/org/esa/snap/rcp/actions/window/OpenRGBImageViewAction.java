@@ -99,8 +99,8 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
             return;
         }
         final String[] rgbaExpressions = profilePane.getRgbaExpressions();
-        if (!BandArithmetic.areReferencedRastersCompatible(product, rgbaExpressions)) {
-            SnapDialogs.showInformation(title, "Referenced rasters are incompatible", null);
+        if (!BandArithmetic.areReferencedRastersOfSameSize(product, rgbaExpressions)) {
+            SnapDialogs.showInformation(title, "Referenced rasters must all be the same size", null);
             return;
         }
         if (profilePane.getStoreProfileInProduct()) {

@@ -109,8 +109,8 @@ public class OpenHSVImageViewAction extends AbstractAction implements HelpCtx.Pr
             return;
         }
         final String[] hsvExpressions = profilePane.getRgbaExpressions();
-        if (!BandArithmetic.areReferencedRastersCompatible(product, hsvExpressions)) {
-            SnapDialogs.showInformation(title, "Referenced rasters are incompatible", null);
+        if (!BandArithmetic.areReferencedRastersOfSameSize(product, hsvExpressions)) {
+            SnapDialogs.showInformation(title, "Referenced rasters must all be the same size", null);
             return;
         }
         nomalizeHSVExpressions(product, hsvExpressions);
