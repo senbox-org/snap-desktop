@@ -449,16 +449,17 @@ public class PixelInfoViewModelUpdater {
             return RasterDataNode.INVALID_POS_TEXT;
         }
         if (isPixelValid(raster, pixelX, pixelY, level)) {
-            int geophysicalDataType = raster.getGeophysicalDataType();
-            if (geophysicalDataType == ProductData.TYPE_FLOAT64) {
-                double pixel = ProductUtils.getGeophysicalSampleDouble(raster, pixelX, pixelY, level);
-                return String.format("%.10f", pixel);
-            } else if (geophysicalDataType == ProductData.TYPE_FLOAT32) {
-                double pixel = ProductUtils.getGeophysicalSampleDouble(raster, pixelX, pixelY, level);
-                return String.format("%.5f", pixel);
-            } else {
-                return String.valueOf(ProductUtils.getGeophysicalSampleLong(raster, pixelX, pixelY, level));
+            if (raster.isScalingApplied() || ProductData.isFloatingPointType(raster.getDataType())) {
+                int dataType = raster.getGeophysicalDataType();
+                if (dataType == ProductData.TYPE_FLOAT64) {
+                    double pixel = ProductUtils.getGeophysicalSampleDouble(raster, pixelX, pixelY, level);
+                    return String.format("%.10f", pixel);
+                } else if (dataType == ProductData.TYPE_FLOAT32) {
+                    double pixel = ProductUtils.getGeophysicalSampleDouble(raster, pixelX, pixelY, level);
+                    return String.format("%.5f", pixel);
+                }
             }
+            return String.valueOf(ProductUtils.getGeophysicalSampleLong(raster, pixelX, pixelY, level));
         } else {
             return RasterDataNode.NO_DATA_TEXT;
         }
