@@ -376,7 +376,7 @@ public class PixelInfoViewModelUpdater {
     private void updateTiePointGridPixelValues() {
         for (int i = 0; i < tiePointModel.getRowCount(); i++) {
             final TiePointGrid grid = currentProduct.getTiePointGrid((String) tiePointModel.getValueAt(i, 0));
-            tiePointModel.updateValue(grid.getPixelString(levelZeroX, levelZeroY), i);
+            tiePointModel.updateValue(getPixelString(grid), i);
         }
     }
 
