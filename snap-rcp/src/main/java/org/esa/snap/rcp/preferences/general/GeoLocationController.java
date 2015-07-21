@@ -157,30 +157,6 @@ public final class GeoLocationController extends DefaultConfigController {
         pageUI.add(showDecimalComponents[0]);
         pageUI.add(geolocationAsDecimalComponents[0]);
         pageUI.add(tableLayout.createVerticalSpacer());
-
-//        pageUI.add(xComponents[1]);
-//        tableLayout.setCellWeightX(0, 1, 1.0);
-//        pageUI.add(xComponents[0]);
-
-//        tableLayout.setCellRowspan(0, 1, 2);
-//        tableLayout.setCellColspan(0, 1, 2);
-//        tableLayout.setCellWeightX(0, 1, 1.0);
-//        tableLayout.setCellAnchor(0, 1, TableLayout.Anchor.CENTER);
-//        tableLayout.setCellFill(0, 1, TableLayout.Fill.NONE);
-//        pageUI.add(visualizer);
-
-//        pageUI.add(yComponents[1]);
-//        tableLayout.setCellWeightX(1, 1, 1.0);
-//        pageUI.add(yComponents[0]);
-//        tableLayout.setCellWeightX(0, 0, 1.0);
-
-//        tableLayout.setRowPadding(1, new Insets(10, 0, 4, 4));
-//        pageUI.add(showDecimalComponents[0], cell(2, 0, 1, 3));
-//        tableLayout.setRowPadding(2, new Insets(10, 0, 4, 4));
-//        pageUI.add(geolocationAsDecimalComponents[0], cell(3, 0, 1, 3));
-
-
-
         return createPageUIContentPane(pageUI);
     }
 

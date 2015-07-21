@@ -47,8 +47,6 @@ public class PixelPosStatusLineElementProvider
     public final static String PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_SHOW_DECIMALS = "pixel.offset.display.show.decimals";
     public final static String PROPERTY_KEY_GEOLOCATION_OFFSET_FOR_DISPLAY_SHOW_DECIMALS = "geolocation.display.decimal";
 
-    public final static double PROPERTY_DEFAULT_PIXEL_OFFSET_FOR_DISPLAY_X = 0;
-    public final static double PROPERTY_DEFAULT_PIXEL_OFFSET_FOR_DISPLAY_Y = 0;
     public final static boolean PROPERTY_DEFAULT_PIXEL_OFFSET_FOR_DISPLAY_SHOW_DECIMALS = false;
     public final static boolean PROPERTY_DEFAULT_DISPLAY_GEOLOCATION_AS_DECIMAL = false;
 
@@ -215,13 +213,6 @@ public class PixelPosStatusLineElementProvider
 
     private void updateSettings() {
         final Preferences preferences = SnapApp.getDefault().getPreferences();
-        //Todo @Muhammad bc
-        // Will be implement for calculate the pixels in the setting.
-        double pixelOffsetY = preferences.getDouble(PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_Y,
-                                                    PROPERTY_DEFAULT_PIXEL_OFFSET_FOR_DISPLAY_X);
-
-        double pixelOffsetX = preferences.getDouble(PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_X,
-                                                    PROPERTY_DEFAULT_PIXEL_OFFSET_FOR_DISPLAY_Y);
         showPixelOffsetDecimals = preferences.getBoolean(
                 PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_SHOW_DECIMALS,
                 PROPERTY_DEFAULT_PIXEL_OFFSET_FOR_DISPLAY_SHOW_DECIMALS);

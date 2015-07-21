@@ -70,7 +70,7 @@ public @interface Preference {
     String interval() default "";
 
     /**
-     * Description as Tooltips
+     * Description as Tooltips text
      */
     String description() default "";
 
