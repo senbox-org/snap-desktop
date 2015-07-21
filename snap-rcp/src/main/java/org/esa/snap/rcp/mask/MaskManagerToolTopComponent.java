@@ -31,7 +31,7 @@ import javax.swing.event.ListSelectionListener;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS //todo define
 )
 @TopComponent.Registration(
-        mode = "navigator",
+        mode = "right",
         openAtStartup = false,
         position = 1
 )

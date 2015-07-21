@@ -44,9 +44,9 @@ import java.text.DecimalFormat;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS //todo define
 )
 @TopComponent.Registration(
-        mode = "navigator",
+        mode = "properties",
         openAtStartup = false,
-        position = 1
+        position = 10
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.placemark.gcp.GcpManagerTopComponent")
 @ActionReferences({

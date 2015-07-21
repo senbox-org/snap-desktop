@@ -32,7 +32,7 @@ import javax.swing.Icon;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS //todo define
 )
 @TopComponent.Registration(
-        mode = "navigator",
+        mode = "properties",
         openAtStartup = false,
         position = 1
 )

@@ -75,7 +75,7 @@ import static java.lang.Math.*;
 @TopComponent.Registration(
         mode = "navigator",
         openAtStartup = true,
-        position = 0
+        position = 10
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.window.NavigationTopComponent")
 @ActionReference(path = "Menu/View/Tool Windows", position = 0)

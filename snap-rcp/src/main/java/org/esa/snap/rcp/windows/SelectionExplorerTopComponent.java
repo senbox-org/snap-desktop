@@ -29,7 +29,7 @@ import java.util.Collection;
         preferredID = "SelectionExplorerTopComponent",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
-@TopComponent.Registration(mode = "explorer", openAtStartup = true, position = 2, roles={"developer"})
+@TopComponent.Registration(mode = "right", openAtStartup = true, position = 100, roles={"developer"})
 @ActionID(category = "Window", id = "org.esa.snap.rcp.window.SelectionExplorerTopComponent")
 @ActionReference(path = "Menu/View/Tool Windows", position = 0)
 @TopComponent.OpenActionRegistration(

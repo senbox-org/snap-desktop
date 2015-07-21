@@ -63,7 +63,7 @@ import java.net.URISyntaxException;
         persistenceType = TopComponent.PERSISTENCE_NEVER
 )
 @TopComponent.Registration(
-        mode = "editor",
+        mode = "navigator",
         openAtStartup = false,
         position = 1
 )

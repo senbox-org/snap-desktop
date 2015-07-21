@@ -102,7 +102,7 @@ import java.util.List;
 import java.util.Map;
 
 @TopComponent.Description(preferredID = "SpectrumTopComponent", iconBase = "org/esa/snap/rcp/icons/Spectrum.gif" )
-@TopComponent.Registration(mode = "navigator", openAtStartup = false, position = 1 )
+@TopComponent.Registration(mode = "properties", openAtStartup = false, position = 1 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.statistics.SpectrumTopComponent")
 @ActionReferences({
         @ActionReference(path = "Menu/Optical", position = 0),

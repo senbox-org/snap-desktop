@@ -29,9 +29,9 @@ import org.openide.windows.TopComponent;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS //todo define
 )
 @TopComponent.Registration(
-        mode = "navigator",
+        mode = "properties",
         openAtStartup = false,
-        position = 1
+        position = 20
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.statistics.GeoCodingTopComponent")
 @ActionReferences({

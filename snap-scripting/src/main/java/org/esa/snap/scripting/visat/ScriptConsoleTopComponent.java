@@ -72,7 +72,7 @@ import java.util.Map;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(
-        mode = "bottomSlidingSide",  // it's one of the standard modes,
+        mode = "output",  // it's one of the standard modes,
         openAtStartup = false,
         position = 1)
 @ActionID(category = "Window", id = "org.esa.snap.scripting.visat.ScriptConsoleTopComponent")

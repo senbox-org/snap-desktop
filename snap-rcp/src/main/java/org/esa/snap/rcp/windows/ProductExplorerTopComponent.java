@@ -42,7 +42,7 @@ import java.text.SimpleDateFormat;
 @TopComponent.Registration(
         mode = "explorer",
         openAtStartup = true,
-        position = 1)
+        position = 10)
 @ActionID(category = "Window", id = "org.esa.snap.rcp.window.ProductExplorerTopComponent")
 @ActionReference(path = "Menu/View/Tool Windows", position = 0)
 @TopComponent.OpenActionRegistration(

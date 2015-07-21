@@ -13,7 +13,7 @@ import org.openide.windows.TopComponent;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS //todo define
 )
 @TopComponent.Registration(
-        mode = "navigator",
+        mode = "properties",
         openAtStartup = false,
         position = 1
 )

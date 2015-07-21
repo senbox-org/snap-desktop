@@ -39,7 +39,7 @@ import java.beans.PropertyChangeListener;
 )
 @TopComponent.Registration(mode = "explorer",
                            openAtStartup = true,
-                           position = 3
+                           position = 20
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.window.PixelInfoTopComponent")
 @ActionReference(path = "Menu/View/Tool Windows", position = 0)

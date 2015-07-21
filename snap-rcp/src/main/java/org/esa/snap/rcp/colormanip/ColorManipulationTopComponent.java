@@ -32,7 +32,7 @@ import java.awt.BorderLayout;
 @TopComponent.Registration(
         mode = "navigator",
         openAtStartup = true,
-        position = 1
+        position = 20
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.colormanip.ColorManipulationTopComponent")
 @ActionReferences({
