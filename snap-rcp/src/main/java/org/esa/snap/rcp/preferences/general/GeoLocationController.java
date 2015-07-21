@@ -27,21 +27,10 @@ import org.esa.snap.rcp.preferences.Preference;
 import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.HelpCtx;
 
-import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
-import javax.swing.SwingConstants;
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
-import java.awt.Rectangle;
-import java.awt.RenderingHints;
-import java.beans.PropertyChangeListener;
 
 import static com.bc.ceres.swing.TableLayout.*;
 
@@ -63,36 +52,20 @@ import static com.bc.ceres.swing.TableLayout.*;
 public final class GeoLocationController extends DefaultConfigController {
 
     /**
-     * Preferences key for pixel offset-X for display pixel positions
+     * Preference key for coordinate system starting at (1,1)
      */
-    public static final String PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_X = "pixel.offset.display.x";
-    /**
-     * Preferences key for pixel offset-Y for display pixel positions
-     */
-    public static final String PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_Y = "pixel.offset.display.y";
+    public static final String PROPERTY_KEY_PIXEL_OFFSET_IS_ONE = "pixel.coordinates.starting.at.one";
 
-    /**
-     * Preference key for coorddinate starting with (1,1)
-     */
-    public static final String PROPERTY_KEY_PIXEL_COORINATE_STARTING = "pixel.coordinate.start.XY";
     /**
      * Preferences key for showing floating-point image coordinates
      */
-    // todo - check if property key really matches purpose of key
     public static final String PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_SHOW_DECIMALS = "pixel.offset.display.show.decimals";
+
     /**
      * Preferences key for display style of geo-locations
      */
     public static final String PROPERTY_KEY_DISPLAY_GEOLOCATION_AS_DECIMAL = "geolocation.display.decimal";
 
-    /**
-     * Default geo-location epsilon
-     */
-    public static final float DEFAULT_GEOLOCATION_EPS = 1.0e-4F;
-    /**
-     * Default value for pixel offset's for display pixel positions
-     */
-    public static final float PROPERTY_DEFAULT_PIXEL_OFFSET_FOR_DISPLAY = 0.5f;
     /**
      * Default value for pixel offset's for display pixel positions
      */
@@ -105,7 +78,7 @@ public final class GeoLocationController extends DefaultConfigController {
     /**
      * Default value for steeing the starting point for pixel coordinate
      */
-    public static final boolean PROPERTY_DEFAULT_KEY_PIXEL_COORINATE_STARTING = true;
+    public static final boolean PROPERTY_DEFAULT_PIXEL_OFFSET_IS_ONE = false;
 
     protected PropertySet createPropertySet() {
         return createPropertySet(new GeoLocationBean());
@@ -118,29 +91,14 @@ public final class GeoLocationController extends DefaultConfigController {
 
     @Override
     protected JPanel createPanel(BindingContext context) {
-        JComponent visualizer = createOffsetVisualizer(context);
-        visualizer.setPreferredSize(new Dimension(60, 60));
-        visualizer.setOpaque(true);
-        visualizer.setBorder(BorderFactory.createLoweredBevelBorder());
 
         final PropertyEditorRegistry registry = PropertyEditorRegistry.getInstance();
-        Property paramOffsetX = context.getPropertySet().getProperty(PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_X);
-        Property paramOffsetY = context.getPropertySet().getProperty(PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_Y);
         Property paramShowDecimals = context.getPropertySet().getProperty(PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_SHOW_DECIMALS);
-        Property paramPixelCoordinateStarting = context.getPropertySet().getProperty(PROPERTY_KEY_PIXEL_COORINATE_STARTING);
+        Property paramPixelCoordinateStartingAtOne = context.getPropertySet().getProperty(PROPERTY_KEY_PIXEL_OFFSET_IS_ONE);
         Property paramGeolocationAsDecimal = context.getPropertySet().getProperty(PROPERTY_KEY_DISPLAY_GEOLOCATION_AS_DECIMAL);
-        PropertyChangeListener listener = evt -> visualizer.repaint();
-        paramPixelCoordinateStarting.addPropertyChangeListener(listener);
 
-        paramOffsetX.addPropertyChangeListener(listener);
-        paramOffsetY.addPropertyChangeListener(listener);
-
-        JComponent[] xComponents = registry.findPropertyEditor(paramOffsetX.getDescriptor()).createComponents(paramOffsetX.getDescriptor(), context);
-        JComponent[] yComponents = registry.findPropertyEditor(paramOffsetY.getDescriptor()).createComponents(paramOffsetY.getDescriptor(), context);
         JComponent[] showDecimalComponents = registry.findPropertyEditor(paramShowDecimals.getDescriptor()).createComponents(paramShowDecimals.getDescriptor(), context);
-
-        JComponent[] pixelCoordinateStart = registry.findPropertyEditor(paramShowDecimals.getDescriptor()).createComponents(paramPixelCoordinateStarting.getDescriptor(), context);
-
+        JComponent[] pixelCoordinateStart = registry.findPropertyEditor(paramShowDecimals.getDescriptor()).createComponents(paramPixelCoordinateStartingAtOne.getDescriptor(), context);
         JComponent[] geolocationAsDecimalComponents = registry.findPropertyEditor(paramGeolocationAsDecimal.getDescriptor()).createComponents(paramGeolocationAsDecimal.getDescriptor(), context);
 
         TableLayout tableLayout = new TableLayout(1);
@@ -160,58 +118,6 @@ public final class GeoLocationController extends DefaultConfigController {
         return createPageUIContentPane(pageUI);
     }
 
-    private JComponent createOffsetVisualizer(BindingContext context) {
-        return new JPanel() {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                int totWidth = getWidth();
-                int totHeight = getHeight();
-
-                if (totWidth == 0 || totHeight == 0) {
-                    return;
-                }
-                if (!(g instanceof Graphics2D)) {
-                    return;
-                }
-
-                Graphics2D g2d = (Graphics2D) g;
-                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2d.setStroke(new BasicStroke(2));
-                int borderSize = 10;
-                int maxPixelWidth = totWidth - 2 * borderSize;
-                int maxPixelHeight = totHeight - 2 * borderSize;
-                int pixelSize = Math.min(maxPixelHeight, maxPixelWidth);
-                Rectangle pixel = new Rectangle((totWidth - pixelSize) / 2, (totHeight - pixelSize) / 2, pixelSize, pixelSize);
-                g2d.setColor(Color.blue);
-                g2d.drawRect(pixel.x, pixel.y, pixel.width, pixel.height);
-                Property paramOffsetX = context.getPropertySet().getProperty(PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_X);
-                Property paramOffsetY = context.getPropertySet().getProperty(PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_Y);
-
-                float offsetX = paramOffsetX.getValue();
-                float offsetY = paramOffsetY.getValue();
-
-                int posX = Math.round(pixelSize * offsetX + pixel.x);
-                int posY = Math.round(pixelSize * offsetY + pixel.y);
-                drawPos(g2d, posX, posY);
-            }
-
-            private void drawPos(Graphics2D g2d, final int posX, final int posY) {
-                g2d.setColor(Color.yellow);
-                final int crossLength = 8;
-                g2d.drawLine(posX - crossLength, posY, posX + crossLength, posY);
-                g2d.drawLine(posX, posY - crossLength, posX, posY + crossLength);
-                g2d.setColor(Color.red);
-
-                final int diameter = 3;
-                g2d.fillOval(posX - diameter / 2, posY - diameter / 2, diameter, diameter);
-            }
-        };
-    }
-
     private static JPanel createPageUIContentPane(JPanel pane) {
         JPanel contentPane = GridBagUtils.createPanel();
         final GridBagConstraints gbc = GridBagUtils.createConstraints("fill=HORIZONTAL,anchor=NORTHWEST");
@@ -225,18 +131,12 @@ public final class GeoLocationController extends DefaultConfigController {
 
     static class GeoLocationBean {
 
-        @Preference(label = "Relative pixel-X offset", key = PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_X, interval = "[0,1]")
-        float paramOffsetX = PROPERTY_DEFAULT_PIXEL_OFFSET_FOR_DISPLAY;
-
-        @Preference(label = "Relative pixel-Y offset", key = PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_Y, interval = "[0,1]")
-        float paramOffsetY = PROPERTY_DEFAULT_PIXEL_OFFSET_FOR_DISPLAY;
-
         @Preference(label = "Show floating-point image coordinates", key = PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_SHOW_DECIMALS)
         boolean paramShowDecimals = PROPERTY_DEFAULT_PIXEL_OFFSET_FOR_DISPLAY_SHOW_DECIMALS;
 
-        @Preference(label = "Display pixel coordinate starting at (1,1)", key = PROPERTY_KEY_PIXEL_COORINATE_STARTING,
+        @Preference(label = "Display pixel coordinate starting at (1,1)", key = PROPERTY_KEY_PIXEL_OFFSET_IS_ONE,
                 description = "Pixel coordinate with the upper left plug pixel of (1,1) coordinate, instead of (0,0).")
-        boolean pixelCoordinateStart = PROPERTY_DEFAULT_KEY_PIXEL_COORINATE_STARTING;
+        boolean pixelCoordinateStart = PROPERTY_DEFAULT_PIXEL_OFFSET_IS_ONE;
 
         @Preference(label = "Show geo-location coordinates in decimal degrees", key = PROPERTY_KEY_DISPLAY_GEOLOCATION_AS_DECIMAL)
         boolean paramGeolocationAsDecimal = PROPERTY_DEFAULT_DISPLAY_GEOLOCATION_AS_DECIMAL;
