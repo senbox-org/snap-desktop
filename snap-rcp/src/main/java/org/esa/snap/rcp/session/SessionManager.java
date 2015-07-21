@@ -21,8 +21,8 @@ public class SessionManager {
 
     public SnapFileFilter getSessionFileFilter() {
         return new SnapFileFilter("SESSION",
-                                  new String[]{String.format(".%s", SystemUtils.getApplicationContextId()), ".snap"},
-                                  String.format("%s Session file", SystemUtils.getApplicationName()));
+                                  new String[]{".snap"},
+                                  "SNAP session files");
     }
 
     public File getSessionFile() {
