@@ -452,10 +452,10 @@ public class PixelInfoViewModelUpdater {
             if (raster.isScalingApplied() || ProductData.isFloatingPointType(raster.getDataType())) {
                 int dataType = raster.getGeophysicalDataType();
                 if (dataType == ProductData.TYPE_FLOAT64) {
-                    double pixel = ProductUtils.getGeophysicalSampleDouble(raster, pixelX, pixelY, level);
+                    double pixel = ProductUtils.getGeophysicalSampleAsDouble(raster, pixelX, pixelY, level);
                     return String.format("%.10f", pixel);
                 } else if (dataType == ProductData.TYPE_FLOAT32) {
-                    double pixel = ProductUtils.getGeophysicalSampleDouble(raster, pixelX, pixelY, level);
+                    double pixel = ProductUtils.getGeophysicalSampleAsDouble(raster, pixelX, pixelY, level);
                     return String.format("%.5f", pixel);
                 }
             }

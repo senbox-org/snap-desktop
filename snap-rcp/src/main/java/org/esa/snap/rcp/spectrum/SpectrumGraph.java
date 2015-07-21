@@ -159,7 +159,7 @@ class SpectrumGraph extends AbstractDiagramGraph {
     }
 
     private double getSample(Band band, int pixelX, int pixelY, int level) {
-        return ProductUtils.getGeophysicalSampleDouble(band, pixelX, pixelY, level);
+        return ProductUtils.getGeophysicalSampleAsDouble(band, pixelX, pixelY, level);
     }
 
     @Override

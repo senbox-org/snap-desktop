@@ -877,7 +877,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
                     for (Band spectralBand : spectralBands) {
                         final float wavelength = spectralBand.getSpectralWavelength();
                         if (spectralBand.isPixelValid(pixelX, pixelY)) {
-                            final double energy = ProductUtils.getGeophysicalSampleDouble(spectralBand, pixelX, pixelY, level);
+                            final double energy = ProductUtils.getGeophysicalSampleAsDouble(spectralBand, pixelX, pixelY, level);
                             if (energy != spectralBand.getGeophysicalNoDataValue()) {
                                 series.add(wavelength, energy);
                             }
@@ -948,7 +948,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
             int pinPixelX = (int) Math.floor(imagePixel.getX());
             int pinPixelY = (int) Math.floor(imagePixel.getY());
             if (spectralBand.isPixelValid(pinPixelX, pinPixelY)) {
-                return ProductUtils.getGeophysicalSampleDouble(spectralBand, pinPixelX, pinPixelY, level);
+                return ProductUtils.getGeophysicalSampleAsDouble(spectralBand, pinPixelX, pinPixelY, level);
             }
             return spectralBand.getGeophysicalNoDataValue();
         }
