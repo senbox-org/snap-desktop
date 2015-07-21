@@ -15,8 +15,8 @@ public class CollapsibleItemsPanel extends JComponent {
 
     private Item[] items;
     private JToggleButton[] toggleButtons;
-    private static ImageIcon col_icon = ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/NodeCollapsed11.png", false);
-    private static ImageIcon exp_icon = ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/NodeExpanded11.png", false);
+    private static ImageIcon COL_ICON = ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/NodeCollapsed11.png", false);
+    private static ImageIcon EXP_ICON = ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/NodeExpanded11.png", false);
 
     public static void main(String[] args) {
         try {
@@ -55,7 +55,11 @@ public class CollapsibleItemsPanel extends JComponent {
             Item item = items[i];
             JToggleButton button = new JToggleButton(item.getDisplayName());
             Font font = button.getFont();
-            button.setFont(font.deriveFont(Font.BOLD, font.getSize() * 0.8f));
+            if (font != null) {
+                button.setFont(font.deriveFont(Font.PLAIN, font.getSize()));
+            } else {
+                button.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
+            }
 
             JPanel panel = new JPanel(new BorderLayout(0, 0));
             panel.add(button, BorderLayout.NORTH);
@@ -63,10 +67,10 @@ public class CollapsibleItemsPanel extends JComponent {
 
             button.setHorizontalAlignment(SwingConstants.LEFT);
             button.setBorder(new EmptyBorder(2, 4, 2, 4));
-            button.setIcon(exp_icon);
+            button.setIcon(EXP_ICON);
             button.addActionListener(e -> {
                 item.getComponent().setVisible(!button.isSelected());
-                button.setIcon(button.isSelected() ? col_icon : exp_icon);
+                button.setIcon(button.isSelected() ? COL_ICON : EXP_ICON);
             });
             toggleButtons[i] = button;
             add(panel);
@@ -80,7 +84,7 @@ public class CollapsibleItemsPanel extends JComponent {
     public void setCollapsed(int index, boolean collapsed) {
         items[index].getComponent().setVisible(!collapsed);
         toggleButtons[index].setSelected(collapsed);
-        toggleButtons[index].setIcon(collapsed ? col_icon : exp_icon);
+        toggleButtons[index].setIcon(collapsed ? COL_ICON : EXP_ICON);
     }
 
     @Override

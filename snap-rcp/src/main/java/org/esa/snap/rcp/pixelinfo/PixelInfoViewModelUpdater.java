@@ -77,18 +77,18 @@ public class PixelInfoViewModelUpdater {
 
     private final PixelInfoView pixelInfoView;
 
-    PixelInfoViewModelUpdater(PixelInfoViewTableModel positionModel,
+    PixelInfoViewModelUpdater(PixelInfoView pixelInfoView,
+                              PixelInfoViewTableModel positionModel,
                               PixelInfoViewTableModel timeModel,
                               PixelInfoViewTableModel bandModel,
                               PixelInfoViewTableModel tiePointModel,
-                              PixelInfoViewTableModel flagModel,
-                              PixelInfoView pixelInfoView) {
+                              PixelInfoViewTableModel flagModel) {
+        this.pixelInfoView = pixelInfoView;
         this.positionModel = positionModel;
         this.timeModel = timeModel;
         this.bandModel = bandModel;
         this.tiePointModel = tiePointModel;
         this.flagModel = flagModel;
-        this.pixelInfoView = pixelInfoView;
     }
 
     Product getCurrentProduct() {
@@ -376,7 +376,7 @@ public class PixelInfoViewModelUpdater {
     private void updateTiePointGridPixelValues() {
         for (int i = 0; i < tiePointModel.getRowCount(); i++) {
             final TiePointGrid grid = currentProduct.getTiePointGrid((String) tiePointModel.getValueAt(i, 0));
-            tiePointModel.updateValue(grid.getPixelString(levelZeroX, levelZeroY), i);
+            tiePointModel.updateValue(getPixelString(grid), i);
         }
     }
 

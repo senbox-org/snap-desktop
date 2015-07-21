@@ -591,10 +591,10 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
                                 final Product product = band.getProduct();
                                 final RasterDataNode[] refRasters = BandArithmetic.getRefRasters(newValue, product);
                                 if (refRasters.length > 0 &&
-                                        (!BandArithmetic.areReferencedRastersCompatible(product, newValue) ||
+                                        (!BandArithmetic.areReferencedRastersOfSameSize(product, newValue) ||
                                                 refRasters[0].getRasterHeight() != band.getRasterHeight() ||
                                                 refRasters[0].getRasterWidth() != band.getRasterWidth())) {
-                                    SnapDialogs.showInformation("Referenced rasters are incompatible", null);
+                                    SnapDialogs.showInformation("Referenced rasters must all be the same size", null);
                                 } else {
                                     String oldValue = band.getValidPixelExpression();
                                     performUndoableProductNodeEdit("Edit Valid-Pixel Expression",

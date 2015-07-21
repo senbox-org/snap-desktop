@@ -63,9 +63,9 @@ public class PixelInfoView extends JPanel {
     public static final String PROPERTY_KEY_SHOW_ONLY_DISPLAYED_BAND_PIXEL_VALUES = "pixelview.showOnlyDisplayedBands";
     public static final boolean PROPERTY_DEFAULT_SHOW_DISPLAYED_BAND_PIXEL_VALUES = true;
 
-    private static final int name_column = 0;
-    private static final int value_column = 1;
-    private static final int unit_column = 2;
+    private static final int NAME_COLUMN = 0;
+    private static final int VALUE_COLUMN = 1;
+    private static final int UNIT_COLUMN = 2;
     private boolean showGeoPosDecimal;
 
     public static final int POSITION_INDEX = 0;
@@ -104,12 +104,12 @@ public class PixelInfoView extends JPanel {
         bandsTableModel = new PixelInfoViewTableModel(new String[]{"Band", "Value", "Unit"});
         tiePointGridsTableModel = new PixelInfoViewTableModel(new String[]{"Tie-Point Grid", "Value", "Unit"});
         flagsTableModel = new PixelInfoViewTableModel(new String[]{"Flag", "Value",});
-        modelUpdater = new PixelInfoViewModelUpdater(positionTableModel,
+        modelUpdater = new PixelInfoViewModelUpdater(this, positionTableModel,
                                                      timeTableModel,
                                                      bandsTableModel,
                                                      tiePointGridsTableModel,
-                                                     flagsTableModel,
-                                                     this);
+                                                     flagsTableModel
+        );
         updateService = new PixelInfoUpdateService(modelUpdater);
         setDisplayFilter(new DisplayFilter());
         final Preferences preferences = SnapApp.getDefault().getPreferences();
@@ -177,15 +177,6 @@ public class PixelInfoView extends JPanel {
      */
     public Product getCurrentProduct() {
         return modelUpdater.getCurrentProduct();
-    }
-
-    /**
-     * Returns the current raster
-     *
-     * @return the current raster
-     */
-    public RasterDataNode getCurrentRaster() {
-        return modelUpdater.getCurrentRaster();
     }
 
     /**
@@ -287,17 +278,18 @@ public class PixelInfoView extends JPanel {
         flagsItem.getComponent().getColumnModel().getColumn(1).setCellRenderer(flagCellRenderer);
 
         collapsibleItemsPanel = new CollapsibleItemsPanel(
-                positionItem,
-                timeItem,
-                bandsItem,
-                flagsItem,
-                tiePointGridsItem
+                positionItem, // POSITION_INDEX = 0
+                timeItem,  // TIME_INDEX = 1
+                bandsItem, // BANDS_INDEX = 2
+                tiePointGridsItem, // TIE_POINT_GRIDS_INDEX = 3
+                flagsItem // FLAGS_INDEX =  4
         );
         collapsibleItemsPanel.setCollapsed(POSITION_INDEX, false);
         collapsibleItemsPanel.setCollapsed(TIME_INDEX, true);
         collapsibleItemsPanel.setCollapsed(BANDS_INDEX, false);
         collapsibleItemsPanel.setCollapsed(TIE_POINT_GRIDS_INDEX, true);
         collapsibleItemsPanel.setCollapsed(FLAGS_INDEX, true);
+
         JScrollPane scrollPane = new JScrollPane(collapsibleItemsPanel,
                                                  ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
                                                  ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
@@ -330,9 +322,9 @@ public class PixelInfoView extends JPanel {
     private boolean selectCurrentRaster(String rasterName, JTable table) {
         final TableModel model = table.getModel();
         for (int i = 0; i < model.getRowCount(); i++) {
-            final String s = model.getValueAt(i, name_column).toString();
+            final String s = model.getValueAt(i, NAME_COLUMN).toString();
             if (rasterName.equals(s)) {
-                table.changeSelection(i, name_column, false, false);
+                table.changeSelection(i, NAME_COLUMN, false, false);
                 return true;
             }
         }
@@ -401,7 +393,7 @@ public class PixelInfoView extends JPanel {
             super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
             setForeground(Color.black);
             setBackground(Color.white);
-            if (column == value_column && value != null) {
+            if (column == VALUE_COLUMN && value != null) {
                 if (value.equals("true")) {
                     setForeground(UIUtils.COLOR_DARK_RED);
                     setBackground(VERY_LIGHT_BLUE);

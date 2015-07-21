@@ -740,8 +740,8 @@ public class ExpressionPane extends JPanel {
             if (parser != null) {
                 try {
                     Term term = parser.parse(code);
-                    if (term != null && !BandArithmetic.areReferencedRastersCompatible(term)) {
-                        message = "Referenced rasters are not compatible";
+                    if (term != null && !BandArithmetic.areReferencedRastersOfSameSize(term)) {
+                        message = "Referenced rasters must all be the same size";
                         foreground = warnMsgColor;
                     } else if (term == null || !booleanExpressionPreferred || term.isB()) {
                         message = "Ok, no errors.";  /*I18N*/
