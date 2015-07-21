@@ -238,8 +238,8 @@ public class PixelInfoViewModelUpdater {
             if (geoCoding != null) {
                 GeoPos geoPos = geoCoding.getGeoPos(pixelPos, null);
                 if (pixelInfoView.getShowGeoPosDecimals()) {
-                    tgx = String.valueOf(geoPos.getLon());
-                    tgy = String.valueOf(geoPos.getLat());
+                    tgx = String.format("%.6f", geoPos.getLon());
+                    tgy = String.format("%.6f", geoPos.getLat());
                 } else {
                     tgx = geoPos.getLonString();
                     tgy = geoPos.getLatString();
