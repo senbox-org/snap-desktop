@@ -30,6 +30,11 @@ import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
 import java.util.prefs.Preferences;
 
+import static org.esa.snap.rcp.pixelinfo.PixelInfoView.PROPERTY_DEFAULT_SHOW_GEO_POS_DECIMALS;
+import static org.esa.snap.rcp.pixelinfo.PixelInfoView.PROPERTY_DEFAULT_SHOW_PIXEL_POS_DECIMALS;
+import static org.esa.snap.rcp.pixelinfo.PixelInfoView.PROPERTY_KEY_SHOW_GEO_POS_DECIMALS;
+import static org.esa.snap.rcp.pixelinfo.PixelInfoView.PROPERTY_KEY_SHOW_PIXEL_POS_DECIMALS;
+
 /**
  * Displays current pixel position in the status bar.
  *
@@ -41,14 +46,6 @@ public class PixelPosStatusLineElementProvider
         DocumentWindowManager.Listener,
         PixelPositionListener,
         PreferenceChangeListener {
-
-    public final static String PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_X = "pixel.offset.display.x";
-    public final static String PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_Y = "pixel.offset.display.y";
-    public final static String PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_SHOW_DECIMALS = "pixel.offset.display.show.decimals";
-    public final static String PROPERTY_KEY_GEOLOCATION_OFFSET_FOR_DISPLAY_SHOW_DECIMALS = "geolocation.display.decimal";
-
-    public final static boolean PROPERTY_DEFAULT_PIXEL_OFFSET_FOR_DISPLAY_SHOW_DECIMALS = false;
-    public final static boolean PROPERTY_DEFAULT_DISPLAY_GEOLOCATION_AS_DECIMAL = false;
 
     private static final String GEO_POS_FORMAT = "Lat %8s  Lon %8s";
     private static final String PIXEL_POS_FORMAT = "X %6s  Y %6s";
@@ -176,10 +173,8 @@ public class PixelPosStatusLineElementProvider
     public void preferenceChange(PreferenceChangeEvent evt) {
         // Called if SNAP preferences change, adjust any status bar setting here.
         final String propertyName = evt.getKey();
-        if (PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_X.equals(propertyName)
-                || PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_Y.equals(propertyName)
-                || PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_SHOW_DECIMALS.equals(propertyName)
-                || PROPERTY_KEY_GEOLOCATION_OFFSET_FOR_DISPLAY_SHOW_DECIMALS.equals(propertyName)) {
+        if (PROPERTY_KEY_SHOW_PIXEL_POS_DECIMALS.equals(propertyName)
+                || PROPERTY_KEY_SHOW_GEO_POS_DECIMALS.equals(propertyName)) {
             updateSettings();
         }
     }
@@ -214,12 +209,12 @@ public class PixelPosStatusLineElementProvider
     private void updateSettings() {
         final Preferences preferences = SnapApp.getDefault().getPreferences();
         showPixelOffsetDecimals = preferences.getBoolean(
-                PROPERTY_KEY_PIXEL_OFFSET_FOR_DISPLAY_SHOW_DECIMALS,
-                PROPERTY_DEFAULT_PIXEL_OFFSET_FOR_DISPLAY_SHOW_DECIMALS);
+                PROPERTY_KEY_SHOW_PIXEL_POS_DECIMALS,
+                PROPERTY_DEFAULT_SHOW_PIXEL_POS_DECIMALS);
 
         showGeoPosOffsetDecimals = preferences.getBoolean(
-                PROPERTY_KEY_GEOLOCATION_OFFSET_FOR_DISPLAY_SHOW_DECIMALS,
-                PROPERTY_DEFAULT_DISPLAY_GEOLOCATION_AS_DECIMAL);
+                PROPERTY_KEY_SHOW_GEO_POS_DECIMALS,
+                PROPERTY_DEFAULT_SHOW_GEO_POS_DECIMALS);
     }
 }
 
