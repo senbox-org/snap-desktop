@@ -22,7 +22,7 @@ import org.openide.windows.TopComponent;
 @TopComponent.Registration(
         mode = "output",
         openAtStartup = false,
-        position = 1
+        position = 10
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.placemark.pin.PinManagerTopComponent")
 @ActionReferences({

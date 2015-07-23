@@ -31,7 +31,7 @@ import org.openide.windows.TopComponent;
 @TopComponent.Registration(
         mode = "properties",
         openAtStartup = false,
-        position = 1
+        position = 50
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.statistics.HistogramPlotTopComponent")
 @ActionReferences({

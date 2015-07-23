@@ -46,7 +46,7 @@ import java.text.DecimalFormat;
 @TopComponent.Registration(
         mode = "properties",
         openAtStartup = false,
-        position = 10
+        position = 20
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.placemark.gcp.GcpManagerTopComponent")
 @ActionReferences({

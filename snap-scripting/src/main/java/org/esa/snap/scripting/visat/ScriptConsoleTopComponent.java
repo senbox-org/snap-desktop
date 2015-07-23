@@ -74,7 +74,7 @@ import java.util.Map;
 @TopComponent.Registration(
         mode = "output",  // it's one of the standard modes,
         openAtStartup = false,
-        position = 1)
+        position = 30)
 @ActionID(category = "Window", id = "org.esa.snap.scripting.visat.ScriptConsoleTopComponent")
 @ActionReference(path = "Menu/View/Tool Windows", position = 0)
 @TopComponent.OpenActionRegistration(

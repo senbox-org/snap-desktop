@@ -44,7 +44,7 @@ import java.awt.Dimension;
 @TopComponent.Registration(
         mode = "navigator",
         openAtStartup = false,
-        position = 1
+        position = 40
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.worldmap.WorldMapTopComponent")
 @ActionReferences({

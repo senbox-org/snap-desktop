@@ -34,7 +34,7 @@ import javax.swing.Icon;
 @TopComponent.Registration(
         mode = "properties",
         openAtStartup = false,
-        position = 1
+        position = 70
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.statistics.ScatterPlotTopComponent")
 @ActionReferences({

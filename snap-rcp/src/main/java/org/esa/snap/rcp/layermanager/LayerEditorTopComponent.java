@@ -76,6 +76,7 @@ public class LayerEditorTopComponent extends AbstractLayerTopComponent {
     protected void initUI() {
         layerHandler = new LayerHandler();
         super.initUI();
+//        add(activeEditor.createControl(newLayer), BorderLayout.CENTER);
     }
 
     @Override

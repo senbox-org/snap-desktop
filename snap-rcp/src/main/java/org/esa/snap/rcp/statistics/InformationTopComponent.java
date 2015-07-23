@@ -31,7 +31,7 @@ import org.openide.windows.TopComponent;
 @TopComponent.Registration(
         mode = "properties",
         openAtStartup = false,
-        position = 1
+        position = 10
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.statistics.InformationTopComponent")
 @ActionReferences({
