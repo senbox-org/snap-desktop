@@ -17,6 +17,7 @@ package org.esa.snap.rcp.mask;
 
 import org.esa.snap.framework.datamodel.Mask;
 import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.datamodel.ProductNodeGroup;
 import org.esa.snap.framework.datamodel.RasterDataNode;
 
 import javax.swing.AbstractButton;
@@ -27,6 +28,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -141,4 +143,15 @@ abstract class MaskForm {
         maskTable.clear();
     }
 
+    Dimension getTargetMaskSize() {
+        RasterDataNode raster = getRaster();
+        if (raster != null) {
+            return new Dimension(raster.getSceneRasterWidth(), raster.getSceneRasterHeight());
+        }
+        Product product = getProduct();
+        if (product != null) {
+            return new Dimension(product.getSceneRasterWidth(), product.getSceneRasterHeight());
+        }
+        return null;
+    }
 }
