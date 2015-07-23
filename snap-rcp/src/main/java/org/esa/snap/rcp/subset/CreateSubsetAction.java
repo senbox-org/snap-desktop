@@ -16,7 +16,6 @@
 
 package org.esa.snap.rcp.subset;
 
-import com.bc.ceres.core.Assert;
 import org.esa.snap.framework.dataio.ProductSubsetDef;
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.ProductNode;
@@ -48,8 +47,8 @@ import java.awt.event.ActionEvent;
         @ActionReference(path = "Menu/Raster", position = 50)
 })
 @NbBundle.Messages({
-        "CTL_CreateSubsetAction_Name=Spatial Subset...",
-        "CTL_CreateSubsetAction_Title=Spatial Subset"
+        "CTL_CreateSubsetAction_Name=Subset...",
+        "CTL_CreateSubsetAction_Title=Subset"
 })
 public class CreateSubsetAction extends AbstractAction {
 
