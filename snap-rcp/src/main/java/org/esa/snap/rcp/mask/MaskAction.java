@@ -19,6 +19,7 @@ package org.esa.snap.rcp.mask;
 import org.esa.snap.framework.datamodel.Mask;
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.ProductNodeGroup;
+import org.esa.snap.framework.datamodel.RasterDataNode;
 import org.esa.snap.framework.ui.UIUtils;
 import org.esa.snap.framework.ui.tool.ToolButtonFactory;
 import org.esa.snap.rcp.SnapApp;
@@ -78,6 +79,7 @@ abstract class MaskAction extends AbstractAction {
         final Product product = maskForm.getProduct();
         final ProductNodeGroup<Mask> productNodeGroup = product.getMaskGroup();
         String maskName = getNewMaskName(productNodeGroup);
+        // todo - [multisize_products] fix: use width/height of selected (displayed) band (nf 2015-07-23)
         final Mask mask = new Mask(maskName,
                                    product.getSceneRasterWidth(),
                                    product.getSceneRasterHeight(),
