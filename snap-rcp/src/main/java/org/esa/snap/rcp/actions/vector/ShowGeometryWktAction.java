@@ -65,7 +65,7 @@ import java.awt.event.ActionEvent;
 @ActionRegistration(displayName = "#CTL_ShowGeometryWktAction_MenuText", lazy = false)
 @ActionReferences({
         @ActionReference(path = "Menu/Vector", position = 19, separatorAfter = 20),
-        @ActionReference(path = "Context/View", position = 10)
+        @ActionReference(path = "Context/ProductSceneView", position = 10)
 })
 @NbBundle.Messages({
         "CTL_ShowGeometryWktAction_MenuText=WKT from Geometry",

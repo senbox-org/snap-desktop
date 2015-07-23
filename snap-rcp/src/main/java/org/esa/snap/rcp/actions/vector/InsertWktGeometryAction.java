@@ -72,7 +72,7 @@ import java.awt.event.ActionEvent;
 )
 @ActionReferences({
         @ActionReference(path = "Menu/Vector", position = 11, separatorBefore = 10),
-        @ActionReference(path = "Context/View", position = 0)
+        @ActionReference(path = "Context/ProductSceneView", position = 0)
 })
 
 @NbBundle.Messages({

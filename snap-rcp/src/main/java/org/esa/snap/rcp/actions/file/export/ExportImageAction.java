@@ -78,7 +78,7 @@ import java.awt.image.RenderedImage;
 )
 @ActionReferences({
         @ActionReference(path = "Menu/File/Export/Other", position = 80, separatorAfter = 200),
-        @ActionReference(path = "Context/View",position = 70)
+        @ActionReference(path = "Context/ProductSceneView",position = 70)
 })
 @NbBundle.Messages({
         "CTL_ExportImageAction_MenuText=View as Image",

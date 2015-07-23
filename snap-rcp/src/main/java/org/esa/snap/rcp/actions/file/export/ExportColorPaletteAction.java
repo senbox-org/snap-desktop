@@ -65,7 +65,7 @@ import java.util.Optional;
 )
 @ActionReferences({
         @ActionReference(path = "Menu/File/Export/Other", position = 20),
-        @ActionReference(path = "Context/View" ,position = 80)
+        @ActionReference(path = "Context/ProductSceneView" ,position = 80)
 })
 @NbBundle.Messages({
         "CTL_ExportColorPaletteAction_MenuText=Colour Palette as File",

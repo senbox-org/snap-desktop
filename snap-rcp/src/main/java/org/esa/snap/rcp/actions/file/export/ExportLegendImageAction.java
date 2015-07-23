@@ -69,7 +69,7 @@ import java.awt.image.RenderedImage;
 )
 @ActionReferences({
         @ActionReference(path = "Menu/File/Export/Other", position = 10),
-        @ActionReference(path = "Context/View", position = 90)
+        @ActionReference(path = "Context/ProductSceneView", position = 90)
 })
 @NbBundle.Messages({
         "CTL_ExportLegendImageAction_MenuText=Colour Legend as Image",

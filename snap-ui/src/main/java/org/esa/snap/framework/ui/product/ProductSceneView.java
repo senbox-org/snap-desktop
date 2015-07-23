@@ -411,7 +411,7 @@ public class ProductSceneView extends BasicView
     @Override
     public JPopupMenu createPopupMenu(MouseEvent event) {
         JPopupMenu popupMenu = new JPopupMenu();
-        List<? extends Action> viewActions = Utilities.actionsForPath("Context/View");
+        List<? extends Action> viewActions = Utilities.actionsForPath("Context/ProductSceneView");
         for (Action action : viewActions) {
             JMenuItem menuItem = popupMenu.add(action);
             String popupText = (String) action.getValue("popupText");
@@ -420,7 +420,7 @@ public class ProductSceneView extends BasicView
             }
         }
         addCopyPixelInfoToClipboardMenuItem(popupMenu);
-      return popupMenu;
+        return popupMenu;
     }
 
     /**
@@ -1091,7 +1091,6 @@ public class ProductSceneView extends BasicView
         menuItem.addActionListener(e -> copyPixelInfoStringToClipboard());
         popupMenu.add(menuItem);
     }
-
 
 
     private void addShowGeometryOverlayAction(JPopupMenu popupMenu) {

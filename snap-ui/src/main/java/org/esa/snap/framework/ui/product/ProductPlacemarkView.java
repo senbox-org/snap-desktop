@@ -94,13 +94,12 @@ public class ProductPlacemarkView extends BasicView implements ProductNodeView {
     @Override
     public JPopupMenu createPopupMenu(Component component) {
         JPopupMenu popupMenu = new JPopupMenu();
-        List<? extends Action> viewActions = Utilities.actionsForPath("Context/Placemark");
+        List<? extends Action> viewActions = Utilities.actionsForPath("Context/ProductPlacemarkView");
         for (Action action : viewActions) {
             popupMenu.add(action);
         }
         popupMenu.add(new CopyToClipboardAction());
         return popupMenu;
-
     }
 
     @Override
