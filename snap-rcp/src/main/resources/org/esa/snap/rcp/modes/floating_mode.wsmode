@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mode PUBLIC "-//NetBeans//DTD Mode Properties 2.3//EN" "http://www.netbeans.org/dtds/mode-properties2_3.dtd">
+
+<mode version="2.4">
+    <name unique="floatingmode"  />
+    <kind type="view" />
+    <state type="separated"  />
+    <constraints>
+        <path orientation="horizontal" number="100" weight="0.5"/>
+    </constraints>
+    <bounds x="602" y="267" width="510" height="583" />
+    <frame state="0"/>
+    <empty-behavior permanent="true"/>
+</mode>
