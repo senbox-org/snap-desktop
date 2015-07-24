@@ -21,6 +21,9 @@ import org.esa.snap.framework.datamodel.TiePointGrid;
 import org.esa.snap.framework.datamodel.VectorDataNode;
 import org.esa.snap.framework.datamodel.VirtualBand;
 import org.esa.snap.framework.dataop.barithm.BandArithmetic;
+import org.esa.snap.netbeans.docwin.DocumentWindow;
+import org.esa.snap.netbeans.docwin.DocumentWindowManager;
+import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.actions.window.OpenImageViewAction;
@@ -173,13 +176,25 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
         }
         throw new IllegalStateException("unhandled product node type: " + productNode.getClass() + " named '" + productNode.getName() + "'");
     }
+//
+
+
+    private static <T extends ProductNode> void closeDocumentWindow(T productNode) {
+        WindowUtilities.getOpened(DocumentWindow.class)
+                .filter(dw -> (dw.getDocument() instanceof ProductNode) && (dw.getDocument() == productNode))
+                .forEach(dw -> DocumentWindowManager.getDefault().closeWindow(dw));
+    }
 
     private static <T extends ProductNode> void deleteProductNode(Product product, ProductNodeGroup<T>[] groups,
                                                                   T productNode) {
-        // todo - close all document windows / layers that refer to productNode (nf/mp - 14.01.2015)
+
+        closeDocumentWindow(productNode);
+
         int indexes[] = new int[groups.length];
         for (int i = 0; i < groups.length; i++) {
             indexes[i] = groups[i].indexOf(productNode);
+//            ProductManager productManager = SnapApp.getDefault().getProductManager();
+
             groups[i].remove(productNode);
         }
         UndoRedo.Manager manager = SnapApp.getDefault().getUndoManager(product);
