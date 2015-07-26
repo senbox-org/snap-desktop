@@ -591,7 +591,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
                                 final Product product = band.getProduct();
                                 final RasterDataNode[] refRasters = BandArithmetic.getRefRasters(newValue, product);
                                 if (refRasters.length > 0 &&
-                                        (!BandArithmetic.areReferencedRastersOfSameSize(product, newValue) ||
+                                        (!BandArithmetic.areRastersEqualInSize(product, newValue) ||
                                                 refRasters[0].getRasterHeight() != band.getRasterHeight() ||
                                                 refRasters[0].getRasterWidth() != band.getRasterWidth())) {
                                     SnapDialogs.showInformation("Referenced rasters must all be the same size", null);
