@@ -67,7 +67,7 @@ class VariableItemDialog extends ModalDialog {
             return false;
         }
         try {
-            BandArithmetic.getValidMaskExpression(expression, new Product[]{contextProduct}, 0, null);
+            BandArithmetic.getValidMaskExpression(expression, contextProduct, null);
         } catch (ParseException e) {
             String errorMessage = "The source band could not be created.\nThe expression could not be parsed:\n" + e.getMessage(); /*I18N*/
             JOptionPane.showMessageDialog(getParent(), errorMessage);

@@ -286,7 +286,7 @@ public class MagicWandModel implements Cloneable {
 
         String validMaskExpression;
         try {
-            validMaskExpression = BandArithmetic.getValidMaskExpression(expression, new Product[]{product}, 0, null);
+            validMaskExpression = BandArithmetic.getValidMaskExpression(expression, product, null);
         } catch (ParseException e) {
             validMaskExpression = null;
         }
