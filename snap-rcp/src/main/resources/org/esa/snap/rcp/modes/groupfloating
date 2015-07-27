@@ -4,7 +4,7 @@
     <name unique="groupfloating"  />
     <kind type="view" />
     <state type="joined"  />
-    <bounds x="0" y="0" width="0" height="0" />
+    <bounds x="750" y="267" width="510" height="583" />
     <frame state="0"/>
     <empty-behavior permanent="true"/>
 </mode>

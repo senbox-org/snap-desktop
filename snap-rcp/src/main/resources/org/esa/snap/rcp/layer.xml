@@ -385,6 +385,8 @@
     <folder name="Windows2">
         <folder name="Modes">
             <file name="navigator.wsmode" url="modes/navigator.wsmode"/>
+            <file name="floating.wsmode" url="modes/floating.wsmode"/>
+            <file name="groupfloating.wsmode" url="modes/groupfloating.wsmode"/>
         </folder>
     </folder>
 
