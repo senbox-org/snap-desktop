@@ -6,22 +6,15 @@
 package org.esa.snap.rcp.actions.file;
 
 import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductNode;
+import org.esa.snap.framework.datamodel.ProductManager;
 import org.esa.snap.rcp.SnapApp;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
-import org.openide.util.ContextAwareAction;
-import org.openide.util.Lookup;
-import org.openide.util.LookupEvent;
-import org.openide.util.LookupListener;
 import org.openide.util.NbBundle;
-import org.openide.util.Utilities;
-import org.openide.util.WeakListeners;
 
 import javax.swing.AbstractAction;
-import javax.swing.Action;
 import java.awt.event.ActionEvent;
 import java.util.Arrays;
 import java.util.List;
@@ -36,35 +29,17 @@ import java.util.List;
 
 @ActionReferences({
         @ActionReference(path = "Menu/File", position = 25)
-//        @ActionReference(path = "Context/Product/Product", position = 70)
 })
 @NbBundle.Messages({"CTL_CloseAllProductsActionName=Close All Products"})
-public final class CloseAllProductsAction extends AbstractAction implements LookupListener, ContextAwareAction {
-
-    private final Lookup lkp;
+public final class CloseAllProductsAction extends AbstractAction{
 
     public CloseAllProductsAction() {
-        this(Utilities.actionsGlobalContext());
-    }
-
-    public CloseAllProductsAction(Lookup lkp) {
         super(Bundle.CTL_CloseAllProductsActionName());
-        this.lkp = lkp;
-        Lookup.Result<ProductNode> lkpContext = lkp.lookupResult(ProductNode.class);
-        lkpContext.addLookupListener(WeakListeners.create(LookupListener.class, this, lkpContext));
+        ProductManager productManager = SnapApp.getDefault().getProductManager();
+        productManager.addListener(new CloseAllProductListener());
         setEnabled(false);
     }
 
-    @Override
-    public Action createContextAwareInstance(Lookup actionContext) {
-        return new CloseAllProductsAction(actionContext);
-    }
-
-    @Override
-    public void resultChanged(LookupEvent ev) {
-        ProductNode productNode = lkp.lookup(ProductNode.class);
-        setEnabled(productNode != null);
-    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -81,5 +56,21 @@ public final class CloseAllProductsAction extends AbstractAction implements Look
         return new CloseProductAction(products).execute();
     }
 
+    private class CloseAllProductListener implements ProductManager.Listener {
+
+        @Override
+        public void productAdded(ProductManager.Event event) {
+            updateEnableState();
+        }
+
+        @Override
+        public void productRemoved(ProductManager.Event event) {
+            updateEnableState();
+        }
+
+        private void updateEnableState() {
+            setEnabled(SnapApp.getDefault().getProductManager().getProductCount() > 0);
+        }
+    }
 
 }
