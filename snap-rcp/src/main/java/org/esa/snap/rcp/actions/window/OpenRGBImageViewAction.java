@@ -99,7 +99,7 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
             return;
         }
         final String[] rgbaExpressions = profilePane.getRgbaExpressions();
-        if (!BandArithmetic.areReferencedRastersOfSameSize(product, rgbaExpressions)) {
+        if (!BandArithmetic.areRastersEqualInSize(product, rgbaExpressions)) {
             SnapDialogs.showInformation(title, "Referenced rasters must all be the same size", null);
             return;
         }

@@ -81,7 +81,7 @@ import java.util.GregorianCalendar;
 @ActionReferences({
         @ActionReference(path = "Menu/File/Export/Other", position = 50),
         @ActionReference(path = "Menu/Raster/Export"),
-        @ActionReference(path = "Context/View", position = 50)
+        @ActionReference(path = "Context/ProductSceneView", position = 50)
 })
 
 @NbBundle.Messages({

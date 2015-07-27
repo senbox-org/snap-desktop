@@ -20,6 +20,7 @@ import com.bc.ceres.binding.Property;
 import com.bc.ceres.binding.PropertyContainer;
 import com.bc.ceres.glevel.MultiLevelImage;
 import com.bc.ceres.grender.Viewport;
+import com.bc.jexp.ParseException;
 import com.bc.jexp.impl.Tokenizer;
 import org.esa.snap.dataio.dimap.DimapProductConstants;
 import org.esa.snap.dataio.dimap.spi.DimapPersistable;
@@ -29,6 +30,7 @@ import org.esa.snap.framework.datamodel.Mask;
 import org.esa.snap.framework.datamodel.Mask.ImageType;
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.ProductNodeGroup;
+import org.esa.snap.framework.datamodel.RasterDataNode;
 import org.esa.snap.framework.datamodel.VectorDataNode;
 import org.esa.snap.framework.dataop.barithm.BandArithmetic;
 import org.esa.snap.framework.gpf.GPF;
@@ -41,6 +43,7 @@ import org.esa.snap.rcp.actions.vector.CreateVectorDataNodeAction;
 import org.esa.snap.rcp.util.internal.RasterDataNodeDeleter;
 import org.esa.snap.rcp.windows.ToolTopComponent;
 import org.esa.snap.util.DefaultPropertyMap;
+import org.esa.snap.util.ProductUtils;
 import org.esa.snap.util.PropertyMap;
 import org.esa.snap.util.StringUtils;
 import org.esa.snap.util.io.FileUtils;
@@ -63,6 +66,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.Window;
@@ -71,8 +75,6 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -249,12 +251,7 @@ class MaskFormActions {
         @Override
         String getCode(ActionEvent e) {
             Mask[] selectedMasks = getMaskForm().getSelectedMasks();
-            StringBuilder code = new StringBuilder();
-            code.append("!(");
-            code.append(createCodeFromSelection("||", selectedMasks, 0));
-            code.append(")");
-
-            return code.toString();
+            return "!(" + createCodeFromSelection("||", selectedMasks, 0) + ")";
         }
 
         @Override
@@ -278,32 +275,42 @@ class MaskFormActions {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            final Product product = getMaskForm().getProduct();
-            final String[] rasterNames = StringUtils.addArrays(product.getBandNames(),
-                                                               product.getTiePointGridNames());
+            Product product = getMaskForm().getProduct();
+            String[] rasterNames = StringUtils.addArrays(product.getBandNames(),
+                                                         product.getTiePointGridNames());
 
-            final RangeEditorDialog.Model model = new RangeEditorDialog.Model(rasterNames);
+            RangeEditorDialog.Model model = new RangeEditorDialog.Model(rasterNames);
             model.setMinValue(0.0);
             model.setMaxValue(1.0);
             model.setRasterName(rasterNames[0]);
 
             final RangeEditorDialog rangeEditorDialog = new RangeEditorDialog(getWindow(e), model);
             if (rangeEditorDialog.show() == AbstractDialog.ID_OK) {
-                final Mask mask = createNewMask(Mask.RangeType.INSTANCE);
-                final String externalName = Tokenizer.createExternalName(model.getRasterName());
+                RasterDataNode referencedRaster = product.getRasterDataNode(model.getRasterName());
+                if (referencedRaster == null) {
+                    SnapDialogs.showError(String.format("Raster '%s' not found.", model.getRasterName()));
+                    return;
+                }
+                Dimension expectedSize = getMaskForm().getTargetMaskSize();
+                if (expectedSize != null
+                        && !ProductUtils.areRastersEqualInSize(expectedSize.width, expectedSize.height, referencedRaster)) {
+                    String message = String.format("'%s' does not have the expected size of %d x %d pixels.",
+                                                   model.getRasterName(), expectedSize.width, expectedSize.height);
+                    SnapDialogs.showError(message);
+                    return;
+                }
+                Mask mask = createNewMask(Mask.RangeType.INSTANCE);
+                String externalName = Tokenizer.createExternalName(model.getRasterName());
                 mask.setDescription(model.getMinValue() + " <= " + externalName + " <= " + model.getMaxValue());
 
-                final PropertyContainer imageConfig = mask.getImageConfig();
+                PropertyContainer imageConfig = mask.getImageConfig();
                 imageConfig.setValue(Mask.RangeType.PROPERTY_NAME_MINIMUM, model.getMinValue());
                 imageConfig.setValue(Mask.RangeType.PROPERTY_NAME_MAXIMUM, model.getMaxValue());
                 imageConfig.setValue(Mask.RangeType.PROPERTY_NAME_RASTER, externalName);
-                imageConfig.addPropertyChangeListener(new PropertyChangeListener() {
-                    @Override
-                    public void propertyChange(PropertyChangeEvent evt) {
-                        final String oldText = evt.getOldValue().toString();
-                        final String newText = evt.getNewValue().toString();
-                        mask.setDescription(mask.getDescription().replace(oldText, newText));
-                    }
+                imageConfig.addPropertyChangeListener(evt -> {
+                    String oldText = evt.getOldValue().toString();
+                    String newText = evt.getNewValue().toString();
+                    mask.setDescription(mask.getDescription().replace(oldText, newText));
                 });
                 getMaskForm().addMask(mask);
             }
@@ -348,7 +355,7 @@ class MaskFormActions {
         @Override
         String getCode(ActionEvent e) {
             Mask[] selectedMasks = getMaskForm().getSelectedMasks();
-            final List<Mask> reverseList = new ArrayList<Mask>(Arrays.asList(selectedMasks));
+            List<Mask> reverseList = new ArrayList<>(Arrays.asList(selectedMasks));
             Collections.reverse(reverseList);
             selectedMasks = reverseList.toArray(new Mask[selectedMasks.length]);
             StringBuilder code = new StringBuilder();
@@ -672,15 +679,6 @@ class MaskFormActions {
             return false;
         }
 
-        private static boolean hasFailedExports(boolean[] masksExported) {
-            for (boolean maskExported : masksExported) {
-                if (!maskExported) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
         private boolean[] addContent(Mask[] masks, Document document) {
             boolean[] masksExported = new boolean[masks.length];
             for (int i = 0; i < masks.length; i++) {
@@ -743,7 +741,7 @@ class MaskFormActions {
                 ProductExpressionPane expressionPane = ProductExpressionPane.createBooleanExpressionPane(
                         new Product[]{product}, product, null);
                 expressionPane.setEmptyExpressionAllowed(false);
-                expressionPane.setCode((String) selectedMaskConfig.getValue("expression"));
+                expressionPane.setCode(selectedMaskConfig.getValue("expression"));
                 if (expressionPane.showModalDialog(window, "Edit Band Maths Mask") == AbstractDialog.ID_OK) {
                     String code = expressionPane.getCode();
                     selectedMaskConfig.setValue("expression", code);
@@ -754,9 +752,9 @@ class MaskFormActions {
                 final String[] rasterNames = StringUtils.addArrays(product.getBandNames(),
                                                                    product.getTiePointGridNames());
                 final RangeEditorDialog.Model model = new RangeEditorDialog.Model(rasterNames);
-                model.setMinValue((Double) selectedMaskConfig.getValue(Mask.RangeType.PROPERTY_NAME_MINIMUM));
-                model.setMaxValue((Double) selectedMaskConfig.getValue(Mask.RangeType.PROPERTY_NAME_MAXIMUM));
-                model.setRasterName((String) selectedMaskConfig.getValue(Mask.RangeType.PROPERTY_NAME_RASTER));
+                model.setMinValue(selectedMaskConfig.getValue(Mask.RangeType.PROPERTY_NAME_MINIMUM));
+                model.setMaxValue(selectedMaskConfig.getValue(Mask.RangeType.PROPERTY_NAME_MAXIMUM));
+                model.setRasterName(selectedMaskConfig.getValue(Mask.RangeType.PROPERTY_NAME_RASTER));
                 final RangeEditorDialog rangeEditorDialog = new RangeEditorDialog(window, model);
                 if (rangeEditorDialog.show() == AbstractDialog.ID_OK) {
                     final String description = String.format("%s <= %s <= %s",
@@ -769,14 +767,13 @@ class MaskFormActions {
                 }
             } else if (type == Mask.VectorDataType.INSTANCE) {
                 JOptionPane.showMessageDialog(window,
-                                              "Use the VISAT geometry tools to add new points, lines or polygons.\n" +
-                                              "You can then use the select tool to select and modify the shape\n" +
-                                              "and position of the geometries.",
+                                              "Use the geometry tools to add new points, lines or polygons.\n" +
+                                                      "You can then use the select tool to select and modify the shape\n" +
+                                                      "and position of the geometries.",
                                               "Edit Geometry Mask",
                                               JOptionPane.INFORMATION_MESSAGE);
             } else {
                 // todo - implement for other types too
-
             }
         }
 
@@ -853,18 +850,30 @@ class MaskFormActions {
 
 
         void addBandMathMask(String code) {
+            Product product = getMaskForm().getProduct();
+            RasterDataNode[] refRasters;
+            try {
+                refRasters = BandArithmetic.getRefRasters(code, product);
+            } catch (ParseException e) {
+                SnapDialogs.showError("Invalid expression '" + code + "':\n" + e.getMessage());
+                return;
+            }
+            Dimension expectedSize = getMaskForm().getTargetMaskSize();
+            if (expectedSize != null
+                    && !ProductUtils.areRastersEqualInSize(expectedSize.width, expectedSize.height, refRasters)) {
+                String message = String.format("Referenced rasters must all be the same size (%d x %d pixels).",
+                                               expectedSize.width, expectedSize.height);
+                SnapDialogs.showError(message);
+                return;
+            }
+
             final Mask mask = createNewMask(Mask.BandMathsType.INSTANCE);
             final PropertyContainer imageConfig = mask.getImageConfig();
             final String propertyNameExpression = Mask.BandMathsType.PROPERTY_NAME_EXPRESSION;
             imageConfig.setValue(propertyNameExpression, code);
-            imageConfig.addPropertyChangeListener(propertyNameExpression, new PropertyChangeListener() {
-                @Override
-                public void propertyChange(PropertyChangeEvent evt) {
-                    if (evt.getOldValue().equals(mask.getDescription())) {
-                        mask.setDescription((String) evt.getNewValue());
-                    } else {
-                        // description my have been set by user, ignore change
-                    }
+            imageConfig.addPropertyChangeListener(propertyNameExpression, evt -> {
+                if (evt.getOldValue().equals(mask.getDescription())) {
+                    mask.setDescription((String) evt.getNewValue());
                 }
             });
             mask.setDescription(code);
@@ -882,8 +891,8 @@ class MaskFormActions {
         @Override
         void updateState() {
             setEnabled(getMaskForm().isInManagementMode() &&
-                       getMaskForm().getSelectedRowCount() > 0 &&
-                       SnapApp.getDefault().getProductManager().getProductCount() > 1);
+                               getMaskForm().getSelectedRowCount() > 0 &&
+                               SnapApp.getDefault().getProductManager().getProductCount() > 1);
         }
 
         @Override
@@ -934,7 +943,7 @@ class MaskFormActions {
 
         private static void reprojectBandData(Mask[] selectedMasks, Product sourceProduct, Product targetProduct) {
             final Map<String, Object> projParameters = Collections.EMPTY_MAP;
-            Map<String, Product> projProducts = new HashMap<String, Product>();
+            Map<String, Product> projProducts = new HashMap<>();
             projProducts.put("source", sourceProduct);
             projProducts.put("collocateWith", targetProduct);
             Product reprojectedProduct = GPF.createProduct("Reproject", projParameters, projProducts);
@@ -947,7 +956,7 @@ class MaskFormActions {
         }
 
         private static Band createBandCopy(Product targetProduct, Mask mask) {
-            String bandName = getAvaliableBandName("mask_" + mask.getName(), targetProduct);
+            String bandName = getAvailableBandName("mask_" + mask.getName(), targetProduct);
             String maskName = getAvailableMaskName(mask.getName(), targetProduct.getMaskGroup());
             int dataType = mask.getDataType();
             Band band = targetProduct.addBand(bandName, dataType);
@@ -965,7 +974,7 @@ class MaskFormActions {
             return foundName;
         }
 
-        private static String getAvaliableBandName(String name, Product product) {
+        private static String getAvailableBandName(String name, Product product) {
             int index = 1;
             String foundName = name;
             while (product.containsBand(foundName)) {
@@ -983,13 +992,12 @@ class MaskFormActions {
             super(maskForm, "icons/ZoomTo24.gif", "zoomToButton",
                   "Zooms to the selected mask.");
             this.topComponent = topComponent;
-//            this.toolView = topComponent;
         }
 
         @Override
         void updateState() {
             setEnabled(getMaskForm().getSelectedRowCount() == 1 &&
-                       topComponent.getSelectedProductSceneView() != null);
+                               topComponent.getSelectedProductSceneView() != null);
 
         }
 

@@ -195,7 +195,7 @@ class MaskTableModel extends AbstractTableModel {
             final ProductNodeGroup<Mask> maskGroup = product.getMaskGroup();
             for (int i = 0; i < maskGroup.getNodeCount(); i++) {
                 final Mask mask = maskGroup.get(i);
-                //todo ask ImageGeometry whether mask and band have the same scenerastertransform
+                // todo - [multisize_products] fix: ask ImageGeometry whether mask and band have the same scenerastertransform
                 if (mask.getSceneRasterWidth() == visibleBand.getSceneRasterWidth() &&
                     mask.getSceneRasterHeight() == visibleBand.getSceneRasterHeight()) {
                     visibleMasks.add(mask);

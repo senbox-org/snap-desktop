@@ -300,10 +300,13 @@
             </folder>
 
         </folder>
-        <folder name="View">
-        </folder>
-        <folder name="Placemark">
-        </folder>
+
+        <!-- Context for image view windows, provided by instances of org.esa.snap.framework.ui.product.ProductSceneView -->
+        <folder name="ProductSceneView"/>
+
+        <!-- Context for placemark view windows, provided by instances of org.esa.snap.framework.ui.product.ProductPlacemarkView -->
+        <folder name="ProductPlacemarkView"/>
+
     </folder>
 
     <!--

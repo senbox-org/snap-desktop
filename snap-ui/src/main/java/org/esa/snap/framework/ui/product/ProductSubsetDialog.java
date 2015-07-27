@@ -305,9 +305,7 @@ public class ProductSubsetDialog extends ModalDialog {
                 }
             }
 
-            final Term[] terms = termList.toArray(new Term[termList.size()]);
-            final RasterDataSymbol[] refRasterDataSymbols = BandArithmetic.getRefRasterDataSymbols(terms);
-            return BandArithmetic.getRefRasters(refRasterDataSymbols);
+            return BandArithmetic.getRefRasters(termList.toArray(new Term[termList.size()]));
         }
         return new RasterDataNode[0];
     }

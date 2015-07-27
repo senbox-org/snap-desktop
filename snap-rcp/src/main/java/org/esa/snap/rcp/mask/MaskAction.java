@@ -19,6 +19,7 @@ package org.esa.snap.rcp.mask;
 import org.esa.snap.framework.datamodel.Mask;
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.ProductNodeGroup;
+import org.esa.snap.framework.datamodel.RasterDataNode;
 import org.esa.snap.framework.ui.UIUtils;
 import org.esa.snap.framework.ui.tool.ToolButtonFactory;
 import org.esa.snap.rcp.SnapApp;
@@ -28,6 +29,7 @@ import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
+import java.awt.Dimension;
 import java.net.URL;
 import java.util.prefs.Preferences;
 
@@ -75,14 +77,10 @@ abstract class MaskAction extends AbstractAction {
     }
 
     protected Mask createNewMask(Mask.ImageType type) {
-        final Product product = maskForm.getProduct();
-        final ProductNodeGroup<Mask> productNodeGroup = product.getMaskGroup();
-        String maskName = getNewMaskName(productNodeGroup);
-        final Mask mask = new Mask(maskName,
-                                   product.getSceneRasterWidth(),
-                                   product.getSceneRasterHeight(),
-                                   type);
-        final Preferences preferences = SnapApp.getDefault().getPreferences();
+        String maskName = getNewMaskName(getMaskForm().getProduct().getMaskGroup());
+        Dimension maskSize = getMaskForm().getTargetMaskSize();
+        Mask mask = new Mask(maskName, maskSize.width, maskSize.height, type);
+        Preferences preferences = SnapApp.getDefault().getPreferences();
         mask.setImageColor(
                 StringUtils.parseColor(preferences.get("mask.color", StringUtils.formatColor(Mask.ImageType.DEFAULT_COLOR))));
         mask.setImageTransparency(preferences.getDouble("mask.transparency", Mask.ImageType.DEFAULT_TRANSPARENCY));
