@@ -3,8 +3,8 @@
 <mode version="2.4">
     <name unique="groupfloating"  />
     <kind type="view" />
-    <state type="joined"  />
-    <bounds x="750" y="267" width="510" height="583" />
+    <state type="separated"  />
+    <bounds x="750" y="267" width="1000" height="390" />
     <frame state="0"/>
     <empty-behavior permanent="true"/>
 </mode>
