@@ -13,7 +13,7 @@ import org.openide.windows.TopComponent;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS //todo define
 )
 @TopComponent.Registration(
-        mode = "floating",
+        mode = "Statistics",
         openAtStartup = false,
         position = 30
 )

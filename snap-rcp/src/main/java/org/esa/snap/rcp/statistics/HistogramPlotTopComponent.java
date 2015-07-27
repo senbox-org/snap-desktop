@@ -29,7 +29,7 @@ import org.openide.windows.TopComponent;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS //todo define
 )
 @TopComponent.Registration(
-        mode = "floating",
+        mode = "HistogramPlotMode",
         openAtStartup = false,
         position = 50
 )

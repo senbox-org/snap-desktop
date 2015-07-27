@@ -32,7 +32,7 @@ import javax.swing.Icon;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS //todo define
 )
 @TopComponent.Registration(
-        mode = "floating",
+        mode = "CorrelativePlot",
         openAtStartup = false,
         position = 70
 )
