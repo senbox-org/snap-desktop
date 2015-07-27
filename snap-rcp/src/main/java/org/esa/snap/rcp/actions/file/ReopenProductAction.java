@@ -38,27 +38,25 @@ import static org.esa.snap.rcp.actions.file.OpenProductAction.getRecentProductPa
         "CTL_ClearListActionMenuText=Clear List"
 })
 public final class ReopenProductAction extends AbstractAction implements Presenter.Toolbar, Presenter.Menu, Presenter.Popup {
-
     @Override
     public JMenuItem getMenuPresenter() {
-
         List<File> openedFiles = OpenProductAction.getOpenedProductFiles();
         List<String> pathList = getRecentProductPaths().get();
 
         // Add "open recent product file" actions
         JMenu menu = new JMenu(Bundle.CTL_ReopenProductActionMenuText());
-        pathList.forEach(path -> {
-            if (!openedFiles.contains(new File(path))) {
-                JMenuItem menuItem = new JMenuItem(path);
+
+        for (int i = 0; i <= 10 && pathList.size() > 0; i++) {
+            if (!openedFiles.contains(new File(pathList.get(i)))) {
+                JMenuItem menuItem = new JMenuItem(pathList.get(i));
                 OpenProductAction openProductAction = new OpenProductAction();
-                openProductAction.setFile(new File(path));
+                openProductAction.setFile(new File(pathList.get(i)));
                 menuItem.addActionListener(openProductAction);
                 menu.add(menuItem);
             }
-        });
-
+        }
         // Add "Clear List" action
-        if (menu.getComponentCount() > 0) {
+        if (menu.getComponentCount() > 0 || pathList.size() > 0) {
             menu.addSeparator();
             JMenuItem menuItem = new JMenuItem(Bundle.CTL_ClearListActionMenuText());
             menuItem.addActionListener(e -> getRecentProductPaths().clear());
