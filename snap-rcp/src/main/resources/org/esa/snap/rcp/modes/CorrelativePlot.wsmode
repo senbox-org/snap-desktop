@@ -2,7 +2,7 @@
 <!DOCTYPE mode PUBLIC "-//NetBeans//DTD Mode Properties 2.3//EN" "http://www.netbeans.org/dtds/mode-properties2_3.dtd">
 
 <mode version="2.4">
-    <name unique="floating"  />
+    <name unique="CorrelativePlot"  />
     <kind type="view" />
     <state type="separated"  />
     <constraints>
@@ -10,6 +10,5 @@
     </constraints>
     <bounds x="750" y="267" width="1000" height="390" />
     <frame state="1"/>
-    <active-tc  id="GeoCodingTopComponent" />
     <empty-behavior permanent="true"/>
 </mode>

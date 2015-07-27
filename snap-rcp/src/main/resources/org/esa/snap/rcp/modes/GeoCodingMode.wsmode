@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mode version="2.4">
+    <name unique="GeoCodingMode"  />
+    <kind type="view" />
+    <state type="separated"  />
+    <constraints>
+        <path orientation="horizontal" number="101" weight="0.5"/>
+    </constraints>
+    <bounds x="1219" y="208" width="501" height="382" />
+    <frame state="0"/>
+    <empty-behavior permanent="false"/>
+</mode>

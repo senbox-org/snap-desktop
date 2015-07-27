@@ -389,7 +389,13 @@
         <folder name="Modes">
             <file name="navigator.wsmode" url="modes/navigator.wsmode"/>
             <file name="floating.wsmode" url="modes/floating.wsmode"/>
-            <file name="groupfloating.wsmode" url="modes/groupfloating.wsmode"/>
+            <file name="GeoCodingMode.wsmode" url="modes/GeoCodingMode.wsmode"/>
+            <file name="HistogramPlotMode.wsmode" url="modes/HistogramPlotMode.wsmode"/>
+            <file name="Information.wsmode" url="modes/Information.wsmode"/>
+            <file name="ProfilePlot.wsmode" url="modes/ProfilePlot.wsmode"/>
+            <file name="ScatterPlot.wsmode" url="modes/ScatterPlot.wsmode"/>
+            <file name="Statistics.wsmode" url="modes/Statistics.wsmode"/>
+            <file name="CorrelativePlot.wsmode" url="modes/CorrelativePlot.wsmode"/>
         </folder>
     </folder>
 
