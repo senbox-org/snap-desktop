@@ -21,6 +21,7 @@ import com.bc.ceres.binding.PropertySet;
 import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.PropertyEditorRegistry;
+import org.esa.snap.framework.datamodel.Mask;
 import org.esa.snap.rcp.pixelinfo.PixelInfoView;
 import org.esa.snap.rcp.preferences.DefaultConfigController;
 import org.esa.snap.rcp.preferences.Preference;
@@ -31,8 +32,7 @@ import org.openide.util.HelpCtx;
 import javax.swing.Box;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
-import java.awt.BorderLayout;
-import java.awt.Insets;
+import java.awt.*;
 
 /**
  * Preferences tab for handling the UI behavior preferences. Sub-level panel to the "Miscellaneous"-panel.
@@ -77,6 +77,11 @@ public final class UiBehaviorController extends DefaultConfigController {
      */
     public static final String PROPERTY_KEY_SAVE_AND_OPEN_IN_APP_INFO = "saveAndOpenInAppInfo";
 
+    /**
+     * Preferences key to set the maximum number of file in the list to reopen.
+     */
+    public static final String PROPERTY_KEY_LIST_FILES_TO_REOPEN = "filesToReopen";
+
     protected PropertySet createPropertySet() {
         return createPropertySet(new UiBehaviorBean());
     }
@@ -87,7 +92,9 @@ public final class UiBehaviorController extends DefaultConfigController {
         tableLayout.setTableAnchor(TableLayout.Anchor.NORTHWEST);
         tableLayout.setTablePadding(new Insets(4, 10, 0, 0));
         tableLayout.setTableFill(TableLayout.Fill.BOTH);
+
         tableLayout.setColumnWeightX(0, 1.0);
+
 
         JPanel pageUI = new JPanel(tableLayout);
 
@@ -99,6 +106,8 @@ public final class UiBehaviorController extends DefaultConfigController {
         Property saveInfo = context.getPropertySet().getProperty(PROPERTY_KEY_SAVE_INFO);
         Property openInApp = context.getPropertySet().getProperty(PROPERTY_KEY_OPEN_IN_APP_INFO);
         Property saveAndOpenInApp = context.getPropertySet().getProperty(PROPERTY_KEY_SAVE_AND_OPEN_IN_APP_INFO);
+        Property listOfFilesToReopen = context.getPropertySet().getProperty(PROPERTY_KEY_LIST_FILES_TO_REOPEN);
+
 
         JComponent[] autoShowNavigationComponents = registry.findPropertyEditor(autoShowNavigation.getDescriptor()).createComponents(autoShowNavigation.getDescriptor(), context);
         JComponent[] showNewBandsComponents = registry.findPropertyEditor(showNewBands.getDescriptor()).createComponents(showNewBands.getDescriptor(), context);
@@ -108,11 +117,27 @@ public final class UiBehaviorController extends DefaultConfigController {
         JComponent[] openInAppComponents = registry.findPropertyEditor(openInApp.getDescriptor()).createComponents(openInApp.getDescriptor(), context);
         JComponent[] saveAndOpenInAppComponents = registry.findPropertyEditor(saveAndOpenInApp.getDescriptor()).createComponents(saveAndOpenInApp.getDescriptor(), context);
 
+        JComponent[] listOfFilesToReopenComponent = registry.findPropertyEditor(listOfFilesToReopen.getDescriptor()).createComponents(listOfFilesToReopen.getDescriptor(), context);
+
         pageUI.add(PreferenceUtils.createTitleLabel("Display Settings"));
         pageUI.add(autoShowNavigationComponents[0]);
         pageUI.add(showNewBandsComponents[0]);
         pageUI.add(showOnlyDisplayedComponents[0]);
+
+
+        // Adding the number of file that can be reopenn
+        TableLayout layout = new TableLayout(2);
+        JPanel panel = new JPanel(layout);
+        layout.setTablePadding(new Insets(1, 10, 0, 0));
+        panel.add(listOfFilesToReopenComponent[1]);
+        panel.add(listOfFilesToReopenComponent[0]);
+        tableLayout.setTableFill(TableLayout.Fill.VERTICAL);
+        pageUI.add(panel);
+
+        tableLayout.setTableFill(TableLayout.Fill.BOTH);
+        tableLayout.setTableAnchor(TableLayout.Anchor.EAST);
         pageUI.add(tableLayout.createHorizontalSpacer());
+        tableLayout.setColumnCount(1);
         pageUI.add(PreferenceUtils.createTitleLabel("Message Settings"));
         pageUI.add(checkVersionComponents[0]);
         pageUI.add(saveInfoComponents[0]);
@@ -160,6 +185,11 @@ public final class UiBehaviorController extends DefaultConfigController {
         @Preference(label = "Show target product writing and opening information",
                 key = PROPERTY_KEY_SAVE_AND_OPEN_IN_APP_INFO)
         boolean saveAndOpenInAppInfo = true;
+
+
+        @Preference(label = "Number of files to be reopen",
+                key = PROPERTY_KEY_LIST_FILES_TO_REOPEN, interval = "[1,20]")
+        int fileReopen = 10;
     }
 
 }
