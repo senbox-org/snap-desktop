@@ -79,7 +79,8 @@ public class CloseAllOthersAction extends AbstractAction implements ContextAware
 
     @Override
     public void actionPerformed(final ActionEvent event) {
-        final Product selectedProduct = SnapApp.getDefault().getSelectedProduct();
+        final ProductNode productNode = lkp.lookup(ProductNode.class);
+        final Product selectedProduct = productNode.getProduct();
         final Product[] products = SnapApp.getDefault().getProductManager().getProducts();
         final List<Product> productsToClose = new ArrayList<>(products.length);
         for (Product product : products) {
