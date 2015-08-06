@@ -22,6 +22,11 @@
             <tocitem text="Introduction" target="desktop"/>
             <tocitem text="Main Menu Bar" target="menuBar"/>
             <tocitem text="Main Toolbar" target="mainToolbar"/>
+            <tocitem text="File Menu" target="fileMenu"/>
+            <tocitem text="Edit Menu" target="editMenu"/>
+            <tocitem text="View Menu" target="viewMenu"/>
+            <tocitem text="Window Menu" target="windowMenu"/>
+            <tocitem text="Help Menu" target="helpMenu"/>
             <tocitem text="Product View">
                 <tocitem text="Product Explorer" target="productExplorer"/>
                 <tocitem text="Imaging Tools">
@@ -93,10 +98,7 @@
             <tocitem text="Product Grabber" target="productGrabber"/>
             <tocitem text="No-Data Value" target="noDataValue"/>
         </tocitem>
-        <tocitem text="File Menu" target="fileMenu"/>
-        <tocitem text="Edit Menu" target="editMenu"/>
-        <tocitem text="View Menu" target="viewMenu"/>
-        <tocitem text="Analysis Menu" target="analysisMenu">
+        <tocitem text="Analysis" target="analysisMenu">
             <tocitem text="Band Scatter Plot" target="densityPlotDialog"/>
             <tocitem text="Product/Band Geo-Coding Information" target="geoCodingInfoDialog"/>
             <tocitem text="Band Histogram" target="histogramDialog"/>
@@ -105,12 +107,12 @@
             <tocitem text="Correlative Plot" target="correlativePlotDialog"/>
             <tocitem text="Band Statistics" target="statisticsDialog"/>
         </tocitem>
-        <tocitem text="Layer Menu">
+        <tocitem text="Layer">
             <tocitem text="The Layer menu" target="layerMenu"/>
             <tocitem text="No-Data Overlay" target="noDataOverlay"/>
             <tocitem text="Layer Manager" target="showLayerManagerWnd"/>
         </tocitem>
-        <tocitem text="Vector Menu">
+        <tocitem text="Vector">
             <tocitem text="Vector Data Management" target="vectorDataManagement"/>
             <tocitem text="Geometry from/to WKT" target="geometryWKT"/>
             <tocitem text="Import">
@@ -123,7 +125,7 @@
                 <tocitem text="Geometry as Shapefile" target="exportShapefile"/>
             </tocitem>
         </tocitem>
-        <tocitem text="Raster Menu">
+        <tocitem text="Raster">
             <tocitem text="Band Maths" target="bandArithmetic"/>
             <tocitem text="Band Maths Expression Editor" target="expressionEditor"/>
             <tocitem text="Filtered Band" target="createFilteredBand"/>
@@ -151,7 +153,7 @@
                 <tocitem text="Transect Pixels" target="exportTransectPixels"/>
             </tocitem>
         </tocitem>
-        <tocitem text="Optical Menu">
+        <tocitem text="Optical">
             <tocitem text="Product Spectrum" target="showSpectrumWnd"/>
             <tocitem text="Geometric">
                 <tocitem text="Orthorectification" target="orthorectificationAction">
@@ -161,11 +163,9 @@
                 </tocitem>
             </tocitem>
         </tocitem>
-        <tocitem text="Tools Menu">
+        <tocitem text="Tools">
             <tocitem text="Attach Pixel-based Geo-Coding" target="pixelGeoCodingSetup"/>
         </tocitem>
-        <tocitem text="Window Menu" target="windowMenu"/>
-        <tocitem text="Help Menu" target="helpMenu"/>
     </tocitem>
 
     <tocitem text="Command Line Interface (GPF)"/>
