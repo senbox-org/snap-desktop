@@ -334,8 +334,9 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         //if(ValidateAllNodes()) {
         try {
             final File file = graphEx.saveGraph();
-
-            setTitle(file.getName());
+            if(file != null) {
+                setTitle(file.getName());
+            }
         } catch (GraphException e) {
             showErrorDialog(e.getMessage());
         }
@@ -372,7 +373,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
                 setTitle(file.getName());
             }
         } catch (IOException e) {
-            SnapApp.getDefault().handleError("Unable to load graph "+file.toString(), e);
+            SnapApp.getDefault().handleError("Unable to load graph " + file.toString(), e);
         }
     }
 
@@ -566,6 +567,9 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
 
                 int index = tabbedPanel.indexOfTab(opID);
                 tabbedPanel.setSelectedIndex(index);
+            } else if (event.getEventType() == GraphExecuter.events.CONNECT_EVENT) {
+
+                ValidateAllNodes();
             }
         } catch (Exception e) {
             String msg = e.getMessage();

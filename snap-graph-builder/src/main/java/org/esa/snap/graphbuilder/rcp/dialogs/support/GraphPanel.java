@@ -157,14 +157,7 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
 
     void AutoConnectGraph() {
         if (!graphEx.getGraphNodeList().isGraphComplete()) {
-            final List<GraphNode> nodes = graphEx.GetGraphNodes();
-            Collections.sort(nodes, new GraphNodePosComparator());
-
-            for (int i = 0; i < nodes.size() - 1; ++i) {
-                if (!nodes.get(i).HasSources()) {
-                    nodes.get(i).connectOperatorSource(nodes.get(i + 1).getID());
-                }
-            }
+            graphEx.autoConnectGraph();
             repaint();
         }
     }
@@ -492,26 +485,6 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
 
         public void actionPerformed(java.awt.event.ActionEvent event) {
             graphPanel.RemoveSourceAction(event.getActionCommand());
-        }
-    }
-
-    static class GraphNodePosComparator implements Comparator<GraphNode> {
-
-        public int compare(GraphNode o1, GraphNode o2) {
-            double x1 = o1.getPos().getX();
-            double y1 = o1.getPos().getY();
-            double x2 = o2.getPos().getX();
-            double y2 = o2.getPos().getY();
-
-            double h1 = FastMath.hypot(x1, y1);
-            double h2 = FastMath.hypot(x2, y2);
-
-            if (h1 > h2)
-                return -1;
-            else if (h1 < h2)
-                return +1;
-            else
-                return 0;
         }
     }
 }
