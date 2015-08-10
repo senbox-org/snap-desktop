@@ -175,7 +175,13 @@ public class GraphExecuter extends Observable {
                 nodes.get(i).connectOperatorSource(nodes.get(i + 1).getID());
             }
         }
-        notifyObservers(new GraphEvent(events.CONNECT_EVENT, null));
+        notifyConnection();
+    }
+
+    public void notifyConnection() {
+        setChanged();
+        notifyObservers(new GraphEvent(events.CONNECT_EVENT, graphNodeList.getGraphNodes().get(0)));
+        clearChanged();
     }
 
     public void setOperatorParam(final String id, final String paramName, final String value) {
