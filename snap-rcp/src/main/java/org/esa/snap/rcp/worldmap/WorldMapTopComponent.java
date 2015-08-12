@@ -96,8 +96,6 @@ public class WorldMapTopComponent extends ToolTopComponent {
             public void selectionChange(@NullAllowed ProductNode oldValue, @NullAllowed ProductNode newValue) {
                 if(newValue != null) {
                     setSelectedProduct(newValue.getProduct());
-                } else {
-                    setSelectedProduct(null);
                 }
             }
         });
@@ -123,11 +121,6 @@ public class WorldMapTopComponent extends ToolTopComponent {
     @Override
     protected void productSceneViewSelected(@NonNull ProductSceneView view) {
         setSelectedProduct(view.getProduct());
-    }
-
-    @Override
-    protected void productSceneViewDeselected(@NonNull ProductSceneView view) {
-        setSelectedProduct(null);
     }
 
     private class WorldMapProductManagerListener implements ProductManager.Listener {
