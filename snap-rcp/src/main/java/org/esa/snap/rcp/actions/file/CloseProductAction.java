@@ -21,17 +21,12 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
-import org.openide.util.NbBundle;
-import org.openide.util.WeakSet;
+import org.openide.util.*;
 
-import javax.swing.AbstractAction;
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Action which closes a selected product.
@@ -43,7 +38,7 @@ import java.util.Set;
         id = "CloseProductAction"
 )
 @ActionRegistration(
-        displayName = "#CTL_CloseProductActionName"
+        displayName = "#CTL_CloseProductActionName", lazy = false
 )
 
 @ActionReferences({
@@ -53,28 +48,62 @@ import java.util.Set;
 @NbBundle.Messages({
         "CTL_CloseProductActionName=Close Product"
 })
-public final class CloseProductAction extends AbstractAction{
+public final class CloseProductAction extends AbstractAction implements ContextAwareAction, LookupListener {
 
-    private final WeakSet<Product> productSet;
+    private WeakSet<Product> productSet = new WeakSet<>();
+    private Lookup lkp;
 
     public CloseProductAction(List<Product> products) {
-        productSet = new WeakSet<>();
         productSet.addAll(products);
     }
 
+    public CloseProductAction() {
+        this(Utilities.actionsGlobalContext());
+    }
+
+    public CloseProductAction(Lookup actionContext) {
+        super(Bundle.CTL_CloseProductActionName());
+        this.lkp = actionContext;
+        Lookup.Result<ProductNode> productNode = lkp.lookupResult(ProductNode.class);
+        productNode.addLookupListener(WeakListeners.create(LookupListener.class, this, productNode));
+        setEnableState();
+    }
+
+    @Override
+    public Action createContextAwareInstance(Lookup actionContext) {
+        return new CloseProductAction(actionContext);
+    }
+
+    @Override
+    public void resultChanged(LookupEvent lookupEvent) {
+        setEnableState();
+    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         execute();
     }
 
+
+    private void setEnableState() {
+        ProductNode productNode = lkp.lookup(ProductNode.class);
+        setEnabled(productNode != null);
+    }
     /**
      * Executes the action command.
      *
      * @return {@code Boolean.TRUE} on success, {@code Boolean.FALSE} on failure, or {@code null} on cancellation.
      */
     public Boolean execute() {
-        return closeProducts(new HashSet<>(productSet));
+        if (productSet.isEmpty()) {
+            Product product = SnapApp.getDefault().getSelectedProductNode().getProduct();
+            productSet.add(product);
+        }
+        boolean result = closeProducts(new HashSet<>(productSet));
+        for (Product aProductSet : productSet) {
+            productSet.remove(aProductSet);
+        }
+        return result;
     }
 
     private static Boolean closeProducts(Set<Product> products) {
@@ -90,11 +119,11 @@ public final class CloseProductAction extends AbstractAction{
                 Product firstSourceProduct = findFirstSourceProduct(productToBeClosed, stillOpenProducts);
                 if (firstSourceProduct != null) {
                     SnapDialogs.showInformation("Close Not Possible",
-                                                String.format("Can't close product '%s' because it is in use%n" +
-                                                              "by product '%s'.%n" +
-                                                              "Please close the latter first.",
-                                                              productToBeClosed.getName(),
-                                                              firstSourceProduct.getName()), null);
+                            String.format("Can't close product '%s' because it is in use%n" +
+                                            "by product '%s'.%n" +
+                                            "Please close the latter first.",
+                                    productToBeClosed.getName(),
+                                    firstSourceProduct.getName()), null);
                     return false;
                 }
             }
@@ -103,9 +132,9 @@ public final class CloseProductAction extends AbstractAction{
         for (Product product : products) {
             if (product.isModified()) {
                 SnapDialogs.Answer answer = SnapDialogs.requestDecision(Bundle.CTL_OpenProductActionName(),
-                                                                        MessageFormat.format("Product ''{0}'' has been modified.\n" +
-                                                                                             "Do you want to save it?",
-                                                                                             product.getName()), true, null);
+                        MessageFormat.format("Product ''{0}'' has been modified.\n" +
+                                        "Do you want to save it?",
+                                product.getName()), true, null);
                 if (answer == SnapDialogs.Answer.YES) {
                     saveList.add(product);
                 } else if (answer == SnapDialogs.Answer.CANCELLED) {
@@ -130,6 +159,7 @@ public final class CloseProductAction extends AbstractAction{
         }
 
         closeList.forEach(Product::dispose);
+
         return true;
     }
 

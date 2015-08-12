@@ -25,10 +25,11 @@ import java.util.List;
  * @author Norman
  */
 @ActionID(category = "File", id = "CloseAllProductsAction")
-@ActionRegistration(displayName = "#CTL_CloseAllProductsActionName")
+@ActionRegistration(displayName = "#CTL_CloseAllProductsActionName",lazy = false)
 
 @ActionReferences({
-        @ActionReference(path = "Menu/File", position = 25)
+        @ActionReference(path = "Menu/File", position = 25),
+        @ActionReference(path = "Context/Product/Product", position = 70)
 })
 @NbBundle.Messages({"CTL_CloseAllProductsActionName=Close All Products"})
 public final class CloseAllProductsAction extends AbstractAction{
