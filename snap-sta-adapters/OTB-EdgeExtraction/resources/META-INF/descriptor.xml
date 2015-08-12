@@ -1,5 +1,5 @@
 <operator>
-  <name>org.esa.snap.framework.gpf.operators.tooladapter.OTB_EE</name>
+  <name>org.esa.snap.OTB.EdgeExtraction</name>
   <operatorClass>org.esa.snap.framework.gpf.operators.tooladapter.ToolAdapterOp</operatorClass>
   <alias>OTB-EdgeExtraction</alias>
   <label>OTB Edge Extraction</label>
@@ -27,10 +27,13 @@
       <key>OTB_BIN_PATH</key>
       <value></value>
     </variable>
-    <variable>
-      <key>OUTPUT_DIR</key>
+    <osvariable>
+      <key>BINARY</key>
       <value></value>
-    </variable>
+      <windows>otbApplicationLauncherCommandLine.exe</windows>
+      <linux>otbApplicationLauncherCommandLine.so</linux>
+      <macosx>otbApplicationLauncherCommandLine.exe</macosx>
+    </osvariable>
   </variables>
   <parameters>
     <parameter>
@@ -60,9 +63,8 @@
       <toolParameterDescriptors/>
     </parameter>
   </parameters>
-  <source>user</source>
+  <source>package</source>
   <isSystem>false</isSystem>
-  <osdependent/>
   <sourceProductDescriptors>
     <org.esa.snap.framework.gpf.descriptor.DefaultSourceProductDescriptor>
       <name>sourceProduct.0</name>
