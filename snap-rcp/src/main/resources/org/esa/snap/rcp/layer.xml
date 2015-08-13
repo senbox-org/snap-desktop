@@ -176,6 +176,9 @@
     SNAP's toolbar groups
     -->
     <folder name="Toolbars">
+        <file name="Standard.xml" url="toolbars/Standard.xml"/>
+        <file name="Developer.xml" url="toolbars/Developer.xml"/>
+
         <folder name="File"> <!-- defined by NetBeans -->
             <attr name="position" intvalue="100"/>
         </folder>
@@ -184,11 +187,6 @@
         </folder>
         <folder name="UndoRedo"> <!-- defined by NetBeans -->
             <attr name="position" intvalue="300"/>
-        </folder>
-        <folder name="Memory">
-            <!-- defined by NetBeans; not sure about the exact position number but is always shown after UndoRedo.
-            It seems it can't be easily changed -->
-            <attr name="position" intvalue="350"/>
         </folder>
         <folder name="Analysis">
             <attr name="position" intvalue="400"/>
@@ -207,6 +205,9 @@
         </folder>
         <folder name="Window"> <!-- defined by tiled-editors -->
             <attr name="position" intvalue="1500"/>
+        </folder>
+        <folder name="Memory"> <!-- defined by NetBeans -->
+            <attr name="position" intvalue="1600"/>
         </folder>
     </folder>
 

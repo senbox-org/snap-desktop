@@ -29,6 +29,7 @@ import org.esa.snap.util.PropertyMap;
 import org.esa.snap.util.SystemUtils;
 import org.openide.awt.NotificationDisplayer;
 import org.openide.awt.StatusDisplayer;
+import org.openide.awt.ToolbarPool;
 import org.openide.awt.UndoRedo;
 import org.openide.modules.ModuleInfo;
 import org.openide.modules.OnStart;
@@ -316,9 +317,16 @@ public class SnapApp {
 
     public void onStart() {
         engine = Engine.start(false);
+
+        String toolbarConfig = "Standard";
         if (Config.instance().debug()) {
             WindowManager.getDefault().setRole("developer");
+            toolbarConfig = "Developer";
         }
+        // See src/main/resources/org/esa/snap/rcp/layer.xml
+        // See src/main/resources/org/esa/snap/rcp/toolbars/Standard.xml
+        // See src/main/resources/org/esa/snap/rcp/toolbars/Developer.xml
+        ToolbarPool.getDefault().setConfiguration(toolbarConfig);
     }
 
     public void onStop() {
