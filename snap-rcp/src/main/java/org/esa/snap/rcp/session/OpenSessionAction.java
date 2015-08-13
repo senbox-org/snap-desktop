@@ -77,6 +77,7 @@ public class OpenSessionAction extends AbstractAction {
         if (sessionFile == null) {
             return;
         }
+
         openSession(sessionFile);
     }
 
