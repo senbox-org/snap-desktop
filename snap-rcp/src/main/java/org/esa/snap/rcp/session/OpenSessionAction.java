@@ -65,7 +65,7 @@ public class OpenSessionAction extends AbstractAction {
 
         if (manager.getSessionFile() != null) {
             SnapDialogs.Answer answer = SnapDialogs.requestDecision(TITLE,
-                                                                    "This will close the current session.\n" +
+                                                                    "This will close or reopen the current session.\n" +
                                                                             "Do you want to continue?", true, null);
             if (answer != SnapDialogs.Answer.YES) {
                 return;
@@ -75,10 +75,6 @@ public class OpenSessionAction extends AbstractAction {
                                                                 SessionManager.getDefault().getSessionFileFilter(),
                                                                 LAST_SESSION_DIR_KEY);
         if (sessionFile == null) {
-            return;
-        }
-        if (sessionFile.equals(manager.getSessionFile())) {
-            SnapDialogs.showError(TITLE, "Session has already been opened.");
             return;
         }
         openSession(sessionFile);
