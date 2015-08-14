@@ -74,6 +74,11 @@ abstract class PNGroupingGroup extends PNGroup<Object> {
         nodesAreSelected.clear();
     }
 
+    @Override
+    boolean shallReactToPropertyChange(String propertyName) {
+        return propertyName.equals("autoGrouping");
+    }
+
     /**
      * A group that represents a {@link org.esa.snap.framework.datamodel.ProductNodeGroup}
      * of {@link org.esa.snap.framework.datamodel.Band} members
