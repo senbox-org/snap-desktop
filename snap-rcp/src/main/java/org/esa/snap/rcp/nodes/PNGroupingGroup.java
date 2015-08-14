@@ -13,7 +13,10 @@ import org.esa.snap.framework.datamodel.TiePointGrid;
 import org.openide.nodes.Node;
 import org.openide.util.NbBundle;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -30,11 +33,15 @@ abstract class PNGroupingGroup extends PNGroup<Object> {
 
     private final String displayName;
     private final ProductNodeGroup group;
+    List<Node> nodes;
+    Map<String, Boolean> nodesAreSelected;
 
     protected PNGroupingGroup(String displayName, ProductNodeGroup group) {
         Assert.notNull(group, "group");
         this.displayName = displayName;
         this.group = group;
+        nodes = new ArrayList<>();
+        nodesAreSelected = new HashMap<>();
     }
 
     @Override
@@ -49,17 +56,22 @@ abstract class PNGroupingGroup extends PNGroup<Object> {
 
     @Override
     boolean isDirectChild(org.esa.snap.framework.datamodel.ProductNode productNode) {
-        final Product.AutoGrouping autoGrouping = getProduct().getAutoGrouping();
-        if (autoGrouping != null) {
-            return autoGrouping.indexOf(productNode.getName()) == -1;
+        return group.contains(productNode);
+    }
+
+    @Override
+    void refresh() {
+        for (Node node : nodes) {
+            nodesAreSelected.put(node.getDisplayName(), NodeExpansionManager.isNodeExpanded(node));
         }
-        int nodeCount = group.getNodeCount();
-        for (int i = 0; i < nodeCount; i++) {
-            if (group.get(i) == productNode) {
-                return true;
+        nodes.clear();
+        super.refresh();
+        for (Node node : nodes) {
+            if (nodesAreSelected.containsKey(node.getDisplayName()) && nodesAreSelected.get(node.getDisplayName())) {
+                NodeExpansionManager.expandNode(node);
             }
         }
-        return false;
+        nodesAreSelected.clear();
     }
 
     /**
@@ -82,7 +94,9 @@ abstract class PNGroupingGroup extends PNGroup<Object> {
             if (key instanceof Band) {
                 return new PNNode.B((Band) key);
             } else {
-                return new PNGroupNode((PNGroup) key);
+                final PNGroupNode pnGroupNode = new PNGroupNode((PNGroup) key);
+                nodes.add(pnGroupNode);
+                return pnGroupNode;
             }
         }
 
@@ -142,7 +156,9 @@ abstract class PNGroupingGroup extends PNGroup<Object> {
             if (key instanceof TiePointGrid) {
                 return new PNNode.TPG((TiePointGrid) key);
             } else {
-                return new PNGroupNode((PNGroup) key);
+                final PNGroupNode pnGroupNode = new PNGroupNode((PNGroup) key);
+                nodes.add(pnGroupNode);
+                return pnGroupNode;
             }
         }
 

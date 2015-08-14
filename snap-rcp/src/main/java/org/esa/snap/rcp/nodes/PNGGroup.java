@@ -92,10 +92,27 @@ abstract class PNGGroup<T extends ProductNode> extends PNGroup<T> {
 
         @Override
         protected PNNode createNodeForKey(Band key) {
-            if (group != product.getBandGroup()) {
-                return new PNNode.B(key, group);
-            } else {
-                return new PNNode.B(key);
+            return new PNNode.B(key);
+        }
+
+        @Override
+        void refresh() {
+            refreshGroup();
+            super.refresh();
+        }
+
+        private void refreshGroup() {
+            final ProductNodeGroup<Band> productBandGroup = product.getBandGroup();
+            if (group != productBandGroup) {
+                final Product.AutoGrouping autoGrouping = product.getAutoGrouping();
+                final int groupIndex = autoGrouping.indexOf(group.getDisplayName());
+                group.removeAll();
+                for (int i = 0; i < productBandGroup.getNodeCount(); i++) {
+                    final Band band = productBandGroup.get(i);
+                    if (autoGrouping.indexOf(band.getName()) == groupIndex) {
+                        group.add(band);
+                    }
+                }
             }
         }
 
@@ -118,10 +135,27 @@ abstract class PNGGroup<T extends ProductNode> extends PNGroup<T> {
 
         @Override
         protected PNNode createNodeForKey(TiePointGrid key) {
-            if (group != product.getTiePointGridGroup()) {
-                return new PNNode.TPG(key, group);
-            } else {
-                return new PNNode.TPG(key);
+            return new PNNode.TPG(key);
+        }
+
+        @Override
+        void refresh() {
+            refreshGroup();
+            super.refresh();
+        }
+
+        private void refreshGroup() {
+            final ProductNodeGroup<TiePointGrid> productTiePointGridGroup = product.getTiePointGridGroup();
+            if (group != productTiePointGridGroup) {
+                final Product.AutoGrouping autoGrouping = product.getAutoGrouping();
+                final int groupIndex = autoGrouping.indexOf(group.getDisplayName());
+                group.removeAll();
+                for (int i = 0; i < productTiePointGridGroup.getNodeCount(); i++) {
+                    final TiePointGrid tiePointGrid = productTiePointGridGroup.get(i);
+                    if (autoGrouping.indexOf(tiePointGrid.getName()) == groupIndex) {
+                        group.add(tiePointGrid);
+                    }
+                }
             }
         }
 
