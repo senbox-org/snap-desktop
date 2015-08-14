@@ -428,13 +428,16 @@ public class SnapApp {
         @Override
         public void run() {
             LOG.info("Starting SNAP Desktop");
-            SnapApp.getDefault().onStart();
-            initImageIO();
-            SystemUtils.initGeoTools();
-            SystemUtils.initJAI(Lookup.getDefault().lookup(ClassLoader.class));
-            // uncomment if we encounter problems with the stmt above
-            //SystemUtils.init3rdPartyLibs(null);
-            initGPF();
+            try {
+                SnapApp.getDefault().onStart();
+            } finally {
+                initImageIO();
+                SystemUtils.initGeoTools();
+                SystemUtils.initJAI(Lookup.getDefault().lookup(ClassLoader.class));
+                // uncomment if we encounter problems with the stmt above
+                //SystemUtils.init3rdPartyLibs(null);
+                initGPF();
+            }
         }
     }
 
