@@ -18,10 +18,12 @@ package org.esa.snap.rcp.actions.window;
 import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.core.SubProgressMonitor;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
+import com.bc.jexp.ParseException;
 import org.esa.snap.framework.datamodel.Band;
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.ProductNode;
 import org.esa.snap.framework.datamodel.RGBImageProfile;
+import org.esa.snap.framework.datamodel.RasterDataNode;
 import org.esa.snap.framework.dataop.barithm.BandArithmetic;
 import org.esa.snap.framework.ui.RGBImageProfilePane;
 import org.esa.snap.framework.ui.UIUtils;
@@ -31,6 +33,7 @@ import org.esa.snap.netbeans.docwin.DocumentWindowManager;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
+import org.esa.snap.util.ArrayUtils;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -99,7 +102,9 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
             return;
         }
         final String[] rgbaExpressions = profilePane.getRgbaExpressions();
-        if (!BandArithmetic.areRastersEqualInSize(product, rgbaExpressions)) {
+        final int defaultProductIndex = ArrayUtils.getElementIndex(product, openedProducts);
+        if (!BandArithmetic.areRastersEqualInSize(openedProducts,
+                                                  defaultProductIndex, rgbaExpressions)) {
             SnapDialogs.showInformation(title, "Referenced rasters must all be the same size", null);
             return;
         }
@@ -219,11 +224,15 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
     public static Band[] allocateRgbBands(final Product product, final String[] rgbaExpressions) {
         final Band[] rgbBands = new Band[3]; // todo - set to [4] as soon as we support alpha
         final boolean productModificationState = product.isModified();
+        final Product[] products = SnapApp.getDefault().getProductManager().getProducts();
+        final int elementIndex = ArrayUtils.getElementIndex(product, products);
         for (int i = 0; i < rgbBands.length; i++) {
             String expression = rgbaExpressions[i].isEmpty() ? "0" : rgbaExpressions[i];
             Band rgbBand = product.getBand(expression);
             if (rgbBand == null) {
                 rgbBand = new ProductSceneView.RGBChannel(product,
+                                                          determineWidth(expression, products, elementIndex),
+                                                          determineHeight(expression, products, elementIndex),
                                                           RGBImageProfile.RGB_BAND_NAMES[i],
                                                           expression);
             }
@@ -231,6 +240,34 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
         }
         product.setModified(productModificationState);
         return rgbBands;
+    }
+
+    private static int determineWidth(String expression, Product[] products, int index) {
+        int width = products[index].getSceneRasterWidth();
+        try {
+            final RasterDataNode[] refRasters = BandArithmetic.getRefRasters(expression, products, index);
+            if (refRasters.length > 0) {
+                width = refRasters[0].getRasterWidth();
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+            //should not come here
+        }
+        return width;
+    }
+
+    private static int determineHeight(String expression, Product[] products, int index) {
+        int height = products[index].getSceneRasterHeight();
+        try {
+            final RasterDataNode[] refRasters = BandArithmetic.getRefRasters(expression, products, index);
+            if (refRasters.length > 0) {
+                height = refRasters[0].getRasterHeight();
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+            //should not come here
+        }
+        return height;
     }
 
     public static void releaseRgbBands(Band[] rgbBands, boolean errorOccurred) {
