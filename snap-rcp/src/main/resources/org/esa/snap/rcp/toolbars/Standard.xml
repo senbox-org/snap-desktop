@@ -3,7 +3,7 @@
         "http://www.netbeans.org/dtds/toolbar1_1.dtd">
 <Configuration>
     <Row>
-        <Toolbar name="File" visible="false" />
+        <Toolbar name="File" visible="true" />
         <Toolbar name="Clipboard" visible="false" />
         <Toolbar name="UndoRedo" visible="false" />
 
@@ -12,6 +12,7 @@
         <Toolbar name="Processing" visible="false" />
         <Toolbar name="Tools" visible="true"/>
         <Toolbar name="Views" visible="false"/>
+        <Toolbar name="Projects" visible="false" />
         <Toolbar name="Window" visible="true" />
 
         <Toolbar name="Memory" visible="false" align="right"/>
