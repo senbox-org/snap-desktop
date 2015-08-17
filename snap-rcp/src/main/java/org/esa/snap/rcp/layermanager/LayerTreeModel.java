@@ -20,6 +20,7 @@ import com.bc.ceres.glayer.Layer;
 import com.bc.ceres.glayer.support.AbstractLayerListener;
 import com.bc.ceres.glayer.support.LayerUtils;
 
+import javax.swing.SwingUtilities;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
@@ -36,7 +37,7 @@ class LayerTreeModel implements TreeModel {
     LayerTreeModel(final Layer rootLayer) {
         this.rootLayer = rootLayer;
         this.rootLayer.addListener(new LayerListener());
-        treeModelListeners = new WeakHashMap<TreeModelListener, Object>();
+        treeModelListeners = new WeakHashMap<>();
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -135,22 +136,22 @@ class LayerTreeModel implements TreeModel {
 
         @Override
         public void handleLayerPropertyChanged(Layer layer, PropertyChangeEvent event) {
-            fireTreeNodeChanged(layer);
+            SwingUtilities.invokeLater(() -> fireTreeNodeChanged(layer));
         }
 
         @Override
         public void handleLayerDataChanged(Layer layer, Rectangle2D modelRegion) {
-            fireTreeNodeChanged(layer);
+            SwingUtilities.invokeLater(() -> fireTreeNodeChanged(layer));
         }
 
         @Override
         public void handleLayersAdded(Layer parentLayer, Layer[] childLayers) {
-            fireTreeStructureChanged(parentLayer);
+            SwingUtilities.invokeLater(() -> fireTreeStructureChanged(parentLayer));
         }
 
         @Override
         public void handleLayersRemoved(Layer parentLayer, Layer[] childLayers) {
-            fireTreeStructureChanged(parentLayer);
+            SwingUtilities.invokeLater(() -> fireTreeStructureChanged(parentLayer));
         }
     }
 }

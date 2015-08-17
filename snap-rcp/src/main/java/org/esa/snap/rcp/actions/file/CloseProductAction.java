@@ -50,10 +50,11 @@ import java.util.*;
 })
 public final class CloseProductAction extends AbstractAction implements ContextAwareAction, LookupListener {
 
-    private WeakSet<Product> productSet = new WeakSet<>();
+    private final WeakSet<Product> productSet = new WeakSet<>();
     private Lookup lkp;
 
     public CloseProductAction(List<Product> products) {
+        productSet.clear();
         productSet.addAll(products);
     }
 
@@ -89,21 +90,22 @@ public final class CloseProductAction extends AbstractAction implements ContextA
         ProductNode productNode = lkp.lookup(ProductNode.class);
         setEnabled(productNode != null);
     }
+
     /**
      * Executes the action command.
      *
      * @return {@code Boolean.TRUE} on success, {@code Boolean.FALSE} on failure, or {@code null} on cancellation.
      */
     public Boolean execute() {
-        if (productSet.isEmpty()) {
+        int productCount = SnapApp.getDefault().getProductManager().getProductCount();
+        if (productSet.isEmpty() && productCount!=0) {
             Product product = SnapApp.getDefault().getSelectedProductNode().getProduct();
             productSet.add(product);
         }
-        boolean result = closeProducts(new HashSet<>(productSet));
-        for (Product aProductSet : productSet) {
-            productSet.remove(aProductSet);
-        }
-        return result;
+
+        Boolean aBoolean = closeProducts(new HashSet<>(productSet));
+        productSet.clear();
+        return aBoolean;
     }
 
     private static Boolean closeProducts(Set<Product> products) {

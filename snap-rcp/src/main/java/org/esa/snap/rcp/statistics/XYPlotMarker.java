@@ -108,17 +108,19 @@ public class XYPlotMarker implements ChartMouseListener {
             double minDist = Double.POSITIVE_INFINITY;
             for (int datasetIndex = 0; datasetIndex < datasetCount; datasetIndex++) {
                 XYDataset xyDataset = chartPanel.getChart().getXYPlot().getDataset(datasetIndex);
-                int seriesCount = xyDataset.getSeriesCount();
-                for (int seriesIndex = 0; seriesIndex < seriesCount; seriesIndex++) {
-                    int itemCount = xyDataset.getItemCount(seriesIndex);
-                    for (int itemIndex = 0; itemIndex < itemCount; itemIndex++) {
-                        double x = xyDataset.getXValue(seriesIndex, itemIndex);
-                        double y = xyDataset.getYValue(seriesIndex, itemIndex);
-                        double dist = (x - mx) * (x - mx) + (y - my) * (y - my);
-                        if (dist < minDist) {
-                            minDist = dist;
-                            this.xyDataset = xyDataset;
-                            this.seriesIndex = seriesIndex;
+                if (xyDataset != null) {
+                    int seriesCount = xyDataset.getSeriesCount();
+                    for (int seriesIndex = 0; seriesIndex < seriesCount; seriesIndex++) {
+                        int itemCount = xyDataset.getItemCount(seriesIndex);
+                        for (int itemIndex = 0; itemIndex < itemCount; itemIndex++) {
+                            double x = xyDataset.getXValue(seriesIndex, itemIndex);
+                            double y = xyDataset.getYValue(seriesIndex, itemIndex);
+                            double dist = (x - mx) * (x - mx) + (y - my) * (y - my);
+                            if (dist < minDist) {
+                                minDist = dist;
+                                this.xyDataset = xyDataset;
+                                this.seriesIndex = seriesIndex;
+                            }
                         }
                     }
                 }

@@ -56,6 +56,7 @@ import java.text.SimpleDateFormat;
 public class ProductExplorerTopComponent extends TopComponent implements ExplorerManager.Provider {
 
     private final ExplorerManager explorerManager = new ExplorerManager();
+    private BeanTreeView treeView;
 
     public ProductExplorerTopComponent() {
         initComponents();
@@ -69,7 +70,7 @@ public class ProductExplorerTopComponent extends TopComponent implements Explore
     private void initComponents() {
         setLayout(new BorderLayout());
         // 1. Add an explorer view, in this case BeanTreeView:
-        final BeanTreeView treeView = new BeanTreeView();
+        treeView = new BeanTreeView();
         treeView.setRootVisible(false);
         add(treeView, BorderLayout.CENTER);
         // 2. Create a node hierarchy:
@@ -135,4 +136,12 @@ public class ProductExplorerTopComponent extends TopComponent implements Explore
         //  read your settings according to their version
     }
 
+    public boolean isNodeExpanded(Node node) {
+        return treeView.isExpanded(node);
+    }
+
+
+    public void expandNode(Node node) {
+        treeView.expandNode(node);
+    }
 }

@@ -538,10 +538,26 @@ public class ToolAdapterEditorDialog extends ModalDialog {
         SpringUtilities.makeCompactGrid(panelToolFiles, 2, 2, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING);
 
         configPanel.add(panelToolFiles);
+
+        JPanel checkPanel = new JPanel(new SpringLayout());
+
+        propertyDescriptor = propertyContainer.getDescriptor(ToolAdapterConstants.HANDLE_OUTPUT);
+        editor = PropertyEditorRegistry.getInstance().findPropertyEditor(propertyDescriptor);
+        editorComponent = editor.createEditorComponent(propertyDescriptor, bindingContext);
+        editorComponent.setMaximumSize(new Dimension(editorComponent.getMaximumSize().width, controlHeight));
+        editorComponent.setPreferredSize(new Dimension(editorComponent.getPreferredSize().width, controlHeight));
+
+        checkPanel.add(editorComponent);
+        checkPanel.add(new JLabel("Tool produces the name of the output product"));
+
+        SpringUtilities.makeCompactGrid(checkPanel, 1, 2, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING);
+
+        configPanel.add(checkPanel);
+
         JLabel label = new JLabel(Bundle.CTL_Label_CmdLineTemplate_Text());
         configPanel.add(label);
 
-        templateContent = new AutoCompleteTextArea("", 16, 9);
+        templateContent = new AutoCompleteTextArea("", 15, 9);
         try {
             if (operatorIsNew) {
                 if (oldOperatorDescriptor.getTemplateFileLocation() != null) {
@@ -559,7 +575,7 @@ public class ToolAdapterEditorDialog extends ModalDialog {
         JScrollPane scrollPane = new JScrollPane(templateContent);
         configPanel.add(scrollPane);
 
-        SpringUtilities.makeCompactGrid(configPanel, 3, 1, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING);
+        SpringUtilities.makeCompactGrid(configPanel, 4, 1, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING);
 
         return configPanel;
     }
