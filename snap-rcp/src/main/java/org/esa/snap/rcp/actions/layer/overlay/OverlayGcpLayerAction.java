@@ -5,6 +5,9 @@
  */
 package org.esa.snap.rcp.actions.layer.overlay;
 
+import com.bc.ceres.glayer.Layer;
+import com.bc.ceres.glayer.LayerListener;
+import com.bc.ceres.glayer.support.AbstractLayerListener;
 import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -16,6 +19,7 @@ import org.openide.util.NbBundle;
 import org.openide.util.Utilities;
 
 import javax.swing.Action;
+import java.lang.ref.WeakReference;
 
 /**
  * @author Marco Peters
@@ -32,12 +36,16 @@ import javax.swing.Action;
 })
 public final class OverlayGcpLayerAction extends AbstractOverlayAction {
 
+    private final LayerListener layerListener;
+    private WeakReference<ProductSceneView> lastView;
+
     public OverlayGcpLayerAction() {
         this(Utilities.actionsGlobalContext());
     }
 
     public OverlayGcpLayerAction(Lookup lkp) {
         super(lkp);
+        layerListener = new GcpLayerListener();
     }
 
     @Override
@@ -68,5 +76,35 @@ public final class OverlayGcpLayerAction extends AbstractOverlayAction {
         view.setGcpOverlayEnabled(!getActionSelectionState(view));
     }
 
+    @Override
+    protected void selectedProductSceneViewChanged(ProductSceneView newView) {
+        ProductSceneView oldView = lastView != null ? lastView.get() : null;
+        if (oldView != null) {
+            oldView.getRootLayer().removeListener(layerListener);
+        }
+        if (newView != null) {
+            newView.getRootLayer().addListener(layerListener);
+        }
+
+        if (newView != null) {
+            lastView = new WeakReference<>(newView);
+        } else {
+            if (lastView != null) {
+                lastView.clear();
+                lastView = null;
+            }
+        }
+    }
+    private class GcpLayerListener extends AbstractLayerListener {
+        @Override
+        public void handleLayersAdded(Layer parentLayer, Layer[] childLayers) {
+            updateActionState();
+        }
+
+        @Override
+        public void handleLayersRemoved(Layer parentLayer, Layer[] childLayers) {
+            updateActionState();
+        }
+    }
 
 }
