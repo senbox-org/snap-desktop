@@ -62,7 +62,9 @@ import java.util.stream.Collectors;
         "RequiredTargetProductMissingWarning_Text=A target product is required in adapter's template, but none was provided",
         "NoOutput_Text=The operator did not produce any output",
         "BeginOfErrorMessages_Text=The operator completed with the following errors:\n",
-        "OutputTitle_Text=Process output"
+        "OutputTitle_Text=Process output",
+        "ExecutionFailed_Text=Execution Failed",
+        "ExecutionFailed_Message=The execution completed with errors: \n%s\n\nDo you want to try to open the resulting product?"
 })
 public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
 
@@ -210,6 +212,9 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
 
     @Override
     protected void onCancel() {
+        if (operatorTask != null) {
+            operatorTask.cancel();
+        }
         super.onCancel();
     }
 
@@ -247,15 +252,21 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
         displayErrors();
     }
 
-    private void tearDown(Throwable throwable) {
+    private void tearDown(Throwable throwable, Product result) {
         boolean hasBeenCancelled = operatorTask != null && !operatorTask.hasCompleted;
         if (operatorTask != null) {
             operatorTask.cancel();
         }
         if (throwable != null) {
-            if (!hasBeenCancelled)
-                SnapDialogs.showError("Execution failed", throwable.getMessage());
-                //handleInitialisationError(throwable);
+            if (result != null) {
+                final SnapDialogs.Answer answer = SnapDialogs.requestDecision(Bundle.ExecutionFailed_Text(),
+                        String.format(Bundle.ExecutionFailed_Message(), throwable.getMessage()),
+                        false, null);
+                if (answer == SnapDialogs.Answer.YES) {
+                    operatorCompleted(result);
+                }
+            } else
+                SnapDialogs.showError(Bundle.ExecutionFailed_Text(), throwable.getMessage());
         }
         displayErrors();
     }
@@ -342,7 +353,7 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
             if (!hasCompleted) {
                 if (operator instanceof ToolAdapterOp) {
                     ((ToolAdapterOp) operator).stop();
-                    onCancel();
+                    //onCancel();
                 }
                 hasCompleted = true;
             }
@@ -354,7 +365,11 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
             try {
                 callbackMethod.accept(operator.getTargetProduct());
             } catch (Throwable t) {
-                tearDown(t);
+                if (operator instanceof ToolAdapterOp) {
+                    tearDown(t, ((ToolAdapterOp) operator).getResult());
+                } else {
+                    tearDown(t, null);
+                }
             } finally {
                 hasCompleted = true;
             }

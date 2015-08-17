@@ -52,7 +52,13 @@ ADAPTER_FOLDER
                             layer.xml
                         </li></ul>
                     </li></ul>
-                </li></ul>
+                </li>
+                    <li>utils
+                        <ul><li>
+                            ModuleInstaller.class
+                        </li></ul>
+                    </li>
+                </ul>
             </li></ul>
         </li></ul>
     </li>
@@ -160,6 +166,14 @@ file <strong>snap.properties</strong></p>
             <td>Yes</td>
             <td>Specifies if the adapter comes from a NBM module, or is created by the user.<br/>
                 Possible values: <i>user</i>, <i>package</i>
+            </td>
+        </tr>
+        <tr>
+            <td>isHandlingOutputName</td>
+            <td>No</td>
+            <td>Specifies if the tool handles the output product name by itself. If <i>false</i>, <strong>targetProductFile</strong> has to be provided
+                at execution time.<br/>
+                Possible values: <i>true</i>, <i>false</i>
             </td>
         </tr>
         <tr>

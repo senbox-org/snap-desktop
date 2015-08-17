@@ -39,6 +39,7 @@ import javax.swing.border.EmptyBorder;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -160,14 +161,23 @@ class ToolExecutionForm extends JTabbedPane {
     private void updateTargetProductFields() {
         TargetProductSelectorModel model = targetProductSelector.getModel();
         Property property = propertySet.getProperty(ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE);
-        Object value = property.getValue();
-        if (value != null) {
-            File file = operatorDescriptor.resolveVariables(new File(property.getValueAsText()));
-            String productName = FileUtils.getFilenameWithoutExtension(file);
-            if (fileExtension == null) {
-                fileExtension = FileUtils.getExtension(file);
+        if (!operatorDescriptor.isHandlingOutputName()) {
+            Object value = property.getValue();
+            if (value != null) {
+                File file = operatorDescriptor.resolveVariables(new File(property.getValueAsText()));
+                String productName = FileUtils.getFilenameWithoutExtension(file);
+                if (fileExtension == null) {
+                    fileExtension = FileUtils.getExtension(file);
+                }
+                model.setProductName(productName);
             }
-            model.setProductName(productName);
+        } else {
+            try {
+                model.setProductName("Output Product");
+                property.setValue(null);
+            } catch (ValidationException e) {
+                Logger.getLogger(ToolExecutionForm.class.getName()).severe(e.getMessage());
+            }
         }
         model.setSaveToFileSelected(false);
         targetProductSelector.getProductDirTextField().setEnabled(false);
@@ -179,26 +189,28 @@ class ToolExecutionForm extends JTabbedPane {
 
         @Override
         public void selectionChanged(SelectionChangeEvent event) {
-            Property targetProperty = propertySet.getProperty(ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE);
-            Object value = targetProperty.getValue();
-            String productName = "";
-            final Product selectedProduct = (Product) event.getSelection().getSelectedValue();
-            if (selectedProduct != null) {
-                productName = FileUtils.getFilenameWithoutExtension(selectedProduct.getName());
-            }
-            final TargetProductSelectorModel targetProductSelectorModel = targetProductSelector.getModel();
-            productName += TARGET_PRODUCT_NAME_SUFFIX;
-            targetProductSelectorModel.setProductName(productName);
-            if (value != null) {
-                File oldValue = operatorDescriptor.resolveVariables(value instanceof File ? (File) value : new File((String) value));
-                if (fileExtension == null)
-                    fileExtension = TIF_EXTENSION;
-                propertySet.setValue(ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE, new File(oldValue.getParentFile().getAbsolutePath(), productName + fileExtension));
-            } else {
-                File workingDir = operatorDescriptor.resolveVariables(operatorDescriptor.getWorkingDir());
-                try {
-                    targetProperty.setValue(new File(workingDir, productName + TIF_EXTENSION));
-                } catch (ValidationException ignored) {
+            if (!operatorDescriptor.isHandlingOutputName()) {
+                Property targetProperty = propertySet.getProperty(ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE);
+                Object value = targetProperty.getValue();
+                String productName = "";
+                final Product selectedProduct = (Product) event.getSelection().getSelectedValue();
+                if (selectedProduct != null) {
+                    productName = FileUtils.getFilenameWithoutExtension(selectedProduct.getName());
+                }
+                final TargetProductSelectorModel targetProductSelectorModel = targetProductSelector.getModel();
+                productName += TARGET_PRODUCT_NAME_SUFFIX;
+                targetProductSelectorModel.setProductName(productName);
+                if (value != null) {
+                    File oldValue = operatorDescriptor.resolveVariables(value instanceof File ? (File) value : new File((String) value));
+                    if (fileExtension == null)
+                        fileExtension = TIF_EXTENSION;
+                    propertySet.setValue(ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE, new File(oldValue.getParentFile().getAbsolutePath(), productName + fileExtension));
+                } else {
+                    File workingDir = operatorDescriptor.resolveVariables(operatorDescriptor.getWorkingDir());
+                    try {
+                        targetProperty.setValue(new File(workingDir, productName + TIF_EXTENSION));
+                    } catch (ValidationException ignored) {
+                    }
                 }
             }
         }
