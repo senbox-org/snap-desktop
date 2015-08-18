@@ -42,7 +42,6 @@ import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.awt.UndoRedo;
 import org.openide.util.HelpCtx;
-import org.openide.util.ImageUtilities;
 import org.openide.util.NbBundle.Messages;
 
 import javax.swing.AbstractAction;
@@ -59,29 +58,23 @@ import java.text.MessageFormat;
 @ActionRegistration(
         displayName = "#CTL_CreateVectorDataNodeActionText",
         popupText = "#CTL_CreateVectorDataNodeActionPopupText",
-        iconBase = "org/esa/snap/rcp/icons/NewVectorDataNode24.gif"
+        iconBase = "org/esa/snap/rcp/icons/NewVectorDataNode.gif"
 )
 @ActionReferences({
         @ActionReference(path = "Menu/Vector", position = 0),
         @ActionReference(path = "Toolbars/Tools", position = 191)
 })
 @Messages({
-        "CTL_CreateVectorDataNodeActionText=Vector Data Container",
-        "CTL_CreateVectorDataNodeActionPopupText=Vector Data Container"
+        "CTL_CreateVectorDataNodeActionText=New Vector Data Container",
+        "CTL_CreateVectorDataNodeActionPopupText=New Vector Data Container"
 })
 public class CreateVectorDataNodeAction extends AbstractAction implements HelpCtx.Provider {
-
-    private static final String DIALOG_TITLE = "New Vector Data Container";
-    //private static final String KEY_VECTOR_DATA_INITIAL_NAME = "geometry.initialName";
-
 
     private static final String HELP_ID = "vectorDataManagement";
     private static int numItems = 1;
 
     public CreateVectorDataNodeAction() {
         putValue(Action.SHORT_DESCRIPTION, "Create a new vector data container for drawing line and polygons.");
-        putValue(Action.SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/NewVectorDataNode16.gif", false));
-        putValue(Action.LARGE_ICON_KEY, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/NewVectorDataNode24.gif", false));
     }
 
     @Override
@@ -187,7 +180,7 @@ public class CreateVectorDataNodeAction extends AbstractAction implements HelpCt
 
         private MyModalDialog(PropertyPane propertyPane) {
             super(SnapApp.getDefault().getMainFrame(),
-                  DIALOG_TITLE,
+                  Bundle.CTL_CreateVectorDataNodeActionText(),
                   ModalDialog.ID_OK_CANCEL_HELP,
                   HELP_ID);
             this.propertyPane = propertyPane;
