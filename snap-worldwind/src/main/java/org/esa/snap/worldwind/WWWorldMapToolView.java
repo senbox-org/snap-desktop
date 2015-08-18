@@ -50,7 +50,7 @@ import java.awt.Window;
 )
 @TopComponent.Registration(
         mode = "navigator",
-        openAtStartup = false,
+        openAtStartup = true,
         position = 50
 )
 @ActionID(category = "Window", id = "org.esa.snap.worldwind.WWWorldMapToolView")
