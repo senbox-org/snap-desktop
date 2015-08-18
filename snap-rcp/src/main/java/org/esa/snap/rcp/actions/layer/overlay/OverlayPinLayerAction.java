@@ -5,15 +5,8 @@
  */
 package org.esa.snap.rcp.actions.layer.overlay;
 
-import com.bc.ceres.glayer.Layer;
-import com.bc.ceres.glayer.LayerListener;
-import com.bc.ceres.glayer.support.AbstractLayerListener;
-import com.bc.ceres.swing.figure.FigureEditor;
-import com.bc.ceres.swing.figure.FigureEditorAware;
 import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductManager;
 import org.esa.snap.framework.ui.product.ProductSceneView;
-import org.esa.snap.rcp.SnapApp;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -24,7 +17,6 @@ import org.openide.util.NbBundle;
 import org.openide.util.Utilities;
 
 import javax.swing.Action;
-import java.lang.ref.WeakReference;
 
 /**
  * @author Marco Peters
@@ -41,17 +33,12 @@ import java.lang.ref.WeakReference;
 })
 public final class OverlayPinLayerAction extends AbstractOverlayAction{
 
-    private ProductSceneView productSceneView;
-    private final LayerListener layerListener;
-    private WeakReference<ProductSceneView> lastView;
-
     public OverlayPinLayerAction() {
         this(Utilities.actionsGlobalContext());
     }
 
     public OverlayPinLayerAction(Lookup lkp) {
         super(lkp);
-        layerListener = new PinLayerListener();
     }
 
     @Override
@@ -69,22 +56,7 @@ public final class OverlayPinLayerAction extends AbstractOverlayAction{
 
     @Override
     protected void selectedProductSceneViewChanged(ProductSceneView newView) {
-        ProductSceneView oldView = lastView != null ? lastView.get() : null;
-        if (oldView != null) {
-            oldView.getRootLayer().removeListener(layerListener);
-        }
-        if (newView != null) {
-            newView.getRootLayer().addListener(layerListener);
-        }
-
-        if (newView != null) {
-            lastView = new WeakReference<>(newView);
-        } else {
-            if (lastView != null) {
-                lastView.clear();
-                lastView = null;
-            }
-        }
+        new HandleOverLayerListener().addOverLayerChangedListener(newView);
     }
 
     @Override
@@ -103,19 +75,5 @@ public final class OverlayPinLayerAction extends AbstractOverlayAction{
     protected void setOverlayEnableState(ProductSceneView view) {
         view.setPinOverlayEnabled(!getActionSelectionState(view));
     }
-
-
-    private class PinLayerListener extends AbstractLayerListener {
-        @Override
-        public void handleLayersAdded(Layer parentLayer, Layer[] childLayers) {
-            updateActionState();
-        }
-
-        @Override
-        public void handleLayersRemoved(Layer parentLayer, Layer[] childLayers) {
-            updateActionState();
-        }
-    }
-
 
 }

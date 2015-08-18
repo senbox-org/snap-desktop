@@ -1,5 +1,8 @@
 package org.esa.snap.rcp.actions.layer.overlay;
 
+import com.bc.ceres.glayer.Layer;
+import com.bc.ceres.glayer.LayerListener;
+import com.bc.ceres.glayer.support.AbstractLayerListener;
 import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.openide.util.ContextAwareAction;
 import org.openide.util.Lookup;
@@ -14,6 +17,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JToggleButton;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
+import java.lang.ref.WeakReference;
 import java.util.Collection;
 
 /**
@@ -101,4 +105,19 @@ public abstract class AbstractOverlayAction extends AbstractAction
         putValue(SELECTED_KEY, selected);
     }
 
+
+    class HandleOverLayerListener {
+        private WeakReference<ProductSceneView> lastView;
+        public void addOverLayerChangedListener(ProductSceneView newView) {
+            if (newView != null) {
+                newView.getRootLayer().addListener(new AbstractLayerListener() {
+                    @Override
+                    public void handleLayersAdded(Layer parentLayer, Layer[] childLayers) {
+                        updateActionState();
+                    }
+                });
+                lastView = new WeakReference<>(newView);
+            }
+        }
+    }
 }
