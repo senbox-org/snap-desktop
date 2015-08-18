@@ -165,7 +165,7 @@ public class OpenSessionAction extends AbstractAction {
                     Viewport viewport = sceneView.getLayerCanvas().getViewport().clone();
 
 //        ######### 06.07.2015 ########
-//        Comment out by Muhammad until Internal view is solved for NetBeans platform
+//        Comment out by Muhammad until tool window persistance is solved for SNAP on NetBeans platform.
 
 //                    if (sceneView.isRGB()) {
 //                        internalFrame = null;// showImageViewRGBAction.openInternalFrame(sceneView, false);
