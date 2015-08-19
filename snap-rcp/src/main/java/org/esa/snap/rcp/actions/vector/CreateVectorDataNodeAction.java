@@ -41,8 +41,14 @@ import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.awt.UndoRedo;
-import org.openide.util.HelpCtx;
+import org.openide.util.ContextAwareAction;
+import org.openide.util.ImageUtilities;
+import org.openide.util.Lookup;
+import org.openide.util.LookupEvent;
+import org.openide.util.LookupListener;
 import org.openide.util.NbBundle.Messages;
+import org.openide.util.Utilities;
+import org.openide.util.WeakListeners;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -53,12 +59,11 @@ import java.text.MessageFormat;
 
 @ActionID(
         category = "Tools",
-        id = "org.esa.snap.rcp.action.tools.CreateVectorDataNodeAction"
+        id = "CreateVectorDataNodeAction"
 )
 @ActionRegistration(
         displayName = "#CTL_CreateVectorDataNodeActionText",
-        popupText = "#CTL_CreateVectorDataNodeActionPopupText",
-        iconBase = "org/esa/snap/rcp/icons/NewVectorDataNode.gif"
+        popupText = "#CTL_CreateVectorDataNodeActionPopupText"
 )
 @ActionReferences({
         @ActionReference(path = "Menu/Vector", position = 0),
@@ -68,19 +73,32 @@ import java.text.MessageFormat;
         "CTL_CreateVectorDataNodeActionText=New Vector Data Container",
         "CTL_CreateVectorDataNodeActionPopupText=New Vector Data Container"
 })
-public class CreateVectorDataNodeAction extends AbstractAction implements HelpCtx.Provider {
-
+public class CreateVectorDataNodeAction extends AbstractAction implements ContextAwareAction, LookupListener {
+    // TODO: Make sure help page is available for ID
     private static final String HELP_ID = "vectorDataManagement";
     private static int numItems = 1;
+    private final Lookup.Result<Product> result;
 
     public CreateVectorDataNodeAction() {
-        putValue(Action.SHORT_DESCRIPTION, "Create a new vector data container for drawing line and polygons.");
+        this(Utilities.actionsGlobalContext());
+    }
+
+    public CreateVectorDataNodeAction(Lookup lkp) {
+        super(Bundle.CTL_CreateVectorDataNodeActionText());
+        result = lkp.lookupResult(Product.class);
+        result.addLookupListener(WeakListeners.create(LookupListener.class, this, result));
+        setEnabled(false);
+        putValue(Action.SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/NewVectorDataNode24.gif", false));
     }
 
     @Override
-    public HelpCtx getHelpCtx() {
-        // TODO: Make sure help page is available for ID
-        return new HelpCtx("createVectorDataNode");
+    public Action createContextAwareInstance(Lookup actionContext) {
+        return new CreateVectorDataNodeAction(actionContext);
+    }
+
+    @Override
+    public void resultChanged(LookupEvent ev) {
+        setEnabled(result.allInstances().size() >= 1);
     }
 
     @Override
@@ -151,7 +169,6 @@ public class CreateVectorDataNodeAction extends AbstractAction implements HelpCt
     }
 
     public static String getDefaultVectorDataNodeName() {
-        //return VisatActivator.getDefault().getModuleContext().getRuntimeConfig().getContextProperty(KEY_VECTOR_DATA_INITIAL_NAME, "geometry");
         return "geometry";
     }
 
