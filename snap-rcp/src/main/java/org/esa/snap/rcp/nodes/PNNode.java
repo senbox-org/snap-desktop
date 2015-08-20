@@ -32,6 +32,8 @@ import org.esa.snap.rcp.actions.window.OpenPlacemarkViewAction;
 import org.esa.snap.rcp.util.ProgressHandleMonitor;
 import org.esa.snap.util.StringUtils;
 import org.netbeans.api.progress.ProgressUtils;
+import org.opengis.feature.type.GeometryDescriptor;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.openide.awt.UndoRedo;
 import org.openide.nodes.Node;
 import org.openide.nodes.PropertySupport;
@@ -333,6 +335,55 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
         @Override
         public Action getPreferredAction() {
             return new OpenPlacemarkViewAction();
+        }
+
+        @Override
+        public PropertySet[] getPropertySets() {
+
+            Sheet.Set set = new Sheet.Set();
+            final VectorDataNode vdn = getProductNode();
+
+            set.setDisplayName("Vector Data Properties");
+            set.put(new PropertySupport.ReadOnly<String>("featureType", String.class, "Feature type", "The feature type schema used for all features in the collection") {
+                @Override
+                public String getValue() {
+                    return vdn.getFeatureType().getTypeName();
+                }
+            });
+            set.put(new PropertySupport.ReadOnly<String>("featureGeomType", String.class, "Feature geometry type", "The geometry type used used for all feature geometries in the collection") {
+                @Override
+                public String getValue() {
+                    Class<?> binding;
+                    GeometryDescriptor geometryDescriptor = vdn.getFeatureType().getGeometryDescriptor();
+                    if (geometryDescriptor != null) {
+                        binding = geometryDescriptor.getType().getBinding();
+                    } else {
+                        binding = null;
+                    }
+                    return binding != null ? binding.getName() : "<unknown>";
+                }
+            });
+            set.put(new PropertySupport.ReadOnly<String>("featureCRS", String.class, "Feature geometry CRS", "The coordinate reference system used used for all feature geometries in the collection") {
+                @Override
+                public String getValue() {
+                    CoordinateReferenceSystem crs;
+                    GeometryDescriptor geometryDescriptor = vdn.getFeatureType().getGeometryDescriptor();
+                    if (geometryDescriptor != null) {
+                        crs = geometryDescriptor.getType().getCoordinateReferenceSystem();
+                    } else {
+                        crs = null;
+                    }
+                    return crs != null ? crs.toString() : "<unknown>";
+                }
+            });
+            set.put(new PropertySupport.ReadOnly<Integer>("featureCount", Integer.class, "Feature count", "The number of features in this collection") {
+                @Override
+                public Integer getValue() {
+                    return vdn.getFeatureCollection().size();
+                }
+            });
+
+            return Stream.concat(Stream.of(super.getPropertySets()), Stream.of(set)).toArray(PropertySet[]::new);
         }
     }
 
