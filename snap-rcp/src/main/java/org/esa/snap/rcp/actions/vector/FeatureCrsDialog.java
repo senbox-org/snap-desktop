@@ -49,8 +49,8 @@ public class FeatureCrsDialog extends ModalDialog {
         final JPanel contentPanel = new JPanel(tableLayout);
         final JLabel label = new JLabel();
         label.setText("<html><b>" +
-                              "These vector data does not define a coordinate reference system (CRS).<br/>" +
-                              "Please specify a CRS so that coordinates can interpreted correctly.</b>");
+                              "The vector data are not associated with a coordinate reference system (CRS).<br/>" +
+                              "Please specify a CRS so that coordinates can be interpreted correctly.</b>");
 
         contentPanel.add(label);
         contentPanel.add(crsSelectionPanel);
@@ -63,7 +63,7 @@ public class FeatureCrsDialog extends ModalDialog {
             crs = crsSelectionPanel.getCrs(ProductUtils.getCenterGeoPos(product));
         } catch (FactoryException e) {
             SnapDialogs.showError(title,
-                                  "Can not create Coordinate Reference System.\n" + e.getMessage());
+                                  "Cannot create coordinate reference system.\n" + e.getMessage());
         }
         return crs;
     }
