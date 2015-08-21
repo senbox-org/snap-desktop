@@ -12,17 +12,14 @@ import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.ImageUtilities;
-import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
-import org.openide.util.Utilities;
-
-import javax.swing.Action;
 
 /**
  * @author Marco Peters
+ * @author Muhammad.bc
  */
 @ActionID(category = "View", id = "OverlayPinLayerAction")
-@ActionRegistration(displayName = "#CTL_OverlayPinLayerActionName", lazy = false)
+@ActionRegistration(displayName = "#CTL_OverlayPinLayerActionName")
 @ActionReferences({
         @ActionReference(path = "Menu/Layer", position = 30),
         @ActionReference(path = "Toolbars/Overlay", position = 30)
@@ -31,20 +28,8 @@ import javax.swing.Action;
         "CTL_OverlayPinLayerActionName=Pin Overlay",
         "CTL_OverlayPinLayerActionToolTip=Show/hide pin overlay for the selected image"
 })
-public final class OverlayPinLayerAction extends AbstractOverlayAction{
+public final class OverlayPinLayerAction extends AbstractOverlayAction {
 
-    public OverlayPinLayerAction() {
-        this(Utilities.actionsGlobalContext());
-    }
-
-    public OverlayPinLayerAction(Lookup lkp) {
-        super(lkp);
-    }
-
-    @Override
-    public Action createContextAwareInstance(Lookup lkp) {
-        return new OverlayPinLayerAction(lkp);
-    }
 
     @Override
     protected void initActionProperties() {
@@ -55,17 +40,12 @@ public final class OverlayPinLayerAction extends AbstractOverlayAction{
     }
 
     @Override
-    protected void selectedProductSceneViewChanged(ProductSceneView newView) {
-        new HandleOverLayerListener().addOverLayerChangedListener(newView);
-    }
-
-    @Override
     protected boolean getActionSelectionState(ProductSceneView view) {
         return view.isPinOverlayEnabled();
     }
 
     @Override
-    protected boolean getActionEnableState(ProductSceneView view) {
+    protected boolean getActionEnabledState(ProductSceneView view) {
         final Product product = view.getProduct();
         return product != null && product.getPinGroup().getNodeCount() > 0;
     }

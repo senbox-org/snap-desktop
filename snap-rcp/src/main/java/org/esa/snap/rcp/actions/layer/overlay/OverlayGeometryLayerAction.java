@@ -15,19 +15,17 @@ import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.ImageUtilities;
-import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
-import org.openide.util.Utilities;
 
-import javax.swing.Action;
 import java.util.List;
 
 /**
  * @author Marco Peters
  * @author Norman Fomferra
+ * @author Muhammad.bc
  */
 @ActionID(category = "View", id = "OverlayGeometryLayerAction")
-@ActionRegistration(displayName = "#CTL_OverlayGeometryLayerActionName", lazy = false)
+@ActionRegistration(displayName = "#CTL_OverlayGeometryLayerActionName")
 @ActionReferences({
         @ActionReference(path = "Menu/Layer", position = 10),
         @ActionReference(path = "Toolbars/Overlay", position = 10),
@@ -41,30 +39,12 @@ public final class OverlayGeometryLayerAction extends AbstractOverlayAction {
     private final LayerFilter geometryFilter = VectorDataLayerFilterFactory.createGeometryFilter();
 
 
-    public OverlayGeometryLayerAction() {
-        this(Utilities.actionsGlobalContext());
-    }
-
-    public OverlayGeometryLayerAction(Lookup lkp) {
-        super(lkp);
-    }
-
-    @Override
-    public Action createContextAwareInstance(Lookup lkp) {
-        return new OverlayGeometryLayerAction(lkp);
-    }
-
     @Override
     protected void initActionProperties() {
         putValue(NAME, Bundle.CTL_OverlayGeometryLayerActionName());
         putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/ShapeOverlay.gif", false));
         putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/ShapeOverlay24.gif", false));
         putValue(SHORT_DESCRIPTION, Bundle.CTL_OverlayGeometryLayerActionToolTip());
-    }
-
-    @Override
-    protected void selectedProductSceneViewChanged(ProductSceneView newView) {
-        new HandleOverLayerListener().addOverLayerChangedListener(newView);
     }
 
     @Override
@@ -75,7 +55,7 @@ public final class OverlayGeometryLayerAction extends AbstractOverlayAction {
 
 
     @Override
-    protected boolean getActionEnableState(ProductSceneView view) {
+    protected boolean getActionEnabledState(ProductSceneView view) {
         List<Layer> childLayers = getGeometryLayers(view);
         return !childLayers.isEmpty();
     }
