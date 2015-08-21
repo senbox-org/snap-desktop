@@ -187,7 +187,7 @@ public final class UiBehaviorController extends DefaultConfigController {
         boolean saveAndOpenInAppInfo = true;
 
 
-        @Preference(label = "Number of files to be reopen",
+        @Preference(label = "Maximum recent file list",
                 key = PROPERTY_KEY_LIST_FILES_TO_REOPEN, interval = "[1,20]")
         int fileReopen = 10;
     }

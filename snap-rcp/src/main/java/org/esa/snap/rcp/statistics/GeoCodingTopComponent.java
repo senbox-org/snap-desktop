@@ -31,11 +31,11 @@ import org.openide.windows.TopComponent;
 @TopComponent.Registration(
         mode = "GeoCodingMode",
         openAtStartup = false,
-        position = 20
+        position = 30
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.statistics.GeoCodingTopComponent")
 @ActionReferences({
-        @ActionReference(path = "Menu/Analysis"),
+        @ActionReference(path = "Menu/Analysis",position = 40),
         @ActionReference(path = "Toolbars/Analysis")
 })
 @TopComponent.OpenActionRegistration(

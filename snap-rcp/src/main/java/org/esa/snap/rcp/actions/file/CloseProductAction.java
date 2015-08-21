@@ -53,11 +53,6 @@ public final class CloseProductAction extends AbstractAction implements ContextA
     private final WeakSet<Product> productSet = new WeakSet<>();
     private Lookup lkp;
 
-    public CloseProductAction(List<Product> products) {
-        productSet.clear();
-        productSet.addAll(products);
-    }
-
     public CloseProductAction() {
         this(Utilities.actionsGlobalContext());
     }
@@ -68,6 +63,10 @@ public final class CloseProductAction extends AbstractAction implements ContextA
         Lookup.Result<ProductNode> productNode = lkp.lookupResult(ProductNode.class);
         productNode.addLookupListener(WeakListeners.create(LookupListener.class, this, productNode));
         setEnableState();
+    }
+
+    public CloseProductAction(List<Product> products) {
+        productSet.addAll(products);
     }
 
     @Override
@@ -85,7 +84,6 @@ public final class CloseProductAction extends AbstractAction implements ContextA
         execute();
     }
 
-
     private void setEnableState() {
         ProductNode productNode = lkp.lookup(ProductNode.class);
         setEnabled(productNode != null);
@@ -97,15 +95,22 @@ public final class CloseProductAction extends AbstractAction implements ContextA
      * @return {@code Boolean.TRUE} on success, {@code Boolean.FALSE} on failure, or {@code null} on cancellation.
      */
     public Boolean execute() {
-        int productCount = SnapApp.getDefault().getProductManager().getProductCount();
-        if (productSet.isEmpty() && productCount!=0) {
-            Product product = SnapApp.getDefault().getSelectedProductNode().getProduct();
-            productSet.add(product);
+        Boolean status;
+        if (!productSet.isEmpty()) {
+            // Case 1: If productSet is not empty, action has been constructed with selected products
+            status = closeProducts(new HashSet<>(productSet));
+            productSet.clear();
+        } else {
+            // Case 2: If productSet is empty, default constructor has been called
+            ProductNode productNode = SnapApp.getDefault().getSelectedProductNode();
+            if (productNode != null) {
+                Product product = productNode.getProduct();
+                status = closeProducts(new HashSet<>(Arrays.asList(product)));
+            } else {
+                status = false;
+            }
         }
-
-        Boolean aBoolean = closeProducts(new HashSet<>(productSet));
-        productSet.clear();
-        return aBoolean;
+        return status;
     }
 
     private static Boolean closeProducts(Set<Product> products) {

@@ -40,23 +40,23 @@ import java.util.List;
 /**
  * This action closes all opened products other than the one selected.
  */
-@ActionID(category = "File", id = "CloseAllOthersAction")
+@ActionID(category = "File", id = "CloseOtherProductsAction")
 @ActionRegistration(displayName = "#CTL_CloseAllOthersActionName",lazy = false)
 @ActionReferences({
         @ActionReference(path = "Menu/File", position = 30),
         @ActionReference(path = "Context/Product/Product", position = 80, separatorAfter = 85),
 })
-@NbBundle.Messages({"CTL_CloseAllOthersActionName=Close All Other Products"})
-public class CloseAllOthersAction extends AbstractAction implements ContextAwareAction, LookupListener {
+@NbBundle.Messages({"CTL_CloseAllOthersActionName=Close Other Products"})
+public class CloseOtherProductsAction extends AbstractAction implements ContextAwareAction, LookupListener {
 
     private final Lookup lkp;
     private Product[] products;
 
-    public CloseAllOthersAction() {
+    public CloseOtherProductsAction() {
         this(Utilities.actionsGlobalContext());
     }
 
-    public CloseAllOthersAction(Lookup lkp) {
+    public CloseOtherProductsAction(Lookup lkp) {
         super(Bundle.CTL_CloseAllOthersActionName());
         this.lkp = lkp;
         Lookup.Result<ProductNode> lkpContext = lkp.lookupResult(ProductNode.class);
@@ -68,7 +68,7 @@ public class CloseAllOthersAction extends AbstractAction implements ContextAware
 
     @Override
     public Action createContextAwareInstance(Lookup actionContext) {
-        return new CloseAllOthersAction(actionContext);
+        return new CloseOtherProductsAction(actionContext);
     }
 
     @Override
