@@ -21,6 +21,9 @@ import org.esa.snap.framework.datamodel.TiePointGrid;
 import org.esa.snap.framework.datamodel.VectorDataNode;
 import org.esa.snap.framework.datamodel.VirtualBand;
 import org.esa.snap.framework.dataop.barithm.BandArithmetic;
+import org.esa.snap.netbeans.docwin.DocumentWindow;
+import org.esa.snap.netbeans.docwin.DocumentWindowManager;
+import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.actions.window.OpenImageViewAction;
@@ -29,6 +32,8 @@ import org.esa.snap.rcp.actions.window.OpenPlacemarkViewAction;
 import org.esa.snap.rcp.util.ProgressHandleMonitor;
 import org.esa.snap.util.StringUtils;
 import org.netbeans.api.progress.ProgressUtils;
+import org.opengis.feature.type.GeometryDescriptor;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.openide.awt.UndoRedo;
 import org.openide.nodes.Node;
 import org.openide.nodes.PropertySupport;
@@ -174,17 +179,23 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
         throw new IllegalStateException("unhandled product node type: " + productNode.getClass() + " named '" + productNode.getName() + "'");
     }
 
-    private static <T extends ProductNode> void deleteProductNode(Product product, ProductNodeGroup<T>[] groups,
+    private static <T extends ProductNode> void closeDocumentWindow(T productNode) {
+        WindowUtilities.getOpened(DocumentWindow.class)
+                .filter(dw -> (dw.getDocument() instanceof ProductNode) && (dw.getDocument() == productNode))
+                .forEach(dw -> DocumentWindowManager.getDefault().closeWindow(dw));
+    }
+
+    private static <T extends ProductNode> void deleteProductNode(Product product,
+                                                                  ProductNodeGroup<T> group,
                                                                   T productNode) {
-        // todo - close all document windows / layers that refer to productNode (nf/mp - 14.01.2015)
-        int indexes[] = new int[groups.length];
-        for (int i = 0; i < groups.length; i++) {
-            indexes[i] = groups[i].indexOf(productNode);
-            groups[i].remove(productNode);
-        }
+
+        closeDocumentWindow(productNode);
+
+        final int index = group.indexOf(productNode);
+        group.remove(productNode);
         UndoRedo.Manager manager = SnapApp.getDefault().getUndoManager(product);
         if (manager != null) {
-            manager.addEdit(new UndoableProductNodeDeletion<>(groups, productNode, indexes));
+            manager.addEdit(new UndoableProductNodeDeletion<>(group, productNode, index));
         }
     }
 
@@ -219,13 +230,12 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
         @Override
         public void destroy() throws IOException {
             deleteProductNode(getProductNode().getProduct(),
-                              new ProductNodeGroup[]{getProductNode().getParentElement().getElementGroup()},
+                              getProductNode().getParentElement().getElementGroup(),
                               getProductNode());
         }
 
         @Override
         public Action getPreferredAction() {
-//            return new OpenMetadataViewAction(this.getProductNode());
             return new OpenMetadataViewAction();
         }
     }
@@ -250,7 +260,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
         @Override
         public void destroy() throws IOException {
             deleteProductNode(getProductNode().getProduct(),
-                              new ProductNodeGroup[]{getProductNode().getProduct().getIndexCodingGroup()},
+                              getProductNode().getProduct().getIndexCodingGroup(),
                               getProductNode());
         }
 
@@ -280,7 +290,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
         @Override
         public void destroy() throws IOException {
             deleteProductNode(getProductNode().getProduct(),
-                              new ProductNodeGroup[]{getProductNode().getProduct().getFlagCodingGroup()},
+                              getProductNode().getProduct().getFlagCodingGroup(),
                               getProductNode());
         }
 
@@ -318,13 +328,62 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
         @Override
         public void destroy() throws IOException {
             deleteProductNode(getProductNode().getProduct(),
-                              new ProductNodeGroup[]{getProductNode().getProduct().getVectorDataGroup()},
+                              getProductNode().getProduct().getVectorDataGroup(),
                               getProductNode());
         }
 
         @Override
         public Action getPreferredAction() {
             return new OpenPlacemarkViewAction();
+        }
+
+        @Override
+        public PropertySet[] getPropertySets() {
+
+            Sheet.Set set = new Sheet.Set();
+            final VectorDataNode vdn = getProductNode();
+
+            set.setDisplayName("Vector Data Properties");
+            set.put(new PropertySupport.ReadOnly<String>("featureType", String.class, "Feature type", "The feature type schema used for all features in the collection") {
+                @Override
+                public String getValue() {
+                    return vdn.getFeatureType().getTypeName();
+                }
+            });
+            set.put(new PropertySupport.ReadOnly<String>("featureGeomType", String.class, "Feature geometry type", "The geometry type used used for all feature geometries in the collection") {
+                @Override
+                public String getValue() {
+                    Class<?> binding;
+                    GeometryDescriptor geometryDescriptor = vdn.getFeatureType().getGeometryDescriptor();
+                    if (geometryDescriptor != null) {
+                        binding = geometryDescriptor.getType().getBinding();
+                    } else {
+                        binding = null;
+                    }
+                    return binding != null ? binding.getName() : "<unknown>";
+                }
+            });
+            set.put(new PropertySupport.ReadOnly<String>("featureCRS", String.class, "Feature geometry CRS", "The coordinate reference system used used for all feature geometries in the collection") {
+                @Override
+                public String getValue() {
+                    CoordinateReferenceSystem crs;
+                    GeometryDescriptor geometryDescriptor = vdn.getFeatureType().getGeometryDescriptor();
+                    if (geometryDescriptor != null) {
+                        crs = geometryDescriptor.getType().getCoordinateReferenceSystem();
+                    } else {
+                        crs = null;
+                    }
+                    return crs != null ? crs.toString() : "<unknown>";
+                }
+            });
+            set.put(new PropertySupport.ReadOnly<Integer>("featureCount", Integer.class, "Feature count", "The number of features in this collection") {
+                @Override
+                public Integer getValue() {
+                    return vdn.getFeatureCollection().size();
+                }
+            });
+
+            return Stream.concat(Stream.of(super.getPropertySets()), Stream.of(set)).toArray(PropertySet[]::new);
         }
     }
 
@@ -335,18 +394,10 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
      */
     static class TPG extends PNNode<TiePointGrid> {
 
-        private ProductNodeGroup[] groups;
-
-        public TPG(TiePointGrid tiePointGrid, ProductNodeGroup<TiePointGrid> additionalGroup) {
-            this(tiePointGrid);
-            groups = new ProductNodeGroup[]{additionalGroup, getProductNode().getProduct().getTiePointGridGroup()};
-        }
-
         public TPG(TiePointGrid tiePointGrid) {
             super(tiePointGrid);
             setIconBaseWithExtension("org/esa/snap/rcp/icons/RsBandAsTiePoint16.gif");
             setShortDescription(createToolTip(tiePointGrid));
-            groups = new ProductNodeGroup[]{getProductNode().getProduct().getTiePointGridGroup()};
         }
 
         private String createToolTip(final TiePointGrid tiePointGrid) {
@@ -366,7 +417,9 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
 
         @Override
         public void destroy() throws IOException {
-            deleteProductNode(getProductNode().getProduct(), groups, getProductNode());
+            deleteProductNode(getProductNode().getProduct(),
+                              getProductNode().getProduct().getTiePointGridGroup(),
+                              getProductNode());
         }
 
         @Override
@@ -423,7 +476,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
         @Override
         public void destroy() throws IOException {
             deleteProductNode(getProductNode().getProduct(),
-                              new ProductNodeGroup[]{getProductNode().getProduct().getMaskGroup()},
+                              getProductNode().getProduct().getMaskGroup(),
                               getProductNode());
         }
 
@@ -440,8 +493,6 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
      */
     static class B extends PNNode<Band> {
 
-        private ProductNodeGroup[] groups;
-
         public B(Band band) {
             super(band);
             if (band instanceof VirtualBand) {
@@ -452,12 +503,6 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
                 setIconBaseWithExtension("org/esa/snap/rcp/icons/RsBandAsSwath.gif");
             }
             setShortDescription(createToolTip(band));
-            groups = new ProductNodeGroup[]{band.getProduct().getBandGroup()};
-        }
-
-        public B(Band band, ProductNodeGroup<Band> additionalGroup) {
-            this(band);
-            groups = new ProductNodeGroup[]{additionalGroup, band.getProduct().getBandGroup()};
         }
 
         private String createToolTip(final Band band) {
@@ -486,7 +531,9 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
 
         @Override
         public void destroy() throws IOException {
-            deleteProductNode(getProductNode().getProduct(), groups, getProductNode());
+            deleteProductNode(getProductNode().getProduct(),
+                              getProductNode().getProduct().getBandGroup(),
+                              getProductNode());
         }
 
         @Override

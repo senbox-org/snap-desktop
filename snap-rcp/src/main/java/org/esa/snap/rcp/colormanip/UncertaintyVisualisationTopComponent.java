@@ -46,7 +46,7 @@ import java.awt.Component;
 @TopComponent.Registration(
         mode = "navigator",
         openAtStartup = true,
-        position = 1
+        position = 30
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.colormanip.UncertaintyVisualisationTopComponent")
 @ActionReference(path = "Menu/View/Tool Windows")

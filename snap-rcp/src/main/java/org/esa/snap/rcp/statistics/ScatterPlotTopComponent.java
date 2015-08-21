@@ -32,9 +32,9 @@ import javax.swing.Icon;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS //todo define
 )
 @TopComponent.Registration(
-        mode = "properties",
+        mode = "CorrelativePlot",
         openAtStartup = false,
-        position = 1
+        position = 70
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.statistics.ScatterPlotTopComponent")
 @ActionReferences({

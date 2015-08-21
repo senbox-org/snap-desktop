@@ -90,6 +90,13 @@ abstract class PNNodeSupport implements ProductNodeListener {
 
         @Override
         public void nodeChanged(ProductNodeEvent event) {
+            if (group.shallReactToPropertyChange(event.getPropertyName())) {
+                final boolean nodeExpanded = NodeExpansionManager.isNodeExpanded(node);
+                group.refresh();
+                if (nodeExpanded) {
+                    NodeExpansionManager.expandNode(node);
+                }
+            }
             delegateProductNodeEvent(l -> l.nodeChanged(event));
         }
 

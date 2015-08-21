@@ -65,7 +65,7 @@ import java.net.URISyntaxException;
 @TopComponent.Registration(
         mode = "navigator",
         openAtStartup = false,
-        position = 1
+        position = 60
 )
 @ActionID(category = "Window", id = "org.esa.snap.worldwind.WW3DToolView")
 @ActionReferences({

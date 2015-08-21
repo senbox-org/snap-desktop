@@ -29,9 +29,9 @@ import org.openide.windows.TopComponent;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS //todo define
 )
 @TopComponent.Registration(
-        mode = "properties",
+        mode = "ScatterPlot",
         openAtStartup = false,
-        position = 1
+        position = 40
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.statistics.DensityPlotTopComponent")
 @ActionReferences({

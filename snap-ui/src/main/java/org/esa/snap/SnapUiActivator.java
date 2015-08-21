@@ -47,15 +47,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * The activator for the BEAM UI module. Registers help set extensions.
- *
  * @author Marco Peters
  * @author Norman Fomferra
- * @version $Revision$ $Date$
+ * @deprecated This class shall no longer be in use at all.
  */
-public class BeamUiActivator implements ToolViewDescriptorRegistry {
+@Deprecated
+public class SnapUiActivator implements ToolViewDescriptorRegistry {
 
-    private static BeamUiActivator instance = new BeamUiActivator();
+    private static SnapUiActivator instance = new SnapUiActivator();
     private ModuleContext moduleContext;
     private TreeNode<HelpSet> helpSetRegistry;
     private List<Command> actionList;
@@ -87,7 +86,7 @@ public class BeamUiActivator implements ToolViewDescriptorRegistry {
     }
 
     private void registerApplicationDescriptors(ModuleContext moduleContext) {
-        final List<ApplicationDescriptor> applicationDescriptorList = BeamCoreActivator.loadExecutableExtensions(moduleContext, "applicationDescriptors", "applicationDescriptor", ApplicationDescriptor.class);
+        final List<ApplicationDescriptor> applicationDescriptorList = SnapCoreActivator.loadExecutableExtensions(moduleContext, "applicationDescriptors", "applicationDescriptor", ApplicationDescriptor.class);
         final String applicationId = getApplicationId();
         for (ApplicationDescriptor applicationDescriptor : applicationDescriptorList) {
             if (applicationId.equals(applicationDescriptor.getApplicationId())) {
@@ -95,17 +94,17 @@ public class BeamUiActivator implements ToolViewDescriptorRegistry {
                 this.applicationDescriptor = applicationDescriptor;
                 final String[] toolViewIds = applicationDescriptor.getExcludedToolViews();
                 for (String toolViewId : toolViewIds) {
-                    BeamUiActivator.getInstance().removeToolViewDescriptor(toolViewId);
+                    SnapUiActivator.getInstance().removeToolViewDescriptor(toolViewId);
                     moduleContext.getLogger().info(String.format("Removed toolview [%s]", toolViewId));
                 }
                 final String[] actionIds = applicationDescriptor.getExcludedActions();
                 for (String actionId : actionIds) {
-                    BeamUiActivator.getInstance().removeAction(actionId);
+                    SnapUiActivator.getInstance().removeAction(actionId);
                     moduleContext.getLogger().info(String.format("Removed action [%s]", actionId));
                 }
                 final String[] actionGroupIds = applicationDescriptor.getExcludedActionGroups();
                 for (String actionGroupId : actionGroupIds) {
-                    BeamUiActivator.getInstance().removeActionGroup(actionGroupId);
+                    SnapUiActivator.getInstance().removeActionGroup(actionGroupId);
                     moduleContext.getLogger().info(String.format("Removed action group [%s]", actionGroupId));
                 }
             } else {
@@ -114,7 +113,7 @@ public class BeamUiActivator implements ToolViewDescriptorRegistry {
         }
     }
 
-    public static BeamUiActivator getInstance() {
+    public static SnapUiActivator getInstance() {
         return instance;
     }
 
@@ -179,7 +178,7 @@ public class BeamUiActivator implements ToolViewDescriptorRegistry {
 
 
     private void registerToolViews(ModuleContext moduleContext) {
-        List<ToolViewDescriptor> toolViewDescriptorList = BeamCoreActivator.loadExecutableExtensions(moduleContext,
+        List<ToolViewDescriptor> toolViewDescriptorList = SnapCoreActivator.loadExecutableExtensions(moduleContext,
                                                                                                      "toolViews",
                                                                                                      "toolView",
                                                                                                      ToolViewDescriptor.class);
@@ -195,7 +194,7 @@ public class BeamUiActivator implements ToolViewDescriptorRegistry {
     }
 
     private void registerActions(ModuleContext moduleContext) {
-        actionList = BeamCoreActivator.loadExecutableExtensions(moduleContext,
+        actionList = SnapCoreActivator.loadExecutableExtensions(moduleContext,
                                                                 "actions",
                                                                 "action",
                                                                 Command.class);
@@ -214,7 +213,7 @@ public class BeamUiActivator implements ToolViewDescriptorRegistry {
 
 
     private void registerActionGroups(ModuleContext moduleContext) {
-        actionGroupList = BeamCoreActivator.loadExecutableExtensions(moduleContext,
+        actionGroupList = SnapCoreActivator.loadExecutableExtensions(moduleContext,
                                                                      "actionGroups",
                                                                      "actionGroup",
                                                                      CommandGroup.class);
@@ -233,7 +232,7 @@ public class BeamUiActivator implements ToolViewDescriptorRegistry {
 
 
     private void registerLayerEditors(ModuleContext moduleContext) {
-        BeamCoreActivator.loadExecutableExtensions(moduleContext,
+        SnapCoreActivator.loadExecutableExtensions(moduleContext,
                                                    "layerEditors",
                                                    "layerEditor",
                                                    LayerEditorDescriptor.class);
@@ -241,7 +240,7 @@ public class BeamUiActivator implements ToolViewDescriptorRegistry {
 
     private void registerLayerSources(ModuleContext moduleContext) {
         List<LayerSourceDescriptor> layerSourceListDescriptor =
-                BeamCoreActivator.loadExecutableExtensions(moduleContext,
+                SnapCoreActivator.loadExecutableExtensions(moduleContext,
                                                            "layerSources",
                                                            "layerSource",
                                                            LayerSourceDescriptor.class);

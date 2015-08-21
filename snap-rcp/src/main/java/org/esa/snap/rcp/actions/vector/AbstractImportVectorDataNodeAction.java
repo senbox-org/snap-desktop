@@ -78,18 +78,11 @@ abstract class AbstractImportVectorDataNodeAction extends AbstractSnapAction {
             }
 
             final CoordinateReferenceSystem[] featureCrsBuffer = new CoordinateReferenceSystem[1];
-            Runnable runnable = new Runnable() {
-                @Override
-                public void run() {
-                    featureCrsBuffer[0] = promptForFeatureCrs(product);
-                }
-            };
+            Runnable runnable = () -> featureCrsBuffer[0] = promptForFeatureCrs(product);
             if (!SwingUtilities.isEventDispatchThread()) {
                 try {
                     SwingUtilities.invokeAndWait(runnable);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                } catch (InvocationTargetException e) {
+                } catch (InterruptedException | InvocationTargetException e) {
                     throw new RuntimeException(e);
                 }
             } else {
@@ -97,6 +90,11 @@ abstract class AbstractImportVectorDataNodeAction extends AbstractSnapAction {
             }
             CoordinateReferenceSystem featureCrs = featureCrsBuffer[0];
             return featureCrs != null ? featureCrs : DefaultGeographicCRS.WGS84;
+        }
+
+        @Override
+        public boolean clipToProductBounds() {
+            return true;
         }
 
         private CoordinateReferenceSystem promptForFeatureCrs(Product product) {

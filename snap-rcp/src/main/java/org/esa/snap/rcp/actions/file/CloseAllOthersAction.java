@@ -16,6 +16,7 @@
 package org.esa.snap.rcp.actions.file;
 
 import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.datamodel.ProductManager;
 import org.esa.snap.framework.datamodel.ProductNode;
 import org.esa.snap.rcp.SnapApp;
 import org.openide.awt.ActionID;
@@ -49,6 +50,7 @@ import java.util.List;
 public class CloseAllOthersAction extends AbstractAction implements ContextAwareAction, LookupListener {
 
     private final Lookup lkp;
+    private Product[] products;
 
     public CloseAllOthersAction() {
         this(Utilities.actionsGlobalContext());
@@ -59,6 +61,8 @@ public class CloseAllOthersAction extends AbstractAction implements ContextAware
         this.lkp = lkp;
         Lookup.Result<ProductNode> lkpContext = lkp.lookupResult(ProductNode.class);
         lkpContext.addLookupListener(WeakListeners.create(LookupListener.class, this, lkpContext));
+        ProductManager productManager = SnapApp.getDefault().getProductManager();
+        productManager.addListener(new CloseOtherProductListener());
         setEnableState();
     }
 
@@ -73,14 +77,16 @@ public class CloseAllOthersAction extends AbstractAction implements ContextAware
     }
 
     private void setEnableState() {
+        products = SnapApp.getDefault().getProductManager().getProducts();
         ProductNode productNode = lkp.lookup(ProductNode.class);
-        setEnabled(productNode != null);
+        setEnabled(productNode != null && products.length>1);
     }
 
     @Override
     public void actionPerformed(final ActionEvent event) {
-        final Product selectedProduct = SnapApp.getDefault().getSelectedProduct();
-        final Product[] products = SnapApp.getDefault().getProductManager().getProducts();
+        final ProductNode productNode = lkp.lookup(ProductNode.class);
+        products = SnapApp.getDefault().getProductManager().getProducts();
+        final Product selectedProduct = productNode.getProduct();
         final List<Product> productsToClose = new ArrayList<>(products.length);
         for (Product product : products) {
             if (product != selectedProduct) {
@@ -88,5 +94,23 @@ public class CloseAllOthersAction extends AbstractAction implements ContextAware
             }
         }
         new CloseProductAction(productsToClose).execute();
+        setEnableState();
+    }
+
+    private class CloseOtherProductListener implements ProductManager.Listener {
+
+        @Override
+        public void productAdded(ProductManager.Event event) {
+            updateEnableState();
+        }
+
+        @Override
+        public void productRemoved(ProductManager.Event event) {
+            updateEnableState();
+        }
+
+        private void updateEnableState() {
+            setEnableState();
+        }
     }
 }

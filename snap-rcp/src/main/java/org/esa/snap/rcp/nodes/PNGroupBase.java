@@ -28,4 +28,8 @@ abstract class PNGroupBase<T> extends ChildFactory.Detachable<T> {
         createKeys(list);
         return list.contains(productNode);
     }
+
+    boolean shallReactToPropertyChange(String propertyName) {
+        return false;
+    }
 }

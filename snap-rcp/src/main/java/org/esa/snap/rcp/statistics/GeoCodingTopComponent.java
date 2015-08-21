@@ -29,7 +29,7 @@ import org.openide.windows.TopComponent;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS //todo define
 )
 @TopComponent.Registration(
-        mode = "properties",
+        mode = "GeoCodingMode",
         openAtStartup = false,
         position = 20
 )

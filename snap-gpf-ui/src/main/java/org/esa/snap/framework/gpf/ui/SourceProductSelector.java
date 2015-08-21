@@ -25,11 +25,13 @@ import org.esa.snap.framework.dataio.ProductReaderPlugIn;
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.ProductFilter;
 import org.esa.snap.framework.datamodel.ProductManager;
+import org.esa.snap.framework.datamodel.ProductNode;
 import org.esa.snap.framework.ui.AppContext;
 import org.esa.snap.rcp.actions.file.OpenProductAction;
 import org.esa.snap.util.SystemUtils;
 import org.esa.snap.util.io.SnapFileChooser;
 import org.esa.snap.util.io.SnapFileFilter;
+import org.openide.util.Utilities;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
@@ -153,7 +155,14 @@ public class SourceProductSelector {
         for (Product product : appContext.getProductManager().getProducts()) {
             addProduct(product);
         }
-        final Product selectedProduct = appContext.getSelectedProduct();
+
+        Product selectedProduct = appContext.getSelectedProduct();
+        final ProductNode productNode = Utilities.actionsGlobalContext().lookup(ProductNode.class);
+        if (productNode != null) {
+            // user would want to apply operation to the selected productNode rather than the productSceneView
+            selectedProduct = productNode.getProduct();
+        }
+
         if (selectedProduct != null && productFilter.accept(selectedProduct)) {
             productListModel.setSelectedItem(selectedProduct);
         }

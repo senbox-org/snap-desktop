@@ -34,6 +34,7 @@ import org.esa.snap.framework.ui.product.ProductSceneImage;
 import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.util.ArrayUtils;
 import org.esa.snap.util.StringUtils;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -109,7 +110,9 @@ public class OpenHSVImageViewAction extends AbstractAction implements HelpCtx.Pr
             return;
         }
         final String[] hsvExpressions = profilePane.getRgbaExpressions();
-        if (!BandArithmetic.areRastersEqualInSize(product, hsvExpressions)) {
+        final int defaultProductIndex = ArrayUtils.getElementIndex(product, openedProducts);
+        if (!BandArithmetic.areRastersEqualInSize(openedProducts,
+                                                  defaultProductIndex, hsvExpressions)) {
             SnapDialogs.showInformation(title, "Referenced rasters must all be the same size", null);
             return;
         }
