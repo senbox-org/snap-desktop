@@ -34,11 +34,11 @@ import javax.swing.Icon;
 @TopComponent.Registration(
         mode = "ProfilePlot",
         openAtStartup = false,
-        position = 60
+        position = 30
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.statistics.ProfilePlotTopComponent")
 @ActionReferences({
-        @ActionReference(path = "Menu/Analysis"),
+        @ActionReference(path = "Menu/Analysis",position = 30),
         @ActionReference(path = "Toolbars/Analysis")
 })
 @TopComponent.OpenActionRegistration(

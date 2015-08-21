@@ -31,11 +31,11 @@ import org.openide.windows.TopComponent;
 @TopComponent.Registration(
         mode = "ScatterPlot",
         openAtStartup = false,
-        position = 40
+        position = 10
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.statistics.DensityPlotTopComponent")
 @ActionReferences({
-        @ActionReference(path = "Menu/Analysis"),
+        @ActionReference(path = "Menu/Analysis",position = 20),
         @ActionReference(path = "Toolbars/Analysis")
 })
 @TopComponent.OpenActionRegistration(
