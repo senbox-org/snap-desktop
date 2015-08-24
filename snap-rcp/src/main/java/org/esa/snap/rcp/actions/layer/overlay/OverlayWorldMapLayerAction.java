@@ -26,17 +26,14 @@ import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.ImageUtilities;
-import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
-import org.openide.util.Utilities;
-
-import javax.swing.Action;
 
 /**
  * @author Marco Peters
+ * @author Muhammad.bc
  */
 @ActionID(category = "View", id = "OverlayWorldMapLayerAction")
-@ActionRegistration(displayName = "#CTL_OverlayWorldMapLayerActionName", lazy = false)
+@ActionRegistration(displayName = "#CTL_OverlayWorldMapLayerActionName")
 @ActionReferences({
         @ActionReference(path = "Menu/Layer", position = 50),
         @ActionReference(path = "Toolbars/Overlay", position = 50)
@@ -49,19 +46,6 @@ public final class OverlayWorldMapLayerAction extends AbstractOverlayAction {
 
     private static final String WORLDMAP_TYPE_PROPERTY_NAME = "worldmap.type";
     private static final String DEFAULT_LAYER_TYPE = "BlueMarbleLayerType";
-
-    public OverlayWorldMapLayerAction() {
-        this(Utilities.actionsGlobalContext());
-    }
-
-    public OverlayWorldMapLayerAction(Lookup lkp) {
-        super(lkp);
-    }
-
-    @Override
-    public Action createContextAwareInstance(Lookup lkp) {
-        return new OverlayWorldMapLayerAction(lkp);
-    }
 
     @Override
     protected void initActionProperties() {
@@ -78,7 +62,7 @@ public final class OverlayWorldMapLayerAction extends AbstractOverlayAction {
     }
 
     @Override
-    protected boolean getActionEnableState(ProductSceneView view) {
+    protected boolean getActionEnabledState(ProductSceneView view) {
         RasterDataNode raster = view.getRaster();
         return isGeographicLatLon(raster.getGeoCoding());
     }

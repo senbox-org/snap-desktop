@@ -12,17 +12,14 @@ import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.ImageUtilities;
-import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
-import org.openide.util.Utilities;
-
-import javax.swing.Action;
 
 /**
  * @author Marco Peters
+ * @author Muhammad.bc
  */
 @ActionID(category = "View", id = "OverlayGraticuleLayerAction")
-@ActionRegistration(displayName = "#CTL_OverlayGraticuleLayerActionName", lazy = false)
+@ActionRegistration(displayName = "#CTL_OverlayGraticuleLayerActionName")
 @ActionReferences({
         @ActionReference(path = "Menu/Layer", position = 20),
         @ActionReference(path = "Toolbars/Overlay", position = 20)
@@ -32,19 +29,6 @@ import javax.swing.Action;
         "CTL_OverlayGraticuleLayerActionToolTip=Show/hide graticule overlay for the selected image"
 })
 public final class OverlayGraticuleLayerAction extends AbstractOverlayAction {
-
-    public OverlayGraticuleLayerAction() {
-        this(Utilities.actionsGlobalContext());
-    }
-
-    public OverlayGraticuleLayerAction(Lookup lkp) {
-        super(lkp);
-    }
-
-    @Override
-    public Action createContextAwareInstance(Lookup lkp) {
-        return new OverlayGraticuleLayerAction(lkp);
-    }
 
     @Override
     protected void initActionProperties() {
@@ -60,7 +44,7 @@ public final class OverlayGraticuleLayerAction extends AbstractOverlayAction {
     }
 
     @Override
-    protected boolean getActionEnableState(ProductSceneView view) {
+    protected boolean getActionEnabledState(ProductSceneView view) {
         return ProductUtils.canGetPixelPos(view.getRaster());
     }
 

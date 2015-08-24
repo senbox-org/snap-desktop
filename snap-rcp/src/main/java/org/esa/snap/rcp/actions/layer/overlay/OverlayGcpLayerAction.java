@@ -11,17 +11,13 @@ import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.ImageUtilities;
-import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
-import org.openide.util.Utilities;
-
-import javax.swing.Action;
 
 /**
  * @author Marco Peters
  */
 @ActionID(category = "View", id = "OverlayGcpLayerAction")
-@ActionRegistration(displayName = "#CTL_OverlayGcpLayerActionName", lazy = false)
+@ActionRegistration(displayName = "#CTL_OverlayGcpLayerActionName")
 @ActionReferences({
         @ActionReference(path = "Menu/Layer", position = 40),
         @ActionReference(path = "Toolbars/Overlay", position = 40)
@@ -31,20 +27,6 @@ import javax.swing.Action;
         "CTL_OverlayGcpLayerActionToolTip=Show/hide GCP overlay for the selected image"
 })
 public final class OverlayGcpLayerAction extends AbstractOverlayAction {
-
-    public OverlayGcpLayerAction() {
-        this(Utilities.actionsGlobalContext());
-    }
-
-    public OverlayGcpLayerAction(Lookup lkp) {
-        super(lkp);
-    }
-
-    @Override
-    public Action createContextAwareInstance(Lookup lkp) {
-        return new OverlayGcpLayerAction(lkp);
-    }
-
     @Override
     protected void initActionProperties() {
         putValue(NAME, Bundle.CTL_OverlayGcpLayerActionName());
@@ -59,7 +41,7 @@ public final class OverlayGcpLayerAction extends AbstractOverlayAction {
     }
 
     @Override
-    protected boolean getActionEnableState(ProductSceneView view) {
+    protected boolean getActionEnabledState(ProductSceneView view) {
         return view.getProduct().getGcpGroup().getNodeCount() > 0;
     }
 
@@ -67,6 +49,5 @@ public final class OverlayGcpLayerAction extends AbstractOverlayAction {
     protected void setOverlayEnableState(ProductSceneView view) {
         view.setGcpOverlayEnabled(!getActionSelectionState(view));
     }
-
 
 }

@@ -7,8 +7,6 @@ package org.esa.snap.rcp.actions.layer.overlay;
 
 import com.bc.ceres.glayer.Layer;
 import com.bc.ceres.glayer.LayerFilter;
-import com.bc.ceres.glayer.LayerListener;
-import com.bc.ceres.glayer.support.AbstractLayerListener;
 import com.bc.ceres.glayer.support.LayerUtils;
 import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.framework.ui.product.VectorDataLayerFilterFactory;
@@ -17,20 +15,17 @@ import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.ImageUtilities;
-import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
-import org.openide.util.Utilities;
 
-import javax.swing.Action;
-import java.lang.ref.WeakReference;
 import java.util.List;
 
 /**
  * @author Marco Peters
  * @author Norman Fomferra
+ * @author Muhammad.bc
  */
 @ActionID(category = "View", id = "OverlayGeometryLayerAction")
-@ActionRegistration(displayName = "#CTL_OverlayGeometryLayerActionName", lazy = false)
+@ActionRegistration(displayName = "#CTL_OverlayGeometryLayerActionName")
 @ActionReferences({
         @ActionReference(path = "Menu/Layer", position = 10),
         @ActionReference(path = "Toolbars/Overlay", position = 10),
@@ -42,23 +37,7 @@ import java.util.List;
 public final class OverlayGeometryLayerAction extends AbstractOverlayAction {
 
     private final LayerFilter geometryFilter = VectorDataLayerFilterFactory.createGeometryFilter();
-    private final LayerListener layerListener;
-    private WeakReference<ProductSceneView> lastView;
 
-
-    public OverlayGeometryLayerAction() {
-        this(Utilities.actionsGlobalContext());
-    }
-
-    public OverlayGeometryLayerAction(Lookup lkp) {
-        super(lkp);
-        layerListener = new MyLayerListener();
-    }
-
-    @Override
-    public Action createContextAwareInstance(Lookup lkp) {
-        return new OverlayGeometryLayerAction(lkp);
-    }
 
     @Override
     protected void initActionProperties() {
@@ -69,33 +48,14 @@ public final class OverlayGeometryLayerAction extends AbstractOverlayAction {
     }
 
     @Override
-    protected void selectedProductSceneViewChanged(ProductSceneView newView) {
-        ProductSceneView oldView = lastView != null ? lastView.get() : null;
-        if (oldView != null) {
-            oldView.getRootLayer().removeListener(layerListener);
-        }
-        if (newView != null) {
-            newView.getRootLayer().addListener(layerListener);
-        }
-
-        if (newView != null) {
-            lastView = new WeakReference<>(newView);
-        } else {
-            if (lastView != null) {
-                lastView.clear();
-                lastView = null;
-            }
-        }
-    }
-
-    @Override
     protected boolean getActionSelectionState(ProductSceneView view) {
         List<Layer> childLayers = getGeometryLayers(view);
         return childLayers.stream().filter(Layer::isVisible).findAny().isPresent();
     }
 
+
     @Override
-    protected boolean getActionEnableState(ProductSceneView view) {
+    protected boolean getActionEnabledState(ProductSceneView view) {
         List<Layer> childLayers = getGeometryLayers(view);
         return !childLayers.isEmpty();
     }
@@ -113,15 +73,4 @@ public final class OverlayGeometryLayerAction extends AbstractOverlayAction {
         return LayerUtils.getChildLayers(sceneView.getRootLayer(), LayerUtils.SEARCH_DEEP, geometryFilter);
     }
 
-    private class MyLayerListener extends AbstractLayerListener {
-        @Override
-        public void handleLayersAdded(Layer parentLayer, Layer[] childLayers) {
-            updateActionState();
-        }
-
-        @Override
-        public void handleLayersRemoved(Layer parentLayer, Layer[] childLayers) {
-            updateActionState();
-        }
-    }
 }

@@ -31,11 +31,11 @@ import org.openide.windows.TopComponent;
 @TopComponent.Registration(
         mode = "HistogramPlotMode",
         openAtStartup = false,
-        position = 50
+        position = 40
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.statistics.HistogramPlotTopComponent")
 @ActionReferences({
-        @ActionReference(path = "Menu/Analysis"),
+        @ActionReference(path = "Menu/Analysis",position = 50),
         @ActionReference(path = "Toolbars/Analysis")
 })
 @TopComponent.OpenActionRegistration(
