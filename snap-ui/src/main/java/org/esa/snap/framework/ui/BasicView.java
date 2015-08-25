@@ -16,20 +16,15 @@
 package org.esa.snap.framework.ui;
 
 import com.bc.ceres.swing.selection.SelectionContext;
-import org.esa.snap.framework.ui.command.CommandUIFactory;
 
 import javax.swing.JPanel;
 
 /**
  * The base class for application view panes. It provides support for a context menu and command handling.
  *
- * @see org.esa.snap.framework.ui.command.CommandManager
- * @see org.esa.snap.framework.ui.command.CommandUIFactory
  * @see org.esa.snap.framework.ui.PopupMenuFactory
  */
-public abstract class BasicView extends JPanel implements PopupMenuFactory, CommandUIFactoryAware, Disposable {
-
-    private CommandUIFactory _commandUIFactory;
+public abstract class BasicView extends JPanel implements PopupMenuFactory, Disposable {
 
     /**
      * Creates a new <code>BasicView</code> with a double buffer and a flow layout.
@@ -38,30 +33,9 @@ public abstract class BasicView extends JPanel implements PopupMenuFactory, Comm
     }
 
     /**
-     * Gets the command UI factory used to create the context dependent menu items for the context menu associated with
-     * this view.
-     *
-     * @return the command UI factory
-     */
-    public CommandUIFactory getCommandUIFactory() {
-        return _commandUIFactory;
-    }
-
-    /**
-     * Sets the command UI factory used to create the context dependent menu items for the context menu associated with
-     * this view.
-     *
-     * @param commandUIFactory the command UI factory
-     */
-    public void setCommandUIFactory(CommandUIFactory commandUIFactory) {
-        _commandUIFactory = commandUIFactory;
-    }
-
-    /**
      * Releases all of the resources used by this view, its subcomponents, and all of its owned children.
      */
     public void dispose() {
-        _commandUIFactory = null;
     }
 
     /**

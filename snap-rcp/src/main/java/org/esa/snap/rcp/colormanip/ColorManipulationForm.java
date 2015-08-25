@@ -17,7 +17,6 @@ package org.esa.snap.rcp.colormanip;
 
 import com.bc.ceres.core.Assert;
 import com.bc.ceres.core.ProgressMonitor;
-import org.esa.snap.SnapUiActivator;
 import org.esa.snap.framework.datamodel.Band;
 import org.esa.snap.framework.datamodel.ColorPaletteDef;
 import org.esa.snap.framework.datamodel.ImageInfo;
@@ -106,7 +105,7 @@ class ColorManipulationForm implements SelectionSupport.Handler<ProductSceneView
     private JPanel editorPanel;
     private MoreOptionsPane moreOptionsPane;
     private SceneViewImageInfoChangeListener sceneViewChangeListener;
-    private String titlePrefix; // todo - inline!
+    private String titlePrefix;
     private ColorManipulationChildForm emptyForm;
 
     public ColorManipulationForm(TopComponent colorManipulationToolView, FormModel formModel) {
@@ -613,8 +612,8 @@ class ColorManipulationForm implements SelectionSupport.Handler<ProductSceneView
         @Override
         public void run() {
             try {
-                Path sourceBasePath = ResourceInstaller.findModuleCodeBasePath(SnapUiActivator.class);
-                final Path auxdataDir = getColorPalettesDir();
+                Path sourceBasePath = ResourceInstaller.findModuleCodeBasePath(GridBagUtils.class);
+                Path auxdataDir = getColorPalettesDir();
                 Path sourceDirPath = sourceBasePath.resolve("auxdata/color_palettes");
                 final ResourceInstaller resourceInstaller = new ResourceInstaller(sourceDirPath, auxdataDir);
 
