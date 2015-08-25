@@ -12,7 +12,6 @@ import org.esa.snap.framework.gpf.GPF;
 import org.esa.snap.framework.gpf.OperatorSpi;
 import org.esa.snap.framework.gpf.OperatorSpiRegistry;
 import org.esa.snap.framework.ui.AppContext;
-import org.esa.snap.framework.ui.application.ApplicationPage;
 import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.rcp.actions.file.OpenProductAction;
 import org.esa.snap.rcp.actions.file.SaveProductAction;
@@ -202,7 +201,7 @@ public class SnapApp {
         if (t != null) {
             t.printStackTrace();
         }
-        SnapDialogs.showError(getInstanceName() + " - Error", message);
+        SnapDialogs.showError("Error", message);
         getLogger().log(Level.SEVERE, message, t);
 
         ImageIcon icon = TangoIcons.status_dialog_error(TangoIcons.Res.R16);
@@ -562,11 +561,6 @@ public class SnapApp {
     public static class SnapContext implements AppContext {
 
         private final SnapApp app = getDefault();
-
-        @Override
-        public ApplicationPage getApplicationPage() {
-            throw new UnsupportedOperationException();
-        }
 
         @Override
         public ProductManager getProductManager() {

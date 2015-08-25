@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.esa.snap.rcp.windows;
+package org.esa.snap.rcp.developer;
 
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -23,33 +23,35 @@ import java.awt.BorderLayout;
 import java.util.Collection;
 
 /**
- * Experimental top component which displays infos about selected node(s).
+ * Displays the state of SNAP's global action context.
+ *
+ * @author Norman Fomferra
  */
 @TopComponent.Description(
-        preferredID = "SelectionExplorerTopComponent",
-        persistenceType = TopComponent.PERSISTENCE_ALWAYS
+        preferredID = "ActionContextMonitorTopComponent",
+        persistenceType = TopComponent.PERSISTENCE_NEVER
 )
 @TopComponent.Registration(mode = "rightSlidingSide", openAtStartup = false, position = 100, roles={"developer"})
-@ActionID(category = "Window", id = "org.esa.snap.rcp.window.SelectionExplorerTopComponent")
-@ActionReference(path = "Menu/View/Tool Windows", position = 0)
+@ActionID(category = "Window", id = "org.esa.snap.rcp.developer.ActionContextMonitorTopComponent")
+@ActionReference(path = "Menu/View/Tool Windows/Developer", position = 10)
 @TopComponent.OpenActionRegistration(
-        displayName = "#CTL_SelectionExplorerTopComponentName",
-        preferredID = "SelectionExplorerTopComponent"
+        displayName = "#CTL_ActionContextMonitorTopComponentName",
+        preferredID = "ActionContextMonitorTopComponent"
 )
 @NbBundle.Messages({
-        "CTL_SelectionExplorerTopComponentName=Global Selection",
-        "CTL_SelectionExplorerTopComponentDescription=Displays info about global selection",
+        "CTL_ActionContextMonitorTopComponentName=Action Context Monitor",
+        "CTL_ActionContextMonitorTopComponentDescription=Displays the state of SNAP's global action context.",
 })
-public final class SelectionExplorerTopComponent extends TopComponent implements LookupListener {
+public final class ActionContextMonitorTopComponent extends TopComponent implements LookupListener {
 
     private JLabel infoLabel;
     private JTable infoTable;
     private Lookup.Result<Object> result;
 
-    public SelectionExplorerTopComponent() {
+    public ActionContextMonitorTopComponent() {
         initComponents();
-        setName(Bundle.CTL_SelectionExplorerTopComponentName());
-        setToolTipText(Bundle.CTL_SelectionExplorerTopComponentDescription());
+        setName(Bundle.CTL_ActionContextMonitorTopComponentName());
+        setToolTipText(Bundle.CTL_ActionContextMonitorTopComponentDescription());
         putClientProperty(TopComponent.PROP_MAXIMIZATION_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_KEEP_PREFERRED_SIZE_WHEN_SLIDED_IN, Boolean.TRUE);
     }

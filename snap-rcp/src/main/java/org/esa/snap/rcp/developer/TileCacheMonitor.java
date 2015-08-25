@@ -14,7 +14,7 @@
  * with this program; if not, see http://www.gnu.org/licenses/
  */
 
-package org.esa.snap.visat.toolviews.diag;
+package org.esa.snap.rcp.developer;
 
 import com.sun.media.jai.util.CacheDiagnostics;
 import com.sun.media.jai.util.SunTileCache;
