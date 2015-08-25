@@ -16,7 +16,6 @@
 
 package org.esa.snap.framework.ui;
 
-import org.esa.snap.framework.ui.command.Command;
 import org.esa.snap.util.Guardian;
 
 import javax.swing.AbstractButton;
@@ -30,7 +29,6 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Arrays;
-import java.util.Comparator;
 
 /**
  * A handler which can be registered on components as a mouse listener.
@@ -38,12 +36,11 @@ import java.util.Comparator;
  * popup-menu is created by the <code>PopupMenuFactory</code> instance passed to the constructor of this class.
  *
  * @author Norman Fomferra
- * @version $Revision$  $Date$
  * @see PopupMenuFactory
  */
 public class PopupMenuHandler implements MouseListener, KeyListener {
 
-    private PopupMenuFactory _popupMenuFactory;
+    private PopupMenuFactory popupMenuFactory;
 
     /**
      * Constructs a new pop-up menu handler for th given pop-up menu factory.
@@ -52,7 +49,7 @@ public class PopupMenuHandler implements MouseListener, KeyListener {
      */
     public PopupMenuHandler(PopupMenuFactory popupMenuFactory) {
         Guardian.assertNotNull("popupMenuFactory", popupMenuFactory);
-        _popupMenuFactory = popupMenuFactory;
+        this.popupMenuFactory = popupMenuFactory;
     }
 
     /**
@@ -98,14 +95,12 @@ public class PopupMenuHandler implements MouseListener, KeyListener {
      * Invoked when a key has been released.
      */
     public void keyReleased(KeyEvent event) {
-        maybeShowPopupMenu(event);
     }
 
     /**
      * Invoked when a key has been typed. This event occurs when a key press is followed by a key release.
      */
     public void keyTyped(KeyEvent event) {
-        maybeShowPopupMenu(event);
     }
 
     private void maybeShowPopupMenu(MouseEvent event) {
@@ -116,14 +111,10 @@ public class PopupMenuHandler implements MouseListener, KeyListener {
         }
     }
 
-    private void maybeShowPopupMenu(KeyEvent event) {
-        // @todo 1 nf/nf - proove event for pop-up triggerabilty here
-    }
-
     private void showPopupMenu(MouseEvent event) {
-        JPopupMenu popupMenu = _popupMenuFactory.createPopupMenu(event.getComponent());
+        JPopupMenu popupMenu = popupMenuFactory.createPopupMenu(event.getComponent());
         if (popupMenu == null) {
-            popupMenu = _popupMenuFactory.createPopupMenu(event);
+            popupMenu = popupMenuFactory.createPopupMenu(event);
         }
         if (popupMenu != null) {
             rearrangeMenuItems(popupMenu);
@@ -133,12 +124,7 @@ public class PopupMenuHandler implements MouseListener, KeyListener {
 
     private void rearrangeMenuItems(JPopupMenu popupMenu) {
         Component[] components = popupMenu.getComponents();
-        Arrays.sort(components, new Comparator<Component>() {
-            @Override
-            public int compare(Component o1, Component o2) {
-                return getGroupName(o1).compareToIgnoreCase(getGroupName(o2));
-            }
-        });
+        Arrays.sort(components, (o1, o2) -> getGroupName(o1).compareToIgnoreCase(getGroupName(o2)));
         popupMenu.removeAll();
         Component lastComponent = null;
         String lastGroupName = null;
@@ -169,7 +155,7 @@ public class PopupMenuHandler implements MouseListener, KeyListener {
             action = (Action) component;
         }
         if (action != null) {
-            Object parent = action.getValue(Command.ACTION_KEY_PARENT);
+            Object parent = action.getValue("parent");
             if (parent != null) {
                 return parent.toString();
             }

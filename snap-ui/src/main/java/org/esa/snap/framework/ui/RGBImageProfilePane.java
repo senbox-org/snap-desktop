@@ -19,7 +19,6 @@ import com.bc.ceres.swing.TableLayout;
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.RGBImageProfile;
 import org.esa.snap.framework.datamodel.RGBImageProfileManager;
-import org.esa.snap.framework.ui.command.Command;
 import org.esa.snap.framework.ui.product.ProductExpressionPane;
 import org.esa.snap.framework.ui.tool.ToolButtonFactory;
 import org.esa.snap.util.Debug;
@@ -53,7 +52,6 @@ import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
@@ -102,7 +100,7 @@ public class RGBImageProfilePane extends JPanel {
                 performOpen();
             }
         };
-        openAction.putValue(Command.ACTION_KEY_LARGE_ICON, UIUtils.loadImageIcon("icons/Open24.gif"));
+        openAction.putValue(Action.LARGE_ICON_KEY, UIUtils.loadImageIcon("icons/Open24.gif"));
         openAction.putValue(Action.SHORT_DESCRIPTION, "Open an external RGB profile");
 
         saveAsAction = new AbstractAction() {
@@ -110,7 +108,7 @@ public class RGBImageProfilePane extends JPanel {
                 performSaveAs();
             }
         };
-        saveAsAction.putValue(Command.ACTION_KEY_LARGE_ICON, UIUtils.loadImageIcon("icons/Save24.gif"));
+        saveAsAction.putValue(Action.LARGE_ICON_KEY, UIUtils.loadImageIcon("icons/Save24.gif"));
         saveAsAction.putValue(Action.SHORT_DESCRIPTION, "Save the RGB profile");
 
         deleteAction = new AbstractAction() {
@@ -118,7 +116,7 @@ public class RGBImageProfilePane extends JPanel {
                 performDelete();
             }
         };
-        deleteAction.putValue(Command.ACTION_KEY_LARGE_ICON,
+        deleteAction.putValue(Action.LARGE_ICON_KEY,
                               UIUtils.loadImageIcon("icons/Remove24.gif"));   // todo - use the nicer "cross" icon
         deleteAction.putValue(Action.SHORT_DESCRIPTION, "Delete the selected RGB profile");
 
@@ -207,8 +205,8 @@ public class RGBImageProfilePane extends JPanel {
 
         if (profileModel.getSelectedItem() == null) {
             // default
-            if(defaultBandIndices != null && defaultBandIndices.length > 0) {
-                for(int i=0; i < defaultBandIndices.length; ++i) {
+            if (defaultBandIndices != null && defaultBandIndices.length > 0) {
+                for (int i = 0; i < defaultBandIndices.length; ++i) {
                     rgbaExprBoxes[i].setSelectedIndex(defaultBandIndices[i]);
                 }
             }
@@ -241,7 +239,6 @@ public class RGBImageProfilePane extends JPanel {
      * Gets the selected RGB-image profile if any.
      *
      * @return the selected profile, can be null
-     *
      * @see #getRgbaExpressions()
      */
     public RGBImageProfile getSelectedProfile() {
@@ -253,7 +250,6 @@ public class RGBImageProfilePane extends JPanel {
      * Gets the selected RGB expressions as array of 3 strings.
      *
      * @return the selected RGB expressions, never null
-     *
      * @see #getSelectedProfile()
      */
     public String[] getRgbExpressions() {
@@ -268,7 +264,6 @@ public class RGBImageProfilePane extends JPanel {
      * Gets the selected RGBA expressions as array of 4 strings.
      *
      * @return the selected RGBA expressions, never null
-     *
      * @see #getSelectedProfile()
      */
     public String[] getRgbaExpressions() {
@@ -337,7 +332,7 @@ public class RGBImageProfilePane extends JPanel {
         } catch (IOException e) {
             JOptionPane.showMessageDialog(this,
                                           "Failed to open RGB-profile '"
-                                          + file.getName() + "':\n" + e.getMessage(),
+                                                  + file.getName() + "':\n" + e.getMessage(),
                                           "Open RGB-Image Profile",
                                           JOptionPane.ERROR_MESSAGE);
             return;
@@ -354,7 +349,7 @@ public class RGBImageProfilePane extends JPanel {
         if (product != null && !profile.isApplicableTo(product)) {
             JOptionPane.showMessageDialog(this,
                                           "The selected RGB-Profile '" + profile.getName() + "'\n" +
-                                          "is not applicable to the current product.",
+                                                  "is not applicable to the current product.",
                                           "Open RGB-Image Profile",
                                           JOptionPane.ERROR_MESSAGE);
             return;
@@ -374,7 +369,7 @@ public class RGBImageProfilePane extends JPanel {
         } catch (IOException e) {
             JOptionPane.showMessageDialog(this,
                                           "Failed to save RGB-profile '" + file.getName() + "':\n"
-                                          + e.getMessage(),
+                                                  + e.getMessage(),
                                           "Open RGB-Image Profile",
                                           JOptionPane.ERROR_MESSAGE);
             return;
@@ -404,8 +399,8 @@ public class RGBImageProfilePane extends JPanel {
             if (selectedFile.exists()) {
                 final int answer = JOptionPane.showConfirmDialog(RGBImageProfilePane.this,
                                                                  "The file '" + selectedFile.getName()
-                                                                 + "' already exists.\n" +
-                                                                 "So you really want to overwrite it?",
+                                                                         + "' already exists.\n" +
+                                                                         "So you really want to overwrite it?",
                                                                  "Safe RGB-Profile As",
                                                                  JOptionPane.YES_NO_CANCEL_OPTION);
                 if (answer == JOptionPane.CANCEL_OPTION) {
@@ -475,11 +470,7 @@ public class RGBImageProfilePane extends JPanel {
 
     private void addColorComponentRow(JPanel p3, final GridBagConstraints constraints, final int index) {
         final JButton editorButton = new JButton("...");
-        editorButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                invokeExpressionEditor(index);
-            }
-        });
+        editorButton.addActionListener(e -> invokeExpressionEditor(index));
         final Dimension preferredSize = rgbaExprBoxes[index].getPreferredSize();
         editorButton.setPreferredSize(new Dimension(preferredSize.height, preferredSize.height));
 
@@ -533,13 +524,13 @@ public class RGBImageProfilePane extends JPanel {
     }
 
     private static Product[] getCompatibleProducts(final Product targetProduct, final Product[] productsList) {
-        final List<Product> compatibleProducts = new ArrayList<Product>(1);
+        final List<Product> compatibleProducts = new ArrayList<>(1);
         compatibleProducts.add(targetProduct);
         final float geolocationEps = 180;
         Debug.trace("BandMathsDialog.geolocationEps = " + geolocationEps);
         Debug.trace("BandMathsDialog.getCompatibleProducts:");
         Debug.trace("  comparing: " + targetProduct.getName());
-        if(productsList != null) {
+        if (productsList != null) {
             for (final Product product : productsList) {
                 if (targetProduct != product) {
                     Debug.trace("  with:      " + product.getDisplayName());
