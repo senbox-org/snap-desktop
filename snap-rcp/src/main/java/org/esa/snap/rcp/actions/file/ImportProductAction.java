@@ -116,7 +116,7 @@ public class ImportProductAction extends AbstractAction implements HelpCtx.Provi
         OpenProductAction openProductAction = new OpenProductAction();
         openProductAction.setFileFormat(getFormatName());
         openProductAction.setUseAllFileFilter(getUseAllFileFilter());
-        openProductAction.actionPerformed(e);
+        openProductAction.execute();
     }
 
     protected class ProductFileChooser extends SnapFileChooser {
