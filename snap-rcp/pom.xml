@@ -226,7 +226,12 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>snap-python</artifactId>
-            <version>2.0.0-SNAPSHOT</version>
+            <version>${snap.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>snap-jython</artifactId>
+            <version>${snap.version}</version>
         </dependency>
         <!-- TODO: remove this dependency as soon as snap-statistics-op has been moved to snap-core
           (prerequisite: snap-gpf needs to be moved to snap-core before) -->

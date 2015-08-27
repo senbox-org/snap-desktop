@@ -138,8 +138,8 @@ public class ConvertComputedBandIntoBandAction extends AbstractAction implements
     }
 
     MultiLevelImage createSourceImage(Band computedBand, Band realBand) {
-        if(computedBand instanceof VirtualBand) {
-            return VirtualBand.createVirtualSourceImage(realBand, ((VirtualBand) computedBand).getExpression());
+        if (computedBand instanceof VirtualBand) {
+            return VirtualBand.createSourceImage(realBand, ((VirtualBand) computedBand).getExpression());
         }else {
             return computedBand.getSourceImage();
         }

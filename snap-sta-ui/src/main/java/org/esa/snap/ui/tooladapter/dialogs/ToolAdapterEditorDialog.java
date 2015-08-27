@@ -311,7 +311,12 @@ public class ToolAdapterEditorDialog extends ModalDialog {
                         .forEach(param -> {
                             Object propertyValue = paramsTable.getBindingContext().getBinding(param.getName()).getPropertyValue();
                             if (param.isTemplateBefore() || param.isTemplateAfter()) {
-                                param.setDefaultValue(new File(propertyValue.toString()).getName());
+                                final File paramTemplateFile = new File(propertyValue.toString());
+                                param.setDefaultValue(paramTemplateFile.getName());
+                                if (!newOperatorDescriptor.getAlias().equals(oldOperatorDescriptor.getAlias())) {
+                                    File oldFile = ToolAdapterIO.ensureLocalCopy(paramTemplateFile, oldOperatorDescriptor.getAlias());
+                                    ToolAdapterIO.ensureLocalCopy(oldFile, newOperatorDescriptor.getAlias());
+                                }
                             } else {
                                 String defaultValueString = "";
                                 if (propertyValue.getClass().isArray()) {
@@ -338,6 +343,7 @@ public class ToolAdapterEditorDialog extends ModalDialog {
                     if (menuLocation != null && !menuLocation.startsWith("Menu/")) {
                         newOperatorDescriptor.setMenuLocation("Menu/" + menuLocation);
                     }
+                    ToolAdapterIO.removeOperator(oldOperatorDescriptor, true);
                     ToolAdapterIO.saveAndRegisterOperator(newOperatorDescriptor, templateContent);
                     ToolAdapterActionRegistrar.registerOperatorMenu(newOperatorDescriptor);
                 } catch (Exception e) {

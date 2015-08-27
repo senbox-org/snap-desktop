@@ -173,7 +173,7 @@ class BandMathsDialog extends ModalDialog {
             if (validMaskExpression != null && !validMaskExpression.isEmpty()) {
                 expression = "(" + validMaskExpression + ") ? (" + expression + ") : NaN";
             }
-            band.setSourceImage(VirtualBand.createVirtualSourceImage(band, expression));
+            band.setSourceImage(VirtualBand.createSourceImage(band, expression));
         }
 
         UndoRedo.Manager undoManager = SnapApp.getDefault().getUndoManager(targetProduct);

@@ -21,7 +21,6 @@ import com.bc.ceres.glayer.Layer;
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.ProductManager;
 import org.esa.snap.framework.ui.AppContext;
-import org.esa.snap.framework.ui.application.ApplicationPage;
 import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.util.PropertyMap;
 import org.junit.Before;
@@ -104,11 +103,6 @@ public class AbstractMoveLayerTest {
 
         @Override
         public Window getApplicationWindow() {
-            return null;
-        }
-
-        @Override
-        public ApplicationPage getApplicationPage() {
             return null;
         }
 

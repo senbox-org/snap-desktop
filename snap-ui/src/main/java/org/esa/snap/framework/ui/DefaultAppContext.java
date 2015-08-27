@@ -18,7 +18,6 @@ package org.esa.snap.framework.ui;
 
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.ProductManager;
-import org.esa.snap.framework.ui.application.ApplicationPage;
 import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.util.DefaultPropertyMap;
 import org.esa.snap.util.PropertyMap;
@@ -70,11 +69,6 @@ public class DefaultAppContext implements AppContext {
     @Override
     public Window getApplicationWindow() {
         return applicationWindow;
-    }
-
-    @Override
-    public ApplicationPage getApplicationPage() {
-        return null;
     }
 
     public void setApplicationWindow(Window applicationWindow) {
