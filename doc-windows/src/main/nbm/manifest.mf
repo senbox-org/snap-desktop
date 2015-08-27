@@ -1,3 +1,4 @@
 Manifest-Version: 1.0
+OpenIDE-Module-Specification-Version: ${netbeans.specVersion}
 AutoUpdate-Essential-Module: true
 AutoUpdate-Show-In-Client: false
