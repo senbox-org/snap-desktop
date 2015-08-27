@@ -95,34 +95,6 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
-            <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>2.7</version>
-                <configuration>
-                    <encoding>UTF-8</encoding>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>file-manifest</id>
-                        <phase>process-sources</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${build.directory}/nbm</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>src/main/nbm</directory>
-                                    <filtering>true</filtering>
-                                    <includes>
-                                        <include>manifest.mf</include>
-                                    </includes>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
     <dependencies>
