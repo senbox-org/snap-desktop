@@ -77,7 +77,7 @@ class TimeSeriesAssistantPage_ReprojectingSources extends AbstractTimeSeriesAssi
     @Override
     protected Component createPageComponent() {
         final PropertyChangeListener listener = evt -> getContext().updateState();
-        collocationCrsForm = new MyCollocationCrsForm(new SnapApp.SnapContext(), listener, getAssistantModel());
+        collocationCrsForm = new MyCollocationCrsForm(SnapApp.getDefault().getAppContext(), listener, getAssistantModel());
         collocationCrsForm.addMyChangeListener();
 
         final JPanel pagePanel = new JPanel(new BorderLayout());
@@ -136,7 +136,7 @@ class TimeSeriesAssistantPage_ReprojectingSources extends AbstractTimeSeriesAssi
 
         @Override
         protected JComponent createCrsComponent() {
-            collocateProductSelector = new SourceProductSelector(new SnapApp.SnapContext(), "Product:");
+            collocateProductSelector = new SourceProductSelector(SnapApp.getDefault().getAppContext(), "Product:");
             List<Product> products = new ArrayList<>();
             for (ProductLocation productLocation : assistantModel.getProductLocationsModel().getProductLocations()) {
                 for (Product product : productLocation.getProducts(ProgressMonitor.NULL).values()) {
