@@ -15,6 +15,7 @@
  */
 package org.esa.snap.worldwind.layers;
 
+import com.bc.ceres.core.ProgressMonitor;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.awt.WorldWindowGLCanvas;
@@ -36,14 +37,14 @@ import gov.nasa.worldwind.util.WWMath;
 import gov.nasa.worldwindx.examples.analytics.AnalyticSurface;
 import gov.nasa.worldwindx.examples.analytics.AnalyticSurfaceAttributes;
 import gov.nasa.worldwindx.examples.util.DirectedPath;
-import org.esa.snap.worldwind.ColorBarLegend;
-import org.esa.snap.worldwind.ProductRenderablesInfo;
 import org.esa.snap.framework.datamodel.Band;
 import org.esa.snap.framework.datamodel.GeoPos;
 import org.esa.snap.framework.datamodel.PixelPos;
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.util.SystemUtils;
+import org.esa.snap.worldwind.ColorBarLegend;
+import org.esa.snap.worldwind.ProductRenderablesInfo;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -173,11 +174,11 @@ public class Level2ProductLayer extends BaseLayer implements WWLayer {
         if (theColorBarLegendProduct.getBand(prefix + "_001_owiLon") == null) {
             prefix = "hh";
         }
-        final Band lonBand = theColorBarLegendProduct.getBand(prefix + "_001_owiLon");
-        final Band latBand = theColorBarLegendProduct.getBand(prefix + "_001_owiLat");
-        final Band incAngleBand = theColorBarLegendProduct.getBand(prefix + "_001_owiIncidenceAngle");
-        final Band windSpeedBand = theColorBarLegendProduct.getBand(prefix + "_001_owiWindSpeed");
-        final Band windDirBand = theColorBarLegendProduct.getBand(prefix + "_001_owiWindDirection");
+        final Band owiLonBand = theColorBarLegendProduct.getBand(prefix + "_001_owiLon");
+        final Band owiLatBand = theColorBarLegendProduct.getBand(prefix + "_001_owiLat");
+        final Band owiIncAngleBand = theColorBarLegendProduct.getBand(prefix + "_001_owiIncidenceAngle");
+        final Band owiWindSpeedBand = theColorBarLegendProduct.getBand(prefix + "_001_owiWindSpeed");
+        final Band owiWindDirBand = theColorBarLegendProduct.getBand(prefix + "_001_owiWindDirection");
         final Band rvlRadVelBand = theColorBarLegendProduct.getBand(prefix + "_001_rvlRadVel");
 
         final Band waveLonBand = theColorBarLegendProduct.getBand(prefix + "_001_oswLon");
@@ -196,81 +197,86 @@ public class Level2ProductLayer extends BaseLayer implements WWLayer {
 
         //final Band band = theColorBarLegendProduct.getBand();
 
-        SystemUtils.LOG.info("band 0 " + lonBand);
-        SystemUtils.LOG.info("band width " + lonBand.getRasterWidth());
-        SystemUtils.LOG.info("band height " + lonBand.getRasterHeight());
+        final GeoPos geoPos1 = product.getGeoCoding().getGeoPos(new PixelPos(0, 0), null);
+        final GeoPos geoPos2 = product.getGeoCoding().getGeoPos(new PixelPos(product.getSceneRasterWidth() - 1,
+                                                                             product.getSceneRasterHeight() - 1), null);
 
         try {
-            final float[] lonValues = new float[lonBand.getRasterWidth() * lonBand.getRasterHeight()];
-            lonBand.readPixels(0, 0, lonBand.getRasterWidth(), lonBand.getRasterHeight(), lonValues, com.bc.ceres.core.ProgressMonitor.NULL);
+            if(owiLonBand != null) {
+                final float[] lonValues = new float[owiLonBand.getRasterWidth() * owiLonBand.getRasterHeight()];
+                owiLonBand.readPixels(0, 0, owiLonBand.getRasterWidth(), owiLonBand.getRasterHeight(), lonValues, ProgressMonitor.NULL);
 
-            final float[] latValues = new float[latBand.getRasterWidth() * latBand.getRasterHeight()];
-            latBand.readPixels(0, 0, latBand.getRasterWidth(), latBand.getRasterHeight(), latValues, com.bc.ceres.core.ProgressMonitor.NULL);
+                final float[] latValues = new float[owiLatBand.getRasterWidth() * owiLatBand.getRasterHeight()];
+                owiLatBand.readPixels(0, 0, owiLatBand.getRasterWidth(), owiLatBand.getRasterHeight(), latValues, ProgressMonitor.NULL);
 
-            final double[] incAngleValues = new double[incAngleBand.getRasterWidth() * incAngleBand.getRasterHeight()];
-            incAngleBand.readPixels(0, 0, incAngleBand.getRasterWidth(), incAngleBand.getRasterHeight(), incAngleValues, com.bc.ceres.core.ProgressMonitor.NULL);
+                final double[] incAngleValues = new double[owiIncAngleBand.getRasterWidth() * owiIncAngleBand.getRasterHeight()];
+                owiIncAngleBand.readPixels(0, 0, owiIncAngleBand.getRasterWidth(), owiIncAngleBand.getRasterHeight(), incAngleValues, ProgressMonitor.NULL);
 
-            final double[] windSpeedValues = new double[windSpeedBand.getRasterWidth() * windSpeedBand.getRasterHeight()];
-            windSpeedBand.readPixels(0, 0, windSpeedBand.getRasterWidth(), windSpeedBand.getRasterHeight(), windSpeedValues, com.bc.ceres.core.ProgressMonitor.NULL);
+                final double[] windSpeedValues = new double[owiWindSpeedBand.getRasterWidth() * owiWindSpeedBand.getRasterHeight()];
+                owiWindSpeedBand.readPixels(0, 0, owiWindSpeedBand.getRasterWidth(), owiWindSpeedBand.getRasterHeight(), windSpeedValues, ProgressMonitor.NULL);
 
-            final double[] windDirValues = new double[windDirBand.getRasterWidth() * windDirBand.getRasterHeight()];
-            windDirBand.readPixels(0, 0, windDirBand.getRasterWidth(), windDirBand.getRasterHeight(), windDirValues, com.bc.ceres.core.ProgressMonitor.NULL);
+                final double[] windDirValues = new double[owiWindDirBand.getRasterWidth() * owiWindDirBand.getRasterHeight()];
+                owiWindDirBand.readPixels(0, 0, owiWindDirBand.getRasterWidth(), owiWindDirBand.getRasterHeight(), windDirValues, ProgressMonitor.NULL);
 
-            double[] rvlRadVelValues = null;
-            if (rvlRadVelBand != null) {
-                rvlRadVelValues = new double[rvlRadVelBand.getRasterWidth() * rvlRadVelBand.getRasterHeight()];
-                rvlRadVelBand.readPixels(0, 0, rvlRadVelBand.getRasterWidth(), rvlRadVelBand.getRasterHeight(), rvlRadVelValues, com.bc.ceres.core.ProgressMonitor.NULL);
+                final int[] cellSizeArr = {4, 8, 16, 24, 32, 40, 48, 64};
+
+                for (int cellSizeInd = 0; cellSizeInd < cellSizeArr.length; cellSizeInd++) {
+                    double minHeight = 0;
+                    double maxHeight = cellSizeArr[cellSizeInd] * 0.5e6 / 16;
+                    if (cellSizeInd > 0) {
+                        minHeight = cellSizeArr[cellSizeInd - 1] * 0.5e6 / 16;
+                    }
+                    addWindSpeedArrows(latValues, lonValues, incAngleValues, windSpeedValues, windDirValues,
+                                       owiLonBand.getRasterWidth(), owiLonBand.getRasterHeight(),
+                                       cellSizeArr[cellSizeInd], minHeight, maxHeight,
+                                       productRenderablesInfo.theRenderableListHash.get("owi"));
+                    //addWindSpeedArrows(waveLatValues, waveLonValues, incAngleValues, windSpeedValues, windDirValues,
+                    // waveLonBand.getRasterWidth(), waveLonBand.getRasterHeight(), cellSizeArr[cellSizeInd],
+                    // minHeight, maxHeight, productRenderablesInfo.theRenderableListHash.get("osw"));
+                }
+
+                createColorSurfaceWithGradient(geoPos1, geoPos2, windSpeedValues,
+                                               owiWindSpeedBand.getRasterWidth(), owiWindSpeedBand.getRasterHeight(),
+                                               0, 10, false, productRenderablesInfo.theRenderableListHash.get("owi"),
+                                               productRenderablesInfo, "owi");
             }
 
-            double[] waveHeightValues = null;
-            double[] waveLatValues = null;
-            double[] waveLonValues = null;
-            double[] waveLengthValues = null;
-            double[] waveDirValues = null;
+            if (rvlRadVelBand != null) {
+                final double[] rvlRadVelValues = new double[rvlRadVelBand.getRasterWidth() * rvlRadVelBand.getRasterHeight()];
+                rvlRadVelBand.readPixels(0, 0, rvlRadVelBand.getRasterWidth(), rvlRadVelBand.getRasterHeight(), rvlRadVelValues, ProgressMonitor.NULL);
+
+                createColorSurfaceWithGradient(geoPos1, geoPos2,
+                                               rvlRadVelValues, rvlRadVelBand.getRasterWidth(), rvlRadVelBand.getRasterHeight(),
+                                               -6, 6, true, productRenderablesInfo.theRenderableListHash.get("rvl"),
+                                               productRenderablesInfo, "rvl");
+            }
 
             if (waveLonBand != null) {
-                waveLonValues = new double[waveLonBand.getRasterWidth() * waveLonBand.getRasterHeight()];
-                waveLonBand.readPixels(0, 0, waveLonBand.getRasterWidth(), waveLonBand.getRasterHeight(), waveLonValues, com.bc.ceres.core.ProgressMonitor.NULL);
+                final double[] waveLonValues = new double[waveLonBand.getRasterWidth() * waveLonBand.getRasterHeight()];
+                waveLonBand.readPixels(0, 0, waveLonBand.getRasterWidth(), waveLonBand.getRasterHeight(), waveLonValues, ProgressMonitor.NULL);
 
-                waveLatValues = new double[waveLatBand.getRasterWidth() * waveLatBand.getRasterHeight()];
-                waveLatBand.readPixels(0, 0, waveLatBand.getRasterWidth(), waveLatBand.getRasterHeight(), waveLatValues, com.bc.ceres.core.ProgressMonitor.NULL);
+                final double[] waveLatValues = new double[waveLatBand.getRasterWidth() * waveLatBand.getRasterHeight()];
+                waveLatBand.readPixels(0, 0, waveLatBand.getRasterWidth(), waveLatBand.getRasterHeight(), waveLatValues, ProgressMonitor.NULL);
 
-                waveHeightValues = new double[waveHeightBand.getRasterWidth() * waveHeightBand.getRasterHeight()];
-                waveHeightBand.readPixels(0, 0, waveHeightBand.getRasterWidth(), waveHeightBand.getRasterHeight(), waveHeightValues, com.bc.ceres.core.ProgressMonitor.NULL);
+                final double[] waveHeightValues = new double[waveHeightBand.getRasterWidth() * waveHeightBand.getRasterHeight()];
+                waveHeightBand.readPixels(0, 0, waveHeightBand.getRasterWidth(), waveHeightBand.getRasterHeight(), waveHeightValues, ProgressMonitor.NULL);
 
-                waveLengthValues = new double[waveLengthBand.getRasterWidth() * waveLengthBand.getRasterHeight()];
-                waveLengthBand.readPixels(0, 0, waveLengthBand.getRasterWidth(), waveLengthBand.getRasterHeight(), waveLengthValues, com.bc.ceres.core.ProgressMonitor.NULL);
+                final double[] waveLengthValues = new double[waveLengthBand.getRasterWidth() * waveLengthBand.getRasterHeight()];
+                waveLengthBand.readPixels(0, 0, waveLengthBand.getRasterWidth(), waveLengthBand.getRasterHeight(), waveLengthValues, ProgressMonitor.NULL);
 
-                waveDirValues = new double[waveDirBand.getRasterWidth() * waveDirBand.getRasterHeight()];
-                waveDirBand.readPixels(0, 0, waveDirBand.getRasterWidth(), waveDirBand.getRasterHeight(), waveDirValues, com.bc.ceres.core.ProgressMonitor.NULL);
+                final double[] waveDirValues = new double[waveDirBand.getRasterWidth() * waveDirBand.getRasterHeight()];
+                waveDirBand.readPixels(0, 0, waveDirBand.getRasterWidth(), waveDirBand.getRasterHeight(), waveDirValues, ProgressMonitor.NULL);
+
+                addWaveLengthArrows(waveLatValues, waveLonValues, waveLengthValues, waveDirValues,
+                                    waveLonBand.getRasterWidth(), waveLonBand.getRasterHeight(),
+                                    productRenderablesInfo.theRenderableListHash.get("osw"));
+
+                createColorSurfaceWithGradient(geoPos1, geoPos2, waveHeightValues, waveHeightBand.getRasterWidth(),
+                                               waveHeightBand.getRasterHeight(), 0, 10, false,
+                                               productRenderablesInfo.theRenderableListHash.get("osw"),
+                                               productRenderablesInfo, "osw");
             }
 
-            final GeoPos geoPos1 = product.getGeoCoding().getGeoPos(new PixelPos(0, 0), null);
-            final GeoPos geoPos2 = product.getGeoCoding().getGeoPos(new PixelPos(product.getSceneRasterWidth() - 1,
-                    product.getSceneRasterHeight() - 1), null);
-
-            final int[] cellSizeArr = {4, 8, 16, 24, 32, 40, 48, 64};
-
-            for (int cellSizeInd = 0; cellSizeInd < cellSizeArr.length; cellSizeInd++) {
-                double minHeight = 0;
-                double maxHeight = cellSizeArr[cellSizeInd] * 0.5e6 / 16;
-                if (cellSizeInd > 0) {
-                    minHeight = cellSizeArr[cellSizeInd - 1] * 0.5e6 / 16;
-                }
-                addWindSpeedArrows(latValues, lonValues, incAngleValues, windSpeedValues, windDirValues, lonBand.getRasterWidth(), lonBand.getRasterHeight(), cellSizeArr[cellSizeInd], minHeight, maxHeight, productRenderablesInfo.theRenderableListHash.get("owi"));
-                //addWindSpeedArrows(waveLatValues, waveLonValues, incAngleValues, windSpeedValues, windDirValues, waveLonBand.getRasterWidth(), waveLonBand.getRasterHeight(), cellSizeArr[cellSizeInd], minHeight, maxHeight, productRenderablesInfo.theRenderableListHash.get("osw"));
-            }
-
-            createColorSurfaceWithGradient(geoPos1, geoPos2, windSpeedValues, windSpeedBand.getRasterWidth(), windSpeedBand.getRasterHeight(), 0, 10, false, productRenderablesInfo.theRenderableListHash.get("owi"), productRenderablesInfo, "owi");
-            if (rvlRadVelValues != null) {
-                createColorSurfaceWithGradient(geoPos1, geoPos2, rvlRadVelValues, rvlRadVelBand.getRasterWidth(), rvlRadVelBand.getRasterHeight(), -6, 6, true, productRenderablesInfo.theRenderableListHash.get("rvl"), productRenderablesInfo, "rvl");
-            }
-
-            if (waveHeightValues != null) {
-                addWaveLengthArrows(waveLatValues, waveLonValues, waveLengthValues, waveDirValues, waveLonBand.getRasterWidth(), waveLonBand.getRasterHeight(), productRenderablesInfo.theRenderableListHash.get("osw"));
-                createColorSurfaceWithGradient(geoPos1, geoPos2, waveHeightValues, waveHeightBand.getRasterWidth(), waveHeightBand.getRasterHeight(), 0, 10, false, productRenderablesInfo.theRenderableListHash.get("osw"), productRenderablesInfo, "osw");
-
-            }
             theProductRenderablesInfoHash.put(product, productRenderablesInfo);
 
             setComponentVisible(theSelectedComp, wwd);
@@ -280,8 +286,10 @@ public class Level2ProductLayer extends BaseLayer implements WWLayer {
         }
     }
 
-    public void createColorSurfaceWithGradient(GeoPos geoPos1, GeoPos geoPos2, double[] values, int width, int height, double minValue, double maxValue, boolean whiteZero, ArrayList<Renderable> renderableList, ProductRenderablesInfo prodRenderInfo, String comp) {
-        createColorSurface(geoPos2.getLat(), geoPos1.getLat(), geoPos1.getLon(), geoPos2.getLon(), values, width, height, renderableList, prodRenderInfo, comp);
+    public void createColorSurfaceWithGradient(GeoPos geoPos1, GeoPos geoPos2, double[] values, int width, int height,
+                                               double minValue, double maxValue, boolean whiteZero, ArrayList<Renderable> renderableList, ProductRenderablesInfo prodRenderInfo, String comp) {
+        createColorSurface(geoPos2.getLat(), geoPos1.getLat(), geoPos1.getLon(), geoPos2.getLon(), values, width, height,
+                           renderableList, prodRenderInfo, comp);
         //createColorSurface(geoPos2.getLat(), geoPos1.getLat(), geoPos1.getLon(), geoPos2.getLon(), rvlRadVelValues, 40, 40, minValue, maxValue, renderableList);
 
         //theCurrMinHue = minHue;

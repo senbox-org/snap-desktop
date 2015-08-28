@@ -48,7 +48,7 @@ public class BatchProcessingAction extends AbstractAction {
 
     @Override
     public void actionPerformed(final ActionEvent event) {
-        final BatchGraphDialog dialog = new BatchGraphDialog(new SnapApp.SnapContext(),
+        final BatchGraphDialog dialog = new BatchGraphDialog(SnapApp.getDefault().getAppContext(),
                 "Batch Processing", "batchProcessing", false);
         dialog.show();
     }

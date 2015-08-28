@@ -112,7 +112,7 @@ public class OpenSessionAction extends AbstractAction {
             } else {
                 rootURI = new File(".").toURI();
             }
-            return session.restore(new SnapApp.SnapContext(), rootURI, pm, new SessionProblemSolver());
+            return session.restore(SnapApp.getDefault().getAppContext(), rootURI, pm, new SessionProblemSolver());
         }
 
         @Override

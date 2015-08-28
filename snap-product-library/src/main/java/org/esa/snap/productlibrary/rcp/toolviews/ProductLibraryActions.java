@@ -124,7 +124,7 @@ public class ProductLibraryActions {
     }
 
     private static void batchProcess(final ProductEntry[] productEntryList, final File graphFile) {
-        final BatchGraphDialog batchDlg = new BatchGraphDialog(new SnapApp.SnapContext(),
+        final BatchGraphDialog batchDlg = new BatchGraphDialog(SnapApp.getDefault().getAppContext(),
                 "Batch Processing", "batchProcessing", false);
         batchDlg.setInputFiles(productEntryList);
         if (graphFile != null) {

@@ -27,6 +27,7 @@ import org.esa.snap.configurator.ConfigurationOptimizer;
 import org.esa.snap.configurator.VMParameters;
 import org.esa.snap.framework.gpf.GPF;
 import org.esa.snap.framework.gpf.OperatorSpi;
+import org.esa.snap.framework.ui.AppContext;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.util.SystemUtils;
 import org.esa.snap.util.io.FileUtils;
@@ -472,7 +473,7 @@ final class PerformancePanel extends javax.swing.JPanel {
             }
             Benchmark benchmarkModel = new Benchmark(tileSizesList, cacheSizesList, nbThreadsList);
             String opName = procGraphJComboBox.getSelectedItem().toString();
-            SnapApp.SnapContext appContext = new SnapApp.SnapContext();
+            AppContext appContext = SnapApp.getDefault().getAppContext();
             //launch Benchmark dialog
             BenchmarkDialog productDialog = new BenchmarkDialog(this, opName, benchmarkModel, appContext);
             productDialog.show();
