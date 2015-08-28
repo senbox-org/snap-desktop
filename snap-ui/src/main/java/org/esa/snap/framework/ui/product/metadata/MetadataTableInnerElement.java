@@ -51,7 +51,11 @@ public class MetadataTableInnerElement implements MetadataTableElement {
                 final Object dataElems = attribute.getDataElems();
                 final int dataType = attribute.getDataType();
                 if (ProductData.isFloatingPointType(dataType)) {
-                    addFloatMetadataAttributes(attribute, (float[]) dataElems, metadataTableElementList);
+                    if(dataElems instanceof float[]) {
+                        addFloatMetadataAttributes(attribute, (float[]) dataElems, metadataTableElementList);
+                    } else {
+                        addDoubleMetadataAttributes(attribute, (double[]) dataElems, metadataTableElementList);
+                    }
                 } else if (ProductData.isIntType(dataType)) {
                     if(dataElems instanceof byte[]) {
                         addByteMetadataAttributes(attribute, (byte[]) dataElems, metadataTableElementList);
@@ -80,6 +84,22 @@ public class MetadataTableInnerElement implements MetadataTableElement {
             final MetadataAttribute partAttribute =
                     new MetadataAttribute(name + "." + (j + 1), dataType);
             partAttribute.setDataElems(new float[]{elems[j]});
+            partAttribute.setUnit(unit);
+            partAttribute.setDescription(description);
+            metadataTableElementList.add(new MetadataTableLeaf(partAttribute));
+        }
+    }
+
+    private static void addDoubleMetadataAttributes(MetadataAttribute attribute, double[] elems,
+                                                   List<MetadataTableElement> metadataTableElementList) {
+        final String name = attribute.getName();
+        final String unit = attribute.getUnit();
+        final int dataType = attribute.getDataType();
+        final String description = attribute.getDescription();
+        for (int j = 0; j < elems.length; j++) {
+            final MetadataAttribute partAttribute =
+                    new MetadataAttribute(name + "." + (j + 1), dataType);
+            partAttribute.setDataElems(new double[]{elems[j]});
             partAttribute.setUnit(unit);
             partAttribute.setDescription(description);
             metadataTableElementList.add(new MetadataTableLeaf(partAttribute));
