@@ -19,6 +19,7 @@ package org.esa.snap.rcp.layermanager.layersrc.shapefile;
 import com.bc.ceres.swing.TableLayout;
 import org.esa.snap.framework.datamodel.GeoPos;
 import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.ui.AppContext;
 import org.esa.snap.framework.ui.crs.CrsSelectionPanel;
 import org.esa.snap.framework.ui.crs.CustomCrsForm;
 import org.esa.snap.framework.ui.crs.PredefinedCrsForm;
@@ -45,7 +46,7 @@ class ShapefileAssistantPage2 extends AbstractLayerSourceAssistantPage {
 
     @Override
     public Component createPageComponent() {
-        final SnapApp.SnapContext snapContext = new SnapApp.SnapContext();
+        final AppContext snapContext = SnapApp.getDefault().getAppContext();
         final ProductCrsForm productCrsForm = new ProductCrsForm(snapContext, SnapApp.getDefault().getSelectedProduct());
         final CustomCrsForm customCrsForm = new CustomCrsForm(snapContext);
         final PredefinedCrsForm predefinedCrsForm = new PredefinedCrsForm(snapContext);

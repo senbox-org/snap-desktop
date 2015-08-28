@@ -61,7 +61,7 @@ class TypeDialog extends ModalDialog {
         BoxLayout layout = new BoxLayout(panel, BoxLayout.Y_AXIS);
         panel.setLayout(layout);
 
-        panel.add(new JLabel("<html>" + new SnapApp.SnapContext().getApplicationName() + " can interpret the imported point data in various ways.<br>" +
+        panel.add(new JLabel("<html>" + SnapApp.getDefault().getAppContext().getApplicationName() + " can interpret the imported point data in various ways.<br>" +
                                      "Please select:<br><br></html>"));
 
         List<AbstractButton> buttons = new ArrayList<AbstractButton>();
