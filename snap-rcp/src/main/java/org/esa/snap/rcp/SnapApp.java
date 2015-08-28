@@ -207,11 +207,14 @@ public class SnapApp {
 
     /**
      * Gets the {@link #getPreferences() preferences} wrapped by a {@link PropertyMap}.
-     * Using a {@link PropertyMap} for configuration of components is preferred over
-     * using Java {@link Preferences} because of easier unit-testing.
+     * <p>
+     * Its main use is to provide compatibility for SNAP heritage GUI code (from BEAM & NEST) which used
+     * the {@link PropertyMap} interface.
      *
      * @return The user's application preferences as {@link PropertyMap} instance.
+     * @deprecated Use {@link #getPreferences()} or {@link Config#preferences()} instead.
      */
+    @Deprecated
     public PropertyMap getPreferencesPropertyMap() {
         return new PreferencesPropertyMap(getPreferences());
     }
@@ -303,7 +306,7 @@ public class SnapApp {
      * Gets an {@link AppContext} representation of the SNAP application.
      * <p>
      * Its main use is to provide compatibility for SNAP heritage GUI code (from BEAM & NEST) which used
-     * the {@link AppContext} interfaces.
+     * the {@link AppContext} interface.
      *
      * @return An {@link AppContext} representation of this {@code SnapApp}.
      */
