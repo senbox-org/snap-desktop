@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
-OpenIDE-Module-Specification-Version: ${netbeans.specVersion}
+OpenIDE-Module-Specification-Version: ${snap.nbmSpecVersion}
 OpenIDE-Module-Localizing-Bundle: org/esa/snap/configurator/ui/Bundle.properties
 OpenIDE-Module-Layer: org/esa/snap/smart/configurator/ui/layer.xml
 AutoUpdate-Show-In-Client: false

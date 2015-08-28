@@ -228,16 +228,6 @@
             <artifactId>snap-python</artifactId>
             <version>${snap.version}</version>
         </dependency>
-        <!--
-        Fixme:
-          [INFO] Private classes referenced in module: [javax.xml.transform...
-          [ERROR] Project depends on packages not accessible at runtime in module org.esa.snap:snap-jython:jar:...
-        <dependency>
-            <groupId>org.esa.snap</groupId>
-            <artifactId>snap-jython</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        -->
         <!-- TODO: remove this dependency as soon as snap-statistics-op has been moved to snap-core
           (prerequisite: snap-gpf needs to be moved to snap-core before) -->
         <dependency>
