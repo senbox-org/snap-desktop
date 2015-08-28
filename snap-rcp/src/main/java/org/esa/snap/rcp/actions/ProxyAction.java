@@ -32,12 +32,13 @@ import java.util.Map;
  * @author Norman Fomferra
  */
 public class ProxyAction implements Action, Serializable {
+
     private static final long serialVersionUID = 3069372659219673560L;
     private static final String INSTANCE_PREFIX = "ProxyAction-";
     private static final String INSTANCE_SUFFIX = ".instance";
     private static final String SHADOW_SUFFIX = ".shadow";
     private static final Map<String, Action> DELEGATES = new HashMap<>();
-    private static long COUNTER = System.nanoTime();
+
     private String path;
     private Action delegate;
 
@@ -127,7 +128,7 @@ public class ProxyAction implements Action, Serializable {
     public synchronized static FileObject addAction(Action action, String path, Integer position) {
         FileObject configRoot = FileUtil.getConfigRoot();
         try {
-            FileObject actionFile = FileUtil.createData(configRoot, path + "/" + genInstanceId(action.getClass()));
+            FileObject actionFile = FileUtil.createData(configRoot, getDataPath(path, action));
             actionFile.setAttribute("instanceCreate", new ProxyAction(action, actionFile.getPath()));
             if (position != null) {
                 actionFile.setAttribute("position", position);
@@ -206,14 +207,6 @@ public class ProxyAction implements Action, Serializable {
         return false;
     }
 
-    static String genInstanceId() {
-        return INSTANCE_PREFIX + Long.toHexString(++COUNTER) + INSTANCE_SUFFIX;
-    }
-
-    static String genInstanceId(Class<? extends Action> type) {
-        return INSTANCE_PREFIX + type.getSimpleName().replace("$", "") + "-" + Long.toHexString(++COUNTER) + INSTANCE_SUFFIX;
-    }
-
     private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
         String path = in.readUTF();
         Action delegate = DELEGATES.get(path);
@@ -228,5 +221,23 @@ public class ProxyAction implements Action, Serializable {
     private void writeObject(java.io.ObjectOutputStream out) throws IOException {
         SystemUtils.LOG.info(String.format(">>> ProxyAction.writeObject: path=%s, delegate=%s%n", path, delegate));
         out.writeUTF(path);
+    }
+
+    private static String getDataPath(String folderPath, Action delegate) {
+        Object commandKey = delegate.getValue(ACTION_COMMAND_KEY);
+        String id;
+        if (commandKey != null && !commandKey.toString().isEmpty()) {
+            id = commandKey.toString();
+        } else {
+            id = delegate.getClass().getName();
+        }
+        id = id.replace('/', '-').replace('.', '-').replace('$', '-');
+        if (!id.startsWith(INSTANCE_PREFIX)) {
+            id = INSTANCE_PREFIX + id;
+        }
+        if (!id.endsWith(INSTANCE_SUFFIX)) {
+            id += INSTANCE_SUFFIX;
+        }
+        return folderPath + "/" + id;
     }
 }

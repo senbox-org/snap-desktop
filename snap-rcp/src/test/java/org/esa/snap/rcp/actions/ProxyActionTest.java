@@ -26,7 +26,7 @@ public class ProxyActionTest {
             public void actionPerformed(ActionEvent e) {
             }
         };
-        String path = "Test/" + ProxyAction.genInstanceId();
+        String path = "Test/X.instance";
         ProxyAction proxyAction = new ProxyAction(delegate, path);
         Assert.assertSame(delegate, proxyAction.getDelegate());
         assertEquals(path, proxyAction.getPath());
@@ -44,7 +44,13 @@ public class ProxyActionTest {
         }
 
         try {
-            new ProxyAction(delegate, "u");
+            new ProxyAction(delegate, "Test/u");
+            Assert.fail();
+        } catch (IllegalArgumentException ignored) {
+        }
+
+        try {
+            new ProxyAction(delegate, "u.instance");
             Assert.fail();
         } catch (IllegalArgumentException ignored) {
         }
@@ -61,7 +67,7 @@ public class ProxyActionTest {
         };
         delegate.setEnabled(false);
 
-        ProxyAction proxyAction = new ProxyAction(delegate, "Test/" + ProxyAction.genInstanceId());
+        ProxyAction proxyAction = new ProxyAction(delegate, "Test/MyAction.instance");
 
         // Enables state
         assertEquals(false, delegate.isEnabled());
