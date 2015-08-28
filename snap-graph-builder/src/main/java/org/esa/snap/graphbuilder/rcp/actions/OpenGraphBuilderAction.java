@@ -52,7 +52,7 @@ public class OpenGraphBuilderAction extends AbstractAction {
     }
 
     public void actionPerformed(ActionEvent event) {
-        final GraphBuilderDialog dialog = new GraphBuilderDialog(new SnapApp.SnapContext(), "Graph Builder", "graph_builder");
+        final GraphBuilderDialog dialog = new GraphBuilderDialog(SnapApp.getDefault().getAppContext(), "Graph Builder", "graph_builder");
         //dialog.getJDialog().setIconImage(IconUtils.esaPlanetIcon.getImage());
         dialog.show();
 

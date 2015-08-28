@@ -49,8 +49,11 @@ public class ProxyAction implements Action, Serializable {
         Assert.argument(path.contains("/"), "path");
         this.path = path;
         this.delegate = delegate;
-        DELEGATES.put(path, delegate);
-        SystemUtils.LOG.info(String.format(">>> ProxyAction.<init>: path=%s, delegate=%s%n", this.path, this.delegate));
+        Action oldDelegate = DELEGATES.put(path, delegate);
+        if (oldDelegate != null) {
+            SystemUtils.LOG.info(String.format("Proxy action %s registered once more. Replacing the old action.%n", this.path));
+        }
+        SystemUtils.LOG.info(String.format("Proxy action added as %s%n", this.path));
     }
 
     public Action getDelegate() {
@@ -128,7 +131,7 @@ public class ProxyAction implements Action, Serializable {
     public synchronized static FileObject addAction(Action action, String path, Integer position) {
         FileObject configRoot = FileUtil.getConfigRoot();
         try {
-            FileObject actionFile = FileUtil.createData(configRoot, getDataPath(path, action));
+            FileObject actionFile = FileUtil.createData(configRoot, getActionDataPath(path, action));
             actionFile.setAttribute("instanceCreate", new ProxyAction(action, actionFile.getPath()));
             if (position != null) {
                 actionFile.setAttribute("position", position);
@@ -210,20 +213,25 @@ public class ProxyAction implements Action, Serializable {
     private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
         String path = in.readUTF();
         Action delegate = DELEGATES.get(path);
-        SystemUtils.LOG.info(String.format(">>> ProxyAction.readObject: path=%s, delegate=%s%n", path, delegate));
         if (delegate == null) {
-            throw new IOException(String.format("Action delegate not found for file path %s (don't worry this might be intended)", path));
+            throw new IOException(String.format("Action delegate not found for file %s.\n" +
+                                                        "Please make sure to call removeAction() before SNAP shuts down.", path));
         }
         this.path = path;
         this.delegate = delegate;
+        SystemUtils.LOG.info(String.format("Deserialized proxy action %s%n", this.path));
     }
 
     private void writeObject(java.io.ObjectOutputStream out) throws IOException {
-        SystemUtils.LOG.info(String.format(">>> ProxyAction.writeObject: path=%s, delegate=%s%n", path, delegate));
         out.writeUTF(path);
+        SystemUtils.LOG.info(String.format("Serialized proxy action %s%n", this.path));
     }
 
-    private static String getDataPath(String folderPath, Action delegate) {
+    private static String getActionDataPath(String folderPath, Action delegate) {
+        return folderPath + "/" + getActionInstanceName(delegate);
+    }
+
+    private static String getActionInstanceName(Action delegate) {
         Object commandKey = delegate.getValue(ACTION_COMMAND_KEY);
         String id;
         if (commandKey != null && !commandKey.toString().isEmpty()) {
@@ -238,6 +246,6 @@ public class ProxyAction implements Action, Serializable {
         if (!id.endsWith(INSTANCE_SUFFIX)) {
             id += INSTANCE_SUFFIX;
         }
-        return folderPath + "/" + id;
+        return id;
     }
 }
