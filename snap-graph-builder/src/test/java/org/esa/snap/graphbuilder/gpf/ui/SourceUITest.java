@@ -19,7 +19,6 @@ import org.esa.snap.GlobalTestConfig;
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.ProductManager;
 import org.esa.snap.framework.ui.AppContext;
-import org.esa.snap.framework.ui.application.ApplicationPage;
 import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.util.DefaultPropertyMap;
 import org.esa.snap.util.PropertyMap;
@@ -103,10 +102,6 @@ public class SourceUITest {
 
         public String getApplicationName() {
             return "Killer App";
-        }
-
-        public ApplicationPage getApplicationPage() {
-            return null;
         }
 
         public Product getSelectedProduct() {

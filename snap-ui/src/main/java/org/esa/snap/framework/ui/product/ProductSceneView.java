@@ -1040,7 +1040,7 @@ public class ProductSceneView extends BasicView
                 thatGeoCoding.getPixelPos(geoCenter, imageCenter);
                 if (imageCenter.isValid()) {
                     thatView.getBaseImageLayer().getImageToModelTransform().transform(imageCenter, modelCenter);
-                    thatViewport.setZoomFactor(thatViewport.getZoomFactor(), modelCenter.getX(), modelCenter.getY());
+                    thatViewport.setZoomFactor(thisViewport.getZoomFactor(), modelCenter.getX(), modelCenter.getY());
                     return true;
                 }
             }

@@ -112,7 +112,7 @@ public class OpenSessionAction extends AbstractAction {
             } else {
                 rootURI = new File(".").toURI();
             }
-            return session.restore(new SnapApp.SnapContext(), rootURI, pm, new SessionProblemSolver());
+            return session.restore(SnapApp.getDefault().getAppContext(), rootURI, pm, new SessionProblemSolver());
         }
 
         @Override
@@ -152,7 +152,6 @@ public class OpenSessionAction extends AbstractAction {
 
             // todo - Handle view persistence in a generic way. (nf - 08.05.2009)
             //        These are the only 3 views currently known in BEAM.
-            //        NEST already uses another view type which cannot be stored/restored.
 
             final ProductNodeView[] nodeViews = restoredSession.getViews();
             for (ProductNodeView nodeView : nodeViews) {
@@ -165,7 +164,7 @@ public class OpenSessionAction extends AbstractAction {
                     Viewport viewport = sceneView.getLayerCanvas().getViewport().clone();
 
 //        ######### 06.07.2015 ########
-//        Comment out by Muhammad until Internal view is solved for NetBeans platform
+//        Comment out by Muhammad until tool window persistance is solved for SNAP on NetBeans platform.
 
 //                    if (sceneView.isRGB()) {
 //                        internalFrame = null;// showImageViewRGBAction.openInternalFrame(sceneView, false);

@@ -18,7 +18,6 @@ package org.esa.snap.framework.ui;
 
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.ProductManager;
-import org.esa.snap.framework.ui.application.ApplicationPage;
 import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.util.PropertyMap;
 
@@ -29,8 +28,6 @@ public interface AppContext {
     String getApplicationName();
 
     Window getApplicationWindow();
-
-    ApplicationPage getApplicationPage();
 
     Product getSelectedProduct();
 

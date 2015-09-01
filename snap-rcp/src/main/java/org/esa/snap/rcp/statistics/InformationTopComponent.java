@@ -31,11 +31,11 @@ import org.openide.windows.TopComponent;
 @TopComponent.Registration(
         mode = "Information",
         openAtStartup = false,
-        position = 10
+        position = 30
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.statistics.InformationTopComponent")
 @ActionReferences({
-        @ActionReference(path = "Menu/Analysis"),
+        @ActionReference(path = "Menu/Analysis",position = 35),
         @ActionReference(path = "Toolbars/Analysis")
 })
 @TopComponent.OpenActionRegistration(

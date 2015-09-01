@@ -15,11 +15,11 @@ import org.openide.windows.TopComponent;
 @TopComponent.Registration(
         mode = "Statistics",
         openAtStartup = false,
-        position = 30
+        position = 40
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.statistics.StatisticsTopComponent")
 @ActionReferences({
-        @ActionReference(path = "Menu/Analysis"),
+        @ActionReference(path = "Menu/Analysis",position = 60),
         @ActionReference(path = "Toolbars/Analysis")
 })
 @TopComponent.OpenActionRegistration(

@@ -11,17 +11,14 @@ import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.ImageUtilities;
-import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
-import org.openide.util.Utilities;
-
-import javax.swing.Action;
 
 /**
  * @author Marco Peters
+ * @author Muhammad.bc
  */
 @ActionID(category = "View", id = "OverlayNoDataLayerAction")
-@ActionRegistration(displayName = "#CTL_OverlayNoDataLayerActionName", lazy = false)
+@ActionRegistration(displayName = "#CTL_OverlayNoDataLayerActionName")
 @ActionReferences({
         @ActionReference(path = "Menu/Layer", position = 0),
         @ActionReference(path = "Toolbars/Overlay", position = 0)
@@ -31,20 +28,6 @@ import javax.swing.Action;
         "CTL_OverlayNoDataLayerActionToolTip=Show/hide no-data overlay for the selected image"
 })
 public final class OverlayNoDataLayerAction extends AbstractOverlayAction {
-
-    public OverlayNoDataLayerAction() {
-        this(Utilities.actionsGlobalContext());
-    }
-
-    public OverlayNoDataLayerAction(Lookup lkp) {
-        super(lkp);
-    }
-
-    @Override
-    public Action createContextAwareInstance(Lookup lkp) {
-        return new OverlayNoDataLayerAction(lkp);
-    }
-
     @Override
     protected void initActionProperties() {
         putValue(NAME, Bundle.CTL_OverlayNoDataLayerActionName());
@@ -59,7 +42,7 @@ public final class OverlayNoDataLayerAction extends AbstractOverlayAction {
     }
 
     @Override
-    protected boolean getActionEnableState(ProductSceneView view) {
+    protected boolean getActionEnabledState(ProductSceneView view) {
         return view.getRaster().isValidMaskUsed();
     }
 

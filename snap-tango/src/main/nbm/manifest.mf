@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+OpenIDE-Module-Specification-Version: ${snap.nbmSpecVersion}
 AutoUpdate-Essential-Module: true
 AutoUpdate-Show-In-Client: false
 OpenIDE-Module-Long-Description: NB-Module which wraps the Tango Icon

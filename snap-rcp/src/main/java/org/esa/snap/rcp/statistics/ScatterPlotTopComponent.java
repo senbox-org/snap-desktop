@@ -34,11 +34,11 @@ import javax.swing.Icon;
 @TopComponent.Registration(
         mode = "CorrelativePlot",
         openAtStartup = false,
-        position = 70
+        position = 5
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.statistics.ScatterPlotTopComponent")
 @ActionReferences({
-        @ActionReference(path = "Menu/Analysis"),
+        @ActionReference(path = "Menu/Analysis",position = 10),
         @ActionReference(path = "Toolbars/Analysis")
 })
 @TopComponent.OpenActionRegistration(

@@ -12,17 +12,14 @@ import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.ImageUtilities;
-import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
-import org.openide.util.Utilities;
-
-import javax.swing.Action;
 
 /**
  * @author Marco Peters
+ * @author Muhammad.bc
  */
 @ActionID(category = "View", id = "OverlayPinLayerAction")
-@ActionRegistration(displayName = "#CTL_OverlayPinLayerActionName", lazy = false)
+@ActionRegistration(displayName = "#CTL_OverlayPinLayerActionName")
 @ActionReferences({
         @ActionReference(path = "Menu/Layer", position = 30),
         @ActionReference(path = "Toolbars/Overlay", position = 30)
@@ -33,18 +30,6 @@ import javax.swing.Action;
 })
 public final class OverlayPinLayerAction extends AbstractOverlayAction {
 
-    public OverlayPinLayerAction() {
-        this(Utilities.actionsGlobalContext());
-    }
-
-    public OverlayPinLayerAction(Lookup lkp) {
-        super(lkp);
-    }
-
-    @Override
-    public Action createContextAwareInstance(Lookup lkp) {
-        return new OverlayPinLayerAction(lkp);
-    }
 
     @Override
     protected void initActionProperties() {
@@ -60,15 +45,15 @@ public final class OverlayPinLayerAction extends AbstractOverlayAction {
     }
 
     @Override
-    protected boolean getActionEnableState(ProductSceneView view) {
+    protected boolean getActionEnabledState(ProductSceneView view) {
         final Product product = view.getProduct();
         return product != null && product.getPinGroup().getNodeCount() > 0;
     }
+
 
     @Override
     protected void setOverlayEnableState(ProductSceneView view) {
         view.setPinOverlayEnabled(!getActionSelectionState(view));
     }
-
 
 }

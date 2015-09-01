@@ -12,7 +12,6 @@ import org.esa.snap.framework.gpf.GPF;
 import org.esa.snap.framework.gpf.OperatorSpi;
 import org.esa.snap.framework.gpf.OperatorSpiRegistry;
 import org.esa.snap.framework.ui.AppContext;
-import org.esa.snap.framework.ui.application.ApplicationPage;
 import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.rcp.actions.file.OpenProductAction;
 import org.esa.snap.rcp.actions.file.SaveProductAction;
@@ -71,9 +70,30 @@ import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 /**
- * The central SNAP application class.
+ * The class {@code SnapApp} is a facade for SNAP Desktop applications. There is only a single instance of
+ * a SNAP application which is retrieved by
+ * <pre>
+ *     SnapApp app = SnapApp.getDefault();
+ * </pre>
+ * {@code SnapApp} is the main entry point for most SNAP Desktop extensions. An extension might want to be informed
+ * about selection changes in the application. Here are some examples:
+ * <pre>
+ *     app.getSelectionSupport(Product.class).addHandler(myProductSelectionHandler);
+ *     app.getSelectionSupport(ProductNode.class).addHandler(myProductNodeSelectionHandler);
+ *     app.getSelectionSupport(RasterDataNode.class).addHandler(myRasterDataNodeSelectionHandler);
+ *     app.getSelectionSupport(ProductSceneView.class).addHandler(myViewSelectionHandler);
+ * </pre>
+ * Or might want to retrieve the currently selected objects:
+ * <pre>
+ *     Product product = app.getSelectedProduct();
+ *     ProductNode productNode = getSelectedProductNode();
+ *     ProductSceneView view = app.getSelectedProductSceneView();
+ *     // For any other type of selected object, use:
+ *     Figure figure = Utilities.actionsGlobalContext().lookup(Figure.class);
+ * </pre>
  * <p>
- * If you want to provide alter behaviour of this class, register your derived class as a service using
+ * If you want to alter the behaviour of the default implementation of the SNAP Desktop application,
+ * then register your derived class as a service using
  * <pre>
  *     &#64;ServiceProvider(service = MoonApp.class, supersedes = "SnapApp")
  *     public class MoonApp extends SnapApp {
@@ -82,6 +102,8 @@ import java.util.prefs.Preferences;
  * </pre>
  *
  * @author Norman Fomferra
+ * @see SelectionSupport
+ * @see org.esa.snap.rcp.util.SelectionSupport.Handler
  * @since 2.0
  */
 @ServiceProvider(service = SnapApp.class)
@@ -101,6 +123,7 @@ public class SnapApp {
      * <pre>
      *    Lookup.getDefault().lookup(SnapApp.class)
      * </pre>
+     *
      * @return The SNAP applications global singleton instance.
      */
     public static SnapApp getDefault() {
@@ -111,6 +134,11 @@ public class SnapApp {
         return instance;
     }
 
+    /**
+     * Constructor.
+     * <p>
+     * As this class is a registered service, the constructor is not supposed to be called directly.
+     */
     public SnapApp() {
         productManager = new ProductManager();
         // Register a provider that delivers an UndoManager for a Product instance.
@@ -159,6 +187,9 @@ public class SnapApp {
         return getInstanceName();
     }
 
+    /**
+     * @return The SNAP application's name. The default is {@code "SNAP"}.
+     */
     public String getInstanceName() {
         try {
             return NbBundle.getBundle("org.netbeans.core.ui.Bundle").getString("LBL_ProductInformation");
@@ -176,11 +207,14 @@ public class SnapApp {
 
     /**
      * Gets the {@link #getPreferences() preferences} wrapped by a {@link PropertyMap}.
-     * Using a {@link PropertyMap} for configuration of components is preferred over
-     * using Java {@link Preferences} because of easier unit-testing.
+     * <p>
+     * Its main use is to provide compatibility for SNAP heritage GUI code (from BEAM & NEST) which used
+     * the {@link PropertyMap} interface.
      *
      * @return The user's application preferences as {@link PropertyMap} instance.
+     * @deprecated Use {@link #getPreferences()} or {@link Config#preferences()} instead.
      */
+    @Deprecated
     public PropertyMap getPreferencesPropertyMap() {
         return new PreferencesPropertyMap(getPreferences());
     }
@@ -202,7 +236,7 @@ public class SnapApp {
         if (t != null) {
             t.printStackTrace();
         }
-        SnapDialogs.showError(getInstanceName() + " - Error", message);
+        SnapDialogs.showError("Error", message);
         getLogger().log(Level.SEVERE, message, t);
 
         ImageIcon icon = TangoIcons.status_dialog_error(TangoIcons.Res.R16);
@@ -268,53 +302,23 @@ public class SnapApp {
         return null;
     }
 
-    private String getMainFrameTitle() {
-
-        ProductNode selectedProductNode = getSelectedProductNode();
-        Product selectedProduct = null;
-        if (selectedProductNode != null) {
-            selectedProduct = selectedProductNode.getProduct();
-            if (selectedProduct == null) {
-                selectedProduct = getSelectedProduct();
-            }
-        }
-
-        String title;
-        if (selectedProduct == null) {
-            if (Utilities.isMac()) {
-                title = String.format("[%s]", "Empty");
-            } else {
-                title = String.format("%s", getInstanceName());
-            }
-        } else if (selectedProduct == selectedProductNode) {
-            File fileLocation = selectedProduct.getFileLocation();
-            String path = fileLocation != null ? fileLocation.getPath() : "not saved";
-            if (Utilities.isMac()) {
-                title = String.format("%s - [%s]",
-                                      selectedProduct.getName(), path);
-            } else {
-                title = String.format("%s - [%s] - %s",
-                                      selectedProduct.getName(), path, getInstanceName());
-            }
-        } else {
-            File fileLocation = selectedProduct.getFileLocation();
-            String path = fileLocation != null ? fileLocation.getPath() : "not saved";
-            if (Utilities.isMac()) {
-                title = String.format("%s - [%s] - [%s]",
-                                      selectedProduct.getName(), path, selectedProductNode.getName());
-            } else {
-                title = String.format("%s - [%s] - [%s] - %s",
-                                      selectedProduct.getName(), path, selectedProductNode.getName(), getInstanceName());
-            }
-        }
-
-        return title;
+    /**
+     * Gets an {@link AppContext} representation of the SNAP application.
+     * <p>
+     * Its main use is to provide compatibility for SNAP heritage GUI code (from BEAM & NEST) which used
+     * the {@link AppContext} interface.
+     *
+     * @return An {@link AppContext} representation of this {@code SnapApp}.
+     */
+    public AppContext getAppContext() {
+        return new SnapContext();
     }
 
-    private void updateMainFrameTitle() {
-        getMainFrame().setTitle(getMainFrameTitle());
-    }
-
+    /**
+     * Called if SNAP starts up. The method is not supposed to be called by clients directly.
+     * <p>
+     * Overrides should call {@code super.onStart()} as a first step unless they know what they are doing.
+     */
     public void onStart() {
         engine = Engine.start(false);
 
@@ -329,6 +333,11 @@ public class SnapApp {
         ToolbarPool.getDefault().setConfiguration(toolbarConfig);
     }
 
+    /**
+     * Called if SNAP shuts down. The method is not supposed to be called by clients directly.
+     * <p>
+     * Overrides should call {@code super.onStop()} in a final step unless they know what they are doing.
+     */
     public void onStop() {
         engine.stop();
         try {
@@ -338,6 +347,11 @@ public class SnapApp {
         }
     }
 
+    /**
+     * Called if SNAP is showing on the user's desktop. The method is not supposed to be called by clients directly.
+     * <p>
+     * Overrides should call {@code super.onShowing()} as a first step unless they know whet they are doing.
+     */
     public void onShowing() {
         updateMainFrameTitle();
         MainFrameTitleUpdater updater = new MainFrameTitleUpdater();
@@ -355,7 +369,7 @@ public class SnapApp {
         });
         if (SnapArgs.getDefault().getSessionFile() != null) {
             File sessionFile = SnapArgs.getDefault().getSessionFile().toFile();
-            if (sessionFile!= null) {
+            if (sessionFile != null) {
                 new OpenSessionAction().openSession(sessionFile);
             }
         }
@@ -368,6 +382,15 @@ public class SnapApp {
         }
     }
 
+    /**
+     * Called if SNAP is about to shut down. The method is not supposed to be called by clients directly.
+     * <p>
+     * Overrides should call {@code super.onTryStop()()} unless they know whet they are doing. The method should return
+     * immediately {@code false} if the super call returns {@code false}.
+     *
+     * @return {@code false} if the shutdown process shall be cancelled immediately. {@code true}, if it is ok
+     * to continue shut down.
+     */
     public boolean onTryStop() {
 
         final ArrayList<Product> modifiedProducts = new ArrayList<>(5);
@@ -417,8 +440,57 @@ public class SnapApp {
         return true;
     }
 
+    private String getMainFrameTitle() {
+
+        ProductNode selectedProductNode = getSelectedProductNode();
+        Product selectedProduct = null;
+        if (selectedProductNode != null) {
+            selectedProduct = selectedProductNode.getProduct();
+            if (selectedProduct == null) {
+                selectedProduct = getSelectedProduct();
+            }
+        }
+
+        String title;
+        if (selectedProduct == null) {
+            if (Utilities.isMac()) {
+                title = String.format("[%s]", "Empty");
+            } else {
+                title = String.format("%s", getInstanceName());
+            }
+        } else if (selectedProduct == selectedProductNode) {
+            File fileLocation = selectedProduct.getFileLocation();
+            String path = fileLocation != null ? fileLocation.getPath() : "not saved";
+            if (Utilities.isMac()) {
+                title = String.format("%s - [%s]",
+                                      selectedProduct.getName(), path);
+            } else {
+                title = String.format("%s - [%s] - %s",
+                                      selectedProduct.getName(), path, getInstanceName());
+            }
+        } else {
+            File fileLocation = selectedProduct.getFileLocation();
+            String path = fileLocation != null ? fileLocation.getPath() : "not saved";
+            if (Utilities.isMac()) {
+                title = String.format("%s - [%s] - [%s]",
+                                      selectedProduct.getName(), path, selectedProductNode.getName());
+            } else {
+                title = String.format("%s - [%s] - [%s] - %s",
+                                      selectedProduct.getName(), path, selectedProductNode.getName(), getInstanceName());
+            }
+        }
+
+        return title;
+    }
+
+    private void updateMainFrameTitle() {
+        getMainFrame().setTitle(getMainFrameTitle());
+    }
+
     /**
-     * {@code @OnStart}: {@code Runnable}s defined by various modules are invoked in parallel and as soon
+     * This non-API class is public as an implementation detail. Don't use it, it may be removed anytime.
+     * <p>
+     * NetBeans {@code @OnStart}: {@code Runnable}s defined by various modules are invoked in parallel and as soon
      * as possible. It is guaranteed that execution of all {@code runnable}s is finished
      * before the startup sequence is claimed over.
      */
@@ -441,8 +513,11 @@ public class SnapApp {
         }
     }
 
+
     /**
-     * {@code @OnShowing}: Annotation to place on a {@code Runnable} with default constructor which should be invoked as soon as the window
+     * This non-API class is public as an implementation detail. Don't use it, it may be removed anytime.
+     * <p>
+     * NetBeans {@code @OnShowing}: Annotation to place on a {@code Runnable} with default constructor which should be invoked as soon as the window
      * system is shown. The {@code Runnable}s are invoked in AWT event dispatch thread one by one
      */
     @OnShowing
@@ -456,7 +531,9 @@ public class SnapApp {
     }
 
     /**
-     * {@code @OnStop}: Annotation that can be applied to {@code Runnable} or {@code Callable<Boolean>}
+     * This non-API class is public as an implementation detail. Don't use it, it may be removed anytime.
+     * <p>
+     * NetBeans {@code @OnStop}: Annotation that can be applied to {@code Runnable} or {@code Callable<Boolean>}
      * subclasses with default constructor which will be invoked during shutdown sequence or when the
      * module is being shutdown.
      * <p>
@@ -476,6 +553,9 @@ public class SnapApp {
         }
     }
 
+    /**
+     * This non-API class is public as an implementation detail. Don't use it, it may be removed anytime.
+     */
     @OnStop
     public static class StopOp implements Runnable {
 
@@ -513,19 +593,19 @@ public class SnapApp {
     }
 
     /**
+     * This non-API class is public as an implementation detail. Don't use it, it may be removed anytime.
+     * <p>
      * This class proxies the original ContextGlobalProvider and ensures that a set
      * of additional objects remain in the GlobalContext regardless of the TopComponent
      * selection.
      *
      * @see org.esa.snap.rcp.util.ContextGlobalExtenderImpl
      */
-
     @ServiceProvider(
             service = ContextGlobalProvider.class,
             supersedes = "org.netbeans.modules.openide.windows.GlobalActionContextImpl"
     )
     public static class ActionContextExtender extends ContextGlobalExtenderImpl {
-
     }
 
     /**
@@ -559,49 +639,42 @@ public class SnapApp {
         }
     }
 
-    public static class SnapContext implements AppContext {
-
-        private final SnapApp app = getDefault();
-
-        @Override
-        public ApplicationPage getApplicationPage() {
-            throw new UnsupportedOperationException();
-        }
+    private static class SnapContext implements AppContext {
 
         @Override
         public ProductManager getProductManager() {
-            return app.getProductManager();
+            return getDefault().getProductManager();
         }
 
         @Override
         public Product getSelectedProduct() {
-            return app.getSelectedProduct();
+            return getDefault().getSelectedProduct();
         }
 
         @Override
         public Window getApplicationWindow() {
-            return app.getMainFrame();
+            return getDefault().getMainFrame();
         }
 
         @Override
         public String getApplicationName() {
-            return app.getInstanceName();
+            return getDefault().getInstanceName();
         }
 
         @Override
         public void handleError(String message, Throwable t) {
-            app.handleError(message, t);
+            getDefault().handleError(message, t);
         }
 
         @Override
         @Deprecated
         public PropertyMap getPreferences() {
-            return app.getPreferencesPropertyMap();
+            return getDefault().getPreferencesPropertyMap();
         }
 
         @Override
         public ProductSceneView getSelectedProductSceneView() {
-            return app.getSelectedProductSceneView();
+            return getDefault().getSelectedProductSceneView();
         }
     }
 
