@@ -16,7 +16,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <all.clusters>${project.build.directory}/${brandingToken}</all.clusters>
+        <application.dir>${project.build.directory}/${brandingToken}</application.dir>
     </properties>
 
     <dependencies>
@@ -160,13 +160,19 @@
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources/etc</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>nbm-maven-plugin</artifactId>
                 <configuration>
                     <installerLicenseFile>../LICENSE.html</installerLicenseFile>
-                    <etcConfFile>../etc/snap.conf</etcConfFile>
+                    <etcConfFile>${application.dir}/etc/snap.conf</etcConfFile>
                 </configuration>
             </plugin>
             <!-- Permits NbModuleSuite to be run in integration-test phase: -->
@@ -177,10 +183,6 @@
                 <configuration>
                     <!-- currently the application test fails during initialisation of JAI-->
                     <skipTests>true</skipTests>
-                    <systemPropertyVariables>
-                        <all.clusters>${all.clusters}</all.clusters>
-                        <branding.token>${brandingToken}</branding.token>
-                    </systemPropertyVariables>
                 </configuration>
             </plugin>
             <plugin>
@@ -194,11 +196,11 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${all.clusters}/etc/</outputDirectory>
+                            <outputDirectory>${application.dir}/etc</outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>../etc</directory>
-                                    <filtering>false</filtering>
+                                    <filtering>true</filtering>
                                 </resource>
                                 <resource>
                                     <directory>../../snap-engine/etc</directory>

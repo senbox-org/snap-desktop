@@ -25,13 +25,21 @@ public class Main {
      */
     public static void main(String[] args) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 
-        System.setProperty("snap.home", Paths.get(System.getProperty("netbeans.home")).getParent().toString());
-        System.setProperty("snap.userdir", Paths.get(System.getProperty("netbeans.user")).toString());
+        System.setProperty("snap.home", Paths.get(getPropertySafe("netbeans.home")).getParent().toString());
+        System.setProperty("snap.userdir", Paths.get(getPropertySafe("netbeans.user")).toString());
         if (Boolean.getBoolean("snap.debug")) {
             dumpEnv(args);
         }
 
         runNetBeans(args, NB_MAIN_CLASS);
+    }
+
+    private static String getPropertySafe(String key) {
+        String value = System.getProperty(key);
+        if (value == null) {
+            throw new IllegalStateException(String.format("Expecting system property '%s' to be set", key));
+        }
+        return value;
     }
 
     private static void dumpEnv(String[] args) {

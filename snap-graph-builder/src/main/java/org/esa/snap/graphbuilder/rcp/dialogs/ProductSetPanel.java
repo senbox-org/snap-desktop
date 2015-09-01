@@ -46,7 +46,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 /**
- * NEST IO Panel to handle source and target selection
+ * ProductSet Panel to handle source and target selection
  * User: lveci
  * Date: Feb 5, 2009
  */

@@ -26,11 +26,11 @@ public abstract class AbstractSnapAction extends AbstractAction implements HelpC
 
     public static final String HELP_ID = "helpId";
 
-    private SnapApp.SnapContext appContext;
+    private AppContext appContext;
 
     public AppContext getAppContext() {
         if (appContext == null) {
-            appContext = new SnapApp.SnapContext();
+            appContext = SnapApp.getDefault().getAppContext();
         }
         return appContext;
     }

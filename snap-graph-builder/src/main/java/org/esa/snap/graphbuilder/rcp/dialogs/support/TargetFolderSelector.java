@@ -26,9 +26,7 @@ import java.awt.FlowLayout;
 import java.awt.Insets;
 
 /**
- * NEST
- * User: lveci
- * Date: Jul 28, 2009
+ * Target folder selector
  */
 public class TargetFolderSelector extends TargetProductSelector {
 
