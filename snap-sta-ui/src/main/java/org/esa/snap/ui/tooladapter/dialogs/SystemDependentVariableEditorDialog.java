@@ -25,6 +25,7 @@ public class SystemDependentVariableEditorDialog extends ModalDialog {
         super(parent, String.format("Edit %s", variable.getKey()), ID_OK_CANCEL, helpID);
         oldVariable = variable;
         newVariable = (SystemDependentVariable)oldVariable.createCopy();
+        newVariable.setTransient(true);
         logger = Logger.getLogger(ToolAdapterEditorDialog.class.getName());
         setContent(createPanel());
 

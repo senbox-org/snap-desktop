@@ -62,11 +62,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -221,6 +219,8 @@ public class ToolAdapterEditorDialog extends ModalDialog {
         setContent(createMainPanel());
     }
 
+    ToolAdapterOperatorDescriptor getUpdatedOperatorDescriptor() { return this.newOperatorDescriptor; }
+
     @Override
     protected boolean verifyUserInput() {
         /**
@@ -304,6 +304,7 @@ public class ToolAdapterEditorDialog extends ModalDialog {
                 if (!newOperatorDescriptor.isFromPackage()) {
                     newOperatorDescriptor.setSource(ToolAdapterOperatorDescriptor.SOURCE_USER);
                 }
+                Map<File, String> templates = new HashMap<>();
                 newOperatorDescriptor.setTemplateFileLocation(newOperatorDescriptor.getAlias() + ToolAdapterConstants.TOOL_VELO_TEMPLATE_SUFIX);
                 java.util.List<TemplateParameterDescriptor> toolParameterDescriptors = newOperatorDescriptor.getToolParameterDescriptors();
                 toolParameterDescriptors.stream().filter(param -> paramsTable.getBindingContext().getBinding(param.getName()) != null)
@@ -313,9 +314,17 @@ public class ToolAdapterEditorDialog extends ModalDialog {
                             if (param.isTemplateBefore() || param.isTemplateAfter()) {
                                 final File paramTemplateFile = new File(propertyValue.toString());
                                 param.setDefaultValue(paramTemplateFile.getName());
+                                File fileToAdd;
                                 if (!newOperatorDescriptor.getAlias().equals(oldOperatorDescriptor.getAlias())) {
                                     File oldFile = ToolAdapterIO.ensureLocalCopy(paramTemplateFile, oldOperatorDescriptor.getAlias());
-                                    ToolAdapterIO.ensureLocalCopy(oldFile, newOperatorDescriptor.getAlias());
+                                    fileToAdd = ToolAdapterIO.ensureLocalCopy(oldFile, newOperatorDescriptor.getAlias());
+                                } else {
+                                    fileToAdd = ToolAdapterIO.ensureLocalCopy(paramTemplateFile, newOperatorDescriptor.getAlias());
+                                }
+                                try {
+                                    templates.put(fileToAdd, new String(Files.readAllBytes(Paths.get(fileToAdd.toURI()))));
+                                } catch (IOException e) {
+                                    logger.severe(e.getMessage());
                                 }
                             } else {
                                 String defaultValueString = "";
@@ -345,6 +354,17 @@ public class ToolAdapterEditorDialog extends ModalDialog {
                     }
                     ToolAdapterIO.removeOperator(oldOperatorDescriptor, true);
                     ToolAdapterIO.saveAndRegisterOperator(newOperatorDescriptor, templateContent);
+                    templates.keySet().stream().forEach(k -> {
+                        if (!k.exists()) {
+                            try {
+                                if (k.createNewFile()) {
+                                    Files.write(Paths.get(k.toURI()), templates.get(k).getBytes(), StandardOpenOption.WRITE);
+                                }
+                            } catch (IOException e) {
+                                logger.severe(e.getMessage());
+                            }
+                        }
+                    });
                     ToolAdapterActionRegistrar.registerOperatorMenu(newOperatorDescriptor);
                 } catch (Exception e) {
                     logger.warning(e.getMessage());

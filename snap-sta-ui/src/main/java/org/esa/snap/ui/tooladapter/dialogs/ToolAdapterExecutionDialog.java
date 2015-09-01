@@ -22,6 +22,7 @@ import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.gpf.GPF;
 import org.esa.snap.framework.gpf.Operator;
 import org.esa.snap.framework.gpf.descriptor.ParameterDescriptor;
+import org.esa.snap.framework.gpf.descriptor.SystemVariable;
 import org.esa.snap.framework.gpf.descriptor.ToolAdapterOperatorDescriptor;
 import org.esa.snap.framework.gpf.operators.tooladapter.ToolAdapterConstants;
 import org.esa.snap.framework.gpf.operators.tooladapter.ToolAdapterIO;
@@ -39,16 +40,16 @@ import org.openide.util.Cancellable;
 import org.openide.util.NbBundle;
 
 import javax.swing.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -86,6 +87,10 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
 
     private OperatorTask operatorTask;
 
+    private Logger logger;
+
+    private List<String> warnings;
+
     public static final String helpID = "sta_execution";
 
     /**
@@ -97,10 +102,14 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
      */
     public ToolAdapterExecutionDialog(ToolAdapterOperatorDescriptor descriptor, AppContext appContext, String title) {
         super(appContext, title, helpID);
+        logger = Logger.getLogger(ToolAdapterExecutionDialog.class.getName());
+        initialize(descriptor);
+        warnings = new ArrayList<>();
+    }
+
+    private void initialize(ToolAdapterOperatorDescriptor descriptor) {
         this.operatorDescriptor = descriptor;
-
         this.parameterSupport = new OperatorParameterSupport(descriptor);
-
         form = new ToolExecutionForm(appContext, descriptor, parameterSupport.getPropertySet(),
                 getTargetProductSelector());
         OperatorMenu operatorMenu = new OperatorMenu(this.getJDialog(),
@@ -126,7 +135,7 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
         }
         if (Arrays.stream(sourceProducts).anyMatch(p -> p == null)) {
             SnapDialogs.Answer decision = SnapDialogs.requestDecision("No Product Selected", Bundle.NoSourceProductWarning_Text(), false, null);
-            if (SnapDialogs.Answer.NO.equals(decision.equals(SnapDialogs.Answer.YES))) {
+            if (decision.equals(SnapDialogs.Answer.NO)) {
                 return;
             }
         }
@@ -135,8 +144,21 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
                 SnapDialogs.showWarning(Bundle.RequiredTargetProductMissingWarning_Text());
         } else {
             if (!canApply()) {
-                onClose();
+                StringBuilder warnMessage = new StringBuilder();
+                warnMessage.append("Before executing the tool, please correct the errors below:")
+                        .append("\n").append("\n");
+                for (String msg : warnings) {
+                    warnMessage.append("\t").append(msg).append("\n");
+                }
+                SnapDialogs.showWarning(warnMessage.toString());
                 ToolAdapterEditorDialog dialog = new ToolAdapterEditorDialog(appContext, operatorDescriptor, false);
+                dialog.getJDialog().addWindowListener(new WindowAdapter() {
+                    @Override
+                    public void windowClosed(WindowEvent e) {
+                        super.windowClosed(e);
+                        onOperatorDescriptorChanged(dialog.getUpdatedOperatorDescriptor());
+                    }
+                });
                 dialog.show();
             } else {
                 if (validateUserInput()) {
@@ -176,16 +198,20 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
 
     @Override
     protected boolean canApply() {
+        warnings.clear();
         try {
+            String message;
             Path toolLocation = operatorDescriptor.resolveVariables(operatorDescriptor.getMainToolFileLocation()).toPath();
             if (!(Files.exists(toolLocation) && Files.isExecutable(toolLocation))) {
-                SnapDialogs.showWarning(Bundle.MSG_Inexistent_Tool_Path_Text());
-                return false;
+                message = String.format("Path does not exist: '%s'", toolLocation.toString());
+                logger.warning(message);
+                warnings.add(message);
             }
             File workingDir = operatorDescriptor.resolveVariables(operatorDescriptor.getWorkingDir());
             if (!(workingDir != null && workingDir.exists() && workingDir.isDirectory())) {
-                SnapDialogs.showWarning(Bundle.MSG_Inexistent_WorkDir_Text());
-                return false;
+                message = String.format("Working directory does not exist: '%s'", workingDir == null ? "null" : workingDir.getPath());
+                logger.warning(message);
+                warnings.add(message);
             }
             ParameterDescriptor[] parameterDescriptors = operatorDescriptor.getParameterDescriptors();
             if (parameterDescriptors != null && parameterDescriptors.length > 0) {
@@ -195,19 +221,23 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
                     if (File.class.isAssignableFrom(dataType) &&
                             (parameterDescriptor.isNotNull() || parameterDescriptor.isNotEmpty()) &&
                             (defaultValue == null || defaultValue.isEmpty() || !Files.exists(Paths.get(defaultValue)))) {
-                        SnapDialogs.showWarning(String.format(Bundle.MSG_Inexistem_Parameter_Value_Text(),
-                                parameterDescriptor.getName(), parameterDescriptor.isNotNull() ? "NotNull" : "NotEmpty"));
-                        return false;
+                        message = String.format("Path does not exist: '%s'", defaultValue == null ? "null" : defaultValue);
+                        logger.warning(message);
+                        warnings.add(message);
                     }
                 }
             }
-            return operatorDescriptor.getVariables().stream().filter(variable -> {
+            for (SystemVariable variable : operatorDescriptor.getVariables()) {
                 String value = variable.getValue();
-                return value == null || value.isEmpty();
-            }).count() == 0;
+                if (value == null || value.isEmpty()) {
+                    message = String.format("Variable %s is not set", variable.getKey());
+                    logger.warning(message);
+                    warnings.add(message);
+                }
+            }
         } catch (Exception ignored) {
-            return false;
         }
+        return warnings.size() == 0;
     }
 
     @Override
@@ -225,6 +255,11 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
 
     /* End @Override methods section */
 
+    private void onOperatorDescriptorChanged(ToolAdapterOperatorDescriptor newOperatorDescriptor) {
+        initialize(newOperatorDescriptor);
+        show();
+    }
+
     /**
      * Performs any validation on the user input.
      *
@@ -235,7 +270,7 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
         File productDir = targetProductSelector.getModel().getProductDir();
         isValid = (productDir != null) && productDir.exists();
         Product[] sourceProducts = form.getSourceProducts();
-        isValid &= (sourceProducts != null) && sourceProducts.length > 0;
+        isValid &= (sourceProducts != null) && sourceProducts.length > 0 && Arrays.stream(sourceProducts).filter(sp -> sp == null).count() == 0;
 
         return isValid;
     }
@@ -253,7 +288,7 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
     }
 
     private void tearDown(Throwable throwable, Product result) {
-        boolean hasBeenCancelled = operatorTask != null && !operatorTask.hasCompleted;
+        //boolean hasBeenCancelled = operatorTask != null && !operatorTask.hasCompleted;
         if (operatorTask != null) {
             operatorTask.cancel();
         }
