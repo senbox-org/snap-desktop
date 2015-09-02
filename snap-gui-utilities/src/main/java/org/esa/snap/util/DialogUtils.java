@@ -34,9 +34,7 @@ import java.beans.PropertyChangeListener;
 import java.text.NumberFormat;
 
 /**
- * NEST
- * User: lveci
- * Date: Jan 8, 2009
+ * Common functions for working with dialog controls
  */
 public final class DialogUtils {
 

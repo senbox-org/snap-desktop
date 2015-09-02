@@ -18,10 +18,10 @@ package org.esa.snap.framework.ui.io;
 import org.esa.snap.framework.dataio.ProductIOPlugInManager;
 import org.esa.snap.framework.dataio.ProductReaderPlugIn;
 import org.esa.snap.framework.ui.GridBagUtils;
+import org.esa.snap.framework.ui.SnapFileChooser;
 import org.esa.snap.framework.ui.UIUtils;
 import org.esa.snap.framework.ui.tool.ToolButtonFactory;
 import org.esa.snap.util.Guardian;
-import org.esa.snap.util.io.SnapFileChooser;
 import org.esa.snap.util.io.SnapFileFilter;
 
 import javax.swing.JButton;

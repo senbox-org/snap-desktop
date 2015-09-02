@@ -1,9 +1,9 @@
 package org.esa.snap.util;
 
+import org.esa.snap.framework.ui.SnapFileChooser;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.file.SaveProductAsAction;
 import org.esa.snap.util.io.FileUtils;
-import org.esa.snap.util.io.SnapFileChooser;
 import org.esa.snap.util.io.SnapFileFilter;
 
 import javax.swing.JFileChooser;

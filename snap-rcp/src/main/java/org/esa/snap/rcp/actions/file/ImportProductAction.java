@@ -19,10 +19,10 @@ import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.ProductNodeList;
 import org.esa.snap.framework.ui.GridBagUtils;
 import org.esa.snap.framework.ui.NewProductDialog;
+import org.esa.snap.framework.ui.SnapFileChooser;
 import org.esa.snap.framework.ui.product.ProductSubsetDialog;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
-import org.esa.snap.util.io.SnapFileChooser;
 import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle;
 
@@ -37,29 +37,15 @@ import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.Map;
 
 /**
- * Action for importing a product.
+ * Generic configurable action for importing data products.
  *
  * @author Marco Peters
  * @author Norman Fomferra
  */
-// note (mp, nf) - it is not yet decided if we want on generic import action or
-// register an action for each format. We want to discuss this with the SenBox Team.
-//@ActionID(
-//        category = "File",
-//        id = "ImportProductAction"
-//)
-//@ActionRegistration(
-//        displayName = "#CTL_ImportProductActionName",
-//        menuText = "#CTL_ImportProductActionMenuText"
-//)
-//@ActionReference(path = "Menu/File", position = 100, separatorBefore = 99)
 @NbBundle.Messages({
         "CTL_ImportProductActionName=Import Product",
         "CTL_ImportProductActionMenuText=Import Product..."
@@ -67,12 +53,6 @@ import java.util.Map;
 public class ImportProductAction extends AbstractAction implements HelpCtx.Provider {
 
     /**
-     *
-     *
-     *
-     *
-     *
-     *
      * Action factory method used in NetBeans {@code layer.xml} file, e.g.
      *
      * <pre>
@@ -136,7 +116,7 @@ public class ImportProductAction extends AbstractAction implements HelpCtx.Provi
         OpenProductAction openProductAction = new OpenProductAction();
         openProductAction.setFileFormat(getFormatName());
         openProductAction.setUseAllFileFilter(getUseAllFileFilter());
-        openProductAction.actionPerformed(e);
+        openProductAction.execute();
     }
 
     protected class ProductFileChooser extends SnapFileChooser {
@@ -170,18 +150,11 @@ public class ImportProductAction extends AbstractAction implements HelpCtx.Provi
         protected void createUI() {
 
             setDialogType(OPEN_DIALOG);
-            setDialogTitle(SnapApp.getDefault().getInstanceName() + " - " + Bundle.CTL_ImportProductActionName()); /*I18N*/
+            setDialogTitle(SnapApp.getDefault().getInstanceName() + " - " + Bundle.CTL_ImportProductActionName());
 
-            subsetButton = new JButton("Subset...");  /*I18N*/
-            subsetButton.setMnemonic('S'); /*I18N*/
-            subsetButton.addActionListener(new ActionListener() {
-
-                @Override
-                public void actionPerformed(ActionEvent e) {
-
-                    openProductSubsetDialog();
-                }
-            });
+            subsetButton = new JButton("Subset...");
+            subsetButton.setMnemonic('S');
+            subsetButton.addActionListener(e -> openProductSubsetDialog());
             subsetButton.setEnabled(false);
 
 
@@ -191,26 +164,21 @@ public class ImportProductAction extends AbstractAction implements HelpCtx.Provi
             GridBagConstraints gbc = GridBagUtils.createConstraints(
                     "fill=HORIZONTAL,weightx=1,anchor=NORTHWEST,insets.left=7,insets.right=7,insets.bottom=4");
             GridBagUtils.addToPanel(panel, subsetButton, gbc, "gridy=0");
-            //GridBagUtils.addToPanel(panel, _historyButton, gbc, "gridy=1");
             GridBagUtils.addToPanel(panel, sizeLabel, gbc, "gridy=1");
             GridBagUtils.addVerticalFiller(panel, gbc);
 
             setAccessory(panel);
 
-            addPropertyChangeListener(new PropertyChangeListener() {
-
-                @Override
-                public void propertyChange(PropertyChangeEvent e) {
-                    String prop = e.getPropertyName();
-                    if (prop.equals(JFileChooser.SELECTED_FILE_CHANGED_PROPERTY)) {
-                        clearCurrentProduct();
-                        subsetButton.setEnabled(true);
-                    } else if (prop.equals(JFileChooser.DIRECTORY_CHANGED_PROPERTY)) {
-                        clearCurrentProduct();
-                        subsetButton.setEnabled(false);
-                    }
-                    updateState();
+            addPropertyChangeListener(e -> {
+                String prop = e.getPropertyName();
+                if (prop.equals(JFileChooser.SELECTED_FILE_CHANGED_PROPERTY)) {
+                    clearCurrentProduct();
+                    subsetButton.setEnabled(true);
+                } else if (prop.equals(JFileChooser.DIRECTORY_CHANGED_PROPERTY)) {
+                    clearCurrentProduct();
+                    subsetButton.setEnabled(false);
                 }
+                updateState();
             });
 
             ProductFileChooser.this.setPreferredSize(new Dimension(640, 400));
@@ -219,9 +187,9 @@ public class ImportProductAction extends AbstractAction implements HelpCtx.Provi
         }
 
         private void updateState() {
-            setApproveButtonText(Bundle.CTL_ImportProductActionName());/*I18N*/
-            setApproveButtonMnemonic('I');/*I18N*/
-            setApproveButtonToolTipText("Imports the entire product.");/*I18N*/
+            setApproveButtonText(Bundle.CTL_ImportProductActionName());
+            setApproveButtonMnemonic('I');
+            setApproveButtonToolTipText("Imports the entire product.");
             File file = getSelectedFile();
             if (file != null && file.isFile()) {
                 long fileSize = Math.round(file.length() / (1024.0 * 1024.0));

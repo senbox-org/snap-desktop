@@ -36,9 +36,9 @@ public class FeatureCrsDialog extends ModalDialog {
     }
 
     private void createUI() {
-        final ProductCrsForm productCrsForm = new ProductCrsForm(new SnapApp.SnapContext(), product);
-        final CustomCrsForm customCrsForm = new CustomCrsForm(new SnapApp.SnapContext());
-        final PredefinedCrsForm predefinedCrsForm = new PredefinedCrsForm(new SnapApp.SnapContext());
+        final ProductCrsForm productCrsForm = new ProductCrsForm(SnapApp.getDefault().getAppContext(), product);
+        final CustomCrsForm customCrsForm = new CustomCrsForm(SnapApp.getDefault().getAppContext());
+        final PredefinedCrsForm predefinedCrsForm = new PredefinedCrsForm(SnapApp.getDefault().getAppContext());
 
         crsSelectionPanel = new CrsSelectionPanel(productCrsForm, customCrsForm, predefinedCrsForm);
         final TableLayout tableLayout = new TableLayout(1);

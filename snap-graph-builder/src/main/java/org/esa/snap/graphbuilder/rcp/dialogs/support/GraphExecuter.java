@@ -19,6 +19,7 @@ import com.bc.ceres.binding.dom.DomElement;
 import com.bc.ceres.binding.dom.XppDomElement;
 import com.bc.ceres.core.ProgressMonitor;
 import com.thoughtworks.xstream.io.xml.xppdom.XppDom;
+import org.apache.commons.math3.util.FastMath;
 import org.esa.snap.framework.gpf.GPF;
 import org.esa.snap.framework.gpf.OperatorSpi;
 import org.esa.snap.framework.gpf.OperatorSpiRegistry;
@@ -45,10 +46,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Observable;
-import java.util.Set;
+import java.util.*;
 
 public class GraphExecuter extends Observable {
 
@@ -61,7 +59,7 @@ public class GraphExecuter extends Observable {
 
     private final GraphNodeList graphNodeList = new GraphNodeList();
 
-    public enum events {ADD_EVENT, REMOVE_EVENT, SELECT_EVENT}
+    public enum events {ADD_EVENT, REMOVE_EVENT, SELECT_EVENT, CONNECT_EVENT}
 
     public GraphExecuter() {
 
@@ -166,6 +164,24 @@ public class GraphExecuter extends Observable {
     private void removeNode(final GraphNode node) {
         graphNodeList.remove(node);
         graph.removeNode(node.getID());
+    }
+
+    public void autoConnectGraph() {
+        final List<GraphNode> nodes = GetGraphNodes();
+        Collections.sort(nodes, new GraphNodePosComparator());
+
+        for (int i = 0; i < nodes.size() - 1; ++i) {
+            if (!nodes.get(i).HasSources()) {
+                nodes.get(i).connectOperatorSource(nodes.get(i + 1).getID());
+            }
+        }
+        notifyConnection();
+    }
+
+    public void notifyConnection() {
+        setChanged();
+        notifyObservers(new GraphEvent(events.CONNECT_EVENT, graphNodeList.getGraphNodes().get(0)));
+        clearChanged();
     }
 
     public void setOperatorParam(final String id, final String paramName, final String value) {
@@ -444,6 +460,26 @@ public class GraphExecuter extends Observable {
 
         public events getEventType() {
             return eventType;
+        }
+    }
+
+    static class GraphNodePosComparator implements Comparator<GraphNode> {
+
+        public int compare(GraphNode o1, GraphNode o2) {
+            double x1 = o1.getPos().getX();
+            double y1 = o1.getPos().getY();
+            double x2 = o2.getPos().getX();
+            double y2 = o2.getPos().getY();
+
+            double h1 = FastMath.hypot(x1, y1);
+            double h2 = FastMath.hypot(x2, y2);
+
+            if (h1 > h2)
+                return -1;
+            else if (h1 < h2)
+                return +1;
+            else
+                return 0;
         }
     }
 }

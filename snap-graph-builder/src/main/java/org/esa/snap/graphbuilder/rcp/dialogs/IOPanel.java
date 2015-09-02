@@ -34,7 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * NEST IO Panel to handle source and target selection
+ * IO Panel to handle source and target selection
  * User: lveci
  * Date: Feb 5, 2009
  */

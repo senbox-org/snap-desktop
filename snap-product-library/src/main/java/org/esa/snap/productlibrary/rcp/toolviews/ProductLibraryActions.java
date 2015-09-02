@@ -2,16 +2,16 @@ package org.esa.snap.productlibrary.rcp.toolviews;
 
 import org.esa.snap.datamodel.AbstractMetadata;
 import org.esa.snap.db.ProductEntry;
+import org.esa.snap.framework.ui.SnapFileChooser;
 import org.esa.snap.framework.ui.UIUtils;
 import org.esa.snap.graphbuilder.rcp.dialogs.BatchGraphDialog;
+import org.esa.snap.productlibrary.rcp.toolviews.model.SortingDecorator;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
-import org.esa.snap.productlibrary.rcp.toolviews.model.SortingDecorator;
 import org.esa.snap.util.ClipboardUtils;
 import org.esa.snap.util.DialogUtils;
 import org.esa.snap.util.ProductOpener;
 import org.esa.snap.util.ResourceUtils;
-import org.esa.snap.util.io.SnapFileChooser;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -124,7 +124,7 @@ public class ProductLibraryActions {
     }
 
     private static void batchProcess(final ProductEntry[] productEntryList, final File graphFile) {
-        final BatchGraphDialog batchDlg = new BatchGraphDialog(new SnapApp.SnapContext(),
+        final BatchGraphDialog batchDlg = new BatchGraphDialog(SnapApp.getDefault().getAppContext(),
                 "Batch Processing", "batchProcessing", false);
         batchDlg.setInputFiles(productEntryList);
         if (graphFile != null) {

@@ -16,8 +16,6 @@
 
 package org.esa.snap.rcp.statistics;
 
-import com.bc.ceres.core.runtime.Module;
-import com.bc.ceres.core.runtime.internal.ModuleReader;
 import org.esa.snap.framework.dataio.ProductReader;
 import org.esa.snap.framework.dataio.ProductReaderPlugIn;
 import org.esa.snap.framework.datamodel.AbstractBand;
@@ -26,14 +24,11 @@ import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.ProductData;
 import org.esa.snap.framework.datamodel.TiePointGrid;
 import org.esa.snap.util.StringUtils;
-import org.esa.snap.util.SystemUtils;
 import org.openide.windows.TopComponent;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import java.net.URL;
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * @author Thomas Storm
@@ -131,7 +126,7 @@ class InformationPanel extends TablePagePanel {
             showNoInformationAvailableMessage();
             return;
         }
-        if(tableModel.getRowCount() > 0) {
+        if (tableModel.getRowCount() > 0) {
             addEntry("", "", "");
         }
 
@@ -148,16 +143,16 @@ class InformationPanel extends TablePagePanel {
         addEntry("Product reader module:", getProductReaderModule(product), "");
 
         addEntry("Product file location:",
-                product.getFileLocation() != null ? product.getFileLocation().getPath() : "Not yet saved", "");
+                 product.getFileLocation() != null ? product.getFileLocation().getPath() : "Not yet saved", "");
         addEntry("Product scene width:", String.valueOf(product.getSceneRasterWidth()), "pixels");
         addEntry("Product scene height:", String.valueOf(product.getSceneRasterHeight()), "pixels");
 
         final String startTimeString = product.getStartTime() != null ?
-                                       product.getStartTime().getElemString() : "Not available";
+                product.getStartTime().getElemString() : "Not available";
         addEntry("Product start time (UTC):", startTimeString, "");
 
         final String stopTimeString = product.getEndTime() != null ?
-                                      product.getEndTime().getElemString() : "Not available";
+                product.getEndTime().getElemString() : "Not available";
         addEntry("Product end time (UTC):", stopTimeString, "");
 
         ensureTableModel();
@@ -176,7 +171,7 @@ class InformationPanel extends TablePagePanel {
         getTable().getColumnModel().getColumn(index_of_value_and_unit_column).setMaxWidth(widthOfValueAndUnitColumn);
         setColumnRenderer(0, RendererFactory.createRenderer(RendererFactory.ALTERNATING_ROWS));
         setColumnRenderer(1, RendererFactory.createRenderer(RendererFactory.ALTERNATING_ROWS
-                                                                | RendererFactory.TOOLTIP_AWARE));
+                                                                    | RendererFactory.TOOLTIP_AWARE));
     }
 
     private void addEntry(final String label, final String value, final String unit) {
@@ -216,16 +211,8 @@ class InformationPanel extends TablePagePanel {
     private static String getProductReaderModule(final Product product) {
         final ProductReader productReader = product.getProductReader();
         if (productReader != null) {
-            Logger logger = SystemUtils.LOG;
-            ModuleReader moduleReader = new ModuleReader(logger);
-            URL moduleLocation = productReader.getClass().getProtectionDomain().getCodeSource().getLocation();
-            try {
-                Module module = moduleReader.readFromLocation(moduleLocation);
-                return module.getSymbolicName() + "  v " + module.getVersion().toString();
-            } catch (Exception e) {
-                logger.warning("Could not read " + moduleLocation.toString());
-                return "unknown";
-            }
+            // todo: Tonio, please use MANIFEST.MF here to obtain name/version info
+            return "unknown";
         }
         return NO_PRODUCT_READER_MESSAGE;
     }
@@ -295,7 +282,7 @@ class InformationPanel extends TablePagePanel {
                     return tableRow.label;
                 case index_of_value_and_unit_column:
                     return tableRow.value +
-                           (StringUtils.isNotNullAndNotEmpty(tableRow.unit) ? " " + tableRow.unit : "");
+                            (StringUtils.isNotNullAndNotEmpty(tableRow.unit) ? " " + tableRow.unit : "");
             }
 
             throw new IllegalStateException("Invalid index: row=" + rowIndex + "; column=" + columnIndex);
