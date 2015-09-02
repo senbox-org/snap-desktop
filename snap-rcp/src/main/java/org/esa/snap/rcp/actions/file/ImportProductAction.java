@@ -19,10 +19,10 @@ import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.ProductNodeList;
 import org.esa.snap.framework.ui.GridBagUtils;
 import org.esa.snap.framework.ui.NewProductDialog;
+import org.esa.snap.framework.ui.SnapFileChooser;
 import org.esa.snap.framework.ui.product.ProductSubsetDialog;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
-import org.esa.snap.util.io.SnapFileChooser;
 import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle;
 

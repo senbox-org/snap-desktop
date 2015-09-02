@@ -4,10 +4,10 @@ import org.esa.snap.framework.datamodel.GenericPlacemarkDescriptor;
 import org.esa.snap.framework.datamodel.GeoPos;
 import org.esa.snap.framework.datamodel.Placemark;
 import org.esa.snap.framework.ui.AppContext;
+import org.esa.snap.framework.ui.SnapFileChooser;
 import org.esa.snap.pixex.PixExOpUtils;
 import org.esa.snap.util.PropertyMap;
 import org.esa.snap.util.SystemUtils;
-import org.esa.snap.util.io.SnapFileChooser;
 import org.esa.snap.util.io.SnapFileFilter;
 import org.opengis.feature.simple.SimpleFeature;
 
