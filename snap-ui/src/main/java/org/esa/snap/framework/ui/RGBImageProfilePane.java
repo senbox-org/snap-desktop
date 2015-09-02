@@ -24,7 +24,6 @@ import org.esa.snap.framework.ui.tool.ToolButtonFactory;
 import org.esa.snap.util.Debug;
 import org.esa.snap.util.PropertyMap;
 import org.esa.snap.util.io.FileUtils;
-import org.esa.snap.util.io.SnapFileChooser;
 import org.esa.snap.util.io.SnapFileFilter;
 
 import javax.swing.AbstractAction;

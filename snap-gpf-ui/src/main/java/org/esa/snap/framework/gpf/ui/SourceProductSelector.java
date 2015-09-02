@@ -27,9 +27,9 @@ import org.esa.snap.framework.datamodel.ProductFilter;
 import org.esa.snap.framework.datamodel.ProductManager;
 import org.esa.snap.framework.datamodel.ProductNode;
 import org.esa.snap.framework.ui.AppContext;
+import org.esa.snap.framework.ui.SnapFileChooser;
 import org.esa.snap.rcp.actions.file.OpenProductAction;
 import org.esa.snap.util.SystemUtils;
-import org.esa.snap.util.io.SnapFileChooser;
 import org.esa.snap.util.io.SnapFileFilter;
 import org.openide.util.Utilities;
 
