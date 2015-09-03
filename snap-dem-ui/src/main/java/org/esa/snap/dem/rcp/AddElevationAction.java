@@ -169,11 +169,6 @@ public class AddElevationAction extends AbstractAction implements ContextAwareAc
             SnapDialogs.showError(DIALOG_TITLE, "The DEM '" + demName + "' is not supported.");
             return;
         }
-        if (demDescriptor.isInstallingDem()) {
-            SnapDialogs.showError(DIALOG_TITLE,
-                                  "The DEM '" + demName + "' is currently being installed.");
-            return;
-        }
 
         Resampling resampling = Resampling.BILINEAR_INTERPOLATION;
         if (dialogData.resamplingMethod != null) {

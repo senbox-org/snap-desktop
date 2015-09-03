@@ -89,11 +89,6 @@ class ReprojectionDialog extends SingleTargetProductDialog {
                 close();
                 return false;
             }
-            if (demDescriptor.isInstallingDem()) {
-                showErrorDialog("The DEM '" + externalDemName + "' is currently being installed.");
-                close();
-                return false;
-            }
         }
         return true;
     }
