@@ -56,15 +56,19 @@ public final class ReopenProductAction extends AbstractAction implements Present
 
         // Add "open recent product file" actions
         JMenu menu = new JMenu(Bundle.CTL_ReopenProductActionMenuText());
-        for (int i = 0; i < maxFileList && i < pathList.size(); i++) {
-            if (!openedFiles.contains(new File(pathList.get(i)))) {
-                JMenuItem menuItem = new JMenuItem(pathList.get(i));
+
+
+        pathList.stream().limit(maxFileList).forEach(path->{
+            if (!openedFiles.contains(new File(path))) {
+                JMenuItem menuItem = new JMenuItem(path);
                 OpenProductAction openProductAction = new OpenProductAction();
-                openProductAction.setFile(new File(pathList.get(i)));
+                openProductAction.setFile(new File(path));
                 menuItem.addActionListener(openProductAction);
                 menu.add(menuItem);
             }
-        }
+        });
+
+
         // Add "Clear List" action
         if (menu.getComponentCount() > 0 || pathList.size() > 0) {
             menu.addSeparator();
