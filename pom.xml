@@ -23,9 +23,10 @@
             This is necessary to make NetBeans modules updatable and independent from the Maven version (= snap.version).
         -->
         <snap.version>${project.version}</snap.version>
-        <snap.nbmSpecVersion>1.0</snap.nbmSpecVersion>
+        <snap.nbmSpecVersion>2.0.0.6</snap.nbmSpecVersion>
         <netbeans.version>RELEASE802</netbeans.version>
         <doc-windows.version>1.0-SNAPSHOT</doc-windows.version>
+        <user.language>en</user.language>
     </properties>
 
     <modules>
@@ -225,30 +226,21 @@
             <plugin>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>2.10.3</version>
-
                 <configuration>
-                    <excludePackageNames>*.internal:*.impl:org.esa.snap.visat</excludePackageNames>
                     <links>
                         <link>http://java.sun.com/javase/8/docs/api/</link>
                     </links>
-                    <quiet>true</quiet><!-- show only warnings and errors -->
+                    <quiet>true</quiet> <!-- show only warnings and errors -->
                     <aggregate>true</aggregate>
-
-                    <subpackages>
-                        com.bc:org.esa.snap
-                    </subpackages>
-
-                    <maxmemory>256m</maxmemory>
-
-                    <doctitle>
-                        ${project.name} ${snap.version} API
-                    </doctitle>
-
-                    <windowtitle>
-                        ${project.name} ${snap.version} API
-                    </windowtitle>
+                    <additionalparam>org.esa.snap.rcp org.esa.snap.rcp.about org.esa.snap.rcp.actions org.esa.snap.rcp.layermanager org.esa.snap.rcp.nodes org.esa.snap.rcp.preferences org.esa.snap.rcp.tango org.esa.snap.rcp.windows</additionalparam>
+                    <!--<subpackages>-->
+                        <!--org.esa.snap.rcp:org.esa.snap.rcp.about:org.esa.snap.rcp.actions:org.esa.snap.rcp.layermanager:org.esa.snap.rcp.nodes:org.esa.snap.rcp.preferences:org.esa.snap.rcp.windows-->
+                    <!--</subpackages>-->
+                    <!--<excludePackageNames>org.esa.snap.rcp.*:*.internal:*.impl:com.bc.*</excludePackageNames>-->
+                    <maxmemory>512M</maxmemory>
+                    <doctitle>SNAP Desktop 2 API</doctitle>
+                    <windowtitle>SNAP Desktop 2 API</windowtitle>
                 </configuration>
-
             </plugin>
 
             <plugin>

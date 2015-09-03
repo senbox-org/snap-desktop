@@ -21,10 +21,10 @@ import org.esa.snap.framework.dataio.ProductReaderPlugIn;
 import org.esa.snap.framework.dataio.ProductSubsetDef;
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.ui.GridBagUtils;
+import org.esa.snap.framework.ui.SnapFileChooser;
 import org.esa.snap.framework.ui.UIUtils;
 import org.esa.snap.util.Debug;
 import org.esa.snap.util.Guardian;
-import org.esa.snap.util.io.SnapFileChooser;
 import org.esa.snap.util.io.SnapFileFilter;
 
 import javax.swing.JButton;

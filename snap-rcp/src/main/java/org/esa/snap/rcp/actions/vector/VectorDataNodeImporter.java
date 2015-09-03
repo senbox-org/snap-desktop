@@ -25,12 +25,12 @@ import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.ProductNodeGroup;
 import org.esa.snap.framework.datamodel.VectorDataNode;
 import org.esa.snap.framework.ui.ModalDialog;
+import org.esa.snap.framework.ui.SnapFileChooser;
 import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.util.Debug;
 import org.esa.snap.util.SystemUtils;
-import org.esa.snap.util.io.SnapFileChooser;
 import org.esa.snap.util.io.SnapFileFilter;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.openide.util.HelpCtx;
@@ -43,7 +43,7 @@ import java.util.prefs.Preferences;
 
 // todo - test with shapefile that has no CRS (nf, 2012-04-05)
 
-class VectorDataNodeImporter implements HelpCtx.Provider {
+public class VectorDataNodeImporter implements HelpCtx.Provider {
 
     private final String dialogTitle;
     private final String shapeIoDirPreferencesKey;
@@ -51,7 +51,7 @@ class VectorDataNodeImporter implements HelpCtx.Provider {
     private SnapFileFilter filter;
     private final VectorDataNodeReader reader;
 
-    VectorDataNodeImporter(String helpId, SnapFileFilter filter, VectorDataNodeReader reader, String dialogTitle, String shapeIoDirPreferencesKey) {
+    public VectorDataNodeImporter(String helpId, SnapFileFilter filter, VectorDataNodeReader reader, String dialogTitle, String shapeIoDirPreferencesKey) {
         this.helpId = helpId;
         this.filter = filter;
         this.reader = reader;
@@ -59,7 +59,7 @@ class VectorDataNodeImporter implements HelpCtx.Provider {
         this.shapeIoDirPreferencesKey = shapeIoDirPreferencesKey;
     }
 
-    void importGeometry(final SnapApp snapApp) {
+    public void importGeometry(final SnapApp snapApp) {
         final Preferences preferences = snapApp.getPreferences();
         final SnapFileChooser fileChooser = new SnapFileChooser();
         fileChooser.setDialogTitle(dialogTitle);
@@ -151,7 +151,7 @@ class VectorDataNodeImporter implements HelpCtx.Provider {
         }
     }
 
-    static String findUniqueVectorDataNodeName(String suggestedName, ProductNodeGroup<VectorDataNode> vectorDataGroup) {
+    public static String findUniqueVectorDataNodeName(String suggestedName, ProductNodeGroup<VectorDataNode> vectorDataGroup) {
         String name = suggestedName;
         int index = 1;
         while (vectorDataGroup.contains(name)) {
@@ -175,7 +175,7 @@ class VectorDataNodeImporter implements HelpCtx.Provider {
         return new HelpCtx(helpId);
     }
 
-    interface VectorDataNodeReader {
+    public interface VectorDataNodeReader {
 
         VectorDataNode readVectorDataNode(File file, Product product, ProgressMonitor pm) throws IOException;
     }
