@@ -192,10 +192,6 @@ class MosaicDialog extends SingleTargetProductDialog {
                 showErrorDialog("The DEM '" + externalDemName + "' is currently being installed.");
                 return false;
             }
-            if (!demDescriptor.isDemInstalled()) {
-                demDescriptor.installDemFiles(getParent());
-                return false;
-            }
         }
         return true;
     }

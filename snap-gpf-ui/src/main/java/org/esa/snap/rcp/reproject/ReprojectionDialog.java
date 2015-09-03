@@ -94,14 +94,6 @@ class ReprojectionDialog extends SingleTargetProductDialog {
                 close();
                 return false;
             }
-            if (!demDescriptor.isDemInstalled()) {
-                final boolean ok = demDescriptor.installDemFiles(getParent());
-                if (ok) {
-                    // close dialog because DEM will be installed first
-                    close();
-                }
-                return false;
-            }
         }
         return true;
     }

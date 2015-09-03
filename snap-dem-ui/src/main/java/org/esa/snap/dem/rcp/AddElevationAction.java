@@ -174,10 +174,6 @@ public class AddElevationAction extends AbstractAction implements ContextAwareAc
                                   "The DEM '" + demName + "' is currently being installed.");
             return;
         }
-        if (!demDescriptor.isDemInstalled()) {
-            demDescriptor.installDemFiles(SnapApp.getDefault().getMainFrame());
-            return;
-        }
 
         Resampling resampling = Resampling.BILINEAR_INTERPOLATION;
         if (dialogData.resamplingMethod != null) {
