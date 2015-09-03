@@ -7,12 +7,16 @@ package org.esa.snap.rcp.actions.file;
 
 import com.bc.ceres.swing.TableLayout;
 import org.esa.snap.framework.dataio.DecodeQualification;
+import org.esa.snap.framework.dataio.ProductIO;
 import org.esa.snap.framework.dataio.ProductIOPlugInManager;
 import org.esa.snap.framework.dataio.ProductReaderPlugIn;
 import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.framework.ui.GridBagUtils;
 import org.esa.snap.framework.ui.SnapFileChooser;
+import org.esa.snap.framework.ui.product.ProductSubsetDialog;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.util.io.FileUtils;
 import org.esa.snap.util.io.SnapFileFilter;
 import org.netbeans.api.progress.ProgressUtils;
 import org.openide.DialogDisplayer;
@@ -25,6 +29,7 @@ import org.openide.util.NbBundle;
 
 import javax.swing.AbstractAction;
 import javax.swing.DefaultListCellRenderer;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
@@ -33,8 +38,12 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Frame;
+import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -73,6 +82,8 @@ public final class OpenProductAction extends AbstractAction {
     public static final String PREFERENCES_KEY_RECENTLY_OPENED_PRODUCTS = "recently_opened_products";
     public static final String PREFERENCES_KEY_LAST_PRODUCT_DIR = "last_product_open_dir";
     private static final String PREFERENCES_KEY_PREFIX_ALTERNATIVE_READER = "open_alternative_reader.";
+
+    private static int numNewProducts = 0;
 
 
     static RecentPaths getRecentProductPaths() {
@@ -120,8 +131,37 @@ public final class OpenProductAction extends AbstractAction {
 
     public boolean getUseAllFileFilter() {
         // by default the All file filter is used
-        final Object useAllFileFilter = getValue("useAllFileFilter");
-        return useAllFileFilter == null || Boolean.TRUE.equals(useAllFileFilter);
+        return getBooleanProperty("useAllFileFilter", true);
+    }
+
+    public void setSubsetImportEnabled(boolean subsetImportEnabled) {
+        putValue("subsetImportEnabled", subsetImportEnabled);
+        if (subsetImportEnabled) {
+            setMultiSelectionEnabled(false);
+        }
+    }
+
+    public boolean isSubsetImportEnabled() {
+        return getBooleanProperty("subsetImportEnabled", false);
+    }
+
+
+    public void setMultiSelectionEnabled(boolean multiSelectionEnabled) {
+        putValue("multiSelectionEnabled", multiSelectionEnabled);
+    }
+
+    public boolean isMultiSelectionEnabled() {
+        // by default multi selection is enabled
+        return getBooleanProperty("multiSelectionEnabled", true);
+    }
+
+    private boolean getBooleanProperty(String propertyName, Boolean defaultValue) {
+        final Object propValue = getValue(propertyName);
+        if (propValue == null) {
+            return defaultValue;
+        } else {
+            return Boolean.TRUE.equals(propValue);
+        }
     }
 
     @Override
@@ -167,9 +207,9 @@ public final class OpenProductAction extends AbstractAction {
         }
 
         Preferences preferences = SnapApp.getDefault().getPreferences();
-
-        SnapFileChooser fc = new SnapFileChooser(new File(preferences.get(PREFERENCES_KEY_LAST_PRODUCT_DIR, ".")));
-        fc.setDialogTitle(Bundle.CTL_OpenProductActionName());
+        ProductFileChooser fc = new ProductFileChooser(new File(preferences.get(PREFERENCES_KEY_LAST_PRODUCT_DIR, ".")));
+        fc.setSubsetEnabled(isSubsetImportEnabled());
+        fc.setDialogTitle(SnapApp.getDefault().getInstanceName() + " - " + Bundle.CTL_OpenProductActionName());
         fc.setAcceptAllFileFilterUsed(getUseAllFileFilter());
         filters.forEach((filter) -> {
             fc.addChoosableFileFilter(filter);
@@ -178,13 +218,17 @@ public final class OpenProductAction extends AbstractAction {
             }
         });
         fc.setDialogType(JFileChooser.OPEN_DIALOG);
-        fc.setMultiSelectionEnabled(true);
+        fc.setMultiSelectionEnabled(isMultiSelectionEnabled());
         fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
         int returnVal = fc.showOpenDialog(null);
         if (returnVal != JFileChooser.APPROVE_OPTION) {
             // cancelled
             return null;
+        }
+        if (fc.getSubsetProduct() != null) {
+            SnapApp.getDefault().getProductManager().addProduct(fc.getSubsetProduct());
+            return true;
         }
 
         File[] files = fc.getSelectedFiles();
@@ -199,8 +243,8 @@ public final class OpenProductAction extends AbstractAction {
         }
 
         String formatName = (fc.getFileFilter() instanceof SnapFileFilter)
-                ? ((SnapFileFilter) fc.getFileFilter()).getFormatName()
-                : null;
+                            ? ((SnapFileFilter) fc.getFileFilter()).getFormatName()
+                            : null;
 
         return openProductFilesCheckOpened(formatName, files);
     }
@@ -212,9 +256,9 @@ public final class OpenProductAction extends AbstractAction {
             if (openedFiles.contains(file)) {
                 SnapDialogs.Answer answer = SnapDialogs.requestDecision(Bundle.CTL_OpenProductActionName(),
                                                                         MessageFormat.format("Product\n" +
-                                                                                                     "{0}\n" +
-                                                                                                     "is already opened.\n" +
-                                                                                                     "Do you want to open another instance?", file),
+                                                                                             "{0}\n" +
+                                                                                             "is already opened.\n" +
+                                                                                             "Do you want to open another instance?", file),
                                                                         true, null);
                 if (answer == SnapDialogs.Answer.NO) {
                     fileList.remove(file);
@@ -298,8 +342,8 @@ public final class OpenProductAction extends AbstractAction {
 
         final JPanel readerSelectionPanel = new JPanel(layout);
         readerSelectionPanel.add(new JLabel("<html>Multiple readers are available for the selected file.<br>" +
-                                                    "The readers might interpret the data differently.<br>" +
-                                                    "Please select one of the following:"));
+                                            "The readers might interpret the data differently.<br>" +
+                                            "Please select one of the following:"));
         final JComboBox<ProductReaderPlugIn> pluginsCombobox = new JComboBox<>();
         DefaultListCellRenderer cellRenderer = new DefaultListCellRenderer() {
             @Override
@@ -323,7 +367,8 @@ public final class OpenProductAction extends AbstractAction {
 
         NotifyDescriptor d = new NotifyDescriptor(readerSelectionPanel,
                                                   SnapDialogs.getDialogTitle("Multiple Readers Available"),
-                                                  NotifyDescriptor.OK_CANCEL_OPTION, NotifyDescriptor.QUESTION_MESSAGE, null, NotifyDescriptor.OK_OPTION);
+                                                  NotifyDescriptor.OK_CANCEL_OPTION, NotifyDescriptor.QUESTION_MESSAGE, null,
+                                                  NotifyDescriptor.OK_OPTION);
         Object answer = DialogDisplayer.getDefault().notify(d);
         if (NotifyDescriptor.OK_OPTION.equals(answer)) {
             boolean storeResult = decisionCheckBox.isSelected();
@@ -355,6 +400,7 @@ public final class OpenProductAction extends AbstractAction {
     }
 
     private static class PluginEntry implements Comparable<PluginEntry> {
+
         ProductReaderPlugIn plugin;
         DecodeQualification qualification;
 
@@ -374,5 +420,165 @@ public final class OpenProductAction extends AbstractAction {
                 return qualificationComparison;
             }
         }
+    }
+
+    protected class ProductFileChooser extends SnapFileChooser {
+
+        private static final long serialVersionUID = -8122437634943074658L;
+
+        private JButton subsetButton;
+        private Product subsetProduct;
+
+        private JLabel sizeLabel;
+        private boolean useSubset;
+
+        public ProductFileChooser(File currentDirectory) {
+            super(currentDirectory);
+            setDialogType(OPEN_DIALOG);
+        }
+
+        /**
+         * File chooser only returns a product, if a product subset was created.
+         *
+         * @return the product subset or null
+         */
+        public Product getSubsetProduct() {
+            return subsetProduct;
+        }
+
+        public boolean isSubsetEnabled() {
+            return useSubset;
+        }
+
+        public void setSubsetEnabled(boolean useSubset) {
+            this.useSubset = useSubset;
+        }
+
+        @Override
+        public int showDialog(Component parent, String approveButtonText) {
+            if (useSubset) {
+                addSubsetAcessory();
+                validate();
+            }
+            clearCurrentProduct();
+            return super.showDialog(parent, approveButtonText);
+        }
+
+        private void addSubsetAcessory() {
+            subsetButton = new JButton("Subset...");
+            subsetButton.setMnemonic('S');
+            subsetButton.addActionListener(e -> openProductSubsetDialog());
+            subsetButton.setEnabled(false);
+
+
+            sizeLabel = new JLabel("0 M");
+            sizeLabel.setHorizontalAlignment(JLabel.RIGHT);
+            JPanel panel = GridBagUtils.createPanel();
+            GridBagConstraints gbc = GridBagUtils.createConstraints(
+                    "fill=HORIZONTAL,weightx=1,anchor=NORTHWEST,insets.left=7,insets.right=7,insets.bottom=4");
+            GridBagUtils.addToPanel(panel, subsetButton, gbc, "gridy=0");
+            GridBagUtils.addToPanel(panel, sizeLabel, gbc, "gridy=1");
+            GridBagUtils.addVerticalFiller(panel, gbc);
+
+            setAccessory(panel);
+
+            addPropertyChangeListener(e -> {
+                String prop = e.getPropertyName();
+                if (prop.equals(JFileChooser.SELECTED_FILE_CHANGED_PROPERTY)) {
+                    clearCurrentProduct();
+                    subsetButton.setEnabled(true);
+                } else if (prop.equals(JFileChooser.DIRECTORY_CHANGED_PROPERTY)) {
+                    clearCurrentProduct();
+                    subsetButton.setEnabled(false);
+                }
+                updateState();
+            });
+        }
+
+        private void updateState() {
+            setApproveButtonText(Bundle.CTL_ImportProductActionName());
+            setApproveButtonMnemonic('I');
+            setApproveButtonToolTipText("Imports the entire product.");
+            File file = getSelectedFile();
+            if (file != null && file.isFile()) {
+                long fileSize = Math.round(file.length() / (1024.0 * 1024.0));
+                if (fileSize >= 1) {
+                    sizeLabel.setText("File size: " + fileSize + " M");
+                } else {
+                    sizeLabel.setText("File size: < 1 M");
+                }
+            } else {
+                sizeLabel.setText("");
+            }
+        }
+
+        private void clearCurrentProduct() {
+            subsetProduct = null;
+        }
+
+        private void openProductSubsetDialog() {
+
+            File file = getSelectedFile();
+            if (file == null) {
+                // Should not come here...
+                return;
+            }
+
+            Product product = null;
+            try {
+                setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+                product = ProductIO.readProduct(file);
+            } catch (IOException e) {
+                SnapDialogs.showError("The product could not be read:\n" + e.getMessage());
+            } finally {
+                setCursor(Cursor.getDefaultCursor());
+            }
+
+            if (product != null) {
+                boolean approve = openProductSubsetDialog(product);
+                if (approve) {
+                    approveSelection();
+                }
+            }
+
+            updateState();
+        }
+
+        private boolean openProductSubsetDialog(Product product) {
+            subsetProduct = null;
+            boolean approve = false;
+            if (product != null) {
+                Frame mainFrame = SnapApp.getDefault().getMainFrame();
+                ProductSubsetDialog productSubsetDialog = new ProductSubsetDialog(mainFrame, product);
+                if (productSubsetDialog.show() == ProductSubsetDialog.ID_OK) {
+                    try {
+                        final String newProductName = createNewProductName(product.getName(), numNewProducts++);
+                        subsetProduct = product.createSubset(productSubsetDialog.getProductSubsetDef(),
+                                                             newProductName,
+                                                             null);
+                        approve = true;
+                    } catch (IOException e) {
+                        SnapDialogs.showError("Could not create subset:\n" + e.getMessage());
+                    }
+                }
+            }
+            return approve;
+        }
+
+        private String createNewProductName(String sourceProductName, int productIndex) {
+            String newNameBase = "";
+            if (sourceProductName != null && sourceProductName.length() > 0) {
+                newNameBase = FileUtils.exchangeExtension(sourceProductName, "");
+            }
+            String newNamePrefix = "subset";
+            String newProductName;
+            if (newNameBase.length() > 0) {
+                newProductName = newNamePrefix + "_" + productIndex + "_" + newNameBase;
+            } else {
+                newProductName = newNamePrefix + "_" + productIndex;
+            }
+            return newProductName;
+        }
+
     }
 }
