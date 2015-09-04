@@ -24,14 +24,23 @@ import org.esa.snap.framework.gpf.descriptor.ToolAdapterOperatorDescriptor;
 import org.esa.snap.framework.gpf.operators.tooladapter.ToolAdapterIO;
 import org.esa.snap.framework.gpf.operators.tooladapter.ToolAdapterOpSpi;
 import org.esa.snap.rcp.SnapDialogs;
-import org.openide.filesystems.*;
+import org.openide.filesystems.FileObject;
+import org.openide.filesystems.FileUtil;
 import org.openide.modules.OnStart;
+import org.openide.modules.Places;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
+import java.util.jar.Attributes;
+import java.util.jar.JarFile;
+import java.util.jar.Manifest;
+import java.util.stream.Collectors;
 
 /**
  * Helper class for creating menu entries for tool adapter operators.
@@ -129,23 +138,23 @@ public class ToolAdapterActionRegistrar {
     }
 
     public static void removeOperatorMenu(ToolAdapterOperatorDescriptor operator) {
-        if (!operator.isFromPackage()) {
-            FileObject menuFolder = FileUtil.getConfigFile(operator.getMenuLocation());
-            try {
-                if (menuFolder != null) {
-                    String operatorAlias = operator.getAlias();
-                    FileObject newItem = menuFolder.getFileObject(operatorAlias, "instance");
-                    if (newItem != null) {
-                        newItem.delete();
-                    }
-                    if (actionMap.containsKey(operatorAlias)) {
-                        actionMap.remove(operatorAlias);
-                    }
+        //if (!operator.isFromPackage()) {
+        FileObject menuFolder = FileUtil.getConfigFile(operator.getMenuLocation());
+        try {
+            if (menuFolder != null) {
+                String operatorAlias = operator.getAlias();
+                FileObject newItem = menuFolder.getFileObject(operatorAlias, "instance");
+                if (newItem != null) {
+                    newItem.delete();
                 }
-            } catch (IOException e) {
-                SnapDialogs.showError("Error:" + e.getMessage());
+                if (actionMap.containsKey(operatorAlias)) {
+                    actionMap.remove(operatorAlias);
+                }
             }
+        } catch (IOException e) {
+            SnapDialogs.showError("Error:" + e.getMessage());
         }
+        //}
     }
 
     /**
@@ -156,49 +165,55 @@ public class ToolAdapterActionRegistrar {
         @Override
         public void run() {
             OperatorSpiRegistry spiRegistry = GPF.getDefaultInstance().getOperatorSpiRegistry();
+            Path jarPaths = Paths.get(Places.getUserDirectory().getAbsolutePath(), "modules");
+            Map<String, File> jarAdapters = getJarAdapters(jarPaths.toFile());
             if (spiRegistry != null) {
                 Collection<OperatorSpi> operatorSpis = spiRegistry.getOperatorSpis();
                 if (operatorSpis != null) {
                     if (operatorSpis.size() == 0) {
                         operatorSpis.addAll(ToolAdapterIO.searchAndRegisterAdapters());
                     }
+                    final List<OperatorSpi> orphaned = operatorSpis.stream()
+                            .filter(spi -> spi instanceof ToolAdapterOpSpi &&
+                                    ((ToolAdapterOperatorDescriptor) spi.getOperatorDescriptor()).isFromPackage() &&
+                                    !jarAdapters.containsKey(spi.getOperatorDescriptor().getAlias()))
+                            .collect(Collectors.toList());
+                    orphaned.forEach(spi -> {
+                        ToolAdapterOperatorDescriptor operatorDescriptor = (ToolAdapterOperatorDescriptor) spi.getOperatorDescriptor();
+                        operatorSpis.remove(spi);
+                        ToolAdapterActionRegistrar.removeOperatorMenu(operatorDescriptor);
+                        ToolAdapterIO.removeOperator(operatorDescriptor);
+                    });
                     operatorSpis.stream().filter(spi -> spi instanceof ToolAdapterOpSpi).forEach(spi -> {
                         ToolAdapterOperatorDescriptor operatorDescriptor = (ToolAdapterOperatorDescriptor) spi.getOperatorDescriptor();
                         registerOperatorMenu(operatorDescriptor, false);
                     });
                 }
-                FileUtil.addFileChangeListener(new FileChangeListener() {
-                    @Override
-                    public void fileFolderCreated(FileEvent fileEvent) {
-                        Logger.getLogger(ToolAdapterActionRegistrar.class.getName()).info(fileEvent.toString() + " added");
-                    }
-
-                    @Override
-                    public void fileDataCreated(FileEvent fileEvent) {
-
-                    }
-
-                    @Override
-                    public void fileChanged(FileEvent fileEvent) {
-
-                    }
-
-                    @Override
-                    public void fileDeleted(FileEvent fileEvent) {
-                        Logger.getLogger(ToolAdapterActionRegistrar.class.getName()).info(fileEvent.toString() + " deleted");
-                    }
-
-                    @Override
-                    public void fileRenamed(FileRenameEvent fileRenameEvent) {
-
-                    }
-
-                    @Override
-                    public void fileAttributeChanged(FileAttributeEvent fileAttributeEvent) {
-
-                    }
-                });
             }
+        }
+
+        private Map<String, File> getJarAdapters(File fromPath) {
+            Map<String, File> output = new HashMap<>();
+            if (fromPath != null && fromPath.exists()) {
+                String descriptionKeyName = "OpenIDE-Module-Short-Description";
+                Attributes.Name typeKey = new Attributes.Name("OpenIDE-Module-Type");
+                File[] files = fromPath.listFiles((dir, name) -> name.endsWith("jar"));
+                if (files != null) {
+                    try {
+                        for (File file : files) {
+                            JarFile jarFile = new JarFile(file);
+                            Manifest manifest = jarFile.getManifest();
+                            Attributes manifestEntries = manifest.getMainAttributes();
+                            if (manifestEntries.containsKey(typeKey) &&
+                                    "STA".equals(manifestEntries.getValue(typeKey.toString()))) {
+                                output.put(manifestEntries.getValue(descriptionKeyName), file);
+                            }
+                        }
+                    } catch (Exception ignored) {
+                    }
+                }
+            }
+            return output;
         }
     }
 }

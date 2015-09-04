@@ -34,12 +34,13 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 /**
  * Tool Adapter module installer class for NetBeans.
@@ -82,22 +83,28 @@ public class ModuleInstaller extends ModuleInstall {
 
     @Override
     public void uninstalled() {
-        List<ToolAdapterOperatorDescriptor> registeredDescriptors = new ArrayList<>();
-        registeredDescriptors.addAll(ToolAdapterRegistry.INSTANCE.getOperatorMap().values()
-                .stream()
-                .map(e -> (ToolAdapterOperatorDescriptor) e.getOperatorDescriptor())
-                .filter(ToolAdapterOperatorDescriptor::isFromPackage)
-                .collect(Collectors.toList()));
-        Map<String, File> jarAdapters = getJarAdapters(nbUserModulesPath.toFile());
-        // we have a "package" adapter, but no jar was found in NB modules folder
-        registeredDescriptors.stream()
-                .filter(descriptor -> !jarAdapters.containsKey(descriptor.getAlias()))
-                .forEach(descriptor -> {
+        logger.info("Uninstalling module");
+        String jarFile = getCurrentJarPath();
+        if (jarFile != null) {
+            try {
+                logger.info("Jar file: " + jarFile);
+                String alias = ModulePackager.getAdapterAlias(new File(jarFile));
+                logger.info("Alias: " + alias);
+                ToolAdapterOpSpi spi = ToolAdapterRegistry.INSTANCE.getOperatorMap().values()
+                        .stream()
+                        .filter(d -> alias.equals(d.getOperatorAlias()))
+                        .findFirst().get();
+                if (spi != null) {
+                    final ToolAdapterOperatorDescriptor descriptor = (ToolAdapterOperatorDescriptor) spi.getOperatorDescriptor();
                     ToolAdapterActionRegistrar.removeOperatorMenu(descriptor);
                     ToolAdapterIO.removeOperator(descriptor);
-                    logger.info(String.format("%s was removed from adapter user location", descriptor.getAlias()));
-                });
-        super.uninstalled();
+                }
+            } catch (IOException e) {
+                logger.warning(e.getMessage());
+            }
+        } else {
+            logger.info("No jar found");
+        }
     }
 
     private Map<String, File> getJarAdapters(File fromPath) {
