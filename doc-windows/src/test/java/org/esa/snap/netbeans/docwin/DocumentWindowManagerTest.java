@@ -2,12 +2,13 @@ package org.esa.snap.netbeans.docwin;
 
 import org.esa.snap.netbeans.docwin.DocumentWindowManager.Predicate;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import java.io.File;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 /**
  * Manages global opening, closing, and selection of {@link DocumentWindow}s.
@@ -15,6 +16,7 @@ import static org.junit.Assert.assertEquals;
  * @author Norman Fomferra
  * @since 2.0
  */
+@RunWith(HeadlessTestRunner.class)
 public class DocumentWindowManagerTest {
     @Test
     public void testListeners() throws Exception {
