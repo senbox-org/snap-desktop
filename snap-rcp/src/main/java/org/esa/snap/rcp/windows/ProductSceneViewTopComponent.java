@@ -43,7 +43,7 @@ import java.util.logging.Logger;
  *
  * @author Norman Fomferra
  */
-public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNode>
+public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNode, ProductSceneView>
         implements UndoRedo.Provider, SelectionChangeListener {
 
     private static final Logger LOG = Logger.getLogger(ProductSceneViewTopComponent.class.getName());

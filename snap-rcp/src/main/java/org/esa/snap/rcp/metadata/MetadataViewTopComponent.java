@@ -13,7 +13,7 @@ import org.openide.nodes.Node;
 import javax.swing.table.TableColumnModel;
 import java.awt.BorderLayout;
 
-public class MetadataViewTopComponent extends DocumentTopComponent<MetadataElement> implements ExplorerManager.Provider {
+public class MetadataViewTopComponent extends DocumentTopComponent<MetadataElement, OutlineView> implements ExplorerManager.Provider {
 
     private static final String[] COLUMN_NAMES = new String[]{
             "Value", "Value",
@@ -32,19 +32,25 @@ public class MetadataViewTopComponent extends DocumentTopComponent<MetadataEleme
 
     private static final String nodesColumnName = "Name";
     private ExplorerManager em = new ExplorerManager();
+    private OutlineView outlineView;
 
     public MetadataViewTopComponent(MetadataElement element) {
         super(element);
         updateDisplayName();
         setName(getDisplayName());
-        setupView();
+        initView();
         final MetadataTableInnerElement tableInnerElement = new MetadataTableInnerElement(element);
         em.setRootContext(tableInnerElement.createNode());
     }
 
-    private void setupView() {
+    @Override
+    public OutlineView getView() {
+        return outlineView;
+    }
+
+    private void initView() {
         setLayout(new BorderLayout());
-        OutlineView outlineView = new OutlineView(nodesColumnName);
+        outlineView = new OutlineView(nodesColumnName);
         outlineView.setPropertyColumns(COLUMN_NAMES);
         final Outline outline = outlineView.getOutline();
         outline.setRootVisible(false);

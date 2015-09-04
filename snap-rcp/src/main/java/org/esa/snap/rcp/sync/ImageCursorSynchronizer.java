@@ -23,12 +23,12 @@ import org.esa.snap.framework.datamodel.PixelPos;
 import org.esa.snap.framework.ui.PixelPositionListener;
 import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.netbeans.docwin.DocumentWindowManager;
+import org.esa.snap.netbeans.docwin.DocumentWindowManager.Predicate;
 import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.tools.SyncImageCursorsAction;
 import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
 import org.openide.windows.OnShowing;
-import org.openide.windows.TopComponent;
 
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
@@ -125,32 +125,18 @@ public class ImageCursorSynchronizer implements Runnable {
         }
     }
 
-    private class PsvListUpdater implements DocumentWindowManager.Listener {
+    private class PsvListUpdater implements DocumentWindowManager.Listener<Object, ProductSceneView> {
 
         @Override
-        public void windowOpened(DocumentWindowManager.Event e) {
-            TopComponent topComponent = e.getDocumentWindow().getTopComponent();
-            if (topComponent instanceof ProductSceneViewTopComponent) {
-                ProductSceneView view = ((ProductSceneViewTopComponent) topComponent).getView();
-                addPPL(view);
-            }
+        public void windowOpened(DocumentWindowManager.Event<Object, ProductSceneView> e) {
+            ProductSceneView view = e.getDocumentWindow().getView();
+            addPPL(view);
         }
 
         @Override
-        public void windowClosed(DocumentWindowManager.Event e) {
-            TopComponent topComponent = e.getDocumentWindow().getTopComponent();
-            if (topComponent instanceof ProductSceneViewTopComponent) {
-                ProductSceneView view = ((ProductSceneViewTopComponent) topComponent).getView();
-                removePPL(view);
-            }
-        }
-
-        @Override
-        public void windowSelected(DocumentWindowManager.Event e) {
-        }
-
-        @Override
-        public void windowDeselected(DocumentWindowManager.Event e) {
+        public void windowClosed(DocumentWindowManager.Event<Object, ProductSceneView> e) {
+            ProductSceneView view = e.getDocumentWindow().getView();
+            removePPL(view);
         }
     }
 
@@ -196,9 +182,11 @@ public class ImageCursorSynchronizer implements Runnable {
             if (PROPERTY_KEY_AUTO_SYNC_CURSORS.equals(evt.getKey())) {
                 if (isActive()) {
                     initPsvOverlayMap();
-                    DocumentWindowManager.getDefault().addListener(psvOverlayMapUpdater);
+                    DocumentWindowManager.getDefault().addListener(Predicate.viewType(ProductSceneView.class),
+                                                                   psvOverlayMapUpdater);
                 } else {
-                    DocumentWindowManager.getDefault().removeListener(psvOverlayMapUpdater);
+                    DocumentWindowManager.getDefault().removeListener(Predicate.viewType(ProductSceneView.class),
+                                                                      psvOverlayMapUpdater);
                     clearPsvOverlayMap();
                 }
             }

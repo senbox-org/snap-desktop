@@ -2,7 +2,7 @@ package org.esa.snap.netbeans.docwin;
 
 import org.openide.windows.TopComponent;
 
-/**
+/*
  * Represents a document window.
  * <p>
  * This interface is usually implemented by classes derived from {@code TopComponent}. A document window is usually
@@ -17,14 +17,21 @@ import org.openide.windows.TopComponent;
  * implementing the {@code DocumentWindow} interface is activated, it will always also be the
  * {@link #isSelected() selected} one.
  *
+ * @param <D> The document type
+ * @param <V> The view type.
  * @author Norman Fomferra
  * @since 1.0
  */
-public interface DocumentWindow<T> extends NotifiableComponent {
+public interface DocumentWindow<D, V> extends NotifiableComponent {
     /**
      * @return The associated document data or node.
      */
-    T getDocument();
+    D getDocument();
+
+    /**
+     * @return The associated view or node.
+     */
+    V getView();
 
     /**
      * @return The {@code TopComponent} for this window.

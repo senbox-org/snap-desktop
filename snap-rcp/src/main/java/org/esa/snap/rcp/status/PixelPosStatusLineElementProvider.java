@@ -10,10 +10,8 @@ import org.esa.snap.framework.ui.PixelPositionListener;
 import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.netbeans.docwin.DocumentWindowManager;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
 import org.openide.awt.StatusLineElementProvider;
 import org.openide.util.lookup.ServiceProvider;
-import org.openide.windows.TopComponent;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -43,7 +41,7 @@ import static org.esa.snap.rcp.pixelinfo.PixelInfoView.PROPERTY_KEY_SHOW_PIXEL_P
 @ServiceProvider(service = StatusLineElementProvider.class, position = 10)
 public class PixelPosStatusLineElementProvider
         implements StatusLineElementProvider,
-        DocumentWindowManager.Listener,
+        DocumentWindowManager.Listener<Object, ProductSceneView>,
         PixelPositionListener,
         PreferenceChangeListener {
 
@@ -61,7 +59,7 @@ public class PixelPosStatusLineElementProvider
     private boolean showGeoPosOffsetDecimals;
 
     public PixelPosStatusLineElementProvider() {
-        DocumentWindowManager.getDefault().addListener(this);
+        DocumentWindowManager.getDefault().addListener(DocumentWindowManager.Predicate.viewType(ProductSceneView.class), this);
         SnapApp.getDefault().getPreferences().addPreferenceChangeListener(this);
         updateSettings();
 
@@ -179,31 +177,26 @@ public class PixelPosStatusLineElementProvider
         }
     }
 
-
+    /**
+     * Invoked when a document window has been opened.
+     *
+     * @param e The event object.
+     */
     @Override
-    public void windowOpened(DocumentWindowManager.Event e) {
-        TopComponent topComponent = e.getDocumentWindow().getTopComponent();
-        if (topComponent instanceof ProductSceneViewTopComponent) {
-            ProductSceneViewTopComponent component = (ProductSceneViewTopComponent) topComponent;
-            component.getView().addPixelPositionListener(this);
-        }
+    public void windowOpened(DocumentWindowManager.Event<Object, ProductSceneView> e) {
+        ProductSceneView view = e.getDocumentWindow().getView();
+        view.addPixelPositionListener(this);
     }
 
+    /**
+     * Invoked when a document window has been closed.
+     *
+     * @param e The event object.
+     */
     @Override
-    public void windowClosed(DocumentWindowManager.Event e) {
-        TopComponent topComponent = e.getDocumentWindow().getTopComponent();
-        if (topComponent instanceof ProductSceneViewTopComponent) {
-            ProductSceneViewTopComponent component = (ProductSceneViewTopComponent) topComponent;
-            component.getView().removePixelPositionListener(this);
-        }
-    }
-
-    @Override
-    public void windowSelected(DocumentWindowManager.Event e) {
-    }
-
-    @Override
-    public void windowDeselected(DocumentWindowManager.Event e) {
+    public void windowClosed(DocumentWindowManager.Event<Object, ProductSceneView> e) {
+        ProductSceneView view = e.getDocumentWindow().getView();
+        view.removePixelPositionListener(this);
     }
 
     private void updateSettings() {
