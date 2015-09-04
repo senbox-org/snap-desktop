@@ -47,6 +47,7 @@ public class ImageCursorSynchronizer implements Runnable {
 
     public static final String PROPERTY_KEY_AUTO_SYNC_CURSORS = SyncImageCursorsAction.PREFERENCE_KEY;
     private static final GeoPos INVALID_GEO_POS = new GeoPos(Float.NaN, Float.NaN);
+    private static final Predicate<Object, ProductSceneView> SCENE_VIEW_PREDICATE = Predicate.view(ProductSceneView.class);
 
     private Map<ProductSceneView, ImageCursorOverlay> psvOverlayMap;
     private Map<ProductSceneView, MyPixelPositionListener> viewPplMap;
@@ -129,14 +130,12 @@ public class ImageCursorSynchronizer implements Runnable {
 
         @Override
         public void windowOpened(DocumentWindowManager.Event<Object, ProductSceneView> e) {
-            ProductSceneView view = e.getDocumentWindow().getView();
-            addPPL(view);
+            addPPL(e.getWindow().getView());
         }
 
         @Override
         public void windowClosed(DocumentWindowManager.Event<Object, ProductSceneView> e) {
-            ProductSceneView view = e.getDocumentWindow().getView();
-            removePPL(view);
+            removePPL(e.getWindow().getView());
         }
     }
 
@@ -165,7 +164,7 @@ public class ImageCursorSynchronizer implements Runnable {
 
                 return new PixelPos(new Float(imageP.getX()), new Float(imageP.getY()));
             } else {
-                return new PixelPos(pixelX + 0.5f, pixelY + 0.5f);
+                return new PixelPos(pixelX + 0.5, pixelY + 0.5);
             }
         }
 
@@ -182,11 +181,9 @@ public class ImageCursorSynchronizer implements Runnable {
             if (PROPERTY_KEY_AUTO_SYNC_CURSORS.equals(evt.getKey())) {
                 if (isActive()) {
                     initPsvOverlayMap();
-                    DocumentWindowManager.getDefault().addListener(Predicate.viewType(ProductSceneView.class),
-                                                                   psvOverlayMapUpdater);
+                    DocumentWindowManager.getDefault().addListener(SCENE_VIEW_PREDICATE, psvOverlayMapUpdater);
                 } else {
-                    DocumentWindowManager.getDefault().removeListener(Predicate.viewType(ProductSceneView.class),
-                                                                      psvOverlayMapUpdater);
+                    DocumentWindowManager.getDefault().removeListener(SCENE_VIEW_PREDICATE, psvOverlayMapUpdater);
                     clearPsvOverlayMap();
                 }
             }

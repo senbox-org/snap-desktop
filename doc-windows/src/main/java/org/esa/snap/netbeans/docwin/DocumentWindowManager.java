@@ -45,13 +45,6 @@ public class DocumentWindowManager implements WindowContainer<DocumentWindow> {
         return (instance != null) ? instance : getDefaultInstance();
     }
 
-    private static DocumentWindowManager getDefaultInstance() {
-        if (defaultInstance == null) {
-            defaultInstance = new DocumentWindowManager();
-        }
-        return defaultInstance;
-    }
-
     /**
      * Constructor.
      */
@@ -60,20 +53,6 @@ public class DocumentWindowManager implements WindowContainer<DocumentWindow> {
         openDocumentWindows = new LinkedHashSet<>();
         captureCurrentState();
         WindowManager.getDefault().getRegistry().addPropertyChangeListener(new RegistryPropertyChangeDelegate());
-    }
-
-    private void captureCurrentState() {
-        TopComponent.Registry registry = WindowManager.getDefault().getRegistry();
-        Set<TopComponent> topComponents = registry.getOpened();
-        topComponents.stream()
-                .filter(topComponent -> topComponent instanceof DocumentWindow)
-                .forEach(topComponent -> {
-                    DocumentWindow documentWindow = (DocumentWindow) topComponent;
-                    openDocumentWindows.add(documentWindow);
-                    if (registry.getActivated() == topComponent) {
-                        selectedDocumentWindow = documentWindow;
-                    }
-                });
     }
 
     /**
@@ -155,38 +134,6 @@ public class DocumentWindowManager implements WindowContainer<DocumentWindow> {
     }
 
     /**
-     * Gets all registered document window listeners.
-     *
-     * @return The array of listeners which may be empty.
-     */
-    public final Listener[] getListeners() {
-        return listeners.keySet().toArray(new Listener[listeners.size()]);
-    }
-
-    /**
-     * Gets the document window listeners registered for the given window selector.
-     *
-     * @param documentWindow The document window.
-     * @return The array of listeners which may be empty.
-     */
-    public final <D, V> Listener<D, V>[] getListeners(DocumentWindow documentWindow) {
-        ArrayList<Listener<D, V>> listeners = new ArrayList<>();
-        for (Map.Entry<Listener, Set<Predicate>> entry : this.listeners.entrySet()) {
-            Listener listener = entry.getKey();
-            Set<Predicate> predicates = entry.getValue();
-            for (Predicate predicate : predicates) {
-                if (predicate.test(documentWindow)) {
-                    //noinspection unchecked
-                    listeners.add(listener);
-                    break;
-                }
-            }
-        }
-        //noinspection unchecked
-        return listeners.toArray(new Listener[listeners.size()]);
-    }
-
-    /**
      * Adds a document window listener for any document type.
      *
      * @param listener The listener.
@@ -217,8 +164,7 @@ public class DocumentWindowManager implements WindowContainer<DocumentWindow> {
      * @param listener The listener.
      */
     public final void removeListener(Listener listener) {
-        //noinspection unchecked
-        removeListener(Predicate.any(), listener);
+        listeners.remove(listener);
     }
 
     /**
@@ -234,6 +180,47 @@ public class DocumentWindowManager implements WindowContainer<DocumentWindow> {
                 listeners.remove(listener);
             }
         }
+    }
+
+    /**
+     * Gets all registered document window listeners.
+     *
+     * @return The array of listeners which may be empty.
+     */
+    public final Listener[] getListeners() {
+        return listeners.keySet().toArray(new Listener[listeners.size()]);
+    }
+
+    /**
+     * Gets the document window listeners registered for the given window selector.
+     *
+     * @param documentWindow The document window.
+     * @return The array of listeners which may be empty.
+     */
+    final Listener[] getListeners(DocumentWindow documentWindow) {
+        ArrayList<Listener> listeners = new ArrayList<>();
+        for (Map.Entry<Listener, Set<Predicate>> entry : this.listeners.entrySet()) {
+            Listener listener = entry.getKey();
+            Set<Predicate> predicates = entry.getValue();
+            for (Predicate predicate : predicates) {
+                if (isPredicateApplicable(predicate, documentWindow) && predicate.test(documentWindow)) {
+                    listeners.add(listener);
+                    break;
+                }
+            }
+        }
+        return listeners.toArray(new Listener[listeners.size()]);
+    }
+
+    private boolean isPredicateApplicable(Predicate predicate, DocumentWindow documentWindow) {
+        Object document = documentWindow.getDocument();
+        Object view = documentWindow.getView();
+        Class<?> actualDocType = document != null ? document.getClass() : Object.class;
+        Class<?> actualViewType = view != null ? view.getClass() : Object.class;
+        Class<?> requestedDocType = predicate.getDocType();
+        Class<?> requestedViewType = predicate.getViewType();
+        return requestedDocType.isAssignableFrom(actualDocType)
+                && requestedViewType.isAssignableFrom(actualViewType);
     }
 
     void addOpenedWindow(DocumentWindow documentWindow) {
@@ -300,6 +287,26 @@ public class DocumentWindowManager implements WindowContainer<DocumentWindow> {
         }
     }
 
+    private static DocumentWindowManager getDefaultInstance() {
+        if (defaultInstance == null) {
+            defaultInstance = new DocumentWindowManager();
+        }
+        return defaultInstance;
+    }
+
+    private void captureCurrentState() {
+        TopComponent.Registry registry = WindowManager.getDefault().getRegistry();
+        Set<TopComponent> topComponents = registry.getOpened();
+        topComponents.stream()
+                .filter(topComponent -> topComponent instanceof DocumentWindow)
+                .forEach(topComponent -> {
+                    DocumentWindow documentWindow = (DocumentWindow) topComponent;
+                    openDocumentWindows.add(documentWindow);
+                    if (registry.getActivated() == topComponent) {
+                        selectedDocumentWindow = documentWindow;
+                    }
+                });
+    }
 
     /**
      * A predicate is used to select document windows.
@@ -308,31 +315,123 @@ public class DocumentWindowManager implements WindowContainer<DocumentWindow> {
      * @param <V> The view type.
      */
     public interface Predicate<D, V> {
+
+        /**
+         * @return the requested document type.
+         */
+        Class<D> getDocType();
+
+        /**
+         * @return the requested view type.
+         */
+        Class<V> getViewType();
+
+        /**
+         * Tests if this predicate applies to the given document window.
+         * <p>
+         * The method will only be called if it has already been ensured that the {@link #getDocType() requested document type}
+         * is assignable from the type of the
+         * window's {@link DocumentWindow#getDocument document}
+         * and that the {@link #getViewType() requested view type} is assignable from the type of the window's
+         * {@link DocumentWindow#getView view}.
+         *
+         * @param window The document window
+         * @return {@code true} if this predicate applies to the given document window.
+         */
         boolean test(DocumentWindow window);
 
+        /**
+         * @return A predicate that applies to any document window.
+         */
         static Predicate<Object, Object> any() {
-            return TypePredicate.ANY;
+            return DefaultPredicate.ANY;
         }
 
-        static <D> Predicate<D, Object> docType(Class<D> docType) {
-            return new TypePredicate<>(docType, Object.class);
+        /**
+         * @return A predicate that applies to document windows with the given {@code docType}.
+         */
+        static <D> Predicate<D, Object> doc(Class<D> docType) {
+            return new DefaultPredicate<>(docType, Object.class);
         }
 
-        static <V> Predicate<Object, V> viewType(Class<V> viewType) {
-            return new TypePredicate<>(Object.class, viewType);
+        /**
+         * @return A predicate that applies to document windows with the given {@code viewType}.
+         */
+        static <V> Predicate<Object, V> view(Class<V> viewType) {
+            return new DefaultPredicate<>(Object.class, viewType);
         }
 
-        static <D, V> Predicate<D, V> docViewType(Class<D> docType, Class<V> viewType) {
-            return new TypePredicate<>(docType, viewType);
+        /**
+         * @return A predicate that applies to document windows with the given {@code docType} and {@code viewType}.
+         */
+        static <D, V> Predicate<D, V> docView(Class<D> docType, Class<V> viewType) {
+            return new DefaultPredicate<>(docType, viewType);
         }
     }
 
+    /**
+     * Default {@link Predicate} implementation.
+     *
+     * @param <D> The document type.
+     * @param <V> The view type.
+     */
+    public static class DefaultPredicate<D, V> implements Predicate<D, V> {
+
+        private static final Predicate<Object, Object> ANY = new DefaultPredicate<>(Object.class, Object.class);
+
+        private final Class<D> docType;
+        private final Class<V> viewType;
+
+        public DefaultPredicate(Class<D> docType, Class<V> viewType) {
+            this.docType = docType;
+            this.viewType = viewType;
+        }
+
+        @Override
+        public Class<D> getDocType() {
+            return docType;
+        }
+
+        @Override
+        public Class<V> getViewType() {
+            return viewType;
+        }
+
+        /**
+         * Always returns {@code true}. Override if you want a more detailed test.
+         *
+         * @param window The document window
+         * @return Always {@code true}.
+         */
+        @Override
+        public boolean test(DocumentWindow window) {
+            return true;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            DefaultPredicate<?, ?> that = (DefaultPredicate<?, ?>) o;
+            return getDocType().equals(that.getDocType()) && getViewType().equals(that.getViewType());
+        }
+
+        @Override
+        public int hashCode() {
+            int result = getDocType().hashCode();
+            result = 31 * result + getViewType().hashCode();
+            return result;
+        }
+    }
 
     /**
      * An {@code Event} that adds support for
      * {@code DocumentWindow} objects as the event source.
      */
     public static final class Event<D, V> extends EventObject {
+        /**
+         * The type of event.
+         */
         public enum Type {
             WINDOW_OPENED,
             WINDOW_CLOSED,
@@ -343,17 +442,23 @@ public class DocumentWindowManager implements WindowContainer<DocumentWindow> {
         private final DocumentWindow<D, V> documentWindow;
         private final Type type;
 
-        public Event(Type type, DocumentWindow<D, V> documentWindow) {
+        Event(Type type, DocumentWindow<D, V> documentWindow) {
             super(documentWindow);
             this.type = type;
             this.documentWindow = documentWindow;
         }
 
+        /**
+         * @return The type of event.
+         */
         public Type getType() {
             return type;
         }
 
-        public DocumentWindow<D, V> getDocumentWindow() {
+        /**
+         * @return The document window.
+         */
+        public DocumentWindow<D, V> getWindow() {
             return documentWindow;
         }
 
@@ -376,15 +481,11 @@ public class DocumentWindowManager implements WindowContainer<DocumentWindow> {
         default void windowOpened(Event<D, V> e) {
         }
 
-        ;
-
         /**
          * Invoked when a document window has been closed.
          */
         default void windowClosed(Event<D, V> e) {
         }
-
-        ;
 
         /**
          * Invoked when a document window has been selected.
@@ -392,15 +493,11 @@ public class DocumentWindowManager implements WindowContainer<DocumentWindow> {
         default void windowSelected(Event<D, V> e) {
         }
 
-        ;
-
         /**
          * Invoked when a document window has been de-selected.
          */
         default void windowDeselected(Event<D, V> e) {
         }
-
-        ;
     }
 
     /**
@@ -437,41 +534,6 @@ public class DocumentWindowManager implements WindowContainer<DocumentWindow> {
                     removeOpenedWindow((DocumentWindow) newValue);
                 }
             }
-        }
-    }
-
-    private static final class TypePredicate<D, V> implements Predicate<D, V> {
-        private static final Predicate<Object, Object> ANY = new TypePredicate<>(Object.class, Object.class);
-
-        private final Class<D> docType;
-        private final Class<V> viewType;
-
-        public TypePredicate(Class<D> docType, Class<V> viewType) {
-            this.docType = docType;
-            this.viewType = viewType;
-        }
-
-        @Override
-        public boolean test(DocumentWindow documentWindow) {
-            Object document = documentWindow.getDocument();
-            Object view = documentWindow.getView();
-            return docType.isAssignableFrom(document != null ? document.getClass() : Object.class)
-                    && viewType.isAssignableFrom(view != null ? view.getClass() : Object.class);
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            TypePredicate<?, ?> that = (TypePredicate<?, ?>) o;
-            return docType.equals(that.docType) && viewType.equals(that.viewType);
-        }
-
-        @Override
-        public int hashCode() {
-            int result = docType.hashCode();
-            result = 31 * result + viewType.hashCode();
-            return result;
         }
     }
 }

@@ -29,7 +29,7 @@ public interface DocumentWindow<D, V> extends NotifiableComponent {
     D getDocument();
 
     /**
-     * @return The associated view or node.
+     * @return The associated view.
      */
     V getView();
 

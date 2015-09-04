@@ -59,7 +59,7 @@ public class PixelPosStatusLineElementProvider
     private boolean showGeoPosOffsetDecimals;
 
     public PixelPosStatusLineElementProvider() {
-        DocumentWindowManager.getDefault().addListener(DocumentWindowManager.Predicate.viewType(ProductSceneView.class), this);
+        DocumentWindowManager.getDefault().addListener(DocumentWindowManager.Predicate.view(ProductSceneView.class), this);
         SnapApp.getDefault().getPreferences().addPreferenceChangeListener(this);
         updateSettings();
 
@@ -184,7 +184,7 @@ public class PixelPosStatusLineElementProvider
      */
     @Override
     public void windowOpened(DocumentWindowManager.Event<Object, ProductSceneView> e) {
-        ProductSceneView view = e.getDocumentWindow().getView();
+        ProductSceneView view = e.getWindow().getView();
         view.addPixelPositionListener(this);
     }
 
@@ -195,7 +195,7 @@ public class PixelPosStatusLineElementProvider
      */
     @Override
     public void windowClosed(DocumentWindowManager.Event<Object, ProductSceneView> e) {
-        ProductSceneView view = e.getDocumentWindow().getView();
+        ProductSceneView view = e.getWindow().getView();
         view.removePixelPositionListener(this);
     }
 
