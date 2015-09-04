@@ -288,6 +288,12 @@ public class SnapApp {
     }
 
     /**
+     * Return the currently selected product.
+     * <p>
+     * In case a {@link ProductSceneView} is opened then the associated {@link Product}, otherwise the selected {@link Product}
+     * provided by the {@link Utilities#actionsGlobalContext() global context} is returned. If there is no selected product {@code null}
+     * is returned.
+     *
      * @return The currently selected product or {@code null}.
      */
     public Product getSelectedProduct() {
