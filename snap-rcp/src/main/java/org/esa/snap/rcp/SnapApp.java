@@ -13,6 +13,7 @@ import org.esa.snap.framework.gpf.OperatorSpi;
 import org.esa.snap.framework.gpf.OperatorSpiRegistry;
 import org.esa.snap.framework.ui.AppContext;
 import org.esa.snap.framework.ui.product.ProductSceneView;
+import org.esa.snap.netbeans.docwin.DocumentWindowManager;
 import org.esa.snap.rcp.actions.file.OpenProductAction;
 import org.esa.snap.rcp.actions.file.SaveProductAction;
 import org.esa.snap.rcp.cli.SnapArgs;
@@ -149,6 +150,19 @@ public class SnapApp {
     }
 
     /**
+     * Gets SNAP's global document window manager. Use it to open your own document windows, or register a listener to
+     * be notified on window events such as opening, closing, selection, deselection.
+     *
+     * @return SNAP's global document window manager.
+     */
+    public DocumentWindowManager getDocumentWindowManager() {
+        return DocumentWindowManager.getDefault();
+    }
+
+    /**
+     * Gets SNAP's global data product manager. Use it to add your own data product instances, or register a listener to
+     * be notified on product addition and removal events.
+     *
      * @return SNAP's global product manager.
      */
     public ProductManager getProductManager() {
