@@ -20,6 +20,7 @@ public class DefaultSelectionSupport<T> implements SelectionSupport<T> {
     private final LinkedList<Handler<T>> handlerList;
     private final LookupListener lookupListener;
     private Collection<? extends T> currentlySelectedItems;
+    private LookupListener theWeakListener;
 
     public DefaultSelectionSupport(Class<T> type) {
         this.type = type;
@@ -31,8 +32,9 @@ public class DefaultSelectionSupport<T> implements SelectionSupport<T> {
 
     @Override
     public void addHandler(Handler<T> handler) {
-        if (handlerList.isEmpty()) { // first listener added --> add LookupListener
-            itemResult.addLookupListener(WeakListeners.create(LookupListener.class, lookupListener, itemResult));
+        if (handlerList.isEmpty() && theWeakListener == null) { // first listener added --> add LookupListener
+            theWeakListener = WeakListeners.create(LookupListener.class, lookupListener, itemResult);
+            itemResult.addLookupListener(theWeakListener);
         }
         handlerList.add(handler);
     }
@@ -41,7 +43,8 @@ public class DefaultSelectionSupport<T> implements SelectionSupport<T> {
     public void removeHandler(Handler<T> handler) {
         handlerList.remove(handler);
         if (handlerList.isEmpty()) { // last listener removed --> remove LookupListener
-            itemResult.removeLookupListener(WeakListeners.create(LookupListener.class, lookupListener, itemResult));
+            itemResult.removeLookupListener(theWeakListener);
+            theWeakListener = null;
         }
     }
 

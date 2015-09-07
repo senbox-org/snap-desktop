@@ -11,7 +11,7 @@ import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
 import org.openide.windows.TopComponent;
 
-import javax.swing.*;
+import javax.swing.Action;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.logging.Logger;
@@ -33,16 +33,22 @@ import java.util.logging.Logger;
  * Overrides may use the {@link #getDynamicContent() content} to alter the objects in the exposed lookup,
  * however, the document object will always remain in it.
  *
+ * @param <D> The document type.
+ * @param <V> The view type.
  * @author Norman Fomferra
  * @since 1.0
  */
-public class DocumentTopComponent<T> extends TopComponent implements DocumentWindow, NotifiableComponent {
+public abstract class DocumentTopComponent<D, V> extends TopComponent
+        implements DocumentWindow<D, V>, NotifiableComponent {
     private static final Logger LOG = Logger.getLogger(DocumentTopComponent.class.getName());
 
-    private final T document;
+    private final D document;
     private final InstanceContent dynamicContent;
 
-    public DocumentTopComponent(T document) {
+    public DocumentTopComponent(D document) {
+        if (document == null) {
+            throw new NullPointerException("document");
+        }
         this.document = document;
         this.dynamicContent = new InstanceContent();
         associateLookup(new ProxyLookup(Lookups.fixed(document), new AbstractLookup(dynamicContent)));
@@ -53,7 +59,7 @@ public class DocumentTopComponent<T> extends TopComponent implements DocumentWin
     }
 
     @Override
-    public final T getDocument() {
+    public final D getDocument() {
         return document;
     }
 

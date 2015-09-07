@@ -23,12 +23,12 @@ import org.esa.snap.framework.datamodel.PixelPos;
 import org.esa.snap.framework.ui.PixelPositionListener;
 import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.netbeans.docwin.DocumentWindowManager;
+import org.esa.snap.netbeans.docwin.DocumentWindowManager.Predicate;
 import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.tools.SyncImageCursorsAction;
 import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
 import org.openide.windows.OnShowing;
-import org.openide.windows.TopComponent;
 
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
@@ -47,6 +47,7 @@ public class ImageCursorSynchronizer implements Runnable {
 
     public static final String PROPERTY_KEY_AUTO_SYNC_CURSORS = SyncImageCursorsAction.PREFERENCE_KEY;
     private static final GeoPos INVALID_GEO_POS = new GeoPos(Float.NaN, Float.NaN);
+    private static final Predicate<Object, ProductSceneView> SCENE_VIEW_PREDICATE = Predicate.view(ProductSceneView.class);
 
     private Map<ProductSceneView, ImageCursorOverlay> psvOverlayMap;
     private Map<ProductSceneView, MyPixelPositionListener> viewPplMap;
@@ -125,32 +126,16 @@ public class ImageCursorSynchronizer implements Runnable {
         }
     }
 
-    private class PsvListUpdater implements DocumentWindowManager.Listener {
+    private class PsvListUpdater implements DocumentWindowManager.Listener<Object, ProductSceneView> {
 
         @Override
-        public void windowOpened(DocumentWindowManager.Event e) {
-            TopComponent topComponent = e.getDocumentWindow().getTopComponent();
-            if (topComponent instanceof ProductSceneViewTopComponent) {
-                ProductSceneView view = ((ProductSceneViewTopComponent) topComponent).getView();
-                addPPL(view);
-            }
+        public void windowOpened(DocumentWindowManager.Event<Object, ProductSceneView> e) {
+            addPPL(e.getWindow().getView());
         }
 
         @Override
-        public void windowClosed(DocumentWindowManager.Event e) {
-            TopComponent topComponent = e.getDocumentWindow().getTopComponent();
-            if (topComponent instanceof ProductSceneViewTopComponent) {
-                ProductSceneView view = ((ProductSceneViewTopComponent) topComponent).getView();
-                removePPL(view);
-            }
-        }
-
-        @Override
-        public void windowSelected(DocumentWindowManager.Event e) {
-        }
-
-        @Override
-        public void windowDeselected(DocumentWindowManager.Event e) {
+        public void windowClosed(DocumentWindowManager.Event<Object, ProductSceneView> e) {
+            removePPL(e.getWindow().getView());
         }
     }
 
@@ -179,7 +164,7 @@ public class ImageCursorSynchronizer implements Runnable {
 
                 return new PixelPos(new Float(imageP.getX()), new Float(imageP.getY()));
             } else {
-                return new PixelPos(pixelX + 0.5f, pixelY + 0.5f);
+                return new PixelPos(pixelX + 0.5, pixelY + 0.5);
             }
         }
 
@@ -196,9 +181,9 @@ public class ImageCursorSynchronizer implements Runnable {
             if (PROPERTY_KEY_AUTO_SYNC_CURSORS.equals(evt.getKey())) {
                 if (isActive()) {
                     initPsvOverlayMap();
-                    DocumentWindowManager.getDefault().addListener(psvOverlayMapUpdater);
+                    DocumentWindowManager.getDefault().addListener(SCENE_VIEW_PREDICATE, psvOverlayMapUpdater);
                 } else {
-                    DocumentWindowManager.getDefault().removeListener(psvOverlayMapUpdater);
+                    DocumentWindowManager.getDefault().removeListener(SCENE_VIEW_PREDICATE, psvOverlayMapUpdater);
                     clearPsvOverlayMap();
                 }
             }

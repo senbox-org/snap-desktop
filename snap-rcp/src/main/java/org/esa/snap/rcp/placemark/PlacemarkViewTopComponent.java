@@ -8,15 +8,22 @@ import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
 
 import java.awt.BorderLayout;
 
-public class PlacemarkViewTopComponent extends DocumentTopComponent<VectorDataNode> {
+public class PlacemarkViewTopComponent extends DocumentTopComponent<VectorDataNode, ProductPlacemarkView> {
+
+    private final ProductPlacemarkView placemarkView;
 
     public PlacemarkViewTopComponent(VectorDataNode document) {
         super(document);
         updateDisplayName();
         setName(getDisplayName());
-        ProductPlacemarkView placemarkView = new ProductPlacemarkView(document);
+        placemarkView = new ProductPlacemarkView(document);
         setLayout(new BorderLayout());
         add(placemarkView, BorderLayout.CENTER);
+    }
+
+    @Override
+    public ProductPlacemarkView getView() {
+        return placemarkView;
     }
 
     private void updateDisplayName() {
