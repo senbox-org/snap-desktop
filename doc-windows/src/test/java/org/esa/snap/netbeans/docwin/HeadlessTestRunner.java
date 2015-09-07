@@ -28,7 +28,7 @@ import java.awt.GraphicsEnvironment;
  * @author Thomas Storm
  * @author Marco Peters
  */
-class HeadlessTestRunner extends BlockJUnit4ClassRunner {
+public class HeadlessTestRunner extends BlockJUnit4ClassRunner {
 
     public HeadlessTestRunner(Class<?> klass) throws InitializationError {
         super(klass);
