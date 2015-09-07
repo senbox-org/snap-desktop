@@ -95,11 +95,12 @@ public class ImportProductAction extends AbstractAction implements HelpCtx.Provi
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        OpenProductAction openProductAction = new OpenProductAction();
-        openProductAction.setFileFormat(getFormatName());
-        openProductAction.setUseAllFileFilter(getUseAllFileFilter());
-        openProductAction.setSubsetImportEnabled(true);
-        openProductAction.execute();
+        final ProductOpener opener = new ProductOpener();
+        opener.setFileFormat(getFormatName());
+        opener.setUseAllFileFilter(getUseAllFileFilter());
+        opener.setMultiSelectionEnabled(false);
+        opener.setSubsetImportEnabled(true);
+        opener.openProduct();
     }
 
 }
