@@ -458,4 +458,8 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
     public void setProductEntryList(final ProductEntry[] productEntryList) {
         productSetTable.setProductEntries(productEntryList);
     }
+
+    public boolean isSkippingExistingTargetFiles() {
+        return targetProductSelector.isSkippingExistingTargetFiles();
+    }
 }
