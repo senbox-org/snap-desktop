@@ -126,7 +126,6 @@ public class VectorDataLayer extends Layer {
                 final FigureStyle selectedStyle = getFigureFactory().deriveSelectedStyle(normalStyle);
                 featureFigure.setNormalStyle(normalStyle);
                 featureFigure.setSelectedStyle(selectedStyle);
-//                featureFigure.setGeometry((Geometry) simpleFeature.getDefaultGeometry());
             } else {
                 featureFigure = getFigureFactory().createSimpleFeatureFigure(simpleFeature, sceneRasterTransform, vectorDataNode.getDefaultStyleCss());
                 figureCollection.addFigure(featureFigure);
@@ -216,7 +215,6 @@ public class VectorDataLayer extends Layer {
                 try {
                     final VectorDataNode vectorDataNode = getVectorDataNode();
                     final SimpleFeature simpleFeature = featureFigure.getSimpleFeature();
-//                    simpleFeature.setDefaultGeometry(featureFigure.getGeometryInProductCoordinates());
                     Debug.trace("VectorDataLayer$FigureChangeHandler: vectorDataNode=" + vectorDataNode.getName() +
                                         ", featureType=" + simpleFeature.getFeatureType().getTypeName());
                     reactingAgainstFigureChange = true;
