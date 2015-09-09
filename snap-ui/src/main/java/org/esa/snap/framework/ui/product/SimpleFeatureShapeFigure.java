@@ -19,23 +19,16 @@ package org.esa.snap.framework.ui.product;
 import com.bc.ceres.swing.figure.AbstractShapeFigure;
 import com.bc.ceres.swing.figure.FigureStyle;
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Lineal;
-import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geom.Polygonal;
 import com.vividsolutions.jts.geom.Puntal;
-import org.esa.snap.framework.datamodel.SceneRasterTransform;
-import org.esa.snap.framework.datamodel.SceneRasterTransformException;
 import org.esa.snap.util.AwtGeomToJtsGeomConverter;
 import org.esa.snap.util.Debug;
-import org.esa.snap.util.SceneRasterTransformUtils;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.geometry.jts.LiteShape2;
 import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.operation.TransformException;
 
 import java.awt.Shape;
 
@@ -48,22 +41,17 @@ public class SimpleFeatureShapeFigure extends AbstractShapeFigure implements Sim
 
     private SimpleFeature simpleFeature;
     private Shape geometryShape;
-    private Geometry geometry;
     private final Class<?> geometryType;
-    private SceneRasterTransform sceneRasterTransform;
 
-    public SimpleFeatureShapeFigure(SimpleFeature simpleFeature, SceneRasterTransform sceneRasterTransform, FigureStyle style) {
-        this(simpleFeature, sceneRasterTransform, style, style);
+    public SimpleFeatureShapeFigure(SimpleFeature simpleFeature, FigureStyle style) {
+        this(simpleFeature, style, style);
     }
 
-    public SimpleFeatureShapeFigure(SimpleFeature simpleFeature, SceneRasterTransform sceneRasterTransform,
-                                    FigureStyle normalStyle, FigureStyle selectedStyle) {
+    public SimpleFeatureShapeFigure(SimpleFeature simpleFeature, FigureStyle normalStyle, FigureStyle selectedStyle) {
         super(getRank(simpleFeature), normalStyle, selectedStyle);
         this.simpleFeature = simpleFeature;
-        this.sceneRasterTransform = sceneRasterTransform;
         this.geometryType = simpleFeature.getDefaultGeometry().getClass();
         this.geometryShape = null;
-        this.geometry = null;
     }
 
     @Override
@@ -73,18 +61,9 @@ public class SimpleFeatureShapeFigure extends AbstractShapeFigure implements Sim
 
     @Override
     public void setMemento(Object memento) {
-        try {
-            final LiteShape2 shapeInRasterCoords = new LiteShape2((Geometry) memento, null, null, true);
-            setShape(shapeInRasterCoords);
-            final Geometry productGeometry =
-                    getGeometryFromShape(SceneRasterTransformUtils.transformShapeToProductCoordinates(
-                            shapeInRasterCoords, sceneRasterTransform));
-            simpleFeature.setDefaultGeometry(productGeometry);
-            forceRegeneration();
-            fireFigureChanged();
-        } catch (TransformException | FactoryException | SceneRasterTransformException e) {
-            e.printStackTrace();
-        }
+        simpleFeature.setDefaultGeometry(memento);
+        forceRegeneration();
+        fireFigureChanged();
     }
 
     @Override
@@ -94,10 +73,7 @@ public class SimpleFeatureShapeFigure extends AbstractShapeFigure implements Sim
 
     @Override
     public Geometry getGeometry() {
-        if (geometry == null) {
-            geometry = getGeometryFromShape(getShape());
-        }
-        return geometry;
+        return (Geometry) simpleFeature.getDefaultGeometry();
     }
 
     @Override
@@ -106,14 +82,15 @@ public class SimpleFeatureShapeFigure extends AbstractShapeFigure implements Sim
             Debug.trace("WARNING: Assigning a geometry of type " + geometry.getClass() + ", should actually be a " + geometryType);
         }
         simpleFeature.setDefaultGeometry(geometry);
+        forceRegeneration();
+        fireFigureChanged();
     }
 
     @Override
     public Shape getShape() {
         try {
             if (geometryShape == null) {
-                final LiteShape2 shapeInProductCoords = new LiteShape2((Geometry) simpleFeature.getDefaultGeometry(), null, null, true);
-                geometryShape = SceneRasterTransformUtils.transformShapeToRasterCoordinates(shapeInProductCoords, sceneRasterTransform);
+                geometryShape = new LiteShape2(getGeometry(), null, null, true);
             }
             return geometryShape;
         } catch (Exception e) {
@@ -124,22 +101,10 @@ public class SimpleFeatureShapeFigure extends AbstractShapeFigure implements Sim
     @Override
     public void forceRegeneration() {
         geometryShape = null;
-        geometry = null;
     }
 
     @Override
     public void setShape(Shape shape) {
-        geometryShape = shape;
-        try {
-            simpleFeature.setDefaultGeometry(getGeometryFromShape(
-                    SceneRasterTransformUtils.transformShapeToProductCoordinates(shape, sceneRasterTransform)));
-            fireFigureChanged();
-        } catch (SceneRasterTransformException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private Geometry getGeometryFromShape(Shape shape) {
         AwtGeomToJtsGeomConverter converter = new AwtGeomToJtsGeomConverter();
         Geometry geometry;
         // May need to handle more cases here in the future!  (nf)
@@ -147,14 +112,10 @@ public class SimpleFeatureShapeFigure extends AbstractShapeFigure implements Sim
             geometry = converter.createPolygon(shape);
         } else if (MultiPolygon.class.isAssignableFrom(geometryType)) {
             geometry = converter.createMultiPolygon(shape);
-        } else if (LinearRing.class.isAssignableFrom(geometryType)) {
-            geometry = converter.createLinearRingList(shape).get(0);
-        } else if (LineString.class.isAssignableFrom(geometryType)) {
-            geometry = converter.createLineStringList(shape).get(0);
         } else {
             geometry = converter.createMultiLineString(shape);
         }
-        return geometry;
+        setGeometry(geometry);
     }
 
     @Override
@@ -164,7 +125,7 @@ public class SimpleFeatureShapeFigure extends AbstractShapeFigure implements Sim
         builder.init(simpleFeature);
         clone.simpleFeature = builder.buildFeature(null);
         clone.simpleFeature.setDefaultGeometry(getGeometry().clone());
-        clone.geometryShape = getShape();
+        clone.geometryShape = null;
         return clone;
     }
 

@@ -23,7 +23,6 @@ import com.bc.ceres.swing.figure.FigureFactory;
 import com.bc.ceres.swing.figure.support.DefaultFigureStyle;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
-import org.esa.snap.framework.datamodel.SceneRasterTransform;
 import org.esa.snap.framework.ui.product.SimpleFeatureFigure;
 import org.esa.snap.framework.ui.product.SimpleFeatureFigureFactory;
 import org.esa.snap.framework.ui.product.SimpleFeaturePointFigure;
@@ -97,9 +96,9 @@ public class FeatureFigureEditorApp extends FigureEditorApp {
             DefaultFigureStyle figureStyle = createDefaultFigureStyle();
             Object o = simpleFeature.getDefaultGeometry();
             if (o instanceof Point) {
-                figureCollection.addFigure(new SimpleFeaturePointFigure(simpleFeature, SceneRasterTransform.IDENTITY, figureStyle));
+                figureCollection.addFigure(new SimpleFeaturePointFigure(simpleFeature, figureStyle));
             } else {
-                figureCollection.addFigure(new SimpleFeatureShapeFigure(simpleFeature, SceneRasterTransform.IDENTITY, figureStyle));
+                figureCollection.addFigure(new SimpleFeatureShapeFigure(simpleFeature, figureStyle));
             }
         }
     }
