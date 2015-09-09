@@ -78,7 +78,7 @@ public class WWWorldMapToolView extends WWBaseToolView implements WWView {
     private final static boolean flatWorld = !useflatWorld.equals("false");
 
     public WWWorldMapToolView() {
-        setDisplayName("World Map");
+        setDisplayName(Bundle.CTL_WorldWindTopComponentName());
         initComponents();
         SnapApp.getDefault().getSelectionSupport(ProductSceneView.class).addHandler((oldValue, newValue) -> setCurrentView(newValue));
     }
