@@ -98,8 +98,7 @@ public class SimpleFeatureFigureFactory implements FigureFactory {
         return new SimpleFeaturePointFigure(createSimpleFeature(geometry), style);
     }
 
-    public SimpleFeatureFigure createSimpleFeatureFigure(SimpleFeature simpleFeature,
-                                                         SceneRasterTransform sceneRasterTransform, String defaultStyleCss) {
+    public SimpleFeatureFigure createSimpleFeatureFigure(SimpleFeature simpleFeature, String defaultStyleCss) {
         final String css = getStyleCss(simpleFeature, defaultStyleCss);
         final FigureStyle normalStyle = DefaultFigureStyle.createFromCss(css);
         final FigureStyle selectedStyle = deriveSelectedStyle(normalStyle);
