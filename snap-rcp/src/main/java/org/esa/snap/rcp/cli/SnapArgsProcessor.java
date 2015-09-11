@@ -81,16 +81,12 @@ public class SnapArgsProcessor implements ArgsProcessor {
 
         Path pythonExecutable = null;
         Path pythonModuleInstallDir = null;
-        Boolean forcePythonConfig = true;
 
         if (args.length >= 1) {
             pythonExecutable = Paths.get(args[0]);
         }
         if (args.length >= 2) {
             pythonModuleInstallDir = Paths.get(args[1]);
-        }
-        if (args.length >= 3) {
-            forcePythonConfig = "true".equalsIgnoreCase(args[2]);
         }
 
         if (pythonExecutable == null) {
@@ -104,7 +100,7 @@ public class SnapArgsProcessor implements ArgsProcessor {
         try {
             System.out.flush();
             System.out.println("Configuring SNAP-Python interface...");
-            Path snappyDir = PyBridge.installPythonModule(pythonExecutable, pythonModuleInstallDir, forcePythonConfig);
+            Path snappyDir = PyBridge.installPythonModule(pythonExecutable, pythonModuleInstallDir, true);
             System.out.flush();
             System.out.printf("Done. The SNAP-Python interface is located in '%s'%n", snappyDir);
             System.out.printf("When using SNAP from Python, either do: sys.path.append('%s')%n", snappyDir.getParent().toString().replace("\\", "\\\\"));
