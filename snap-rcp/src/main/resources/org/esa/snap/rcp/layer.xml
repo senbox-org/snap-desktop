@@ -217,20 +217,28 @@
     <folder name="Services">
         <folder name="AutoupdateType">
             <file name="snap_engine_update_center.instance">
-                <attr name="displayName" stringvalue="SNAP Engine Update Center"/>
+                <attr name="displayName" stringvalue="SNAP"/>
                 <attr name="enabled" boolvalue="true"/>
                 <attr name="instanceCreate"
                       methodvalue="org.netbeans.modules.autoupdate.updateprovider.AutoupdateCatalogFactory.createUpdateProvider"/>
                 <attr name="instanceOf" stringvalue="org.netbeans.spi.autoupdate.UpdateProvider"/>
-                <attr name="url" urlvalue="http://step.esa.int/updatecenter/2.0/snap-engine/updates.xml.gz"/>
+                <attr name="url" urlvalue="http://step.esa.int/updatecenter/snap/2.0/updates.xml.gz"/>
             </file>
             <file name="snap_desktop_update_center.instance">
-                <attr name="displayName" stringvalue="SNAP Desktop Update Center"/>
+                <attr name="displayName" stringvalue="SNAP Extensions"/>
                 <attr name="enabled" boolvalue="true"/>
                 <attr name="instanceCreate"
                       methodvalue="org.netbeans.modules.autoupdate.updateprovider.AutoupdateCatalogFactory.createUpdateProvider"/>
                 <attr name="instanceOf" stringvalue="org.netbeans.spi.autoupdate.UpdateProvider"/>
-                <attr name="url" urlvalue="http://step.esa.int/updatecenter/2.0/snap-desktop/updates.xml.gz"/>
+                <attr name="url" urlvalue="http://step.esa.int/updatecenter/snap-extensions/2.0/updates.xml.gz"/>
+            </file>
+            <file name="snap_desktop_update_center.instance">
+                <attr name="displayName" stringvalue="SNAP Community Extensions"/>
+                <attr name="enabled" boolvalue="true"/>
+                <attr name="instanceCreate"
+                      methodvalue="org.netbeans.modules.autoupdate.updateprovider.AutoupdateCatalogFactory.createUpdateProvider"/>
+                <attr name="instanceOf" stringvalue="org.netbeans.spi.autoupdate.UpdateProvider"/>
+                <attr name="url" urlvalue="http://step.esa.int/updatecenter/snap-community/2.0/updates.xml.gz"/>
             </file>
         </folder>
     </folder>
