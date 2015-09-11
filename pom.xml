@@ -23,7 +23,7 @@
             This is necessary to make NetBeans modules updatable and independent from the Maven version (= snap.version).
         -->
         <snap.version>${project.version}</snap.version>
-        <snap.nbmSpecVersion>2.0.0.6</snap.nbmSpecVersion>
+        <snap.nbmSpecVersion>2.0.0.7</snap.nbmSpecVersion>
         <netbeans.version>RELEASE802</netbeans.version>
         <doc-windows.version>1.0-SNAPSHOT</doc-windows.version>
         <user.language>en</user.language>
