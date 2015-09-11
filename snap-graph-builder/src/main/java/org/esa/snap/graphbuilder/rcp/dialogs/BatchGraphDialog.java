@@ -80,6 +80,7 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog {
     private Map<File, File[]> slaveFileMap = null;
     private final List<BatchProcessListener> listenerList = new ArrayList<>(1);
     private final boolean closeOnDone;
+    private boolean skipExistingTargetFiles = false;
 
     private boolean isProcessing = false;
     protected File graphFile;
@@ -164,6 +165,8 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog {
         if (isProcessing) return;
 
         productSetPanel.onApply();
+
+        skipExistingTargetFiles = productSetPanel.isSkippingExistingTargetFiles();
 
         try {
             DoProcessing();
@@ -575,10 +578,16 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog {
                 timeMonitor.start();
                 isProcessing = true;
 
+                final File[] existingFiles = productSetPanel.getTargetFolder().listFiles();
+
                 final File[] fileList = productSetPanel.getFileList();
                 int graphIndex = 0;
                 for (GraphExecuter graphEx : graphExecutorList) {
                     if (pm.isCanceled()) break;
+
+                    if(shouldSkip(graphEx, existingFiles)) {
+                        continue;
+                    }
 
                     try {
                         final String nOfm = String.valueOf(graphIndex + 1) + " of " + graphExecutorList.size() + ' ';
@@ -655,6 +664,30 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog {
                 close();
         }
 
+        private boolean shouldSkip(final GraphExecuter graphEx, final File[] existingFiles) {
+            if(skipExistingTargetFiles) {
+                final File[] targetFiles = graphEx.getPotentialOutputFiles();
+
+                if(existingFiles != null) {
+                    boolean allTargetsExist = true;
+                    for (File targetFile : targetFiles) {
+                        boolean fileExists = false;
+                        for(File existingFile : existingFiles) {
+                            if(existingFile.getAbsolutePath().startsWith(targetFile.getAbsolutePath())) {
+                                fileExists = true;
+                                break;
+                            }
+                        }
+                        if (!fileExists) {
+                            allTargetsExist = false;
+                            break;
+                        }
+                    }
+                    return allTargetsExist;
+                }
+            }
+            return false;
+        }
     }
 
     public interface BatchProcessListener {

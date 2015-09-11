@@ -18,17 +18,15 @@ package org.esa.snap.graphbuilder.rcp.dialogs.support;
 import com.bc.ceres.swing.TableLayout;
 import org.esa.snap.framework.gpf.ui.TargetProductSelector;
 
-import javax.swing.BorderFactory;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.Insets;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * Target folder selector
  */
 public class TargetFolderSelector extends TargetProductSelector {
+
+    private JCheckBox skipExistingCBox = new JCheckBox("Skip existing target files");
 
     public JPanel createPanel() {
 
@@ -41,6 +39,9 @@ public class TargetFolderSelector extends TargetProductSelector {
         subPanel3.add(getProductDirTextField(), BorderLayout.CENTER);
         subPanel3.add(getProductDirChooserButton(), BorderLayout.EAST);
 
+        final JPanel subPanel4 = new JPanel(new FlowLayout(FlowLayout.LEADING, 0, 0));
+        subPanel4.add(skipExistingCBox);
+
         final TableLayout tableLayout = new TableLayout(1);
         tableLayout.setTableAnchor(TableLayout.Anchor.WEST);
         tableLayout.setTableFill(TableLayout.Fill.HORIZONTAL);
@@ -48,15 +49,21 @@ public class TargetFolderSelector extends TargetProductSelector {
 
         tableLayout.setCellPadding(0, 0, new Insets(3, 3, 3, 3));
         tableLayout.setCellPadding(1, 0, new Insets(3, 3, 3, 3));
-        tableLayout.setCellPadding(2, 0, new Insets(0, 24, 3, 3));
-        tableLayout.setCellPadding(3, 0, new Insets(3, 3, 3, 3));
+        tableLayout.setCellPadding(2, 0, new Insets(3, 3, 3, 3));
+        tableLayout.setCellPadding(3, 0, new Insets(0, 24, 3, 3));
+        tableLayout.setCellPadding(4, 0, new Insets(3, 3, 3, 3));
 
         final JPanel panel = new JPanel(tableLayout);
         panel.setBorder(BorderFactory.createTitledBorder("Target Folder"));
         panel.add(subPanel2);
         panel.add(subPanel3);
+        panel.add(subPanel4);
         panel.add(getOpenInAppCheckBox());
 
         return panel;
+    }
+
+    public boolean isSkippingExistingTargetFiles() {
+        return skipExistingCBox.isSelected();
     }
 }
