@@ -3,13 +3,17 @@ package org.esa.snap.rcp.actions.layer.overlay;
 import com.bc.ceres.glayer.Layer;
 import com.bc.ceres.glayer.support.AbstractLayerListener;
 import org.esa.snap.framework.ui.product.ProductSceneView;
+import org.esa.snap.netbeans.docwin.DocumentWindowManager;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.SelectionSupport;
 import org.netbeans.api.annotations.common.NullAllowed;
 import org.openide.util.actions.Presenter;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.AbstractAction;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JMenuItem;
+import javax.swing.JToggleButton;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 
 /**
@@ -20,7 +24,7 @@ import java.awt.event.ActionEvent;
  * @author Norman Fomferra
  */
 public abstract class AbstractOverlayAction extends AbstractAction
-        implements Presenter.Toolbar, Presenter.Menu, Presenter.Popup, SelectionSupport.Handler<ProductSceneView> {
+        implements Presenter.Toolbar, Presenter.Menu, Presenter.Popup, SelectionSupport.Handler<ProductSceneView>{
 
     private final AbstractLayerListener layerListener = new AbstractLayerListener() {
         @Override
@@ -53,6 +57,7 @@ public abstract class AbstractOverlayAction extends AbstractAction
     }
 
 
+
     @Override
     public void selectionChange(@NullAllowed ProductSceneView oldValue, @NullAllowed ProductSceneView newValue) {
         if (oldValue != null) {
@@ -61,6 +66,7 @@ public abstract class AbstractOverlayAction extends AbstractAction
         if (newValue != null) {
             newValue.getRootLayer().addListener(layerListener);
         }
+        updateActionState();
     }
 
 
@@ -95,8 +101,8 @@ public abstract class AbstractOverlayAction extends AbstractAction
     /**
      * Compute the state of a ProductSceneView that is selected.
      *
-     * @param view  // get the selected productSceneView
-     * @return      // return the state of the Overlay within the ProductSceneView
+     * @param view // get the selected productSceneView
+     * @return // return the state of the Overlay within the ProductSceneView
      */
     protected abstract boolean getActionSelectionState(ProductSceneView view);
 
