@@ -118,7 +118,7 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
     private ProductSceneView currentView;
     private final SelectionChangeListener selectionChangeHandler;
     private final List<List<Placemark>> relatedPlacemarks;
-    private final boolean snapToExactGeolocation;
+    private final boolean snapToComputedGeolocation;
 
     public PlacemarkManagerTopComponent(PlacemarkDescriptor placemarkDescriptor, TableModelFactory modelFactory) {
         this.placemarkDescriptor = placemarkDescriptor;
@@ -129,7 +129,7 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
         placemarkTableModel = modelFactory.createTableModel(placemarkDescriptor, product, null, null);
         selectionChangeHandler = new ViewSelectionChangeHandler();
         relatedPlacemarks = new ArrayList<>();
-        snapToExactGeolocation = Config.instance().preferences().getBoolean(SYSPROP_SNAP_TO_COMPUTED_GEOLOCATION, true);
+        snapToComputedGeolocation = Config.instance().preferences().getBoolean(SYSPROP_SNAP_TO_COMPUTED_GEOLOCATION, true);
         initUI();
         setDisplayName(getTitle());
     }
@@ -547,7 +547,7 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
 
             // from here on we only handle GCPs and valid Pins
 
-            if (canGetPixelPos && snapToExactGeolocation) {
+            if (canGetPixelPos && snapToComputedGeolocation) {
                 placemarkDescriptor.updatePixelPos(geoCoding, placemark.getGeoPos(), pixelPos);
             }
 
@@ -555,7 +555,7 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
                 numPinsOutOfBounds++;
             } else {
                 getPlacemarkGroup(targetProduct).add(placemark);
-                if (snapToExactGeolocation) {
+                if (snapToComputedGeolocation) {
                     placemark.setPixelPos(pixelPos);
                 } else {
                     placemark.setGeoPos(placemark.getGeoPos());
