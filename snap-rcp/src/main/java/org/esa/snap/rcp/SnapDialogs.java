@@ -56,6 +56,15 @@ public class SnapDialogs {
      * Displays a modal dialog with the provided information message text.
      *
      * @param message        The message text to be displayed.
+     */
+    public static void showInformation(String message) {
+        showInformation(message, null);
+    }
+
+    /**
+     * Displays a modal dialog with the provided information message text.
+     *
+     * @param message        The message text to be displayed.
      * @param preferencesKey If not {@code null}, a checkbox is displayed, and if checked the dialog will not be displayed again which lets users store the answer
      */
     public static void showInformation(String message, String preferencesKey) {
