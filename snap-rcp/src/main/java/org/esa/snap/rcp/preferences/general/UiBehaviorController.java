@@ -21,7 +21,6 @@ import com.bc.ceres.binding.PropertySet;
 import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.PropertyEditorRegistry;
-import org.esa.snap.framework.datamodel.Mask;
 import org.esa.snap.rcp.pixelinfo.PixelInfoView;
 import org.esa.snap.rcp.preferences.DefaultConfigController;
 import org.esa.snap.rcp.preferences.Preference;
@@ -32,7 +31,8 @@ import org.openide.util.HelpCtx;
 import javax.swing.Box;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Insets;
 
 /**
  * Preferences tab for handling the UI behavior preferences. Sub-level panel to the "Miscellaneous"-panel.
@@ -46,7 +46,7 @@ import java.awt.*;
         id = "UiBehavior",
         position = 1)
 @org.openide.util.NbBundle.Messages({
-        "AdvancedOption_DisplayName_UiBehavior=UI Behavior",
+        "AdvancedOption_DisplayName_UiBehavior=UI Behaviour",
         "AdvancedOption_Keywords_UiBehavior=UI, behavior"
 })
 public final class UiBehaviorController extends DefaultConfigController {
