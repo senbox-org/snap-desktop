@@ -37,6 +37,7 @@ import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.util.SelectionSupport;
 import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
+import org.esa.snap.runtime.Config;
 import org.esa.snap.util.Guardian;
 import org.esa.snap.util.StringUtils;
 import org.esa.snap.util.SystemUtils;
@@ -97,6 +98,7 @@ import java.util.prefs.Preferences;
 public class PlacemarkManagerTopComponent extends TopComponent implements UndoRedo.Provider, HelpCtx.Provider {
 
     public static final String PROPERTY_KEY_IO_DIR = "pin.io.dir";
+    private static final String sysprop_snap_to_exact_geolocation = "snap.pin.adjust.geolocation";
 
     private final PlacemarkDescriptor placemarkDescriptor;
     private final Preferences preferences;
@@ -116,6 +118,7 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
     private ProductSceneView currentView;
     private final SelectionChangeListener selectionChangeHandler;
     private final List<List<Placemark>> relatedPlacemarks;
+    private final boolean snapToExactGeolocation;
 
     public PlacemarkManagerTopComponent(PlacemarkDescriptor placemarkDescriptor, TableModelFactory modelFactory) {
         this.placemarkDescriptor = placemarkDescriptor;
@@ -126,6 +129,7 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
         placemarkTableModel = modelFactory.createTableModel(placemarkDescriptor, product, null, null);
         selectionChangeHandler = new ViewSelectionChangeHandler();
         relatedPlacemarks = new ArrayList<>();
+        snapToExactGeolocation = Config.instance("snap-engine").preferences().getBoolean(sysprop_snap_to_exact_geolocation, true);
         initUI();
         setDisplayName(getTitle());
     }
@@ -184,9 +188,9 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
             Band[] allBands = product.getBands();
             TiePointGrid[] allGrids = product.getTiePointGrids();
             BandChooser bandChooser = new BandChooser(SwingUtilities.getWindowAncestor(this),
-                    "Available Bands And Tie Point Grids",
-                    getHelpId(), false,
-                    allBands, selectedBands, allGrids, selectedGrids, true);
+                                                      "Available Bands And Tie Point Grids",
+                                                      getHelpId(), false,
+                                                      allBands, selectedBands, allGrids, selectedGrids, true);
             if (bandChooser.show() == ModalDialog.ID_OK) {
                 selectedBands = bandChooser.getSelectedBands();
                 selectedGrids = bandChooser.getSelectedTiePointGrids();
@@ -325,10 +329,10 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
         Guardian.assertNotNull("product", product);
         String[] uniquePinNameAndLabel = PlacemarkNameFactory.createUniqueNameAndLabel(placemarkDescriptor, product);
         Placemark newPlacemark = Placemark.createPointPlacemark(placemarkDescriptor, uniquePinNameAndLabel[0],
-                uniquePinNameAndLabel[1],
-                "",
-                new PixelPos(0, 0), null,
-                product.getGeoCoding());
+                                                                uniquePinNameAndLabel[1],
+                                                                "",
+                                                                new PixelPos(0, 0), null,
+                                                                product.getGeoCoding());
         if (PlacemarkDialog.showEditPlacemarkDialog(
                 SwingUtilities.getWindowAncestor(this), product, newPlacemark, placemarkDescriptor)) {
             makePlacemarkNameUnique(newPlacemark);
@@ -345,12 +349,12 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
         Placemark activePlacemark = getSelectedPlacemark();
         Guardian.assertNotNull("activePlacemark", activePlacemark);
         Placemark newPlacemark = Placemark.createPointPlacemark(activePlacemark.getDescriptor(),
-                "copy_of_" + activePlacemark.getName(),
-                activePlacemark.getLabel(),
-                activePlacemark.getDescription(),
-                activePlacemark.getPixelPos(),
-                activePlacemark.getGeoPos(),
-                activePlacemark.getProduct().getGeoCoding());
+                                                                "copy_of_" + activePlacemark.getName(),
+                                                                activePlacemark.getLabel(),
+                                                                activePlacemark.getDescription(),
+                                                                activePlacemark.getPixelPos(),
+                                                                activePlacemark.getGeoPos(),
+                                                                activePlacemark.getProduct().getGeoCoding());
         newPlacemark.setStyleCss(activePlacemark.getStyleCss());
         if (PlacemarkDialog.showEditPlacemarkDialog(
                 SwingUtilities.getWindowAncestor(this), product, newPlacemark, placemarkDescriptor)) {
@@ -371,15 +375,15 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
         Guardian.assertNotNull("product", product);
         Placemark activePlacemark = getSelectedPlacemark();
         Placemark originalPlacemark = Placemark.createPointPlacemark(activePlacemark.getDescriptor(),
-                activePlacemark.getName(),
-                activePlacemark.getLabel(),
-                activePlacemark.getDescription(),
-                activePlacemark.getPixelPos(),
-                activePlacemark.getGeoPos(),
-                activePlacemark.getProduct().getGeoCoding());
+                                                                     activePlacemark.getName(),
+                                                                     activePlacemark.getLabel(),
+                                                                     activePlacemark.getDescription(),
+                                                                     activePlacemark.getPixelPos(),
+                                                                     activePlacemark.getGeoPos(),
+                                                                     activePlacemark.getProduct().getGeoCoding());
         Guardian.assertNotNull("activePlacemark", activePlacemark);
         if (PlacemarkDialog.showEditPlacemarkDialog(SwingUtilities.getWindowAncestor(this), product, activePlacemark,
-                placemarkDescriptor)) {
+                                                    placemarkDescriptor)) {
             makePlacemarkNameUnique(activePlacemark);
             UndoRedo.Manager undoManager = SnapApp.getDefault().getUndoManager(product);
             if (undoManager != null) {
@@ -455,10 +459,10 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
     private void makePlacemarkNameUnique(Placemark newPlacemark) {
         if (makePlacemarkNameUnique0(newPlacemark, product)) {
             SnapDialogs.showWarning(MessageFormat.format("{0} has been renamed to ''{1}'',\n" +
-                            "because a {2} with the former name already exists.",
-                    StringUtils.firstLetterUp(placemarkDescriptor.getRoleLabel()),
-                    newPlacemark.getName(),
-                    placemarkDescriptor.getRoleLabel()));
+                                                                 "because a {2} with the former name already exists.",
+                                                         StringUtils.firstLetterUp(placemarkDescriptor.getRoleLabel()),
+                                                         newPlacemark.getName(),
+                                                         placemarkDescriptor.getRoleLabel()));
         }
     }
 
@@ -489,7 +493,7 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
                                     placemarkTable.getSelectionModel().addSelectionInterval(sortedRowAt, sortedRowAt);
                                 } else {
                                     placemarkTable.getSelectionModel().removeSelectionInterval(sortedRowAt,
-                                            sortedRowAt);
+                                                                                               sortedRowAt);
                                 }
                             }
                         }
@@ -510,7 +514,7 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
         } catch (IOException e) {
             e.printStackTrace();
             SnapDialogs.showError(MessageFormat.format("I/O error, failed to import {0}s:\n{1}",  /*I18N*/
-                    placemarkDescriptor.getRoleLabel(), e.getMessage()));
+                                                       placemarkDescriptor.getRoleLabel(), e.getMessage()));
             return;
         }
         if (placemarks.isEmpty()) {
@@ -543,11 +547,19 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
 
             // from here on we only handle GCPs and valid Pins
 
+            if (canGetPixelPos && snapToExactGeolocation) {
+                placemarkDescriptor.updatePixelPos(geoCoding, placemark.getGeoPos(), pixelPos);
+            }
+
             if (!productContainsPixelPos && isPin) {
                 numPinsOutOfBounds++;
             } else {
                 getPlacemarkGroup(targetProduct).add(placemark);
-                placemark.setGeoPos(placemark.getGeoPos());
+                if (snapToExactGeolocation) {
+                    placemark.setPixelPos(pixelPos);
+                } else {
+                    placemark.setGeoPos(placemark.getGeoPos());
+                }
             }
 
             if (!allPlacemarks) {
@@ -738,7 +750,7 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
                         if (notAlreadyAsked) {
                             notAlreadyAsked = false;
                             SnapDialogs.Answer decision = SnapDialogs.requestDecision("Transfer placemarks",
-                                    "Do you want to update existing placemarks?", false, null);
+                                                                                      "Do you want to update existing placemarks?", false, null);
                             updateExistingPins = decision == SnapDialogs.Answer.YES;
                         }
                         if (updateExistingPins) {
@@ -768,12 +780,12 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
 
     private Placemark createTransferrablePlacemark(Placemark placemark, Product product) {
         Placemark newPlacemark = Placemark.createPointPlacemark(placemark.getDescriptor(),
-                placemark.getName(),
-                placemark.getLabel(),
-                placemark.getDescription(),
-                placemark.getPixelPos(),
-                placemark.getGeoPos(),
-                product.getGeoCoding());
+                                                                placemark.getName(),
+                                                                placemark.getLabel(),
+                                                                placemark.getDescription(),
+                                                                placemark.getPixelPos(),
+                                                                placemark.getGeoPos(),
+                                                                product.getGeoCoding());
         newPlacemark.setStyleCss(placemark.getStyleCss());
         return newPlacemark;
     }
@@ -846,7 +858,7 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
     void exportPlacemarkDataTable() {
         final SnapFileChooser fileChooser = new SnapFileChooser();
         fileChooser.setDialogTitle(MessageFormat.format("Export {0} Data Table",  /*I18N*/
-                StringUtils.firstLetterUp(placemarkDescriptor.getRoleLabel())));
+                                                        StringUtils.firstLetterUp(placemarkDescriptor.getRoleLabel())));
         setComponentName(fileChooser, "Export_Data_Table");
         fileChooser.setFileFilter(PlacemarkIO.createTextFileFilter());
         final File ioDir = getIODir();
@@ -899,12 +911,12 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
         }
 
         PlacemarkIO.writePlacemarksWithAdditionalData(writer,
-                placemarkDescriptor.getRoleLabel(),
-                product.getName(),
-                placemarkList,
-                valueList,
-                standardColumnNames,
-                additionalColumnNames);
+                                                      placemarkDescriptor.getRoleLabel(),
+                                                      product.getName(),
+                                                      placemarkList,
+                                                      valueList,
+                                                      standardColumnNames,
+                                                      additionalColumnNames);
     }
 
     private void setIODir(File dir) {
@@ -1186,7 +1198,7 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
                                                        boolean hasFocus,
                                                        int row, int column) {
             final JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row,
-                    column);
+                                                                              column);
             label.setHorizontalAlignment(JLabel.RIGHT);
             return label;
 

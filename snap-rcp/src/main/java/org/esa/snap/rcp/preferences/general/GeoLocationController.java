@@ -25,6 +25,7 @@ import org.esa.snap.framework.ui.GridBagUtils;
 import org.esa.snap.rcp.pixelinfo.PixelInfoView;
 import org.esa.snap.rcp.preferences.DefaultConfigController;
 import org.esa.snap.rcp.preferences.Preference;
+import org.esa.snap.rcp.preferences.PreferenceUtils;
 import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle;
@@ -34,13 +35,9 @@ import javax.swing.JPanel;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 
-import static com.bc.ceres.swing.TableLayout.*;
-import static org.esa.snap.rcp.pixelinfo.PixelInfoView.PROPERTY_DEFAULT_SHOW_GEO_POS_DECIMALS;
-import static org.esa.snap.rcp.pixelinfo.PixelInfoView.PROPERTY_DEFAULT_SHOW_PIXEL_POS_DECIMALS;
-import static org.esa.snap.rcp.pixelinfo.PixelInfoView.PROPERTY_DEFAULT_SHOW_PIXEL_POS_OFFSET_1;
-import static org.esa.snap.rcp.pixelinfo.PixelInfoView.PROPERTY_KEY_SHOW_PIXEL_POS_OFFSET_ONE;
-import static org.esa.snap.rcp.pixelinfo.PixelInfoView.PROPERTY_KEY_SHOW_GEO_POS_DECIMALS;
-import static org.esa.snap.rcp.pixelinfo.PixelInfoView.PROPERTY_KEY_SHOW_PIXEL_POS_DECIMALS;
+import static com.bc.ceres.swing.TableLayout.Anchor;
+import static com.bc.ceres.swing.TableLayout.Fill;
+import static org.esa.snap.rcp.pixelinfo.PixelInfoView.*;
 
 /**
  * The preferences panel handling geo-location details. Sub-level panel to the "Miscellaneous"-panel.
@@ -48,16 +45,20 @@ import static org.esa.snap.rcp.pixelinfo.PixelInfoView.PROPERTY_KEY_SHOW_PIXEL_P
  * @author thomas
  */
 @OptionsPanelController.SubRegistration(location = "GeneralPreferences",
-        displayName = "#TXT_PixelViewDisplayController_DisplayName",
-        keywords = "#TXT_PixelViewDisplayController_Keyword",
-        keywordsCategory = "Pixel Display",
-        id = "PixelViewDisplayController",
+        displayName = "#TXT_GeoLocationController_DisplayName",
+        keywords = "#TXT_GeoLocationController_Keyword",
+        keywordsCategory = "Pixel Display, Geolocation",
+        id = "GeolocationController",
         position = 2)
 @NbBundle.Messages({
-        "TXT_PixelViewDisplayController_DisplayName=Geo-Location",
-        "TXT_PixelViewDisplayController_Keyword=geo, location, geo-location, compatibility, differ"
+        "TXT_GeoLocationController_DisplayName=Geo-Location",
+        "TXT_GeoLocationController_Keyword=geo, location, geo-location, compatibility, differ"
 })
-public final class PixelViewDisplayController extends DefaultConfigController {
+public final class GeoLocationController extends DefaultConfigController {
+
+    private static final String sysprop_snap_to_exact_geolocation = "snap.pin.adjust.geolocation";
+    private static final String sysprop_pixel_geo_coding_fraction_accuracy = "snap.pixelGeoCoding.fractionAccuracy";
+
 
     protected PropertySet createPropertySet() {
         return createPropertySet(new GeoLocationBean());
@@ -72,24 +73,34 @@ public final class PixelViewDisplayController extends DefaultConfigController {
     protected JPanel createPanel(BindingContext context) {
 
         final PropertyEditorRegistry registry = PropertyEditorRegistry.getInstance();
+        Property snapToExactGeolocationProperty = context.getPropertySet().getProperty(sysprop_snap_to_exact_geolocation);
+        Property pixelGeocodingFractionAccuracyProperty = context.getPropertySet().getProperty(sysprop_pixel_geo_coding_fraction_accuracy);
         Property showGeoPosAsDecimals = context.getPropertySet().getProperty(PROPERTY_KEY_SHOW_GEO_POS_DECIMALS);
         Property showPixelPosAsDecimals = context.getPropertySet().getProperty(PROPERTY_KEY_SHOW_PIXEL_POS_DECIMALS);
         Property showPixelPosOffset1 = context.getPropertySet().getProperty(PROPERTY_KEY_SHOW_PIXEL_POS_OFFSET_ONE);
 
+        JComponent[] snapToExactGeolocationComponents = registry.findPropertyEditor(snapToExactGeolocationProperty.getDescriptor()).createComponents(snapToExactGeolocationProperty.getDescriptor(), context);
+        JComponent[] pixelGeocodingfractionAccuracyComponents = registry.findPropertyEditor(pixelGeocodingFractionAccuracyProperty.getDescriptor()).createComponents(pixelGeocodingFractionAccuracyProperty.getDescriptor(), context);
         JComponent[] showGeoPosAsDecimalsComponents = registry.findPropertyEditor(showGeoPosAsDecimals.getDescriptor()).createComponents(showGeoPosAsDecimals.getDescriptor(), context);
         JComponent[] showPixelPosAsDecimalsComponents = registry.findPropertyEditor(showPixelPosAsDecimals.getDescriptor()).createComponents(showPixelPosAsDecimals.getDescriptor(), context);
         JComponent[] showPixelPosOffset1Components = registry.findPropertyEditor(showPixelPosAsDecimals.getDescriptor()).createComponents(showPixelPosOffset1.getDescriptor(), context);
 
         TableLayout tableLayout = new TableLayout(1);
         tableLayout.setTableAnchor(Anchor.NORTHWEST);
-        tableLayout.setTablePadding(4, 10);
+        tableLayout.setTablePadding(new Insets(4, 10, 0, 0));
         tableLayout.setTableFill(Fill.BOTH);
         tableLayout.setTableWeightX(1.0);
-        tableLayout.setRowWeightY(4, 1.0);
+        tableLayout.setTableWeightY(0.0);
+        tableLayout.setRowWeightY(8, 1.0);
 
         final JPanel pageUI = new JPanel(tableLayout);
 
-        tableLayout.setRowPadding(0, new Insets(10, 80, 10, 4));
+        pageUI.add(PreferenceUtils.createTitleLabel("General Settings"));
+        pageUI.add(snapToExactGeolocationComponents[0]);
+        pageUI.add(pixelGeocodingfractionAccuracyComponents[0]);
+        tableLayout.createHorizontalSpacer();
+
+        pageUI.add(PreferenceUtils.createTitleLabel("Display Settings"));
         pageUI.add(showGeoPosAsDecimalsComponents[0]);
         pageUI.add(showPixelPosAsDecimalsComponents[0]);
         pageUI.add(showPixelPosOffset1Components[0]);
@@ -109,6 +120,14 @@ public final class PixelViewDisplayController extends DefaultConfigController {
     }
 
     static class GeoLocationBean {
+
+        @Preference(label = "Use sub-pixel fraction accuracy for pixel-based geo-coding",
+                key = sysprop_pixel_geo_coding_fraction_accuracy, config = "snap-engine")
+        boolean getPixelPosWithFractionAccuracy = false;
+
+        @Preference(label = "Snap pins to exact geo-location after import, transfer to another product, or geo-coding change",
+                key = sysprop_snap_to_exact_geolocation, config = "snap-engine")
+        boolean snapToExactGeoLocation = true;
 
         @Preference(label = "Show geographical coordinates in decimal degrees", key = PROPERTY_KEY_SHOW_GEO_POS_DECIMALS)
         boolean showGeoPosAsDecimals = PROPERTY_DEFAULT_SHOW_GEO_POS_DECIMALS;
