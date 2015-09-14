@@ -158,31 +158,60 @@ public class SnapUtils {
         return false;
     }
 
+    /**
+     * Opens a new window in SNAP Desktop in the "explorer" location.
+     *
+     * @param window The window which must must be an instance of {@link TopComponent}.
+     * @see #openWindow(TopComponent, String, boolean)
+     */
     public static void openWindow(TopComponent window) {
         openWindow(window, false);
     }
 
+    /**
+     * Opens a new window in SNAP Desktop in the "explorer" location.
+     *
+     * @param window The window which must must be an instance of {@link TopComponent}.
+     * @param requestActive {@code true} if a request will be made to activate the window after opening it.
+     * @see #openWindow(TopComponent, String, boolean)
+     */
     public static void openWindow(TopComponent window, boolean requestActive) {
         openWindow(window, "explorer", requestActive);
     }
 
-    public static void openWindow(TopComponent window, String modeName) {
-        openWindow(window, modeName, false);
+    /**
+     * Opens a new window in SNAP Desktop at the given location.
+     *
+     * @param window The window which must must be an instance of {@link TopComponent}.
+     * @param location The location where the window should appear when it is first opened.
+     * @see #openWindow(TopComponent, String, boolean)
+     */
+    public static void openWindow(TopComponent window, String location) {
+        openWindow(window, location, false);
     }
 
-    public static void openWindow(TopComponent window, String modeName, boolean requestActive) {
-        WindowManager.getDefault().invokeWhenUIReady(() -> openWindow0(window, modeName, requestActive));
-    }
-
-    private static void openWindow0(TopComponent window, String modeName, boolean requestActive) {
-        Mode mode = WindowManager.getDefault().findMode(modeName);
-        if (mode != null) {
-            mode.dockInto(window);
-        }
-        window.open();
-        if (requestActive) {
-            window.requestActive();
-        }
+    /**
+     * Opens a new window in SNAP Desktop.
+     *
+     * @param window The window which must must be an instance of {@link TopComponent}.
+     * @param location The location where the window should appear when it is first opened.
+     *                 Possible docking areas are
+     *                 "explorer" (upper left), "navigator" (lower left), "properties" (upper right),
+     *                 "output" (bottom). You may choose "floating" to not dock the window at all. Note
+     *                 that this mode requires explicitly setting the window's position and size.
+     * @param requestActive {@code true} if a request will be made to activate the window after opening it.
+     */
+    public static void openWindow(TopComponent window, String location, boolean requestActive) {
+        WindowManager.getDefault().invokeWhenUIReady(() -> {
+            Mode mode = WindowManager.getDefault().findMode(location);
+            if (mode != null) {
+                mode.dockInto(window);
+            }
+            window.open();
+            if (requestActive) {
+                window.requestActive();
+            }
+        });
     }
 
     private static String getActionDataPath(String folderPath, Action delegate) {
