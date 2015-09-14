@@ -1,103 +1,50 @@
-package org.esa.snap.rcp.actions;
+package org.esa.snap.rcp.scripting;
 
-
-import com.bc.ceres.core.Assert;
-import org.esa.snap.util.SystemUtils;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 import org.openide.util.Exceptions;
+import org.openide.windows.Mode;
+import org.openide.windows.TopComponent;
+import org.openide.windows.WindowManager;
 
 import javax.swing.Action;
-import java.awt.event.ActionEvent;
-import java.beans.PropertyChangeListener;
 import java.io.IOException;
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
+
 
 /**
- * A proxy action which can be used to programmatically register delegate actions which will *not* be serialized
- * into the NetBeans filesystem.
- * The proxy protects the delegate action from being serialized/deserialized by NetBeans.
- * by putting the delegate into a static hash table. On serialisation request only the file system path is serialized
- * and used to look up the delegate action later on deserialisation request.
+ * Provides various utility functions allowing scripting clients to register actions and windows
+ * for the SNAP Desktop application.
  * <p>
  * The following methods can be used to dynamically add/remove actions and action references to/from
- * the NetBeans file system:
- * <ol>
- * <li>{@link ProxyAction#addAction(Action, String)} / {@link ProxyAction#removeAction(FileObject)}</li>
- * <li>{@link ProxyAction#addActionReference(FileObject, String, Integer)} / {@link ProxyAction#removeActionReference(FileObject)}</li>
- * </ol>
+ * the SNAP Desktop application:
+ * <ul>
+ * <li>{@link SnapUtils#addAction(Action, String)}</li>
+ * <li>{@link SnapUtils#removeAction(FileObject)}</li>
+ * </ul>
+ * The {@code addAction()} methods all return "file objects" which live in the NetBeans
+ * Platform's virtual file system.
+ * These object can be used to create references to the actions they represent in various places
+ * such as menus and tool bars:
+ * <ul>
+ * <li>{@link SnapUtils#addActionReference(FileObject, String, Integer)}</li>
+ * <li>{@link SnapUtils#removeActionReference(FileObject)}</li>
+ * </ul>
+ * <p>
+ * To open a new window in the SNAP Desktop application, the following methods can be used:
+ * <ul>
+ * <li>{@link SnapUtils#openWindow(TopComponent)}</li>
+ * <li>{@link SnapUtils#openWindow(TopComponent, boolean)}</li>
+ * <li>{@link SnapUtils#openWindow(TopComponent, String)}</li>
+ * <li>{@link SnapUtils#openWindow(TopComponent, String, boolean)}</li>
+ * </ul>
  *
  * @author Norman Fomferra
  */
-public class ProxyAction implements Action, Serializable {
+public class SnapUtils {
 
-    private static final long serialVersionUID = 3069372659219673560L;
-    private static final String INSTANCE_PREFIX = "ProxyAction-";
+    private static final String INSTANCE_PREFIX = "TransientAction-";
     private static final String INSTANCE_SUFFIX = ".instance";
     private static final String SHADOW_SUFFIX = ".shadow";
-    private static final Map<String, Action> DELEGATES = new HashMap<>();
-
-    private String path;
-    private Action delegate;
-
-    ProxyAction(Action delegate, String path) {
-        Assert.notNull(delegate, "delegate");
-        Assert.notNull(path, "path");
-        Assert.argument(path.endsWith(INSTANCE_SUFFIX), "path");
-        Assert.argument(path.contains("/"), "path");
-        this.path = path;
-        this.delegate = delegate;
-        Action oldDelegate = DELEGATES.put(path, delegate);
-        if (oldDelegate != null) {
-            SystemUtils.LOG.info(String.format("Proxy action %s registered once more. Replacing the old action.%n", this.path));
-        }
-        SystemUtils.LOG.info(String.format("Proxy action added as %s%n", this.path));
-    }
-
-    public Action getDelegate() {
-        return delegate;
-    }
-
-    public String getPath() {
-        return path;
-    }
-
-    @Override
-    public Object getValue(String key) {
-        return delegate.getValue(key);
-    }
-
-    @Override
-    public void putValue(String key, Object value) {
-        delegate.putValue(key, value);
-    }
-
-    @Override
-    public void setEnabled(boolean b) {
-        delegate.setEnabled(b);
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return delegate.isEnabled();
-    }
-
-    @Override
-    public void addPropertyChangeListener(PropertyChangeListener listener) {
-        delegate.addPropertyChangeListener(listener);
-    }
-
-    @Override
-    public void removePropertyChangeListener(PropertyChangeListener listener) {
-        delegate.removePropertyChangeListener(listener);
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        delegate.actionPerformed(e);
-    }
 
     /**
      * Adds an action into the folder {@code Menu/Tools} of the SNAP Desktop / NetBeans file system.
@@ -132,7 +79,7 @@ public class ProxyAction implements Action, Serializable {
         FileObject configRoot = FileUtil.getConfigRoot();
         try {
             FileObject actionFile = FileUtil.createData(configRoot, getActionDataPath(path, action));
-            actionFile.setAttribute("instanceCreate", new ProxyAction(action, actionFile.getPath()));
+            actionFile.setAttribute("instanceCreate", new TransientAction(action, actionFile.getPath()));
             if (position != null) {
                 actionFile.setAttribute("position", position);
             }
@@ -158,7 +105,7 @@ public class ProxyAction implements Action, Serializable {
      * @return The file object representing the action reference.
      */
     public synchronized static FileObject addActionReference(FileObject instanceFile, String path, Integer position) {
-        Action actualAction = DELEGATES.get(instanceFile.getPath());
+        Action actualAction = TransientAction.getAction(instanceFile.getPath());
         if (actualAction == null) {
             return null;
         }
@@ -178,11 +125,12 @@ public class ProxyAction implements Action, Serializable {
         return null;
     }
 
+
     public synchronized static boolean removeAction(FileObject actionFile) {
-        if (DELEGATES.containsKey(actionFile.getPath())) {
+        if (TransientAction.hasAction(actionFile.getPath())) {
             try {
                 actionFile.delete();
-                DELEGATES.remove(actionFile.getPath());
+                TransientAction.removeAction(actionFile.getPath());
                 return true;
             } catch (IOException ex) {
                 Exceptions.printStackTrace(ex);
@@ -210,21 +158,31 @@ public class ProxyAction implements Action, Serializable {
         return false;
     }
 
-    private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
-        String path = in.readUTF();
-        Action delegate = DELEGATES.get(path);
-        if (delegate == null) {
-            throw new IOException(String.format("Action delegate not found for file %s.\n" +
-                                                        "Please make sure to call removeAction() before SNAP shuts down.", path));
-        }
-        this.path = path;
-        this.delegate = delegate;
-        SystemUtils.LOG.info(String.format("Deserialized proxy action %s%n", this.path));
+    public static void openWindow(TopComponent window) {
+        openWindow(window, false);
     }
 
-    private void writeObject(java.io.ObjectOutputStream out) throws IOException {
-        out.writeUTF(path);
-        SystemUtils.LOG.info(String.format("Serialized proxy action %s%n", this.path));
+    public static void openWindow(TopComponent window, boolean requestActive) {
+        openWindow(window, "explorer", requestActive);
+    }
+
+    public static void openWindow(TopComponent window, String modeName) {
+        openWindow(window, modeName, false);
+    }
+
+    public static void openWindow(TopComponent window, String modeName, boolean requestActive) {
+        WindowManager.getDefault().invokeWhenUIReady(() -> openWindow0(window, modeName, requestActive));
+    }
+
+    private static void openWindow0(TopComponent window, String modeName, boolean requestActive) {
+        Mode mode = WindowManager.getDefault().findMode(modeName);
+        if (mode != null) {
+            mode.dockInto(window);
+        }
+        window.open();
+        if (requestActive) {
+            window.requestActive();
+        }
     }
 
     private static String getActionDataPath(String folderPath, Action delegate) {
@@ -232,7 +190,7 @@ public class ProxyAction implements Action, Serializable {
     }
 
     private static String getActionInstanceName(Action delegate) {
-        Object commandKey = delegate.getValue(ACTION_COMMAND_KEY);
+        Object commandKey = delegate.getValue(Action.ACTION_COMMAND_KEY);
         String id;
         if (commandKey != null && !commandKey.toString().isEmpty()) {
             id = commandKey.toString();
