@@ -122,11 +122,11 @@ public final class GeoLocationController extends DefaultConfigController {
     static class GeoLocationBean {
 
         @Preference(label = "Use sub-pixel fraction accuracy for pixel-based geo-coding",
-                key = sysprop_pixel_geo_coding_fraction_accuracy, config = "snap-engine")
+                key = sysprop_pixel_geo_coding_fraction_accuracy, config = "snap")
         boolean getPixelPosWithFractionAccuracy = false;
 
         @Preference(label = "Snap pins to exact geo-location after import, transfer to another product, or geo-coding change",
-                key = sysprop_snap_to_exact_geolocation, config = "snap-engine")
+                key = sysprop_snap_to_exact_geolocation, config = "snap")
         boolean snapToExactGeoLocation = true;
 
         @Preference(label = "Show geographical coordinates in decimal degrees", key = PROPERTY_KEY_SHOW_GEO_POS_DECIMALS)

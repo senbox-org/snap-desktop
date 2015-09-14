@@ -129,7 +129,7 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
         placemarkTableModel = modelFactory.createTableModel(placemarkDescriptor, product, null, null);
         selectionChangeHandler = new ViewSelectionChangeHandler();
         relatedPlacemarks = new ArrayList<>();
-        snapToExactGeolocation = Config.instance("snap-engine").preferences().getBoolean(sysprop_snap_to_exact_geolocation, true);
+        snapToExactGeolocation = Config.instance().preferences().getBoolean(sysprop_snap_to_exact_geolocation, true);
         initUI();
         setDisplayName(getTitle());
     }
