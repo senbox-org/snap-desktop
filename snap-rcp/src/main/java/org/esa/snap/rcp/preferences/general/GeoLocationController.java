@@ -56,8 +56,8 @@ import static org.esa.snap.rcp.pixelinfo.PixelInfoView.*;
 })
 public final class GeoLocationController extends DefaultConfigController {
 
-    private static final String sysprop_snap_to_exact_geolocation = "snap.pin.adjust.geolocation";
-    private static final String sysprop_pixel_geo_coding_fraction_accuracy = "snap.pixelGeoCoding.fractionAccuracy";
+    private static final String SYSPROP_SNAP_TO_COMPUTED_GEOLOCATION = "snap.pin.adjust.geolocation";
+    private static final String SYSPROP_PIXEL_GEO_CODING_FRACTION_ACCURACY = "snap.pixelGeoCoding.fractionAccuracy";
 
 
     protected PropertySet createPropertySet() {
@@ -73,8 +73,8 @@ public final class GeoLocationController extends DefaultConfigController {
     protected JPanel createPanel(BindingContext context) {
 
         final PropertyEditorRegistry registry = PropertyEditorRegistry.getInstance();
-        Property snapToExactGeolocationProperty = context.getPropertySet().getProperty(sysprop_snap_to_exact_geolocation);
-        Property pixelGeocodingFractionAccuracyProperty = context.getPropertySet().getProperty(sysprop_pixel_geo_coding_fraction_accuracy);
+        Property snapToExactGeolocationProperty = context.getPropertySet().getProperty(SYSPROP_SNAP_TO_COMPUTED_GEOLOCATION);
+        Property pixelGeocodingFractionAccuracyProperty = context.getPropertySet().getProperty(SYSPROP_PIXEL_GEO_CODING_FRACTION_ACCURACY);
         Property showGeoPosAsDecimals = context.getPropertySet().getProperty(PROPERTY_KEY_SHOW_GEO_POS_DECIMALS);
         Property showPixelPosAsDecimals = context.getPropertySet().getProperty(PROPERTY_KEY_SHOW_PIXEL_POS_DECIMALS);
         Property showPixelPosOffset1 = context.getPropertySet().getProperty(PROPERTY_KEY_SHOW_PIXEL_POS_OFFSET_ONE);
@@ -122,11 +122,11 @@ public final class GeoLocationController extends DefaultConfigController {
     static class GeoLocationBean {
 
         @Preference(label = "Use sub-pixel fraction accuracy for pixel-based geo-coding",
-                key = sysprop_pixel_geo_coding_fraction_accuracy, config = "snap")
+                key = SYSPROP_PIXEL_GEO_CODING_FRACTION_ACCURACY, config = "snap")
         boolean getPixelPosWithFractionAccuracy = false;
 
         @Preference(label = "Snap pins to exact geo-location after import, transfer to another product, or geo-coding change",
-                key = sysprop_snap_to_exact_geolocation, config = "snap")
+                key = SYSPROP_SNAP_TO_COMPUTED_GEOLOCATION, config = "snap")
         boolean snapToExactGeoLocation = true;
 
         @Preference(label = "Show geographical coordinates in decimal degrees", key = PROPERTY_KEY_SHOW_GEO_POS_DECIMALS)

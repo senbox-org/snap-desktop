@@ -98,7 +98,7 @@ import java.util.prefs.Preferences;
 public class PlacemarkManagerTopComponent extends TopComponent implements UndoRedo.Provider, HelpCtx.Provider {
 
     public static final String PROPERTY_KEY_IO_DIR = "pin.io.dir";
-    private static final String sysprop_snap_to_exact_geolocation = "snap.pin.adjust.geolocation";
+    private static final String SYSPROP_SNAP_TO_COMPUTED_GEOLOCATION = "snap.pin.adjust.geolocation";
 
     private final PlacemarkDescriptor placemarkDescriptor;
     private final Preferences preferences;
@@ -129,7 +129,7 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
         placemarkTableModel = modelFactory.createTableModel(placemarkDescriptor, product, null, null);
         selectionChangeHandler = new ViewSelectionChangeHandler();
         relatedPlacemarks = new ArrayList<>();
-        snapToExactGeolocation = Config.instance().preferences().getBoolean(sysprop_snap_to_exact_geolocation, true);
+        snapToExactGeolocation = Config.instance().preferences().getBoolean(SYSPROP_SNAP_TO_COMPUTED_GEOLOCATION, true);
         initUI();
         setDisplayName(getTitle());
     }
