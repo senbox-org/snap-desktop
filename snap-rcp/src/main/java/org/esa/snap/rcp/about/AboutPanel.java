@@ -25,6 +25,7 @@ import java.util.List;
  * {@link AboutBox} annotations.
  *
  * @author Norman Fomferra
+ * @author Marco Peters
  */
 class AboutPanel extends JPanel {
 
@@ -36,26 +37,32 @@ class AboutPanel extends JPanel {
         if (configFile != null) {
             JTabbedPane tabbedPane = new JTabbedPane();
             tabbedPane.add("SNAP", new SnapAboutBox());
-            FileObject aboutBoxPanels[] = configFile.getChildren();
-            List<FileObject> orderedAboutBoxPanels = FileUtil.getOrder(Arrays.asList(aboutBoxPanels), true);
-            for (FileObject aboutBoxFileObject : orderedAboutBoxPanels) {
-                JComponent panel = FileUtil.getConfigObject(aboutBoxFileObject.getPath(), JComponent.class);
-                if (panel != null) {
-                    String displayName = (String) aboutBoxFileObject.getAttribute("displayName");
-                    if (displayName != null && !displayName.trim().isEmpty()) {
-                        Icon icon = null;
-                        String iconPath = (String) aboutBoxFileObject.getAttribute("iconPath");
-                        if (iconPath != null && !iconPath.trim().isEmpty()) {
-                            Image image = ImageUtilities.loadImage(iconPath, false);
-                            if (image != null) {
-                                icon = new ImageIcon(image);
-                            }
+            addAboutBoxPlugins(tabbedPane, configFile);
+            add(tabbedPane, BorderLayout.CENTER);
+        } else {
+            add(new SnapAboutBox(), BorderLayout.CENTER);
+        }
+    }
+
+    private void addAboutBoxPlugins(JTabbedPane tabbedPane, FileObject configFile) {
+        FileObject aboutBoxPanels[] = configFile.getChildren();
+        List<FileObject> orderedAboutBoxPanels = FileUtil.getOrder(Arrays.asList(aboutBoxPanels), true);
+        for (FileObject aboutBoxFileObject : orderedAboutBoxPanels) {
+            JComponent panel = FileUtil.getConfigObject(aboutBoxFileObject.getPath(), JComponent.class);
+            if (panel != null) {
+                String displayName = (String) aboutBoxFileObject.getAttribute("displayName");
+                if (displayName != null && !displayName.trim().isEmpty()) {
+                    Icon icon = null;
+                    String iconPath = (String) aboutBoxFileObject.getAttribute("iconPath");
+                    if (iconPath != null && !iconPath.trim().isEmpty()) {
+                        Image image = ImageUtilities.loadImage(iconPath, false);
+                        if (image != null) {
+                            icon = new ImageIcon(image);
                         }
-                        tabbedPane.addTab(displayName, icon, panel);
                     }
+                    tabbedPane.addTab(displayName, icon, panel);
                 }
             }
-            add(tabbedPane, BorderLayout.CENTER);
         }
     }
 }
