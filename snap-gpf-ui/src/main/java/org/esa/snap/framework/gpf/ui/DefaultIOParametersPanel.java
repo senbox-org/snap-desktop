@@ -130,6 +130,9 @@ public class DefaultIOParametersPanel extends JPanel {
             if (!label.endsWith(":")) {
                 label += ":";
             }
+            if (descriptor.isOptional()) {
+                label += " (optional)";
+            }
             selector.getProductNameLabel().setText(label);
         }
     }
