@@ -224,7 +224,7 @@
                 <attr name="instanceOf" stringvalue="org.netbeans.spi.autoupdate.UpdateProvider"/>
                 <attr name="url" urlvalue="http://step.esa.int/updatecenter/2.0/snap/updates.xml.gz"/>
             </file>
-            <file name="snap_desktop_update_center.instance">
+            <file name="snap_extensions_update_center.instance">
                 <attr name="displayName" stringvalue="SNAP Extensions"/>
                 <attr name="enabled" boolvalue="true"/>
                 <attr name="instanceCreate"
