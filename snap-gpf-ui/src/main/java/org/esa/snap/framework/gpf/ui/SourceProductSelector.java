@@ -29,6 +29,7 @@ import org.esa.snap.framework.datamodel.ProductNode;
 import org.esa.snap.framework.ui.AppContext;
 import org.esa.snap.framework.ui.SnapFileChooser;
 import org.esa.snap.rcp.actions.file.OpenProductAction;
+import org.esa.snap.util.StringUtils;
 import org.esa.snap.util.SystemUtils;
 import org.esa.snap.util.io.SnapFileFilter;
 import org.openide.util.Utilities;
@@ -260,6 +261,10 @@ public class SourceProductSelector {
     }
 
     public JPanel createDefaultPanel() {
+        return createDefaultPanel("Source Product");
+    }
+
+    public JPanel createDefaultPanel(String borderTitle) {
         final JPanel subPanel = new JPanel(new BorderLayout(3, 3));
         subPanel.add(getProductNameComboBox(), BorderLayout.CENTER);
         subPanel.add(getProductFileChooserButton(), BorderLayout.EAST);
@@ -271,7 +276,9 @@ public class SourceProductSelector {
         tableLayout.setRowFill(1, TableLayout.Fill.HORIZONTAL);
         tableLayout.setTablePadding(3, 3);
         JPanel panel = new JPanel(tableLayout);
-        panel.setBorder(BorderFactory.createTitledBorder("Source Product"));
+        if (StringUtils.isNotNullAndNotEmpty(borderTitle)) {
+            panel.setBorder(BorderFactory.createTitledBorder(borderTitle));
+        }
         panel.add(getProductNameLabel());
         panel.add(subPanel);
         panel.add(tableLayout.createVerticalSpacer());
@@ -356,7 +363,7 @@ public class SourceProductSelector {
         public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
                                                       boolean cellHasFocus) {
             final Component cellRendererComponent =
-                    super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                        super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 
             if (cellRendererComponent instanceof JLabel && value instanceof Product) {
                 final JLabel label = (JLabel) cellRendererComponent;
@@ -382,7 +389,7 @@ public class SourceProductSelector {
                 return;
             }
             JComponent scrollPane = (JComponent) ((JPopupMenu) comp)
-                    .getComponent(0);
+                        .getComponent(0);
             Dimension size = new Dimension();
             size.width = scrollPane.getPreferredSize().width;
             final int boxItemCount = box.getModel().getSize();

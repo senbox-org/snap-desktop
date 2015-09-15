@@ -25,6 +25,7 @@ import org.esa.snap.framework.gpf.descriptor.OperatorDescriptor;
 import org.esa.snap.framework.gpf.descriptor.SourceProductDescriptor;
 import org.esa.snap.framework.ui.AppContext;
 
+import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -56,10 +57,25 @@ public class DefaultIOParametersPanel extends JPanel {
         tableLayout.setTablePadding(3, 3);
 
         setLayout(tableLayout);
-        for (SourceProductSelector selector : sourceProductSelectorList) {
-            add(selector.createDefaultPanel());
+        int countSPS = sourceProductSelectorList.size();
+        if (countSPS == 1) {
+            for (SourceProductSelector selector : sourceProductSelectorList) {
+                add(selector.createDefaultPanel());
+            }
+        } else {
+            final TableLayout tableLayoutSPS = new TableLayout(1);
+            tableLayoutSPS.setTableAnchor(TableLayout.Anchor.WEST);
+            tableLayoutSPS.setTableWeightX(1.0);
+            tableLayoutSPS.setTableFill(TableLayout.Fill.HORIZONTAL);
+            JPanel panel = new JPanel(tableLayoutSPS);
+            panel.setBorder(BorderFactory.createTitledBorder("Source Products"));
+            for (SourceProductSelector selector : sourceProductSelectorList) {
+                panel.add(selector.createDefaultPanel(""));
+            }
+            panel.add(tableLayoutSPS.createVerticalSpacer());
+            add(panel);
         }
-        if(targetProductSelectorDisplay){
+        if (targetProductSelectorDisplay) {
             add(targetProductSelector.createDefaultPanel());
         }
         add(tableLayout.createVerticalSpacer());
