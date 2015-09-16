@@ -37,7 +37,7 @@ import java.awt.event.ActionEvent;
 @ActionRegistration(displayName = "#CTL_TileSingleActionName", lazy = false )
 @ActionReferences({
         @ActionReference(path = "Menu/Window", position = 230, separatorAfter = 235),
-        @ActionReference(path = "Toolbars/Window", position = 30 )
+        @ActionReference(path = "Toolbars/Window Arrangement", position = 30 )
 })
 @NbBundle.Messages("CTL_TileSingleActionName=Tile Single")
 public class TileSingleAction extends TileAction {

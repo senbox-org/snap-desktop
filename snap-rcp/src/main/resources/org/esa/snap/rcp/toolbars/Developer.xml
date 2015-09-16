@@ -12,7 +12,7 @@
         <Toolbar name="Processing" visible="true" />
         <Toolbar name="Tools" visible="true"/>
         <Toolbar name="Tool Windows" visible="true"/>
-        <Toolbar name="Window" visible="true" />
+        <Toolbar name="Window Arrangement" visible="true" />
 
         <Toolbar name="Memory" visible="true" align="right"/>
     </Row>
