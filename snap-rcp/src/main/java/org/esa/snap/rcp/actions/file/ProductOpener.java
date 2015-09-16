@@ -150,7 +150,8 @@ class ProductOpener {
             return true;
         }
 
-        File[] files = fc.getSelectedFiles();
+        File[] files = getSelectedFiles(fc);
+
         if (files == null || files.length == 0) {
             // cancelled
             return null;
@@ -168,6 +169,18 @@ class ProductOpener {
         return openProductFilesCheckOpened(formatName, files);
     }
 
+    private File[] getSelectedFiles(ProductFileChooser fc) {
+        File[] files = new File[0];
+        if (isMultiSelectionEnabled()) {
+            files = fc.getSelectedFiles();
+        }else {
+            File file = fc.getSelectedFile();
+            if (file != null) {
+                files = new File[]{file};
+            }
+        }
+        return files;
+    }
 
     private static Boolean openProductFilesCheckOpened(final String formatName, final File... files) {
         List<File> openedFiles = getOpenedProductFiles();
