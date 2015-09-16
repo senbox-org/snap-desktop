@@ -125,7 +125,7 @@ public class DefaultIOParametersPanel extends JPanel {
     private void createSourceProductSelectors(OperatorDescriptor operatorDescriptor) {
         for (SourceProductDescriptor descriptor : operatorDescriptor.getSourceProductDescriptors()) {
             final ProductFilter productFilter = new AnnotatedSourceProductFilter(descriptor);
-            SourceProductSelector sourceProductSelector = new SourceProductSelector(appContext);
+            SourceProductSelector sourceProductSelector = new SourceProductSelector(appContext, descriptor.isOptional());
             sourceProductSelector.setProductFilter(productFilter);
             sourceProductSelectorList.add(sourceProductSelector);
             sourceProductSelectorMap.put(descriptor, sourceProductSelector);

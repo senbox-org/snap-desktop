@@ -82,13 +82,24 @@ public class SourceProductSelector {
     private JComboBox<Object> productNameComboBox;
     private final ProductManager.Listener productManagerListener;
     private ComboBoxSelectionContext selectionContext;
+    private boolean enableEmptySelection;
 
     public SourceProductSelector(AppContext appContext) {
-        this(appContext, "Name:");
+        this(appContext, false);
+    }
+
+    public SourceProductSelector(AppContext appContext, boolean enableEmptySelection) {
+        this(appContext, "Name:", enableEmptySelection);
     }
 
     public SourceProductSelector(AppContext appContext, String labelText) {
+        this(appContext, labelText, false);
+    }
+
+    public SourceProductSelector(AppContext appContext, String labelText, boolean enableEmptySelection) {
         this.appContext = appContext;
+        this.enableEmptySelection = enableEmptySelection;
+
         productListModel = new DefaultComboBoxModel<>();
 
         productNameLabel = new JLabel(labelText);
@@ -104,8 +115,9 @@ public class SourceProductSelector {
         productNameComboBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                final Product product = (Product) productNameComboBox.getSelectedItem();
-                if (product != null) {
+                final Object selected = productNameComboBox.getSelectedItem();
+                if (selected != null && selected instanceof Product) {
+                    Product product = (Product) selected;
                     if (product.getFileLocation() != null) {
                         productNameComboBox.setToolTipText(product.getFileLocation().getPath());
                     } else {
@@ -153,6 +165,9 @@ public class SourceProductSelector {
 
     public synchronized void initProducts() {
         productListModel.removeAllElements();
+        if (enableEmptySelection) {
+            productListModel.addElement(null);
+        }
         for (Product product : appContext.getProductManager().getProducts()) {
             addProduct(product);
         }
@@ -171,7 +186,11 @@ public class SourceProductSelector {
     }
 
     public int getProductCount() {
-        return productListModel.getSize();
+        if (enableEmptySelection) {
+            return productListModel.getSize() - 1;
+        } else {
+            return productListModel.getSize();
+        }
     }
 
     public void setSelectedIndex(int index) {
@@ -365,10 +384,14 @@ public class SourceProductSelector {
             final Component cellRendererComponent =
                         super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 
-            if (cellRendererComponent instanceof JLabel && value instanceof Product) {
+            if (cellRendererComponent instanceof JLabel) {
                 final JLabel label = (JLabel) cellRendererComponent;
-                final Product product = (Product) value;
-                label.setText(product.getDisplayName());
+                if (value instanceof Product) {
+                    final Product product = (Product) value;
+                    label.setText(product.getDisplayName());
+                } else {
+                    label.setText(" ");
+                }
             }
 
             return cellRendererComponent;
@@ -394,9 +417,11 @@ public class SourceProductSelector {
             size.width = scrollPane.getPreferredSize().width;
             final int boxItemCount = box.getModel().getSize();
             for (int i = 0; i < boxItemCount; i++) {
-                Product product = (Product) box.getModel().getElementAt(i);
                 final JLabel label = new JLabel();
-                label.setText(product.getDisplayName());
+                Object elementAt = box.getModel().getElementAt(i);
+                if (elementAt != null && elementAt instanceof Product) {
+                    label.setText(((Product) elementAt).getDisplayName());
+                }
                 size.width = Math.max(label.getPreferredSize().width, size.width);
             }
             size.height = scrollPane.getPreferredSize().height;

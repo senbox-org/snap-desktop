@@ -16,14 +16,15 @@
 
 package org.esa.snap.framework.gpf.ui;
 
+import static org.junit.Assert.*;
+
 import org.esa.snap.HeadlessTestRunner;
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.ui.DefaultAppContext;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.*;
+import org.junit.runner.*;
 
+import javax.swing.JComboBox;
 import java.io.File;
 
 /**
@@ -60,9 +61,40 @@ public class SourceProductSelectorTest {
     public void testCreatedUIComponentsAreSame() {
         SourceProductSelector selector = new SourceProductSelector(appContext, "Source:");
         selector.initProducts();
-        Assert.assertSame(selector.getProductNameLabel(), selector.getProductNameLabel());
-        Assert.assertSame(selector.getProductNameComboBox(), selector.getProductNameComboBox());
-        Assert.assertSame(selector.getProductFileChooserButton(), selector.getProductFileChooserButton());
+        assertSame(selector.getProductNameLabel(), selector.getProductNameLabel());
+        assertSame(selector.getProductNameComboBox(), selector.getProductNameComboBox());
+        assertSame(selector.getProductFileChooserButton(), selector.getProductFileChooserButton());
+    }
+
+    @Test
+    public void testThatComboboxContains_4_EntriesIfEmptySelectionIsDisabled() {
+        boolean enableEmptySelection = false;
+        SourceProductSelector selector = new SourceProductSelector(appContext, "Source", enableEmptySelection);
+        selector.initProducts();
+
+        final JComboBox<Object> comboBox = selector.getProductNameComboBox();
+        assertEquals(4, comboBox.getItemCount());
+        assertEquals(comboBox.getItemAt(0), defaultProducts[0]);
+        assertEquals(comboBox.getItemAt(1), defaultProducts[1]);
+        assertEquals(comboBox.getItemAt(2), defaultProducts[2]);
+        assertEquals(comboBox.getItemAt(3), defaultProducts[3]);
+        assertEquals(4, selector.getProductCount());
+    }
+
+    @Test
+    public void testThatComboboxContains_5_EntriesIfEmptySelectionIsEnabled() {
+        boolean enableEmptySelection = true;
+        SourceProductSelector selector = new SourceProductSelector(appContext, "Source", enableEmptySelection);
+        selector.initProducts();
+
+        final JComboBox<Object> comboBox = selector.getProductNameComboBox();
+        assertEquals(5, comboBox.getItemCount());
+        assertEquals(comboBox.getItemAt(0), null);
+        assertEquals(comboBox.getItemAt(1), defaultProducts[0]);
+        assertEquals(comboBox.getItemAt(2), defaultProducts[1]);
+        assertEquals(comboBox.getItemAt(3), defaultProducts[2]);
+        assertEquals(comboBox.getItemAt(4), defaultProducts[3]);
+        assertEquals(4, selector.getProductCount());
     }
 
     @Test
@@ -70,22 +102,22 @@ public class SourceProductSelectorTest {
         SourceProductSelector selector = new SourceProductSelector(appContext, "Source");
         selector.initProducts();
         Product selectedProduct = selector.getSelectedProduct();
-        Assert.assertSame(appContext.getSelectedProduct(), selectedProduct);
+        assertSame(appContext.getSelectedProduct(), selectedProduct);
 
         selector.setSelectedProduct(defaultProducts[1]);
         selectedProduct = selector.getSelectedProduct();
-        Assert.assertSame(defaultProducts[1], selectedProduct);
+        assertSame(defaultProducts[1], selectedProduct);
 
         Product oldProduct = new Product("new", "T1", 0, 0);
         oldProduct.setFileLocation(new File(""));
         selector.setSelectedProduct(oldProduct);
         selectedProduct = selector.getSelectedProduct();
-        Assert.assertSame(oldProduct, selectedProduct);
+        assertSame(oldProduct, selectedProduct);
 
         Product newProduct = new Product("new", "T2", 0, 0);
         selector.setSelectedProduct(newProduct);
         selectedProduct = selector.getSelectedProduct();
-        Assert.assertSame(newProduct, selectedProduct);
+        assertSame(newProduct, selectedProduct);
         Assert.assertNull(oldProduct.getFileLocation()); // assert that old product is disposed
     }
 
@@ -112,9 +144,9 @@ public class SourceProductSelectorTest {
         Product newProduct = new Product("new", "T1", 0, 0);
         newProduct.setFileLocation(new File(""));
         selector.setSelectedProduct(newProduct);
-        Assert.assertSame(newProduct, selector.getSelectedProduct());
+        assertSame(newProduct, selector.getSelectedProduct());
         selector.setSelectedProduct(defaultProducts[0]);
-        Assert.assertSame(defaultProducts[0], selector.getSelectedProduct());
+        assertSame(defaultProducts[0], selector.getSelectedProduct());
 
         Assert.assertNotNull(newProduct.getFileLocation());
         selector.releaseProducts();
@@ -126,11 +158,11 @@ public class SourceProductSelectorTest {
         SourceProductSelector selector = new SourceProductSelector(appContext, "Source");
         selector.initProducts();
         selector.setSelectedProduct(defaultProducts[0]);
-        Assert.assertSame(defaultProducts[0], selector.getSelectedProduct());
+        assertSame(defaultProducts[0], selector.getSelectedProduct());
         Product newProduct = new Product("new", "T1", 0, 0);
         newProduct.setFileLocation(new File(""));
         selector.setSelectedProduct(newProduct);
-        Assert.assertSame(newProduct, selector.getSelectedProduct());
+        assertSame(newProduct, selector.getSelectedProduct());
 
         Assert.assertNotNull(newProduct.getFileLocation());
         selector.releaseProducts();
@@ -142,12 +174,12 @@ public class SourceProductSelectorTest {
         SourceProductSelector selector = new SourceProductSelector(appContext, "Source");
 
         selector.initProducts();
-        Assert.assertSame(defaultProducts[0], selector.getSelectedProduct());
+        assertSame(defaultProducts[0], selector.getSelectedProduct());
 
         selector.setSelectedIndex(1);
-        Assert.assertSame(defaultProducts[1], selector.getSelectedProduct());
+        assertSame(defaultProducts[1], selector.getSelectedProduct());
 
         selector.setSelectedIndex(2);
-        Assert.assertSame(defaultProducts[2], selector.getSelectedProduct());
+        assertSame(defaultProducts[2], selector.getSelectedProduct());
     }
 }
