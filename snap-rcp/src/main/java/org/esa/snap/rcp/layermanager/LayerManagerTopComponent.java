@@ -43,7 +43,7 @@ import java.util.WeakHashMap;
 @ActionReferences({
         @ActionReference(path = "Menu/Layer", position = 400, separatorBefore = 399),
         @ActionReference(path = "Menu/View/Tool Windows"),
-        @ActionReference(path = "Toolbars/Views")
+        @ActionReference(path = "Toolbars/Tool Windows")
 })
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_LayerManagerTopComponent_Name",

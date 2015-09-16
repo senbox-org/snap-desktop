@@ -200,10 +200,10 @@
         <folder name="Tools">
             <attr name="position" intvalue="700"/>
         </folder>
-        <folder name="Views">
+        <folder name="Tool Windows">
             <attr name="position" intvalue="800"/>
         </folder>
-        <folder name="Window"> <!-- defined by tiled-editors -->
+        <folder name="Window Arrangement"> <!-- defined by tiled-editors -->
             <attr name="position" intvalue="1500"/>
         </folder>
         <folder name="Memory"> <!-- defined by NetBeans -->

@@ -70,7 +70,7 @@ import java.net.URISyntaxException;
 @ActionID(category = "Window", id = "org.esa.snap.worldwind.WW3DToolView")
 @ActionReferences({
         @ActionReference(path = "Menu/View/Tool Windows"),
-        @ActionReference(path = "Toolbars/Views")
+        @ActionReference(path = "Toolbars/Tool Windows")
 })
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_WorldWind3DTopComponentName",
