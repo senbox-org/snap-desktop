@@ -4,7 +4,6 @@ import org.esa.snap.framework.datamodel.VectorDataNode;
 import org.esa.snap.framework.ui.product.ProductPlacemarkView;
 import org.esa.snap.netbeans.docwin.DocumentTopComponent;
 import org.esa.snap.netbeans.docwin.WindowUtilities;
-import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
 
 import java.awt.BorderLayout;
 
@@ -27,8 +26,8 @@ public class PlacemarkViewTopComponent extends DocumentTopComponent<VectorDataNo
     }
 
     private void updateDisplayName() {
-        setDisplayName(WindowUtilities.getUniqueTitle(getDocument().getName(),
-                                                      ProductSceneViewTopComponent.class));
+        setDisplayName(WindowUtilities.getUniqueTitle(getDocument().getDisplayName(),
+                                                      PlacemarkViewTopComponent.class));
     }
 
 }

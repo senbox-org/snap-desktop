@@ -4,7 +4,6 @@ import org.esa.snap.framework.datamodel.MetadataElement;
 import org.esa.snap.framework.ui.product.metadata.MetadataTableInnerElement;
 import org.esa.snap.netbeans.docwin.DocumentTopComponent;
 import org.esa.snap.netbeans.docwin.WindowUtilities;
-import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
 import org.netbeans.swing.outline.Outline;
 import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.view.OutlineView;
@@ -65,8 +64,8 @@ public class MetadataViewTopComponent extends DocumentTopComponent<MetadataEleme
     }
 
     private void updateDisplayName() {
-        setDisplayName(WindowUtilities.getUniqueTitle(getDocument().getName(),
-                                                      ProductSceneViewTopComponent.class));
+        setDisplayName(WindowUtilities.getUniqueTitle(getDocument().getDisplayName(),
+                                                      MetadataViewTopComponent.class));
     }
 
     @Override
