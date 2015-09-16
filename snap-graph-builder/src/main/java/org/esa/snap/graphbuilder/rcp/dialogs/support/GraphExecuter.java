@@ -126,7 +126,7 @@ public class GraphExecuter extends Observable {
             ++cnt;
             id = opName + '(' + cnt + ')';
         }
-        final GraphNode newGraphNode = createNewGraphNode(graph, graphNodeList, opName, id);
+        final GraphNode newGraphNode = createNewGraphNode(graph, opName, id);
 
         setChanged();
         notifyObservers(new GraphEvent(events.ADD_EVENT, newGraphNode));
@@ -150,6 +150,35 @@ public class GraphExecuter extends Observable {
         newGraphNode.setOperatorUI(OperatorUIRegistry.CreateOperatorUI(newGraphNode.getOperatorName()));
 
         return newGraphNode;
+    }
+
+    private GraphNode createNewGraphNode(final Graph graph, final String opName, final String id) {
+        final Node newNode = new Node(id, opName);
+
+        final XppDomElement parameters = new XppDomElement("parameters");
+        newNode.setConfiguration(parameters);
+
+        graph.addNode(newNode);
+
+        final GraphNode newGraphNode = new GraphNode(newNode);
+        graphNodeList.add(newGraphNode);
+
+        newGraphNode.setOperatorUI(OperatorUIRegistry.CreateOperatorUI(newGraphNode.getOperatorName()));
+
+        moveWriterToLast(graph);
+
+        return newGraphNode;
+    }
+
+    private void moveWriterToLast(final Graph graph) {
+        final String writeOperatorAlias = OperatorSpi.getOperatorAlias(WriteOp.class);
+        final GraphNode writerNode = graphNodeList.findGraphNode(writeOperatorAlias);
+        if (writerNode != null) {
+            removeNode(writerNode);
+
+            graphNodeList.add(writerNode);
+            graph.addNode(writerNode.getNode());
+        }
     }
 
     public void removeOperator(final GraphNode node) {
