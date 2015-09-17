@@ -37,7 +37,7 @@ import java.awt.event.ActionEvent;
 @ActionRegistration(displayName = "#CTL_TileVerticallyActionName", lazy = false)
 @ActionReferences({
         @ActionReference(path = "Menu/Window", position = 210),
-        @ActionReference(path = "Toolbars/Window", position = 10 )
+        @ActionReference(path = "Toolbars/Window Arrangement", position = 10 )
 })
 @NbBundle.Messages("CTL_TileVerticallyActionName=Tile Vertically")
 public class TileVerticallyAction extends TileAction {

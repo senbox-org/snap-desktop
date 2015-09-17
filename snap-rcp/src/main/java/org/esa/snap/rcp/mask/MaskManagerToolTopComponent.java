@@ -38,7 +38,7 @@ import javax.swing.event.ListSelectionListener;
 @ActionID(category = "Window", id = "org.esa.snap.rcp.mask.MaskManagerTopComponent")
 @ActionReferences({
         @ActionReference(path = "Menu/View/Tool Windows"),
-        @ActionReference(path = "Toolbars/Views")
+        @ActionReference(path = "Toolbars/Tool Windows")
 })
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_MaskManagerTopComponent_Name",

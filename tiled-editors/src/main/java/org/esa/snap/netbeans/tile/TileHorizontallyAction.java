@@ -37,7 +37,7 @@ import java.awt.event.ActionEvent;
 @ActionRegistration(displayName = "#CTL_TileHorizontallyActionName", lazy = false )
 @ActionReferences({
         @ActionReference(path = "Menu/Window", position = 201, separatorBefore = 200),
-        @ActionReference(path = "Toolbars/Window", position = 0 )
+        @ActionReference(path = "Toolbars/Window Arrangement", position = 0 )
 })
 @NbBundle.Messages("CTL_TileHorizontallyActionName=Tile Horizontally")
 public class TileHorizontallyAction extends TileAction {

@@ -36,7 +36,7 @@ import java.awt.event.ActionEvent;
 @ActionID(category = "Window", id = "org.esa.snap.netbeans.tile.TileEvenlyAction" )
 @ActionReferences({
         @ActionReference(path = "Menu/Window", position = 220),
-        @ActionReference(path = "Toolbars/Window", position = 20)
+        @ActionReference(path = "Toolbars/Window Arrangement", position = 20)
 })
 @ActionRegistration(displayName = "#CTL_TileEvenlyActionName", lazy = false )
 @NbBundle.Messages("CTL_TileEvenlyActionName=Tile Evenly")

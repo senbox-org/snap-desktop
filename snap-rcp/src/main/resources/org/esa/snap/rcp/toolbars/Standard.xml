@@ -11,9 +11,9 @@
         <Toolbar name="Overlay" visible="true" />
         <Toolbar name="Processing" visible="false" />
         <Toolbar name="Tools" visible="true"/>
-        <Toolbar name="Views" visible="false"/>
+        <Toolbar name="Tool Windows" visible="false"/>
         <Toolbar name="Projects" visible="false" />
-        <Toolbar name="Window" visible="true" />
+        <Toolbar name="Window Arrangement" visible="true" />
 
         <Toolbar name="Memory" visible="false" align="right"/>
     </Row>
