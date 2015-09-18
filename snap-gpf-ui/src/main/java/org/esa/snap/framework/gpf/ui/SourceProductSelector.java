@@ -272,7 +272,11 @@ public class SourceProductSelector {
 
     private boolean productListModelContains(Product product) {
         for (int i = 0; i < productListModel.getSize(); i++) {
-            if (productListModel.getElementAt(i).equals(product)) {
+            Object listProduct = productListModel.getElementAt(i);
+            if (listProduct == null) {
+                continue;
+            }
+            if (listProduct.equals(product)) {
                 return true;
             }
         }
@@ -295,12 +299,12 @@ public class SourceProductSelector {
         tableLayout.setRowFill(1, TableLayout.Fill.HORIZONTAL);
         tableLayout.setTablePadding(3, 3);
         JPanel panel = new JPanel(tableLayout);
-        if (StringUtils.isNotNullAndNotEmpty(borderTitle)) {
-            panel.setBorder(BorderFactory.createTitledBorder(borderTitle));
-        }
         panel.add(getProductNameLabel());
         panel.add(subPanel);
-        panel.add(tableLayout.createVerticalSpacer());
+        if (StringUtils.isNotNullAndNotEmpty(borderTitle)) {
+            panel.setBorder(BorderFactory.createTitledBorder(borderTitle));
+            panel.add(tableLayout.createVerticalSpacer());
+        }
         return panel;
     }
 
