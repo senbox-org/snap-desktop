@@ -89,7 +89,6 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
             }
         }
         nodeSupport.nodeChanged(event);
-        //System.out.println("PNNode.nodeChanged: event = " + event);
     }
 
     @Override
