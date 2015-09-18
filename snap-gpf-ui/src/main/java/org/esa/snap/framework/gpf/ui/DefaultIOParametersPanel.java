@@ -72,7 +72,6 @@ public class DefaultIOParametersPanel extends JPanel {
             for (SourceProductSelector selector : sourceProductSelectorList) {
                 panel.add(selector.createDefaultPanel(""));
             }
-            panel.add(tableLayoutSPS.createVerticalSpacer());
             add(panel);
         }
         if (targetProductSelectorDisplay) {
