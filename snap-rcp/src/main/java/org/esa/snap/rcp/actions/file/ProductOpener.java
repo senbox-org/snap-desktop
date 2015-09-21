@@ -103,6 +103,10 @@ class ProductOpener {
         Iterator<ProductReaderPlugIn> readerPlugIns;
         if (getFileFormat() != null) {
             readerPlugIns = ProductIOPlugInManager.getInstance().getReaderPlugIns(getFileFormat());
+            if (!readerPlugIns.hasNext()) {
+                SnapDialogs.showError(Bundle.LBL_NoReaderFoundText() + String.format("%nCan't find reader for the given format '%s'.", getFileFormat()));
+                return false;
+            }
         } else {
             readerPlugIns = ProductIOPlugInManager.getInstance().getAllReaderPlugIns();
         }
