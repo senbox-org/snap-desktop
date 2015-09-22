@@ -15,8 +15,6 @@
  */
 package org.esa.snap.framework.ui;
 
-import org.esa.snap.framework.param.ParamChangeEvent;
-import org.esa.snap.framework.param.ParamChangeListener;
 import org.esa.snap.framework.param.ParamProperties;
 import org.esa.snap.framework.param.Parameter;
 import org.esa.snap.util.ArrayUtils;
@@ -41,8 +39,6 @@ import javax.swing.KeyStroke;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
@@ -55,8 +51,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.net.URL;
 import java.text.DecimalFormat;
 
@@ -386,30 +380,17 @@ public class UIUtils {
         final Double bigStep = spinnerStep.doubleValue() * 10;
         final JSpinner spinner = createSpinner(v, min, max, spinnerStep, bigStep, formatPattern);
         spinner.setName(properties.getLabel());
-        spinner.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent e) {
-                param.setValue(spinner.getValue(), null);
-            }
-        });
-        param.addParamChangeListener(new ParamChangeListener() {
-            public void parameterValueChanged(ParamChangeEvent event) {
-                spinner.setValue(param.getValue());
-            }
-        });
-        param.getEditor().getEditorComponent().addPropertyChangeListener("enabled", new PropertyChangeListener() {
-            public void propertyChange(PropertyChangeEvent evt) {
-                spinner.setEnabled(((Boolean) evt.getNewValue()).booleanValue());
-            }
-        });
+        spinner.addChangeListener(e -> param.setValue(spinner.getValue(), null));
+        param.addParamChangeListener(event -> spinner.setValue(param.getValue()));
+        param.getEditor().getEditorComponent().addPropertyChangeListener("enabled",
+                                                                         evt -> spinner.setEnabled(((Boolean) evt.getNewValue()).booleanValue()));
 
-        properties.addPropertyChangeListener(new PropertyChangeListener() {
-            public void propertyChange(PropertyChangeEvent evt) {
-                if (ParamProperties.MAXVALUE_KEY.equals(evt.getPropertyName())) {
-                    ((SpinnerNumberModel) spinner.getModel()).setMaximum((Comparable) properties.getMaxValue());
-                }
-                if (ParamProperties.MINVALUE_KEY.equals(evt.getPropertyName())) {
-                    ((SpinnerNumberModel) spinner.getModel()).setMinimum((Comparable) properties.getMinValue());
-                }
+        properties.addPropertyChangeListener(evt -> {
+            if (ParamProperties.MAXVALUE_KEY.equals(evt.getPropertyName())) {
+                ((SpinnerNumberModel) spinner.getModel()).setMaximum((Comparable) properties.getMaxValue());
+            }
+            if (ParamProperties.MINVALUE_KEY.equals(evt.getPropertyName())) {
+                ((SpinnerNumberModel) spinner.getModel()).setMinimum((Comparable) properties.getMinValue());
             }
         });
 
