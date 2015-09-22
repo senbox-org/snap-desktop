@@ -501,6 +501,13 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
             } else {
                 setIconBaseWithExtension("org/esa/snap/rcp/icons/RsBandAsSwath.gif");
             }
+            if (band.getSpectralWavelength() > 0.0) {
+                if (band.getSpectralWavelength() == Math.round(band.getSpectralWavelength())) {
+                    setDisplayName(String.format("%s (%d nm)", band.getName(), (int) band.getSpectralWavelength()));
+                } else {
+                    setDisplayName(String.format("%s (%s nm)", band.getName(), String.valueOf(band.getSpectralWavelength())));
+                }
+            }
             setShortDescription(createToolTip(band));
         }
 
