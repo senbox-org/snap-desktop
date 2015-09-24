@@ -29,6 +29,7 @@ import org.openide.util.Lookup;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 import java.awt.event.ActionEvent;
 import java.io.File;
@@ -36,6 +37,7 @@ import java.lang.ref.WeakReference;
 import java.text.MessageFormat;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.prefs.Preferences;
 
 /**
  * Action for exporting a product.
@@ -139,14 +141,20 @@ public class ExportProductAction extends AbstractAction implements HelpCtx.Provi
             fileName = product.getName();
         }
 
-        File newFile = SnapDialogs.requestFileForSave("Export Product",
-                                                      false,
-                                                      getFileFilter(formatName),
-                                                      getFileExtension(formatName),
-                                                      fileName,
-                                                      null,
-                                                      OpenProductAction.PREFERENCES_KEY_LAST_PRODUCT_DIR);
 
+        Preferences preferences = SnapApp.getDefault().getPreferences();
+        ProductFileChooser fc = new ProductFileChooser(new File(preferences.get(ProductOpener.PREFERENCES_KEY_LAST_PRODUCT_DIR, ".")));
+        fc.setDialogType(JFileChooser.SAVE_DIALOG);
+        fc.setSubsetEnabled(true);
+        fc.addChoosableFileFilter(getFileFilter(formatName));
+        fc.setProductToExport(product);
+        int returnVal = fc.showSaveDialog(SnapApp.getDefault().getMainFrame());
+        if (returnVal != JFileChooser.APPROVE_OPTION) {
+            // cancelled
+            return null;
+        }
+
+        File newFile = fc.getSelectedFile();
         if (newFile == null) {
             // cancelled
             return null;
@@ -163,9 +171,12 @@ public class ExportProductAction extends AbstractAction implements HelpCtx.Provi
             return false;
         }
 
-        SnapApp.getDefault().setStatusBarMessage(MessageFormat.format("Exporting product ''{0}'' to {1}...", product.getDisplayName(), newFile));
+        Product exportProduct = fc.getSubsetProduct() != null ? fc.getSubsetProduct() : product;
 
-        WriteProductOperation operation = new WriteProductOperation(product, newFile, formatName, false);
+
+        SnapApp.getDefault().setStatusBarMessage(MessageFormat.format("Exporting product ''{0}'' to {1}...", exportProduct.getDisplayName(), newFile));
+
+        WriteProductOperation operation = new WriteProductOperation(exportProduct, newFile, formatName, false);
         ProgressUtils.runOffEventThreadWithProgressDialog(operation,
                                                           getDisplayName(),
                                                           operation.getProgressHandle(),
