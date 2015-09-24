@@ -7,6 +7,7 @@ import org.esa.snap.framework.dataio.ProductReaderPlugIn;
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.util.SystemUtils;
 import org.esa.snap.util.io.SnapFileFilter;
 import org.netbeans.api.progress.ProgressUtils;
 import org.openide.DialogDisplayer;
@@ -130,7 +131,8 @@ class ProductOpener {
         }
 
         Preferences preferences = SnapApp.getDefault().getPreferences();
-        ProductFileChooser fc = new ProductFileChooser(new File(preferences.get(PREFERENCES_KEY_LAST_PRODUCT_DIR, ".")));
+        String userHomePath = SystemUtils.getUserHomeDir().getAbsolutePath();
+        ProductFileChooser fc = new ProductFileChooser(new File(preferences.get(PREFERENCES_KEY_LAST_PRODUCT_DIR, userHomePath)));
         fc.setSubsetEnabled(isSubsetImportEnabled());
         fc.setDialogTitle(SnapApp.getDefault().getInstanceName() + " - " + Bundle.CTL_OpenProductActionName());
         fc.setAcceptAllFileFilterUsed(isUseAllFileFilter());
@@ -149,10 +151,6 @@ class ProductOpener {
             // cancelled
             return null;
         }
-        if (fc.getSubsetProduct() != null) {
-            SnapApp.getDefault().getProductManager().addProduct(fc.getSubsetProduct());
-            return true;
-        }
 
         File[] files = getSelectedFiles(fc);
 
@@ -164,6 +162,11 @@ class ProductOpener {
         File currentDirectory = fc.getCurrentDirectory();
         if (currentDirectory != null) {
             preferences.put(PREFERENCES_KEY_LAST_PRODUCT_DIR, currentDirectory.toString());
+        }
+
+        if (fc.getSubsetProduct() != null) {
+            SnapApp.getDefault().getProductManager().addProduct(fc.getSubsetProduct());
+            return true;
         }
 
         String formatName = (fc.getFileFilter() instanceof SnapFileFilter)
