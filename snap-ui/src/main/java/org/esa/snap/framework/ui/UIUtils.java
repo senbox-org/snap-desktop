@@ -466,7 +466,7 @@ public class UIUtils {
             format.applyPattern(formatPattern);
             numberEditor.getTextField().setColumns(8);
         }
-        spinner.setValue(0);
+
         spinner.setValue(value);
 
         final String bigDec = "dec++";
