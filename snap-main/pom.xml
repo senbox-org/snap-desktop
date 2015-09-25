@@ -20,7 +20,11 @@
     </description>
 
     <dependencies>
-        <!-- nbexec provides the actual main class (org.esa.snap.nbexec.Launcher) to be called from the IDE. -->
+        <!--
+            nbexec provides an org.esa.snap.nbexec.Launcher#main method to be called from
+            an IDE other than NetBeans, i.e. IntelliJ IDEA.
+            This nbexec dependency is not used in production code at all.
+        -->
         <dependency>
             <groupId>org.esa.snap</groupId>
             <artifactId>nbexec</artifactId>
