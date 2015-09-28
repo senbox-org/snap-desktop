@@ -15,27 +15,15 @@
  */
 package org.esa.snap.graphbuilder.rcp.dialogs.support;
 
-import org.apache.commons.math3.util.FastMath;
 import org.esa.snap.framework.gpf.graph.NodeSource;
 import org.esa.snap.graphbuilder.gpf.ui.OperatorUIRegistry;
-import org.esa.snap.util.IconUtils;
 import org.esa.snap.util.StringUtils;
 
-import javax.swing.ImageIcon;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
+import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.RenderingHints;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -43,8 +31,6 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.Rectangle2D;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -62,8 +48,10 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
     private final ConnectMenuListener connectListener = new ConnectMenuListener(this);
     private final RemoveSourceMenuListener removeSourceListener = new RemoveSourceMenuListener(this);
 
-    private static final ImageIcon opIcon = IconUtils.LoadIcon("org/esa/snap/icons/operator.png");
-    private static final ImageIcon folderIcon = IconUtils.LoadIcon("org/esa/snap/icons/folder.png");
+    private static final ImageIcon opIcon = new ImageIcon(GraphPanel.class.getClassLoader().
+            getResource("org/esa/snap/graphbuilder/icons/operator.png"));
+    private static final ImageIcon folderIcon = new ImageIcon(GraphPanel.class.getClassLoader().
+            getResource("org/esa/snap/graphbuilder/icons/folder.png"));
 
     private static final Font font = new Font("Ariel", Font.BOLD, 10);
     private static final Color opColor = new Color(0, 177, 255, 128);
