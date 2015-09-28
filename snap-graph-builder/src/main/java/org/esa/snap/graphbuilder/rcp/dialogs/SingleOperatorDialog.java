@@ -370,18 +370,20 @@ public class SingleOperatorDialog extends SingleTargetProductDialog {
             final TargetProductSelectorModel model = getTargetProductSelector().getModel();
             try {
                 final Product targetProduct = get();
-                final Date now = Calendar.getInstance().getTime();
-                final long totalSeconds = (now.getTime() - executeStartTime.getTime()) / 1000;
-                final long totalBytes = ProductFunctions.getRawStorageSize(targetProduct);
-                final long totalPixels = ProductFunctions.getTotalPixels(targetProduct);
+                if(targetProduct != null) {
+                    final Date now = Calendar.getInstance().getTime();
+                    final long totalSeconds = (now.getTime() - executeStartTime.getTime()) / 1000;
+                    final long totalBytes = ProductFunctions.getRawStorageSize(targetProduct);
+                    final long totalPixels = ProductFunctions.getTotalPixels(targetProduct);
 
-                statusLabel.setText(ProductFunctions.getProcessingStatistics(totalSeconds, totalBytes, totalPixels));
+                    statusLabel.setText(ProductFunctions.getProcessingStatistics(totalSeconds, totalBytes, totalPixels));
 
-                if (model.isOpenInAppSelected()) {
-                    appContext.getProductManager().addProduct(targetProduct);
-                    //showSaveAndOpenInAppInfo(saveTime);
-                } else {
-                    //showSaveInfo(saveTime);
+                    if (model.isOpenInAppSelected()) {
+                        appContext.getProductManager().addProduct(targetProduct);
+                        //showSaveAndOpenInAppInfo(saveTime);
+                    } else {
+                        //showSaveInfo(saveTime);
+                    }
                 }
             } catch (InterruptedException e) {
                 // ignore
