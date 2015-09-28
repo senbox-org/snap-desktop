@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
  */
 class ProductOpener {
 
-    private static final String PREFERENCES_KEY_LAST_PRODUCT_DIR = "last_product_open_dir";
+    public static final String PREFERENCES_KEY_LAST_PRODUCT_DIR = "last_product_open_dir";
     private static final String PREFERENCES_KEY_PREFIX_ALTERNATIVE_READER = "open_alternative_reader.";
 
     private String fileFormat;
@@ -142,11 +142,10 @@ class ProductOpener {
                 fc.setFileFilter(filter);
             }
         });
-        fc.setDialogType(JFileChooser.OPEN_DIALOG);
         fc.setMultiSelectionEnabled(isMultiSelectionEnabled());
         fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
-        int returnVal = fc.showOpenDialog(null);
+        int returnVal = fc.showOpenDialog(SnapApp.getDefault().getMainFrame());
         if (returnVal != JFileChooser.APPROVE_OPTION) {
             // cancelled
             return null;
