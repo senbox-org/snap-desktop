@@ -102,6 +102,8 @@ public class Main {
 
         // Special rule on Windows OS
         Path nbDefaultWindowsUserDir = userHome.resolve("AppData\\Roaming\\.snap").normalize();
+        // before Java 8 update 20 the following line fails with an ArrayIndexOutOfBoundsException
+        // see https://bugs.openjdk.java.net/browse/JDK-8037945
         boolean isWindowsDefaultUserDir = Paths.get(userDir).normalize().equals(nbDefaultWindowsUserDir);
         if (isWindowsDefaultUserDir) {
             userDir = defaultUserDir;
