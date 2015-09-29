@@ -179,7 +179,7 @@ class RangeFinderInteractor extends ViewportInteractor {
     }
 
     private void showDetailsDialog(ProductSceneView view) {
-        //todo ask for scenerastertransform instead of geocoding
+        //todo [multisize_products] ask for scenerastertransform instead of geocoding
         GeoCoding geoCoding;
         geoCoding = view.getRaster().getGeoCoding();
         if (geoCoding == null) {
