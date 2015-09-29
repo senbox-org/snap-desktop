@@ -129,7 +129,7 @@ public class ComputeMaskAreaAction extends AbstractAction implements LookupListe
         final List<String> maskNameList = new ArrayList<>();
         for (int i = 0; i < maskGroup.getNodeCount(); i++) {
             final Mask mask = maskGroup.get(i);
-            //todo ask about scenerastertransform, not size
+            //todo [multisize_products] ask about scenerastertransform, not size
             if ((raster instanceof Band && raster.getRasterSize().equals(mask.getRasterSize())) ||
                     (raster instanceof TiePointGrid && mask.getRasterSize().equals(product.getSceneRasterSize()))) {
                 maskNameList.add(mask.getName());
