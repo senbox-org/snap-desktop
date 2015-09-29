@@ -65,14 +65,11 @@
                 For Virtual Machine parameters, it compute "optimum" memory parameters:<br>
                 It sets the minumal memory to 2GB if enough memory is available.
                 It computes the maximal memory using the total memory of the system, the memory taken by SNAP
-                and the memory taken by other processes (OS, other applications, etc.). If the actual free
-                ram is higher the the "minimum free ram" (fixed to 512Mb), then the maximum memory is configured
-                so that SNAP can use all the free ram but the "minimum free ram". If the free ram is lower than
-                the "minimum free ram", the SNAP is configured to take at most the ram it takes plus half of
-                the free ram
+                and the memory taken by other processes (OS, other applications, etc.). The maximum memory is configured
+                so that SNAP can use all the free ram.
             </li>
             <li>
-                For Data Path parameters, it computes the fastest directory by performing a benchmark on all drives,
+                For Cache Path parameters, it computes the fastest directory by performing a benchmark on all drives,
                 including network drives. The drive have to have enough free space and be significantly faster than the
                 actual drive to be selected.
             </li>

@@ -52,6 +52,8 @@ final class PerformancePanel extends javax.swing.JPanel {
      */
     private static final String BENCHMARK_SEPARATOR=";";
 
+    private static final int nbCores = JavaSystemInfos.getInstance().getNbCPUs();
+
     /**
      * Tool for optimizing and setting the performance parameters
      */
@@ -562,7 +564,6 @@ final class PerformancePanel extends javax.swing.JPanel {
         String nbThreadsString = nbThreadsTextField.getText();
         try{
             int nbThreads = Integer.parseUnsignedInt(nbThreadsString);
-            int nbCores = JavaSystemInfos.getInstance().getNbCPUs();
 
             if(nbThreads > nbCores) {
                 nbThreadsTextField.setForeground(ERROR_VALUES_COLOR);
@@ -606,7 +607,7 @@ final class PerformancePanel extends javax.swing.JPanel {
         boolean valid = true;
         for(String nbThread : StringUtils.split(benchmarkNbThreadsTextField.getText(), ';')){
             try {
-                if(Integer.parseInt(nbThread) > JavaSystemInfos.getInstance().getNbCPUs()){
+                if(Integer.parseInt(nbThread) > nbCores){
                     valid = false;
                     break;
                 }
