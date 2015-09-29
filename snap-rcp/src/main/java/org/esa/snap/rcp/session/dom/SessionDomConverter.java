@@ -22,7 +22,6 @@ import com.bc.ceres.binding.PropertyDescriptorFactory;
 import com.bc.ceres.binding.PropertySetDescriptor;
 import com.bc.ceres.binding.dom.DefaultDomConverter;
 import com.bc.ceres.binding.dom.DomConverter;
-import org.esa.snap.framework.datamodel.BitmaskDef;
 import org.esa.snap.framework.datamodel.PlacemarkDescriptor;
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.ProductManager;
@@ -40,7 +39,6 @@ public class SessionDomConverter extends DefaultDomConverter {
         this.domConverterMap = new HashMap<>(33);
         setDomConverter(Product.class, new ProductDomConverter(productManager));
         setDomConverter(RasterDataNode.class, new RasterDataNodeDomConverter(productManager));
-        setDomConverter(BitmaskDef.class, new BitmaskDefDomConverter(productManager));
         setDomConverter(PlacemarkDescriptor.class, new PlacemarkDescriptorDomConverter());
     }
 
