@@ -191,7 +191,7 @@ class ProductLayerAssistantPage extends AbstractLayerSourceAssistantPage {
 
     private void collectCompatibleBands(RasterDataNode referenceRaster, RasterDataNode[] dataNodes,
                                                   Collection<RasterDataNode> rasterDataNodes) {
-        //todo ask for scenerastertransform instead of width and height
+        //todo [multisize_products] ask for scenerastertransform instead of width and height
         final Dimension referenceRasterSize = referenceRaster.getRasterSize();
         for (RasterDataNode node : dataNodes) {
             if (node.getRasterSize().equals(referenceRasterSize)) {
