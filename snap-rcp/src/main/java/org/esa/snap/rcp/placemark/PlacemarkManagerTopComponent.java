@@ -97,8 +97,8 @@ import java.util.prefs.Preferences;
  */
 public class PlacemarkManagerTopComponent extends TopComponent implements UndoRedo.Provider, HelpCtx.Provider {
 
-    public static final String PROPERTY_KEY_IO_DIR = "pin.io.dir";
-    private static final String SYSPROP_SNAP_TO_COMPUTED_GEOLOCATION = "snap.pin.adjust.geolocation";
+    public static final String PREFERENCE_KEY_PIN_IO_DIR = "pin.io.dir";
+    private static final String PREFERENCE_KEY_ADJUST_PIN_GEO_POS = Placemark.PREFERENCE_KEY_ADJUST_PIN_GEO_POS;
 
     private final PlacemarkDescriptor placemarkDescriptor;
     private final Preferences preferences;
@@ -118,7 +118,7 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
     private ProductSceneView currentView;
     private final SelectionChangeListener selectionChangeHandler;
     private final List<List<Placemark>> relatedPlacemarks;
-    private final boolean snapToComputedGeolocation;
+    private final boolean adjustPinGeoPos;
 
     public PlacemarkManagerTopComponent(PlacemarkDescriptor placemarkDescriptor, TableModelFactory modelFactory) {
         this.placemarkDescriptor = placemarkDescriptor;
@@ -129,7 +129,7 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
         placemarkTableModel = modelFactory.createTableModel(placemarkDescriptor, product, null, null);
         selectionChangeHandler = new ViewSelectionChangeHandler();
         relatedPlacemarks = new ArrayList<>();
-        snapToComputedGeolocation = Config.instance().preferences().getBoolean(SYSPROP_SNAP_TO_COMPUTED_GEOLOCATION, true);
+        adjustPinGeoPos = Config.instance().preferences().getBoolean(PREFERENCE_KEY_ADJUST_PIN_GEO_POS, true);
         initUI();
         setDisplayName(getTitle());
     }
@@ -547,7 +547,7 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
 
             // from here on we only handle GCPs and valid Pins
 
-            if (canGetPixelPos && snapToComputedGeolocation) {
+            if (canGetPixelPos && adjustPinGeoPos) {
                 placemarkDescriptor.updatePixelPos(geoCoding, placemark.getGeoPos(), pixelPos);
             }
 
@@ -555,7 +555,7 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
                 numPinsOutOfBounds++;
             } else {
                 getPlacemarkGroup(targetProduct).add(placemark);
-                if (snapToComputedGeolocation) {
+                if (adjustPinGeoPos) {
                     placemark.setPixelPos(pixelPos);
                 } else {
                     placemark.setGeoPos(placemark.getGeoPos());
@@ -921,14 +921,14 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
 
     private void setIODir(File dir) {
         if (preferences != null && dir != null) {
-            preferences.put(PROPERTY_KEY_IO_DIR, dir.getPath());
+            preferences.put(PREFERENCE_KEY_PIN_IO_DIR, dir.getPath());
         }
     }
 
     private File getIODir() {
         File dir = SystemUtils.getUserHomeDir();
         if (preferences != null) {
-            dir = new File(preferences.get(PROPERTY_KEY_IO_DIR, dir.getPath()));
+            dir = new File(preferences.get(PREFERENCE_KEY_PIN_IO_DIR, dir.getPath()));
         }
         return dir;
     }

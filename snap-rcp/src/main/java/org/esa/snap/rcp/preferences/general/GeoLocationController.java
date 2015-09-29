@@ -21,6 +21,7 @@ import com.bc.ceres.binding.PropertySet;
 import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.PropertyEditorRegistry;
+import org.esa.snap.framework.datamodel.Placemark;
 import org.esa.snap.framework.ui.GridBagUtils;
 import org.esa.snap.rcp.pixelinfo.PixelInfoView;
 import org.esa.snap.rcp.preferences.DefaultConfigController;
@@ -56,8 +57,8 @@ import static org.esa.snap.rcp.pixelinfo.PixelInfoView.*;
 })
 public final class GeoLocationController extends DefaultConfigController {
 
-    private static final String SYSPROP_SNAP_TO_COMPUTED_GEOLOCATION = "snap.pin.adjust.geolocation";
-    private static final String SYSPROP_PIXEL_GEO_CODING_FRACTION_ACCURACY = "snap.pixelGeoCoding.fractionAccuracy";
+    private static final String PREFERENCE_KEY_ADJUST_PIN_GEO_POS = Placemark.PREFERENCE_KEY_ADJUST_PIN_GEO_POS;
+    private static final String PREFERENCE_KEY_PIXEL_GEO_CODING_FRACTION_ACCURACY = "snap.pixelGeoCoding.fractionAccuracy";
 
 
     protected PropertySet createPropertySet() {
@@ -73,11 +74,11 @@ public final class GeoLocationController extends DefaultConfigController {
     protected JPanel createPanel(BindingContext context) {
 
         final PropertyEditorRegistry registry = PropertyEditorRegistry.getInstance();
-        Property snapToExactGeolocationProperty = context.getPropertySet().getProperty(SYSPROP_SNAP_TO_COMPUTED_GEOLOCATION);
-        Property pixelGeocodingFractionAccuracyProperty = context.getPropertySet().getProperty(SYSPROP_PIXEL_GEO_CODING_FRACTION_ACCURACY);
-        Property showGeoPosAsDecimals = context.getPropertySet().getProperty(PROPERTY_KEY_SHOW_GEO_POS_DECIMALS);
-        Property showPixelPosAsDecimals = context.getPropertySet().getProperty(PROPERTY_KEY_SHOW_PIXEL_POS_DECIMALS);
-        Property showPixelPosOffset1 = context.getPropertySet().getProperty(PROPERTY_KEY_SHOW_PIXEL_POS_OFFSET_ONE);
+        Property snapToExactGeolocationProperty = context.getPropertySet().getProperty(PREFERENCE_KEY_ADJUST_PIN_GEO_POS);
+        Property pixelGeocodingFractionAccuracyProperty = context.getPropertySet().getProperty(PREFERENCE_KEY_PIXEL_GEO_CODING_FRACTION_ACCURACY);
+        Property showGeoPosAsDecimals = context.getPropertySet().getProperty(PREFERENCE_KEY_SHOW_GEO_POS_DECIMALS);
+        Property showPixelPosAsDecimals = context.getPropertySet().getProperty(PREFERENCE_KEY_SHOW_PIXEL_POS_DECIMALS);
+        Property showPixelPosOffset1 = context.getPropertySet().getProperty(PREFERENCE_KEY_SHOW_PIXEL_POS_OFFSET_ONE);
 
         JComponent[] snapToExactGeolocationComponents = registry.findPropertyEditor(snapToExactGeolocationProperty.getDescriptor()).createComponents(snapToExactGeolocationProperty.getDescriptor(), context);
         JComponent[] pixelGeocodingfractionAccuracyComponents = registry.findPropertyEditor(pixelGeocodingFractionAccuracyProperty.getDescriptor()).createComponents(pixelGeocodingFractionAccuracyProperty.getDescriptor(), context);
@@ -122,22 +123,22 @@ public final class GeoLocationController extends DefaultConfigController {
     static class GeoLocationBean {
 
         @Preference(label = "Use sub-pixel fraction accuracy for pixel-based geo-coding",
-                key = SYSPROP_PIXEL_GEO_CODING_FRACTION_ACCURACY, config = "snap")
+                key = PREFERENCE_KEY_PIXEL_GEO_CODING_FRACTION_ACCURACY, config = "snap")
         boolean getPixelPosWithFractionAccuracy = false;
 
         @Preference(label = "Snap pins to exact geo-location after import, transfer to another product, or geo-coding change",
-                key = SYSPROP_SNAP_TO_COMPUTED_GEOLOCATION, config = "snap")
+                key = PREFERENCE_KEY_ADJUST_PIN_GEO_POS, config = "snap")
         boolean snapToExactGeoLocation = true;
 
-        @Preference(label = "Show geographical coordinates in decimal degrees", key = PROPERTY_KEY_SHOW_GEO_POS_DECIMALS)
-        boolean showGeoPosAsDecimals = PROPERTY_DEFAULT_SHOW_GEO_POS_DECIMALS;
+        @Preference(label = "Show geographical coordinates in decimal degrees", key = PREFERENCE_KEY_SHOW_GEO_POS_DECIMALS)
+        boolean showGeoPosAsDecimals = PREFERENCE_DEFAULT_SHOW_GEO_POS_DECIMALS;
 
-        @Preference(label = "Show pixel coordinates with fractional part", key = PROPERTY_KEY_SHOW_PIXEL_POS_DECIMALS)
-        boolean showPixelPosAsDecimals = PROPERTY_DEFAULT_SHOW_PIXEL_POS_DECIMALS;
+        @Preference(label = "Show pixel coordinates with fractional part", key = PREFERENCE_KEY_SHOW_PIXEL_POS_DECIMALS)
+        boolean showPixelPosAsDecimals = PREFERENCE_DEFAULT_SHOW_PIXEL_POS_DECIMALS;
 
-        @Preference(label = "Show pixel coordinates starting at (1,1)", key = PROPERTY_KEY_SHOW_PIXEL_POS_OFFSET_ONE,
+        @Preference(label = "Show pixel coordinates starting at (1,1)", key = PREFERENCE_KEY_SHOW_PIXEL_POS_OFFSET_ONE,
                 description = "Show pixel coordinates so that the upper left image corner is (1,1), instead of (0,0).")
-        boolean showPixelPosWithOffset1 = PROPERTY_DEFAULT_SHOW_PIXEL_POS_OFFSET_1;
+        boolean showPixelPosWithOffset1 = PREFERENCE_DEFAULT_SHOW_PIXEL_POS_OFFSET_1;
     }
 
 }

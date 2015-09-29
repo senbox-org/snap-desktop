@@ -48,19 +48,19 @@ public final class WriteOptionsController extends DefaultConfigController {
     /**
      * Preferences key for save product headers (MPH, SPH) or not
      */
-    public static final String PROPERTY_KEY_SAVE_PRODUCT_HEADERS = "save.product.headers";
+    public static final String PREFERENCE_KEY_SAVE_PRODUCT_HEADERS = "save.product.headers";
     /**
      * Preferences key for save product history or not
      */
-    public static final String PROPERTY_KEY_SAVE_PRODUCT_HISTORY = "save.product.history";
+    public static final String PREFERENCE_KEY_SAVE_PRODUCT_HISTORY = "save.product.history";
     /**
      * Preferences key for save product annotations (ADS) or not
      */
-    public static final String PROPERTY_KEY_SAVE_PRODUCT_ANNOTATIONS = "save.product.annotations";
+    public static final String PREFERENCE_KEY_SAVE_PRODUCT_ANNOTATIONS = "save.product.annotations";
     /**
      * Preferences key for incremental mode at save
      */
-    public static final String PROPERTY_KEY_SAVE_INCREMENTAL = "save.incremental";
+    public static final String PREFERENCE_KEY_SAVE_INCREMENTAL = "save.incremental";
 
     /**
      * default value for preference save product headers (MPH, SPH) or not
@@ -85,19 +85,19 @@ public final class WriteOptionsController extends DefaultConfigController {
 
     @Override
     protected void configure(BindingContext context) {
-        Enablement enablement = context.bindEnabledState(PROPERTY_KEY_SAVE_PRODUCT_ANNOTATIONS, false, new Enablement.Condition() {
+        Enablement enablement = context.bindEnabledState(PREFERENCE_KEY_SAVE_PRODUCT_ANNOTATIONS, false, new Enablement.Condition() {
             @Override
             public boolean evaluate(BindingContext bindingContext) {
-                return !((Boolean) bindingContext.getPropertySet().getProperty(PROPERTY_KEY_SAVE_PRODUCT_HEADERS).getValue());
+                return !((Boolean) bindingContext.getPropertySet().getProperty(PREFERENCE_KEY_SAVE_PRODUCT_HEADERS).getValue());
             }
         });
-        context.getPropertySet().getProperty(PROPERTY_KEY_SAVE_PRODUCT_HEADERS).addPropertyChangeListener(new PropertyChangeListener() {
+        context.getPropertySet().getProperty(PREFERENCE_KEY_SAVE_PRODUCT_HEADERS).addPropertyChangeListener(new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
                 enablement.apply();
                 if (!((Boolean) evt.getNewValue())) {
                     try {
-                        context.getPropertySet().getProperty(PROPERTY_KEY_SAVE_PRODUCT_ANNOTATIONS).setValue(false);
+                        context.getPropertySet().getProperty(PREFERENCE_KEY_SAVE_PRODUCT_ANNOTATIONS).setValue(false);
                     } catch (ValidationException e) {
                         e.printStackTrace(); // very basic exception handling because exception is not expected to be thrown
                     }
@@ -114,16 +114,16 @@ public final class WriteOptionsController extends DefaultConfigController {
     @SuppressWarnings("UnusedDeclaration")
     static class WriteOptionsBean {
 
-        @Preference(label = "Save product header (MPH, SPH, Global_Attributes)", key = PROPERTY_KEY_SAVE_PRODUCT_HEADERS)
+        @Preference(label = "Save product header (MPH, SPH, Global_Attributes)", key = PREFERENCE_KEY_SAVE_PRODUCT_HEADERS)
         boolean saveProductHeaders = DEFAULT_VALUE_SAVE_PRODUCT_HEADERS;
 
-        @Preference(label = "Save product history (History)", key = PROPERTY_KEY_SAVE_PRODUCT_HISTORY)
+        @Preference(label = "Save product history (History)", key = PREFERENCE_KEY_SAVE_PRODUCT_HISTORY)
         boolean saveProductHistory = DEFAULT_VALUE_SAVE_PRODUCT_HISTORY;
 
-        @Preference(label = "Save product annotation datasets (ADS)", key = PROPERTY_KEY_SAVE_PRODUCT_ANNOTATIONS)
+        @Preference(label = "Save product annotation datasets (ADS)", key = PREFERENCE_KEY_SAVE_PRODUCT_ANNOTATIONS)
         boolean saveProductAds = DEFAULT_VALUE_SAVE_PRODUCT_ANNOTATIONS;
 
-        @Preference(label = "Use incremental save (only save modified items)", key = PROPERTY_KEY_SAVE_INCREMENTAL)
+        @Preference(label = "Use incremental save (only save modified items)", key = PREFERENCE_KEY_SAVE_INCREMENTAL)
         boolean saveIncremental = DEFAULT_VALUE_SAVE_INCREMENTAL;
     }
 

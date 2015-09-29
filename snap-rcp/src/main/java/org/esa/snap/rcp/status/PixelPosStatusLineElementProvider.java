@@ -28,10 +28,10 @@ import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
 import java.util.prefs.Preferences;
 
-import static org.esa.snap.rcp.pixelinfo.PixelInfoView.PROPERTY_DEFAULT_SHOW_GEO_POS_DECIMALS;
-import static org.esa.snap.rcp.pixelinfo.PixelInfoView.PROPERTY_DEFAULT_SHOW_PIXEL_POS_DECIMALS;
-import static org.esa.snap.rcp.pixelinfo.PixelInfoView.PROPERTY_KEY_SHOW_GEO_POS_DECIMALS;
-import static org.esa.snap.rcp.pixelinfo.PixelInfoView.PROPERTY_KEY_SHOW_PIXEL_POS_DECIMALS;
+import static org.esa.snap.rcp.pixelinfo.PixelInfoView.PREFERENCE_DEFAULT_SHOW_GEO_POS_DECIMALS;
+import static org.esa.snap.rcp.pixelinfo.PixelInfoView.PREFERENCE_DEFAULT_SHOW_PIXEL_POS_DECIMALS;
+import static org.esa.snap.rcp.pixelinfo.PixelInfoView.PREFERENCE_KEY_SHOW_GEO_POS_DECIMALS;
+import static org.esa.snap.rcp.pixelinfo.PixelInfoView.PREFERENCE_KEY_SHOW_PIXEL_POS_DECIMALS;
 
 /**
  * Displays current pixel position in the status bar.
@@ -171,8 +171,8 @@ public class PixelPosStatusLineElementProvider
     public void preferenceChange(PreferenceChangeEvent evt) {
         // Called if SNAP preferences change, adjust any status bar setting here.
         final String propertyName = evt.getKey();
-        if (PROPERTY_KEY_SHOW_PIXEL_POS_DECIMALS.equals(propertyName)
-                || PROPERTY_KEY_SHOW_GEO_POS_DECIMALS.equals(propertyName)) {
+        if (PREFERENCE_KEY_SHOW_PIXEL_POS_DECIMALS.equals(propertyName)
+                || PREFERENCE_KEY_SHOW_GEO_POS_DECIMALS.equals(propertyName)) {
             updateSettings();
         }
     }
@@ -202,12 +202,12 @@ public class PixelPosStatusLineElementProvider
     private void updateSettings() {
         final Preferences preferences = SnapApp.getDefault().getPreferences();
         showPixelOffsetDecimals = preferences.getBoolean(
-                PROPERTY_KEY_SHOW_PIXEL_POS_DECIMALS,
-                PROPERTY_DEFAULT_SHOW_PIXEL_POS_DECIMALS);
+                PREFERENCE_KEY_SHOW_PIXEL_POS_DECIMALS,
+                PREFERENCE_DEFAULT_SHOW_PIXEL_POS_DECIMALS);
 
         showGeoPosOffsetDecimals = preferences.getBoolean(
-                PROPERTY_KEY_SHOW_GEO_POS_DECIMALS,
-                PROPERTY_DEFAULT_SHOW_GEO_POS_DECIMALS);
+                PREFERENCE_KEY_SHOW_GEO_POS_DECIMALS,
+                PREFERENCE_DEFAULT_SHOW_GEO_POS_DECIMALS);
     }
 }
 

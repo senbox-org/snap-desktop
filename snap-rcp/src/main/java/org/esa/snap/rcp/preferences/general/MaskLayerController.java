@@ -55,11 +55,11 @@ public final class MaskLayerController extends DefaultConfigController {
     /**
      * Preferences key for the mask overlay color
      */
-    public static final String PROPERTY_KEY_MASK_COLOR = "mask.color";
+    public static final String PREFERENCE_KEY_MASK_COLOR = "mask.color";
     /**
      * Preferences key for the mask overlay transparency
      */
-    public static final String PROPERTY_KEY_MASK_TRANSPARENCY = "mask.transparency";
+    public static final String PREFERENCE_KEY_MASK_TRANSPARENCY = "mask.transparency";
 
     protected PropertySet createPropertySet() {
         return createPropertySet(new MaskBean());
@@ -76,8 +76,8 @@ public final class MaskLayerController extends DefaultConfigController {
         JPanel pageUI = new JPanel(tableLayout);
 
         PropertyEditorRegistry registry = PropertyEditorRegistry.getInstance();
-        Property maskOverlayColor = context.getPropertySet().getProperty(PROPERTY_KEY_MASK_COLOR);
-        Property maskOverlayTransparency = context.getPropertySet().getProperty(PROPERTY_KEY_MASK_TRANSPARENCY);
+        Property maskOverlayColor = context.getPropertySet().getProperty(PREFERENCE_KEY_MASK_COLOR);
+        Property maskOverlayTransparency = context.getPropertySet().getProperty(PREFERENCE_KEY_MASK_TRANSPARENCY);
 
         JComponent[] maskOverlayColorComponents = PreferenceUtils.createColorComponents(maskOverlayColor);
         JComponent[] maskOverlayTransparencyComponents = registry.findPropertyEditor(maskOverlayTransparency.getDescriptor()).createComponents(maskOverlayTransparency.getDescriptor(), context);
@@ -104,11 +104,11 @@ public final class MaskLayerController extends DefaultConfigController {
 
         @SuppressWarnings("AccessStaticViaInstance")
         @Preference(label = "Default mask overlay colour",
-                key = PROPERTY_KEY_MASK_COLOR)
+                key = PREFERENCE_KEY_MASK_COLOR)
         Color maskOverlayColor = Mask.ImageType.DEFAULT_COLOR.RED;
 
         @Preference(label = "Default mask overlay transparency",
-                key = PROPERTY_KEY_MASK_TRANSPARENCY,
+                key = PREFERENCE_KEY_MASK_TRANSPARENCY,
                 interval = "[0.0,1.0]")
         double maskOverlayTransparency = Mask.ImageType.DEFAULT_TRANSPARENCY;
     }

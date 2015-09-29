@@ -145,7 +145,7 @@ public class CreateGeoCodingDisplacementBandsAction extends AbstractAction imple
 
             @Override
             public void done() {
-                if (snapApp.getPreferences().getBoolean(UiBehaviorController.PROPERTY_KEY_AUTO_SHOW_NEW_BANDS, true)) {
+                if (snapApp.getPreferences().getBoolean(UiBehaviorController.PREFERENCE_KEY_AUTO_SHOW_NEW_BANDS, true)) {
                     try {
                         Band[] bands = get();
                         if (bands == null) {

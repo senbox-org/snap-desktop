@@ -131,15 +131,15 @@ public class ProductSceneView extends BasicView
     /**
      * Property name for the pixel border
      */
-    public static final String PROPERTY_KEY_PIXEL_BORDER_SHOWN = "pixel.border.shown";
+    public static final String PREFERENCE_KEY_PIXEL_BORDER_SHOWN = "pixel.border.shown";
     /**
      * Name of property which switches display of af a navigataion control in the image view.
      */
-    public static final String PROPERTY_KEY_IMAGE_NAV_CONTROL_SHOWN = "image.navControlShown";
+    public static final String PREFERENCE_KEY_IMAGE_NAV_CONTROL_SHOWN = "image.navControlShown";
     /**
      * Name of property which switches display of af a navigataion control in the image view.
      */
-    public static final String PROPERTY_KEY_IMAGE_SCROLL_BARS_SHOWN = "image.scrollBarsShown";
+    public static final String PREFERENCE_KEY_IMAGE_SCROLL_BARS_SHOWN = "image.scrollBarsShown";
 
     /**
      * Name of property of image info
@@ -208,7 +208,7 @@ public class ProductSceneView extends BasicView
         // todo - use sceneImage.getConfiguration() (nf, 18.09.2008)
         setBackground(DEFAULT_IMAGE_BACKGROUND_COLOR);
 
-        this.pixelBorderShown = sceneImage.getConfiguration().getPropertyBool(PROPERTY_KEY_PIXEL_BORDER_SHOWN, true);
+        this.pixelBorderShown = sceneImage.getConfiguration().getPropertyBool(PREFERENCE_KEY_PIXEL_BORDER_SHOWN, true);
 
         this.sceneImage = sceneImage;
         this.baseImageLayer = sceneImage.getBaseImageLayer();
@@ -233,7 +233,7 @@ public class ProductSceneView extends BasicView
             }
         });
         final boolean navControlShown = sceneImage.getConfiguration().getPropertyBool(
-                PROPERTY_KEY_IMAGE_NAV_CONTROL_SHOWN, true);
+                PREFERENCE_KEY_IMAGE_NAV_CONTROL_SHOWN, true);
         this.layerCanvas.setNavControlShown(navControlShown);
         this.layerCanvas.setAntialiasing(true);
         this.layerCanvas.setPreferredSize(new Dimension(400, 400));
@@ -245,7 +245,7 @@ public class ProductSceneView extends BasicView
         figureEditor = new VectorDataFigureEditor(this);
         figureEditor.addSelectionChangeListener(new PinSelectionChangeListener());
 
-        this.scrollBarsShown = sceneImage.getConfiguration().getPropertyBool(PROPERTY_KEY_IMAGE_SCROLL_BARS_SHOWN,
+        this.scrollBarsShown = sceneImage.getConfiguration().getPropertyBool(PREFERENCE_KEY_IMAGE_SCROLL_BARS_SHOWN,
                                                                              false);
         if (scrollBarsShown) {
             this.scrollPane = createScrollPane();
@@ -675,9 +675,9 @@ public class ProductSceneView extends BasicView
      * @param configuration the configuration.
      */
     public void appyLayerProperties(PropertyMap configuration) {
-        setScrollBarsShown(configuration.getPropertyBool(PROPERTY_KEY_IMAGE_SCROLL_BARS_SHOWN, false));
+        setScrollBarsShown(configuration.getPropertyBool(PREFERENCE_KEY_IMAGE_SCROLL_BARS_SHOWN, false));
         layerCanvas.setAntialiasing(true);
-        layerCanvas.setNavControlShown(configuration.getPropertyBool(PROPERTY_KEY_IMAGE_NAV_CONTROL_SHOWN, true));
+        layerCanvas.setNavControlShown(configuration.getPropertyBool(PREFERENCE_KEY_IMAGE_NAV_CONTROL_SHOWN, true));
         layerCanvas.setBackground(
                 configuration.getPropertyColor("image.background.color", DEFAULT_IMAGE_BACKGROUND_COLOR));
 
@@ -1016,7 +1016,7 @@ public class ProductSceneView extends BasicView
         final Product thisProduct = thisRaster.getProduct();
         final Product thatProduct = thatRaster.getProduct();
 
-        //todo ask for scenerastertransform instead
+        //todo [multisize_products] ask for scenerastertransform instead
         if ((thatProduct == thisProduct || thatProduct.isCompatibleProduct(thisProduct, 1.0e-3f))
                 && thisRaster.getRasterSize().equals(thatRaster.getRasterSize())) {
             final Viewport thisViewport = layerCanvas.getViewport();

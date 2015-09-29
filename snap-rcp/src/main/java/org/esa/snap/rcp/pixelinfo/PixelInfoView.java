@@ -60,27 +60,27 @@ public class PixelInfoView extends JPanel {
     /**
      * Preferences key for showing all band pixel values in pixel info view
      */
-    public static final String PROPERTY_KEY_SHOW_ONLY_DISPLAYED_BAND_PIXEL_VALUES = "pixelview.showOnlyDisplayedBands";
+    public static final String PREFERENCE_KEY_SHOW_ONLY_DISPLAYED_BAND_PIXEL_VALUES = "pixelview.showOnlyDisplayedBands";
 
     /**
      * Preferences key for display style of geo-locations
      */
-    public static final String PROPERTY_KEY_SHOW_GEO_POS_DECIMALS = "pixelview.showGeoPosDecimals";
+    public static final String PREFERENCE_KEY_SHOW_GEO_POS_DECIMALS = "pixelview.showGeoPosDecimals";
 
     /**
      * Preferences key for showing floating-point image coordinates
      */
-    public static final String PROPERTY_KEY_SHOW_PIXEL_POS_DECIMALS = "pixelview.showPixelPosDecimals";
+    public static final String PREFERENCE_KEY_SHOW_PIXEL_POS_DECIMALS = "pixelview.showPixelPosDecimals";
 
     /**
      * Preferences key for coordinate system starting at (1,1)
      */
-    public static final String PROPERTY_KEY_SHOW_PIXEL_POS_OFFSET_ONE = "pixelview.showPixelPosOffsetOne";
+    public static final String PREFERENCE_KEY_SHOW_PIXEL_POS_OFFSET_ONE = "pixelview.showPixelPosOffsetOne";
 
-    public static final boolean PROPERTY_DEFAULT_SHOW_DISPLAYED_BAND_PIXEL_VALUES = true;
-    public static final boolean PROPERTY_DEFAULT_SHOW_GEO_POS_DECIMALS = false;
-    public static final boolean PROPERTY_DEFAULT_SHOW_PIXEL_POS_DECIMALS = false;
-    public static final boolean PROPERTY_DEFAULT_SHOW_PIXEL_POS_OFFSET_1 = false;
+    public static final boolean PREFERENCE_DEFAULT_SHOW_DISPLAYED_BAND_PIXEL_VALUES = true;
+    public static final boolean PREFERENCE_DEFAULT_SHOW_GEO_POS_DECIMALS = false;
+    public static final boolean PREFERENCE_DEFAULT_SHOW_PIXEL_POS_DECIMALS = false;
+    public static final boolean PREFERENCE_DEFAULT_SHOW_PIXEL_POS_OFFSET_1 = false;
 
     private static final int NAME_COLUMN = 0;
     private static final int VALUE_COLUMN = 1;
@@ -136,13 +136,13 @@ public class PixelInfoView extends JPanel {
             @Override
             public void preferenceChange(PreferenceChangeEvent evt) {
                 final String propertyName = evt.getKey();
-                if (PROPERTY_KEY_SHOW_ONLY_DISPLAYED_BAND_PIXEL_VALUES.equals(propertyName)) {
+                if (PREFERENCE_KEY_SHOW_ONLY_DISPLAYED_BAND_PIXEL_VALUES.equals(propertyName)) {
                     setShowOnlyLoadedBands(preferences);
-                } else if (PROPERTY_KEY_SHOW_PIXEL_POS_DECIMALS.equals(propertyName)) {
+                } else if (PREFERENCE_KEY_SHOW_PIXEL_POS_DECIMALS.equals(propertyName)) {
                     setShowPixelPosDecimals(preferences);
-                } else if (PROPERTY_KEY_SHOW_GEO_POS_DECIMALS.equals(propertyName)) {
+                } else if (PREFERENCE_KEY_SHOW_GEO_POS_DECIMALS.equals(propertyName)) {
                     setShowGeoPosDecimals(preferences);
-                } else if (PROPERTY_KEY_SHOW_PIXEL_POS_OFFSET_ONE.equals(propertyName)) {
+                } else if (PREFERENCE_KEY_SHOW_PIXEL_POS_OFFSET_ONE.equals(propertyName)) {
                     setShowPixelPosOffset1(preferences);
                 }
             }
@@ -338,27 +338,27 @@ public class PixelInfoView extends JPanel {
 
     private void setShowOnlyLoadedBands(final Preferences preferences) {
         final boolean showOnlyLoadedOrDisplayedBands = preferences.getBoolean(
-                PixelInfoView.PROPERTY_KEY_SHOW_ONLY_DISPLAYED_BAND_PIXEL_VALUES,
-                PixelInfoView.PROPERTY_DEFAULT_SHOW_DISPLAYED_BAND_PIXEL_VALUES);
+                PixelInfoView.PREFERENCE_KEY_SHOW_ONLY_DISPLAYED_BAND_PIXEL_VALUES,
+                PixelInfoView.PREFERENCE_DEFAULT_SHOW_DISPLAYED_BAND_PIXEL_VALUES);
         displayFilter.setShowOnlyLoadedOrDisplayedBands(showOnlyLoadedOrDisplayedBands);
     }
 
     private void setShowPixelPosOffset1(final Preferences preferences) {
         setShowPixelPosOffset1(preferences.getBoolean(
-                PROPERTY_KEY_SHOW_PIXEL_POS_OFFSET_ONE,
-                PROPERTY_DEFAULT_SHOW_PIXEL_POS_OFFSET_1));
+                PREFERENCE_KEY_SHOW_PIXEL_POS_OFFSET_ONE,
+                PREFERENCE_DEFAULT_SHOW_PIXEL_POS_OFFSET_1));
     }
 
     private void setShowPixelPosDecimals(final Preferences preferences) {
         setShowPixelPosDecimals(preferences.getBoolean(
-                PROPERTY_KEY_SHOW_PIXEL_POS_DECIMALS,
-                PROPERTY_DEFAULT_SHOW_PIXEL_POS_DECIMALS));
+                PREFERENCE_KEY_SHOW_PIXEL_POS_DECIMALS,
+                PREFERENCE_DEFAULT_SHOW_PIXEL_POS_DECIMALS));
     }
 
     private void setShowGeoPosDecimals(final Preferences preferences) {
         setShowGeoPosDecimals(preferences.getBoolean(
-                PROPERTY_KEY_SHOW_GEO_POS_DECIMALS,
-                PROPERTY_DEFAULT_SHOW_GEO_POS_DECIMALS));
+                PREFERENCE_KEY_SHOW_GEO_POS_DECIMALS,
+                PREFERENCE_DEFAULT_SHOW_GEO_POS_DECIMALS));
     }
 
     private static class ValueCellRenderer extends DefaultTableCellRenderer {

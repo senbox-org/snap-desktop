@@ -51,7 +51,7 @@ public final class ReopenProductAction extends AbstractAction implements Present
         List<String> pathList = getRecentProductPaths().get();
 
         final Preferences preference = SnapApp.getDefault().getPreferences();
-        int maxFileList = preference.getInt(UiBehaviorController.PROPERTY_KEY_LIST_FILES_TO_REOPEN,
+        int maxFileList = preference.getInt(UiBehaviorController.PREFERENCE_KEY_LIST_FILES_TO_REOPEN,
                 DEFAULT_MAX_FILE_LIST_REOPEN);
 
         // Add "open recent product file" actions

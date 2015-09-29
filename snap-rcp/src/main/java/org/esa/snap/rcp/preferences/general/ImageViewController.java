@@ -72,8 +72,8 @@ public final class ImageViewController extends DefaultConfigController {
         JPanel pageUI = new JPanel(tableLayout);
 
         PropertyEditorRegistry registry = PropertyEditorRegistry.getInstance();
-        Property showNavigationControl = context.getPropertySet().getProperty(ProductSceneView.PROPERTY_KEY_IMAGE_NAV_CONTROL_SHOWN);
-        Property showScrollBars = context.getPropertySet().getProperty(ProductSceneView.PROPERTY_KEY_IMAGE_SCROLL_BARS_SHOWN);
+        Property showNavigationControl = context.getPropertySet().getProperty(ProductSceneView.PREFERENCE_KEY_IMAGE_NAV_CONTROL_SHOWN);
+        Property showScrollBars = context.getPropertySet().getProperty(ProductSceneView.PREFERENCE_KEY_IMAGE_SCROLL_BARS_SHOWN);
 
         JComponent[] showNavigationControlComponents = registry.findPropertyEditor(showNavigationControl.getDescriptor()).createComponents(showNavigationControl.getDescriptor(), context);
         JComponent[] showScrollBarsComponents = registry.findPropertyEditor(showScrollBars.getDescriptor()).createComponents(showScrollBars.getDescriptor(), context);
@@ -90,11 +90,11 @@ public final class ImageViewController extends DefaultConfigController {
     static class GeneralLayerBean {
 
         @Preference(label = "Show a navigation control widget in image views",
-                key = ProductSceneView.PROPERTY_KEY_IMAGE_NAV_CONTROL_SHOWN)
+                key = ProductSceneView.PREFERENCE_KEY_IMAGE_NAV_CONTROL_SHOWN)
         boolean showNavigationControl = true;
 
         @Preference(label = "Show scroll bars in image views",
-                key = ProductSceneView.PROPERTY_KEY_IMAGE_SCROLL_BARS_SHOWN)
+                key = ProductSceneView.PREFERENCE_KEY_IMAGE_SCROLL_BARS_SHOWN)
         boolean showScrollBars = false;
     }
 

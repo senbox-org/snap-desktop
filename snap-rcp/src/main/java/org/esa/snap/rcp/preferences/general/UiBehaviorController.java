@@ -54,33 +54,33 @@ public final class UiBehaviorController extends DefaultConfigController {
     /**
      * Preferences key for automatically showing navigation
      */
-    public static final String PROPERTY_KEY_AUTO_SHOW_NAVIGATION = "autoshownavigation.enabled";
+    public static final String PREFERENCE_KEY_AUTO_SHOW_NAVIGATION = "autoshownavigation.enabled";
     /**
      * Preferences key for automatically showing new bands
      */
-    public static final String PROPERTY_KEY_AUTO_SHOW_NEW_BANDS = "autoshowbands.enabled";
+    public static final String PREFERENCE_KEY_AUTO_SHOW_NEW_BANDS = "autoshowbands.enabled";
     /**
      * Preferences key for on-line version check
      */
-    public static final String PROPERTY_KEY_VERSION_CHECK_ENABLED =
+    public static final String PREFERENCE_KEY_VERSION_CHECK_ENABLED =
             "versionCheck.enabled";
     /**
      * Preferences key for showing a message after writing a GPF-processed product.
      */
-    public static final String PROPERTY_KEY_SAVE_INFO = "saveInfo";
+    public static final String PREFERENCE_KEY_SAVE_INFO = "saveInfo";
     /**
      * Preferences key for showing a message after opening a GPF-processed product in the application.
      */
-    public static final String PROPERTY_KEY_OPEN_IN_APP_INFO = "openInAppInfo";
+    public static final String PREFERENCE_KEY_OPEN_IN_APP_INFO = "openInAppInfo";
     /**
      * Preferences key for showing a message after writing and opening a GPF-processed product.
      */
-    public static final String PROPERTY_KEY_SAVE_AND_OPEN_IN_APP_INFO = "saveAndOpenInAppInfo";
+    public static final String PREFERENCE_KEY_SAVE_AND_OPEN_IN_APP_INFO = "saveAndOpenInAppInfo";
 
     /**
      * Preferences key to set the maximum number of file in the list to reopen.
      */
-    public static final String PROPERTY_KEY_LIST_FILES_TO_REOPEN = "filesToReopen";
+    public static final String PREFERENCE_KEY_LIST_FILES_TO_REOPEN = "filesToReopen";
 
     protected PropertySet createPropertySet() {
         return createPropertySet(new UiBehaviorBean());
@@ -99,14 +99,14 @@ public final class UiBehaviorController extends DefaultConfigController {
         JPanel pageUI = new JPanel(tableLayout);
 
         PropertyEditorRegistry registry = PropertyEditorRegistry.getInstance();
-        Property autoShowNavigation = context.getPropertySet().getProperty(PROPERTY_KEY_AUTO_SHOW_NAVIGATION);
-        Property showNewBands = context.getPropertySet().getProperty(PROPERTY_KEY_AUTO_SHOW_NEW_BANDS);
-        Property showOnlyDisplayed = context.getPropertySet().getProperty(PixelInfoView.PROPERTY_KEY_SHOW_ONLY_DISPLAYED_BAND_PIXEL_VALUES);
-        Property checkVersion = context.getPropertySet().getProperty(PROPERTY_KEY_VERSION_CHECK_ENABLED);
-        Property saveInfo = context.getPropertySet().getProperty(PROPERTY_KEY_SAVE_INFO);
-        Property openInApp = context.getPropertySet().getProperty(PROPERTY_KEY_OPEN_IN_APP_INFO);
-        Property saveAndOpenInApp = context.getPropertySet().getProperty(PROPERTY_KEY_SAVE_AND_OPEN_IN_APP_INFO);
-        Property listOfFilesToReopen = context.getPropertySet().getProperty(PROPERTY_KEY_LIST_FILES_TO_REOPEN);
+        Property autoShowNavigation = context.getPropertySet().getProperty(PREFERENCE_KEY_AUTO_SHOW_NAVIGATION);
+        Property showNewBands = context.getPropertySet().getProperty(PREFERENCE_KEY_AUTO_SHOW_NEW_BANDS);
+        Property showOnlyDisplayed = context.getPropertySet().getProperty(PixelInfoView.PREFERENCE_KEY_SHOW_ONLY_DISPLAYED_BAND_PIXEL_VALUES);
+        Property checkVersion = context.getPropertySet().getProperty(PREFERENCE_KEY_VERSION_CHECK_ENABLED);
+        Property saveInfo = context.getPropertySet().getProperty(PREFERENCE_KEY_SAVE_INFO);
+        Property openInApp = context.getPropertySet().getProperty(PREFERENCE_KEY_OPEN_IN_APP_INFO);
+        Property saveAndOpenInApp = context.getPropertySet().getProperty(PREFERENCE_KEY_SAVE_AND_OPEN_IN_APP_INFO);
+        Property listOfFilesToReopen = context.getPropertySet().getProperty(PREFERENCE_KEY_LIST_FILES_TO_REOPEN);
 
 
         JComponent[] autoShowNavigationComponents = registry.findPropertyEditor(autoShowNavigation.getDescriptor()).createComponents(autoShowNavigation.getDescriptor(), context);
@@ -159,36 +159,36 @@ public final class UiBehaviorController extends DefaultConfigController {
     static class UiBehaviorBean {
 
         @Preference(label = "Show navigation window when image views are opened",
-                key = PROPERTY_KEY_AUTO_SHOW_NAVIGATION)
+                key = PREFERENCE_KEY_AUTO_SHOW_NAVIGATION)
         boolean autoShowNavigation = true;
 
         @Preference(label = "Open image view for new (virtual) bands",
-                key = PROPERTY_KEY_AUTO_SHOW_NEW_BANDS)
+                key = PREFERENCE_KEY_AUTO_SHOW_NEW_BANDS)
         boolean autoShowNewBands = true;
 
         @Preference(label = "Show only pixel values of loaded or displayed bands",
-                key = PixelInfoView.PROPERTY_KEY_SHOW_ONLY_DISPLAYED_BAND_PIXEL_VALUES)
-        boolean showOnlyLoadedOrDisplayedBandPixels = PixelInfoView.PROPERTY_DEFAULT_SHOW_DISPLAYED_BAND_PIXEL_VALUES;
+                key = PixelInfoView.PREFERENCE_KEY_SHOW_ONLY_DISPLAYED_BAND_PIXEL_VALUES)
+        boolean showOnlyLoadedOrDisplayedBandPixels = PixelInfoView.PREFERENCE_DEFAULT_SHOW_DISPLAYED_BAND_PIXEL_VALUES;
 
         @Preference(label = "Check for new version on startup",
-                key = PROPERTY_KEY_VERSION_CHECK_ENABLED)
+                key = PREFERENCE_KEY_VERSION_CHECK_ENABLED)
         boolean checkEnabled = true;
 
         @Preference(label = "Show target product writing success and duration information",
-                key = PROPERTY_KEY_SAVE_INFO)
+                key = PREFERENCE_KEY_SAVE_INFO)
         boolean saveInfo = true;
 
         @Preference(label = "Show target product opening information",
-                key = PROPERTY_KEY_OPEN_IN_APP_INFO)
+                key = PREFERENCE_KEY_OPEN_IN_APP_INFO)
         boolean openInAppInfo = true;
 
         @Preference(label = "Show target product writing and opening information",
-                key = PROPERTY_KEY_SAVE_AND_OPEN_IN_APP_INFO)
+                key = PREFERENCE_KEY_SAVE_AND_OPEN_IN_APP_INFO)
         boolean saveAndOpenInAppInfo = true;
 
 
         @Preference(label = "Maximum recent file list",
-                key = PROPERTY_KEY_LIST_FILES_TO_REOPEN, interval = "[1,20]")
+                key = PREFERENCE_KEY_LIST_FILES_TO_REOPEN, interval = "[1,20]")
         int fileReopen = 10;
     }
 
