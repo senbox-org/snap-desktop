@@ -17,7 +17,10 @@
  */
 package org.esa.snap.ui.tooladapter.dialogs;
 
-import com.bc.ceres.binding.*;
+import com.bc.ceres.binding.DefaultPropertySetDescriptor;
+import com.bc.ceres.binding.PropertyContainer;
+import com.bc.ceres.binding.PropertyDescriptor;
+import com.bc.ceres.binding.ValidationException;
 import com.bc.ceres.binding.converters.ArrayConverter;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.internal.CheckBoxEditor;
@@ -35,12 +38,18 @@ import org.esa.snap.ui.tooladapter.validators.RequiredFieldValidator;
 import org.esa.snap.ui.tooladapter.validators.TypedValueValidator;
 import org.esa.snap.util.StringUtils;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.HashMap;
 import java.util.logging.Logger;

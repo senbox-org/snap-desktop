@@ -16,18 +16,19 @@
 package org.esa.snap.graphbuilder.gpf.ui;
 
 import com.bc.ceres.swing.TableLayout;
+import com.bc.ceres.swing.selection.SelectionChangeEvent;
+import com.bc.ceres.swing.selection.SelectionChangeListener;
 import org.esa.snap.db.CommonReaders;
+import org.esa.snap.framework.dataio.*;
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.gpf.ui.SourceProductSelector;
 import org.esa.snap.framework.ui.AppContext;
 
-import javax.swing.JComponent;
-import javax.swing.JPanel;
+import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 
 /**
@@ -36,15 +37,17 @@ import java.util.Map;
 public class SourceUI extends BaseOperatorUI {
 
     SourceProductSelector sourceProductSelector = null;
+    private JComboBox<String> formatNameComboBox;
+
     private static final String FILE_PARAMETER = "file";
+    private static final String FORMAT_PARAMETER = "formatName";
+    private static final String ANY_FORMAT = "Any Format";
 
     @Override
     public JComponent CreateOpTab(String operatorName, Map<String, Object> parameterMap, AppContext appContext) {
 
         paramMap = parameterMap;
-        final List<SourceProductSelector> sourceProductSelectorList = new ArrayList<>(3);
         sourceProductSelector = new SourceProductSelector(appContext);
-        sourceProductSelectorList.add(sourceProductSelector);
 
         final TableLayout tableLayout = new TableLayout(1);
         tableLayout.setTableAnchor(TableLayout.Anchor.WEST);
@@ -52,37 +55,77 @@ public class SourceUI extends BaseOperatorUI {
         tableLayout.setTableFill(TableLayout.Fill.HORIZONTAL);
         tableLayout.setTablePadding(3, 3);
 
+        final JPanel sourcePanel = sourceProductSelector.createDefaultPanel();
+
+        formatNameComboBox = new JComboBox<>();
+        formatNameComboBox.setToolTipText("Select 'Any Format' to let SNAP decide");
+
+        final JPanel formatPanel = new JPanel();
+        formatPanel.add(new JLabel("Data Format:      "));
+        formatPanel.add(formatNameComboBox);
+        sourcePanel.add(formatPanel);
+
         final JPanel ioParametersPanel = new JPanel(tableLayout);
-        for (SourceProductSelector selector : sourceProductSelectorList) {
-            ioParametersPanel.add(selector.createDefaultPanel());
-        }
+        ioParametersPanel.add(sourcePanel);
+
         ioParametersPanel.add(tableLayout.createVerticalSpacer());
 
-        initSourceProductSelectors(sourceProductSelectorList);
+        sourceProductSelector.initProducts();
+        sourceProductSelector.addSelectionChangeListener(new SourceSelectionChangeListener());
+
+        updateFormatNamesCombo(sourceProductSelector.getSelectedProduct().getFileLocation());
 
         initParameters();
 
         return ioParametersPanel;
     }
 
-    private static void initSourceProductSelectors(java.util.List<SourceProductSelector> sourceProductSelectorList) {
-        for (SourceProductSelector sourceProductSelector : sourceProductSelectorList) {
-            sourceProductSelector.initProducts();
+    private void updateFormatNamesCombo(final File file) {
+        final List<String> formatNameList = getFormatsForFile(file);
+
+        formatNameComboBox.removeAllItems();
+        for(String format : formatNameList) {
+            formatNameComboBox.addItem(format);
         }
+    }
+
+    private static List<String> getFormatsForFile(final File file) {
+        final Iterator<ProductReaderPlugIn> allReaderPlugIns = ProductIOPlugInManager.getInstance().getAllReaderPlugIns();
+        final List<String> formatNameList = new ArrayList<>();
+
+        while (allReaderPlugIns.hasNext()) {
+            ProductReaderPlugIn reader = allReaderPlugIns.next();
+            String[] formatNames = reader.getFormatNames();
+            for (String formatName : formatNames) {
+                if(file == null || reader.getDecodeQualification(file) != DecodeQualification.UNABLE &&
+                        !formatNameList.contains(formatName)) {
+                    formatNameList.add(formatName);
+                }
+            }
+        }
+        formatNameList.sort(String::compareTo);
+        formatNameList.add(0, ANY_FORMAT);
+
+        return formatNameList;
     }
 
     @Override
     public void initParameters() {
         assert (paramMap != null);
-        final Object value = paramMap.get(FILE_PARAMETER);
-        if (value != null) {
-
+        final Object fileValue = paramMap.get(FILE_PARAMETER);
+        if (fileValue != null) {
             try {
-                final Product product = CommonReaders.readProduct((File) value);
+                final Product product = CommonReaders.readProduct((File) fileValue);
                 sourceProductSelector.setSelectedProduct(product);
             } catch (IOException e) {
                 // do nothing
             }
+        }
+        final Object formatValue = paramMap.get(FORMAT_PARAMETER);
+        if (formatValue != null) {
+            formatNameComboBox.setSelectedItem(formatValue);
+        } else {
+            formatNameComboBox.setSelectedItem(ANY_FORMAT);
         }
     }
 
@@ -103,6 +146,11 @@ public class SourceUI extends BaseOperatorUI {
                 paramMap.put(FILE_PARAMETER, prod.getFileLocation());
             }
         }
+        String selectedFormat = (String)formatNameComboBox.getSelectedItem();
+        if(selectedFormat.equals(ANY_FORMAT)) {
+            selectedFormat = null;
+        }
+        paramMap.put(FORMAT_PARAMETER, selectedFormat);
     }
 
     public void setSourceProduct(final Product product) {
@@ -111,6 +159,22 @@ public class SourceUI extends BaseOperatorUI {
             if (product != null && product.getFileLocation() != null) {
                 paramMap.put(FILE_PARAMETER, product.getFileLocation());
             }
+        }
+    }
+
+    private class SourceSelectionChangeListener implements SelectionChangeListener {
+
+        public void selectionChanged(SelectionChangeEvent event) {
+            final Object selected = event.getSelection().getSelectedValue();
+            if (selected != null && selected instanceof Product) {
+                Product product = (Product) selected;
+                if (product.getFileLocation() != null) {
+                    updateFormatNamesCombo(product.getFileLocation());
+                }
+            }
+        }
+
+        public void selectionContextChanged(SelectionChangeEvent event) {
         }
     }
 }

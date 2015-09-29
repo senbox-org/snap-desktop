@@ -7,6 +7,7 @@ import org.esa.snap.framework.dataio.ProductReaderPlugIn;
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.util.SystemUtils;
 import org.esa.snap.util.io.SnapFileFilter;
 import org.netbeans.api.progress.ProgressUtils;
 import org.openide.DialogDisplayer;
@@ -38,7 +39,7 @@ import java.util.stream.Collectors;
  */
 class ProductOpener {
 
-    private static final String PREFERENCES_KEY_LAST_PRODUCT_DIR = "last_product_open_dir";
+    public static final String PREFERENCES_KEY_LAST_PRODUCT_DIR = "last_product_open_dir";
     private static final String PREFERENCES_KEY_PREFIX_ALTERNATIVE_READER = "open_alternative_reader.";
 
     private String fileFormat;
@@ -130,7 +131,8 @@ class ProductOpener {
         }
 
         Preferences preferences = SnapApp.getDefault().getPreferences();
-        ProductFileChooser fc = new ProductFileChooser(new File(preferences.get(PREFERENCES_KEY_LAST_PRODUCT_DIR, ".")));
+        String userHomePath = SystemUtils.getUserHomeDir().getAbsolutePath();
+        ProductFileChooser fc = new ProductFileChooser(new File(preferences.get(PREFERENCES_KEY_LAST_PRODUCT_DIR, userHomePath)));
         fc.setSubsetEnabled(isSubsetImportEnabled());
         fc.setDialogTitle(SnapApp.getDefault().getInstanceName() + " - " + Bundle.CTL_OpenProductActionName());
         fc.setAcceptAllFileFilterUsed(isUseAllFileFilter());
@@ -140,18 +142,13 @@ class ProductOpener {
                 fc.setFileFilter(filter);
             }
         });
-        fc.setDialogType(JFileChooser.OPEN_DIALOG);
         fc.setMultiSelectionEnabled(isMultiSelectionEnabled());
         fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
-        int returnVal = fc.showOpenDialog(null);
+        int returnVal = fc.showOpenDialog(SnapApp.getDefault().getMainFrame());
         if (returnVal != JFileChooser.APPROVE_OPTION) {
             // cancelled
             return null;
-        }
-        if (fc.getSubsetProduct() != null) {
-            SnapApp.getDefault().getProductManager().addProduct(fc.getSubsetProduct());
-            return true;
         }
 
         File[] files = getSelectedFiles(fc);
@@ -164,6 +161,11 @@ class ProductOpener {
         File currentDirectory = fc.getCurrentDirectory();
         if (currentDirectory != null) {
             preferences.put(PREFERENCES_KEY_LAST_PRODUCT_DIR, currentDirectory.toString());
+        }
+
+        if (fc.getSubsetProduct() != null) {
+            SnapApp.getDefault().getProductManager().addProduct(fc.getSubsetProduct());
+            return true;
         }
 
         String formatName = (fc.getFileFilter() instanceof SnapFileFilter)

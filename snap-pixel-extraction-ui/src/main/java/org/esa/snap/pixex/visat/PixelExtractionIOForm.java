@@ -35,14 +35,10 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.ListDataListener;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 
@@ -130,12 +126,13 @@ class PixelExtractionIOForm {
 
     private String getDefaultOutputPath(AppContext appContext) {
         final Property dirProperty = container.getProperty("outputDir");
-        String lastDir = appContext.getPreferences().getPropertyString(LAST_OPEN_OUTPUT_DIR, ".");
+        String userHomePath = SystemUtils.getUserHomeDir().getAbsolutePath();
+        String lastDir = appContext.getPreferences().getPropertyString(LAST_OPEN_OUTPUT_DIR, userHomePath);
         String path;
         try {
             path = new File(lastDir).getCanonicalPath();
         } catch (IOException ignored) {
-            path = SystemUtils.getUserHomeDir().getPath();
+            path = userHomePath;
         }
         try {
             dirProperty.setValue(new File(path));
@@ -151,28 +148,25 @@ class PixelExtractionIOForm {
 
     private AbstractButton createOutputDirChooserButton(final Property outputFileProperty) {
         AbstractButton button = new JButton("...");
-        button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                FolderChooser folderChooser = new FolderChooser();
-                folderChooser.setCurrentDirectory(new File(getDefaultOutputPath(appContext)));
-                folderChooser.setDialogTitle("Select output directory");
-                folderChooser.setMultiSelectionEnabled(false);
-                int result = folderChooser.showDialog(appContext.getApplicationWindow(), "Select");    /*I18N*/
-                if (result != JFileChooser.APPROVE_OPTION) {
-                    return;
-                }
-                File selectedFile = folderChooser.getSelectedFile();
-                setOutputDirPath(selectedFile.getAbsolutePath());
-                try {
-                    outputFileProperty.setValue(selectedFile);
-                    appContext.getPreferences().setPropertyString(LAST_OPEN_OUTPUT_DIR,
-                                                                  selectedFile.getAbsolutePath());
+        button.addActionListener(e -> {
+            FolderChooser folderChooser = new FolderChooser();
+            folderChooser.setCurrentDirectory(new File(getDefaultOutputPath(appContext)));
+            folderChooser.setDialogTitle("Select output directory");
+            folderChooser.setMultiSelectionEnabled(false);
+            int result = folderChooser.showDialog(appContext.getApplicationWindow(), "Select");    /*I18N*/
+            if (result != JFileChooser.APPROVE_OPTION) {
+                return;
+            }
+            File selectedFile = folderChooser.getSelectedFile();
+            setOutputDirPath(selectedFile.getAbsolutePath());
+            try {
+                outputFileProperty.setValue(selectedFile);
+                appContext.getPreferences().setPropertyString(LAST_OPEN_OUTPUT_DIR,
+                                                              selectedFile.getAbsolutePath());
 
-                } catch (ValidationException ve) {
-                    // not expected to ever come here
-                    appContext.handleError("Invalid input path", ve);
-                }
+            } catch (ValidationException ve) {
+                // not expected to ever come here
+                appContext.handleError("Invalid input path", ve);
             }
         });
         return button;
@@ -220,15 +214,12 @@ class PixelExtractionIOForm {
             filenamePanel.add(filenameLabel, BorderLayout.NORTH);
             filenamePanel.add(filenamePatternField, BorderLayout.CENTER);
 
-            extractTime.addChangeListener(new ChangeListener() {
-                @Override
-                public void stateChanged(ChangeEvent e) {
-                    final boolean selected = extractTime.isSelected();
-                    dateLabel.setEnabled(selected);
-                    datePatternField.setEnabled(selected);
-                    filenameLabel.setEnabled(selected);
-                    filenamePatternField.setEnabled(selected);
-                }
+            extractTime.addChangeListener(e -> {
+                final boolean selected = extractTime.isSelected();
+                dateLabel.setEnabled(selected);
+                datePatternField.setEnabled(selected);
+                filenameLabel.setEnabled(selected);
+                filenamePatternField.setEnabled(selected);
             });
 
             add(extractTime, BorderLayout.NORTH);

@@ -167,7 +167,7 @@ public class SnapFileChooser extends JFileChooser {
         }
 
         if (currentFilename != null && currentFilename.length() > 0) {
-            setSelectedFile(new File(currentFilename));
+            setSelectedFile(new File(getCurrentDirectory(), currentFilename));
         }
     }
 
