@@ -15,11 +15,11 @@
  */
 package org.esa.snap.graphbuilder.gpf.ui;
 
-import org.esa.snap.framework.dataio.ProductIO;
+import org.esa.snap.db.CommonReaders;
 import org.esa.snap.framework.datamodel.Product;
 
-import javax.swing.JList;
-import java.awt.Dimension;
+import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -96,7 +96,7 @@ public final class OperatorUIUtils {
 
     public static double getNoDataValue(final File extFile) {
         try {
-            final Product product = ProductIO.readProduct(extFile);
+            final Product product = CommonReaders.readProduct(extFile);
             if (product != null)
                 return product.getBandAt(0).getNoDataValue();
         } catch (Exception e) {
