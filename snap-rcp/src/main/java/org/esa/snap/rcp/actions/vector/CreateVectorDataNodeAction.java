@@ -63,7 +63,8 @@ import java.text.MessageFormat;
 )
 @ActionRegistration(
         displayName = "#CTL_CreateVectorDataNodeActionText",
-        popupText = "#CTL_CreateVectorDataNodeActionPopupText"
+        popupText = "#CTL_CreateVectorDataNodeActionPopupText",
+        lazy = false
 )
 @ActionReferences({
         @ActionReference(path = "Menu/Vector", position = 0),
@@ -77,7 +78,6 @@ public class CreateVectorDataNodeAction extends AbstractAction implements Contex
     // TODO: Make sure help page is available for ID
     private static final String HELP_ID = "vectorDataManagement";
     private static int numItems = 1;
-    private final Lookup.Result<Product> result;
 
     public CreateVectorDataNodeAction() {
         this(Utilities.actionsGlobalContext());
@@ -85,49 +85,16 @@ public class CreateVectorDataNodeAction extends AbstractAction implements Contex
 
     public CreateVectorDataNodeAction(Lookup lkp) {
         super(Bundle.CTL_CreateVectorDataNodeActionText());
-        result = lkp.lookupResult(Product.class);
+        Lookup.Result<Product> result = lkp.lookupResult(Product.class);
         result.addLookupListener(WeakListeners.create(LookupListener.class, this, result));
-        setEnabled(false);
         putValue(Action.SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/NewVectorDataNode24.gif", false));
-    }
-
-    @Override
-    public Action createContextAwareInstance(Lookup actionContext) {
-        return new CreateVectorDataNodeAction(actionContext);
-    }
-
-    @Override
-    public void resultChanged(LookupEvent ev) {
-        setEnabled(result.allInstances().size() >= 1);
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        Product product = SnapApp.getDefault().getSelectedProduct();
-        if (product != null) {
-            DialogData dialogData = new DialogData(product.getVectorDataGroup());
-            PropertySet propertySet = PropertyContainer.createObjectBacked(dialogData);
-            propertySet.getDescriptor("name").setNotNull(true);
-            propertySet.getDescriptor("name").setNotEmpty(true);
-            propertySet.getDescriptor("name").setValidator(new NameValidator(product));
-            propertySet.getDescriptor("description").setNotNull(true);
-
-            final PropertyPane propertyPane = new PropertyPane(propertySet);
-            JPanel panel = propertyPane.createPanel();
-            panel.setPreferredSize(new Dimension(400, 100));
-            ModalDialog dialog = new MyModalDialog(propertyPane);
-            dialog.setContent(panel);
-            int i = dialog.show();
-            if (i == ModalDialog.ID_OK) {
-                createDefaultVectorDataNode(product, dialogData.name, dialogData.description);
-            }
-        }
+        setEnabled(false);
     }
 
     public static VectorDataNode createDefaultVectorDataNode(Product product) {
         return createDefaultVectorDataNode(product,
-                                           getDefaultVectorDataNodeName(),
-                                           "Default vector data container for geometries (automatically created)");
+                getDefaultVectorDataNodeName(),
+                "Default vector data container for geometries (automatically created)");
     }
 
     public static VectorDataNode createDefaultVectorDataNode(Product product, String name, String description) {
@@ -159,8 +126,8 @@ public class CreateVectorDataNodeAction extends AbstractAction implements Contex
 
             LayerFilter nodeFilter = VectorDataLayerFilterFactory.createNodeFilter(vectorDataNode);
             Layer newSelectedLayer = LayerUtils.getChildLayer(sceneView.getRootLayer(),
-                                                              LayerUtils.SEARCH_DEEP,
-                                                              nodeFilter);
+                    LayerUtils.SEARCH_DEEP,
+                    nodeFilter);
             if (newSelectedLayer != null) {
                 newSelectedLayer.setVisible(true);
             }
@@ -170,6 +137,40 @@ public class CreateVectorDataNodeAction extends AbstractAction implements Contex
 
     public static String getDefaultVectorDataNodeName() {
         return "geometry";
+    }
+
+    @Override
+    public Action createContextAwareInstance(Lookup actionContext) {
+        return new CreateVectorDataNodeAction(actionContext);
+    }
+
+    @Override
+    public void resultChanged(LookupEvent ev) {
+        Product[] products = SnapApp.getDefault().getProductManager().getProducts();
+        setEnabled(products.length > 0);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        Product product = SnapApp.getDefault().getSelectedProduct();
+        if (product != null) {
+            DialogData dialogData = new DialogData(product.getVectorDataGroup());
+            PropertySet propertySet = PropertyContainer.createObjectBacked(dialogData);
+            propertySet.getDescriptor("name").setNotNull(true);
+            propertySet.getDescriptor("name").setNotEmpty(true);
+            propertySet.getDescriptor("name").setValidator(new NameValidator(product));
+            propertySet.getDescriptor("description").setNotNull(true);
+
+            final PropertyPane propertyPane = new PropertyPane(propertySet);
+            JPanel panel = propertyPane.createPanel();
+            panel.setPreferredSize(new Dimension(400, 100));
+            ModalDialog dialog = new MyModalDialog(propertyPane);
+            dialog.setContent(panel);
+            int i = dialog.show();
+            if (i == ModalDialog.ID_OK) {
+                createDefaultVectorDataNode(product, dialogData.name, dialogData.description);
+            }
+        }
     }
 
     private static class NameValidator implements Validator {
@@ -185,7 +186,7 @@ public class CreateVectorDataNodeAction extends AbstractAction implements Contex
             String name = (String) value;
             if (product.getVectorDataGroup().contains(name)) {
                 final String pattern = "A vector data container with name ''{0}'' already exists.\n" +
-                                       "Please choose another one.";
+                        "Please choose another one.";
                 throw new ValidationException(MessageFormat.format(pattern, name));
             }
         }
@@ -197,9 +198,9 @@ public class CreateVectorDataNodeAction extends AbstractAction implements Contex
 
         private MyModalDialog(PropertyPane propertyPane) {
             super(SnapApp.getDefault().getMainFrame(),
-                  Bundle.CTL_CreateVectorDataNodeActionText(),
-                  ModalDialog.ID_OK_CANCEL_HELP,
-                  HELP_ID);
+                    Bundle.CTL_CreateVectorDataNodeActionText(),
+                    ModalDialog.ID_OK_CANCEL_HELP,
+                    HELP_ID);
             this.propertyPane = propertyPane;
         }
 
@@ -239,6 +240,17 @@ public class CreateVectorDataNodeAction extends AbstractAction implements Contex
             this.oldLayerId = oldLayerId;
         }
 
+        private static String getSelectedLayerId() {
+            ProductSceneView sceneView = SnapApp.getDefault().getSelectedProductSceneView();
+            if (sceneView != null) {
+                Layer selectedLayer = sceneView.getSelectedLayer();
+                if (selectedLayer != null) {
+                    return selectedLayer.getId();
+                }
+            }
+            return null;
+        }
+
         @Override
         public void undo() {
             super.undo(); // removes VDN
@@ -250,17 +262,6 @@ public class CreateVectorDataNodeAction extends AbstractAction implements Contex
             oldLayerId = getSelectedLayerId();
             super.redo(); // inserts VDN
             selectVectorDataLayer(getProductNode());
-        }
-
-        private static String getSelectedLayerId() {
-            ProductSceneView sceneView = SnapApp.getDefault().getSelectedProductSceneView();
-            if (sceneView != null) {
-                Layer selectedLayer = sceneView.getSelectedLayer();
-                if (selectedLayer != null) {
-                    return selectedLayer.getId();
-                }
-            }
-            return null;
         }
 
         private void setSelectedLayer(String layerId) {
