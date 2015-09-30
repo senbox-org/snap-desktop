@@ -27,13 +27,13 @@ import java.util.HashMap;
  */
 public class ProductRenderablesInfo  {
 
-    public AnalyticSurface owiAnalyticSurface = null;
-    public AnalyticSurface oswAnalyticSurface = null;
-    public AnalyticSurface rvlAnalyticSurface = null;
+    public ArrayList<AnalyticSurface> owiAnalyticSurfaces = null;
+    public ArrayList<AnalyticSurface> oswAnalyticSurfaces = null;
+    public ArrayList<AnalyticSurface> rvlAnalyticSurfaces = null;
 
-    public BufferWrapper owiAnalyticSurfaceValueBuffer = null;
-    public BufferWrapper oswAnalyticSurfaceValueBuffer = null;
-    public BufferWrapper rvlAnalyticSurfaceValueBuffer = null;
+    public ArrayList<BufferWrapper> owiAnalyticSurfaceValueBuffers = null;
+    public ArrayList<BufferWrapper> oswAnalyticSurfaceValueBuffers = null;
+    public ArrayList<BufferWrapper> rvlAnalyticSurfaceValueBuffers = null;
 
     public HashMap<String, ArrayList<Renderable>> theRenderableListHash;
 
@@ -44,20 +44,37 @@ public class ProductRenderablesInfo  {
         theRenderableListHash.put("owi", new ArrayList<>());
         theRenderableListHash.put("osw", new ArrayList<>());
         theRenderableListHash.put("rvl", new ArrayList<>());
+
+        owiAnalyticSurfaces = new ArrayList<AnalyticSurface>();
+        oswAnalyticSurfaces = new ArrayList<AnalyticSurface>();
+        rvlAnalyticSurfaces = new ArrayList<AnalyticSurface>();
+
+        owiAnalyticSurfaceValueBuffers = new ArrayList<BufferWrapper>();
+        oswAnalyticSurfaceValueBuffers = new ArrayList<BufferWrapper>();
+        rvlAnalyticSurfaceValueBuffers = new ArrayList<BufferWrapper>();
     }
 
     public void setAnalyticSurfaceAndBuffer (AnalyticSurface analyticSurface, BufferWrapper analyticSurfaceValueBuffer, String comp) {
         if (comp.equalsIgnoreCase("owi")) {
-            owiAnalyticSurface = analyticSurface;
-            owiAnalyticSurfaceValueBuffer = analyticSurfaceValueBuffer;
+            //owiAnalyticSurface = analyticSurface;
+            //owiAnalyticSurfaceValueBuffer = analyticSurfaceValueBuffer;
+
+            owiAnalyticSurfaces.add(analyticSurface);
+            owiAnalyticSurfaceValueBuffers.add(analyticSurfaceValueBuffer);
         }
         else if (comp.equalsIgnoreCase("osw")) {
-            oswAnalyticSurface = analyticSurface;
-            oswAnalyticSurfaceValueBuffer = analyticSurfaceValueBuffer;
+            //oswAnalyticSurface = analyticSurface;
+            //oswAnalyticSurfaceValueBuffer = analyticSurfaceValueBuffer;
+
+            oswAnalyticSurfaces.add(analyticSurface);
+            oswAnalyticSurfaceValueBuffers.add(analyticSurfaceValueBuffer);
         }
         else if (comp.equalsIgnoreCase("rvl")) {
-            rvlAnalyticSurface = analyticSurface;
-            rvlAnalyticSurfaceValueBuffer = analyticSurfaceValueBuffer;
+            //rvlAnalyticSurface = analyticSurface;
+            //rvlAnalyticSurfaceValueBuffer = analyticSurfaceValueBuffer;
+
+            rvlAnalyticSurfaces.add(analyticSurface);
+            rvlAnalyticSurfaceValueBuffers.add(analyticSurfaceValueBuffer);
         }
     }
 }
