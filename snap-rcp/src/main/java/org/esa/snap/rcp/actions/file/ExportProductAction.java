@@ -134,14 +134,6 @@ public class ExportProductAction extends AbstractAction implements HelpCtx.Provi
     }
 
     private Boolean exportProduct(Product product, String formatName) {
-        String fileName;
-        if (product.getFileLocation() != null) {
-            fileName = product.getFileLocation().getName();
-        } else {
-            fileName = product.getName();
-        }
-
-
         Preferences preferences = SnapApp.getDefault().getPreferences();
         ProductFileChooser fc = new ProductFileChooser(new File(preferences.get(ProductOpener.PREFERENCES_KEY_LAST_PRODUCT_DIR, ".")));
         fc.setDialogType(JFileChooser.SAVE_DIALOG);

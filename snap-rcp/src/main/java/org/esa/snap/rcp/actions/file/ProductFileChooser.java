@@ -42,7 +42,13 @@ class ProductFileChooser extends SnapFileChooser {
     public void setProductToExport(Product product) {
         this.productToExport = product;
         if (productToExport != null) {
-            setCurrentFilename(productToExport.getName());
+            String fileName;
+            if (productToExport.getFileLocation() != null) {
+                fileName = productToExport.getFileLocation().getName();
+            } else {
+                fileName = productToExport.getName();
+            }
+            setCurrentFilename(fileName);
         }
     }
 
@@ -75,7 +81,7 @@ class ProductFileChooser extends SnapFileChooser {
         if (getDialogType() == OPEN_DIALOG) {
             setDialogTitle(SnapApp.getDefault().getInstanceName() + " - Open Product");
             if (isSubsetEnabled()) {
-                setDialogTitle(SnapApp.getDefault().getInstanceName() + " -  Import Product");
+                setDialogTitle(SnapApp.getDefault().getInstanceName() + " - Import Product");
 
                 setApproveButtonText("Import Product");
                 setApproveButtonMnemonic('I');
