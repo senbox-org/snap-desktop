@@ -52,7 +52,7 @@ public class VectorDataCollectionLayer extends CollectionLayer {
         super(layerType, configuration, "Vector data");
         Assert.notNull(vectorDataGroup, "vectorDataGroup");
 
-        reference = new WeakReference<ProductNodeGroup<VectorDataNode>>(vectorDataGroup);
+        reference = new WeakReference<>(vectorDataGroup);
         pnl = new PNL();
         this.plc = plc;
 
@@ -89,23 +89,20 @@ public class VectorDataCollectionLayer extends CollectionLayer {
             return;
         }
         // Collect all current vector layers
-        LayerFilter layerFilter = new LayerFilter() {
-            @Override
-            public boolean accept(Layer layer) {
-                PropertySet conf = layer.getConfiguration();
-                return conf.isPropertyDefined(VectorDataLayerType.PROPERTY_NAME_VECTOR_DATA) && conf.getValue(VectorDataLayerType.PROPERTY_NAME_VECTOR_DATA) != null;
-            }
+        LayerFilter layerFilter = layer -> {
+            PropertySet conf = layer.getConfiguration();
+            return conf.isPropertyDefined(VectorDataLayerType.PROPERTY_NAME_VECTOR_DATA) && conf.getValue(VectorDataLayerType.PROPERTY_NAME_VECTOR_DATA) != null;
         };
         List<Layer> vectorLayers = LayerUtils.getChildLayers(LayerUtils.getRootLayer(this), LayerUtils.SEARCH_DEEP, layerFilter);
-        final Map<VectorDataNode, Layer> currentLayers = new HashMap<VectorDataNode, Layer>();
+        final Map<VectorDataNode, Layer> currentLayers = new HashMap<>();
         for (final Layer child : vectorLayers) {
-            final String name = (String) child.getConfiguration().getValue(VectorDataLayerType.PROPERTY_NAME_VECTOR_DATA);
+            final String name = child.getConfiguration().getValue(VectorDataLayerType.PROPERTY_NAME_VECTOR_DATA);
             final VectorDataNode vectorDataNode = vectorDataGroup.get(name);
             currentLayers.put(vectorDataNode, child);
         }
 
-        // Allign vector layers with available vectors
-        final Set<Layer> unusedLayers = new HashSet<Layer>(vectorLayers);
+        // Align vector layers with available vectors
+        final Set<Layer> unusedLayers = new HashSet<>(vectorLayers);
         VectorDataNode[] vectorDataNodes = vectorDataGroup.toArray(new VectorDataNode[vectorDataGroup.getNodeCount()]);
         for (final VectorDataNode vectorDataNode : vectorDataNodes) {
             Layer layer = currentLayers.get(vectorDataNode);
