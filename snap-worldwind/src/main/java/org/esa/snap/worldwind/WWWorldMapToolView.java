@@ -34,14 +34,9 @@ import org.openide.awt.ActionReferences;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Window;
+import java.awt.*;
 
 @TopComponent.Description(
         preferredID = "WWWorldMapToolView",
@@ -125,8 +120,8 @@ public class WWWorldMapToolView extends WWBaseToolView implements WWView {
                     layerList.add(virtualEarthLayerA);
 
                     final WWLayerDescriptor[] wwLayerDescriptors = WWLayerRegistry.getInstance().getWWLayerDescriptors();
-                    for(WWLayerDescriptor layerDescriptor : wwLayerDescriptors) {
-                        if(layerDescriptor.showInWorldMapToolView()) {
+                    for (WWLayerDescriptor layerDescriptor : wwLayerDescriptors) {
+                        if (layerDescriptor.showInWorldMapToolView()) {
                             final WWLayer wwLayer = layerDescriptor.createWWLayer();
                             layerList.add(wwLayer);
 

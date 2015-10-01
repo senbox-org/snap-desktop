@@ -35,16 +35,15 @@ public class ColorBarLegend extends gov.nasa.worldwindx.examples.analytics.Analy
     }
 
     public void setColorGradient(int width, int height, double minValue, double maxValue, double minHue, double maxHue,
-                                                   Color borderColor, Iterable<? extends LabelAttributes> labels, LabelAttributes titleLabel, boolean whiteZero)
-    {
+                                 Color borderColor, Iterable<? extends LabelAttributes> labels, LabelAttributes titleLabel, boolean whiteZero) {
         //System.out.println("setColorGradient " + minHue + " " + maxHue);
 
         screenImage = new ScreenImage();
         screenImage.setImageSource(createColorGradientLegendImage(width,
-                height, minHue, maxHue,
-                borderColor, whiteZero));
+                                                                  height, minHue, maxHue,
+                                                                  borderColor, whiteZero));
         this.labels = createColorGradientLegendLabels(width,
-                height, minValue, maxValue, labels, titleLabel);
+                                                      height, minValue, maxValue, labels, titleLabel);
 
         theMinValue = minValue;
         theMaxValue = maxValue;
@@ -70,17 +69,14 @@ public class ColorBarLegend extends gov.nasa.worldwindx.examples.analytics.Analy
 
     protected BufferedImage createColorGradientLegendImage(final int width, final int height,
                                                            final double minHue, final double maxHue,
-                                                           final Color borderColor, final boolean whiteZero)
-    {
+                                                           final Color borderColor, final boolean whiteZero) {
         //System.out.println("createColorGradientLegendImage " + minHue + " " + maxHue);
 
         final BufferedImage image = new BufferedImage(width, height,
-                BufferedImage.TYPE_4BYTE_ABGR);
+                                                      BufferedImage.TYPE_4BYTE_ABGR);
         final Graphics2D g2d = image.createGraphics();
-        try
-        {
-            for (int y = 0; y < height; y++)
-            {
+        try {
+            for (int y = 0; y < height; y++) {
                 double a = 1d - y / (double) (height - 1);
                 double hue = WWMath.mix(a, minHue, maxHue);
                 double sat = 1.0;
@@ -91,32 +87,29 @@ public class ColorBarLegend extends gov.nasa.worldwindx.examples.analytics.Analy
                 g2d.drawLine(0, y, width - 1, y);
             }
 
-            if (borderColor != null)
-            {
+            if (borderColor != null) {
                 g2d.setColor(borderColor);
                 g2d.drawRect(0, 0, width - 1, height - 1);
             }
-        }
-        finally
-        {
+        } finally {
             g2d.dispose();
         }
 
         return image;
     }
 
-    public void render (final DrawContext dc) {
+    public void render(final DrawContext dc) {
         //System.out.println("render");
 
         final double x = dc.getView().getViewport().getWidth() - 75.0;
         final double y = 320.0;
 
-        setScreenLocation(new Point ((int) x, (int) y));
+        setScreenLocation(new Point((int) x, (int) y));
         super.render(dc);
     }
 
     public double getMinValue() {
-       return theMinValue;
+        return theMinValue;
     }
 
     public double getMaxValue() {

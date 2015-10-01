@@ -23,15 +23,15 @@ import org.esa.snap.framework.datamodel.Product;
 import javax.swing.*;
 
 /**
-    World Wind renderable layer
+ * World Wind renderable layer
  */
 public interface WWLayer extends Layer {
 
-    void addProduct (Product product, WorldWindowGLCanvas wwd);
+    void addProduct(Product product, WorldWindowGLCanvas wwd);
 
     void removeProduct(Product product);
 
-    JPanel getControlPanel (WorldWindowGLCanvas wwd);
+    JPanel getControlPanel(WorldWindowGLCanvas wwd);
 
     void setSelectedProduct(final Product product);
 

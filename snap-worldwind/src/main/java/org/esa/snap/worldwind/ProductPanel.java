@@ -16,21 +16,13 @@
 package org.esa.snap.worldwind;
 
 import gov.nasa.worldwind.WorldWindow;
-import gov.nasa.worldwind.awt.WorldWindowGLCanvas;
 import org.esa.snap.util.SystemUtils;
 import org.esa.snap.worldwind.layers.DefaultProductLayer;
 
-import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
-import javax.swing.JCheckBox;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
+import javax.swing.*;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.TitledBorder;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridLayout;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 
 
@@ -72,11 +64,6 @@ class ProductPanel extends JPanel {
         westPanel.setToolTipText("Products to Show");
         westPanel.add(scrollPane);
         this.add(westPanel, BorderLayout.CENTER);
-    }
-
-    protected WorldWindow createWorldWindow()
-    {
-        return new WorldWindowGLCanvas();
     }
 
     private void fill(WorldWindow wwd) {

@@ -41,7 +41,7 @@ public class WWLayerRegistry {
     }
 
     public static WWLayerRegistry getInstance() {
-        if(instance == null) {
+        if (instance == null) {
             instance = new WWLayerRegistry();
         }
         return instance;
@@ -57,7 +57,7 @@ public class WWLayerRegistry {
 
     private void registerWWLayers() {
         final FileObject fileObj = FileUtil.getConfigFile("WorldWindLayers");
-        if(fileObj == null) {
+        if (fileObj == null) {
             SystemUtils.LOG.warning("No World Wind layers found.");
             return;
         }

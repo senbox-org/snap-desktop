@@ -59,7 +59,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
-    Default Product Layer draws product outline
+ * Default Product Layer draws product outline
  */
 public class DefaultProductLayer extends BaseLayer implements WWLayer {
 
@@ -199,7 +199,7 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
                     if (imageTable.contains(name))
                         removeImage(name);
                     final SurfaceImage si = (SurfaceImage) get();
-                    if(si != null) {
+                    if (si != null) {
                         addRenderable(si);
                         imageTable.put(name, si);
                     }
@@ -229,7 +229,7 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
 
             it.currentSegment(floats);
             final Position firstPosition = new Position(Angle.fromDegreesLatitude(floats[1]),
-                    Angle.fromDegreesLongitude(floats[0]), 0.0);
+                                                        Angle.fromDegreesLongitude(floats[0]), 0.0);
             positions.add(firstPosition);
             centreLat += floats[1];
             centreLon += floats[0];
@@ -239,7 +239,7 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
             while (!it.isDone()) {
                 it.currentSegment(floats);
                 positions.add(new Position(Angle.fromDegreesLatitude(floats[1]),
-                        Angle.fromDegreesLongitude(floats[0]), 0.0));
+                                           Angle.fromDegreesLongitude(floats[0]), 0.0));
 
                 centreLat += floats[1];
                 centreLon += floats[0];
@@ -345,9 +345,9 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
         labelTable.put(getUniqueName(product), ppm);
     }
 
-    private PointPlacemark getLabelPlacemark (Position pos, String label) {
+    private PointPlacemark getLabelPlacemark(Position pos, String label) {
         PointPlacemarkAttributes ppmAtttrs = new PointPlacemarkAttributes();
-        ppmAtttrs.setLabelOffset(new Offset (0.0, 0.0, AVKey.PIXELS, AVKey.PIXELS));
+        ppmAtttrs.setLabelOffset(new Offset(0.0, 0.0, AVKey.PIXELS, AVKey.PIXELS));
         ppmAtttrs.setScale(0.0);
 
         PointPlacemark ppm = new PointPlacemark(pos);

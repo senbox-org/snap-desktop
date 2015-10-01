@@ -80,7 +80,7 @@ public class AppPanel extends JPanel {
             this.wwd.setView(new BasicOrbitView());
         }
 
-        if(removeExtraLayers) {
+        if (removeExtraLayers) {
             final LayerList layerList = m.getLayers();
             for (Layer layer : layerList) {
                 if (layer instanceof CompassLayer || layer instanceof WorldMapLayer || layer instanceof StarsLayer ||
@@ -111,7 +111,8 @@ public class AppPanel extends JPanel {
         try {
             final ElevationModel em = makeElevationModel();
             wwd.getModel().getGlobe().setElevationModel(em);
-        } catch (Exception ignore) {}
+        } catch (Exception ignore) {
+        }
     }
 
     public final WorldWindowGLCanvas getWwd() {
@@ -145,7 +146,7 @@ public class AppPanel extends JPanel {
         // Parse the DOM as a capabilities document.
         // CHANGED
         //final Capabilities caps = Capabilities.parse(doc);
-        final WMSCapabilities caps = new WMSCapabilities (doc);
+        final WMSCapabilities caps = new WMSCapabilities(doc);
 
         final double HEIGHT_OF_MT_EVEREST = 8850d; // meters
         final double DEPTH_OF_MARIANAS_TRENCH = -11000d; // meters
@@ -165,5 +166,13 @@ public class AppPanel extends JPanel {
         cem.addElevationModel(new WMSBasicElevationModel(caps, params));
 
         return cem;
+    }
+
+    private static class MinimalStatusBar extends StatusBar {
+
+        public MinimalStatusBar() {
+            super();
+            this.remove(altDisplay);
+        }
     }
 }

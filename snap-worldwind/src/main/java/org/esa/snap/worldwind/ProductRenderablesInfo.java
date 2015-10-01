@@ -25,7 +25,7 @@ import java.util.HashMap;
 /**
 
  */
-public class ProductRenderablesInfo  {
+public class ProductRenderablesInfo {
 
     public ArrayList<AnalyticSurface> owiAnalyticSurfaces = null;
     public ArrayList<AnalyticSurface> oswAnalyticSurfaces = null;
@@ -45,31 +45,29 @@ public class ProductRenderablesInfo  {
         theRenderableListHash.put("osw", new ArrayList<>());
         theRenderableListHash.put("rvl", new ArrayList<>());
 
-        owiAnalyticSurfaces = new ArrayList<AnalyticSurface>();
-        oswAnalyticSurfaces = new ArrayList<AnalyticSurface>();
-        rvlAnalyticSurfaces = new ArrayList<AnalyticSurface>();
+        owiAnalyticSurfaces = new ArrayList<>();
+        oswAnalyticSurfaces = new ArrayList<>();
+        rvlAnalyticSurfaces = new ArrayList<>();
 
-        owiAnalyticSurfaceValueBuffers = new ArrayList<BufferWrapper>();
-        oswAnalyticSurfaceValueBuffers = new ArrayList<BufferWrapper>();
-        rvlAnalyticSurfaceValueBuffers = new ArrayList<BufferWrapper>();
+        owiAnalyticSurfaceValueBuffers = new ArrayList<>();
+        oswAnalyticSurfaceValueBuffers = new ArrayList<>();
+        rvlAnalyticSurfaceValueBuffers = new ArrayList<>();
     }
 
-    public void setAnalyticSurfaceAndBuffer (AnalyticSurface analyticSurface, BufferWrapper analyticSurfaceValueBuffer, String comp) {
+    public void setAnalyticSurfaceAndBuffer(AnalyticSurface analyticSurface, BufferWrapper analyticSurfaceValueBuffer, String comp) {
         if (comp.equalsIgnoreCase("owi")) {
             //owiAnalyticSurface = analyticSurface;
             //owiAnalyticSurfaceValueBuffer = analyticSurfaceValueBuffer;
 
             owiAnalyticSurfaces.add(analyticSurface);
             owiAnalyticSurfaceValueBuffers.add(analyticSurfaceValueBuffer);
-        }
-        else if (comp.equalsIgnoreCase("osw")) {
+        } else if (comp.equalsIgnoreCase("osw")) {
             //oswAnalyticSurface = analyticSurface;
             //oswAnalyticSurfaceValueBuffer = analyticSurfaceValueBuffer;
 
             oswAnalyticSurfaces.add(analyticSurface);
             oswAnalyticSurfaceValueBuffers.add(analyticSurfaceValueBuffer);
-        }
-        else if (comp.equalsIgnoreCase("rvl")) {
+        } else if (comp.equalsIgnoreCase("rvl")) {
             //rvlAnalyticSurface = analyticSurface;
             //rvlAnalyticSurfaceValueBuffer = analyticSurfaceValueBuffer;
 

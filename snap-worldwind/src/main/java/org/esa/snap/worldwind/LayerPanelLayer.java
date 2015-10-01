@@ -158,9 +158,9 @@ public class LayerPanelLayer extends LayerManagerLayer {
                     this.draggingComponent = true;
                 }
                 final Point cursorOffset = new Point(event.getMouseEvent().getPoint().x - this.dragRefCursorPoint.x,
-                        event.getMouseEvent().getPoint().y - this.dragRefCursorPoint.y);
+                                                     event.getMouseEvent().getPoint().y - this.dragRefCursorPoint.y);
                 final Point targetPoint = new Point(this.dragRefPoint.x + cursorOffset.x,
-                        this.dragRefPoint.y - cursorOffset.y);
+                                                    this.dragRefPoint.y - cursorOffset.y);
                 this.moveTo(targetPoint);
             } else if (this.isLayerDragEnabled()) {
                 // Dragging a layer inside the list

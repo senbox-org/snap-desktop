@@ -40,52 +40,44 @@ import org.openide.awt.ActionReferences;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
-import javax.swing.JComponent;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
-import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.GridLayout;
-import java.awt.Window;
+import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.net.URISyntaxException;
 
 @TopComponent.Description(
-        preferredID = "WW3DToolView",
+        preferredID = "WWAnalysisToolView",
         iconBase = "org/esa/snap/icons/earth24.png",
         persistenceType = TopComponent.PERSISTENCE_NEVER
 )
 @TopComponent.Registration(
-        mode = "navigator",
+        mode = "editor",
         openAtStartup = false,
         position = 60
 )
-@ActionID(category = "Window", id = "org.esa.snap.worldwind.WW3DToolView")
+@ActionID(category = "Window", id = "org.esa.snap.worldwind.WWAnalysisToolView")
 @ActionReferences({
         @ActionReference(path = "Menu/View/Tool Windows"),
         @ActionReference(path = "Toolbars/Tool Windows")
 })
 @TopComponent.OpenActionRegistration(
-        displayName = "#CTL_WorldWind3DTopComponentName",
-        preferredID = "WW3DToolView"
+        displayName = "#CTL_WorldWindAnalysisTopComponentName",
+        preferredID = "WWAnalysisToolView"
 )
 @NbBundle.Messages({
-        "CTL_WorldWind3DTopComponentName=WorldWind 3D View",
-        "CTL_WorldWind3DTopComponentDescription=WorldWind 3D World Map",
+        "CTL_WorldWindAnalysisTopComponentName=WorldWind Analysis View",
+        "CTL_WorldWindAnalysisTopComponentDescription=WorldWind Analysis World Map",
 })
 
 /**
- * The window displaying the full WorldWind 3D.
+ * The window displaying the full WorldWind 3D for analysis.
  *
  */
-public class WW3DToolView extends WWBaseToolView implements WWView {
+public class WWAnalysisToolView extends WWBaseToolView implements WWView {
 
     private LayerPanel layerPanel = null;
     private ProductPanel productPanel = null;
@@ -108,7 +100,7 @@ public class WW3DToolView extends WWBaseToolView implements WWView {
                     "http://worldwind46.arc.nasa.gov:8087/wms"
             };
 
-    public WW3DToolView() {
+    public WWAnalysisToolView() {
         setDisplayName("WorldWind 3D");
         setLayout(new BorderLayout(4, 4));
         setBorder(new EmptyBorder(4, 4, 4, 4));
@@ -143,7 +135,8 @@ public class WW3DToolView extends WWBaseToolView implements WWView {
     }
 
     private void initialize(final JPanel mainPane) {
-        SystemUtils.LOG.info("INITIALIZE IN WW3DToolView CALLED" + " includeLayerPanel " + includeLayerPanel + " includeProductPanel " + includeProductPanel);
+        SystemUtils.LOG.info("INITIALIZE IN WWAnalysisToolView CALLED" + " includeLayerPanel " + includeLayerPanel +
+                                     " includeProductPanel " + includeProductPanel);
 
         final WWView toolView = this;
         final SwingWorker worker = new SwingWorker() {
@@ -290,7 +283,7 @@ public class WW3DToolView extends WWBaseToolView implements WWView {
 
 
                 } catch (Throwable e) {
-                    SnapApp.getDefault().handleError("Unable to initialize WW3DToolView: " + e.getMessage(), e);
+                    SnapApp.getDefault().handleError("Unable to initialize WWAnalysisToolView: " + e.getMessage(), e);
                 }
                 return null;
             }
@@ -304,8 +297,8 @@ public class WW3DToolView extends WWBaseToolView implements WWView {
         controlPanel.setBorder(new EmptyBorder(15, 15, 15, 15));
 
         final LayerList layerList = getWwd().getModel().getLayers();
-        for(Layer layer : layerList) {
-            if(layer instanceof WWLayer) {
+        for (Layer layer : layerList) {
+            if (layer instanceof WWLayer) {
                 final WWLayer wwLayer = (WWLayer) layer;
                 final JPanel layerControlPanel = wwLayer.getControlPanel(getWwd());
                 controlPanel.add(layerControlPanel);
@@ -357,7 +350,7 @@ public class WW3DToolView extends WWBaseToolView implements WWView {
             return layersPanel;
         } catch (URISyntaxException e) {
             JOptionPane.showMessageDialog(null, "Server URL is invalid", "Invalid Server URL",
-                    JOptionPane.ERROR_MESSAGE);
+                                          JOptionPane.ERROR_MESSAGE);
             tabbedPane.setSelectedIndex(previousTabIndex);
             return null;
         }

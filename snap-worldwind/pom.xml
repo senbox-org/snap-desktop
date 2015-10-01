@@ -69,21 +69,21 @@
             <artifactId>worldwind</artifactId>
             <version>2.0.0-986</version>
         </dependency>
-	    <dependency>
-			<groupId>gov.nasa</groupId>
-			<artifactId>worldwindx</artifactId>
-            <version>2.0.0-986</version>
-		</dependency>
         <dependency>
-			 <groupId>org.jogamp.gluegen</groupId>
-			 <artifactId>gluegen-rt-main</artifactId>
-             <version>2.1.5-01</version>
-		</dependency>
-		<dependency>
-			 <groupId>org.jogamp.jogl</groupId>
-			 <artifactId>jogl-all-main</artifactId>
-             <version>2.1.5-01</version>
-		</dependency>
+            <groupId>gov.nasa</groupId>
+            <artifactId>worldwindx</artifactId>
+            <version>2.0.0-986</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jogamp.gluegen</groupId>
+            <artifactId>gluegen-rt-main</artifactId>
+            <version>2.1.5-01</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jogamp.jogl</groupId>
+            <artifactId>jogl-all-main</artifactId>
+            <version>2.1.5-01</version>
+        </dependency>
 
         <!-- natives -->
 
@@ -166,7 +166,7 @@
     </dependencies>
 
     <build>
-        <plugins>            
+        <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>nbm-maven-plugin</artifactId>

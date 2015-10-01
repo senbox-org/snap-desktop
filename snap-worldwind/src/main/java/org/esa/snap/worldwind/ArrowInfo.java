@@ -15,14 +15,7 @@
  */
 package org.esa.snap.worldwind;
 
-import gov.nasa.worldwind.geom.Position;
-import gov.nasa.worldwind.render.Renderable;
-import gov.nasa.worldwind.util.BufferWrapper;
-import gov.nasa.worldwindx.examples.analytics.AnalyticSurface;
 import gov.nasa.worldwindx.examples.util.DirectedPath;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
 
