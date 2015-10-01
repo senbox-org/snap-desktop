@@ -120,37 +120,13 @@ class ProductFileChooser extends SnapFileChooser {
 
         setAccessory(panel);
 
-        addPropertyChangeListener(e -> {
-            String prop = e.getPropertyName();
-            if (prop.equals(JFileChooser.SELECTED_FILE_CHANGED_PROPERTY)) {
-                clearCurrentSubsetProduct();
-            } else if (prop.equals(JFileChooser.DIRECTORY_CHANGED_PROPERTY)) {
-                clearCurrentSubsetProduct();
-            }
-            updateState();
-        });
+        addPropertyChangeListener(e -> updateState());
     }
 
     private void updateState() {
-        if (getDialogType() == OPEN_DIALOG) {
-            if (isSubsetEnabled()) {
-                subsetButton.setEnabled(getSelectedFile() != null);
-//
-//                setApproveButtonText("Import Product");
-//                setApproveButtonMnemonic('I');
-//                setApproveButtonToolTipText("Imports the product.");
-            }
-        } else {
-            if (isSubsetEnabled()) {
-                subsetButton.setEnabled(productToExport != null);
-//
-//                setApproveButtonText("Export Product");
-//                setApproveButtonMnemonic('E');
-//                setApproveButtonToolTipText("Exports the product.");
-            }
-        }
-
         if (isSubsetEnabled()) {
+            subsetButton.setEnabled(getSelectedFile() != null || productToExport != null);
+
             File file = getSelectedFile();
             if (file != null && file.isFile()) {
                 long fileSize = Math.round(file.length() / (1024.0 * 1024.0));
@@ -199,26 +175,24 @@ class ProductFileChooser extends SnapFileChooser {
 
         if (product != null) {
             boolean approve = openProductSubsetDialog(product, newProductName);
-            if (approve&& getDialogType() == JFileChooser.OPEN_DIALOG) {
-//                setCurrentFilename(subsetProduct.getName());
+            if (approve && getDialogType() == JFileChooser.OPEN_DIALOG) {
                 approveSelection();
             }
-//            if (approve && getDialogType() == JFileChooser.SAVE_DIALOG) {
-//                setCurrentFilename(subsetProduct.getName());
-//                approveSelection();
-//            }
         }
 
         updateState();
     }
 
     private boolean openProductSubsetDialog(Product product, String newProductName) {
-        subsetProduct = null;
+        clearCurrentSubsetProduct();
         if (product != null) {
             ProductSubsetDialog productSubsetDialog = new ProductSubsetDialog(SnapApp.getDefault().getMainFrame(), product);
             if (productSubsetDialog.show() == ProductSubsetDialog.ID_OK) {
                 try {
                     subsetProduct = product.createSubset(productSubsetDialog.getProductSubsetDef(), newProductName, null);
+                    if (getCurrentFilename() != null && !getCurrentFilename().startsWith("subset_")) {
+                        setCurrentFilename("subset_" + getCurrentFilename());
+                    }
                     return true;
                 } catch (IOException e) {
                     SnapDialogs.showError("Could not create subset:\n" + e.getMessage());
