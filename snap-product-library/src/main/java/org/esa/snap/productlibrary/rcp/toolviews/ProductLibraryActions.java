@@ -5,6 +5,9 @@ import org.esa.snap.db.ProductEntry;
 import org.esa.snap.framework.ui.SnapFileChooser;
 import org.esa.snap.framework.ui.UIUtils;
 import org.esa.snap.graphbuilder.rcp.dialogs.BatchGraphDialog;
+import org.esa.snap.productlibrary.rcp.toolviews.extensions.ProductLibraryActionExt;
+import org.esa.snap.productlibrary.rcp.toolviews.extensions.ProductLibraryActionExtDescriptor;
+import org.esa.snap.productlibrary.rcp.toolviews.extensions.ProductLibraryActionExtRegistry;
 import org.esa.snap.productlibrary.rcp.toolviews.model.SortingDecorator;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
@@ -13,27 +16,17 @@ import org.esa.snap.util.DialogUtils;
 import org.esa.snap.util.ProductOpener;
 import org.esa.snap.util.ResourceUtils;
 
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JTable;
+import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.table.TableModel;
-import java.awt.Desktop;
-import java.awt.Dimension;
-import java.awt.Point;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * actions on product entry selections
@@ -50,7 +43,10 @@ public class ProductLibraryActions {
     private final JTable productEntryTable;
     private final ProductLibraryToolView toolView;
     private final ProductOpener openHandler;
-    private JButton selectAllButton, openAllSelectedButton, copySelectedButton, findSlicesButton, batchProcessButton;//, stackButton;
+    private JButton selectAllButton, openAllSelectedButton, copySelectedButton, findSlicesButton,
+            batchProcessButton;//, stackButton;
+
+    private List<ProductLibraryActionExt> actionExtList = new ArrayList<>();
 
     private JMenuItem copyToItem,  moveToItem, deleteItem;
 
@@ -104,6 +100,25 @@ public class ProductLibraryActions {
             }
         });
 
+        panel.add(selectAllButton);
+        panel.add(openAllSelectedButton);
+        panel.add(copySelectedButton);
+        panel.add(batchProcessButton);
+        //panel.add(new JSeparator(SwingConstants.HORIZONTAL));
+        
+        for(ProductLibraryActionExtDescriptor desc : ProductLibraryActionExtRegistry.getInstance().getDescriptors()) {
+            final ProductLibraryActionExt action = desc.createActionExt(this);
+            actionExtList.add(action);
+
+            final JButton button = action.getButton(panel);
+            panel.add(button);
+            button.addActionListener(new ActionListener() {
+                public void actionPerformed(final ActionEvent e) {
+                    action.performAction();
+                }
+            });
+        }
+
         //stackButton = DialogUtils.createButton("stackButton", "Stack overview", stackIcon, panel, DialogUtils.ButtonStyle.Icon);
         //stackButton.addActionListener(new ActionListener() {
         //    public void actionPerformed(final ActionEvent e) {
@@ -111,11 +126,7 @@ public class ProductLibraryActions {
         //    }
         //});
 
-        panel.add(selectAllButton);
-        panel.add(openAllSelectedButton);
-        panel.add(copySelectedButton);
-        panel.add(batchProcessButton);
-        //panel.add(new JSeparator(SwingConstants.HORIZONTAL));
+
         panel.add(Box.createRigidArea(new Dimension(24,24)));
         panel.add(findSlicesButton);
         //panel.add(stackButton);
@@ -140,16 +151,18 @@ public class ProductLibraryActions {
     //    dialog.show();
     //}
 
-    public void selectionEnabled(final boolean enable) {
+    public void selectionChanged(final ProductEntry[] selections) {
+        final boolean enable = selections.length > 0;
+
         openAllSelectedButton.setEnabled(enable);
         copySelectedButton.setEnabled(enable);
-        findSlicesButton.setEnabled(enable && getNumberOfSelections() == 1);
+        findSlicesButton.setEnabled(selections.length == 1);
         batchProcessButton.setEnabled(enable);
-        //stackButton.setEnabled(enable && getNumberOfSelections() > 1);
-    }
+        //stackButton.setEnabled(selections.length > 1);
 
-    private int getNumberOfSelections() {
-        return productEntryTable.getSelectedRowCount();
+        for(ProductLibraryActionExt action : actionExtList) {
+            action.selectionChanged(selections);
+        }
     }
 
     public ProductEntry[] getSelectedProductEntries() {

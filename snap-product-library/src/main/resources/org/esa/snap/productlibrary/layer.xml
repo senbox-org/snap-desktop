@@ -1,0 +1,9 @@
+<filesystem>
+
+    <folder name="ProductLibraryActions">
+        <file name="ExportListActionExt">
+            <attr name="actionExtClass" stringvalue="org.esa.snap.productlibrary.rcp.toolviews.extensions.ExportListActionExt"/>
+        </file>
+    </folder>
+
+</filesystem>

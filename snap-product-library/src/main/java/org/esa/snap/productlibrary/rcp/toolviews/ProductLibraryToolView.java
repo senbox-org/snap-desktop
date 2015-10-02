@@ -475,7 +475,6 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         String selectedText = "";
         final int selecteRows = productEntryTable.getSelectedRowCount();
 
-        productLibraryActions.selectionEnabled(selecteRows > 0);
         if (selecteRows > 0)
             selectedText = ", " + selecteRows + " Selected";
         else
@@ -487,7 +486,7 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         final ProductEntryTableModel tableModel = new ProductEntryTableModel(productEntryList);
         productEntryTable.setModel(new SortingDecorator(tableModel, productEntryTable.getTableHeader()));
         productEntryTable.setColumnModel(tableModel.getColumnModel());
-        updateStatusLabel();
+        notifySelectionChanged();
         worldMapUI.setProductEntryList(productEntryList);
         worldMapUI.setSelectedProductEntryList(null);
     }
@@ -581,7 +580,7 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
     public void notifySelectionChanged() {
         updateStatusLabel();
         final ProductEntry[] selections = productLibraryActions.getSelectedProductEntries();
-        productLibraryActions.selectionEnabled(selections.length > 0);
+        productLibraryActions.selectionChanged(selections);
 
         productLibraryActions.updateContextMenu(selections);
         dbPane.updateProductSelectionText(selections);
