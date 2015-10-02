@@ -15,12 +15,15 @@
  */
 package org.esa.snap.productlibrary.rcp.toolviews.extensions;
 
+import com.bc.ceres.core.Assert;
 import org.esa.snap.graphbuilder.gpf.ui.OperatorUIRegistry;
 import org.esa.snap.util.SystemUtils;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +35,9 @@ public class ProductLibraryActionExtRegistry {
 
     private static ProductLibraryActionExtRegistry instance = null;
     private final Map<String, ProductLibraryActionExtDescriptor> actionExtDescriptors = new HashMap<>();
+
+    private static Comparator<ProductLibraryActionExtDescriptor> descriptorComparator
+            = (a, b) -> a.getPosition() - b.getPosition();
 
     public ProductLibraryActionExtRegistry() {
         registerActions();
@@ -45,7 +51,9 @@ public class ProductLibraryActionExtRegistry {
     }
 
     public ProductLibraryActionExtDescriptor[] getDescriptors() {
-        return actionExtDescriptors.values().toArray(new ProductLibraryActionExtDescriptor[actionExtDescriptors.values().size()]);
+        final List<ProductLibraryActionExtDescriptor> values = new ArrayList<>(actionExtDescriptors.values());
+        values.sort(descriptorComparator);
+        return values.toArray(new ProductLibraryActionExtDescriptor[values.size()]);
     }
 
     private void registerActions() {
@@ -82,7 +90,11 @@ public class ProductLibraryActionExtRegistry {
 
         final Class<? extends ProductLibraryActionExt> actionExtClass =
                 OperatorUIRegistry.getClassAttribute(fileObject, "actionExtClass", ProductLibraryActionExt.class, false);
+        final Integer position = (Integer) fileObject.getAttribute("position");
 
-        return new ProductLibraryActionExtDescriptor(id, actionExtClass);
+        Assert.argument(actionExtClass != null, "Attribute 'actionExtClass' must be provided");
+        Assert.argument(position != null, "Attribute 'position' must be provided");
+
+        return new ProductLibraryActionExtDescriptor(id, actionExtClass, position);
     }
 }

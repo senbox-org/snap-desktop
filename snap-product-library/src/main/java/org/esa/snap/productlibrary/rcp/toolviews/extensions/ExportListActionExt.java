@@ -24,6 +24,7 @@ import org.esa.snap.util.DialogUtils;
 import org.esa.snap.util.SystemUtils;
 
 import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -62,6 +63,8 @@ public class ExportListActionExt implements ProductLibraryActionExt {
             final File[] fileList = actionHandler.getSelectedFiles();
             if (fileList.length != 0) {
                 exportFileList(file, fileList);
+
+                viewFile(file);
             }
         }
     }
@@ -102,6 +105,16 @@ public class ExportListActionExt implements ProductLibraryActionExt {
         } finally {
             if (p != null)
                 p.close();
+        }
+    }
+
+    private void viewFile(final File file) {
+        if (Desktop.isDesktopSupported() && file.exists()) {
+            try {
+                Desktop.getDesktop().open(file);
+            } catch (Exception e) {
+                SnapApp.getDefault().handleError("Error opening file " + e.getMessage(), e);
+            }
         }
     }
 }

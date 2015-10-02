@@ -3,6 +3,7 @@
     <folder name="ProductLibraryActions">
         <file name="ExportListActionExt">
             <attr name="actionExtClass" stringvalue="org.esa.snap.productlibrary.rcp.toolviews.extensions.ExportListActionExt"/>
+            <attr name="position" intvalue="200"/>
         </file>
     </folder>
 

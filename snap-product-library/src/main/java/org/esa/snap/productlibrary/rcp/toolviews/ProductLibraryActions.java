@@ -1,6 +1,20 @@
+/*
+ * Copyright (C) 2015 by Array Systems Computing Inc. http://www.array.ca
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option)
+ * any later version.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, see http://www.gnu.org/licenses/
+ */
 package org.esa.snap.productlibrary.rcp.toolviews;
 
-import org.esa.snap.datamodel.AbstractMetadata;
 import org.esa.snap.db.ProductEntry;
 import org.esa.snap.framework.ui.SnapFileChooser;
 import org.esa.snap.framework.ui.UIUtils;
@@ -36,15 +50,12 @@ public class ProductLibraryActions {
     private static final ImageIcon selectAllIcon = UIUtils.loadImageIcon("/org/esa/snap/productlibrary/icons/select-all24.png", ProductLibraryToolView.class);
     private static final ImageIcon openIcon = UIUtils.loadImageIcon("/org/esa/snap/productlibrary/icons/open24.png", ProductLibraryToolView.class);
     private static final ImageIcon copyIcon = UIUtils.loadImageIcon("/org/esa/snap/productlibrary/icons/copy24.png", ProductLibraryToolView.class);
-    private static final ImageIcon findSlicesIcon = UIUtils.loadImageIcon("/org/esa/snap/productlibrary/icons/slices24.png", ProductLibraryToolView.class);
     private static final ImageIcon batchIcon = UIUtils.loadImageIcon("/org/esa/snap/productlibrary/icons/batch24.png", ProductLibraryToolView.class);
-    //private static final ImageIcon stackIcon = UIUtils.loadImageIcon("/org/esa/snap/productlibrary/icons/stack24.png", ProductLibraryToolView.class);
 
     private final JTable productEntryTable;
     private final ProductLibraryToolView toolView;
     private final ProductOpener openHandler;
-    private JButton selectAllButton, openAllSelectedButton, copySelectedButton, findSlicesButton,
-            batchProcessButton;//, stackButton;
+    private JButton selectAllButton, openAllSelectedButton, copySelectedButton, batchProcessButton;
 
     private List<ProductLibraryActionExt> actionExtList = new ArrayList<>();
 
@@ -84,13 +95,6 @@ public class ProductLibraryActions {
             }
         });
 
-        findSlicesButton = DialogUtils.createButton("findSlicesButton", "Find related slices", findSlicesIcon, panel, DialogUtils.ButtonStyle.Icon);
-        findSlicesButton.addActionListener(new ActionListener() {
-            public void actionPerformed(final ActionEvent e) {
-                performFindSlicesAction();
-            }
-        });
-
         batchProcessButton = DialogUtils.createButton("batchProcessButton", "Batch", batchIcon, panel, DialogUtils.ButtonStyle.Icon);
         batchProcessButton.setToolTipText("Right click to select a graph");
         batchProcessButton.setComponentPopupMenu(createGraphPopup());
@@ -104,8 +108,8 @@ public class ProductLibraryActions {
         panel.add(openAllSelectedButton);
         panel.add(copySelectedButton);
         panel.add(batchProcessButton);
-        //panel.add(new JSeparator(SwingConstants.HORIZONTAL));
-        
+        panel.add(Box.createRigidArea(new Dimension(24,24))); // separator
+
         for(ProductLibraryActionExtDescriptor desc : ProductLibraryActionExtRegistry.getInstance().getDescriptors()) {
             final ProductLibraryActionExt action = desc.createActionExt(this);
             actionExtList.add(action);
@@ -118,18 +122,6 @@ public class ProductLibraryActions {
                 }
             });
         }
-
-        //stackButton = DialogUtils.createButton("stackButton", "Stack overview", stackIcon, panel, DialogUtils.ButtonStyle.Icon);
-        //stackButton.addActionListener(new ActionListener() {
-        //    public void actionPerformed(final ActionEvent e) {
-        //        performStackOverviewAction();
-        //    }
-        //});
-
-
-        panel.add(Box.createRigidArea(new Dimension(24,24)));
-        panel.add(findSlicesButton);
-        //panel.add(stackButton);
 
         return panel;
     }
@@ -144,21 +136,12 @@ public class ProductLibraryActions {
         batchDlg.show();
     }
 
-    //private void performStackOverviewAction() {
-
-    //    final InSARMasterDialog dialog = new InSARMasterDialog();
-    //    dialog.setInputProductList(getSelectedProductEntries());
-    //    dialog.show();
-    //}
-
     public void selectionChanged(final ProductEntry[] selections) {
         final boolean enable = selections.length > 0;
 
         openAllSelectedButton.setEnabled(enable);
         copySelectedButton.setEnabled(enable);
-        findSlicesButton.setEnabled(selections.length == 1);
         batchProcessButton.setEnabled(enable);
-        //stackButton.setEnabled(selections.length > 1);
 
         for(ProductLibraryActionExt action : actionExtList) {
             action.selectionChanged(selections);
@@ -208,14 +191,6 @@ public class ProductLibraryActions {
             ClipboardUtils.copyToClipboard(fileList);
     }
 
-    private void performFindSlicesAction() {
-        final ProductEntry entry = getSelectedProductEntries()[0];
-        int dataTakeId = entry.getMetadata().getAttributeInt(AbstractMetadata.data_take_id, AbstractMetadata.NO_METADATA);
-        if(dataTakeId != AbstractMetadata.NO_METADATA) {
-            toolView.findSlices(dataTakeId);
-        }
-    }
-
     private void performFileAction(final ProductFileHandler.TYPE operationType) {
         final File targetFolder;
         if(operationType.equals(ProductFileHandler.TYPE.DELETE)) {
@@ -237,6 +212,10 @@ public class ProductLibraryActions {
         if (openHandler != null) {
             openHandler.openProducts(getSelectedFiles());
         }
+    }
+
+    public void findSlices(final int dataTakeId) {
+        toolView.findSlices(dataTakeId);
     }
 
     public File promptForRepositoryBaseDir() {

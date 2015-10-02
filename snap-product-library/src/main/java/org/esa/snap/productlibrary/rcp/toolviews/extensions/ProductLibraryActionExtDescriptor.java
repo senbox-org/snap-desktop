@@ -25,15 +25,22 @@ public class ProductLibraryActionExtDescriptor {
 
     private String id;
     private Class<? extends ProductLibraryActionExt> actionExtClass;
+    private int position;
 
     public ProductLibraryActionExtDescriptor(final String id,
-                                             final Class<? extends ProductLibraryActionExt> actionExtClass) {
+                                             final Class<? extends ProductLibraryActionExt> actionExtClass,
+                                             final int position) {
         this.id = id;
         this.actionExtClass = actionExtClass;
+        this.position = position;
     }
 
     public String getId() {
         return id;
+    }
+
+    public int getPosition() {
+        return position;
     }
 
     public ProductLibraryActionExt createActionExt(final ProductLibraryActions actionHandler) {
