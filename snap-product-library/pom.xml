@@ -71,11 +71,6 @@
             <version>${snap.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.esa.snap</groupId>
-            <artifactId>snap-gui-utilities</artifactId>
-            <version>${snap.version}</version>
-        </dependency>
-        <dependency>
             <groupId>com.alee</groupId>
             <artifactId>weblaf</artifactId>
             <version>1.27</version>

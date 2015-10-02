@@ -27,7 +27,7 @@ import org.esa.snap.framework.datamodel.ProductData;
 import org.esa.snap.framework.ui.UIUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
-import org.esa.snap.util.DialogUtils;
+import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
 import org.esa.snap.util.StringUtils;
 import org.jdesktop.swingx.JXDatePicker;
 

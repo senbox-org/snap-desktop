@@ -20,7 +20,7 @@ import org.esa.snap.framework.ui.SnapFileChooser;
 import org.esa.snap.productlibrary.rcp.toolviews.ProductLibraryActions;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.tango.TangoIcons;
-import org.esa.snap.util.DialogUtils;
+import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
 import org.esa.snap.util.SystemUtils;
 
 import javax.swing.*;

@@ -45,7 +45,6 @@
         <module>snap-desktop-examples</module>
         <module>snap-gpf-ui</module>
         <module>snap-graph-builder</module>
-        <module>snap-gui-utilities</module>
         <module>snap-help</module>
         <module>snap-pixel-extraction-ui</module>
 		<module>snap-product-library</module>

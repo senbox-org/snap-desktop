@@ -18,7 +18,7 @@ package org.esa.snap.graphbuilder.rcp.actions;
 import org.esa.snap.graphbuilder.rcp.dialogs.SingleOperatorDialog;
 import org.esa.snap.framework.ui.ModelessDialog;
 import org.esa.snap.rcp.actions.DefaultOperatorAction;
-import org.esa.snap.util.IconUtils;
+import org.esa.snap.graphbuilder.rcp.utils.IconUtils;
 
 import javax.swing.ImageIcon;
 import java.awt.event.ActionEvent;

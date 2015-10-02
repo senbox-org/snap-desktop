@@ -25,9 +25,9 @@ import org.esa.snap.productlibrary.rcp.toolviews.extensions.ProductLibraryAction
 import org.esa.snap.productlibrary.rcp.toolviews.model.SortingDecorator;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
-import org.esa.snap.util.ClipboardUtils;
-import org.esa.snap.util.DialogUtils;
-import org.esa.snap.util.ProductOpener;
+import org.esa.snap.graphbuilder.rcp.utils.ClipboardUtils;
+import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
+import org.esa.snap.productlibrary.rcp.utils.ProductOpener;
 import org.esa.snap.util.ResourceUtils;
 
 import javax.swing.*;

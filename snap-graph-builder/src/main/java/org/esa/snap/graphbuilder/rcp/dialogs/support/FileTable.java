@@ -18,7 +18,7 @@ package org.esa.snap.graphbuilder.rcp.dialogs.support;
 import org.esa.snap.db.ProductEntry;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
-import org.esa.snap.util.ClipboardUtils;
+import org.esa.snap.graphbuilder.rcp.utils.ClipboardUtils;
 import org.esa.snap.util.ProductFunctions;
 
 import javax.swing.*;

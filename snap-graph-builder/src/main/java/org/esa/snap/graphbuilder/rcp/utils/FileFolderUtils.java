@@ -1,8 +1,9 @@
-package org.esa.snap.util;
+package org.esa.snap.graphbuilder.rcp.utils;
 
 import org.esa.snap.framework.ui.SnapFileChooser;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.file.SaveProductAsAction;
+import org.esa.snap.util.SystemUtils;
 import org.esa.snap.util.io.FileUtils;
 import org.esa.snap.util.io.SnapFileFilter;
 

@@ -2,7 +2,7 @@ package org.esa.snap.productlibrary.rcp.toolviews.timeline;
 
 import org.esa.snap.productlibrary.rcp.toolviews.model.DatabaseQueryListener;
 import org.esa.snap.productlibrary.rcp.toolviews.model.DatabaseStatistics;
-import org.esa.snap.util.DialogUtils;
+import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
 
 import javax.swing.*;
 import java.awt.*;

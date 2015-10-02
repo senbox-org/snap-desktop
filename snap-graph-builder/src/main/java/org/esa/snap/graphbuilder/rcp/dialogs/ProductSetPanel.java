@@ -29,7 +29,7 @@ import org.esa.snap.rcp.actions.file.OpenProductAction;
 import org.esa.snap.rcp.actions.file.SaveProductAsAction;
 import org.esa.snap.rcp.util.ProgressHandleMonitor;
 import org.esa.snap.tango.TangoIcons;
-import org.esa.snap.util.DialogUtils;
+import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
 import org.esa.snap.util.ProductFunctions;
 import org.esa.snap.util.SystemUtils;
 import org.netbeans.api.progress.ProgressUtils;
