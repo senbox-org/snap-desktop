@@ -27,9 +27,7 @@ import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import org.esa.snap.framework.datamodel.PlainFeatureFactory;
 import org.esa.snap.framework.datamodel.SceneRasterTransform;
-import org.esa.snap.framework.datamodel.SceneRasterTransformException;
 import org.esa.snap.util.AwtGeomToJtsGeomConverter;
-import org.esa.snap.util.SceneRasterTransformUtils;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.referencing.operation.MathTransform2D;
@@ -88,14 +86,7 @@ public class SimpleFeatureFigureFactory implements FigureFactory {
 
     @Override
     public ShapeFigure createPolygonFigure(Shape shape, FigureStyle style) {
-        Polygon polygon;
-        try {
-            polygon = toJtsGeom.createPolygon(
-                    SceneRasterTransformUtils.transformShapeToProductCoordinates(shape, sceneRasterTransform));
-        } catch (SceneRasterTransformException e) {
-            e.printStackTrace();
-            return null;
-        }
+        Polygon polygon = toJtsGeom.createPolygon(shape);
         return createShapeFigure(polygon, style);
     }
 
@@ -104,19 +95,18 @@ public class SimpleFeatureFigureFactory implements FigureFactory {
     }
 
     private PointFigure createPointFigure(Point geometry, SceneRasterTransform sceneRasterTransform, FigureStyle style) {
-        return new SimpleFeaturePointFigure(createSimpleFeature(geometry), sceneRasterTransform, style);
+        return new SimpleFeaturePointFigure(createSimpleFeature(geometry), style);
     }
 
-    public SimpleFeatureFigure createSimpleFeatureFigure(SimpleFeature simpleFeature,
-                                                         SceneRasterTransform sceneRasterTransform, String defaultStyleCss) {
+    public SimpleFeatureFigure createSimpleFeatureFigure(SimpleFeature simpleFeature, String defaultStyleCss) {
         final String css = getStyleCss(simpleFeature, defaultStyleCss);
         final FigureStyle normalStyle = DefaultFigureStyle.createFromCss(css);
         final FigureStyle selectedStyle = deriveSelectedStyle(normalStyle);
         final Object geometry = simpleFeature.getDefaultGeometry();
         if (geometry instanceof Point) {
-            return new SimpleFeaturePointFigure(simpleFeature, sceneRasterTransform, normalStyle, selectedStyle);
+            return new SimpleFeaturePointFigure(simpleFeature, normalStyle, selectedStyle);
         } else {
-            return new SimpleFeatureShapeFigure(simpleFeature, sceneRasterTransform, normalStyle, selectedStyle);
+            return new SimpleFeatureShapeFigure(simpleFeature, normalStyle, selectedStyle);
         }
     }
 
@@ -140,7 +130,7 @@ public class SimpleFeatureFigureFactory implements FigureFactory {
     }
 
     public ShapeFigure createShapeFigure(Geometry geometry, FigureStyle style) {
-        return new SimpleFeatureShapeFigure(createSimpleFeature(geometry), sceneRasterTransform, style, deriveSelectedStyle(style));
+        return new SimpleFeatureShapeFigure(createSimpleFeature(geometry), style, deriveSelectedStyle(style));
     }
 
     public SimpleFeature createSimpleFeature(Geometry geometry) {
