@@ -56,11 +56,6 @@
         </dependency>
         <dependency>
             <groupId>org.esa.snap</groupId>
-            <artifactId>snap-gui-utilities</artifactId>
-            <version>${snap.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.esa.snap</groupId>
             <artifactId>snap-rcp</artifactId>
         </dependency>
 

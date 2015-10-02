@@ -51,10 +51,6 @@ public class WWLayerRegistry {
         return wwLayerDescriptors.values().toArray(new WWLayerDescriptor[wwLayerDescriptors.values().size()]);
     }
 
-    public WWLayerDescriptor getWWLayerDescriptor(final String id) {
-        return wwLayerDescriptors.get(id);
-    }
-
     private void registerWWLayers() {
         final FileObject fileObj = FileUtil.getConfigFile("WorldWindLayers");
         if (fileObj == null) {
@@ -73,13 +69,13 @@ public class WWLayerRegistry {
             if (WWLayerDescriptor != null) {
                 final WWLayerDescriptor existingDescriptor = wwLayerDescriptors.get(WWLayerDescriptor.getId());
                 if (existingDescriptor != null) {
-                    SystemUtils.LOG.info(String.format("WWLayer [%s] has been redeclared!\n",
+                    SystemUtils.LOG.warning(String.format("WWLayer [%s] has been redeclared!\n",
                                                        WWLayerDescriptor.getId()));
                 }
 
                 wwLayerDescriptors.put(WWLayerDescriptor.getId(), WWLayerDescriptor);
 
-                SystemUtils.LOG.info(String.format("New WWLayer added from layer.xml path '%s': %s",
+                SystemUtils.LOG.fine(String.format("New WWLayer added from layer.xml path '%s': %s",
                                                    file.getPath(), WWLayerDescriptor.getId()));
             }
         }
@@ -101,22 +97,6 @@ public class WWLayerRegistry {
 
         return new DefaultWWLayerDescriptor(id, Boolean.parseBoolean(showInWorldMapToolView),
                                             Boolean.parseBoolean(showIn3DToolView), WWLayerClass);
-    }
-
-    public static WWLayer CreateWWLayer(final String id) {
-
-        final WWLayerRegistry reg = WWLayerRegistry.getInstance();
-        if (reg != null) {
-            WWLayerDescriptor desc = reg.getWWLayerDescriptor(id);
-            if (desc != null) {
-                return desc.createWWLayer();
-            }
-            desc = WWLayerRegistry.getInstance().getWWLayerDescriptor("DefaultProductLayer");
-            if (desc != null) {
-                return desc.createWWLayer();
-            }
-        }
-        return new DefaultProductLayer();
     }
 
     public static <T> Class<T> getClassAttribute(final FileObject fileObject,
