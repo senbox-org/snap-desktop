@@ -25,9 +25,7 @@ import org.esa.snap.framework.datamodel.PlacemarkDescriptor;
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.ProductNodeEvent;
 import org.esa.snap.framework.datamodel.ProductNodeListenerAdapter;
-import org.esa.snap.framework.datamodel.SceneRasterTransformException;
 import org.esa.snap.framework.datamodel.TiePointGrid;
-import org.esa.snap.util.SceneRasterTransformUtils;
 import org.esa.snap.util.math.MathUtils;
 
 import javax.swing.table.DefaultTableModel;
@@ -203,20 +201,19 @@ public abstract class AbstractPlacemarkTableModel extends DefaultTableModel {
             return "No-data";
         }
 
-        if (index < getNumSelectedBands()) {
-            final Band band = selectedBands[index];
-            final int width = band.getSceneRasterWidth();
-            final int height = band.getSceneRasterHeight();
-            try {
-                pixelPos = SceneRasterTransformUtils.transformToRasterDataNodeRaster(band, pixelPos);
-            } catch (SceneRasterTransformException e) {
-                return "SceneRasterTransformError";
-            }
-            final int x = MathUtils.floorInt(pixelPos.getX());
-            final int y = MathUtils.floorInt(pixelPos.getY());
+        final int x = MathUtils.floorInt(pixelPos.getX());
+        final int y = MathUtils.floorInt(pixelPos.getY());
+        if (product != null) {
+            final int width = product.getSceneRasterWidth();
+            final int height = product.getSceneRasterHeight();
+
             if (x < 0 || x >= width || y < 0 || y >= height) {
                 return "No-data";
             }
+        }
+
+        if (index < getNumSelectedBands()) {
+            final Band band = selectedBands[index];
             if (band.isPixelValid(x, y)) {
                 try {
                     float[] value = null;
@@ -232,13 +229,6 @@ public abstract class AbstractPlacemarkTableModel extends DefaultTableModel {
         index -= getNumSelectedBands();
         if (index < selectedGrids.length) {
             final TiePointGrid grid = selectedGrids[index];
-            try {
-                pixelPos = SceneRasterTransformUtils.transformToRasterDataNodeRaster(grid, pixelPos);
-            } catch (SceneRasterTransformException e) {
-                return "SceneRasterTransformError";
-            }
-            final int x = MathUtils.floorInt(pixelPos.getX());
-            final int y = MathUtils.floorInt(pixelPos.getY());
             try {
                 float[] value = null;
                 value = grid.readPixels(x, y, 1, 1, value, ProgressMonitor.NULL);
