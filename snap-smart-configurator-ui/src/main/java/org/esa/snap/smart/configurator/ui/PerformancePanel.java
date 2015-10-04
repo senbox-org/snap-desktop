@@ -1,7 +1,17 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (C) 2015 CS SI
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option)
+ * any later version.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, see http://www.gnu.org/licenses/
  */
 package org.esa.snap.smart.configurator.ui;
 
@@ -17,6 +27,8 @@ import java.util.logging.Level;
 import java.util.prefs.BackingStoreException;
 import java.util.regex.Pattern;
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import org.apache.commons.lang.StringUtils;
 import org.esa.snap.configurator.BenchmarkSingleCalculus;
@@ -83,41 +95,28 @@ final class PerformancePanel extends javax.swing.JPanel {
 
         initComponents();
 
-        vmParametersTextField.addKeyListener(new KeyAdapter() {
+        DocumentListener textFieldListener = new DocumentListener() {
             @Override
-            public void keyTyped(KeyEvent e) {
+            public void insertUpdate(DocumentEvent e) {
                 controller.changed();
             }
-        });
 
-        cachePathTextField.addKeyListener(new KeyAdapter() {
             @Override
-            public void keyTyped(KeyEvent e) {
+            public void removeUpdate(DocumentEvent e) {
                 controller.changed();
             }
-        });
 
-        nbThreadsTextField.addKeyListener(new KeyAdapter() {
             @Override
-            public void keyTyped(KeyEvent e) {
-                    controller.changed();
+            public void changedUpdate(DocumentEvent e) {
+                controller.changed();
             }
-        });
+        };
 
-        defaultTileSizeTextField.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-                    controller.changed();
-            }
-        });
-
-
-        cacheSizeTextField.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-                    controller.changed();
-            }
-        });
+        vmParametersTextField.getDocument().addDocumentListener(textFieldListener);
+        cachePathTextField.getDocument().addDocumentListener(textFieldListener);
+        nbThreadsTextField.getDocument().addDocumentListener(textFieldListener);
+        defaultTileSizeTextField.getDocument().addDocumentListener(textFieldListener);
+        cacheSizeTextField.getDocument().addDocumentListener(textFieldListener);
     }
 
     /**
@@ -156,9 +155,11 @@ final class PerformancePanel extends javax.swing.JPanel {
         jPanel3 = new javax.swing.JPanel();
         processingParamsComputeButton = new javax.swing.JButton();
         processingParamsResetButton = new javax.swing.JButton();
-        filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 3000), new java.awt.Dimension(0, 32767));
 
-        setLayout(new javax.swing.BoxLayout(this, javax.swing.BoxLayout.PAGE_AXIS));
+        BoxLayout perfPanelLayout = new BoxLayout(this, BoxLayout.Y_AXIS);
+        setLayout(perfPanelLayout);
+
+        Box.createVerticalGlue();
 
         systemParametersPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.systemParametersPanel.border.title"))); 
         systemParametersPanel.setMinimumSize(new java.awt.Dimension(283, 115));
@@ -262,10 +263,10 @@ final class PerformancePanel extends javax.swing.JPanel {
 
         add(systemParametersPanel);
 
+        Box.createVerticalGlue();
+
         processingParametersPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.border.title"))); 
-        processingParametersPanel.setMinimumSize(new java.awt.Dimension(450, 185));
-        processingParametersPanel.setName(""); 
-        processingParametersPanel.setPreferredSize(new java.awt.Dimension(400, 350));
+        processingParametersPanel.setName("");
         processingParametersPanel.setLayout(new java.awt.GridBagLayout());
 
         jPanel2.setLayout(new java.awt.GridLayout(3, 0, 0, 15));
@@ -377,7 +378,9 @@ final class PerformancePanel extends javax.swing.JPanel {
         processingParametersPanel.add(jPanel3, gridBagConstraints);
 
         add(processingParametersPanel);
-        add(filler1);
+
+
+        setBorder(BorderFactory.createLineBorder(Color.BLUE));
     }
 
     private void editVMParametersButtonActionPerformed(ActionEvent e) {
@@ -651,7 +654,6 @@ final class PerformancePanel extends javax.swing.JPanel {
     private javax.swing.JLabel cacheSizeLabel;
     private javax.swing.JTextField cacheSizeTextField;
     private javax.swing.JTextField defaultTileSizeTextField;
-    private javax.swing.Box.Filler filler1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel cachePathLabel;
     private javax.swing.JLabel vmParametersLabel;
