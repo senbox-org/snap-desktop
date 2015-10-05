@@ -4,10 +4,16 @@
  */
 package org.esa.snap.framework.ui;
 
-import org.esa.snap.framework.help.HelpSys;
 import org.openide.util.HelpCtx;
 
-import javax.swing.*;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;

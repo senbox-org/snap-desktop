@@ -1,6 +1,5 @@
 package org.esa.snap.rcp.imgfilter;
 
-import org.esa.snap.framework.ui.UIUtils;
 import org.esa.snap.rcp.imgfilter.model.Filter;
 import org.esa.snap.rcp.imgfilter.model.FilterSet;
 import org.esa.snap.rcp.imgfilter.model.FilterSetStore;

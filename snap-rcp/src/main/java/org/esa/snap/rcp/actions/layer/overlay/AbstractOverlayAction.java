@@ -3,7 +3,6 @@ package org.esa.snap.rcp.actions.layer.overlay;
 import com.bc.ceres.glayer.Layer;
 import com.bc.ceres.glayer.support.AbstractLayerListener;
 import org.esa.snap.framework.ui.product.ProductSceneView;
-import org.esa.snap.netbeans.docwin.DocumentWindowManager;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.SelectionSupport;
 import org.netbeans.api.annotations.common.NullAllowed;
