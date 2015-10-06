@@ -25,7 +25,7 @@ import org.esa.snap.core.datamodel.ProductNodeEvent;
 import org.esa.snap.core.datamodel.ProductNodeListener;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.datamodel.VirtualBand;
-import org.esa.snap.glevel.BandImageMultiLevelSource;
+import org.esa.snap.core.image.BandImageMultiLevelSource;
 
 import java.util.Arrays;
 import java.util.List;
