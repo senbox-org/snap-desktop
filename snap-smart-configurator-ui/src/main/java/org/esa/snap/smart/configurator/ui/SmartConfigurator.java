@@ -74,6 +74,9 @@ public class SmartConfigurator extends javax.swing.JFrame implements PropertyCha
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
+        setIconImage(new ImageIcon(getClass().getResource("SnapSmall.gif")).getImage());
+        setTitle("SNAP Performance Configuration Optimisation");
+
         pack();
     }
 
@@ -86,15 +89,6 @@ public class SmartConfigurator extends javax.swing.JFrame implements PropertyCha
         System.exit(0);
     }
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new SmartConfigurator().setVisible(true));
-    }
-
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         if(performancePanel.valid()) {
@@ -102,5 +96,13 @@ public class SmartConfigurator extends javax.swing.JFrame implements PropertyCha
         } else {
             okButton.setEnabled(false);
         }
+    }
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(() -> new SmartConfigurator().setVisible(true));
     }
 }
