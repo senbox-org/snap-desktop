@@ -18,12 +18,12 @@
 package org.esa.snap.ui.tooladapter.model;
 
 import com.bc.ceres.swing.binding.BindingContext;
-import org.esa.snap.framework.gpf.descriptor.PropertyAttributeException;
-import org.esa.snap.framework.gpf.descriptor.ToolAdapterOperatorDescriptor;
-import org.esa.snap.framework.gpf.descriptor.ToolParameterDescriptor;
+import org.esa.snap.core.gpf.descriptor.PropertyAttributeException;
+import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
+import org.esa.snap.core.gpf.descriptor.ToolParameterDescriptor;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JComponent;
+import java.awt.Dimension;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.util.logging.Logger;

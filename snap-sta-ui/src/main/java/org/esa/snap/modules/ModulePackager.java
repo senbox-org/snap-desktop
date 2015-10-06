@@ -15,16 +15,26 @@
  */
 package org.esa.snap.modules;
 
-import org.esa.snap.framework.gpf.descriptor.ToolAdapterOperatorDescriptor;
-import org.esa.snap.framework.gpf.operators.tooladapter.ToolAdapterIO;
+import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
+import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterIO;
 import org.esa.snap.utils.ModuleInstaller;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.jar.*;
+import java.util.jar.Attributes;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.util.jar.JarOutputStream;
+import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 

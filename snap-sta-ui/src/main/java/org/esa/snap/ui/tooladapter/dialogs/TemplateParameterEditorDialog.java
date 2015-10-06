@@ -17,9 +17,13 @@
  */
 package org.esa.snap.ui.tooladapter.dialogs;
 
-import org.esa.snap.framework.gpf.descriptor.*;
-import org.esa.snap.framework.gpf.operators.tooladapter.ToolAdapterIO;
-import org.esa.snap.framework.gpf.operators.tooladapter.ToolAdapterOp;
+import org.esa.snap.core.gpf.descriptor.SystemVariable;
+import org.esa.snap.core.gpf.descriptor.TemplateParameterDescriptor;
+import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
+import org.esa.snap.core.gpf.descriptor.ToolParameterDescriptor;
+import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterIO;
+import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterOp;
+import org.esa.snap.framework.gpf.descriptor.ParameterDescriptor;
 import org.esa.snap.framework.ui.AppContext;
 import org.esa.snap.framework.ui.ModalDialog;
 import org.esa.snap.framework.ui.UIUtils;
@@ -28,9 +32,17 @@ import org.esa.snap.ui.tooladapter.model.AutoCompleteTextArea;
 import org.esa.snap.ui.tooladapter.model.OperatorParametersTable;
 import org.esa.snap.ui.tooladapter.model.PropertyMemberUIWrapper;
 
-import javax.swing.*;
+import javax.swing.AbstractButton;
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.border.TitledBorder;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
