@@ -8,8 +8,6 @@ import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.PropertyEditor;
 import com.bc.ceres.swing.binding.PropertyEditorRegistry;
 import com.bc.jexp.ParseException;
-import com.bc.jexp.Term;
-import com.bc.jexp.impl.TermDecompiler;
 import org.esa.snap.framework.datamodel.Band;
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.ProductData;

@@ -51,7 +51,7 @@ import java.net.URISyntaxException;
 
 @TopComponent.Description(
         preferredID = "WWAnalysisToolView",
-        iconBase = "org/esa/snap/icons/earth24.png",
+        iconBase = "org/esa/snap/worldwind/icons/earth24.png",
         persistenceType = TopComponent.PERSISTENCE_NEVER
 )
 @TopComponent.Registration(
@@ -101,7 +101,7 @@ public class WWAnalysisToolView extends WWBaseToolView implements WWView {
             };
 
     public WWAnalysisToolView() {
-        setDisplayName("WorldWind 3D");
+        setDisplayName("WorldWind Analysis");
         setLayout(new BorderLayout(4, 4));
         setBorder(new EmptyBorder(4, 4, 4, 4));
         add(createControl(), BorderLayout.CENTER);
