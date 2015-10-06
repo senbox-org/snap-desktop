@@ -32,7 +32,7 @@ import com.bc.ceres.glevel.MultiLevelSource;
 import com.bc.ceres.glevel.support.DefaultMultiLevelModel;
 import com.bc.ceres.glevel.support.DefaultMultiLevelSource;
 import org.esa.snap.core.datamodel.RasterDataNode;
-import org.esa.snap.jai.ImageManager;
+import org.esa.snap.core.image.ImageManager;
 import org.geotools.data.ows.CRSEnvelope;
 import org.geotools.data.ows.StyleImpl;
 import org.geotools.data.wms.WebMapServer;

@@ -16,10 +16,10 @@
 
 package org.esa.snap.ui.diagram;
 
+import org.esa.snap.core.util.PropertyMap;
+import org.esa.snap.core.util.io.CsvReader;
+import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.ui.SnapFileChooser;
-import org.esa.snap.util.PropertyMap;
-import org.esa.snap.util.io.CsvReader;
-import org.esa.snap.util.io.SnapFileFilter;
 
 import javax.swing.JOptionPane;
 import java.awt.Component;

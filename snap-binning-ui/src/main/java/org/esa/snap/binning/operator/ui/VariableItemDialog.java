@@ -15,9 +15,9 @@ import com.bc.jexp.ParseException;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.dataop.barithm.BandArithmetic;
 import org.esa.snap.core.gpf.annotations.ParameterDescriptorFactory;
+import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.ui.product.ProductExpressionPane;
-import org.esa.snap.util.StringUtils;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;

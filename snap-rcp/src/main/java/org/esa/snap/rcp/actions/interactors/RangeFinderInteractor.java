@@ -24,10 +24,10 @@ import org.esa.snap.core.datamodel.GeoCoding;
 import org.esa.snap.core.datamodel.GeoPos;
 import org.esa.snap.core.datamodel.PixelPos;
 import org.esa.snap.core.dataop.maptransf.Ellipsoid;
+import org.esa.snap.core.util.math.MathUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.ui.product.ProductSceneView;
-import org.esa.snap.util.math.MathUtils;
 import org.openide.util.ImageUtilities;
 
 import javax.swing.ImageIcon;

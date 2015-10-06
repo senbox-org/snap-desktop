@@ -23,9 +23,9 @@ import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.jidesoft.swing.FolderChooser;
 import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.product.SourceProductList;
-import org.esa.snap.util.SystemUtils;
 
 import javax.swing.AbstractButton;
 import javax.swing.JButton;

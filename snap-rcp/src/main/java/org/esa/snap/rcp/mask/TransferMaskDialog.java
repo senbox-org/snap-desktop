@@ -19,8 +19,8 @@ import com.bc.ceres.swing.TableLayout;
 import org.esa.snap.core.datamodel.GeoCoding;
 import org.esa.snap.core.datamodel.Mask;
 import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.util.ProductUtils;
 import org.esa.snap.ui.ModalDialog;
-import org.esa.snap.util.ProductUtils;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;

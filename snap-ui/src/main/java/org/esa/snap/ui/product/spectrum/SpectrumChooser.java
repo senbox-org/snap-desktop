@@ -3,13 +3,13 @@ package org.esa.snap.ui.product.spectrum;
 import com.bc.ceres.swing.TableLayout;
 import com.jidesoft.swing.TristateCheckBox;
 import org.esa.snap.core.datamodel.Band;
+import org.esa.snap.core.util.ArrayUtils;
 import org.esa.snap.ui.DecimalTableCellRenderer;
 import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.product.LoadSaveRasterDataNodesConfigurationsComponent;
 import org.esa.snap.ui.product.LoadSaveRasterDataNodesConfigurationsProvider;
 import org.esa.snap.ui.tool.ToolButtonFactory;
-import org.esa.snap.util.ArrayUtils;
 
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;

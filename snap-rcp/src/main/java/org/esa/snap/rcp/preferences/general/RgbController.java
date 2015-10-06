@@ -19,9 +19,9 @@ package org.esa.snap.rcp.preferences.general;
 import com.bc.ceres.binding.PropertyContainer;
 import com.bc.ceres.binding.PropertySet;
 import com.bc.ceres.swing.binding.BindingContext;
+import org.esa.snap.core.util.DefaultPropertyMap;
 import org.esa.snap.rcp.preferences.DefaultConfigController;
 import org.esa.snap.ui.RGBImageProfilePane;
-import org.esa.snap.util.DefaultPropertyMap;
 import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.HelpCtx;
 

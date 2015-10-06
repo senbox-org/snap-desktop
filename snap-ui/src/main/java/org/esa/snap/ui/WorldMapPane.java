@@ -21,8 +21,8 @@ import com.bc.ceres.glayer.swing.LayerCanvas;
 import com.bc.ceres.glayer.swing.WakefulComponent;
 import com.bc.ceres.grender.Viewport;
 import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.util.ProductUtils;
 import org.esa.snap.tango.TangoIcons;
-import org.esa.snap.util.ProductUtils;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.openide.util.ImageUtilities;
 

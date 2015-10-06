@@ -21,9 +21,9 @@ import org.esa.snap.core.datamodel.ProductNodeEvent;
 import org.esa.snap.core.datamodel.ProductNodeListener;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.datamodel.VectorDataNode;
+import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.tool.ToolButtonFactory;
-import org.esa.snap.util.SystemUtils;
 import org.openide.windows.TopComponent;
 
 import javax.swing.AbstractButton;

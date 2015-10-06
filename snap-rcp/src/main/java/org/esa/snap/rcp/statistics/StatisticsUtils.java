@@ -22,10 +22,10 @@ import org.esa.snap.core.datamodel.GeoPos;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.datamodel.TransectProfileData;
+import org.esa.snap.core.util.StringUtils;
+import org.esa.snap.core.util.math.MathUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.ui.product.ProductSceneView;
-import org.esa.snap.util.StringUtils;
-import org.esa.snap.util.math.MathUtils;
 
 import java.awt.Shape;
 import java.awt.geom.Point2D;

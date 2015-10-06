@@ -18,6 +18,7 @@ package org.esa.snap.productlibrary.rcp.toolviews;
 import org.esa.snap.core.datamodel.GeoPos;
 import org.esa.snap.core.datamodel.MetadataElement;
 import org.esa.snap.core.datamodel.ProductData;
+import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.datamodel.AbstractMetadata;
 import org.esa.snap.db.DBQuery;
 import org.esa.snap.db.ProductDB;
@@ -28,7 +29,6 @@ import org.esa.snap.productlibrary.rcp.toolviews.model.DatabaseQueryListener;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.ui.UIUtils;
-import org.esa.snap.util.StringUtils;
 import org.jdesktop.swingx.JXDatePicker;
 
 import javax.swing.BorderFactory;

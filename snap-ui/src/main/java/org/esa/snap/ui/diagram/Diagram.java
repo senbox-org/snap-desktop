@@ -15,9 +15,9 @@
  */
 package org.esa.snap.ui.diagram;
 
-import org.esa.snap.util.Guardian;
-import org.esa.snap.util.ObjectUtils;
-import org.esa.snap.util.math.Range;
+import org.esa.snap.core.util.Guardian;
+import org.esa.snap.core.util.ObjectUtils;
+import org.esa.snap.core.util.math.Range;
 
 import java.awt.BasicStroke;
 import java.awt.Color;

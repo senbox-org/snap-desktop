@@ -18,12 +18,12 @@ package org.esa.snap.rcp.layermanager.layersrc.image;
 import com.bc.ceres.binding.PropertySet;
 import com.bc.ceres.glayer.Layer;
 import com.bc.ceres.glayer.LayerTypeRegistry;
+import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.ui.layer.AbstractLayerSourceAssistantPage;
 import org.esa.snap.ui.layer.LayerSource;
 import org.esa.snap.ui.layer.LayerSourcePageContext;
 import org.esa.snap.ui.product.ProductSceneView;
-import org.esa.snap.util.io.FileUtils;
 
 import java.awt.geom.AffineTransform;
 import java.io.File;

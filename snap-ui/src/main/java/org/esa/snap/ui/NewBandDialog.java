@@ -23,8 +23,8 @@ import org.esa.snap.core.datamodel.ProductData;
 import org.esa.snap.core.datamodel.ProductNodeNameValidator;
 import org.esa.snap.core.param.ParamProperties;
 import org.esa.snap.core.param.Parameter;
-import org.esa.snap.util.Guardian;
-import org.esa.snap.util.StringUtils;
+import org.esa.snap.core.util.Guardian;
+import org.esa.snap.core.util.StringUtils;
 
 import javax.swing.JComponent;
 import javax.swing.JLabel;

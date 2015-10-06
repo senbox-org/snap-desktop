@@ -27,12 +27,12 @@ import org.esa.snap.core.gpf.common.WriteOp;
 import org.esa.snap.core.gpf.experimental.Output;
 import org.esa.snap.core.gpf.internal.OperatorExecutor;
 import org.esa.snap.core.gpf.internal.OperatorProductReader;
+import org.esa.snap.core.util.SystemUtils;
+import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.actions.file.SaveProductAsAction;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.ModelessDialog;
-import org.esa.snap.util.SystemUtils;
-import org.esa.snap.util.io.FileUtils;
 
 import javax.swing.AbstractButton;
 import javax.swing.JOptionPane;

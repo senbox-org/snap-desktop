@@ -19,6 +19,7 @@ import com.bc.ceres.core.ProgressMonitor;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.common.ReadOp;
 import org.esa.snap.core.gpf.graph.GraphException;
+import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.db.CommonReaders;
 import org.esa.snap.graphbuilder.gpf.ui.ProductSetReaderOpUI;
 import org.esa.snap.graphbuilder.gpf.ui.SourceUI;
@@ -38,7 +39,6 @@ import org.esa.snap.ui.ModelessDialog;
 import org.esa.snap.util.MemUtils;
 import org.esa.snap.util.ProductFunctions;
 import org.esa.snap.util.ResourceUtils;
-import org.esa.snap.util.io.SnapFileFilter;
 import org.openide.util.HelpCtx;
 
 import javax.swing.BorderFactory;

@@ -16,7 +16,7 @@
 package org.esa.snap.ui;
 
 import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.util.PropertyMap;
+import org.esa.snap.core.util.PropertyMap;
 
 public class HSVImageProfilePane extends RGBImageProfilePane {
 

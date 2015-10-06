@@ -16,7 +16,7 @@
 
 package org.esa.snap.ui.crs.projdef;
 
-import org.esa.snap.util.math.MathUtils;
+import org.esa.snap.core.util.math.MathUtils;
 import org.geotools.referencing.ReferencingFactoryFinder;
 import org.geotools.referencing.cs.DefaultCartesianCS;
 import org.geotools.referencing.cs.DefaultEllipsoidalCS;

@@ -19,7 +19,7 @@ package org.esa.snap.ui.product;
 import com.bc.ceres.binding.Property;
 import com.bc.ceres.binding.ValidationException;
 import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.util.SystemUtils;
+import org.esa.snap.core.util.SystemUtils;
 
 import javax.swing.AbstractListModel;
 import java.beans.PropertyChangeEvent;

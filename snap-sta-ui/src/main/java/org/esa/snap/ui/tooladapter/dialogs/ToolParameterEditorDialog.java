@@ -29,6 +29,7 @@ import org.apache.commons.collections.BidiMap;
 import org.apache.commons.collections.bidimap.DualHashBidiMap;
 import org.esa.snap.core.gpf.annotations.ParameterDescriptorFactory;
 import org.esa.snap.core.gpf.descriptor.ToolParameterDescriptor;
+import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.ModalDialog;
@@ -36,7 +37,6 @@ import org.esa.snap.ui.tooladapter.model.PropertyMemberUIWrapper;
 import org.esa.snap.ui.tooladapter.model.PropertyMemberUIWrapperFactory;
 import org.esa.snap.ui.tooladapter.validators.RequiredFieldValidator;
 import org.esa.snap.ui.tooladapter.validators.TypedValueValidator;
-import org.esa.snap.util.StringUtils;
 
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;

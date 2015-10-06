@@ -19,10 +19,10 @@ import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.core.datamodel.ProductNodeEvent;
 import org.esa.snap.core.datamodel.ProductNodeListener;
 import org.esa.snap.core.datamodel.VectorDataNode;
+import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.ui.BasicView;
 import org.esa.snap.ui.PopupMenuHandler;
 import org.esa.snap.ui.io.TableModelCsvEncoder;
-import org.esa.snap.util.SystemUtils;
 import org.openide.util.Utilities;
 
 import javax.swing.AbstractAction;

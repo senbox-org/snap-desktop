@@ -19,6 +19,7 @@ import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.core.SubProgressMonitor;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.graph.GraphException;
+import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.db.CommonReaders;
 import org.esa.snap.db.ProductEntry;
 import org.esa.snap.gpf.ProcessTimeMonitor;
@@ -34,7 +35,6 @@ import org.esa.snap.ui.FileChooserFactory;
 import org.esa.snap.ui.ModelessDialog;
 import org.esa.snap.util.MemUtils;
 import org.esa.snap.util.ResourceUtils;
-import org.esa.snap.util.io.FileUtils;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;

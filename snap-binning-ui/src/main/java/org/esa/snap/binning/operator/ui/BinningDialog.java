@@ -35,8 +35,8 @@ import org.esa.snap.core.gpf.ui.OperatorParameterSupport;
 import org.esa.snap.core.gpf.ui.ParameterUpdater;
 import org.esa.snap.core.gpf.ui.SingleTargetProductDialog;
 import org.esa.snap.core.gpf.ui.TargetProductSelectorModel;
+import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.ui.AppContext;
-import org.esa.snap.util.io.FileUtils;
 
 import java.io.File;
 import java.util.ArrayList;

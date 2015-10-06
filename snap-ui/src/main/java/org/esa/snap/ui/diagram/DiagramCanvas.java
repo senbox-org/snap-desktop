@@ -15,7 +15,7 @@
  */
 package org.esa.snap.ui.diagram;
 
-import org.esa.snap.util.ObjectUtils;
+import org.esa.snap.core.util.ObjectUtils;
 
 import javax.swing.JPanel;
 import javax.swing.event.MouseInputAdapter;

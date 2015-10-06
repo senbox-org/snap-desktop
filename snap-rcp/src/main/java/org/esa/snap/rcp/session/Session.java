@@ -47,6 +47,8 @@ import org.esa.snap.core.datamodel.ProductManager;
 import org.esa.snap.core.datamodel.RGBImageProfile;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.datamodel.VirtualBand;
+import org.esa.snap.core.util.PropertyMap;
+import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.glayer.MaskCollectionLayerType;
 import org.esa.snap.rcp.metadata.MetadataViewTopComponent;
 import org.esa.snap.rcp.session.dom.SessionDomConverter;
@@ -54,8 +56,6 @@ import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.product.ProductNodeView;
 import org.esa.snap.ui.product.ProductSceneImage;
 import org.esa.snap.ui.product.ProductSceneView;
-import org.esa.snap.util.PropertyMap;
-import org.esa.snap.util.io.FileUtils;
 
 import javax.swing.JComponent;
 import javax.swing.RootPaneContainer;

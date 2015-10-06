@@ -18,9 +18,9 @@ package org.esa.snap.ui.diagram;
 
 import com.bc.ceres.core.Assert;
 import com.bc.ceres.core.ProgressMonitor;
-import org.esa.snap.util.ObjectUtils;
-import org.esa.snap.util.math.IndexValidator;
-import org.esa.snap.util.math.Range;
+import org.esa.snap.core.util.ObjectUtils;
+import org.esa.snap.core.util.math.IndexValidator;
+import org.esa.snap.core.util.math.Range;
 
 public class DefaultDiagramGraph extends AbstractDiagramGraph  {
 

@@ -17,12 +17,12 @@ package org.esa.snap.ui.io;
 
 import org.esa.snap.core.dataio.ProductIOPlugInManager;
 import org.esa.snap.core.dataio.ProductReaderPlugIn;
+import org.esa.snap.core.util.Guardian;
+import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.ui.GridBagUtils;
 import org.esa.snap.ui.SnapFileChooser;
 import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.tool.ToolButtonFactory;
-import org.esa.snap.util.Guardian;
-import org.esa.snap.util.io.SnapFileFilter;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;

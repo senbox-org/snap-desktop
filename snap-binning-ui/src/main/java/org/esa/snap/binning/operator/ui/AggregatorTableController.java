@@ -8,10 +8,10 @@ import com.bc.ceres.swing.ListControlBar;
 import org.esa.snap.binning.AggregatorConfig;
 import org.esa.snap.binning.operator.VariableConfig;
 import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.tool.ToolButtonFactory;
-import org.esa.snap.util.StringUtils;
 
 import javax.swing.AbstractButton;
 import javax.swing.JComponent;
@@ -134,9 +134,9 @@ class AggregatorTableController extends ListControlBar.AbstractListController {
         String[] bandNames = contextProduct.getBandNames();
         String[] tiePointGridNames = contextProduct.getTiePointGridNames();
         String[] maskNames = contextProduct.getMaskGroup().getNodeNames();
-        String[] sourceNames = org.esa.snap.util.StringUtils.addArrays(varNames, bandNames);
-        sourceNames = org.esa.snap.util.StringUtils.addArrays(sourceNames, tiePointGridNames);
-        sourceNames = org.esa.snap.util.StringUtils.addArrays(sourceNames, maskNames);
+        String[] sourceNames = StringUtils.addArrays(varNames, bandNames);
+        sourceNames = StringUtils.addArrays(sourceNames, tiePointGridNames);
+        sourceNames = StringUtils.addArrays(sourceNames, maskNames);
 
         boolean isNewAggregatorItem = rowIndex < 0;
         ModalDialog aggregatorDialog = new AggregatorItemDialog(SwingUtilities.getWindowAncestor(grid), sourceNames, aggregatorItem, isNewAggregatorItem);

@@ -17,6 +17,7 @@ package org.esa.snap.graphbuilder.rcp.dialogs;
 
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.ui.TargetProductSelectorModel;
+import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.db.DBSearch;
 import org.esa.snap.db.ProductEntry;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.FileTable;
@@ -31,7 +32,6 @@ import org.esa.snap.tango.TangoIcons;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.FileChooserFactory;
 import org.esa.snap.util.ProductFunctions;
-import org.esa.snap.util.SystemUtils;
 import org.netbeans.api.progress.ProgressUtils;
 
 import javax.swing.BorderFactory;

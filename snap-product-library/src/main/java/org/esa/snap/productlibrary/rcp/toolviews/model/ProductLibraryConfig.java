@@ -15,11 +15,11 @@
  */
 package org.esa.snap.productlibrary.rcp.toolviews.model;
 
+import org.esa.snap.core.util.DefaultPropertyMap;
+import org.esa.snap.core.util.Guardian;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.util.DefaultPropertyMap;
-import org.esa.snap.util.Guardian;
 
-import java.awt.*;
+import java.awt.Rectangle;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;

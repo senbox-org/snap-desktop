@@ -22,7 +22,7 @@ import org.esa.snap.core.datamodel.ImageInfo;
 import org.esa.snap.core.datamodel.ProductNodeEvent;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.datamodel.Stx;
-import org.esa.snap.util.math.Range;
+import org.esa.snap.core.util.math.Range;
 
 import javax.swing.AbstractButton;
 import javax.swing.JButton;

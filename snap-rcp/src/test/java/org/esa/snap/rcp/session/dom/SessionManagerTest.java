@@ -1,16 +1,12 @@
 package org.esa.snap.rcp.session.dom;
 
+import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.rcp.session.SessionManager;
-import org.esa.snap.util.io.SnapFileFilter;
 import org.junit.Test;
 
 import java.io.File;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Created by muhammad.bc on 7/17/2015.

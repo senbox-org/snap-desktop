@@ -27,13 +27,13 @@ import org.esa.snap.core.gpf.Operator;
 import org.esa.snap.core.gpf.OperatorSpi;
 import org.esa.snap.core.gpf.OperatorSpiRegistry;
 import org.esa.snap.core.gpf.descriptor.OperatorDescriptor;
+import org.esa.snap.core.util.Debug;
+import org.esa.snap.core.util.SystemUtils;
+import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.ui.AbstractDialog;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.ui.UIUtils;
-import org.esa.snap.util.Debug;
-import org.esa.snap.util.SystemUtils;
-import org.esa.snap.util.io.FileUtils;
 import org.openide.util.HelpCtx;
 import org.xmlpull.mxp1.MXParser;
 

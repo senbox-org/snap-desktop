@@ -28,8 +28,8 @@ import org.esa.snap.core.gpf.Tile;
 import org.esa.snap.core.gpf.annotations.Parameter;
 import org.esa.snap.core.gpf.annotations.SourceProduct;
 import org.esa.snap.core.gpf.annotations.TargetProduct;
+import org.esa.snap.core.util.converters.GeneralExpressionConverter;
 import org.esa.snap.ui.DefaultAppContext;
-import org.esa.snap.util.converters.GeneralExpressionConverter;
 
 import javax.swing.UIManager;
 

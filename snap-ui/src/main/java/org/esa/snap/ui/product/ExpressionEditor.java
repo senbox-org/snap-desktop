@@ -23,10 +23,10 @@ import com.bc.ceres.swing.binding.ComponentAdapter;
 import com.bc.ceres.swing.binding.PropertyEditor;
 import com.bc.ceres.swing.binding.internal.TextComponentAdapter;
 import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.util.converters.BooleanExpressionConverter;
+import org.esa.snap.core.util.converters.GeneralExpressionConverter;
 import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.ui.UIUtils;
-import org.esa.snap.util.converters.BooleanExpressionConverter;
-import org.esa.snap.util.converters.GeneralExpressionConverter;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;

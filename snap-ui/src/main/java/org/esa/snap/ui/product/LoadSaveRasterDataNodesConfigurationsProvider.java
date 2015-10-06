@@ -1,7 +1,7 @@
 package org.esa.snap.ui.product;
 
+import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.ui.tool.ToolButtonFactory;
-import org.esa.snap.util.SystemUtils;
 import org.openide.util.ImageUtilities;
 
 import javax.swing.AbstractButton;

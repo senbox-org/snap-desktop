@@ -16,8 +16,8 @@
 package org.esa.snap.graphbuilder.rcp.dialogs.support;
 
 import org.esa.snap.core.gpf.graph.NodeSource;
+import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.graphbuilder.gpf.ui.OperatorUIRegistry;
-import org.esa.snap.util.StringUtils;
 
 import javax.swing.ImageIcon;
 import javax.swing.JMenu;

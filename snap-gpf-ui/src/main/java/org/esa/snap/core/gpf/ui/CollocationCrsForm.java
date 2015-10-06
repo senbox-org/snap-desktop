@@ -23,9 +23,9 @@ import org.esa.snap.core.datamodel.GeoCoding;
 import org.esa.snap.core.datamodel.GeoPos;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductFilter;
+import org.esa.snap.core.util.ProductUtils;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.crs.CrsForm;
-import org.esa.snap.util.ProductUtils;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import javax.swing.JComponent;

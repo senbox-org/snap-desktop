@@ -28,9 +28,9 @@ import org.esa.snap.core.datamodel.TiePointGrid;
 import org.esa.snap.core.param.ParamChangeEvent;
 import org.esa.snap.core.param.ParamChangeListener;
 import org.esa.snap.core.param.Parameter;
+import org.esa.snap.core.util.Guardian;
+import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.ui.product.ProductSubsetDialog;
-import org.esa.snap.util.Guardian;
-import org.esa.snap.util.io.FileUtils;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;

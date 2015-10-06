@@ -16,7 +16,7 @@
 
 package org.esa.snap.ui.diagram;
 
-import org.esa.snap.util.Guardian;
+import org.esa.snap.core.util.Guardian;
 
 
 public abstract class AbstractDiagramGraph implements DiagramGraph {

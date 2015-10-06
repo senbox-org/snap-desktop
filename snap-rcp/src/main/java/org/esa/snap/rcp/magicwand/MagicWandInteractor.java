@@ -25,13 +25,13 @@ import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.Mask;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductNodeGroup;
+import org.esa.snap.core.image.ImageManager;
+import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.glayer.MaskLayerType;
-import org.esa.snap.jai.ImageManager;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.product.ProductSceneView;
-import org.esa.snap.util.io.FileUtils;
 
 import javax.swing.JDialog;
 import javax.swing.undo.AbstractUndoableEdit;

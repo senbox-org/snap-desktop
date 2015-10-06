@@ -33,6 +33,8 @@ import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.core.datamodel.ProductNodeGroup;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.datamodel.VectorDataNode;
+import org.esa.snap.core.image.ImageManager;
+import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.glayer.GraticuleLayer;
 import org.esa.snap.glayer.GraticuleLayerType;
 import org.esa.snap.glayer.MaskCollectionLayerType;
@@ -42,8 +44,6 @@ import org.esa.snap.glayer.ProductLayerContext;
 import org.esa.snap.glayer.RasterImageLayerType;
 import org.esa.snap.glayer.RgbImageLayerType;
 import org.esa.snap.glevel.BandImageMultiLevelSource;
-import org.esa.snap.jai.ImageManager;
-import org.esa.snap.util.PropertyMap;
 
 import java.awt.Color;
 import java.awt.geom.AffineTransform;

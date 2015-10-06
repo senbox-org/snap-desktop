@@ -27,12 +27,12 @@ import org.esa.snap.core.gpf.annotations.ParameterDescriptorFactory;
 import org.esa.snap.core.gpf.ui.OperatorMenu;
 import org.esa.snap.core.gpf.ui.OperatorParameterSupport;
 import org.esa.snap.core.gpf.ui.ParameterUpdater;
+import org.esa.snap.core.util.SystemUtils;
+import org.esa.snap.core.util.io.WildcardMatcher;
 import org.esa.snap.pixex.Coordinate;
 import org.esa.snap.pixex.PixExOp;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.ModelessDialog;
-import org.esa.snap.util.SystemUtils;
-import org.esa.snap.util.io.WildcardMatcher;
 
 import javax.swing.AbstractButton;
 import javax.swing.JOptionPane;

@@ -22,10 +22,10 @@ import com.bc.ceres.core.Assert;
 import com.bc.ceres.swing.binding.ComponentAdapter;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductNode;
+import org.esa.snap.core.util.Debug;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.tool.ToolButtonFactory;
-import org.esa.snap.util.Debug;
 
 import javax.swing.AbstractButton;
 import javax.swing.BoxLayout;

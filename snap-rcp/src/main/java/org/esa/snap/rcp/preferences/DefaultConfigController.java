@@ -16,20 +16,25 @@
 
 package org.esa.snap.rcp.preferences;
 
-import com.bc.ceres.binding.*;
+import com.bc.ceres.binding.Property;
+import com.bc.ceres.binding.PropertyContainer;
+import com.bc.ceres.binding.PropertyDescriptor;
+import com.bc.ceres.binding.PropertySet;
+import com.bc.ceres.binding.ValidationException;
+import com.bc.ceres.binding.Validator;
+import com.bc.ceres.binding.ValueRange;
+import com.bc.ceres.binding.ValueSet;
 import com.bc.ceres.core.Assert;
 import com.bc.ceres.swing.binding.BindingContext;
+import org.esa.snap.core.util.StringUtils;
+import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.runtime.Config;
-import org.esa.snap.util.StringUtils;
-import org.esa.snap.util.SystemUtils;
 import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.Lookup;
 
 import javax.swing.JComponent;
 import javax.swing.JPanel;
-import java.awt.*;
 import java.beans.PropertyChangeListener;
 import java.util.HashSet;
 import java.util.prefs.BackingStoreException;

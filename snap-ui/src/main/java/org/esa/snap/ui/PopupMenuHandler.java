@@ -16,7 +16,7 @@
 
 package org.esa.snap.ui;
 
-import org.esa.snap.util.Guardian;
+import org.esa.snap.core.util.Guardian;
 
 import javax.swing.AbstractButton;
 import javax.swing.Action;

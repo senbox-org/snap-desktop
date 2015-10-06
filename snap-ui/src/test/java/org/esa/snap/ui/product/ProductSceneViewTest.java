@@ -20,7 +20,7 @@ import junit.framework.TestCase;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductData;
 import org.esa.snap.core.datamodel.VirtualBand;
-import org.esa.snap.util.DefaultPropertyMap;
+import org.esa.snap.core.util.DefaultPropertyMap;
 
 import java.awt.geom.AffineTransform;
 

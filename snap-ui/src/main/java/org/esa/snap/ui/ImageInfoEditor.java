@@ -23,10 +23,10 @@ import com.jidesoft.popup.JidePopup;
 import com.jidesoft.swing.JidePopupMenu;
 import org.esa.snap.core.datamodel.ColorPaletteDef;
 import org.esa.snap.core.datamodel.ImageInfo;
+import org.esa.snap.core.util.math.Histogram;
+import org.esa.snap.core.util.math.MathUtils;
+import org.esa.snap.core.util.math.Range;
 import org.esa.snap.ui.color.ColorChooserPanel;
-import org.esa.snap.util.math.Histogram;
-import org.esa.snap.util.math.MathUtils;
-import org.esa.snap.util.math.Range;
 
 import javax.swing.JComponent;
 import javax.swing.JFormattedTextField;

@@ -7,8 +7,8 @@ import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductData;
 import org.esa.snap.core.datamodel.ProductManager;
 import org.esa.snap.core.datamodel.Stx;
+import org.esa.snap.core.util.ProductUtils;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.util.ProductUtils;
 import org.openide.modules.OnStart;
 
 

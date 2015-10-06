@@ -15,13 +15,13 @@
  */
 package org.esa.snap.productlibrary.rcp.toolviews.extensions;
 
+import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.db.ProductEntry;
 import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
 import org.esa.snap.productlibrary.rcp.toolviews.ProductLibraryActions;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.tango.TangoIcons;
 import org.esa.snap.ui.SnapFileChooser;
-import org.esa.snap.util.SystemUtils;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;

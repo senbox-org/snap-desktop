@@ -18,9 +18,9 @@ package org.esa.snap.rcp.developer;
 
 import com.sun.media.jai.util.CacheDiagnostics;
 import com.sun.media.jai.util.SunTileCache;
-import org.esa.snap.jai.RasterDataNodeOpImage;
-import org.esa.snap.jai.SingleBandedOpImage;
-import org.esa.snap.jai.VirtualBandOpImage;
+import org.esa.snap.core.image.RasterDataNodeOpImage;
+import org.esa.snap.core.image.SingleBandedOpImage;
+import org.esa.snap.core.image.VirtualBandOpImage;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.DateAxis;

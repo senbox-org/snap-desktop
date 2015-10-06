@@ -15,9 +15,9 @@
  */
 package org.esa.snap.ui;
 
-import org.esa.snap.util.Debug;
-import org.esa.snap.util.io.FileUtils;
-import org.esa.snap.util.io.SnapFileFilter;
+import org.esa.snap.core.util.Debug;
+import org.esa.snap.core.util.io.FileUtils;
+import org.esa.snap.core.util.io.SnapFileFilter;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;

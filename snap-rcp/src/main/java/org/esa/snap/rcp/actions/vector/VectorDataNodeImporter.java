@@ -23,15 +23,15 @@ import org.esa.snap.core.datamodel.GeoCoding;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductNodeGroup;
 import org.esa.snap.core.datamodel.VectorDataNode;
+import org.esa.snap.core.util.Debug;
+import org.esa.snap.core.util.SystemUtils;
+import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.dataio.geometry.VectorDataNodeIO;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.ui.SnapFileChooser;
 import org.esa.snap.ui.product.ProductSceneView;
-import org.esa.snap.util.Debug;
-import org.esa.snap.util.SystemUtils;
-import org.esa.snap.util.io.SnapFileFilter;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.openide.util.HelpCtx;
 

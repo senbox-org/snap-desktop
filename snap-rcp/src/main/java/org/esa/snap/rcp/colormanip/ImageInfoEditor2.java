@@ -22,10 +22,10 @@ import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.datamodel.Scaling;
 import org.esa.snap.core.datamodel.Stx;
+import org.esa.snap.core.util.math.MathUtils;
 import org.esa.snap.ui.ImageInfoEditor;
 import org.esa.snap.ui.ImageInfoEditorModel;
 import org.esa.snap.ui.UIUtils;
-import org.esa.snap.util.math.MathUtils;
 
 import javax.swing.JComponent;
 import javax.swing.JLabel;

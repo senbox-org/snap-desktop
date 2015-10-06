@@ -29,7 +29,7 @@ import org.esa.snap.core.datamodel.ProductNodeEvent;
 import org.esa.snap.core.datamodel.ProductNodeGroup;
 import org.esa.snap.core.datamodel.ProductNodeListener;
 import org.esa.snap.core.dataop.maptransf.Datum;
-import org.esa.snap.util.Debug;
+import org.esa.snap.core.util.Debug;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;

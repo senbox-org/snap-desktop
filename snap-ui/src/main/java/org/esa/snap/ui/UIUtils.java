@@ -17,9 +17,9 @@ package org.esa.snap.ui;
 
 import org.esa.snap.core.param.ParamProperties;
 import org.esa.snap.core.param.Parameter;
-import org.esa.snap.util.ArrayUtils;
-import org.esa.snap.util.Guardian;
-import org.esa.snap.util.StringUtils;
+import org.esa.snap.core.util.ArrayUtils;
+import org.esa.snap.core.util.Guardian;
+import org.esa.snap.core.util.StringUtils;
 
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;

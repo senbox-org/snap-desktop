@@ -17,7 +17,7 @@
 package org.esa.snap.ui.diagram;
 
 import junit.framework.TestCase;
-import org.esa.snap.util.math.Range;
+import org.esa.snap.core.util.math.Range;
 
 import java.awt.geom.Point2D;
 

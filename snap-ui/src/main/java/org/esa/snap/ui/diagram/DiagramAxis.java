@@ -15,8 +15,8 @@
  */
 package org.esa.snap.ui.diagram;
 
-import org.esa.snap.util.ObjectUtils;
-import org.esa.snap.util.math.MathUtils;
+import org.esa.snap.core.util.ObjectUtils;
+import org.esa.snap.core.util.math.MathUtils;
 
 import java.io.Serializable;
 

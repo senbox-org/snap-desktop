@@ -36,12 +36,12 @@ import org.esa.snap.core.datamodel.PixelPos;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.gpf.GPF;
+import org.esa.snap.core.util.ProductUtils;
 import org.esa.snap.datamodel.AbstractMetadata;
 import org.esa.snap.eo.Constants;
 import org.esa.snap.eo.GeoUtils;
 import org.esa.snap.gpf.InputProductValidator;
 import org.esa.snap.rcp.SnapDialogs;
-import org.esa.snap.util.ProductUtils;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;

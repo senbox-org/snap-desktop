@@ -34,7 +34,7 @@ import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.datamodel.TiePointGeoCoding;
 import org.esa.snap.core.dataop.maptransf.MapInfo;
 import org.esa.snap.core.param.Parameter;
-import org.esa.snap.util.math.FXYSum;
+import org.esa.snap.core.util.math.FXYSum;
 import org.openide.windows.TopComponent;
 
 import javax.swing.JLabel;

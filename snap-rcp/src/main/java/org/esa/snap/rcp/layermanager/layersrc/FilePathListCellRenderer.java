@@ -16,7 +16,7 @@
 
 package org.esa.snap.rcp.layermanager.layersrc;
 
-import org.esa.snap.util.io.FileUtils;
+import org.esa.snap.core.util.io.FileUtils;
 
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;

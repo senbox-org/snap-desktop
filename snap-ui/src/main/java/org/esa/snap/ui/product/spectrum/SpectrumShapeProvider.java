@@ -1,6 +1,6 @@
 package org.esa.snap.ui.product.spectrum;
 
-import org.esa.snap.util.ArrayUtils;
+import org.esa.snap.core.util.ArrayUtils;
 
 import javax.swing.ImageIcon;
 import java.awt.Color;

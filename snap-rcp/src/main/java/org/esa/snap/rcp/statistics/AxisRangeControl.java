@@ -6,8 +6,8 @@ import com.bc.ceres.binding.PropertySet;
 import com.bc.ceres.binding.ValidationException;
 import com.bc.ceres.binding.Validator;
 import com.bc.ceres.swing.binding.BindingContext;
+import org.esa.snap.core.util.math.MathUtils;
 import org.esa.snap.ui.GridBagUtils;
-import org.esa.snap.util.math.MathUtils;
 import org.jfree.chart.axis.ValueAxis;
 
 import javax.swing.JCheckBox;

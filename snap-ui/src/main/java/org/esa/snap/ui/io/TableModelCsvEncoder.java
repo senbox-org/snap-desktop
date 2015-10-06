@@ -1,6 +1,6 @@
 package org.esa.snap.ui.io;
 
-import org.esa.snap.util.io.CsvWriter;
+import org.esa.snap.core.util.io.CsvWriter;
 
 import javax.swing.table.TableModel;
 import java.io.IOException;

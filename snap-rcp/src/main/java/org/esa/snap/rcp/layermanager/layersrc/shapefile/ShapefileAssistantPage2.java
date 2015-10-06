@@ -19,6 +19,7 @@ package org.esa.snap.rcp.layermanager.layersrc.shapefile;
 import com.bc.ceres.swing.TableLayout;
 import org.esa.snap.core.datamodel.GeoPos;
 import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.util.ProductUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.crs.CrsSelectionPanel;
@@ -27,7 +28,6 @@ import org.esa.snap.ui.crs.PredefinedCrsForm;
 import org.esa.snap.ui.crs.ProductCrsForm;
 import org.esa.snap.ui.layer.AbstractLayerSourceAssistantPage;
 import org.esa.snap.ui.layer.LayerSourcePageContext;
-import org.esa.snap.util.ProductUtils;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 

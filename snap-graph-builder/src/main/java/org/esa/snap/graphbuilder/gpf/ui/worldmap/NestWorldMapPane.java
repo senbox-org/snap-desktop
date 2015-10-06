@@ -26,10 +26,10 @@ import org.esa.snap.core.datamodel.GeoCoding;
 import org.esa.snap.core.datamodel.GeoPos;
 import org.esa.snap.core.datamodel.PixelPos;
 import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.util.ProductUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.ui.ButtonOverlayControl;
 import org.esa.snap.ui.UIUtils;
-import org.esa.snap.util.ProductUtils;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 
 import javax.swing.AbstractAction;
