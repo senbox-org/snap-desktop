@@ -19,13 +19,13 @@ import com.bc.ceres.binding.dom.DefaultDomElement;
 import com.bc.ceres.binding.dom.DomElement;
 import com.bc.ceres.core.ProgressMonitor;
 import org.esa.snap.core.gpf.OperatorSpi;
+import org.esa.snap.core.gpf.common.ReadOp;
+import org.esa.snap.core.gpf.common.WriteOp;
 import org.esa.snap.core.gpf.graph.Graph;
 import org.esa.snap.core.gpf.graph.GraphException;
 import org.esa.snap.core.gpf.graph.GraphIO;
 import org.esa.snap.core.gpf.graph.GraphProcessor;
 import org.esa.snap.core.gpf.graph.Node;
-import org.esa.snap.gpf.operators.standard.ReadOp;
-import org.esa.snap.gpf.operators.standard.WriteOp;
 
 import java.io.File;
 import java.io.FileReader;

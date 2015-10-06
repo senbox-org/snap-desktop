@@ -16,7 +16,7 @@
 
 package org.esa.snap.rcp.mosaic;
 
-import org.esa.snap.gpf.operators.standard.MosaicOp;
+import org.esa.snap.core.gpf.common.MosaicOp;
 
 import javax.swing.JTable;
 import javax.swing.event.TableModelEvent;

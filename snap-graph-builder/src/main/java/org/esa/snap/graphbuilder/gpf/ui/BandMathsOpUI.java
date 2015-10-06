@@ -1,6 +1,7 @@
 package org.esa.snap.graphbuilder.gpf.ui;
 
 import com.bc.jexp.ParseException;
+import org.esa.snap.core.gpf.common.BandMathsOp;
 import org.esa.snap.framework.datamodel.Band;
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.ProductData;
@@ -14,7 +15,6 @@ import org.esa.snap.framework.ui.AppContext;
 import org.esa.snap.framework.ui.GridBagUtils;
 import org.esa.snap.framework.ui.ModalDialog;
 import org.esa.snap.framework.ui.product.ProductExpressionPane;
-import org.esa.snap.gpf.operators.standard.BandMathsOp;
 import org.esa.snap.util.Debug;
 
 import javax.swing.JButton;
