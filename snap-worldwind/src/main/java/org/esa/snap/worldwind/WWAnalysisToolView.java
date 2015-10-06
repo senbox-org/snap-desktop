@@ -51,7 +51,7 @@ import java.net.URISyntaxException;
 
 @TopComponent.Description(
         preferredID = "WWAnalysisToolView",
-        iconBase = "org/esa/snap/icons/earth24.png",
+        iconBase = "org/esa/snap/worldwind/icons/earth24.png",
         persistenceType = TopComponent.PERSISTENCE_NEVER
 )
 @TopComponent.Registration(
