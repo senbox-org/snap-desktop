@@ -2,12 +2,12 @@ package org.esa.snap.rcp.imgfilter;
 
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.ProductNode;
-import org.esa.snap.framework.ui.ModalDialog;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.imgfilter.model.Filter;
 import org.esa.snap.rcp.imgfilter.model.FilterSet;
 import org.esa.snap.rcp.imgfilter.model.StandardFilters;
+import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.util.SystemUtils;
 
 import java.io.File;

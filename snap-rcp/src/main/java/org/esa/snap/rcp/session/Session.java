@@ -47,13 +47,13 @@ import org.esa.snap.framework.datamodel.ProductManager;
 import org.esa.snap.framework.datamodel.RGBImageProfile;
 import org.esa.snap.framework.datamodel.RasterDataNode;
 import org.esa.snap.framework.datamodel.VirtualBand;
-import org.esa.snap.framework.ui.AppContext;
-import org.esa.snap.framework.ui.product.ProductNodeView;
-import org.esa.snap.framework.ui.product.ProductSceneImage;
-import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.glayer.MaskCollectionLayerType;
 import org.esa.snap.rcp.metadata.MetadataViewTopComponent;
 import org.esa.snap.rcp.session.dom.SessionDomConverter;
+import org.esa.snap.ui.AppContext;
+import org.esa.snap.ui.product.ProductNodeView;
+import org.esa.snap.ui.product.ProductSceneImage;
+import org.esa.snap.ui.product.ProductSceneView;
 import org.esa.snap.util.PropertyMap;
 import org.esa.snap.util.io.FileUtils;
 

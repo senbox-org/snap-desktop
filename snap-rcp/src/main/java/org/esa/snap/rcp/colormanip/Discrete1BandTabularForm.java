@@ -24,8 +24,8 @@ import org.esa.snap.framework.datamodel.IndexCoding;
 import org.esa.snap.framework.datamodel.ProductNodeEvent;
 import org.esa.snap.framework.datamodel.RasterDataNode;
 import org.esa.snap.framework.datamodel.Stx;
-import org.esa.snap.framework.ui.color.ColorTableCellEditor;
-import org.esa.snap.framework.ui.color.ColorTableCellRenderer;
+import org.esa.snap.ui.color.ColorTableCellEditor;
+import org.esa.snap.ui.color.ColorTableCellRenderer;
 
 import javax.swing.AbstractButton;
 import javax.swing.JComponent;

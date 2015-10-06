@@ -21,12 +21,12 @@ import org.esa.snap.framework.datamodel.ProductNodeEvent;
 import org.esa.snap.framework.datamodel.ProductNodeListener;
 import org.esa.snap.framework.datamodel.ProductNodeListenerAdapter;
 import org.esa.snap.framework.datamodel.RasterDataNode;
-import org.esa.snap.framework.ui.UIUtils;
-import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.CollapsibleItemsPanel;
 import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
+import org.esa.snap.ui.UIUtils;
+import org.esa.snap.ui.product.ProductSceneView;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;

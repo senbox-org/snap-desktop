@@ -1,7 +1,7 @@
 package org.esa.snap.rcp;
 
 import com.bc.ceres.core.Assert;
-import org.esa.snap.framework.ui.SnapFileChooser;
+import org.esa.snap.ui.SnapFileChooser;
 import org.esa.snap.util.SystemUtils;
 import org.esa.snap.util.io.FileUtils;
 import org.openide.DialogDisplayer;

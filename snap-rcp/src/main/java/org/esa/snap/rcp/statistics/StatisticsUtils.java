@@ -22,8 +22,8 @@ import org.esa.snap.framework.datamodel.GeoPos;
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.RasterDataNode;
 import org.esa.snap.framework.datamodel.TransectProfileData;
-import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.ui.product.ProductSceneView;
 import org.esa.snap.util.StringUtils;
 import org.esa.snap.util.math.MathUtils;
 

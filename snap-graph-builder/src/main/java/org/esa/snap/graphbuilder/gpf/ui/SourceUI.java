@@ -24,7 +24,7 @@ import org.esa.snap.framework.dataio.DecodeQualification;
 import org.esa.snap.framework.dataio.ProductIOPlugInManager;
 import org.esa.snap.framework.dataio.ProductReaderPlugIn;
 import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.ui.AppContext;
+import org.esa.snap.ui.AppContext;
 
 import javax.swing.JComboBox;
 import javax.swing.JComponent;

@@ -20,14 +20,14 @@ import com.bc.ceres.glayer.support.ImageLayer;
 import org.esa.snap.framework.datamodel.GeoCoding;
 import org.esa.snap.framework.datamodel.GeoPos;
 import org.esa.snap.framework.datamodel.PixelPos;
-import org.esa.snap.framework.ui.PixelPositionListener;
-import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.netbeans.docwin.DocumentWindowManager;
 import org.esa.snap.netbeans.docwin.DocumentWindowManager.Predicate;
 import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.tools.SyncImageCursorsAction;
 import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
+import org.esa.snap.ui.PixelPositionListener;
+import org.esa.snap.ui.product.ProductSceneView;
 import org.openide.windows.OnShowing;
 
 import java.awt.event.MouseEvent;

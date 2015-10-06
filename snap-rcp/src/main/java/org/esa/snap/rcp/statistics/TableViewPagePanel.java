@@ -1,8 +1,8 @@
 package org.esa.snap.rcp.statistics;
 
 import org.esa.snap.framework.datamodel.RasterDataNode;
-import org.esa.snap.framework.ui.io.TableModelCsvEncoder;
-import org.esa.snap.framework.ui.tool.ToolButtonFactory;
+import org.esa.snap.ui.io.TableModelCsvEncoder;
+import org.esa.snap.ui.tool.ToolButtonFactory;
 import org.openide.windows.TopComponent;
 
 import javax.swing.AbstractButton;

@@ -20,7 +20,7 @@ import com.bc.ceres.swing.figure.AbstractInteractorListener;
 import com.bc.ceres.swing.figure.Interactor;
 import com.bc.ceres.swing.figure.InteractorListener;
 import com.bc.ceres.swing.figure.interactions.NullInteractor;
-import org.esa.snap.framework.ui.product.ProductSceneView;
+import org.esa.snap.ui.product.ProductSceneView;
 import org.esa.snap.util.Guardian;
 import org.openide.util.ContextAwareAction;
 import org.openide.util.HelpCtx;

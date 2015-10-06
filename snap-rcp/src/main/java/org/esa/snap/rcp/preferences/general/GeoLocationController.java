@@ -22,11 +22,11 @@ import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.PropertyEditorRegistry;
 import org.esa.snap.framework.datamodel.Placemark;
-import org.esa.snap.framework.ui.GridBagUtils;
 import org.esa.snap.rcp.pixelinfo.PixelInfoView;
 import org.esa.snap.rcp.preferences.DefaultConfigController;
 import org.esa.snap.rcp.preferences.Preference;
 import org.esa.snap.rcp.preferences.PreferenceUtils;
+import org.esa.snap.ui.GridBagUtils;
 import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle;
@@ -36,8 +36,7 @@ import javax.swing.JPanel;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 
-import static com.bc.ceres.swing.TableLayout.Anchor;
-import static com.bc.ceres.swing.TableLayout.Fill;
+import static com.bc.ceres.swing.TableLayout.*;
 import static org.esa.snap.rcp.pixelinfo.PixelInfoView.*;
 
 /**

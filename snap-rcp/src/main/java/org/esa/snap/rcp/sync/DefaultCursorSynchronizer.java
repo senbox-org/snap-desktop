@@ -2,9 +2,9 @@ package org.esa.snap.rcp.sync;
 
 import org.esa.snap.framework.datamodel.GeoCoding;
 import org.esa.snap.framework.datamodel.GeoPos;
-import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
+import org.esa.snap.ui.product.ProductSceneView;
 
 import java.util.HashMap;
 import java.util.Map;

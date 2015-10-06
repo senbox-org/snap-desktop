@@ -16,14 +16,14 @@
 
 package org.esa.snap.unmixing.ui;
 
-import org.esa.snap.framework.ui.AppContext;
-import org.esa.snap.framework.ui.diagram.DefaultDiagramGraphStyle;
-import org.esa.snap.framework.ui.diagram.Diagram;
-import org.esa.snap.framework.ui.diagram.DiagramAxis;
-import org.esa.snap.framework.ui.diagram.DiagramGraph;
-import org.esa.snap.framework.ui.diagram.DiagramGraphIO;
 import org.esa.snap.runtime.Config;
 import org.esa.snap.tango.TangoIcons;
+import org.esa.snap.ui.AppContext;
+import org.esa.snap.ui.diagram.DefaultDiagramGraphStyle;
+import org.esa.snap.ui.diagram.Diagram;
+import org.esa.snap.ui.diagram.DiagramAxis;
+import org.esa.snap.ui.diagram.DiagramGraph;
+import org.esa.snap.ui.diagram.DiagramGraphIO;
 import org.esa.snap.unmixing.Endmember;
 import org.esa.snap.util.ResourceInstaller;
 import org.esa.snap.util.SystemUtils;

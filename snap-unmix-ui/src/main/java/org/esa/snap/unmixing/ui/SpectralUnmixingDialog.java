@@ -24,8 +24,8 @@ import org.esa.snap.core.gpf.ui.SingleTargetProductDialog;
 import org.esa.snap.framework.datamodel.Band;
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.ProductData;
-import org.esa.snap.framework.ui.AppContext;
-import org.esa.snap.framework.ui.DefaultAppContext;
+import org.esa.snap.ui.AppContext;
+import org.esa.snap.ui.DefaultAppContext;
 import org.esa.snap.unmixing.Endmember;
 import org.esa.snap.unmixing.SpectralUnmixingOp;
 

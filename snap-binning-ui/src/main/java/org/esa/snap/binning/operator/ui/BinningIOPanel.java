@@ -21,8 +21,8 @@ import com.bc.ceres.swing.TableLayout;
 import org.esa.snap.core.gpf.ui.TargetProductSelector;
 import org.esa.snap.framework.dataio.ProductIO;
 import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.ui.AppContext;
-import org.esa.snap.framework.ui.product.SourceProductList;
+import org.esa.snap.ui.AppContext;
+import org.esa.snap.ui.product.SourceProductList;
 import org.esa.snap.util.SystemUtils;
 import org.esa.snap.util.io.WildcardMatcher;
 

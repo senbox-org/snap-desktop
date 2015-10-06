@@ -20,8 +20,8 @@ import com.bc.ceres.binding.ValueRange;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.PropertyEditorRegistry;
 import com.bc.ceres.swing.binding.internal.RangeEditor;
-import org.esa.snap.framework.ui.layer.AbstractLayerConfigurationEditor;
 import org.esa.snap.glayer.GraticuleLayerType;
+import org.esa.snap.ui.layer.AbstractLayerConfigurationEditor;
 
 import java.awt.Color;
 

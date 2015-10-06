@@ -46,14 +46,14 @@ import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.ProductNodeEvent;
 import org.esa.snap.framework.datamodel.ProductNodeListener;
 import org.esa.snap.framework.datamodel.RasterDataNode;
-import org.esa.snap.framework.ui.AppContext;
-import org.esa.snap.framework.ui.UIUtils;
 import org.esa.snap.graphbuilder.gpf.ui.OperatorUI;
 import org.esa.snap.graphbuilder.gpf.ui.OperatorUIRegistry;
 import org.esa.snap.graphbuilder.gpf.ui.UIValidation;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.actions.file.SaveProductAsAction;
+import org.esa.snap.ui.AppContext;
+import org.esa.snap.ui.UIUtils;
 import org.esa.snap.util.MemUtils;
 import org.esa.snap.util.ProductFunctions;
 

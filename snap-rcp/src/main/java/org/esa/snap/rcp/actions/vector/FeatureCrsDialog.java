@@ -2,13 +2,13 @@ package org.esa.snap.rcp.actions.vector;
 
 import com.bc.ceres.swing.TableLayout;
 import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.ui.ModalDialog;
-import org.esa.snap.framework.ui.crs.CrsSelectionPanel;
-import org.esa.snap.framework.ui.crs.CustomCrsForm;
-import org.esa.snap.framework.ui.crs.PredefinedCrsForm;
-import org.esa.snap.framework.ui.crs.ProductCrsForm;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.ui.ModalDialog;
+import org.esa.snap.ui.crs.CrsSelectionPanel;
+import org.esa.snap.ui.crs.CustomCrsForm;
+import org.esa.snap.ui.crs.PredefinedCrsForm;
+import org.esa.snap.ui.crs.ProductCrsForm;
 import org.esa.snap.util.ProductUtils;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;

@@ -23,7 +23,7 @@ import org.esa.snap.core.gpf.descriptor.OperatorDescriptor;
 import org.esa.snap.core.gpf.descriptor.SourceProductDescriptor;
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.ProductFilter;
-import org.esa.snap.framework.ui.AppContext;
+import org.esa.snap.ui.AppContext;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;

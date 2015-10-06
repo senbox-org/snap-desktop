@@ -17,7 +17,7 @@
 package org.esa.snap.rcp.session;
 
 import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.ui.product.ProductNodeView;
+import org.esa.snap.ui.product.ProductNodeView;
 
 /**
  * A restored session comprising products and views.

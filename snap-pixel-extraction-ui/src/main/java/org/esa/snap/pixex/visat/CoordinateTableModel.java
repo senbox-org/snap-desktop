@@ -19,7 +19,7 @@ package org.esa.snap.pixex.visat;
 import com.vividsolutions.jts.geom.Point;
 import org.esa.snap.framework.datamodel.PinDescriptor;
 import org.esa.snap.framework.datamodel.Placemark;
-import org.esa.snap.framework.ui.product.AbstractPlacemarkTableModel;
+import org.esa.snap.ui.product.AbstractPlacemarkTableModel;
 
 import java.util.Date;
 

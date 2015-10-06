@@ -15,8 +15,8 @@
  */
 package org.esa.snap.rcp.actions;
 
-import org.esa.snap.framework.ui.AppContext;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.ui.AppContext;
 import org.openide.util.HelpCtx;
 
 import javax.swing.AbstractAction;

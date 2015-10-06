@@ -26,11 +26,11 @@ import org.esa.snap.framework.datamodel.ProductManager;
 import org.esa.snap.framework.datamodel.ProductNode;
 import org.esa.snap.framework.datamodel.RasterDataNode;
 import org.esa.snap.framework.datamodel.VectorDataNode;
-import org.esa.snap.framework.ui.product.ProductSceneView;
-import org.esa.snap.framework.ui.product.VectorDataLayer;
-import org.esa.snap.framework.ui.product.VectorDataLayerFilterFactory;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.SelectionSupport;
+import org.esa.snap.ui.product.ProductSceneView;
+import org.esa.snap.ui.product.VectorDataLayer;
+import org.esa.snap.ui.product.VectorDataLayerFilterFactory;
 import org.openide.util.HelpCtx;
 import org.openide.windows.TopComponent;
 

@@ -14,8 +14,8 @@ import org.esa.snap.configurator.PerformanceParameters;
 import org.esa.snap.configurator.VMParameters;
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.OperatorSpi;
-import org.esa.snap.framework.ui.AppContext;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.ui.AppContext;
 import org.esa.snap.util.SystemUtils;
 import org.esa.snap.util.io.FileUtils;
 

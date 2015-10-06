@@ -15,10 +15,10 @@
  */
 package org.esa.snap.rcp.layermanager.layersrc.shapefile;
 
-import org.esa.snap.framework.ui.layer.AbstractLayerSourceAssistantPage;
-import org.esa.snap.framework.ui.layer.LayerSource;
-import org.esa.snap.framework.ui.layer.LayerSourcePageContext;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.ui.layer.AbstractLayerSourceAssistantPage;
+import org.esa.snap.ui.layer.LayerSource;
+import org.esa.snap.ui.layer.LayerSourcePageContext;
 
 /**
  * A layer source for ESRI shape files.

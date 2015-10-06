@@ -4,7 +4,7 @@ import org.esa.snap.framework.datamodel.Band;
 import org.esa.snap.framework.datamodel.ImageInfo;
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.RasterDataNode;
-import org.esa.snap.framework.ui.product.ProductSceneView;
+import org.esa.snap.ui.product.ProductSceneView;
 
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;

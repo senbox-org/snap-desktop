@@ -20,7 +20,7 @@ import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.ProductNodeEvent;
 import org.esa.snap.framework.datamodel.ProductNodeListenerAdapter;
 import org.esa.snap.framework.datamodel.RasterDataNode;
-import org.esa.snap.framework.ui.GridLayout2;
+import org.esa.snap.ui.GridLayout2;
 import org.junit.Ignore;
 import org.junit.Test;
 

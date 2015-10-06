@@ -18,7 +18,7 @@ package org.esa.snap.core.gpf.ui;
 
 import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
-import org.esa.snap.framework.ui.FileChooserFactory;
+import org.esa.snap.ui.FileChooserFactory;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;

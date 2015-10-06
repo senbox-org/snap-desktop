@@ -16,8 +16,8 @@
 
 package org.esa.snap.binning.operator.ui;
 
-import org.esa.snap.framework.ui.ModelessDialog;
 import org.esa.snap.rcp.actions.AbstractSnapAction;
+import org.esa.snap.ui.ModelessDialog;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;

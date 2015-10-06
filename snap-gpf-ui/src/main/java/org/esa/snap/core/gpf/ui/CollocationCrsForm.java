@@ -23,8 +23,8 @@ import org.esa.snap.framework.datamodel.GeoCoding;
 import org.esa.snap.framework.datamodel.GeoPos;
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.ProductFilter;
-import org.esa.snap.framework.ui.AppContext;
-import org.esa.snap.framework.ui.crs.CrsForm;
+import org.esa.snap.ui.AppContext;
+import org.esa.snap.ui.crs.CrsForm;
 import org.esa.snap.util.ProductUtils;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 

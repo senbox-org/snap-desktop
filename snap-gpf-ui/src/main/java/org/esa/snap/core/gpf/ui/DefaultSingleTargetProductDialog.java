@@ -34,8 +34,8 @@ import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.ProductNodeEvent;
 import org.esa.snap.framework.datamodel.ProductNodeListener;
 import org.esa.snap.framework.datamodel.RasterDataNode;
-import org.esa.snap.framework.ui.AppContext;
-import org.esa.snap.framework.ui.UIUtils;
+import org.esa.snap.ui.AppContext;
+import org.esa.snap.ui.UIUtils;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;

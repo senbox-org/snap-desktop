@@ -26,9 +26,9 @@ import org.esa.snap.framework.datamodel.GeoCoding;
 import org.esa.snap.framework.datamodel.GeoPos;
 import org.esa.snap.framework.datamodel.PixelPos;
 import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.ui.ButtonOverlayControl;
-import org.esa.snap.framework.ui.UIUtils;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.ui.ButtonOverlayControl;
+import org.esa.snap.ui.UIUtils;
 import org.esa.snap.util.ProductUtils;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 

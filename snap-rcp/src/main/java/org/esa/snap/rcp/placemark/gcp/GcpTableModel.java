@@ -26,7 +26,7 @@ import org.esa.snap.framework.datamodel.Placemark;
 import org.esa.snap.framework.datamodel.PlacemarkDescriptor;
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.TiePointGrid;
-import org.esa.snap.framework.ui.product.AbstractPlacemarkTableModel;
+import org.esa.snap.ui.product.AbstractPlacemarkTableModel;
 
 public class GcpTableModel extends AbstractPlacemarkTableModel {
 

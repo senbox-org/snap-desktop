@@ -27,7 +27,7 @@ import org.esa.snap.framework.datamodel.ImageInfo;
 import org.esa.snap.framework.datamodel.ProductNodeEvent;
 import org.esa.snap.framework.datamodel.RasterDataNode;
 import org.esa.snap.framework.datamodel.Stx;
-import org.esa.snap.framework.ui.ImageInfoEditorModel;
+import org.esa.snap.ui.ImageInfoEditorModel;
 
 import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;

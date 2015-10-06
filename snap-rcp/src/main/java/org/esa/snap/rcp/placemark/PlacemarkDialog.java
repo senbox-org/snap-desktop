@@ -28,7 +28,7 @@ import org.esa.snap.framework.datamodel.Placemark;
 import org.esa.snap.framework.datamodel.PlacemarkDescriptor;
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.ProductNode;
-import org.esa.snap.framework.ui.ModalDialog;
+import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.util.Guardian;
 import org.esa.snap.util.StringUtils;
 import org.geotools.referencing.crs.DefaultGeographicCRS;

@@ -5,9 +5,9 @@ import com.bc.ceres.swing.Grid;
 import com.bc.ceres.swing.ListControlBar;
 import org.esa.snap.binning.operator.VariableConfig;
 import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.ui.ModalDialog;
-import org.esa.snap.framework.ui.UIUtils;
-import org.esa.snap.framework.ui.tool.ToolButtonFactory;
+import org.esa.snap.ui.ModalDialog;
+import org.esa.snap.ui.UIUtils;
+import org.esa.snap.ui.tool.ToolButtonFactory;
 
 import javax.swing.AbstractButton;
 import javax.swing.JComponent;

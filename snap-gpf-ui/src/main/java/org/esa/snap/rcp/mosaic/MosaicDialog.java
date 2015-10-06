@@ -28,7 +28,7 @@ import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.dataop.barithm.BandArithmetic;
 import org.esa.snap.framework.dataop.dem.ElevationModelDescriptor;
 import org.esa.snap.framework.dataop.dem.ElevationModelRegistry;
-import org.esa.snap.framework.ui.AppContext;
+import org.esa.snap.ui.AppContext;
 import org.esa.snap.util.StringUtils;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;

@@ -15,11 +15,11 @@
  */
 package org.esa.snap.productlibrary.rcp.toolviews;
 
-import org.esa.snap.productlibrary.rcp.dialogs.CheckListDialog;
 import org.esa.snap.db.DBQuery;
 import org.esa.snap.db.ProductEntry;
-import org.esa.snap.framework.ui.UIUtils;
-import org.esa.snap.framework.ui.tool.ToolButtonFactory;
+import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
+import org.esa.snap.graphbuilder.rcp.utils.FileFolderUtils;
+import org.esa.snap.productlibrary.rcp.dialogs.CheckListDialog;
 import org.esa.snap.productlibrary.rcp.toolviews.model.DatabaseQueryListener;
 import org.esa.snap.productlibrary.rcp.toolviews.model.DatabaseStatistics;
 import org.esa.snap.productlibrary.rcp.toolviews.model.ProductEntryTableModel;
@@ -29,8 +29,8 @@ import org.esa.snap.productlibrary.rcp.toolviews.timeline.TimelinePanel;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.windows.ToolTopComponent;
-import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
-import org.esa.snap.graphbuilder.rcp.utils.FileFolderUtils;
+import org.esa.snap.ui.UIUtils;
+import org.esa.snap.ui.tool.ToolButtonFactory;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;

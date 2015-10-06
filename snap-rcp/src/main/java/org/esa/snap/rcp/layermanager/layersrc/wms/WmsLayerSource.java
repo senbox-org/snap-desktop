@@ -18,11 +18,11 @@ package org.esa.snap.rcp.layermanager.layersrc.wms;
 import org.esa.snap.framework.datamodel.CrsGeoCoding;
 import org.esa.snap.framework.datamodel.MapGeoCoding;
 import org.esa.snap.framework.datamodel.RasterDataNode;
-import org.esa.snap.framework.ui.layer.AbstractLayerSourceAssistantPage;
-import org.esa.snap.framework.ui.layer.LayerSource;
-import org.esa.snap.framework.ui.layer.LayerSourcePageContext;
-import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.ui.layer.AbstractLayerSourceAssistantPage;
+import org.esa.snap.ui.layer.LayerSource;
+import org.esa.snap.ui.layer.LayerSourcePageContext;
+import org.esa.snap.ui.product.ProductSceneView;
 
 
 public class WmsLayerSource implements LayerSource {

@@ -7,13 +7,13 @@ import com.bc.ceres.swing.undo.support.DefaultUndoContext;
 import com.thoughtworks.xstream.XStream;
 import org.esa.snap.framework.datamodel.Band;
 import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.ui.ModalDialog;
-import org.esa.snap.framework.ui.product.BandChooser;
-import org.esa.snap.framework.ui.product.ProductSceneView;
-import org.esa.snap.framework.ui.tool.ToolButtonFactory;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.tango.TangoIcons;
+import org.esa.snap.ui.ModalDialog;
+import org.esa.snap.ui.product.BandChooser;
+import org.esa.snap.ui.product.ProductSceneView;
+import org.esa.snap.ui.tool.ToolButtonFactory;
 import org.esa.snap.util.io.FileUtils;
 import org.openide.util.ImageUtilities;
 

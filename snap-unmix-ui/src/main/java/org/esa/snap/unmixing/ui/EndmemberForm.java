@@ -16,9 +16,9 @@
 
 package org.esa.snap.unmixing.ui;
 
-import org.esa.snap.framework.ui.AppContext;
-import org.esa.snap.framework.ui.diagram.DiagramCanvas;
-import org.esa.snap.framework.ui.tool.ToolButtonFactory;
+import org.esa.snap.ui.AppContext;
+import org.esa.snap.ui.diagram.DiagramCanvas;
+import org.esa.snap.ui.tool.ToolButtonFactory;
 
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;

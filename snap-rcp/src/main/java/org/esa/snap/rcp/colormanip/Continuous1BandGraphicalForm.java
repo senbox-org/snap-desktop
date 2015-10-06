@@ -24,7 +24,7 @@ import org.esa.snap.framework.datamodel.RasterDataNode;
 import org.esa.snap.framework.datamodel.Scaling;
 import org.esa.snap.framework.datamodel.Stx;
 import org.esa.snap.framework.datamodel.StxFactory;
-import org.esa.snap.framework.ui.ImageInfoEditorModel;
+import org.esa.snap.ui.ImageInfoEditorModel;
 
 import javax.swing.AbstractButton;
 import javax.swing.JPanel;

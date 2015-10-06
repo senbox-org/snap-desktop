@@ -23,7 +23,7 @@ import org.esa.snap.framework.datamodel.GeoCoding;
 import org.esa.snap.framework.datamodel.GeoPos;
 import org.esa.snap.framework.datamodel.PixelPos;
 import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.ui.product.ProductSceneView;
+import org.esa.snap.ui.product.ProductSceneView;
 
 import java.awt.BasicStroke;
 import java.awt.Color;

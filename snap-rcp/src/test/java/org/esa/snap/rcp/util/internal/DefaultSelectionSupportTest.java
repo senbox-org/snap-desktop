@@ -1,8 +1,8 @@
 package org.esa.snap.rcp.util.internal;
 
-import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.rcp.util.ContextGlobalExtender;
 import org.esa.snap.rcp.util.SelectionSupport;
+import org.esa.snap.ui.product.ProductSceneView;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;

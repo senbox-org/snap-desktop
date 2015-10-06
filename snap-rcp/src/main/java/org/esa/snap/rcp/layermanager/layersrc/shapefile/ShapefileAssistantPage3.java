@@ -18,10 +18,10 @@ package org.esa.snap.rcp.layermanager.layersrc.shapefile;
 
 import com.bc.ceres.glayer.Layer;
 import com.bc.ceres.glayer.swing.LayerCanvas;
-import org.esa.snap.framework.ui.layer.AbstractLayerSourceAssistantPage;
-import org.esa.snap.framework.ui.layer.LayerSourcePageContext;
-import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.ui.layer.AbstractLayerSourceAssistantPage;
+import org.esa.snap.ui.layer.LayerSourcePageContext;
+import org.esa.snap.ui.product.ProductSceneView;
 import org.geotools.styling.Style;
 import org.opengis.util.InternationalString;
 

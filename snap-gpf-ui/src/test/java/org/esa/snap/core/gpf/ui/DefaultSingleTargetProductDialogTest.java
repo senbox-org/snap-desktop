@@ -28,7 +28,7 @@ import org.esa.snap.core.gpf.annotations.TargetProduct;
 import org.esa.snap.framework.datamodel.Band;
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.ProductData;
-import org.esa.snap.framework.ui.DefaultAppContext;
+import org.esa.snap.ui.DefaultAppContext;
 import org.esa.snap.util.converters.GeneralExpressionConverter;
 
 import javax.swing.UIManager;

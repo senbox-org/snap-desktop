@@ -17,9 +17,9 @@
 package org.esa.snap.rcp.layermanager.layersrc.shapefile;
 
 import com.bc.ceres.glayer.Layer;
-import org.esa.snap.framework.ui.layer.LayerSourcePageContext;
-import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.ui.layer.LayerSourcePageContext;
+import org.esa.snap.ui.product.ProductSceneView;
 
 import java.util.concurrent.ExecutionException;
 

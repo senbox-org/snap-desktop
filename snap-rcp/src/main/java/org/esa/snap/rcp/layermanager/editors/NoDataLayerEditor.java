@@ -18,8 +18,8 @@ package org.esa.snap.rcp.layermanager.editors;
 
 import com.bc.ceres.binding.PropertyDescriptor;
 import com.bc.ceres.glayer.support.ImageLayer;
-import org.esa.snap.framework.ui.layer.AbstractLayerConfigurationEditor;
 import org.esa.snap.glayer.NoDataLayerType;
+import org.esa.snap.ui.layer.AbstractLayerConfigurationEditor;
 
 import java.awt.Color;
 import java.beans.PropertyChangeEvent;

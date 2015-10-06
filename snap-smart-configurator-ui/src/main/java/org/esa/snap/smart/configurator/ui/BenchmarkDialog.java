@@ -31,9 +31,9 @@ import org.esa.snap.core.gpf.internal.OperatorProductReader;
 import org.esa.snap.core.gpf.ui.DefaultSingleTargetProductDialog;
 import org.esa.snap.core.gpf.ui.TargetProductSelectorModel;
 import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.ui.AppContext;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.actions.file.SaveProductAsAction;
+import org.esa.snap.ui.AppContext;
 
 import java.io.File;
 

@@ -11,10 +11,10 @@ import org.esa.snap.framework.param.ParamChangeEvent;
 import org.esa.snap.framework.param.ParamChangeListener;
 import org.esa.snap.framework.param.ParamProperties;
 import org.esa.snap.framework.param.Parameter;
-import org.esa.snap.framework.ui.AppContext;
-import org.esa.snap.framework.ui.GridBagUtils;
-import org.esa.snap.framework.ui.ModalDialog;
-import org.esa.snap.framework.ui.product.ProductExpressionPane;
+import org.esa.snap.ui.AppContext;
+import org.esa.snap.ui.GridBagUtils;
+import org.esa.snap.ui.ModalDialog;
+import org.esa.snap.ui.product.ProductExpressionPane;
 import org.esa.snap.util.Debug;
 
 import javax.swing.JButton;

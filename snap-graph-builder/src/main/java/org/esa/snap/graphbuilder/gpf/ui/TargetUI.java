@@ -16,9 +16,9 @@
 package org.esa.snap.graphbuilder.gpf.ui;
 
 import org.esa.snap.core.gpf.ui.TargetProductSelector;
-import org.esa.snap.framework.ui.AppContext;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.file.SaveProductAsAction;
+import org.esa.snap.ui.AppContext;
 import org.esa.snap.util.SystemUtils;
 import org.esa.snap.util.io.FileUtils;
 

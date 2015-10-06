@@ -18,7 +18,7 @@ package org.esa.snap.core.gpf.ui;
 
 import org.esa.snap.HeadlessTestRunner;
 import org.esa.snap.core.gpf.GPF;
-import org.esa.snap.framework.ui.DefaultAppContext;
+import org.esa.snap.ui.DefaultAppContext;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;

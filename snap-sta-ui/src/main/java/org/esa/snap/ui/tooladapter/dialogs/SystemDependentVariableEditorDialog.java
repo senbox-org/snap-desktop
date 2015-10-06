@@ -1,7 +1,7 @@
 package org.esa.snap.ui.tooladapter.dialogs;
 
 import org.esa.snap.core.gpf.descriptor.SystemDependentVariable;
-import org.esa.snap.framework.ui.ModalDialog;
+import org.esa.snap.ui.ModalDialog;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;

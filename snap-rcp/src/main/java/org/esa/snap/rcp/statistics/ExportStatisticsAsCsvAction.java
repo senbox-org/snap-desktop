@@ -18,12 +18,12 @@ package org.esa.snap.rcp.statistics;
 
 import org.esa.snap.framework.datamodel.Mask;
 import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.ui.SnapFileChooser;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.statistics.output.CsvStatisticsWriter;
 import org.esa.snap.statistics.output.MetadataWriter;
 import org.esa.snap.statistics.output.StatisticsOutputContext;
+import org.esa.snap.ui.SnapFileChooser;
 import org.esa.snap.util.io.FileUtils;
 import org.esa.snap.util.io.SnapFileFilter;
 

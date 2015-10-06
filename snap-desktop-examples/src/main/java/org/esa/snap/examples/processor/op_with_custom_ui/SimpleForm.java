@@ -11,7 +11,7 @@ import org.esa.snap.core.gpf.ui.SourceProductSelector;
 import org.esa.snap.core.gpf.ui.TargetProductSelector;
 import org.esa.snap.core.gpf.ui.TargetProductSelectorModel;
 import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.ui.AppContext;
+import org.esa.snap.ui.AppContext;
 import org.esa.snap.util.io.FileUtils;
 
 import javax.swing.JPanel;

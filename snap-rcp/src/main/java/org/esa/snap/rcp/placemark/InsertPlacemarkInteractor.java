@@ -22,8 +22,8 @@ import org.esa.snap.framework.datamodel.Placemark;
 import org.esa.snap.framework.datamodel.PlacemarkDescriptor;
 import org.esa.snap.framework.datamodel.PlacemarkNameFactory;
 import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.ui.product.ProductSceneView;
 import org.openide.awt.UndoRedo;
 
 import java.awt.Component;
