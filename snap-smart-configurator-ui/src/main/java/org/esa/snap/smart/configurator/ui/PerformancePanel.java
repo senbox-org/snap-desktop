@@ -17,8 +17,6 @@ package org.esa.snap.smart.configurator.ui;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -175,9 +173,21 @@ final class PerformancePanel extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 0);
         systemParametersPanel.add(cachePathLabel, gridBagConstraints);
 
-        vmParametersTextField.setText(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.vmParametersTextField.text")); 
+
+        org.openide.awt.Mnemonics.setLocalizedText(vmParametersLabel, org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.jLabel3.text"));
+        vmParametersLabel.setMaximumSize(new java.awt.Dimension(200, 14));
+        vmParametersLabel.setMinimumSize(new java.awt.Dimension(100, 14));
+        vmParametersLabel.setPreferredSize(new java.awt.Dimension(80, 14));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 0);
+        systemParametersPanel.add(vmParametersLabel, gridBagConstraints);
+
+        vmParametersTextField.setText(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.vmParametersTextField.text"));
         vmParametersTextField.setToolTipText(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.vmParametersTextField.toolTipText"));
-        if(!VMParameters.canSave()) {
+        if (!VMParameters.canSave()) {
             vmParametersTextField.setEditable(false);
         }
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -198,8 +208,14 @@ final class PerformancePanel extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(5, 2, 0, 10);
         systemParametersPanel.add(editVMParametersButton, gridBagConstraints);
 
+        if(!VMParameters.canSave()) {
+            vmParametersLabel.setEnabled(false);
+            vmParametersTextField.setEnabled(false);
+            editVMParametersButton.setEnabled(false);
+        }
 
-        cachePathTextField.setText(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.userDirTextField.text"));
+
+            cachePathTextField.setText(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.userDirTextField.text"));
         cachePathTextField.setToolTipText(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.userDirTextField.toolTipText"));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -218,17 +234,6 @@ final class PerformancePanel extends javax.swing.JPanel {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 2, 0, 10);
         systemParametersPanel.add(browseUserDirButton, gridBagConstraints);
-
-        org.openide.awt.Mnemonics.setLocalizedText(vmParametersLabel, org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.jLabel3.text"));
-        vmParametersLabel.setMaximumSize(new java.awt.Dimension(200, 14));
-        vmParametersLabel.setMinimumSize(new java.awt.Dimension(100, 14));
-        vmParametersLabel.setPreferredSize(new java.awt.Dimension(80, 14));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 0);
-        systemParametersPanel.add(vmParametersLabel, gridBagConstraints);
 
         org.openide.awt.Mnemonics.setLocalizedText(sysResetButton, org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.sysResetButton.text")); 
         sysResetButton.addActionListener(evt -> sysResetButtonActionPerformed());
@@ -319,13 +324,14 @@ final class PerformancePanel extends javax.swing.JPanel {
         jPanel4.setMinimumSize(new java.awt.Dimension(190, 107));
         jPanel4.setLayout(new java.awt.GridLayout(3, 1, 0, 10));
 
-
         PerformanceParameters actualParameters = confOptimizer.getActualPerformanceParameters();
-        benchmarkTileSizeTextField.setText(Integer.toString(actualParameters.getDefaultTileSize()) + BENCHMARK_SEPARATOR);
+        String tileSizeBenchmarkValues = getDefaultTileSizeValuesForBenchmark(actualParameters.getDefaultTileSize());
+        benchmarkTileSizeTextField.setText(tileSizeBenchmarkValues);
         benchmarkTileSizeTextField.setPreferredSize(new java.awt.Dimension(150, 20));
         jPanel4.add(benchmarkTileSizeTextField);
 
-        benchmarkCacheSizeTextField.setText(Integer.toString(actualParameters.getCacheSize()) + BENCHMARK_SEPARATOR);
+        String cacheSizeBenchmarkValues = getDefaultCacheSizeValuesForBenchmark(actualParameters);
+        benchmarkCacheSizeTextField.setText(cacheSizeBenchmarkValues);
         benchmarkCacheSizeTextField.setMinimumSize(new java.awt.Dimension(100, 20));
         benchmarkCacheSizeTextField.setName(""); 
         benchmarkCacheSizeTextField.setPreferredSize(new java.awt.Dimension(150, 20));
@@ -378,9 +384,56 @@ final class PerformancePanel extends javax.swing.JPanel {
         processingParametersPanel.add(jPanel3, gridBagConstraints);
 
         add(processingParametersPanel);
+    }
+
+    private String getDefaultTileSizeValuesForBenchmark(int defaultTileSize) {
+        StringBuilder defaultTileSizeValues = new StringBuilder();
+
+        if(defaultTileSize >= 1024) {
+            defaultTileSizeValues.append(defaultTileSize/2);
+            defaultTileSizeValues.append(BENCHMARK_SEPARATOR);
+        }
+
+        defaultTileSizeValues.append(defaultTileSize);
+        defaultTileSizeValues.append(BENCHMARK_SEPARATOR);
+
+        defaultTileSizeValues.append(defaultTileSize*2);
+        defaultTileSizeValues.append(BENCHMARK_SEPARATOR);
 
 
-        setBorder(BorderFactory.createLineBorder(Color.BLUE));
+        if(defaultTileSize < 1024) {
+            defaultTileSizeValues.append(defaultTileSize*4);
+            defaultTileSizeValues.append(BENCHMARK_SEPARATOR);
+        }
+
+        return defaultTileSizeValues.toString();
+    }
+
+    private String getDefaultCacheSizeValuesForBenchmark(PerformanceParameters actualParameters) {
+        StringBuilder defaultCacheSizeValues = new StringBuilder();
+
+        int defaultCacheSize = actualParameters.getCacheSize();
+        long xmx = actualParameters.getVmXMX();
+
+        if(xmx == 0) {
+            PerformanceParameters memoryParameters = new PerformanceParameters();
+            ConfigurationOptimizer.getInstance().computeOptimisedRAMParams(memoryParameters);
+            xmx = memoryParameters.getVmXMX();
+        }
+
+        defaultCacheSizeValues.append(defaultCacheSize);
+        defaultCacheSizeValues.append(BENCHMARK_SEPARATOR);
+
+        if(xmx != 0) {
+            defaultCacheSizeValues.append(Math.round(xmx * 0.5));
+            defaultCacheSizeValues.append(BENCHMARK_SEPARATOR);
+
+            defaultCacheSizeValues.append(Math.round(xmx * 0.75));
+            defaultCacheSizeValues.append(BENCHMARK_SEPARATOR);
+        }
+
+
+        return defaultCacheSizeValues.toString();
     }
 
     private void editVMParametersButtonActionPerformed(ActionEvent e) {
@@ -432,7 +485,7 @@ final class PerformancePanel extends javax.swing.JPanel {
 
         PerformanceParameters optimizedParameters = confOptimizer.computeOptimisedSystemParameters();
 
-        if(!vmParametersTextField.getText().equals(optimizedParameters.getVMParameters())) {
+        if(VMParameters.canSave() && !vmParametersTextField.getText().equals(optimizedParameters.getVMParameters())) {
             vmParametersTextField.setText(optimizedParameters.getVMParameters());
             vmParametersTextField.setForeground(CURRENT_VALUES_COLOR);
             vmParametersTextField.setCaretPosition(0);
@@ -538,7 +591,7 @@ final class PerformancePanel extends javax.swing.JPanel {
         boolean isValid = true;
 
         File userDir = new File(cachePathTextField.getText());
-        if(!userDir.exists() || !userDir.isDirectory()) {
+        if(userDir.exists() && !userDir.isDirectory()) {
             cachePathTextField.setForeground(ERROR_VALUES_COLOR);
             isValid = false;
         } else {
