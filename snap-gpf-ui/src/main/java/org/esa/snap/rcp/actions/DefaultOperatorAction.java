@@ -16,7 +16,7 @@
 
 package org.esa.snap.rcp.actions;
 
-import org.esa.snap.framework.gpf.ui.DefaultSingleTargetProductDialog;
+import org.esa.snap.core.gpf.ui.DefaultSingleTargetProductDialog;
 import org.esa.snap.framework.ui.ModelessDialog;
 
 import java.awt.event.ActionEvent;

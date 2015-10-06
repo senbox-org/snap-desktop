@@ -14,18 +14,20 @@
  * with this program; if not, see http://www.gnu.org/licenses/
  */
 
-package org.esa.snap.framework.gpf.ui;
-
-import static org.junit.Assert.*;
+package org.esa.snap.core.gpf.ui;
 
 import org.esa.snap.HeadlessTestRunner;
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.ui.DefaultAppContext;
-import org.junit.*;
-import org.junit.runner.*;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import javax.swing.JComboBox;
 import java.io.File;
+
+import static org.junit.Assert.*;
 
 /**
  * @author Ralf Quast

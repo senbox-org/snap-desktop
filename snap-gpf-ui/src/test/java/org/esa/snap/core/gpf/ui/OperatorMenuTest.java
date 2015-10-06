@@ -14,7 +14,7 @@
  * with this program; if not, see http://www.gnu.org/licenses/
  */
 
-package org.esa.snap.framework.gpf.ui;
+package org.esa.snap.core.gpf.ui;
 
 import org.esa.snap.HeadlessTestRunner;
 import org.esa.snap.core.gpf.GPF;

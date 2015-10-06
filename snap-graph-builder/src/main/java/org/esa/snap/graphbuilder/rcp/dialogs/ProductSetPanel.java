@@ -15,21 +15,21 @@
  */
 package org.esa.snap.graphbuilder.rcp.dialogs;
 
+import org.esa.snap.core.gpf.ui.TargetProductSelectorModel;
 import org.esa.snap.db.DBSearch;
 import org.esa.snap.db.ProductEntry;
 import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.gpf.ui.TargetProductSelectorModel;
 import org.esa.snap.framework.ui.AppContext;
 import org.esa.snap.framework.ui.FileChooserFactory;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.FileTable;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.FileTableModel;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.TargetFolderSelector;
+import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.file.OpenProductAction;
 import org.esa.snap.rcp.actions.file.SaveProductAsAction;
 import org.esa.snap.rcp.util.ProgressHandleMonitor;
 import org.esa.snap.tango.TangoIcons;
-import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
 import org.esa.snap.util.ProductFunctions;
 import org.esa.snap.util.SystemUtils;
 import org.netbeans.api.progress.ProgressUtils;

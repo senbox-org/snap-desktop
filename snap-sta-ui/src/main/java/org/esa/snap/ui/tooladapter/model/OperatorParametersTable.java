@@ -32,7 +32,7 @@ import org.esa.snap.core.gpf.descriptor.TemplateParameterDescriptor;
 import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
 import org.esa.snap.core.gpf.descriptor.ToolParameterDescriptor;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterConstants;
-import org.esa.snap.framework.gpf.ui.OperatorParameterSupport;
+import org.esa.snap.core.gpf.ui.OperatorParameterSupport;
 import org.esa.snap.framework.ui.AbstractDialog;
 import org.esa.snap.framework.ui.AppContext;
 import org.esa.snap.framework.ui.UIUtils;

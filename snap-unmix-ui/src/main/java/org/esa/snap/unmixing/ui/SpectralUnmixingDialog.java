@@ -17,13 +17,13 @@ package org.esa.snap.unmixing.ui;
 
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.OperatorSpi;
+import org.esa.snap.core.gpf.ui.OperatorMenu;
+import org.esa.snap.core.gpf.ui.OperatorParameterSupport;
+import org.esa.snap.core.gpf.ui.ParameterUpdater;
+import org.esa.snap.core.gpf.ui.SingleTargetProductDialog;
 import org.esa.snap.framework.datamodel.Band;
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.ProductData;
-import org.esa.snap.framework.gpf.ui.OperatorMenu;
-import org.esa.snap.framework.gpf.ui.OperatorParameterSupport;
-import org.esa.snap.framework.gpf.ui.ParameterUpdater;
-import org.esa.snap.framework.gpf.ui.SingleTargetProductDialog;
 import org.esa.snap.framework.ui.AppContext;
 import org.esa.snap.framework.ui.DefaultAppContext;
 import org.esa.snap.unmixing.Endmember;

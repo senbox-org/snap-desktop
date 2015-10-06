@@ -24,10 +24,10 @@ import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.selection.AbstractSelectionChangeListener;
 import com.bc.ceres.swing.selection.SelectionChangeEvent;
 import com.bc.ceres.swing.selection.SelectionChangeListener;
+import org.esa.snap.core.gpf.ui.SourceProductSelector;
+import org.esa.snap.core.gpf.ui.TargetProductSelector;
+import org.esa.snap.core.gpf.ui.TargetProductSelectorModel;
 import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.gpf.ui.SourceProductSelector;
-import org.esa.snap.framework.gpf.ui.TargetProductSelector;
-import org.esa.snap.framework.gpf.ui.TargetProductSelectorModel;
 import org.esa.snap.framework.ui.AppContext;
 
 import javax.swing.BorderFactory;

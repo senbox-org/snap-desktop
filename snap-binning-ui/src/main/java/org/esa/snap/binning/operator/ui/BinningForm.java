@@ -16,7 +16,7 @@
 
 package org.esa.snap.binning.operator.ui;
 
-import org.esa.snap.framework.gpf.ui.TargetProductSelector;
+import org.esa.snap.core.gpf.ui.TargetProductSelector;
 import org.esa.snap.framework.ui.AppContext;
 
 import javax.swing.JTabbedPane;
