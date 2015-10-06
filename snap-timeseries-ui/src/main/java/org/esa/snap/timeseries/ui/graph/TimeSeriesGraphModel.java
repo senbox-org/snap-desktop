@@ -16,7 +16,7 @@
 
 package org.esa.snap.timeseries.ui.graph;
 
-import com.bc.jexp.ParseException;
+import org.esa.snap.core.jexp.ParseException;
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.GeoCoding;
 import org.esa.snap.core.datamodel.GeoPos;

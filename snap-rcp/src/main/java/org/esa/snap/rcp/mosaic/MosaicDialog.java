@@ -16,7 +16,6 @@
 
 package org.esa.snap.rcp.mosaic;
 
-import com.bc.jexp.ParseException;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.dataop.barithm.BandArithmetic;
 import org.esa.snap.core.dataop.dem.ElevationModelDescriptor;
@@ -28,6 +27,7 @@ import org.esa.snap.core.gpf.ui.OperatorMenu;
 import org.esa.snap.core.gpf.ui.OperatorParameterSupport;
 import org.esa.snap.core.gpf.ui.SingleTargetProductDialog;
 import org.esa.snap.core.gpf.ui.TargetProductSelector;
+import org.esa.snap.core.jexp.ParseException;
 import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.ui.AppContext;
 import org.opengis.referencing.FactoryException;

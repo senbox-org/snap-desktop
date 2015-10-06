@@ -16,14 +16,14 @@
 
 package org.esa.snap.timeseries.ui.graph;
 
-import com.bc.jexp.ParseException;
-import com.bc.jexp.Parser;
-import com.bc.jexp.Symbol;
-import com.bc.jexp.Term;
-import com.bc.jexp.Variable;
-import com.bc.jexp.impl.DefaultNamespace;
-import com.bc.jexp.impl.ParserImpl;
-import com.bc.jexp.impl.SymbolFactory;
+import org.esa.snap.core.jexp.ParseException;
+import org.esa.snap.core.jexp.Parser;
+import org.esa.snap.core.jexp.Symbol;
+import org.esa.snap.core.jexp.Term;
+import org.esa.snap.core.jexp.Variable;
+import org.esa.snap.core.jexp.impl.DefaultNamespace;
+import org.esa.snap.core.jexp.impl.ParserImpl;
+import org.esa.snap.core.jexp.impl.SymbolFactory;
 import org.esa.snap.core.ui.ExpressionPane;
 import org.esa.snap.core.ui.ModalDialog;
 import org.esa.snap.rcp.SnapApp;

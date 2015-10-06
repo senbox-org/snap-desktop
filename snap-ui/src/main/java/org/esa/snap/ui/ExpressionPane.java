@@ -15,14 +15,14 @@
  */
 package org.esa.snap.ui;
 
-import com.bc.jexp.Function;
-import com.bc.jexp.Namespace;
-import com.bc.jexp.ParseException;
-import com.bc.jexp.Parser;
-import com.bc.jexp.Term;
-import com.bc.jexp.impl.Functions;
-import com.bc.jexp.impl.NamespaceImpl;
 import org.esa.snap.core.dataop.barithm.BandArithmetic;
+import org.esa.snap.core.jexp.Function;
+import org.esa.snap.core.jexp.Namespace;
+import org.esa.snap.core.jexp.ParseException;
+import org.esa.snap.core.jexp.Parser;
+import org.esa.snap.core.jexp.Term;
+import org.esa.snap.core.jexp.impl.Functions;
+import org.esa.snap.core.jexp.impl.NamespaceImpl;
 import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.ui.tool.ToolButtonFactory;
 
