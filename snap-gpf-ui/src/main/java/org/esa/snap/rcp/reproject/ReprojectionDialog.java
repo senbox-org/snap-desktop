@@ -18,15 +18,15 @@ package org.esa.snap.rcp.reproject;
 
 import com.bc.ceres.binding.ConversionException;
 import com.bc.ceres.binding.ValidationException;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.dataop.dem.ElevationModelDescriptor;
+import org.esa.snap.core.dataop.dem.ElevationModelRegistry;
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.OperatorSpi;
 import org.esa.snap.core.gpf.ui.OperatorMenu;
 import org.esa.snap.core.gpf.ui.OperatorParameterSupport;
 import org.esa.snap.core.gpf.ui.ParameterUpdater;
 import org.esa.snap.core.gpf.ui.SingleTargetProductDialog;
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.dataop.dem.ElevationModelDescriptor;
-import org.esa.snap.framework.dataop.dem.ElevationModelRegistry;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.DefaultAppContext;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;

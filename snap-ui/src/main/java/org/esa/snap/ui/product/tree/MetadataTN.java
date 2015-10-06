@@ -16,7 +16,7 @@
 
 package org.esa.snap.ui.product.tree;
 
-import org.esa.snap.framework.datamodel.MetadataElement;
+import org.esa.snap.core.datamodel.MetadataElement;
 
 class MetadataTN extends ProductNodeTN {
     private MetadataElement metadataElement;

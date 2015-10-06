@@ -15,12 +15,12 @@
  */
 package org.esa.snap.rcp.pixelinfo;
 
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductNode;
-import org.esa.snap.framework.datamodel.ProductNodeEvent;
-import org.esa.snap.framework.datamodel.ProductNodeListener;
-import org.esa.snap.framework.datamodel.ProductNodeListenerAdapter;
-import org.esa.snap.framework.datamodel.RasterDataNode;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductNode;
+import org.esa.snap.core.datamodel.ProductNodeEvent;
+import org.esa.snap.core.datamodel.ProductNodeListener;
+import org.esa.snap.core.datamodel.ProductNodeListenerAdapter;
+import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.CollapsibleItemsPanel;

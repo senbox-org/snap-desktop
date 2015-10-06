@@ -16,7 +16,7 @@
 
 package org.esa.snap.ui.product;
 
-import org.esa.snap.framework.datamodel.PlainFeatureFactory;
+import org.esa.snap.core.datamodel.PlainFeatureFactory;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.junit.Before;

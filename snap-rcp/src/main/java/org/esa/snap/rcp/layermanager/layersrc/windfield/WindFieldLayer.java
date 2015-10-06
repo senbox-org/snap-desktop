@@ -25,7 +25,7 @@ import com.bc.ceres.glayer.support.ImageLayer;
 import com.bc.ceres.glevel.MultiLevelImage;
 import com.bc.ceres.grender.Rendering;
 import com.bc.ceres.grender.Viewport;
-import org.esa.snap.framework.datamodel.RasterDataNode;
+import org.esa.snap.core.datamodel.RasterDataNode;
 
 import java.awt.BasicStroke;
 import java.awt.Color;

@@ -18,8 +18,8 @@ package org.esa.snap.ui.product;
 
 import com.bc.ceres.glayer.Layer;
 import com.bc.ceres.glayer.LayerFilter;
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.VectorDataNode;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.VectorDataNode;
 
 /**
  * Filter out layers of type {@link VectorDataLayer}.

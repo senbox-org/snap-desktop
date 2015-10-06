@@ -4,7 +4,7 @@ import com.bc.ceres.binding.ValidationException;
 import com.bc.ceres.swing.Grid;
 import com.bc.ceres.swing.ListControlBar;
 import org.esa.snap.binning.operator.VariableConfig;
-import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.tool.ToolButtonFactory;

@@ -18,8 +18,8 @@ package org.esa.snap.rcp.spectrum;
 
 import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.glevel.MultiLevelModel;
-import org.esa.snap.framework.datamodel.Band;
-import org.esa.snap.framework.datamodel.Placemark;
+import org.esa.snap.core.datamodel.Band;
+import org.esa.snap.core.datamodel.Placemark;
 import org.esa.snap.jai.ImageManager;
 import org.esa.snap.ui.diagram.AbstractDiagramGraph;
 import org.esa.snap.util.Debug;

@@ -16,8 +16,8 @@
 
 package org.esa.snap.ui.product;
 
-import org.esa.snap.framework.datamodel.Band;
-import org.esa.snap.framework.datamodel.ProductData;
+import org.esa.snap.core.datamodel.Band;
+import org.esa.snap.core.datamodel.ProductData;
 import org.junit.Test;
 
 import java.util.ArrayList;

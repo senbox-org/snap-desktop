@@ -17,8 +17,8 @@
 package org.esa.snap.ui.product;
 
 import com.bc.ceres.binding.ValidationException;
-import org.esa.snap.framework.dataio.ProductIOPlugInManager;
-import org.esa.snap.framework.dataio.ProductReaderPlugIn;
+import org.esa.snap.core.dataio.ProductIOPlugInManager;
+import org.esa.snap.core.dataio.ProductReaderPlugIn;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.util.PropertyMap;
 import org.esa.snap.util.SystemUtils;

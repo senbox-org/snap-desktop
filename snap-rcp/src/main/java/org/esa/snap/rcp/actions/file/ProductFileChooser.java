@@ -1,7 +1,7 @@
 package org.esa.snap.rcp.actions.file;
 
-import org.esa.snap.framework.dataio.ProductIO;
-import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.core.dataio.ProductIO;
+import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.ui.GridBagUtils;

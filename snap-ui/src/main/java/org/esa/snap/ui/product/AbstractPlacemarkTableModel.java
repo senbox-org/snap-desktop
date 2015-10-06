@@ -17,15 +17,15 @@
 package org.esa.snap.ui.product;
 
 import com.bc.ceres.core.ProgressMonitor;
-import org.esa.snap.framework.datamodel.Band;
-import org.esa.snap.framework.datamodel.GeoPos;
-import org.esa.snap.framework.datamodel.PixelPos;
-import org.esa.snap.framework.datamodel.Placemark;
-import org.esa.snap.framework.datamodel.PlacemarkDescriptor;
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductNodeEvent;
-import org.esa.snap.framework.datamodel.ProductNodeListenerAdapter;
-import org.esa.snap.framework.datamodel.TiePointGrid;
+import org.esa.snap.core.datamodel.Band;
+import org.esa.snap.core.datamodel.GeoPos;
+import org.esa.snap.core.datamodel.PixelPos;
+import org.esa.snap.core.datamodel.Placemark;
+import org.esa.snap.core.datamodel.PlacemarkDescriptor;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductNodeEvent;
+import org.esa.snap.core.datamodel.ProductNodeListenerAdapter;
+import org.esa.snap.core.datamodel.TiePointGrid;
 import org.esa.snap.util.math.MathUtils;
 
 import javax.swing.table.DefaultTableModel;

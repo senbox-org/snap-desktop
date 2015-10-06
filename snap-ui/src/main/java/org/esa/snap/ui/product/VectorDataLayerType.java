@@ -25,9 +25,9 @@ import com.bc.ceres.glayer.LayerContext;
 import com.bc.ceres.glayer.LayerType;
 import com.bc.ceres.glayer.LayerTypeRegistry;
 import com.bc.ceres.glayer.annotations.LayerTypeMetadata;
-import org.esa.snap.framework.datamodel.ProductNode;
-import org.esa.snap.framework.datamodel.RasterDataNode;
-import org.esa.snap.framework.datamodel.VectorDataNode;
+import org.esa.snap.core.datamodel.ProductNode;
+import org.esa.snap.core.datamodel.RasterDataNode;
+import org.esa.snap.core.datamodel.VectorDataNode;
 import org.esa.snap.glayer.ProductLayerContext;
 
 /**

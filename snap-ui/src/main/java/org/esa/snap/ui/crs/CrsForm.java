@@ -16,8 +16,8 @@
 
 package org.esa.snap.ui.crs;
 
-import org.esa.snap.framework.datamodel.GeoPos;
-import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.core.datamodel.GeoPos;
+import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.ui.AppContext;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;

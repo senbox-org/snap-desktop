@@ -17,9 +17,9 @@
 package org.esa.snap.ui;
 
 import junit.framework.TestCase;
-import org.esa.snap.framework.param.ParamChangeEvent;
-import org.esa.snap.framework.param.ParamChangeListener;
-import org.esa.snap.framework.param.ParamValidateException;
+import org.esa.snap.core.param.ParamChangeEvent;
+import org.esa.snap.core.param.ParamChangeListener;
+import org.esa.snap.core.param.ParamValidateException;
 
 /**
  * Description of DemSelectorTest

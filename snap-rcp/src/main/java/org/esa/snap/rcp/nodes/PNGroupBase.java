@@ -5,14 +5,14 @@
  */
 package org.esa.snap.rcp.nodes;
 
-import org.esa.snap.framework.datamodel.ProductNode;
+import org.esa.snap.core.datamodel.ProductNode;
 import org.openide.nodes.ChildFactory;
 
 import java.util.ArrayList;
 
 /**
  * A group object serves as a key for {@link PNGroupNode}s and is a child factory for nodes
- * representing {@link org.esa.snap.framework.datamodel.ProductNode}s.
+ * representing {@link ProductNode}s.
  *
  * @author Norman
  */

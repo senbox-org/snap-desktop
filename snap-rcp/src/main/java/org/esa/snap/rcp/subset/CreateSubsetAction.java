@@ -16,9 +16,9 @@
 
 package org.esa.snap.rcp.subset;
 
-import org.esa.snap.framework.dataio.ProductSubsetDef;
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductNode;
+import org.esa.snap.core.dataio.ProductSubsetDef;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.ui.product.ProductSceneView;

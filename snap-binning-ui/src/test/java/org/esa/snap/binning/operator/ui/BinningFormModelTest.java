@@ -24,7 +24,7 @@ import org.esa.snap.binning.AggregatorConfig;
 import org.esa.snap.binning.aggregators.AggregatorAverage;
 import org.esa.snap.binning.operator.BinningOp;
 import org.esa.snap.binning.operator.VariableConfig;
-import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.core.datamodel.Product;
 import org.junit.Test;
 
 import java.beans.PropertyChangeEvent;

@@ -2,7 +2,7 @@ package org.esa.snap.ui.product;
 
 import com.bc.ceres.core.ExtensionFactory;
 import com.bc.ceres.glayer.LayerTypeRegistry;
-import org.esa.snap.framework.datamodel.VectorDataNode;
+import org.esa.snap.core.datamodel.VectorDataNode;
 
 /**
  * The {@link ExtensionFactory} that adapts {@link VectorDataNode}s using the {@code FeatureType} "org.esa.snap.TrackPoint"

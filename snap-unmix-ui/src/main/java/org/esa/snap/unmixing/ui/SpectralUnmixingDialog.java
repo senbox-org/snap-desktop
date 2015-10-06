@@ -15,15 +15,15 @@
  */
 package org.esa.snap.unmixing.ui;
 
+import org.esa.snap.core.datamodel.Band;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductData;
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.OperatorSpi;
 import org.esa.snap.core.gpf.ui.OperatorMenu;
 import org.esa.snap.core.gpf.ui.OperatorParameterSupport;
 import org.esa.snap.core.gpf.ui.ParameterUpdater;
 import org.esa.snap.core.gpf.ui.SingleTargetProductDialog;
-import org.esa.snap.framework.datamodel.Band;
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductData;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.DefaultAppContext;
 import org.esa.snap.unmixing.Endmember;

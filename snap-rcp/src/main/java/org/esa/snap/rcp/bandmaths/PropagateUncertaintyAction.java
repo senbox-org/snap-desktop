@@ -16,7 +16,7 @@
 
 package org.esa.snap.rcp.bandmaths;
 
-import org.esa.snap.framework.datamodel.VirtualBand;
+import org.esa.snap.core.datamodel.VirtualBand;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;

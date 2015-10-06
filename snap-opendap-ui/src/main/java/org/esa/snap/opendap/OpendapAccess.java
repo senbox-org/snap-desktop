@@ -1,10 +1,10 @@
 package org.esa.snap.opendap;
 
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductManager;
-import org.esa.snap.framework.ui.AppContext;
-import org.esa.snap.framework.ui.application.ApplicationPage;
-import org.esa.snap.framework.ui.product.ProductSceneView;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductManager;
+import org.esa.snap.core.ui.AppContext;
+import org.esa.snap.core.ui.application.ApplicationPage;
+import org.esa.snap.core.ui.product.ProductSceneView;
 import org.esa.snap.opendap.ui.OpendapAccessPanel;
 import org.esa.snap.util.DefaultPropertyMap;
 import org.esa.snap.util.PropertyMap;
@@ -36,7 +36,7 @@ public class OpendapAccess {
 
 
     /**
-     * This trivial implementation of the {@link org.esa.snap.framework.ui.AppContext} class
+     * This trivial implementation of the {@link org.esa.snap.core.ui.AppContext} class
      * is only for testing.
      */
     private static class DefaultAppContext implements AppContext {

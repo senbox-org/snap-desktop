@@ -18,8 +18,8 @@ package org.esa.snap.rcp.actions.file.export;
 
 import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.swing.progress.DialogProgressMonitor;
-import org.esa.snap.framework.datamodel.MetadataAttribute;
-import org.esa.snap.framework.datamodel.MetadataElement;
+import org.esa.snap.core.datamodel.MetadataAttribute;
+import org.esa.snap.core.datamodel.MetadataElement;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.metadata.MetadataViewTopComponent;

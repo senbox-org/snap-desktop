@@ -15,8 +15,8 @@
  */
 package org.esa.snap.ui;
 
-import org.esa.snap.framework.param.ParamProperties;
-import org.esa.snap.framework.param.Parameter;
+import org.esa.snap.core.param.ParamProperties;
+import org.esa.snap.core.param.Parameter;
 import org.esa.snap.util.ArrayUtils;
 import org.esa.snap.util.Guardian;
 import org.esa.snap.util.StringUtils;

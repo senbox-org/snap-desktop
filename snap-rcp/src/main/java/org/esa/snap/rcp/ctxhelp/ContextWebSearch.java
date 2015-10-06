@@ -1,7 +1,7 @@
 package org.esa.snap.rcp.ctxhelp;
 
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductNode;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.util.SystemUtils;
 
 import java.awt.Desktop;

@@ -19,8 +19,8 @@ import com.bc.ceres.binding.Property;
 import com.bc.ceres.binding.PropertyContainer;
 import com.bc.ceres.binding.PropertySet;
 import com.bc.ceres.binding.ValueSet;
-import org.esa.snap.framework.datamodel.ImageGeometry;
-import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.core.datamodel.ImageGeometry;
+import org.esa.snap.core.datamodel.Product;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import java.awt.Rectangle;

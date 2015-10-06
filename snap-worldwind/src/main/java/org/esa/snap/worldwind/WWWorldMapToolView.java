@@ -20,7 +20,7 @@ import com.bc.ceres.grender.ViewportListener;
 import gov.nasa.worldwind.layers.Earth.MSVirtualEarthLayer;
 import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.layers.LayerList;
-import org.esa.snap.framework.datamodel.ProductNode;
+import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.SelectionSupport;
 import org.esa.snap.ui.product.ProductSceneView;

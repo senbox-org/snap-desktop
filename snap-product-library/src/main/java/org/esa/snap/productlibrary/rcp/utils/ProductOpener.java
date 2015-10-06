@@ -15,9 +15,9 @@
  */
 package org.esa.snap.productlibrary.rcp.utils;
 
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductManager;
 import org.esa.snap.db.CommonReaders;
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductManager;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 

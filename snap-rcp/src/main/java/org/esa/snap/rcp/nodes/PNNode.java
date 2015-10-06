@@ -6,21 +6,21 @@
 package org.esa.snap.rcp.nodes;
 
 import com.bc.jexp.ParseException;
-import org.esa.snap.framework.datamodel.Band;
-import org.esa.snap.framework.datamodel.FlagCoding;
-import org.esa.snap.framework.datamodel.IndexCoding;
-import org.esa.snap.framework.datamodel.Mask;
-import org.esa.snap.framework.datamodel.MetadataElement;
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductData;
-import org.esa.snap.framework.datamodel.ProductNode;
-import org.esa.snap.framework.datamodel.ProductNodeEvent;
-import org.esa.snap.framework.datamodel.ProductNodeGroup;
-import org.esa.snap.framework.datamodel.RasterDataNode;
-import org.esa.snap.framework.datamodel.TiePointGrid;
-import org.esa.snap.framework.datamodel.VectorDataNode;
-import org.esa.snap.framework.datamodel.VirtualBand;
-import org.esa.snap.framework.dataop.barithm.BandArithmetic;
+import org.esa.snap.core.datamodel.Band;
+import org.esa.snap.core.datamodel.FlagCoding;
+import org.esa.snap.core.datamodel.IndexCoding;
+import org.esa.snap.core.datamodel.Mask;
+import org.esa.snap.core.datamodel.MetadataElement;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductData;
+import org.esa.snap.core.datamodel.ProductNode;
+import org.esa.snap.core.datamodel.ProductNodeEvent;
+import org.esa.snap.core.datamodel.ProductNodeGroup;
+import org.esa.snap.core.datamodel.RasterDataNode;
+import org.esa.snap.core.datamodel.TiePointGrid;
+import org.esa.snap.core.datamodel.VectorDataNode;
+import org.esa.snap.core.datamodel.VirtualBand;
+import org.esa.snap.core.dataop.barithm.BandArithmetic;
 import org.esa.snap.netbeans.docwin.DocumentWindow;
 import org.esa.snap.netbeans.docwin.DocumentWindowManager;
 import org.esa.snap.netbeans.docwin.WindowUtilities;
@@ -50,10 +50,10 @@ import java.util.Collections;
 import java.util.WeakHashMap;
 import java.util.stream.Stream;
 
-import static org.esa.snap.rcp.nodes.PNNodeSupport.performUndoableProductNodeEdit;
+import static org.esa.snap.rcp.nodes.PNNodeSupport.*;
 
 /**
- * A node that represents some {@link org.esa.snap.framework.datamodel.ProductNode} (=PN).
+ * A node that represents some {@link ProductNode} (=PN).
  *
  * @author Norman
  */
@@ -210,7 +210,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
 
 
     /**
-     * A node that represents a {@link org.esa.snap.framework.datamodel.MetadataElement} (=ME).
+     * A node that represents a {@link MetadataElement} (=ME).
      *
      * @author Norman
      */
@@ -240,7 +240,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
     }
 
     /**
-     * A node that represents an {@link org.esa.snap.framework.datamodel.IndexCoding} (=IC).
+     * A node that represents an {@link IndexCoding} (=IC).
      *
      * @author Norman
      */
@@ -270,7 +270,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
     }
 
     /**
-     * A node that represents a {@link org.esa.snap.framework.datamodel.FlagCoding} (=FC).
+     * A node that represents a {@link FlagCoding} (=FC).
      *
      * @author Norman
      */
@@ -300,7 +300,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
     }
 
     /**
-     * A node that represents a {@link org.esa.snap.framework.datamodel.VectorDataNode} (=VDN).
+     * A node that represents a {@link VectorDataNode} (=VDN).
      *
      * @author Norman
      */
@@ -387,7 +387,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
     }
 
     /**
-     * A node that represents a {@link org.esa.snap.framework.datamodel.TiePointGrid} (=TPG).
+     * A node that represents a {@link TiePointGrid} (=TPG).
      *
      * @author Norman
      */
@@ -456,7 +456,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
     }
 
     /**
-     * A node that represents a {@link org.esa.snap.framework.datamodel.Mask} (=M).
+     * A node that represents a {@link Mask} (=M).
      *
      * @author Norman
      */
@@ -486,7 +486,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
     }
 
     /**
-     * A node that represents a {@link org.esa.snap.framework.datamodel.Band} (=B).
+     * A node that represents a {@link Band} (=B).
      *
      * @author Norman
      */

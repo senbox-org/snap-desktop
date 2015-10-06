@@ -20,7 +20,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.io.WKTReader;
-import org.esa.snap.framework.datamodel.GeoPos;
+import org.esa.snap.core.datamodel.GeoPos;
 import org.esa.snap.graphbuilder.gpf.ui.worldmap.NestWorldMapPane;
 import org.esa.snap.graphbuilder.gpf.ui.worldmap.WorldMapUI;
 import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;

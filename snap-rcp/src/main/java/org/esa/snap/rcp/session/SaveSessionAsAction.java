@@ -15,8 +15,8 @@
  */
 package org.esa.snap.rcp.session;
 
-import org.esa.snap.framework.datamodel.ProductManager;
-import org.esa.snap.framework.datamodel.ProductNode;
+import org.esa.snap.core.datamodel.ProductManager;
+import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.rcp.SnapApp;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;

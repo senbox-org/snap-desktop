@@ -1,6 +1,6 @@
 package org.esa.snap.ui.product.spectrum;
 
-import org.esa.snap.framework.datamodel.Band;
+import org.esa.snap.core.datamodel.Band;
 
 public interface Spectrum {
 

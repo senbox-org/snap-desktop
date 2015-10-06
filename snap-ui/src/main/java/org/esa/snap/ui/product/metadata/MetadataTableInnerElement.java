@@ -1,8 +1,8 @@
 package org.esa.snap.ui.product.metadata;
 
-import org.esa.snap.framework.datamodel.MetadataAttribute;
-import org.esa.snap.framework.datamodel.MetadataElement;
-import org.esa.snap.framework.datamodel.ProductData;
+import org.esa.snap.core.datamodel.MetadataAttribute;
+import org.esa.snap.core.datamodel.MetadataElement;
+import org.esa.snap.core.datamodel.ProductData;
 import org.openide.nodes.AbstractNode;
 
 import java.util.ArrayList;

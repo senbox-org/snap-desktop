@@ -1,10 +1,10 @@
 package org.esa.snap.rcp.statistics;
 
-import org.esa.snap.framework.datamodel.Band;
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.TransectProfileData;
-import org.esa.snap.framework.datamodel.TransectProfileDataBuilder;
-import org.esa.snap.framework.datamodel.VectorDataNode;
+import org.esa.snap.core.datamodel.Band;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.TransectProfileData;
+import org.esa.snap.core.datamodel.TransectProfileDataBuilder;
+import org.esa.snap.core.datamodel.VectorDataNode;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureImpl;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;

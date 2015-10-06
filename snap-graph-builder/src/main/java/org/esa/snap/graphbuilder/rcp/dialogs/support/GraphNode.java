@@ -24,13 +24,13 @@ import com.bc.ceres.binding.dom.DomElement;
 import com.bc.ceres.binding.dom.XppDomElement;
 import com.thoughtworks.xstream.io.xml.xppdom.XppDom;
 import org.apache.commons.math3.util.FastMath;
+import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.OperatorSpi;
 import org.esa.snap.core.gpf.annotations.ParameterDescriptorFactory;
 import org.esa.snap.core.gpf.graph.GraphException;
 import org.esa.snap.core.gpf.graph.Node;
 import org.esa.snap.core.gpf.graph.NodeSource;
-import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.graphbuilder.gpf.ui.OperatorUI;
 import org.esa.snap.graphbuilder.gpf.ui.UIValidation;
 

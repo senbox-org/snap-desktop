@@ -1,7 +1,7 @@
 package org.esa.snap.ui.product;
 
-import org.esa.snap.framework.datamodel.Band;
-import org.esa.snap.framework.datamodel.TiePointGrid;
+import org.esa.snap.core.datamodel.Band;
+import org.esa.snap.core.datamodel.TiePointGrid;
 
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;

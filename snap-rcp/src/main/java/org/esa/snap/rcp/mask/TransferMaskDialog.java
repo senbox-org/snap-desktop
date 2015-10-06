@@ -16,9 +16,9 @@
 package org.esa.snap.rcp.mask;
 
 import com.bc.ceres.swing.TableLayout;
-import org.esa.snap.framework.datamodel.GeoCoding;
-import org.esa.snap.framework.datamodel.Mask;
-import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.core.datamodel.GeoCoding;
+import org.esa.snap.core.datamodel.Mask;
+import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.util.ProductUtils;
 

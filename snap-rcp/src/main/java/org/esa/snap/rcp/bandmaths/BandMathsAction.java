@@ -16,11 +16,11 @@
 
 package org.esa.snap.rcp.bandmaths;
 
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductManager;
-import org.esa.snap.framework.datamodel.ProductNode;
-import org.esa.snap.framework.datamodel.ProductNodeList;
-import org.esa.snap.framework.datamodel.RasterDataNode;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductManager;
+import org.esa.snap.core.datamodel.ProductNode;
+import org.esa.snap.core.datamodel.ProductNodeList;
+import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.rcp.SnapApp;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;

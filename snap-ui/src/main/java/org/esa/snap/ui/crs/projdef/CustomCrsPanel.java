@@ -26,7 +26,7 @@ import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.PropertyPane;
 import com.jidesoft.swing.ComboBoxSearchable;
 import com.jidesoft.swing.SearchableUtils;
-import org.esa.snap.framework.datamodel.GeoPos;
+import org.esa.snap.core.datamodel.GeoPos;
 import org.esa.snap.ui.AbstractDialog;
 import org.esa.snap.ui.ModalDialog;
 import org.geotools.referencing.AbstractIdentifiedObject;

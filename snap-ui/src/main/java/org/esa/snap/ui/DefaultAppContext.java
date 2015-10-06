@@ -16,8 +16,8 @@
 
 package org.esa.snap.ui;
 
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductManager;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductManager;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.esa.snap.util.DefaultPropertyMap;
 import org.esa.snap.util.PropertyMap;

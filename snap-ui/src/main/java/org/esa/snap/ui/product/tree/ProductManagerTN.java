@@ -16,8 +16,8 @@
 
 package org.esa.snap.ui.product.tree;
 
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductManager;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductManager;
 
 class ProductManagerTN extends AbstractTN {
 

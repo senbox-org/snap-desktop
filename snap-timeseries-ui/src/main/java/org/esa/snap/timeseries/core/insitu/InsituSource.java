@@ -16,7 +16,7 @@
 
 package org.esa.snap.timeseries.core.insitu;
 
-import org.esa.snap.framework.datamodel.GeoPos;
+import org.esa.snap.core.datamodel.GeoPos;
 import org.esa.snap.timeseries.core.insitu.csv.InsituRecord;
 import org.esa.snap.util.StringUtils;
 

@@ -16,16 +16,16 @@
 package org.esa.snap.rcp.spectrum;
 
 import com.bc.ceres.glevel.MultiLevelModel;
-import org.esa.snap.framework.datamodel.Band;
-import org.esa.snap.framework.datamodel.DataNode;
-import org.esa.snap.framework.datamodel.Placemark;
-import org.esa.snap.framework.datamodel.PlacemarkGroup;
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductManager;
-import org.esa.snap.framework.datamodel.ProductNodeEvent;
-import org.esa.snap.framework.datamodel.ProductNodeGroup;
-import org.esa.snap.framework.datamodel.ProductNodeListenerAdapter;
-import org.esa.snap.framework.datamodel.RasterDataNode;
+import org.esa.snap.core.datamodel.Band;
+import org.esa.snap.core.datamodel.DataNode;
+import org.esa.snap.core.datamodel.Placemark;
+import org.esa.snap.core.datamodel.PlacemarkGroup;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductManager;
+import org.esa.snap.core.datamodel.ProductNodeEvent;
+import org.esa.snap.core.datamodel.ProductNodeGroup;
+import org.esa.snap.core.datamodel.ProductNodeListenerAdapter;
+import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.jai.ImageManager;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;

@@ -18,6 +18,7 @@
 package org.esa.snap.ui.tooladapter.dialogs;
 
 import com.bc.ceres.core.ProgressMonitor;
+import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.Operator;
 import org.esa.snap.core.gpf.descriptor.ParameterDescriptor;
@@ -29,7 +30,6 @@ import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterOp;
 import org.esa.snap.core.gpf.ui.OperatorMenu;
 import org.esa.snap.core.gpf.ui.OperatorParameterSupport;
 import org.esa.snap.core.gpf.ui.SingleTargetProductDialog;
-import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.actions.file.SaveProductAsAction;
 import org.esa.snap.ui.AppContext;

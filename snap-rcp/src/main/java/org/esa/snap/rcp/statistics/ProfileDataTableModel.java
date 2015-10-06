@@ -1,7 +1,7 @@
 package org.esa.snap.rcp.statistics;
 
-import org.esa.snap.framework.datamodel.GeoPos;
-import org.esa.snap.framework.datamodel.TransectProfileData;
+import org.esa.snap.core.datamodel.GeoPos;
+import org.esa.snap.core.datamodel.TransectProfileData;
 import org.esa.snap.ui.io.CsvEncoder;
 import org.esa.snap.ui.io.TableModelCsvEncoder;
 import org.opengis.feature.Property;

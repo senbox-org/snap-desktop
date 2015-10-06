@@ -1,9 +1,9 @@
 package org.esa.snap.ui.product;
 
 import com.bc.ceres.swing.TableLayout;
-import org.esa.snap.framework.datamodel.Band;
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.TiePointGrid;
+import org.esa.snap.core.datamodel.Band;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.TiePointGrid;
 import org.esa.snap.ui.ModalDialog;
 
 import javax.swing.AbstractButton;

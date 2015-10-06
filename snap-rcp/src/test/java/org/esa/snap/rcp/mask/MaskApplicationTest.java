@@ -16,10 +16,10 @@
 
 package org.esa.snap.rcp.mask;
 
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductNodeEvent;
-import org.esa.snap.framework.datamodel.ProductNodeListenerAdapter;
-import org.esa.snap.framework.datamodel.RasterDataNode;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductNodeEvent;
+import org.esa.snap.core.datamodel.ProductNodeListenerAdapter;
+import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.ui.GridLayout2;
 import org.junit.Ignore;
 import org.junit.Test;

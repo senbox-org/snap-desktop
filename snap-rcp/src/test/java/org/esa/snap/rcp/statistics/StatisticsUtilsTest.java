@@ -16,10 +16,10 @@
 
 package org.esa.snap.rcp.statistics;
 
-import org.esa.snap.framework.datamodel.Band;
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductData;
-import org.esa.snap.framework.datamodel.TransectProfileData;
+import org.esa.snap.core.datamodel.Band;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductData;
+import org.esa.snap.core.datamodel.TransectProfileData;
 import org.junit.Test;
 
 import java.awt.geom.Line2D;

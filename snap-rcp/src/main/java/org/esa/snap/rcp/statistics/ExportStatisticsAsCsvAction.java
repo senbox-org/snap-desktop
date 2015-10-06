@@ -16,8 +16,8 @@
 
 package org.esa.snap.rcp.statistics;
 
-import org.esa.snap.framework.datamodel.Mask;
-import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.core.datamodel.Mask;
+import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.statistics.output.CsvStatisticsWriter;

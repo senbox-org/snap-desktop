@@ -17,9 +17,9 @@
 package org.esa.snap.ui;
 
 import com.bc.ceres.core.Assert;
-import org.esa.snap.framework.datamodel.ImageInfo;
-import org.esa.snap.framework.datamodel.Scaling;
-import org.esa.snap.framework.datamodel.Stx;
+import org.esa.snap.core.datamodel.ImageInfo;
+import org.esa.snap.core.datamodel.Scaling;
+import org.esa.snap.core.datamodel.Stx;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;

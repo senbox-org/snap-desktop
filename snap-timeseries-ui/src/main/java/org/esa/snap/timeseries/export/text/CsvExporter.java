@@ -18,7 +18,7 @@ package org.esa.snap.timeseries.export.text;
 
 import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.glevel.MultiLevelImage;
-import org.esa.snap.framework.datamodel.RasterDataNode;
+import org.esa.snap.core.datamodel.RasterDataNode;
 
 import java.awt.Rectangle;
 import java.awt.image.Raster;

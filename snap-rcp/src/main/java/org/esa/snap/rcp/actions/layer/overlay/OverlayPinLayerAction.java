@@ -5,7 +5,7 @@
  */
 package org.esa.snap.rcp.actions.layer.overlay;
 
-import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;

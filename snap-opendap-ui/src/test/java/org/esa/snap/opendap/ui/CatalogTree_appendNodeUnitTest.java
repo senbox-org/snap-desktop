@@ -1,7 +1,7 @@
 package org.esa.snap.opendap.ui;
 
 import org.esa.snap.HeadlessTestRunner;
-import org.esa.snap.framework.ui.DefaultAppContext;
+import org.esa.snap.core.ui.DefaultAppContext;
 import org.esa.snap.opendap.datamodel.CatalogNode;
 import org.junit.After;
 import org.junit.Before;

@@ -15,14 +15,14 @@
  */
 package org.esa.snap.productlibrary.rcp.toolviews;
 
+import org.esa.snap.core.datamodel.GeoPos;
+import org.esa.snap.core.datamodel.MetadataElement;
+import org.esa.snap.core.datamodel.ProductData;
 import org.esa.snap.datamodel.AbstractMetadata;
 import org.esa.snap.db.DBQuery;
 import org.esa.snap.db.ProductDB;
 import org.esa.snap.db.ProductEntry;
 import org.esa.snap.db.SQLUtils;
-import org.esa.snap.framework.datamodel.GeoPos;
-import org.esa.snap.framework.datamodel.MetadataElement;
-import org.esa.snap.framework.datamodel.ProductData;
 import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
 import org.esa.snap.productlibrary.rcp.toolviews.model.DatabaseQueryListener;
 import org.esa.snap.rcp.SnapApp;

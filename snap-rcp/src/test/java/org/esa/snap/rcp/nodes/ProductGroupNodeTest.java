@@ -1,7 +1,7 @@
 package org.esa.snap.rcp.nodes;
 
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductManager;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductManager;
 import org.esa.snap.rcp.util.TestProducts;
 import org.junit.Test;
 import org.openide.awt.UndoRedo;

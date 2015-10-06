@@ -1,6 +1,6 @@
 package org.esa.snap.rcp.util;
 
-import org.esa.snap.framework.datamodel.ProductData;
+import org.esa.snap.core.datamodel.ProductData;
 import org.jdesktop.swingx.table.DatePickerCellEditor;
 
 import javax.swing.BorderFactory;

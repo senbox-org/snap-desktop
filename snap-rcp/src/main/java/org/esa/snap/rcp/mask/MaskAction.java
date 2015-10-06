@@ -16,8 +16,8 @@
 
 package org.esa.snap.rcp.mask;
 
-import org.esa.snap.framework.datamodel.Mask;
-import org.esa.snap.framework.datamodel.ProductNodeGroup;
+import org.esa.snap.core.datamodel.Mask;
+import org.esa.snap.core.datamodel.ProductNodeGroup;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.tool.ToolButtonFactory;

@@ -20,8 +20,8 @@ import com.bc.ceres.glayer.Layer;
 import com.bc.ceres.glayer.LayerContext;
 import com.bc.ceres.glayer.LayerType;
 import com.bc.ceres.glayer.LayerTypeRegistry;
-import org.esa.snap.framework.datamodel.GeoPos;
-import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.core.datamodel.GeoPos;
+import org.esa.snap.core.datamodel.Product;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;

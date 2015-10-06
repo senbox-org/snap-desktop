@@ -17,11 +17,11 @@ package org.esa.snap.ui.product;
 
 import com.bc.jexp.Namespace;
 import com.bc.jexp.impl.ParserImpl;
-import org.esa.snap.framework.datamodel.Band;
-import org.esa.snap.framework.datamodel.Mask;
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.TiePointGrid;
-import org.esa.snap.framework.dataop.barithm.BandArithmetic;
+import org.esa.snap.core.datamodel.Band;
+import org.esa.snap.core.datamodel.Mask;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.TiePointGrid;
+import org.esa.snap.core.dataop.barithm.BandArithmetic;
 import org.esa.snap.ui.ExpressionPane;
 import org.esa.snap.util.PropertyMap;
 

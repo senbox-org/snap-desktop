@@ -27,6 +27,7 @@ import org.esa.snap.binning.AggregatorDescriptor;
 import org.esa.snap.binning.TypedDescriptorsRegistry;
 import org.esa.snap.binning.operator.BinningOp;
 import org.esa.snap.binning.operator.VariableConfig;
+import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.OperatorSpi;
 import org.esa.snap.core.gpf.ui.OperatorMenu;
@@ -34,7 +35,6 @@ import org.esa.snap.core.gpf.ui.OperatorParameterSupport;
 import org.esa.snap.core.gpf.ui.ParameterUpdater;
 import org.esa.snap.core.gpf.ui.SingleTargetProductDialog;
 import org.esa.snap.core.gpf.ui.TargetProductSelectorModel;
-import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.util.io.FileUtils;
 

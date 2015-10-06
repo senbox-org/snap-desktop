@@ -22,7 +22,7 @@ import com.bc.jexp.Parser;
 import com.bc.jexp.Term;
 import com.bc.jexp.impl.Functions;
 import com.bc.jexp.impl.NamespaceImpl;
-import org.esa.snap.framework.dataop.barithm.BandArithmetic;
+import org.esa.snap.core.dataop.barithm.BandArithmetic;
 import org.esa.snap.ui.tool.ToolButtonFactory;
 import org.esa.snap.util.PropertyMap;
 

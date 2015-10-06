@@ -1,8 +1,8 @@
 package org.esa.snap.ui.product.spectrum;
 
 import junit.framework.TestCase;
-import org.esa.snap.framework.datamodel.Band;
-import org.esa.snap.framework.datamodel.ProductData;
+import org.esa.snap.core.datamodel.Band;
+import org.esa.snap.core.datamodel.ProductData;
 
 /**
  * Created by E1001827 on 21.2.2014.

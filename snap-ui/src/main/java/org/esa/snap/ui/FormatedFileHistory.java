@@ -15,8 +15,8 @@
  */
 package org.esa.snap.ui;
 
-import org.esa.snap.framework.dataio.DecodeQualification;
-import org.esa.snap.framework.dataio.ProductReaderPlugIn;
+import org.esa.snap.core.dataio.DecodeQualification;
+import org.esa.snap.core.dataio.ProductReaderPlugIn;
 import org.esa.snap.util.Guardian;
 
 import java.io.File;

@@ -17,7 +17,7 @@
 package org.esa.snap.timeseries.ui.assistant;
 
 import com.bc.ceres.swing.TableLayout;
-import org.esa.snap.framework.datamodel.ProductNode;
+import org.esa.snap.core.datamodel.ProductNode;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;

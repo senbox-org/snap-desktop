@@ -16,7 +16,7 @@
 
 package org.esa.snap.ui.product;
 
-import org.esa.snap.framework.datamodel.Band;
+import org.esa.snap.core.datamodel.Band;
 
 import java.util.Arrays;
 import java.util.Comparator;

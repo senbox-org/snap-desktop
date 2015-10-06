@@ -20,7 +20,7 @@ import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.glayer.LayerType;
 import com.bc.ceres.glayer.LayerTypeRegistry;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
-import org.esa.snap.framework.datamodel.RasterDataNode;
+import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.ui.layer.LayerSourcePageContext;
 import org.geotools.data.ows.CRSEnvelope;

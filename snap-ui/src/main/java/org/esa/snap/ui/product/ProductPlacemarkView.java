@@ -15,10 +15,10 @@
  */
 package org.esa.snap.ui.product;
 
-import org.esa.snap.framework.datamodel.ProductNode;
-import org.esa.snap.framework.datamodel.ProductNodeEvent;
-import org.esa.snap.framework.datamodel.ProductNodeListener;
-import org.esa.snap.framework.datamodel.VectorDataNode;
+import org.esa.snap.core.datamodel.ProductNode;
+import org.esa.snap.core.datamodel.ProductNodeEvent;
+import org.esa.snap.core.datamodel.ProductNodeListener;
+import org.esa.snap.core.datamodel.VectorDataNode;
 import org.esa.snap.ui.BasicView;
 import org.esa.snap.ui.PopupMenuHandler;
 import org.esa.snap.ui.io.TableModelCsvEncoder;

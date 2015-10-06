@@ -16,7 +16,7 @@
 
 package org.esa.snap.ui.crs.projdef;
 
-import org.esa.snap.framework.datamodel.GeoPos;
+import org.esa.snap.core.datamodel.GeoPos;
 import org.geotools.parameter.ParameterGroup;
 import org.geotools.referencing.operation.projection.TransverseMercator;
 import org.opengis.parameter.ParameterValueGroup;

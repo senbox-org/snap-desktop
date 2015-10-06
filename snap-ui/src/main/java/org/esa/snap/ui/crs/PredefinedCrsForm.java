@@ -17,7 +17,7 @@
 package org.esa.snap.ui.crs;
 
 import com.bc.ceres.swing.TableLayout;
-import org.esa.snap.framework.datamodel.GeoPos;
+import org.esa.snap.core.datamodel.GeoPos;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.ModalDialog;
 import org.opengis.referencing.FactoryException;

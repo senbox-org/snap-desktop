@@ -20,10 +20,10 @@ import com.bc.ceres.core.Assert;
 import com.bc.jexp.ParseException;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.SingleValueConverter;
-import org.esa.snap.framework.datamodel.Band;
-import org.esa.snap.framework.datamodel.Mask;
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.dataop.barithm.BandArithmetic;
+import org.esa.snap.core.datamodel.Band;
+import org.esa.snap.core.datamodel.Mask;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.dataop.barithm.BandArithmetic;
 import org.esa.snap.util.ObjectUtils;
 import org.esa.snap.util.StringUtils;
 

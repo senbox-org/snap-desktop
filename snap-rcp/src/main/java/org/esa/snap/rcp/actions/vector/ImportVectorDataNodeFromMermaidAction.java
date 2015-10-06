@@ -17,10 +17,10 @@
 package org.esa.snap.rcp.actions.vector;
 
 import com.bc.ceres.core.ProgressMonitor;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductNode;
+import org.esa.snap.core.datamodel.VectorDataNode;
 import org.esa.snap.dataio.geometry.VectorDataNodeReader;
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductNode;
-import org.esa.snap.framework.datamodel.VectorDataNode;
 import org.esa.snap.jai.ImageManager;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.util.io.SnapFileFilter;

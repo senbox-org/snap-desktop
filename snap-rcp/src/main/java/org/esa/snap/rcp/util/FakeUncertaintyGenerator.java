@@ -1,12 +1,12 @@
 package org.esa.snap.rcp.util;
 
-import org.esa.snap.framework.datamodel.Band;
-import org.esa.snap.framework.datamodel.ConvolutionFilterBand;
-import org.esa.snap.framework.datamodel.Kernel;
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductData;
-import org.esa.snap.framework.datamodel.ProductManager;
-import org.esa.snap.framework.datamodel.Stx;
+import org.esa.snap.core.datamodel.Band;
+import org.esa.snap.core.datamodel.ConvolutionFilterBand;
+import org.esa.snap.core.datamodel.Kernel;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductData;
+import org.esa.snap.core.datamodel.ProductManager;
+import org.esa.snap.core.datamodel.Stx;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.util.ProductUtils;
 import org.openide.modules.OnStart;

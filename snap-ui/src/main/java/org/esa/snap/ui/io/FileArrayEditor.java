@@ -15,8 +15,8 @@
  */
 package org.esa.snap.ui.io;
 
-import org.esa.snap.framework.dataio.ProductIOPlugInManager;
-import org.esa.snap.framework.dataio.ProductReaderPlugIn;
+import org.esa.snap.core.dataio.ProductIOPlugInManager;
+import org.esa.snap.core.dataio.ProductReaderPlugIn;
 import org.esa.snap.ui.GridBagUtils;
 import org.esa.snap.ui.SnapFileChooser;
 import org.esa.snap.ui.UIUtils;

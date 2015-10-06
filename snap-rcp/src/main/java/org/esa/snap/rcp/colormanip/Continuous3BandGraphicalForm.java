@@ -21,12 +21,12 @@ import com.bc.ceres.binding.PropertyContainer;
 import com.bc.ceres.binding.ValueRange;
 import com.bc.ceres.binding.ValueSet;
 import com.bc.ceres.swing.binding.BindingContext;
-import org.esa.snap.framework.datamodel.Band;
-import org.esa.snap.framework.datamodel.ColorPaletteDef;
-import org.esa.snap.framework.datamodel.ImageInfo;
-import org.esa.snap.framework.datamodel.ProductNodeEvent;
-import org.esa.snap.framework.datamodel.RasterDataNode;
-import org.esa.snap.framework.datamodel.Stx;
+import org.esa.snap.core.datamodel.Band;
+import org.esa.snap.core.datamodel.ColorPaletteDef;
+import org.esa.snap.core.datamodel.ImageInfo;
+import org.esa.snap.core.datamodel.ProductNodeEvent;
+import org.esa.snap.core.datamodel.RasterDataNode;
+import org.esa.snap.core.datamodel.Stx;
 import org.esa.snap.ui.ImageInfoEditorModel;
 
 import javax.swing.AbstractButton;

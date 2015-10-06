@@ -16,8 +16,8 @@
 package org.esa.snap.graphbuilder.rcp.dialogs;
 
 import com.bc.ceres.swing.TableLayout;
+import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.ui.SourceProductSelector;
-import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.ui.AppContext;
 
 import javax.swing.JPanel;

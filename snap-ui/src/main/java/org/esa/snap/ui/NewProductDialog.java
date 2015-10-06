@@ -15,19 +15,19 @@
  */
 package org.esa.snap.ui;
 
-import org.esa.snap.framework.dataio.ProductSubsetBuilder;
-import org.esa.snap.framework.dataio.ProductSubsetDef;
-import org.esa.snap.framework.datamodel.GeoCoding;
-import org.esa.snap.framework.datamodel.GeoPos;
-import org.esa.snap.framework.datamodel.PixelPos;
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductNodeList;
-import org.esa.snap.framework.datamodel.ProductNodeNameValidator;
-import org.esa.snap.framework.datamodel.TiePointGeoCoding;
-import org.esa.snap.framework.datamodel.TiePointGrid;
-import org.esa.snap.framework.param.ParamChangeEvent;
-import org.esa.snap.framework.param.ParamChangeListener;
-import org.esa.snap.framework.param.Parameter;
+import org.esa.snap.core.dataio.ProductSubsetBuilder;
+import org.esa.snap.core.dataio.ProductSubsetDef;
+import org.esa.snap.core.datamodel.GeoCoding;
+import org.esa.snap.core.datamodel.GeoPos;
+import org.esa.snap.core.datamodel.PixelPos;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductNodeList;
+import org.esa.snap.core.datamodel.ProductNodeNameValidator;
+import org.esa.snap.core.datamodel.TiePointGeoCoding;
+import org.esa.snap.core.datamodel.TiePointGrid;
+import org.esa.snap.core.param.ParamChangeEvent;
+import org.esa.snap.core.param.ParamChangeListener;
+import org.esa.snap.core.param.Parameter;
 import org.esa.snap.ui.product.ProductSubsetDialog;
 import org.esa.snap.util.Guardian;
 import org.esa.snap.util.io.FileUtils;

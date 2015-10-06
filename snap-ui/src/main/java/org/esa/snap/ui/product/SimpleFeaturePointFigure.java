@@ -28,7 +28,7 @@ import com.bc.ceres.swing.figure.support.ShapeSymbol;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
-import org.esa.snap.framework.datamodel.Placemark;
+import org.esa.snap.core.datamodel.Placemark;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.opengis.feature.simple.SimpleFeature;
 

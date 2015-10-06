@@ -16,10 +16,10 @@
 
 package org.esa.snap.ui.product;
 
-import org.esa.snap.framework.dataio.ProductReader;
-import org.esa.snap.framework.dataio.ProductReaderPlugIn;
-import org.esa.snap.framework.dataio.ProductSubsetDef;
-import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.core.dataio.ProductReader;
+import org.esa.snap.core.dataio.ProductReaderPlugIn;
+import org.esa.snap.core.dataio.ProductSubsetDef;
+import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.ui.GridBagUtils;
 import org.esa.snap.ui.SnapFileChooser;
 import org.esa.snap.ui.UIUtils;

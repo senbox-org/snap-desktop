@@ -17,18 +17,18 @@
 package org.esa.snap.rcp.placemark.gcp;
 
 import com.bc.ceres.swing.TableLayout;
-import org.esa.snap.framework.datamodel.GcpGeoCoding;
-import org.esa.snap.framework.datamodel.GeoCoding;
-import org.esa.snap.framework.datamodel.GeoPos;
-import org.esa.snap.framework.datamodel.PixelPos;
-import org.esa.snap.framework.datamodel.Placemark;
-import org.esa.snap.framework.datamodel.PlacemarkGroup;
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductNode;
-import org.esa.snap.framework.datamodel.ProductNodeEvent;
-import org.esa.snap.framework.datamodel.ProductNodeGroup;
-import org.esa.snap.framework.datamodel.ProductNodeListener;
-import org.esa.snap.framework.dataop.maptransf.Datum;
+import org.esa.snap.core.datamodel.GcpGeoCoding;
+import org.esa.snap.core.datamodel.GeoCoding;
+import org.esa.snap.core.datamodel.GeoPos;
+import org.esa.snap.core.datamodel.PixelPos;
+import org.esa.snap.core.datamodel.Placemark;
+import org.esa.snap.core.datamodel.PlacemarkGroup;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductNode;
+import org.esa.snap.core.datamodel.ProductNodeEvent;
+import org.esa.snap.core.datamodel.ProductNodeGroup;
+import org.esa.snap.core.datamodel.ProductNodeListener;
+import org.esa.snap.core.dataop.maptransf.Datum;
 import org.esa.snap.util.Debug;
 
 import javax.swing.AbstractAction;

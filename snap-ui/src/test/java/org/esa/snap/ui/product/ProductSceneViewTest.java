@@ -17,9 +17,9 @@ package org.esa.snap.ui.product;
 
 import com.bc.ceres.core.ProgressMonitor;
 import junit.framework.TestCase;
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductData;
-import org.esa.snap.framework.datamodel.VirtualBand;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductData;
+import org.esa.snap.core.datamodel.VirtualBand;
 import org.esa.snap.util.DefaultPropertyMap;
 
 import java.awt.geom.AffineTransform;

@@ -16,10 +16,10 @@
 
 package org.esa.snap.rcp.statistics;
 
-import org.esa.snap.framework.datamodel.Mask;
-import org.esa.snap.framework.datamodel.PlacemarkDescriptor;
-import org.esa.snap.framework.datamodel.ProductNodeGroup;
-import org.esa.snap.framework.datamodel.VectorDataNode;
+import org.esa.snap.core.datamodel.Mask;
+import org.esa.snap.core.datamodel.PlacemarkDescriptor;
+import org.esa.snap.core.datamodel.ProductNodeGroup;
+import org.esa.snap.core.datamodel.VectorDataNode;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.statistics.output.BandNameCreator;

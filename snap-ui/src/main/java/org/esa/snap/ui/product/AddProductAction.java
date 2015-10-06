@@ -17,7 +17,7 @@
 package org.esa.snap.ui.product;
 
 import com.bc.ceres.binding.ValidationException;
-import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.util.Debug;

@@ -15,8 +15,8 @@
  */
 package org.esa.snap.ui.product.tree;
 
-import org.esa.snap.framework.datamodel.MetadataAttribute;
-import org.esa.snap.framework.datamodel.MetadataElement;
+import org.esa.snap.core.datamodel.MetadataAttribute;
+import org.esa.snap.core.datamodel.MetadataElement;
 
 class IdentificationTN extends AbstractTN {
     private MetadataElement metadataElement;

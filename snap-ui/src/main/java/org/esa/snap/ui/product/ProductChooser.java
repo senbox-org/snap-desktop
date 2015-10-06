@@ -18,7 +18,7 @@ package org.esa.snap.ui.product;
 
 import com.bc.ceres.swing.TableLayout;
 import com.jidesoft.swing.CheckBoxList;
-import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.ui.ModalDialog;
 
 import javax.swing.DefaultListCellRenderer;

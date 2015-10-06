@@ -16,7 +16,7 @@
 
 package org.esa.snap.opendap.ui;
 
-import org.esa.snap.framework.ui.UIUtils;
+import org.esa.snap.core.ui.UIUtils;
 import org.esa.snap.opendap.datamodel.CatalogNode;
 import org.esa.snap.opendap.datamodel.OpendapLeaf;
 import thredds.catalog.InvCatalogFactory;

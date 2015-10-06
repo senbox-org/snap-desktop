@@ -15,10 +15,10 @@
  */
 package org.esa.snap.rcp.actions.file;
 
-import org.esa.snap.framework.dataio.ProductIOPlugInManager;
-import org.esa.snap.framework.dataio.ProductWriterPlugIn;
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductNode;
+import org.esa.snap.core.dataio.ProductIOPlugInManager;
+import org.esa.snap.core.dataio.ProductWriterPlugIn;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.util.io.SnapFileFilter;
@@ -58,7 +58,7 @@ public class ExportProductAction extends AbstractAction implements HelpCtx.Provi
      * <pre>
      * &lt;file name="org-esa-snap-csv-dataio-ExportCSVProduct.instance"&gt;
      *      &lt;attr name="instanceCreate" methodvalue="org.openide.awt.Actions.context"/&gt;
-     *      &lt;attr name="type" stringvalue="org.esa.snap.framework.datamodel.ProductNode"/&gt;
+     *      &lt;attr name="type" stringvalue="ProductNode"/&gt;
      *      &lt;attr name="delegate" methodvalue="ExportProductAction.create"/&gt;
      *      &lt;attr name="selectionType" stringvalue="EXACTLY_ONE"/&gt;
      *      &lt;attr name="displayName" stringvalue="CSV Product"/&gt;

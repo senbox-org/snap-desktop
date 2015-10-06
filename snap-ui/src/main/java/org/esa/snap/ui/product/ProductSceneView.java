@@ -45,20 +45,20 @@ import com.bc.ceres.swing.selection.SelectionChangeEvent;
 import com.bc.ceres.swing.selection.SelectionContext;
 import com.bc.ceres.swing.undo.UndoContext;
 import com.bc.ceres.swing.undo.support.DefaultUndoContext;
-import org.esa.snap.framework.datamodel.GeoCoding;
-import org.esa.snap.framework.datamodel.GeoPos;
-import org.esa.snap.framework.datamodel.ImageInfo;
-import org.esa.snap.framework.datamodel.PixelPos;
-import org.esa.snap.framework.datamodel.Placemark;
-import org.esa.snap.framework.datamodel.PlacemarkGroup;
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductData;
-import org.esa.snap.framework.datamodel.ProductNode;
-import org.esa.snap.framework.datamodel.ProductNodeEvent;
-import org.esa.snap.framework.datamodel.ProductNodeListener;
-import org.esa.snap.framework.datamodel.RasterDataNode;
-import org.esa.snap.framework.datamodel.VectorDataNode;
-import org.esa.snap.framework.datamodel.VirtualBand;
+import org.esa.snap.core.datamodel.GeoCoding;
+import org.esa.snap.core.datamodel.GeoPos;
+import org.esa.snap.core.datamodel.ImageInfo;
+import org.esa.snap.core.datamodel.PixelPos;
+import org.esa.snap.core.datamodel.Placemark;
+import org.esa.snap.core.datamodel.PlacemarkGroup;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductData;
+import org.esa.snap.core.datamodel.ProductNode;
+import org.esa.snap.core.datamodel.ProductNodeEvent;
+import org.esa.snap.core.datamodel.ProductNodeListener;
+import org.esa.snap.core.datamodel.RasterDataNode;
+import org.esa.snap.core.datamodel.VectorDataNode;
+import org.esa.snap.core.datamodel.VirtualBand;
 import org.esa.snap.glayer.GraticuleLayer;
 import org.esa.snap.glayer.MaskCollectionLayer;
 import org.esa.snap.glayer.NoDataLayerType;
@@ -1105,7 +1105,7 @@ public class ProductSceneView extends BasicView
 
     /**
      * A band that is used as an RGB channel for RGB image views.
-     * These bands shall not be added to {@link org.esa.snap.framework.datamodel.Product}s but they are always owned by the {@link org.esa.snap.framework.datamodel.Product}
+     * These bands shall not be added to {@link Product}s but they are always owned by the {@link Product}
      * passed into the constructor.
      */
     public static class RGBChannel extends VirtualBand {

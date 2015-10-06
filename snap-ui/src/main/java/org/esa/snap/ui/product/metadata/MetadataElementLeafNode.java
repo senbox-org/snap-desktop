@@ -1,6 +1,6 @@
 package org.esa.snap.ui.product.metadata;
 
-import org.esa.snap.framework.datamodel.ProductData;
+import org.esa.snap.core.datamodel.ProductData;
 import org.esa.snap.util.StringUtils;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;

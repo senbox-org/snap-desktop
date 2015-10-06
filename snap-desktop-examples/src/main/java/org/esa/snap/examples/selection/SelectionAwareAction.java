@@ -16,7 +16,7 @@
 
 package org.esa.snap.examples.selection;
 
-import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.actions.AbstractSnapAction;
 import org.esa.snap.rcp.actions.tools.AttachPixelGeoCodingAction;

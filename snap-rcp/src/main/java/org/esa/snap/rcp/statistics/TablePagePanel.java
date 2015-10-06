@@ -16,7 +16,7 @@
 
 package org.esa.snap.rcp.statistics;
 
-import org.esa.snap.framework.datamodel.ProductNodeEvent;
+import org.esa.snap.core.datamodel.ProductNodeEvent;
 import org.esa.snap.util.StringUtils;
 import org.openide.windows.TopComponent;
 

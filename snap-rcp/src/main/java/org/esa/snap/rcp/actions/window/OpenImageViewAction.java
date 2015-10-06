@@ -17,7 +17,7 @@ package org.esa.snap.rcp.actions.window;
 
 import com.bc.ceres.core.SubProgressMonitor;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
-import org.esa.snap.framework.datamodel.RasterDataNode;
+import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.netbeans.docwin.DocumentWindowManager;
 import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.rcp.SnapApp;

@@ -18,8 +18,8 @@ package org.esa.snap.rcp.layermanager;
 
 import com.bc.ceres.glayer.CollectionLayer;
 import com.bc.ceres.glayer.Layer;
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductManager;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductManager;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.esa.snap.util.PropertyMap;

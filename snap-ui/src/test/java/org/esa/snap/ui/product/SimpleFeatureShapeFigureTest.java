@@ -36,7 +36,7 @@ import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 
-import static org.esa.snap.framework.datamodel.PlainFeatureFactory.*;
+import static org.esa.snap.core.datamodel.PlainFeatureFactory.*;
 
 public class SimpleFeatureShapeFigureTest extends TestCase {
 

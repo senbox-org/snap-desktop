@@ -27,14 +27,14 @@ import com.bc.ceres.binding.dom.DomConverter;
 import com.bc.ceres.binding.dom.DomElement;
 import com.bc.ceres.binding.dom.XppDomElement;
 import com.thoughtworks.xstream.io.xml.xppdom.XppDom;
+import org.esa.snap.core.datamodel.Band;
+import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.OperatorSpi;
 import org.esa.snap.core.gpf.annotations.ParameterDescriptorFactory;
 import org.esa.snap.core.gpf.descriptor.OperatorDescriptor;
 import org.esa.snap.core.gpf.descriptor.PropertySetDescriptorFactory;
 import org.esa.snap.core.gpf.graph.GraphException;
-import org.esa.snap.framework.datamodel.Band;
-import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.ui.AppContext;
 
 import javax.swing.JComponent;

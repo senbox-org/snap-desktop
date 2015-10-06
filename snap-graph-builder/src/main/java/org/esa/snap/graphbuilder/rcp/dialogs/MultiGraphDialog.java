@@ -17,10 +17,10 @@ package org.esa.snap.graphbuilder.rcp.dialogs;
 
 import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.core.SubProgressMonitor;
+import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.OperatorException;
 import org.esa.snap.core.gpf.graph.GraphException;
 import org.esa.snap.db.CommonReaders;
-import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphExecuter;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.ProgressBarProgressMonitor;
 import org.esa.snap.ui.AppContext;

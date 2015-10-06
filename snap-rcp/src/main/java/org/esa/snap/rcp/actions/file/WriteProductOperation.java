@@ -2,11 +2,11 @@ package org.esa.snap.rcp.actions.file;
 
 import com.bc.ceres.core.Assert;
 import com.bc.ceres.core.ProgressMonitor;
+import org.esa.snap.core.dataio.ProductIO;
+import org.esa.snap.core.datamodel.MetadataElement;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductNodeList;
 import org.esa.snap.dataio.dimap.DimapProductConstants;
-import org.esa.snap.framework.dataio.ProductIO;
-import org.esa.snap.framework.datamodel.MetadataElement;
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductNodeList;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.util.ProgressHandleMonitor;

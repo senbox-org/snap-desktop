@@ -1,8 +1,8 @@
 package org.esa.snap.ui.product;
 
-import org.esa.snap.framework.datamodel.Band;
-import org.esa.snap.framework.datamodel.RasterDataNode;
-import org.esa.snap.framework.datamodel.TiePointGrid;
+import org.esa.snap.core.datamodel.Band;
+import org.esa.snap.core.datamodel.RasterDataNode;
+import org.esa.snap.core.datamodel.TiePointGrid;
 import org.esa.snap.ui.GridBagUtils;
 
 import javax.swing.JCheckBox;

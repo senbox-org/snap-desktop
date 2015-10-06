@@ -1,6 +1,6 @@
 <operator>
   <name>org.esa.snap.OTB.BandMath</name>
-  <operatorClass>org.esa.snap.framework.gpf.operators.tooladapter.ToolAdapterOp</operatorClass>
+  <operatorClass>org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterOp</operatorClass>
   <alias>OTB-BandMath</alias>
   <label>OTB Band Math</label>
   <version>1</version>
@@ -62,12 +62,12 @@
   <source>package</source>
   <isSystem>false</isSystem>
   <sourceProductDescriptors>
-    <org.esa.snap.framework.gpf.descriptor.DefaultSourceProductDescriptor>
+    <org.esa.snap.core.gpf.descriptor.DefaultSourceProductDescriptor>
       <name>sourceProduct.0</name>
-    </org.esa.snap.framework.gpf.descriptor.DefaultSourceProductDescriptor>
-    <org.esa.snap.framework.gpf.descriptor.DefaultSourceProductDescriptor>
+    </org.esa.snap.core.gpf.descriptor.DefaultSourceProductDescriptor>
+    <org.esa.snap.core.gpf.descriptor.DefaultSourceProductDescriptor>
       <name>sourceProduct 2</name>
-    </org.esa.snap.framework.gpf.descriptor.DefaultSourceProductDescriptor>
+    </org.esa.snap.core.gpf.descriptor.DefaultSourceProductDescriptor>
   </sourceProductDescriptors>
   <targetPropertyDescriptors/>
   <numSourceProducts>2</numSourceProducts>

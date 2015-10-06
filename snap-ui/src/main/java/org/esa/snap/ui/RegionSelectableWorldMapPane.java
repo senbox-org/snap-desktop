@@ -31,10 +31,10 @@ import com.bc.ceres.swing.figure.ShapeFigure;
 import com.bc.ceres.swing.figure.ViewportInteractor;
 import com.bc.ceres.swing.figure.support.DefaultFigureEditor;
 import com.bc.ceres.swing.figure.support.DefaultFigureStyle;
-import org.esa.snap.framework.datamodel.GeoCoding;
-import org.esa.snap.framework.datamodel.GeoPos;
-import org.esa.snap.framework.datamodel.PixelPos;
-import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.core.datamodel.GeoCoding;
+import org.esa.snap.core.datamodel.GeoPos;
+import org.esa.snap.core.datamodel.PixelPos;
+import org.esa.snap.core.datamodel.Product;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;

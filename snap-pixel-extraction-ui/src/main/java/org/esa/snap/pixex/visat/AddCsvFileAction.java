@@ -1,8 +1,8 @@
 package org.esa.snap.pixex.visat;
 
-import org.esa.snap.framework.datamodel.GenericPlacemarkDescriptor;
-import org.esa.snap.framework.datamodel.GeoPos;
-import org.esa.snap.framework.datamodel.Placemark;
+import org.esa.snap.core.datamodel.GenericPlacemarkDescriptor;
+import org.esa.snap.core.datamodel.GeoPos;
+import org.esa.snap.core.datamodel.Placemark;
 import org.esa.snap.pixex.PixExOpUtils;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.SnapFileChooser;

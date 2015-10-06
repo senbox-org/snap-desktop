@@ -22,10 +22,10 @@ import com.bc.ceres.binding.PropertyDescriptorFactory;
 import com.bc.ceres.binding.PropertySetDescriptor;
 import com.bc.ceres.binding.dom.DefaultDomConverter;
 import com.bc.ceres.binding.dom.DomConverter;
-import org.esa.snap.framework.datamodel.PlacemarkDescriptor;
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductManager;
-import org.esa.snap.framework.datamodel.RasterDataNode;
+import org.esa.snap.core.datamodel.PlacemarkDescriptor;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductManager;
+import org.esa.snap.core.datamodel.RasterDataNode;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,6 +1,6 @@
 package org.esa.snap.timeseries.ui.matrix;
 
-import org.esa.snap.framework.datamodel.Band;
+import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.util.ProductUtils;
 import org.esa.snap.util.math.MathUtils;
 

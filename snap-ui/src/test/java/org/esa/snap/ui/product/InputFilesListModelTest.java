@@ -19,7 +19,7 @@ package org.esa.snap.ui.product;
 import com.bc.ceres.binding.Property;
 import com.bc.ceres.binding.PropertyContainer;
 import com.bc.ceres.binding.ValidationException;
-import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.core.datamodel.Product;
 import org.junit.Before;
 import org.junit.Test;
 

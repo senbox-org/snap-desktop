@@ -17,11 +17,11 @@
 package org.esa.snap.rcp.placemark;
 
 import com.bc.ceres.swing.figure.FigureEditorInteractor;
-import org.esa.snap.framework.datamodel.PixelPos;
-import org.esa.snap.framework.datamodel.Placemark;
-import org.esa.snap.framework.datamodel.PlacemarkDescriptor;
-import org.esa.snap.framework.datamodel.PlacemarkNameFactory;
-import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.core.datamodel.PixelPos;
+import org.esa.snap.core.datamodel.Placemark;
+import org.esa.snap.core.datamodel.PlacemarkDescriptor;
+import org.esa.snap.core.datamodel.PlacemarkNameFactory;
+import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.openide.awt.UndoRedo;

@@ -15,7 +15,7 @@
  */
 package org.esa.snap.ui;
 
-import org.esa.snap.framework.dataop.maptransf.MapTransformUI;
+import org.esa.snap.core.dataop.maptransf.MapTransformUI;
 import org.esa.snap.util.Guardian;
 
 import javax.swing.JPanel;

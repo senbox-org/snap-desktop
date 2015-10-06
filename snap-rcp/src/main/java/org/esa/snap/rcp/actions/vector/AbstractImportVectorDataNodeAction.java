@@ -1,10 +1,10 @@
 package org.esa.snap.rcp.actions.vector;
 
+import org.esa.snap.core.datamodel.GeometryDescriptor;
+import org.esa.snap.core.datamodel.PlacemarkDescriptor;
+import org.esa.snap.core.datamodel.PlacemarkDescriptorRegistry;
+import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.dataio.geometry.VectorDataNodeReader;
-import org.esa.snap.framework.datamodel.GeometryDescriptor;
-import org.esa.snap.framework.datamodel.PlacemarkDescriptor;
-import org.esa.snap.framework.datamodel.PlacemarkDescriptorRegistry;
-import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.jai.ImageManager;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.AbstractSnapAction;

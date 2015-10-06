@@ -15,7 +15,7 @@
  */
 package org.esa.snap.rcp.placemark;
 
-import org.esa.snap.framework.datamodel.PinDescriptor;
+import org.esa.snap.core.datamodel.PinDescriptor;
 
 /**
  * A tool used to create (single click), select (single click on a pin) or edit (double click on a pin) the pins

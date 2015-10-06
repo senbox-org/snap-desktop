@@ -18,11 +18,11 @@ package org.esa.snap.core.gpf.ui;
 
 import com.bc.ceres.binding.PropertyDescriptor;
 import com.bc.ceres.swing.TableLayout;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductFilter;
 import org.esa.snap.core.gpf.OperatorSpi;
 import org.esa.snap.core.gpf.descriptor.OperatorDescriptor;
 import org.esa.snap.core.gpf.descriptor.SourceProductDescriptor;
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductFilter;
 import org.esa.snap.ui.AppContext;
 
 import javax.swing.BorderFactory;

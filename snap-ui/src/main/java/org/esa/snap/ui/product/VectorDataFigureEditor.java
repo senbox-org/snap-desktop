@@ -21,7 +21,7 @@ import com.bc.ceres.swing.figure.support.DefaultFigureEditor;
 import com.bc.ceres.swing.figure.support.DefaultFigureStyle;
 import com.bc.ceres.swing.figure.support.FigureDeleteEdit;
 import com.bc.ceres.swing.figure.support.FigureInsertEdit;
-import org.esa.snap.framework.datamodel.VectorDataNode;
+import org.esa.snap.core.datamodel.VectorDataNode;
 import org.esa.snap.util.Debug;
 import org.opengis.feature.simple.SimpleFeature;
 

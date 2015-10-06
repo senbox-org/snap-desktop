@@ -16,9 +16,9 @@
 package org.esa.snap.ui;
 
 import com.bc.ceres.swing.TableLayout;
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.RGBImageProfile;
-import org.esa.snap.framework.datamodel.RGBImageProfileManager;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.RGBImageProfile;
+import org.esa.snap.core.datamodel.RGBImageProfileManager;
 import org.esa.snap.ui.product.ProductExpressionPane;
 import org.esa.snap.ui.tool.ToolButtonFactory;
 import org.esa.snap.util.Debug;

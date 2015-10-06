@@ -6,16 +6,16 @@
 package org.esa.snap.rcp.nodes;
 
 import com.bc.ceres.core.Assert;
-import org.esa.snap.framework.datamodel.Band;
-import org.esa.snap.framework.datamodel.FlagCoding;
-import org.esa.snap.framework.datamodel.IndexCoding;
-import org.esa.snap.framework.datamodel.Mask;
-import org.esa.snap.framework.datamodel.MetadataElement;
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductNode;
-import org.esa.snap.framework.datamodel.ProductNodeGroup;
-import org.esa.snap.framework.datamodel.TiePointGrid;
-import org.esa.snap.framework.datamodel.VectorDataNode;
+import org.esa.snap.core.datamodel.Band;
+import org.esa.snap.core.datamodel.FlagCoding;
+import org.esa.snap.core.datamodel.IndexCoding;
+import org.esa.snap.core.datamodel.Mask;
+import org.esa.snap.core.datamodel.MetadataElement;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductNode;
+import org.esa.snap.core.datamodel.ProductNodeGroup;
+import org.esa.snap.core.datamodel.TiePointGrid;
+import org.esa.snap.core.datamodel.VectorDataNode;
 import org.openide.nodes.Node;
 import org.openide.util.NbBundle;
 
@@ -23,7 +23,7 @@ import java.util.List;
 
 
 /**
- * A group that gets its nodes from a {@link org.esa.snap.framework.datamodel.ProductNodeGroup} (=PNG).
+ * A group that gets its nodes from a {@link ProductNodeGroup} (=PNG).
  *
  * @author Norman
  */

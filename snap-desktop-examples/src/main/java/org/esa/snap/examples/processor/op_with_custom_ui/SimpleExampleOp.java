@@ -1,6 +1,8 @@
 package org.esa.snap.examples.processor.op_with_custom_ui;
 
 
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductData;
 import org.esa.snap.core.gpf.OperatorException;
 import org.esa.snap.core.gpf.OperatorSpi;
 import org.esa.snap.core.gpf.annotations.OperatorMetadata;
@@ -12,8 +14,6 @@ import org.esa.snap.core.gpf.pointop.SampleOperator;
 import org.esa.snap.core.gpf.pointop.SourceSampleConfigurer;
 import org.esa.snap.core.gpf.pointop.TargetSampleConfigurer;
 import org.esa.snap.core.gpf.pointop.WritableSample;
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductData;
 
 @OperatorMetadata(alias = "Simple",
         category = "Optical",

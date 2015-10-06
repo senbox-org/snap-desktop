@@ -15,11 +15,11 @@
  */
 package org.esa.snap.rcp.actions.file.export;
 
-import org.esa.snap.framework.datamodel.ImageInfo;
-import org.esa.snap.framework.datamodel.ImageLegend;
-import org.esa.snap.framework.datamodel.RasterDataNode;
-import org.esa.snap.framework.param.ParamGroup;
-import org.esa.snap.framework.param.Parameter;
+import org.esa.snap.core.datamodel.ImageInfo;
+import org.esa.snap.core.datamodel.ImageLegend;
+import org.esa.snap.core.datamodel.RasterDataNode;
+import org.esa.snap.core.param.ParamGroup;
+import org.esa.snap.core.param.Parameter;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.ui.GridBagUtils;
 import org.esa.snap.ui.ModalDialog;

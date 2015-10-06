@@ -25,7 +25,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
-import org.esa.snap.framework.datamodel.PlainFeatureFactory;
+import org.esa.snap.core.datamodel.PlainFeatureFactory;
 import org.esa.snap.util.AwtGeomToJtsGeomConverter;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;

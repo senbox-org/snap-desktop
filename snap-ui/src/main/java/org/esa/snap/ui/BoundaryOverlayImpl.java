@@ -1,7 +1,7 @@
 package org.esa.snap.ui;
 
 import com.bc.ceres.grender.Rendering;
-import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.core.datamodel.Product;
 
 /**
  * This class extends a {@link BoundaryOverlay} by the ability to draw a selected product.

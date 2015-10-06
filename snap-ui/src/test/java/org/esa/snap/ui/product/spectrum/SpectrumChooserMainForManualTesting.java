@@ -1,8 +1,8 @@
 package org.esa.snap.ui.product.spectrum;
 
 import com.jidesoft.utils.Lm;
-import org.esa.snap.framework.datamodel.Band;
-import org.esa.snap.framework.datamodel.ProductData;
+import org.esa.snap.core.datamodel.Band;
+import org.esa.snap.core.datamodel.ProductData;
 
 public class SpectrumChooserMainForManualTesting {
     /*

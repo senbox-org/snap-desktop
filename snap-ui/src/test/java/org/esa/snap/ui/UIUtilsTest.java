@@ -16,8 +16,8 @@
 
 package org.esa.snap.ui;
 
-import org.esa.snap.framework.param.ParamProperties;
-import org.esa.snap.framework.param.Parameter;
+import org.esa.snap.core.param.ParamProperties;
+import org.esa.snap.core.param.Parameter;
 import org.junit.Test;
 
 import javax.swing.JInternalFrame;

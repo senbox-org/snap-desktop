@@ -1,6 +1,6 @@
 package org.esa.snap.rcp.metadata;
 
-import org.esa.snap.framework.datamodel.MetadataElement;
+import org.esa.snap.core.datamodel.MetadataElement;
 import org.esa.snap.netbeans.docwin.DocumentTopComponent;
 import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.ui.product.metadata.MetadataTableInnerElement;

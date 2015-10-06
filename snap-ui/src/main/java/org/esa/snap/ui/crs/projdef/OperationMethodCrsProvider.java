@@ -16,7 +16,7 @@
 
 package org.esa.snap.ui.crs.projdef;
 
-import org.esa.snap.framework.datamodel.GeoPos;
+import org.esa.snap.core.datamodel.GeoPos;
 import org.geotools.referencing.AbstractIdentifiedObject;
 import org.geotools.referencing.ReferencingFactoryFinder;
 import org.geotools.referencing.cs.DefaultCartesianCS;

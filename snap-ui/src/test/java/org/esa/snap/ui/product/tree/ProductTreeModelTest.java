@@ -16,15 +16,15 @@
 
 package org.esa.snap.ui.product.tree;
 
-import org.esa.snap.framework.datamodel.Band;
-import org.esa.snap.framework.datamodel.PinDescriptor;
-import org.esa.snap.framework.datamodel.PixelPos;
-import org.esa.snap.framework.datamodel.Placemark;
-import org.esa.snap.framework.datamodel.PlainFeatureFactory;
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductData;
-import org.esa.snap.framework.datamodel.ProductManager;
-import org.esa.snap.framework.datamodel.VectorDataNode;
+import org.esa.snap.core.datamodel.Band;
+import org.esa.snap.core.datamodel.PinDescriptor;
+import org.esa.snap.core.datamodel.PixelPos;
+import org.esa.snap.core.datamodel.Placemark;
+import org.esa.snap.core.datamodel.PlainFeatureFactory;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductData;
+import org.esa.snap.core.datamodel.ProductManager;
+import org.esa.snap.core.datamodel.VectorDataNode;
 import org.junit.Before;
 import org.junit.Test;
 

@@ -4,7 +4,7 @@ import com.bc.ceres.binding.PropertySet;
 import com.bc.ceres.grender.Rendering;
 import com.bc.ceres.swing.figure.support.DefaultFigureStyle;
 import com.vividsolutions.jts.geom.Geometry;
-import org.esa.snap.framework.datamodel.VectorDataNode;
+import org.esa.snap.core.datamodel.VectorDataNode;
 import org.opengis.feature.simple.SimpleFeature;
 
 import java.awt.BasicStroke;

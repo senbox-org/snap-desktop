@@ -17,7 +17,7 @@
 package org.esa.snap.ui;
 
 import com.bc.ceres.core.Assert;
-import org.esa.snap.framework.datamodel.ImageInfo;
+import org.esa.snap.core.datamodel.ImageInfo;
 import org.esa.snap.jai.ImageManager;
 
 import java.awt.Color;

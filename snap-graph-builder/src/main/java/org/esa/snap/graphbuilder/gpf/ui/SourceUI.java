@@ -18,12 +18,12 @@ package org.esa.snap.graphbuilder.gpf.ui;
 import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.selection.SelectionChangeEvent;
 import com.bc.ceres.swing.selection.SelectionChangeListener;
+import org.esa.snap.core.dataio.DecodeQualification;
+import org.esa.snap.core.dataio.ProductIOPlugInManager;
+import org.esa.snap.core.dataio.ProductReaderPlugIn;
+import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.ui.SourceProductSelector;
 import org.esa.snap.db.CommonReaders;
-import org.esa.snap.framework.dataio.DecodeQualification;
-import org.esa.snap.framework.dataio.ProductIOPlugInManager;
-import org.esa.snap.framework.dataio.ProductReaderPlugIn;
-import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.ui.AppContext;
 
 import javax.swing.JComboBox;

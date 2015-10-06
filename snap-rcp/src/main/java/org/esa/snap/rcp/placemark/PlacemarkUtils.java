@@ -4,7 +4,7 @@ package org.esa.snap.rcp.placemark;
 import com.bc.ceres.swing.figure.Figure;
 import com.bc.ceres.swing.figure.FigureCollection;
 import com.bc.ceres.swing.figure.support.DefaultFigureStyle;
-import org.esa.snap.framework.datamodel.Placemark;
+import org.esa.snap.core.datamodel.Placemark;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.esa.snap.ui.product.SimpleFeaturePointFigure;

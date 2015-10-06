@@ -16,10 +16,10 @@
 
 package org.esa.snap.rcp.colormanip;
 
-import org.esa.snap.framework.datamodel.ColorPaletteDef;
-import org.esa.snap.framework.datamodel.ImageInfo;
-import org.esa.snap.framework.datamodel.ProductNodeEvent;
-import org.esa.snap.framework.datamodel.RasterDataNode;
+import org.esa.snap.core.datamodel.ColorPaletteDef;
+import org.esa.snap.core.datamodel.ImageInfo;
+import org.esa.snap.core.datamodel.ProductNodeEvent;
+import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.ui.color.ColorTableCellEditor;
 import org.esa.snap.ui.color.ColorTableCellRenderer;
 

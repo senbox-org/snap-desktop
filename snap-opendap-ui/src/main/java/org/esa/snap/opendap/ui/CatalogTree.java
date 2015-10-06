@@ -1,6 +1,6 @@
 package org.esa.snap.opendap.ui;
 
-import org.esa.snap.framework.ui.AppContext;
+import org.esa.snap.core.ui.AppContext;
 import org.esa.snap.opendap.datamodel.OpendapLeaf;
 import org.esa.snap.opendap.utils.OpendapUtils;
 import org.esa.snap.util.SystemUtils;

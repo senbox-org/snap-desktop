@@ -15,12 +15,12 @@
  */
 package org.esa.snap.productlibrary.rcp.toolviews;
 
-import org.esa.snap.productlibrary.rcp.toolviews.model.DatabaseQueryListener;
+import org.esa.snap.core.datamodel.GeoPos;
 import org.esa.snap.db.GeoPosList;
 import org.esa.snap.db.ProductEntry;
-import org.esa.snap.framework.datamodel.GeoPos;
 import org.esa.snap.graphbuilder.gpf.ui.worldmap.NestWorldMapPane;
 import org.esa.snap.graphbuilder.gpf.ui.worldmap.NestWorldMapPaneDataModel;
+import org.esa.snap.productlibrary.rcp.toolviews.model.DatabaseQueryListener;
 
 import javax.swing.event.MouseInputAdapter;
 import java.awt.event.MouseEvent;

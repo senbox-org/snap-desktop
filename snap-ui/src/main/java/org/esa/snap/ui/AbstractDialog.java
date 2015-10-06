@@ -15,7 +15,6 @@
  */
 package org.esa.snap.ui;
 
-import org.esa.snap.framework.ui.Bundle;
 import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle;
 

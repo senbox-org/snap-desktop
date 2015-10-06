@@ -17,7 +17,7 @@
 package org.esa.snap.rcp.layermanager.layersrc.wms;
 
 import com.bc.ceres.glayer.Layer;
-import org.esa.snap.framework.datamodel.RasterDataNode;
+import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.ui.layer.LayerSourcePageContext;
 import org.esa.snap.ui.product.ProductSceneView;

@@ -1,7 +1,7 @@
 package org.esa.snap.rcp.actions.vector;
 
 import com.bc.ceres.swing.TableLayout;
-import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.ui.ModalDialog;

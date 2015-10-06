@@ -16,14 +16,14 @@
 
 package org.esa.snap.ui;
 
-import org.esa.snap.framework.dataop.dem.ElevationModelDescriptor;
-import org.esa.snap.framework.dataop.dem.ElevationModelRegistry;
-import org.esa.snap.framework.param.ParamChangeEvent;
-import org.esa.snap.framework.param.ParamChangeListener;
-import org.esa.snap.framework.param.ParamParseException;
-import org.esa.snap.framework.param.ParamValidateException;
-import org.esa.snap.framework.param.Parameter;
-import org.esa.snap.framework.param.editors.RadioButtonEditor;
+import org.esa.snap.core.dataop.dem.ElevationModelDescriptor;
+import org.esa.snap.core.dataop.dem.ElevationModelRegistry;
+import org.esa.snap.core.param.ParamChangeEvent;
+import org.esa.snap.core.param.ParamChangeListener;
+import org.esa.snap.core.param.ParamParseException;
+import org.esa.snap.core.param.ParamValidateException;
+import org.esa.snap.core.param.Parameter;
+import org.esa.snap.core.param.editors.RadioButtonEditor;
 
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;

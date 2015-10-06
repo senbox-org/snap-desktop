@@ -1,7 +1,7 @@
 package org.esa.snap.timeseries.ui.graph;
 
-import org.esa.snap.framework.datamodel.Placemark;
-import org.esa.snap.framework.datamodel.PlacemarkGroup;
+import org.esa.snap.core.datamodel.Placemark;
+import org.esa.snap.core.datamodel.PlacemarkGroup;
 import org.esa.snap.timeseries.core.timeseries.datamodel.AbstractTimeSeries;
 
 import java.awt.Color;

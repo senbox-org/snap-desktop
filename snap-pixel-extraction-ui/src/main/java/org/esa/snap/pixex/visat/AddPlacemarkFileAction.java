@@ -16,9 +16,9 @@
 
 package org.esa.snap.pixex.visat;
 
+import org.esa.snap.core.datamodel.PinDescriptor;
+import org.esa.snap.core.datamodel.Placemark;
 import org.esa.snap.dataio.placemark.PlacemarkIO;
-import org.esa.snap.framework.datamodel.PinDescriptor;
-import org.esa.snap.framework.datamodel.Placemark;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.util.PropertyMap;
 import org.esa.snap.util.SystemUtils;

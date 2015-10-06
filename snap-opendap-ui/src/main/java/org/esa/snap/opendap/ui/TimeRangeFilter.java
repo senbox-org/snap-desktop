@@ -1,7 +1,7 @@
 package org.esa.snap.opendap.ui;
 
 import com.bc.ceres.binding.ValidationException;
-import org.esa.snap.framework.datamodel.ProductData;
+import org.esa.snap.core.datamodel.ProductData;
 import org.esa.snap.opendap.datamodel.OpendapLeaf;
 import org.esa.snap.opendap.utils.PatternProvider;
 import org.esa.snap.rcp.util.DateTimePicker;

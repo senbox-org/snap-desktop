@@ -2,10 +2,10 @@ package org.esa.snap.rcp.status;
 
 import com.bc.ceres.glayer.support.ImageLayer;
 import com.bc.ceres.glayer.swing.LayerCanvas;
-import org.esa.snap.framework.datamodel.GeoCoding;
-import org.esa.snap.framework.datamodel.GeoPos;
-import org.esa.snap.framework.datamodel.PixelPos;
-import org.esa.snap.framework.datamodel.RasterDataNode;
+import org.esa.snap.core.datamodel.GeoCoding;
+import org.esa.snap.core.datamodel.GeoPos;
+import org.esa.snap.core.datamodel.PixelPos;
+import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.netbeans.docwin.DocumentWindowManager;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.ui.PixelPositionListener;

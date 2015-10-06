@@ -21,7 +21,7 @@ import com.bc.ceres.glayer.LayerFilter;
 import com.bc.ceres.glayer.support.LayerUtils;
 import com.bc.ceres.swing.figure.AbstractInteractorInterceptor;
 import com.bc.ceres.swing.figure.Interactor;
-import org.esa.snap.framework.datamodel.VectorDataNode;
+import org.esa.snap.core.datamodel.VectorDataNode;
 import org.esa.snap.rcp.actions.vector.CreateVectorDataNodeAction;
 import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.ui.product.ProductSceneView;

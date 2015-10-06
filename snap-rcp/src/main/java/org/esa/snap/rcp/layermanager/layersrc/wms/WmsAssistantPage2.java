@@ -16,7 +16,7 @@
 
 package org.esa.snap.rcp.layermanager.layersrc.wms;
 
-import org.esa.snap.framework.datamodel.RasterDataNode;
+import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.jai.ImageManager;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.ui.layer.AbstractLayerSourceAssistantPage;

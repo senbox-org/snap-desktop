@@ -16,7 +16,7 @@
 
 package org.esa.snap.rcp.session;
 
-import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.ui.product.ProductNodeView;
 
 /**

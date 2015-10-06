@@ -20,8 +20,8 @@ import com.bc.ceres.binding.Property;
 import com.bc.ceres.binding.ValidationException;
 import com.bc.ceres.core.Assert;
 import com.bc.ceres.swing.binding.ComponentAdapter;
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductNode;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.tool.ToolButtonFactory;
@@ -89,8 +89,8 @@ public class SourceProductList extends ComponentAdapter {
         this.appContext = appContext;
         this.listModel = new InputListModel();
         this.inputPathsList = createInputPathsList(listModel);
-        this.lastOpenInputDir = "org.esa.snap.framework.ui.product.lastOpenInputDir";
-        this.lastOpenedFormat = "org.esa.snap.framework.ui.product.lastOpenedFormat";
+        this.lastOpenInputDir = "org.esa.snap.core.ui.product.lastOpenInputDir";
+        this.lastOpenedFormat = "org.esa.snap.core.ui.product.lastOpenedFormat";
         this.xAxis = true;
     }
 

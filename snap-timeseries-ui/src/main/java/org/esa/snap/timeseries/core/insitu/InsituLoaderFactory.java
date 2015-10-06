@@ -16,7 +16,7 @@
 
 package org.esa.snap.timeseries.core.insitu;
 
-import org.esa.snap.framework.datamodel.ProductData;
+import org.esa.snap.core.datamodel.ProductData;
 import org.esa.snap.timeseries.core.insitu.csv.CsvInsituLoader;
 
 import java.io.File;

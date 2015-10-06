@@ -18,7 +18,7 @@ package org.esa.snap.ui.product;
 
 import com.bc.ceres.binding.Property;
 import com.bc.ceres.binding.ValidationException;
-import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.util.SystemUtils;
 
 import javax.swing.AbstractListModel;
@@ -71,7 +71,7 @@ class InputListModel extends AbstractListModel<Object> {
         for (Object element : elements) {
             if (!(element instanceof File || element instanceof Product)) {
                 throw new IllegalStateException(
-                        "Only java.io.File or org.esa.snap.framework.datamodel.Product allowed.");
+                        "Only java.io.File or Product allowed.");
             }
             if (mayAdd(element)) {
                 list.add(element);

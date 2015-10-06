@@ -15,14 +15,14 @@
  */
 package org.esa.snap.ui;
 
-import org.esa.snap.framework.datamodel.GeoCoding;
-import org.esa.snap.framework.datamodel.GeoPos;
-import org.esa.snap.framework.datamodel.PixelPos;
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductData;
-import org.esa.snap.framework.datamodel.ProductNodeNameValidator;
-import org.esa.snap.framework.param.ParamProperties;
-import org.esa.snap.framework.param.Parameter;
+import org.esa.snap.core.datamodel.GeoCoding;
+import org.esa.snap.core.datamodel.GeoPos;
+import org.esa.snap.core.datamodel.PixelPos;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductData;
+import org.esa.snap.core.datamodel.ProductNodeNameValidator;
+import org.esa.snap.core.param.ParamProperties;
+import org.esa.snap.core.param.Parameter;
 import org.esa.snap.util.Guardian;
 import org.esa.snap.util.StringUtils;
 

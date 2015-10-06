@@ -18,9 +18,9 @@ package org.esa.snap.timeseries.ui.assistant;
 
 import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductManager;
-import org.esa.snap.framework.ui.assistant.AbstractAssistantPage;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductManager;
+import org.esa.snap.core.ui.assistant.AbstractAssistantPage;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.timeseries.core.timeseries.datamodel.AbstractTimeSeries;
 import org.esa.snap.timeseries.core.timeseries.datamodel.TimeSeriesFactory;

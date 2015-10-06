@@ -19,10 +19,10 @@ package org.esa.snap.rcp.sync;
 import com.bc.ceres.glayer.swing.LayerCanvas;
 import com.bc.ceres.grender.Rendering;
 import com.bc.ceres.grender.Viewport;
-import org.esa.snap.framework.datamodel.GeoCoding;
-import org.esa.snap.framework.datamodel.GeoPos;
-import org.esa.snap.framework.datamodel.PixelPos;
-import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.core.datamodel.GeoCoding;
+import org.esa.snap.core.datamodel.GeoPos;
+import org.esa.snap.core.datamodel.PixelPos;
+import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.ui.product.ProductSceneView;
 
 import java.awt.BasicStroke;

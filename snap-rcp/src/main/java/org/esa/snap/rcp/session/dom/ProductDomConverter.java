@@ -17,8 +17,8 @@
 package org.esa.snap.rcp.session.dom;
 
 import com.bc.ceres.binding.dom.DomElement;
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductManager;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductManager;
 
 class ProductDomConverter extends ProductNodeDomConverter<Product> {
 

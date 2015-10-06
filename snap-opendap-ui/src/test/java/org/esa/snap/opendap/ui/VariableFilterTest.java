@@ -18,7 +18,7 @@ package org.esa.snap.opendap.ui;
 
 import opendap.dap.DArrayDimension;
 import org.esa.snap.HeadlessTestRunner;
-import org.esa.snap.framework.ui.DefaultAppContext;
+import org.esa.snap.core.ui.DefaultAppContext;
 import org.esa.snap.opendap.datamodel.DAPVariable;
 import org.esa.snap.opendap.datamodel.OpendapLeaf;
 import org.junit.Before;

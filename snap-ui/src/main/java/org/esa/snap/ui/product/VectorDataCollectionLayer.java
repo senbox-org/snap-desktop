@@ -22,12 +22,12 @@ import com.bc.ceres.glayer.CollectionLayer;
 import com.bc.ceres.glayer.Layer;
 import com.bc.ceres.glayer.LayerFilter;
 import com.bc.ceres.glayer.support.LayerUtils;
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductNode;
-import org.esa.snap.framework.datamodel.ProductNodeEvent;
-import org.esa.snap.framework.datamodel.ProductNodeGroup;
-import org.esa.snap.framework.datamodel.ProductNodeListener;
-import org.esa.snap.framework.datamodel.VectorDataNode;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductNode;
+import org.esa.snap.core.datamodel.ProductNodeEvent;
+import org.esa.snap.core.datamodel.ProductNodeGroup;
+import org.esa.snap.core.datamodel.ProductNodeListener;
+import org.esa.snap.core.datamodel.VectorDataNode;
 import org.esa.snap.glayer.ProductLayerContext;
 
 import java.lang.ref.WeakReference;

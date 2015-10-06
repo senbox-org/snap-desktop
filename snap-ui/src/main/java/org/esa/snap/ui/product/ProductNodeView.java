@@ -15,7 +15,7 @@
  */
 package org.esa.snap.ui.product;
 
-import org.esa.snap.framework.datamodel.ProductNode;
+import org.esa.snap.core.datamodel.ProductNode;
 
 import java.awt.Rectangle;
 

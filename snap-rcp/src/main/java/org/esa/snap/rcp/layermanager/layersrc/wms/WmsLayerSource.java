@@ -15,9 +15,9 @@
  */
 package org.esa.snap.rcp.layermanager.layersrc.wms;
 
-import org.esa.snap.framework.datamodel.CrsGeoCoding;
-import org.esa.snap.framework.datamodel.MapGeoCoding;
-import org.esa.snap.framework.datamodel.RasterDataNode;
+import org.esa.snap.core.datamodel.CrsGeoCoding;
+import org.esa.snap.core.datamodel.MapGeoCoding;
+import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.ui.layer.AbstractLayerSourceAssistantPage;
 import org.esa.snap.ui.layer.LayerSource;

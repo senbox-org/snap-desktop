@@ -22,10 +22,10 @@ import com.bc.ceres.binding.PropertyDescriptor;
 import com.bc.ceres.binding.ValidationException;
 import com.bc.ceres.binding.Validator;
 import com.bc.ceres.binding.validators.NotNullValidator;
-import org.esa.snap.framework.dataio.ProductIO;
-import org.esa.snap.framework.dataio.ProductIOPlugInManager;
-import org.esa.snap.framework.dataio.ProductWriterPlugIn;
-import org.esa.snap.framework.datamodel.ProductNode;
+import org.esa.snap.core.dataio.ProductIO;
+import org.esa.snap.core.dataio.ProductIOPlugInManager;
+import org.esa.snap.core.dataio.ProductWriterPlugIn;
+import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.util.StringUtils;
 import org.esa.snap.util.io.FileUtils;
 

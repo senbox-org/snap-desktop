@@ -17,11 +17,11 @@
 package org.esa.snap.timeseries.export.text;
 
 import com.bc.ceres.core.ProgressMonitor;
-import org.esa.snap.framework.datamodel.Band;
-import org.esa.snap.framework.datamodel.GeoPos;
-import org.esa.snap.framework.datamodel.PixelPos;
-import org.esa.snap.framework.datamodel.Placemark;
-import org.esa.snap.framework.ui.product.ProductSceneView;
+import org.esa.snap.core.datamodel.Band;
+import org.esa.snap.core.datamodel.GeoPos;
+import org.esa.snap.core.datamodel.PixelPos;
+import org.esa.snap.core.datamodel.Placemark;
+import org.esa.snap.core.ui.product.ProductSceneView;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.timeseries.core.TimeSeriesMapper;
 import org.esa.snap.timeseries.core.timeseries.datamodel.AbstractTimeSeries;

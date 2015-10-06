@@ -18,9 +18,9 @@ package org.esa.snap.binning.operator.ui;
 
 import com.bc.ceres.binding.ValidationException;
 import com.bc.ceres.swing.TableLayout;
+import org.esa.snap.core.dataio.ProductIO;
+import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.ui.TargetProductSelector;
-import org.esa.snap.framework.dataio.ProductIO;
-import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.product.SourceProductList;
 import org.esa.snap.util.SystemUtils;

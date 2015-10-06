@@ -18,11 +18,11 @@ package org.esa.snap.core.gpf.ui;
 
 import com.bc.ceres.swing.selection.AbstractSelectionChangeListener;
 import com.bc.ceres.swing.selection.SelectionChangeEvent;
-import org.esa.snap.framework.datamodel.CrsGeoCoding;
-import org.esa.snap.framework.datamodel.GeoCoding;
-import org.esa.snap.framework.datamodel.GeoPos;
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductFilter;
+import org.esa.snap.core.datamodel.CrsGeoCoding;
+import org.esa.snap.core.datamodel.GeoCoding;
+import org.esa.snap.core.datamodel.GeoPos;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductFilter;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.crs.CrsForm;
 import org.esa.snap.util.ProductUtils;

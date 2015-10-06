@@ -15,14 +15,14 @@
  */
 package org.esa.snap.rcp.imgfilter;
 
-import org.esa.snap.framework.datamodel.Band;
-import org.esa.snap.framework.datamodel.ConvolutionFilterBand;
-import org.esa.snap.framework.datamodel.FilterBand;
-import org.esa.snap.framework.datamodel.GeneralFilterBand;
-import org.esa.snap.framework.datamodel.Kernel;
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductNode;
-import org.esa.snap.framework.datamodel.RasterDataNode;
+import org.esa.snap.core.datamodel.Band;
+import org.esa.snap.core.datamodel.ConvolutionFilterBand;
+import org.esa.snap.core.datamodel.FilterBand;
+import org.esa.snap.core.datamodel.GeneralFilterBand;
+import org.esa.snap.core.datamodel.Kernel;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductNode;
+import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.window.OpenImageViewAction;
 import org.esa.snap.rcp.imgfilter.model.Filter;

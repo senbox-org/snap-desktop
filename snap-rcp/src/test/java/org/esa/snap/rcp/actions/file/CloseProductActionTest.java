@@ -1,7 +1,7 @@
 package org.esa.snap.rcp.actions.file;
 
-import org.esa.snap.framework.dataio.ProductSubsetDef;
-import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.core.dataio.ProductSubsetDef;
+import org.esa.snap.core.datamodel.Product;
 import org.junit.Test;
 
 import java.io.IOException;
