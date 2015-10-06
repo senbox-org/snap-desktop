@@ -1,7 +1,17 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (C) 2015 CS SI
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option)
+ * any later version.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, see http://www.gnu.org/licenses/
  */
 package org.esa.snap.smart.configurator.ui;
 
@@ -26,8 +36,6 @@ import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -37,6 +45,23 @@ import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.prefs.BackingStoreException;
 import java.util.regex.Pattern;
+import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+
+import org.apache.commons.lang.StringUtils;
+import org.esa.snap.configurator.BenchmarkSingleCalculus;
+import org.esa.snap.configurator.JavaSystemInfos;
+import org.esa.snap.configurator.PerformanceParameters;
+import org.esa.snap.configurator.Benchmark;
+import org.esa.snap.configurator.ConfigurationOptimizer;
+import org.esa.snap.configurator.VMParameters;
+import org.esa.snap.framework.gpf.GPF;
+import org.esa.snap.framework.gpf.OperatorSpi;
+import org.esa.snap.framework.ui.AppContext;
+import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.util.SystemUtils;
+import org.esa.snap.util.io.FileUtils;
 
 final class PerformancePanel extends javax.swing.JPanel {
     
@@ -89,41 +114,28 @@ final class PerformancePanel extends javax.swing.JPanel {
 
         initComponents();
 
-        vmParametersTextField.addKeyListener(new KeyAdapter() {
+        DocumentListener textFieldListener = new DocumentListener() {
             @Override
-            public void keyTyped(KeyEvent e) {
+            public void insertUpdate(DocumentEvent e) {
                 controller.changed();
             }
-        });
 
-        cachePathTextField.addKeyListener(new KeyAdapter() {
             @Override
-            public void keyTyped(KeyEvent e) {
+            public void removeUpdate(DocumentEvent e) {
                 controller.changed();
             }
-        });
 
-        nbThreadsTextField.addKeyListener(new KeyAdapter() {
             @Override
-            public void keyTyped(KeyEvent e) {
-                    controller.changed();
+            public void changedUpdate(DocumentEvent e) {
+                controller.changed();
             }
-        });
+        };
 
-        defaultTileSizeTextField.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-                    controller.changed();
-            }
-        });
-
-
-        cacheSizeTextField.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-                    controller.changed();
-            }
-        });
+        vmParametersTextField.getDocument().addDocumentListener(textFieldListener);
+        cachePathTextField.getDocument().addDocumentListener(textFieldListener);
+        nbThreadsTextField.getDocument().addDocumentListener(textFieldListener);
+        defaultTileSizeTextField.getDocument().addDocumentListener(textFieldListener);
+        cacheSizeTextField.getDocument().addDocumentListener(textFieldListener);
     }
 
     /**
@@ -162,9 +174,11 @@ final class PerformancePanel extends javax.swing.JPanel {
         jPanel3 = new javax.swing.JPanel();
         processingParamsComputeButton = new javax.swing.JButton();
         processingParamsResetButton = new javax.swing.JButton();
-        filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 3000), new java.awt.Dimension(0, 32767));
 
-        setLayout(new javax.swing.BoxLayout(this, javax.swing.BoxLayout.PAGE_AXIS));
+        BoxLayout perfPanelLayout = new BoxLayout(this, BoxLayout.Y_AXIS);
+        setLayout(perfPanelLayout);
+
+        Box.createVerticalGlue();
 
         systemParametersPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.systemParametersPanel.border.title"))); 
         systemParametersPanel.setMinimumSize(new java.awt.Dimension(283, 115));
@@ -180,9 +194,21 @@ final class PerformancePanel extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 0);
         systemParametersPanel.add(cachePathLabel, gridBagConstraints);
 
-        vmParametersTextField.setText(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.vmParametersTextField.text")); 
+
+        org.openide.awt.Mnemonics.setLocalizedText(vmParametersLabel, org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.jLabel3.text"));
+        vmParametersLabel.setMaximumSize(new java.awt.Dimension(200, 14));
+        vmParametersLabel.setMinimumSize(new java.awt.Dimension(100, 14));
+        vmParametersLabel.setPreferredSize(new java.awt.Dimension(80, 14));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 0);
+        systemParametersPanel.add(vmParametersLabel, gridBagConstraints);
+
+        vmParametersTextField.setText(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.vmParametersTextField.text"));
         vmParametersTextField.setToolTipText(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.vmParametersTextField.toolTipText"));
-        if(!VMParameters.canSave()) {
+        if (!VMParameters.canSave()) {
             vmParametersTextField.setEditable(false);
         }
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -203,8 +229,14 @@ final class PerformancePanel extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(5, 2, 0, 10);
         systemParametersPanel.add(editVMParametersButton, gridBagConstraints);
 
+        if(!VMParameters.canSave()) {
+            vmParametersLabel.setEnabled(false);
+            vmParametersTextField.setEnabled(false);
+            editVMParametersButton.setEnabled(false);
+        }
 
-        cachePathTextField.setText(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.userDirTextField.text"));
+
+            cachePathTextField.setText(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.userDirTextField.text"));
         cachePathTextField.setToolTipText(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.userDirTextField.toolTipText"));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -223,17 +255,6 @@ final class PerformancePanel extends javax.swing.JPanel {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 2, 0, 10);
         systemParametersPanel.add(browseUserDirButton, gridBagConstraints);
-
-        org.openide.awt.Mnemonics.setLocalizedText(vmParametersLabel, org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.jLabel3.text"));
-        vmParametersLabel.setMaximumSize(new java.awt.Dimension(200, 14));
-        vmParametersLabel.setMinimumSize(new java.awt.Dimension(100, 14));
-        vmParametersLabel.setPreferredSize(new java.awt.Dimension(80, 14));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 0);
-        systemParametersPanel.add(vmParametersLabel, gridBagConstraints);
 
         org.openide.awt.Mnemonics.setLocalizedText(sysResetButton, org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.sysResetButton.text")); 
         sysResetButton.addActionListener(evt -> sysResetButtonActionPerformed());
@@ -268,10 +289,10 @@ final class PerformancePanel extends javax.swing.JPanel {
 
         add(systemParametersPanel);
 
+        Box.createVerticalGlue();
+
         processingParametersPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.border.title"))); 
-        processingParametersPanel.setMinimumSize(new java.awt.Dimension(450, 185));
-        processingParametersPanel.setName(""); 
-        processingParametersPanel.setPreferredSize(new java.awt.Dimension(400, 350));
+        processingParametersPanel.setName("");
         processingParametersPanel.setLayout(new java.awt.GridBagLayout());
 
         jPanel2.setLayout(new java.awt.GridLayout(3, 0, 0, 15));
@@ -324,13 +345,14 @@ final class PerformancePanel extends javax.swing.JPanel {
         jPanel4.setMinimumSize(new java.awt.Dimension(190, 107));
         jPanel4.setLayout(new java.awt.GridLayout(3, 1, 0, 10));
 
-
         PerformanceParameters actualParameters = confOptimizer.getActualPerformanceParameters();
-        benchmarkTileSizeTextField.setText(Integer.toString(actualParameters.getDefaultTileSize()) + BENCHMARK_SEPARATOR);
+        String tileSizeBenchmarkValues = getDefaultTileSizeValuesForBenchmark(actualParameters.getDefaultTileSize());
+        benchmarkTileSizeTextField.setText(tileSizeBenchmarkValues);
         benchmarkTileSizeTextField.setPreferredSize(new java.awt.Dimension(150, 20));
         jPanel4.add(benchmarkTileSizeTextField);
 
-        benchmarkCacheSizeTextField.setText(Integer.toString(actualParameters.getCacheSize()) + BENCHMARK_SEPARATOR);
+        String cacheSizeBenchmarkValues = getDefaultCacheSizeValuesForBenchmark(actualParameters);
+        benchmarkCacheSizeTextField.setText(cacheSizeBenchmarkValues);
         benchmarkCacheSizeTextField.setMinimumSize(new java.awt.Dimension(100, 20));
         benchmarkCacheSizeTextField.setName(""); 
         benchmarkCacheSizeTextField.setPreferredSize(new java.awt.Dimension(150, 20));
@@ -383,7 +405,56 @@ final class PerformancePanel extends javax.swing.JPanel {
         processingParametersPanel.add(jPanel3, gridBagConstraints);
 
         add(processingParametersPanel);
-        add(filler1);
+    }
+
+    private String getDefaultTileSizeValuesForBenchmark(int defaultTileSize) {
+        StringBuilder defaultTileSizeValues = new StringBuilder();
+
+        if(defaultTileSize >= 1024) {
+            defaultTileSizeValues.append(defaultTileSize/2);
+            defaultTileSizeValues.append(BENCHMARK_SEPARATOR);
+        }
+
+        defaultTileSizeValues.append(defaultTileSize);
+        defaultTileSizeValues.append(BENCHMARK_SEPARATOR);
+
+        defaultTileSizeValues.append(defaultTileSize*2);
+        defaultTileSizeValues.append(BENCHMARK_SEPARATOR);
+
+
+        if(defaultTileSize < 1024) {
+            defaultTileSizeValues.append(defaultTileSize*4);
+            defaultTileSizeValues.append(BENCHMARK_SEPARATOR);
+        }
+
+        return defaultTileSizeValues.toString();
+    }
+
+    private String getDefaultCacheSizeValuesForBenchmark(PerformanceParameters actualParameters) {
+        StringBuilder defaultCacheSizeValues = new StringBuilder();
+
+        int defaultCacheSize = actualParameters.getCacheSize();
+        long xmx = actualParameters.getVmXMX();
+
+        if(xmx == 0) {
+            PerformanceParameters memoryParameters = new PerformanceParameters();
+            ConfigurationOptimizer.getInstance().computeOptimisedRAMParams(memoryParameters);
+            xmx = memoryParameters.getVmXMX();
+        }
+
+        defaultCacheSizeValues.append(defaultCacheSize);
+        defaultCacheSizeValues.append(BENCHMARK_SEPARATOR);
+
+        if(xmx != 0) {
+            defaultCacheSizeValues.append(Math.round(xmx * 0.5));
+            defaultCacheSizeValues.append(BENCHMARK_SEPARATOR);
+
+            defaultCacheSizeValues.append(Math.round(xmx * 0.75));
+            defaultCacheSizeValues.append(BENCHMARK_SEPARATOR);
+        }
+
+
+        return defaultCacheSizeValues.toString();
     }
 
     private void editVMParametersButtonActionPerformed(ActionEvent e) {
@@ -435,7 +506,7 @@ final class PerformancePanel extends javax.swing.JPanel {
 
         PerformanceParameters optimizedParameters = confOptimizer.computeOptimisedSystemParameters();
 
-        if(!vmParametersTextField.getText().equals(optimizedParameters.getVMParameters())) {
+        if(VMParameters.canSave() && !vmParametersTextField.getText().equals(optimizedParameters.getVMParameters())) {
             vmParametersTextField.setText(optimizedParameters.getVMParameters());
             vmParametersTextField.setForeground(CURRENT_VALUES_COLOR);
             vmParametersTextField.setCaretPosition(0);
@@ -541,7 +612,7 @@ final class PerformancePanel extends javax.swing.JPanel {
         boolean isValid = true;
 
         File userDir = new File(cachePathTextField.getText());
-        if(!userDir.exists() || !userDir.isDirectory()) {
+        if(userDir.exists() && !userDir.isDirectory()) {
             cachePathTextField.setForeground(ERROR_VALUES_COLOR);
             isValid = false;
         } else {
@@ -657,7 +728,6 @@ final class PerformancePanel extends javax.swing.JPanel {
     private javax.swing.JLabel cacheSizeLabel;
     private javax.swing.JTextField cacheSizeTextField;
     private javax.swing.JTextField defaultTileSizeTextField;
-    private javax.swing.Box.Filler filler1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel cachePathLabel;
     private javax.swing.JLabel vmParametersLabel;
