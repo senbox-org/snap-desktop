@@ -14,9 +14,9 @@
  * with this program; if not, see http://www.gnu.org/licenses/
  */
 
-package org.esa.snap.rcp.actions;
+package org.esa.snap.core.gpf.ui;
 
-import org.esa.snap.core.gpf.ui.DefaultSingleTargetProductDialog;
+import org.esa.snap.rcp.actions.AbstractSnapAction;
 import org.esa.snap.ui.ModelessDialog;
 
 import java.awt.event.ActionEvent;
