@@ -15,7 +15,7 @@
  */
 package org.esa.snap.graphbuiler.rcp.dialogs.support;
 
-import org.esa.snap.framework.gpf.graph.GraphException;
+import org.esa.snap.core.gpf.graph.GraphException;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphExecuter;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphNode;
 import org.junit.Before;

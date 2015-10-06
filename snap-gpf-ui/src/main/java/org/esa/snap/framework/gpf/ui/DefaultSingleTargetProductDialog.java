@@ -26,14 +26,14 @@ import com.bc.ceres.swing.binding.PropertyPane;
 import com.bc.ceres.swing.selection.AbstractSelectionChangeListener;
 import com.bc.ceres.swing.selection.Selection;
 import com.bc.ceres.swing.selection.SelectionChangeEvent;
+import org.esa.snap.core.gpf.GPF;
+import org.esa.snap.core.gpf.OperatorSpi;
+import org.esa.snap.core.gpf.descriptor.OperatorDescriptor;
+import org.esa.snap.core.gpf.internal.RasterDataNodeValues;
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.ProductNodeEvent;
 import org.esa.snap.framework.datamodel.ProductNodeListener;
 import org.esa.snap.framework.datamodel.RasterDataNode;
-import org.esa.snap.framework.gpf.GPF;
-import org.esa.snap.framework.gpf.OperatorSpi;
-import org.esa.snap.framework.gpf.descriptor.OperatorDescriptor;
-import org.esa.snap.framework.gpf.internal.RasterDataNodeValues;
 import org.esa.snap.framework.ui.AppContext;
 import org.esa.snap.framework.ui.UIUtils;
 

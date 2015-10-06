@@ -18,13 +18,14 @@ package org.esa.snap.framework.gpf.ui;
 import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.core.SubProgressMonitor;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
+import org.esa.snap.core.gpf.GPF;
+import org.esa.snap.core.gpf.Operator;
+import org.esa.snap.core.gpf.OperatorException;
+import org.esa.snap.core.gpf.experimental.Output;
+import org.esa.snap.core.gpf.internal.OperatorExecutor;
+import org.esa.snap.core.gpf.internal.OperatorProductReader;
 import org.esa.snap.framework.dataio.ProductIO;
 import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.gpf.Operator;
-import org.esa.snap.framework.gpf.OperatorException;
-import org.esa.snap.framework.gpf.experimental.Output;
-import org.esa.snap.framework.gpf.internal.OperatorExecutor;
-import org.esa.snap.framework.gpf.internal.OperatorProductReader;
 import org.esa.snap.framework.ui.AppContext;
 import org.esa.snap.framework.ui.ModelessDialog;
 import org.esa.snap.gpf.operators.standard.WriteOp;
@@ -363,7 +364,7 @@ public abstract class SingleTargetProductDialog extends ModelessDialog {
 
     /**
      * Creates the desired target product.
-     * Usually, this method will be implemented by invoking one of the multiple {@link org.esa.snap.framework.gpf.GPF GPF}
+     * Usually, this method will be implemented by invoking one of the multiple {@link GPF GPF}
      * {@code createProduct} methods.
      * <p>
      * The method should throw a {@link OperatorException} in order to signal "nominal" processing errors,

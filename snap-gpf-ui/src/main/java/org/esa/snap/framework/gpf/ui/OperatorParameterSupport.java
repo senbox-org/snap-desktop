@@ -26,10 +26,10 @@ import com.bc.ceres.binding.dom.DefaultDomConverter;
 import com.bc.ceres.binding.dom.DefaultDomElement;
 import com.bc.ceres.binding.dom.DomElement;
 import com.bc.ceres.core.Assert;
-import org.esa.snap.framework.gpf.Operator;
-import org.esa.snap.framework.gpf.annotations.ParameterDescriptorFactory;
-import org.esa.snap.framework.gpf.descriptor.OperatorDescriptor;
-import org.esa.snap.framework.gpf.descriptor.PropertySetDescriptorFactory;
+import org.esa.snap.core.gpf.Operator;
+import org.esa.snap.core.gpf.annotations.ParameterDescriptorFactory;
+import org.esa.snap.core.gpf.descriptor.OperatorDescriptor;
+import org.esa.snap.core.gpf.descriptor.PropertySetDescriptorFactory;
 
 import java.util.HashMap;
 import java.util.Map;

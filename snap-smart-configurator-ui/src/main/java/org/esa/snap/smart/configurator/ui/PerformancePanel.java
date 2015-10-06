@@ -5,32 +5,38 @@
  */
 package org.esa.snap.smart.configurator.ui;
 
-import java.awt.*;
+import org.apache.commons.lang.StringUtils;
+import org.esa.snap.configurator.Benchmark;
+import org.esa.snap.configurator.BenchmarkSingleCalculus;
+import org.esa.snap.configurator.ConfigurationOptimizer;
+import org.esa.snap.configurator.JavaSystemInfos;
+import org.esa.snap.configurator.PerformanceParameters;
+import org.esa.snap.configurator.VMParameters;
+import org.esa.snap.core.gpf.GPF;
+import org.esa.snap.core.gpf.OperatorSpi;
+import org.esa.snap.framework.ui.AppContext;
+import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.util.SystemUtils;
+import org.esa.snap.util.io.FileUtils;
+
+import javax.swing.JFileChooser;
+import javax.swing.SwingUtilities;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.prefs.BackingStoreException;
 import java.util.regex.Pattern;
-import javax.swing.*;
-
-import org.apache.commons.lang.StringUtils;
-import org.esa.snap.configurator.BenchmarkSingleCalculus;
-import org.esa.snap.configurator.JavaSystemInfos;
-import org.esa.snap.configurator.PerformanceParameters;
-import org.esa.snap.configurator.Benchmark;
-import org.esa.snap.configurator.ConfigurationOptimizer;
-import org.esa.snap.configurator.VMParameters;
-import org.esa.snap.framework.gpf.GPF;
-import org.esa.snap.framework.gpf.OperatorSpi;
-import org.esa.snap.framework.ui.AppContext;
-import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.util.SystemUtils;
-import org.esa.snap.util.io.FileUtils;
 
 final class PerformancePanel extends javax.swing.JPanel {
     

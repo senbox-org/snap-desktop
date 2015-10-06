@@ -1,6 +1,6 @@
 package org.esa.snap.examples.processor.op_with_custom_ui;
 
-import org.esa.snap.framework.gpf.annotations.OperatorMetadata;
+import org.esa.snap.core.gpf.annotations.OperatorMetadata;
 import org.esa.snap.rcp.actions.AbstractSnapAction;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;

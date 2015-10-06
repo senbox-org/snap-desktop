@@ -16,8 +16,8 @@
 package org.esa.snap.graphbuiler.rcp.dialogs.support;
 
 import com.bc.ceres.binding.dom.XppDomElement;
-import org.esa.snap.framework.gpf.graph.Node;
-import org.esa.snap.framework.gpf.graph.NodeSource;
+import org.esa.snap.core.gpf.graph.Node;
+import org.esa.snap.core.gpf.graph.NodeSource;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphNode;
 import org.junit.Before;
 import org.junit.Test;

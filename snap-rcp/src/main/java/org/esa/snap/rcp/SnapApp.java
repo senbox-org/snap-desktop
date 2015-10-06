@@ -2,15 +2,15 @@ package org.esa.snap.rcp;
 
 import com.bc.ceres.core.ExtensionFactory;
 import com.bc.ceres.core.ExtensionManager;
+import org.esa.snap.core.gpf.GPF;
+import org.esa.snap.core.gpf.OperatorSpi;
+import org.esa.snap.core.gpf.OperatorSpiRegistry;
 import org.esa.snap.framework.dataio.ProductReader;
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.ProductManager;
 import org.esa.snap.framework.datamodel.ProductNode;
 import org.esa.snap.framework.datamodel.ProductNodeEvent;
 import org.esa.snap.framework.datamodel.ProductNodeListener;
-import org.esa.snap.framework.gpf.GPF;
-import org.esa.snap.framework.gpf.OperatorSpi;
-import org.esa.snap.framework.gpf.OperatorSpiRegistry;
 import org.esa.snap.framework.ui.AppContext;
 import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.netbeans.docwin.DocumentWindowManager;

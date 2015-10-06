@@ -18,7 +18,7 @@ package org.esa.snap.rcp.mosaic;
 
 import com.bc.ceres.binding.PropertyContainer;
 import com.bc.ceres.swing.binding.BindingContext;
-import org.esa.snap.framework.gpf.annotations.ParameterDescriptorFactory;
+import org.esa.snap.core.gpf.annotations.ParameterDescriptorFactory;
 import org.esa.snap.gpf.operators.standard.MosaicOp;
 import org.junit.Before;
 import org.junit.Test;

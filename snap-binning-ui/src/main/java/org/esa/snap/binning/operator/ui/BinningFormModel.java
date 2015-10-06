@@ -30,6 +30,7 @@ import com.vividsolutions.jts.io.WKTReader;
 import org.esa.snap.binning.AggregatorConfig;
 import org.esa.snap.binning.operator.BinningOp;
 import org.esa.snap.binning.operator.VariableConfig;
+import org.esa.snap.core.gpf.annotations.ParameterDescriptorFactory;
 import org.esa.snap.framework.datamodel.Band;
 import org.esa.snap.framework.datamodel.FlagCoding;
 import org.esa.snap.framework.datamodel.Mask;
@@ -37,7 +38,6 @@ import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.datamodel.ProductData;
 import org.esa.snap.framework.datamodel.TiePointGrid;
 import org.esa.snap.framework.datamodel.VectorDataNode;
-import org.esa.snap.framework.gpf.annotations.ParameterDescriptorFactory;
 import org.esa.snap.util.StringUtils;
 
 import java.beans.PropertyChangeEvent;

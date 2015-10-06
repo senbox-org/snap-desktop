@@ -17,13 +17,13 @@
  */
 package org.esa.snap.ui.tooladapter.dialogs;
 
+import org.esa.snap.core.gpf.descriptor.ParameterDescriptor;
 import org.esa.snap.core.gpf.descriptor.SystemVariable;
 import org.esa.snap.core.gpf.descriptor.TemplateParameterDescriptor;
 import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
 import org.esa.snap.core.gpf.descriptor.ToolParameterDescriptor;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterIO;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterOp;
-import org.esa.snap.framework.gpf.descriptor.ParameterDescriptor;
 import org.esa.snap.framework.ui.AppContext;
 import org.esa.snap.framework.ui.ModalDialog;
 import org.esa.snap.framework.ui.UIUtils;

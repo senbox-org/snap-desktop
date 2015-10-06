@@ -17,12 +17,12 @@
 package org.esa.snap.rcp.mosaic;
 
 import com.bc.jexp.ParseException;
+import org.esa.snap.core.gpf.GPF;
+import org.esa.snap.core.gpf.OperatorSpi;
 import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.framework.dataop.barithm.BandArithmetic;
 import org.esa.snap.framework.dataop.dem.ElevationModelDescriptor;
 import org.esa.snap.framework.dataop.dem.ElevationModelRegistry;
-import org.esa.snap.framework.gpf.GPF;
-import org.esa.snap.framework.gpf.OperatorSpi;
 import org.esa.snap.framework.gpf.ui.OperatorMenu;
 import org.esa.snap.framework.gpf.ui.OperatorParameterSupport;
 import org.esa.snap.framework.gpf.ui.SingleTargetProductDialog;
