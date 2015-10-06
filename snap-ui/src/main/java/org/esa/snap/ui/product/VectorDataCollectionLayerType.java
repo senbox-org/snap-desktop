@@ -24,7 +24,7 @@ import com.bc.ceres.glayer.LayerContext;
 import com.bc.ceres.glayer.annotations.LayerTypeMetadata;
 import org.esa.snap.core.datamodel.ProductNodeGroup;
 import org.esa.snap.core.datamodel.VectorDataNode;
-import org.esa.snap.glayer.ProductLayerContext;
+import org.esa.snap.core.layer.ProductLayerContext;
 
 @LayerTypeMetadata(name = "VectorDataCollectionLayerType",
                    aliasNames = {"VectorDataCollectionLayerType"})

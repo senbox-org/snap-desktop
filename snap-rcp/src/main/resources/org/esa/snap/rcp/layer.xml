@@ -423,7 +423,7 @@
         </file>
         <file name="NoDataLayerType">
             <attr name="layerTypeClass"
-                  stringvalue="org.esa.snap.glayer.NoDataLayerType"/>
+                  stringvalue="org.esa.snap.core.layer.NoDataLayerType"/>
             <attr name="editorClass"
                   stringvalue="org.esa.snap.rcp.layermanager.editors.NoDataLayerEditor"/>
         </file>
@@ -435,7 +435,7 @@
         </file>
         <file name="GraticuleLayerType">
             <attr name="layerTypeClass"
-                  stringvalue="org.esa.snap.glayer.GraticuleLayerType"/>
+                  stringvalue="org.esa.snap.core.layer.GraticuleLayerType"/>
             <attr name="editorClass"
                   stringvalue="org.esa.snap.rcp.layermanager.editors.GraticuleLayerEditor"/>
         </file>

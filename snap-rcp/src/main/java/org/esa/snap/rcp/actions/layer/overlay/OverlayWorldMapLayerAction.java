@@ -16,7 +16,7 @@ import org.esa.snap.core.datamodel.MapGeoCoding;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.dataop.maptransf.IdentityTransformDescriptor;
 import org.esa.snap.core.dataop.maptransf.MapTransformDescriptor;
-import org.esa.snap.glayer.WorldMapLayerType;
+import org.esa.snap.core.layer.WorldMapLayerType;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.geotools.referencing.CRS;

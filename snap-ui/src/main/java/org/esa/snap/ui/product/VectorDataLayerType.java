@@ -28,7 +28,7 @@ import com.bc.ceres.glayer.annotations.LayerTypeMetadata;
 import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.datamodel.VectorDataNode;
-import org.esa.snap.glayer.ProductLayerContext;
+import org.esa.snap.core.layer.ProductLayerContext;
 
 /**
  * A {@link LayerType} that creates layers of type {@link VectorDataLayer} for a given {@code VectorDataNode}.

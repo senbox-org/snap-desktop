@@ -28,7 +28,7 @@ import org.esa.snap.core.datamodel.ProductNodeEvent;
 import org.esa.snap.core.datamodel.ProductNodeGroup;
 import org.esa.snap.core.datamodel.ProductNodeListener;
 import org.esa.snap.core.datamodel.VectorDataNode;
-import org.esa.snap.glayer.ProductLayerContext;
+import org.esa.snap.core.layer.ProductLayerContext;
 
 import java.lang.ref.WeakReference;
 import java.util.HashMap;

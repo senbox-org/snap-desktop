@@ -22,7 +22,7 @@ import com.bc.ceres.glayer.support.LayerUtils;
 import com.bc.ceres.swing.TreeCellExtender;
 import com.jidesoft.swing.CheckBoxTree;
 import com.jidesoft.swing.CheckBoxTreeSelectionModel;
-import org.esa.snap.glayer.MaskLayerType;
+import org.esa.snap.core.layer.MaskLayerType;
 import org.esa.snap.rcp.layermanager.layersrc.SelectLayerSourceAssistantPage;
 import org.esa.snap.rcp.windows.ToolTopComponent;
 import org.esa.snap.ui.GridBagUtils;
