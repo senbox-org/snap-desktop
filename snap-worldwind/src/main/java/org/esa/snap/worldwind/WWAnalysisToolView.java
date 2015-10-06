@@ -101,7 +101,7 @@ public class WWAnalysisToolView extends WWBaseToolView implements WWView {
             };
 
     public WWAnalysisToolView() {
-        setDisplayName("WorldWind 3D");
+        setDisplayName("WorldWind Analysis");
         setLayout(new BorderLayout(4, 4));
         setBorder(new EmptyBorder(4, 4, 4, 4));
         add(createControl(), BorderLayout.CENTER);
