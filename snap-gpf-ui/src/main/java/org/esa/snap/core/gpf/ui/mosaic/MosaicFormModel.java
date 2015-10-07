@@ -14,7 +14,7 @@
  * with this program; if not, see http://www.gnu.org/licenses/
  */
 
-package org.esa.snap.rcp.mosaic;
+package org.esa.snap.core.gpf.ui.mosaic;
 
 import com.bc.ceres.binding.Property;
 import com.bc.ceres.binding.PropertyDescriptor;

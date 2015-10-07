@@ -14,7 +14,7 @@
  * with this program; if not, see http://www.gnu.org/licenses/
  */
 
-package org.esa.snap.rcp.reproject;
+package org.esa.snap.core.gpf.ui.reproject;
 
 import com.bc.ceres.binding.ConversionException;
 import com.bc.ceres.binding.ValidationException;

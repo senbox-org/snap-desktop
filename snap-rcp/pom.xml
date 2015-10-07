@@ -227,10 +227,6 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>snap-gpf-ui</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>snap-python</artifactId>
             <version>${snap.version}</version>
         </dependency>

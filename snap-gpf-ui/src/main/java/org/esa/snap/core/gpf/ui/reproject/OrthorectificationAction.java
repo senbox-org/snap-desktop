@@ -14,7 +14,7 @@
  * with this program; if not, see http://www.gnu.org/licenses/
  */
 
-package org.esa.snap.rcp.reproject;
+package org.esa.snap.core.gpf.ui.reproject;
 
 import org.esa.snap.rcp.actions.AbstractSnapAction;
 import org.esa.snap.ui.ModelessDialog;
@@ -30,7 +30,7 @@ import java.awt.event.ActionEvent;
  *
  * @author Norman Fomferra
  */
-@ActionID(category = "Operators", id = "org.esa.snap.rcp.reproject.OrthorectificationAction")
+@ActionID(category = "Operators", id = "org.esa.snap.core.gpf.ui.reproject.OrthorectificationAction")
 @ActionRegistration(displayName = "#CTL_OrthorectificationAction_Name")
 @ActionReference(path = "Menu/Optical/Geometric")
 @NbBundle.Messages("CTL_OrthorectificationAction_Name=Orthorectification")
