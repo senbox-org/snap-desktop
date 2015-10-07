@@ -5,6 +5,6 @@ importPackage(org.esa.snap.core.gpf);
 importPackage(org.esa.snap.core.gpf.operators.common);
 importPackage(org.esa.snap.core.gpf.operators.meris);
 importPackage(org.esa.snap.util);
-importPackage(org.esa.snap.visat);
+importPackage(org.esa.snap.rcp);
 
-visat = VisatApp.getApp();
+snap = SnapApp.getDefault();
