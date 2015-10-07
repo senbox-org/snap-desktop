@@ -63,7 +63,7 @@ public abstract class PagePanel extends JPanel implements ProductNodeListener {
 
     private PagePanel alternativeView;
 
-    PagePanel(TopComponent parentComponent, String helpId, String title) {
+    protected PagePanel(TopComponent parentComponent, String helpId, String title) {
         super(new BorderLayout(4, 4));
         this.parentComponent = parentComponent;
         this.helpId = helpId;
