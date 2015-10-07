@@ -144,6 +144,9 @@ public class CustomParameterClass {
         if (result == null) {
             result = matchClass(FloatClass, aClass, typeMask);
         }
+        if (result == null) {
+            result = matchClass(FileListClass, aClass, typeMask);
+        }
         return result;
     }
 

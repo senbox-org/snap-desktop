@@ -207,12 +207,12 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
                 logger.warning(message);
                 warnings.add(message);
             }
-            File workingDir = operatorDescriptor.resolveVariables(operatorDescriptor.getWorkingDir());
+            /*File workingDir = operatorDescriptor.resolveVariables(operatorDescriptor.getWorkingDir());
             if (!(workingDir != null && workingDir.exists() && workingDir.isDirectory())) {
                 message = String.format("Working directory does not exist: '%s'", workingDir == null ? "null" : workingDir.getPath());
                 logger.warning(message);
                 warnings.add(message);
-            }
+            }*/
             ParameterDescriptor[] parameterDescriptors = operatorDescriptor.getParameterDescriptors();
             if (parameterDescriptors != null && parameterDescriptors.length > 0) {
                 for (ParameterDescriptor parameterDescriptor : parameterDescriptors) {
