@@ -48,7 +48,7 @@ import java.util.List;
  */
 public class VariablesTable extends JTable {
     private static String[] columnNames = {"", "Key", "Value"};
-    private static int[] widths = {27, 100, 250};
+    private static int[] widths = {24, 100, 250};
     private List<SystemVariable> variables;
     private MultiRenderer tableRenderer;
     private AppContext appContext;
@@ -58,7 +58,7 @@ public class VariablesTable extends JTable {
         this.appContext = context;
         tableRenderer = new MultiRenderer();
         setModel(new VariablesTableModel());
-        setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
         for(int i=0; i < widths.length; i++) {
             getColumnModel().getColumn(i).setPreferredWidth(widths[i]);
         }

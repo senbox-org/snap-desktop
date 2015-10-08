@@ -78,6 +78,14 @@ class ToolExecutionForm extends JTabbedPane {
         if(sourceProperty != null) {
             this.propertySet.removeProperty(sourceProperty);
         }
+        // if the tool is handling by itself the output product name, then remove targetProductFile from the list,
+        // since it may bring only confusion in this case
+        if (operatorDescriptor.isHandlingOutputName()) {
+            sourceProperty = this.propertySet.getProperty(ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE);
+            if (sourceProperty != null) {
+                this.propertySet.removeProperty(sourceProperty);
+            }
+        }
 
         //initialise the target product's directory to the working directory
         final TargetProductSelectorModel targetProductSelectorModel = targetProductSelector.getModel();
@@ -178,7 +186,9 @@ class ToolExecutionForm extends JTabbedPane {
         } else {
             try {
                 model.setProductName("Output Product");
-                property.setValue(null);
+                if (property != null) {
+                    property.setValue(null);
+                }
             } catch (ValidationException e) {
                 Logger.getLogger(ToolExecutionForm.class.getName()).severe(e.getMessage());
             }

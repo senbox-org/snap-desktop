@@ -254,10 +254,12 @@ public class OperatorParametersTable extends JTable {
         @Override
         public boolean isCellEditable(int rowIndex, int columnIndex) {
             ToolParameterDescriptor descriptor = operator.getToolParameterDescriptors().get(rowIndex);
-            return !descriptor.getName().equals(ToolAdapterConstants.TOOL_SOURCE_PRODUCT_ID)
-                    && !descriptor.getName().equals(ToolAdapterConstants.TOOL_SOURCE_PRODUCT_FILE)
-                    && !(descriptor.getName().equals(ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE)
-                    && (columnIndex == 0 || columnIndex == 1 || columnIndex == 4 || columnIndex == 6));
+            final String descriptorName = descriptor.getName();
+            final Class<?> dataType = descriptor.getDataType();
+            return  !ToolAdapterConstants.TOOL_SOURCE_PRODUCT_ID.equals(descriptorName) &&
+                    !ToolAdapterConstants.TOOL_SOURCE_PRODUCT_FILE.equals(descriptorName) &&
+                    !(ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE.equals(descriptorName) && (columnIndex == 0 || columnIndex == 1 || columnIndex == 4 || columnIndex == 6)) &&
+                    !(dataType.isArray() && columnIndex > 4);
         }
 
         @Override
