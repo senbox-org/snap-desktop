@@ -487,8 +487,8 @@ public class PixelInfoViewModelUpdater {
                 && pixelValid
                 && pixelX >= 0
                 && pixelY >= 0
-                && pixelX < currentRaster.getRasterWidth()
-                && pixelY < currentRaster.getRasterHeight();
+                && pixelX < currentRaster.getSceneRasterWidth()
+                && pixelY < currentRaster.getSceneRasterHeight();
     }
 
     void clearProductNodeRefs() {

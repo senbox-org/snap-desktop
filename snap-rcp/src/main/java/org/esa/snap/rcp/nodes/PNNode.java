@@ -315,7 +315,8 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
         private String createToolTip(final VectorDataNode vectorDataNode) {
             final StringBuilder tooltip = new StringBuilder();
             append(tooltip, vectorDataNode.getDescription());
-            append(tooltip, String.format("type %s, %d feature(s)", vectorDataNode.getFeatureType().getTypeName(), vectorDataNode.getFeatureCollection().size()));
+            append(tooltip, String.format("type %s, %d feature(s)", vectorDataNode.getFeatureType().getTypeName(),
+                                          vectorDataNode.getFeatureCollection().size()));
             return tooltip.toString();
         }
 
@@ -343,13 +344,15 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
             final VectorDataNode vdn = getProductNode();
 
             set.setDisplayName("Vector Data Properties");
-            set.put(new PropertySupport.ReadOnly<String>("featureType", String.class, "Feature type", "The feature type schema used for all features in the collection") {
+            set.put(new PropertySupport.ReadOnly<String>("featureType", String.class, "Feature type",
+                                                         "The feature type schema used for all features in the collection") {
                 @Override
                 public String getValue() {
                     return vdn.getFeatureType().getTypeName();
                 }
             });
-            set.put(new PropertySupport.ReadOnly<String>("featureGeomType", String.class, "Feature geometry type", "The geometry type used used for all feature geometries in the collection") {
+            set.put(new PropertySupport.ReadOnly<String>("featureGeomType", String.class, "Feature geometry type",
+                                                         "The geometry type used used for all feature geometries in the collection") {
                 @Override
                 public String getValue() {
                     Class<?> binding;
@@ -362,7 +365,8 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
                     return binding != null ? binding.getName() : "<unknown>";
                 }
             });
-            set.put(new PropertySupport.ReadOnly<String>("featureCRS", String.class, "Feature geometry CRS", "The coordinate reference system used used for all feature geometries in the collection") {
+            set.put(new PropertySupport.ReadOnly<String>("featureCRS", String.class, "Feature geometry CRS",
+                                                         "The coordinate reference system used used for all feature geometries in the collection") {
                 @Override
                 public String getValue() {
                     CoordinateReferenceSystem crs;
@@ -375,7 +379,8 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
                     return crs != null ? crs.toString() : "<unknown>";
                 }
             });
-            set.put(new PropertySupport.ReadOnly<Integer>("featureCount", Integer.class, "Feature count", "The number of features in this collection") {
+            set.put(new PropertySupport.ReadOnly<Integer>("featureCount", Integer.class, "Feature count",
+                                                          "The number of features in this collection") {
                 @Override
                 public Integer getValue() {
                     return vdn.getFeatureCollection().size();
@@ -402,7 +407,8 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
         private String createToolTip(final TiePointGrid tiePointGrid) {
             StringBuilder tooltip = new StringBuilder();
             append(tooltip, tiePointGrid.getDescription());
-            append(tooltip, String.format("%d x %d --> %d x %d pixels", tiePointGrid.getRasterWidth(), tiePointGrid.getRasterHeight(), tiePointGrid.getSceneRasterWidth(), tiePointGrid.getSceneRasterHeight()));
+            append(tooltip, String.format("%d x %d --> %d x %d pixels", tiePointGrid.getRasterWidth(), tiePointGrid.getRasterHeight(),
+                                          tiePointGrid.getSceneRasterWidth(), tiePointGrid.getSceneRasterHeight()));
             if (tiePointGrid.getUnit() != null) {
                 append(tooltip, String.format(" (%s)", tiePointGrid.getUnit()));
             }
@@ -433,23 +439,12 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
             final TiePointGrid tpg = getProductNode();
 
             set.setDisplayName("Tie-Point Grid Properties");
-            set.put(new PropertySupport.ReadWrite<String>("unit", String.class, "Unit", "Geophysical unit") {
-                @Override
-                public String getValue() {
-                    return tpg.getUnit();
-                }
+            set.put(new UnitProperty(tpg));
+            set.put(new RasterSizeProperty(tpg));
+            set.put(new ValidPixelExpressionProperty(tpg));
+            set.put(new NoDataValueUsedProperty(tpg));
+            set.put(new NoDataValueProperty(tpg));
 
-                @Override
-                public void setValue(String s) {
-                    tpg.setUnit(s);
-                }
-            });
-            set.put(new PropertySupport.ReadOnly<String>("rasterSize", String.class, "Raster size", "The width and height of the raster in pixels") {
-                @Override
-                public String getValue() {
-                    return String.format("%d x %d", tpg.getRasterWidth(), tpg.getRasterHeight());
-                }
-            });
 
             return Stream.concat(Stream.of(super.getPropertySets()), Stream.of(set)).toArray(PropertySet[]::new);
         }
@@ -574,37 +569,14 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
             final Band band = getProductNode();
 
             set.setDisplayName("Raster Band Properties");
-            set.put(new PropertySupport.ReadWrite<String>("unit", String.class, "Unit", "Geophysical Unit") {
-                @Override
-                public String getValue() {
-                    return band.getUnit();
-                }
+            set.put(new UnitProperty(band));
+            set.put(new DataTypeProperty(band));
+            set.put(new RasterSizeProperty(band));
 
-                @Override
-                public void setValue(String newValue) {
-                    String oldValue = band.getUnit();
-                    performUndoableProductNodeEdit("Edit Unit",
-                                                   band,
-                                                   node -> node.setName(newValue),
-                                                   node -> node.setUnit(oldValue)
-                    );
-                }
-            });
-            set.put(new PropertySupport.ReadOnly<String>("dataType", String.class, "Data Type", "Raster data type") {
-                @Override
-                public String getValue() {
-                    return ProductData.getTypeString(band.getDataType());
-                }
-            });
-            set.put(new PropertySupport.ReadOnly<String>("rasterSize", String.class, "Raster size", "Width and height of the raster in pixels") {
-                @Override
-                public String getValue() {
-                    return String.format("%d x %d", band.getRasterWidth(), band.getRasterHeight());
-                }
-            });
             if (band instanceof VirtualBand) {
                 final VirtualBand virtualBand = (VirtualBand) band;
-                set.put(new PropertySupport.ReadWrite<String>("expression", String.class, "Pixel-Value Expression", "Mathematical expression used to compute the raster's pixel values") {
+                set.put(new PropertySupport.ReadWrite<String>("expression", String.class, "Pixel-Value Expression",
+                                                              "Mathematical expression used to compute the raster's pixel values") {
                     @Override
                     public String getValue() {
                         return virtualBand.getExpression();
@@ -627,95 +599,12 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
                     }
                 });
             }
-            set.put(new PropertySupport.ReadWrite<String>("validPixelExpression", String.class, "Valid-Pixel Expression",
-                                                          "Boolean expression which is used to identify valid pixels") {
-                        @Override
-                        public String getValue() {
-                            final String expression = band.getValidPixelExpression();
-                            if (expression != null) {
-                                return expression;
-                            }
-                            return "";
-                        }
+            set.put(new ValidPixelExpressionProperty(band));
+            set.put(new NoDataValueUsedProperty(band));
+            set.put(new NoDataValueProperty(band));
 
-                        @Override
-                        public void setValue(String newValue) {
-                            try {
-                                final Product product = band.getProduct();
-                                final RasterDataNode[] refRasters = BandArithmetic.getRefRasters(newValue, product);
-                                if (refRasters.length > 0 &&
-                                        (!BandArithmetic.areRastersEqualInSize(product, newValue) ||
-                                                refRasters[0].getRasterHeight() != band.getRasterHeight() ||
-                                                refRasters[0].getRasterWidth() != band.getRasterWidth())) {
-                                    SnapDialogs.showInformation("Referenced rasters must all be the same size", null);
-                                } else {
-                                    String oldValue = band.getValidPixelExpression();
-                                    performUndoableProductNodeEdit("Edit Valid-Pixel Expression",
-                                                                   band,
-                                                                   node -> {
-                                                                       node.setValidPixelExpression(newValue);
-                                                                       updateImages(node, true);
-                                                                   },
-                                                                   node -> {
-                                                                       node.setValidPixelExpression(oldValue);
-                                                                       updateImages(node, true);
-                                                                   }
-                                    );
-                                }
-                            } catch (ParseException e) {
-                                SnapDialogs.showError("Expression is invalid: " + e.getMessage());
-                            }
-                        }
-                    }
-
-            );
-            set.put(new PropertySupport.ReadWrite<Boolean>("noDataValueUsed", Boolean.class, "No-Data Value Used", "Is the no-data value in use?") {
-                @Override
-                public Boolean getValue() {
-                    return band.isNoDataValueUsed();
-                }
-
-                @Override
-                public void setValue(Boolean newValue) {
-                    Boolean oldValue = band.isNoDataValueUsed();
-                    performUndoableProductNodeEdit("Edit No-Data Value Used",
-                                                   band,
-                                                   node -> {
-                                                       node.setNoDataValueUsed(newValue);
-                                                       updateImages(node, true);
-                                                   },
-                                                   node -> {
-                                                       node.setNoDataValueUsed(oldValue);
-                                                       updateImages(node, true);
-                                                   }
-                    );
-                }
-            });
-            set.put(new PropertySupport.ReadWrite<Double>("noDataValue", Double.class, "No-Data Value", "No-data value used to indicate missing pixels") {
-                        @Override
-                        public Double getValue() {
-                            return band.getNoDataValue();
-                        }
-
-                        @Override
-                        public void setValue(Double newValue) {
-                            double oldValue = band.getNoDataValue();
-                            performUndoableProductNodeEdit("Edit No-Data Value",
-                                                           band,
-                                                           node -> {
-                                                               node.setNoDataValue(newValue);
-                                                               updateImages(node, true);
-                                                           },
-                                                           node -> {
-                                                               node.setNoDataValue(oldValue);
-                                                               updateImages(node, true);
-                                                           }
-                            );
-                        }
-                    }
-
-            );
-            set.put(new PropertySupport.ReadWrite<Float>("spectralWavelength", Float.class, "Spectral Wavelength", "The spectral wavelength in nanometers") {
+            set.put(new PropertySupport.ReadWrite<Float>("spectralWavelength", Float.class, "Spectral Wavelength",
+                                                         "The spectral wavelength in nanometers") {
                         @Override
                         public Float getValue() {
                             return band.getSpectralWavelength();
@@ -732,7 +621,8 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
                     }
 
             );
-            set.put(new PropertySupport.ReadWrite<Float>("spectralBandWidth", Float.class, "Spectral Bandwidth", "The spectral bandwidth in nanometers") {
+            set.put(new PropertySupport.ReadWrite<Float>("spectralBandWidth", Float.class, "Spectral Bandwidth",
+                                                         "The spectral bandwidth in nanometers") {
                         @Override
                         public Float getValue() {
                             return band.getSpectralBandwidth();
@@ -860,4 +750,170 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
             view.updateImage();
         });
     }
+
+    private static class DataTypeProperty extends PropertySupport.ReadOnly<String> {
+
+        private final RasterDataNode raster;
+
+        public DataTypeProperty(RasterDataNode raster) {
+            super("dataType", String.class, "Data Type", "Raster data type");
+            this.raster = raster;
+        }
+
+        @Override
+        public String getValue() {
+            return ProductData.getTypeString(raster.getDataType());
+        }
+    }
+
+    private static class RasterSizeProperty extends PropertySupport.ReadOnly<String> {
+
+        private final RasterDataNode raster;
+
+        public RasterSizeProperty(RasterDataNode raster) {
+            super("rasterSize", String.class, "Raster size", "Width and height of the raster in pixels");
+            this.raster = raster;
+        }
+
+        @Override
+        public String getValue() {
+            return String.format("%d x %d", raster.getRasterWidth(), raster.getRasterHeight());
+        }
+    }
+
+    private static class UnitProperty extends PropertySupport.ReadWrite<String> {
+
+        private final RasterDataNode raster;
+
+        public UnitProperty(RasterDataNode raster) {
+            super("unit", String.class, "Unit", "Geophysical Unit");
+            this.raster = raster;
+        }
+
+        @Override
+        public String getValue() {
+            return raster.getUnit();
+        }
+
+        @Override
+        public void setValue(String newValue) {
+            String oldValue = raster.getUnit();
+            performUndoableProductNodeEdit("Edit Unit",
+                                           raster,
+                                           node -> node.setName(newValue),
+                                           node -> node.setUnit(oldValue)
+            );
+        }
+    }
+
+    private static class ValidPixelExpressionProperty extends PropertySupport.ReadWrite<String> {
+
+        private final RasterDataNode raster;
+
+        public ValidPixelExpressionProperty(RasterDataNode raster) {
+            super("validPixelExpression", String.class, "Valid-Pixel Expression", "Boolean expression which is used to identify valid pixels");
+            this.raster = raster;
+        }
+
+        @Override
+        public String getValue() {
+            final String expression = raster.getValidPixelExpression();
+            if (expression != null) {
+                return expression;
+            }
+            return "";
+        }
+
+        @Override
+        public void setValue(String newValue) {
+            try {
+                final Product product = raster.getProduct();
+                final RasterDataNode[] refRasters = BandArithmetic.getRefRasters(newValue, product);
+                if (refRasters.length > 0 &&
+                    (!BandArithmetic.areRastersEqualInSize(product, newValue) ||
+                     refRasters[0].getRasterHeight() != raster.getRasterHeight() ||
+                     refRasters[0].getRasterWidth() != raster.getRasterWidth())) {
+                    SnapDialogs.showInformation("Referenced rasters must all be the same size", null);
+                } else {
+                    String oldValue = raster.getValidPixelExpression();
+                    performUndoableProductNodeEdit("Edit Valid-Pixel Expression",
+                                                   raster,
+                                                   node -> {
+                                                       node.setValidPixelExpression(newValue);
+                                                       updateImages(node, true);
+                                                   },
+                                                   node -> {
+                                                       node.setValidPixelExpression(oldValue);
+                                                       updateImages(node, true);
+                                                   }
+                    );
+                }
+            } catch (ParseException e) {
+                SnapDialogs.showError("Expression is invalid: " + e.getMessage());
+            }
+        }
+    }
+
+    private static class NoDataValueProperty extends PropertySupport.ReadWrite<Double> {
+
+        private final RasterDataNode raster;
+
+        public NoDataValueProperty(RasterDataNode raster) {
+            super("noDataValue", Double.class, "No-Data Value", "No-data value used to indicate missing pixels");
+            this.raster = raster;
+        }
+
+        @Override
+        public Double getValue() {
+            return raster.getNoDataValue();
+        }
+
+        @Override
+        public void setValue(Double newValue) {
+            double oldValue = raster.getNoDataValue();
+            performUndoableProductNodeEdit("Edit No-Data Value",
+                                           raster,
+                                           node -> {
+                                               node.setNoDataValue(newValue);
+                                               updateImages(node, true);
+                                           },
+                                           node -> {
+                                               node.setNoDataValue(oldValue);
+                                               updateImages(node, true);
+                                           }
+            );
+        }
+    }
+
+    private static class NoDataValueUsedProperty extends PropertySupport.ReadWrite<Boolean> {
+
+        private final RasterDataNode raster;
+
+        public NoDataValueUsedProperty(RasterDataNode raster) {
+            super("noDataValueUsed", Boolean.class, "No-Data Value Used", "Is the no-data value in use?");
+            this.raster = raster;
+        }
+
+        @Override
+        public Boolean getValue() {
+            return raster.isNoDataValueUsed();
+        }
+
+        @Override
+        public void setValue(Boolean newValue) {
+            Boolean oldValue = raster.isNoDataValueUsed();
+            performUndoableProductNodeEdit("Edit No-Data Value Used",
+                                           raster,
+                                           node -> {
+                                               node.setNoDataValueUsed(newValue);
+                                               updateImages(node, true);
+                                           },
+                                           node -> {
+                                               node.setNoDataValueUsed(oldValue);
+                                               updateImages(node, true);
+                                           }
+            );
+        }
+    }
+
 }
