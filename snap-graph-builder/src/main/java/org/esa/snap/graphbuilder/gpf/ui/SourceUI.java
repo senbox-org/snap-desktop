@@ -73,7 +73,10 @@ public class SourceUI extends BaseOperatorUI {
         sourceProductSelector.initProducts();
         sourceProductSelector.addSelectionChangeListener(new SourceSelectionChangeListener());
 
-        updateFormatNamesCombo(sourceProductSelector.getSelectedProduct().getFileLocation());
+        final Product selectedProduct = sourceProductSelector.getSelectedProduct();
+        if(selectedProduct != null) {
+            updateFormatNamesCombo(selectedProduct.getFileLocation());
+        }
 
         initParameters();
 
@@ -81,6 +84,9 @@ public class SourceUI extends BaseOperatorUI {
     }
 
     private void updateFormatNamesCombo(final File file) {
+        if(file == null) {
+            return;
+        }
         final List<String> formatNameList = getFormatsForFile(file);
 
         formatNameComboBox.removeAllItems();
