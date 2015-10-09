@@ -308,9 +308,10 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
                     operatorCompleted(result);
                 }
             } else
-                SnapDialogs.showError(Bundle.ExecutionFailed_Text(), throwable.getMessage());
+                displayErrors();
+                //SnapDialogs.showError(Bundle.ExecutionFailed_Text(), throwable.getMessage());
         }
-        displayErrors();
+        //displayErrors();
     }
 
     private void displayErrors() {
@@ -368,7 +369,7 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
     }
 
     private boolean displayExecutionConsole() {
-        return "yes".equals(NbPreferences.forModule(SnapDialogs.class).get(ToolAdapterOptionsController.PREFERENCE_KEY_SHOW_EXECUTION_OUTPUT, "no"));
+        return Boolean.parseBoolean(NbPreferences.forModule(SnapDialogs.class).get(ToolAdapterOptionsController.PREFERENCE_KEY_SHOW_EXECUTION_OUTPUT, "false"));
     }
 
     /**
