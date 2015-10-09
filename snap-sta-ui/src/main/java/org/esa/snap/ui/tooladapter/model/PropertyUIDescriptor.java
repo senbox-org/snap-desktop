@@ -23,8 +23,7 @@ import org.esa.snap.core.gpf.descriptor.ToolParameterDescriptor;
 import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.tool.ToolButtonFactory;
 
-import javax.swing.AbstractButton;
-import javax.swing.JButton;
+import javax.swing.*;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
 

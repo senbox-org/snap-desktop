@@ -17,20 +17,12 @@
  */
 package org.esa.snap.ui.tooladapter.model;
 
-import com.bc.ceres.binding.ConversionException;
-import com.bc.ceres.binding.DefaultPropertySetDescriptor;
-import com.bc.ceres.binding.PropertyContainer;
-import com.bc.ceres.binding.PropertyDescriptor;
-import com.bc.ceres.binding.PropertySet;
+import com.bc.ceres.binding.*;
 import com.bc.ceres.swing.binding.BindingContext;
 import org.apache.commons.collections.BidiMap;
 import org.apache.commons.collections.bidimap.DualHashBidiMap;
 import org.esa.snap.core.gpf.annotations.ParameterDescriptorFactory;
-import org.esa.snap.core.gpf.descriptor.ParameterDescriptor;
-import org.esa.snap.core.gpf.descriptor.PropertyAttributeException;
-import org.esa.snap.core.gpf.descriptor.TemplateParameterDescriptor;
-import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
-import org.esa.snap.core.gpf.descriptor.ToolParameterDescriptor;
+import org.esa.snap.core.gpf.descriptor.*;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterConstants;
 import org.esa.snap.core.gpf.ui.OperatorParameterSupport;
 import org.esa.snap.rcp.SnapDialogs;
@@ -42,17 +34,12 @@ import org.esa.snap.ui.tooladapter.dialogs.TemplateParameterEditorDialog;
 import org.esa.snap.ui.tooladapter.dialogs.ToolParameterEditorDialog;
 import org.openide.util.NbBundle;
 
-import javax.swing.AbstractButton;
-import javax.swing.AbstractCellEditor;
-import javax.swing.DefaultCellEditor;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JTable;
+import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
-import java.awt.Component;
+import java.awt.*;
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;

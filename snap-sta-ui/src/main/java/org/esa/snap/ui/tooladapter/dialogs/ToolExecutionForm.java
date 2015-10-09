@@ -34,11 +34,7 @@ import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.utils.SpringUtilities;
 
-import javax.swing.JCheckBox;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.SpringLayout;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.io.File;
 import java.util.ArrayList;

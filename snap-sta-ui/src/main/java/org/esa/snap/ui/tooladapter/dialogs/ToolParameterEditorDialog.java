@@ -31,14 +31,13 @@ import org.esa.snap.core.gpf.annotations.ParameterDescriptorFactory;
 import org.esa.snap.core.gpf.descriptor.ToolParameterDescriptor;
 import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.rcp.SnapDialogs;
-import org.esa.snap.ui.tooladapter.actions.EscapeAction;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.ModalDialog;
+import org.esa.snap.ui.tooladapter.actions.EscapeAction;
 import org.esa.snap.ui.tooladapter.model.PropertyMemberUIWrapper;
 import org.esa.snap.ui.tooladapter.model.PropertyMemberUIWrapperFactory;
 import org.esa.snap.ui.tooladapter.validators.RequiredFieldValidator;
 import org.esa.snap.ui.tooladapter.validators.TypedValueValidator;
-import org.esa.snap.util.StringUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -128,7 +127,7 @@ public class ToolParameterEditorDialog extends ModalDialog {
         comboEditor.addActionListener(ev -> {
             JComboBox cb = (JComboBox) ev.getSource();
             String typeName = (String) cb.getSelectedItem();
-            if (!parameter.getDataType().equals((Class<?>) typesMap.get(typeName))) {
+            if (!parameter.getDataType().equals(typesMap.get(typeName))) {
                 parameter.setDataType((Class<?>) typesMap.get(typeName));
                 //reset value set
                 parameter.setValueSet(null);

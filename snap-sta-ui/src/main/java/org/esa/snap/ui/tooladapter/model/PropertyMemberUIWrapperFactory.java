@@ -17,12 +17,7 @@
  */
 package org.esa.snap.ui.tooladapter.model;
 
-import com.bc.ceres.binding.DefaultPropertySetDescriptor;
-import com.bc.ceres.binding.Property;
-import com.bc.ceres.binding.PropertyContainer;
-import com.bc.ceres.binding.PropertyDescriptor;
-import com.bc.ceres.binding.ValueRange;
-import com.bc.ceres.binding.ValueSet;
+import com.bc.ceres.binding.*;
 import com.bc.ceres.binding.converters.ArrayConverter;
 import com.bc.ceres.binding.converters.StringConverter;
 import com.bc.ceres.swing.binding.BindingContext;
@@ -35,10 +30,7 @@ import org.esa.snap.core.gpf.descriptor.PropertyAttributeException;
 import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
 import org.esa.snap.core.gpf.descriptor.ToolParameterDescriptor;
 
-import javax.swing.JCheckBox;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
+import javax.swing.*;
 import java.awt.event.FocusEvent;
 import java.lang.reflect.Method;
 import java.util.HashMap;

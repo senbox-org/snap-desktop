@@ -22,8 +22,8 @@ import org.esa.snap.core.gpf.descriptor.PropertyAttributeException;
 import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
 import org.esa.snap.core.gpf.descriptor.ToolParameterDescriptor;
 
-import javax.swing.JComponent;
-import java.awt.Dimension;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.util.logging.Logger;

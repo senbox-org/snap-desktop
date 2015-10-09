@@ -1,30 +1,23 @@
 package org.esa.snap.ui.tooladapter.dialogs;
 
-import org.esa.snap.framework.gpf.descriptor.SystemDependentVariable;
-import org.esa.snap.framework.ui.ModalDialog;
-import org.esa.snap.ui.tooladapter.actions.EscapeAction;
 import org.esa.snap.core.gpf.descriptor.SystemDependentVariable;
 import org.esa.snap.ui.ModalDialog;
+import org.esa.snap.ui.tooladapter.actions.EscapeAction;
 
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import java.awt.EventQueue;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.Window;
+import java.awt.*;
 import java.lang.reflect.Method;
 import java.util.logging.Logger;
 
 /**
- * Created by kraftek on 6/30/2015.
+ * A simple editor window for system-dependent variables
+ *
+ * @author Cosmin Cara
  */
 public class SystemDependentVariableEditorDialog extends ModalDialog {
 
-    private JPanel mainPanel;
     private SystemDependentVariable oldVariable;
     private SystemDependentVariable newVariable;
 
@@ -51,7 +44,7 @@ public class SystemDependentVariableEditorDialog extends ModalDialog {
     private JPanel createPanel() {
         GridBagLayout layout = new GridBagLayout();
         layout.columnWidths = new int[]{100, 390};
-        mainPanel = new JPanel(layout);
+        JPanel mainPanel = new JPanel(layout);
         addTextEditor(mainPanel, "Windows value:", newVariable.getWindows(), "windows", 0);
         addTextEditor(mainPanel, "Linux value:", newVariable.getLinux(), "linux", 1);
         addTextEditor(mainPanel, "MacOSX value:", newVariable.getMacosx(), "macosx", 2);
@@ -95,20 +88,20 @@ public class SystemDependentVariableEditorDialog extends ModalDialog {
 
         @Override
         public void insertUpdate(DocumentEvent e) {
-            updateProperty(e);
+            updateProperty();
         }
 
         @Override
         public void removeUpdate(DocumentEvent e) {
-            updateProperty(e);
+            updateProperty();
         }
 
         @Override
         public void changedUpdate(DocumentEvent e) {
-            updateProperty(e);
+            updateProperty();
         }
 
-        private void updateProperty(DocumentEvent e) {
+        private void updateProperty() {
             EventQueue.invokeLater(() -> {
                 try {
                     fieldSetter.invoke(instance, parent.getText());
