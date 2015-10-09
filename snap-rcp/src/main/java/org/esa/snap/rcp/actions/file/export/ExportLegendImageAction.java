@@ -15,18 +15,18 @@
  */
 package org.esa.snap.rcp.actions.file.export;
 
-import org.esa.snap.framework.datamodel.ImageInfo;
-import org.esa.snap.framework.datamodel.ImageLegend;
-import org.esa.snap.framework.datamodel.RasterDataNode;
-import org.esa.snap.framework.param.ParamGroup;
-import org.esa.snap.framework.param.Parameter;
-import org.esa.snap.framework.ui.GridBagUtils;
-import org.esa.snap.framework.ui.ModalDialog;
-import org.esa.snap.framework.ui.SnapFileChooser;
-import org.esa.snap.framework.ui.product.ProductSceneView;
+import org.esa.snap.core.datamodel.ImageInfo;
+import org.esa.snap.core.datamodel.ImageLegend;
+import org.esa.snap.core.datamodel.RasterDataNode;
+import org.esa.snap.core.param.ParamGroup;
+import org.esa.snap.core.param.Parameter;
+import org.esa.snap.core.util.SystemUtils;
+import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.util.SystemUtils;
-import org.esa.snap.util.io.SnapFileFilter;
+import org.esa.snap.ui.GridBagUtils;
+import org.esa.snap.ui.ModalDialog;
+import org.esa.snap.ui.SnapFileChooser;
+import org.esa.snap.ui.product.ProductSceneView;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;

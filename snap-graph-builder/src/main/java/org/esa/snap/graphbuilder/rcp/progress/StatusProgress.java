@@ -15,13 +15,13 @@
  */
 package org.esa.snap.graphbuilder.rcp.progress;
 
-import org.esa.snap.framework.dataop.downloadable.ProgressMonitorList;
-import org.esa.snap.framework.dataop.downloadable.StatusProgressMonitor;
+import org.esa.snap.core.dataop.downloadable.ProgressMonitorList;
+import org.esa.snap.core.dataop.downloadable.StatusProgressMonitor;
 import org.openide.awt.StatusLineElementProvider;
 import org.openide.util.lookup.ServiceProvider;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JPanel;
+import java.awt.Component;
 import java.util.HashMap;
 import java.util.Map;
 

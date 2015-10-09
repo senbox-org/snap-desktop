@@ -2,14 +2,14 @@ package org.esa.snap.rcp.status;
 
 import com.bc.ceres.glayer.support.ImageLayer;
 import com.bc.ceres.glayer.swing.LayerCanvas;
-import org.esa.snap.framework.datamodel.GeoCoding;
-import org.esa.snap.framework.datamodel.GeoPos;
-import org.esa.snap.framework.datamodel.PixelPos;
-import org.esa.snap.framework.datamodel.RasterDataNode;
-import org.esa.snap.framework.ui.PixelPositionListener;
-import org.esa.snap.framework.ui.product.ProductSceneView;
+import org.esa.snap.core.datamodel.GeoCoding;
+import org.esa.snap.core.datamodel.GeoPos;
+import org.esa.snap.core.datamodel.PixelPos;
+import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.netbeans.docwin.DocumentWindowManager;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.ui.PixelPositionListener;
+import org.esa.snap.ui.product.ProductSceneView;
 import org.openide.awt.StatusLineElementProvider;
 import org.openide.util.lookup.ServiceProvider;
 
@@ -28,10 +28,7 @@ import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
 import java.util.prefs.Preferences;
 
-import static org.esa.snap.rcp.pixelinfo.PixelInfoView.PREFERENCE_DEFAULT_SHOW_GEO_POS_DECIMALS;
-import static org.esa.snap.rcp.pixelinfo.PixelInfoView.PREFERENCE_DEFAULT_SHOW_PIXEL_POS_DECIMALS;
-import static org.esa.snap.rcp.pixelinfo.PixelInfoView.PREFERENCE_KEY_SHOW_GEO_POS_DECIMALS;
-import static org.esa.snap.rcp.pixelinfo.PixelInfoView.PREFERENCE_KEY_SHOW_PIXEL_POS_DECIMALS;
+import static org.esa.snap.rcp.pixelinfo.PixelInfoView.*;
 
 /**
  * Displays current pixel position in the status bar.

@@ -8,8 +8,8 @@ import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.ComponentAdapter;
 import com.bc.ceres.swing.binding.PropertyEditor;
 import com.bc.ceres.swing.binding.internal.ListSelectionAdapter;
-import org.esa.snap.framework.ui.UIUtils;
-import org.esa.snap.framework.ui.tool.ToolButtonFactory;
+import org.esa.snap.ui.UIUtils;
+import org.esa.snap.ui.tool.ToolButtonFactory;
 import org.esa.snap.utils.SpringUtilities;
 
 import javax.swing.*;

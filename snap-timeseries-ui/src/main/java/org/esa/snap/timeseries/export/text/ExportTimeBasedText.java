@@ -18,12 +18,12 @@ package org.esa.snap.timeseries.export.text;
 
 import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
-import org.esa.snap.framework.datamodel.Band;
-import org.esa.snap.framework.datamodel.Placemark;
-import org.esa.snap.framework.datamodel.PlacemarkGroup;
-import org.esa.snap.framework.datamodel.ProductNode;
-import org.esa.snap.framework.help.HelpSys;
-import org.esa.snap.framework.ui.SelectExportMethodDialog;
+import org.esa.snap.core.datamodel.Band;
+import org.esa.snap.core.datamodel.Placemark;
+import org.esa.snap.core.datamodel.PlacemarkGroup;
+import org.esa.snap.core.datamodel.ProductNode;
+import org.esa.snap.core.help.HelpSys;
+import org.esa.snap.core.ui.SelectExportMethodDialog;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.timeseries.core.timeseries.datamodel.AbstractTimeSeries;

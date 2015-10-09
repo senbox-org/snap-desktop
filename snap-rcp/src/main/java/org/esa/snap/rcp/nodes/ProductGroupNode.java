@@ -6,9 +6,9 @@
 package org.esa.snap.rcp.nodes;
 
 import com.bc.ceres.core.Assert;
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductManager;
-import org.esa.snap.framework.datamodel.ProductNodeListener;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductManager;
+import org.esa.snap.core.datamodel.ProductNodeListener;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * A node that represents a {@link org.esa.snap.framework.datamodel.Product} (=P).
+ * A node that represents a {@link Product} (=P).
  * Every {@code PNode} holds a dedicated undo/redo context.
  *
  * @author Norman

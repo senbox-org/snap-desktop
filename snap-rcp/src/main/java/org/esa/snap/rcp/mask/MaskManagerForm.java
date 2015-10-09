@@ -15,10 +15,10 @@
  */
 package org.esa.snap.rcp.mask;
 
-import org.esa.snap.framework.ui.GridBagUtils;
-import org.esa.snap.framework.ui.UIUtils;
-import org.esa.snap.framework.ui.tool.ToolButtonFactory;
 import org.esa.snap.rcp.windows.ToolTopComponent;
+import org.esa.snap.ui.GridBagUtils;
+import org.esa.snap.ui.UIUtils;
+import org.esa.snap.ui.tool.ToolButtonFactory;
 
 import javax.swing.AbstractButton;
 import javax.swing.Action;

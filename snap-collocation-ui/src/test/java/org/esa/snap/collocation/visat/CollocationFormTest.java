@@ -17,9 +17,9 @@
 package org.esa.snap.collocation.visat;
 
 import org.esa.snap.collocation.ResamplingType;
-import org.esa.snap.framework.datamodel.Band;
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductData;
+import org.esa.snap.core.datamodel.Band;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductData;
 import org.junit.Test;
 
 import javax.swing.DefaultComboBoxModel;

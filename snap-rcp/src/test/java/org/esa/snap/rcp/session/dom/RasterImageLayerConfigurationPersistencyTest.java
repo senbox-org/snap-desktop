@@ -20,8 +20,8 @@ import com.bc.ceres.binding.PropertySet;
 import com.bc.ceres.glayer.Layer;
 import com.bc.ceres.glayer.LayerType;
 import com.bc.ceres.glayer.LayerTypeRegistry;
-import org.esa.snap.framework.datamodel.Band;
-import org.esa.snap.glayer.RasterImageLayerType;
+import org.esa.snap.core.datamodel.Band;
+import org.esa.snap.core.layer.RasterImageLayerType;
 
 public class RasterImageLayerConfigurationPersistencyTest extends AbstractLayerConfigurationPersistencyTest {
 

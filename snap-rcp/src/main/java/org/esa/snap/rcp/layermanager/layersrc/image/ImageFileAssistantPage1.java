@@ -18,13 +18,13 @@ package org.esa.snap.rcp.layermanager.layersrc.image;
 
 
 import com.bc.ceres.glayer.tools.Tools;
-import org.esa.snap.framework.ui.FileHistory;
-import org.esa.snap.framework.ui.layer.AbstractLayerSourceAssistantPage;
-import org.esa.snap.framework.ui.layer.LayerSourcePageContext;
+import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.layermanager.layersrc.FilePathListCellRenderer;
 import org.esa.snap.rcp.layermanager.layersrc.HistoryComboBoxModel;
-import org.esa.snap.util.io.FileUtils;
+import org.esa.snap.ui.FileHistory;
+import org.esa.snap.ui.layer.AbstractLayerSourceAssistantPage;
+import org.esa.snap.ui.layer.LayerSourcePageContext;
 
 import javax.media.jai.Interpolation;
 import javax.media.jai.PlanarImage;

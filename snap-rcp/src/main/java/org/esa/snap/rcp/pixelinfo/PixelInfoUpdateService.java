@@ -15,7 +15,7 @@
  */
 package org.esa.snap.rcp.pixelinfo;
 
-import org.esa.snap.framework.ui.product.ProductSceneView;
+import org.esa.snap.ui.product.ProductSceneView;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;

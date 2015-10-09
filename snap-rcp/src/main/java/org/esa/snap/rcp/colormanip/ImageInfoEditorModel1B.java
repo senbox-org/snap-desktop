@@ -16,8 +16,8 @@
 
 package org.esa.snap.rcp.colormanip;
 
-import org.esa.snap.framework.datamodel.ImageInfo;
-import org.esa.snap.framework.ui.DefaultImageInfoEditorModel;
+import org.esa.snap.core.datamodel.ImageInfo;
+import org.esa.snap.ui.DefaultImageInfoEditorModel;
 
 /**
  * todo - add API doc

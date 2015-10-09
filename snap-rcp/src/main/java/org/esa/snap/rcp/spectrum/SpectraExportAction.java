@@ -16,12 +16,12 @@
 
 package org.esa.snap.rcp.spectrum;
 
-import org.esa.snap.framework.datamodel.Placemark;
-import org.esa.snap.framework.ui.diagram.DiagramGraph;
-import org.esa.snap.framework.ui.diagram.DiagramGraphIO;
-import org.esa.snap.framework.ui.product.spectrum.DisplayableSpectrum;
+import org.esa.snap.core.datamodel.Placemark;
+import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.util.io.SnapFileFilter;
+import org.esa.snap.ui.diagram.DiagramGraph;
+import org.esa.snap.ui.diagram.DiagramGraphIO;
+import org.esa.snap.ui.product.spectrum.DisplayableSpectrum;
 
 import javax.swing.AbstractAction;
 import javax.swing.SwingUtilities;

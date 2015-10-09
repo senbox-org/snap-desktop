@@ -1,3 +1,3 @@
-org.esa.snap.framework.ui.color.ColorEditor
-org.esa.snap.framework.ui.product.ExpressionEditor$GeneralExpressionEditor
-org.esa.snap.framework.ui.product.ExpressionEditor$BooleanExpressionEditor
+org.esa.snap.ui.color.ColorEditor
+org.esa.snap.ui.product.ExpressionEditor$GeneralExpressionEditor
+org.esa.snap.ui.product.ExpressionEditor$BooleanExpressionEditor

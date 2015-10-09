@@ -23,7 +23,7 @@ import com.bc.ceres.swing.binding.internal.AbstractButtonAdapter;
 import com.jidesoft.swing.AutoResizingTextArea;
 import com.jidesoft.swing.TitledSeparator;
 import org.esa.snap.binning.operator.BinningOp;
-import org.esa.snap.framework.ui.RegionBoundsInputUI;
+import org.esa.snap.ui.RegionBoundsInputUI;
 
 import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;

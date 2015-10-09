@@ -15,8 +15,8 @@
  */
 package org.esa.snap.rcp.actions.window;
 
-import org.esa.snap.framework.datamodel.ProductNode;
-import org.esa.snap.framework.datamodel.VectorDataNode;
+import org.esa.snap.core.datamodel.ProductNode;
+import org.esa.snap.core.datamodel.VectorDataNode;
 import org.esa.snap.netbeans.docwin.DocumentWindowManager;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.placemark.PlacemarkViewTopComponent;

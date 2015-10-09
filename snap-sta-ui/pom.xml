@@ -135,6 +135,7 @@
                         <publicPackage>org.esa.snap.ui.tooladapter.actions.*</publicPackage>
                         <publicPackage>org.esa.snap.ui.tooladapter.dialogs.*</publicPackage>
                         <publicPackage>org.esa.snap.ui.tooladapter.model.*</publicPackage>
+                        <publicPackage>org.esa.snap.ui.tooladapter.preferences.*</publicPackage>
                         <publicPackage>org.esa.snap.ui.tooladapter.validators.*</publicPackage>
                         <publicPackage>org.esa.snap.modules.*</publicPackage>
                     </publicPackages>

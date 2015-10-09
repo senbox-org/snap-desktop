@@ -25,9 +25,9 @@ import com.bc.ceres.swing.figure.Figure;
 import com.bc.ceres.swing.figure.FigureEditor;
 import com.bc.ceres.swing.figure.Interactor;
 import com.bc.ceres.swing.figure.interactions.SelectionInteractor;
-import org.esa.snap.framework.ui.product.ProductSceneView;
-import org.esa.snap.framework.ui.product.VectorDataFigureEditor;
-import org.esa.snap.framework.ui.product.VectorDataLayer;
+import org.esa.snap.ui.product.ProductSceneView;
+import org.esa.snap.ui.product.VectorDataFigureEditor;
+import org.esa.snap.ui.product.VectorDataLayer;
 
 import java.awt.Rectangle;
 import java.awt.Shape;

@@ -28,15 +28,16 @@ import com.bc.ceres.swing.figure.support.DefaultFigureStyle;
 import com.bc.ceres.swing.figure.support.NamedSymbol;
 import com.bc.ceres.swing.selection.AbstractSelectionChangeListener;
 import com.bc.ceres.swing.selection.SelectionChangeEvent;
-import org.esa.snap.framework.datamodel.Placemark;
-import org.esa.snap.framework.datamodel.VectorDataNode;
-import org.esa.snap.framework.ui.layer.AbstractLayerConfigurationEditor;
-import org.esa.snap.framework.ui.product.ProductSceneView;
-import org.esa.snap.framework.ui.product.SimpleFeatureFigure;
-import org.esa.snap.framework.ui.product.VectorDataFigureEditor;
-import org.esa.snap.framework.ui.product.VectorDataLayer;
-import org.esa.snap.util.Debug;
-import org.esa.snap.util.ObjectUtils;
+import org.esa.snap.core.datamodel.Placemark;
+import org.esa.snap.core.datamodel.VectorDataNode;
+import org.esa.snap.core.util.Debug;
+import org.esa.snap.core.util.ObjectUtils;
+import org.esa.snap.ui.layer.AbstractLayerConfigurationEditor;
+import org.esa.snap.ui.layer.LayerEditor;
+import org.esa.snap.ui.product.ProductSceneView;
+import org.esa.snap.ui.product.SimpleFeatureFigure;
+import org.esa.snap.ui.product.VectorDataFigureEditor;
+import org.esa.snap.ui.product.VectorDataLayer;
 import org.openide.util.Utilities;
 
 import java.awt.Color;
@@ -45,7 +46,7 @@ import java.beans.PropertyChangeListener;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Customizable {@link org.esa.snap.framework.ui.layer.LayerEditor} for {@link VectorDataNode}s.
+ * Customizable {@link LayerEditor} for {@link VectorDataNode}s.
  *
  * @author Marco Peters
  * @author Norman Fomferra

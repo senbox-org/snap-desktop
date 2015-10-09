@@ -16,10 +16,10 @@
 
 package org.esa.snap.pixex.visat;
 
-import org.esa.snap.framework.datamodel.GeoPos;
-import org.esa.snap.framework.datamodel.PinDescriptor;
-import org.esa.snap.framework.datamodel.PixelPos;
-import org.esa.snap.framework.datamodel.Placemark;
+import org.esa.snap.core.datamodel.GeoPos;
+import org.esa.snap.core.datamodel.PinDescriptor;
+import org.esa.snap.core.datamodel.PixelPos;
+import org.esa.snap.core.datamodel.Placemark;
 
 import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;

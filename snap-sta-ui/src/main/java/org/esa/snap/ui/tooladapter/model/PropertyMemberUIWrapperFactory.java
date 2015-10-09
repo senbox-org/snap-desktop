@@ -24,11 +24,11 @@ import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.PropertyEditor;
 import com.bc.ceres.swing.binding.PropertyEditorRegistry;
 import org.apache.commons.lang.StringUtils;
-import org.esa.snap.framework.gpf.annotations.ParameterDescriptorFactory;
-import org.esa.snap.framework.gpf.descriptor.ParameterDescriptor;
-import org.esa.snap.framework.gpf.descriptor.PropertyAttributeException;
-import org.esa.snap.framework.gpf.descriptor.ToolAdapterOperatorDescriptor;
-import org.esa.snap.framework.gpf.descriptor.ToolParameterDescriptor;
+import org.esa.snap.core.gpf.annotations.ParameterDescriptorFactory;
+import org.esa.snap.core.gpf.descriptor.ParameterDescriptor;
+import org.esa.snap.core.gpf.descriptor.PropertyAttributeException;
+import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
+import org.esa.snap.core.gpf.descriptor.ToolParameterDescriptor;
 
 import javax.swing.*;
 import java.awt.event.FocusEvent;

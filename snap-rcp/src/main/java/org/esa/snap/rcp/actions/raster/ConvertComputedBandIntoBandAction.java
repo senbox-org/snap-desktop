@@ -17,14 +17,14 @@
 package org.esa.snap.rcp.actions.raster;
 
 import com.bc.ceres.glevel.MultiLevelImage;
-import org.esa.snap.framework.datamodel.Band;
-import org.esa.snap.framework.datamodel.FilterBand;
-import org.esa.snap.framework.datamodel.ImageInfo;
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductNode;
-import org.esa.snap.framework.datamodel.ProductNodeGroup;
-import org.esa.snap.framework.datamodel.RasterDataNode;
-import org.esa.snap.framework.datamodel.VirtualBand;
+import org.esa.snap.core.datamodel.Band;
+import org.esa.snap.core.datamodel.FilterBand;
+import org.esa.snap.core.datamodel.ImageInfo;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductNode;
+import org.esa.snap.core.datamodel.ProductNodeGroup;
+import org.esa.snap.core.datamodel.RasterDataNode;
+import org.esa.snap.core.datamodel.VirtualBand;
 import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;

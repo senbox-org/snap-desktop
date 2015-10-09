@@ -1,10 +1,10 @@
 package org.esa.snap.rcp.placemark.pin;
 
-import org.esa.snap.framework.datamodel.Band;
-import org.esa.snap.framework.datamodel.PinDescriptor;
-import org.esa.snap.framework.datamodel.PlacemarkDescriptor;
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.TiePointGrid;
+import org.esa.snap.core.datamodel.Band;
+import org.esa.snap.core.datamodel.PinDescriptor;
+import org.esa.snap.core.datamodel.PlacemarkDescriptor;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.TiePointGrid;
 import org.esa.snap.rcp.placemark.PlacemarkManagerTopComponent;
 import org.esa.snap.rcp.placemark.TableModelFactory;
 import org.openide.awt.ActionID;

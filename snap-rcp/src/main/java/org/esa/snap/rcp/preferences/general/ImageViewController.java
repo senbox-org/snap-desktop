@@ -21,9 +21,9 @@ import com.bc.ceres.binding.PropertySet;
 import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.PropertyEditorRegistry;
-import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.rcp.preferences.DefaultConfigController;
 import org.esa.snap.rcp.preferences.Preference;
+import org.esa.snap.ui.product.ProductSceneView;
 import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.HelpCtx;
 

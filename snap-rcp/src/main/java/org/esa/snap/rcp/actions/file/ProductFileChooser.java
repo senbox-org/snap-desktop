@@ -1,14 +1,14 @@
 package org.esa.snap.rcp.actions.file;
 
-import org.esa.snap.framework.dataio.ProductIO;
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.ui.GridBagUtils;
-import org.esa.snap.framework.ui.SnapFileChooser;
-import org.esa.snap.framework.ui.product.ProductSubsetDialog;
+import org.esa.snap.core.dataio.ProductIO;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.util.StringUtils;
+import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
-import org.esa.snap.util.StringUtils;
-import org.esa.snap.util.io.FileUtils;
+import org.esa.snap.ui.GridBagUtils;
+import org.esa.snap.ui.SnapFileChooser;
+import org.esa.snap.ui.product.ProductSubsetDialog;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;

@@ -20,12 +20,12 @@ package org.esa.snap.rcp.layermanager.layersrc.product;
 import com.bc.ceres.glayer.Layer;
 import com.bc.ceres.glayer.support.AbstractLayerListener;
 import com.bc.ceres.glayer.support.ImageLayer;
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductNodeEvent;
-import org.esa.snap.framework.datamodel.ProductNodeListener;
-import org.esa.snap.framework.datamodel.RasterDataNode;
-import org.esa.snap.framework.datamodel.VirtualBand;
-import org.esa.snap.glevel.BandImageMultiLevelSource;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductNodeEvent;
+import org.esa.snap.core.datamodel.ProductNodeListener;
+import org.esa.snap.core.datamodel.RasterDataNode;
+import org.esa.snap.core.datamodel.VirtualBand;
+import org.esa.snap.core.image.BandImageMultiLevelSource;
 
 import java.util.Arrays;
 import java.util.List;

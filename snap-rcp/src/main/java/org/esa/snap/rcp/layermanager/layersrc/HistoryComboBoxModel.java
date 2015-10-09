@@ -16,7 +16,7 @@
 
 package org.esa.snap.rcp.layermanager.layersrc;
 
-import org.esa.snap.framework.ui.UserInputHistory;
+import org.esa.snap.ui.UserInputHistory;
 
 import javax.swing.ComboBoxModel;
 import javax.swing.event.EventListenerList;

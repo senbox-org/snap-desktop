@@ -15,8 +15,8 @@
  */
 package org.esa.snap.worldwind;
 
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductManager;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductManager;
 import org.esa.snap.rcp.SnapApp;
 
 /**

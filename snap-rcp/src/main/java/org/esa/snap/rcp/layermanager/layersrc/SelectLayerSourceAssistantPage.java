@@ -16,10 +16,10 @@
 
 package org.esa.snap.rcp.layermanager.layersrc;
 
-import org.esa.snap.framework.ui.layer.AbstractLayerSourceAssistantPage;
-import org.esa.snap.framework.ui.layer.LayerSource;
-import org.esa.snap.framework.ui.layer.LayerSourceDescriptor;
-import org.esa.snap.framework.ui.layer.LayerSourcePageContext;
+import org.esa.snap.ui.layer.AbstractLayerSourceAssistantPage;
+import org.esa.snap.ui.layer.LayerSource;
+import org.esa.snap.ui.layer.LayerSourceDescriptor;
+import org.esa.snap.ui.layer.LayerSourcePageContext;
 
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JLabel;

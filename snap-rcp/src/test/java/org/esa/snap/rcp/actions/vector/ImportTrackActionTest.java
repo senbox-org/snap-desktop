@@ -1,6 +1,6 @@
 package org.esa.snap.rcp.actions.vector;
 
-import org.esa.snap.framework.datamodel.CrsGeoCoding;
+import org.esa.snap.core.datamodel.CrsGeoCoding;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.junit.Test;

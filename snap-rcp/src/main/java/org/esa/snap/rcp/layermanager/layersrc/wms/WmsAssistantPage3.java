@@ -17,8 +17,8 @@
 package org.esa.snap.rcp.layermanager.layersrc.wms;
 
 import com.bc.ceres.glayer.swing.LayerCanvas;
-import org.esa.snap.framework.ui.layer.AbstractLayerSourceAssistantPage;
-import org.esa.snap.framework.ui.layer.LayerSourcePageContext;
+import org.esa.snap.ui.layer.AbstractLayerSourceAssistantPage;
+import org.esa.snap.ui.layer.LayerSourcePageContext;
 import org.geotools.data.ows.CRSEnvelope;
 import org.geotools.data.ows.Layer;
 import org.geotools.data.ows.StyleImpl;

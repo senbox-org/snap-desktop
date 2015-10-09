@@ -15,11 +15,11 @@
  */
 package org.esa.snap.graphbuilder.gpf.ui;
 
-import org.esa.snap.graphbuilder.rcp.dialogs.support.FileTable;
 import org.esa.snap.graphbuilder.rcp.dialogs.ProductSetPanel;
-import org.esa.snap.framework.ui.AppContext;
+import org.esa.snap.graphbuilder.rcp.dialogs.support.FileTable;
+import org.esa.snap.ui.AppContext;
 
-import javax.swing.*;
+import javax.swing.JComponent;
 import java.io.File;
 import java.util.Map;
 

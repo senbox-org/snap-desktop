@@ -1,0 +1,14 @@
+<filesystem>
+
+    <folder name="OperatorUIs">
+        <file name="org.esa.snap.core.gpf.ui.Mosaic">
+            <attr name="operatorName" stringvalue="Mosaic"/>
+            <attr name="disableFromGraphBuilder" stringvalue="true"/>
+        </file>
+        <file name="org.esa.snap.core.gpf.ui.Merge">
+            <attr name="operatorName" stringvalue="Merge"/>
+            <attr name="disableFromGraphBuilder" stringvalue="true"/>
+        </file>
+    </folder>
+
+</filesystem>

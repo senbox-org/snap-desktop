@@ -15,7 +15,7 @@
  */
 package org.esa.snap.graphbuilder.rcp.utils;
 
-import org.esa.snap.util.SystemUtils;
+import org.esa.snap.core.util.SystemUtils;
 
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;

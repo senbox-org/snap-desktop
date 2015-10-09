@@ -17,13 +17,13 @@
 package org.esa.snap.timeseries.ui.graph;
 
 import com.bc.ceres.glayer.support.ImageLayer;
-import org.esa.snap.framework.datamodel.Placemark;
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductNode;
-import org.esa.snap.framework.datamodel.ProductNodeEvent;
-import org.esa.snap.framework.datamodel.RasterDataNode;
-import org.esa.snap.framework.ui.PixelPositionListener;
-import org.esa.snap.framework.ui.product.ProductSceneView;
+import org.esa.snap.core.datamodel.Placemark;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductNode;
+import org.esa.snap.core.datamodel.ProductNodeEvent;
+import org.esa.snap.core.datamodel.RasterDataNode;
+import org.esa.snap.core.ui.PixelPositionListener;
+import org.esa.snap.core.ui.product.ProductSceneView;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.timeseries.core.TimeSeriesMapper;
 import org.esa.snap.timeseries.core.TimeSeriesModule;

@@ -18,9 +18,9 @@ package org.esa.snap.worldwind.layers;
 import gov.nasa.worldwind.awt.WorldWindowGLCanvas;
 import gov.nasa.worldwind.event.SelectEvent;
 import gov.nasa.worldwind.layers.Layer;
-import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.core.datamodel.Product;
 
-import javax.swing.*;
+import javax.swing.JPanel;
 
 /**
  * World Wind renderable layer

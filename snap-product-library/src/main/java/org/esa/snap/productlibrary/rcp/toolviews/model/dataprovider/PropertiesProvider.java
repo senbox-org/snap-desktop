@@ -15,10 +15,10 @@
  */
 package org.esa.snap.productlibrary.rcp.toolviews.model.dataprovider;
 
+import org.esa.snap.core.datamodel.MetadataElement;
+import org.esa.snap.core.datamodel.ProductData;
 import org.esa.snap.datamodel.AbstractMetadata;
 import org.esa.snap.db.ProductEntry;
-import org.esa.snap.framework.datamodel.MetadataElement;
-import org.esa.snap.framework.datamodel.ProductData;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;

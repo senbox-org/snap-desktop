@@ -1,7 +1,7 @@
 package org.esa.snap.rcp.spectrum;
 
 import com.bc.ceres.glayer.support.ImageLayer;
-import org.esa.snap.framework.ui.PixelPositionListener;
+import org.esa.snap.ui.PixelPositionListener;
 
 import javax.swing.SwingWorker;
 import java.awt.event.MouseEvent;

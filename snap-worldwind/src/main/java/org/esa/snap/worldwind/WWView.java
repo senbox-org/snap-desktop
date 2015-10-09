@@ -15,7 +15,7 @@
  */
 package org.esa.snap.worldwind;
 
-import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.core.datamodel.Product;
 
 /**
  * Interface for WorldWind ToolView

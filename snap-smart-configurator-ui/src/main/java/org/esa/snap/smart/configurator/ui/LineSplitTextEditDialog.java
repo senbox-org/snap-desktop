@@ -15,10 +15,10 @@
  */
 package org.esa.snap.smart.configurator.ui;
 
-import org.esa.snap.framework.ui.ModalDialog;
+import org.esa.snap.ui.ModalDialog;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JScrollPane;
+import java.awt.Window;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

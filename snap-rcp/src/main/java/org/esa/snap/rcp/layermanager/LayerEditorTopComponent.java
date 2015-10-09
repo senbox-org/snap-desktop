@@ -17,7 +17,7 @@ package org.esa.snap.rcp.layermanager;
 
 import com.bc.ceres.glayer.Layer;
 import com.bc.ceres.glayer.support.AbstractLayerListener;
-import org.esa.snap.framework.ui.layer.LayerEditor;
+import org.esa.snap.ui.layer.LayerEditor;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;

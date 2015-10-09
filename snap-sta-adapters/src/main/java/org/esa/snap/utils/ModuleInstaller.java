@@ -17,10 +17,10 @@
  */
 package org.esa.snap.utils;
 
-import org.esa.snap.framework.gpf.descriptor.ToolAdapterOperatorDescriptor;
-import org.esa.snap.framework.gpf.operators.tooladapter.ToolAdapterIO;
-import org.esa.snap.framework.gpf.operators.tooladapter.ToolAdapterOpSpi;
-import org.esa.snap.framework.gpf.operators.tooladapter.ToolAdapterRegistry;
+import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
+import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterIO;
+import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterOpSpi;
+import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterRegistry;
 import org.esa.snap.modules.ModulePackager;
 import org.esa.snap.ui.tooladapter.actions.ToolAdapterActionRegistrar;
 import org.openide.modules.ModuleInstall;

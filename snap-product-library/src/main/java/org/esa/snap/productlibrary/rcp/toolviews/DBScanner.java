@@ -15,11 +15,11 @@
  */
 package org.esa.snap.productlibrary.rcp.toolviews;
 
+import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.db.CommonReaders;
 import org.esa.snap.db.ProductDB;
 import org.esa.snap.db.ProductEntry;
 import org.esa.snap.db.QuickLookGenerator;
-import org.esa.snap.framework.datamodel.Product;
 import org.esa.snap.gpf.ThreadManager;
 import org.esa.snap.util.ProductFunctions;
 

@@ -16,11 +16,11 @@
 package org.esa.snap.graphbuilder.rcp.dialogs.support;
 
 import com.bc.ceres.binding.dom.DomElement;
-import org.esa.snap.framework.gpf.graph.Graph;
-import org.esa.snap.framework.gpf.graph.GraphException;
-import org.esa.snap.framework.gpf.graph.GraphIO;
-import org.esa.snap.framework.gpf.graph.Node;
-import org.esa.snap.framework.gpf.graph.NodeSource;
+import org.esa.snap.core.gpf.graph.Graph;
+import org.esa.snap.core.gpf.graph.GraphException;
+import org.esa.snap.core.gpf.graph.GraphIO;
+import org.esa.snap.core.gpf.graph.Node;
+import org.esa.snap.core.gpf.graph.NodeSource;
 
 import java.io.FileReader;
 import java.util.ArrayList;

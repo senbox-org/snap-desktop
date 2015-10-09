@@ -17,11 +17,11 @@
  */
 package org.esa.snap.ui.tooladapter.model;
 
-import org.esa.snap.framework.gpf.descriptor.SystemDependentVariable;
-import org.esa.snap.framework.gpf.descriptor.SystemVariable;
-import org.esa.snap.framework.ui.AppContext;
-import org.esa.snap.framework.ui.UIUtils;
-import org.esa.snap.framework.ui.tool.ToolButtonFactory;
+import org.esa.snap.core.gpf.descriptor.SystemDependentVariable;
+import org.esa.snap.core.gpf.descriptor.SystemVariable;
+import org.esa.snap.ui.AppContext;
+import org.esa.snap.ui.UIUtils;
+import org.esa.snap.ui.tool.ToolButtonFactory;
 import org.esa.snap.ui.tooladapter.dialogs.SystemDependentVariableEditorDialog;
 
 import javax.swing.*;

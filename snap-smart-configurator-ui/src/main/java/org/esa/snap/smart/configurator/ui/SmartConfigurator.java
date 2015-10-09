@@ -15,10 +15,14 @@
  */
 package org.esa.snap.smart.configurator.ui;
 
-import org.esa.snap.util.SystemUtils;
+import org.esa.snap.core.util.SystemUtils;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+import java.awt.BorderLayout;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 

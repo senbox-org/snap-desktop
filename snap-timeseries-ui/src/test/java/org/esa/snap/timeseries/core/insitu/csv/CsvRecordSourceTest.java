@@ -1,7 +1,7 @@
 package org.esa.snap.timeseries.core.insitu.csv;
 
-import org.esa.snap.framework.datamodel.GeoPos;
-import org.esa.snap.framework.datamodel.ProductData;
+import org.esa.snap.core.datamodel.GeoPos;
+import org.esa.snap.core.datamodel.ProductData;
 import org.esa.snap.timeseries.core.insitu.Header;
 import org.esa.snap.timeseries.core.insitu.Record;
 import org.junit.Test;

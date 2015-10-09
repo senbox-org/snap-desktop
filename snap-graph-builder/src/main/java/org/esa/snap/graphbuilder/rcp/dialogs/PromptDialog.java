@@ -15,9 +15,9 @@
  */
 package org.esa.snap.graphbuilder.rcp.dialogs;
 
-import org.esa.snap.framework.ui.GridBagUtils;
-import org.esa.snap.framework.ui.ModalDialog;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.ui.GridBagUtils;
+import org.esa.snap.ui.ModalDialog;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;

@@ -16,9 +16,9 @@
 
 package org.esa.snap.timeseries.core.timeseries.datamodel;
 
-import org.esa.snap.framework.datamodel.PixelPos;
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductData;
+import org.esa.snap.core.datamodel.PixelPos;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductData;
 
 /**
  * <p><i>Note that this class is not yet public API. Interface may change in future releases.</i></p>

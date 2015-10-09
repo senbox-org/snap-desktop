@@ -89,13 +89,13 @@ file <strong>snap.properties</strong></p>
             <td>name</td>
             <td>Yes</td>
             <td>The name of the adapter. Must be unique among the set of adapters.<br/>
-                Sample value: <i>org.esa.snap.framework.gpf.operators.tooladapter.MyAdapter</i>
+                Sample value: <i>org.esa.snap.core.gpf.operators.tooladapter.MyAdapter</i>
             </td>
         </tr>
         <tr>
             <td>operatorClass</td>
             <td>Yes</td>
-            <td>The implementing Java class.<br/>It is always <strong>org.esa.snap.framework.gpf.operators.tooladapter.ToolAdapterOp</strong>
+            <td>The implementing Java class.<br/>It is always <strong>org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterOp</strong>
             </td>
         </tr>
         <tr>
@@ -421,7 +421,7 @@ file <strong>snap.properties</strong></p>
     </tbody>
 </table>
 <h5 id="srcProdDesc">Source Products Descriptors section</h5>
-<p>The element <strong>sourceProductDescriptors</strong> has one or more child elements <strong>org.esa.snap.framework.gpf.descriptor.DefaultSourceProductDescriptor</strong> with the following structure:</p>
+<p>The element <strong>sourceProductDescriptors</strong> has one or more child elements <strong>org.esa.snap.core.gpf.descriptor.DefaultSourceProductDescriptor</strong> with the following structure:</p>
 <table>
     <thead>
         <tr>
@@ -440,6 +440,6 @@ file <strong>snap.properties</strong></p>
         </tr>
     </tbody>
 </table>
-<p>Please remember that the number of <strong>org.esa.snap.framework.gpf.descriptor.DefaultSourceProductDescriptor</strong> elements should match the value of the <strong>numSourceProducts</strong> element</p>
+<p>Please remember that the number of <strong>org.esa.snap.core.gpf.descriptor.DefaultSourceProductDescriptor</strong> elements should match the value of the <strong>numSourceProducts</strong> element</p>
 </body>
 </html>

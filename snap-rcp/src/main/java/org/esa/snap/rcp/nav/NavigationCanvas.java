@@ -27,8 +27,8 @@ import com.bc.ceres.grender.Rendering;
 import com.bc.ceres.grender.Viewport;
 import com.bc.ceres.grender.ViewportListener;
 import com.bc.ceres.grender.support.DefaultViewport;
-import org.esa.snap.framework.ui.product.ProductSceneView;
 import org.esa.snap.rcp.windows.NavigationTopComponent;
+import org.esa.snap.ui.product.ProductSceneView;
 
 import javax.swing.JPanel;
 import javax.swing.border.Border;

@@ -16,11 +16,11 @@
 
 package org.esa.snap.rcp.layermanager.layersrc.wms;
 
-import org.esa.snap.framework.datamodel.RasterDataNode;
-import org.esa.snap.framework.ui.layer.AbstractLayerSourceAssistantPage;
-import org.esa.snap.framework.ui.layer.LayerSourcePageContext;
-import org.esa.snap.jai.ImageManager;
+import org.esa.snap.core.datamodel.RasterDataNode;
+import org.esa.snap.core.image.ImageManager;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.ui.layer.AbstractLayerSourceAssistantPage;
+import org.esa.snap.ui.layer.LayerSourcePageContext;
 import org.geotools.data.ows.CRSEnvelope;
 import org.geotools.data.ows.Layer;
 import org.geotools.data.ows.StyleImpl;

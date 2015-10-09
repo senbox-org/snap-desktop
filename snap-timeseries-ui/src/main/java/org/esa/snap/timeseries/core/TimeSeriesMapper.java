@@ -16,7 +16,7 @@
 
 package org.esa.snap.timeseries.core;
 
-import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.timeseries.core.timeseries.datamodel.AbstractTimeSeries;
 import org.esa.snap.timeseries.core.timeseries.datamodel.ProductLocation;
 

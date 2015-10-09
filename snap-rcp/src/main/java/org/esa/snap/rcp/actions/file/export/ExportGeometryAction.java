@@ -18,13 +18,13 @@ package org.esa.snap.rcp.actions.file.export;
 
 import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
-import org.esa.snap.framework.datamodel.CrsGeoCoding;
-import org.esa.snap.framework.datamodel.VectorDataNode;
-import org.esa.snap.framework.ui.UIUtils;
-import org.esa.snap.jai.ImageManager;
+import org.esa.snap.core.datamodel.CrsGeoCoding;
+import org.esa.snap.core.datamodel.VectorDataNode;
+import org.esa.snap.core.image.ImageManager;
+import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
-import org.esa.snap.util.io.SnapFileFilter;
+import org.esa.snap.ui.UIUtils;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.DefaultTransaction;

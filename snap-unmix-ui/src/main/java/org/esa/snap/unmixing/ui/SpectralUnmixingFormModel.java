@@ -19,7 +19,7 @@ package org.esa.snap.unmixing.ui;
 import com.bc.ceres.binding.Property;
 import com.bc.ceres.binding.PropertySet;
 import com.bc.ceres.binding.ValidationException;
-import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.core.datamodel.Product;
 
 class SpectralUnmixingFormModel {
     private Product sourceProduct;

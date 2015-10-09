@@ -16,7 +16,7 @@
 
 package org.esa.snap.timeseries.ui.manager;
 
-import org.esa.snap.framework.ui.UIUtils;
+import org.esa.snap.core.ui.UIUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.timeseries.core.insitu.InsituLoader;
 import org.esa.snap.timeseries.core.insitu.InsituLoaderFactory;

@@ -2,7 +2,7 @@ package org.esa.snap.opendap.ui;
 
 import com.bc.ceres.binding.Property;
 import com.bc.ceres.binding.PropertySet;
-import org.esa.snap.framework.ui.RegionBoundsInputUI;
+import org.esa.snap.core.ui.RegionBoundsInputUI;
 import org.esa.snap.opendap.datamodel.OpendapLeaf;
 import thredds.catalog.ThreddsMetadata;
 import ucar.unidata.geoloc.LatLonPointImpl;

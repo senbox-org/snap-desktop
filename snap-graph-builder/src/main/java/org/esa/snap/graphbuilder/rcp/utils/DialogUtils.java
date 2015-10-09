@@ -15,8 +15,8 @@
  */
 package org.esa.snap.graphbuilder.rcp.utils;
 
-import org.esa.snap.framework.ui.GridBagUtils;
-import org.esa.snap.framework.ui.tool.ToolButtonFactory;
+import org.esa.snap.ui.GridBagUtils;
+import org.esa.snap.ui.tool.ToolButtonFactory;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;

@@ -5,8 +5,8 @@
  */
 package org.esa.snap.rcp.nodes;
 
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductNode;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductNode;
 
 /**
  * A group object serves as a key for {@link PNGroupNode}s and is a child factory for nodes

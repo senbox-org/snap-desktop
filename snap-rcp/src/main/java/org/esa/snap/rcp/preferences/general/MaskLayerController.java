@@ -21,7 +21,7 @@ import com.bc.ceres.binding.PropertySet;
 import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.PropertyEditorRegistry;
-import org.esa.snap.framework.datamodel.Mask;
+import org.esa.snap.core.datamodel.Mask;
 import org.esa.snap.rcp.preferences.DefaultConfigController;
 import org.esa.snap.rcp.preferences.Preference;
 import org.esa.snap.rcp.preferences.PreferenceUtils;

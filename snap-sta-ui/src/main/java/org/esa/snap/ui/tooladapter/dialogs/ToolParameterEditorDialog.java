@@ -27,27 +27,20 @@ import com.bc.ceres.swing.binding.internal.CheckBoxEditor;
 import com.bc.ceres.swing.binding.internal.TextFieldEditor;
 import org.apache.commons.collections.BidiMap;
 import org.apache.commons.collections.bidimap.DualHashBidiMap;
-import org.esa.snap.framework.gpf.annotations.ParameterDescriptorFactory;
-import org.esa.snap.framework.gpf.descriptor.ToolParameterDescriptor;
-import org.esa.snap.framework.ui.AppContext;
-import org.esa.snap.framework.ui.ModalDialog;
+import org.esa.snap.core.gpf.annotations.ParameterDescriptorFactory;
+import org.esa.snap.core.gpf.descriptor.ToolParameterDescriptor;
+import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.ui.AppContext;
+import org.esa.snap.ui.ModalDialog;
+import org.esa.snap.ui.tooladapter.actions.EscapeAction;
 import org.esa.snap.ui.tooladapter.model.PropertyMemberUIWrapper;
 import org.esa.snap.ui.tooladapter.model.PropertyMemberUIWrapperFactory;
 import org.esa.snap.ui.tooladapter.validators.RequiredFieldValidator;
 import org.esa.snap.ui.tooladapter.validators.TypedValueValidator;
-import org.esa.snap.util.StringUtils;
 
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.io.File;
@@ -98,6 +91,7 @@ public class ToolParameterEditorDialog extends ModalDialog {
         this.logger = Logger.getLogger(ToolAdapterEditorDialog.class.getName());
         setContent(createMainPanel());
         getJDialog().setPreferredSize(new Dimension(500, 500));
+        EscapeAction.register(getJDialog());
     }
 
     private void createContextForValueEditor() throws Exception{
@@ -133,7 +127,7 @@ public class ToolParameterEditorDialog extends ModalDialog {
         comboEditor.addActionListener(ev -> {
             JComboBox cb = (JComboBox) ev.getSource();
             String typeName = (String) cb.getSelectedItem();
-            if (!parameter.getDataType().equals((Class<?>) typesMap.get(typeName))) {
+            if (!parameter.getDataType().equals(typesMap.get(typeName))) {
                 parameter.setDataType((Class<?>) typesMap.get(typeName));
                 //reset value set
                 parameter.setValueSet(null);

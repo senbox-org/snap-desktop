@@ -16,9 +16,9 @@
 package org.esa.snap.graphbuilder.rcp.dialogs.support;
 
 import com.thoughtworks.xstream.io.xml.xppdom.XppDom;
-import org.esa.snap.framework.gpf.graph.GraphContext;
-import org.esa.snap.framework.gpf.graph.GraphException;
-import org.esa.snap.framework.gpf.graph.NodeContext;
+import org.esa.snap.core.gpf.graph.GraphContext;
+import org.esa.snap.core.gpf.graph.GraphException;
+import org.esa.snap.core.gpf.graph.NodeContext;
 
 import java.util.ArrayList;
 import java.util.List;

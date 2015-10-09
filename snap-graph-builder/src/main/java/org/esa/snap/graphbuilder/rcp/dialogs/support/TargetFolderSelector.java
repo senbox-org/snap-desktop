@@ -16,10 +16,15 @@
 package org.esa.snap.graphbuilder.rcp.dialogs.support;
 
 import com.bc.ceres.swing.TableLayout;
-import org.esa.snap.framework.gpf.ui.TargetProductSelector;
+import org.esa.snap.core.gpf.ui.TargetProductSelector;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.BorderFactory;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.Insets;
 
 /**
  * Target folder selector

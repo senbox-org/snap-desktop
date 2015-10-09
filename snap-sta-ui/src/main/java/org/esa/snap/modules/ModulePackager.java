@@ -15,8 +15,8 @@
  */
 package org.esa.snap.modules;
 
-import org.esa.snap.framework.gpf.descriptor.ToolAdapterOperatorDescriptor;
-import org.esa.snap.framework.gpf.operators.tooladapter.ToolAdapterIO;
+import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
+import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterIO;
 import org.esa.snap.utils.ModuleInstaller;
 
 import java.io.*;

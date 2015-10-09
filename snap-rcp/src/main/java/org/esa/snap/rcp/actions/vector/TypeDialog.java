@@ -16,12 +16,12 @@
 
 package org.esa.snap.rcp.actions.vector;
 
-import org.esa.snap.framework.datamodel.GeometryDescriptor;
-import org.esa.snap.framework.datamodel.PlacemarkDescriptor;
-import org.esa.snap.framework.datamodel.PlacemarkDescriptorRegistry;
-import org.esa.snap.framework.datamodel.PointDescriptor;
-import org.esa.snap.framework.ui.ModalDialog;
+import org.esa.snap.core.datamodel.GeometryDescriptor;
+import org.esa.snap.core.datamodel.PlacemarkDescriptor;
+import org.esa.snap.core.datamodel.PlacemarkDescriptorRegistry;
+import org.esa.snap.core.datamodel.PointDescriptor;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.ui.ModalDialog;
 import org.opengis.feature.simple.SimpleFeatureType;
 
 import javax.swing.AbstractButton;

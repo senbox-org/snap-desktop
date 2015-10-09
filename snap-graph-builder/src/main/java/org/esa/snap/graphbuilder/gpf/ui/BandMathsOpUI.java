@@ -1,21 +1,21 @@
 package org.esa.snap.graphbuilder.gpf.ui;
 
-import com.bc.jexp.ParseException;
-import org.esa.snap.framework.datamodel.Band;
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductData;
-import org.esa.snap.framework.datamodel.ProductNodeList;
-import org.esa.snap.framework.dataop.barithm.BandArithmetic;
-import org.esa.snap.framework.param.ParamChangeEvent;
-import org.esa.snap.framework.param.ParamChangeListener;
-import org.esa.snap.framework.param.ParamProperties;
-import org.esa.snap.framework.param.Parameter;
-import org.esa.snap.framework.ui.AppContext;
-import org.esa.snap.framework.ui.GridBagUtils;
-import org.esa.snap.framework.ui.ModalDialog;
-import org.esa.snap.framework.ui.product.ProductExpressionPane;
-import org.esa.snap.gpf.operators.standard.BandMathsOp;
-import org.esa.snap.util.Debug;
+import org.esa.snap.core.datamodel.Band;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductData;
+import org.esa.snap.core.datamodel.ProductNodeList;
+import org.esa.snap.core.dataop.barithm.BandArithmetic;
+import org.esa.snap.core.gpf.common.BandMathsOp;
+import org.esa.snap.core.jexp.ParseException;
+import org.esa.snap.core.param.ParamChangeEvent;
+import org.esa.snap.core.param.ParamChangeListener;
+import org.esa.snap.core.param.ParamProperties;
+import org.esa.snap.core.param.Parameter;
+import org.esa.snap.core.util.Debug;
+import org.esa.snap.ui.AppContext;
+import org.esa.snap.ui.GridBagUtils;
+import org.esa.snap.ui.ModalDialog;
+import org.esa.snap.ui.product.ProductExpressionPane;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;

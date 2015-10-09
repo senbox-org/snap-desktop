@@ -1,7 +1,7 @@
 package org.esa.snap.rcp.nodes;
 
-import org.esa.snap.framework.datamodel.ProductNode;
-import org.esa.snap.framework.datamodel.RasterDataNode;
+import org.esa.snap.core.datamodel.ProductNode;
+import org.esa.snap.core.datamodel.RasterDataNode;
 import org.openide.explorer.propertysheet.ExPropertyEditor;
 import org.openide.explorer.propertysheet.PropertyEnv;
 

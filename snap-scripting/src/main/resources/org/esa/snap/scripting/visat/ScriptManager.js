@@ -1,10 +1,10 @@
 load("nashorn:mozilla_compat.js");
-importPackage(org.esa.snap.framework.datamodel);
-importPackage(org.esa.snap.framework.dataio);
-importPackage(org.esa.snap.framework.gpf);
-importPackage(org.esa.snap.framework.gpf.operators.common);
-importPackage(org.esa.snap.framework.gpf.operators.meris);
+importPackage(org.esa.snap.core.datamodel);
+importPackage(org.esa.snap.core.dataio);
+importPackage(org.esa.snap.core.gpf);
+importPackage(org.esa.snap.core.gpf.operators.common);
+importPackage(org.esa.snap.core.gpf.operators.meris);
 importPackage(org.esa.snap.util);
-importPackage(org.esa.snap.visat);
+importPackage(org.esa.snap.rcp);
 
-visat = VisatApp.getApp();
+snap = SnapApp.getDefault();

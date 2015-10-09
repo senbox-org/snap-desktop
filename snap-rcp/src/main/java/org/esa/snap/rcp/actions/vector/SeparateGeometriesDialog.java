@@ -16,8 +16,8 @@
 
 package org.esa.snap.rcp.actions.vector;
 
-import org.esa.snap.framework.datamodel.VectorDataNode;
-import org.esa.snap.framework.ui.ModalDialog;
+import org.esa.snap.core.datamodel.VectorDataNode;
+import org.esa.snap.ui.ModalDialog;
 import org.opengis.feature.type.AttributeType;
 
 import javax.swing.JComboBox;

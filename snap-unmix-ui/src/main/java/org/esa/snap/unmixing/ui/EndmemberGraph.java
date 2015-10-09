@@ -16,7 +16,7 @@
 
 package org.esa.snap.unmixing.ui;
 
-import org.esa.snap.framework.ui.diagram.DefaultDiagramGraph;
+import org.esa.snap.ui.diagram.DefaultDiagramGraph;
 import org.esa.snap.unmixing.Endmember;
 
 class EndmemberGraph extends DefaultDiagramGraph {

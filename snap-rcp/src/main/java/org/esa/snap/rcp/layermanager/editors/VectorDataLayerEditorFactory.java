@@ -1,8 +1,8 @@
 package org.esa.snap.rcp.layermanager.editors;
 
 import com.bc.ceres.core.ExtensionFactory;
-import org.esa.snap.framework.ui.layer.LayerEditor;
-import org.esa.snap.framework.ui.product.VectorDataLayer;
+import org.esa.snap.ui.layer.LayerEditor;
+import org.esa.snap.ui.product.VectorDataLayer;
 
 /**
  * Experimental code: A factory that creates a specific {@link LayerEditor} for a given {@link VectorDataLayer}.

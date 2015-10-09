@@ -1,7 +1,7 @@
 package org.esa.snap.timeseries.ui.matrix;
 
-import org.esa.snap.framework.datamodel.ImageInfo;
-import org.esa.snap.framework.datamodel.RasterDataNode;
+import org.esa.snap.core.datamodel.ImageInfo;
+import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.jai.ImageManager;
 
 import javax.swing.JLabel;

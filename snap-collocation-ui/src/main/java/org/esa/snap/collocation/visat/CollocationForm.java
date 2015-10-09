@@ -20,11 +20,11 @@ import com.bc.ceres.binding.PropertySet;
 import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
 import org.esa.snap.collocation.ResamplingType;
-import org.esa.snap.framework.datamodel.Band;
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.gpf.ui.SourceProductSelector;
-import org.esa.snap.framework.gpf.ui.TargetProductSelector;
-import org.esa.snap.framework.ui.AppContext;
+import org.esa.snap.core.datamodel.Band;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.gpf.ui.SourceProductSelector;
+import org.esa.snap.core.gpf.ui.TargetProductSelector;
+import org.esa.snap.ui.AppContext;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;

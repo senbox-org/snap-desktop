@@ -15,27 +15,38 @@
  */
 package org.esa.snap.productlibrary.rcp.toolviews;
 
-import org.esa.snap.productlibrary.rcp.toolviews.model.DatabaseQueryListener;
+import org.esa.snap.core.datamodel.GeoPos;
+import org.esa.snap.core.datamodel.MetadataElement;
+import org.esa.snap.core.datamodel.ProductData;
+import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.datamodel.AbstractMetadata;
 import org.esa.snap.db.DBQuery;
 import org.esa.snap.db.ProductDB;
 import org.esa.snap.db.ProductEntry;
 import org.esa.snap.db.SQLUtils;
-import org.esa.snap.framework.datamodel.GeoPos;
-import org.esa.snap.framework.datamodel.MetadataElement;
-import org.esa.snap.framework.datamodel.ProductData;
-import org.esa.snap.framework.ui.UIUtils;
+import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
+import org.esa.snap.productlibrary.rcp.toolviews.model.DatabaseQueryListener;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
-import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
-import org.esa.snap.util.StringUtils;
+import org.esa.snap.ui.UIUtils;
 import org.jdesktop.swingx.JXDatePicker;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;

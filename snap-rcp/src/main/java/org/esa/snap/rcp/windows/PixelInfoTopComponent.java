@@ -6,16 +6,16 @@
 package org.esa.snap.rcp.windows;
 
 import com.bc.ceres.glayer.support.ImageLayer;
-import org.esa.snap.framework.datamodel.PixelPos;
-import org.esa.snap.framework.datamodel.Placemark;
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductNodeEvent;
-import org.esa.snap.framework.datamodel.ProductNodeListener;
-import org.esa.snap.framework.ui.PixelPositionListener;
-import org.esa.snap.framework.ui.product.ProductSceneView;
+import org.esa.snap.core.datamodel.PixelPos;
+import org.esa.snap.core.datamodel.Placemark;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductNodeEvent;
+import org.esa.snap.core.datamodel.ProductNodeListener;
+import org.esa.snap.core.util.math.MathUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.pixelinfo.PixelInfoView;
-import org.esa.snap.util.math.MathUtils;
+import org.esa.snap.ui.PixelPositionListener;
+import org.esa.snap.ui.product.ProductSceneView;
 import org.netbeans.api.annotations.common.NonNull;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;

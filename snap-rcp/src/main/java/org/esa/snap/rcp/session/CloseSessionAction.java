@@ -15,7 +15,7 @@
  */
 package org.esa.snap.rcp.session;
 
-import org.esa.snap.framework.datamodel.ProductManager;
+import org.esa.snap.core.datamodel.ProductManager;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.file.CloseAllProductsAction;
 import org.openide.awt.ActionID;
