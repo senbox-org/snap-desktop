@@ -33,11 +33,14 @@ import org.esa.snap.framework.gpf.ui.SingleTargetProductDialog;
 import org.esa.snap.framework.ui.AppContext;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.actions.file.SaveProductAsAction;
+import org.esa.snap.ui.tooladapter.actions.EscapeAction;
+import org.esa.snap.ui.tooladapter.preferences.ToolAdapterOptionsController;
 import org.netbeans.api.progress.ProgressHandle;
 import org.netbeans.api.progress.ProgressHandleFactory;
 import org.netbeans.api.progress.ProgressUtils;
 import org.openide.util.Cancellable;
 import org.openide.util.NbBundle;
+import org.openide.util.NbPreferences;
 
 import javax.swing.*;
 import java.awt.event.WindowAdapter;
@@ -118,6 +121,7 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
                 appContext,
                 helpID);
         getJDialog().setJMenuBar(operatorMenu.createDefaultMenu());
+        EscapeAction.register(getJDialog());
     }
 
     /* Begin @Override methods section */
@@ -134,7 +138,8 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
         } catch (IOException ignored) {
         }
         if (Arrays.stream(sourceProducts).anyMatch(p -> p == null)) {
-            SnapDialogs.Answer decision = SnapDialogs.requestDecision("No Product Selected", Bundle.NoSourceProductWarning_Text(), false, null);
+            SnapDialogs.Answer decision = SnapDialogs.requestDecision("No Product Selected", Bundle.NoSourceProductWarning_Text(), false,
+                    ToolAdapterOptionsController.PREFERENCE_KEY_SHOW_EMPTY_PRODUCT_WARNING);
             if (decision.equals(SnapDialogs.Answer.NO)) {
                 return;
             }
@@ -151,7 +156,7 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
                     warnMessage.append("\t").append(msg).append("\n");
                 }
                 SnapDialogs.showWarning(warnMessage.toString());
-                ToolAdapterEditorDialog dialog = new ToolAdapterEditorDialog(appContext, operatorDescriptor, false);
+                AbstractAdapterEditor dialog = AbstractAdapterEditor.createEditorDialog(appContext, getJDialog(), operatorDescriptor, false);
                 dialog.getJDialog().addWindowListener(new WindowAdapter() {
                     @Override
                     public void windowClosed(WindowEvent e) {
@@ -171,7 +176,9 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
                     operatorTask = new OperatorTask(op, ToolAdapterExecutionDialog.this::operatorCompleted);
                     ProgressHandle progressHandle = ProgressHandleFactory.createHandle(this.getTitle());
                     String progressPattern = operatorDescriptor.getProgressPattern();
-                    ((ToolAdapterOp) op).setProgressMonitor(new ProgressWrapper(progressHandle, progressPattern == null || progressPattern.isEmpty()));
+                    ((ToolAdapterOp) op).setProgressMonitor(new ProgressWrapper(progressHandle,
+                                                                                progressPattern == null || progressPattern.isEmpty(),
+                                                                                displayExecutionConsole()));
                     ProgressUtils.runOffEventThreadWithProgressDialog(operatorTask, this.getTitle(), progressHandle, true, 1, 1);
                 }
             }
@@ -360,6 +367,10 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
         }
     }
 
+    private boolean displayExecutionConsole() {
+        return "yes".equals(NbPreferences.forModule(SnapDialogs.class).get(ToolAdapterOptionsController.PREFERENCE_KEY_SHOW_EXECUTION_OUTPUT, "no"));
+    }
+
     /**
      * Runnable for executing the operator. It requires a callback
      * method that is to be called when the operator has finished its
@@ -431,10 +442,14 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
 
         private ProgressHandle progressHandle;
         private boolean isIndeterminate;
+        private ConsoleDialog consoleDialog;
 
-        ProgressWrapper(ProgressHandle handle, boolean indeterminate) {
+        ProgressWrapper(ProgressHandle handle, boolean indeterminate, boolean showConsole) {
             this.progressHandle = handle;
             this.isIndeterminate = indeterminate;
+            if (showConsole) {
+                consoleDialog = new ConsoleDialog(ToolAdapterExecutionDialog.this);
+            }
         }
 
         @Override
@@ -443,6 +458,9 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
             this.progressHandle.start(totalWork, -1);
             if (this.isIndeterminate) {
                 this.progressHandle.switchToIndeterminate();
+            }
+            if (this.consoleDialog != null) {
+                this.consoleDialog.setVisible(true);
             }
         }
 
@@ -473,7 +491,12 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
 
         @Override
         public void setSubTaskName(String subTaskName) {
-            SwingUtilities.invokeLater(() -> ProgressWrapper.this.progressHandle.progress(subTaskName));
+            SwingUtilities.invokeLater(() -> {
+                ProgressWrapper.this.progressHandle.progress(subTaskName);
+                if (consoleDialog != null) {
+                    consoleDialog.append(subTaskName);
+                }
+            });
         }
 
         @Override

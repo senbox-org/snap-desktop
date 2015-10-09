@@ -47,74 +47,51 @@ import java.text.MessageFormat;
 import static org.esa.snap.utils.SpringUtilities.DEFAULT_PADDING;
 
 /**
- * A dialog window used to edit an operator, or to create a new operator.
+ * A tabbed dialog window used to edit an operator, or to create a new operator.
  * It shows details of an operator such as: descriptor details (name, alias, label, version, copyright,
  * authors, description), system variables, preprocessing tool, product writer, tool location,
  * operator working directory, command line template content, tool output patterns and parameters.
  *
+ * @author Ramona Manda
  * @author Cosmin Cara
  */
-public class ToolAdapterEditorDialog extends AbstractAdapterEditor {
+public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
 
-
-    public ToolAdapterEditorDialog(AppContext appContext, JDialog parent, ToolAdapterOperatorDescriptor operatorDescriptor, boolean operatorIsNew) {
+    public ToolAdapterTabbedEditorDialog(AppContext appContext, JDialog parent, ToolAdapterOperatorDescriptor operatorDescriptor, boolean operatorIsNew) {
         super(appContext, parent, operatorDescriptor, operatorIsNew);
     }
 
-    public ToolAdapterEditorDialog(AppContext appContext, JDialog parent, ToolAdapterOperatorDescriptor operatorDescriptor, int newNameIndex) {
+    public ToolAdapterTabbedEditorDialog(AppContext appContext, JDialog parent, ToolAdapterOperatorDescriptor operatorDescriptor, int newNameIndex) {
         super(appContext, parent, operatorDescriptor, newNameIndex);
     }
 
     @Override
-    protected JSplitPane createMainPanel() {
-        JSplitPane mainPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-        mainPanel.setOneTouchExpandable(false);
-
+    protected JTabbedPane createMainPanel() {
+        JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.LEFT);
+        tabbedPane.setBorder(BorderFactory.createEmptyBorder());
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         double widthRatio = 0.5;
-        formWidth = Math.max((int) (Math.min(screenSize.width, MAX_4K_WIDTH) * widthRatio), MIN_WIDTH);
-        double heightRatio = 0.6;
-        int formHeight = Math.max((int) (Math.min(screenSize.height, MAX_4K_HEIGHT) * heightRatio), MIN_HEIGHT);
-
+        formWidth = Math.max((int) (screenSize.width * widthRatio), MIN_TABBED_WIDTH);
+        double heightRatio = 0.5;
+        int formHeight = Math.max((int) (screenSize.height * heightRatio), MIN_TABBED_HEIGHT);
+        tabbedPane.setPreferredSize(new Dimension(formWidth, formHeight));
         getJDialog().setMinimumSize(new Dimension(formWidth + 16, formHeight + 72));
 
-        // top panel first
-        JSplitPane topPanel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-        topPanel.setOneTouchExpandable(false);
+        addTab(tabbedPane, Bundle.CTL_Panel_OperatorDescriptor_Text(), createDescriptorTab());
+        addTab(tabbedPane, Bundle.CTL_Panel_ConfigParams_Text(), createToolInfoPanel());
+        addTab(tabbedPane, Bundle.CTL_Panel_PreProcessing_Border_TitleText(), createPreProcessingTab());
+        int width = tabbedPane.getTabComponentAt(0).getWidth();
+        addTab(tabbedPane, Bundle.CTL_Panel_OpParams_Border_TitleText(), createParametersTab(formWidth));
+        addTab(tabbedPane, Bundle.CTL_Panel_SysVar_Border_TitleText(), createVariablesPanel());
 
-        JPanel descriptorPanel = createDescriptorAndVariablesAndPreprocessingPanel();
-        Dimension topPanelDimension = new Dimension((int)((formWidth - 3 * DEFAULT_PADDING) * 0.5), (int)((formHeight - 3 * DEFAULT_PADDING) * 0.75));
-        descriptorPanel.setMinimumSize(topPanelDimension);
-        descriptorPanel.setPreferredSize(topPanelDimension);
-        topPanel.setLeftComponent(descriptorPanel);
+        formWidth = tabbedPane.getTabComponentAt(0).getWidth();
 
-        JPanel configurationPanel = createToolInfoPanel();
-        configurationPanel.setMinimumSize(topPanelDimension);
-        configurationPanel.setPreferredSize(topPanelDimension);
-        topPanel.setRightComponent(configurationPanel);
-        topPanel.setDividerLocation(0.5);
-
-        // bottom panel last
-        JPanel bottomPannel = createParametersPanel();
-        Dimension bottomPanelDimension = new Dimension(formWidth - 2 * DEFAULT_PADDING, (int)((formHeight - 3 * DEFAULT_PADDING) * 0.25));
-        bottomPannel.setMinimumSize(bottomPanelDimension);
-        bottomPannel.setPreferredSize(bottomPanelDimension);
-
-        mainPanel.setTopComponent(topPanel);
-        mainPanel.setBottomComponent(bottomPannel);
-        mainPanel.setDividerLocation(0.75);
-
-        mainPanel.setPreferredSize(new Dimension(formWidth, formHeight));
-
-        mainPanel.revalidate();
-
-        return mainPanel;
+        return tabbedPane;
     }
 
     @Override
     protected JPanel createDescriptorPanel() {
-        final JPanel descriptorPanel = new JPanel(new SpringLayout());
-
+        JPanel descriptorPanel = new JPanel(new SpringLayout());
         TextFieldEditor textEditor = new TextFieldEditor();
 
         addValidatedTextField(descriptorPanel, textEditor, Bundle.CTL_Label_Alias_Text(), ToolAdapterConstants.ALIAS, "[^\\\\\\?%\\*:\\|\"<>\\./]*");
@@ -128,11 +105,7 @@ public class ToolAdapterEditorDialog extends AbstractAdapterEditor {
         java.util.List<String> menus = getAvailableMenuOptions(null);
         addComboField(descriptorPanel, Bundle.CTL_Label_MenuLocation_Text(), ToolAdapterConstants.MENU_LOCATION, menus, true, true);
 
-        TitledBorder title = BorderFactory.createTitledBorder(Bundle.CTL_Panel_OperatorDescriptor_Text());
-        descriptorPanel.setBorder(title);
-
         SpringUtilities.makeCompactGrid(descriptorPanel, 8, 2, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING);
-
         return descriptorPanel;
     }
 
@@ -141,7 +114,6 @@ public class ToolAdapterEditorDialog extends AbstractAdapterEditor {
         JPanel variablesBorderPanel = new JPanel();
         BoxLayout layout = new BoxLayout(variablesBorderPanel, BoxLayout.PAGE_AXIS);
         variablesBorderPanel.setLayout(layout);
-        variablesBorderPanel.setBorder(BorderFactory.createTitledBorder(Bundle.CTL_Panel_SysVar_Border_TitleText()));
 
         AbstractButton addVariableButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon(Bundle.Icon_Add()), false);
         addVariableButton.setText(Bundle.CTL_Button_Add_Variable_Text());
@@ -162,7 +134,12 @@ public class ToolAdapterEditorDialog extends AbstractAdapterEditor {
 
         VariablesTable varTable = new VariablesTable(newOperatorDescriptor.getVariables(), context);
         varTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
-        varTable.setRowHeight(20);
+        varTable.setRowHeight(controlHeight);
+        int widths[] = {controlHeight, (int)(formWidth * 0.3), (int)(formWidth * 0.7) - controlHeight};
+        for(int i=0; i < widths.length; i++) {
+            varTable.getColumnModel().getColumn(i).setPreferredWidth(widths[i]);
+
+        }
         JScrollPane scrollPane = new JScrollPane(varTable);
         scrollPane.setAlignmentX(Component.LEFT_ALIGNMENT);
         variablesBorderPanel.add(scrollPane);
@@ -186,7 +163,7 @@ public class ToolAdapterEditorDialog extends AbstractAdapterEditor {
     }
 
     @Override
-    protected JPanel createPreProcessingPanel() {
+    protected JPanel createPreProcessingPanel(){
         final JPanel preProcessingPanel = new JPanel(new SpringLayout());
 
         PropertyDescriptor propertyDescriptor = propertyContainer.getDescriptor("preprocessorExternalTool");
@@ -218,9 +195,6 @@ public class ToolAdapterEditorDialog extends AbstractAdapterEditor {
         preProcessingPanel.add(new JLabel(Bundle.CTL_Label_WriteBefore_Text()));
         preProcessingPanel.add(editorComponent);
 
-        TitledBorder title = BorderFactory.createTitledBorder(Bundle.CTL_Panel_PreProcessing_Border_TitleText());
-        preProcessingPanel.setBorder(title);
-
         SpringUtilities.makeCompactGrid(preProcessingPanel, 2, 3, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING);
 
         return preProcessingPanel;
@@ -228,11 +202,7 @@ public class ToolAdapterEditorDialog extends AbstractAdapterEditor {
 
     @Override
     protected JPanel createToolInfoPanel() {
-        JPanel container = new JPanel(new SpringLayout());
-
-        JPanel configPanel = new JPanel(new SpringLayout());
-        configPanel.setBorder(BorderFactory.createTitledBorder(Bundle.CTL_Panel_ConfigParams_Text()));
-
+        final JPanel configPanel = new JPanel(new SpringLayout());
         JPanel panelToolFiles = new JPanel(new SpringLayout());
 
         PropertyDescriptor propertyDescriptor = propertyContainer.getDescriptor(ToolAdapterConstants.MAIN_TOOL_FILE_LOCATION);
@@ -301,19 +271,19 @@ public class ToolAdapterEditorDialog extends AbstractAdapterEditor {
         JScrollPane scrollPane = new JScrollPane(templateContent);
         configPanel.add(scrollPane);
 
-        SpringUtilities.makeCompactGrid(configPanel, 4, 1, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING);
+        configPanel.add(createPatternsPanel());
 
-        container.add(configPanel);
-        container.add(createPatternsPanel());
-        SpringUtilities.makeCompactGrid(container, 2, 1, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING);
+        SpringUtilities.makeCompactGrid(configPanel, 5, 1, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING);
 
-        return container;
+        return configPanel;
     }
 
     @Override
     protected JPanel createPatternsPanel() {
         JPanel patternsPanel = new JPanel(new SpringLayout());
-        patternsPanel.setBorder(BorderFactory.createTitledBorder(Bundle.CTL_Panel_OutputPattern_Border_TitleText()));
+        TitledBorder titledBorder = BorderFactory.createTitledBorder(Bundle.CTL_Panel_OutputPattern_Border_TitleText());
+        titledBorder.setTitleJustification(TitledBorder.CENTER);
+        patternsPanel.setBorder(titledBorder);
 
         TextFieldEditor textEditor = new TextFieldEditor();
         addTextField(patternsPanel, textEditor, Bundle.CTL_Label_ProgressPattern(), ToolAdapterConstants.PROGRESS_PATTERN, false);
@@ -330,36 +300,58 @@ public class ToolAdapterEditorDialog extends AbstractAdapterEditor {
         BoxLayout layout = new BoxLayout(paramsPanel, BoxLayout.PAGE_AXIS);
         paramsPanel.setLayout(layout);
         AbstractButton addParamBut = ToolButtonFactory.createButton(UIUtils.loadImageIcon(Bundle.Icon_Add()), false);
+        addParamBut.setText("New Parameter");
+        addParamBut.setMaximumSize(new Dimension(addParamBut.getWidth(), controlHeight));
         addParamBut.setAlignmentX(Component.LEFT_ALIGNMENT);
         addParamBut.setAlignmentY(Component.TOP_ALIGNMENT);
         paramsPanel.add(addParamBut);
-        int tableWidth = (formWidth - 2 * DEFAULT_PADDING);
-        int widths[] = {27, 120, (int)(tableWidth * 0.25), (int)(tableWidth * 0.1), 100, (int)(tableWidth * 0.32), 30};
+        JScrollPane tableScrollPane = new JScrollPane(paramsTable);
+        tableScrollPane.setAlignmentX(Component.LEFT_ALIGNMENT);
+        paramsPanel.add(tableScrollPane);
+        addParamBut.addActionListener(e -> {
+            paramsTable.addParameterToTable(new TemplateParameterDescriptor("parameterName", String.class));
+            int rowIndex = paramsTable.getRowCount() - 1;
+            paramsTable.setRowSelectionInterval(rowIndex, rowIndex);
+            paramsTable.setEditingRow(rowIndex);
+        });
+        return paramsPanel;
+    }
+
+    private JPanel createPreProcessingTab(){
+        JPanel preprocessAndPatternsPanel = new JPanel(new SpringLayout());
+        preprocessAndPatternsPanel.add(createPreProcessingPanel());
+        SpringUtilities.makeCompactGrid(preprocessAndPatternsPanel, 1, 1, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING);
+        preprocessAndPatternsPanel.setMaximumSize(preprocessAndPatternsPanel.getSize());
+        return preprocessAndPatternsPanel;
+    }
+
+    private JPanel createDescriptorTab() {
+        JPanel jPanel = new JPanel(new SpringLayout());
+        jPanel.add(createDescriptorPanel());
+        SpringUtilities.makeCompactGrid(jPanel, 1, 1, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING);
+        jPanel.setMaximumSize(jPanel.getSize());
+        return jPanel;
+    }
+
+    private JPanel createParametersTab(int width) {
+        JPanel paramsPanel = createParametersPanel();
+        int tableWidth = width - 2 * DEFAULT_PADDING;
+        int widths[] = {controlHeight, 5 * controlHeight, 5 * controlHeight, 3 * controlHeight, 3 * controlHeight, (int)(tableWidth * 0.3), 30};
         for(int i=0; i < widths.length; i++) {
             paramsTable.getColumnModel().getColumn(i).setPreferredWidth(widths[i]);
 
         }
-        JScrollPane tableScrollPane = new JScrollPane(paramsTable);
-        tableScrollPane.setAlignmentX(Component.LEFT_ALIGNMENT);
-        paramsPanel.add(tableScrollPane);
-        addParamBut.addActionListener(e -> paramsTable.addParameterToTable(new TemplateParameterDescriptor("parameterName", String.class)));
-        TitledBorder title = BorderFactory.createTitledBorder(Bundle.CTL_Panel_OpParams_Border_TitleText());
-        paramsPanel.setBorder(title);
+        paramsTable.setRowHeight(controlHeight);
         return paramsPanel;
     }
 
-    private JPanel createDescriptorAndVariablesAndPreprocessingPanel() {
-        JPanel descriptorAndVariablesPanel = new JPanel(new SpringLayout());
-
-        descriptorAndVariablesPanel.add(createDescriptorPanel());
-        descriptorAndVariablesPanel.add(createVariablesPanel());
-        descriptorAndVariablesPanel.add(createPreProcessingPanel());
-
-        SpringUtilities.makeCompactGrid(descriptorAndVariablesPanel, 3, 1, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING);
-
-        return descriptorAndVariablesPanel;
+    private void addTab(JTabbedPane tabControl, String title, JPanel content) {
+        JLabel tabText = new JLabel(title, JLabel.LEFT);
+        tabText.setPreferredSize(new Dimension(6 * controlHeight, controlHeight));
+        TitledBorder titledBorder = BorderFactory.createTitledBorder(title);
+        titledBorder.setTitleJustification(TitledBorder.CENTER);
+        content.setBorder(titledBorder);
+        tabControl.addTab(null, content);
+        tabControl.setTabComponentAt(tabControl.getTabCount() - 1, tabText);
     }
-
-
-
 }

@@ -24,6 +24,7 @@ import org.esa.snap.framework.ui.AppContext;
 import org.esa.snap.framework.ui.ModelessDialog;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.tango.TangoIcons;
+import org.esa.snap.ui.tooladapter.actions.EscapeAction;
 import org.esa.snap.ui.tooladapter.actions.ToolAdapterActionRegistrar;
 import org.esa.snap.ui.tooladapter.model.OperatorsTableModel;
 import org.openide.util.NbBundle;
@@ -66,7 +67,7 @@ import static org.esa.snap.utils.SpringUtilities.makeCompactGrid;
         "MessagePackageModules_Text=The adapter %s was installed as a NetBeans module and cannot be removed from here.%nPlease uninstall the module."
 
 })
-public class ToolAdaptersManagementDialog extends ModelessDialog{
+public class ToolAdaptersManagementDialog extends ModelessDialog {
 
     final int CHECK_COLUMN_WIDTH = 20;
     final int LABEL_COLUMN_WIDTH = 250;
@@ -92,6 +93,7 @@ public class ToolAdaptersManagementDialog extends ModelessDialog{
         JPanel contentPanel = createContentPanel();
         setContent(contentPanel);
         super.getJDialog().setMinimumSize(contentPanel.getPreferredSize());
+        EscapeAction.register(super.getJDialog());
     }
 
     private JPanel createContentPanel() {
@@ -139,7 +141,7 @@ public class ToolAdaptersManagementDialog extends ModelessDialog{
                     Bundle.ToolTipNewOperator_Text(),
                     e -> {
                         ToolAdapterOperatorDescriptor newOperatorSpi = new ToolAdapterOperatorDescriptor(ToolAdapterConstants.OPERATOR_NAMESPACE + "NewOperator", ToolAdapterOp.class, "NewOperator", null, null, null, null, null, null);
-                        ToolAdapterEditorDialog dialog = new ToolAdapterEditorDialog(appContext, newOperatorSpi, true);
+                        AbstractAdapterEditor dialog = AbstractAdapterEditor.createEditorDialog(appContext, getJDialog(), newOperatorSpi, true);
                         dialog.show();
                         refreshContent();
                     }));
@@ -158,7 +160,7 @@ public class ToolAdaptersManagementDialog extends ModelessDialog{
                                 newNameIndex++;
                                 opName = operatorDesc.getName() + ToolAdapterConstants.OPERATOR_GENERATED_NAME_SEPARATOR + newNameIndex;
                             }
-                            ToolAdapterEditorDialog dialog = new ToolAdapterEditorDialog(appContext, operatorDesc, newNameIndex);
+                            AbstractAdapterEditor dialog = AbstractAdapterEditor.createEditorDialog(appContext, getJDialog(), operatorDesc, newNameIndex);
                             dialog.show();
                             refreshContent();
                         }
@@ -172,7 +174,7 @@ public class ToolAdaptersManagementDialog extends ModelessDialog{
                 e -> {
                     ToolAdapterOperatorDescriptor operatorDesc = requestSelection();
                     if (operatorDesc != null) {
-                        ToolAdapterEditorDialog dialog = new ToolAdapterEditorDialog(appContext, operatorDesc, false);
+                        AbstractAdapterEditor dialog = AbstractAdapterEditor.createEditorDialog(appContext, getJDialog(), operatorDesc, false);
                         dialog.show();
                         refreshContent();
                     }
@@ -316,7 +318,7 @@ public class ToolAdaptersManagementDialog extends ModelessDialog{
                     //operatorsTable.getModel().setValueAt(true, selectedRow, 0);
                     operatorsTable.repaint();
                     ToolAdapterOperatorDescriptor operatorDesc = ((OperatorsTableModel) operatorsTable.getModel()).getObjectAt(selectedRow);
-                    ToolAdapterEditorDialog dialog = new ToolAdapterEditorDialog(appContext, operatorDesc, false);
+                    AbstractAdapterEditor dialog = AbstractAdapterEditor.createEditorDialog(appContext, getJDialog(), operatorDesc, false);
                     dialog.show();
                     refreshContent();
                 }

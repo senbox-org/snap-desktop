@@ -24,6 +24,7 @@ import org.esa.snap.framework.ui.AppContext;
 import org.esa.snap.framework.ui.ModalDialog;
 import org.esa.snap.framework.ui.UIUtils;
 import org.esa.snap.framework.ui.tool.ToolButtonFactory;
+import org.esa.snap.ui.tooladapter.actions.EscapeAction;
 import org.esa.snap.ui.tooladapter.model.AutoCompleteTextArea;
 import org.esa.snap.ui.tooladapter.model.OperatorParametersTable;
 import org.esa.snap.ui.tooladapter.model.PropertyMemberUIWrapper;
@@ -63,6 +64,7 @@ public class TemplateParameterEditorDialog extends ModalDialog {
         super(appContext.getApplicationWindow(), title, ID_OK_CANCEL, helpID);
         this.appContext = appContext;
         this.logger = Logger.getLogger(TemplateParameterEditorDialog.class.getName());
+        EscapeAction.register(getJDialog());
     }
 
     public TemplateParameterEditorDialog(AppContext appContext, String helpID, TemplateParameterDescriptor parameter, PropertyMemberUIWrapper fileWrapper, ToolAdapterOperatorDescriptor parent) {

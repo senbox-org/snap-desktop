@@ -2,6 +2,7 @@ package org.esa.snap.ui.tooladapter.dialogs;
 
 import org.esa.snap.framework.gpf.descriptor.SystemDependentVariable;
 import org.esa.snap.framework.ui.ModalDialog;
+import org.esa.snap.ui.tooladapter.actions.EscapeAction;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -28,7 +29,7 @@ public class SystemDependentVariableEditorDialog extends ModalDialog {
         newVariable.setTransient(true);
         logger = Logger.getLogger(ToolAdapterEditorDialog.class.getName());
         setContent(createPanel());
-
+        EscapeAction.register(getJDialog());
     }
 
     @Override
