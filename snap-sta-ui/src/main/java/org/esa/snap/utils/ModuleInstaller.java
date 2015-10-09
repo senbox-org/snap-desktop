@@ -17,10 +17,10 @@
  */
 package org.esa.snap.utils;
 
-import org.esa.snap.framework.gpf.descriptor.ToolAdapterOperatorDescriptor;
-import org.esa.snap.framework.gpf.operators.tooladapter.ToolAdapterIO;
-import org.esa.snap.framework.gpf.operators.tooladapter.ToolAdapterOpSpi;
-import org.esa.snap.framework.gpf.operators.tooladapter.ToolAdapterRegistry;
+import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
+import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterIO;
+import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterOpSpi;
+import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterRegistry;
 import org.esa.snap.modules.ModulePackager;
 import org.esa.snap.ui.tooladapter.actions.ToolAdapterActionRegistrar;
 import org.openide.modules.ModuleInstall;
@@ -34,7 +34,11 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;

@@ -1,6 +1,6 @@
 package org.esa.snap.timeseries.ui.graph;
 
-import com.bc.jexp.ParseException;
+import org.esa.snap.core.jexp.ParseException;
 import org.esa.snap.timeseries.core.timeseries.datamodel.AxisMapping;
 import org.jfree.data.time.Day;
 import org.jfree.data.time.TimeSeries;

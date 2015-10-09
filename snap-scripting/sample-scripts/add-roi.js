@@ -1,5 +1,5 @@
-importPackage(org.esa.snap.framework.datamodel);
-importPackage(org.esa.snap.framework.dataio);
+importPackage(org.esa.snap.core.datamodel);
+importPackage(org.esa.snap.core.dataio);
 importPackage(org.esa.snap.visat);
 importPackage(org.esa.snap.visat.actions);
 

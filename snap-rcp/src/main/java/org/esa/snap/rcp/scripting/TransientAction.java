@@ -2,7 +2,7 @@ package org.esa.snap.rcp.scripting;
 
 
 import com.bc.ceres.core.Assert;
-import org.esa.snap.util.SystemUtils;
+import org.esa.snap.core.util.SystemUtils;
 
 import javax.swing.Action;
 import java.awt.event.ActionEvent;

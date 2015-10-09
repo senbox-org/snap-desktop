@@ -16,7 +16,7 @@
 
 package org.esa.snap.timeseries.core.timeseries.datamodel;
 
-import org.esa.snap.framework.datamodel.ProductNodeListenerAdapter;
+import org.esa.snap.core.datamodel.ProductNodeListenerAdapter;
 
 /**
  * Listener for events of type {@link TimeSeriesChangeEvent}.

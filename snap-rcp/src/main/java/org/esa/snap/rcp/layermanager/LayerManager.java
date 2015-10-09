@@ -6,10 +6,10 @@ import com.bc.ceres.core.ExtensionManager;
 import com.bc.ceres.core.SingleTypeExtensionFactory;
 import com.bc.ceres.glayer.Layer;
 import com.bc.ceres.glayer.LayerType;
-import org.esa.snap.framework.ui.layer.DefaultLayerSourceDescriptor;
-import org.esa.snap.framework.ui.layer.LayerEditor;
-import org.esa.snap.framework.ui.layer.LayerSource;
-import org.esa.snap.framework.ui.layer.LayerSourceDescriptor;
+import org.esa.snap.ui.layer.DefaultLayerSourceDescriptor;
+import org.esa.snap.ui.layer.LayerEditor;
+import org.esa.snap.ui.layer.LayerSource;
+import org.esa.snap.ui.layer.LayerSourceDescriptor;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 import org.openide.modules.ModuleInfo;
@@ -28,9 +28,9 @@ import java.util.logging.Logger;
 /**
  * Either 'editor' or 'editorFactory' must be given:
  * <ul>
- * <li>'editor' must be a <code>org.esa.snap.framework.ui.layer.LayerEditor</code></li>
+ * <li>'editor' must be a <code>LayerEditor</code></li>
  * <li>'editorFactory' must be a <code>com.bc.ceres.core.ExtensionFactory</code> that produces
- * instances of <code>org.esa.snap.framework.ui.layer.LayerEditor</code>.</li>
+ * instances of <code>LayerEditor</code>.</li>
  * </ul>
  * <pre>
  * &lt;editor field="layerEditorClass" type="java.lang.Class"/&gt;
@@ -173,7 +173,7 @@ public class LayerManager {
 
     /**
      * Creates an extension factory that maps an instances of a {@link com.bc.ceres.glayer.Layer} or
-     * a {@link com.bc.ceres.glayer.LayerType} to an instance of a {@link org.esa.snap.framework.ui.layer.LayerEditor}.
+     * a {@link com.bc.ceres.glayer.LayerType} to an instance of a {@link LayerEditor}.
      */
     private static ExtensionFactory createExtensionFactory(Class<? extends LayerEditor> editorClass, Class<? extends ExtensionFactory> editorFactoryClass) throws Exception {
         if (editorClass != null) {

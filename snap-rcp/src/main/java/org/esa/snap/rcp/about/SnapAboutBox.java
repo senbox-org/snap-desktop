@@ -5,8 +5,8 @@
  */
 package org.esa.snap.rcp.about;
 
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.util.SystemUtils;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.util.SystemUtils;
 import org.openide.modules.ModuleInfo;
 import org.openide.modules.Modules;
 

@@ -5,8 +5,8 @@
  */
 package org.esa.snap.rcp.actions.layer.overlay;
 
-import org.esa.snap.framework.ui.product.ProductSceneView;
-import org.esa.snap.util.ProductUtils;
+import org.esa.snap.core.util.ProductUtils;
+import org.esa.snap.ui.product.ProductSceneView;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;

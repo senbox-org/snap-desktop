@@ -17,9 +17,9 @@ package org.esa.snap.graphbuilder.gpf.ui;
 
 
 import com.bc.ceres.binding.dom.XppDomElement;
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.gpf.graph.GraphException;
-import org.esa.snap.framework.ui.AppContext;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.gpf.graph.GraphException;
+import org.esa.snap.ui.AppContext;
 
 import javax.swing.JComponent;
 import java.util.Map;

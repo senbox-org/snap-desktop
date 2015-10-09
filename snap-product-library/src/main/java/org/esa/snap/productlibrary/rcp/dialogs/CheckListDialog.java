@@ -15,8 +15,8 @@
  */
 package org.esa.snap.productlibrary.rcp.dialogs;
 
-import org.esa.snap.framework.ui.ModalDialog;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.ui.ModalDialog;
 
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;

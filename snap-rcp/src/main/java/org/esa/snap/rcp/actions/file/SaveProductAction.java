@@ -6,9 +6,9 @@
 package org.esa.snap.rcp.actions.file;
 
 import com.bc.ceres.core.Assert;
-import org.esa.snap.dataio.dimap.DimapProductReader;
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductNode;
+import org.esa.snap.core.dataio.dimap.DimapProductReader;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.netbeans.api.progress.ProgressUtils;

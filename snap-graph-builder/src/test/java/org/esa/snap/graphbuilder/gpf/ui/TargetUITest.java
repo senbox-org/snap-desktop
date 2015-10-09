@@ -16,12 +16,12 @@
 package org.esa.snap.graphbuilder.gpf.ui;
 
 import org.esa.snap.GlobalTestConfig;
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductManager;
-import org.esa.snap.framework.ui.AppContext;
-import org.esa.snap.framework.ui.product.ProductSceneView;
-import org.esa.snap.util.DefaultPropertyMap;
-import org.esa.snap.util.PropertyMap;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductManager;
+import org.esa.snap.core.util.DefaultPropertyMap;
+import org.esa.snap.core.util.PropertyMap;
+import org.esa.snap.ui.AppContext;
+import org.esa.snap.ui.product.ProductSceneView;
 import org.junit.Before;
 import org.junit.Test;
 

@@ -16,7 +16,7 @@
 
 package org.esa.snap.timeseries.core.timeseries.datamodel;
 
-import org.esa.snap.framework.datamodel.ProductData;
+import org.esa.snap.core.datamodel.ProductData;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

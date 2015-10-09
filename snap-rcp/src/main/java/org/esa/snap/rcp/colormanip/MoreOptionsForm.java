@@ -21,10 +21,10 @@ import com.bc.ceres.binding.PropertyContainer;
 import com.bc.ceres.binding.ValueSet;
 import com.bc.ceres.swing.binding.Binding;
 import com.bc.ceres.swing.binding.BindingContext;
-import org.esa.snap.framework.datamodel.ImageInfo;
-import org.esa.snap.framework.ui.color.ColorComboBox;
-import org.esa.snap.framework.ui.color.ColorComboBoxAdapter;
+import org.esa.snap.core.datamodel.ImageInfo;
 import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.ui.color.ColorComboBox;
+import org.esa.snap.ui.color.ColorComboBoxAdapter;
 
 import javax.swing.JComboBox;
 import javax.swing.JComponent;

@@ -15,12 +15,12 @@
  */
 package org.esa.snap.rcp.mask;
 
-import org.esa.snap.framework.datamodel.Mask;
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.RasterDataNode;
-import org.esa.snap.framework.ui.UIUtils;
-import org.esa.snap.framework.ui.color.ColorTableCellEditor;
-import org.esa.snap.framework.ui.color.ColorTableCellRenderer;
+import org.esa.snap.core.datamodel.Mask;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.RasterDataNode;
+import org.esa.snap.ui.UIUtils;
+import org.esa.snap.ui.color.ColorTableCellEditor;
+import org.esa.snap.ui.color.ColorTableCellRenderer;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;

@@ -16,8 +16,8 @@
 
 package org.esa.snap.rcp.layermanager.layersrc.image;
 
-import org.esa.snap.framework.ui.layer.AbstractLayerSourceAssistantPage;
-import org.esa.snap.framework.ui.layer.LayerSourcePageContext;
+import org.esa.snap.ui.layer.AbstractLayerSourceAssistantPage;
+import org.esa.snap.ui.layer.LayerSourcePageContext;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;

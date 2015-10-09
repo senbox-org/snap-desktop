@@ -17,20 +17,28 @@
  */
 package org.esa.snap.ui.tooladapter.model;
 
-import com.bc.ceres.binding.*;
+import com.bc.ceres.binding.DefaultPropertySetDescriptor;
+import com.bc.ceres.binding.Property;
+import com.bc.ceres.binding.PropertyContainer;
+import com.bc.ceres.binding.PropertyDescriptor;
+import com.bc.ceres.binding.ValueRange;
+import com.bc.ceres.binding.ValueSet;
 import com.bc.ceres.binding.converters.ArrayConverter;
 import com.bc.ceres.binding.converters.StringConverter;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.PropertyEditor;
 import com.bc.ceres.swing.binding.PropertyEditorRegistry;
 import org.apache.commons.lang.StringUtils;
-import org.esa.snap.framework.gpf.annotations.ParameterDescriptorFactory;
-import org.esa.snap.framework.gpf.descriptor.ParameterDescriptor;
-import org.esa.snap.framework.gpf.descriptor.PropertyAttributeException;
-import org.esa.snap.framework.gpf.descriptor.ToolAdapterOperatorDescriptor;
-import org.esa.snap.framework.gpf.descriptor.ToolParameterDescriptor;
+import org.esa.snap.core.gpf.annotations.ParameterDescriptorFactory;
+import org.esa.snap.core.gpf.descriptor.ParameterDescriptor;
+import org.esa.snap.core.gpf.descriptor.PropertyAttributeException;
+import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
+import org.esa.snap.core.gpf.descriptor.ToolParameterDescriptor;
 
-import javax.swing.*;
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
 import java.awt.event.FocusEvent;
 import java.lang.reflect.Method;
 import java.util.HashMap;

@@ -16,7 +16,7 @@
 
 package org.esa.snap.rcp.statistics;
 
-import org.esa.snap.framework.ui.UIUtils;
+import org.esa.snap.ui.UIUtils;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;

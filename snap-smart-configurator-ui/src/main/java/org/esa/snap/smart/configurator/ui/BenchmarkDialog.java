@@ -24,16 +24,16 @@ import org.esa.snap.configurator.Benchmark;
 import org.esa.snap.configurator.BenchmarkSingleCalculus;
 import org.esa.snap.configurator.ConfigurationOptimizer;
 import org.esa.snap.configurator.PerformanceParameters;
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.gpf.Operator;
-import org.esa.snap.framework.gpf.internal.OperatorExecutor;
-import org.esa.snap.framework.gpf.internal.OperatorProductReader;
-import org.esa.snap.framework.gpf.ui.DefaultSingleTargetProductDialog;
-import org.esa.snap.framework.gpf.ui.TargetProductSelectorModel;
-import org.esa.snap.framework.ui.AppContext;
-import org.esa.snap.gpf.operators.standard.WriteOp;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.gpf.Operator;
+import org.esa.snap.core.gpf.common.WriteOp;
+import org.esa.snap.core.gpf.internal.OperatorExecutor;
+import org.esa.snap.core.gpf.internal.OperatorProductReader;
+import org.esa.snap.core.gpf.ui.DefaultSingleTargetProductDialog;
+import org.esa.snap.core.gpf.ui.TargetProductSelectorModel;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.actions.file.SaveProductAsAction;
+import org.esa.snap.ui.AppContext;
 
 import java.io.File;
 

@@ -16,7 +16,7 @@
 package org.esa.snap.worldwind.layers;
 
 import gov.nasa.worldwind.layers.RenderableLayer;
-import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.core.datamodel.Product;
 
 /**
  * Base layer class

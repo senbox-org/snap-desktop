@@ -16,7 +16,7 @@
 
 package org.esa.snap.rcp.layermanager.layersrc;
 
-import org.esa.snap.framework.ui.UserInputHistory;
+import org.esa.snap.ui.UserInputHistory;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -28,7 +28,7 @@ import java.util.prefs.NodeChangeListener;
 import java.util.prefs.PreferenceChangeListener;
 import java.util.prefs.Preferences;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 public class HistoryComboBoxModelTest {
 

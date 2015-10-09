@@ -21,12 +21,12 @@ import com.bc.ceres.glayer.LayerFilter;
 import com.bc.ceres.glayer.support.LayerUtils;
 import com.bc.ceres.swing.figure.AbstractInteractorInterceptor;
 import com.bc.ceres.swing.figure.Interactor;
-import org.esa.snap.framework.datamodel.VectorDataNode;
-import org.esa.snap.framework.ui.ModalDialog;
-import org.esa.snap.framework.ui.product.ProductSceneView;
-import org.esa.snap.framework.ui.product.VectorDataLayer;
-import org.esa.snap.framework.ui.product.VectorDataLayerFilterFactory;
+import org.esa.snap.core.datamodel.VectorDataNode;
 import org.esa.snap.rcp.actions.vector.CreateVectorDataNodeAction;
+import org.esa.snap.ui.ModalDialog;
+import org.esa.snap.ui.product.ProductSceneView;
+import org.esa.snap.ui.product.VectorDataLayer;
+import org.esa.snap.ui.product.VectorDataLayerFilterFactory;
 
 import javax.swing.JLabel;
 import javax.swing.JList;

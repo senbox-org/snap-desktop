@@ -15,13 +15,20 @@
  */
 package org.esa.snap.graphbuilder.rcp.dialogs.support;
 
-import org.esa.snap.framework.ui.AbstractDialog;
-import org.esa.snap.framework.ui.ModalDialog;
-import org.esa.snap.framework.ui.UIUtils;
+import org.esa.snap.ui.AbstractDialog;
+import org.esa.snap.ui.ModalDialog;
+import org.esa.snap.ui.UIUtils;
 import org.esa.snap.util.ResourceUtils;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;

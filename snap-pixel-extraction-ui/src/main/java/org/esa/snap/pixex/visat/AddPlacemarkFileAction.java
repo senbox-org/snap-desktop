@@ -16,12 +16,12 @@
 
 package org.esa.snap.pixex.visat;
 
-import org.esa.snap.dataio.placemark.PlacemarkIO;
-import org.esa.snap.framework.datamodel.PinDescriptor;
-import org.esa.snap.framework.datamodel.Placemark;
-import org.esa.snap.framework.ui.AppContext;
-import org.esa.snap.util.PropertyMap;
-import org.esa.snap.util.SystemUtils;
+import org.esa.snap.core.dataio.placemark.PlacemarkIO;
+import org.esa.snap.core.datamodel.PinDescriptor;
+import org.esa.snap.core.datamodel.Placemark;
+import org.esa.snap.core.util.PropertyMap;
+import org.esa.snap.core.util.SystemUtils;
+import org.esa.snap.ui.AppContext;
 
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;

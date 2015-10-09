@@ -17,7 +17,7 @@
 package org.esa.snap.timeseries.core.timeseries.datamodel;
 
 import com.bc.ceres.core.ProgressMonitor;
-import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.core.datamodel.Product;
 
 import java.util.Map;
 

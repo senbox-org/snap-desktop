@@ -6,10 +6,11 @@
 package org.esa.snap.rcp.nodes;
 
 import com.bc.ceres.core.Assert;
-import org.esa.snap.framework.datamodel.Band;
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductNodeGroup;
-import org.esa.snap.framework.datamodel.TiePointGrid;
+import org.esa.snap.core.datamodel.Band;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductNode;
+import org.esa.snap.core.datamodel.ProductNodeGroup;
+import org.esa.snap.core.datamodel.TiePointGrid;
 import org.openide.nodes.Node;
 import org.openide.util.NbBundle;
 
@@ -20,8 +21,8 @@ import java.util.Map;
 
 
 /**
- * A group that gets its nodes from a {@link org.esa.snap.framework.datamodel.ProductNodeGroup} (=PNG)
- * and can have a {@link org.esa.snap.framework.datamodel.ProductNodeGroup} as child
+ * A group that gets its nodes from a {@link ProductNodeGroup} (=PNG)
+ * and can have a {@link ProductNodeGroup} as child
  *
  * @author Tonio Fincke
  */
@@ -55,7 +56,7 @@ abstract class PNGroupingGroup extends PNGroup<Object> {
     }
 
     @Override
-    boolean isDirectChild(org.esa.snap.framework.datamodel.ProductNode productNode) {
+    boolean isDirectChild(ProductNode productNode) {
         return group.contains(productNode);
     }
 
@@ -80,8 +81,8 @@ abstract class PNGroupingGroup extends PNGroup<Object> {
     }
 
     /**
-     * A group that represents a {@link org.esa.snap.framework.datamodel.ProductNodeGroup}
-     * of {@link org.esa.snap.framework.datamodel.Band} members
+     * A group that represents a {@link ProductNodeGroup}
+     * of {@link Band} members
      *
      * @author Tonio
      */
@@ -142,8 +143,8 @@ abstract class PNGroupingGroup extends PNGroup<Object> {
     }
 
     /**
-     * A group that represents a {@link org.esa.snap.framework.datamodel.ProductNodeGroup}
-     * of {@link org.esa.snap.framework.datamodel.TiePointGrid} members
+     * A group that represents a {@link ProductNodeGroup}
+     * of {@link TiePointGrid} members
      *
      * @author Tonio
      */

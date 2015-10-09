@@ -17,8 +17,8 @@
 package org.esa.snap.rcp.colormanip;
 
 import com.jidesoft.swing.TitledSeparator;
-import org.esa.snap.framework.ui.UIUtils;
-import org.esa.snap.framework.ui.tool.ToolButtonFactory;
+import org.esa.snap.ui.UIUtils;
+import org.esa.snap.ui.tool.ToolButtonFactory;
 
 import javax.swing.AbstractButton;
 import javax.swing.ImageIcon;

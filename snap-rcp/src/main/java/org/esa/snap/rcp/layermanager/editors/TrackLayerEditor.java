@@ -2,7 +2,7 @@ package org.esa.snap.rcp.layermanager.editors;
 
 import com.bc.ceres.binding.PropertyDescriptor;
 import com.bc.ceres.swing.binding.BindingContext;
-import org.esa.snap.framework.ui.product.SimpleFeatureFigure;
+import org.esa.snap.ui.product.SimpleFeatureFigure;
 
 import java.awt.Color;
 

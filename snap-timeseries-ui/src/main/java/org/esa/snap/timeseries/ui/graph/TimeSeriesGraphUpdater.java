@@ -1,9 +1,9 @@
 package org.esa.snap.timeseries.ui.graph;
 
-import org.esa.snap.framework.datamodel.Band;
-import org.esa.snap.framework.datamodel.GeoPos;
-import org.esa.snap.framework.datamodel.Placemark;
-import org.esa.snap.framework.datamodel.ProductData;
+import org.esa.snap.core.datamodel.Band;
+import org.esa.snap.core.datamodel.GeoPos;
+import org.esa.snap.core.datamodel.Placemark;
+import org.esa.snap.core.datamodel.ProductData;
 import org.esa.snap.timeseries.core.insitu.InsituSource;
 import org.esa.snap.timeseries.core.insitu.csv.InsituRecord;
 import org.esa.snap.timeseries.core.timeseries.datamodel.AbstractTimeSeries;

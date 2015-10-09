@@ -5,10 +5,10 @@
  */
 package org.esa.snap.rcp.nodes;
 
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductNode;
-import org.esa.snap.framework.datamodel.ProductNodeEvent;
-import org.esa.snap.framework.datamodel.ProductNodeListener;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductNode;
+import org.esa.snap.core.datamodel.ProductNodeEvent;
+import org.esa.snap.core.datamodel.ProductNodeListener;
 import org.esa.snap.rcp.SnapApp;
 import org.openide.awt.UndoRedo;
 import org.openide.nodes.Children;

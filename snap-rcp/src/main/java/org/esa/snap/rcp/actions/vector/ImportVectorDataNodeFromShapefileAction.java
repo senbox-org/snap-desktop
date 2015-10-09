@@ -17,14 +17,14 @@
 package org.esa.snap.rcp.actions.vector;
 
 import com.bc.ceres.core.ProgressMonitor;
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductNode;
-import org.esa.snap.framework.datamodel.ProductNodeGroup;
-import org.esa.snap.framework.datamodel.VectorDataNode;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductNode;
+import org.esa.snap.core.datamodel.ProductNodeGroup;
+import org.esa.snap.core.datamodel.VectorDataNode;
+import org.esa.snap.core.util.FeatureUtils;
+import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.layermanager.layersrc.shapefile.SLDUtils;
-import org.esa.snap.util.FeatureUtils;
-import org.esa.snap.util.io.SnapFileFilter;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.styling.Style;
 import org.opengis.feature.simple.SimpleFeature;

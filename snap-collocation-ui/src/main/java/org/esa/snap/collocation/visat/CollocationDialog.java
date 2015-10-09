@@ -17,13 +17,13 @@
 package org.esa.snap.collocation.visat;
 
 import org.esa.snap.collocation.CollocateOp;
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.gpf.GPF;
-import org.esa.snap.framework.gpf.OperatorSpi;
-import org.esa.snap.framework.gpf.ui.OperatorMenu;
-import org.esa.snap.framework.gpf.ui.OperatorParameterSupport;
-import org.esa.snap.framework.gpf.ui.SingleTargetProductDialog;
-import org.esa.snap.framework.ui.AppContext;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.gpf.GPF;
+import org.esa.snap.core.gpf.OperatorSpi;
+import org.esa.snap.core.gpf.ui.OperatorMenu;
+import org.esa.snap.core.gpf.ui.OperatorParameterSupport;
+import org.esa.snap.core.gpf.ui.SingleTargetProductDialog;
+import org.esa.snap.ui.AppContext;
 
 import java.util.HashMap;
 import java.util.Map;

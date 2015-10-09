@@ -15,11 +15,11 @@
  */
 package org.esa.snap.graphbuilder.gpf.ui;
 
+import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.db.CommonReaders;
-import org.esa.snap.framework.datamodel.Product;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JList;
+import java.awt.Dimension;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;

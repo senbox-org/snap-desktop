@@ -1,10 +1,10 @@
 package org.esa.snap.rcp.colormanip;
 
-import org.esa.snap.framework.datamodel.ColorPaletteDef;
-import org.esa.snap.framework.datamodel.ImageInfo;
-import org.esa.snap.jai.ImageManager;
-import org.esa.snap.util.io.FileUtils;
-import org.esa.snap.util.math.Range;
+import org.esa.snap.core.datamodel.ColorPaletteDef;
+import org.esa.snap.core.datamodel.ImageInfo;
+import org.esa.snap.core.image.ImageManager;
+import org.esa.snap.core.util.io.FileUtils;
+import org.esa.snap.core.util.math.Range;
 
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;

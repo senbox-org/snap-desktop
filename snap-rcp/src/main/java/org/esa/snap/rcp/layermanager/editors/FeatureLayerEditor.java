@@ -17,8 +17,8 @@
 package org.esa.snap.rcp.layermanager.editors;
 
 import com.bc.ceres.swing.TableLayout;
-import org.esa.snap.framework.ui.layer.AbstractLayerEditor;
 import org.esa.snap.rcp.layermanager.layersrc.shapefile.FeatureLayer;
+import org.esa.snap.ui.layer.AbstractLayerEditor;
 
 import javax.swing.JComponent;
 import javax.swing.JLabel;

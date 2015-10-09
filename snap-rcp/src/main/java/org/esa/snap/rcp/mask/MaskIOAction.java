@@ -16,9 +16,9 @@
 
 package org.esa.snap.rcp.mask;
 
+import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
-import org.esa.snap.util.SystemUtils;
 import org.openide.windows.TopComponent;
 
 import javax.swing.JOptionPane;

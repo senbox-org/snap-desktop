@@ -1,6 +1,6 @@
 package org.esa.snap.ui.tooladapter.model;
 
-import org.esa.snap.framework.gpf.descriptor.ToolAdapterOperatorDescriptor;
+import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.List;

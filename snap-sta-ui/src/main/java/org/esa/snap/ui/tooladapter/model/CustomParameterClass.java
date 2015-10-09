@@ -17,7 +17,7 @@
  */
 package org.esa.snap.ui.tooladapter.model;
 
-import org.esa.snap.framework.gpf.operators.tooladapter.ToolAdapterConstants;
+import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterConstants;
 
 import java.io.File;
 

@@ -25,8 +25,8 @@ import com.bc.ceres.swing.binding.PropertyPane;
 import org.esa.snap.binning.AggregatorConfig;
 import org.esa.snap.binning.AggregatorDescriptor;
 import org.esa.snap.binning.TypedDescriptorsRegistry;
-import org.esa.snap.framework.gpf.annotations.ParameterDescriptorFactory;
-import org.esa.snap.framework.ui.ModalDialog;
+import org.esa.snap.core.gpf.annotations.ParameterDescriptorFactory;
+import org.esa.snap.ui.ModalDialog;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;

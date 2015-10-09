@@ -3,11 +3,19 @@ package org.esa.snap.ui.tooladapter.dialogs;
 import org.esa.snap.framework.gpf.descriptor.SystemDependentVariable;
 import org.esa.snap.framework.ui.ModalDialog;
 import org.esa.snap.ui.tooladapter.actions.EscapeAction;
+import org.esa.snap.core.gpf.descriptor.SystemDependentVariable;
+import org.esa.snap.ui.ModalDialog;
 
-import javax.swing.*;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import java.awt.*;
+import java.awt.EventQueue;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.Window;
 import java.lang.reflect.Method;
 import java.util.logging.Logger;
 

@@ -16,7 +16,7 @@
 
 package org.esa.snap.timeseries.ui.assistant;
 
-import org.esa.snap.framework.ui.assistant.AssistantPage;
+import org.esa.snap.core.ui.assistant.AssistantPage;
 import org.esa.snap.timeseries.ui.Variable;
 import org.esa.snap.timeseries.ui.VariableSelectionPane;
 import org.esa.snap.timeseries.ui.VariableSelectionPaneModel;

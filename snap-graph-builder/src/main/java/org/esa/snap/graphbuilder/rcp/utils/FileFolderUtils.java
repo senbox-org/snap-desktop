@@ -1,11 +1,11 @@
 package org.esa.snap.graphbuilder.rcp.utils;
 
-import org.esa.snap.framework.ui.SnapFileChooser;
+import org.esa.snap.core.util.SystemUtils;
+import org.esa.snap.core.util.io.FileUtils;
+import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.file.SaveProductAsAction;
-import org.esa.snap.util.SystemUtils;
-import org.esa.snap.util.io.FileUtils;
-import org.esa.snap.util.io.SnapFileFilter;
+import org.esa.snap.ui.SnapFileChooser;
 
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;

@@ -1,7 +1,6 @@
 package org.esa.snap.rcp.session;
 
-import org.esa.snap.util.SystemUtils;
-import org.esa.snap.util.io.SnapFileFilter;
+import org.esa.snap.core.util.io.SnapFileFilter;
 
 import java.io.File;
 

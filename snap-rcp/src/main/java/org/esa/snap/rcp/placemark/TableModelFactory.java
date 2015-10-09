@@ -16,11 +16,11 @@
 
 package org.esa.snap.rcp.placemark;
 
-import org.esa.snap.framework.datamodel.Band;
-import org.esa.snap.framework.datamodel.PlacemarkDescriptor;
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.TiePointGrid;
-import org.esa.snap.framework.ui.product.AbstractPlacemarkTableModel;
+import org.esa.snap.core.datamodel.Band;
+import org.esa.snap.core.datamodel.PlacemarkDescriptor;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.TiePointGrid;
+import org.esa.snap.ui.product.AbstractPlacemarkTableModel;
 
 public interface TableModelFactory {
     AbstractPlacemarkTableModel createTableModel(PlacemarkDescriptor placemarkDescriptor, Product product, Band[] selectedBands,

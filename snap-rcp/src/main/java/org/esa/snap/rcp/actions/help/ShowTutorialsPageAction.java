@@ -16,18 +16,14 @@
 package org.esa.snap.rcp.actions.help;
 
 import org.esa.snap.runtime.Config;
-import org.esa.snap.util.SystemUtils;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
-import java.io.IOException;
-import java.net.URI;
 
 /**
  * This action launches the default browser to display the project tutorials.

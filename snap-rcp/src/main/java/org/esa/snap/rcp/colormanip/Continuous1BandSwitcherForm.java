@@ -16,8 +16,8 @@
 
 package org.esa.snap.rcp.colormanip;
 
-import org.esa.snap.framework.datamodel.ProductNodeEvent;
-import org.esa.snap.framework.datamodel.RasterDataNode;
+import org.esa.snap.core.datamodel.ProductNodeEvent;
+import org.esa.snap.core.datamodel.RasterDataNode;
 
 import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;

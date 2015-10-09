@@ -15,9 +15,9 @@
  */
 package org.esa.snap.rcp.layermanager.layersrc.product;
 
-import org.esa.snap.framework.ui.layer.AbstractLayerSourceAssistantPage;
-import org.esa.snap.framework.ui.layer.LayerSource;
-import org.esa.snap.framework.ui.layer.LayerSourcePageContext;
+import org.esa.snap.ui.layer.AbstractLayerSourceAssistantPage;
+import org.esa.snap.ui.layer.LayerSource;
+import org.esa.snap.ui.layer.LayerSourcePageContext;
 
 /**
  * A layer source that adds band or tie-point-grids

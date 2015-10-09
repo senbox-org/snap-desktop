@@ -17,7 +17,7 @@
 package org.esa.snap.rcp.mask;
 
 import junit.framework.TestCase;
-import org.esa.snap.framework.datamodel.Product;
+import org.esa.snap.core.datamodel.Product;
 
 
 public class MaskTableModelTest extends TestCase {

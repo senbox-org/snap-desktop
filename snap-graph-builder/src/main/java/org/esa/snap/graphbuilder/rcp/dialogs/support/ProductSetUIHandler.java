@@ -17,11 +17,11 @@ package org.esa.snap.graphbuilder.rcp.dialogs.support;
 
 import com.bc.ceres.binding.dom.DomElement;
 import com.bc.ceres.binding.dom.XppDomElement;
-import org.esa.snap.framework.gpf.OperatorSpi;
-import org.esa.snap.framework.gpf.graph.Graph;
-import org.esa.snap.framework.gpf.graph.Node;
-import org.esa.snap.framework.gpf.internal.ProductSetHandler;
-import org.esa.snap.gpf.operators.standard.ReadOp;
+import org.esa.snap.core.gpf.OperatorSpi;
+import org.esa.snap.core.gpf.common.ReadOp;
+import org.esa.snap.core.gpf.graph.Graph;
+import org.esa.snap.core.gpf.graph.Node;
+import org.esa.snap.core.gpf.internal.ProductSetHandler;
 
 import java.util.ArrayList;
 import java.util.List;

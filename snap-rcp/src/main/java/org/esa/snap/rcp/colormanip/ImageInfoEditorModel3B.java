@@ -17,9 +17,9 @@
 package org.esa.snap.rcp.colormanip;
 
 import com.bc.ceres.core.Assert;
-import org.esa.snap.framework.datamodel.ImageInfo;
-import org.esa.snap.framework.ui.AbstractImageInfoEditorModel;
-import org.esa.snap.util.math.MathUtils;
+import org.esa.snap.core.datamodel.ImageInfo;
+import org.esa.snap.core.util.math.MathUtils;
+import org.esa.snap.ui.AbstractImageInfoEditorModel;
 
 import java.awt.Color;
 

@@ -20,9 +20,9 @@ import com.bc.ceres.binding.PropertySet;
 import com.bc.ceres.glayer.Layer;
 import com.bc.ceres.glayer.LayerType;
 import com.bc.ceres.glayer.LayerTypeRegistry;
-import org.esa.snap.framework.datamodel.Product;
-import org.esa.snap.framework.datamodel.ProductData;
-import org.esa.snap.glayer.RgbImageLayerType;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductData;
+import org.esa.snap.core.layer.RgbImageLayerType;
 
 public class RgbImageLayerConfigurationPersistencyTest extends AbstractLayerConfigurationPersistencyTest {
 

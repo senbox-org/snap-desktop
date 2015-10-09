@@ -17,19 +17,28 @@
  */
 package org.esa.snap.ui.tooladapter.model;
 
-import org.esa.snap.framework.gpf.descriptor.SystemDependentVariable;
-import org.esa.snap.framework.gpf.descriptor.SystemVariable;
-import org.esa.snap.framework.ui.AppContext;
-import org.esa.snap.framework.ui.UIUtils;
-import org.esa.snap.framework.ui.tool.ToolButtonFactory;
+import org.esa.snap.core.gpf.descriptor.SystemDependentVariable;
+import org.esa.snap.core.gpf.descriptor.SystemVariable;
+import org.esa.snap.ui.AppContext;
+import org.esa.snap.ui.UIUtils;
+import org.esa.snap.ui.tool.ToolButtonFactory;
 import org.esa.snap.ui.tooladapter.dialogs.SystemDependentVariableEditorDialog;
 
-import javax.swing.*;
+import javax.swing.AbstractButton;
+import javax.swing.AbstractCellEditor;
+import javax.swing.DefaultCellEditor;
+import javax.swing.JButton;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Font;
+import java.awt.Window;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;

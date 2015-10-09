@@ -16,7 +16,7 @@
 
 package org.esa.snap.rcp.pixelinfo;
 
-import org.esa.snap.framework.ui.product.ProductSceneView;
+import org.esa.snap.ui.product.ProductSceneView;
 
 class PixelInfoState {
     static final PixelInfoState INVALID = new PixelInfoState(null, -1, -1, -1, false);

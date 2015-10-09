@@ -17,9 +17,9 @@
 package org.esa.snap.timeseries.ui.graph;
 
 import com.bc.ceres.swing.TableLayout;
-import org.esa.snap.framework.ui.UIUtils;
-import org.esa.snap.framework.ui.product.ProductSceneView;
-import org.esa.snap.framework.ui.tool.ToolButtonFactory;
+import org.esa.snap.core.ui.UIUtils;
+import org.esa.snap.core.ui.product.ProductSceneView;
+import org.esa.snap.core.ui.tool.ToolButtonFactory;
 import org.esa.snap.rcp.SnapApp;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;

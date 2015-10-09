@@ -310,10 +310,10 @@
 
         </folder>
 
-        <!-- Context for image view windows, provided by instances of org.esa.snap.framework.ui.product.ProductSceneView -->
+        <!-- Context for image view windows, provided by instances of ProductSceneView -->
         <folder name="ProductSceneView"/>
 
-        <!-- Context for placemark view windows, provided by instances of org.esa.snap.framework.ui.product.ProductPlacemarkView -->
+        <!-- Context for placemark view windows, provided by instances of ProductPlacemarkView -->
         <folder name="ProductPlacemarkView"/>
 
     </folder>
@@ -411,7 +411,7 @@
     <folder name="LayerEditors">
         <file name="VectorDataLayer">
             <attr name="layerClass"
-                  stringvalue="org.esa.snap.framework.ui.product.VectorDataLayer"/>
+                  stringvalue="org.esa.snap.ui.product.VectorDataLayer"/>
             <attr name="editorFactoryClass"
                   stringvalue="org.esa.snap.rcp.layermanager.editors.VectorDataLayerEditorFactory"/>
         </file>
@@ -423,7 +423,7 @@
         </file>
         <file name="NoDataLayerType">
             <attr name="layerTypeClass"
-                  stringvalue="org.esa.snap.glayer.NoDataLayerType"/>
+                  stringvalue="org.esa.snap.core.layer.NoDataLayerType"/>
             <attr name="editorClass"
                   stringvalue="org.esa.snap.rcp.layermanager.editors.NoDataLayerEditor"/>
         </file>
@@ -435,7 +435,7 @@
         </file>
         <file name="GraticuleLayerType">
             <attr name="layerTypeClass"
-                  stringvalue="org.esa.snap.glayer.GraticuleLayerType"/>
+                  stringvalue="org.esa.snap.core.layer.GraticuleLayerType"/>
             <attr name="editorClass"
                   stringvalue="org.esa.snap.rcp.layermanager.editors.GraticuleLayerEditor"/>
         </file>
@@ -479,7 +479,7 @@
             <attr name="description"
                   stringvalue="Inserts an empty layer group"/>
             <attr name="layerSourceClass"
-                  stringvalue="org.esa.snap.framework.ui.layer.CollectionLayerSource"/>
+                  stringvalue="org.esa.snap.ui.layer.CollectionLayerSource"/>
         </file>
         <file name="MerisWindFieldLayerSource">
             <attr name="displayName"

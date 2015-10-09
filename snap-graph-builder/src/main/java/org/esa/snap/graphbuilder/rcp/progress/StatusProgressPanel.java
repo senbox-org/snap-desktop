@@ -15,11 +15,12 @@
  */
 package org.esa.snap.graphbuilder.rcp.progress;
 
-import org.esa.snap.framework.dataop.downloadable.StatusProgressMonitor;
+import org.esa.snap.core.dataop.downloadable.StatusProgressMonitor;
 import org.netbeans.api.progress.ProgressHandle;
 import org.netbeans.api.progress.ProgressHandleFactory;
 
-import javax.swing.*;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 public class StatusProgressPanel extends JPanel implements StatusProgressMonitor.Listener
 {
