@@ -15,8 +15,8 @@
  */
 package org.esa.snap.productlibrary.rcp.toolviews;
 
+import org.esa.snap.core.dataio.dimap.DimapProductConstants;
 import org.esa.snap.core.util.io.FileUtils;
-import org.esa.snap.dataio.dimap.DimapProductConstants;
 import org.esa.snap.db.ProductEntry;
 import org.esa.snap.util.FileIOUtils;
 

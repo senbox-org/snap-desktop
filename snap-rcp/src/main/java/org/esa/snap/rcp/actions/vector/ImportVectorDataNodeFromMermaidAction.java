@@ -17,12 +17,12 @@
 package org.esa.snap.rcp.actions.vector;
 
 import com.bc.ceres.core.ProgressMonitor;
+import org.esa.snap.core.dataio.geometry.VectorDataNodeReader;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.core.datamodel.VectorDataNode;
 import org.esa.snap.core.image.ImageManager;
 import org.esa.snap.core.util.io.SnapFileFilter;
-import org.esa.snap.dataio.geometry.VectorDataNodeReader;
 import org.esa.snap.rcp.SnapApp;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.openide.awt.ActionID;
