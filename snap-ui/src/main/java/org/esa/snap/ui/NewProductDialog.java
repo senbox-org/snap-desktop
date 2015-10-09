@@ -160,7 +160,7 @@ public class NewProductDialog extends ModalDialog {
                 TiePointGrid lonGrid = resultProduct.getTiePointGrid("longitude");
                 if (latGrid != null && lonGrid != null) {
                     resultProduct.setGeoCoding(
-                            new TiePointGeoCoding(latGrid, lonGrid, sourceProduct.getGeoCoding().getDatum()));
+                            new TiePointGeoCoding(latGrid, lonGrid, sourceProduct.getGeoCoding().getGeoCRS()));
                 }
             } else if (subsetDef != null && subsetRButton.isSelected()) {
                 resultProduct = ProductSubsetBuilder.createProductSubset(sourceProduct, sourceProductOwner,
