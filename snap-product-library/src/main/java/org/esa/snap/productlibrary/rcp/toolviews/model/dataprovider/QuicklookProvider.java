@@ -15,7 +15,7 @@
  */
 package org.esa.snap.productlibrary.rcp.toolviews.model.dataprovider;
 
-import org.esa.snap.db.ProductEntry;
+import org.esa.snap.engine_utilities.db.ProductEntry;
 
 import javax.swing.AbstractCellEditor;
 import javax.swing.BorderFactory;

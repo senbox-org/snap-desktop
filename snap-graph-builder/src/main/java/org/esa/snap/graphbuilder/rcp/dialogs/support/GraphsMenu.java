@@ -18,7 +18,7 @@ package org.esa.snap.graphbuilder.rcp.dialogs.support;
 import org.esa.snap.ui.AbstractDialog;
 import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.ui.UIUtils;
-import org.esa.snap.util.ResourceUtils;
+import org.esa.snap.engine_utilities.util.ResourceUtils;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;

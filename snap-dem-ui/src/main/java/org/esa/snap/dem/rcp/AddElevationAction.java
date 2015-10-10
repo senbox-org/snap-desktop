@@ -41,7 +41,7 @@ import org.esa.snap.core.dataop.resamp.ResamplingFactory;
 import org.esa.snap.core.image.ImageManager;
 import org.esa.snap.core.image.RasterDataNodeSampleOpImage;
 import org.esa.snap.core.image.ResolutionLevel;
-import org.esa.snap.datamodel.Unit;
+import org.esa.snap.engine_utilities.datamodel.Unit;
 import org.esa.snap.dem.dataio.DEMFactory;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;

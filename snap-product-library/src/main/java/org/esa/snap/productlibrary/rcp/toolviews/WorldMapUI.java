@@ -16,8 +16,8 @@
 package org.esa.snap.productlibrary.rcp.toolviews;
 
 import org.esa.snap.core.datamodel.GeoPos;
-import org.esa.snap.db.GeoPosList;
-import org.esa.snap.db.ProductEntry;
+import org.esa.snap.engine_utilities.db.GeoPosList;
+import org.esa.snap.engine_utilities.db.ProductEntry;
 import org.esa.snap.graphbuilder.gpf.ui.worldmap.NestWorldMapPane;
 import org.esa.snap.graphbuilder.gpf.ui.worldmap.NestWorldMapPaneDataModel;
 import org.esa.snap.productlibrary.rcp.toolviews.model.DatabaseQueryListener;

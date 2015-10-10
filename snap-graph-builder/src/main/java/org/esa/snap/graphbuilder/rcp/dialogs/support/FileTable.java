@@ -15,11 +15,11 @@
  */
 package org.esa.snap.graphbuilder.rcp.dialogs.support;
 
-import org.esa.snap.db.ProductEntry;
+import org.esa.snap.engine_utilities.db.ProductEntry;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.graphbuilder.rcp.utils.ClipboardUtils;
-import org.esa.snap.util.ProductFunctions;
+import org.esa.snap.engine_utilities.util.ProductFunctions;
 
 import javax.swing.*;
 import java.awt.*;

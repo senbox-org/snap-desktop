@@ -19,7 +19,7 @@ import org.esa.snap.productlibrary.rcp.toolviews.model.dataprovider.DataProvider
 import org.esa.snap.productlibrary.rcp.toolviews.model.dataprovider.IDProvider;
 import org.esa.snap.productlibrary.rcp.toolviews.model.dataprovider.PropertiesProvider;
 import org.esa.snap.productlibrary.rcp.toolviews.model.dataprovider.QuicklookProvider;
-import org.esa.snap.db.ProductEntry;
+import org.esa.snap.engine_utilities.db.ProductEntry;
 import org.esa.snap.rcp.SnapDialogs;
 
 import javax.swing.table.AbstractTableModel;

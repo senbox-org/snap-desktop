@@ -15,8 +15,8 @@
  */
 package org.esa.snap.productlibrary.rcp.toolviews;
 
-import org.esa.snap.db.DBQuery;
-import org.esa.snap.db.ProductEntry;
+import org.esa.snap.engine_utilities.db.DBQuery;
+import org.esa.snap.engine_utilities.db.ProductEntry;
 import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
 import org.esa.snap.graphbuilder.rcp.utils.FileFolderUtils;
 import org.esa.snap.productlibrary.rcp.dialogs.CheckListDialog;

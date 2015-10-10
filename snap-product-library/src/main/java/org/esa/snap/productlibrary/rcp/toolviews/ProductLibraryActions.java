@@ -15,7 +15,7 @@
  */
 package org.esa.snap.productlibrary.rcp.toolviews;
 
-import org.esa.snap.db.ProductEntry;
+import org.esa.snap.engine_utilities.db.ProductEntry;
 import org.esa.snap.graphbuilder.rcp.dialogs.BatchGraphDialog;
 import org.esa.snap.graphbuilder.rcp.utils.ClipboardUtils;
 import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
@@ -28,7 +28,7 @@ import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.ui.SnapFileChooser;
 import org.esa.snap.ui.UIUtils;
-import org.esa.snap.util.ResourceUtils;
+import org.esa.snap.engine_utilities.util.ResourceUtils;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;

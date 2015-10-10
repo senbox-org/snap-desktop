@@ -20,12 +20,12 @@ import com.bc.ceres.core.SubProgressMonitor;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.OperatorException;
 import org.esa.snap.core.gpf.graph.GraphException;
-import org.esa.snap.db.CommonReaders;
+import org.esa.snap.engine_utilities.db.CommonReaders;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphExecuter;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.ProgressBarProgressMonitor;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.ModelessDialog;
-import org.esa.snap.util.MemUtils;
+import org.esa.snap.engine_utilities.util.MemUtils;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;

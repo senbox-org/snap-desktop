@@ -15,7 +15,7 @@
  */
 package org.esa.snap.productlibrary.rcp.toolviews;
 
-import org.esa.snap.db.ProductDB;
+import org.esa.snap.engine_utilities.db.ProductDB;
 
 import javax.swing.SwingWorker;
 import java.io.File;

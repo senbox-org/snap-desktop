@@ -17,10 +17,10 @@ package org.esa.snap.graphbuilder.rcp.dialogs.support;
 
 import org.esa.snap.core.datamodel.MetadataElement;
 import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.datamodel.AbstractMetadata;
-import org.esa.snap.db.CommonReaders;
-import org.esa.snap.db.ProductEntry;
-import org.esa.snap.gpf.OperatorUtils;
+import org.esa.snap.engine_utilities.datamodel.AbstractMetadata;
+import org.esa.snap.engine_utilities.db.CommonReaders;
+import org.esa.snap.engine_utilities.db.ProductEntry;
+import org.esa.snap.engine_utilities.gpf.OperatorUtils;
 import org.esa.snap.rcp.SnapApp;
 
 import java.io.File;
