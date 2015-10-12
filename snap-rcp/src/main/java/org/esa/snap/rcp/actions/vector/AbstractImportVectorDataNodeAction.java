@@ -5,7 +5,6 @@ import org.esa.snap.core.datamodel.GeometryDescriptor;
 import org.esa.snap.core.datamodel.PlacemarkDescriptor;
 import org.esa.snap.core.datamodel.PlacemarkDescriptorRegistry;
 import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.image.ImageManager;
 import org.esa.snap.core.util.FeatureUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.AbstractSnapAction;
@@ -73,8 +72,8 @@ abstract class AbstractImportVectorDataNodeAction extends AbstractSnapAction {
 
         @Override
         public CoordinateReferenceSystem getFeatureCrs(final Product product) {
-            if (ImageManager.getModelCrs(product.getGeoCoding()) == ImageManager.DEFAULT_IMAGE_CRS) {
-                return ImageManager.DEFAULT_IMAGE_CRS;
+            if (product.getModelCRS() == Product.DEFAULT_IMAGE_CRS) {
+                return Product.DEFAULT_IMAGE_CRS;
             }
 
             final CoordinateReferenceSystem[] featureCrsBuffer = new CoordinateReferenceSystem[1];

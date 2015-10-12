@@ -23,12 +23,10 @@ import com.bc.ceres.glayer.LayerType;
 import com.bc.ceres.glayer.LayerTypeRegistry;
 import com.bc.ceres.glayer.support.ImageLayer;
 import org.esa.snap.core.datamodel.Band;
-import org.esa.snap.core.datamodel.GeoCoding;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductManager;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.datamodel.TiePointGrid;
-import org.esa.snap.core.image.ImageManager;
 import org.esa.snap.core.layer.RasterImageLayerType;
 import org.esa.snap.core.util.ObjectUtils;
 import org.esa.snap.rcp.SnapApp;
@@ -157,8 +155,7 @@ class ProductLayerAssistantPage extends AbstractLayerSourceAssistantPage {
         Product selectedProduct = selectedProductSceneView.getProduct();
 
         RasterDataNode raster = selectedProductSceneView.getRaster();
-        GeoCoding geoCoding = raster.getGeoCoding();
-        CoordinateReferenceSystem modelCRS = ImageManager.getModelCrs(geoCoding);
+        CoordinateReferenceSystem modelCRS = selectedProduct.getModelCRS();
 
         ArrayList<CompatibleNodeList> compatibleNodeLists = new ArrayList<>(3);
         List<RasterDataNode> compatibleNodes = new ArrayList<>();
@@ -191,7 +188,6 @@ class ProductLayerAssistantPage extends AbstractLayerSourceAssistantPage {
 
     private void collectCompatibleBands(RasterDataNode referenceRaster, RasterDataNode[] dataNodes,
                                                   Collection<RasterDataNode> rasterDataNodes) {
-        //todo [multisize_products] ask for scenerastertransform instead of width and height
         final Dimension referenceRasterSize = referenceRaster.getRasterSize();
         for (RasterDataNode node : dataNodes) {
             if (node.getRasterSize().equals(referenceRasterSize)) {
@@ -203,7 +199,7 @@ class ProductLayerAssistantPage extends AbstractLayerSourceAssistantPage {
     private void collectCompatibleRasterDataNodes(CoordinateReferenceSystem thisCrs,
                                                   RasterDataNode[] bands, Collection<RasterDataNode> rasterDataNodes) {
         for (RasterDataNode node : bands) {
-            CoordinateReferenceSystem otherCrs = ImageManager.getModelCrs(node.getGeoCoding());
+            CoordinateReferenceSystem otherCrs = Product.getAppropriateModelCRS(node.getGeoCoding());
             // For GeoTools, two CRS where unequal if the authorities of their CS only differ in version
             // This happened with the S-2 L1C CRS, namely an EPSG:32615. Here one authority's version was null,
             // the other "7.9". Extremely annoying to debug and find out :-(   (nf, Feb 2013)

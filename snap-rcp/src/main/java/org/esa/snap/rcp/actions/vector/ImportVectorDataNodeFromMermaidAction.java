@@ -21,7 +21,6 @@ import org.esa.snap.core.dataio.geometry.VectorDataNodeReader;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.core.datamodel.VectorDataNode;
-import org.esa.snap.core.image.ImageManager;
 import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.rcp.SnapApp;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -121,10 +120,10 @@ public class ImportVectorDataNodeFromMermaidAction extends AbstractImportVectorD
         public VectorDataNode readVectorDataNode(File file, Product product, ProgressMonitor pm) throws IOException {
             FileReader reader = null;
             try {
-                final CoordinateReferenceSystem modelCrs = ImageManager.getModelCrs(product.getGeoCoding());
+                CoordinateReferenceSystem modelCrs = product.getModelCRS();
                 reader = new FileReader(file);
 
-                final char delimiterChar = ';';
+                char delimiterChar = ';';
                 return VectorDataNodeReader.read(file.getName(), reader, product, crsProvider, placemarkDescriptorProvider,
                                                  modelCrs, delimiterChar, pm);
             } finally {

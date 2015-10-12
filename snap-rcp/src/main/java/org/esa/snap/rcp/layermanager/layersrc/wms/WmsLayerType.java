@@ -78,7 +78,7 @@ public class WmsLayerType extends ImageLayer.Type {
                                                  configuration.getValue(WmsLayerType.PROPERTY_NAME_URL));
             throw new RuntimeException(message, e);
         }
-        final int layerIndex = (Integer) configuration.getValue(WmsLayerType.PROPERTY_NAME_LAYER_INDEX);
+        final int layerIndex = configuration.getValue(WmsLayerType.PROPERTY_NAME_LAYER_INDEX);
         final org.geotools.data.ows.Layer wmsLayer = getLayer(mapServer, layerIndex);
         final MultiLevelSource multiLevelSource = createMultiLevelSource(configuration, mapServer, wmsLayer);
 
@@ -115,8 +115,8 @@ public class WmsLayerType extends ImageLayer.Type {
                                                                   WebMapServer wmsServer,
                                                                   org.geotools.data.ows.Layer layer) {
         DefaultMultiLevelSource multiLevelSource;
-        final String styleName = (String) configuration.getValue(WmsLayerType.PROPERTY_NAME_STYLE_NAME);
-        final Dimension size = (Dimension) configuration.getValue(WmsLayerType.PROPERTY_NAME_IMAGE_SIZE);
+        final String styleName = configuration.getValue(WmsLayerType.PROPERTY_NAME_STYLE_NAME);
+        final Dimension size = configuration.getValue(WmsLayerType.PROPERTY_NAME_IMAGE_SIZE);
         try {
             List<StyleImpl> styleList = layer.getStyles();
             StyleImpl style = null;
@@ -128,7 +128,7 @@ public class WmsLayerType extends ImageLayer.Type {
                     }
                 }
             }
-            CRSEnvelope crsEnvelope = (CRSEnvelope) configuration.getValue(WmsLayerType.PROPERTY_NAME_CRS_ENVELOPE);
+            CRSEnvelope crsEnvelope = configuration.getValue(WmsLayerType.PROPERTY_NAME_CRS_ENVELOPE);
             GetMapRequest mapRequest = wmsServer.createGetMapRequest();
             mapRequest.addLayer(layer, style);
             mapRequest.setTransparent(true);
@@ -137,7 +137,7 @@ public class WmsLayerType extends ImageLayer.Type {
             mapRequest.setBBox(crsEnvelope);
             mapRequest.setFormat("image/png");
             final PlanarImage image = PlanarImage.wrapRenderedImage(downloadWmsImage(mapRequest, wmsServer));
-            RasterDataNode raster = (RasterDataNode) configuration.getValue(WmsLayerType.PROPERTY_NAME_RASTER);
+            RasterDataNode raster = configuration.getValue(WmsLayerType.PROPERTY_NAME_RASTER);
 
             final int sceneWidth = raster.getSceneRasterWidth();
             final int sceneHeight = raster.getSceneRasterHeight();
@@ -164,11 +164,8 @@ public class WmsLayerType extends ImageLayer.Type {
     private static BufferedImage downloadWmsImage(GetMapRequest mapRequest, WebMapServer wms) throws IOException,
             ServiceException {
         GetMapResponse mapResponse = wms.issueRequest(mapRequest);
-        InputStream inputStream = mapResponse.getInputStream();
-        try {
+        try (InputStream inputStream = mapResponse.getInputStream()) {
             return ImageIO.read(inputStream);
-        } finally {
-            inputStream.close();
         }
     }
 

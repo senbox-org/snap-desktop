@@ -25,7 +25,6 @@ import com.bc.ceres.glayer.LayerType;
 import com.bc.ceres.glayer.LayerTypeRegistry;
 import com.bc.ceres.glayer.support.ImageLayer;
 import com.bc.ceres.glayer.support.LayerUtils;
-import org.esa.snap.core.datamodel.GeoCoding;
 import org.esa.snap.core.datamodel.ImageInfo;
 import org.esa.snap.core.datamodel.Mask;
 import org.esa.snap.core.datamodel.Product;
@@ -34,7 +33,6 @@ import org.esa.snap.core.datamodel.ProductNodeGroup;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.datamodel.VectorDataNode;
 import org.esa.snap.core.image.BandImageMultiLevelSource;
-import org.esa.snap.core.image.ImageManager;
 import org.esa.snap.core.layer.GraticuleLayer;
 import org.esa.snap.core.layer.GraticuleLayerType;
 import org.esa.snap.core.layer.MaskCollectionLayerType;
@@ -138,11 +136,7 @@ public class ProductSceneImage implements ProductLayerContext {
 
     @Override
     public Object getCoordinateReferenceSystem() {
-        final GeoCoding geoCoding = rasters[0].getGeoCoding();
-        if (geoCoding != null) {
-            return ImageManager.getModelCrs(geoCoding);
-        }
-        return null;
+        return getProduct().getModelCRS();
     }
 
     @Override

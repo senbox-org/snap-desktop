@@ -20,7 +20,6 @@ import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
 import org.esa.snap.core.datamodel.CrsGeoCoding;
 import org.esa.snap.core.datamodel.VectorDataNode;
-import org.esa.snap.core.image.ImageManager;
 import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
@@ -197,7 +196,7 @@ public class ExportGeometryAction extends AbstractAction implements ContextAware
         }
         final CoordinateReferenceSystem modelCrs;
         if (vectorNode.getProduct().getGeoCoding() instanceof CrsGeoCoding) {
-            modelCrs = ImageManager.getModelCrs(vectorNode.getProduct().getGeoCoding());
+            modelCrs = vectorNode.getProduct().getModelCRS();
         } else {
             modelCrs = DefaultGeographicCRS.WGS84;
         }

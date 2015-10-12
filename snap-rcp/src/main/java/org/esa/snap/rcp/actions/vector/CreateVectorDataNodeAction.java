@@ -28,7 +28,6 @@ import org.esa.snap.core.datamodel.PlainFeatureFactory;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductNodeGroup;
 import org.esa.snap.core.datamodel.VectorDataNode;
-import org.esa.snap.core.image.ImageManager;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.nodes.UndoableProductNodeInsertion;
 import org.esa.snap.ui.ModalDialog;
@@ -98,7 +97,7 @@ public class CreateVectorDataNodeAction extends AbstractAction implements Contex
     }
 
     public static VectorDataNode createDefaultVectorDataNode(Product product, String name, String description) {
-        CoordinateReferenceSystem modelCrs = ImageManager.getModelCrs(product.getGeoCoding());
+        CoordinateReferenceSystem modelCrs = product.getModelCRS();
         SimpleFeatureType type = PlainFeatureFactory.createDefaultFeatureType(modelCrs);
         VectorDataNode vectorDataNode = new VectorDataNode(name, type);
         vectorDataNode.setDescription(description);
