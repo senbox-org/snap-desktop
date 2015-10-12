@@ -664,7 +664,7 @@ class ReprojectionForm extends JTabbedPane {
 
         @Override
         public boolean accept(Product product) {
-            final GeoCoding geoCoding = product.getGeoCoding();
+            final GeoCoding geoCoding = product.getSceneGeoCoding();
             return geoCoding != null && geoCoding.canGetGeoPos() && geoCoding.canGetPixelPos();
         }
     }

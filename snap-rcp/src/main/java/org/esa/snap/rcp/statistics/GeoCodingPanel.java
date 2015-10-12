@@ -72,9 +72,9 @@ class GeoCodingPanel extends PagePanel {
 
     @Override
     public void nodeChanged(final ProductNodeEvent event) {
-        if (Product.PROPERTY_NAME_GEOCODING.equals(event.getPropertyName())) {
+        if (Product.PROPERTY_NAME_SCENE_GEO_CODING.equals(event.getPropertyName())) {
             if (event.getSourceNode() instanceof Product) {
-                geoCoding = getProduct().getGeoCoding();
+                geoCoding = getProduct().getSceneGeoCoding();
             } else {
                 geoCoding = getRaster().getGeoCoding();
             }
@@ -147,7 +147,7 @@ class GeoCodingPanel extends PagePanel {
         final String nodeType;
         if (usingUniformGeoCodings) {
             nodeType = "product";
-            geoCoding = product.getGeoCoding();
+            geoCoding = product.getSceneGeoCoding();
             sceneCenter = new PixelPos(product.getSceneRasterWidth() / 2 + 0.5f,
                                        product.getSceneRasterHeight() / 2 + 0.5f);
             sceneUL = new PixelPos(0 + 0.5f, 0 + 0.5f);

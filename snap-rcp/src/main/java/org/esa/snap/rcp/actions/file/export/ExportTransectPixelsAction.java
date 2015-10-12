@@ -319,7 +319,7 @@ public class ExportTransectPixelsAction extends AbstractAction implements HelpCt
 
             final Band[] bands = product.getBands();
             final TiePointGrid[] tiePointGrids = product.getTiePointGrids();
-            final GeoCoding geoCoding = product.getGeoCoding();
+            final GeoCoding geoCoding = product.getSceneGeoCoding();
             if (mustCreateHeader) {
                 writeFileHeader(out, bands);
             }

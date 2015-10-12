@@ -142,13 +142,13 @@ public class NestWorldMapPane extends JPanel {
 
     public void zoomToProduct(Product product) {
         final GeoPos[][] selGeoBoundaries = dataModel.getSelectedGeoBoundaries();
-        if ((product == null || product.getGeoCoding() == null) && selGeoBoundaries.length == 0) {
+        if ((product == null || product.getSceneGeoCoding() == null) && selGeoBoundaries.length == 0) {
             return;
         }
 
         //NESTMOD
         final GeneralPath[] generalPaths;
-        if (product != null && product.getGeoCoding() != null) {
+        if (product != null && product.getSceneGeoCoding() != null) {
             generalPaths = getGeoBoundaryPaths(product);
         } else {
             final ArrayList<GeneralPath> pathList = assemblePathList(selGeoBoundaries[0]);
@@ -251,7 +251,7 @@ public class NestWorldMapPane extends JPanel {
     }
 
     private PixelPos getProductCenter(final Product product) {
-        final GeoCoding geoCoding = product.getGeoCoding();
+        final GeoCoding geoCoding = product.getSceneGeoCoding();
         PixelPos centerPos = null;
         if (geoCoding != null) {
             final float pixelX = (float) Math.floor(0.5f * product.getSceneRasterWidth()) + 0.5f;
@@ -402,7 +402,7 @@ public class NestWorldMapPane extends JPanel {
 
         private void drawProduct(final Graphics2D g2d, final Product product,
                                  final Color fillColor, final Color borderColor) {
-            final GeoCoding geoCoding = product.getGeoCoding();
+            final GeoCoding geoCoding = product.getSceneGeoCoding();
             if (geoCoding == null) {
                 return;
             }

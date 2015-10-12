@@ -161,8 +161,8 @@ class TransferMaskDialog extends ModalDialog {
     }
     
     private static boolean intersectsWith(Product sourceProduct, Product targetProduct) {
-        final GeoCoding srcGC = sourceProduct.getGeoCoding();
-        final GeoCoding targetGC = targetProduct.getGeoCoding();
+        final GeoCoding srcGC = sourceProduct.getSceneGeoCoding();
+        final GeoCoding targetGC = targetProduct.getSceneGeoCoding();
         if (srcGC != null && srcGC.canGetGeoPos() && targetGC != null && targetGC.canGetGeoPos()) {
             final GeneralPath[] sourcePath = ProductUtils.createGeoBoundaryPaths(sourceProduct);
             final GeneralPath[] targetPath = ProductUtils.createGeoBoundaryPaths(targetProduct);

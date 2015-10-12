@@ -183,7 +183,7 @@ class RangeFinderInteractor extends ViewportInteractor {
         GeoCoding geoCoding;
         geoCoding = view.getRaster().getGeoCoding();
         if (geoCoding == null) {
-            geoCoding = view.getProduct().getGeoCoding();
+            geoCoding = view.getProduct().getSceneGeoCoding();
         }
         if (geoCoding == null) {
             JOptionPane.showMessageDialog(SnapApp.getDefault().getMainFrame(), "Product is not geo-coded.",

@@ -92,7 +92,7 @@ public class ImportVectorDataNodeFromCsvAction extends AbstractImportVectorDataN
         ProductNode productNode = lookup.lookup(ProductNode.class);
         if (productNode != null) {
             Product product = productNode.getProduct();
-            state = product != null && product.getGeoCoding() != null;
+            state = product != null && product.getSceneGeoCoding() != null;
         }
         setEnabled(state);
     }

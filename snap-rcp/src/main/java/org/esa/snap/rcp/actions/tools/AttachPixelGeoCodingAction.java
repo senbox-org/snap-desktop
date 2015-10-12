@@ -125,7 +125,7 @@ public class AttachPixelGeoCodingAction extends AbstractAction implements Contex
         boolean state = false;
         if (productNode != null) {
             Product product = productNode.getProduct();
-            final boolean hasPixelGeoCoding = product.getGeoCoding() instanceof BasicPixelGeoCoding;
+            final boolean hasPixelGeoCoding = product.getSceneGeoCoding() instanceof BasicPixelGeoCoding;
             final boolean hasSomeBands = product.getNumBands() >= 2;
             state = !hasPixelGeoCoding && hasSomeBands;
         }
@@ -175,7 +175,7 @@ public class AttachPixelGeoCodingAction extends AbstractAction implements Contex
             @Override
             protected Void doInBackground(ProgressMonitor pm) throws Exception {
                 final BasicPixelGeoCoding pixelGeoCoding = GeoCodingFactory.createPixelGeoCoding(latBand, lonBand, validMask, searchRadius, pm);
-                product.setGeoCoding(pixelGeoCoding);
+                product.setSceneGeoCoding(pixelGeoCoding);
                 UndoRedo.Manager undoManager = SnapApp.getDefault().getUndoManager(product);
                 if (undoManager != null) {
                     undoManager.addEdit(new UndoableAttachGeoCoding<>(product, pixelGeoCoding));
@@ -417,15 +417,15 @@ public class AttachPixelGeoCodingAction extends AbstractAction implements Contex
         @Override
         public void undo() throws CannotUndoException {
             super.undo();
-            if (product.getGeoCoding() == pixelGeoCoding) {
-                product.setGeoCoding(pixelGeoCoding.getPixelPosEstimator());
+            if (product.getSceneGeoCoding() == pixelGeoCoding) {
+                product.setSceneGeoCoding(pixelGeoCoding.getPixelPosEstimator());
             }
         }
 
         @Override
         public void redo() throws CannotRedoException {
             super.redo();
-            product.setGeoCoding(pixelGeoCoding);
+            product.setSceneGeoCoding(pixelGeoCoding);
         }
 
         @Override

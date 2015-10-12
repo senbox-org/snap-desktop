@@ -168,8 +168,8 @@ class MosaicFormModel {
 
     void setUpdateProduct(Product product) {
         setPropertyValue(PROPERTY_UPDATE_PRODUCT, product);
-        if (product != null && product.getGeoCoding() != null && product.getGeoCoding().getMapCRS() != null) {
-            setTargetCRS(product.getGeoCoding().getMapCRS().toWKT());
+        if (product != null && product.getSceneGeoCoding() != null && product.getSceneGeoCoding().getMapCRS() != null) {
+            setTargetCRS(product.getSceneGeoCoding().getMapCRS().toWKT());
         }
     }
 
@@ -219,7 +219,7 @@ class MosaicFormModel {
                                                          mapEnvelope.getMinimum(0),
                                                          mapEnvelope.getMaximum(1),
                                                          pixelSizeX, pixelSizeY);
-            product.setGeoCoding(geoCoding);
+            product.setSceneGeoCoding(geoCoding);
 
             return product;
         }

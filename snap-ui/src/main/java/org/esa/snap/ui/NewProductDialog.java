@@ -159,8 +159,8 @@ public class NewProductDialog extends ModalDialog {
                 TiePointGrid latGrid = resultProduct.getTiePointGrid("latitude");
                 TiePointGrid lonGrid = resultProduct.getTiePointGrid("longitude");
                 if (latGrid != null && lonGrid != null) {
-                    resultProduct.setGeoCoding(
-                            new TiePointGeoCoding(latGrid, lonGrid, sourceProduct.getGeoCoding().getGeoCRS()));
+                    resultProduct.setSceneGeoCoding(
+                            new TiePointGeoCoding(latGrid, lonGrid, sourceProduct.getSceneGeoCoding().getGeoCRS()));
                 }
             } else if (subsetDef != null && subsetRButton.isSelected()) {
                 resultProduct = ProductSubsetBuilder.createProductSubset(sourceProduct, sourceProductOwner,
@@ -343,7 +343,7 @@ public class NewProductDialog extends ModalDialog {
                 final int height = product.getSceneRasterHeight();
                 labelWidthInfo.setText("" + width);
                 labelHeightInfo.setText("" + height);
-                final GeoCoding geoCoding = product.getGeoCoding();
+                final GeoCoding geoCoding = product.getSceneGeoCoding();
                 if (geoCoding != null) {
                     final GeoPos pos = geoCoding.getGeoPos(new PixelPos(0.5f * width + 0.5f, 0.5f * height + 0.5f),
                                                            null);
@@ -370,7 +370,7 @@ public class NewProductDialog extends ModalDialog {
                 labelCenterLatInfo.setText(DEFAULT_LATLON_TEXT);
                 labelCenterLonInfo.setText(DEFAULT_LATLON_TEXT);
             } else {
-                final GeoCoding geoCoding = product.getGeoCoding();
+                final GeoCoding geoCoding = product.getSceneGeoCoding();
                 if (geoCoding == null) {
                     labelCenterLatInfo.setText(DEFAULT_LATLON_TEXT);
                     labelCenterLonInfo.setText(DEFAULT_LATLON_TEXT);
@@ -384,7 +384,7 @@ public class NewProductDialog extends ModalDialog {
                 }
             }
         }
-        final boolean geocodingAvailable = product != null && product.getGeoCoding() != null;
+        final boolean geocodingAvailable = product != null && product.getSceneGeoCoding() != null;
         geocodingRButton.setEnabled(geocodingAvailable);
         if (geocodingRButton.isSelected() && !geocodingAvailable) {
             subsetRButton.setSelected(true);

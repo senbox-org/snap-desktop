@@ -159,7 +159,7 @@ public class WorldMapPane extends JPanel {
     }
 
     public void zoomToProduct(Product product) {
-        if (product == null || product.getGeoCoding() == null) {
+        if (product == null || product.getSceneGeoCoding() == null) {
             return;
         }
         final GeneralPath[] generalPaths = getGeoBoundaryPaths(product);

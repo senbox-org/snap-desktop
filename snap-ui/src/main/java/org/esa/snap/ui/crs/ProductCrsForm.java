@@ -45,7 +45,7 @@ public class ProductCrsForm extends CrsForm {
     }
 
     private CoordinateReferenceSystem getMapCrs() {
-        return product.getGeoCoding().getMapCRS();
+        return product.getSceneGeoCoding().getMapCRS();
     }
 
     @Override

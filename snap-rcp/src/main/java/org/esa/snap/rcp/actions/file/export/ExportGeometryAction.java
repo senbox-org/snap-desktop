@@ -192,10 +192,10 @@ public class ExportGeometryAction extends AbstractAction implements ContextAware
         FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection = vectorNode.getFeatureCollection();
         CoordinateReferenceSystem crs = vectorNode.getFeatureType().getCoordinateReferenceSystem();
         if (crs == null) {   // for pins and GCPs crs is null --> assume image crs
-            crs = vectorNode.getProduct().getGeoCoding().getImageCRS();
+            crs = vectorNode.getProduct().getSceneGeoCoding().getImageCRS();
         }
         final CoordinateReferenceSystem modelCrs;
-        if (vectorNode.getProduct().getGeoCoding() instanceof CrsGeoCoding) {
+        if (vectorNode.getProduct().getSceneGeoCoding() instanceof CrsGeoCoding) {
             modelCrs = vectorNode.getProduct().getModelCRS();
         } else {
             modelCrs = DefaultGeographicCRS.WGS84;

@@ -239,8 +239,8 @@ public class MagicWandInteractor extends ViewportInteractor implements MagicWand
     Point getPixelPos(Product product, MouseEvent event) {
         final Point2D mp = toModelPoint(event);
         final Point2D ip;
-        if (product.getGeoCoding() != null) {
-            AffineTransform transform = ImageManager.getImageToModelTransform(product.getGeoCoding());
+        if (product.getSceneGeoCoding() != null) {
+            AffineTransform transform = ImageManager.getImageToModelTransform(product.getSceneGeoCoding());
             try {
                 ip = transform.inverseTransform(mp, null);
             } catch (NoninvertibleTransformException e) {

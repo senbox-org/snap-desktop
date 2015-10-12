@@ -639,7 +639,7 @@ public class ProductSubsetDialog extends ModalDialog {
         }
 
         private boolean canUseGeoCoordinates(Product product) {
-            final GeoCoding geoCoding = product.getGeoCoding();
+            final GeoCoding geoCoding = product.getSceneGeoCoding();
             return geoCoding != null && geoCoding.canGetPixelPos() && geoCoding.canGetGeoPos();
         }
 
@@ -953,7 +953,7 @@ public class ProductSubsetDialog extends ModalDialog {
                                                     ((Number) paramY1.getValue()).intValue());
             final PixelPos pixelPos2 = new PixelPos(((Number) paramX2.getValue()).intValue(),
                                                     ((Number) paramY2.getValue()).intValue());
-            final GeoCoding geoCoding = product.getGeoCoding();
+            final GeoCoding geoCoding = product.getSceneGeoCoding();
             final GeoPos geoPos1 = geoCoding.getGeoPos(pixelPos1, null);
             final GeoPos geoPos2 = geoCoding.getGeoPos(pixelPos2, null);
             paramNorthLat1.setValue(geoPos1.getLat(), null);
@@ -963,7 +963,7 @@ public class ProductSubsetDialog extends ModalDialog {
         }
 
         private void updateXYParams(GeoPos geoPos1, GeoPos geoPos2) {
-            final GeoCoding geoCoding = product.getGeoCoding();
+            final GeoCoding geoCoding = product.getSceneGeoCoding();
             final PixelPos pixelPos1 = geoCoding.getPixelPos(geoPos1, null);
             if (!pixelPos1.isValid()) {
                 pixelPos1.setLocation(0, 0);
@@ -994,7 +994,7 @@ public class ProductSubsetDialog extends ModalDialog {
         }
 
         private Rectangle getScaledRectangle(Rectangle rectangle) {
-            final AffineTransform i2mTransform = ImageManager.getImageToModelTransform(product.getGeoCoding());
+            final AffineTransform i2mTransform = ImageManager.getImageToModelTransform(product.getSceneGeoCoding());
             final double scaleX = i2mTransform.getScaleX();
             final double scaleY = i2mTransform.getScaleY();
             double scaleFactorY = Math.abs(scaleY / scaleX);

@@ -48,7 +48,7 @@ public class TestProducts {
         at.translate(-80, -30);
         at.rotate(0.3, 20.0, 10.0);
         at.scale(sx, sx);
-        product.setGeoCoding(new ATGeoCoding(at));
+        product.setSceneGeoCoding(new ATGeoCoding(at));
         return product;
     }
 
@@ -75,7 +75,7 @@ public class TestProducts {
         AffineTransform at = new AffineTransform();
         at.scale(sx, sx);
         at.rotate(-0.2, 10.0, 10.0);
-        product.setGeoCoding(new ATGeoCoding(at));
+        product.setSceneGeoCoding(new ATGeoCoding(at));
 
         // add band with new raster size!
         VirtualBand band4 = new VirtualBand("Band_4", ProductData.TYPE_FLOAT64, 512, 512, "cos(ampl((X-256)/100, (Y-256)/100))");
@@ -120,7 +120,7 @@ public class TestProducts {
         at.translate(100, 0.0);
         at.rotate(0.1, 15.0, 15.0);
         at.scale(sx, sx);
-        product.setGeoCoding(new ATGeoCoding(at));
+        product.setSceneGeoCoding(new ATGeoCoding(at));
         return product;
     }
 
@@ -136,7 +136,7 @@ public class TestProducts {
         at4.scale(0.5 * sx, 0.5 * sx);
         at4.rotate(-0.2, 5.0, 5.0);
         at4.translate(256, 256);
-        product.setGeoCoding(new ATGeoCoding(at4));
+        product.setSceneGeoCoding(new ATGeoCoding(at4));
 
         return product;
     }

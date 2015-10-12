@@ -332,7 +332,7 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
                                                                 uniquePinNameAndLabel[1],
                                                                 "",
                                                                 new PixelPos(0, 0), null,
-                                                                product.getGeoCoding());
+                                                                product.getSceneGeoCoding());
         if (PlacemarkDialog.showEditPlacemarkDialog(
                 SwingUtilities.getWindowAncestor(this), product, newPlacemark, placemarkDescriptor)) {
             makePlacemarkNameUnique(newPlacemark);
@@ -354,7 +354,7 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
                                                                 activePlacemark.getDescription(),
                                                                 activePlacemark.getPixelPos(),
                                                                 activePlacemark.getGeoPos(),
-                                                                activePlacemark.getProduct().getGeoCoding());
+                                                                activePlacemark.getProduct().getSceneGeoCoding());
         newPlacemark.setStyleCss(activePlacemark.getStyleCss());
         if (PlacemarkDialog.showEditPlacemarkDialog(
                 SwingUtilities.getWindowAncestor(this), product, newPlacemark, placemarkDescriptor)) {
@@ -380,7 +380,7 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
                                                                      activePlacemark.getDescription(),
                                                                      activePlacemark.getPixelPos(),
                                                                      activePlacemark.getGeoPos(),
-                                                                     activePlacemark.getProduct().getGeoCoding());
+                                                                     activePlacemark.getProduct().getSceneGeoCoding());
         Guardian.assertNotNull("activePlacemark", activePlacemark);
         if (PlacemarkDialog.showEditPlacemarkDialog(SwingUtilities.getWindowAncestor(this), product, activePlacemark,
                                                     placemarkDescriptor)) {
@@ -524,7 +524,7 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
     }
 
     void addPlacemarksToProduct(List<Placemark> placemarks, Product targetProduct, boolean allPlacemarks) {
-        final GeoCoding geoCoding = targetProduct.getGeoCoding();
+        final GeoCoding geoCoding = targetProduct.getSceneGeoCoding();
         final boolean canGetPixelPos = geoCoding != null && geoCoding.canGetPixelPos();
         final boolean isPin = placemarkDescriptor instanceof PinDescriptor;
 
@@ -653,7 +653,7 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
                 setIODir(file.getAbsoluteFile().getParentFile());
                 GeoCoding geoCoding = null;
                 if (product != null) {
-                    geoCoding = product.getGeoCoding();
+                    geoCoding = product.getSceneGeoCoding();
                 }
                 return PlacemarkIO.readPlacemarks(new FileReader(file), geoCoding, placemarkDescriptor);
             }
@@ -785,7 +785,7 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
                                                                 placemark.getDescription(),
                                                                 placemark.getPixelPos(),
                                                                 placemark.getGeoPos(),
-                                                                product.getGeoCoding());
+                                                                product.getSceneGeoCoding());
         newPlacemark.setStyleCss(placemark.getStyleCss());
         return newPlacemark;
     }

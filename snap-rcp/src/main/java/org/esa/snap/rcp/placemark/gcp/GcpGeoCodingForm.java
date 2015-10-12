@@ -141,7 +141,7 @@ class GcpGeoCodingForm extends JPanel {
         AbstractAction attachDetachAction = new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
 
-                if (!(currentProduct.getGeoCoding() instanceof GcpGeoCoding)) {
+                if (!(currentProduct.getSceneGeoCoding() instanceof GcpGeoCoding)) {
                     attachGeoCoding(currentProduct);
                 } else {
                     detachGeoCoding(currentProduct);
@@ -176,8 +176,8 @@ class GcpGeoCodingForm extends JPanel {
     }
 
     void updateUIState() {
-        if (currentProduct != null && currentProduct.getGeoCoding() instanceof GcpGeoCoding) {
-            final GcpGeoCoding gcpGeoCoding = (GcpGeoCoding) currentProduct.getGeoCoding();
+        if (currentProduct != null && currentProduct.getSceneGeoCoding() instanceof GcpGeoCoding) {
+            final GcpGeoCoding gcpGeoCoding = (GcpGeoCoding) currentProduct.getSceneGeoCoding();
 
             rmseLatTextField.setText(rmseNumberFormat.format(gcpGeoCoding.getRmseLat()));
             rmseLonTextField.setText(rmseNumberFormat.format(gcpGeoCoding.getRmseLon()));
@@ -215,9 +215,9 @@ class GcpGeoCodingForm extends JPanel {
     }
 
     private void detachGeoCoding(Product product) {
-        if (product.getGeoCoding() instanceof GcpGeoCoding) {
-            GeoCoding gc = ((GcpGeoCoding) product.getGeoCoding()).getOriginalGeoCoding();
-            product.setGeoCoding(gc);
+        if (product.getSceneGeoCoding() instanceof GcpGeoCoding) {
+            GeoCoding gc = ((GcpGeoCoding) product.getSceneGeoCoding()).getOriginalGeoCoding();
+            product.setSceneGeoCoding(gc);
         }
         updateUIState();
     }
@@ -225,7 +225,7 @@ class GcpGeoCodingForm extends JPanel {
     private void attachGeoCoding(final Product product) {
         final GcpGeoCoding.Method method = (GcpGeoCoding.Method) methodComboBox.getSelectedItem();
         final Placemark[] gcps = getValidGcps(product.getGcpGroup());
-        final GeoCoding geoCoding = product.getGeoCoding();
+        final GeoCoding geoCoding = product.getSceneGeoCoding();
         final Datum datum;
         if (geoCoding == null) {
             datum = Datum.WGS_84;
@@ -240,7 +240,7 @@ class GcpGeoCodingForm extends JPanel {
                                                              product.getSceneRasterWidth(),
                                                              product.getSceneRasterHeight(),
                                                              datum);
-                gcpGeoCoding.setOriginalGeoCoding(product.getGeoCoding());
+                gcpGeoCoding.setOriginalGeoCoding(product.getSceneGeoCoding());
                 return gcpGeoCoding;
             }
 
@@ -249,7 +249,7 @@ class GcpGeoCodingForm extends JPanel {
                 final GcpGeoCoding gcpGeoCoding;
                 try {
                     gcpGeoCoding = get();
-                    product.setGeoCoding(gcpGeoCoding);
+                    product.setSceneGeoCoding(gcpGeoCoding);
                     updateUIState();
                 } catch (InterruptedException e) {
                     Debug.trace(e);
@@ -337,7 +337,7 @@ class GcpGeoCodingForm extends JPanel {
         @Override
         public void nodeChanged(ProductNodeEvent event) {
             // exclude geo-coding changes to prevent recursion
-            if (Product.PROPERTY_NAME_GEOCODING.equals(event.getPropertyName())) {
+            if (Product.PROPERTY_NAME_SCENE_GEO_CODING.equals(event.getPropertyName())) {
                 return;
             }
             final ProductNode sourceNode = event.getSourceNode();
@@ -368,7 +368,7 @@ class GcpGeoCodingForm extends JPanel {
         }
 
         private void updateGcpGeoCoding() {
-            final GeoCoding geoCoding = currentProduct.getGeoCoding();
+            final GeoCoding geoCoding = currentProduct.getSceneGeoCoding();
             if (geoCoding instanceof GcpGeoCoding) {
                 final GcpGeoCoding gcpGeoCoding = ((GcpGeoCoding) geoCoding);
                 final PlacemarkGroup gcpGroup = currentProduct.getGcpGroup();
@@ -377,7 +377,7 @@ class GcpGeoCodingForm extends JPanel {
                     detachGeoCoding(currentProduct);
                 } else {
                     gcpGeoCoding.setGcps(gcpGroup.toArray(new Placemark[gcpCount]));
-                    currentProduct.fireProductNodeChanged(Product.PROPERTY_NAME_GEOCODING);
+                    currentProduct.fireProductNodeChanged(Product.PROPERTY_NAME_SCENE_GEO_CODING);
                     updateUIState();
                 }
             }

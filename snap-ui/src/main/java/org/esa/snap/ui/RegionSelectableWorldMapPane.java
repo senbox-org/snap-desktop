@@ -454,7 +454,7 @@ public class RegionSelectableWorldMapPane {
             PixelPos upperLeftPixel = new PixelPos(0.5f, 0.5f);
             PixelPos lowerRightPixel = new PixelPos(
                     selectedProduct.getSceneRasterWidth() - 0.5f, selectedProduct.getSceneRasterHeight() - 0.5f);
-            GeoCoding geoCoding = selectedProduct.getGeoCoding();
+            GeoCoding geoCoding = selectedProduct.getSceneGeoCoding();
             upperLeftGeoPos = geoCoding.getGeoPos(upperLeftPixel, null);
             lowerRightGeoPos = geoCoding.getGeoPos(lowerRightPixel, null);
         } else {

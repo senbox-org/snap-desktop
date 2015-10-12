@@ -52,7 +52,7 @@ public abstract class BoundaryOverlay implements LayerCanvas.Overlay {
     protected abstract void handleSelectedProduct(Rendering rendering, Product selectedProduct);
 
     protected void drawProduct(final Graphics2D g2d, final Product product, final boolean isCurrent) {
-        final GeoCoding geoCoding = product.getGeoCoding();
+        final GeoCoding geoCoding = product.getSceneGeoCoding();
         if (geoCoding == null) {
             return;
         }
@@ -141,7 +141,7 @@ public abstract class BoundaryOverlay implements LayerCanvas.Overlay {
     }
 
     private PixelPos getProductCenter(final Product product) {
-        final GeoCoding geoCoding = product.getGeoCoding();
+        final GeoCoding geoCoding = product.getSceneGeoCoding();
         PixelPos centerPos = null;
         if (geoCoding != null) {
             final double pixelX = Math.floor(0.5f * product.getSceneRasterWidth()) + 0.5f;

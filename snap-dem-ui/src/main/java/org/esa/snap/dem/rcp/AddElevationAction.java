@@ -149,7 +149,7 @@ public class AddElevationAction extends AbstractAction implements ContextAwareAc
         boolean state = false;
         if (productNode != null) {
             product = productNode.getProduct();
-            state = product.getGeoCoding() != null;
+            state = product.getSceneGeoCoding() != null;
         }
         setEnabled(state);
     }
@@ -198,7 +198,7 @@ public class AddElevationAction extends AbstractAction implements ContextAwareAc
     }
 
     private static void addElevationBand(Product product, ElevationModel dem, String elevationBandName) {
-        final GeoCoding geoCoding = product.getGeoCoding();
+        final GeoCoding geoCoding = product.getSceneGeoCoding();
         ElevationModelDescriptor demDescriptor = dem.getDescriptor();
         final float noDataValue = dem.getDescriptor().getNoDataValue();
         final Band elevationBand = product.addBand(elevationBandName, ProductData.TYPE_FLOAT32);

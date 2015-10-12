@@ -71,9 +71,9 @@ public abstract class WWBaseToolView extends ToolTopComponent {
 
         final View theView = getWwd().getView();
         final Position origPos = theView.getEyePosition();
-        final GeoCoding geoCoding = product.getGeoCoding();
+        final GeoCoding geoCoding = product.getSceneGeoCoding();
         if (geoCoding != null && origPos != null) {
-            final GeoPos centre = product.getGeoCoding().getGeoPos(new PixelPos(product.getSceneRasterWidth() / 2,
+            final GeoPos centre = product.getSceneGeoCoding().getGeoPos(new PixelPos(product.getSceneRasterWidth() / 2,
                                                                                 product.getSceneRasterHeight() / 2), null);
             centre.normalize();
             theView.setEyePosition(Position.fromDegrees(centre.getLat(), centre.getLon(), origPos.getElevation()));

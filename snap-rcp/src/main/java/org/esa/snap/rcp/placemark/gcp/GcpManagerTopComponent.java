@@ -83,7 +83,7 @@ public class GcpManagerTopComponent extends PlacemarkManagerTopComponent {
 
             @Override
             public void nodeChanged(ProductNodeEvent event) {
-                if (Product.PROPERTY_NAME_GEOCODING.equals(event.getPropertyName())) {
+                if (Product.PROPERTY_NAME_SCENE_GEO_CODING.equals(event.getPropertyName())) {
                     updateUIState();
                 }
 

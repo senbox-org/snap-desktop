@@ -136,7 +136,7 @@ public class ImportTrackAction extends AbstractSnapAction implements ContextAwar
         final Product product = SnapApp.getDefault().getSelectedProduct();
         FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection;
         try {
-            featureCollection = readTrack(file, product.getGeoCoding());
+            featureCollection = readTrack(file, product.getSceneGeoCoding());
         } catch (IOException e) {
             SnapDialogs.showError(Bundle.CTL_ImportSeadasTrackActionName(), "Failed to load track file:\n" + e.getMessage());
             return;
@@ -171,7 +171,7 @@ public class ImportTrackAction extends AbstractSnapAction implements ContextAwar
         ProductNode productNode = lookup.lookup(ProductNode.class);
         if (productNode != null) {
             Product product = productNode.getProduct();
-            state = product != null && product.getGeoCoding() != null;
+            state = product != null && product.getSceneGeoCoding() != null;
         }
         setEnabled(state);
     }

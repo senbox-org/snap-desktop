@@ -114,7 +114,7 @@ public class ExportKmzFileAction extends AbstractAction implements HelpCtx.Provi
     @Override
     public void actionPerformed(ActionEvent e) {
         ProductSceneView view = SnapApp.getDefault().getSelectedProductSceneView();
-        final GeoCoding geoCoding = view.getProduct().getGeoCoding();
+        final GeoCoding geoCoding = view.getProduct().getSceneGeoCoding();
         boolean isGeographic = false;
         if (geoCoding instanceof MapGeoCoding) {
             MapGeoCoding mapGeoCoding = (MapGeoCoding) geoCoding;

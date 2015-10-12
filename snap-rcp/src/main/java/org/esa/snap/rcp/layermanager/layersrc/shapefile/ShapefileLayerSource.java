@@ -39,7 +39,7 @@ public class ShapefileLayerSource implements LayerSource {
 
     @Override
     public boolean isApplicable(LayerSourcePageContext pageContext) {
-        return SnapApp.getDefault().getSelectedProduct().getGeoCoding() != null;
+        return SnapApp.getDefault().getSelectedProduct().getSceneGeoCoding() != null;
     }
 
     @Override

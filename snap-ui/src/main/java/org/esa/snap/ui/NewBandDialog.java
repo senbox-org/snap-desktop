@@ -154,7 +154,7 @@ public class NewBandDialog extends ModalDialog {
         final JLabel heightValueLabel = new JLabel("" + _currentProduct.getSceneRasterHeight() + " pixel");
         final JLabel centerValueLatLabel = new JLabel("##°");
         final JLabel centerValueLonLabel = new JLabel("##°");
-        final GeoCoding geoCoding = _currentProduct.getGeoCoding();
+        final GeoCoding geoCoding = _currentProduct.getSceneGeoCoding();
         if (geoCoding != null) {
             final float centerX = 0.5f * _currentProduct.getSceneRasterWidth();
             final float centerY = 0.5f * _currentProduct.getSceneRasterHeight();

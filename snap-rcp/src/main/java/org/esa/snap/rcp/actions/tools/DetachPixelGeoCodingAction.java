@@ -97,11 +97,11 @@ public class DetachPixelGeoCodingAction extends AbstractAction implements Contex
             @Override
             protected Throwable doInBackground() throws Exception {
                 try {
-                    GeoCoding geoCoding = product.getGeoCoding();
+                    GeoCoding geoCoding = product.getSceneGeoCoding();
                     if (geoCoding instanceof BasicPixelGeoCoding) {
                         final BasicPixelGeoCoding pixelGeoCoding = (BasicPixelGeoCoding) geoCoding;
                         final GeoCoding delegate = pixelGeoCoding.getPixelPosEstimator();
-                        product.setGeoCoding(delegate);
+                        product.setSceneGeoCoding(delegate);
                         UndoRedo.Manager undoManager = SnapApp.getDefault().getUndoManager(product);
                         if (undoManager != null) {
                             undoManager.addEdit(new UndoableDetachGeoCoding<>(product, pixelGeoCoding));
@@ -143,7 +143,7 @@ public class DetachPixelGeoCodingAction extends AbstractAction implements Contex
         boolean state = false;
         if (productNode != null) {
             Product product = productNode.getProduct();
-            state = product.getGeoCoding() instanceof BasicPixelGeoCoding;
+            state = product.getSceneGeoCoding() instanceof BasicPixelGeoCoding;
         }
         setEnabled(state);
     }
@@ -169,14 +169,14 @@ public class DetachPixelGeoCodingAction extends AbstractAction implements Contex
         @Override
         public void undo() throws CannotUndoException {
             super.undo();
-            product.setGeoCoding(pixelGeoCoding);
+            product.setSceneGeoCoding(pixelGeoCoding);
         }
 
         @Override
         public void redo() throws CannotRedoException {
             super.redo();
-            if (product.getGeoCoding() == pixelGeoCoding) {
-                product.setGeoCoding(pixelGeoCoding.getPixelPosEstimator());
+            if (product.getSceneGeoCoding() == pixelGeoCoding) {
+                product.setSceneGeoCoding(pixelGeoCoding.getPixelPosEstimator());
             }
         }
 

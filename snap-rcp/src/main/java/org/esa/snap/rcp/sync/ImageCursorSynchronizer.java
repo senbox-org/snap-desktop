@@ -109,7 +109,7 @@ public class ImageCursorSynchronizer implements Runnable {
     }
 
     private void addPPL(ProductSceneView view) {
-        GeoCoding geoCoding = view.getProduct().getGeoCoding();
+        GeoCoding geoCoding = view.getProduct().getSceneGeoCoding();
         if (geoCoding != null && geoCoding.canGetPixelPos()) {
             psvOverlayMap.put(view, null);
             MyPixelPositionListener ppl = new MyPixelPositionListener(view);

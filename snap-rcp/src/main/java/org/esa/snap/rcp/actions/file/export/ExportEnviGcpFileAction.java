@@ -129,7 +129,7 @@ public class ExportEnviGcpFileAction extends AbstractAction implements LookupLis
         String lastDirPath = absoluteFile.getParent();
         Config.instance().load().preferences().put(GCP_EXPORT_DIR_PREFERENCES_KEY, lastDirPath);
 
-        final GeoCoding geoCoding = product.getGeoCoding();
+        final GeoCoding geoCoding = product.getSceneGeoCoding();
         if (geoCoding == null) {
             return;
         }

@@ -72,7 +72,7 @@ public class PlacemarkDialog extends ModalDialog {
         this.product = product;
         this.placemarkDescriptor = placemarkDescriptor;
         bindingContext = new BindingContext();
-        final GeoCoding geoCoding = this.product.getGeoCoding();
+        final GeoCoding geoCoding = this.product.getSceneGeoCoding();
         final boolean hasGeoCoding = geoCoding != null;
         canGetPixelPos = hasGeoCoding && geoCoding.canGetPixelPos();
         canGetGeoPos = hasGeoCoding && geoCoding.canGetGeoPos();
@@ -263,7 +263,7 @@ public class PlacemarkDialog extends ModalDialog {
     private void updatePixelPos() {
         if (canGetPixelPos && !adjusting) {
             adjusting = true;
-            PixelPos pixelPos = placemarkDescriptor.updatePixelPos(product.getGeoCoding(), getGeoPos(), getPixelPos());
+            PixelPos pixelPos = placemarkDescriptor.updatePixelPos(product.getSceneGeoCoding(), getGeoPos(), getPixelPos());
             setPixelPos(pixelPos);
             adjusting = false;
         }
@@ -272,7 +272,7 @@ public class PlacemarkDialog extends ModalDialog {
     private void updateGeoPos() {
         if (canGetGeoPos && !adjusting) {
             adjusting = true;
-            GeoPos geoPos = placemarkDescriptor.updateGeoPos(product.getGeoCoding(), getPixelPos(), getGeoPos());
+            GeoPos geoPos = placemarkDescriptor.updateGeoPos(product.getSceneGeoCoding(), getPixelPos(), getGeoPos());
             setGeoPos(geoPos);
             adjusting = false;
         }
@@ -326,9 +326,9 @@ public class PlacemarkDialog extends ModalDialog {
 
     public static void main(String[] args) throws TransformException, FactoryException {
         Product product1 = new Product("A", "B", 360, 180);
-        product1.setGeoCoding(new CrsGeoCoding(DefaultGeographicCRS.WGS84, 360, 180, -180.0, 90.0, 1.0, 1.0, 0.0, 0.0));
+        product1.setSceneGeoCoding(new CrsGeoCoding(DefaultGeographicCRS.WGS84, 360, 180, -180.0, 90.0, 1.0, 1.0, 0.0, 0.0));
         PinDescriptor descriptor = PinDescriptor.getInstance();
-        Placemark pin1 = Placemark.createPointPlacemark(descriptor, "pin_1", "Pin 1", "Schnatter!", new PixelPos(0, 0), new GeoPos(), product1.getGeoCoding());
+        Placemark pin1 = Placemark.createPointPlacemark(descriptor, "pin_1", "Pin 1", "Schnatter!", new PixelPos(0, 0), new GeoPos(), product1.getSceneGeoCoding());
         product1.getPinGroup().add(pin1);
         showEditPlacemarkDialog(null, product1, pin1, descriptor);
     }

@@ -146,7 +146,7 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
         if (this.outlineTable.get(name) != null)
             return;
 
-        final GeoCoding geoCoding = product.getGeoCoding();
+        final GeoCoding geoCoding = product.getSceneGeoCoding();
         if (geoCoding == null) {
             final String productType = product.getProductType();
             if (productType.equals("ASA_WVW_2P") || productType.equals("ASA_WVS_1P") || productType.equals("ASA_WVI_1P")) {
@@ -176,8 +176,8 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
                                                                             band.getImageInfo(com.bc.ceres.core.ProgressMonitor.NULL),
                                                                             com.bc.ceres.core.ProgressMonitor.NULL);
 
-                    final GeoPos geoPos1 = product.getGeoCoding().getGeoPos(new PixelPos(0, 0), null);
-                    final GeoPos geoPos2 = product.getGeoCoding().getGeoPos(new PixelPos(product.getSceneRasterWidth() - 1,
+                    final GeoPos geoPos1 = product.getSceneGeoCoding().getGeoPos(new PixelPos(0, 0), null);
+                    final GeoPos geoPos2 = product.getSceneGeoCoding().getGeoPos(new PixelPos(product.getSceneRasterWidth() - 1,
                                                                                          product.getSceneRasterHeight() - 1),
                                                                             null
                     );
@@ -406,7 +406,7 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
         Product productSubset = product.createSubset(productSubsetDef, quicklookBandName, null);
 
         final InputProductValidator validator = new InputProductValidator(product);
-        if (!validator.isMapProjected() && productSubset.getGeoCoding() != null) {
+        if (!validator.isMapProjected() && productSubset.getSceneGeoCoding() != null) {
             try {
                 final Map<String, Object> projParameters = new HashMap<>();
                 Map<String, Product> projProducts = new HashMap<>();

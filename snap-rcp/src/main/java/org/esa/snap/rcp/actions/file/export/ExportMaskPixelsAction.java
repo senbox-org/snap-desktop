@@ -322,7 +322,7 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
 
         final Band[] bands = product.getBands();
         final TiePointGrid[] tiePointGrids = product.getTiePointGrids();
-        final GeoCoding geoCoding = product.getGeoCoding();
+        final GeoCoding geoCoding = product.getSceneGeoCoding();
 
         final int minTileX = maskImage.getMinTileX();
         final int minTileY = maskImage.getMinTileY();

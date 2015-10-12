@@ -31,9 +31,9 @@ public class PinPositionTest {
         final GeoCoding geoCoding = new CrsGeoCoding(DefaultGeographicCRS.WGS84, new Rectangle(0, 0, 10, 10), i2m);
 
         final Product product = new Product("P", "T", 10, 10);
-        product.setGeoCoding(geoCoding);
+        product.setSceneGeoCoding(geoCoding);
 
-        placemark = Placemark.createPointPlacemark(PinDescriptor.getInstance(), "P1", "L", "", new PixelPos(1.0f, 1.0f), null, product.getGeoCoding());
+        placemark = Placemark.createPointPlacemark(PinDescriptor.getInstance(), "P1", "L", "", new PixelPos(1.0f, 1.0f), null, product.getSceneGeoCoding());
         product.getPinGroup().add(placemark);
     }
 

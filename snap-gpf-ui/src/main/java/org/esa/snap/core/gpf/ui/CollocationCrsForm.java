@@ -61,7 +61,7 @@ public class CollocationCrsForm extends CrsForm {
     public CoordinateReferenceSystem getCRS(GeoPos referencePos) {
         Product collocationProduct = collocateProductSelector.getSelectedProduct();
         if (collocationProduct != null) {
-            return collocationProduct.getGeoCoding().getMapCRS();
+            return collocationProduct.getSceneGeoCoding().getMapCRS();
         }
         return null;
     }
@@ -127,13 +127,13 @@ public class CollocationCrsForm extends CrsForm {
         public boolean accept(Product collocationProduct) {
             final Product referenceProduct = getReferenceProduct();
             if (referenceProduct == collocationProduct ||
-                collocationProduct.getGeoCoding() == null) {
+                collocationProduct.getSceneGeoCoding() == null) {
                 return false;
             }
             if (referenceProduct == null) {
                 return true;
             }
-            final GeoCoding geoCoding = collocationProduct.getGeoCoding();
+            final GeoCoding geoCoding = collocationProduct.getSceneGeoCoding();
             if (geoCoding.canGetGeoPos() && geoCoding.canGetPixelPos() && (geoCoding instanceof CrsGeoCoding)) {
                 final GeneralPath[] sourcePath = ProductUtils.createGeoBoundaryPaths(referenceProduct);
                 final GeneralPath[] collocationPath = ProductUtils.createGeoBoundaryPaths(collocationProduct);

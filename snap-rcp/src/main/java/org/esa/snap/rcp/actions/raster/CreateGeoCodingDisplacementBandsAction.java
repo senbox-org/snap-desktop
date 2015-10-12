@@ -122,8 +122,8 @@ public class CreateGeoCodingDisplacementBandsAction extends AbstractAction imple
         boolean state = false;
         if (productNode != null) {
             Product product = productNode.getProduct();
-            state = product != null && product.getGeoCoding() != null &&
-                    product.getGeoCoding().canGetGeoPos() && product.getGeoCoding().canGetPixelPos();
+            state = product != null && product.getSceneGeoCoding() != null &&
+                    product.getSceneGeoCoding().canGetGeoPos() && product.getSceneGeoCoding().canGetPixelPos();
         }
         setEnabled(state);
     }
@@ -232,8 +232,8 @@ public class CreateGeoCodingDisplacementBandsAction extends AbstractAction imple
                     double valueY = 0;
                     for (float[] offset : OFFSETS) {
                         pixelPos1.setLocation(x + offset[0], y + offset[1]);
-                        product.getGeoCoding().getGeoPos(pixelPos1, geoPos);
-                        product.getGeoCoding().getPixelPos(geoPos, pixelPos2);
+                        product.getSceneGeoCoding().getGeoPos(pixelPos1, geoPos);
+                        product.getSceneGeoCoding().getPixelPos(geoPos, pixelPos2);
                         double dx = pixelPos2.x - pixelPos1.x;
                         double dy = pixelPos2.y - pixelPos1.y;
                         if (Math.abs(dx) > maxX) {

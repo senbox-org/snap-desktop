@@ -71,7 +71,7 @@ public class GcpTableModel extends AbstractPlacemarkTableModel {
         double dLon = Double.NaN;
         double dLat = Double.NaN;
 
-        final GeoCoding geoCoding = getProduct().getGeoCoding();
+        final GeoCoding geoCoding = getProduct().getSceneGeoCoding();
 
         if (geoCoding instanceof GcpGeoCoding && pixelPos != null) {
             final GeoPos expectedGeoPos = geoCoding.getGeoPos(pixelPos, new GeoPos());

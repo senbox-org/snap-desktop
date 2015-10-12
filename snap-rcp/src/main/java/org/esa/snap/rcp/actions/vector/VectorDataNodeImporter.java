@@ -82,7 +82,7 @@ public class VectorDataNodeImporter implements HelpCtx.Provider {
             return;
         }
 
-        final GeoCoding geoCoding = product.getGeoCoding();
+        final GeoCoding geoCoding = product.getSceneGeoCoding();
         if (geoCoding == null || !geoCoding.canGetPixelPos()) {
             SnapDialogs.showError(dialogTitle, "Failed to import vector data.\n"
                     +

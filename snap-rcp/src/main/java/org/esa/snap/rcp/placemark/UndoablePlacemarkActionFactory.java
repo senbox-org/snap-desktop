@@ -152,7 +152,7 @@ class UndoablePlacemarkActionFactory {
                                                                newPlacemark.getDescription(),
                                                                newPlacemark.getPixelPos(),
                                                                newPlacemark.getGeoPos(),
-                                                               newPlacemark.getProduct().getGeoCoding());
+                                                               newPlacemark.getProduct().getSceneGeoCoding());
             placemarkInView = newPlacemark;
             this.placemarkDescriptor = placemarkDescriptor;
         }
