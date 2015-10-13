@@ -21,6 +21,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
 import java.awt.Component;
 import java.io.File;
 import java.text.MessageFormat;
@@ -30,7 +31,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
 
@@ -71,7 +71,7 @@ class ProductOpener {
         return fileFormat;
     }
 
-    void setUseAllFileFilter(boolean useAllFileFilter){
+    void setUseAllFileFilter(boolean useAllFileFilter) {
         this.useAllFileFilter = useAllFileFilter;
     }
 
@@ -105,7 +105,8 @@ class ProductOpener {
         if (getFileFormat() != null) {
             readerPlugIns = ProductIOPlugInManager.getInstance().getReaderPlugIns(getFileFormat());
             if (!readerPlugIns.hasNext()) {
-                SnapDialogs.showError(Bundle.LBL_NoReaderFoundText() + String.format("%nCan't find reader for the given format '%s'.", getFileFormat()));
+                SnapDialogs.showError(
+                        Bundle.LBL_NoReaderFoundText() + String.format("%nCan't find reader for the given format '%s'.", getFileFormat()));
                 return false;
             }
         } else {
@@ -179,7 +180,7 @@ class ProductOpener {
         File[] files = new File[0];
         if (isMultiSelectionEnabled()) {
             files = fc.getSelectedFiles();
-        }else {
+        } else {
             File file = fc.getSelectedFile();
             if (file != null) {
                 files = new File[]{file};
@@ -325,15 +326,20 @@ class ProductOpener {
     private static Boolean openProductFileDoNotCheckOpened(File file, String formatName) {
         SnapApp.getDefault().setStatusBarMessage(MessageFormat.format("Reading product ''{0}''...", file.getName()));
 
-        AtomicBoolean cancelled = new AtomicBoolean();
         ReadProductOperation operation = new ReadProductOperation(file, formatName);
-        ProgressUtils.runOffEventDispatchThread(operation, Bundle.CTL_OpenProductActionName(), cancelled, true, 50, 3000);
+        final JPanel dialogContent = new JPanel();
+        final TableLayout layout = new TableLayout(1);
+        layout.setTableAnchor(TableLayout.Anchor.WEST);
+        layout.setTableFill(TableLayout.Fill.HORIZONTAL);
 
+        dialogContent.setLayout(layout);
+        dialogContent.setBorder(new EmptyBorder(5, 5, 5, 5));
+
+        dialogContent.add(new JLabel("Please wait while the data product is being read..."), TableLayout.cell(0, 0));
+
+        ProgressUtils.runOffEventThreadWithCustomDialogContent(operation, "Reading Product", dialogContent, 50, 2000);
         SnapApp.getDefault().setStatusBarMessage("");
 
-        if (cancelled.get()) {
-            return null;
-        }
 
         return operation.getStatus();
     }
