@@ -112,12 +112,14 @@ class InformationPanel extends TablePagePanel {
             addEntry("Description:", grid.getDescription(), "");
             addEntry("Geophysical unit:", grid.getUnit(), "");
             addEntry("Geophysical data type:", ProductData.getTypeString(grid.getGeophysicalDataType()), "");
+            addEntry("Grid width:", String.valueOf(grid.getGridWidth()), "tie points");
+            addEntry("Grid height:", String.valueOf(grid.getGridHeight()), "tie points");
             addEntry("Offset X:", String.valueOf(grid.getOffsetX()), "pixels");
             addEntry("Offset Y:", String.valueOf(grid.getOffsetY()), "pixels");
             addEntry("Sub-sampling X:", String.valueOf(grid.getSubSamplingX()), "pixels");
             addEntry("Sub-sampling Y:", String.valueOf(grid.getSubSamplingY()), "pixels");
-            addEntry("Raster width:", String.valueOf(grid.getRasterWidth()), "tie points");
-            addEntry("Raster height:", String.valueOf(grid.getRasterHeight()), "tie points");
+            addEntry("Raster width:", String.valueOf(grid.getSceneRasterWidth()), "pixels");
+            addEntry("Raster height:", String.valueOf(grid.getSceneRasterHeight()), "pixels");
         }
 
         final Product product = getProduct();
