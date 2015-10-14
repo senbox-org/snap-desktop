@@ -229,7 +229,7 @@
                     <subpackages>
                         org.esa.snap.rcp:org.esa.snap.ui:
                     </subpackages>
-                    <!-- Not possible to exclude packages -->
+                    <!-- Not possible to exclude packages; it is not considered by the plugin -->
                     <!--<excludePackageNames>*.internal:*.impl:com.bc.*</excludePackageNames>-->
                     <maxmemory>512M</maxmemory>
                     <doctitle>SNAP Desktop ${snap.version} API</doctitle>
