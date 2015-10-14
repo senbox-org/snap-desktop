@@ -9,6 +9,8 @@ import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
+import org.netbeans.api.progress.ProgressHandle;
+import org.netbeans.api.progress.ProgressHandleFactory;
 import org.netbeans.api.progress.ProgressUtils;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
@@ -21,7 +23,6 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
-import javax.swing.border.EmptyBorder;
 import java.awt.Component;
 import java.io.File;
 import java.text.MessageFormat;
@@ -327,19 +328,12 @@ class ProductOpener {
         SnapApp.getDefault().setStatusBarMessage(MessageFormat.format("Reading product ''{0}''...", file.getName()));
 
         ReadProductOperation operation = new ReadProductOperation(file, formatName);
-        final JPanel dialogContent = new JPanel();
-        final TableLayout layout = new TableLayout(1);
-        layout.setTableAnchor(TableLayout.Anchor.WEST);
-        layout.setTableFill(TableLayout.Fill.HORIZONTAL);
+        final ProgressHandle progressHandle = ProgressHandleFactory.createHandle("Please wait while the data product is being read...", operation);
+        ProgressUtils.runOffEventThreadWithProgressDialog(operation, "Reading Product", progressHandle, false, 50, 2000);
+        progressHandle.start();
+        progressHandle.switchToIndeterminate();
 
-        dialogContent.setLayout(layout);
-        dialogContent.setBorder(new EmptyBorder(5, 5, 5, 5));
-
-        dialogContent.add(new JLabel("Please wait while the data product is being read..."), TableLayout.cell(0, 0));
-
-        ProgressUtils.runOffEventThreadWithCustomDialogContent(operation, "Reading Product", dialogContent, 50, 2000);
         SnapApp.getDefault().setStatusBarMessage("");
-
 
         return operation.getStatus();
     }
