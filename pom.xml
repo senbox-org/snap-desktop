@@ -225,20 +225,23 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>2.10.3</version>
                 <configuration>
-                    <links>
-                        <link>http://java.sun.com/javase/8/docs/api/</link>
-                    </links>
-                    <quiet>true</quiet>
-                    <!-- show only warnings and errors -->
                     <aggregate>true</aggregate>
                     <subpackages>
-                        org.esa.snap
+                        org.esa.snap.rcp:org.esa.snap.ui:
                     </subpackages>
+                    <!-- Not possible to exclude packages -->
+                    <!--<excludePackageNames>*.internal:*.impl:com.bc.*</excludePackageNames>-->
                     <maxmemory>512M</maxmemory>
-                    <doctitle>SNAP Desktop 2 API</doctitle>
-                    <windowtitle>SNAP Desktop 2 API</windowtitle>
-                    <failOnError>false</failOnError>
+                    <doctitle>SNAP Desktop ${snap.version} API</doctitle>
+                    <windowtitle>SNAP Desktop ${snap.version} API</windowtitle>
+                    <quiet>true</quiet><!-- show only warnings and errors -->
+                    <failOnError>false</failOnError> <!-- Actually we should fix the errors -->
                     <author>false</author>
+                    <detectJavaApiLink>true</detectJavaApiLink>
+                    <detectLinks>true</detectLinks>
+                    <links>
+                        <link>http://step.esa.int/docs/v2.0/apidoc/engine/</link>
+                    </links>
                 </configuration>
             </plugin>
 
