@@ -16,6 +16,7 @@
 package org.esa.snap.worldwind;
 
 import gov.nasa.worldwind.WorldWindow;
+import gov.nasa.worldwind.awt.WorldWindowGLCanvas;
 import gov.nasa.worldwind.event.SelectEvent;
 import gov.nasa.worldwind.event.SelectListener;
 import gov.nasa.worldwind.layers.Earth.MSVirtualEarthLayer;
@@ -152,7 +153,10 @@ public class WWAnalysisToolView extends WWBaseToolView implements WWView {
             protected Object doInBackground() throws Exception {
                 // Create the WorldWindow.
                 try {
-                    createWWPanel(includeStatusBar, false, false);
+                    // share resources from existing WorldWind Canvas
+                    WorldWindowGLCanvas shareWith = findWorldWindView();
+
+                    createWWPanel(shareWith, includeStatusBar, false, false);
                     wwjPanel.addLayerPanelLayer();
                     wwjPanel.addElevation();
 

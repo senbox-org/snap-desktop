@@ -62,11 +62,11 @@ public class AppPanel extends JPanel {
     private WorldWindowGLCanvas wwd = null;
     private StatusBar statusBar = null;
 
-    public AppPanel(final Dimension canvasSize, final boolean includeStatusBar, final boolean flatWorld,
+    public AppPanel(final WorldWindowGLCanvas shareWith, final boolean includeStatusBar, final boolean flatWorld,
                     final boolean removeExtraLayers) {
         super(new BorderLayout());
 
-        this.wwd = new WorldWindowGLCanvas();
+        this.wwd = new WorldWindowGLCanvas(shareWith);
         //this.wwd.setPreferredSize(canvasSize);
 
         // Create the default model as described in the current worldwind properties.

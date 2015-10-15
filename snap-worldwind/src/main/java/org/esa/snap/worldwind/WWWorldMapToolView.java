@@ -113,7 +113,7 @@ public class WWWorldMapToolView extends WWBaseToolView implements WWView {
             protected Object doInBackground() throws Exception {
                 // Create the WorldWindow.
                 try {
-                    createWWPanel(includeStatusBar, flatWorld, true);
+                    createWWPanel(null, includeStatusBar, flatWorld, true);
 
                     // Put the pieces together.
                     mainPane.add(wwjPanel, BorderLayout.CENTER);

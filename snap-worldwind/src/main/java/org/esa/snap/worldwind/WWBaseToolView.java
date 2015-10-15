@@ -27,6 +27,7 @@ import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.windows.ToolTopComponent;
 import org.esa.snap.worldwind.layers.WWLayer;
+import org.openide.windows.WindowManager;
 
 import java.awt.Dimension;
 
@@ -43,8 +44,9 @@ public abstract class WWBaseToolView extends ToolTopComponent {
 
     }
 
-    AppPanel createWWPanel(final boolean includeStatusBar, final boolean flatWorld, final boolean removeExtraLayers) {
-        wwjPanel = new AppPanel(canvasSize, includeStatusBar, flatWorld, removeExtraLayers);
+    AppPanel createWWPanel(final WorldWindowGLCanvas shareWith,
+                           final boolean includeStatusBar, final boolean flatWorld, final boolean removeExtraLayers) {
+        wwjPanel = new AppPanel(shareWith, includeStatusBar, flatWorld, removeExtraLayers);
         wwjPanel.setPreferredSize(canvasSize);
         return wwjPanel;
     }
@@ -53,6 +55,15 @@ public abstract class WWBaseToolView extends ToolTopComponent {
         if (wwjPanel == null)
             return null;
         return wwjPanel.getWwd();
+    }
+
+    protected WorldWindowGLCanvas findWorldWindView() {
+        final WWWorldMapToolView window = (WWWorldMapToolView)
+                WindowManager.getDefault().findTopComponent("WWWorldMapToolView");
+        if(window != null) {
+            return window.getWwd();
+        }
+        return null;
     }
 
     public Product getSelectedProduct() {
