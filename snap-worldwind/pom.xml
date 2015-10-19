@@ -31,6 +31,14 @@
     <dependencies>
         <dependency>
             <groupId>org.esa.snap</groupId>
+            <artifactId>ceres-ui</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.esa.snap</groupId>
+            <artifactId>ceres-binding</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.esa.snap</groupId>
             <artifactId>ceres-core</artifactId>
         </dependency>
         <dependency>
@@ -51,12 +59,12 @@
         </dependency>
         <dependency>
             <groupId>org.esa.snap</groupId>
-            <artifactId>snap-engine-utilities</artifactId>
-            <version>${snap.version}</version>
+            <artifactId>snap-rcp</artifactId>
         </dependency>
         <dependency>
             <groupId>org.esa.snap</groupId>
-            <artifactId>snap-rcp</artifactId>
+            <artifactId>snap-engine-utilities</artifactId>
+            <version>${snap.version}</version>
         </dependency>
 
         <dependency>
@@ -157,6 +165,15 @@
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-windows</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-awt</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-netbeans-modules-options-api</artifactId>
+            <version>${netbeans.version}</version>
         </dependency>
     </dependencies>
 

@@ -23,6 +23,7 @@ import gov.nasa.worldwind.layers.LayerList;
 import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.SelectionSupport;
+import org.esa.snap.runtime.Config;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.esa.snap.worldwind.layers.WWLayer;
 import org.esa.snap.worldwind.layers.WWLayerDescriptor;
@@ -70,15 +71,17 @@ import java.awt.Window;
  */
 public class WWWorldMapToolView extends WWBaseToolView implements WWView {
 
+    public static String useFlatEarth = "snap.worldwind.useFlatEarth";
+
     private ProductSceneView currentView;
     private ObservedViewportHandler observedViewportHandler;
 
     private static final boolean includeStatusBar = true;
-    private final static String useflatWorld = "false";//Config.instance().preferences().get(SystemUtils.getApplicationContextId() + ".use.flat.worldmap", "false");
-    private final static boolean flatWorld = !useflatWorld.equals("false");
+    private final boolean flatWorld;
 
     public WWWorldMapToolView() {
         setDisplayName(Bundle.CTL_WorldWindTopComponentName());
+        flatWorld = Config.instance().preferences().getBoolean(useFlatEarth, false);
         initComponents();
         SnapApp.getDefault().getSelectionSupport(ProductSceneView.class).addHandler((oldValue, newValue) -> setCurrentView(newValue));
     }
