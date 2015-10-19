@@ -17,7 +17,7 @@ package org.esa.snap.worldwind.preferences;
 
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.runtime.Config;
-import org.esa.snap.worldwind.WWWorldMapToolView;
+import org.esa.snap.worldwind.WWWorldViewToolView;
 import org.openide.awt.Mnemonics;
 
 import java.util.prefs.BackingStoreException;
@@ -60,12 +60,12 @@ final class WorldWindOptionsPanel extends javax.swing.JPanel {
 
     void load() {
         useFlatEarthCheckBox.setSelected(
-                Config.instance().preferences().getBoolean(WWWorldMapToolView.useFlatEarth, false));
+                Config.instance().preferences().getBoolean(WWWorldViewToolView.useFlatEarth, false));
     }
 
     void store() {
         final Preferences preferences = Config.instance().preferences();
-        preferences.putBoolean(WWWorldMapToolView.useFlatEarth, useFlatEarthCheckBox.isSelected());
+        preferences.putBoolean(WWWorldViewToolView.useFlatEarth, useFlatEarthCheckBox.isSelected());
 
         try {
             preferences.flush();

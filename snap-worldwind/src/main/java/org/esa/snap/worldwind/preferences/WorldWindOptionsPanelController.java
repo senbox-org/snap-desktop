@@ -31,7 +31,7 @@ import java.beans.PropertyChangeSupport;
         position = 8
 )
 @org.openide.util.NbBundle.Messages({
-        "LBL_WorldWindOption_DisplayName=WorldWind",
+        "LBL_WorldWindOption_DisplayName=World View",
         "LBL_WorldWindOption_Keywords=WorldWind,Globe,World,Map"
 })
 public class WorldWindOptionsPanelController extends OptionsPanelController {

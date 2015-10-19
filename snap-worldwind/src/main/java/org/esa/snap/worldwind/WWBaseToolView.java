@@ -58,7 +58,7 @@ public abstract class WWBaseToolView extends ToolTopComponent {
     }
 
     protected WorldWindowGLCanvas findWorldWindView() {
-        final WWWorldMapToolView window = (WWWorldMapToolView)
+        final WWWorldViewToolView window = (WWWorldViewToolView)
                 WindowManager.getDefault().findTopComponent("WWWorldMapToolView");
         if(window != null) {
             return window.getWwd();
