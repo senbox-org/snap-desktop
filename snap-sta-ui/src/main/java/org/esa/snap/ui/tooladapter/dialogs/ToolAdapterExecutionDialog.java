@@ -164,7 +164,9 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
                     String productDir = targetProductSelector.getModel().getProductDir().getAbsolutePath();
                     appContext.getPreferences().setPropertyString(SaveProductAsAction.PREFERENCES_KEY_LAST_PRODUCT_DIR, productDir);
                     Map<String, Product> sourceProductMap = new HashMap<>();
-                    sourceProductMap.put(SOURCE_PRODUCT_FIELD, sourceProducts[0]);
+                    if (sourceProducts.length > 0) {
+                        sourceProductMap.put(SOURCE_PRODUCT_FIELD, sourceProducts[0]);
+                    }
                     Operator op = GPF.getDefaultInstance().createOperator(operatorDescriptor.getName(), parameterSupport.getParameterMap(), sourceProductMap, null);
                     op.setSourceProducts(sourceProducts);
                     operatorTask = new OperatorTask(op, ToolAdapterExecutionDialog.this::operatorCompleted);
