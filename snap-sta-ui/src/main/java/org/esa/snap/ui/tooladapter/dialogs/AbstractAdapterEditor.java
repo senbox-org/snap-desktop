@@ -345,6 +345,9 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
                 this.getJDialog().requestFocus();
             } else {
                 super.onOK();
+                if (newOperatorDescriptor.getSourceProductCount() == 0) {
+                    SnapDialogs.showInformation("The template is not using the parameter $sourceProduct.\nNo source product selection will be available at execution time.", "empty.source.info");
+                }
                 if (!this.operatorIsNew) {
                     ToolAdapterActionRegistrar.removeOperatorMenu(oldOperatorDescriptor);
                     ToolAdapterIO.removeOperator(oldOperatorDescriptor, false);
@@ -560,19 +563,11 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
 
     protected boolean resolveTemplateProductCount(String templateContent) {
         boolean success = true;
-        int idx = templateContent.lastIndexOf(ToolAdapterConstants.TOOL_SOURCE_PRODUCT_ID + "[");
-        if (idx > 0) {
-            String value = templateContent.substring(idx + (ToolAdapterConstants.TOOL_SOURCE_PRODUCT_ID + "[").length(), templateContent.indexOf("]", idx));
-            int maxNum = Integer.valueOf(value) + 1;
-            if (maxNum > 1) {
-                newOperatorDescriptor.setSourceProductCount(maxNum);
-            } else {
-                success = false;
-            }
-        } else {
-            idx = templateContent.lastIndexOf(ToolAdapterConstants.TOOL_SOURCE_PRODUCT_FILE + "[");
+        if (templateContent.contains(ToolAdapterConstants.TOOL_SOURCE_PRODUCT_ID) ||
+                templateContent.contains(ToolAdapterConstants.TOOL_SOURCE_PRODUCT_FILE)) {
+            int idx = templateContent.lastIndexOf(ToolAdapterConstants.TOOL_SOURCE_PRODUCT_ID + "[");
             if (idx > 0) {
-                String value = templateContent.substring(idx + (ToolAdapterConstants.TOOL_SOURCE_PRODUCT_FILE + "[").length(), templateContent.indexOf("]", idx));
+                String value = templateContent.substring(idx + (ToolAdapterConstants.TOOL_SOURCE_PRODUCT_ID + "[").length(), templateContent.indexOf("]", idx));
                 int maxNum = Integer.valueOf(value) + 1;
                 if (maxNum > 1) {
                     newOperatorDescriptor.setSourceProductCount(maxNum);
@@ -580,8 +575,21 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
                     success = false;
                 }
             } else {
-                newOperatorDescriptor.setSourceProductCount(1);
+                idx = templateContent.lastIndexOf(ToolAdapterConstants.TOOL_SOURCE_PRODUCT_FILE + "[");
+                if (idx > 0) {
+                    String value = templateContent.substring(idx + (ToolAdapterConstants.TOOL_SOURCE_PRODUCT_FILE + "[").length(), templateContent.indexOf("]", idx));
+                    int maxNum = Integer.valueOf(value) + 1;
+                    if (maxNum > 1) {
+                        newOperatorDescriptor.setSourceProductCount(maxNum);
+                    } else {
+                        success = false;
+                    }
+                } else {
+                    newOperatorDescriptor.setSourceProductCount(1);
+                }
             }
+        } else {
+            newOperatorDescriptor.setSourceProductCount(0);
         }
         return success;
     }

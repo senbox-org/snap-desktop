@@ -176,7 +176,12 @@ public class VariablesTable extends JTable {
 
         @Override
         public Object getCellEditorValue() {
-            return lastEditor != null ? lastEditor.getCellEditorValue() : delButton; //delButton;
+            //return lastEditor != null ? lastEditor.getCellEditorValue() : delButton; //delButton;
+            return lastEditor != null ?
+                    ((DefaultCellEditor)lastEditor).getComponent() instanceof JTextField ?
+                            ((JTextField)((DefaultCellEditor)lastEditor).getComponent()).getText() :
+                            lastEditor.getCellEditorValue() :
+                    delButton;
         }
     }
 

@@ -149,13 +149,7 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
                 SnapDialogs.showWarning(Bundle.RequiredTargetProductMissingWarning_Text());
         } else {
             if (!canApply()) {
-                StringBuilder warnMessage = new StringBuilder();
-                warnMessage.append("Before executing the tool, please correct the errors below:")
-                        .append("\n").append("\n");
-                for (String msg : warnings) {
-                    warnMessage.append("\t").append(msg).append("\n");
-                }
-                SnapDialogs.showWarning(warnMessage.toString());
+                displayWarnings();
                 AbstractAdapterEditor dialog = AbstractAdapterEditor.createEditorDialog(appContext, getJDialog(), operatorDescriptor, false);
                 dialog.getJDialog().addWindowListener(new WindowAdapter() {
                     @Override
@@ -180,6 +174,10 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
                                                                                 progressPattern == null || progressPattern.isEmpty(),
                                                                                 displayExecutionConsole()));
                     ProgressUtils.runOffEventThreadWithProgressDialog(operatorTask, this.getTitle(), progressHandle, true, 1, 1);
+                } else {
+                    if (warnings.size() > 0) {
+                        displayWarnings();
+                    }
                 }
             }
         }
@@ -276,10 +274,24 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
         boolean isValid;
         File productDir = targetProductSelector.getModel().getProductDir();
         isValid = (productDir != null) && productDir.exists();
-        Product[] sourceProducts = form.getSourceProducts();
-        isValid &= (sourceProducts != null) && sourceProducts.length > 0 && Arrays.stream(sourceProducts).filter(sp -> sp == null).count() == 0;
-
+        if (!isValid) {
+            warnings.add("Target product folder is not accessible or does not exist");
+        }
+        if (operatorDescriptor.getSourceProductCount() > 0) {
+            Product[] sourceProducts = form.getSourceProducts();
+            isValid &= (sourceProducts != null) && sourceProducts.length > 0 && Arrays.stream(sourceProducts).filter(sp -> sp == null).count() == 0;
+        }
         return isValid;
+    }
+
+    private void displayWarnings() {
+        StringBuilder warnMessage = new StringBuilder();
+        warnMessage.append("Before executing the tool, please correct the errors below:")
+                .append("\n").append("\n");
+        for (String msg : warnings) {
+            warnMessage.append("\t").append(msg).append("\n");
+        }
+        SnapDialogs.showWarning(warnMessage.toString());
     }
 
     /**

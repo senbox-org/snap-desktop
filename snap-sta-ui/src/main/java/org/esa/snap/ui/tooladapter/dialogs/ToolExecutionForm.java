@@ -162,7 +162,7 @@ class ToolExecutionForm extends JTabbedPane {
         PropertyPane parametersPane = new PropertyPane(propertySet);
         final JPanel parametersPanel = parametersPane.createPanel();
         parametersPanel.setBorder(new EmptyBorder(4, 4, 4, 4));
-        parametersPanel.setPreferredSize(ioParamPanel.getPreferredSize());
+        //parametersPanel.setPreferredSize(ioParamPanel.getPreferredSize());
         return new JScrollPane(parametersPanel);
     }
 
