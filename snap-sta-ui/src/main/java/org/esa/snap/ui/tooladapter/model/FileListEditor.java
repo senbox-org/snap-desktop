@@ -65,12 +65,11 @@ public class FileListEditor extends PropertyEditor {
             }
         };
         final Binding binding = bindingContext.bind(propertyDescriptor.getName(), adapter);
-        panel.add(new JScrollPane(list, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER));
-
-        for (int i = 0; i < 4; i++)
-            listModel.addElement("");
+        /*for (int i = 0; i < 4; i++)
+            listModel.addElement("");*/
         list.setMinimumSize(new Dimension(250, 24*5));
         list.setPreferredSize(new Dimension(250, 24 * 5));
+        panel.add(new JScrollPane(list, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER));
         AbstractButton addFileBtn = ToolButtonFactory.createButton(UIUtils.loadImageIcon("/org/esa/snap/resources/images/icons/Add16.png"), false);
         addFileBtn.setMaximumSize(new Dimension(20, 20));
         addFileBtn.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -83,12 +82,12 @@ public class FileListEditor extends PropertyEditor {
             int i = fileChooser.showDialog(panel, "Select");
             final File selectedFile = fileChooser.getSelectedFile();
             if (i == JFileChooser.APPROVE_OPTION && selectedFile != null) {
-                if (++lastIndex < 4) {
+                /*if (++lastIndex < 4) {
                     listModel.set(lastIndex, selectedFile.getAbsolutePath());
-                } else {
+                } else {*/
                     listModel.addElement(selectedFile.getAbsolutePath());
                     lastIndex++;
-                }
+                //}
                 final Object[] objects = listModel.toArray();
                 binding.setPropertyValue(Arrays.stream(objects).map(item -> new File(item.toString())).collect(Collectors.toList()).toArray(new File[objects.length]));
             }
