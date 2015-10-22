@@ -30,10 +30,12 @@ public class AutoCompleteTextArea extends JTextArea {
 
             @Override
             public void keyTyped(KeyEvent e) {
-                if (e.getKeyChar() == KeyEvent.VK_ENTER || e.getKeyChar() == KeyEvent.VK_TAB) {
-                    if (suggestion != null && triggerCharPressed) {
+                if (e.getKeyChar() == KeyEvent.VK_ENTER ||
+                        e.getKeyChar() == KeyEvent.VK_TAB ||
+                        e.getKeyChar() == KeyEvent.VK_SPACE) {
+                    if (suggestion != null && (triggerCharPressed || suggestion.isVisible())) {
                         if (suggestion.insertSelection()) {
-                            e.consume();
+                            //e.consume();
                             final int position = getCaretPosition();
                             SwingUtilities.invokeLater(() -> {
                                 try {
@@ -146,6 +148,8 @@ public class AutoCompleteTextArea extends JTextArea {
             this.insertionPosition = position;
             popupMenu.show(textArea, location.x, textArea.getBaseline(0, 0) + location.y);
         }
+
+        public boolean isVisible() { return popupMenu.isVisible(); }
 
         public void setSuggestionList(List<String> entries, String subWord) {
             popupMenu.removeAll();

@@ -30,6 +30,7 @@ import com.bc.ceres.swing.binding.internal.TextFieldEditor;
 import org.esa.snap.core.dataio.ProductIOPlugInManager;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.GPF;
+import org.esa.snap.core.gpf.OperatorException;
 import org.esa.snap.core.gpf.OperatorSpi;
 import org.esa.snap.core.gpf.descriptor.*;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterConstants;
@@ -132,7 +133,7 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
     protected int newNameIndex = -1;
     protected PropertyContainer propertyContainer;
     protected BindingContext bindingContext;
-    protected AutoCompleteTextArea templateContent;
+    protected JTextArea templateContent;
     protected OperatorParametersTable paramsTable;
     protected AppContext context;
     protected Logger logger;
@@ -594,6 +595,32 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
         return success;
     }
 
+    protected JTextArea createTemplateEditorField() {
+        boolean useAutocomplete = Boolean.parseBoolean(NbPreferences.forModule(SnapDialogs.class).get(ToolAdapterOptionsController.PREFERENCE_KEY_AUTOCOMPLETE, "false"));
+        if (useAutocomplete) {
+            templateContent = new AutoCompleteTextArea("", 15, 9);
+        } else {
+            templateContent = new JTextArea("", 15, 9);
+        }
+        try {
+            if (operatorIsNew) {
+                if (oldOperatorDescriptor.getTemplateFileLocation() != null) {
+                    templateContent.setText(ToolAdapterIO.readOperatorTemplate(oldOperatorDescriptor.getName()));
+                }
+            } else {
+                templateContent.setText(ToolAdapterIO.readOperatorTemplate(newOperatorDescriptor.getName()));
+            }
+        } catch (IOException | OperatorException e) {
+            logger.warning(e.getMessage());
+        }
+        templateContent.setInputVerifier(new RequiredFieldValidator(MESSAGE_REQUIRED));
+        if (useAutocomplete && templateContent instanceof AutoCompleteTextArea) {
+            ((AutoCompleteTextArea) templateContent).setAutoCompleteEntries(getAutocompleteEntries());
+            ((AutoCompleteTextArea) templateContent).setTriggerChar('$');
+        }
+        return templateContent;
+    }
+
     protected java.util.List<String> getAutocompleteEntries() {
         java.util.List<String> entries = new ArrayList<>();
         entries.addAll(newOperatorDescriptor.getVariables().stream().map(SystemVariable::getKey).collect(Collectors.toList()));
@@ -603,4 +630,5 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
         entries.sort(Comparator.<String>naturalOrder());
         return entries;
     }
+
 }

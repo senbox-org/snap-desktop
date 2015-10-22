@@ -23,25 +23,20 @@ import com.bc.ceres.binding.validators.NotEmptyValidator;
 import com.bc.ceres.swing.binding.PropertyEditor;
 import com.bc.ceres.swing.binding.PropertyEditorRegistry;
 import com.bc.ceres.swing.binding.internal.TextFieldEditor;
-import org.esa.snap.core.gpf.OperatorException;
 import org.esa.snap.core.gpf.descriptor.SystemDependentVariable;
 import org.esa.snap.core.gpf.descriptor.SystemVariable;
 import org.esa.snap.core.gpf.descriptor.TemplateParameterDescriptor;
 import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterConstants;
-import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterIO;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.tool.ToolButtonFactory;
-import org.esa.snap.ui.tooladapter.model.AutoCompleteTextArea;
 import org.esa.snap.ui.tooladapter.model.VariablesTable;
-import org.esa.snap.ui.tooladapter.validators.RequiredFieldValidator;
 import org.esa.snap.utils.SpringUtilities;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
-import java.io.IOException;
 import java.text.MessageFormat;
 
 import static org.esa.snap.utils.SpringUtilities.DEFAULT_PADDING;
@@ -252,22 +247,7 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
         JLabel label = new JLabel(Bundle.CTL_Label_CmdLineTemplate_Text());
         configPanel.add(label);
 
-        templateContent = new AutoCompleteTextArea("", 15, 9);
-        try {
-            if (operatorIsNew) {
-                if (oldOperatorDescriptor.getTemplateFileLocation() != null) {
-                    templateContent.setText(ToolAdapterIO.readOperatorTemplate(oldOperatorDescriptor.getName()));
-                }
-            } else {
-                templateContent.setText(ToolAdapterIO.readOperatorTemplate(newOperatorDescriptor.getName()));
-            }
-        } catch (IOException | OperatorException e) {
-            logger.warning(e.getMessage());
-        }
-        templateContent.setInputVerifier(new RequiredFieldValidator(MESSAGE_REQUIRED));
-        templateContent.setAutoCompleteEntries(getAutocompleteEntries());
-        templateContent.setTriggerChar('$');
-        JScrollPane scrollPane = new JScrollPane(templateContent);
+        JScrollPane scrollPane = new JScrollPane(createTemplateEditorField());
         configPanel.add(scrollPane);
 
         configPanel.add(createPatternsPanel());

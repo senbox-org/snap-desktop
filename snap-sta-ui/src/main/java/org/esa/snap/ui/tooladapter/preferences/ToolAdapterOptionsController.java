@@ -52,11 +52,13 @@ public class ToolAdapterOptionsController extends DefaultConfigController {
     public static final String PREFERENCE_KEY_TABBED_WINDOW = "sta.use.tabs";
     public static final String PREFERENCE_KEY_VALIDATE_PATHS = "sta.validate.paths";
     public static final String PREFERENCE_KEY_SHOW_EMPTY_PRODUCT_WARNING = "sta.warn.no.product";
+    public static final String PREFERENCE_KEY_AUTOCOMPLETE = "sta.autocomplete";
     public static final String PREFERENCE_KEY_SHOW_EXECUTION_OUTPUT = "sta.display.output";
     public static final boolean DEFAULT_VALUE_TABBED_WINDOW = false;
     public static final boolean DEFAULT_VALUE_VALIDATE_PATHS = true;
     public static final boolean DEFAULT_VALUE_SHOW_EMPTY_PRODUCT_WARINING = true;
     public static final boolean DEFAULT_VALUE_SHOW_EXECUTION_OUTPUT = false;
+    public static final boolean DEFAULT_VALUE_AUTOCOMPLETE = false;
     private static final String DECISION_SUFFIX = ".decision";
     private BindingContext context;
 
@@ -82,17 +84,20 @@ public class ToolAdapterOptionsController extends DefaultConfigController {
         Property pathValidationControl = context.getPropertySet().getProperty(PREFERENCE_KEY_VALIDATE_PATHS);
         Property noProductWarningControl = context.getPropertySet().getProperty(PREFERENCE_KEY_SHOW_EMPTY_PRODUCT_WARNING);
         Property displayOutputControl = context.getPropertySet().getProperty(PREFERENCE_KEY_SHOW_EXECUTION_OUTPUT);
+        Property autocompleteControl = context.getPropertySet().getProperty(PREFERENCE_KEY_AUTOCOMPLETE);
 
         JComponent[] useTabsComponents = registry.findPropertyEditor(useTabsControl.getDescriptor()).createComponents(useTabsControl.getDescriptor(), context);
         JComponent[] pathValidationComponents = registry.findPropertyEditor(pathValidationControl.getDescriptor()).createComponents(pathValidationControl.getDescriptor(), context);
         JComponent[] noProductWarningComponents = registry.findPropertyEditor(noProductWarningControl.getDescriptor()).createComponents(noProductWarningControl.getDescriptor(), context);
         JComponent[] displayOutputComponents = registry.findPropertyEditor(displayOutputControl.getDescriptor()).createComponents(displayOutputControl.getDescriptor(), context);
+        JComponent[] autocompleteComponents = registry.findPropertyEditor(autocompleteControl.getDescriptor()).createComponents(autocompleteControl.getDescriptor(), context);
 
         tableLayout.setRowPadding(0, new Insets(10, 80, 10, 4));
         pageUI.add(useTabsComponents[0]);
         pageUI.add(pathValidationComponents[0]);
         pageUI.add(noProductWarningComponents[0]);
         pageUI.add(displayOutputComponents[0]);
+        pageUI.add(autocompleteComponents[0]);
         pageUI.add(tableLayout.createVerticalSpacer());
 
         return pageUI;
@@ -113,6 +118,10 @@ public class ToolAdapterOptionsController extends DefaultConfigController {
         property = context.getPropertySet().getProperty(PREFERENCE_KEY_SHOW_EXECUTION_OUTPUT);
         if (property != null) {
             preferences.put(PREFERENCE_KEY_SHOW_EXECUTION_OUTPUT, property.getValueAsText());
+        }
+        property = context.getPropertySet().getProperty(PREFERENCE_KEY_AUTOCOMPLETE);
+        if (property != null) {
+            preferences.put(PREFERENCE_KEY_AUTOCOMPLETE, property.getValueAsText());
         }
         // decision preferences
         property = context.getPropertySet().getProperty(PREFERENCE_KEY_SHOW_EMPTY_PRODUCT_WARNING);
@@ -143,5 +152,7 @@ public class ToolAdapterOptionsController extends DefaultConfigController {
         boolean warnNoProduct = DEFAULT_VALUE_SHOW_EMPTY_PRODUCT_WARINING;
         @Preference(label = "Display execution output", key = PREFERENCE_KEY_SHOW_EXECUTION_OUTPUT)
         boolean displayOutput = DEFAULT_VALUE_SHOW_EXECUTION_OUTPUT;
+        @Preference(label = "Use autocomplete of parameters for template editing [experimental]", key = PREFERENCE_KEY_AUTOCOMPLETE)
+        boolean autocomplete = DEFAULT_VALUE_AUTOCOMPLETE;
     }
 }
