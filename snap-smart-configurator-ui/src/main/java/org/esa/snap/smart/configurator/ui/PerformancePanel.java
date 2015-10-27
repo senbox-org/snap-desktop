@@ -15,13 +15,17 @@
  */
 package org.esa.snap.smart.configurator.ui;
 
+import com.bc.ceres.core.ServiceRegistry;
+import com.bc.ceres.core.ServiceRegistryManager;
 import org.apache.commons.lang.StringUtils;
-import org.esa.snap.configurator.Benchmark;
-import org.esa.snap.configurator.BenchmarkSingleCalculus;
-import org.esa.snap.configurator.ConfigurationOptimizer;
-import org.esa.snap.configurator.JavaSystemInfos;
-import org.esa.snap.configurator.PerformanceParameters;
-import org.esa.snap.configurator.VMParameters;
+import org.esa.snap.SnapCoreActivator;
+import org.esa.snap.smart.configurator.Benchmark;
+import org.esa.snap.smart.configurator.BenchmarkOperatorProvider;
+import org.esa.snap.smart.configurator.BenchmarkSingleCalculus;
+import org.esa.snap.smart.configurator.ConfigurationOptimizer;
+import org.esa.snap.smart.configurator.JavaSystemInfos;
+import org.esa.snap.smart.configurator.PerformanceParameters;
+import org.esa.snap.smart.configurator.VMParameters;
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.OperatorSpi;
 import org.esa.snap.core.util.SystemUtils;
@@ -471,12 +475,16 @@ final class PerformancePanel extends javax.swing.JPanel {
         if (gpf.getOperatorSpiRegistry().getOperatorSpis().isEmpty()) {
             gpf.getOperatorSpiRegistry().loadOperatorSpis();
         }
-        Set<OperatorSpi> allOperators = gpf.getOperatorSpiRegistry().getOperatorSpis();
+        ServiceRegistry<BenchmarkOperatorProvider> benchemarkOperatorServiceRegistry =
+                ServiceRegistryManager.getInstance().getServiceRegistry(BenchmarkOperatorProvider.class);
+        SnapCoreActivator.loadServices(benchemarkOperatorServiceRegistry);
+        Set<BenchmarkOperatorProvider> providers = benchemarkOperatorServiceRegistry.getServices();
 
         TreeSet<String> externalOperatorsAliases = new TreeSet<>();
-        for(OperatorSpi operatorSpi : allOperators) {
-            if(!operatorSpi.getOperatorDescriptor().isInternal()) {
-                externalOperatorsAliases.add(operatorSpi.getOperatorAlias());
+        for(BenchmarkOperatorProvider provider : providers) {
+            Set<OperatorSpi> operatorSpis = provider.getBenchmarkOperators();
+            for(OperatorSpi operatorSpi : operatorSpis) {
+                    externalOperatorsAliases.add(operatorSpi.getOperatorAlias());
             }
         }
 

@@ -45,7 +45,7 @@ public class SmartConfigurator extends javax.swing.JFrame implements PropertyCha
     }
 
 
-    @SuppressWarnings("unchecked")
+
     private void initComponents() {
 
         try {

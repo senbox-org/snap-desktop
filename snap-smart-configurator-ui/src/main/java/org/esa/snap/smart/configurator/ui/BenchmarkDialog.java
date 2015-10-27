@@ -20,21 +20,22 @@ import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.core.SubProgressMonitor;
 import com.bc.ceres.core.VirtualDir;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
-import org.esa.snap.configurator.Benchmark;
-import org.esa.snap.configurator.BenchmarkSingleCalculus;
-import org.esa.snap.configurator.ConfigurationOptimizer;
-import org.esa.snap.configurator.PerformanceParameters;
+import org.esa.snap.smart.configurator.Benchmark;
+import org.esa.snap.smart.configurator.BenchmarkSingleCalculus;
+import org.esa.snap.smart.configurator.ConfigurationOptimizer;
+import org.esa.snap.smart.configurator.PerformanceParameters;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.Operator;
 import org.esa.snap.core.gpf.common.WriteOp;
 import org.esa.snap.core.gpf.internal.OperatorExecutor;
 import org.esa.snap.core.gpf.internal.OperatorProductReader;
-import org.esa.snap.core.gpf.ui.DefaultSingleTargetProductDialog;
 import org.esa.snap.core.gpf.ui.TargetProductSelectorModel;
+import org.esa.snap.graphbuilder.rcp.dialogs.SingleOperatorDialog;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.actions.file.SaveProductAsAction;
 import org.esa.snap.ui.AppContext;
 
+import javax.media.jai.JAI;
 import java.io.File;
 
 /**
@@ -42,12 +43,14 @@ import java.io.File;
  *
  * @author Manuel Campomanes
  */
-public class BenchmarkDialog extends DefaultSingleTargetProductDialog {
+public class BenchmarkDialog extends SingleOperatorDialog {
 
     /**
      * Benchmark calculus model
      */
     private Benchmark benchmarkModel;
+
+
     /**
      * Parent panel
      */
@@ -62,7 +65,8 @@ public class BenchmarkDialog extends DefaultSingleTargetProductDialog {
      * @param appContext Application context
      */
     public BenchmarkDialog(PerformancePanel perfPanel, String operatorName, Benchmark benchmarkModel, AppContext appContext){
-        super(operatorName, appContext, "Benchmark "+operatorName, null, false);
+        super(operatorName, appContext, "Benchmark "+operatorName, null);
+
         this.benchmarkModel = benchmarkModel;
         this.getJDialog().setModal(true);
         this.perfPanel = perfPanel;
@@ -125,6 +129,7 @@ public class BenchmarkDialog extends DefaultSingleTargetProductDialog {
         //benchmark loop
         try{
             for(BenchmarkSingleCalculus benchmarkSingleCalcul : this.benchmarkModel.getBenchmarkCalculus()){
+
                 Product targetProduct = null;
                 try {
                     targetProduct = createTargetProduct();
@@ -140,11 +145,16 @@ public class BenchmarkDialog extends DefaultSingleTargetProductDialog {
                 String benchmarkCounter = benchmarkCounterIndex++ + "/"+this.benchmarkModel.getBenchmarkCalculus().size();
                 //processing start time
                 long startTime = System.currentTimeMillis();
+
                 //launch processing with a progress bar
                 final ProgressMonitorSwingWorker worker = new ProductWriterSwingWorker(targetProduct, benchmarkCounter);
                 worker.executeWithBlocking();
+
                 //save execution time
                 benchmarkSingleCalcul.setExecutionTime(System.currentTimeMillis() - startTime);
+
+                // we remove all tiles
+                JAI.getDefaultInstance().setTileCache(JAI.createTileCache());
             }
             //sort benchmark results and return the faster
             BenchmarkSingleCalculus bestBenchmarkSingleCalcul = this.benchmarkModel.getFasterBenchmarkSingleCalculus();
