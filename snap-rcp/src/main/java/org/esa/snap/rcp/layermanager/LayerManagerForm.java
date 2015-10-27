@@ -520,7 +520,9 @@ class LayerManagerForm implements AbstractLayerForm {
                 installTransparencyChangeListener(selectedLayer);
                 installSwipeChangeListener(selectedLayer);
             }
-            parentComponent.getSelectedProductSceneView().setSelectedLayer(selectedLayer);
+            if(parentComponent.getSelectedProductSceneView() != null) {
+                parentComponent.getSelectedProductSceneView().setSelectedLayer(selectedLayer);
+            }
         }
     }
 
