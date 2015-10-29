@@ -144,7 +144,7 @@ class RoiMaskSelector {
 
     private void updateRoiMasks() {
         final Property property = bindingContext.getPropertySet().getProperty(PROPERTY_NAME_ROI_MASK);
-        if (raster != null) {
+        if (product != null && raster != null) {
             //todo [multisize_products] compare scenerastertransform (or its successor) rather than size
             final ProductNodeGroup<Mask> maskGroup = product.getMaskGroup();
             List<ProductNode> maskList = new ArrayList<>();
