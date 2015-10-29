@@ -7,6 +7,7 @@ package org.esa.snap.rcp.windows;
 
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.rcp.actions.file.OpenProductAction;
 import org.esa.snap.rcp.nodes.ProductGroupNode;
 import org.esa.snap.rcp.util.TestProducts;
 import org.esa.snap.runtime.Config;
@@ -24,10 +25,20 @@ import org.openide.windows.TopComponent;
 import javax.swing.ActionMap;
 import javax.swing.text.DefaultEditorKit;
 import java.awt.BorderLayout;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetAdapter;
+import java.awt.dnd.DropTargetDropEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.List;
 
 /**
  * The product explorer tool window.
@@ -56,7 +67,7 @@ import java.text.SimpleDateFormat;
 public class ProductExplorerTopComponent extends TopComponent implements ExplorerManager.Provider {
 
     private final ExplorerManager explorerManager = new ExplorerManager();
-    private BeanTreeView treeView;
+    private DndBeanTreeView treeView;
 
     public ProductExplorerTopComponent() {
         initComponents();
@@ -70,11 +81,12 @@ public class ProductExplorerTopComponent extends TopComponent implements Explore
     private void initComponents() {
         setLayout(new BorderLayout());
         // 1. Add an explorer view, in this case BeanTreeView:
-        treeView = new BeanTreeView();
+        // DndBeanTreeView has the purpose to enable Drag&Drop an the tree
+        treeView = new DndBeanTreeView();
         treeView.setRootVisible(false);
         add(treeView, BorderLayout.CENTER);
         // 2. Create a node hierarchy:
-        if(Config.instance().preferences().getBoolean("snap.debug.loadTestProducts", false)){
+        if (Config.instance().preferences().getBoolean("snap.debug.loadTestProducts", false)) {
             Product[] products = TestProducts.createProducts();
             for (Product product : products) {
                 SnapApp.getDefault().getProductManager().addProduct(product);
@@ -144,4 +156,38 @@ public class ProductExplorerTopComponent extends TopComponent implements Explore
     public void expandNode(Node node) {
         treeView.expandNode(node);
     }
+
+    private static class DndBeanTreeView extends BeanTreeView {
+
+        public DndBeanTreeView() {
+            tree.setDropTarget(new DropTarget(tree, new ProductExplorerDropTarget()));
+        }
+
+    }
+
+    private static class ProductExplorerDropTarget extends DropTargetAdapter {
+
+        @Override
+        public void drop(DropTargetDropEvent dtde) {
+            try {
+                final Transferable transferable = dtde.getTransferable();
+                if (transferable.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
+                    dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
+                    final List<File> fileList = (List<File>) transferable.getTransferData(DataFlavor.javaFileListFlavor);
+                    if (fileList.size() > 0) {
+                        final OpenProductAction open = new OpenProductAction();
+                        open.setFiles(fileList.toArray(new File[fileList.size()]));
+                        dtde.dropComplete(Boolean.TRUE.equals(open.execute()));
+                    }
+                } else {
+                    dtde.rejectDrop();
+                }
+            } catch (UnsupportedFlavorException | IOException ignored) {
+                dtde.rejectDrop();
+            }
+        }
+
+    }
+
+
 }
