@@ -25,7 +25,9 @@ import org.esa.snap.core.datamodel.Mask;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.core.datamodel.ProductNodeEvent;
+import org.esa.snap.core.datamodel.ProductNodeGroup;
 import org.esa.snap.core.datamodel.ProductNodeListener;
+import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.ui.GridBagUtils;
 import org.esa.snap.ui.tool.ToolButtonFactory;
 import org.openide.util.ImageUtilities;
@@ -43,6 +45,8 @@ import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 
 
 class RoiMaskSelector {
@@ -57,6 +61,7 @@ class RoiMaskSelector {
     private final ProductNodeListener productNodeListener;
 
     private Product product;
+    private RasterDataNode raster;
     private Enablement useRoiEnablement;
     private Enablement roiMaskEnablement;
 
@@ -121,7 +126,7 @@ class RoiMaskSelector {
         return roiMaskPanel;
     }
 
-    public void updateMaskSource(Product newProduct) {
+    public void updateMaskSource(Product newProduct, RasterDataNode newRaster) {
         if (product != newProduct) {
             if (product != null) {
                 product.removeProductNodeListener(productNodeListener);
@@ -130,14 +135,26 @@ class RoiMaskSelector {
                 newProduct.addProductNodeListener(productNodeListener);
             }
             this.product = newProduct;
-            updateRoiMasks();
         }
+        if (raster != newRaster) {
+            this.raster = newRaster;
+        }
+        updateRoiMasks();
     }
 
     private void updateRoiMasks() {
         final Property property = bindingContext.getPropertySet().getProperty(PROPERTY_NAME_ROI_MASK);
-        if (product != null) {
-            property.getDescriptor().setValueSet(new ValueSet(product.getMaskGroup().toArray()));
+        if (raster != null) {
+            //todo [multisize_products] compare scenerastertransform (or its successor) rather than size
+            final ProductNodeGroup<Mask> maskGroup = product.getMaskGroup();
+            List<ProductNode> maskList = new ArrayList<>();
+            for (int i = 0; i < maskGroup.getNodeCount(); i++) {
+                final Mask mask = maskGroup.get(i);
+                if (mask.getSceneRasterSize().equals(raster.getSceneRasterSize())) {
+                    maskList.add(mask);
+                }
+            }
+            property.getDescriptor().setValueSet(new ValueSet(maskList.toArray(new ProductNode[maskList.size()])));
         } else {
             property.getDescriptor().setValueSet(new ValueSet(new Mask[0]));
         }

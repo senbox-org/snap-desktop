@@ -73,7 +73,7 @@ public abstract class ChartPagePanel extends PagePanel {
 
     @Override
     protected void updateComponents() {
-        roiMaskSelector.updateMaskSource(getProduct());
+        roiMaskSelector.updateMaskSource(getProduct(), getRaster());
         refreshButton.setEnabled(refreshButtonEnabled && (getRaster() != null));
     }
 
