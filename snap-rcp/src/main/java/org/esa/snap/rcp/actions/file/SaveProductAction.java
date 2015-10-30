@@ -35,14 +35,8 @@ import java.text.MessageFormat;
  *
  * @author Norman
  */
-@ActionID(
-        category = "File",
-        id = "SaveProductAction"
-)
-@ActionRegistration(
-        displayName = "#CTL_SaveProductActionName",
-        lazy = false
-)
+@ActionID(category = "File", id = "SaveProductAction" )
+@ActionRegistration(displayName = "#CTL_SaveProductActionName", lazy = false )
 @ActionReference(path = "Menu/File", position = 40, separatorBefore = 38)
 @NbBundle.Messages({"CTL_SaveProductActionName=Save Product"})
 public final class SaveProductAction extends AbstractAction implements ContextAwareAction, LookupListener {
@@ -76,9 +70,9 @@ public final class SaveProductAction extends AbstractAction implements ContextAw
         if (file.isFile() && !file.canWrite()) {
             SnapDialogs.showWarning(Bundle.CTL_SaveProductActionName(),
                                     MessageFormat.format("The product\n" +
-                                                                 "''{0}''\n" +
-                                                                 "exists and cannot be overwritten, because it is read only.\n" +
-                                                                 "Please choose another file or remove the write protection.",
+                                                         "''{0}''\n" +
+                                                         "exists and cannot be overwritten, because it is read only.\n" +
+                                                         "Please choose another file or remove the write protection.",
                                                          file.getPath()),
                                     null);
             return false;
