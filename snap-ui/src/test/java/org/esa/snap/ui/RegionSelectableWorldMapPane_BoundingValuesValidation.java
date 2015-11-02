@@ -2,6 +2,9 @@ package org.esa.snap.ui;
 
 import org.junit.Test;
 
+import java.awt.*;
+import java.awt.geom.Rectangle2D;
+
 import static org.junit.Assert.*;
 
 public class RegionSelectableWorldMapPane_BoundingValuesValidation {
@@ -45,5 +48,49 @@ public class RegionSelectableWorldMapPane_BoundingValuesValidation {
         assertFalse(RegionSelectableWorldMapPane.geoBoundsAreValid(validNorthBound, 181.0, validSouthBound, validWestBound));
         assertFalse(RegionSelectableWorldMapPane.geoBoundsAreValid(validNorthBound, validEastBound, -91.0, validWestBound));
         assertFalse(RegionSelectableWorldMapPane.geoBoundsAreValid(validNorthBound, validEastBound, validSouthBound, -181.0));
+    }
+
+
+    @Test
+    public void testCorrectBoundsIfNecessary_noCorrection() {
+        final Rectangle2D.Double toCorrect = new Rectangle2D.Double(-175.0, -85.0, 140.0, 110.0);
+
+        RegionSelectableWorldMapPane.correctBoundsIfNecessary(toCorrect);
+
+        assertEquals(-175.0, toCorrect.getMinX(), 1e-8);
+        assertEquals(-85.0, toCorrect.getMinY(), 1e-8);
+
+        assertEquals(-175.0 + 140.0, toCorrect.getMaxX(), 1e-8);
+        assertEquals(-85.0 + 110.0, toCorrect.getMaxY(), 1e-8);
+    }
+
+    @Test
+    public void testCorrectBoundsIfNecessary_correction_positive_x() {
+        final Rectangle2D.Double toCorrect = new Rectangle2D.Double(-175.499991, -90.0, 360.0, 180.0);
+
+        RegionSelectableWorldMapPane.correctBoundsIfNecessary(toCorrect);
+
+        assertEquals(-175.499991, toCorrect.getMinX(), 1e-8);
+        assertEquals(180.0, toCorrect.getMaxX(), 1e-8);
+        assertEquals(-90.0, toCorrect.getMinY(), 1e-8);
+        assertEquals(90.0, toCorrect.getMaxY(), 1e-8);
+
+        assertTrue(toCorrect.getMinX() + toCorrect.getWidth() <= 180.0);
+        assertTrue(toCorrect.getMinY() + toCorrect.getHeight() <= 90.0);
+    }
+
+    @Test
+    public void testCorrectBoundsIfNecessary_correction_negative_x() {
+        final Rectangle2D.Double toCorrect = new Rectangle2D.Double(-185.499991, -90.0, 360.0, 180.0);
+
+        RegionSelectableWorldMapPane.correctBoundsIfNecessary(toCorrect);
+
+        assertEquals(-180.0, toCorrect.getMinX(), 1e-8);
+        assertEquals(174.50000899999895, toCorrect.getMaxX(), 1e-8);
+        assertEquals(-90.0, toCorrect.getMinY(), 1e-8);
+        assertEquals(90.0, toCorrect.getMaxY(), 1e-8);
+
+        assertTrue(toCorrect.getMinX() + toCorrect.getWidth() <= 180.0);
+        assertTrue(toCorrect.getMinY() + toCorrect.getHeight() <= 90.0);
     }
 }

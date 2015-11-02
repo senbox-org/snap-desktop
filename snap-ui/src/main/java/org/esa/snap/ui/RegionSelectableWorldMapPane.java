@@ -152,8 +152,7 @@ public class RegionSelectableWorldMapPane {
             final ShapeFigure polygonFigure = editor.getFigureFactory().createPolygonFigure(defaultShape, createFigureStyle(
                     (DefaultFigureStyle) editor.getDefaultPolygonStyle()));
             if (polygonFigure != null) {
-                ShapeFigure shapeFigure = polygonFigure;
-                editor.getFigureCollection().addFigure(shapeFigure);
+                editor.getFigureCollection().addFigure(polygonFigure);
             }
             regionSelectionInteractor.updateProperties(defaultShape.getBounds2D());
             mustInitFigureEditor = false;
@@ -184,6 +183,30 @@ public class RegionSelectableWorldMapPane {
                && isInValidLatitudeRange(southBound)
                && isInValidLongitudeRange(eastBound)
                && isInValidLongitudeRange(westBound);
+    }
+
+    static void correctBoundsIfNecessary(Rectangle2D newFigureShape) {
+        double minX = newFigureShape.getMinX();
+        double minY = newFigureShape.getMinY();
+        double maxX = newFigureShape.getMaxX();
+        double maxY = newFigureShape.getMaxY();
+        minX = Math.min(maxX, Math.min(180, Math.max(-180, minX)));
+        minY = Math.min(maxY, Math.min(90, Math.max(-90, minY)));
+        maxX = Math.max(minX, Math.min(180, Math.max(-180, maxX)));
+        maxY = Math.max(minY, Math.min(90, Math.max(-90, maxY)));
+        minX = Math.min(maxX, Math.min(180, Math.max(-180, minX)));
+        minY = Math.min(maxY, Math.min(90, Math.max(-90, minY)));
+        if (newFigureShape.getMinX() != minX || newFigureShape.getMinY() != minY
+                || newFigureShape.getMaxX() != maxX || newFigureShape.getMaxY() != maxY) {
+
+            // there were numerical issues with the direct approach that returned rectangles with a maxX slightly larger
+            // than 180 deg. To ensure data is always in the valid range, we subtract a small amount from width and height.
+            // tb 2015-11-02
+            final double width = maxX - minX;
+            final double height = maxY - minY;
+            newFigureShape.setRect(minX, minY, width - 1e-12, height - 1e-12);
+
+        }
     }
 
     private static boolean isInValidLongitudeRange(Double longitude) {
@@ -338,19 +361,11 @@ public class RegionSelectableWorldMapPane {
 
         private FigureEditorAwareWorldMapPane(WorldMapPaneDataModel dataModel, SelectionOverlay overlay) {
             super(dataModel, overlay);
-            addZoomListener(new ZoomListener() {
-                @Override
-                public void zoomed() {
-                    handleZoom();
-                }
-            });
-            greyOverlay = new LayerCanvas.Overlay() {
-                @Override
-                public void paintOverlay(LayerCanvas canvas, Rendering rendering) {
-                    final Graphics2D graphics = rendering.getGraphics();
-                    graphics.setPaint(new Color(200, 200, 200, 180));
-                    graphics.fillRect(0, 0, worldMapPane.getWidth(), worldMapPane.getHeight());
-                }
+            addZoomListener(() -> handleZoom());
+            greyOverlay = (canvas, rendering) -> {
+                final Graphics2D graphics = rendering.getGraphics();
+                graphics.setPaint(new Color(200, 200, 200, 180));
+                graphics.fillRect(0, 0, worldMapPane.getWidth(), worldMapPane.getHeight());
             };
         }
 
@@ -628,9 +643,8 @@ public class RegionSelectableWorldMapPane {
             DefaultFigureStyle defaultFigureStyle = createFigureStyle((DefaultFigureStyle) figureEditor.getDefaultPolygonStyle());
             final ShapeFigure polygonFigure = figureEditor.getFigureFactory().createPolygonFigure(modelRectangle, defaultFigureStyle);
             if (polygonFigure != null) {
-                Figure newFigure = polygonFigure;
                 figureEditor.getFigureCollection().removeAllFigures();
-                figureEditor.getFigureCollection().addFigure(newFigure);
+                figureEditor.getFigureCollection().addFigure(polygonFigure);
             }
         }
 
@@ -644,23 +658,6 @@ public class RegionSelectableWorldMapPane {
                 !modelRectangle.equals(getFirstFigure().getBounds())) {
                 updateFigure(modelRectangle);
                 updateProperties(modelRectangle);
-            }
-        }
-
-        private void correctBoundsIfNecessary(Rectangle2D newFigureShape) {
-            double minX = newFigureShape.getMinX();
-            double minY = newFigureShape.getMinY();
-            double maxX = newFigureShape.getMaxX();
-            double maxY = newFigureShape.getMaxY();
-            minX = Math.min(maxX, Math.min(180, Math.max(-180, minX)));
-            minY = Math.min(maxY, Math.min(90, Math.max(-90, minY)));
-            maxX = Math.max(minX, Math.min(180, Math.max(-180, maxX)));
-            maxY = Math.max(minY, Math.min(90, Math.max(-90, maxY)));
-            minX = Math.min(maxX, Math.min(180, Math.max(-180, minX)));
-            minY = Math.min(maxY, Math.min(90, Math.max(-90, minY)));
-            if (newFigureShape.getMinX() != minX || newFigureShape.getMinY() != minY
-                || newFigureShape.getMaxX() != maxX || newFigureShape.getMaxY() != maxY) {
-                newFigureShape.setRect(minX, minY, maxX - minX, maxY - minY);
             }
         }
 
