@@ -32,6 +32,7 @@ import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.tool.ToolButtonFactory;
 import org.esa.snap.ui.tooladapter.model.VariablesTable;
+import org.esa.snap.ui.tooladapter.validators.RegexFieldValidator;
 import org.esa.snap.utils.SpringUtilities;
 
 import javax.swing.*;
@@ -111,12 +112,12 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
 
         AbstractButton addVariableButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon(Bundle.Icon_Add()), false);
         addVariableButton.setText(Bundle.CTL_Button_Add_Variable_Text());
-        addVariableButton.setMaximumSize(new Dimension(addVariableButton.getWidth(), controlHeight));
+        addVariableButton.setMaximumSize(new Dimension(150, controlHeight));
         addVariableButton.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         AbstractButton addDependentVariableButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon(Bundle.Icon_Add()), false);
         addDependentVariableButton.setText(Bundle.CTL_Button_Add_PDVariable_Text());
-        addDependentVariableButton.setMaximumSize(new Dimension(addDependentVariableButton.getWidth(), controlHeight));
+        addDependentVariableButton.setMaximumSize(new Dimension(250, controlHeight));
         addDependentVariableButton.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         JPanel buttonsPannel = new JPanel(new SpringLayout());
@@ -177,14 +178,6 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
         editorComponent.setPreferredSize(new Dimension(editorComponent.getPreferredSize().width, controlHeight));
 
         JComponent writeComponent = createCheckboxComponent("writeForProcessing", editorComponent, newOperatorDescriptor.shouldWriteBeforeProcessing());
-        if(writeComponent instanceof JCheckBox){
-            ((JCheckBox) writeComponent).addActionListener(e -> {
-                //noinspection StatementWithEmptyBody
-                if (((JCheckBox) writeComponent).isSelected()){
-
-                }
-            });
-        }
         preProcessingPanel.add(writeComponent);
         preProcessingPanel.add(new JLabel(Bundle.CTL_Label_WriteBefore_Text()));
         preProcessingPanel.add(editorComponent);
@@ -266,9 +259,13 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
 
         TextFieldEditor textEditor = new TextFieldEditor();
         addTextField(patternsPanel, textEditor, Bundle.CTL_Label_ProgressPattern(), ToolAdapterConstants.PROGRESS_PATTERN, false);
+        propertyContainer.getDescriptor(ToolAdapterConstants.PROGRESS_PATTERN).setValidator(new RegexFieldValidator());
+        addTextField(patternsPanel, textEditor, Bundle.CTL_Label_StepPattern(), ToolAdapterConstants.STEP_PATTERN, false);
+        propertyContainer.getDescriptor(ToolAdapterConstants.STEP_PATTERN).setValidator(new RegexFieldValidator());
         addTextField(patternsPanel, textEditor, Bundle.CTL_Label_ErrorPattern(), ToolAdapterConstants.ERROR_PATTERN, false);
+        propertyContainer.getDescriptor(ToolAdapterConstants.ERROR_PATTERN).setValidator(new RegexFieldValidator());
 
-        SpringUtilities.makeCompactGrid(patternsPanel, 2, 2, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING);
+        SpringUtilities.makeCompactGrid(patternsPanel, 3, 2, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING);
 
         return patternsPanel;
     }
@@ -280,7 +277,7 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
         paramsPanel.setLayout(layout);
         AbstractButton addParamBut = ToolButtonFactory.createButton(UIUtils.loadImageIcon(Bundle.Icon_Add()), false);
         addParamBut.setText("New Parameter");
-        addParamBut.setMaximumSize(new Dimension(addParamBut.getWidth(), controlHeight));
+        addParamBut.setMaximumSize(new Dimension(150, controlHeight));
         addParamBut.setAlignmentX(Component.LEFT_ALIGNMENT);
         addParamBut.setAlignmentY(Component.TOP_ALIGNMENT);
         paramsPanel.add(addParamBut);

@@ -141,13 +141,13 @@ public class ToolAdapterEditorDialog extends AbstractAdapterEditor {
 
         AbstractButton addVariableButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon(Bundle.Icon_Add()), false);
         addVariableButton.setText(Bundle.CTL_Button_Add_Variable_Text());
-        addVariableButton.setMaximumSize(new Dimension(addVariableButton.getWidth(), controlHeight));
         addVariableButton.setAlignmentX(Component.LEFT_ALIGNMENT);
+        addVariableButton.setMaximumSize(new Dimension(150, controlHeight));
 
         AbstractButton addDependentVariableButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon(Bundle.Icon_Add()), false);
         addDependentVariableButton.setText(Bundle.CTL_Button_Add_PDVariable_Text());
-        addDependentVariableButton.setMaximumSize(new Dimension(addDependentVariableButton.getWidth(), controlHeight));
         addDependentVariableButton.setAlignmentX(Component.LEFT_ALIGNMENT);
+        addDependentVariableButton.setMaximumSize(new Dimension(250, controlHeight));
 
         JPanel buttonsPannel = new JPanel(new SpringLayout());
         buttonsPannel.add(addVariableButton);
@@ -202,14 +202,7 @@ public class ToolAdapterEditorDialog extends AbstractAdapterEditor {
         editorComponent.setPreferredSize(new Dimension(editorComponent.getPreferredSize().width, controlHeight));
 
         JComponent writeComponent = createCheckboxComponent("writeForProcessing", editorComponent, newOperatorDescriptor.shouldWriteBeforeProcessing());
-        if(writeComponent instanceof JCheckBox){
-            ((JCheckBox) writeComponent).addActionListener(e -> {
-                //noinspection StatementWithEmptyBody
-                if (((JCheckBox) writeComponent).isSelected()){
 
-                }
-            });
-        }
         preProcessingPanel.add(writeComponent);
         preProcessingPanel.add(new JLabel(Bundle.CTL_Label_WriteBefore_Text()));
         preProcessingPanel.add(editorComponent);

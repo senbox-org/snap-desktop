@@ -96,6 +96,7 @@ import static org.esa.snap.utils.SpringUtilities.makeCompactGrid;
         "CTL_Panel_OutputPattern_Border_TitleText=Tool Output Patterns",
         "CTL_Label_ProgressPattern=Progress pattern:",
         "CTL_Label_ErrorPattern=Error pattern:",
+        "CTL_Label_StepPattern=Step operation pattern:",
         "CTL_Panel_SysVar_Border_TitleText=System Variables",
         "CTL_Label_RadioButton_ExistingMenus=Existing Menus",
         "CTL_Label_RadioButton_NewMenu=Create Menu",

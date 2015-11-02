@@ -501,7 +501,7 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
 
         @Override
         public void setTaskName(String taskName) {
-            this.progressHandle.progress(taskName);
+            this.progressHandle.setDisplayName(taskName);
         }
 
         @Override
