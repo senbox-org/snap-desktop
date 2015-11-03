@@ -39,6 +39,8 @@ import com.thoughtworks.xstream.annotations.XStreamConverter;
 import com.thoughtworks.xstream.converters.SingleValueConverterWrapper;
 import com.thoughtworks.xstream.converters.basic.AbstractSingleValueConverter;
 import org.esa.snap.core.dataio.ProductIO;
+import org.esa.snap.core.dataio.ProductIOPlugInManager;
+import org.esa.snap.core.dataio.ProductReaderPlugIn;
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.MetadataElement;
 import org.esa.snap.core.datamodel.Product;
@@ -49,7 +51,9 @@ import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.datamodel.VirtualBand;
 import org.esa.snap.core.layer.MaskCollectionLayerType;
 import org.esa.snap.core.util.PropertyMap;
+import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.core.util.io.FileUtils;
+import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.metadata.MetadataViewTopComponent;
 import org.esa.snap.rcp.session.dom.SessionDomConverter;
 import org.esa.snap.ui.AppContext;
@@ -67,7 +71,9 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 
 /**
  * Data container used for storing/restoring BEAM sessions.
@@ -102,7 +108,8 @@ public class Session {
         for (int i = 0; i < products.length; i++) {
             Product product = products[i];
             URI relativeProductURI = getFileLocationURI(rootURI, product);
-            productRefs[i] = new ProductRef(product.getRefNo(), relativeProductURI);
+            final String productReaderPlugin = product.getProductReader().getReaderPlugIn().getClass().toString();
+            productRefs[i] = new ProductRef(product.getRefNo(), relativeProductURI, productReaderPlugin);
         }
 
         ProductManager productManager = new ProductManager();
@@ -290,10 +297,28 @@ public class Session {
             pm.beginTask("Restoring products", productRefs.length);
             for (ProductRef productRef : productRefs) {
                 try {
-                    Product product;
+                    Product product = null;
                     File productFile = new File(rootURI.resolve(productRef.uri));
                     if (productFile.exists()) {
-                        product = ProductIO.readProduct(productFile);
+                        final String productReaderPlugin = productRef.productReaderPlugin;
+                        if (StringUtils.isNotNullAndNotEmpty(productReaderPlugin)) {
+                            final Iterator<ProductReaderPlugIn> allReaderPlugIns = ProductIOPlugInManager.getInstance().getAllReaderPlugIns();
+                            while (allReaderPlugIns.hasNext()) {
+                                final ProductReaderPlugIn plugIn = allReaderPlugIns.next();
+                                if (plugIn.getClass().toString().equals(productReaderPlugin)) {
+                                    product = plugIn.createReaderInstance().readProductNodes(productFile, null);
+                                    break;
+                                }
+                            }
+                            if (product == null) {
+                                SnapApp.getDefault().getLogger().log(Level.WARNING,
+                                                                     "Could not find " + productReaderPlugin + ". " +
+                                                                             "Attempting to use other reader to open " + productFile.getName());
+                            }
+                        }
+                        if (product == null) {
+                            product = ProductIO.readProduct(productFile);
+                        }
                     } else {
                         product = problemSolver.solveProductNotFound(productRef.refNo, productFile);
                         if (product == null) {
@@ -509,6 +534,7 @@ public class Session {
         int refNo;
         @XStreamConverter(URIConverterWrapper.class)
         URI uri;
+        String productReaderPlugin;
 
         /**
          * No-arg constructor required by XStream.
@@ -517,9 +543,10 @@ public class Session {
         public ProductRef() {
         }
 
-        public ProductRef(int refNo, URI uri) {
+        public ProductRef(int refNo, URI uri, String productReaderPlugin) {
             this.refNo = refNo;
             this.uri = uri;
+            this.productReaderPlugin = productReaderPlugin;
         }
     }
 
