@@ -186,6 +186,11 @@ class ProductFileChooser extends SnapFileChooser {
     private boolean openProductSubsetDialog(Product product, String newProductName) {
         clearCurrentSubsetProduct();
         if (product != null) {
+            if (product.isMultiSizeProduct()) {
+                SnapDialogs.showError("No subset can be created of a multi-size products.");
+                return false;
+            }
+
             ProductSubsetDialog productSubsetDialog = new ProductSubsetDialog(SnapApp.getDefault().getMainFrame(), product);
             if (productSubsetDialog.show() == ProductSubsetDialog.ID_OK) {
                 try {
