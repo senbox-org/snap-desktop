@@ -437,6 +437,9 @@ public class ProductSceneView extends BasicView
         }
 
         deregisterLayerCanvasListeners();
+        if (sceneImage != null) {
+            sceneImage.getConfiguration().removePropertyChangeListener(this);
+        }
 
         for (int i = 0; i < getSceneImage().getRasters().length; i++) {
             final RasterDataNode raster = getSceneImage().getRasters()[i];
@@ -444,12 +447,9 @@ public class ProductSceneView extends BasicView
                 RGBChannel rgbChannel = (RGBChannel) raster;
                 rgbChannel.dispose();
             }
-            getSceneImage().getRasters()[i] = null;
+            sceneImage.getRasters()[i] = null;
         }
 
-        if (sceneImage != null) {
-            sceneImage.getConfiguration().removePropertyChangeListener(this);
-        }
         sceneImage = null;
 
         if (getLayerCanvas() != null) {
