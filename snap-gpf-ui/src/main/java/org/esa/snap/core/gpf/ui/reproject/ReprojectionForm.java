@@ -656,7 +656,7 @@ class ReprojectionForm extends JTabbedPane {
 
         @Override
         public boolean accept(Product product) {
-            return product.canBeOrthorectified();
+            return product.canBeOrthorectified() && !product.isMultiSizeProduct();
         }
     }
 
@@ -665,7 +665,7 @@ class ReprojectionForm extends JTabbedPane {
         @Override
         public boolean accept(Product product) {
             final GeoCoding geoCoding = product.getSceneGeoCoding();
-            return geoCoding != null && geoCoding.canGetGeoPos() && geoCoding.canGetPixelPos();
+            return geoCoding != null && geoCoding.canGetGeoPos() && geoCoding.canGetPixelPos() && !product.isMultiSizeProduct();
         }
     }
 }
