@@ -146,6 +146,7 @@ public class SnapApp {
         UndoManagerProvider undoManagerProvider = new UndoManagerProvider();
         ExtensionManager.getInstance().register(Product.class, undoManagerProvider);
         productManager.addListener(undoManagerProvider);
+        productManager.addListener(new MultiSizeWarningListener());
         selectionChangeSupports = new HashMap<>();
     }
 
@@ -695,6 +696,27 @@ public class SnapApp {
         @Override
         public ProductSceneView getSelectedProductSceneView() {
             return getDefault().getSelectedProductSceneView();
+        }
+    }
+
+    private static class MultiSizeWarningListener implements ProductManager.Listener {
+
+        @Override
+        public void productAdded(ProductManager.Event event) {
+            final Product product = event.getProduct();
+            if(product.isMultiSizeProduct()) {
+                SnapDialogs.showInformation("Limited Functionality",
+                                            "<html>Please note that you have opened a product which contains <br/>" +
+                                            "bands of different sizes. Not all features of SNAP will work with this product. <br/>" +
+                                            "For example reprojection, subset and some masks functions will not work.",
+                                            "snap.multiSize.showInfo");
+            }
+
+        }
+
+        @Override
+        public void productRemoved(ProductManager.Event event) {
+
         }
     }
 
