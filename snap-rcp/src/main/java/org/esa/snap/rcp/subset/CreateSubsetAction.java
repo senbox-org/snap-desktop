@@ -40,12 +40,8 @@ import java.awt.event.ActionEvent;
  * @author Norman Fomferra
  */
 @ActionID(category = "Raster", id = "CreateSubsetAction")
-@ActionRegistration(
-        displayName = "#CTL_CreateSubsetAction_Name"
-)
-@ActionReferences({
-        @ActionReference(path = "Menu/Raster", position = 50)
-})
+@ActionRegistration(displayName = "#CTL_CreateSubsetAction_Name")
+@ActionReferences({@ActionReference(path = "Menu/Raster", position = 50)})
 @NbBundle.Messages({
         "CTL_CreateSubsetAction_Name=Subset...",
         "CTL_CreateSubsetAction_Title=Subset"
@@ -69,6 +65,13 @@ public class CreateSubsetAction extends AbstractAction {
     }
 
     public static void createSubset(Product sourceProduct, Rectangle bounds) {
+        if (sourceProduct.isMultiSizeProduct()) {
+            SnapDialogs.showInformation("Limited Functionality",
+                                        "<html>Please note that the subset functionality is not available for a product which contains <br/>" +
+                                        "bands of different sizes.", null);
+            return;
+        }
+
         final String subsetName = "subset_" + CreateSubsetAction.subsetNumber + "_of_" + sourceProduct.getName();
         final ProductSubsetDef initSubset = new ProductSubsetDef();
         initSubset.setRegion(bounds);
@@ -94,7 +97,7 @@ public class CreateSubsetAction extends AbstractAction {
             CreateSubsetAction.subsetNumber++;
         } catch (Exception e) {
             final String msg = "An error occurred while creating the product subset:\n" +
-                    e.getMessage();
+                               e.getMessage();
             SnapApp.getDefault().handleError(msg, e);
         }
     }
