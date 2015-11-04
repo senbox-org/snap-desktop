@@ -142,7 +142,7 @@ class BinningFormModel {
         return products;
     }
 
-    public String[] getSourceProductPath() {
+    public String[] getSourceProductPaths() {
         return getPropertyValue(BinningFormModel.PROPERTY_KEY_SOURCE_PRODUCT_PATHS);
     }
 

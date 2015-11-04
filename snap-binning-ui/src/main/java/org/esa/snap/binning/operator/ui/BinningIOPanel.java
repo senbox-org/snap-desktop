@@ -92,9 +92,9 @@ class BinningIOPanel extends JPanel {
                     binningFormModel.useAsContextProduct(sourceProducts[0]);
                     return;
                 }
-                String[] sourceProductPath = binningFormModel.getSourceProductPath();
-                if (sourceProductPath != null && sourceProductPath.length > 0) {
-                    openFirstProduct(sourceProductPath);
+                String[] sourceProductPaths = binningFormModel.getSourceProductPaths();
+                if (sourceProductPaths != null && sourceProductPaths.length > 0) {
+                    openFirstProduct(sourceProductPaths);
                     return;
                 }
                 binningFormModel.useAsContextProduct(null);
