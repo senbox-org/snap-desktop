@@ -50,8 +50,6 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.FlowLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -59,6 +57,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 /**
  * @author Marco Peters
@@ -92,15 +91,12 @@ class MosaicIOPanel extends JPanel {
         updateProductSelector = new SourceProductSelector(appContext);
         updateProductSelector.setProductFilter(new UpdateProductFilter());
         init();
-        propertySet.addPropertyChangeListener(MosaicFormModel.PROPERTY_UPDATE_MODE, new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                if (Boolean.TRUE.equals(evt.getNewValue())) {
-                    propertySet.setValue(MosaicFormModel.PROPERTY_UPDATE_PRODUCT,
-                                         updateProductSelector.getSelectedProduct());
-                } else {
-                    updateProductSelector.setSelectedProduct(null);
-                }
+        propertySet.addPropertyChangeListener(MosaicFormModel.PROPERTY_UPDATE_MODE, evt -> {
+            if (Boolean.TRUE.equals(evt.getNewValue())) {
+                propertySet.setValue(MosaicFormModel.PROPERTY_UPDATE_PRODUCT,
+                                     updateProductSelector.getSelectedProduct());
+            } else {
+                updateProductSelector.setSelectedProduct(null);
             }
         });
         propertySet.addPropertyChangeListener(MosaicFormModel.PROPERTY_UPDATE_PRODUCT,
@@ -126,11 +122,9 @@ class MosaicIOPanel extends JPanel {
                 try {
                     if (product != null) {
                         final Map<String, Object> map = MosaicOp.getOperatorParameters(product);
-                        for (Map.Entry<String, Object> entry : map.entrySet()) {
-                            if (propertySet.getProperty(entry.getKey()) != null) {
-                                propertySet.setValue(entry.getKey(), entry.getValue());
-                            }
-                        }
+                        final Stream<Map.Entry<String, Object>> entrySetStream = map.entrySet().stream();
+                        final Stream<Map.Entry<String, Object>> filteredStream = entrySetStream.filter(entry -> propertySet.getProperty(entry.getKey()) != null);
+                        filteredStream.forEach(entry -> propertySet.setValue(entry.getKey(), entry.getValue()));
                     }
 
                     propertySet.setValue(MosaicFormModel.PROPERTY_UPDATE_PRODUCT, product);
@@ -142,28 +136,25 @@ class MosaicIOPanel extends JPanel {
     }
 
     private JPanel createSourceProductsPanel() {
-        final FileArrayEditor.FileArrayEditorListener listener = new FileArrayEditor.FileArrayEditorListener() {
-            @Override
-            public void updatedList(final File[] files) {
-                final SwingWorker worker = new SwingWorker() {
-                    @Override
-                    protected Object doInBackground() throws Exception {
-                        mosaicModel.setSourceProducts(files);
-                        return null;
-                    }
+        final FileArrayEditor.FileArrayEditorListener listener = files -> {
+            final SwingWorker worker = new SwingWorker() {
+                @Override
+                protected Object doInBackground() throws Exception {
+                    mosaicModel.setSourceProducts(files);
+                    return null;
+                }
 
-                    @Override
-                    protected void done() {
-                        try {
-                            get();
-                        } catch (Exception e) {
-                            final String msg = String.format("Cannot display source products.\n%s", e.getMessage());
-                            appContext.handleError(msg, e);
-                        }
+                @Override
+                protected void done() {
+                    try {
+                        get();
+                    } catch (Exception e) {
+                        final String msg = String.format("Cannot display source products.\n%s", e.getMessage());
+                        appContext.handleError(msg, e);
                     }
-                };
-                worker.execute();
-            }
+                }
+            };
+            worker.execute();
         };
         sourceFileEditor.setListener(listener);
 
@@ -216,18 +207,15 @@ class MosaicIOPanel extends JPanel {
         final String updateProductKey = "UPDATE_PRODUCT";
         subPanel.add(newProductSelectorPanel, newProductKey);
         subPanel.add(updateProductSelectorPanel, updateProductKey);
-        updateTargetCheckBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (updateTargetCheckBox.isSelected()) {
-                    prepareHideTargetProductSelector();
-                    prepareShowUpdateProductSelector();
-                    cards.show(subPanel, updateProductKey);
-                } else {
-                    prepareShowTargetProductSelector();
-                    prepareHideUpdateProductSelector();
-                    cards.show(subPanel, newProductKey);
-                }
+        updateTargetCheckBox.addActionListener(e -> {
+            if (updateTargetCheckBox.isSelected()) {
+                prepareHideTargetProductSelector();
+                prepareShowUpdateProductSelector();
+                cards.show(subPanel, updateProductKey);
+            } else {
+                prepareShowTargetProductSelector();
+                prepareHideUpdateProductSelector();
+                cards.show(subPanel, newProductKey);
             }
         });
         cards.show(subPanel, newProductKey);
