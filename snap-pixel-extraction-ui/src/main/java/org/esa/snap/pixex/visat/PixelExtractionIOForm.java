@@ -44,9 +44,9 @@ import java.io.IOException;
 
 class PixelExtractionIOForm {
 
-    static final String LAST_OPEN_INPUT_DIR = "beam.petOp.lastOpenInputDir";
-    static final String LAST_OPEN_OUTPUT_DIR = "beam.petOp.lastOpenOutputDir";
-    static final String LAST_OPEN_FORMAT = "beam.petOp.lastOpenFormat";
+    static final String LAST_OPEN_INPUT_DIR = "snap.petOp.lastOpenInputDir";
+    static final String LAST_OPEN_OUTPUT_DIR = "snap.petOp.lastOpenOutputDir";
+    static final String LAST_OPEN_FORMAT = "snap.petOp.lastOpenFormat";
 
     private final AppContext appContext;
 
