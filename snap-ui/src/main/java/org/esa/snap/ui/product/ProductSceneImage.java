@@ -136,7 +136,7 @@ public class ProductSceneImage implements ProductLayerContext {
 
     @Override
     public Object getCoordinateReferenceSystem() {
-        return getProduct().getModelCRS();
+        return getProduct().getSceneCRS();
     }
 
     @Override

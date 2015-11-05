@@ -97,7 +97,7 @@ public class CreateVectorDataNodeAction extends AbstractAction implements Contex
     }
 
     public static VectorDataNode createDefaultVectorDataNode(Product product, String name, String description) {
-        CoordinateReferenceSystem modelCrs = product.getModelCRS();
+        CoordinateReferenceSystem modelCrs = product.getSceneCRS();
         SimpleFeatureType type = PlainFeatureFactory.createDefaultFeatureType(modelCrs);
         VectorDataNode vectorDataNode = new VectorDataNode(name, type);
         vectorDataNode.setDescription(description);

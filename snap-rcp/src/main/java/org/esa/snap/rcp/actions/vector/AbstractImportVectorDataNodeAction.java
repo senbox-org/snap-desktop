@@ -72,7 +72,7 @@ abstract class AbstractImportVectorDataNodeAction extends AbstractSnapAction {
 
         @Override
         public CoordinateReferenceSystem getFeatureCrs(final Product product) {
-            if (product.getModelCRS() == Product.DEFAULT_IMAGE_CRS) {
+            if (product.getSceneCRS() == Product.DEFAULT_IMAGE_CRS) {
                 return Product.DEFAULT_IMAGE_CRS;
             }
 
