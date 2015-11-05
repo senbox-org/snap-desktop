@@ -174,6 +174,14 @@ class MosaicDialog extends SingleTargetProductDialog {
             showErrorDialog("No source products specified.");
             return false;
         }
+        for (Map.Entry<String, Product> productEntry : sourceProductMap.entrySet()) {
+            if (productEntry.getValue().isMultiSizeProduct()) {
+                showErrorDialog(String.format("Product '%s'contains bands of different sizes. " +
+                                              "Currently it is not possible to use it for mosaicking.",
+                                              productEntry.getKey()));
+                return false;
+            }
+        }
         return true;
     }
 
