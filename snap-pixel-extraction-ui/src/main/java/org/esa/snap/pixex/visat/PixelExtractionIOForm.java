@@ -44,9 +44,9 @@ import java.io.IOException;
 
 class PixelExtractionIOForm {
 
-    static final String LAST_OPEN_INPUT_DIR = "snap.petOp.lastOpenInputDir";
-    static final String LAST_OPEN_OUTPUT_DIR = "snap.petOp.lastOpenOutputDir";
-    static final String LAST_OPEN_FORMAT = "snap.petOp.lastOpenFormat";
+    static final String PROPERTY_NAME_LAST_OPEN_INPUT_DIR = "snap.petOp.lastOpenInputDir";
+    static final String PROPERTY_NAME_LAST_OPEN_OUTPUT_DIR = "snap.petOp.lastOpenOutputDir";
+    static final String PROPERTY_NAME_LAST_OPEN_FORMAT = "snap.petOp.lastOpenFormat";
 
     private final AppContext appContext;
 
@@ -75,8 +75,8 @@ class PixelExtractionIOForm {
         panel = new JPanel(tableLayout);
 
         sourceProductList = new SourceProductList(appContext);
-        sourceProductList.setLastOpenedFormat(LAST_OPEN_FORMAT);
-        sourceProductList.setLastOpenInputDir(LAST_OPEN_INPUT_DIR);
+        sourceProductList.setPropertyNameLastOpenedFormat(PROPERTY_NAME_LAST_OPEN_FORMAT);
+        sourceProductList.setPropertyNameLastOpenInputDir(PROPERTY_NAME_LAST_OPEN_INPUT_DIR);
         sourceProductList.addChangeListener(changeListener);
         sourceProductList.setXAxis(true);
         context.bind("sourceProductPaths", sourceProductList);
@@ -127,7 +127,7 @@ class PixelExtractionIOForm {
     private String getDefaultOutputPath(AppContext appContext) {
         final Property dirProperty = container.getProperty("outputDir");
         String userHomePath = SystemUtils.getUserHomeDir().getAbsolutePath();
-        String lastDir = appContext.getPreferences().getPropertyString(LAST_OPEN_OUTPUT_DIR, userHomePath);
+        String lastDir = appContext.getPreferences().getPropertyString(PROPERTY_NAME_LAST_OPEN_OUTPUT_DIR, userHomePath);
         String path;
         try {
             path = new File(lastDir).getCanonicalPath();
@@ -161,7 +161,7 @@ class PixelExtractionIOForm {
             setOutputDirPath(selectedFile.getAbsolutePath());
             try {
                 outputFileProperty.setValue(selectedFile);
-                appContext.getPreferences().setPropertyString(LAST_OPEN_OUTPUT_DIR,
+                appContext.getPreferences().setPropertyString(PROPERTY_NAME_LAST_OPEN_OUTPUT_DIR,
                                                               selectedFile.getAbsolutePath());
 
             } catch (ValidationException ve) {

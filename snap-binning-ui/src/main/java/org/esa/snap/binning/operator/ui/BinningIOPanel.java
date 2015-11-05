@@ -112,8 +112,8 @@ class BinningIOPanel extends JPanel {
         };
 
         sourceProductList = new SourceProductList(appContext);
-        sourceProductList.setLastOpenInputDir("org.esa.snap.binning.lastDir");
-        sourceProductList.setLastOpenedFormat("org.esa.snap.binning.lastFormat");
+        sourceProductList.setPropertyNameLastOpenInputDir("org.esa.snap.binning.lastDir");
+        sourceProductList.setPropertyNameLastOpenedFormat("org.esa.snap.binning.lastFormat");
         sourceProductList.addChangeListener(changeListener);
         sourceProductList.setXAxis(false);
         binningFormModel.getBindingContext().bind(BinningFormModel.PROPERTY_KEY_SOURCE_PRODUCT_PATHS, sourceProductList);

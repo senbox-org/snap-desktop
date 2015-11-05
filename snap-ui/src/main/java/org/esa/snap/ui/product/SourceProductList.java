@@ -42,8 +42,6 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 
 /**
@@ -62,7 +60,7 @@ import java.io.File;
  * account as well as the return value of that method.
  *
  * The property that serves as target container for the source product paths must be of type
- * <code>String[].class</code>. Changes in the list are synchronised with the property. If the changes of the property
+ * {@code String[].class}. Changes in the list are synchronised with the property. If the changes of the property
  * values outside this component shall be synchronised with the list, it is necessary that the property lies within a
  * property container.
  *
@@ -74,8 +72,8 @@ public class SourceProductList extends ComponentAdapter {
     private final InputListModel listModel;
     private final JList inputPathsList;
 
-    private String lastOpenInputDir;
-    private String lastOpenedFormat;
+    private String propertyNameLastOpenInputDir;
+    private String propertyNameLastOpenedFormat;
     private boolean xAxis;
     private JComponent[] components;
 
@@ -89,8 +87,8 @@ public class SourceProductList extends ComponentAdapter {
         this.appContext = appContext;
         this.listModel = new InputListModel();
         this.inputPathsList = createInputPathsList(listModel);
-        this.lastOpenInputDir = "org.esa.snap.core.ui.product.lastOpenInputDir";
-        this.lastOpenedFormat = "org.esa.snap.core.ui.product.lastOpenedFormat";
+        this.propertyNameLastOpenInputDir = "org.esa.snap.core.ui.product.lastOpenInputDir";
+        this.propertyNameLastOpenedFormat = "org.esa.snap.core.ui.product.lastOpenedFormat";
         this.xAxis = true;
     }
 
@@ -177,17 +175,14 @@ public class SourceProductList extends ComponentAdapter {
     private AbstractButton createAddInputButton() {
         final AbstractButton addButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon("icons/Plus24.gif"),
                                                                         false);
-        addButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                final JPopupMenu popup = new JPopupMenu("Add");
-                final Rectangle buttonBounds = addButton.getBounds();
-                popup.add(new AddProductAction(appContext, listModel));
-                popup.add(new AddFileAction(appContext, listModel, lastOpenInputDir, lastOpenedFormat));
-                popup.add(new AddDirectoryAction(appContext, listModel, false, lastOpenInputDir));
-                popup.add(new AddDirectoryAction(appContext, listModel, true, lastOpenInputDir));
-                popup.show(addButton, 1, buttonBounds.height + 1);
-            }
+        addButton.addActionListener(e -> {
+            final JPopupMenu popup = new JPopupMenu("Add");
+            final Rectangle buttonBounds = addButton.getBounds();
+            popup.add(new AddProductAction(appContext, listModel));
+            popup.add(new AddFileAction(appContext, listModel, propertyNameLastOpenInputDir, propertyNameLastOpenedFormat));
+            popup.add(new AddDirectoryAction(appContext, listModel, false, propertyNameLastOpenInputDir));
+            popup.add(new AddDirectoryAction(appContext, listModel, true, propertyNameLastOpenInputDir));
+            popup.show(addButton, 1, buttonBounds.height + 1);
         });
         return addButton;
     }
@@ -195,12 +190,7 @@ public class SourceProductList extends ComponentAdapter {
     private AbstractButton createRemoveInputButton() {
         final AbstractButton removeButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon("icons/Minus24.gif"),
                                                                            false);
-        removeButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                listModel.removeElementsAt(inputPathsList.getSelectedIndices());
-            }
-        });
+        removeButton.addActionListener(e -> listModel.removeElementsAt(inputPathsList.getSelectedIndices()));
         return removeButton;
     }
 
@@ -241,24 +231,24 @@ public class SourceProductList extends ComponentAdapter {
     /**
      * Setter for property name indicating the last directory the user has opened
      *
-     * @param lastOpenedFormat property name indicating the last directory the user has opened
+     * @param propertyNameLastOpenedFormat property name indicating the last directory the user has opened
      */
-    public void setLastOpenedFormat(String lastOpenedFormat) {
-        this.lastOpenedFormat = lastOpenedFormat;
+    public void setPropertyNameLastOpenedFormat(String propertyNameLastOpenedFormat) {
+        this.propertyNameLastOpenedFormat = propertyNameLastOpenedFormat;
     }
 
     /**
      * Setter for property name indicating the last product format the user has opened
-     * @param lastOpenInputDir property name indicating the last product format the user has opened
+     * @param propertyNameLastOpenInputDir property name indicating the last product format the user has opened
      */
-    public void setLastOpenInputDir(String lastOpenInputDir) {
-        this.lastOpenInputDir = lastOpenInputDir;
+    public void setPropertyNameLastOpenInputDir(String propertyNameLastOpenInputDir) {
+        this.propertyNameLastOpenInputDir = propertyNameLastOpenInputDir;
     }
 
     /**
      * Setter for xAxis property.
      *
-     * @param xAxis <code>true</code> if the buttons on the second panel shall be laid out in horizontal direction
+     * @param xAxis {@code true} if the buttons on the second panel shall be laid out in horizontal direction
      */
     public void setXAxis(boolean xAxis) {
         this.xAxis = xAxis;
