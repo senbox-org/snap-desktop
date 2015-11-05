@@ -75,6 +75,7 @@ class PixelExtractionIOForm {
         panel = new JPanel(tableLayout);
 
         sourceProductList = new SourceProductList(appContext);
+        sourceProductList.setProductFilter(product -> !product.isMultiSizeProduct());
         sourceProductList.setPropertyNameLastOpenedFormat(PROPERTY_NAME_LAST_OPEN_FORMAT);
         sourceProductList.setPropertyNameLastOpenInputDir(PROPERTY_NAME_LAST_OPEN_INPUT_DIR);
         sourceProductList.addChangeListener(changeListener);
