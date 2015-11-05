@@ -119,7 +119,7 @@ public class ProductSubsetDialog extends ModalDialog {
      * Constructs a new subset dialog.
      *
      * @param window  the parent window
-     * @param product the product for which the subset is to be specified, must not be <code>null</code>
+     * @param product the product for which the subset is to be specified, must not be {@code null}
      */
     public ProductSubsetDialog(Window window, Product product) {
         this(window, product, DEFAULT_MEM_WARN_LIMIT);
@@ -129,7 +129,7 @@ public class ProductSubsetDialog extends ModalDialog {
      * Constructs a new subset dialog.
      *
      * @param window       the parent window
-     * @param product      the product for which the subset is to be specified, must not be <code>null</code>
+     * @param product      the product for which the subset is to be specified, must not be {@code null}
      * @param memWarnLimit the warning limit in megabytes
      */
     public ProductSubsetDialog(Window window, Product product, double memWarnLimit) {
@@ -140,8 +140,8 @@ public class ProductSubsetDialog extends ModalDialog {
      * Constructs a new subset dialog.
      *
      * @param window           the parent window
-     * @param product          the product for which the subset is to be specified, must not be <code>null</code>
-     * @param productSubsetDef the initial product subset definition, can be <code>null</code>
+     * @param product          the product for which the subset is to be specified, must not be {@code null}
+     * @param productSubsetDef the initial product subset definition, can be {@code null}
      */
     public ProductSubsetDialog(Window window,
                                Product product,
@@ -153,21 +153,15 @@ public class ProductSubsetDialog extends ModalDialog {
      * Constructs a new subset dialog.
      *
      * @param window           the parent window
-     * @param product          the product for which the subset is to be specified, must not be <code>null</code>
-     * @param productSubsetDef the initial product subset definition, can be <code>null</code>
+     * @param product          the product for which the subset is to be specified, must not be {@code null}
+     * @param productSubsetDef the initial product subset definition, can be {@code null}
      * @param memWarnLimit     the warning limit in megabytes
      */
     public ProductSubsetDialog(Window window,
                                Product product,
                                ProductSubsetDef productSubsetDef,
                                double memWarnLimit) {
-        super(window,
-              "Specify Product Subset", /*I18N*/
-              ID_OK
-              | ID_CANCEL
-              | ID_HELP,
-              "subsetDialog"
-        );
+        super(window, "Specify Product Subset", ID_OK | ID_CANCEL | ID_HELP, "subsetDialog");
         Guardian.assertNotNull("product", product);
         this.product = product;
         givenProductSubsetDef = productSubsetDef;
@@ -1048,18 +1042,18 @@ public class ProductSubsetDialog extends ModalDialog {
 
     private class ProductNodeSubsetPane extends JPanel {
 
-        private Object[] productNodes;
+        private ProductNode[] productNodes;
         private String[] includeAlways;
         private List<JCheckBox> checkers;
         private JCheckBox allCheck;
         private JCheckBox noneCheck;
         private boolean selected;
 
-        private ProductNodeSubsetPane(Object[] productNodes, boolean selected) {
+        private ProductNodeSubsetPane(ProductNode[] productNodes, boolean selected) {
             this(productNodes, null, selected);
         }
 
-        private ProductNodeSubsetPane(Object[] productNodes, String[] includeAlways, boolean selected) {
+        private ProductNodeSubsetPane(ProductNode[] productNodes, String[] includeAlways, boolean selected) {
             this.productNodes = productNodes;
             this.includeAlways = includeAlways;
             this.selected = selected;
@@ -1076,7 +1070,7 @@ public class ProductSubsetDialog extends ModalDialog {
 
             GridBagConstraints gbc = GridBagUtils.createConstraints("insets.left=4,anchor=WEST,fill=HORIZONTAL");
             for (int i = 0; i < productNodes.length; i++) {
-                ProductNode productNode = (ProductNode) productNodes[i];
+                ProductNode productNode = productNodes[i];
 
                 String name = productNode.getName();
                 JCheckBox productNodeCheck = new JCheckBox(name);
@@ -1151,7 +1145,7 @@ public class ProductSubsetDialog extends ModalDialog {
             for (int i = 0; i < checkers.size(); i++) {
                 JCheckBox checker = checkers.get(i);
                 if (checker.isSelected()) {
-                    ProductNode productNode = (ProductNode) productNodes[i];
+                    ProductNode productNode = productNodes[i];
                     names[pos] = productNode.getName();
                     pos++;
                 }
