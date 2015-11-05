@@ -21,6 +21,7 @@ import com.bc.ceres.binding.ValidationException;
 import com.bc.ceres.core.Assert;
 import com.bc.ceres.swing.binding.ComponentAdapter;
 import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductFilter;
 import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.core.util.Debug;
 import org.esa.snap.ui.AppContext;
@@ -76,6 +77,7 @@ public class SourceProductList extends ComponentAdapter {
     private String propertyNameLastOpenedFormat;
     private boolean xAxis;
     private JComponent[] components;
+    private ProductFilter productFilter;
 
     /**
      * Constructor.
@@ -90,6 +92,7 @@ public class SourceProductList extends ComponentAdapter {
         this.propertyNameLastOpenInputDir = "org.esa.snap.core.ui.product.lastOpenInputDir";
         this.propertyNameLastOpenedFormat = "org.esa.snap.core.ui.product.lastOpenedFormat";
         this.xAxis = true;
+        productFilter = product -> true;
     }
 
     /**
@@ -178,7 +181,9 @@ public class SourceProductList extends ComponentAdapter {
         addButton.addActionListener(e -> {
             final JPopupMenu popup = new JPopupMenu("Add");
             final Rectangle buttonBounds = addButton.getBounds();
-            popup.add(new AddProductAction(appContext, listModel));
+            final AddProductAction addProductAction = new AddProductAction(appContext, listModel);
+            addProductAction.setProductFilter(productFilter);
+            popup.add(addProductAction);
             popup.add(new AddFileAction(appContext, listModel, propertyNameLastOpenInputDir, propertyNameLastOpenedFormat));
             popup.add(new AddDirectoryAction(appContext, listModel, false, propertyNameLastOpenInputDir));
             popup.add(new AddDirectoryAction(appContext, listModel, true, propertyNameLastOpenInputDir));
@@ -226,6 +231,14 @@ public class SourceProductList extends ComponentAdapter {
      */
     public void removeChangeListener(ListDataListener changeListener) {
         listModel.removeListDataListener(changeListener);
+    }
+
+    /**
+     * The filter to be used to filter the list of opened products which are offered to the user for selection.
+     * @param productFilter the filter
+     */
+    public void setProductFilter(ProductFilter productFilter) {
+        this.productFilter = productFilter;
     }
 
     /**
