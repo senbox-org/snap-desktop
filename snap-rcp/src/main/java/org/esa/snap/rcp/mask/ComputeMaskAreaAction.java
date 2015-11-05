@@ -18,7 +18,6 @@ package org.esa.snap.rcp.mask;
 import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.glevel.MultiLevelImage;
 import com.bc.ceres.swing.progress.DialogProgressMonitor;
-import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.GeoCoding;
 import org.esa.snap.core.datamodel.GeoPos;
 import org.esa.snap.core.datamodel.Mask;
@@ -26,7 +25,6 @@ import org.esa.snap.core.datamodel.PixelPos;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductNodeGroup;
 import org.esa.snap.core.datamodel.RasterDataNode;
-import org.esa.snap.core.datamodel.TiePointGrid;
 import org.esa.snap.core.util.Debug;
 import org.esa.snap.core.util.math.MathUtils;
 import org.esa.snap.core.util.math.RsMathUtils;
@@ -130,8 +128,7 @@ public class ComputeMaskAreaAction extends AbstractAction implements LookupListe
         for (int i = 0; i < maskGroup.getNodeCount(); i++) {
             final Mask mask = maskGroup.get(i);
             //todo [multisize_products] ask about scenerastertransform, not size
-            if ((raster instanceof Band && raster.getRasterSize().equals(mask.getRasterSize())) ||
-                    (raster instanceof TiePointGrid && mask.getRasterSize().equals(product.getSceneRasterSize()))) {
+            if ((raster.getRasterSize().equals(mask.getRasterSize()))) {
                 maskNameList.add(mask.getName());
             }
         }
