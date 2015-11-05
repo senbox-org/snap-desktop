@@ -122,14 +122,14 @@ class MosaicDialog extends SingleTargetProductDialog {
             final Product product = entry.getValue();
             if (variables != null) {
                 for (MosaicOp.Variable variable : variables) {
-                    if (isExpressionValidForProduct(variable.getName(), variable.getExpression(), productIdentifier, product)) {
+                    if (!isExpressionValidForProduct(variable.getName(), variable.getExpression(), productIdentifier, product)) {
                         return false;
                     }
                 }
             }
             if (conditions != null) {
                 for (MosaicOp.Condition condition : conditions) {
-                    if (isExpressionValidForProduct(condition.getName(), condition.getExpression(), productIdentifier, product)) {
+                    if (!isExpressionValidForProduct(condition.getName(), condition.getExpression(), productIdentifier, product)) {
                         return false;
                     }
                 }
@@ -141,6 +141,7 @@ class MosaicDialog extends SingleTargetProductDialog {
     private boolean isExpressionValidForProduct(String expressionName, String expression, String productIdentifier, Product product) {
         try {
             BandArithmetic.parseExpression(expression, new Product[]{product}, 0);
+            return true;
         } catch (ParseException e) {
             final String msg = String.format("Expression '%s' is invalid for product '%s'.\n%s",
                                              expressionName,
@@ -148,9 +149,8 @@ class MosaicDialog extends SingleTargetProductDialog {
                                              e.getMessage());
             showErrorDialog(msg);
             e.printStackTrace();
-            return true;
+            return false;
         }
-        return false;
     }
 
     private boolean verifyTargetCrs(MosaicFormModel formModel) {
