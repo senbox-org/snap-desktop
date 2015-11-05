@@ -24,7 +24,6 @@ import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.Operator;
 import org.esa.snap.core.gpf.OperatorException;
 import org.esa.snap.core.gpf.common.WriteOp;
-import org.esa.snap.core.gpf.experimental.Output;
 import org.esa.snap.core.gpf.internal.OperatorExecutor;
 import org.esa.snap.core.gpf.internal.OperatorProductReader;
 import org.esa.snap.core.util.SystemUtils;
@@ -302,9 +301,7 @@ public abstract class SingleTargetProductDialog extends ModelessDialog {
                 if (targetProduct.getProductReader() instanceof OperatorProductReader) {
                     final OperatorProductReader opReader = (OperatorProductReader) targetProduct.getProductReader();
                     Operator operator = opReader.getOperatorContext().getOperator();
-                    boolean autoWriteDisabled = operator instanceof Output
-                            || operator.getSpi().getOperatorDescriptor().isAutoWriteDisabled();
-                    if (autoWriteDisabled) {
+                    if (operator.getSpi().getOperatorDescriptor().isAutoWriteDisabled()) {
                         execOp = operator;
                     }
                 }

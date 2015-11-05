@@ -35,7 +35,6 @@ import org.esa.snap.core.gpf.Operator;
 import org.esa.snap.core.gpf.OperatorSpi;
 import org.esa.snap.core.gpf.common.WriteOp;
 import org.esa.snap.core.gpf.descriptor.OperatorDescriptor;
-import org.esa.snap.core.gpf.experimental.Output;
 import org.esa.snap.core.gpf.internal.OperatorExecutor;
 import org.esa.snap.core.gpf.internal.OperatorProductReader;
 import org.esa.snap.core.gpf.internal.RasterDataNodeValues;
@@ -334,8 +333,10 @@ public class SingleOperatorDialog extends SingleTargetProductDialog {
                 Operator operator = null;
                 if (targetProduct.getProductReader() instanceof OperatorProductReader) {
                     final OperatorProductReader opReader = (OperatorProductReader) targetProduct.getProductReader();
-                    if (opReader.getOperatorContext().getOperator() instanceof Output) {
-                        operator = opReader.getOperatorContext().getOperator();
+                    Operator op = opReader.getOperatorContext().getOperator();
+                    OperatorDescriptor descriptor = op.getSpi().getOperatorDescriptor();
+                    if (descriptor.isAutoWriteDisabled()) {
+                        operator = op;
                     }
                 }
                 if (operator == null) {
