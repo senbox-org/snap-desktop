@@ -68,7 +68,7 @@ class MosaicDialog extends SingleTargetProductDialog {
         if (!verifySourceProducts(mosaicModel)) {
             return false;
         }
-        if (!verfiyTargetCrs(mosaicModel)) {
+        if (!verifyTargetCrs(mosaicModel)) {
             return false;
         }
         if (!verifyVariablesAndConditions(mosaicModel)) {
@@ -90,10 +90,7 @@ class MosaicDialog extends SingleTargetProductDialog {
             showErrorDialog("No variables or conditions specified.");
             return false;
         }
-        if (!verifyDEM(mosaicModel)) {
-            return false;
-        }
-        return true;
+        return verifyDEM(mosaicModel);
     }
 
     @Override
@@ -121,7 +118,7 @@ class MosaicDialog extends SingleTargetProductDialog {
         final MosaicOp.Variable[] variables = mosaicModel.getVariables();
         final MosaicOp.Condition[] conditions = mosaicModel.getConditions();
         for (Map.Entry<String, Product> entry : sourceProductMap.entrySet()) {
-            if (conditions != null) {
+            if (variables != null) {
                 for (MosaicOp.Variable variable : variables) {
                     try {
                         BandArithmetic.parseExpression(variable.getExpression(), new Product[]{entry.getValue()}, 0);
@@ -155,7 +152,7 @@ class MosaicDialog extends SingleTargetProductDialog {
         return true;
     }
 
-    private boolean verfiyTargetCrs(MosaicFormModel formModel) {
+    private boolean verifyTargetCrs(MosaicFormModel formModel) {
         try {
             final CoordinateReferenceSystem crs = formModel.getTargetCRS();
             if (crs == null) {
