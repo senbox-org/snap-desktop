@@ -40,23 +40,22 @@ class AddFileAction extends AbstractAction {
     public static final String ALL_FILES_FORMAT = "ALL_FILES";
     private final AppContext appContext;
     private final InputListModel listModel;
-    private final String lastOpenInputDir;
-    private final String lastOpenedFormat;
+    private final String propertyNameLastOpenInputDir;
+    private final String propertyNameLastOpenedFormat;
 
-    AddFileAction(AppContext appContext, InputListModel listModel, String lastOpenInputDir, String lastOpenedFormat) {
+    AddFileAction(AppContext appContext, InputListModel listModel, String propertyNameLastOpenInputDir, String propertyNameLastOpenedFormat) {
         super("Add product file(s)...");
         this.appContext = appContext;
         this.listModel = listModel;
-        this.lastOpenInputDir = lastOpenInputDir;
-        this.lastOpenedFormat = lastOpenedFormat;
+        this.propertyNameLastOpenInputDir = propertyNameLastOpenInputDir;
+        this.propertyNameLastOpenedFormat = propertyNameLastOpenedFormat;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         final PropertyMap preferences = appContext.getPreferences();
-        String lastDir = preferences.getPropertyString(lastOpenInputDir,
-                                                       SystemUtils.getUserHomeDir().getPath());
-        String lastFormat = preferences.getPropertyString(lastOpenedFormat, ALL_FILES_FORMAT);
+        String lastDir = preferences.getPropertyString(propertyNameLastOpenInputDir, SystemUtils.getUserHomeDir().getPath());
+        String lastFormat = preferences.getPropertyString(propertyNameLastOpenedFormat, ALL_FILES_FORMAT);
 
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setCurrentDirectory(new File(lastDir));
@@ -80,8 +79,7 @@ class AddFileAction extends AbstractAction {
             return;
         }
 
-        preferences.setPropertyString(lastOpenInputDir,
-                                      fileChooser.getCurrentDirectory().getAbsolutePath());
+        preferences.setPropertyString(propertyNameLastOpenInputDir, fileChooser.getCurrentDirectory().getAbsolutePath());
 
         final Object[] selectedProducts = fileChooser.getSelectedFiles();
         try {
@@ -98,10 +96,10 @@ class AddFileAction extends AbstractAction {
         if (fileFilter instanceof SnapFileFilter) {
             String currentFormat = ((SnapFileFilter) fileFilter).getFormatName();
             if (currentFormat != null) {
-                preferences.setPropertyString(lastOpenedFormat, currentFormat);
+                preferences.setPropertyString(propertyNameLastOpenedFormat, currentFormat);
             }
         } else {
-            preferences.setPropertyString(lastOpenedFormat, ALL_FILES_FORMAT);
+            preferences.setPropertyString(propertyNameLastOpenedFormat, ALL_FILES_FORMAT);
         }
     }
 }
