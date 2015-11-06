@@ -37,7 +37,6 @@ import org.esa.snap.core.jexp.impl.Tokenizer;
 import org.esa.snap.core.util.DefaultPropertyMap;
 import org.esa.snap.core.util.ProductUtils;
 import org.esa.snap.core.util.PropertyMap;
-import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.rcp.SnapApp;
@@ -275,18 +274,15 @@ class MaskFormActions {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            Product product = getMaskForm().getProduct();
-            String[] rasterNames = StringUtils.addArrays(product.getBandNames(),
-                                                         product.getTiePointGridNames());
-
-            RangeEditorDialog.Model model = new RangeEditorDialog.Model(rasterNames);
+            final String[] rasterNames = collectNamesOfRastersOfSameSize();
+            final RangeEditorDialog.Model model = new RangeEditorDialog.Model(rasterNames);;
             model.setMinValue(0.0);
             model.setMaxValue(1.0);
             model.setRasterName(rasterNames[0]);
 
             final RangeEditorDialog rangeEditorDialog = new RangeEditorDialog(getWindow(e), model);
             if (rangeEditorDialog.show() == AbstractDialog.ID_OK) {
-                RasterDataNode referencedRaster = product.getRasterDataNode(model.getRasterName());
+                RasterDataNode referencedRaster = getMaskForm().getProduct().getRasterDataNode(model.getRasterName());
                 if (referencedRaster == null) {
                     SnapDialogs.showError(String.format("Raster '%s' not found.", model.getRasterName()));
                     return;
@@ -748,10 +744,8 @@ class MaskFormActions {
                     selectedMask.setDescription(code);
                 }
             } else if (type == Mask.RangeType.INSTANCE) {
-                final Product product = getMaskForm().getProduct();
-                final String[] rasterNames = StringUtils.addArrays(product.getBandNames(),
-                                                                   product.getTiePointGridNames());
-                final RangeEditorDialog.Model model = new RangeEditorDialog.Model(rasterNames);
+                final String[] namesOfRastersOfSameSize = collectNamesOfRastersOfSameSize();
+                final RangeEditorDialog.Model model = new RangeEditorDialog.Model(namesOfRastersOfSameSize);
                 model.setMinValue(selectedMaskConfig.getValue(Mask.RangeType.PROPERTY_NAME_MINIMUM));
                 model.setMaxValue(selectedMaskConfig.getValue(Mask.RangeType.PROPERTY_NAME_MAXIMUM));
                 model.setRasterName(selectedMaskConfig.getValue(Mask.RangeType.PROPERTY_NAME_RASTER));
