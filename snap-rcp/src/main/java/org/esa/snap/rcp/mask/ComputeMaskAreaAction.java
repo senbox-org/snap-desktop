@@ -54,6 +54,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingWorker;
+import java.awt.BorderLayout;
 import java.awt.Dialog;
 import java.awt.GridBagConstraints;
 import java.awt.Rectangle;
@@ -134,21 +135,33 @@ public class ComputeMaskAreaAction extends AbstractAction implements LookupListe
         }
         String[] maskNames = maskNameList.toArray(new String[maskNameList.size()]);
         String maskName;
-        if (maskNames.length == 1) {
+        if (maskNames.length == 0) {
+            SnapDialogs.showInformation(Bundle.CTL_ComputeMaskAreaAction_DialogTitle(), "No compatible mask available", null);
+            return;
+        }else if (maskNames.length == 1) {
             maskName = maskNames[0];
         } else {
-            JPanel panel = new JPanel();
-            BoxLayout boxLayout = new BoxLayout(panel, BoxLayout.X_AXIS);
-            panel.setLayout(boxLayout);
-            panel.add(new JLabel("Select Mask: "));
+            JPanel selectPanel = new JPanel();
+            selectPanel.setLayout(new BoxLayout(selectPanel, BoxLayout.X_AXIS));
+            selectPanel.add(new JLabel("Select Mask: "));
             JComboBox<String> maskCombo = new JComboBox<>(maskNames);
-            panel.add(maskCombo);
+            selectPanel.add(maskCombo);
+            JPanel dialogPanel = selectPanel;
+            if(product.isMultiSizeProduct()) {
+                final JPanel wrapperPanel = new JPanel(new BorderLayout(4,3));
+                wrapperPanel.add(selectPanel, BorderLayout.CENTER);
+                wrapperPanel.add(new JLabel("<html><i>Product has rasters of different size. <br/>Only compatible masks are shown.</i>"), BorderLayout.SOUTH);
+                dialogPanel = wrapperPanel;
+            }
             ModalDialog modalDialog = new ModalDialog(SnapApp.getDefault().getMainFrame(),
-                                                      Bundle.CTL_ComputeMaskAreaAction_DialogTitle(), panel,
+                                                      Bundle.CTL_ComputeMaskAreaAction_DialogTitle(), dialogPanel,
                                                       ModalDialog.ID_OK_CANCEL | ModalDialog.ID_HELP,
                                                       getHelpCtx().getHelpID());
             if (modalDialog.show() == AbstractDialog.ID_OK) {
                 maskName = (String) maskCombo.getSelectedItem();
+                if(maskName == null) {
+                    return;
+                }
             } else {
                 return;
             }
