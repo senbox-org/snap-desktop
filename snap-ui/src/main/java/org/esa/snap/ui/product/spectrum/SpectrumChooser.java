@@ -99,8 +99,9 @@ public class SpectrumChooser extends ModalDialog implements LoadSaveRasterDataNo
         final JPanel content = new JPanel(new BorderLayout());
         initSpectraPanel();
         final JScrollPane spectraScrollPane = new JScrollPane(spectraPanel);
-        spectraScrollPane.getVerticalScrollBar().setUnitIncrement(20);
         spectraScrollPane.getHorizontalScrollBar().setUnitIncrement(20);
+        spectraScrollPane.getVerticalScrollBar().setUnitIncrement(20);
+        spectraScrollPane.setPreferredSize(new Dimension(spectraScrollPane.getPreferredSize().width, 180));
         content.add(spectraScrollPane, BorderLayout.CENTER);
 
         LoadSaveRasterDataNodesConfigurationsProvider provider = new LoadSaveRasterDataNodesConfigurationsProvider(this);
