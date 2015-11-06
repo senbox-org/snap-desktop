@@ -125,9 +125,11 @@ public class AttachPixelGeoCodingAction extends AbstractAction implements Contex
         boolean state = false;
         if (productNode != null) {
             Product product = productNode.getProduct();
-            final boolean hasPixelGeoCoding = product.getSceneGeoCoding() instanceof BasicPixelGeoCoding;
-            final boolean hasSomeBands = product.getNumBands() >= 2;
-            state = !hasPixelGeoCoding && hasSomeBands;
+            if (!product.isMultiSizeProduct()) {
+                final boolean hasPixelGeoCoding = product.getSceneGeoCoding() instanceof BasicPixelGeoCoding;
+                final boolean hasSomeBands = product.getNumBands() >= 2;
+                state = !hasPixelGeoCoding && hasSomeBands;
+            }
         }
         setEnabled(state);
     }
