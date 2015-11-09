@@ -118,7 +118,7 @@ class SpectralUnmixingForm extends JPanel {
                 final String[] validNames;
                 if (selectedProduct != null) {
                     String[] bandNames = selectedProduct.getBandNames();
-                    ArrayList<String> names = new ArrayList<String>(bandNames.length);
+                    ArrayList<String> names = new ArrayList<>(bandNames.length);
                     for (String bandName : bandNames) {
                         if (selectedProduct.getBand(bandName).getSpectralWavelength() > 0.0) {
                             names.add(bandName);
