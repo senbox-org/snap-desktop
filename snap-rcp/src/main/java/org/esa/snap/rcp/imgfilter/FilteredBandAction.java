@@ -23,6 +23,8 @@ import org.esa.snap.core.datamodel.Kernel;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.core.datamodel.RasterDataNode;
+import org.esa.snap.core.datamodel.Scene;
+import org.esa.snap.core.datamodel.SceneFactory;
 import org.esa.snap.core.util.ProductUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.window.OpenImageViewAction;
@@ -77,9 +79,7 @@ public class FilteredBandAction extends AbstractAction  implements LookupListene
         this.lookup = lookup;
         result = lookup.lookupResult(RasterDataNode.class);
         result.addLookupListener(WeakListeners.create(LookupListener.class, this, result));
-        final RasterDataNode node = this.lookup.lookup(RasterDataNode.class);
-        //todo [multisize_products] compare scenerastertransform rather than size
-        setEnabled(node != null && node.getRasterSize().equals(node.getProduct().getSceneRasterSize()));
+        updateEnableState(this.lookup.lookup(RasterDataNode.class));
     }
 
     @Override
@@ -89,9 +89,12 @@ public class FilteredBandAction extends AbstractAction  implements LookupListene
 
     @Override
     public void resultChanged(LookupEvent ev) {
-        final RasterDataNode node = this.lookup.lookup(RasterDataNode.class);
+        updateEnableState(this.lookup.lookup(RasterDataNode.class));
+    }
+
+    private void updateEnableState(RasterDataNode node) {
         //todo [multisize_products] compare scenerastertransform rather than size
-        setEnabled(node != null && node.getRasterSize().equals(node.getProduct().getSceneRasterSize()));
+        setEnabled(node != null);
     }
 
     @Override
@@ -144,9 +147,7 @@ public class FilteredBandAction extends AbstractAction  implements LookupListene
         Product product = sourceRaster.getProduct();
 
         if (filter.getOperation() == Filter.Operation.CONVOLVE) {
-            targetBand = new ConvolutionFilterBand
-
-                    (bandName, sourceRaster, getKernel(filter), iterationCount);
+            targetBand = new ConvolutionFilterBand(bandName, sourceRaster, getKernel(filter), iterationCount);
             if (sourceRaster instanceof Band) {
                 ProductUtils.copySpectralBandProperties((Band) sourceRaster, targetBand);
             }
@@ -161,6 +162,13 @@ public class FilteredBandAction extends AbstractAction  implements LookupListene
         targetBand.setDescription(String.format("Filter '%s' (=%s) applied to '%s'", filter.getName(), filter.getOperation(), sourceRaster.getName()));
         if (sourceRaster instanceof Band) {
             ProductUtils.copySpectralBandProperties((Band) sourceRaster, targetBand);
+        }
+        if(product.isMultiSizeProduct() && !targetBand.getRasterSize().equals(product.getSceneRasterSize())) {
+            final Scene srcScene = SceneFactory.createScene(sourceRaster);
+            final Scene destScene = SceneFactory.createScene(targetBand);
+            if (srcScene != null && destScene != null) {
+                srcScene.transferGeoCodingTo(destScene, null);
+            }
         }
         product.addBand(targetBand);
         targetBand.fireProductNodeDataChanged();

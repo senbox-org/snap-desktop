@@ -17,6 +17,7 @@
 package org.esa.snap.rcp.actions.interactors;
 
 import org.esa.snap.rcp.magicwand.MagicWandInteractor;
+import org.esa.snap.ui.product.ProductSceneView;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
@@ -25,22 +26,13 @@ import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle.Messages;
 
-@ActionID(
-        category = "Interactors",
-        id = "org.esa.snap.rcp.action.interactors.MagicWandToolAction"
-)
-@ActionRegistration(
-        displayName = "#CTL_MagicWandToolActionText",
-        lazy = false
-)
-@ActionReference(
-        path = "Toolbars/Tools",
-        position = 210
-)
+@ActionID(category = "Interactors", id = "org.esa.snap.rcp.action.interactors.MagicWandToolAction")
+@ActionRegistration(displayName = "#CTL_MagicWandToolActionText", lazy = false)
+@ActionReference(path = "Toolbars/Tools", position = 210)
 @Messages({
-                  "CTL_MagicWandToolActionText=Magic Wand",
-                  "CTL_MagicWandToolActionDescription=Creates a ROI mask using a magic wand"
-          })
+        "CTL_MagicWandToolActionText=Magic Wand",
+        "CTL_MagicWandToolActionDescription=Creates a ROI mask using a magic wand"
+})
 public class MagicWandToolAction extends ToolAction {
     @SuppressWarnings("UnusedDeclaration")
     public MagicWandToolAction() {
@@ -52,6 +44,18 @@ public class MagicWandToolAction extends ToolAction {
         putValue(NAME, Bundle.CTL_MagicWandToolActionText());
         putValue(SHORT_DESCRIPTION, Bundle.CTL_MagicWandToolActionDescription());
         putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/MagicWand22.png", false));
+    }
+
+    @Override
+    protected void updateEnabledState() {
+        final ProductSceneView productSceneView = getProductSceneView();
+        if (productSceneView == null) {
+            setEnabled(false);
+            return;
+        }
+        if (productSceneView.getProduct() != null) {
+            setEnabled(!productSceneView.getProduct().isMultiSizeProduct());
+        }
     }
 
     @Override

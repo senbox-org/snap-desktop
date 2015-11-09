@@ -68,7 +68,7 @@ public class CreateSubsetAction extends AbstractAction {
         if (sourceProduct.isMultiSizeProduct()) {
             SnapDialogs.showInformation("Limited Functionality",
                                         "<html>Please note that the subset functionality is not available for a product which contains <br/>" +
-                                        "bands of different sizes.", null);
+                                        "rasters of different sizes.", null);
             return;
         }
 
