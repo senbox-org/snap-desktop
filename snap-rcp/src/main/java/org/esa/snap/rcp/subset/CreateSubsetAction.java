@@ -19,6 +19,7 @@ package org.esa.snap.rcp.subset;
 import org.esa.snap.core.dataio.ProductSubsetDef;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductNode;
+import org.esa.snap.rcp.MultiSizeIssue;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.ui.product.ProductSceneView;
@@ -66,9 +67,7 @@ public class CreateSubsetAction extends AbstractAction {
 
     public static void createSubset(Product sourceProduct, Rectangle bounds) {
         if (sourceProduct.isMultiSizeProduct()) {
-            SnapDialogs.showInformation("Limited Functionality",
-                                        "<html>Please note that the subset functionality is not available for a product which contains <br/>" +
-                                        "rasters of different sizes.", null);
+            MultiSizeIssue.showMultiSizeWarning();
             return;
         }
 
