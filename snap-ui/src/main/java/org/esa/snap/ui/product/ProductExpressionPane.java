@@ -33,7 +33,6 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,8 +46,8 @@ public class ProductExpressionPane extends ExpressionPane {
     private Product[] products;
     private Product currentProduct;
     private Product targetProduct;
-    private JComboBox productBox;
-    private JList nodeList;
+    private JComboBox<String> productBox;
+    private JList<String> nodeList;
     private JCheckBox inclBandsCheck;
     private JCheckBox inclMasksCheck;
     private JCheckBox inclGridsCheck;
@@ -92,15 +91,11 @@ public class ProductExpressionPane extends ExpressionPane {
         // We may make type checking an option (checkbox) in UI
         setParser(new ParserImpl(namespace, false));
 
-        final ActionListener resetNodeListAL = new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (e.getSource() == productBox) {
-                    setCurrentProduct();
-                }
-                resetNodeList();
+        final ActionListener resetNodeListAL = e -> {
+            if (e.getSource() == productBox) {
+                setCurrentProduct();
             }
+            resetNodeList();
         };
 
         inclBandsCheck = new JCheckBox("Show bands");
@@ -142,7 +137,7 @@ public class ProductExpressionPane extends ExpressionPane {
         setLeftAccessory(accessoryPane);
 
         if (products.length > 1) {
-            List<String> nameList = new ArrayList<String>(products.length);
+            List<String> nameList = new ArrayList<>(products.length);
             for (Product product : products) {
                 String productName = product.getDisplayName();
                 nameList.add(productName);
@@ -150,7 +145,7 @@ public class ProductExpressionPane extends ExpressionPane {
             String currentProductName = currentProduct.getDisplayName();
             final String[] productNames = new String[nameList.size()];
             nameList.toArray(productNames);
-            productBox = new JComboBox(productNames);
+            productBox = new JComboBox<>(productNames);
             productBox.setEditable(false);
             productBox.setEnabled(products.length > 1);
             productBox.addActionListener(resetNodeListAL);
@@ -180,7 +175,7 @@ public class ProductExpressionPane extends ExpressionPane {
 
     private void resetNodeList() {
         setCurrentProduct();
-        List<String> listEntries = new ArrayList<String>(64);
+        List<String> listEntries = new ArrayList<>(64);
         if (currentProduct != null) {
             String[] flagNames = currentProduct.getAllFlagNames();
             boolean hasBands = currentProduct.getNumBands() > 0;
@@ -231,7 +226,7 @@ public class ProductExpressionPane extends ExpressionPane {
             inclGridsCheck.setEnabled(false);
             inclFlagsCheck.setEnabled(false);
         }
-        nodeList.setListData(listEntries.toArray());
+        nodeList.setListData(listEntries.toArray(new String[listEntries.size()]));
     }
 
     private void setCurrentProduct() {

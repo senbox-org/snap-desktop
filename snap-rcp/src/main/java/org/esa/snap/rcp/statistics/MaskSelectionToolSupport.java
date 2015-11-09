@@ -109,7 +109,18 @@ public abstract class MaskSelectionToolSupport implements PlotAreaSelectionTool.
         if (mask != null) {
             mask.getImageConfig().setValue("expression", expression);
         } else {
-            mask = product.addMask(maskName, expression, maskDescription, maskColor, 0.5);
+            RasterDataNode raster = pagePanel.getRaster();
+            if (raster != null) {
+                mask = Mask.BandMathsType.create(maskName, maskDescription,
+                                                 raster.getSceneRasterWidth(),
+                                                 raster.getSceneRasterHeight(),
+                                                 expression, maskColor, 0.5);
+                if (product.isMultiSizeProduct() &&
+                    !raster.getRasterSize().equals(product.getSceneRasterSize())) {
+                    mask.setGeoCoding(raster.getGeoCoding());
+                }
+                product.addMask(mask);
+            }
         }
 
         RasterDataNode raster = pagePanel.getRaster();
