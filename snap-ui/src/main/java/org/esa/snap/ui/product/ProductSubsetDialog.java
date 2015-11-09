@@ -47,7 +47,7 @@ import org.esa.snap.core.param.ParamChangeEvent;
 import org.esa.snap.core.param.ParamChangeListener;
 import org.esa.snap.core.param.ParamGroup;
 import org.esa.snap.core.param.Parameter;
-import org.esa.snap.core.util.BeamConstants;
+import org.esa.snap.core.util.SnapConstants;
 import org.esa.snap.core.util.Debug;
 import org.esa.snap.core.util.Guardian;
 import org.esa.snap.core.util.ProductUtils;
@@ -416,7 +416,7 @@ public class ProductSubsetDialog extends ModalDialog {
             return null;
         }
         return new ProductNodeSubsetPane(product.getTiePointGrids(),
-                                         new String[]{BeamConstants.LAT_DS_NAME, BeamConstants.LON_DS_NAME},
+                                         new String[]{SnapConstants.LAT_DS_NAME, SnapConstants.LON_DS_NAME},
                                          true);
     }
 
