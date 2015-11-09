@@ -22,10 +22,8 @@ import com.bc.ceres.swing.binding.BindingContext;
 import org.esa.snap.collocation.ResamplingType;
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.datamodel.ProductFilter;
 import org.esa.snap.core.gpf.ui.SourceProductSelector;
 import org.esa.snap.core.gpf.ui.TargetProductSelector;
-import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.ui.AppContext;
 
 import javax.swing.BorderFactory;
@@ -61,9 +59,7 @@ class CollocationForm extends JPanel {
     public CollocationForm(PropertySet propertySet, TargetProductSelector targetProductSelector, AppContext appContext) {
         this.targetProductSelector = targetProductSelector;
         masterProductSelector = new SourceProductSelector(appContext, "Master (pixel values are conserved):");
-        masterProductSelector.setProductFilter(new MultisizeProductFilter());
         slaveProductSelector = new SourceProductSelector(appContext, "Slave (pixel values are resampled onto the master grid):");
-        slaveProductSelector.setProductFilter(new MultisizeProductFilter());
         renameMasterComponentsCheckBox = new JCheckBox("Rename master components:");
         renameSlaveComponentsCheckBox = new JCheckBox("Rename slave components:");
         masterComponentPatternField = new JTextField();
@@ -226,16 +222,4 @@ class CollocationForm extends JPanel {
     }
 
 
-    private static class MultisizeProductFilter implements ProductFilter {
-
-        @Override
-        public boolean accept(Product product) {
-            if (product.isMultiSizeProduct()) {
-                SnapDialogs.showInformation("Selected product contains bands of different sizes. Currently not usable for collocation.");
-                return false;
-            } else {
-                return true;
-            }
-        }
-    }
 }

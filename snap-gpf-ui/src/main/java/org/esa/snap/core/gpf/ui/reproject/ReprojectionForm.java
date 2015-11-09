@@ -79,7 +79,7 @@ import java.util.Map;
 
 /**
  * @author Marco Zuehlke
- * @author Marco Paters
+ * @author Marco Peters
  * @since BEAM 4.7
  */
 class ReprojectionForm extends JTabbedPane {
@@ -656,7 +656,7 @@ class ReprojectionForm extends JTabbedPane {
 
         @Override
         public boolean accept(Product product) {
-            return product.canBeOrthorectified() && !product.isMultiSizeProduct();
+            return product.canBeOrthorectified();
         }
     }
 
@@ -665,7 +665,7 @@ class ReprojectionForm extends JTabbedPane {
         @Override
         public boolean accept(Product product) {
             final GeoCoding geoCoding = product.getSceneGeoCoding();
-            return geoCoding != null && geoCoding.canGetGeoPos() && geoCoding.canGetPixelPos() && !product.isMultiSizeProduct();
+            return geoCoding != null && geoCoding.canGetGeoPos() && geoCoding.canGetPixelPos();
         }
     }
 }
