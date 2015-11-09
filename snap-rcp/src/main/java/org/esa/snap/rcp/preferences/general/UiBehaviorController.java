@@ -62,8 +62,7 @@ public final class UiBehaviorController extends DefaultConfigController {
     /**
      * Preferences key for on-line version check
      */
-    public static final String PREFERENCE_KEY_VERSION_CHECK_ENABLED =
-            "versionCheck.enabled";
+    public static final String PREFERENCE_KEY_VERSION_CHECK_ENABLED = "versionCheck.enabled";
     /**
      * Preferences key for showing a message after writing a GPF-processed product.
      */
