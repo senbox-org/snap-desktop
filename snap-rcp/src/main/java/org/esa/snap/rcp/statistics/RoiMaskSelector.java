@@ -42,9 +42,8 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -68,18 +67,11 @@ class RoiMaskSelector {
     private AbstractButton createShowMaskManagerButton() {
         final AbstractButton showMaskManagerButton =
                 ToolButtonFactory.createButton(ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/MaskManager24.png", false), false);
-        showMaskManagerButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run() {
-                        final TopComponent maskManagerTopComponent = WindowManager.getDefault().findTopComponent("MaskManagerTopComponent");
-                        maskManagerTopComponent.open();
-                        maskManagerTopComponent.requestActive();
-                    }
-                });
-            }
-        });
+        showMaskManagerButton.addActionListener(e -> SwingUtilities.invokeLater(() -> {
+            final TopComponent maskManagerTopComponent = WindowManager.getDefault().findTopComponent("MaskManagerTopComponent");
+            maskManagerTopComponent.open();
+            maskManagerTopComponent.requestActive();
+        }));
         return showMaskManagerButton;
     }
 
@@ -148,9 +140,10 @@ class RoiMaskSelector {
             //todo [multisize_products] compare scenerastertransform (or its successor) rather than size
             final ProductNodeGroup<Mask> maskGroup = product.getMaskGroup();
             List<ProductNode> maskList = new ArrayList<>();
+            final Dimension refRrasterSize = raster.getRasterSize();
             for (int i = 0; i < maskGroup.getNodeCount(); i++) {
                 final Mask mask = maskGroup.get(i);
-                if (mask.getSceneRasterSize().equals(raster.getSceneRasterSize())) {
+                if (refRrasterSize.equals(mask.getRasterSize())) {
                     maskList.add(mask);
                 }
             }
