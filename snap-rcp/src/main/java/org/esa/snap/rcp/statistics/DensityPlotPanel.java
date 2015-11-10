@@ -59,8 +59,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.Shape;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -234,16 +232,7 @@ class DensityPlotPanel extends ChartPagePanel {
                 updateBandList((Product) event.getItem(), xBandProperty, false);
             }
         });
-        xProductList.setRenderer(new DefaultListCellRenderer() {
-            @Override
-            public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-                if (value != null) {
-                    this.setText(formatProductName((Product) value));
-                }
-                return this;
-            }
-        });
+        xProductList.setRenderer(new ProductListCellRenderer());
         bindingContext.bind(PROPERTY_NAME_X_PRODUCT, xProductList);
         xProductProperty = bindingContext.getPropertySet().getProperty(PROPERTY_NAME_X_PRODUCT);
 
@@ -253,57 +242,27 @@ class DensityPlotPanel extends ChartPagePanel {
                 updateBandList((Product) event.getItem(), yBandProperty, true);
             }
         });
-        yProductList.setRenderer(new DefaultListCellRenderer() {
-            @Override
-            public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-                if (value != null) {
-                    this.setText(formatProductName((Product) value));
-                }
-                return this;
-            }
-        });
+        yProductList.setRenderer(new ProductListCellRenderer());
         bindingContext.bind(PROPERTY_NAME_Y_PRODUCT, yProductList);
         yProductProperty = bindingContext.getPropertySet().getProperty(PROPERTY_NAME_Y_PRODUCT);
 
         xBandList = new JComboBox<>();
-        xBandList.setRenderer(new DefaultListCellRenderer() {
-            @Override
-            public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-                if (value != null) {
-                    this.setText(((RasterDataNode) value).getName());
-                }
-                return this;
-            }
-        });
+        xBandList.setRenderer(new BandListCellRenderer());
         bindingContext.bind(PROPERTY_NAME_X_BAND, xBandList);
-        xBandList.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                final Object value = xBandList.getSelectedItem();
-                if (value != null) {
-                    final Dimension rasterSize = ((RasterDataNode) value).getRasterSize();
-                    if (rasterSize != referenceSize) {
-                        referenceSize = rasterSize;
-                        updateBandList(getProduct(), yBandProperty, true);
-                    }
+        xBandList.addActionListener(e -> {
+            final Object value = xBandList.getSelectedItem();
+            if (value != null) {
+                final Dimension rasterSize = ((RasterDataNode) value).getRasterSize();
+                if (rasterSize != referenceSize) {
+                    referenceSize = rasterSize;
+                    updateBandList(getProduct(), yBandProperty, true);
                 }
             }
         });
         xBandProperty = bindingContext.getPropertySet().getProperty(PROPERTY_NAME_X_BAND);
 
         yBandList = new JComboBox<>();
-        yBandList.setRenderer(new DefaultListCellRenderer() {
-            @Override
-            public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-                if (value != null) {
-                    this.setText(((RasterDataNode) value).getName());
-                }
-                return this;
-            }
-        });
+        yBandList.setRenderer(new BandListCellRenderer());
         bindingContext.bind(PROPERTY_NAME_Y_BAND, yBandList);
         yBandProperty = bindingContext.getPropertySet().getProperty(PROPERTY_NAME_Y_BAND);
     }
@@ -758,5 +717,28 @@ class DensityPlotPanel extends ChartPagePanel {
         private Property yBandProperty;
     }
 
+    private static class BandListCellRenderer extends DefaultListCellRenderer {
+
+        @Override
+        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+            super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+            if (value != null) {
+                this.setText(((RasterDataNode) value).getName());
+            }
+            return this;
+        }
+    }
+
+    private static class ProductListCellRenderer extends DefaultListCellRenderer {
+
+        @Override
+        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+            super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+            if (value != null) {
+                this.setText(formatProductName((Product) value));
+            }
+            return this;
+        }
+    }
 }
 
