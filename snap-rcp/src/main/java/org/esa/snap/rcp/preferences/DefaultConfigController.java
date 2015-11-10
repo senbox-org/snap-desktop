@@ -67,7 +67,7 @@ public abstract class DefaultConfigController extends OptionsPanelController {
      *
      * @param context The {@link BindingContext} for the panel.
      *
-     * @return A JPanel instance for the given {@link BindingContext}, never <code>null</code>.
+     * @return A JPanel instance for the given {@link BindingContext}, never {@code null}.
      */
     protected JPanel createPanel(BindingContext context) {
         Assert.state(isInitialised());
@@ -75,7 +75,7 @@ public abstract class DefaultConfigController extends OptionsPanelController {
     }
 
     /**
-     * Configure the passed binding context. This is intended to be used to create <code>enablements</code> in order to
+     * Configure the passed binding context. This is intended to be used to create {@code enablements} in order to
      * add dependencies between property states. The default implementation does nothing.
      *
      * @param context The {@link BindingContext} to configure.
@@ -85,6 +85,10 @@ public abstract class DefaultConfigController extends OptionsPanelController {
      * @see com.bc.ceres.swing.binding.BindingContext#bindEnabledState(String, boolean, String, Object)
      */
     protected void configure(BindingContext context) {
+    }
+
+    protected BindingContext getBindingContext() {
+        return bindingContext;
     }
 
     /**
@@ -156,7 +160,7 @@ public abstract class DefaultConfigController extends OptionsPanelController {
     @Override
     public void applyChanges() {
         if (isInitialised()) {
-            HashSet<Preferences> set = new HashSet<Preferences>();
+            HashSet<Preferences> set = new HashSet<>();
             for (Property property : bindingContext.getPropertySet().getProperties()) {
                 String key = property.getDescriptor().getAttribute("key").toString();
                 String value = property.getValueAsText();
@@ -172,14 +176,14 @@ public abstract class DefaultConfigController extends OptionsPanelController {
                     SnapApp.getDefault().handleError("Failed to store user preferences.", e);
                 }
             }
-            panel.setChanged(false);
+            setChanged(false);
         }
     }
 
     @Override
     public void cancel() {
         if (isInitialised()) {
-            panel.setChanged(false);
+            setChanged(false);
         }
     }
 
@@ -197,6 +201,10 @@ public abstract class DefaultConfigController extends OptionsPanelController {
             }
         }
         return true;
+    }
+
+    protected void setChanged(boolean changed) {
+        panel.setChanged(changed);
     }
 
     @Override
@@ -226,7 +234,7 @@ public abstract class DefaultConfigController extends OptionsPanelController {
         }
     }
 
-    private boolean isInitialised() {
+    protected boolean isInitialised() {
         return bindingContext != null;
     }
 
