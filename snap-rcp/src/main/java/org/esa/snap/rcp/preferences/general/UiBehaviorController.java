@@ -23,6 +23,7 @@ import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.PropertyEditorRegistry;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.pixelinfo.PixelInfoView;
 import org.esa.snap.rcp.preferences.DefaultConfigController;
 import org.esa.snap.rcp.preferences.Preference;
@@ -138,7 +139,7 @@ public final class UiBehaviorController extends DefaultConfigController {
                 try {
                     final String[] childrenNames = preferences.keys();
                     for (String childrenName : childrenNames) {
-                        if (childrenName.endsWith(".dontShow")) {
+                        if (childrenName.endsWith(SnapDialogs.PREF_KEY_SUFFIX_DONTSHOW)) {
                             preferences.putBoolean(childrenName, false);
                         }
                     }

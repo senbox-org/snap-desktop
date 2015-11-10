@@ -31,7 +31,7 @@ public class MultiSizeIssue {
                                "raster of different sizes. Not all features of SNAP will work with this product. <br/>" +
                                "More info about this issue can be found in the " +
                                "<a href=\"http://senbox.atlassian.net/wiki/display/SNAP/Multi-size+Products+Specification\">SNAP Wiki</a>";
-        final String prefKey = "snap.multiSizeInfo" + ".dontShow";
+        final String prefKey = "snap.multiSizeInfo" + SnapDialogs.PREF_KEY_SUFFIX_DONTSHOW;
         String decision = SnapApp.getDefault().getPreferences().get(prefKey, "");
         if ("true".equals(decision)) {
             return;
