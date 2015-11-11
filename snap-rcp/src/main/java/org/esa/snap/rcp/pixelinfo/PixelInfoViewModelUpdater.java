@@ -247,7 +247,7 @@ public class PixelInfoViewModelUpdater {
                 Point2D sceneCoords = rasterImageToSceneTransform.transform(rasterPos, null);
                 try {
                     final GeoCoding sceneGeoCoding = currentProduct.getSceneGeoCoding();
-                    if (geoCoding != null) {
+                    if (sceneGeoCoding != null) {
                         final MathTransform imageToMapTransform = sceneGeoCoding.getImageToMapTransform();
                         if (imageToMapTransform instanceof AffineTransform) {
                             final MathTransform modelToImage = imageToMapTransform.inverse();
