@@ -242,11 +242,25 @@ public class PixelInfoViewModelUpdater {
             }
             if (getCurrentProduct().isMultiSizeProduct()) {
                 final PixelPos rasterPos = new PixelPos(levelZeroX, levelZeroY);
-                //todo [Multisize_Products] use scenerastertransform to derive these
+                //todo [Multisize_Products] use scenerastertransform instead (see commented code below)
+                final AffineTransform rasterImageToSceneTransform = currentRaster.getImageToModelTransform();
+                Point2D sceneCoords = rasterImageToSceneTransform.transform(rasterPos, null);
+                try {
+                    final GeoCoding sceneGeoCoding = currentProduct.getSceneGeoCoding();
+                    if (geoCoding != null) {
+                        final MathTransform imageToMapTransform = sceneGeoCoding.getImageToMapTransform();
+                        if (imageToMapTransform instanceof AffineTransform) {
+                            final MathTransform modelToImage = imageToMapTransform.inverse();
+                            final DirectPosition position =
+                                    modelToImage.transform(new DirectPosition2D(sceneCoords), new DirectPosition2D(sceneCoords));
+                            sceneCoords = new PixelPos(position.getCoordinate()[0], position.getCoordinate()[1]);
+                        }
+                    }
+                } catch (TransformException e) {
+                    e.printStackTrace();
+                }
 //                try {
 //                    final PixelPos sceneCoords = SceneRasterTransformUtils.transformToSceneCoords(currentRaster, rasterPos);
-                    final AffineTransform imageToModelTransform = currentRaster.getImageToModelTransform();
-                    final Point2D sceneCoords = imageToModelTransform.transform(rasterPos, null);
                     tsx = String.valueOf((int) Math.floor(sceneCoords.getX() + offset));
                     tsy = String.valueOf((int) Math.floor(sceneCoords.getY() + offset));
 //                } catch (SceneRasterTransformException e) {
