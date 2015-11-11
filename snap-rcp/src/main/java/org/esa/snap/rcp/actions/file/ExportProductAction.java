@@ -20,6 +20,7 @@ import org.esa.snap.core.dataio.ProductWriterPlugIn;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.core.util.io.SnapFileFilter;
+import org.esa.snap.rcp.MultiSizeIssue;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.netbeans.api.progress.ProgressUtils;
@@ -125,6 +126,9 @@ public class ExportProductAction extends AbstractAction implements HelpCtx.Provi
     public Boolean execute() {
         Product product = productRef.get();
         if (product != null) {
+            if(product.isMultiSizeProduct()) {
+                MultiSizeIssue.showMultiSizeWarning();
+            }
             return exportProduct(product, (String) getValue(PROPERTY_FORMAT_NAME));
         } else {
             // reference was garbage collected, that's fine, no need to save.
