@@ -17,7 +17,7 @@
     <mapID target="beamDimapFormat" url="general/overview/BeamDimapFormat.html"/>
     <mapID target="pconvertTool" url="general/overview/PConvertUsage.html"/>
     <mapID target="resamplingMethods" url="general/overview/ResamplingMethods.html"/>
-    <mapID target="endesktopProducts" url="general/endesktop-products/index.html"/>
+    <mapID target="envisatProducts" url="general/envisat-products/index.html"/>
     <!-- todo -->
 
     <mapID target="desktop" url="desktop/index.html"/>
@@ -38,7 +38,7 @@
     <mapID target="productGrabber" url="desktop/ProductGrabber.html"/>
     <mapID target="subsetDialog" url="desktop/ProductSubsetDialog.html"/>
     <mapID target="importDimapProduct" url="desktop/ImportDimap.html"/>
-    <mapID target="importEndesktopProduct" url="desktop/ImportEndesktop.html"/>
+    <mapID target="importEnvisatProduct" url="desktop/ImportEnvisat.html"/>
     <mapID target="importErsProduct" url="desktop/ImportErs.html"/>
     <mapID target="importMerisBinnedL3Product" url="desktop/ImportMerisBinnedL3.html"/>
     <mapID target="importModisProduct" url="desktop/ImportModis.html"/>
