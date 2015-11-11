@@ -25,7 +25,7 @@ import org.esa.snap.core.datamodel.ProductNodeEvent;
 import org.esa.snap.core.datamodel.ProductNodeListener;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.datamodel.VirtualBand;
-import org.esa.snap.core.image.BandImageMultiLevelSource;
+import org.esa.snap.core.image.ColoredBandImageMultiLevelSource;
 
 import java.util.Arrays;
 import java.util.List;
@@ -65,7 +65,7 @@ class LayerDataHandler extends AbstractLayerListener implements ProductNodeListe
             if (RasterDataNode.PROPERTY_NAME_NAME.equals(event.getPropertyName())) {
                 imageLayer.setName(rasterDataNode.getDisplayName());
             } else if (imageChangingProperties.contains(event.getPropertyName())) {
-                BandImageMultiLevelSource bandImageSource = (BandImageMultiLevelSource) imageLayer.getMultiLevelSource();
+                ColoredBandImageMultiLevelSource bandImageSource = (ColoredBandImageMultiLevelSource) imageLayer.getMultiLevelSource();
                 bandImageSource.setImageInfo(rasterDataNode.getImageInfo());
                 imageLayer.regenerate();
             }

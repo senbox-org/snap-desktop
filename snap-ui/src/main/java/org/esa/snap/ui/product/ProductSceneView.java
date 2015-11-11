@@ -59,7 +59,7 @@ import org.esa.snap.core.datamodel.ProductNodeListener;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.datamodel.VectorDataNode;
 import org.esa.snap.core.datamodel.VirtualBand;
-import org.esa.snap.core.image.MaskImageMultiLevelSource;
+import org.esa.snap.core.image.ColoredMaskImageMultiLevelSource;
 import org.esa.snap.core.layer.GraticuleLayer;
 import org.esa.snap.core.layer.MaskCollectionLayer;
 import org.esa.snap.core.layer.NoDataLayerType;
@@ -1073,9 +1073,9 @@ public class ProductSceneView extends BasicView
             if (expression != null) {
                 final Color color = noDataLayer.getConfiguration().getValue(
                         NoDataLayerType.PROPERTY_NAME_COLOR);
-                final MultiLevelSource multiLevelSource = MaskImageMultiLevelSource.create(getRaster().getProduct(),
-                                                                                           color, expression, true,
-                                                                                           getBaseImageLayer().getImageToModelTransform());
+                final MultiLevelSource multiLevelSource = ColoredMaskImageMultiLevelSource.create(getRaster().getProduct(),
+                                                                                                  color, expression, true,
+                                                                                                  getBaseImageLayer().getImageToModelTransform());
                 noDataLayer.setMultiLevelSource(multiLevelSource);
             } else {
                 noDataLayer.setMultiLevelSource(MultiLevelSource.NULL);
