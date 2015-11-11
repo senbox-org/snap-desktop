@@ -153,6 +153,7 @@ public abstract class AbstractPlacemarkTableModel extends DefaultTableModel {
     protected abstract Object getStandardColumnValueAt(int rowIndex, int columnIndex);
 
     protected PixelPos getSceneCoordsFromPlacemark(Placemark placemark) {
+        //todo remove this and demand that pixelpos of a placemark must be in scene coords - tf 20151111
         PixelPos pixelPos;
         if (getProduct().isMultiSizeProduct()) {
             final Object defaultGeometry = placemark.getFeature().getDefaultGeometry();
@@ -161,7 +162,6 @@ public abstract class AbstractPlacemarkTableModel extends DefaultTableModel {
             }
             final Point point = (Point) defaultGeometry;
             pixelPos = new PixelPos(point.getX(), point.getY());
-            //todo [Multisize_products] use scenerastertransform here - tf 20151111
             final GeoCoding sceneGeoCoding = getProduct().getSceneGeoCoding();
             if (sceneGeoCoding != null) {
                 final MathTransform imageToMapTransform = sceneGeoCoding.getImageToMapTransform();
