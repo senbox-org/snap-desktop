@@ -109,7 +109,6 @@
 
     <mapID target="demGETASSE30" url="desktop/GETASSE30ElevationModel.html"/>
     <mapID target="createDemRelatedBands" url="desktop/CreateDemRelatedBands.html"/>
-    <mapID target="createAsarNrcsBands" url="desktop/CreateAsarNrcsBands.html"/>
     <mapID target="dataFlip" url="desktop/DataFlip.html"/>
     <mapID target="flipDialog" url="desktop/DataFlip.html"/>
     <mapID target="pixelGeoCodingSetup" url="desktop/PixelGeoCoding.html"/>
