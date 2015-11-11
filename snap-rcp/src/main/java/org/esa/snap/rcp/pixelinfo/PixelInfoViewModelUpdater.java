@@ -197,6 +197,11 @@ public class PixelInfoViewModelUpdater {
             positionModel.addRow("Image-X", "", "pixel");
             positionModel.addRow("Image-Y", "", "pixel");
 
+            if (getCurrentProduct().isMultiSizeProduct()) {
+                positionModel.addRow("Scene-X", "", "pixel");
+                positionModel.addRow("Scene-Y", "", "pixel");
+            }
+
             if (geoCoding != null) {
                 positionModel.addRow("Longitude", "", "degree");
                 positionModel.addRow("Latitude", "", "degree");
@@ -223,8 +228,8 @@ public class PixelInfoViewModelUpdater {
         final double pX = levelZeroX + offset;
         final double pY = levelZeroY + offset;
 
-        String tix, tiy, tmx, tmy, tgx, tgy;
-        tix = tiy = tmx = tmy = tgx = tgy = _INVALID_POS_TEXT;
+        String tix, tiy, tsx, tsy, tmx, tmy, tgx, tgy;
+        tix = tiy = tsx = tsy = tmx = tmy = tgx = tgy = _INVALID_POS_TEXT;
         GeoCoding geoCoding = currentRaster.getGeoCoding();
         if (available) {
             PixelPos pixelPos = new PixelPos(pX, pY);
@@ -234,6 +239,19 @@ public class PixelInfoViewModelUpdater {
             } else {
                 tix = String.valueOf((int) Math.floor(pX));
                 tiy = String.valueOf((int) Math.floor(pY));
+            }
+            if (getCurrentProduct().isMultiSizeProduct()) {
+                final PixelPos rasterPos = new PixelPos(levelZeroX, levelZeroY);
+                //todo [Multisize_Products] use scenerastertransform to derive these
+//                try {
+//                    final PixelPos sceneCoords = SceneRasterTransformUtils.transformToSceneCoords(currentRaster, rasterPos);
+                    final AffineTransform imageToModelTransform = currentRaster.getImageToModelTransform();
+                    final Point2D sceneCoords = imageToModelTransform.transform(rasterPos, null);
+                    tsx = String.valueOf((int) Math.floor(sceneCoords.getX() + offset));
+                    tsy = String.valueOf((int) Math.floor(sceneCoords.getY() + offset));
+//                } catch (SceneRasterTransformException e) {
+                    //keep invalid pos message
+//                }
             }
             if (geoCoding != null) {
                 GeoPos geoPos = geoCoding.getGeoPos(pixelPos, null);
@@ -262,14 +280,19 @@ public class PixelInfoViewModelUpdater {
                 }
             }
         }
-        positionModel.updateValue(tix, 0);
-        positionModel.updateValue(tiy, 1);
+        int rowCount = 0;
+        positionModel.updateValue(tix, rowCount++);
+        positionModel.updateValue(tiy, rowCount++);
+        if (getCurrentProduct().isMultiSizeProduct()) {
+            positionModel.updateValue(tsx, rowCount++);
+            positionModel.updateValue(tsy, rowCount++);
+        }
         if (geoCoding != null) {
-            positionModel.updateValue(tgx, 2);
-            positionModel.updateValue(tgy, 3);
+            positionModel.updateValue(tgx, rowCount++);
+            positionModel.updateValue(tgy, rowCount++);
             if (geoCoding instanceof MapGeoCoding || geoCoding instanceof CrsGeoCoding) {
-                positionModel.updateValue(tmx, 4);
-                positionModel.updateValue(tmy, 5);
+                positionModel.updateValue(tmx, rowCount++);
+                positionModel.updateValue(tmy, rowCount);
             }
         }
     }
