@@ -385,16 +385,7 @@ public class PixelInfoViewModelUpdater {
     }
 
     private boolean equalsViewRasterSize(Dimension size) {
-        if (currentRaster != null) {
-            Dimension viewSize;
-            if (currentRaster instanceof TiePointGrid) {
-                viewSize = currentRaster.getSceneRasterSize();
-            } else {
-                viewSize = currentRaster.getRasterSize();
-            }
-            return viewSize.equals(size);
-        }
-        return false;
+        return currentRaster != null && currentRaster.getRasterSize().equals(size);
     }
 
     private void resetTiePointGridTableModel() {
@@ -403,7 +394,7 @@ public class PixelInfoViewModelUpdater {
             final int numTiePointGrids = currentProduct.getNumTiePointGrids();
             for (int i = 0; i < numTiePointGrids; i++) {
                 final TiePointGrid tiePointGrid = currentProduct.getTiePointGridAt(i);
-                if (equalsViewRasterSize(tiePointGrid.getSceneRasterSize())) {
+                if (equalsViewRasterSize(tiePointGrid.getRasterSize())) {
                     tiePointModel.addRow(tiePointGrid.getName(), "", tiePointGrid.getUnit());
                 }
             }
@@ -524,8 +515,8 @@ public class PixelInfoViewModelUpdater {
                 && pixelValid
                 && pixelX >= 0
                 && pixelY >= 0
-                && pixelX < currentRaster.getSceneRasterWidth()
-                && pixelY < currentRaster.getSceneRasterHeight();
+                && pixelX < currentRaster.getRasterWidth()
+                && pixelY < currentRaster.getRasterHeight();
     }
 
     void clearProductNodeRefs() {

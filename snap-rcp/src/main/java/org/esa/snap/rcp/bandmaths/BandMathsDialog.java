@@ -144,8 +144,8 @@ class BandMathsDialog extends ModalDialog {
             validMaskExpression = BandArithmetic.getValidMaskExpression(getExpression(), products, defaultProductIndex, null);
             final RasterDataNode[] refRasters = BandArithmetic.getRefRasters(getExpression(), products, defaultProductIndex);
             if (refRasters.length > 0) {
-                width = refRasters[0].getSceneRasterWidth();
-                height = refRasters[0].getSceneRasterHeight();
+                width = refRasters[0].getRasterWidth();
+                height = refRasters[0].getRasterHeight();
             }
         } catch (ParseException e) {
             String errorMessage = Bundle.CTL_BandMathsDialog_ErrBandNotCreated() + e.getMessage();

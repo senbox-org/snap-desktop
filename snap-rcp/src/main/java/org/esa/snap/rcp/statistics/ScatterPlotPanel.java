@@ -640,7 +640,7 @@ class ScatterPlotPanel extends ChartPagePanel {
 
                 final int boxSize = scatterPlotModel.boxSize;
 
-                final Rectangle sceneRect = new Rectangle(raster.getSceneRasterWidth(), raster.getSceneRasterHeight());
+                final Rectangle sceneRect = new Rectangle(raster.getRasterWidth(), raster.getRasterHeight());
 
                 final GeoCoding geoCoding = raster.getGeoCoding();
                 final AffineTransform imageToModelTransform;

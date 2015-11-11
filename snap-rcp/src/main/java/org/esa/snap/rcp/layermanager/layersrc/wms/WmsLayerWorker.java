@@ -56,12 +56,12 @@ class WmsLayerWorker extends WmsWorker {
     private static Dimension getFinalImageSize(RasterDataNode raster) {
         int width;
         int height;
-        double ratio = raster.getSceneRasterWidth() / (double) raster.getSceneRasterHeight();
+        double ratio = raster.getRasterWidth() / (double) raster.getRasterHeight();
         if (ratio >= 1.0) {
-            width = Math.min(1280, raster.getSceneRasterWidth());
+            width = Math.min(1280, raster.getRasterWidth());
             height = (int) Math.round(width / ratio);
         } else {
-            height = Math.min(1280, raster.getSceneRasterHeight());
+            height = Math.min(1280, raster.getRasterHeight());
             width = (int) Math.round(height * ratio);
         }
         return new Dimension(width, height);

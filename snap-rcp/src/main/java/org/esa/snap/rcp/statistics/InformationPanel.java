@@ -118,8 +118,8 @@ class InformationPanel extends TablePagePanel {
             addEntry("Offset Y:", String.valueOf(grid.getOffsetY()), "pixels");
             addEntry("Sub-sampling X:", String.valueOf(grid.getSubSamplingX()), "pixels");
             addEntry("Sub-sampling Y:", String.valueOf(grid.getSubSamplingY()), "pixels");
-            addEntry("Raster width:", String.valueOf(grid.getSceneRasterWidth()), "pixels");
-            addEntry("Raster height:", String.valueOf(grid.getSceneRasterHeight()), "pixels");
+            addEntry("Raster width:", String.valueOf(grid.getRasterWidth()), "pixels");
+            addEntry("Raster height:", String.valueOf(grid.getRasterHeight()), "pixels");
         }
 
         final Product product = getProduct();

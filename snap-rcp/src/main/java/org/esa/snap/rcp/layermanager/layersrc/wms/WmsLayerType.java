@@ -139,8 +139,8 @@ public class WmsLayerType extends ImageLayer.Type {
             final PlanarImage image = PlanarImage.wrapRenderedImage(downloadWmsImage(mapRequest, wmsServer));
             RasterDataNode raster = configuration.getValue(WmsLayerType.PROPERTY_NAME_RASTER);
 
-            final int sceneWidth = raster.getSceneRasterWidth();
-            final int sceneHeight = raster.getSceneRasterHeight();
+            final int sceneWidth = raster.getRasterWidth();
+            final int sceneHeight = raster.getRasterHeight();
             AffineTransform i2mTransform = ImageManager.getImageToModelTransform(raster.getGeoCoding());
             i2mTransform.scale((double) sceneWidth / image.getWidth(), (double) sceneHeight / image.getHeight());
             final Rectangle2D bounds = DefaultMultiLevelModel.getModelBounds(i2mTransform, image);
