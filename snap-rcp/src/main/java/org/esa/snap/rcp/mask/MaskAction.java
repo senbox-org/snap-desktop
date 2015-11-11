@@ -111,14 +111,14 @@ abstract class MaskAction extends AbstractAction {
         for (Band band : bands) {
             if (band.getRasterHeight() == referenceRaster.getRasterHeight() &&
                     band.getRasterWidth() == referenceRaster.getRasterWidth()) {
-                rangeRasterNames.add(band.getDisplayName());
+                rangeRasterNames.add(band.getName());
             }
         }
         final TiePointGrid[] tiePointGrids = product.getTiePointGrids();
         for (TiePointGrid tiePointGrid : tiePointGrids) {
             if (tiePointGrid.getRasterHeight() == referenceRaster.getRasterHeight() &&
                     tiePointGrid.getRasterWidth() == referenceRaster.getRasterWidth()) {
-                rangeRasterNames.add(tiePointGrid.getDisplayName());
+                rangeRasterNames.add(tiePointGrid.getName());
             }
         }
         return rangeRasterNames.toArray(new String[rangeRasterNames.size()]);

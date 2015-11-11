@@ -39,6 +39,7 @@ import org.esa.snap.core.util.ProductUtils;
 import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
+import org.esa.snap.rcp.MultiSizeIssue;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.actions.vector.CreateVectorDataNodeAction;
@@ -177,6 +178,9 @@ class MaskFormActions {
         @Override
         String getCode(ActionEvent e) {
             Product product = getMaskForm().getProduct();
+            if(product.isMultiSizeProduct()) {
+                MultiSizeIssue.showMultiSizeWarning();
+            }
             ProductExpressionPane expressionPane = ProductExpressionPane.createBooleanExpressionPane(
                     new Product[]{product}, product, null);
             expressionPane.setEmptyExpressionAllowed(false);

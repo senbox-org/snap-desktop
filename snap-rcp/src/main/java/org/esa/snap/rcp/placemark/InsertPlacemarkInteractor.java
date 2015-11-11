@@ -22,7 +22,10 @@ import org.esa.snap.core.datamodel.Placemark;
 import org.esa.snap.core.datamodel.PlacemarkDescriptor;
 import org.esa.snap.core.datamodel.PlacemarkNameFactory;
 import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.SceneRasterTransformException;
+import org.esa.snap.core.datamodel.SceneRasterTransformUtils;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.openide.awt.UndoRedo;
 
@@ -85,7 +88,8 @@ public abstract class InsertPlacemarkInteractor extends FigureEditorInteractor {
         final String label = uniqueNameAndLabel[1];
         final PixelPos rasterPos = new PixelPos(view.getCurrentPixelX() + 0.5f,
                                                 view.getCurrentPixelY() + 0.5f);
-            PixelPos pixelPos = rasterPos;
+        try {
+            final PixelPos pixelPos = SceneRasterTransformUtils.transformToSceneCoords(view.getRaster(), rasterPos);
             final Placemark newPlacemark = Placemark.createPointPlacemark(placemarkDescriptor, name, label, "", pixelPos, null,
                                                                           view.getRaster().getGeoCoding());
 
@@ -95,6 +99,10 @@ public abstract class InsertPlacemarkInteractor extends FigureEditorInteractor {
             if (undoManager != null) {
                 undoManager.addEdit(UndoablePlacemarkActionFactory.createUndoablePlacemarkInsertion(product, newPlacemark, placemarkDescriptor));
             }
+        } catch (SceneRasterTransformException e) {
+            SnapDialogs.showError("Placemark insertion failed",
+                                  "Could not add placemark to product due to scene raster transformation exception");
+        }
     }
 
     private Cursor createCursor() {

@@ -18,9 +18,12 @@ package org.esa.snap.rcp.preferences.general;
 
 import com.bc.ceres.binding.Property;
 import com.bc.ceres.binding.PropertySet;
+import com.bc.ceres.binding.ValidationException;
 import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.PropertyEditorRegistry;
+import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.pixelinfo.PixelInfoView;
 import org.esa.snap.rcp.preferences.DefaultConfigController;
 import org.esa.snap.rcp.preferences.Preference;
@@ -33,6 +36,8 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.Insets;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
 
 /**
  * Preferences tab for handling the UI behavior preferences. Sub-level panel to the "Miscellaneous"-panel.
@@ -59,27 +64,14 @@ public final class UiBehaviorController extends DefaultConfigController {
      * Preferences key for automatically showing new bands
      */
     public static final String PREFERENCE_KEY_AUTO_SHOW_NEW_BANDS = "autoshowbands.enabled";
-    /**
-     * Preferences key for on-line version check
-     */
-    public static final String PREFERENCE_KEY_VERSION_CHECK_ENABLED = "versionCheck.enabled";
-    /**
-     * Preferences key for showing a message after writing a GPF-processed product.
-     */
-    public static final String PREFERENCE_KEY_SAVE_INFO = "saveInfo";
-    /**
-     * Preferences key for showing a message after opening a GPF-processed product in the application.
-     */
-    public static final String PREFERENCE_KEY_OPEN_IN_APP_INFO = "openInAppInfo";
-    /**
-     * Preferences key for showing a message after writing and opening a GPF-processed product.
-     */
-    public static final String PREFERENCE_KEY_SAVE_AND_OPEN_IN_APP_INFO = "saveAndOpenInAppInfo";
 
     /**
      * Preferences key to set the maximum number of file in the list to reopen.
      */
     public static final String PREFERENCE_KEY_LIST_FILES_TO_REOPEN = "filesToReopen";
+
+
+    private static final String PREFERENCE_KEY_SHOW_SUPPRESSED = "showSuppressedDialogsAgain";
 
     protected PropertySet createPropertySet() {
         return createPropertySet(new UiBehaviorBean());
@@ -101,30 +93,26 @@ public final class UiBehaviorController extends DefaultConfigController {
         Property autoShowNavigation = context.getPropertySet().getProperty(PREFERENCE_KEY_AUTO_SHOW_NAVIGATION);
         Property showNewBands = context.getPropertySet().getProperty(PREFERENCE_KEY_AUTO_SHOW_NEW_BANDS);
         Property showOnlyDisplayed = context.getPropertySet().getProperty(PixelInfoView.PREFERENCE_KEY_SHOW_ONLY_DISPLAYED_BAND_PIXEL_VALUES);
-        Property checkVersion = context.getPropertySet().getProperty(PREFERENCE_KEY_VERSION_CHECK_ENABLED);
-        Property saveInfo = context.getPropertySet().getProperty(PREFERENCE_KEY_SAVE_INFO);
-        Property openInApp = context.getPropertySet().getProperty(PREFERENCE_KEY_OPEN_IN_APP_INFO);
-        Property saveAndOpenInApp = context.getPropertySet().getProperty(PREFERENCE_KEY_SAVE_AND_OPEN_IN_APP_INFO);
-        Property listOfFilesToReopen = context.getPropertySet().getProperty(PREFERENCE_KEY_LIST_FILES_TO_REOPEN);
 
+        Property listOfFilesToReopen = context.getPropertySet().getProperty(PREFERENCE_KEY_LIST_FILES_TO_REOPEN);
+        Property showSuppressedAgain = context.getPropertySet().getProperty(PREFERENCE_KEY_SHOW_SUPPRESSED);
 
         JComponent[] autoShowNavigationComponents = registry.findPropertyEditor(autoShowNavigation.getDescriptor()).createComponents(autoShowNavigation.getDescriptor(), context);
         JComponent[] showNewBandsComponents = registry.findPropertyEditor(showNewBands.getDescriptor()).createComponents(showNewBands.getDescriptor(), context);
         JComponent[] showOnlyDisplayedComponents = registry.findPropertyEditor(showOnlyDisplayed.getDescriptor()).createComponents(showOnlyDisplayed.getDescriptor(), context);
-        JComponent[] checkVersionComponents = registry.findPropertyEditor(checkVersion.getDescriptor()).createComponents(checkVersion.getDescriptor(), context);
-        JComponent[] saveInfoComponents = registry.findPropertyEditor(saveInfo.getDescriptor()).createComponents(saveInfo.getDescriptor(), context);
-        JComponent[] openInAppComponents = registry.findPropertyEditor(openInApp.getDescriptor()).createComponents(openInApp.getDescriptor(), context);
-        JComponent[] saveAndOpenInAppComponents = registry.findPropertyEditor(saveAndOpenInApp.getDescriptor()).createComponents(saveAndOpenInApp.getDescriptor(), context);
 
         JComponent[] listOfFilesToReopenComponent = registry.findPropertyEditor(listOfFilesToReopen.getDescriptor()).createComponents(listOfFilesToReopen.getDescriptor(), context);
+        JComponent[] showSuppressedAgainComponent = registry.findPropertyEditor(showSuppressedAgain.getDescriptor()).createComponents(showSuppressedAgain.getDescriptor(), context);
 
         pageUI.add(PreferenceUtils.createTitleLabel("Display Settings"));
         pageUI.add(autoShowNavigationComponents[0]);
         pageUI.add(showNewBandsComponents[0]);
         pageUI.add(showOnlyDisplayedComponents[0]);
 
-
-        // Adding the number of file that can be reopenn
+        pageUI.add(tableLayout.createHorizontalSpacer());
+        pageUI.add(PreferenceUtils.createTitleLabel("Other Settings"));
+        pageUI.add(showSuppressedAgainComponent[0]);
+        // Adding the number of file that can be reopen
         TableLayout layout = new TableLayout(2);
         JPanel panel = new JPanel(layout);
         layout.setTablePadding(new Insets(1, 10, 0, 0));
@@ -133,21 +121,49 @@ public final class UiBehaviorController extends DefaultConfigController {
         tableLayout.setTableFill(TableLayout.Fill.VERTICAL);
         pageUI.add(panel);
 
-        tableLayout.setTableFill(TableLayout.Fill.BOTH);
-        tableLayout.setTableAnchor(TableLayout.Anchor.EAST);
-        pageUI.add(tableLayout.createHorizontalSpacer());
-        tableLayout.setColumnCount(1);
-        pageUI.add(PreferenceUtils.createTitleLabel("Message Settings"));
-        pageUI.add(checkVersionComponents[0]);
-        pageUI.add(saveInfoComponents[0]);
-        pageUI.add(openInAppComponents[0]);
-        pageUI.add(saveAndOpenInAppComponents[0]);
         pageUI.add(tableLayout.createVerticalSpacer());
 
         JPanel parent = new JPanel(new BorderLayout());
         parent.add(pageUI, BorderLayout.CENTER);
         parent.add(Box.createHorizontalStrut(100), BorderLayout.EAST);
         return parent;
+    }
+
+    @Override
+    public void applyChanges() {
+        if (isInitialised()) {
+            final BindingContext bindingContext = getBindingContext();
+            final Property showSuppressedProperty = bindingContext.getPropertySet().getProperty(PREFERENCE_KEY_SHOW_SUPPRESSED);
+            if (Boolean.parseBoolean(showSuppressedProperty.getValueAsText())) {
+                final Preferences preferences = SnapApp.getDefault().getPreferences();
+                try {
+                    final String[] childrenNames = preferences.keys();
+                    for (String childrenName : childrenNames) {
+                        if (childrenName.endsWith(SnapDialogs.PREF_KEY_SUFFIX_DONTSHOW)) {
+                            preferences.putBoolean(childrenName, false);
+                        }
+                    }
+                    showSuppressedProperty.setValue(Boolean.FALSE);
+                } catch (BackingStoreException | ValidationException e) {
+                    SnapApp.getDefault().handleError("Failure while resetting suppressed dialogs.", e);
+                }
+            }
+        }
+        super.applyChanges();
+    }
+
+    @Override
+    public void cancel() {
+        if (isInitialised()) {
+            final BindingContext bindingContext = getBindingContext();
+            final Property showSuppressedProperty = bindingContext.getPropertySet().getProperty(PREFERENCE_KEY_SHOW_SUPPRESSED);
+            try {
+                showSuppressedProperty.setValue(Boolean.FALSE);
+            } catch (ValidationException e) {
+                // ignore
+            }
+        }
+        super.cancel();
     }
 
     @Override
@@ -169,26 +185,14 @@ public final class UiBehaviorController extends DefaultConfigController {
                 key = PixelInfoView.PREFERENCE_KEY_SHOW_ONLY_DISPLAYED_BAND_PIXEL_VALUES)
         boolean showOnlyLoadedOrDisplayedBandPixels = PixelInfoView.PREFERENCE_DEFAULT_SHOW_DISPLAYED_BAND_PIXEL_VALUES;
 
-        @Preference(label = "Check for new version on startup",
-                key = PREFERENCE_KEY_VERSION_CHECK_ENABLED)
-        boolean checkEnabled = true;
-
-        @Preference(label = "Show target product writing success and duration information",
-                key = PREFERENCE_KEY_SAVE_INFO)
-        boolean saveInfo = true;
-
-        @Preference(label = "Show target product opening information",
-                key = PREFERENCE_KEY_OPEN_IN_APP_INFO)
-        boolean openInAppInfo = true;
-
-        @Preference(label = "Show target product writing and opening information",
-                key = PREFERENCE_KEY_SAVE_AND_OPEN_IN_APP_INFO)
-        boolean saveAndOpenInAppInfo = true;
-
-
         @Preference(label = "Maximum recent file list",
                 key = PREFERENCE_KEY_LIST_FILES_TO_REOPEN, interval = "[1,20]")
         int fileReopen = 10;
+
+        @Preference(label = "Show suppressed message dialogs again",
+                key = PREFERENCE_KEY_SHOW_SUPPRESSED)
+        boolean showSuppressedDialogsAgain = false;
+
     }
 
 }

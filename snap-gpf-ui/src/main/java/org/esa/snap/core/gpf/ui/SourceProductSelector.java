@@ -55,7 +55,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
@@ -112,20 +111,17 @@ public class SourceProductSelector {
         productNameComboBox.setPrototypeDisplayValue("[1] 123456789 123456789 12345");
         productNameComboBox.setRenderer(new ProductListCellRenderer());
         productNameComboBox.addPopupMenuListener(new ProductPopupMenuListener());
-        productNameComboBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                final Object selected = productNameComboBox.getSelectedItem();
-                if (selected != null && selected instanceof Product) {
-                    Product product = (Product) selected;
-                    if (product.getFileLocation() != null) {
-                        productNameComboBox.setToolTipText(product.getFileLocation().getPath());
-                    } else {
-                        productNameComboBox.setToolTipText(product.getDisplayName());
-                    }
+        productNameComboBox.addActionListener(e -> {
+            final Object selected = productNameComboBox.getSelectedItem();
+            if (selected != null && selected instanceof Product) {
+                Product product = (Product) selected;
+                if (product.getFileLocation() != null) {
+                    productNameComboBox.setToolTipText(product.getFileLocation().getPath());
                 } else {
-                    productNameComboBox.setToolTipText("Select a source product.");
+                    productNameComboBox.setToolTipText(product.getDisplayName());
                 }
+            } else {
+                productNameComboBox.setToolTipText("Select a source product.");
             }
         });
 
@@ -370,13 +366,8 @@ public class SourceProductSelector {
         }
 
         private void handleError(final Component component, final String message) {
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    JOptionPane.showMessageDialog(component, message, "Error",
-                                                  JOptionPane.ERROR_MESSAGE);
-                }
-            });
+            SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(component, message, "Error",
+                                                                   JOptionPane.ERROR_MESSAGE));
         }
     }
 

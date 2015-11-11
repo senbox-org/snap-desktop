@@ -705,13 +705,8 @@ public class SnapApp {
         public void productAdded(ProductManager.Event event) {
             final Product product = event.getProduct();
             if(product.isMultiSizeProduct()) {
-                SnapDialogs.showInformation("Limited Functionality",
-                                            "<html>Please note that you have opened a product which contains <br/>" +
-                                            "bands of different sizes. Not all features of SNAP will work with this product. <br/>" +
-                                            "For example reprojection, subset and some masks functions will not work.",
-                                            "snap.multiSize.showInfo");
+                MultiSizeIssue.showMultiSizeWarning();
             }
-
         }
 
         @Override
