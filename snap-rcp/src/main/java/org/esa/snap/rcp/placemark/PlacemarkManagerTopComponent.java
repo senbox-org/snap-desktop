@@ -166,13 +166,6 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
         content.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         content.add(BorderLayout.CENTER, mainPane);
         content.add(BorderLayout.EAST, buttonPane);
-        Component southExtension = getSouthExtension();
-        final JPanel southPanel = new JPanel(new BorderLayout());
-        southPanel.add(new JLabel("Pixel position is given in product raster coordinates"), BorderLayout.SOUTH);
-        if (southExtension != null) {
-            southPanel.add(southExtension, BorderLayout.CENTER);
-        }
-        content.add(BorderLayout.SOUTH, southPanel);
         content.setPreferredSize(new Dimension(420, 200));
 
         setCurrentView(snapApp.getSelectedProductSceneView());
