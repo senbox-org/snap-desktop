@@ -210,7 +210,7 @@ public class AddElevationAction extends AbstractAction implements ContextAwareAc
     }
 
     private static RenderedImage createElevationSourceImage(final ElevationModel dem, final GeoCoding geoCoding, final Band band) {
-        return new DefaultMultiLevelImage(new AbstractMultiLevelSource(ImageManager.getMultiLevelModel(band)) {
+        return new DefaultMultiLevelImage(new AbstractMultiLevelSource(band.createMultiLevelModel()) {
             @Override
             protected RenderedImage createImage(final int level) {
                 return new ElevationSourceImage(dem, geoCoding, band, ResolutionLevel.create(getModel(), level));
