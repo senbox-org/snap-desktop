@@ -29,8 +29,8 @@ public class MultiSizeIssue {
         String title = SnapDialogs.getDialogTitle("Limited Functionality");
         final String msgText = "Please note that you have opened a product which contains <br/>" +
                                "raster of different sizes. Not all features of SNAP will work with this product. <br/>" +
-                               "More info about this issue can be found in the " +
-                               "<a href=\"http://senbox.atlassian.net/wiki/display/SNAP/Multi-size+Products+Specification\">SNAP Wiki</a>";
+                               "More info about this issue and its status can be found in the " +
+                               "<a href=\"https://senbox.atlassian.net/browse/SNAP-1\">SNAP Issue Tracker</a>";
         final String prefKey = "snap.multiSizeInfo" + SnapDialogs.PREF_KEY_SUFFIX_DONTSHOW;
         String decision = SnapApp.getDefault().getPreferences().get(prefKey, "");
         if ("true".equals(decision)) {
