@@ -23,8 +23,6 @@ import org.esa.snap.core.datamodel.Kernel;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.core.datamodel.RasterDataNode;
-import org.esa.snap.core.datamodel.Scene;
-import org.esa.snap.core.datamodel.SceneFactory;
 import org.esa.snap.core.util.ProductUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.window.OpenImageViewAction;
@@ -146,7 +144,7 @@ public class FilteredBandAction extends AbstractAction  implements LookupListene
 
     private static FilterBand getFilterBand(RasterDataNode sourceRaster, String bandName, Filter filter, int iterationCount) {
         FilterBand targetBand;
-        Product product = sourceRaster.getProduct();
+        Product targetProduct = sourceRaster.getProduct();
 
         if (filter.getOperation() == Filter.Operation.CONVOLVE) {
             targetBand = new ConvolutionFilterBand(bandName, sourceRaster, getKernel(filter), iterationCount);
@@ -165,14 +163,10 @@ public class FilteredBandAction extends AbstractAction  implements LookupListene
         if (sourceRaster instanceof Band) {
             ProductUtils.copySpectralBandProperties((Band) sourceRaster, targetBand);
         }
-        if(product.isMultiSizeProduct() && !targetBand.getRasterSize().equals(product.getSceneRasterSize())) {
-            final Scene srcScene = SceneFactory.createScene(sourceRaster);
-            final Scene destScene = SceneFactory.createScene(targetBand);
-            if (srcScene != null && destScene != null) {
-                srcScene.transferGeoCodingTo(destScene, null);
-            }
+        if (targetProduct.isMultiSizeProduct()) {
+            ProductUtils.copyGCandI2M(sourceRaster, targetBand);
         }
-        product.addBand(targetBand);
+        targetProduct.addBand(targetBand);
         targetBand.fireProductNodeDataChanged();
         return targetBand;
     }
