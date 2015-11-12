@@ -39,7 +39,7 @@ import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.datamodel.TiePointGrid;
 import org.esa.snap.core.datamodel.VirtualBand;
 import org.esa.snap.core.dataop.barithm.BandArithmetic;
-import org.esa.snap.core.image.BandImageMultiLevelSource;
+import org.esa.snap.core.image.ColoredBandImageMultiLevelSource;
 import org.esa.snap.core.image.ImageManager;
 import org.esa.snap.core.jexp.ParseException;
 import org.esa.snap.core.jexp.Term;
@@ -1006,8 +1006,8 @@ public class ProductSubsetDialog extends ModalDialog {
             pm.beginTask("Creating thumbnail image", 5);
             BufferedImage image = null;
             try {
-                MultiLevelSource multiLevelSource = BandImageMultiLevelSource.create(thumbNailBand,
-                                                                                     SubProgressMonitor.create(pm, 1));
+                MultiLevelSource multiLevelSource = ColoredBandImageMultiLevelSource.create(thumbNailBand,
+                                                                                            SubProgressMonitor.create(pm, 1));
                 final ImageLayer imageLayer = new ImageLayer(multiLevelSource);
                 final int imageWidth = imgSize.width;
                 final int imageHeight = imgSize.height;

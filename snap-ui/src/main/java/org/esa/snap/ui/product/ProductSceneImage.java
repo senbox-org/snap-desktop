@@ -32,7 +32,7 @@ import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.core.datamodel.ProductNodeGroup;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.datamodel.VectorDataNode;
-import org.esa.snap.core.image.BandImageMultiLevelSource;
+import org.esa.snap.core.image.ColoredBandImageMultiLevelSource;
 import org.esa.snap.core.layer.GraticuleLayer;
 import org.esa.snap.core.layer.GraticuleLayerType;
 import org.esa.snap.core.layer.MaskCollectionLayerType;
@@ -53,7 +53,7 @@ public class ProductSceneImage implements ProductLayerContext {
     private final PropertyMap configuration;
     private RasterDataNode[] rasters;
     private Layer rootLayer;
-    private BandImageMultiLevelSource bandImageMultiLevelSource;
+    private ColoredBandImageMultiLevelSource coloredBandImageMultiLevelSource;
 
     /**
      * Creates a color indexed product scene for the given product raster.
@@ -66,7 +66,7 @@ public class ProductSceneImage implements ProductLayerContext {
         this(raster.getDisplayName(),
              new RasterDataNode[]{raster},
              configuration);
-        bandImageMultiLevelSource = BandImageMultiLevelSource.create(raster, pm);
+        coloredBandImageMultiLevelSource = ColoredBandImageMultiLevelSource.create(raster, pm);
         initRootLayer();
     }
 
@@ -80,7 +80,7 @@ public class ProductSceneImage implements ProductLayerContext {
         this(raster.getDisplayName(),
              new RasterDataNode[]{raster},
              view.getSceneImage().getConfiguration());
-        bandImageMultiLevelSource = view.getSceneImage().getBandImageMultiLevelSource();
+        coloredBandImageMultiLevelSource = view.getSceneImage().getColoredBandImageMultiLevelSource();
         initRootLayer();
     }
 
@@ -100,7 +100,7 @@ public class ProductSceneImage implements ProductLayerContext {
                              PropertyMap configuration,
                              ProgressMonitor pm) {
         this(name, new RasterDataNode[]{redRaster, greenRaster, blueRaster}, configuration);
-        bandImageMultiLevelSource = BandImageMultiLevelSource.create(rasters, pm);
+        coloredBandImageMultiLevelSource = ColoredBandImageMultiLevelSource.create(rasters, pm);
         initRootLayer();
     }
 
@@ -119,11 +119,11 @@ public class ProductSceneImage implements ProductLayerContext {
     }
 
     public ImageInfo getImageInfo() {
-        return bandImageMultiLevelSource.getImageInfo();
+        return coloredBandImageMultiLevelSource.getImageInfo();
     }
 
     public void setImageInfo(ImageInfo imageInfo) {
-        bandImageMultiLevelSource.setImageInfo(imageInfo);
+        coloredBandImageMultiLevelSource.setImageInfo(imageInfo);
     }
 
     public RasterDataNode[] getRasters() {
@@ -254,17 +254,17 @@ public class ProductSceneImage implements ProductLayerContext {
     }
 
     private AffineTransform getImageToModelTransform() {
-        return bandImageMultiLevelSource.getModel().getImageToModelTransform(0);
+        return coloredBandImageMultiLevelSource.getModel().getImageToModelTransform(0);
     }
 
     private Layer createBaseImageLayer() {
         final Layer layer;
         if (getRasters().length == 1) {
             final RasterImageLayerType type = LayerTypeRegistry.getLayerType(RasterImageLayerType.class);
-            layer = type.createLayer(getRaster(), bandImageMultiLevelSource);
+            layer = type.createLayer(getRaster(), coloredBandImageMultiLevelSource);
         } else {
             final RgbImageLayerType type = LayerTypeRegistry.getLayerType(RgbImageLayerType.class);
-            layer = type.createLayer(getRasters(), bandImageMultiLevelSource);
+            layer = type.createLayer(getRasters(), coloredBandImageMultiLevelSource);
         }
 
         layer.setName(getName());
@@ -433,8 +433,8 @@ public class ProductSceneImage implements ProductLayerContext {
                                             GraticuleLayerType.DEFAULT_TEXT_BG_TRANSPARENCY));
     }
 
-    private BandImageMultiLevelSource getBandImageMultiLevelSource() {
-        return bandImageMultiLevelSource;
+    private ColoredBandImageMultiLevelSource getColoredBandImageMultiLevelSource() {
+        return coloredBandImageMultiLevelSource;
     }
 
     @Override

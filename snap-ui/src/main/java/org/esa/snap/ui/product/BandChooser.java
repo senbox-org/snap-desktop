@@ -119,6 +119,7 @@ public class BandChooser extends ModalDialog implements LoadSaveRasterDataNodesC
         final Dimension preferredSize = checkersPane.getPreferredSize();
         scrollPane.setPreferredSize(new Dimension(Math.min(preferredSize.width + 20, 400),
                 Math.min(preferredSize.height + 10, 300)));
+        scrollPane.getVerticalScrollBar().setUnitIncrement(20);
         content.add(scrollPane, BorderLayout.CENTER);
         content.add(buttonPanel, BorderLayout.EAST);
         content.add(checkPane, BorderLayout.SOUTH);

@@ -145,7 +145,7 @@ abstract class MaskForm {
     Dimension getTargetMaskSize() {
         RasterDataNode raster = getRaster();
         if (raster != null) {
-            return new Dimension(raster.getSceneRasterWidth(), raster.getSceneRasterHeight());
+            return new Dimension(raster.getRasterWidth(), raster.getRasterHeight());
         }
         Product product = getProduct();
         if (product != null) {

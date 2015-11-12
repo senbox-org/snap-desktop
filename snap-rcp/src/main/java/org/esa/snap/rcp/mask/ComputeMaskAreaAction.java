@@ -276,8 +276,8 @@ public class ComputeMaskAreaAction extends AbstractAction implements LookupListe
             final int numXTiles = maskImage.getNumXTiles();
             final int numYTiles = maskImage.getNumYTiles();
 
-            final int w = mask.getSceneRasterWidth();
-            final int h = mask.getSceneRasterHeight();
+            final int w = mask.getRasterWidth();
+            final int h = mask.getRasterHeight();
             final Rectangle imageRect = new Rectangle(0, 0, w, h);
 
             final PixelPos[] pixelPoints = new PixelPos[5];

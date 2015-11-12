@@ -258,11 +258,11 @@ class MultipleRoiComputePanel extends JPanel {
         maskNameListModel = new DefaultListModel<>();
         final String[] currentSelectedMaskNames = getSelectedMaskNames();
         if (product != null && raster != null) {
-            //todo [multisize_products] compare scenerastertransform (or its successor) rather than size
+            //todo [multisize_products] compare scenerastertransform (or its successor) rather than size (tf)
             final ProductNodeGroup<Mask> maskGroup = product.getMaskGroup();
             for (int i = 0; i < maskGroup.getNodeCount(); i++) {
                 final Mask mask = maskGroup.get(i);
-                if (mask.getSceneRasterSize().equals(raster.getSceneRasterSize())) {
+                if (mask.getRasterSize().equals(raster.getRasterSize())) {
                     maskNameListModel.addElement(mask.getName());
                 }
             }

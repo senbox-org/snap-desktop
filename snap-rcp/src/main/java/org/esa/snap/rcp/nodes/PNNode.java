@@ -409,7 +409,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
             append(tooltip, tiePointGrid.getDescription());
             append(tooltip, String.format("%d x %d --> %d x %d pixels",
                                           tiePointGrid.getGridWidth(), tiePointGrid.getGridHeight(),
-                                          tiePointGrid.getSceneRasterWidth(), tiePointGrid.getSceneRasterHeight()));
+                                          tiePointGrid.getRasterWidth(), tiePointGrid.getRasterHeight()));
             if (tiePointGrid.getUnit() != null) {
                 append(tooltip, String.format(" (%s)", tiePointGrid.getUnit()));
             }

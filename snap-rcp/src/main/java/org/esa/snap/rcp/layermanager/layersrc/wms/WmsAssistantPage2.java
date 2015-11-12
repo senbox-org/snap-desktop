@@ -191,8 +191,8 @@ class WmsAssistantPage2 extends AbstractLayerSourceAssistantPage {
                     RasterDataNode raster = SnapApp.getDefault().getSelectedProductSceneView().getRaster();
                     AffineTransform g2mTransform = ImageManager.getImageToModelTransform(raster.getGeoCoding());
                     Rectangle2D bounds = g2mTransform.createTransformedShape(
-                            new Rectangle(0, 0, raster.getSceneRasterWidth(),
-                                          raster.getSceneRasterHeight())).getBounds2D();
+                            new Rectangle(0, 0, raster.getRasterWidth(),
+                                          raster.getRasterHeight())).getBounds2D();
                     CRSEnvelope crsEnvelope = new CRSEnvelope(crsCode, bounds.getMinX(), bounds.getMinY(),
                                                               bounds.getMaxX(),
                                                               bounds.getMaxY());

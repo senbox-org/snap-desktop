@@ -101,8 +101,8 @@ public class ConvertComputedBandIntoBandAction extends AbstractAction implements
 
         Band computedBand = (Band) selectedProductNode;
         String bandName = computedBand.getName();
-        int width = computedBand.getSceneRasterWidth();
-        int height = computedBand.getSceneRasterHeight();
+        int width = computedBand.getRasterWidth();
+        int height = computedBand.getRasterHeight();
 
         Band realBand = new Band(bandName, computedBand.getDataType(), width, height);
         realBand.setDescription(createDescription(computedBand));
