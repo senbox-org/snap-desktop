@@ -90,7 +90,7 @@ public abstract class InsertPlacemarkInteractor extends FigureEditorInteractor {
         PixelPos scenePixelPos = new PixelPos();
         Point2D scenePos = view.getRaster().getImageToModelTransform().transform(rasterPos, new Point2D.Double());
         try {
-            final AffineTransform sceneToImage = Product.getAppropriateImageToSceneTransform(product.getSceneGeoCoding()).createInverse();
+            final AffineTransform sceneToImage = Product.findImageToModelTransform(product.getSceneGeoCoding()).createInverse();
             sceneToImage.transform(scenePos, scenePixelPos);
         } catch (NoninvertibleTransformException e) {
             scenePixelPos = rasterPos;
