@@ -67,6 +67,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static org.esa.snap.rcp.SnapApp.ProductSelectionHint.*;
+
 @NbBundle.Messages({
         "CTL_BandMathsDialog_Title=Band Maths",
         "CTL_BandMathsDialog_ErrBandNotCreated=The band could not be created.\nAn expression parse error occurred:\n",
@@ -514,7 +516,7 @@ class BandMathsDialog extends ModalDialog {
     private boolean isTargetBandReferencedInExpression() {
         final Product[] products = getCompatibleProducts();
 
-        final int defaultIndex = Arrays.asList(products).indexOf(SnapApp.getDefault().getSelectedProduct());
+        final int defaultIndex = Arrays.asList(products).indexOf(SnapApp.getDefault().getSelectedProduct(EXPLORER));
         try {
             final Term term = BandArithmetic.parseExpression(getExpression(),
                                                              products, defaultIndex == -1 ? 0 : defaultIndex);

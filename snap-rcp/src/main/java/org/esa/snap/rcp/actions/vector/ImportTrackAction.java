@@ -65,6 +65,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 
+import static org.esa.snap.rcp.SnapApp.ProductSelectionHint.*;
+
 //import org.esa.snap.visat.VisatApp;
 
 
@@ -133,7 +135,7 @@ public class ImportTrackAction extends AbstractSnapAction implements ContextAwar
         if (file == null) {
             return;
         }
-        final Product product = SnapApp.getDefault().getSelectedProduct();
+        final Product product = SnapApp.getDefault().getSelectedProduct(AUTO);
         FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection;
         try {
             featureCollection = readTrack(file, product.getSceneGeoCoding());

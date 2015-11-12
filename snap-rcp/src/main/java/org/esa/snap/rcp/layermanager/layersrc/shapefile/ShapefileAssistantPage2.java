@@ -35,6 +35,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import java.awt.Component;
 
+import static org.esa.snap.rcp.SnapApp.ProductSelectionHint.*;
+
 class ShapefileAssistantPage2 extends AbstractLayerSourceAssistantPage {
 
     private CrsSelectionPanel crsSelectionPanel;
@@ -47,7 +49,7 @@ class ShapefileAssistantPage2 extends AbstractLayerSourceAssistantPage {
     @Override
     public Component createPageComponent() {
         final AppContext snapContext = SnapApp.getDefault().getAppContext();
-        final ProductCrsForm productCrsForm = new ProductCrsForm(snapContext, SnapApp.getDefault().getSelectedProduct());
+        final ProductCrsForm productCrsForm = new ProductCrsForm(snapContext, SnapApp.getDefault().getSelectedProduct(VIEW));
         final CustomCrsForm customCrsForm = new CustomCrsForm(snapContext);
         final PredefinedCrsForm predefinedCrsForm = new PredefinedCrsForm(snapContext);
 
@@ -69,7 +71,7 @@ class ShapefileAssistantPage2 extends AbstractLayerSourceAssistantPage {
     @Override
     public boolean validatePage() {
         try {
-            crsSelectionPanel.getCrs(ProductUtils.getCenterGeoPos(SnapApp.getDefault().getSelectedProduct()));
+            crsSelectionPanel.getCrs(ProductUtils.getCenterGeoPos(SnapApp.getDefault().getSelectedProduct(VIEW)));
         } catch (FactoryException ignored) {
             return false;
         }
@@ -85,7 +87,7 @@ class ShapefileAssistantPage2 extends AbstractLayerSourceAssistantPage {
     public AbstractLayerSourceAssistantPage getNextPage() {
         final LayerSourcePageContext context = getContext();
         try {
-            final Product product = SnapApp.getDefault().getSelectedProduct();
+            final Product product = SnapApp.getDefault().getSelectedProduct(VIEW);
             final GeoPos referencePos = ProductUtils.getCenterGeoPos(product);
             final CoordinateReferenceSystem crs = crsSelectionPanel.getCrs(referencePos);
             context.setPropertyValue(ShapefileLayerSource.PROPERTY_NAME_FEATURE_COLLECTION_CRS, crs);

@@ -305,20 +305,42 @@ public class SnapApp {
     /**
      * Return the currently selected product.
      * <p>
-     * In case a {@link ProductSceneView} is opened then the associated {@link Product}, otherwise the selected {@link Product}
-     * provided by the {@link Utilities#actionsGlobalContext() global context} is returned. If there is no selected product {@code null}
-     * is returned.
+     * The {@link ProductSelectionHint hint} defines what is the primary and secondary selection source. Source is either the
+     * {@link ProductSelectionHint#VIEW scene view} or the {@link ProductSelectionHint#EXPLORER product explorer}. If it is set to
+     * {@link ProductSelectionHint#AUTO} the algorithm tries to make a good guess, checking which component has the focus.
      *
+     * @param hint gives a hint to the implementation which selection source should be preferred.
      * @return The currently selected product or {@code null}.
      */
-    public Product getSelectedProduct() {
+    public Product getSelectedProduct(ProductSelectionHint hint) {
+        Product viewProduct = null;
+        Product explorerProduct = null;
         ProductSceneView productSceneView = getSelectedProductSceneView();
         if (productSceneView != null) {
-            return productSceneView.getProduct();
+            viewProduct = productSceneView.getProduct();
         }
         ProductNode productNode = Utilities.actionsGlobalContext().lookup(ProductNode.class);
         if (productNode != null) {
-            return productNode.getProduct();
+            explorerProduct = productNode.getProduct();
+        }
+        switch (hint) {
+            case VIEW:
+                if (viewProduct != null) {
+                    return viewProduct;
+                } else {
+                    return explorerProduct;
+                }
+            case EXPLORER:
+                if (explorerProduct != null) {
+                    return explorerProduct;
+                } else {
+                    return viewProduct;
+                }
+            case AUTO:
+                if (productSceneView != null && productSceneView.hasFocus()) {
+                    return viewProduct;
+                }
+                return explorerProduct;
         }
         return null;
     }
@@ -468,7 +490,7 @@ public class SnapApp {
         if (selectedProductNode != null) {
             selectedProduct = selectedProductNode.getProduct();
             if (selectedProduct == null) {
-                selectedProduct = getSelectedProduct();
+                selectedProduct = getSelectedProduct(ProductSelectionHint.EXPLORER);
             }
         }
 
@@ -669,7 +691,7 @@ public class SnapApp {
 
         @Override
         public Product getSelectedProduct() {
-            return getDefault().getSelectedProduct();
+            return getDefault().getSelectedProduct(ProductSelectionHint.AUTO);
         }
 
         @Override
@@ -740,5 +762,23 @@ public class SnapApp {
         @Override
         public void nodeRemoved(ProductNodeEvent event) {
         }
+    }
+
+    /**
+     * Provides a hint to {@link SnapApp#getSelectedProduct(ProductSelectionHint)} } which selection provider should be used as primary selection source
+     */
+    public enum ProductSelectionHint {
+        /**
+         * The scene view shall be preferred as selection source.
+         */
+        VIEW,
+        /**
+         * The product explorer shall be preferred as selection source.
+         */
+        EXPLORER,
+        /**
+         * The primary selection source is automatically detected.
+         */
+        AUTO,
     }
 }

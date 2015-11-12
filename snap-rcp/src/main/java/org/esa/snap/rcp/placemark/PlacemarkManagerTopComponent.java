@@ -92,6 +92,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.prefs.Preferences;
 
+import static org.esa.snap.rcp.SnapApp.ProductSelectionHint.*;
+
 /**
  * @author Tonio Fincke
  */
@@ -173,7 +175,7 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
         content.setPreferredSize(new Dimension(420, 200));
 
         setCurrentView(snapApp.getSelectedProductSceneView());
-        setProduct(snapApp.getSelectedProduct());
+        setProduct(snapApp.getSelectedProduct(VIEW));
         snapApp.getSelectionSupport(ProductSceneView.class).addHandler(new ProductSceneViewSelectionChangeHandler());
         snapApp.getProductManager().addListener(new ProductRemovedListener());
         updateUIState();

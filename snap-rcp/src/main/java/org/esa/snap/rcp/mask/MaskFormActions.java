@@ -85,6 +85,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.esa.snap.rcp.SnapApp.ProductSelectionHint.*;
+
 /**
  * @author Marco Peters
  * @since BEAM 4.7
@@ -215,7 +217,7 @@ class MaskFormActions {
 
         @Override
         void updateState() {
-            final boolean enabled = SnapApp.getDefault().getSelectedProduct() != null;
+            final boolean enabled = SnapApp.getDefault().getSelectedProduct(VIEW) != null;
             action.setEnabled(enabled);
             setEnabled(enabled);
         }
