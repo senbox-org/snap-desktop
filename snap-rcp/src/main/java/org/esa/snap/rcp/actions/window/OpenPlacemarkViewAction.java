@@ -36,6 +36,8 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import java.awt.event.ActionEvent;
 
+import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
+
 @ActionID(category = "View", id = "OpenPlacemarkViewAction" )
 @ActionRegistration(
         displayName = "#CTL_OpenPlacemarkViewAction_MenuText",
@@ -80,7 +82,7 @@ public class OpenPlacemarkViewAction extends AbstractAction implements ContextAw
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        ProductNode selectedProductNode = SnapApp.getDefault().getSelectedProductNode();
+        ProductNode selectedProductNode = SnapApp.getDefault().getSelectedProductNode(EXPLORER);
         if (selectedProductNode instanceof VectorDataNode) {
             VectorDataNode vectorDataNode = (VectorDataNode) selectedProductNode;
             openView(vectorDataNode);

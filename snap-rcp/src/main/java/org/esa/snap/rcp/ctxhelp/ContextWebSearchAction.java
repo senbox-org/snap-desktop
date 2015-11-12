@@ -8,8 +8,10 @@ import org.openide.awt.ActionRegistration;
 import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle;
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
+
+import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
 
 /**
  * Provides context-sensitive web search.
@@ -42,7 +44,7 @@ public class ContextWebSearchAction extends AbstractAction implements HelpCtx.Pr
     public void actionPerformed(ActionEvent e) {
         ContextWebSearch contextWebSearch = ContextWebSearch.getDefault();
         if (contextWebSearch != null) {
-            contextWebSearch.searchForNode(SnapApp.getDefault().getSelectedProductNode());
+            contextWebSearch.searchForNode(SnapApp.getDefault().getSelectedProductNode(AUTO));
         }
     }
 

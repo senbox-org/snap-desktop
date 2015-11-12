@@ -38,6 +38,8 @@ import javax.swing.SwingUtilities;
 import java.awt.BorderLayout;
 import java.awt.geom.Rectangle2D;
 
+import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
+
 /**
  * The window containing all statistics.
  *
@@ -133,7 +135,7 @@ public abstract class AbstractStatisticsTopComponent extends TopComponent implem
         RasterDataNode raster = null;
         VectorDataNode vectorDataNode = null;
 
-        final ProductNode selectedNode = SnapApp.getDefault().getSelectedProductNode();
+        final ProductNode selectedNode = SnapApp.getDefault().getSelectedProductNode(EXPLORER);
         if (selectedNode != null && selectedNode.getProduct() != null) {
             product = selectedNode.getProduct();
         }

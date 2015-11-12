@@ -98,11 +98,10 @@ public class ExportMetadataAction extends AbstractAction implements HelpCtx.Prov
     /**
      * Opens a modal file chooser dialog that prompts the user to select the output file name.
      *
-     * @param visatApp        An instance of the VISAT application.
      * @param defaultFileName The default file name.
-     * @return The selected file, <code>null</code> means "Cancel".
+     * @return The selected file, {@code null} means "Cancel".
      */
-    private static File promptForFile(final SnapApp snapApp, String defaultFileName) {
+    private static File promptForFile(String defaultFileName) {
         // Loop while the user does not want to overwrite a selected, existing file
         // or if the user presses "Cancel"
         File file = null;
@@ -142,14 +141,6 @@ public class ExportMetadataAction extends AbstractAction implements HelpCtx.Prov
         exportMetadata();
     }
 
-    /**
-     * Called when a command should update its state.
-     * <p> This method can contain some code which analyzes the underlying element and makes a decision whether
-     * this item or group should be made visible/invisible or enabled/disabled etc.
-     *
-     * @param event the command event
-     */
-
     @Override
     public HelpCtx getHelpCtx() {
         return new HelpCtx(Bundle.CTL_ExportMetadataAction_MenuText());
@@ -171,12 +162,10 @@ public class ExportMetadataAction extends AbstractAction implements HelpCtx.Prov
 
     private void exportMetadata() {
 
-        productMetadata = (MetadataElement) SnapApp.getDefault().getSelectedProductNode();
-        if (!(productMetadata instanceof MetadataElement)) {
-            return;
-        }
+        productMetadata = lookup.lookup(MetadataElement.class);
+
         final String msgText = "How do you want to export the metadata?\n" +
-                productMetadata.getName() + "Element  will be exported.\n"; /*I18N*/
+                productMetadata.getName() + "Element  will be exported.\n";
 
         final int method = SelectExportMethodDialog.run(SnapApp.getDefault().getMainFrame(), getWindowTitle(),
                                                         msgText, getHelpCtx().getHelpID());
@@ -192,7 +181,7 @@ public class ExportMetadataAction extends AbstractAction implements HelpCtx.Prov
         } else if (method == SelectExportMethodDialog.EXPORT_TO_FILE) {
             // Write into file, get file from user
             MetadataViewTopComponent metadataViewTopComponent = new MetadataViewTopComponent(productMetadata);
-            final File file = promptForFile(SnapApp.getDefault(), createDefaultFileName(metadataViewTopComponent));
+            final File file = promptForFile(createDefaultFileName(metadataViewTopComponent));
             if (file == null) {
                 return; // Cancel
             }
@@ -201,7 +190,7 @@ public class ExportMetadataAction extends AbstractAction implements HelpCtx.Prov
                 fileWriter = new FileWriter(file);
             } catch (IOException e) {
                 SnapDialogs.showError(DLG_TITLE,
-                                      ERR_MSG_BASE + "Failed to create file '" + file + "':\n" + e.getMessage()); /*I18N*/
+                                      ERR_MSG_BASE + "Failed to create file '" + file + "':\n" + e.getMessage());
                 return; // Error
             }
             out = new PrintWriter(new BufferedWriter(fileWriter, initialBufferSize));
@@ -240,7 +229,7 @@ public class ExportMetadataAction extends AbstractAction implements HelpCtx.Prov
             }
 
             /**
-             * Called on the event dispatching thread (not on the worker thread) after the <code>construct</code> method
+             * Called on the event dispatching thread (not on the worker thread) after the {@code construct} method
              * has returned.
              */
             @Override

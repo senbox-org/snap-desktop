@@ -296,10 +296,23 @@ public class SnapApp {
     }
 
     /**
+     * Return the currently selected product node.
+     * <p>
+     * The {@link SelectionSourceHint hint} defines what is the primary and secondary selection source. Source is either the
+     * {@link SelectionSourceHint#VIEW scene view} or the {@link SelectionSourceHint#EXPLORER product explorer}. If it is set to
+     * {@link SelectionSourceHint#AUTO} the algorithm tries to make a good guess, checking which component has the focus.
+
      * @return The currently selected product node, or {@code null}.
      */
-    public ProductNode getSelectedProductNode() {
-        return Utilities.actionsGlobalContext().lookup(ProductNode.class);
+    public ProductNode getSelectedProductNode(SelectionSourceHint hint) {
+        ProductNode viewNode = null;
+        ProductSceneView productSceneView = getSelectedProductSceneView();
+        if (productSceneView != null) {
+            viewNode = productSceneView.getProduct();
+        }
+        ProductNode explorerNode = Utilities.actionsGlobalContext().lookup(ProductNode.class);
+
+        return getProductNode(explorerNode, viewNode, productSceneView, hint);
     }
 
     /**
@@ -314,35 +327,16 @@ public class SnapApp {
      */
     public Product getSelectedProduct(SelectionSourceHint hint) {
         Product viewProduct = null;
-        Product explorerProduct = null;
         ProductSceneView productSceneView = getSelectedProductSceneView();
         if (productSceneView != null) {
             viewProduct = productSceneView.getProduct();
         }
+        Product explorerProduct = null;
         ProductNode productNode = Utilities.actionsGlobalContext().lookup(ProductNode.class);
         if (productNode != null) {
             explorerProduct = productNode.getProduct();
         }
-        switch (hint) {
-            case VIEW:
-                if (viewProduct != null) {
-                    return viewProduct;
-                } else {
-                    return explorerProduct;
-                }
-            case EXPLORER:
-                if (explorerProduct != null) {
-                    return explorerProduct;
-                } else {
-                    return viewProduct;
-                }
-            case AUTO:
-                if (productSceneView != null && productSceneView.hasFocus()) {
-                    return viewProduct;
-                }
-                return explorerProduct;
-        }
-        return null;
+        return getProductNode(explorerProduct, viewProduct, productSceneView, hint);
     }
 
     /**
@@ -485,12 +479,12 @@ public class SnapApp {
 
     private String getMainFrameTitle() {
 
-        ProductNode selectedProductNode = getSelectedProductNode();
+        ProductNode selectedProductNode = getSelectedProductNode(SelectionSourceHint.VIEW);
         Product selectedProduct = null;
         if (selectedProductNode != null) {
             selectedProduct = selectedProductNode.getProduct();
             if (selectedProduct == null) {
-                selectedProduct = getSelectedProduct(SelectionSourceHint.EXPLORER);
+                selectedProduct = getSelectedProduct(SelectionSourceHint.VIEW);
             }
         }
 
@@ -528,6 +522,29 @@ public class SnapApp {
 
     private void updateMainFrameTitle() {
         getMainFrame().setTitle(getMainFrameTitle());
+    }
+
+    private static <T extends ProductNode> T getProductNode(T explorerNode, T viewNode, ProductSceneView sceneView, SelectionSourceHint hint) {
+        switch (hint) {
+            case VIEW:
+                if (viewNode != null) {
+                    return viewNode;
+                } else {
+                    return explorerNode;
+                }
+            case EXPLORER:
+                if (explorerNode != null) {
+                    return explorerNode;
+                } else {
+                    return viewNode;
+                }
+            case AUTO:
+            default:
+                if (sceneView != null && sceneView.hasFocus()) {
+                    return viewNode;
+                }
+                return explorerNode;
+        }
     }
 
     /**

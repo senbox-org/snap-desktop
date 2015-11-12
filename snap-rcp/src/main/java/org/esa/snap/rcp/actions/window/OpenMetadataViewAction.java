@@ -36,6 +36,8 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import java.awt.event.ActionEvent;
 
+import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
+
 /**
  * This action opens an Metadata View of the currently selected Metadata Node
  */
@@ -81,7 +83,7 @@ public class OpenMetadataViewAction extends AbstractAction implements ContextAwa
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        openMetadataView((MetadataElement) SnapApp.getDefault().getSelectedProductNode());
+        openMetadataView((MetadataElement) SnapApp.getDefault().getSelectedProductNode(EXPLORER));
     }
     
     public void openMetadataView(final MetadataElement element) {

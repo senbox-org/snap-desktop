@@ -46,6 +46,8 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import java.awt.event.ActionEvent;
 
+import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
+
 
 @ActionID(
         category = "Tools",
@@ -185,7 +187,7 @@ public class FilteredBandAction extends AbstractAction  implements LookupListene
     }
 
     private CreateFilteredBandDialog.DialogData promptForFilter() {
-        final ProductNode selectedNode = SnapApp.getDefault().getSelectedProductNode();
+        final ProductNode selectedNode = SnapApp.getDefault().getSelectedProductNode(EXPLORER);
         final Product product = selectedNode.getProduct();
         final CreateFilteredBandDialog dialog = new CreateFilteredBandDialog(product, selectedNode.getName(), "createFilteredBand");
         if (dialog.show() == ModalDialog.ID_OK) {
