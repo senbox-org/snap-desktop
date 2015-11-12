@@ -58,6 +58,8 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.net.URISyntaxException;
 
+import static org.esa.snap.rcp.SnapApp.ProductSelectionHint.*;
+
 @TopComponent.Description(
         preferredID = "WWAnalysisToolView",
         iconBase = "org/esa/snap/worldwind/icons/earth24.png",
@@ -210,7 +212,7 @@ public class WWAnalysisToolView extends WWBaseToolView implements WWView {
                         }
                     });
                     setProducts(snapApp.getProductManager().getProducts());
-                    setSelectedProduct(snapApp.getSelectedProduct());
+                    setSelectedProduct(snapApp.getSelectedProduct(VIEW));
 
                     // Put the pieces together.
                     mainPane.add(wwjPanel, BorderLayout.CENTER);

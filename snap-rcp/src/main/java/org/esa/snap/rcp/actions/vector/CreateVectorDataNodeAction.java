@@ -56,6 +56,8 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.text.MessageFormat;
 
+import static org.esa.snap.rcp.SnapApp.ProductSelectionHint.*;
+
 @ActionID(
         category = "Tools",
         id = "CreateVectorDataNodeAction"
@@ -151,7 +153,7 @@ public class CreateVectorDataNodeAction extends AbstractAction implements Contex
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        Product product = SnapApp.getDefault().getSelectedProduct();
+        Product product = SnapApp.getDefault().getSelectedProduct(AUTO);
         if (product != null) {
             DialogData dialogData = new DialogData(product.getVectorDataGroup());
             PropertySet propertySet = PropertyContainer.createObjectBacked(dialogData);

@@ -36,6 +36,8 @@ import java.awt.event.ActionEvent;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
+import static org.esa.snap.rcp.SnapApp.ProductSelectionHint.*;
+
 @ActionID(
         category = "Tools",
         id = "BandMathsAction"
@@ -80,7 +82,7 @@ public class BandMathsAction extends AbstractAction implements HelpCtx.Provider 
             products.add(prod);
         }
 
-        Product product = SnapApp.getDefault().getSelectedProduct();
+        Product product = SnapApp.getDefault().getSelectedProduct(EXPLORER);
         if (product == null) {
             product = products.getAt(0);
         }

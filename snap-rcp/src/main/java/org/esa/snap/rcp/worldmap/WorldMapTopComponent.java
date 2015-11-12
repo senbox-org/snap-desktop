@@ -36,6 +36,8 @@ import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 
+import static org.esa.snap.rcp.SnapApp.ProductSelectionHint.*;
+
 @TopComponent.Description(
         preferredID = "WorldMapTopComponent",
         iconBase = "org/esa/snap/rcp/icons/WorldMap.gif",
@@ -100,7 +102,7 @@ public class WorldMapTopComponent extends ToolTopComponent {
             }
         });
         setProducts(snapApp.getProductManager().getProducts());
-        setSelectedProduct(snapApp.getSelectedProduct());
+        setSelectedProduct(snapApp.getSelectedProduct(VIEW));
 
         add(mainPane, BorderLayout.CENTER);
     }

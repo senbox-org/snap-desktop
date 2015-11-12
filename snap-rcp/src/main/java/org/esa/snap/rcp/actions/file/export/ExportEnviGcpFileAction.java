@@ -47,6 +47,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import static org.esa.snap.rcp.SnapApp.ProductSelectionHint.*;
+
 /**
  * This actions exports ground control points of the selected product in a ENVI format.
  */
@@ -101,7 +103,7 @@ public class ExportEnviGcpFileAction extends AbstractAction implements LookupLis
 
     @Override
     public void resultChanged(LookupEvent lookupEvent) {
-        setEnabled(SnapApp.getDefault().getSelectedProduct() != null);
+        setEnabled(SnapApp.getDefault().getSelectedProduct(AUTO) != null);
     }
 
     @Override
@@ -111,12 +113,12 @@ public class ExportEnviGcpFileAction extends AbstractAction implements LookupLis
 
     private void exportGroundControlPoints() {
         SnapApp snapApp = SnapApp.getDefault();
-        final Product product = snapApp.getSelectedProduct();
+        final Product product = snapApp.getSelectedProduct(AUTO);
         if (product == null) {
             return;
         }
 
-        JFileChooser fileChooser = createFileChooser(snapApp);
+        JFileChooser fileChooser = createFileChooser();
         int result = fileChooser.showSaveDialog(snapApp.getMainFrame());
         if (result != JFileChooser.APPROVE_OPTION) {
             return;
@@ -133,7 +135,8 @@ public class ExportEnviGcpFileAction extends AbstractAction implements LookupLis
         if (geoCoding == null) {
             return;
         }
-        if (!SnapDialogs.requestOverwriteDecision(Bundle.CTL_ExportEnviGcpFileAction_DialogTitle(), absoluteFile)) {
+        final Boolean decision = SnapDialogs.requestOverwriteDecision(Bundle.CTL_ExportEnviGcpFileAction_DialogTitle(), absoluteFile);
+        if (decision == null || !decision) {
             return;
         }
         if (absoluteFile.exists()) {
@@ -180,7 +183,7 @@ public class ExportEnviGcpFileAction extends AbstractAction implements LookupLis
         return "" + mapX + "\t" + mapY + "\t" + imageX + "\t" + imageY + GCP_LINE_SEPARATOR;
     }
 
-    private JFileChooser createFileChooser(final SnapApp snapApp) {
+    private JFileChooser createFileChooser() {
         String lastDirPath = Config.instance().load().preferences().get(GCP_EXPORT_DIR_PREFERENCES_KEY,
                                                                         SystemUtils.getUserHomeDir().getPath());
         SnapFileChooser fileChooser = new SnapFileChooser();

@@ -33,9 +33,16 @@ import org.openide.awt.ActionReferences;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
-import javax.swing.*;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.border.EmptyBorder;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Window;
+
+import static org.esa.snap.rcp.SnapApp.ProductSelectionHint.*;
 
 @TopComponent.Description(
         preferredID = "WWWorldMapToolView",
@@ -144,7 +151,7 @@ public class WWWorldViewToolView extends WWBaseToolView implements WWView {
                     });
 
                     setProducts(SnapApp.getDefault().getProductManager().getProducts());
-                    setSelectedProduct(SnapApp.getDefault().getSelectedProduct());
+                    setSelectedProduct(SnapApp.getDefault().getSelectedProduct(VIEW));
                 } catch (Throwable e) {
                     SnapApp.getDefault().handleError("Unable to initialize WWWorldMapToolView: " + e.getMessage(), e);
                 }

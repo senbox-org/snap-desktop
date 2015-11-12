@@ -30,6 +30,8 @@ import java.io.File;
 import java.lang.ref.WeakReference;
 import java.text.MessageFormat;
 
+import static org.esa.snap.rcp.SnapApp.ProductSelectionHint.*;
+
 /**
  * Action which closes a selected product.
  *
@@ -120,7 +122,7 @@ public final class SaveProductAction extends AbstractAction implements ContextAw
         if (productRef != null) {
             product = productRef.get();
         } else {
-            product = SnapApp.getDefault().getSelectedProduct();
+            product = SnapApp.getDefault().getSelectedProduct(EXPLORER);
         }
         if (product != null) {
             if (product.getFileLocation() != null && (product.getProductReader() == null || product.getProductReader() instanceof DimapProductReader)) {
