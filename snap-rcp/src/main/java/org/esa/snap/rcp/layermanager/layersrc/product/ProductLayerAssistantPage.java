@@ -199,7 +199,7 @@ class ProductLayerAssistantPage extends AbstractLayerSourceAssistantPage {
     private void collectCompatibleRasterDataNodes(CoordinateReferenceSystem thisCrs,
                                                   RasterDataNode[] bands, Collection<RasterDataNode> rasterDataNodes) {
         for (RasterDataNode node : bands) {
-            CoordinateReferenceSystem otherCrs = Product.getAppropriateSceneCRS(node.getGeoCoding());
+            CoordinateReferenceSystem otherCrs = Product.findModelCRS(node.getGeoCoding());
             // For GeoTools, two CRS where unequal if the authorities of their CS only differ in version
             // This happened with the S-2 L1C CRS, namely an EPSG:32615. Here one authority's version was null,
             // the other "7.9". Extremely annoying to debug and find out :-(   (nf, Feb 2013)

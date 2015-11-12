@@ -31,8 +31,8 @@ import com.bc.ceres.glayer.support.ImageLayer;
 import com.bc.ceres.glevel.MultiLevelSource;
 import com.bc.ceres.glevel.support.DefaultMultiLevelModel;
 import com.bc.ceres.glevel.support.DefaultMultiLevelSource;
+import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.RasterDataNode;
-import org.esa.snap.core.image.ImageManager;
 import org.geotools.data.ows.CRSEnvelope;
 import org.geotools.data.ows.StyleImpl;
 import org.geotools.data.wms.WebMapServer;
@@ -141,7 +141,7 @@ public class WmsLayerType extends ImageLayer.Type {
 
             final int sceneWidth = raster.getRasterWidth();
             final int sceneHeight = raster.getRasterHeight();
-            AffineTransform i2mTransform = ImageManager.getImageToModelTransform(raster.getGeoCoding());
+            AffineTransform i2mTransform = Product.findImageToModelTransform(raster.getGeoCoding());
             i2mTransform.scale((double) sceneWidth / image.getWidth(), (double) sceneHeight / image.getHeight());
             final Rectangle2D bounds = DefaultMultiLevelModel.getModelBounds(i2mTransform, image);
             final DefaultMultiLevelModel multiLevelModel = new DefaultMultiLevelModel(1, i2mTransform, bounds);

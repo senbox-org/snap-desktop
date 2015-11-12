@@ -25,7 +25,6 @@ import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.Mask;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductNodeGroup;
-import org.esa.snap.core.image.ImageManager;
 import org.esa.snap.core.layer.MaskLayerType;
 import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.rcp.SnapApp;
@@ -240,7 +239,7 @@ public class MagicWandInteractor extends ViewportInteractor implements MagicWand
         final Point2D mp = toModelPoint(event);
         final Point2D ip;
         if (product.getSceneGeoCoding() != null) {
-            AffineTransform transform = ImageManager.getImageToModelTransform(product.getSceneGeoCoding());
+            AffineTransform transform = Product.findImageToModelTransform(product.getSceneGeoCoding());
             try {
                 ip = transform.inverseTransform(mp, null);
             } catch (NoninvertibleTransformException e) {

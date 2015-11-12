@@ -40,7 +40,6 @@ import org.esa.snap.core.datamodel.TiePointGrid;
 import org.esa.snap.core.datamodel.VirtualBand;
 import org.esa.snap.core.dataop.barithm.BandArithmetic;
 import org.esa.snap.core.image.ColoredBandImageMultiLevelSource;
-import org.esa.snap.core.image.ImageManager;
 import org.esa.snap.core.jexp.ParseException;
 import org.esa.snap.core.jexp.Term;
 import org.esa.snap.core.param.ParamChangeEvent;
@@ -988,7 +987,7 @@ public class ProductSubsetDialog extends ModalDialog {
         }
 
         private Rectangle getScaledRectangle(Rectangle rectangle) {
-            final AffineTransform i2mTransform = ImageManager.getImageToModelTransform(product.getSceneGeoCoding());
+            final AffineTransform i2mTransform = Product.findImageToModelTransform(product.getSceneGeoCoding());
             final double scaleX = i2mTransform.getScaleX();
             final double scaleY = i2mTransform.getScaleY();
             double scaleFactorY = Math.abs(scaleY / scaleX);
