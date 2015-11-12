@@ -877,6 +877,9 @@ class MaskFormActions {
                 }
             });
             mask.setDescription(code);
+            if (getMaskForm().getRaster().getProduct().isMultiSizeProduct()) {
+                ProductUtils.copyGCandI2M(getMaskForm().getRaster(), mask);
+            }
             getMaskForm().addMask(mask);
         }
     }

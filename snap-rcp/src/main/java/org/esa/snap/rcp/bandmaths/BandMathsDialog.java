@@ -38,6 +38,7 @@ import org.esa.snap.core.dataop.barithm.BandArithmetic;
 import org.esa.snap.core.dataop.barithm.RasterDataSymbol;
 import org.esa.snap.core.jexp.ParseException;
 import org.esa.snap.core.jexp.Term;
+import org.esa.snap.core.util.ProductUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.actions.window.OpenImageViewAction;
@@ -140,11 +141,12 @@ class BandMathsDialog extends ModalDialog {
         final String validMaskExpression;
         int width = targetProduct.getSceneRasterWidth();
         int height = targetProduct.getSceneRasterHeight();
+        final RasterDataNode[] refRasters;
         try {
             Product[] products = getCompatibleProducts();
             int defaultProductIndex = Arrays.asList(products).indexOf(targetProduct);
             validMaskExpression = BandArithmetic.getValidMaskExpression(getExpression(), products, defaultProductIndex, null);
-            final RasterDataNode[] refRasters = BandArithmetic.getRefRasters(getExpression(), products, defaultProductIndex);
+            refRasters = BandArithmetic.getRefRasters(getExpression(), products, defaultProductIndex);
             if (refRasters.length > 0) {
                 width = refRasters[0].getRasterWidth();
                 height = refRasters[0].getRasterHeight();
@@ -163,6 +165,10 @@ class BandMathsDialog extends ModalDialog {
         } else {
             band = new Band(getBandName(), ProductData.TYPE_FLOAT32, width, height);
             setBandProperties(band, "");
+        }
+
+        if (targetProduct.isMultiSizeProduct() && refRasters.length > 0) {
+            ProductUtils.copyGCandI2M(refRasters[0], band);
         }
 
         ProductNodeGroup<Band> bandGroup = targetProduct.getBandGroup();
