@@ -21,7 +21,7 @@ import org.esa.snap.ui.layer.AbstractLayerSourceAssistantPage;
 import org.esa.snap.ui.layer.LayerSource;
 import org.esa.snap.ui.layer.LayerSourcePageContext;
 
-import static org.esa.snap.rcp.SnapApp.ProductSelectionHint.*;
+import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
 
 /**
  * A layer source for ESRI shape files.

@@ -56,7 +56,7 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.text.MessageFormat;
 
-import static org.esa.snap.rcp.SnapApp.ProductSelectionHint.*;
+import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
 
 @ActionID(
         category = "Tools",

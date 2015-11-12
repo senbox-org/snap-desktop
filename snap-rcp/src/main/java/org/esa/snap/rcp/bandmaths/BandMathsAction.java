@@ -36,7 +36,7 @@ import java.awt.event.ActionEvent;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-import static org.esa.snap.rcp.SnapApp.ProductSelectionHint.*;
+import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
 
 @ActionID(
         category = "Tools",

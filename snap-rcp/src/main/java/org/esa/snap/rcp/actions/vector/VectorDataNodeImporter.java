@@ -41,7 +41,7 @@ import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.prefs.Preferences;
 
-import static org.esa.snap.rcp.SnapApp.ProductSelectionHint.*;
+import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
 
 // todo - test with shapefile that has no CRS (nf, 2012-04-05)
 

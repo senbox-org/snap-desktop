@@ -305,14 +305,14 @@ public class SnapApp {
     /**
      * Return the currently selected product.
      * <p>
-     * The {@link ProductSelectionHint hint} defines what is the primary and secondary selection source. Source is either the
-     * {@link ProductSelectionHint#VIEW scene view} or the {@link ProductSelectionHint#EXPLORER product explorer}. If it is set to
-     * {@link ProductSelectionHint#AUTO} the algorithm tries to make a good guess, checking which component has the focus.
+     * The {@link SelectionSourceHint hint} defines what is the primary and secondary selection source. Source is either the
+     * {@link SelectionSourceHint#VIEW scene view} or the {@link SelectionSourceHint#EXPLORER product explorer}. If it is set to
+     * {@link SelectionSourceHint#AUTO} the algorithm tries to make a good guess, checking which component has the focus.
      *
      * @param hint gives a hint to the implementation which selection source should be preferred.
      * @return The currently selected product or {@code null}.
      */
-    public Product getSelectedProduct(ProductSelectionHint hint) {
+    public Product getSelectedProduct(SelectionSourceHint hint) {
         Product viewProduct = null;
         Product explorerProduct = null;
         ProductSceneView productSceneView = getSelectedProductSceneView();
@@ -490,7 +490,7 @@ public class SnapApp {
         if (selectedProductNode != null) {
             selectedProduct = selectedProductNode.getProduct();
             if (selectedProduct == null) {
-                selectedProduct = getSelectedProduct(ProductSelectionHint.EXPLORER);
+                selectedProduct = getSelectedProduct(SelectionSourceHint.EXPLORER);
             }
         }
 
@@ -691,7 +691,7 @@ public class SnapApp {
 
         @Override
         public Product getSelectedProduct() {
-            return getDefault().getSelectedProduct(ProductSelectionHint.AUTO);
+            return getDefault().getSelectedProduct(SelectionSourceHint.AUTO);
         }
 
         @Override
@@ -765,9 +765,9 @@ public class SnapApp {
     }
 
     /**
-     * Provides a hint to {@link SnapApp#getSelectedProduct(ProductSelectionHint)} } which selection provider should be used as primary selection source
+     * Provides a hint to {@link SnapApp#getSelectedProduct(SelectionSourceHint)} } which selection provider should be used as primary selection source
      */
-    public enum ProductSelectionHint {
+    public enum SelectionSourceHint {
         /**
          * The scene view shall be preferred as selection source.
          */

@@ -30,7 +30,7 @@ import java.io.File;
 import java.lang.ref.WeakReference;
 import java.text.MessageFormat;
 
-import static org.esa.snap.rcp.SnapApp.ProductSelectionHint.*;
+import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
 
 /**
  * Action which closes a selected product.

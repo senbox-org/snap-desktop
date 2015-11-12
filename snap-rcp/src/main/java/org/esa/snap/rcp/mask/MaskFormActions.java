@@ -85,7 +85,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.esa.snap.rcp.SnapApp.ProductSelectionHint.*;
+import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
 
 /**
  * @author Marco Peters
