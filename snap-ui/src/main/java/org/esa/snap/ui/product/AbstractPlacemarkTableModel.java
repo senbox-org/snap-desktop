@@ -19,7 +19,6 @@ package org.esa.snap.ui.product;
 import com.bc.ceres.core.ProgressMonitor;
 import com.vividsolutions.jts.geom.Point;
 import org.esa.snap.core.datamodel.Band;
-import org.esa.snap.core.datamodel.GeoCoding;
 import org.esa.snap.core.datamodel.GeoPos;
 import org.esa.snap.core.datamodel.PixelPos;
 import org.esa.snap.core.datamodel.Placemark;
@@ -29,10 +28,6 @@ import org.esa.snap.core.datamodel.ProductNodeEvent;
 import org.esa.snap.core.datamodel.ProductNodeListenerAdapter;
 import org.esa.snap.core.datamodel.TiePointGrid;
 import org.esa.snap.core.util.math.MathUtils;
-import org.geotools.geometry.DirectPosition2D;
-import org.opengis.geometry.DirectPosition;
-import org.opengis.referencing.operation.MathTransform;
-import org.opengis.referencing.operation.TransformException;
 
 import javax.swing.table.DefaultTableModel;
 import java.awt.geom.AffineTransform;
@@ -151,35 +146,6 @@ public abstract class AbstractPlacemarkTableModel extends DefaultTableModel {
     public abstract boolean isCellEditable(int rowIndex, int columnIndex);
 
     protected abstract Object getStandardColumnValueAt(int rowIndex, int columnIndex);
-
-    protected PixelPos getSceneCoordsFromPlacemark(Placemark placemark) {
-        //todo remove this and demand that pixelpos of a placemark must be in scene coords - tf 20151111
-        PixelPos pixelPos;
-        if (getProduct().isMultiSizeProduct()) {
-            final Object defaultGeometry = placemark.getFeature().getDefaultGeometry();
-            if (!(defaultGeometry instanceof Point)) {
-                throw new IllegalStateException("A placemark must have a point feature");
-            }
-            final Point point = (Point) defaultGeometry;
-            pixelPos = new PixelPos(point.getX(), point.getY());
-            final GeoCoding sceneGeoCoding = getProduct().getSceneGeoCoding();
-            if (sceneGeoCoding != null) {
-                final MathTransform imageToMapTransform = sceneGeoCoding.getImageToMapTransform();
-                if (imageToMapTransform instanceof AffineTransform) {
-                    try {
-                        final DirectPosition transform =
-                                imageToMapTransform.inverse().transform(new DirectPosition2D(pixelPos.getX(), pixelPos.getY()), null);
-                        pixelPos = new PixelPos(transform.getCoordinate()[0], transform.getCoordinate()[1]);
-                    } catch (TransformException e) {
-                        pixelPos = null;
-                    }
-                }
-            }
-        } else {
-            pixelPos = placemark.getPixelPos();
-        }
-        return pixelPos;
-    }
 
     @Override
     public int getRowCount() {

@@ -53,7 +53,7 @@ public class GcpTableModel extends AbstractPlacemarkTableModel {
         double x = Double.NaN;
         double y = Double.NaN;
 
-        final PixelPos pixelPos = getSceneCoordsFromPlacemark(placemark);
+        final PixelPos pixelPos = placemark.getPixelPos();
         if (pixelPos != null) {
             x = pixelPos.x;
             y = pixelPos.y;
