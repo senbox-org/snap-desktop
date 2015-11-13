@@ -1,5 +1,32 @@
 <filesystem>
 
+    <folder name="Actions">
+        <folder name="Operators">
+            <file name="org-esa-snap-gpf-ConvertDatatypeOp-Action.instance">
+                <attr name="instanceCreate" methodvalue="org.openide.awt.Actions.alwaysEnabled"/>
+                <attr name="delegate" methodvalue="org.esa.snap.graphbuilder.rcp.actions.OperatorAction.create"/>
+                <attr name="displayName" stringvalue="Convert Datatype"/>
+                <attr name="operatorName" stringvalue="Convert-Datatype"/>
+                <attr name="dialogTitle" stringvalue="Convert Datatype"/>
+                <attr name="targetProductNameSuffix" stringvalue="_Cnv"/>
+                <attr name="ShortDescription" stringvalue="Change the datatype of the product"/>
+                <attr name="helpId" stringvalue="ConvertDatatypeOp"/>
+            </file>
+        </folder>
+    </folder>
+
+    <folder name="Menu">
+        <folder name="Raster">
+            <folder name="Data Conversion">
+                <attr name="position" intvalue="350"/>
+                <file name="org-esa-snap-gpf-ConvertDatatypeOp-Action.shadow">
+                    <attr name="originalFile" stringvalue="Actions/Operators/org-esa-snap-gpf-ConvertDatatypeOp-Action.instance"/>
+                    <attr name="position" intvalue="100"/>
+                </file>
+            </folder>
+        </folder>
+    </folder>
+
     <folder name="OperatorUIs">
         <file name="org.esa.snap.core.gpf.ui.Mosaic">
             <attr name="operatorName" stringvalue="Mosaic"/>
