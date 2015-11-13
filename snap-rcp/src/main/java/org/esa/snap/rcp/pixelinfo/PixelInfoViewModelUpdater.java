@@ -42,8 +42,8 @@ import org.opengis.referencing.operation.TransformException;
 
 import javax.media.jai.PlanarImage;
 import javax.swing.SwingUtilities;
-import java.awt.Dimension;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.awt.image.Raster;
 import java.util.Calendar;
@@ -72,9 +72,13 @@ public class PixelInfoViewModelUpdater {
     private int pixelX;
     private int pixelY;
     private int level;
-    private int levelZeroX;
-    private int levelZeroY;
-    private boolean pixelPosValid;
+    private int levelZeroRasterX;
+    private int levelZeroRasterY;
+    private double sceneX;
+    private double sceneY;
+    private int levelZeroSceneX;
+    private int levelZeroSceneY;
+    private boolean pixelPosValidInRaster;
 
     private final PixelInfoView pixelInfoView;
 
@@ -136,14 +140,38 @@ public class PixelInfoViewModelUpdater {
         this.pixelX = pixelX;
         this.pixelY = pixelY;
         this.level = level;
-        this.pixelPosValid = pixelPosValid;
+        this.pixelPosValidInRaster = pixelPosValid;
         AffineTransform i2mTransform = currentView.getBaseImageLayer().getImageToModelTransform(level);
         Point2D modelP = i2mTransform.transform(new Point2D.Double(pixelX + 0.5, pixelY + 0.5), null);
+        //todo [Multisize_Products] use scenerastertransform instead - tf 20151113
+        sceneX = modelP.getX();
+        sceneY = modelP.getY();
         AffineTransform m2iTransform = view.getBaseImageLayer().getModelToImageTransform();
         Point2D levelZeroP = m2iTransform.transform(modelP, null);
-        levelZeroX = (int) Math.floor(levelZeroP.getX());
-        levelZeroY = (int) Math.floor(levelZeroP.getY());
-
+        levelZeroRasterX = (int) Math.floor(levelZeroP.getX());
+        levelZeroRasterY = (int) Math.floor(levelZeroP.getY());
+        //todo [multisize_products] ask for different imagetomodeltransforms - tf 20151113
+        if (product.isMultiSizeProduct()) {
+            try {
+                final GeoCoding sceneGeoCoding = product.getSceneGeoCoding();
+                if (sceneGeoCoding != null) {
+                    final MathTransform imageToMapTransform = sceneGeoCoding.getImageToMapTransform();
+                    if (imageToMapTransform instanceof AffineTransform) {
+                        final MathTransform modelToImage = imageToMapTransform.inverse();
+                        final DirectPosition2D pos = new DirectPosition2D(sceneX, sceneY);
+                        final DirectPosition position = modelToImage.transform(pos, pos);
+                        levelZeroSceneX = (int) Math.floor(position.getCoordinate()[0]);
+                        levelZeroSceneY = (int) Math.floor(position.getCoordinate()[1]);
+                    } else {
+                        levelZeroSceneX = (int) Math.floor(sceneX);
+                        levelZeroSceneY = (int) Math.floor(sceneY);
+                    }
+                }
+            } catch (TransformException e) {
+                levelZeroSceneX = levelZeroRasterX;
+                levelZeroSceneY = levelZeroRasterY;
+            }
+        }
         updateDataDisplay(clearRasterTableSelection);
     }
 
@@ -196,16 +224,13 @@ public class PixelInfoViewModelUpdater {
             final GeoCoding geoCoding = currentRaster.getGeoCoding();
             positionModel.addRow("Image-X", "", "pixel");
             positionModel.addRow("Image-Y", "", "pixel");
-
             if (getCurrentProduct().isMultiSizeProduct()) {
                 positionModel.addRow("Scene-X", "", "pixel");
                 positionModel.addRow("Scene-Y", "", "pixel");
             }
-
             if (geoCoding != null) {
                 positionModel.addRow("Longitude", "", "degree");
                 positionModel.addRow("Latitude", "", "degree");
-
                 if (geoCoding instanceof MapGeoCoding) {
                     final MapGeoCoding mapGeoCoding = (MapGeoCoding) geoCoding;
                     final String mapUnit = mapGeoCoding.getMapInfo().getMapProjection().getMapUnit();
@@ -223,16 +248,17 @@ public class PixelInfoViewModelUpdater {
     }
 
     private void updatePositionValues() {
-        final boolean available = isSampleValueAvailable(levelZeroX, levelZeroY, pixelPosValid);
+        final boolean availableInRaster = pixelPosValidInRaster &&
+                isSampleValueAvailableInRaster(levelZeroRasterX, levelZeroRasterY, currentRaster);
+        final boolean availableInScene = isSampleValueAvailableInScene();
         final double offset = 0.5 + (pixelInfoView.getShowPixelPosOffset1() ? 1.0 : 0.0);
-        final double pX = levelZeroX + offset;
-        final double pY = levelZeroY + offset;
+        final double pX = levelZeroRasterX + offset;
+        final double pY = levelZeroRasterY + offset;
 
         String tix, tiy, tsx, tsy, tmx, tmy, tgx, tgy;
         tix = tiy = tsx = tsy = tmx = tmy = tgx = tgy = _INVALID_POS_TEXT;
         GeoCoding geoCoding = currentRaster.getGeoCoding();
-        if (available) {
-            PixelPos pixelPos = new PixelPos(pX, pY);
+        if (availableInRaster) {
             if (pixelInfoView.getShowPixelPosDecimal()) {
                 tix = String.valueOf(pX);
                 tiy = String.valueOf(pY);
@@ -240,57 +266,42 @@ public class PixelInfoViewModelUpdater {
                 tix = String.valueOf((int) Math.floor(pX));
                 tiy = String.valueOf((int) Math.floor(pY));
             }
-            if (getCurrentProduct().isMultiSizeProduct()) {
-                final PixelPos rasterPos = new PixelPos(pX, pY);
-                //todo [Multisize_Products] use scenerastertransform instead (see commented code below)
-                final AffineTransform rasterImageToSceneTransform = currentRaster.getImageToModelTransform();
-                Point2D sceneCoords = rasterImageToSceneTransform.transform(rasterPos, null);
-                try {
-                    final GeoCoding sceneGeoCoding = currentProduct.getSceneGeoCoding();
-                    if (sceneGeoCoding != null) {
-                        final MathTransform imageToMapTransform = sceneGeoCoding.getImageToMapTransform();
-                        if (imageToMapTransform instanceof AffineTransform) {
-                            final MathTransform modelToImage = imageToMapTransform.inverse();
-                            final DirectPosition position =
-                                    modelToImage.transform(new DirectPosition2D(sceneCoords), new DirectPosition2D(sceneCoords));
-                            sceneCoords = new PixelPos(position.getCoordinate()[0], position.getCoordinate()[1]);
-                        }
-                    }
-                } catch (TransformException e) {
-                    e.printStackTrace();
-                }
-//                try {
-//                    final PixelPos sceneCoords = SceneRasterTransformUtils.transformToSceneCoords(currentRaster, rasterPos);
-                    tsx = String.valueOf((int) Math.floor(sceneCoords.getX() + offset));
-                    tsy = String.valueOf((int) Math.floor(sceneCoords.getY() + offset));
-//                } catch (SceneRasterTransformException e) {
-                    //keep invalid pos message
-//                }
+        }
+        if (availableInScene && getCurrentProduct().isMultiSizeProduct()) {
+            double sX = levelZeroSceneX + offset;
+            double sY = levelZeroSceneY + offset;
+            if (pixelInfoView.getShowPixelPosDecimal()) {
+                tsx = String.valueOf(sX);
+                tsy = String.valueOf(sY);
+            } else {
+                tsx = String.valueOf((int) Math.floor(sX));
+                tsy = String.valueOf((int) Math.floor(sY));
             }
-            if (geoCoding != null) {
-                GeoPos geoPos = geoCoding.getGeoPos(pixelPos, null);
-                if (pixelInfoView.getShowGeoPosDecimals()) {
-                    tgx = String.format("%.6f", geoPos.getLon());
-                    tgy = String.format("%.6f", geoPos.getLat());
-                } else {
-                    tgx = geoPos.getLonString();
-                    tgy = geoPos.getLatString();
-                }
-                if (geoCoding instanceof MapGeoCoding) {
-                    final MapGeoCoding mapGeoCoding = (MapGeoCoding) geoCoding;
-                    final MapTransform mapTransform = mapGeoCoding.getMapInfo().getMapProjection().getMapTransform();
-                    Point2D mapPoint = mapTransform.forward(geoPos, null);
-                    tmx = String.valueOf(MathUtils.round(mapPoint.getX(), 10000.0));
-                    tmy = String.valueOf(MathUtils.round(mapPoint.getY(), 10000.0));
-                } else if (geoCoding instanceof CrsGeoCoding) {
-                    MathTransform transform = geoCoding.getImageToMapTransform();
-                    try {
-                        DirectPosition position = transform.transform(new DirectPosition2D(pX, pY), null);
-                        double[] coordinate = position.getCoordinate();
-                        tmx = String.valueOf(coordinate[0]);
-                        tmy = String.valueOf(coordinate[1]);
-                    } catch (TransformException ignore) {
-                    }
+        }
+        if (availableInRaster && geoCoding != null) {
+            PixelPos pixelPos = new PixelPos(pX, pY);
+            GeoPos geoPos = geoCoding.getGeoPos(pixelPos, null);
+            if (pixelInfoView.getShowGeoPosDecimals()) {
+                tgx = String.format("%.6f", geoPos.getLon());
+                tgy = String.format("%.6f", geoPos.getLat());
+            } else {
+                tgx = geoPos.getLonString();
+                tgy = geoPos.getLatString();
+            }
+            if (geoCoding instanceof MapGeoCoding) {
+                final MapGeoCoding mapGeoCoding = (MapGeoCoding) geoCoding;
+                final MapTransform mapTransform = mapGeoCoding.getMapInfo().getMapProjection().getMapTransform();
+                Point2D mapPoint = mapTransform.forward(geoPos, null);
+                tmx = String.valueOf(MathUtils.round(mapPoint.getX(), 10000.0));
+                tmy = String.valueOf(MathUtils.round(mapPoint.getY(), 10000.0));
+            } else if (geoCoding instanceof CrsGeoCoding) {
+                MathTransform transform = geoCoding.getImageToMapTransform();
+                try {
+                    DirectPosition position = transform.transform(new DirectPosition2D(pX, pY), null);
+                    double[] coordinate = position.getCoordinate();
+                    tmx = String.valueOf(coordinate[0]);
+                    tmy = String.valueOf(coordinate[1]);
+                } catch (TransformException ignore) {
                 }
             }
         }
@@ -323,13 +334,11 @@ public class PixelInfoViewModelUpdater {
         final ProductData.UTC utcStartTime = currentProduct.getStartTime();
         final ProductData.UTC utcEndTime = currentProduct.getEndTime();
 
-        if (utcStartTime == null || utcEndTime == null ||
-                !isSampleValueAvailable(0, levelZeroY, true) ||
-                !equalsViewRasterSize(currentProduct.getSceneRasterSize())) {
+        if (utcStartTime == null || utcEndTime == null || !isSampleValueAvailableInScene()) {
             timeModel.updateValue("No date information", 0);
             timeModel.updateValue("No time information", 1);
         } else {
-            final ProductData.UTC utcCurrentLine = ProductUtils.getScanLineTime(currentProduct, levelZeroY + 0.5);
+            final ProductData.UTC utcCurrentLine = ProductUtils.getScanLineTime(currentProduct, levelZeroSceneY + 0.5);
             Assert.notNull(utcCurrentLine, "utcCurrentLine");
             final Calendar currentLineTime = utcCurrentLine.getAsCalendar();
 
@@ -377,15 +386,10 @@ public class PixelInfoViewModelUpdater {
 
     private boolean shouldDisplayBand(final Band band) {
         PixelInfoView.DisplayFilter displayFilter = pixelInfoView.getDisplayFilter();
-        final boolean equalSize = equalsViewRasterSize(band.getRasterSize());
         if (displayFilter != null) {
-            return displayFilter.accept(band) && equalSize;
+            return displayFilter.accept(band);
         }
-        return band.hasRasterData() && equalSize;
-    }
-
-    private boolean equalsViewRasterSize(Dimension size) {
-        return currentRaster != null && currentRaster.getRasterSize().equals(size);
+        return band.hasRasterData();
     }
 
     private void resetTiePointGridTableModel() {
@@ -394,9 +398,7 @@ public class PixelInfoViewModelUpdater {
             final int numTiePointGrids = currentProduct.getNumTiePointGrids();
             for (int i = 0; i < numTiePointGrids; i++) {
                 final TiePointGrid tiePointGrid = currentProduct.getTiePointGridAt(i);
-                if (equalsViewRasterSize(tiePointGrid.getRasterSize())) {
-                    tiePointModel.addRow(tiePointGrid.getName(), "", tiePointGrid.getUnit());
-                }
+                tiePointModel.addRow(tiePointGrid.getName(), "", tiePointGrid.getUnit());
             }
         }
     }
@@ -424,15 +426,29 @@ public class PixelInfoViewModelUpdater {
     }
 
     private void updateFlagPixelValues() {
-        final boolean available = isSampleValueAvailable(levelZeroX, levelZeroY, pixelPosValid);
-
         if (flagModel.getRowCount() != getFlagRowCount()) {
             resetFlagTableModel();
         }
         int rowIndex = 0;
         for (Band band : currentFlagBands) {
-            long pixelValue = available ? ProductUtils.getGeophysicalSampleAsLong(band, pixelX, pixelY, level) : 0;
-
+            long pixelValue;
+            boolean available;
+            if (band.getImageToModelTransform().equals(currentRaster.getImageToModelTransform())) {
+                available = pixelPosValidInRaster;
+                pixelValue = available ? ProductUtils.getGeophysicalSampleAsLong(band, pixelX, pixelY, level) : 0;
+            } else {
+                PixelPos rasterPos = new PixelPos();
+                try {
+                    getRasterPos(band, rasterPos);
+                    final int rasterX = (int) Math.floor(rasterPos.getX());
+                    final int rasterY = (int) Math.floor(rasterPos.getY());
+                    available = isSampleValueAvailableInRaster(rasterX, rasterY, band);
+                    pixelValue = available ? ProductUtils.getGeophysicalSampleAsLong(band, rasterX, rasterY, 0) : 0;
+                } catch (NoninvertibleTransformException e) {
+                    available = false;
+                    pixelValue = -1;
+                }
+            }
             for (int j = 0; j < band.getFlagCoding().getNumAttributes(); j++) {
                 if (available) {
                     MetadataAttribute attribute = band.getFlagCoding().getAttributeAt(j);
@@ -451,7 +467,7 @@ public class PixelInfoViewModelUpdater {
         if (currentProduct != null) {
             final Band[] bands = currentProduct.getBands();
             for (Band band : bands) {
-                if (isFlagBand(band) && equalsViewRasterSize(band.getRasterSize())) {
+                if (isFlagBand(band)) {
                     flagBandsVector.add(band);
                 }
             }
@@ -471,23 +487,46 @@ public class PixelInfoViewModelUpdater {
         return rowCount;
     }
 
+    private void getRasterPos(RasterDataNode raster, PixelPos rasterPos) throws NoninvertibleTransformException {
+        final Point2D.Double scenePos = new Point2D.Double(sceneX, sceneY);
+        raster.getImageToModelTransform().createInverse().transform(scenePos, rasterPos);
+    }
 
     private String getPixelString(RasterDataNode raster) {
-        if (!pixelPosValid) {
+        if (raster.getImageToModelTransform().equals(currentRaster.getImageToModelTransform())) {
+            if (!pixelPosValidInRaster) {
+                return RasterDataNode.INVALID_POS_TEXT;
+            }
+            return getPixelString(raster, pixelX, pixelY, level);
+        }
+        PixelPos rasterPos = new PixelPos();
+        try {
+            getRasterPos(raster, rasterPos);
+        } catch (NoninvertibleTransformException e) {
             return RasterDataNode.INVALID_POS_TEXT;
         }
-        if (isPixelValid(raster, pixelX, pixelY, level)) {
+        final int rasterX = (int) Math.floor(rasterPos.getX());
+        final int rasterY = (int) Math.floor(rasterPos.getY());
+        final boolean pixelPosAvailable = isSampleValueAvailableInRaster(rasterX, rasterY, raster);
+        if (!pixelPosAvailable) {
+            return RasterDataNode.INVALID_POS_TEXT;
+        }
+        return getPixelString(raster, rasterX, rasterY, 0);
+    }
+
+    private String getPixelString(RasterDataNode raster, int x, int y, int level) {
+        if (isPixelValid(raster, x, y, level)) {
             if (raster.isScalingApplied() || ProductData.isFloatingPointType(raster.getDataType())) {
                 int dataType = raster.getGeophysicalDataType();
                 if (dataType == ProductData.TYPE_FLOAT64) {
-                    double pixel = ProductUtils.getGeophysicalSampleAsDouble(raster, pixelX, pixelY, level);
+                    double pixel = ProductUtils.getGeophysicalSampleAsDouble(raster, x, y, level);
                     return String.format("%.10f", pixel);
                 } else if (dataType == ProductData.TYPE_FLOAT32) {
-                    double pixel = ProductUtils.getGeophysicalSampleAsDouble(raster, pixelX, pixelY, level);
+                    double pixel = ProductUtils.getGeophysicalSampleAsDouble(raster, x, y, level);
                     return String.format("%.5f", pixel);
                 }
             }
-            return String.valueOf(ProductUtils.getGeophysicalSampleAsLong(raster, pixelX, pixelY, level));
+            return String.valueOf(ProductUtils.getGeophysicalSampleAsLong(raster, x, y, level));
         } else {
             return RasterDataNode.NO_DATA_TEXT;
         }
@@ -510,13 +549,19 @@ public class PixelInfoViewModelUpdater {
     }
 
 
-    private boolean isSampleValueAvailable(int pixelX, int pixelY, boolean pixelValid) {
-        return currentRaster != null
-                && pixelValid
+    private boolean isSampleValueAvailableInRaster(int pixelX, int pixelY, RasterDataNode raster) {
+        return raster != null
                 && pixelX >= 0
                 && pixelY >= 0
-                && pixelX < currentRaster.getRasterWidth()
-                && pixelY < currentRaster.getRasterHeight();
+                && pixelX < raster.getRasterWidth()
+                && pixelY < raster.getRasterHeight();
+    }
+
+    private boolean isSampleValueAvailableInScene() {
+        return levelZeroSceneX >= 0
+                && levelZeroSceneY >= 0
+                && levelZeroSceneX < currentProduct.getSceneRasterWidth()
+                && levelZeroSceneY < currentProduct.getSceneRasterHeight();
     }
 
     void clearProductNodeRefs() {

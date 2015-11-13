@@ -206,9 +206,7 @@ public final class PixelInfoTopComponent extends ToolTopComponent {
 
         @Override
         public void pixelPosNotAvailable() {
-            if (isActive()) {
-                pixelInfoView.clearProductNodeRefs();
-            }
+            //do nothing
         }
 
         private boolean isActive() {
