@@ -877,10 +877,13 @@ class MaskFormActions {
                 }
             });
             mask.setDescription(code);
-            if (getMaskForm().getRaster().getProduct().isMultiSizeProduct()) {
-                ProductUtils.copyGCandI2M(getMaskForm().getRaster(), mask);
-            }
             getMaskForm().addMask(mask);
+
+            final RasterDataNode refRaster = getMaskForm().getRaster();
+            if (refRaster.getProduct().isMultiSizeProduct() &&
+                refRaster.getGeoCoding() != getMaskForm().getProduct().getSceneGeoCoding()) {
+                ProductUtils.copyGCandI2M(refRaster, mask);
+            }
         }
     }
 

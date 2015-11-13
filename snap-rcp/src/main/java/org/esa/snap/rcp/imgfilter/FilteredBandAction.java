@@ -163,7 +163,7 @@ public class FilteredBandAction extends AbstractAction  implements LookupListene
         if (sourceRaster instanceof Band) {
             ProductUtils.copySpectralBandProperties((Band) sourceRaster, targetBand);
         }
-        if (targetProduct.isMultiSizeProduct()) {
+        if (targetProduct.isMultiSizeProduct() && sourceRaster.getGeoCoding() != targetProduct.getProduct()) {
             ProductUtils.copyGCandI2M(sourceRaster, targetBand);
         }
         targetProduct.addBand(targetBand);
