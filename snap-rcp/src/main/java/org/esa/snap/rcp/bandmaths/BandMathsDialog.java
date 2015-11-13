@@ -167,12 +167,12 @@ class BandMathsDialog extends ModalDialog {
             setBandProperties(band, "");
         }
 
+        ProductNodeGroup<Band> bandGroup = targetProduct.getBandGroup();
+        bandGroup.add(band);
+
         if (targetProduct.isMultiSizeProduct() && refRasters.length > 0) {
             ProductUtils.copyGCandI2M(refRasters[0], band);
         }
-
-        ProductNodeGroup<Band> bandGroup = targetProduct.getBandGroup();
-        bandGroup.add(band);
 
         if (saveExpressionOnly) {
             checkExpressionForExternalReferences(getExpression());
