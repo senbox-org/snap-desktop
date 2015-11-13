@@ -241,7 +241,7 @@ public class PixelInfoViewModelUpdater {
                 tiy = String.valueOf((int) Math.floor(pY));
             }
             if (getCurrentProduct().isMultiSizeProduct()) {
-                final PixelPos rasterPos = new PixelPos(levelZeroX, levelZeroY);
+                final PixelPos rasterPos = new PixelPos(pX, pY);
                 //todo [Multisize_Products] use scenerastertransform instead (see commented code below)
                 final AffineTransform rasterImageToSceneTransform = currentRaster.getImageToModelTransform();
                 Point2D sceneCoords = rasterImageToSceneTransform.transform(rasterPos, null);
