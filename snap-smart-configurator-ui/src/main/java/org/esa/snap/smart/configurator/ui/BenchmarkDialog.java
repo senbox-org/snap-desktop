@@ -16,10 +16,10 @@
 
 package org.esa.snap.smart.configurator.ui;
 
-import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.core.SubProgressMonitor;
 import com.bc.ceres.core.VirtualDir;
-import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
+import org.esa.snap.core.util.SystemUtils;
+import org.esa.snap.rcp.util.ProgressHandleMonitor;
 import org.esa.snap.smart.configurator.Benchmark;
 import org.esa.snap.smart.configurator.BenchmarkSingleCalculus;
 import org.esa.snap.smart.configurator.ConfigurationOptimizer;
@@ -34,6 +34,7 @@ import org.esa.snap.graphbuilder.rcp.dialogs.SingleOperatorDialog;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.actions.file.SaveProductAsAction;
 import org.esa.snap.ui.AppContext;
+import org.netbeans.api.progress.ProgressUtils;
 
 import javax.media.jai.JAI;
 import java.io.File;
@@ -72,21 +73,9 @@ public class BenchmarkDialog extends SingleOperatorDialog {
         this.perfPanel = perfPanel;
     }
 
-    private class ProductWriterSwingWorker extends ProgressMonitorSwingWorker<Product, Object> {
 
-        private final Product targetProduct;
-        private String benchmarkCounter;
-
-        private ProductWriterSwingWorker(Product targetProduct, String benchmarkCounter) {
-            super(getJDialog(), "Benchmark Tests");
-            this.targetProduct = targetProduct;
-            this.benchmarkCounter = benchmarkCounter;
-        }
-
-        @Override
-        protected Product doInBackground(ProgressMonitor pm) throws Exception {
+        protected void executeOperator(Product targetProduct, ProgressHandleMonitor pm) throws Exception {
             final TargetProductSelectorModel model = getTargetProductSelector().getModel();
-            pm.beginTask("Benchmark running... ("+this.benchmarkCounter+")", model.isOpenInAppSelected() ? 100 : 95);
 
             Operator execOp = null;
             if (targetProduct.getProductReader() instanceof OperatorProductReader) {
@@ -97,6 +86,7 @@ public class BenchmarkDialog extends SingleOperatorDialog {
                     execOp = operator;
                 }
             }
+
             if (execOp == null) {
                 WriteOp writeOp = new WriteOp(targetProduct, model.getProductFile(), model.getFormatName());
                 writeOp.setDeleteOutputOnFailure(true);
@@ -105,16 +95,64 @@ public class BenchmarkDialog extends SingleOperatorDialog {
                 execOp = writeOp;
             }
             final OperatorExecutor executor = OperatorExecutor.create(execOp);
-            executor.execute(SubProgressMonitor.create(pm, 95));
-
-            return null;
+            executor.execute(SubProgressMonitor.create(pm, 100));
         }
+
+
+    private void executeBenchmarks(ProgressHandleMonitor pm) throws Exception {
+        final TargetProductSelectorModel model = getTargetProductSelector().getModel();
+        pm.beginTask("Benchmark running... ", this.benchmarkModel.getBenchmarkCalculus().size()*100);
+
+        //benchmark counter initialization
+        int benchmarkCounterIndex = 1;
+
+        for (BenchmarkSingleCalculus benchmarkSingleCalcul : this.benchmarkModel.getBenchmarkCalculus()) {
+            pm.getProgressHandle().progress(
+                    String.format("Benchmarking ( tile size:%d , cache size:%d , nb threads:%d )",
+                                  benchmarkSingleCalcul.getTileSize(),
+                                  benchmarkSingleCalcul.getCacheSize(),
+                                  benchmarkSingleCalcul.getNbThreads()));
+
+            final Product targetProduct;
+            try {
+                targetProduct = createTargetProduct();
+
+            } catch (Throwable t) {
+                handleInitialisationError(t);
+                throw t;
+            }
+            if (targetProduct == null) {
+                throw new NullPointerException("Target product is null.");
+            }
+            //load performance parameters for current benchmark
+            this.benchmarkModel.loadBenchmarkPerfParams(benchmarkSingleCalcul);
+            //benchmark counter display
+            String benchmarkCounter = benchmarkCounterIndex++ + "/" + this.benchmarkModel.getBenchmarkCalculus().size();
+            //processing start time
+            long startTime = System.currentTimeMillis();
+
+            executeOperator(targetProduct, pm);
+
+            //save execution time
+            benchmarkSingleCalcul.setExecutionTime(System.currentTimeMillis() - startTime);
+
+
+            // we remove all tiles
+            JAI.getDefaultInstance().setTileCache(JAI.createTileCache());
+        }
+        //sort benchmark results and return the faster
+        BenchmarkSingleCalculus bestBenchmarkSingleCalcul = this.benchmarkModel.getFasterBenchmarkSingleCalculus();
+        SnapDialogs.showInformation("Benchmark results", this.benchmarkModel.toString(), null);
+        //update parent panel with best values
+        this.perfPanel.updatePerformanceParameters(bestBenchmarkSingleCalcul);
+
+        pm.done();
     }
 
     @Override
     protected void onApply() {
         //temporary directory for benchmark
-        String tmpdirPath = System.getProperty("java.io.tmpdir") + "\\snap-benchmark-tmp";
+        String tmpdirPath = System.getProperty("java.io.tmpdir") + "/snap-benchmark-tmp";
         appContext.getPreferences().setPropertyString(SaveProductAsAction.PREFERENCES_KEY_LAST_PRODUCT_DIR, tmpdirPath);
         //add current performance parameters to benchmark
         PerformanceParameters currentPerformanceParameters = ConfigurationOptimizer.getInstance().getActualPerformanceParameters();
@@ -124,44 +162,28 @@ public class BenchmarkDialog extends SingleOperatorDialog {
                 currentPerformanceParameters.getNbThreads());
 
         this.benchmarkModel.addBenchmarkCalcul(currentBenchmarkSingleCalcul);
-        //benchmark counter initialization
-        int benchmarkCounterIndex = 1;
         //benchmark loop
-        try{
-            for(BenchmarkSingleCalculus benchmarkSingleCalcul : this.benchmarkModel.getBenchmarkCalculus()){
+        try {
+            //launch processing with a progress bar
+            ProgressHandleMonitor pm = ProgressHandleMonitor.create("Progress....");
 
-                Product targetProduct = null;
+            Runnable operation = () -> {
                 try {
-                    targetProduct = createTargetProduct();
-                    if (targetProduct == null) {
-                        throw new NullPointerException("Target product is null.");
-                    }
-                } catch (Throwable t) {
-                    handleInitialisationError(t);
+                    executeBenchmarks(pm);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-                //load performance parameters for current benchmark
-                this.benchmarkModel.loadBenchmarkPerfParams(benchmarkSingleCalcul);
-                //benchmark counter display
-                String benchmarkCounter = benchmarkCounterIndex++ + "/"+this.benchmarkModel.getBenchmarkCalculus().size();
-                //processing start time
-                long startTime = System.currentTimeMillis();
+            };
 
-                //launch processing with a progress bar
-                final ProgressMonitorSwingWorker worker = new ProductWriterSwingWorker(targetProduct, benchmarkCounter);
-                worker.executeWithBlocking();
+            ProgressUtils.runOffEventThreadWithProgressDialog(operation, "Benchmarking....",
+                                                              pm.getProgressHandle(),
+                                                              true,
+                                                              50,
+                                                              1000);
 
-                //save execution time
-                benchmarkSingleCalcul.setExecutionTime(System.currentTimeMillis() - startTime);
-
-                // we remove all tiles
-                JAI.getDefaultInstance().setTileCache(JAI.createTileCache());
-            }
-            //sort benchmark results and return the faster
-            BenchmarkSingleCalculus bestBenchmarkSingleCalcul = this.benchmarkModel.getFasterBenchmarkSingleCalculus();
-            SnapDialogs.showInformation("Benchmark results", this.benchmarkModel.toString(), null);
-            //update parent panel with best values
-            this.perfPanel.updatePerformanceParameters(bestBenchmarkSingleCalcul);
-        }finally {
+        } catch (Exception ex) {
+            SystemUtils.LOG.severe("Could not perform benchmark: " + ex.getMessage());
+        } finally {
             //load old params (before benchmark)
             this.benchmarkModel.loadBenchmarkPerfParams(currentBenchmarkSingleCalcul);
             //delete benchmark TMP directory

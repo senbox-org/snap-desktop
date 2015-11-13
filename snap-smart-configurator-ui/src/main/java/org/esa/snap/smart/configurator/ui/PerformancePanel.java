@@ -202,6 +202,8 @@ final class PerformancePanel extends javax.swing.JPanel {
         if (!VMParameters.canSave()) {
             vmParametersTextField.setEditable(false);
         }
+        vmParametersTextField.setColumns(50);
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
