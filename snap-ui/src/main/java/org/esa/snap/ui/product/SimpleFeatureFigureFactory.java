@@ -105,7 +105,7 @@ public class SimpleFeatureFigureFactory implements FigureFactory {
     }
 
     public PointFigure createPointFigure(Point geometry, FigureStyle style) {
-        return createPointFigure(geometry, SceneRasterTransform.IDENTITY, style);
+        return createPointFigure(geometry, sceneRasterTransform, style);
     }
 
     private PointFigure createPointFigure(Point geometry, SceneRasterTransform sceneRasterTransform, FigureStyle style) {
