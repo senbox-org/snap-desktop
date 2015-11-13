@@ -42,6 +42,7 @@ class ProductOpener {
 
     public static final String PREFERENCES_KEY_LAST_PRODUCT_DIR = "last_product_open_dir";
     private static final String PREFERENCES_KEY_PREFIX_ALTERNATIVE_READER = "open_alternative_reader.";
+    private static final String PREFERENCES_KEY_DONT_SHOW_DIALOG = "multipleReadersDialog.dontShow";
 
     private String fileFormat;
     private boolean useAllFileFilter;
@@ -270,9 +271,10 @@ class ProductOpener {
         } else {
             leadPlugin = suitablePlugIns.get(0);
         }
-        String preferencesKey = PREFERENCES_KEY_PREFIX_ALTERNATIVE_READER + leadPlugin.plugin.getClass().getSimpleName();
-        final String storedSelection = SnapApp.getDefault().getPreferences().get(preferencesKey, null);
-        if (storedSelection != null) {
+        final boolean dontShowDialog = SnapApp.getDefault().getPreferences().getBoolean(PREFERENCES_KEY_DONT_SHOW_DIALOG, false);
+        String prefKeyFormat = PREFERENCES_KEY_PREFIX_ALTERNATIVE_READER + leadPlugin.plugin.getClass().getSimpleName();
+        final String storedSelection = SnapApp.getDefault().getPreferences().get(prefKeyFormat, null);
+        if (dontShowDialog && storedSelection != null) {
             return storedSelection;
         }
 
@@ -315,7 +317,8 @@ class ProductOpener {
             boolean storeResult = decisionCheckBox.isSelected();
             String selectedFormatName = ((ProductReaderPlugIn) pluginsCombobox.getSelectedItem()).getFormatNames()[0];
             if (storeResult) {
-                SnapApp.getDefault().getPreferences().put(preferencesKey, selectedFormatName);
+                SnapApp.getDefault().getPreferences().put(prefKeyFormat, selectedFormatName);
+                SnapApp.getDefault().getPreferences().put(PREFERENCES_KEY_DONT_SHOW_DIALOG, "true");
             }
             return selectedFormatName;
         }

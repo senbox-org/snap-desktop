@@ -18,6 +18,7 @@ package org.esa.snap.ui.product;
 
 import com.bc.ceres.binding.ValidationException;
 import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductFilter;
 import org.esa.snap.core.util.Debug;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.ModalDialog;
@@ -35,11 +36,13 @@ class AddProductAction extends AbstractAction {
 
     private final AppContext appContext;
     private final InputListModel listModel;
+    private ProductFilter productFilter;
 
     AddProductAction(AppContext appContext, InputListModel listModel) {
         super("Add product(s)...");
         this.appContext = appContext;
         this.listModel = listModel;
+        productFilter = product -> true;
     }
 
     @Override
@@ -64,11 +67,19 @@ class AddProductAction extends AbstractAction {
         List<Product> productManagerProducts = Arrays.asList(appContext.getProductManager().getProducts());
         ArrayList<Product> result = new ArrayList<>();
         for (Product product : productManagerProducts) {
-            if (!currentlyOpenedProducts.contains(product)) {
+            if (!currentlyOpenedProducts.contains(product) && productFilter.accept(product)) {
                 result.add(product);
             }
         }
         return result.toArray(new Product[result.size()]);
     }
 
+    /**
+     * Used to filter products which are offered to the user.
+     *
+     * @param productFilter the filter to be used
+     */
+    public void setProductFilter(ProductFilter productFilter) {
+        this.productFilter = productFilter;
+    }
 }

@@ -17,45 +17,14 @@ import org.openide.util.NbBundle;
 
 import java.io.File;
 
+import static org.esa.snap.rcp.preferences.general.WriteOptionsController.*;
+
 /**
  * @author Norman Fomferra
  * @author Marco Peters
  */
 @NbBundle.Messages({"CTL_WriteProductOperationName=Write Product"})
 class WriteProductOperation implements Runnable, Cancellable {
-
-    /**
-     * Preferences key for save product headers (MPH, SPH) or not
-     */
-    private static final String PROPERTY_KEY_SAVE_PRODUCT_HEADERS = "save_product_headers";
-    /**
-     * Preferences key for save product history or not
-     */
-    private static final String PROPERTY_KEY_SAVE_PRODUCT_HISTORY = "save_product_history";
-    /**
-     * Preferences key for save product annotations (ADS) or not
-     */
-    private static final String PROPERTY_KEY_SAVE_PRODUCT_ANNOTATIONS = "save_product_annotations";
-    /**
-     * Preferences key for incremental mode at save
-     */
-    private static final String PROPERTY_KEY_SAVE_INCREMENTAL = "save_incremental";
-    /**
-     * default value for preference incremental mode at save
-     */
-    private static final boolean DEFAULT_VALUE_SAVE_INCREMENTAL = true;
-    /**
-     * default value for preference save product headers (MPH, SPH) or not
-     */
-    private static final boolean DEFAULT_VALUE_SAVE_PRODUCT_HEADERS = true;
-    /**
-     * default value for preference save product history (History) or not
-     */
-    private static final boolean DEFAULT_VALUE_SAVE_PRODUCT_HISTORY = true;
-    /**
-     * default value for preference save product annotations (ADS) or not
-     */
-    private static final boolean DEFAULT_VALUE_SAVE_PRODUCT_ANNOTATIONS = false;
 
     private final Product product;
     private final Boolean incremental;
@@ -78,7 +47,8 @@ class WriteProductOperation implements Runnable, Cancellable {
         if (incremental != null) {
             this.incremental = incremental;
         } else {
-            this.incremental = SnapApp.getDefault().getPreferences().getBoolean(PROPERTY_KEY_SAVE_INCREMENTAL, DEFAULT_VALUE_SAVE_INCREMENTAL);
+            this.incremental = SnapApp.getDefault().getPreferences().getBoolean(PREFERENCE_KEY_SAVE_INCREMENTAL,
+                                                                                DEFAULT_VALUE_SAVE_INCREMENTAL);
         }
         this.pm = ProgressHandleMonitor.create(Bundle.CTL_WriteProductOperationName(), this);
     }
@@ -103,11 +73,11 @@ class WriteProductOperation implements Runnable, Cancellable {
     @Override
     public void run() {
 
-        boolean saveProductHeaders = SnapApp.getDefault().getPreferences().getBoolean(PROPERTY_KEY_SAVE_PRODUCT_HEADERS,
+        boolean saveProductHeaders = SnapApp.getDefault().getPreferences().getBoolean(PREFERENCE_KEY_SAVE_PRODUCT_HEADERS,
                                                                                       DEFAULT_VALUE_SAVE_PRODUCT_HEADERS);
-        boolean saveProductHistory = SnapApp.getDefault().getPreferences().getBoolean(PROPERTY_KEY_SAVE_PRODUCT_HISTORY,
+        boolean saveProductHistory = SnapApp.getDefault().getPreferences().getBoolean(PREFERENCE_KEY_SAVE_PRODUCT_HISTORY,
                                                                                       DEFAULT_VALUE_SAVE_PRODUCT_HISTORY);
-        boolean saveADS = SnapApp.getDefault().getPreferences().getBoolean(PROPERTY_KEY_SAVE_PRODUCT_ANNOTATIONS,
+        boolean saveADS = SnapApp.getDefault().getPreferences().getBoolean(PREFERENCE_KEY_SAVE_PRODUCT_ANNOTATIONS,
                                                                            DEFAULT_VALUE_SAVE_PRODUCT_ANNOTATIONS);
         MetadataElement metadataRoot = product.getMetadataRoot();
         ProductNodeList<MetadataElement> metadataElementBackup = new ProductNodeList<>();
@@ -142,12 +112,9 @@ class WriteProductOperation implements Runnable, Cancellable {
             }
         }
 
-        boolean saveOk = writeProduct(product, fileLocation,
-                                      formatName,
-                                      incremental,
-                                      pm);
+        Boolean saveOk = writeProduct(product, fileLocation, formatName, incremental, pm);
 
-        if (saveOk) {
+        if (saveOk != null && saveOk) {
             product.setModified(false);
             OpenProductAction.getRecentProductPaths().add(fileLocation.getPath());
         } else {

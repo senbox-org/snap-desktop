@@ -44,6 +44,8 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import java.awt.event.ActionEvent;
 
+import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
+
 
 @ActionID(
         category = "Tools",
@@ -77,9 +79,7 @@ public class FilteredBandAction extends AbstractAction  implements LookupListene
         this.lookup = lookup;
         result = lookup.lookupResult(RasterDataNode.class);
         result.addLookupListener(WeakListeners.create(LookupListener.class, this, result));
-        final RasterDataNode node = this.lookup.lookup(RasterDataNode.class);
-        //todo [multisize_products] compare scenerastertransform rather than size
-        setEnabled(node != null && node.getRasterSize().equals(node.getProduct().getSceneRasterSize()));
+        updateEnableState(this.lookup.lookup(RasterDataNode.class));
     }
 
     @Override
@@ -89,9 +89,12 @@ public class FilteredBandAction extends AbstractAction  implements LookupListene
 
     @Override
     public void resultChanged(LookupEvent ev) {
-        final RasterDataNode node = this.lookup.lookup(RasterDataNode.class);
+        updateEnableState(this.lookup.lookup(RasterDataNode.class));
+    }
+
+    private void updateEnableState(RasterDataNode node) {
         //todo [multisize_products] compare scenerastertransform rather than size
-        setEnabled(node != null && node.getRasterSize().equals(node.getProduct().getSceneRasterSize()));
+        setEnabled(node != null);
     }
 
     @Override
@@ -141,12 +144,10 @@ public class FilteredBandAction extends AbstractAction  implements LookupListene
 
     private static FilterBand getFilterBand(RasterDataNode sourceRaster, String bandName, Filter filter, int iterationCount) {
         FilterBand targetBand;
-        Product product = sourceRaster.getProduct();
+        Product targetProduct = sourceRaster.getProduct();
 
         if (filter.getOperation() == Filter.Operation.CONVOLVE) {
-            targetBand = new ConvolutionFilterBand
-
-                    (bandName, sourceRaster, getKernel(filter), iterationCount);
+            targetBand = new ConvolutionFilterBand(bandName, sourceRaster, getKernel(filter), iterationCount);
             if (sourceRaster instanceof Band) {
                 ProductUtils.copySpectralBandProperties((Band) sourceRaster, targetBand);
             }
@@ -162,7 +163,10 @@ public class FilteredBandAction extends AbstractAction  implements LookupListene
         if (sourceRaster instanceof Band) {
             ProductUtils.copySpectralBandProperties((Band) sourceRaster, targetBand);
         }
-        product.addBand(targetBand);
+        if (targetProduct.isMultiSizeProduct()) {
+            ProductUtils.copyGCandI2M(sourceRaster, targetBand);
+        }
+        targetProduct.addBand(targetBand);
         targetBand.fireProductNodeDataChanged();
         return targetBand;
     }
@@ -177,7 +181,7 @@ public class FilteredBandAction extends AbstractAction  implements LookupListene
     }
 
     private CreateFilteredBandDialog.DialogData promptForFilter() {
-        final ProductNode selectedNode = SnapApp.getDefault().getSelectedProductNode();
+        final ProductNode selectedNode = SnapApp.getDefault().getSelectedProductNode(EXPLORER);
         final Product product = selectedNode.getProduct();
         final CreateFilteredBandDialog dialog = new CreateFilteredBandDialog(product, selectedNode.getName(), "createFilteredBand");
         if (dialog.show() == ModalDialog.ID_OK) {

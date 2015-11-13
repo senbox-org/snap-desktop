@@ -99,7 +99,8 @@ public abstract class MaskSelectionToolSupport implements PlotAreaSelectionTool.
     public void areaSelected(PlotAreaSelectionTool.AreaType areaType, Shape shape) {
 
         Product product = pagePanel.getProduct();
-        if (product == null) {
+        final RasterDataNode raster = pagePanel.getRaster();
+        if (product == null || raster == null) {
             return;
         }
 
@@ -107,18 +108,37 @@ public abstract class MaskSelectionToolSupport implements PlotAreaSelectionTool.
 
         Mask mask = product.getMaskGroup().get(maskName);
         if (mask != null) {
-            mask.getImageConfig().setValue("expression", expression);
+            if (!mask.getRasterSize().equals(raster.getRasterSize())) {
+                // if sizes are different we need to remove the mask first and add it as new one
+                product.getMaskGroup().remove(mask);
+                mask = addMask(product, raster, expression);
+            } else {
+                mask.getImageConfig().setValue("expression", expression);
+            }
         } else {
-            mask = product.addMask(maskName, expression, maskDescription, maskColor, 0.5);
+            mask = addMask(product, raster, expression);
         }
 
-        RasterDataNode raster = pagePanel.getRaster();
-        if (raster != null) {
-            ProductNodeGroup<Mask> overlayMaskGroup = raster.getOverlayMaskGroup();
-            if (!overlayMaskGroup.contains(mask)) {
-                overlayMaskGroup.add(mask);
-            }
+        ProductNodeGroup<Mask> overlayMaskGroup = raster.getOverlayMaskGroup();
+        if (!overlayMaskGroup.contains(mask)) {
+            overlayMaskGroup.add(mask);
         }
+    }
+
+    private Mask addMask(Product product, RasterDataNode raster, String expression) {
+        Mask mask = Mask.BandMathsType.create(maskName, maskDescription,
+                                              raster.getRasterWidth(),
+                                              raster.getRasterHeight(),
+                                              expression, maskColor, 0.5);
+        if (product.isMultiSizeProduct() &&
+            !raster.getRasterSize().equals(product.getSceneRasterSize())) {
+            mask.setGeoCoding(raster.getGeoCoding());
+            mask.setImageToModelTransform(raster.getImageToModelTransform());
+        }
+
+        product.addMask(mask);
+
+        return mask;
     }
 
     protected abstract String createMaskExpression(PlotAreaSelectionTool.AreaType areaType, Shape shape);

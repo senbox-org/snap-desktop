@@ -122,7 +122,7 @@ public class ImportVectorDataNodeFromCsvAction extends AbstractImportVectorDataN
         public VectorDataNode readVectorDataNode(File file, Product product, ProgressMonitor pm) throws IOException {
             FileReader reader = null;
             try {
-                CoordinateReferenceSystem modelCrs = product.getModelCRS();
+                CoordinateReferenceSystem modelCrs = product.getSceneCRS();
                 reader = new FileReader(file);
                 return VectorDataNodeReader.read(file.getName(), reader, product, crsProvider, placemarkDescriptorProvider,
                                                  modelCrs, VectorDataNodeIO.DEFAULT_DELIMITER_CHAR, pm);

@@ -120,7 +120,7 @@ public class ImportVectorDataNodeFromMermaidAction extends AbstractImportVectorD
         public VectorDataNode readVectorDataNode(File file, Product product, ProgressMonitor pm) throws IOException {
             FileReader reader = null;
             try {
-                CoordinateReferenceSystem modelCrs = product.getModelCRS();
+                CoordinateReferenceSystem modelCrs = product.getSceneCRS();
                 reader = new FileReader(file);
 
                 char delimiterChar = ';';

@@ -9,9 +9,10 @@
 
         <Toolbar name="Analysis" visible="false"/>
         <Toolbar name="Overlay" visible="true" />
-        <Toolbar name="Processing" visible="false" />
+        <Toolbar name="Processing" visible="true" />
         <Toolbar name="Tools" visible="true"/>
         <Toolbar name="Tool Windows" visible="false"/>
+        <Toolbar name="Radar Tool Windows" visible="false"/>
         <Toolbar name="Projects" visible="false" />
         <Toolbar name="Window Arrangement" visible="true" />
 

@@ -19,6 +19,7 @@ package org.esa.snap.rcp.subset;
 import org.esa.snap.core.dataio.ProductSubsetDef;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductNode;
+import org.esa.snap.rcp.MultiSizeIssue;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.ui.product.ProductSceneView;
@@ -40,12 +41,8 @@ import java.awt.event.ActionEvent;
  * @author Norman Fomferra
  */
 @ActionID(category = "Raster", id = "CreateSubsetAction")
-@ActionRegistration(
-        displayName = "#CTL_CreateSubsetAction_Name"
-)
-@ActionReferences({
-        @ActionReference(path = "Menu/Raster", position = 50)
-})
+@ActionRegistration(displayName = "#CTL_CreateSubsetAction_Name")
+@ActionReferences({@ActionReference(path = "Menu/Raster", position = 50)})
 @NbBundle.Messages({
         "CTL_CreateSubsetAction_Name=Subset...",
         "CTL_CreateSubsetAction_Title=Subset"
@@ -69,6 +66,11 @@ public class CreateSubsetAction extends AbstractAction {
     }
 
     public static void createSubset(Product sourceProduct, Rectangle bounds) {
+        if (sourceProduct.isMultiSizeProduct()) {
+            MultiSizeIssue.showMultiSizeWarning();
+            return;
+        }
+
         final String subsetName = "subset_" + CreateSubsetAction.subsetNumber + "_of_" + sourceProduct.getName();
         final ProductSubsetDef initSubset = new ProductSubsetDef();
         initSubset.setRegion(bounds);
@@ -94,7 +96,7 @@ public class CreateSubsetAction extends AbstractAction {
             CreateSubsetAction.subsetNumber++;
         } catch (Exception e) {
             final String msg = "An error occurred while creating the product subset:\n" +
-                    e.getMessage();
+                               e.getMessage();
             SnapApp.getDefault().handleError(msg, e);
         }
     }

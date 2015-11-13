@@ -68,7 +68,7 @@ class MosaicDialog extends SingleTargetProductDialog {
         if (!verifySourceProducts(mosaicModel)) {
             return false;
         }
-        if (!verfiyTargetCrs(mosaicModel)) {
+        if (!verifyTargetCrs(mosaicModel)) {
             return false;
         }
         if (!verifyVariablesAndConditions(mosaicModel)) {
@@ -90,10 +90,7 @@ class MosaicDialog extends SingleTargetProductDialog {
             showErrorDialog("No variables or conditions specified.");
             return false;
         }
-        if (!verifyDEM(mosaicModel)) {
-            return false;
-        }
-        return true;
+        return verifyDEM(mosaicModel);
     }
 
     @Override
@@ -121,32 +118,18 @@ class MosaicDialog extends SingleTargetProductDialog {
         final MosaicOp.Variable[] variables = mosaicModel.getVariables();
         final MosaicOp.Condition[] conditions = mosaicModel.getConditions();
         for (Map.Entry<String, Product> entry : sourceProductMap.entrySet()) {
-            if (conditions != null) {
+            final String productIdentifier = entry.getKey();
+            final Product product = entry.getValue();
+            if (variables != null) {
                 for (MosaicOp.Variable variable : variables) {
-                    try {
-                        BandArithmetic.parseExpression(variable.getExpression(), new Product[]{entry.getValue()}, 0);
-                    } catch (ParseException e) {
-                        final String msg = String.format("Expression '%s' is invalid for product '%s'.\n%s",
-                                                         variable.getName(),
-                                                         entry.getKey(),
-                                                         e.getMessage());
-                        showErrorDialog(msg);
-                        e.printStackTrace();
+                    if (!isExpressionValidForProduct(variable.getName(), variable.getExpression(), productIdentifier, product)) {
                         return false;
                     }
                 }
             }
             if (conditions != null) {
                 for (MosaicOp.Condition condition : conditions) {
-                    try {
-                        BandArithmetic.parseExpression(condition.getExpression(), new Product[]{entry.getValue()}, 0);
-                    } catch (ParseException e) {
-                        final String msg = String.format("Expression '%s' is invalid for product '%s'.\n%s",
-                                                         condition.getName(),
-                                                         entry.getKey(),
-                                                         e.getMessage());
-                        showErrorDialog(msg);
-                        e.printStackTrace();
+                    if (!isExpressionValidForProduct(condition.getName(), condition.getExpression(), productIdentifier, product)) {
                         return false;
                     }
                 }
@@ -155,7 +138,22 @@ class MosaicDialog extends SingleTargetProductDialog {
         return true;
     }
 
-    private boolean verfiyTargetCrs(MosaicFormModel formModel) {
+    private boolean isExpressionValidForProduct(String expressionName, String expression, String productIdentifier, Product product) {
+        try {
+            BandArithmetic.parseExpression(expression, new Product[]{product}, 0);
+            return true;
+        } catch (ParseException e) {
+            final String msg = String.format("Expression '%s' is invalid for product '%s'.\n%s",
+                                             expressionName,
+                                             productIdentifier,
+                                             e.getMessage());
+            showErrorDialog(msg);
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    private boolean verifyTargetCrs(MosaicFormModel formModel) {
         try {
             final CoordinateReferenceSystem crs = formModel.getTargetCRS();
             if (crs == null) {
@@ -175,6 +173,14 @@ class MosaicDialog extends SingleTargetProductDialog {
         if (sourceProductMap == null || sourceProductMap.isEmpty()) {
             showErrorDialog("No source products specified.");
             return false;
+        }
+        for (Map.Entry<String, Product> productEntry : sourceProductMap.entrySet()) {
+            if (productEntry.getValue().isMultiSizeProduct()) {
+                showErrorDialog(String.format("Product '%s'contains bands of different sizes. " +
+                                              "Currently it is not possible to use it for mosaicking.",
+                                              productEntry.getKey()));
+                return false;
+            }
         }
         return true;
     }

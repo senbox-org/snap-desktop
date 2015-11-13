@@ -196,7 +196,7 @@ public class ExportGeometryAction extends AbstractAction implements ContextAware
         }
         final CoordinateReferenceSystem modelCrs;
         if (vectorNode.getProduct().getSceneGeoCoding() instanceof CrsGeoCoding) {
-            modelCrs = vectorNode.getProduct().getModelCRS();
+            modelCrs = vectorNode.getProduct().getSceneCRS();
         } else {
             modelCrs = DefaultGeographicCRS.WGS84;
         }

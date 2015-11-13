@@ -41,6 +41,8 @@ import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.prefs.Preferences;
 
+import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
+
 // todo - test with shapefile that has no CRS (nf, 2012-04-05)
 
 public class VectorDataNodeImporter implements HelpCtx.Provider {
@@ -77,7 +79,7 @@ public class VectorDataNodeImporter implements HelpCtx.Provider {
     }
 
     private void importGeometry(final SnapApp snapApp, final File file) {
-        final Product product = snapApp.getSelectedProduct();
+        final Product product = snapApp.getSelectedProduct(AUTO);
         if (product == null) {
             return;
         }

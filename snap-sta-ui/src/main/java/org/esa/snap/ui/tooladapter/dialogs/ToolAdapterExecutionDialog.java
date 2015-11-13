@@ -149,13 +149,7 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
                 SnapDialogs.showWarning(Bundle.RequiredTargetProductMissingWarning_Text());
         } else {
             if (!canApply()) {
-                StringBuilder warnMessage = new StringBuilder();
-                warnMessage.append("Before executing the tool, please correct the errors below:")
-                        .append("\n").append("\n");
-                for (String msg : warnings) {
-                    warnMessage.append("\t").append(msg).append("\n");
-                }
-                SnapDialogs.showWarning(warnMessage.toString());
+                displayWarnings();
                 AbstractAdapterEditor dialog = AbstractAdapterEditor.createEditorDialog(appContext, getJDialog(), operatorDescriptor, false);
                 dialog.getJDialog().addWindowListener(new WindowAdapter() {
                     @Override
@@ -170,7 +164,9 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
                     String productDir = targetProductSelector.getModel().getProductDir().getAbsolutePath();
                     appContext.getPreferences().setPropertyString(SaveProductAsAction.PREFERENCES_KEY_LAST_PRODUCT_DIR, productDir);
                     Map<String, Product> sourceProductMap = new HashMap<>();
-                    sourceProductMap.put(SOURCE_PRODUCT_FIELD, sourceProducts[0]);
+                    if (sourceProducts.length > 0) {
+                        sourceProductMap.put(SOURCE_PRODUCT_FIELD, sourceProducts[0]);
+                    }
                     Operator op = GPF.getDefaultInstance().createOperator(operatorDescriptor.getName(), parameterSupport.getParameterMap(), sourceProductMap, null);
                     op.setSourceProducts(sourceProducts);
                     operatorTask = new OperatorTask(op, ToolAdapterExecutionDialog.this::operatorCompleted);
@@ -180,6 +176,10 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
                                                                                 progressPattern == null || progressPattern.isEmpty(),
                                                                                 displayExecutionConsole()));
                     ProgressUtils.runOffEventThreadWithProgressDialog(operatorTask, this.getTitle(), progressHandle, true, 1, 1);
+                } else {
+                    if (warnings.size() > 0) {
+                        displayWarnings();
+                    }
                 }
             }
         }
@@ -276,10 +276,24 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
         boolean isValid;
         File productDir = targetProductSelector.getModel().getProductDir();
         isValid = (productDir != null) && productDir.exists();
-        Product[] sourceProducts = form.getSourceProducts();
-        isValid &= (sourceProducts != null) && sourceProducts.length > 0 && Arrays.stream(sourceProducts).filter(sp -> sp == null).count() == 0;
-
+        if (!isValid) {
+            warnings.add("Target product folder is not accessible or does not exist");
+        }
+        if (operatorDescriptor.getSourceProductCount() > 0) {
+            Product[] sourceProducts = form.getSourceProducts();
+            isValid &= (sourceProducts != null) && sourceProducts.length > 0 && Arrays.stream(sourceProducts).filter(sp -> sp == null).count() == 0;
+        }
         return isValid;
+    }
+
+    private void displayWarnings() {
+        StringBuilder warnMessage = new StringBuilder();
+        warnMessage.append("Before executing the tool, please correct the errors below:")
+                .append("\n").append("\n");
+        for (String msg : warnings) {
+            warnMessage.append("\t").append(msg).append("\n");
+        }
+        SnapDialogs.showWarning(warnMessage.toString());
     }
 
     /**
@@ -487,7 +501,7 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
 
         @Override
         public void setTaskName(String taskName) {
-            this.progressHandle.progress(taskName);
+            this.progressHandle.setDisplayName(taskName);
         }
 
         @Override

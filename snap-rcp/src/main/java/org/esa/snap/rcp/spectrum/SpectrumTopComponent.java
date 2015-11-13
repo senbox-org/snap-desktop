@@ -940,7 +940,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
         }
 
         private double readEnergy(Placemark pin, Band spectralBand) {
-            final MultiLevelModel multiLevelModel = ImageManager.getMultiLevelModel(spectralBand);
+            final MultiLevelModel multiLevelModel = spectralBand.getMultiLevelModel();
             final AffineTransform i2mTransform = multiLevelModel.getImageToModelTransform(0);
             final AffineTransform m2iTransform = multiLevelModel.getModelToImageTransform(level);
             final Point2D modelPixel = i2mTransform.transform(pin.getPixelPos(), null);

@@ -17,6 +17,7 @@
 package org.esa.snap.ui.product;
 
 import com.bc.ceres.core.ProgressMonitor;
+import com.vividsolutions.jts.geom.Point;
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.GeoPos;
 import org.esa.snap.core.datamodel.PixelPos;
@@ -29,6 +30,8 @@ import org.esa.snap.core.datamodel.TiePointGrid;
 import org.esa.snap.core.util.math.MathUtils;
 
 import javax.swing.table.DefaultTableModel;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -196,24 +199,37 @@ public abstract class AbstractPlacemarkTableModel extends DefaultTableModel {
 
         final Placemark placemark = placemarkList.get(rowIndex);
         int index = columnIndex - getStandardColumnNames().length;
-        PixelPos pixelPos = placemark.getPixelPos();
-        if (pixelPos == null) {
-            return "No-data";
+        final Object defaultGeometry = placemark.getFeature().getDefaultGeometry();
+        if (!(defaultGeometry instanceof Point)) {
+            throw new IllegalStateException("A placemark must have a point feature");
         }
+        final Point point = (Point) defaultGeometry;
+        PixelPos pixelPos = new PixelPos(point.getX(), point.getY());
 
-        final int x = MathUtils.floorInt(pixelPos.getX());
-        final int y = MathUtils.floorInt(pixelPos.getY());
-        if (product != null) {
-            final int width = product.getSceneRasterWidth();
-            final int height = product.getSceneRasterHeight();
+        if (index < getNumSelectedBands()) {
+            final Band band = selectedBands[index];
+            //todo [Multisize_Products] use scenerastertransform (see commented code below)
+            PixelPos rasterPos = pixelPos;
+            final AffineTransform modelToImageTransform;
+            try {
+                modelToImageTransform = band.getImageToModelTransform().createInverse();
+                modelToImageTransform.transform(pixelPos, rasterPos);
+            } catch (NoninvertibleTransformException e) {
+                return "Transformation error";
+            }
+//            try {
+//                rasterPos = SceneRasterTransformUtils.transformToImageCoords(band, pixelPos);
+//            } catch (SceneRasterTransformException e) {
+//                do not transform
+//            }
+            final int x = MathUtils.floorInt(rasterPos.getX());
+            final int y = MathUtils.floorInt(rasterPos.getY());
+            final int width = band.getRasterWidth();
+            final int height = band.getRasterHeight();
 
             if (x < 0 || x >= width || y < 0 || y >= height) {
                 return "No-data";
             }
-        }
-
-        if (index < getNumSelectedBands()) {
-            final Band band = selectedBands[index];
             if (band.isPixelValid(x, y)) {
                 try {
                     float[] value = null;
@@ -229,6 +245,28 @@ public abstract class AbstractPlacemarkTableModel extends DefaultTableModel {
         index -= getNumSelectedBands();
         if (index < selectedGrids.length) {
             final TiePointGrid grid = selectedGrids[index];
+            //todo [Multisize_Products] use scenerastertransform (see commented code below)
+            PixelPos rasterPos = pixelPos;
+            final AffineTransform modelToImageTransform;
+            try {
+                modelToImageTransform = grid.getImageToModelTransform().createInverse();
+                modelToImageTransform.transform(pixelPos, rasterPos);
+            } catch (NoninvertibleTransformException e) {
+                return "Transformation error";
+            }
+//            try {
+//                rasterPos = SceneRasterTransformUtils.transformToImageCoords(band, pixelPos);
+//            } catch (SceneRasterTransformException e) {
+//                do not transform
+//            }
+            final int x = MathUtils.floorInt(rasterPos.getX());
+            final int y = MathUtils.floorInt(rasterPos.getY());
+            final int width = grid.getRasterWidth();
+            final int height = grid.getRasterHeight();
+
+            if (x < 0 || x >= width || y < 0 || y >= height) {
+                return "No-data";
+            }
             try {
                 float[] value = null;
                 value = grid.readPixels(x, y, 1, 1, value, ProgressMonitor.NULL);

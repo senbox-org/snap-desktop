@@ -160,7 +160,7 @@ public class SourceUI extends BaseOperatorUI {
             }
         }
         String selectedFormat = (String)formatNameComboBox.getSelectedItem();
-        if(selectedFormat.equals(ANY_FORMAT)) {
+        if(selectedFormat != null && selectedFormat.equals(ANY_FORMAT)) {
             selectedFormat = null;
         }
         paramMap.put(FORMAT_PARAMETER, selectedFormat);

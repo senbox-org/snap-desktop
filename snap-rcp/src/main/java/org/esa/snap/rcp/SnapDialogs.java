@@ -37,6 +37,8 @@ import java.util.prefs.Preferences;
 })
 public class SnapDialogs {
 
+    public static final String PREF_KEY_SUFFIX_DONTSHOW = ".dontShow";
+
     public enum Answer {
         YES,
         NO,
@@ -44,7 +46,6 @@ public class SnapDialogs {
     }
 
     private static final String PREF_KEY_SUFFIX_DECISION = ".decision";
-    private static final String PREF_KEY_SUFFIX_DONTSHOW = ".dontShow";
     private static final String PREF_VALUE_YES = "yes";
     private static final String PREF_VALUE_NO = "no";
     private static final String PREF_VALUE_TRUE = "true";

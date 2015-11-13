@@ -16,8 +16,8 @@
 
 package org.esa.snap.rcp.layermanager.layersrc.wms;
 
+import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.RasterDataNode;
-import org.esa.snap.core.image.ImageManager;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.ui.layer.AbstractLayerSourceAssistantPage;
 import org.esa.snap.ui.layer.LayerSourcePageContext;
@@ -189,10 +189,10 @@ class WmsAssistantPage2 extends AbstractLayerSourceAssistantPage {
                     infoLabel.setText("Coordinate system not supported.");
                 } else {
                     RasterDataNode raster = SnapApp.getDefault().getSelectedProductSceneView().getRaster();
-                    AffineTransform g2mTransform = ImageManager.getImageToModelTransform(raster.getGeoCoding());
+                    AffineTransform g2mTransform = Product.findImageToModelTransform(raster.getGeoCoding());
                     Rectangle2D bounds = g2mTransform.createTransformedShape(
-                            new Rectangle(0, 0, raster.getSceneRasterWidth(),
-                                          raster.getSceneRasterHeight())).getBounds2D();
+                            new Rectangle(0, 0, raster.getRasterWidth(),
+                                          raster.getRasterHeight())).getBounds2D();
                     CRSEnvelope crsEnvelope = new CRSEnvelope(crsCode, bounds.getMinX(), bounds.getMinY(),
                                                               bounds.getMaxX(),
                                                               bounds.getMaxY());

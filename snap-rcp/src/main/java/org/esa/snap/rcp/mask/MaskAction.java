@@ -16,8 +16,12 @@
 
 package org.esa.snap.rcp.mask;
 
+import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.Mask;
+import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductNodeGroup;
+import org.esa.snap.core.datamodel.RasterDataNode;
+import org.esa.snap.core.datamodel.TiePointGrid;
 import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.ui.UIUtils;
@@ -29,6 +33,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import java.awt.Dimension;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.prefs.Preferences;
 
 /**
@@ -94,5 +100,27 @@ abstract class MaskAction extends AbstractAction {
             }
         }
         return possibleName;
+    }
+
+    protected String[] collectNamesOfRastersOfSameSize() {
+        final Product product = getMaskForm().getProduct();
+        //todo [multisize_products] do not compare raster sizes
+        final RasterDataNode referenceRaster = getMaskForm().getRaster();
+        final List<String> rangeRasterNames = new ArrayList<>();
+        final Band[] bands = product.getBands();
+        for (Band band : bands) {
+            if (band.getRasterHeight() == referenceRaster.getRasterHeight() &&
+                    band.getRasterWidth() == referenceRaster.getRasterWidth()) {
+                rangeRasterNames.add(band.getName());
+            }
+        }
+        final TiePointGrid[] tiePointGrids = product.getTiePointGrids();
+        for (TiePointGrid tiePointGrid : tiePointGrids) {
+            if (tiePointGrid.getRasterHeight() == referenceRaster.getRasterHeight() &&
+                    tiePointGrid.getRasterWidth() == referenceRaster.getRasterWidth()) {
+                rangeRasterNames.add(tiePointGrid.getName());
+            }
+        }
+        return rangeRasterNames.toArray(new String[rangeRasterNames.size()]);
     }
 }

@@ -31,6 +31,8 @@ import javax.swing.AbstractButton;
 import javax.swing.event.ListSelectionListener;
 import java.awt.BorderLayout;
 
+import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
+
 public abstract class MaskToolTopComponent extends ToolTopComponent implements HelpCtx.Provider {
 
     private MaskForm maskForm;
@@ -67,7 +69,7 @@ public abstract class MaskToolTopComponent extends ToolTopComponent implements H
 
     private void updateMaskForm(ProductSceneView view) {
         if (view == null) {
-            final ProductNode selectedProductNode = SnapApp.getDefault().getSelectedProductNode();
+            final ProductNode selectedProductNode = SnapApp.getDefault().getSelectedProductNode(EXPLORER);
             if (selectedProductNode instanceof RasterDataNode) {
                 final RasterDataNode rdn = (RasterDataNode) selectedProductNode;
                 maskForm.reconfigureMaskTable(rdn.getProduct(), rdn);

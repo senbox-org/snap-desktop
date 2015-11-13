@@ -59,7 +59,7 @@ import org.esa.snap.core.datamodel.ProductNodeListener;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.datamodel.VectorDataNode;
 import org.esa.snap.core.datamodel.VirtualBand;
-import org.esa.snap.core.image.MaskImageMultiLevelSource;
+import org.esa.snap.core.image.ColoredMaskImageMultiLevelSource;
 import org.esa.snap.core.layer.GraticuleLayer;
 import org.esa.snap.core.layer.MaskCollectionLayer;
 import org.esa.snap.core.layer.NoDataLayerType;
@@ -437,6 +437,9 @@ public class ProductSceneView extends BasicView
         }
 
         deregisterLayerCanvasListeners();
+        if (sceneImage != null) {
+            sceneImage.getConfiguration().removePropertyChangeListener(this);
+        }
 
         for (int i = 0; i < getSceneImage().getRasters().length; i++) {
             final RasterDataNode raster = getSceneImage().getRasters()[i];
@@ -444,12 +447,9 @@ public class ProductSceneView extends BasicView
                 RGBChannel rgbChannel = (RGBChannel) raster;
                 rgbChannel.dispose();
             }
-            getSceneImage().getRasters()[i] = null;
+            sceneImage.getRasters()[i] = null;
         }
 
-        if (sceneImage != null) {
-            sceneImage.getConfiguration().removePropertyChangeListener(this);
-        }
         sceneImage = null;
 
         if (getLayerCanvas() != null) {
@@ -1073,9 +1073,9 @@ public class ProductSceneView extends BasicView
             if (expression != null) {
                 final Color color = noDataLayer.getConfiguration().getValue(
                         NoDataLayerType.PROPERTY_NAME_COLOR);
-                final MultiLevelSource multiLevelSource = MaskImageMultiLevelSource.create(getRaster().getProduct(),
-                                                                                           color, expression, true,
-                                                                                           getBaseImageLayer().getImageToModelTransform());
+                final MultiLevelSource multiLevelSource = ColoredMaskImageMultiLevelSource.create(getRaster().getProduct(),
+                                                                                                  color, expression, true,
+                                                                                                  getBaseImageLayer().getImageToModelTransform());
                 noDataLayer.setMultiLevelSource(multiLevelSource);
             } else {
                 noDataLayer.setMultiLevelSource(MultiLevelSource.NULL);

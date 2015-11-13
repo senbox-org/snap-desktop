@@ -15,14 +15,13 @@
  */
 package org.esa.snap.worldwind;
 
-import com.bc.ceres.grender.Viewport;
-import com.bc.ceres.grender.ViewportListener;
 import gov.nasa.worldwind.layers.Earth.MSVirtualEarthLayer;
 import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.layers.LayerList;
 import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.SelectionSupport;
+import org.esa.snap.runtime.Config;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.esa.snap.worldwind.layers.WWLayer;
 import org.esa.snap.worldwind.layers.WWLayerDescriptor;
@@ -43,6 +42,8 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Window;
 
+import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
+
 @TopComponent.Description(
         preferredID = "WWWorldMapToolView",
         iconBase = "org/esa/snap/icons/WorldMap24.png",
@@ -62,23 +63,24 @@ import java.awt.Window;
         preferredID = "WWWorldMapToolView"
 )
 @NbBundle.Messages({
-        "CTL_WorldWindTopComponentName=WorldWind View",
-        "CTL_WorldWindTopComponentDescription=WorldWind World Map",
+        "CTL_WorldWindTopComponentName=World View",
+        "CTL_WorldWindTopComponentDescription=WorldWind World View",
 })
 /**
  * The window displaying the world map.
  */
-public class WWWorldMapToolView extends WWBaseToolView implements WWView {
+public class WWWorldViewToolView extends WWBaseToolView implements WWView {
+
+    public static String useFlatEarth = "snap.worldwind.useFlatEarth";
 
     private ProductSceneView currentView;
-    private ObservedViewportHandler observedViewportHandler;
 
     private static final boolean includeStatusBar = true;
-    private final static String useflatWorld = "false";//Config.instance().preferences().get(SystemUtils.getApplicationContextId() + ".use.flat.worldmap", "false");
-    private final static boolean flatWorld = !useflatWorld.equals("false");
+    private final boolean flatWorld;
 
-    public WWWorldMapToolView() {
+    public WWWorldViewToolView() {
         setDisplayName(Bundle.CTL_WorldWindTopComponentName());
+        flatWorld = Config.instance().preferences().getBoolean(useFlatEarth, false);
         initComponents();
         SnapApp.getDefault().getSelectionSupport(ProductSceneView.class).addHandler((oldValue, newValue) -> setCurrentView(newValue));
     }
@@ -100,8 +102,6 @@ public class WWWorldMapToolView extends WWBaseToolView implements WWView {
         // world wind canvas
         initialize(mainPane);
 
-        observedViewportHandler = new ObservedViewportHandler();
-
         return mainPane;
     }
 
@@ -113,7 +113,7 @@ public class WWWorldMapToolView extends WWBaseToolView implements WWView {
             protected Object doInBackground() throws Exception {
                 // Create the WorldWindow.
                 try {
-                    createWWPanel(includeStatusBar, flatWorld, true);
+                    createWWPanel(null, includeStatusBar, flatWorld, true);
 
                     // Put the pieces together.
                     mainPane.add(wwjPanel, BorderLayout.CENTER);
@@ -151,7 +151,7 @@ public class WWWorldMapToolView extends WWBaseToolView implements WWView {
                     });
 
                     setProducts(SnapApp.getDefault().getProductManager().getProducts());
-                    setSelectedProduct(SnapApp.getDefault().getSelectedProduct());
+                    setSelectedProduct(SnapApp.getDefault().getSelectedProduct(VIEW));
                 } catch (Throwable e) {
                     SnapApp.getDefault().handleError("Unable to initialize WWWorldMapToolView: " + e.getMessage(), e);
                 }
@@ -163,33 +163,7 @@ public class WWWorldMapToolView extends WWBaseToolView implements WWView {
 
     public void setCurrentView(final ProductSceneView newView) {
         if (currentView != newView) {
-            final ProductSceneView oldView = currentView;
             currentView = newView;
-
-            if (oldView != null) {
-                final Viewport observedViewport = oldView.getLayerCanvas().getViewport();
-                if (observedViewport != null)
-                    observedViewport.removeListener(observedViewportHandler);
-            }
-            if (newView != null) {
-                final Viewport observedViewport = newView.getLayerCanvas().getViewport();
-                if (observedViewport != null)
-                    observedViewport.addListener(observedViewportHandler);
-            }
-        }
-    }
-
-    private class ObservedViewportHandler implements ViewportListener {
-
-        @Override
-        public void handleViewportChanged(Viewport observedViewport, boolean orientationChanged) {
-            /*if (!adjustingObservedViewport) {
-                if (orientationChanged) {
-                    thumbnailCanvas.getViewport().setOrientation(observedViewport.getOrientation());
-                    thumbnailCanvas.zoomAll();
-                }
-                updateMoveSliderRect();
-            }  */
         }
     }
 }

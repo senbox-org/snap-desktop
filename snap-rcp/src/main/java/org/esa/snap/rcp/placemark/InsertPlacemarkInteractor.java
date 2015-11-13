@@ -32,6 +32,9 @@ import java.awt.Cursor;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
+import java.awt.geom.Point2D;
 
 /**
  * Interactor fort inserting pins and GCPs.
@@ -83,18 +86,21 @@ public abstract class InsertPlacemarkInteractor extends FigureEditorInteractor {
                                                                                           product);
         final String name = uniqueNameAndLabel[0];
         final String label = uniqueNameAndLabel[1];
-        final PixelPos rasterPos = new PixelPos(view.getCurrentPixelX() + 0.5f,
-                                                view.getCurrentPixelY() + 0.5f);
-            PixelPos pixelPos = rasterPos;
-            final Placemark newPlacemark = Placemark.createPointPlacemark(placemarkDescriptor, name, label, "", pixelPos, null,
-                                                                          view.getRaster().getGeoCoding());
-
-            placemarkDescriptor.getPlacemarkGroup(product).add(newPlacemark);
-
-            UndoRedo.Manager undoManager = SnapApp.getDefault().getUndoManager(product);
-            if (undoManager != null) {
-                undoManager.addEdit(UndoablePlacemarkActionFactory.createUndoablePlacemarkInsertion(product, newPlacemark, placemarkDescriptor));
-            }
+        final PixelPos rasterPos = new PixelPos(view.getCurrentPixelX() + 0.5f, view.getCurrentPixelY() + 0.5f);
+        PixelPos scenePixelPos = new PixelPos();
+        Point2D scenePos = view.getRaster().getImageToModelTransform().transform(rasterPos, new Point2D.Double());
+        try {
+            final AffineTransform sceneToImage = Product.findImageToModelTransform(product.getSceneGeoCoding()).createInverse();
+            sceneToImage.transform(scenePos, scenePixelPos);
+        } catch (NoninvertibleTransformException e) {
+            scenePixelPos = rasterPos;
+        }
+        final Placemark newPlacemark = Placemark.createPointPlacemark(placemarkDescriptor, name, label, "", scenePixelPos, null, view.getProduct().getSceneGeoCoding());
+        placemarkDescriptor.getPlacemarkGroup(product).add(newPlacemark);
+        UndoRedo.Manager undoManager = SnapApp.getDefault().getUndoManager(product);
+        if (undoManager != null) {
+            undoManager.addEdit(UndoablePlacemarkActionFactory.createUndoablePlacemarkInsertion(product, newPlacemark, placemarkDescriptor));
+        }
     }
 
     private Cursor createCursor() {

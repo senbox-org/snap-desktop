@@ -23,6 +23,8 @@ import org.esa.snap.ui.layer.AbstractLayerSourceAssistantPage;
 import org.esa.snap.ui.layer.LayerSource;
 import org.esa.snap.ui.layer.LayerSourcePageContext;
 
+import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
+
 /**
  * A source for {@link WindFieldLayer}s.
  *
@@ -35,7 +37,7 @@ public class WindFieldLayerSource implements LayerSource {
 
     @Override
     public boolean isApplicable(LayerSourcePageContext pageContext) {
-        final Product product = SnapApp.getDefault().getSelectedProduct();
+        final Product product = SnapApp.getDefault().getSelectedProduct(VIEW);
         final RasterDataNode windu = product.getRasterDataNode(WINDU_NAME);
         final RasterDataNode windv = product.getRasterDataNode(WINDV_NAME);
         return windu != null && windv != null;
@@ -58,7 +60,7 @@ public class WindFieldLayerSource implements LayerSource {
 
     @Override
     public boolean performFinish(LayerSourcePageContext pageContext) {
-        final Product product = SnapApp.getDefault().getSelectedProduct();
+        final Product product = SnapApp.getDefault().getSelectedProduct(VIEW);
         final RasterDataNode windu = product.getRasterDataNode(WINDU_NAME);
         final RasterDataNode windv = product.getRasterDataNode(WINDV_NAME);
         final WindFieldLayer fieldLayer = WindFieldLayerType.createLayer(windu, windv);

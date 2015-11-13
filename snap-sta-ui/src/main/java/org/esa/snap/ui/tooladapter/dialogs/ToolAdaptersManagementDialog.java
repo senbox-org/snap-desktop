@@ -160,7 +160,8 @@ public class ToolAdaptersManagementDialog extends ModelessDialog {
                                 newNameIndex++;
                                 opName = operatorDesc.getName() + ToolAdapterConstants.OPERATOR_GENERATED_NAME_SEPARATOR + newNameIndex;
                             }
-                            AbstractAdapterEditor dialog = AbstractAdapterEditor.createEditorDialog(appContext, getJDialog(), operatorDesc, newNameIndex);
+                            ToolAdapterOperatorDescriptor newOperator = new ToolAdapterOperatorDescriptor(operatorDesc, opName, opName);
+                            AbstractAdapterEditor dialog = AbstractAdapterEditor.createEditorDialog(appContext, getJDialog(), newOperator, newNameIndex);
                             dialog.show();
                             refreshContent();
                         }

@@ -16,6 +16,7 @@
 package org.esa.snap.worldwind;
 
 import gov.nasa.worldwind.WorldWindow;
+import gov.nasa.worldwind.awt.WorldWindowGLCanvas;
 import gov.nasa.worldwind.event.SelectEvent;
 import gov.nasa.worldwind.event.SelectListener;
 import gov.nasa.worldwind.layers.Earth.MSVirtualEarthLayer;
@@ -56,6 +57,8 @@ import java.awt.Window;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.net.URISyntaxException;
+
+import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
 
 @TopComponent.Description(
         preferredID = "WWAnalysisToolView",
@@ -152,7 +155,10 @@ public class WWAnalysisToolView extends WWBaseToolView implements WWView {
             protected Object doInBackground() throws Exception {
                 // Create the WorldWindow.
                 try {
-                    createWWPanel(includeStatusBar, false, false);
+                    // share resources from existing WorldWind Canvas
+                    WorldWindowGLCanvas shareWith = findWorldWindView();
+
+                    createWWPanel(shareWith, includeStatusBar, false, false);
                     wwjPanel.addLayerPanelLayer();
                     wwjPanel.addElevation();
 
@@ -206,7 +212,7 @@ public class WWAnalysisToolView extends WWBaseToolView implements WWView {
                         }
                     });
                     setProducts(snapApp.getProductManager().getProducts());
-                    setSelectedProduct(snapApp.getSelectedProduct());
+                    setSelectedProduct(snapApp.getSelectedProduct(VIEW));
 
                     // Put the pieces together.
                     mainPane.add(wwjPanel, BorderLayout.CENTER);

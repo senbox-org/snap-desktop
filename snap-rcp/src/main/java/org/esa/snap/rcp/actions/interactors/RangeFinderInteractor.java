@@ -180,13 +180,9 @@ class RangeFinderInteractor extends ViewportInteractor {
 
     private void showDetailsDialog(ProductSceneView view) {
         //todo [multisize_products] ask for scenerastertransform instead of geocoding
-        GeoCoding geoCoding;
-        geoCoding = view.getRaster().getGeoCoding();
+        GeoCoding geoCoding = view.getRaster().getGeoCoding();
         if (geoCoding == null) {
-            geoCoding = view.getProduct().getSceneGeoCoding();
-        }
-        if (geoCoding == null) {
-            JOptionPane.showMessageDialog(SnapApp.getDefault().getMainFrame(), "Product is not geo-coded.",
+            JOptionPane.showMessageDialog(SnapApp.getDefault().getMainFrame(), String.format("No geo-coding information for %s.", view.getRaster().getName()),
                                           TITLE, JOptionPane.INFORMATION_MESSAGE);
             return;
         }
@@ -250,7 +246,7 @@ class RangeFinderInteractor extends ViewportInteractor {
                     "Mean earth radius used: " + DistanceData.MEAN_EARTH_RADIUS_KM + " km" + "\n" +
                     "\n" +
                     "Distance: " + dd.distance + " +/- " + dd.distanceError + " km\n" +
-                    "\n\n"           /*I18N*/
+                    "\n\n"
             );
         }
         message.insert(0, "Total distance: " + distance + " +/- " + distanceError + " km\n" +
@@ -260,11 +256,7 @@ class RangeFinderInteractor extends ViewportInteractor {
         final JScrollPane content = new JScrollPane(new JTextArea(message.toString()));
         content.setPreferredSize(new Dimension(300, 150));
 
-        final ModalDialog detailsWindow = new ModalDialog(parentWindow,
-                                                          TITLE + " - Details",
-                                                          /*I18N*/
-                                                          ModalDialog.ID_OK,
-                                                          null);
+        final ModalDialog detailsWindow = new ModalDialog(parentWindow, TITLE + " - Details", ModalDialog.ID_OK, null);
         detailsWindow.setContent(content);
         return detailsWindow;
     }
@@ -274,8 +266,7 @@ class RangeFinderInteractor extends ViewportInteractor {
         final String cursorName = "rangeFinder";
 
         // this is necessary because on some systems the cursor is scaled but not the 'hot spot'
-        Dimension bestCursorSize = defaultToolkit.getBestCursorSize(cursorIcon.getIconWidth(),
-                                                                    cursorIcon.getIconHeight());
+        Dimension bestCursorSize = defaultToolkit.getBestCursorSize(cursorIcon.getIconWidth(), cursorIcon.getIconHeight());
         Point hotSpot = new Point((7 * bestCursorSize.width) / cursorIcon.getIconWidth(),
                                   (7 * bestCursorSize.height) / cursorIcon.getIconHeight());
 

@@ -24,22 +24,13 @@ import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle.Messages;
 
-@ActionID(
-        category = "Interactors",
-        id = "org.esa.snap.rcp.action.interactors.RangeFinderAction"
-)
-@ActionRegistration(
-        displayName = "#CTL_RangeFinderActionText",
-        lazy = false
-)
-@ActionReference(
-        path = "Toolbars/Tools",
-        position = 200
-)
+@ActionID(category = "Interactors", id = "org.esa.snap.rcp.action.interactors.RangeFinderAction" )
+@ActionRegistration(displayName = "#CTL_RangeFinderActionText", lazy = false )
+@ActionReference(path = "Toolbars/Tools", position = 200 )
 @Messages({
-                  "CTL_RangeFinderActionText=Range Finder",
-                  "CTL_RangeFinderActionDescription=Determines the distance between two points"
-          })
+        "CTL_RangeFinderActionText=Range Finder",
+        "CTL_RangeFinderActionDescription=Determines the distance between two points"
+})
 public class RangeFinderAction extends ToolAction {
 
     @SuppressWarnings("UnusedDeclaration")
@@ -56,7 +47,6 @@ public class RangeFinderAction extends ToolAction {
 
     @Override
     public HelpCtx getHelpCtx() {
-        // TODO: Make sure help page is available for ID
         return new HelpCtx("rangeFinder");
     }
 

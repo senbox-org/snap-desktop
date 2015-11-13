@@ -8,9 +8,11 @@
         <tocitem text="Import and Export">
             <tocitem text="Import Raster Data">
                 <tocitem text="DEMs">
-                    <tocitem text="GTOPO30 Tile" target="importGTOPO30"/>
-                    <tocitem text="ACE DEM Tile" target="importACE"/>
-                    <tocitem text="SRTM DEM Tile" target="importSRTM"/>
+                    <tocitem text="ACE DEM" target="importACE"/>
+                    <tocitem text="ASTER DEM" target="importASTER"/>
+                    <tocitem text="GTOPO30" target="importGTOPO30"/>
+                    <tocitem text="SRTM 1 sec DEM" target="importSRTM1sec"/>
+                    <tocitem text="SRTM 3 sec DEM" target="importSRTM3sec"/>
                 </tocitem>
             </tocitem>
         </tocitem>

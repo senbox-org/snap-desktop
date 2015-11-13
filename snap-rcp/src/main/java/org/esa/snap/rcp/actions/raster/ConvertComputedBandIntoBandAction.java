@@ -44,6 +44,8 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import java.awt.event.ActionEvent;
 
+import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
+
 /**
  * Converts a virtual band into a "real" band.
  *
@@ -94,15 +96,15 @@ public class ConvertComputedBandIntoBandAction extends AbstractAction implements
     @Override
     public void actionPerformed(ActionEvent e) {
         SnapApp snapApp = SnapApp.getDefault();
-        ProductNode selectedProductNode = snapApp.getSelectedProductNode();
+        ProductNode selectedProductNode = snapApp.getSelectedProductNode(EXPLORER);
         if (!isComputedBand(selectedProductNode)) {
             return;
         }
 
         Band computedBand = (Band) selectedProductNode;
         String bandName = computedBand.getName();
-        int width = computedBand.getSceneRasterWidth();
-        int height = computedBand.getSceneRasterHeight();
+        int width = computedBand.getRasterWidth();
+        int height = computedBand.getRasterHeight();
 
         Band realBand = new Band(bandName, computedBand.getDataType(), width, height);
         realBand.setDescription(createDescription(computedBand));

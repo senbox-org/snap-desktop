@@ -146,6 +146,7 @@ public class SnapApp {
         UndoManagerProvider undoManagerProvider = new UndoManagerProvider();
         ExtensionManager.getInstance().register(Product.class, undoManagerProvider);
         productManager.addListener(undoManagerProvider);
+        productManager.addListener(new MultiSizeWarningListener());
         selectionChangeSupports = new HashMap<>();
     }
 
@@ -295,31 +296,47 @@ public class SnapApp {
     }
 
     /**
+     * Return the currently selected product node.
+     * <p>
+     * The {@link SelectionSourceHint hint} defines what is the primary and secondary selection source. Source is either the
+     * {@link SelectionSourceHint#VIEW scene view} or the {@link SelectionSourceHint#EXPLORER product explorer}. If it is set to
+     * {@link SelectionSourceHint#AUTO} the algorithm tries to make a good guess, checking which component has the focus.
+
      * @return The currently selected product node, or {@code null}.
      */
-    public ProductNode getSelectedProductNode() {
-        return Utilities.actionsGlobalContext().lookup(ProductNode.class);
+    public ProductNode getSelectedProductNode(SelectionSourceHint hint) {
+        ProductNode viewNode = null;
+        ProductSceneView productSceneView = getSelectedProductSceneView();
+        if (productSceneView != null) {
+            viewNode = productSceneView.getProduct();
+        }
+        ProductNode explorerNode = Utilities.actionsGlobalContext().lookup(ProductNode.class);
+
+        return getProductNode(explorerNode, viewNode, productSceneView, hint);
     }
 
     /**
      * Return the currently selected product.
      * <p>
-     * In case a {@link ProductSceneView} is opened then the associated {@link Product}, otherwise the selected {@link Product}
-     * provided by the {@link Utilities#actionsGlobalContext() global context} is returned. If there is no selected product {@code null}
-     * is returned.
+     * The {@link SelectionSourceHint hint} defines what is the primary and secondary selection source. Source is either the
+     * {@link SelectionSourceHint#VIEW scene view} or the {@link SelectionSourceHint#EXPLORER product explorer}. If it is set to
+     * {@link SelectionSourceHint#AUTO} the algorithm tries to make a good guess, checking which component has the focus.
      *
+     * @param hint gives a hint to the implementation which selection source should be preferred.
      * @return The currently selected product or {@code null}.
      */
-    public Product getSelectedProduct() {
+    public Product getSelectedProduct(SelectionSourceHint hint) {
+        Product viewProduct = null;
         ProductSceneView productSceneView = getSelectedProductSceneView();
         if (productSceneView != null) {
-            return productSceneView.getProduct();
+            viewProduct = productSceneView.getProduct();
         }
+        Product explorerProduct = null;
         ProductNode productNode = Utilities.actionsGlobalContext().lookup(ProductNode.class);
         if (productNode != null) {
-            return productNode.getProduct();
+            explorerProduct = productNode.getProduct();
         }
-        return null;
+        return getProductNode(explorerProduct, viewProduct, productSceneView, hint);
     }
 
     /**
@@ -462,12 +479,12 @@ public class SnapApp {
 
     private String getMainFrameTitle() {
 
-        ProductNode selectedProductNode = getSelectedProductNode();
+        ProductNode selectedProductNode = getSelectedProductNode(SelectionSourceHint.VIEW);
         Product selectedProduct = null;
         if (selectedProductNode != null) {
             selectedProduct = selectedProductNode.getProduct();
             if (selectedProduct == null) {
-                selectedProduct = getSelectedProduct();
+                selectedProduct = getSelectedProduct(SelectionSourceHint.VIEW);
             }
         }
 
@@ -505,6 +522,29 @@ public class SnapApp {
 
     private void updateMainFrameTitle() {
         getMainFrame().setTitle(getMainFrameTitle());
+    }
+
+    private static <T extends ProductNode> T getProductNode(T explorerNode, T viewNode, ProductSceneView sceneView, SelectionSourceHint hint) {
+        switch (hint) {
+            case VIEW:
+                if (viewNode != null) {
+                    return viewNode;
+                } else {
+                    return explorerNode;
+                }
+            case EXPLORER:
+                if (explorerNode != null) {
+                    return explorerNode;
+                } else {
+                    return viewNode;
+                }
+            case AUTO:
+            default:
+                if (sceneView != null && sceneView.hasFocus()) {
+                    return viewNode;
+                }
+                return explorerNode;
+        }
     }
 
     /**
@@ -668,7 +708,7 @@ public class SnapApp {
 
         @Override
         public Product getSelectedProduct() {
-            return getDefault().getSelectedProduct();
+            return getDefault().getSelectedProduct(SelectionSourceHint.AUTO);
         }
 
         @Override
@@ -698,6 +738,22 @@ public class SnapApp {
         }
     }
 
+    private static class MultiSizeWarningListener implements ProductManager.Listener {
+
+        @Override
+        public void productAdded(ProductManager.Event event) {
+            final Product product = event.getProduct();
+            if(product.isMultiSizeProduct()) {
+                MultiSizeIssue.showMultiSizeWarning();
+            }
+        }
+
+        @Override
+        public void productRemoved(ProductManager.Event event) {
+
+        }
+    }
+
     private class MainFrameTitleUpdater implements SelectionSupport.Handler<ProductNode>, ProductNodeListener {
 
         @Override
@@ -723,5 +779,23 @@ public class SnapApp {
         @Override
         public void nodeRemoved(ProductNodeEvent event) {
         }
+    }
+
+    /**
+     * Provides a hint to {@link SnapApp#getSelectedProduct(SelectionSourceHint)} } which selection provider should be used as primary selection source
+     */
+    public enum SelectionSourceHint {
+        /**
+         * The scene view shall be preferred as selection source.
+         */
+        VIEW,
+        /**
+         * The product explorer shall be preferred as selection source.
+         */
+        EXPLORER,
+        /**
+         * The primary selection source is automatically detected.
+         */
+        AUTO,
     }
 }

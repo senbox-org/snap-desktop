@@ -33,7 +33,6 @@ import org.esa.snap.core.datamodel.ProductNodeEvent;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.datamodel.VectorDataNode;
 import org.esa.snap.core.dataop.barithm.BandArithmetic;
-import org.esa.snap.core.image.ImageManager;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.math.MathUtils;
 import org.esa.snap.rcp.SnapApp;
@@ -640,11 +639,11 @@ class ScatterPlotPanel extends ChartPagePanel {
 
                 final int boxSize = scatterPlotModel.boxSize;
 
-                final Rectangle sceneRect = new Rectangle(raster.getSceneRasterWidth(), raster.getSceneRasterHeight());
+                final Rectangle sceneRect = new Rectangle(raster.getRasterWidth(), raster.getRasterHeight());
 
                 final GeoCoding geoCoding = raster.getGeoCoding();
                 final AffineTransform imageToModelTransform;
-                imageToModelTransform = ImageManager.getImageToModelTransform(geoCoding);
+                imageToModelTransform = Product.findImageToModelTransform(geoCoding);
                 for (SimpleFeature feature : features) {
                     final Point point = (Point) feature.getDefaultGeometryProperty().getValue();
                     Point2D modelPos = new Point2D.Float((float) point.getX(), (float) point.getY());

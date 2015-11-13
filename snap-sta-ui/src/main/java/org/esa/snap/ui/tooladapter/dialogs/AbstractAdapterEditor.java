@@ -30,6 +30,7 @@ import com.bc.ceres.swing.binding.internal.TextFieldEditor;
 import org.esa.snap.core.dataio.ProductIOPlugInManager;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.GPF;
+import org.esa.snap.core.gpf.OperatorException;
 import org.esa.snap.core.gpf.OperatorSpi;
 import org.esa.snap.core.gpf.descriptor.*;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterConstants;
@@ -95,6 +96,7 @@ import static org.esa.snap.utils.SpringUtilities.makeCompactGrid;
         "CTL_Panel_OutputPattern_Border_TitleText=Tool Output Patterns",
         "CTL_Label_ProgressPattern=Progress pattern:",
         "CTL_Label_ErrorPattern=Error pattern:",
+        "CTL_Label_StepPattern=Step operation pattern:",
         "CTL_Panel_SysVar_Border_TitleText=System Variables",
         "CTL_Label_RadioButton_ExistingMenus=Existing Menus",
         "CTL_Label_RadioButton_NewMenu=Create Menu",
@@ -132,7 +134,7 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
     protected int newNameIndex = -1;
     protected PropertyContainer propertyContainer;
     protected BindingContext bindingContext;
-    protected AutoCompleteTextArea templateContent;
+    protected JTextArea templateContent;
     protected OperatorParametersTable paramsTable;
     protected AppContext context;
     protected Logger logger;
@@ -345,6 +347,9 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
                 this.getJDialog().requestFocus();
             } else {
                 super.onOK();
+                if (newOperatorDescriptor.getSourceProductCount() == 0) {
+                    SnapDialogs.showInformation("The template is not using the parameter $sourceProduct.\nNo source product selection will be available at execution time.", "empty.source.info");
+                }
                 if (!this.operatorIsNew) {
                     ToolAdapterActionRegistrar.removeOperatorMenu(oldOperatorDescriptor);
                     ToolAdapterIO.removeOperator(oldOperatorDescriptor, false);
@@ -560,19 +565,11 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
 
     protected boolean resolveTemplateProductCount(String templateContent) {
         boolean success = true;
-        int idx = templateContent.lastIndexOf(ToolAdapterConstants.TOOL_SOURCE_PRODUCT_ID + "[");
-        if (idx > 0) {
-            String value = templateContent.substring(idx + (ToolAdapterConstants.TOOL_SOURCE_PRODUCT_ID + "[").length(), templateContent.indexOf("]", idx));
-            int maxNum = Integer.valueOf(value) + 1;
-            if (maxNum > 1) {
-                newOperatorDescriptor.setSourceProductCount(maxNum);
-            } else {
-                success = false;
-            }
-        } else {
-            idx = templateContent.lastIndexOf(ToolAdapterConstants.TOOL_SOURCE_PRODUCT_FILE + "[");
+        if (templateContent.contains(ToolAdapterConstants.TOOL_SOURCE_PRODUCT_ID) ||
+                templateContent.contains(ToolAdapterConstants.TOOL_SOURCE_PRODUCT_FILE)) {
+            int idx = templateContent.lastIndexOf(ToolAdapterConstants.TOOL_SOURCE_PRODUCT_ID + "[");
             if (idx > 0) {
-                String value = templateContent.substring(idx + (ToolAdapterConstants.TOOL_SOURCE_PRODUCT_FILE + "[").length(), templateContent.indexOf("]", idx));
+                String value = templateContent.substring(idx + (ToolAdapterConstants.TOOL_SOURCE_PRODUCT_ID + "[").length(), templateContent.indexOf("]", idx));
                 int maxNum = Integer.valueOf(value) + 1;
                 if (maxNum > 1) {
                     newOperatorDescriptor.setSourceProductCount(maxNum);
@@ -580,10 +577,49 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
                     success = false;
                 }
             } else {
-                newOperatorDescriptor.setSourceProductCount(1);
+                idx = templateContent.lastIndexOf(ToolAdapterConstants.TOOL_SOURCE_PRODUCT_FILE + "[");
+                if (idx > 0) {
+                    String value = templateContent.substring(idx + (ToolAdapterConstants.TOOL_SOURCE_PRODUCT_FILE + "[").length(), templateContent.indexOf("]", idx));
+                    int maxNum = Integer.valueOf(value) + 1;
+                    if (maxNum > 1) {
+                        newOperatorDescriptor.setSourceProductCount(maxNum);
+                    } else {
+                        success = false;
+                    }
+                } else {
+                    newOperatorDescriptor.setSourceProductCount(1);
+                }
             }
+        } else {
+            newOperatorDescriptor.setSourceProductCount(0);
         }
         return success;
+    }
+
+    protected JTextArea createTemplateEditorField() {
+        boolean useAutocomplete = Boolean.parseBoolean(NbPreferences.forModule(SnapDialogs.class).get(ToolAdapterOptionsController.PREFERENCE_KEY_AUTOCOMPLETE, "false"));
+        if (useAutocomplete) {
+            templateContent = new AutoCompleteTextArea("", 15, 9);
+        } else {
+            templateContent = new JTextArea("", 15, 9);
+        }
+        try {
+            if (operatorIsNew) {
+                if (oldOperatorDescriptor.getTemplateFileLocation() != null) {
+                    templateContent.setText(ToolAdapterIO.readOperatorTemplate(oldOperatorDescriptor.getName()));
+                }
+            } else {
+                templateContent.setText(ToolAdapterIO.readOperatorTemplate(newOperatorDescriptor.getName()));
+            }
+        } catch (IOException | OperatorException e) {
+            logger.warning(e.getMessage());
+        }
+        templateContent.setInputVerifier(new RequiredFieldValidator(MESSAGE_REQUIRED));
+        if (useAutocomplete && templateContent instanceof AutoCompleteTextArea) {
+            ((AutoCompleteTextArea) templateContent).setAutoCompleteEntries(getAutocompleteEntries());
+            ((AutoCompleteTextArea) templateContent).setTriggerChar('$');
+        }
+        return templateContent;
     }
 
     protected java.util.List<String> getAutocompleteEntries() {
@@ -595,4 +631,5 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
         entries.sort(Comparator.<String>naturalOrder());
         return entries;
     }
+
 }

@@ -24,6 +24,7 @@ import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.ui.SourceProductSelector;
 import org.esa.snap.core.gpf.ui.TargetProductSelector;
+import org.esa.snap.rcp.MultiSizeIssue;
 import org.esa.snap.ui.AppContext;
 
 import javax.swing.BorderFactory;
@@ -36,8 +37,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import java.awt.BorderLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 /**
  * Form for geographic collocation dialog.
@@ -60,10 +59,8 @@ class CollocationForm extends JPanel {
 
     public CollocationForm(PropertySet propertySet, TargetProductSelector targetProductSelector, AppContext appContext) {
         this.targetProductSelector = targetProductSelector;
-        masterProductSelector = new SourceProductSelector(appContext,
-                                                          "Master (pixel values are conserved):");
-        slaveProductSelector = new SourceProductSelector(appContext,
-                                                         "Slave (pixel values are resampled onto the master grid):");
+        masterProductSelector = new SourceProductSelector(appContext, "Master (pixel values are conserved):");
+        slaveProductSelector = new SourceProductSelector(appContext, "Slave (pixel values are resampled onto the master grid):");
         renameMasterComponentsCheckBox = new JCheckBox("Rename master components:");
         renameSlaveComponentsCheckBox = new JCheckBox("Rename slave components:");
         masterComponentPatternField = new JTextField();
@@ -71,12 +68,10 @@ class CollocationForm extends JPanel {
         resamplingComboBoxModel = new DefaultComboBoxModel<>(ResamplingType.values());
         resamplingComboBox = new JComboBox<>(resamplingComboBoxModel);
 
-        slaveProductSelector.getProductNameComboBox().addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                Product slaveProduct = slaveProductSelector.getSelectedProduct();
-                boolean validPixelExpressionUsed = isValidPixelExpressionUsed(slaveProduct);
-                adaptResamplingComboBoxModel(resamplingComboBoxModel, validPixelExpressionUsed);
-            }
+        slaveProductSelector.getProductNameComboBox().addActionListener(e -> {
+            Product slaveProduct = slaveProductSelector.getSelectedProduct();
+            boolean validPixelExpressionUsed = isValidPixelExpressionUsed(slaveProduct);
+            adaptResamplingComboBoxModel(resamplingComboBoxModel, validPixelExpressionUsed);
         });
 
         createComponents();
@@ -91,6 +86,11 @@ class CollocationForm extends JPanel {
         slaveProductSelector.initProducts();
         if (slaveProductSelector.getProductCount() > 1) {
             slaveProductSelector.setSelectedIndex(1);
+        }
+
+        if(MultiSizeIssue.isMultiSize(masterProductSelector.getSelectedProduct()) ||
+           MultiSizeIssue.isMultiSize(slaveProductSelector.getSelectedProduct())) {
+            MultiSizeIssue.showMultiSizeWarning();
         }
     }
 

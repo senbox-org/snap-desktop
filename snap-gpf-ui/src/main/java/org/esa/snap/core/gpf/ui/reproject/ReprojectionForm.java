@@ -37,6 +37,7 @@ import org.esa.snap.core.gpf.ui.TargetProductSelectorModel;
 import org.esa.snap.core.param.ParamParseException;
 import org.esa.snap.core.param.ParamValidateException;
 import org.esa.snap.core.util.ProductUtils;
+import org.esa.snap.rcp.MultiSizeIssue;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.DemSelector;
 import org.esa.snap.ui.ModalDialog;
@@ -71,15 +72,13 @@ import java.awt.Rectangle;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * @author Marco Zuehlke
- * @author Marco Paters
+ * @author Marco Peters
  * @since BEAM 4.7
  */
 class ReprojectionForm extends JTabbedPane {
@@ -182,7 +181,7 @@ class ReprojectionForm extends JTabbedPane {
         Object crsAsWKT = parameterMap.get("crs");
         if (crsAsWKT instanceof String) {
             try {
-                CoordinateReferenceSystem crs = null;
+                CoordinateReferenceSystem crs;
                 crs = CRS.parseWKT((String) crsAsWKT);
                 if (crs instanceof ProjectedCRS) {
                     ProjectedCRS projectedCRS = (ProjectedCRS) crs;
@@ -211,7 +210,7 @@ class ReprojectionForm extends JTabbedPane {
     }
 
     Map<String, Product> getProductMap() {
-        final Map<String, Product> productMap = new HashMap<String, Product>(5);
+        final Map<String, Product> productMap = new HashMap<>(5);
         productMap.put("source", getSourceProduct());
         if (collocationCrsUI.getRadioButton().isSelected()) {
             productMap.put("collocateWith", collocationCrsUI.getCollocationProduct());
@@ -229,7 +228,15 @@ class ReprojectionForm extends JTabbedPane {
 
     void prepareShow() {
         sourceProductSelector.initProducts();
+        final Product selectedProduct = sourceProductSelector.getSelectedProduct();
+        if(isMultiSize(selectedProduct)) {
+            MultiSizeIssue.showMultiSizeWarning();
+        }
         crsSelectionPanel.prepareShow();
+    }
+
+    private boolean isMultiSize(Product selectedProduct) {
+        return selectedProduct != null && selectedProduct.isMultiSizeProduct();
     }
 
     void prepareHide() {
@@ -296,12 +303,7 @@ class ReprojectionForm extends JTabbedPane {
         infoForm = new InfoForm();
         parameterPanel.add(infoForm.createUI());
 
-        crsSelectionPanel.addPropertyChangeListener("crs", new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                updateCRS();
-            }
-        });
+        crsSelectionPanel.addPropertyChangeListener("crs", evt -> updateCRS());
         updateCRS();
         return parameterPanel;
     }
@@ -337,8 +339,8 @@ class ReprojectionForm extends JTabbedPane {
         if (sourceProduct != null && crs != null) {
             if (!reprojectionModel.preserveResolution && outputGeometryModel != null) {
                 PropertySet container = outputGeometryModel.getPropertySet();
-                width = (Integer) container.getValue("width");
-                height = (Integer) container.getValue("height");
+                width = container.getValue("width");
+                height = container.getValue("height");
             } else {
                 ImageGeometry iGeometry;
                 final Product collocationProduct = collocationCrsUI.getCollocationProduct();
@@ -437,20 +439,16 @@ class ReprojectionForm extends JTabbedPane {
             panel.add(new JLabel("CRS:"));
             panel.add(crsLabel);
             wktButton = new JButton("Show WKT");
-            wktButton.addActionListener(new ActionListener() {
-
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    JTextArea wktArea = new JTextArea(30, 40);
-                    wktArea.setEditable(false);
-                    wktArea.setText(wkt);
-                    final JScrollPane scrollPane = new JScrollPane(wktArea);
-                    final ModalDialog dialog = new ModalDialog(appContext.getApplicationWindow(),
-                                                               "Coordinate reference system as well known text",
-                                                               scrollPane,
-                                                               ModalDialog.ID_OK, null);
-                    dialog.show();
-                }
+            wktButton.addActionListener(e -> {
+                JTextArea wktArea = new JTextArea(30, 40);
+                wktArea.setEditable(false);
+                wktArea.setText(wkt);
+                final JScrollPane scrollPane = new JScrollPane(wktArea);
+                final ModalDialog dialog = new ModalDialog(appContext.getApplicationWindow(),
+                                                           "Coordinate reference system as well known text",
+                                                           scrollPane,
+                                                           ModalDialog.ID_OK, null);
+                dialog.show();
             });
             wktButton.setEnabled(false);
             panel.add(wktButton);
@@ -478,14 +476,11 @@ class ReprojectionForm extends JTabbedPane {
 
         final JCheckBox preserveResolutionCheckBox = new JCheckBox("Preserve resolution");
         context.bind(Model.PRESERVE_RESOLUTION, preserveResolutionCheckBox);
-        collocationCrsUI.getCrsUI().addPropertyChangeListener("collocate", new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                final boolean collocate = (Boolean) evt.getNewValue();
-                reprojectionContainer.setValue(Model.PRESERVE_RESOLUTION,
-                                               collocate || reprojectionModel.preserveResolution);
-                preserveResolutionCheckBox.setEnabled(!collocate);
-            }
+        collocationCrsUI.getCrsUI().addPropertyChangeListener("collocate", evt -> {
+            final boolean collocate = (Boolean) evt.getNewValue();
+            reprojectionContainer.setValue(Model.PRESERVE_RESOLUTION,
+                                           collocate || reprojectionModel.preserveResolution);
+            preserveResolutionCheckBox.setEnabled(!collocate);
         });
         outputSettingsPanel.add(preserveResolutionCheckBox);
 
@@ -509,17 +504,12 @@ class ReprojectionForm extends JTabbedPane {
         context.bind(Model.ADD_DELTA_BANDS, addDeltaBandsChecker);
 
         outputSettingsPanel.add(new JLabel("Resampling method:"));
-        JComboBox resampleComboBox = new JComboBox(RESAMPLING_IDENTIFIER);
+        JComboBox<String> resampleComboBox = new JComboBox<>(RESAMPLING_IDENTIFIER);
         resampleComboBox.setPrototypeDisplayValue(RESAMPLING_IDENTIFIER[0]);
         context.bind(Model.RESAMPLING_NAME, resampleComboBox);
         outputSettingsPanel.add(resampleComboBox);
 
-        reprojectionContainer.addPropertyChangeListener(Model.PRESERVE_RESOLUTION, new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                updateOutputParameterState();
-            }
-        });
+        reprojectionContainer.addPropertyChangeListener(Model.PRESERVE_RESOLUTION, evt -> updateOutputParameterState());
 
         return outputSettingsPanel;
     }

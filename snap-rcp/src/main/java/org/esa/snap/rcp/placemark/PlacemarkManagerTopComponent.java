@@ -92,6 +92,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.prefs.Preferences;
 
+import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
+
 /**
  * @author Tonio Fincke
  */
@@ -167,16 +169,13 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
         content.add(BorderLayout.CENTER, mainPane);
         content.add(BorderLayout.EAST, buttonPane);
         Component southExtension = getSouthExtension();
-        final JPanel southPanel = new JPanel(new BorderLayout());
-        southPanel.add(new JLabel("Pixel position is given in product raster coordinates"), BorderLayout.SOUTH);
         if (southExtension != null) {
-            southPanel.add(southExtension, BorderLayout.CENTER);
+            content.add(BorderLayout.SOUTH, southExtension);
         }
-        content.add(BorderLayout.SOUTH, southPanel);
         content.setPreferredSize(new Dimension(420, 200));
 
         setCurrentView(snapApp.getSelectedProductSceneView());
-        setProduct(snapApp.getSelectedProduct());
+        setProduct(snapApp.getSelectedProduct(VIEW));
         snapApp.getSelectionSupport(ProductSceneView.class).addHandler(new ProductSceneViewSelectionChangeHandler());
         snapApp.getProductManager().addListener(new ProductRemovedListener());
         updateUIState();

@@ -252,6 +252,7 @@ public class OperatorParametersTable extends JTable {
         @Override
         public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
             TemplateParameterDescriptor descriptor = operator.getToolParameterDescriptors().get(rowIndex);
+            String defaultValue = descriptor.getDefaultValue();
             switch (columnIndex) {
                 case 0:
                     operator.removeParamDescriptor(descriptor);
@@ -265,7 +266,7 @@ public class OperatorParametersTable extends JTable {
                     try {
                         PropertyDescriptor property =  ParameterDescriptorFactory.convert(descriptor, new ParameterDescriptorFactory().getSourceProductMap());
                         try {
-                            property.setDefaultValue(descriptor.getDefaultValue());
+                            property.setDefaultValue(defaultValue);
                         }catch (Exception ex){
                             logger.warning(ex.getMessage());
                         }
@@ -290,7 +291,7 @@ public class OperatorParametersTable extends JTable {
                     descriptor.setParameterType(customClass.getTypeMask());
                     if(descriptor.getDataType() != customClass.getParameterClass()) {
                         descriptor.setDataType(customClass.getParameterClass());
-                        descriptor.setDefaultValue(descriptor.getDefaultValue());
+                        descriptor.setDefaultValue(defaultValue);
                         rebuildEditorCell(descriptor);
                     }
                     break;

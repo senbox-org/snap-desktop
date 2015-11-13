@@ -36,9 +36,12 @@ import java.awt.event.ActionEvent;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
 
 /**
  * Action which closes a selected product.
@@ -114,10 +117,10 @@ public final class CloseProductAction extends AbstractAction implements ContextA
             productSet.clear();
         } else {
             // Case 2: If productSet is empty, default constructor has been called
-            ProductNode productNode = SnapApp.getDefault().getSelectedProductNode();
+            ProductNode productNode = SnapApp.getDefault().getSelectedProductNode(EXPLORER);
             if (productNode != null) {
                 Product product = productNode.getProduct();
-                status = closeProducts(new HashSet<>(Arrays.asList(product)));
+                status = closeProducts(new HashSet<>(Collections.singletonList(product)));
             } else {
                 status = false;
             }

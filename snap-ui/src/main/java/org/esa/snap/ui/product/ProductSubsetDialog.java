@@ -39,8 +39,7 @@ import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.datamodel.TiePointGrid;
 import org.esa.snap.core.datamodel.VirtualBand;
 import org.esa.snap.core.dataop.barithm.BandArithmetic;
-import org.esa.snap.core.image.BandImageMultiLevelSource;
-import org.esa.snap.core.image.ImageManager;
+import org.esa.snap.core.image.ColoredBandImageMultiLevelSource;
 import org.esa.snap.core.jexp.ParseException;
 import org.esa.snap.core.jexp.Term;
 import org.esa.snap.core.param.ParamChangeEvent;
@@ -119,7 +118,7 @@ public class ProductSubsetDialog extends ModalDialog {
      * Constructs a new subset dialog.
      *
      * @param window  the parent window
-     * @param product the product for which the subset is to be specified, must not be <code>null</code>
+     * @param product the product for which the subset is to be specified, must not be {@code null}
      */
     public ProductSubsetDialog(Window window, Product product) {
         this(window, product, DEFAULT_MEM_WARN_LIMIT);
@@ -129,7 +128,7 @@ public class ProductSubsetDialog extends ModalDialog {
      * Constructs a new subset dialog.
      *
      * @param window       the parent window
-     * @param product      the product for which the subset is to be specified, must not be <code>null</code>
+     * @param product      the product for which the subset is to be specified, must not be {@code null}
      * @param memWarnLimit the warning limit in megabytes
      */
     public ProductSubsetDialog(Window window, Product product, double memWarnLimit) {
@@ -140,8 +139,8 @@ public class ProductSubsetDialog extends ModalDialog {
      * Constructs a new subset dialog.
      *
      * @param window           the parent window
-     * @param product          the product for which the subset is to be specified, must not be <code>null</code>
-     * @param productSubsetDef the initial product subset definition, can be <code>null</code>
+     * @param product          the product for which the subset is to be specified, must not be {@code null}
+     * @param productSubsetDef the initial product subset definition, can be {@code null}
      */
     public ProductSubsetDialog(Window window,
                                Product product,
@@ -153,21 +152,15 @@ public class ProductSubsetDialog extends ModalDialog {
      * Constructs a new subset dialog.
      *
      * @param window           the parent window
-     * @param product          the product for which the subset is to be specified, must not be <code>null</code>
-     * @param productSubsetDef the initial product subset definition, can be <code>null</code>
+     * @param product          the product for which the subset is to be specified, must not be {@code null}
+     * @param productSubsetDef the initial product subset definition, can be {@code null}
      * @param memWarnLimit     the warning limit in megabytes
      */
     public ProductSubsetDialog(Window window,
                                Product product,
                                ProductSubsetDef productSubsetDef,
                                double memWarnLimit) {
-        super(window,
-              "Specify Product Subset", /*I18N*/
-              ID_OK
-              | ID_CANCEL
-              | ID_HELP,
-              "subsetDialog"
-        );
+        super(window, "Specify Product Subset", ID_OK | ID_CANCEL | ID_HELP, "subsetDialog");
         Guardian.assertNotNull("product", product);
         this.product = product;
         givenProductSubsetDef = productSubsetDef;
@@ -994,7 +987,7 @@ public class ProductSubsetDialog extends ModalDialog {
         }
 
         private Rectangle getScaledRectangle(Rectangle rectangle) {
-            final AffineTransform i2mTransform = ImageManager.getImageToModelTransform(product.getSceneGeoCoding());
+            final AffineTransform i2mTransform = Product.findImageToModelTransform(product.getSceneGeoCoding());
             final double scaleX = i2mTransform.getScaleX();
             final double scaleY = i2mTransform.getScaleY();
             double scaleFactorY = Math.abs(scaleY / scaleX);
@@ -1012,8 +1005,8 @@ public class ProductSubsetDialog extends ModalDialog {
             pm.beginTask("Creating thumbnail image", 5);
             BufferedImage image = null;
             try {
-                MultiLevelSource multiLevelSource = BandImageMultiLevelSource.create(thumbNailBand,
-                                                                                     SubProgressMonitor.create(pm, 1));
+                MultiLevelSource multiLevelSource = ColoredBandImageMultiLevelSource.create(thumbNailBand,
+                                                                                            SubProgressMonitor.create(pm, 1));
                 final ImageLayer imageLayer = new ImageLayer(multiLevelSource);
                 final int imageWidth = imgSize.width;
                 final int imageHeight = imgSize.height;
@@ -1048,18 +1041,18 @@ public class ProductSubsetDialog extends ModalDialog {
 
     private class ProductNodeSubsetPane extends JPanel {
 
-        private Object[] productNodes;
+        private ProductNode[] productNodes;
         private String[] includeAlways;
         private List<JCheckBox> checkers;
         private JCheckBox allCheck;
         private JCheckBox noneCheck;
         private boolean selected;
 
-        private ProductNodeSubsetPane(Object[] productNodes, boolean selected) {
+        private ProductNodeSubsetPane(ProductNode[] productNodes, boolean selected) {
             this(productNodes, null, selected);
         }
 
-        private ProductNodeSubsetPane(Object[] productNodes, String[] includeAlways, boolean selected) {
+        private ProductNodeSubsetPane(ProductNode[] productNodes, String[] includeAlways, boolean selected) {
             this.productNodes = productNodes;
             this.includeAlways = includeAlways;
             this.selected = selected;
@@ -1076,7 +1069,7 @@ public class ProductSubsetDialog extends ModalDialog {
 
             GridBagConstraints gbc = GridBagUtils.createConstraints("insets.left=4,anchor=WEST,fill=HORIZONTAL");
             for (int i = 0; i < productNodes.length; i++) {
-                ProductNode productNode = (ProductNode) productNodes[i];
+                ProductNode productNode = productNodes[i];
 
                 String name = productNode.getName();
                 JCheckBox productNodeCheck = new JCheckBox(name);
@@ -1151,7 +1144,7 @@ public class ProductSubsetDialog extends ModalDialog {
             for (int i = 0; i < checkers.size(); i++) {
                 JCheckBox checker = checkers.get(i);
                 if (checker.isSelected()) {
-                    ProductNode productNode = (ProductNode) productNodes[i];
+                    ProductNode productNode = productNodes[i];
                     names[pos] = productNode.getName();
                     pos++;
                 }

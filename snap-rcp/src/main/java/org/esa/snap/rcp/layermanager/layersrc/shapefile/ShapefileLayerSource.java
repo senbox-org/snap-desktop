@@ -15,10 +15,13 @@
  */
 package org.esa.snap.rcp.layermanager.layersrc.shapefile;
 
+import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.ui.layer.AbstractLayerSourceAssistantPage;
 import org.esa.snap.ui.layer.LayerSource;
 import org.esa.snap.ui.layer.LayerSourcePageContext;
+
+import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
 
 /**
  * A layer source for ESRI shape files.
@@ -39,7 +42,8 @@ public class ShapefileLayerSource implements LayerSource {
 
     @Override
     public boolean isApplicable(LayerSourcePageContext pageContext) {
-        return SnapApp.getDefault().getSelectedProduct().getSceneGeoCoding() != null;
+        final Product selectedProduct = SnapApp.getDefault().getSelectedProduct(VIEW);
+        return selectedProduct != null && selectedProduct.getSceneGeoCoding() != null;
     }
 
     @Override

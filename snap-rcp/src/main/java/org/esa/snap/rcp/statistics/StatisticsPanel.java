@@ -491,7 +491,7 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
         RasterDataNode raster = getRaster();
         boolean maskUsed = mask != null;
         final String unit = (StringUtils.isNotNullAndNotEmpty(raster.getUnit()) ? raster.getUnit() : "1");
-        final long numPixelTotal = (long) raster.getSceneRasterWidth() * (long) raster.getSceneRasterHeight();
+        final long numPixelTotal = (long) raster.getRasterWidth() * (long) raster.getRasterHeight();
         final StringBuilder sb = new StringBuilder(1024);
 
         sb.append("Only ROI-mask pixels considered:\t");

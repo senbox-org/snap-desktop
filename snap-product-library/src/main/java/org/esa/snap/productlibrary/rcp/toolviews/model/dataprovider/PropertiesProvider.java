@@ -47,7 +47,7 @@ public class PropertiesProvider implements DataProvider {
     private static final DecimalFormat df = new DecimalFormat("#.##");
     private static final DateFormat dateFormat = ProductData.UTC.createDateFormat("dd-MMM-yyyy");
 
-    private static final String[] propertyLables = new String[]{
+    private static final String[] propertyLabels = new String[]{
             "Name:",
             "Type:",
             "Acquired:",
@@ -90,7 +90,7 @@ public class PropertiesProvider implements DataProvider {
             final DefaultTableModel dataModel = new DefaultTableModel();
             dataModel.setColumnCount(1);
             setRowHeight(14);
-            dataModel.setRowCount(propertyLables.length);
+            dataModel.setRowCount(propertyLabels.length);
 
             setModel(dataModel);
             valueFont = getFont().deriveFont(Font.PLAIN, 12);
@@ -148,7 +148,7 @@ public class PropertiesProvider implements DataProvider {
                     }
                     toolTip = file.getAbsolutePath();
                 } else if (value == null) {
-                    for (int i = 0; i < propertyLables.length; i++) {
+                    for (int i = 0; i < propertyLabels.length; i++) {
                         setValueAt(null, i, 0);
                     }
                 }
@@ -180,12 +180,12 @@ public class PropertiesProvider implements DataProvider {
         private void adjustCellSize(JTable table, int row, int column, String[] values) {
             setRowHeight(table, row, ROW_HEIGHT);
 
-            final int lablesLength = getMaxStringLength(propertyLables, getFontMetrics(getFont()));
+            final int labelsLength = getMaxStringLength(propertyLabels, getFontMetrics(getFont()));
             int valuesLength = 50;
             if (values != null) {
                 valuesLength = Math.min(200, getMaxStringLength(values, getFontMetrics(valueFont)));
             }
-            int preferredWidth = lablesLength + valuesLength;
+            int preferredWidth = labelsLength + valuesLength;
             final TableColumn valueColumn = table.getColumnModel().getColumn(column);
             final int valueColWidth = Math.max(valueColumn.getWidth(), preferredWidth);
             increasePreferredColumnWidth(valueColumn, valueColWidth);

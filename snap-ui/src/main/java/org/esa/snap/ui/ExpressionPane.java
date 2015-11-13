@@ -49,8 +49,6 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -65,8 +63,8 @@ import java.util.Stack;
 
 /**
  * The expression pane is a UI component which is used to edit mathematical expressions. There are four methods which
- * can be used to customize the UI of the expression pane: <code>{@link #setLeftAccessory}</code>, <code>{@link
- * #setRightAccessory}</code>, <code>{@link #setTopAccessory}</code> and <code>{@link #setBottomAccessory}</code>.
+ * can be used to customize the UI of the expression pane: {@code {@link #setLeftAccessory}}, {@code {@link
+ * #setRightAccessory}}, {@code {@link #setTopAccessory}} and {@code {@link #setBottomAccessory}}.
  */
 public class ExpressionPane extends JPanel {
 
@@ -167,7 +165,7 @@ public class ExpressionPane extends JPanel {
     /**
      * Constructs a new expression pane.
      *
-     * @param requiresBoolExpr if <code>true</code> the expressions are checked to return a boolean value.
+     * @param requiresBoolExpr if {@code true} the expressions are checked to return a boolean value.
      * @param parser           the parser used to check expression syntax
      * @param preferences      a property map which stores expression pane related properties such as the code history
      */
@@ -451,12 +449,7 @@ public class ExpressionPane extends JPanel {
         JButton button = new JButton(pattern);
         button.setFont(insertCompFont);
         button.setForeground(insertCompColor);
-        button.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                insertCodePattern(pattern);
-            }
-        });
+        button.addActionListener(e -> insertCodePattern(pattern));
         return button;
     }
 
@@ -468,39 +461,31 @@ public class ExpressionPane extends JPanel {
         comboBox.setFont(insertCompFont);
         comboBox.setEditable(false);
         comboBox.setForeground(insertCompColor);
-        comboBox.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                if (comboBox.getSelectedIndex() != 0) {
-                    insertCodePattern((String) comboBox.getSelectedItem());
-                    comboBox.setSelectedIndex(0);
-                }
+        comboBox.addActionListener(e -> {
+            if (comboBox.getSelectedIndex() != 0) {
+                insertCodePattern((String) comboBox.getSelectedItem());
+                comboBox.setSelectedIndex(0);
             }
         });
         return comboBox;
     }
 
-    public JList createPatternList() {
+    public JList<String> createPatternList() {
         return createPatternList(null);
     }
 
-    public JList createPatternList(final String[] patterns) {
+    public JList<String> createPatternList(final String[] patterns) {
         final JList<String> patternList = new JList<>(patterns);
         patternList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         final ListCellRenderer<? super String> cellRenderer = patternList.getCellRenderer();
         final Border cellBorder = BorderFactory.createEtchedBorder();
-        patternList.setCellRenderer(new ListCellRenderer<String>() {
-
-            @Override
-            public Component getListCellRendererComponent(JList<? extends String> list, String value, int index, boolean isSelected,
-                                                          boolean cellHasFocus) {
-                final Component component = cellRenderer.getListCellRendererComponent(list, value, index, isSelected,
-                                                                                      cellHasFocus);
-                if (component instanceof JComponent) {
-                    ((JComponent) component).setBorder(cellBorder);
-                }
-                return component;
+        patternList.setCellRenderer((list, value, index, isSelected, cellHasFocus) -> {
+            final Component component1 = cellRenderer.getListCellRendererComponent(list, value, index, isSelected,
+                                                                                   cellHasFocus);
+            if (component1 instanceof JComponent) {
+                ((JComponent) component1).setBorder(cellBorder);
             }
+            return component1;
         });
         patternList.setFont(insertCompFont);
         patternList.setBackground(getBackground());
@@ -514,7 +499,7 @@ public class ExpressionPane extends JPanel {
             public void mouseClicked(MouseEvent e) {
                 final int index = patternList.locationToIndex(e.getPoint());
                 if (index >= 0) {
-                    final String value = (String) patternList.getModel().getElementAt(index);
+                    final String value = patternList.getModel().getElementAt(index);
                     final String pattern = BandArithmetic.createExternalName(value);
                     insertCodePattern(pattern);
                     patternList.clearSelection();
@@ -525,7 +510,7 @@ public class ExpressionPane extends JPanel {
     }
 
     protected JPanel createPatternListPane(final String labelText, final String[] patterns) {
-        JList list = createPatternList(patterns);
+        JList<String> list = createPatternList(patterns);
         JScrollPane scrollableList = new JScrollPane(list);
         JPanel pane = new JPanel(new BorderLayout());
         pane.add(BorderLayout.NORTH, new JLabel(labelText));
@@ -663,7 +648,7 @@ public class ExpressionPane extends JPanel {
             functionNames = FUNCTION_CALL_PATTERNS;
         }
         // remove double values
-        Set<String> set = new HashSet<String>();
+        Set<String> set = new HashSet<>();
         Collections.addAll(set, functionNames);
         functionNames = set.toArray(new String[set.size()]);
         Arrays.sort(functionNames);
@@ -839,43 +824,26 @@ public class ExpressionPane extends JPanel {
             selAllButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon("icons/SelectAll24.gif"), false);
             selAllButton.setName("selAllButton");
             selAllButton.setToolTipText("Select all");
-            selAllButton.addActionListener(new ActionListener() {
-
-                public void actionPerformed(ActionEvent e) {
-                    selectAllCode();
-                }
-            });
+            selAllButton.addActionListener(e -> selectAllCode());
 
             clearButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon("icons/Remove24.gif"), false);
             clearButton.setName("clearButton");
             clearButton.setToolTipText("Clear");
-            clearButton.addActionListener(new ActionListener() {
-
-                public void actionPerformed(ActionEvent e) {
-                    clearCode();
-                }
-            });
+            clearButton.addActionListener(e -> clearCode());
 
 
             undoButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon("icons/Undo24.gif"), false);
             undoButton.setName("undoButton");
             undoButton.setToolTipText("Undo");
-            undoButton.addActionListener(new ActionListener() {
-
-                public void actionPerformed(ActionEvent e) {
-                    undoLastEdit();
-                }
-            });
+            undoButton.addActionListener(e -> undoLastEdit());
 
             historyUpButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon("icons/HistoryUp24.gif"), false);
             historyUpButton.setName("historyUpButton");
             historyUpButton.setToolTipText("Scroll history up");
-            historyUpButton.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    if (history.size() > 0 && historyIndex < history.size()) {
-                        historyIndex++;
-                        setCode(history.get(historyIndex));
-                    }
+            historyUpButton.addActionListener(e -> {
+                if (history.size() > 0 && historyIndex < history.size()) {
+                    historyIndex++;
+                    setCode(history.get(historyIndex));
                 }
             });
 
@@ -883,13 +851,11 @@ public class ExpressionPane extends JPanel {
                                                                false);
             historyDownButton.setName("historyDownButton");
             historyDownButton.setToolTipText("Scroll history down");
-            historyDownButton.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    if (history.size() > 0 && historyIndex >= 0) {
-                        final int oldHistoryIndex = historyIndex;
-                        historyIndex--;
-                        setCode(history.get(oldHistoryIndex));
-                    }
+            historyDownButton.addActionListener(e -> {
+                if (history.size() > 0 && historyIndex >= 0) {
+                    final int oldHistoryIndex = historyIndex;
+                    historyIndex--;
+                    setCode(history.get(oldHistoryIndex));
                 }
             });
 

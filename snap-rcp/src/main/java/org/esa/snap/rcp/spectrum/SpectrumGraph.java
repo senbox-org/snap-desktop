@@ -138,7 +138,7 @@ class SpectrumGraph extends AbstractDiagramGraph {
             if (placemark != null) {
                 // position of placemark is given in image (L0) coordinates
                 // we have to transform them to the current level
-                final MultiLevelModel multiLevelModel = ImageManager.getMultiLevelModel(band);
+                final MultiLevelModel multiLevelModel = band.getMultiLevelModel();
                 final AffineTransform i2mTransform = multiLevelModel.getImageToModelTransform(0);
                 final AffineTransform m2iTransform = multiLevelModel.getModelToImageTransform(0);
                 final Point2D modelPixel = i2mTransform.transform(placemark.getPixelPos(), null);

@@ -122,8 +122,11 @@ public class CreateGeoCodingDisplacementBandsAction extends AbstractAction imple
         boolean state = false;
         if (productNode != null) {
             Product product = productNode.getProduct();
-            state = product != null && product.getSceneGeoCoding() != null &&
-                    product.getSceneGeoCoding().canGetGeoPos() && product.getSceneGeoCoding().canGetPixelPos();
+            if (product != null && !product.isMultiSizeProduct()) {
+                state = product.getSceneGeoCoding() != null &&
+                        product.getSceneGeoCoding().canGetGeoPos() &&
+                        product.getSceneGeoCoding().canGetPixelPos();
+            }
         }
         setEnabled(state);
     }

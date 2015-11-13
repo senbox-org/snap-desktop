@@ -30,19 +30,15 @@ import java.io.File;
 import java.lang.ref.WeakReference;
 import java.text.MessageFormat;
 
+import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
+
 /**
  * Action which closes a selected product.
  *
  * @author Norman
  */
-@ActionID(
-        category = "File",
-        id = "SaveProductAction"
-)
-@ActionRegistration(
-        displayName = "#CTL_SaveProductActionName",
-        lazy = false
-)
+@ActionID(category = "File", id = "SaveProductAction" )
+@ActionRegistration(displayName = "#CTL_SaveProductActionName", lazy = false )
 @ActionReference(path = "Menu/File", position = 40, separatorBefore = 38)
 @NbBundle.Messages({"CTL_SaveProductActionName=Save Product"})
 public final class SaveProductAction extends AbstractAction implements ContextAwareAction, LookupListener {
@@ -76,9 +72,9 @@ public final class SaveProductAction extends AbstractAction implements ContextAw
         if (file.isFile() && !file.canWrite()) {
             SnapDialogs.showWarning(Bundle.CTL_SaveProductActionName(),
                                     MessageFormat.format("The product\n" +
-                                                                 "''{0}''\n" +
-                                                                 "exists and cannot be overwritten, because it is read only.\n" +
-                                                                 "Please choose another file or remove the write protection.",
+                                                         "''{0}''\n" +
+                                                         "exists and cannot be overwritten, because it is read only.\n" +
+                                                         "Please choose another file or remove the write protection.",
                                                          file.getPath()),
                                     null);
             return false;
@@ -126,7 +122,7 @@ public final class SaveProductAction extends AbstractAction implements ContextAw
         if (productRef != null) {
             product = productRef.get();
         } else {
-            product = SnapApp.getDefault().getSelectedProduct();
+            product = SnapApp.getDefault().getSelectedProduct(EXPLORER);
         }
         if (product != null) {
             if (product.getFileLocation() != null && (product.getProductReader() == null || product.getProductReader() instanceof DimapProductReader)) {
