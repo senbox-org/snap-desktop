@@ -28,15 +28,9 @@ import com.bc.ceres.swing.figure.support.ShapeSymbol;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
-import org.esa.snap.core.datamodel.PixelPos;
 import org.esa.snap.core.datamodel.Placemark;
-import org.esa.snap.core.datamodel.SceneRasterTransform;
-import org.esa.snap.core.util.AwtGeomToJtsGeomConverter;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.referencing.operation.MathTransform2D;
-import org.opengis.referencing.operation.TransformException;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -46,7 +40,6 @@ import java.awt.Paint;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.font.GlyphVector;
-import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 
@@ -68,7 +61,6 @@ public class SimpleFeaturePointFigure extends AbstractPointFigure implements Sim
             "Label",
     };
 
-    private SceneRasterTransform sceneRasterTransform;
     private SimpleFeature simpleFeature;
     private Point geometry;
 
@@ -82,15 +74,13 @@ public class SimpleFeaturePointFigure extends AbstractPointFigure implements Sim
         }
     }
 
-    public SimpleFeaturePointFigure(SimpleFeature simpleFeature, SceneRasterTransform sceneRasterTransform, FigureStyle style) {
-        this(simpleFeature, sceneRasterTransform, style, style);
+    public SimpleFeaturePointFigure(SimpleFeature simpleFeature, FigureStyle style) {
+        this(simpleFeature, style, style);
     }
 
-    public SimpleFeaturePointFigure(SimpleFeature simpleFeature, SceneRasterTransform sceneRasterTransform,
-                                    FigureStyle normalStyle, FigureStyle selectedStyle) {
+    public SimpleFeaturePointFigure(SimpleFeature simpleFeature, FigureStyle normalStyle, FigureStyle selectedStyle) {
         super(normalStyle, selectedStyle);
         this.simpleFeature = simpleFeature;
-        this.sceneRasterTransform = sceneRasterTransform;
         Object o = simpleFeature.getDefaultGeometry();
         if (!(o instanceof Point)) {
             throw new IllegalArgumentException("simpleFeature");
@@ -107,20 +97,10 @@ public class SimpleFeaturePointFigure extends AbstractPointFigure implements Sim
     @Override
     public void setMemento(Object memento) {
         Point point = (Point) memento;
-        if (sceneRasterTransform == null) {
-            return;
-        }
-        final MathTransform2D forward = sceneRasterTransform.getForward();
-        if (forward == null) {
-            return;
-        }
-        try {
-            simpleFeature.setDefaultGeometry(forward.transform(new PixelPos(point.getX(), point.getY()), new PixelPos()));
-            geometry = point;
-            fireFigureChanged();
-        } catch (TransformException e) {
-            return;
-        }
+        simpleFeature.setDefaultGeometry(point);
+        geometry = point;
+        forceRegeneration();
+        fireFigureChanged();
     }
 
     @Override
@@ -135,24 +115,7 @@ public class SimpleFeaturePointFigure extends AbstractPointFigure implements Sim
 
     @Override
     public void setGeometry(Geometry geometry) {
-        if (sceneRasterTransform == null) {
-            return;
-        }
-        Point point = (Point) geometry;
-        final PixelPos startPos = new PixelPos(point.getX(), point.getY());
-        PixelPos targetPos = new PixelPos();
-        final MathTransform2D inverse = sceneRasterTransform.getInverse();
-        if (inverse == null) {
-            return;
-        }
-        try {
-            inverse.transform(startPos, targetPos);
-        } catch (TransformException e) {
-            e.printStackTrace();
-            return;
-        }
-        Coordinate coordinate = new Coordinate(targetPos.getX(), targetPos.getY());
-        this.geometry = new Point(new CoordinateArraySequence(new Coordinate[]{coordinate}), point.getFactory());
+        this.geometry = (Point) geometry;
     }
 
     @Override
@@ -172,18 +135,9 @@ public class SimpleFeaturePointFigure extends AbstractPointFigure implements Sim
 
     @Override
     public void setLocation(double x, double y) {
-        if (sceneRasterTransform == null) {
-            return;
-        }
         Coordinate coordinate = geometry.getCoordinate();
         coordinate.x = x;
         coordinate.y = y;
-        try {
-            final Point2D transform = sceneRasterTransform.getForward().transform(new PixelPos(x, y), new PixelPos());
-            simpleFeature.setDefaultGeometry(new AwtGeomToJtsGeomConverter().createPoint(transform));
-        } catch (TransformException e) {
-            e.printStackTrace();
-        }
         geometry.geometryChanged();
         fireFigureChanged();
     }

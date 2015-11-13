@@ -30,10 +30,7 @@ import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import junit.framework.TestCase;
-import org.esa.snap.core.datamodel.SceneRasterTransform;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.junit.Ignore;
-import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 
@@ -50,36 +47,10 @@ public class SimpleFeatureShapeFigureTest extends TestCase {
         Polygon polygon = createPolygon();
         SimpleFeature simpleFeature = createPlainFeature(sft, "_1", polygon, "");
 
-        SimpleFeatureShapeFigure shapeFigure = new SimpleFeatureShapeFigure(simpleFeature, SceneRasterTransform.IDENTITY, new DefaultFigureStyle());
+        SimpleFeatureShapeFigure shapeFigure = new SimpleFeatureShapeFigure(simpleFeature, new DefaultFigureStyle());
         assertEquals(polygon, shapeFigure.getGeometry());
         assertNotNull(shapeFigure.getShape());
         assertEquals(Figure.Rank.AREA, shapeFigure.getRank());
-    }
-
-    @Ignore
-    @Test
-    public void testMixedGeometries_2() {
-        //ignore does not work
-
-//        SimpleFeatureType sft = createPlainFeatureType("Geometry", Geometry.class, DefaultGeographicCRS.WGS84);
-//
-//        Geometry geometry;
-//        SimpleFeature feature;
-//        SimpleFeatureShapeFigure figure;
-//
-//        geometry = createPoint();
-//        feature = createPlainFeature(sft, "_4", geometry, "");
-//        figure = new SimpleFeatureShapeFigure(feature, SceneRasterTransform.IDENTITY, new DefaultFigureStyle());
-//        assertEquals(geometry, figure.getGeometry());
-//        assertNotNull(figure.getShape());
-//        assertEquals(Figure.Rank.POINT, figure.getRank());
-//
-//        geometry = createGeometryCollection();
-//        feature = createPlainFeature(sft, "_5", geometry, "");
-//        figure = new SimpleFeatureShapeFigure(feature, SceneRasterTransform.IDENTITY, new DefaultFigureStyle());
-//        assertEquals(geometry, figure.getGeometry());
-//        assertNotNull(figure.getShape());
-//        assertEquals(Figure.Rank.NOT_SPECIFIED, figure.getRank());
     }
 
     public void testMixedGeometries_1() {
@@ -91,21 +62,21 @@ public class SimpleFeatureShapeFigureTest extends TestCase {
 
         geometry = createPolygon();
         feature = createPlainFeature(sft, "_1", geometry, "");
-        figure = new SimpleFeatureShapeFigure(feature, SceneRasterTransform.IDENTITY, new DefaultFigureStyle());
+        figure = new SimpleFeatureShapeFigure(feature, new DefaultFigureStyle());
         assertEquals(geometry, figure.getGeometry());
         assertNotNull(figure.getShape());
         assertEquals(Figure.Rank.AREA, figure.getRank());
 
         geometry = createLinearRing();
         feature = createPlainFeature(sft, "_2", geometry, "");
-        figure = new SimpleFeatureShapeFigure(feature, SceneRasterTransform.IDENTITY, new DefaultFigureStyle());
+        figure = new SimpleFeatureShapeFigure(feature, new DefaultFigureStyle());
         assertEquals(geometry, figure.getGeometry());
         assertNotNull(figure.getShape());
         assertEquals(Figure.Rank.LINE, figure.getRank());
 
         geometry = createLineString();
         feature = createPlainFeature(sft, "_3", geometry, "");
-        figure = new SimpleFeatureShapeFigure(feature, SceneRasterTransform.IDENTITY, new DefaultFigureStyle());
+        figure = new SimpleFeatureShapeFigure(feature, new DefaultFigureStyle());
         assertEquals(geometry, figure.getGeometry());
         assertNotNull(figure.getShape());
         assertEquals(Figure.Rank.LINE, figure.getRank());
