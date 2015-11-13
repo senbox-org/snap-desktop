@@ -170,8 +170,8 @@ class BandMathsDialog extends ModalDialog {
         ProductNodeGroup<Band> bandGroup = targetProduct.getBandGroup();
         bandGroup.add(band);
 
-        if (targetProduct.isMultiSizeProduct() && refRasters.length > 0) {
-            ProductUtils.copyGCandI2M(refRasters[0], band);
+        if (refRasters.length > 0 && refRasters[0].getGeoCoding() != targetProduct.getSceneGeoCoding()) {
+            ProductUtils.copyGeoCoding(refRasters[0], band);
         }
 
         if (saveExpressionOnly) {

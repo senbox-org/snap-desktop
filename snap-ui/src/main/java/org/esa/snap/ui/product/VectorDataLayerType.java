@@ -39,7 +39,7 @@ import org.esa.snap.core.layer.ProductLayerContext;
  * @since BEAM 4.7
  */
 @LayerTypeMetadata(name = "VectorDataLayerType",
-                   aliasNames = {"VectorDataLayerType"})
+        aliasNames = {"VectorDataLayerType"})
 public class VectorDataLayerType extends LayerType {
 
     public static final String PROPERTY_NAME_VECTOR_DATA = "vectorData";
@@ -76,7 +76,7 @@ public class VectorDataLayerType extends LayerType {
         Assert.notNull(vectorDataNode, String.format("VectorDataNode '%s' does not exist", vectorDataName));
         final ProductNode productNode = plc.getProductNode();
         assert(productNode instanceof RasterDataNode);
-        return createLayer(vectorDataNode, (RasterDataNode) productNode, configuration);
+        return createLayer(vectorDataNode, configuration);
     }
 
     @Override
@@ -90,8 +90,8 @@ public class VectorDataLayerType extends LayerType {
         return configuration;
     }
 
-    protected VectorDataLayer createLayer(VectorDataNode vectorDataNode, RasterDataNode rasterDataNode, PropertySet configuration) {
-        return new VectorDataLayer(this, vectorDataNode, rasterDataNode.getSceneRasterTransform(), configuration);
+    protected VectorDataLayer createLayer(VectorDataNode vectorDataNode, PropertySet configuration) {
+        return new VectorDataLayer(this, vectorDataNode, configuration);
     }
 
     private VectorDataLayer createLayerInternal(ProductLayerContext ctx, VectorDataNode vectorDataNode) {
@@ -100,7 +100,7 @@ public class VectorDataLayerType extends LayerType {
         configuration.setValue(PROPERTY_NAME_VECTOR_DATA, vectorDataNode.getName());
         final ProductNode productNode = ctx.getProductNode();
         assert(productNode instanceof RasterDataNode);
-        return createLayer(vectorDataNode, (RasterDataNode) productNode, configuration);
+        return createLayer(vectorDataNode, configuration);
     }
 
 }

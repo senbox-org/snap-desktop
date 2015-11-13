@@ -6,6 +6,7 @@
 package org.esa.snap.rcp.windows;
 
 import com.bc.ceres.glayer.support.ImageLayer;
+import com.vividsolutions.jts.geom.Point;
 import org.esa.snap.core.datamodel.PixelPos;
 import org.esa.snap.core.datamodel.Placemark;
 import org.esa.snap.core.datamodel.Product;
@@ -26,6 +27,8 @@ import javax.swing.JCheckBox;
 import javax.swing.SwingUtilities;
 import java.awt.BorderLayout;
 import java.awt.event.MouseEvent;
+import java.awt.geom.NoninvertibleTransformException;
+import java.awt.geom.Point2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
@@ -133,9 +136,17 @@ public final class PixelInfoTopComponent extends ToolTopComponent {
     private void snapToSelectedPin() {
         final Placemark pin = currentView != null ? currentView.getSelectedPin() : null;
         if (pin != null) {
-            final PixelPos pos = pin.getPixelPos();
-            final int x = MathUtils.floorInt(pos.x);
-            final int y = MathUtils.floorInt(pos.y);
+            //todo [multisize_products] replace this very ugly code by using the scene raster transformer - tf 20151113
+            PixelPos rasterPos = new PixelPos();
+            final Point pinSceneCoords = (Point) pin.getFeature().getDefaultGeometry();
+            final Point2D.Double pinSceneCoordsDouble = new Point2D.Double(pinSceneCoords.getX(), pinSceneCoords.getY());
+            try {
+                currentView.getRaster().getImageToModelTransform().createInverse().transform(pinSceneCoordsDouble, rasterPos);
+            } catch (NoninvertibleTransformException e) {
+                rasterPos = pin.getPixelPos();
+            }
+            final int x = MathUtils.floorInt(rasterPos.x);
+            final int y = MathUtils.floorInt(rasterPos.y);
             pixelInfoView.updatePixelValues(currentView, x, y, 0, true);
         } else {
             pixelInfoView.updatePixelValues(currentView, -1, -1, 0, false);

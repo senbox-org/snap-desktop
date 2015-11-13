@@ -4,11 +4,6 @@ import com.bc.ceres.binding.PropertySet;
 import com.bc.ceres.grender.Rendering;
 import com.bc.ceres.swing.figure.support.DefaultFigureStyle;
 import com.vividsolutions.jts.geom.Geometry;
-import org.esa.snap.core.datamodel.PixelPos;
-import org.esa.snap.core.datamodel.RasterDataNode;
-import org.esa.snap.core.datamodel.SceneRasterTransform;
-import org.esa.snap.core.datamodel.SceneRasterTransformException;
-import org.esa.snap.core.datamodel.SceneRasterTransformUtils;
 import org.esa.snap.core.datamodel.VectorDataNode;
 import org.opengis.feature.simple.SimpleFeature;
 
@@ -36,10 +31,9 @@ public class TrackLayerType extends VectorDataLayerType {
     }
 
     @Override
-    protected VectorDataLayer createLayer(VectorDataNode vectorDataNode, RasterDataNode rasterDataNode, PropertySet configuration) {
-        return new TrackLayer(this, vectorDataNode, rasterDataNode.getSceneRasterTransform(), configuration);
+    protected VectorDataLayer createLayer(VectorDataNode vectorDataNode, PropertySet configuration) {
+        return new TrackLayer(this, vectorDataNode, configuration);
     }
-
 
     public static class TrackLayer extends VectorDataLayer {
 
@@ -51,9 +45,8 @@ public class TrackLayerType extends VectorDataLayerType {
 
         private final Paint strokePaint;
 
-        public TrackLayer(VectorDataLayerType vectorDataLayerType, VectorDataNode vectorDataNode,
-                          SceneRasterTransform scenerasterTransform, PropertySet configuration) {
-            super(vectorDataLayerType, vectorDataNode, scenerasterTransform, configuration);
+        public TrackLayer(VectorDataLayerType vectorDataLayerType, VectorDataNode vectorDataNode, PropertySet configuration) {
+            super(vectorDataLayerType, vectorDataNode, configuration);
             String styleCss = vectorDataNode.getDefaultStyleCss();
             DefaultFigureStyle style = new DefaultFigureStyle(styleCss);
             style.fromCssString(styleCss);
@@ -111,20 +104,11 @@ public class TrackLayerType extends VectorDataLayerType {
                 SimpleFeature feature = features[i];
                 Geometry geometry = (Geometry) feature.getDefaultGeometry();
                 com.vividsolutions.jts.geom.Point centroid = geometry.getCentroid();
-                try {
-                    if (getSceneRasterTransform() != null) {
-                        final PixelPos transformedPixelPos =
-                                SceneRasterTransformUtils.transformToImageCoords(getSceneRasterTransform(),
-                                                                                 new PixelPos(centroid.getX(), centroid.getY()));
-                        if (i > 0) {
-                            rendering.getGraphics().draw(new Line2D.Double(lastX, lastY, centroid.getX(), centroid.getY()));
-                        }
-                        lastX = transformedPixelPos.getX();
-                        lastY = transformedPixelPos.getY();
-                    }
-                } catch (SceneRasterTransformException e) {
-                    //continue loop
+                if (i > 0) {
+                    rendering.getGraphics().draw(new Line2D.Double(lastX, lastY, centroid.getX(), centroid.getY()));
                 }
+                lastX = centroid.getX();
+                lastY = centroid.getY();
             }
         }
     }
