@@ -171,7 +171,7 @@ class BandMathsDialog extends ModalDialog {
         bandGroup.add(band);
 
         if (refRasters.length > 0 && refRasters[0].getGeoCoding() != targetProduct.getSceneGeoCoding()) {
-            ProductUtils.copyGCandI2M(refRasters[0], band);
+            ProductUtils.copyGeoCoding(refRasters[0], band);
         }
 
         if (saveExpressionOnly) {

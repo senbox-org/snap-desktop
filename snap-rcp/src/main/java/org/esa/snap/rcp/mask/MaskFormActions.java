@@ -882,7 +882,7 @@ class MaskFormActions {
             final RasterDataNode refRaster = getMaskForm().getRaster();
             if (refRaster.getProduct().isMultiSizeProduct() &&
                 refRaster.getGeoCoding() != getMaskForm().getProduct().getSceneGeoCoding()) {
-                ProductUtils.copyGCandI2M(refRaster, mask);
+                ProductUtils.copyGeoCoding(refRaster, mask);
             }
         }
     }
