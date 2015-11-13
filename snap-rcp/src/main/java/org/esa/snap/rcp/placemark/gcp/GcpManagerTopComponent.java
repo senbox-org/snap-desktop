@@ -44,7 +44,7 @@ import java.text.DecimalFormat;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS //todo define
 )
 @TopComponent.Registration(
-        mode = "properties",
+        mode = "output",
         openAtStartup = false,
         position = 20
 )
