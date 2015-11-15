@@ -4,7 +4,6 @@ import com.bc.ceres.swing.figure.support.DefaultFigureStyle;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
-import org.esa.snap.core.datamodel.SceneRasterTransform;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
@@ -15,7 +14,7 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 /**
  * @author Norman
@@ -27,7 +26,7 @@ public class SimpleFeaturePointFigureTest {
         SimpleFeature feature = createFeature(type, 1, 53.1F, 13.2F,  0.5);
 
 
-        SimpleFeaturePointFigure figure = new SimpleFeaturePointFigure(feature, SceneRasterTransform.IDENTITY, new DefaultFigureStyle());
+        SimpleFeaturePointFigure figure = new SimpleFeaturePointFigure(feature, new DefaultFigureStyle());
         Coordinate coordinate = figure.getGeometry().getCoordinate();
         assertEquals(13.2F, coordinate.x, 1e-10);
         assertEquals(53.1F, coordinate.y, 1e-10);

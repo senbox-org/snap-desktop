@@ -878,6 +878,12 @@ class MaskFormActions {
             });
             mask.setDescription(code);
             getMaskForm().addMask(mask);
+
+            final RasterDataNode refRaster = getMaskForm().getRaster();
+            if (refRaster.getProduct().isMultiSizeProduct() &&
+                refRaster.getGeoCoding() != getMaskForm().getProduct().getSceneGeoCoding()) {
+                ProductUtils.copyGeoCoding(refRaster, mask);
+            }
         }
     }
 

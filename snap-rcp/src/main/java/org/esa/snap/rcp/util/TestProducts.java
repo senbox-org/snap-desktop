@@ -3,6 +3,8 @@ package org.esa.snap.rcp.util;
 import org.esa.snap.core.dataio.ProductSubsetDef;
 import org.esa.snap.core.datamodel.AbstractGeoCoding;
 import org.esa.snap.core.datamodel.Band;
+import org.esa.snap.core.datamodel.CrsGeoCoding;
+import org.esa.snap.core.datamodel.DefaultSceneRasterTransform;
 import org.esa.snap.core.datamodel.GeoPos;
 import org.esa.snap.core.datamodel.MetadataElement;
 import org.esa.snap.core.datamodel.PixelPos;
@@ -12,6 +14,11 @@ import org.esa.snap.core.datamodel.Scene;
 import org.esa.snap.core.datamodel.TiePointGrid;
 import org.esa.snap.core.datamodel.VirtualBand;
 import org.esa.snap.core.dataop.maptransf.Datum;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geotools.referencing.operation.transform.AffineTransform2D;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.operation.MathTransform;
+import org.opengis.referencing.operation.TransformException;
 
 import javax.media.jai.operator.ConstantDescriptor;
 import java.awt.Color;
@@ -29,7 +36,10 @@ public class TestProducts {
 
 
     public static Product[] createProducts() {
-        return new Product[]{createProduct1(), createProduct2(), createProduct3(), createProduct4()};
+        return new Product[]{createProduct1(),
+                createProduct2(), createProduct3(), createProduct4(),
+                createProduct5(), createProduct6()
+        };
     }
 
     public static Product createProduct1() {
@@ -76,18 +86,6 @@ public class TestProducts {
         at.scale(sx, sx);
         at.rotate(-0.2, 10.0, 10.0);
         product.setSceneGeoCoding(new ATGeoCoding(at));
-
-        // add band with new raster size!
-        VirtualBand band4 = new VirtualBand("Band_4", ProductData.TYPE_FLOAT64, 512, 512, "cos(ampl((X-256)/100, (Y-256)/100))");
-        AffineTransform at4 = new AffineTransform();
-        at4.scale(0.5 * sx, 0.5 * sx);
-        at4.rotate(-0.2, 5.0, 5.0);
-        at4.translate(256, 256);
-        product.addBand(band4);
-        band4.setGeoCoding(new ATGeoCoding(at4));
-        band4.setNoDataValue(-1.0);
-        band4.setNoDataValueUsed(true);
-
         product.addBand("A", "Band_1");
         product.addBand("B", "Band_1 + Band_2 + Band_3");
         product.addBand("C", "Band_1 / (2.3 + Band_2 + Band_3)");
@@ -140,6 +138,104 @@ public class TestProducts {
 
         return product;
     }
+
+    public static Product createProduct5() {
+        try {
+            Product product = new Product("Test_Product_5_CRS", "Test_Type_5_CRS", 512, 512);
+            product.getMetadataRoot().addElement(new MetadataElement("Global_Attributes"));
+            product.getMetadataRoot().addElement(new MetadataElement("Local_Attributes"));
+            product.setModified(false);
+            product.addBand("Band_A", "sin(4 * PI * sqrt( sq(X/1000.0 - 1) + sq(Y/500.0 - 1) ))");
+            product.setSceneGeoCoding(new CrsGeoCoding(DefaultGeographicCRS.WGS84, 512, 512, 0, 10, 1, 1));
+
+            final String b_expression = "sin(4 * PI * sqrt( 2.0 * abs(X/1000.0 * Y/500.0) ))";
+            final VirtualBand band_b = new VirtualBand("Band_B", ProductData.TYPE_FLOAT32, 1024, 256, b_expression);
+            band_b.setGeoCoding(new CrsGeoCoding(DefaultGeographicCRS.WGS84, 1024, 256, 0, 10, 0.5, 2.0));
+            band_b.setNoDataValueUsed(true);
+            product.addBand(band_b);
+
+            return product;
+        } catch (FactoryException | TransformException e) {
+            return null;
+        }
+    }
+
+    public static Product createProduct6() {
+        try {
+            Product product = new Product("Test_Product_6_SceneRasterTransforms", "Test_Type_6_SceneRasterTransforms", 512, 512);
+            product.getMetadataRoot().addElement(new MetadataElement("Global_Attributes"));
+            product.getMetadataRoot().addElement(new MetadataElement("Local_Attributes"));
+            product.setModified(false);
+            final String a_expression = "sin(4 * PI * sqrt( sq(X/1000.0 - 1) + sq(Y/500.0 - 1) ))";
+            final Band band_a = new VirtualBand("Band_A", ProductData.TYPE_FLOAT32, 2048, 1024, a_expression);
+            final AffineTransform a_forward = new AffineTransform();
+            a_forward.scale(0.25, 0.5);
+            final AffineTransform a_inverse = a_forward.createInverse();
+            final DefaultSceneRasterTransform a_srt =
+                    new DefaultSceneRasterTransform(new AffineTransform2D(a_forward), new AffineTransform2D(a_inverse));
+            band_a.setSceneRasterTransform(a_srt);
+            product.addBand(band_a);
+
+            final String b_expression = "sin(4 * PI * sqrt( 2.0 * abs(X/1000.0 * Y/500.0) ))";
+            final VirtualBand band_b = new VirtualBand("Band_B", ProductData.TYPE_FLOAT32, 128, 256, b_expression);
+            final AffineTransform b_forward = new AffineTransform();
+            b_forward.scale(2.0, 2.0);
+            b_forward.translate(128, 0);
+            final AffineTransform b_inverse = b_forward.createInverse();
+            final DefaultSceneRasterTransform b_srt =
+                    new DefaultSceneRasterTransform(new AffineTransform2D(b_forward), new AffineTransform2D(b_inverse));
+            band_b.setSceneRasterTransform(b_srt);
+            band_b.setNoDataValue(Double.NaN);
+            band_b.setNoDataValueUsed(true);
+            product.addBand(band_b);
+
+            return product;
+        } catch (NoninvertibleTransformException e) {
+            return null;
+        }
+    }
+
+//    public static Product createProduct7() {
+//        Product product = new Product("Test_Product_3_different_tie_point_geocodings", "Test_Type_3_different_tie_point_geocodings", 1024, 2048);
+//        product.addTiePointGrid(new TiePointGrid("Grid_1", 16, 32, 0, 0, 1024f / 16, 2048f / 32, createRandomPoints(32 * 16)));
+//        product.addTiePointGrid(new TiePointGrid("Grid_2", 16, 32, 0, 0, 1024f / 16, 2048f / 32, createRandomPoints(32 * 16)));
+//        product.addBand("Band_1", "cos(X/100)-sin(Y/100)");
+//        product.addMask("Mask_1", "Band_1 > 0.5", "I am Mask 1", Color.GREEN, 0.5);
+//        product.getMetadataRoot().addElement(new MetadataElement("Global_Attributes"));
+//        product.getMetadataRoot().addElement(new MetadataElement("Local_Attributes"));
+//        product.setModified(false);
+//        double sx = 20.0 / product.getSceneRasterWidth();
+//        AffineTransform at = new AffineTransform();
+//        at.scale(sx, sx);
+//        at.rotate(-0.2, 10.0, 10.0);
+//        product.setSceneGeoCoding(new ATGeoCoding(at));
+//
+//        Band band2 = new Band("Band_2", ProductData.TYPE_FLOAT64, 512, 512);
+//        final VirtualBandOpImage image = VirtualBandOpImage.
+//                builder("cos(ampl((X-256)/100, (Y-256)/100))", product).
+//                sourceSize(band2.getRasterSize()).
+//                dataType(band2.getDataType()).
+//                create();
+//
+//        AffineTransform at_model_2 = new AffineTransform();
+//        at_model_2.scale(0.5, 0.5);
+//        at_model_2.translate(128, 128);
+//        final DefaultMultiLevelModel targetModel = new DefaultMultiLevelModel(at_model_2, 512, 512);
+//        final DefaultMultiLevelModel targetModel = new DefaultMultiLevelModel(at2, 512, 512);
+//        final DefaultMultiLevelModel targetModel = new DefaultMultiLevelModel(new AffineTransform(), 512, 512);
+//        final DefaultMultiLevelSource targetMultiLevelSource = new DefaultMultiLevelSource(image, targetModel);
+//        band2.setSourceImage(new DefaultMultiLevelImage(targetMultiLevelSource));
+//        product.addBand(band2);
+//        AffineTransform at2 = new AffineTransform();
+//        at2.scale(0.5 * sx, 0.5 * sx);
+//        at2.scale(0.5, 0.5);
+//        at2.rotate(-0.2, 5.0, 5.0);
+//        at2.translate(256, 256);
+//        band2.setGeoCoding(new ATGeoCoding(at2));
+//        band2.setNoDataValue(-1.0);
+//        band2.setNoDataValueUsed(true);
+//        return product;
+//    }
 
     private static float[] createRandomPoints(int n) {
         Random random = new Random();
@@ -207,6 +303,11 @@ public class TestProducts {
         @Override
         public Datum getDatum() {
             return Datum.WGS_84;
+        }
+
+        @Override
+        public MathTransform getImageToMapTransform() {
+            return new AffineTransform2D(affineTransform);
         }
 
         @Override

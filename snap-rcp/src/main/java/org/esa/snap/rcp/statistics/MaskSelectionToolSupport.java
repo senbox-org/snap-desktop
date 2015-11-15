@@ -133,7 +133,6 @@ public abstract class MaskSelectionToolSupport implements PlotAreaSelectionTool.
         if (product.isMultiSizeProduct() &&
             !raster.getRasterSize().equals(product.getSceneRasterSize())) {
             mask.setGeoCoding(raster.getGeoCoding());
-            mask.setImageToModelTransform(raster.getImageToModelTransform());
         }
 
         product.addMask(mask);
