@@ -88,15 +88,11 @@ public class CursorSpectrumPixelPositionListener implements PixelPositionListene
 
         @Override
         protected Void doInBackground() throws Exception {
-            if (pixelPosValid) {
-                if (shouldUpdateCursorPosition()) {
-                    Waiter waiter = new Waiter();
-                    waiter.execute();
-                    topComponent.updateData(pixelX, pixelY, currentLevel);
-                    waiter.cancel(true);
-                }
-            } else if (topComponent.hasValidCursorPosition()) {
-                topComponent.removeCursorSpectraFromDataset();
+            if (shouldUpdateCursorPosition()) {
+                Waiter waiter = new Waiter();
+                waiter.execute();
+                topComponent.updateData(pixelX, pixelY, currentLevel, pixelPosValid);
+                waiter.cancel(true);
             }
             return null;
         }

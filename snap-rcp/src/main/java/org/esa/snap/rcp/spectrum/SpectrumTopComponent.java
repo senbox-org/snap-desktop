@@ -18,6 +18,7 @@ package org.esa.snap.rcp.spectrum;
 import com.bc.ceres.glevel.MultiLevelModel;
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.DataNode;
+import org.esa.snap.core.datamodel.PixelPos;
 import org.esa.snap.core.datamodel.Placemark;
 import org.esa.snap.core.datamodel.PlacemarkGroup;
 import org.esa.snap.core.datamodel.Product;
@@ -26,7 +27,6 @@ import org.esa.snap.core.datamodel.ProductNodeEvent;
 import org.esa.snap.core.datamodel.ProductNodeGroup;
 import org.esa.snap.core.datamodel.ProductNodeListenerAdapter;
 import org.esa.snap.core.datamodel.RasterDataNode;
-import org.esa.snap.core.image.ImageManager;
 import org.esa.snap.core.util.ProductUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
@@ -45,6 +45,7 @@ import org.esa.snap.ui.product.spectrum.SpectrumChooser;
 import org.esa.snap.ui.product.spectrum.SpectrumShapeProvider;
 import org.esa.snap.ui.product.spectrum.SpectrumStrokeProvider;
 import org.esa.snap.ui.tool.ToolButtonFactory;
+import org.geotools.geometry.DirectPosition2D;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -69,6 +70,8 @@ import org.jfree.ui.HorizontalAlignment;
 import org.jfree.ui.RectangleAnchor;
 import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.RectangleInsets;
+import org.opengis.referencing.operation.MathTransform;
+import org.opengis.referencing.operation.TransformException;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -92,6 +95,7 @@ import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
+import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -101,16 +105,16 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-@TopComponent.Description(preferredID = "SpectrumTopComponent", iconBase = "org/esa/snap/rcp/icons/Spectrum.gif" )
-@TopComponent.Registration(mode = "Spectrum", openAtStartup = false, position = 80 )
+@TopComponent.Description(preferredID = "SpectrumTopComponent", iconBase = "org/esa/snap/rcp/icons/Spectrum.gif")
+@TopComponent.Registration(mode = "Spectrum", openAtStartup = false, position = 80)
 @ActionID(category = "Window", id = "org.esa.snap.rcp.statistics.SpectrumTopComponent")
 @ActionReferences({
         @ActionReference(path = "Menu/Optical", position = 0),
         @ActionReference(path = "Menu/View/Tool Windows/Optical"),
         @ActionReference(path = "Toolbars/Tool Windows")
 })
-@TopComponent.OpenActionRegistration(displayName = "#CTL_SpectrumTopComponent_Name", preferredID = "SpectrumTopComponent" )
-@NbBundle.Messages({ "CTL_SpectrumTopComponent_Name=Spectrum View", "CTL_SpectrumTopComponent_HelpId=showSpectrumWnd" })
+@TopComponent.OpenActionRegistration(displayName = "#CTL_SpectrumTopComponent_Name", preferredID = "SpectrumTopComponent")
+@NbBundle.Messages({"CTL_SpectrumTopComponent_Name=Spectrum View", "CTL_SpectrumTopComponent_HelpId=showSpectrumWnd"})
 /**
  * A window which displays spectra at selected pixel positions.
  */
@@ -218,9 +222,8 @@ public class SpectrumTopComponent extends ToolTopComponent {
         chartHandler.setCollectingSpectralInformationMessage();
     }
 
-    void updateData(int pixelX, int pixelY, int level) {
-        chartHandler.setPosition(pixelX, pixelY);
-        chartHandler.setLevel(level);
+    void updateData(int pixelX, int pixelY, int level, boolean pixelPosInRasterBounds) {
+        chartHandler.setPosition(pixelX, pixelY, level, pixelPosInRasterBounds);
         chartHandler.updateData();
     }
 
@@ -254,7 +257,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
         List<SpectrumBand> spectrumBands = rasterToSpectralBandsMap.get(currentRaster);
         Band[] bands = currentProduct.getBands();
         for (Band band : bands) {
-            if (isSpectralBand(band) && !band.isFlagBand() && isSizeCompatible(band, currentRaster)) {
+            if (isSpectralBand(band) && !band.isFlagBand()) {
                 boolean isAlreadyIncluded = false;
                 for (SpectrumBand spectrumBand : spectrumBands) {
                     if (spectrumBand.getOriginalBand() == band) {
@@ -268,10 +271,6 @@ public class SpectrumTopComponent extends ToolTopComponent {
             }
         }
         return spectrumBands.toArray(new SpectrumBand[spectrumBands.size()]);
-    }
-
-    private boolean isSizeCompatible(RasterDataNode raster1, RasterDataNode raster2) {
-        return raster1.getRasterSize().equals(raster2.getRasterSize());
     }
 
     private boolean isSpectralBand(Band band) {
@@ -612,8 +611,8 @@ public class SpectrumTopComponent extends ToolTopComponent {
         }
     }
 
-    public boolean hasValidCursorPosition() {
-        return chartHandler.hasValidCursorPosition();
+    public boolean showsValidCursorSpectra() {
+        return chartHandler.showsValidCursorSpectra();
     }
 
     private class ChartHandler {
@@ -691,12 +690,8 @@ public class SpectrumTopComponent extends ToolTopComponent {
             chart.addLegend(legend);
         }
 
-        private void setPosition(int pixelX, int pixelY) {
-            chartUpdater.setPosition(pixelX, pixelY);
-        }
-
-        private void setLevel(int level) {
-            chartUpdater.setLevel(level);
+        private void setPosition(int pixelX, int pixelY, int level, boolean pixelPosInRasterBounds) {
+            chartUpdater.setPosition(pixelX, pixelY, level, pixelPosInRasterBounds);
         }
 
         private void updateChart() {
@@ -718,7 +713,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
             chart.getXYPlot().setDataset(null);
             if (getCurrentProduct() == null) {
                 setPlotMessage(MESSAGE_NO_PRODUCT_SELECTED);
-            } else if (!chartUpdater.hasValidCursorPosition()) {
+            } else if (!chartUpdater.showsValidCursorSpectra()) {
                 return;
             } else if (getAllSpectra().length == 0) {
                 setPlotMessage(MESSAGE_NO_SPECTRA_SELECTED);
@@ -752,8 +747,8 @@ public class SpectrumTopComponent extends ToolTopComponent {
             chart.getXYPlot().addAnnotation(message);
         }
 
-        public boolean hasValidCursorPosition() {
-            return chartUpdater.hasValidCursorPosition();
+        public boolean showsValidCursorSpectra() {
+            return chartUpdater.showsValidCursorSpectra();
         }
 
         public void removeCursorSpectraFromDataset() {
@@ -772,11 +767,16 @@ public class SpectrumTopComponent extends ToolTopComponent {
         private final static double relativePlotInset = 0.05;
 
         private final Map<Placemark, Map<Band, Double>> pinToEnergies;
-        private int pixelX;
-        private int pixelY;
-        private int level;
+        private boolean showsValidCursorSpectra;
+        private boolean pixelPosInRasterBounds;
+        private int rasterPixelX;
+        private int rasterPixelY;
+        private int rasterLevel;
+        private int levelZeroRasterX;
+        private int levelZeroRasterY;
         private Range[] plotBounds;
         private XYSeriesCollection dataset;
+        private Point2D modelP;
 
         private ChartUpdater() {
             pinToEnergies = new HashMap<>();
@@ -789,22 +789,24 @@ public class SpectrumTopComponent extends ToolTopComponent {
             plotBounds[range_axis_index] = null;
         }
 
-        private void setLevel(int level) {
-            this.level = level;
-        }
-
-        private void setPosition(int pixelX, int pixelY) {
-            this.pixelX = pixelX;
-            this.pixelY = pixelY;
+        private void setPosition(int pixelX, int pixelY, int level, boolean pixelPosInRasterBounds) {
+            this.rasterPixelX = pixelX;
+            this.rasterPixelY = pixelY;
+            this.rasterLevel = level;
+            this.pixelPosInRasterBounds = pixelPosInRasterBounds;
+            final AffineTransform i2m = currentView.getBaseImageLayer().getImageToModelTransform(level);
+            modelP = i2m.transform(new Point2D.Double(pixelX + 0.5, pixelY + 0.5), new Point2D.Double());
+            final AffineTransform m2iTransform = currentView.getBaseImageLayer().getModelToImageTransform();
+            Point2D levelZeroP = m2iTransform.transform(modelP, null);
+            levelZeroRasterX = (int) Math.floor(levelZeroP.getX());
+            levelZeroRasterY = (int) Math.floor(levelZeroP.getY());
         }
 
         private void updateData(JFreeChart chart, List<DisplayableSpectrum> spectra) {
             dataset = new XYSeriesCollection();
-            if (level >= 0) {
+            if (rasterLevel >= 0) {
                 fillDatasetWithPinSeries(spectra, dataset, chart);
-                if (hasValidCursorPosition()) {
-                    fillDatasetWithCursorSeries(spectra, dataset, chart);
-                }
+                fillDatasetWithCursorSeries(spectra, dataset, chart);
             }
         }
 
@@ -870,16 +872,45 @@ public class SpectrumTopComponent extends ToolTopComponent {
         }
 
         private void fillDatasetWithCursorSeries(List<DisplayableSpectrum> spectra, XYSeriesCollection dataset, JFreeChart chart) {
-            if (isShowingCursorSpectrum() && currentView != null && currentView.isCurrentPixelPosValid()) {
+            showsValidCursorSpectra = false;
+            if (isShowingCursorSpectrum() && currentView != null) {
                 for (DisplayableSpectrum spectrum : spectra) {
                     XYSeries series = new XYSeries(spectrum.getName());
                     final Band[] spectralBands = spectrum.getSelectedBands();
-                    for (Band spectralBand : spectralBands) {
-                        final float wavelength = spectralBand.getSpectralWavelength();
-                        if (spectralBand.isPixelValid(pixelX, pixelY)) {
-                            final double energy = ProductUtils.getGeophysicalSampleAsDouble(spectralBand, pixelX, pixelY, level);
-                            if (energy != spectralBand.getGeophysicalNoDataValue()) {
-                                series.add(wavelength, energy);
+                    if (!currentProduct.isMultiSizeProduct()) {
+                        for (Band spectralBand : spectralBands) {
+                            final float wavelength = spectralBand.getSpectralWavelength();
+                            if (pixelPosInRasterBounds && spectralBand.isPixelValid(levelZeroRasterX, levelZeroRasterY)) {
+                                addToSeries(spectralBand, rasterPixelX, rasterPixelY, rasterLevel, series, wavelength);
+                                showsValidCursorSpectra = true;
+                            }
+                        }
+                    } else {
+                        for (Band spectralBand : spectralBands) {
+                            final float wavelength = spectralBand.getSpectralWavelength();
+                            final AffineTransform i2m = spectralBand.getImageToModelTransform();
+                            if (i2m.equals(currentView.getRaster().getImageToModelTransform())) {
+                                if (pixelPosInRasterBounds && spectralBand.isPixelValid(levelZeroRasterX, levelZeroRasterY)) {
+                                    addToSeries(spectralBand, rasterPixelX, rasterPixelY, rasterLevel, series, wavelength);
+                                    showsValidCursorSpectra = true;
+                                }
+                            } else {
+                                //todo [Multisize_products] use scenerastertransform here
+                                final PixelPos rasterPos = new PixelPos();
+                                try {
+                                    i2m.createInverse().transform(modelP, rasterPos);
+                                    if (coordinatesAreInRasterBounds(spectralBand, (int) rasterPos.getX(), (int) rasterPos.getY())) {
+                                        final MultiLevelModel multiLevelModel = spectralBand.getMultiLevelModel();
+                                        int level = Math.min(rasterLevel, multiLevelModel.getLevelCount() - 1);
+                                        final AffineTransform m2iTransform = multiLevelModel.getModelToImageTransform(level);
+                                        final Point2D.Double modelPoint = new Point2D.Double(modelP.getX(), modelP.getY());
+                                        m2iTransform.transform(modelPoint, rasterPos);
+                                        addToSeries(spectralBand, (int) rasterPos.getX(), (int) rasterPos.getY(), level, series, wavelength);
+                                        showsValidCursorSpectra = true;
+                                    }
+                                } catch (NoninvertibleTransformException e) {
+                                    //do not add to series
+                                }
                             }
                         }
                     }
@@ -887,6 +918,17 @@ public class SpectrumTopComponent extends ToolTopComponent {
                     dataset.addSeries(series);
                 }
             }
+        }
+
+        private void addToSeries(Band spectralBand, int x, int y, int level, XYSeries series, double wavelength) {
+            final double energy = ProductUtils.getGeophysicalSampleAsDouble(spectralBand, x, y, level);
+            if (energy != spectralBand.getGeophysicalNoDataValue()) {
+                series.add(wavelength, energy);
+            }
+        }
+
+        private boolean coordinatesAreInRasterBounds(RasterDataNode raster, int x, int y) {
+            return x >= 0 && y >= 0 && x < raster.getRasterWidth() && y < raster.getRasterHeight();
         }
 
         private void fillDatasetWithPinSeries(List<DisplayableSpectrum> spectra, XYSeriesCollection dataset, JFreeChart chart) {
@@ -940,15 +982,40 @@ public class SpectrumTopComponent extends ToolTopComponent {
         }
 
         private double readEnergy(Placemark pin, Band spectralBand) {
+            //todo [Multisize_products] use scenerastertransform here
+            final DirectPosition2D imagePos = new DirectPosition2D(pin.getPixelPos().getX(), pin.getPixelPos().getY());
+            final DirectPosition2D modelPos = new DirectPosition2D(pin.getPixelPos().getX(), pin.getPixelPos().getY());
+            try {
+                final MathTransform imageToMapTransform = currentProduct.getSceneGeoCoding().getImageToMapTransform();
+                if (imageToMapTransform instanceof AffineTransform) {
+                    imageToMapTransform.transform(imagePos, modelPos);
+                }
+            } catch (TransformException e) {
+                return spectralBand.getGeophysicalNoDataValue();
+            }
+            final Point2D.Double modelPoint = new Point2D.Double(modelPos.getX(), modelPos.getY());
             final MultiLevelModel multiLevelModel = spectralBand.getMultiLevelModel();
-            final AffineTransform i2mTransform = multiLevelModel.getImageToModelTransform(0);
-            final AffineTransform m2iTransform = multiLevelModel.getModelToImageTransform(level);
-            final Point2D modelPixel = i2mTransform.transform(pin.getPixelPos(), null);
-            final Point2D imagePixel = m2iTransform.transform(modelPixel, null);
-            int pinPixelX = (int) Math.floor(imagePixel.getX());
-            int pinPixelY = (int) Math.floor(imagePixel.getY());
-            if (spectralBand.isPixelValid(pinPixelX, pinPixelY)) {
-                return ProductUtils.getGeophysicalSampleAsDouble(spectralBand, pinPixelX, pinPixelY, level);
+            final PixelPos pinLevelZeroRasterPos = new PixelPos();
+            final AffineTransform m2i = multiLevelModel.getModelToImageTransform(0);
+            m2i.transform(modelPoint, pinLevelZeroRasterPos);
+            int pinLevelZeroRasterX = (int) Math.floor(pinLevelZeroRasterPos.getX());
+            int pinLevelZeroRasterY = (int) Math.floor(pinLevelZeroRasterPos.getY());
+            if (coordinatesAreInRasterBounds(spectralBand, pinLevelZeroRasterX, pinLevelZeroRasterY) &&
+                    spectralBand.isPixelValid(pinLevelZeroRasterX, pinLevelZeroRasterY)) {
+                int level = Math.min(rasterLevel, multiLevelModel.getLevelCount() - 1);
+                int pinLevelRasterX;
+                int pinLevelRasterY;
+                if (level == 0) {
+                    pinLevelRasterX = pinLevelZeroRasterX;
+                    pinLevelRasterY = pinLevelZeroRasterY;
+                } else {
+                    final AffineTransform m2iTransform = multiLevelModel.getModelToImageTransform(level);
+                    final PixelPos pinLevelRasterPos = new PixelPos();
+                    m2iTransform.transform(modelPoint, pinLevelRasterPos);
+                    pinLevelRasterX = (int) Math.floor(pinLevelRasterPos.getX());
+                    pinLevelRasterY = (int) Math.floor(pinLevelRasterPos.getY());
+                }
+                return ProductUtils.getGeophysicalSampleAsDouble(spectralBand, pinLevelRasterX, pinLevelRasterY, level);
             }
             return spectralBand.getGeophysicalNoDataValue();
         }
@@ -966,14 +1033,12 @@ public class SpectrumTopComponent extends ToolTopComponent {
             }
         }
 
-        public boolean hasValidCursorPosition() {
-            return pixelX > Integer.MIN_VALUE && pixelY > Integer.MIN_VALUE;
+        public boolean showsValidCursorSpectra() {
+            return showsValidCursorSpectra;
         }
 
         void removeCursorSpectraFromDataset() {
-            if (hasValidCursorPosition()) {
-                pixelX = Integer.MIN_VALUE;
-                pixelY = Integer.MIN_VALUE;
+            if (showsValidCursorSpectra) {
                 int numberOfSelectedSpectra = getSelectedSpectra().size();
                 int numberOfPins = getDisplayedPins().length;
                 int numberOfDisplayedGraphs = numberOfPins * numberOfSelectedSpectra;
@@ -1004,7 +1069,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
                     itemCollection.add(item);
                 });
             }
-            if (isShowingCursorSpectrum() && hasValidCursorPosition()) {
+            if (isShowingCursorSpectrum() && showsValidCursorSpectra()) {
                 spectra.stream().filter(DisplayableSpectrum::hasSelectedBands).forEach(spectrum -> {
                     Paint defaultPaint = Color.BLACK;
                     LegendItem item = createLegendItem(spectrum, defaultPaint, spectrum.getName());
@@ -1132,8 +1197,6 @@ public class SpectrumTopComponent extends ToolTopComponent {
                 }
             }
         }
-
-
 
         private boolean isActive() {
             return isVisible() && getCurrentProduct() != null;
