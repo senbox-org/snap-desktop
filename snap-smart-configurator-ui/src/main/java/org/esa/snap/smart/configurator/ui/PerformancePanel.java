@@ -226,6 +226,10 @@ final class PerformancePanel extends javax.swing.JPanel {
             vmParametersLabel.setEnabled(false);
             vmParametersTextField.setEnabled(false);
             editVMParametersButton.setEnabled(false);
+            String vmParameterDisableToolTip = "VM parameters can't be saved from SNAP, please use the snap-conf-optimiser application as an administrator to change them";
+            vmParametersLabel.setToolTipText(vmParameterDisableToolTip);
+            vmParametersTextField.setToolTipText(vmParameterDisableToolTip);
+            editVMParametersButton.setToolTipText(vmParameterDisableToolTip);
         }
 
 
