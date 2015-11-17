@@ -44,10 +44,16 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
-import org.openide.util.HelpCtx;
+import org.openide.util.ContextAwareAction;
+import org.openide.util.Lookup;
+import org.openide.util.LookupEvent;
+import org.openide.util.LookupListener;
 import org.openide.util.NbBundle;
+import org.openide.util.Utilities;
+import org.openide.util.WeakListeners;
 
 import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.JCheckBox;
 import javax.swing.SwingWorker;
 import java.awt.Dialog;
@@ -66,7 +72,7 @@ import java.util.Date;
 @ActionRegistration(
         displayName = "#CTL_ExportTransectPixelsAction_MenuText",
         popupText = "#CTL_ExportTransectPixelsAction_PopupText",
-        lazy = true
+        lazy = false
 )
 @ActionReferences({
         @ActionReference(path = "Menu/File/Export/Other",position = 60 ),
@@ -81,16 +87,22 @@ import java.util.Date;
         "CTL_ExportTransectPixelsAction_ShortDescription=Export Transect Pixels."
 })
 
-public class ExportTransectPixelsAction extends AbstractAction implements HelpCtx.Provider {
+public class ExportTransectPixelsAction extends AbstractAction implements ContextAwareAction, LookupListener {
 
     private static final String ERR_MSG_BASE = "Transect pixels cannot be exported:\n";
-    private static final String HELP_ID = "exportTransectPixels";
-    private FigureSelection selection;
 
+    private final Lookup.Result<FigureSelection> result;
 
-    public ExportTransectPixelsAction(FigureSelection selection) {
-        super(Bundle.CTL_ExportMaskPixelsAction_MenuText());
-        this.selection = selection;
+    public ExportTransectPixelsAction() {
+        this(Utilities.actionsGlobalContext());
+    }
+
+    public ExportTransectPixelsAction(Lookup lkp) {
+        super(Bundle.CTL_ExportTransectPixelsAction_MenuText());
+        putValue("popupText", Bundle.CTL_ExportTransectPixelsAction_PopupText());
+        result = lkp.lookupResult(FigureSelection.class);
+        result.addLookupListener(WeakListeners.create(LookupListener.class, this, result));
+        updateEnableState(getCurrentFigureSelection());
     }
 
     /**
@@ -98,15 +110,19 @@ public class ExportTransectPixelsAction extends AbstractAction implements HelpCt
      *
      * @param event the command event
      */
-
     @Override
     public void actionPerformed(ActionEvent event) {
         exportTransectPixels();
     }
 
     @Override
-    public HelpCtx getHelpCtx() {
-        return new HelpCtx(HELP_ID);
+    public Action createContextAwareInstance(Lookup lkp) {
+        return new ExportTransectPixelsAction(lkp);
+    }
+
+    @Override
+    public void resultChanged(LookupEvent le) {
+        updateEnableState(getCurrentFigureSelection());
     }
 
     private void exportTransectPixels() {
@@ -116,6 +132,8 @@ public class ExportTransectPixelsAction extends AbstractAction implements HelpCt
         if (view == null) {
             return;
         }
+        final FigureSelection selection = getCurrentFigureSelection();
+
         // Get the displayed raster data node (band or tie-point grid)
         final RasterDataNode raster = view.getRaster();
         // Get the transect of the displayed raster data node
@@ -249,6 +267,23 @@ public class ExportTransectPixelsAction extends AbstractAction implements HelpCt
 
         // Start separate worker thread.
         swingWorker.execute();
+    }
+
+    private FigureSelection getCurrentFigureSelection() {
+        return result.allInstances().stream().findFirst().orElse(null);
+    }
+
+    private void updateEnableState(FigureSelection figureSelection) {
+        boolean enabled = false;
+        if (figureSelection != null) {
+            final ProductSceneView selectedProductSceneView = SnapApp.getDefault().getSelectedProductSceneView();
+            if (selectedProductSceneView != null) {
+                Product product = selectedProductSceneView.getProduct();
+                //todo [multisize_products] enable export for multisize
+                enabled = !product.isMultiSizeProduct();
+            }
+        }
+        setEnabled(enabled);
     }
 
     private static String createDefaultFileName(final RasterDataNode raster) {
