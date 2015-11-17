@@ -70,8 +70,8 @@ import java.util.Date;
 )
 @ActionReferences({
         @ActionReference(path = "Menu/File/Export/Other",position = 60 ),
-        @ActionReference(path = "Menu/Raster/Export", position = 0),
-        @ActionReference(path = "Context/Product/RasterDataNode", position = 50,separatorAfter = 55),
+        @ActionReference(path = "Menu/Raster/Export", position = 200),
+        @ActionReference(path = "Context/Product/RasterDataNode", position = 50, separatorAfter = 55),
         @ActionReference(path = "Context/ProductSceneView" , position = 40)
 })
 @NbBundle.Messages({
@@ -262,7 +262,7 @@ public class ExportTransectPixelsAction extends AbstractAction implements HelpCt
     /**
      * Opens a modal file chooser dialog that prompts the user to select the output file name.
      *
-     * @return the selected file, <code>null</code> means "Cancel"
+     * @return the selected file, {@code null} means "Cancel"
      */
     private static File promptForFile(String defaultFileName) {
         final SnapFileFilter fileFilter = new SnapFileFilter("TXT", "txt", "Text");
@@ -309,7 +309,7 @@ public class ExportTransectPixelsAction extends AbstractAction implements HelpCt
          *
          * @param out     the data output writer
          * @param product the product providing the pixel values
-         * @return <code>true</code> for success, <code>false</code> if export has been terminated (by user)
+         * @return {@code true} for success, {@code false} if export has been terminated (by user)
          */
         private boolean exportTransectPixels(final PrintWriter out,
                                              final Product product,
