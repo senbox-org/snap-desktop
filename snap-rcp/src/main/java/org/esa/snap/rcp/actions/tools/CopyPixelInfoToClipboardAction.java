@@ -40,7 +40,7 @@ import java.awt.event.ActionEvent;
 @ActionRegistration(
         displayName = "#CTL_CopyPixelInfoToClipboardAction_MenuText",
         popupText = "#CTL_CopyPixelInfoToClipboardAction_PopupText",
-        lazy = true
+        lazy = false
 )
 @ActionReferences({
         @ActionReference(path = "Menu/Raster/Export", position = 300),
@@ -106,6 +106,7 @@ public class CopyPixelInfoToClipboardAction extends AbstractAction implements Co
         boolean enabled = false;
         if (sceneView != null) {
             Product product = sceneView.getProduct();
+            //todo [multisize_products] enable export for multisize
             enabled = !product.isMultiSizeProduct();
         }
         setEnabled(enabled);
