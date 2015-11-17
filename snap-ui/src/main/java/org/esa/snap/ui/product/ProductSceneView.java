@@ -66,7 +66,6 @@ import org.esa.snap.core.layer.NoDataLayerType;
 import org.esa.snap.core.layer.ProductLayerContext;
 import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.core.util.StringUtils;
-import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.ui.BasicView;
 import org.esa.snap.ui.PixelPositionListener;
 import org.esa.snap.ui.PopupMenuHandler;
@@ -89,8 +88,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.Shape;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
@@ -111,7 +108,7 @@ import java.util.List;
 import java.util.Vector;
 
 /**
- * The class <code>ProductSceneView</code> is a high-level image display component for color index/RGB images created
+ * The class {@code ProductSceneView} is a high-level image display component for color index/RGB images created
  * from one or more raster datasets of a data product.
  * <p>
  * <p>It is also capable of displaying a graticule (geographical grid) and a ROI associated with a displayed raster
@@ -305,12 +302,7 @@ public class ProductSceneView extends BasicView
                                                                       false);
         zoomAllButton.setFocusable(false);
         zoomAllButton.setFocusPainted(false);
-        zoomAllButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                getLayerCanvas().zoomAll();
-            }
-        });
+        zoomAllButton.addActionListener(e -> getLayerCanvas().zoomAll());
 
         AdjustableViewScrollPane scrollPane = new AdjustableViewScrollPane(layerCanvas);
         // todo - use sceneImage.getConfiguration() (nf, 18.09.2008)
@@ -378,13 +370,13 @@ public class ProductSceneView extends BasicView
     }
 
     /**
-     * If the <code>preferredSize</code> has been set to a
-     * non-<code>null</code> value just returns it.
-     * If the UI delegate's <code>getPreferredSize</code>
-     * method returns a non <code>null</code> value then return that;
+     * If the {@code preferredSize} has been set to a
+     * non-{@code null} value just returns it.
+     * If the UI delegate's {@code getPreferredSize}
+     * method returns a non {@code null} value then return that;
      * otherwise defer to the component's layout manager.
      *
-     * @return the value of the <code>preferredSize</code> property
+     * @return the value of the {@code preferredSize} property
      * @see #setPreferredSize
      * @see javax.swing.plaf.ComponentUI
      */
@@ -417,7 +409,6 @@ public class ProductSceneView extends BasicView
                 menuItem.setText(popupText);
             }
         }
-        addCopyPixelInfoToClipboardMenuItem(popupMenu);
         return popupMenu;
     }
 
@@ -426,9 +417,9 @@ public class ProductSceneView extends BasicView
      * allow the garbage collector to perform a vanilla job.
      * <p>
      * <p>This method should be called only if it is for sure that this object instance will never be used again. The
-     * results of referencing an instance of this class after a call to <code>dispose()</code> are undefined.
+     * results of referencing an instance of this class after a call to {@code dispose()} are undefined.
      * <p>
-     * <p>Overrides of this method should always call <code>super.dispose();</code> after disposing this instance.
+     * <p>Overrides of this method should always call {@code super.dispose();} after disposing this instance.
      */
     @Override
     public synchronized void dispose() {
@@ -491,7 +482,7 @@ public class ProductSceneView extends BasicView
     /**
      * Gets the number of raster datasets.
      *
-     * @return the number of raster datasets, always <code>1</code> for single banded palette images or <code>3</code>
+     * @return the number of raster datasets, always {@code 1} for single banded palette images or {@code 3}
      * for RGB images
      */
     public int getNumRasters() {
@@ -511,7 +502,7 @@ public class ProductSceneView extends BasicView
     /**
      * Gets the product raster of a single banded view.
      *
-     * @return the product raster, or <code>null</code> if this is a 3-banded RGB view
+     * @return the product raster, or {@code null} if this is a 3-banded RGB view
      */
     public RasterDataNode getRaster() {
         return getSceneImage().getRasters()[0];
@@ -1048,11 +1039,6 @@ public class ProductSceneView extends BasicView
         return false;
     }
 
-
-    protected void copyPixelInfoStringToClipboard() {
-        SystemUtils.copyToClipboard(getProduct() != null ? getProduct().createPixelInfoString(currentPixelX, currentPixelY) : "");
-    }
-
     protected void disposeImageDisplayComponent() {
         layerCanvas.dispose();
     }
@@ -1081,21 +1067,6 @@ public class ProductSceneView extends BasicView
                 noDataLayer.setMultiLevelSource(MultiLevelSource.NULL);
             }
         }
-    }
-
-    private void addCopyPixelInfoToClipboardMenuItem(JPopupMenu popupMenu) {
-        JMenuItem menuItem = new JMenuItem("Copy Pixel-Info to Clipboard");
-        menuItem.setMnemonic('C');
-        menuItem.addActionListener(e -> copyPixelInfoStringToClipboard());
-        popupMenu.add(menuItem);
-    }
-
-
-    private void addShowGeometryOverlayAction(JPopupMenu popupMenu) {
-        JMenuItem menuItem = new JMenuItem("ShowGeometryOverplayaction");
-        menuItem.setMnemonic('C');
-//        menuItem.addActionListener();
-        popupMenu.add(menuItem);
     }
 
     public int getFirstImageLayerIndex() {
