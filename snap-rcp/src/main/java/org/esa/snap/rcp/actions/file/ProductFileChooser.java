@@ -4,6 +4,7 @@ import org.esa.snap.core.dataio.ProductIO;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.core.util.io.FileUtils;
+import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.ui.GridBagUtils;
@@ -14,6 +15,7 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.filechooser.FileFilter;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.GridBagConstraints;
@@ -157,7 +159,9 @@ class ProductFileChooser extends SnapFileChooser {
             }
             try {
                 setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-                product = ProductIO.readProduct(file);
+                final FileFilter fileFilter = getFileFilter();
+                String formatName = (fileFilter instanceof SnapFileFilter) ? ((SnapFileFilter) fileFilter).getFormatName() : null;
+                product = ProductIO.readProduct(file, formatName);
                 newProductName = createNewProductName(product.getName(), numSubsetProducts++);
             } catch (IOException e) {
                 SnapDialogs.showError("The product could not be read:\n" + e.getMessage());
