@@ -873,6 +873,9 @@ public class SpectrumTopComponent extends ToolTopComponent {
 
         private void fillDatasetWithCursorSeries(List<DisplayableSpectrum> spectra, XYSeriesCollection dataset, JFreeChart chart) {
             showsValidCursorSpectra = false;
+            if (modelP == null) {
+                return;
+            }
             if (isShowingCursorSpectrum() && currentView != null) {
                 for (DisplayableSpectrum spectrum : spectra) {
                     XYSeries series = new XYSeries(spectrum.getName());
@@ -1038,6 +1041,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
         }
 
         void removeCursorSpectraFromDataset() {
+            modelP = null;
             if (showsValidCursorSpectra) {
                 int numberOfSelectedSpectra = getSelectedSpectra().size();
                 int numberOfPins = getDisplayedPins().length;
