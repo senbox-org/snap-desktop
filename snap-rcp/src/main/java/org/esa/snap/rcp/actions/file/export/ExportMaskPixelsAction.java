@@ -130,7 +130,7 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
         boolean enabled = false;
         if (sceneView != null) {
             Product product = sceneView.getProduct();
-            enabled = product.getMaskGroup().getNodeCount() > 0;
+            enabled = product.getMaskGroup().getNodeCount() > 0 && !product.isMultiSizeProduct();
         }
         setEnabled(enabled);
     }
