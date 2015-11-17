@@ -18,7 +18,6 @@ package org.esa.snap.rcp.actions.tools;
 
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.util.SystemUtils;
-import org.esa.snap.rcp.actions.file.export.ExportMaskPixelsAction;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -83,7 +82,7 @@ public class CopyPixelInfoToClipboardAction extends AbstractAction implements Co
 
     @Override
     public Action createContextAwareInstance(Lookup lkp) {
-        return new ExportMaskPixelsAction(lkp);
+        return new CopyPixelInfoToClipboardAction(lkp);
     }
 
     @Override
