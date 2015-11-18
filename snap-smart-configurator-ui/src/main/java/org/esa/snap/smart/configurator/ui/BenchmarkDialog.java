@@ -38,6 +38,7 @@ import org.netbeans.api.progress.ProgressUtils;
 
 import javax.media.jai.JAI;
 import java.io.File;
+import java.util.List;
 
 /**
  * Dialog to launch performance parameters benchmark.
@@ -56,6 +57,8 @@ public class BenchmarkDialog extends DefaultSingleTargetProductDialog {
      * Parent panel
      */
     private PerformancePanel perfPanel;
+
+    private boolean benchmarkPerformed = false;
 
     /**
      * Constructor
@@ -95,14 +98,32 @@ public class BenchmarkDialog extends DefaultSingleTargetProductDialog {
                 execOp = writeOp;
             }
             final OperatorExecutor executor = OperatorExecutor.create(execOp);
-            executor.execute(SubProgressMonitor.create(pm, 100));
+            executor.execute(SubProgressMonitor.create(pm, 95));
         }
 
 
-    private void executeBenchmarks(ProgressHandleMonitor pm) throws Exception {
+    private synchronized void executeBenchmarks(ProgressHandleMonitor pm) throws Exception {
+
+        //temporary directory for benchmark
+        String tmpdirPath = System.getProperty("java.io.tmpdir") + "/snap-benchmark-tmp";
+        appContext.getPreferences().setPropertyString(SaveProductAsAction.PREFERENCES_KEY_LAST_PRODUCT_DIR, tmpdirPath);
+
+        //add current performance parameters to benchmark
+        PerformanceParameters currentPerformanceParameters = ConfigurationOptimizer.getInstance().getActualPerformanceParameters();
+        BenchmarkSingleCalculus currentBenchmarkSingleCalcul = new BenchmarkSingleCalculus(
+                currentPerformanceParameters.getDefaultTileSize(),
+                currentPerformanceParameters.getCacheSize(),
+                currentPerformanceParameters.getNbThreads());
+
+        this.benchmarkModel.addBenchmarkCalcul(currentBenchmarkSingleCalcul);
+
+        try {
+
         pm.beginTask("Benchmark running... ", this.benchmarkModel.getBenchmarkCalculus().size()*100);
 
-        for (BenchmarkSingleCalculus benchmarkSingleCalcul : this.benchmarkModel.getBenchmarkCalculus()) {
+        List<BenchmarkSingleCalculus> benchmarkSingleCalculusList = this.benchmarkModel.getBenchmarkCalculus();
+
+        for (BenchmarkSingleCalculus benchmarkSingleCalcul : benchmarkSingleCalculusList) {
             pm.getProgressHandle().progress(
                     String.format("Benchmarking ( tile size:%d , cache size:%d , nb threads:%d )",
                                   benchmarkSingleCalcul.getTileSize(),
@@ -129,30 +150,41 @@ public class BenchmarkDialog extends DefaultSingleTargetProductDialog {
             executeOperator(targetProduct, pm);
 
             //save execution time
-            benchmarkSingleCalcul.setExecutionTime(System.currentTimeMillis() - startTime);
+            long endTime = System.currentTimeMillis();
+            benchmarkSingleCalcul.setExecutionTime(endTime - startTime);
+
+            SystemUtils.LOG.fine(String.format("Start time: %d, end time: %d, diff: %d", startTime, endTime, endTime - startTime));
 
             // we remove all tiles
             JAI.getDefaultInstance().setTileCache(JAI.createTileCache());
         }
 
         pm.done();
+
+        } catch (Exception ex) {
+            SystemUtils.LOG.severe("Could not perform benchmark: " + ex.getMessage());
+        } finally {
+            //load old params (before benchmark)
+            this.benchmarkModel.loadBenchmarkPerfParams(currentBenchmarkSingleCalcul);
+            //delete benchmark TMP directory
+            VirtualDir.deleteFileTree(new File(tmpdirPath));
+        }
+    }
+
+    private synchronized void managePostBenchmark() {
+        //sort benchmark results and return the fastest
+        BenchmarkSingleCalculus bestBenchmarkSingleCalcul = this.benchmarkModel.getFasterBenchmarkSingleCalculus();
+
+        SnapDialogs.showInformation("Benchmark results", this.benchmarkModel.toString(), null);
+        //update parent panel with best values
+        this.perfPanel.updatePerformanceParameters(bestBenchmarkSingleCalcul);
+
+        close();
     }
 
     @Override
     protected void onApply() {
-        //temporary directory for benchmark
-        String tmpdirPath = System.getProperty("java.io.tmpdir") + "/snap-benchmark-tmp";
-        appContext.getPreferences().setPropertyString(SaveProductAsAction.PREFERENCES_KEY_LAST_PRODUCT_DIR, tmpdirPath);
-        //add current performance parameters to benchmark
-        PerformanceParameters currentPerformanceParameters = ConfigurationOptimizer.getInstance().getActualPerformanceParameters();
-        BenchmarkSingleCalculus currentBenchmarkSingleCalcul = new BenchmarkSingleCalculus(
-                currentPerformanceParameters.getDefaultTileSize(),
-                currentPerformanceParameters.getCacheSize(),
-                currentPerformanceParameters.getNbThreads());
 
-        this.benchmarkModel.addBenchmarkCalcul(currentBenchmarkSingleCalcul);
-        //benchmark loop
-        try {
             //launch processing with a progress bar
             ProgressHandleMonitor pm = ProgressHandleMonitor.create("Running benchmark");
 
@@ -164,26 +196,22 @@ public class BenchmarkDialog extends DefaultSingleTargetProductDialog {
                 }
             };
 
+            benchmarkPerformed = false;
+
             ProgressUtils.runOffEventThreadWithProgressDialog(operation, "Benchmarking....",
                                                               pm.getProgressHandle(),
                                                               true,
                                                               50,
                                                               1000);
 
-            //sort benchmark results and return the faster
-            BenchmarkSingleCalculus bestBenchmarkSingleCalcul = this.benchmarkModel.getFasterBenchmarkSingleCalculus();
+            Runnable manageBenchmarkResultsOperation = () -> {
+                try {
+                    managePostBenchmark();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            };
 
-            SnapDialogs.showInformation("Benchmark results", this.benchmarkModel.toString(), null);
-            //update parent panel with best values
-            this.perfPanel.updatePerformanceParameters(bestBenchmarkSingleCalcul);
-
-        } catch (Exception ex) {
-            SystemUtils.LOG.severe("Could not perform benchmark: " + ex.getMessage());
-        } finally {
-            //load old params (before benchmark)
-            this.benchmarkModel.loadBenchmarkPerfParams(currentBenchmarkSingleCalcul);
-            //delete benchmark TMP directory
-            VirtualDir.deleteFileTree(new File(tmpdirPath));
-        }
+            new Thread(manageBenchmarkResultsOperation).start();
     }
 }

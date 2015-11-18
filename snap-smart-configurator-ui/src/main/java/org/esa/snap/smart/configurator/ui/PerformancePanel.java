@@ -232,8 +232,7 @@ final class PerformancePanel extends javax.swing.JPanel {
             editVMParametersButton.setToolTipText(vmParameterDisableToolTip);
         }
 
-
-            cachePathTextField.setText(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.userDirTextField.text"));
+        cachePathTextField.setText(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.userDirTextField.text"));
         cachePathTextField.setToolTipText(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.userDirTextField.toolTipText"));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
