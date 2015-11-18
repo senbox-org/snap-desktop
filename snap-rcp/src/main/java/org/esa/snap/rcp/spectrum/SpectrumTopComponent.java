@@ -95,7 +95,6 @@ import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
-import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -900,19 +899,15 @@ public class SpectrumTopComponent extends ToolTopComponent {
                             } else {
                                 //todo [Multisize_products] use scenerastertransform here
                                 final PixelPos rasterPos = new PixelPos();
-                                try {
-                                    i2m.createInverse().transform(modelP, rasterPos);
-                                    if (coordinatesAreInRasterBounds(spectralBand, (int) rasterPos.getX(), (int) rasterPos.getY())) {
-                                        final MultiLevelModel multiLevelModel = spectralBand.getMultiLevelModel();
-                                        int level = Math.min(rasterLevel, multiLevelModel.getLevelCount() - 1);
-                                        final AffineTransform m2iTransform = multiLevelModel.getModelToImageTransform(level);
-                                        final Point2D.Double modelPoint = new Point2D.Double(modelP.getX(), modelP.getY());
-                                        m2iTransform.transform(modelPoint, rasterPos);
-                                        addToSeries(spectralBand, (int) rasterPos.getX(), (int) rasterPos.getY(), level, series, wavelength);
-                                        showsValidCursorSpectra = true;
-                                    }
-                                } catch (NoninvertibleTransformException e) {
-                                    //do not add to series
+                                final MultiLevelModel multiLevelModel = spectralBand.getMultiLevelModel();
+                                multiLevelModel.getModelToImageTransform(0).transform(modelP, rasterPos);
+                                if (coordinatesAreInRasterBounds(spectralBand, (int) rasterPos.getX(), (int) rasterPos.getY())) {
+                                    int level = Math.min(rasterLevel, multiLevelModel.getLevelCount() - 1);
+                                    final AffineTransform m2iTransform = multiLevelModel.getModelToImageTransform(level);
+                                    final Point2D.Double modelPoint = new Point2D.Double(modelP.getX(), modelP.getY());
+                                    m2iTransform.transform(modelPoint, rasterPos);
+                                    addToSeries(spectralBand, (int) rasterPos.getX(), (int) rasterPos.getY(), level, series, wavelength);
+                                    showsValidCursorSpectra = true;
                                 }
                             }
                         }
