@@ -16,6 +16,7 @@
 package org.esa.snap.rcp.spectrum;
 
 import com.bc.ceres.glevel.MultiLevelModel;
+import com.vividsolutions.jts.geom.Point;
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.DataNode;
 import org.esa.snap.core.datamodel.PixelPos;
@@ -45,7 +46,6 @@ import org.esa.snap.ui.product.spectrum.SpectrumChooser;
 import org.esa.snap.ui.product.spectrum.SpectrumShapeProvider;
 import org.esa.snap.ui.product.spectrum.SpectrumStrokeProvider;
 import org.esa.snap.ui.tool.ToolButtonFactory;
-import org.geotools.geometry.DirectPosition2D;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -70,8 +70,6 @@ import org.jfree.ui.HorizontalAlignment;
 import org.jfree.ui.RectangleAnchor;
 import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.RectangleInsets;
-import org.opengis.referencing.operation.MathTransform;
-import org.opengis.referencing.operation.TransformException;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -981,17 +979,12 @@ public class SpectrumTopComponent extends ToolTopComponent {
 
         private double readEnergy(Placemark pin, Band spectralBand) {
             //todo [Multisize_products] use scenerastertransform here
-            final DirectPosition2D imagePos = new DirectPosition2D(pin.getPixelPos().getX(), pin.getPixelPos().getY());
-            final DirectPosition2D modelPos = new DirectPosition2D(pin.getPixelPos().getX(), pin.getPixelPos().getY());
-            try {
-                final MathTransform imageToMapTransform = currentProduct.getSceneGeoCoding().getImageToMapTransform();
-                if (imageToMapTransform instanceof AffineTransform) {
-                    imageToMapTransform.transform(imagePos, modelPos);
-                }
-            } catch (TransformException e) {
+            final Object pinGeometry = pin.getFeature().getDefaultGeometry();
+            if (pinGeometry == null || !(pinGeometry instanceof Point)) {
                 return spectralBand.getGeophysicalNoDataValue();
             }
-            final Point2D.Double modelPoint = new Point2D.Double(modelPos.getX(), modelPos.getY());
+            final Point2D.Double modelPoint = new Point2D.Double(((Point)pinGeometry).getCoordinate().x,
+                                                                 ((Point)pinGeometry).getCoordinate().y);
             final MultiLevelModel multiLevelModel = spectralBand.getMultiLevelModel();
             final PixelPos pinLevelZeroRasterPos = new PixelPos();
             final AffineTransform m2i = multiLevelModel.getModelToImageTransform(0);
@@ -1000,20 +993,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
             int pinLevelZeroRasterY = (int) Math.floor(pinLevelZeroRasterPos.getY());
             if (coordinatesAreInRasterBounds(spectralBand, pinLevelZeroRasterX, pinLevelZeroRasterY) &&
                     spectralBand.isPixelValid(pinLevelZeroRasterX, pinLevelZeroRasterY)) {
-                int level = Math.min(rasterLevel, multiLevelModel.getLevelCount() - 1);
-                int pinLevelRasterX;
-                int pinLevelRasterY;
-                if (level == 0) {
-                    pinLevelRasterX = pinLevelZeroRasterX;
-                    pinLevelRasterY = pinLevelZeroRasterY;
-                } else {
-                    final AffineTransform m2iTransform = multiLevelModel.getModelToImageTransform(level);
-                    final PixelPos pinLevelRasterPos = new PixelPos();
-                    m2iTransform.transform(modelPoint, pinLevelRasterPos);
-                    pinLevelRasterX = (int) Math.floor(pinLevelRasterPos.getX());
-                    pinLevelRasterY = (int) Math.floor(pinLevelRasterPos.getY());
-                }
-                return ProductUtils.getGeophysicalSampleAsDouble(spectralBand, pinLevelRasterX, pinLevelRasterY, level);
+                return ProductUtils.getGeophysicalSampleAsDouble(spectralBand, pinLevelZeroRasterX, pinLevelZeroRasterY, 0);
             }
             return spectralBand.getGeophysicalNoDataValue();
         }
