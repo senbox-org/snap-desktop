@@ -1,9 +1,9 @@
 package org.esa.snap.rcp.placemark;
 
 import com.bc.ceres.glayer.Layer;
-import com.bc.ceres.glayer.support.ImageLayer;
 import com.bc.ceres.swing.selection.SelectionChangeEvent;
 import com.bc.ceres.swing.selection.SelectionChangeListener;
+import com.vividsolutions.jts.geom.Coordinate;
 import org.esa.snap.core.dataio.placemark.PlacemarkIO;
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.GeoCoding;
@@ -75,7 +75,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.io.File;
 import java.io.FileReader;
@@ -92,7 +91,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.prefs.Preferences;
 
-import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
+import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.VIEW;
 
 /**
  * @author Tonio Fincke
@@ -442,11 +441,11 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
         Placemark activePlacemark = getSelectedPlacemark();
         Guardian.assertNotNull("activePlacemark", activePlacemark);
         final ProductSceneView view = getSceneView();
-        final PixelPos imagePos = activePlacemark.getPixelPos();  // in image coordinates on Level 0, can be null
-        if (view != null && imagePos != null) {
-            final ImageLayer layer = view.getBaseImageLayer();
-            final AffineTransform imageToModelTransform = layer.getImageToModelTransform(0);
-            final Point2D modelPos = imageToModelTransform.transform(imagePos, null);
+        //todo [Multisize_products] use scene raster transform here
+        final Object placemarkGeometry = activePlacemark.getFeature().getDefaultGeometry();
+        if (placemarkGeometry != null && placemarkGeometry instanceof com.vividsolutions.jts.geom.Point) {
+            final Coordinate coordinate = ((com.vividsolutions.jts.geom.Point) placemarkGeometry).getCoordinate();
+            final Point2D modelPos = new Point2D.Double(coordinate.x, coordinate.y);
             view.zoom(modelPos.getX(), modelPos.getY(), view.getZoomFactor());
             updateUIState();
         }
@@ -1151,6 +1150,7 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
                 ProductSceneView sceneView = getSceneView();
                 if (sceneView != null) {
                     Placemark[] placemarkArray = selectedPlacemarks.toArray(new Placemark[selectedPlacemarks.size()]);
+                    //todo remove code smell - tf 20151118
                     if (getPlacemarkDescriptor() instanceof PinDescriptor) {
                         sceneView.selectPins(placemarkArray);
                     } else {
