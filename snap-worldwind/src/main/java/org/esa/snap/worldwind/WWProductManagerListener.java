@@ -33,8 +33,8 @@ public class WWProductManagerListener implements ProductManager.Listener {
     @Override
     public void productAdded(ProductManager.Event event) {
         final Product product = event.getProduct();
-        wwView.setSelectedProduct(product);
         wwView.setProducts(SnapApp.getDefault().getProductManager().getProducts());
+        wwView.setSelectedProduct(product);
     }
 
     @Override
