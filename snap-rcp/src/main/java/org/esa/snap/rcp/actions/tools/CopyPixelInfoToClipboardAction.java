@@ -18,6 +18,7 @@ package org.esa.snap.rcp.actions.tools;
 
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.util.SystemUtils;
+import org.esa.snap.rcp.MultiSizeIssue;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -94,7 +95,13 @@ public class CopyPixelInfoToClipboardAction extends AbstractAction implements Co
         final ProductSceneView view = getCurrentSceneView();
         if (view != null) {
             final Product product = view.getProduct();
-            SystemUtils.copyToClipboard(product != null ? product.createPixelInfoString(view.getCurrentPixelX(), view.getCurrentPixelY()) : "");
+            if(product != null ) {
+                if(product.isMultiSizeProduct()) {
+                    MultiSizeIssue.showMultiSizeWarning();
+                }else {
+                    SystemUtils.copyToClipboard(product.createPixelInfoString(view.getCurrentPixelX(), view.getCurrentPixelY()));
+                }
+            }
         }
     }
 
@@ -103,13 +110,7 @@ public class CopyPixelInfoToClipboardAction extends AbstractAction implements Co
     }
 
     private void updateEnableState(ProductSceneView sceneView) {
-        boolean enabled = false;
-        if (sceneView != null) {
-            Product product = sceneView.getProduct();
-            //todo [multisize_products] enable export for multisize
-            enabled = !product.isMultiSizeProduct();
-        }
-        setEnabled(enabled);
+        setEnabled(sceneView != null);
     }
 
 }

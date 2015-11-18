@@ -35,6 +35,7 @@ import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
+import org.esa.snap.rcp.MultiSizeIssue;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.ui.SelectExportMethodDialog;
@@ -112,7 +113,12 @@ public class ExportTransectPixelsAction extends AbstractAction implements Contex
      */
     @Override
     public void actionPerformed(ActionEvent event) {
-        exportTransectPixels();
+        final ProductSceneView sceneView = SnapApp.getDefault().getSelectedProductSceneView();
+        if(sceneView != null && sceneView.getProduct().isMultiSizeProduct()) {
+            MultiSizeIssue.showMultiSizeWarning();
+        }else {
+            exportTransectPixels();
+        }
     }
 
     @Override
@@ -274,16 +280,7 @@ public class ExportTransectPixelsAction extends AbstractAction implements Contex
     }
 
     private void updateEnableState(FigureSelection figureSelection) {
-        boolean enabled = false;
-        if (figureSelection != null) {
-            final ProductSceneView selectedProductSceneView = SnapApp.getDefault().getSelectedProductSceneView();
-            if (selectedProductSceneView != null) {
-                Product product = selectedProductSceneView.getProduct();
-                //todo [multisize_products] enable export for multisize
-                enabled = !product.isMultiSizeProduct();
-            }
-        }
-        setEnabled(enabled);
+        setEnabled(figureSelection != null);
     }
 
     private static String createDefaultFileName(final RasterDataNode raster) {
