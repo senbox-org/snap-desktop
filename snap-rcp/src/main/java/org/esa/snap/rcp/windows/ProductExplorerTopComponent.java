@@ -6,10 +6,10 @@
 package org.esa.snap.rcp.windows;
 
 import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.util.DummyProductBuilder;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.file.OpenProductAction;
 import org.esa.snap.rcp.nodes.ProductGroupNode;
-import org.esa.snap.rcp.util.TestProducts;
 import org.esa.snap.runtime.Config;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -87,7 +87,8 @@ public class ProductExplorerTopComponent extends TopComponent implements Explore
         add(treeView, BorderLayout.CENTER);
         // 2. Create a node hierarchy:
         if (Config.instance().preferences().getBoolean("snap.debug.loadTestProducts", false)) {
-            Product[] products = TestProducts.createProducts();
+            //Product[] products = TestProducts.createProducts();
+            Product[] products = DummyProductBuilder.createTestProducts();
             for (Product product : products) {
                 SnapApp.getDefault().getProductManager().addProduct(product);
             }

@@ -1005,11 +1005,8 @@ public class ProductSceneView extends BasicView
         final RasterDataNode thisRaster = getRaster();
         final RasterDataNode thatRaster = thatView.getRaster();
         final Product thisProduct = thisRaster.getProduct();
-        final Product thatProduct = thatRaster.getProduct();
 
-        //todo [multisize_products] ask for scenerastertransform instead
-        if ((thatProduct == thisProduct || thatProduct.isCompatibleProduct(thisProduct, 1.0e-3f))
-                && thisRaster.getRasterSize().equals(thatRaster.getRasterSize())) {
+        if (thisProduct.isSceneCrsEqualToModelCrsOf(thatRaster)) {
             final Viewport thisViewport = layerCanvas.getViewport();
             final Viewport thatViewport = thatView.layerCanvas.getViewport();
             thatViewport.setTransform(thisViewport);
