@@ -35,6 +35,7 @@ import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
+import org.esa.snap.rcp.MultiSizeIssue;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.ui.SelectExportMethodDialog;
@@ -44,10 +45,16 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
-import org.openide.util.HelpCtx;
+import org.openide.util.ContextAwareAction;
+import org.openide.util.Lookup;
+import org.openide.util.LookupEvent;
+import org.openide.util.LookupListener;
 import org.openide.util.NbBundle;
+import org.openide.util.Utilities;
+import org.openide.util.WeakListeners;
 
 import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.JCheckBox;
 import javax.swing.SwingWorker;
 import java.awt.Dialog;
@@ -66,12 +73,12 @@ import java.util.Date;
 @ActionRegistration(
         displayName = "#CTL_ExportTransectPixelsAction_MenuText",
         popupText = "#CTL_ExportTransectPixelsAction_PopupText",
-        lazy = true
+        lazy = false
 )
 @ActionReferences({
         @ActionReference(path = "Menu/File/Export/Other",position = 60 ),
-        @ActionReference(path = "Menu/Raster/Export", position = 0),
-        @ActionReference(path = "Context/Product/RasterDataNode", position = 50,separatorAfter = 55),
+        @ActionReference(path = "Menu/Raster/Export", position = 200),
+        @ActionReference(path = "Context/Product/RasterDataNode", position = 50, separatorAfter = 55),
         @ActionReference(path = "Context/ProductSceneView" , position = 40)
 })
 @NbBundle.Messages({
@@ -81,16 +88,22 @@ import java.util.Date;
         "CTL_ExportTransectPixelsAction_ShortDescription=Export Transect Pixels."
 })
 
-public class ExportTransectPixelsAction extends AbstractAction implements HelpCtx.Provider {
+public class ExportTransectPixelsAction extends AbstractAction implements ContextAwareAction, LookupListener {
 
     private static final String ERR_MSG_BASE = "Transect pixels cannot be exported:\n";
-    private static final String HELP_ID = "exportTransectPixels";
-    private FigureSelection selection;
 
+    private final Lookup.Result<FigureSelection> result;
 
-    public ExportTransectPixelsAction(FigureSelection selection) {
-        super(Bundle.CTL_ExportMaskPixelsAction_MenuText());
-        this.selection = selection;
+    public ExportTransectPixelsAction() {
+        this(Utilities.actionsGlobalContext());
+    }
+
+    public ExportTransectPixelsAction(Lookup lkp) {
+        super(Bundle.CTL_ExportTransectPixelsAction_MenuText());
+        putValue("popupText", Bundle.CTL_ExportTransectPixelsAction_PopupText());
+        result = lkp.lookupResult(FigureSelection.class);
+        result.addLookupListener(WeakListeners.create(LookupListener.class, this, result));
+        updateEnableState(getCurrentFigureSelection());
     }
 
     /**
@@ -98,15 +111,24 @@ public class ExportTransectPixelsAction extends AbstractAction implements HelpCt
      *
      * @param event the command event
      */
-
     @Override
     public void actionPerformed(ActionEvent event) {
-        exportTransectPixels();
+        final ProductSceneView sceneView = SnapApp.getDefault().getSelectedProductSceneView();
+        if(sceneView != null && sceneView.getProduct().isMultiSizeProduct()) {
+            MultiSizeIssue.showMultiSizeWarning();
+        }else {
+            exportTransectPixels();
+        }
     }
 
     @Override
-    public HelpCtx getHelpCtx() {
-        return new HelpCtx(HELP_ID);
+    public Action createContextAwareInstance(Lookup lkp) {
+        return new ExportTransectPixelsAction(lkp);
+    }
+
+    @Override
+    public void resultChanged(LookupEvent le) {
+        updateEnableState(getCurrentFigureSelection());
     }
 
     private void exportTransectPixels() {
@@ -116,6 +138,8 @@ public class ExportTransectPixelsAction extends AbstractAction implements HelpCt
         if (view == null) {
             return;
         }
+        final FigureSelection selection = getCurrentFigureSelection();
+
         // Get the displayed raster data node (band or tie-point grid)
         final RasterDataNode raster = view.getRaster();
         // Get the transect of the displayed raster data node
@@ -251,6 +275,14 @@ public class ExportTransectPixelsAction extends AbstractAction implements HelpCt
         swingWorker.execute();
     }
 
+    private FigureSelection getCurrentFigureSelection() {
+        return result.allInstances().stream().findFirst().orElse(null);
+    }
+
+    private void updateEnableState(FigureSelection figureSelection) {
+        setEnabled(figureSelection != null);
+    }
+
     private static String createDefaultFileName(final RasterDataNode raster) {
         return FileUtils.getFilenameWithoutExtension(raster.getProduct().getName()) + "_TRANSECT.txt";
     }
@@ -262,7 +294,7 @@ public class ExportTransectPixelsAction extends AbstractAction implements HelpCt
     /**
      * Opens a modal file chooser dialog that prompts the user to select the output file name.
      *
-     * @return the selected file, <code>null</code> means "Cancel"
+     * @return the selected file, {@code null} means "Cancel"
      */
     private static File promptForFile(String defaultFileName) {
         final SnapFileFilter fileFilter = new SnapFileFilter("TXT", "txt", "Text");
@@ -309,7 +341,7 @@ public class ExportTransectPixelsAction extends AbstractAction implements HelpCt
          *
          * @param out     the data output writer
          * @param product the product providing the pixel values
-         * @return <code>true</code> for success, <code>false</code> if export has been terminated (by user)
+         * @return {@code true} for success, {@code false} if export has been terminated (by user)
          */
         private boolean exportTransectPixels(final PrintWriter out,
                                              final Product product,

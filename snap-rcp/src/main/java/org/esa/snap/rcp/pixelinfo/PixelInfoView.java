@@ -298,6 +298,7 @@ public class PixelInfoView extends JPanel {
         JScrollPane scrollPane = new JScrollPane(collapsibleItemsPanel,
                                                  ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
                                                  ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(20);
         add(scrollPane, BorderLayout.CENTER);
     }
 

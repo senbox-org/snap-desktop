@@ -332,9 +332,14 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
         if (form.shouldDisplayOutput()) {
             List<String> output = operatorTask.getOutput();
             StringBuilder builder = new StringBuilder();
-            if (output.size() > 0) {
-                for (String anOutput : output) {
-                    builder.append(String.format("%s%n", shrinkText(anOutput)));
+            int size = output.size();
+            if (size > 0) {
+                int messageCount = Math.max(size - 10, 0);
+                if (size > 10) {
+                    builder.append("\n(for the rest of the output please see the log file)");
+                }
+                for (int i = messageCount; i < size; i++) {
+                    builder.append(String.format("%s%n", shrinkText(output.get(i))));
                 }
                 SnapDialogs.showInformation(Bundle.OutputTitle_Text(), builder.toString(), null);
             } else {
@@ -506,12 +511,16 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
 
         @Override
         public void setSubTaskName(String subTaskName) {
-            SwingUtilities.invokeLater(() -> {
-                ProgressWrapper.this.progressHandle.progress(subTaskName);
-                if (consoleDialog != null) {
+            this.progressHandle.progress(subTaskName);
+            if (consoleDialog != null) {
+                if (SwingUtilities.isEventDispatchThread()) {
                     consoleDialog.append(subTaskName);
+                } else {
+                    SwingUtilities.invokeLater(() -> {
+                        consoleDialog.append(subTaskName);
+                    });
                 }
-            });
+            }
         }
 
         @Override

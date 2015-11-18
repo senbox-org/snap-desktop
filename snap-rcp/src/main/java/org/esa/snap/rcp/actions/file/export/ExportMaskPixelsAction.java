@@ -28,6 +28,7 @@ import org.esa.snap.core.datamodel.TiePointGrid;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
+import org.esa.snap.rcp.MultiSizeIssue;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.ui.AbstractDialog;
@@ -80,7 +81,7 @@ import java.util.GregorianCalendar;
 )
 @ActionReferences({
         @ActionReference(path = "Menu/File/Export/Other", position = 50),
-        @ActionReference(path = "Menu/Raster/Export"),
+        @ActionReference(path = "Menu/Raster/Export", position = 100),
         @ActionReference(path = "Context/ProductSceneView", position = 50)
 })
 
@@ -116,7 +117,12 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
      */
     @Override
     public void actionPerformed(ActionEvent event) {
-        exportMaskPixels();
+        ProductSceneView sceneView = SnapApp.getDefault().getSelectedProductSceneView();
+        if(sceneView.getProduct().isMultiSizeProduct()) {
+            MultiSizeIssue.showMultiSizeWarning();
+        }else {
+            exportMaskPixels();
+        }
     }
 
     @Override

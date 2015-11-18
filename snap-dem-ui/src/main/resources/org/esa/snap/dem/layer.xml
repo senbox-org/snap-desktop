@@ -67,6 +67,7 @@
                 <attr name="dialogTitle" stringvalue="Fill DEM Hole"/>
                 <attr name="ShortDescription" stringvalue="Fill holes in a DEM product"/>
                 <attr name="targetProductNameSuffix" stringvalue="_fill"/>
+                <attr name="helpId" stringvalue="FillHoleOp"/>
                 <attr name="icon" stringvalue="esaIcon"/>
             </file>
         </folder>
