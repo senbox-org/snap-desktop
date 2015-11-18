@@ -87,11 +87,17 @@ public final class PixelInfoTopComponent extends ToolTopComponent {
     @Override
     protected void productSceneViewSelected(@NonNull ProductSceneView view) {
         setCurrentView(view);
+        if (isSnapToSelectedPin()) {
+            snapToSelectedPin();
+        }
     }
 
     @Override
     protected void productSceneViewDeselected(@NonNull ProductSceneView view) {
         setCurrentView(null);
+        if (isSnapToSelectedPin()) {
+            snapToSelectedPin();
+        }
     }
 
     private void setCurrentView(ProductSceneView view) {
