@@ -154,8 +154,12 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
             }
         } else {
 
-            if (enableSurfaceImages)
-                addSurfaceImage(product);
+            if (enableSurfaceImages) {
+                final InputProductValidator validator = new InputProductValidator(product);
+                if (validator.isMapProjected() && product.getSceneGeoCoding() != null) {
+                    addSurfaceImage(product);
+                }
+            }
 
             // add outline
             addOutline(product);
