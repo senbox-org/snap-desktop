@@ -993,7 +993,20 @@ public class SpectrumTopComponent extends ToolTopComponent {
             int pinLevelZeroRasterY = (int) Math.floor(pinLevelZeroRasterPos.getY());
             if (coordinatesAreInRasterBounds(spectralBand, pinLevelZeroRasterX, pinLevelZeroRasterY) &&
                     spectralBand.isPixelValid(pinLevelZeroRasterX, pinLevelZeroRasterY)) {
-                return ProductUtils.getGeophysicalSampleAsDouble(spectralBand, pinLevelZeroRasterX, pinLevelZeroRasterY, 0);
+                int level = Math.min(rasterLevel, multiLevelModel.getLevelCount() - 1);
+                int pinLevelRasterX;
+                int pinLevelRasterY;
+                if (level == 0) {
+                    pinLevelRasterX = pinLevelZeroRasterX;
+                    pinLevelRasterY = pinLevelZeroRasterY;
+                } else {
+                    final AffineTransform m2iTransform = multiLevelModel.getModelToImageTransform(level);
+                    final PixelPos pinLevelRasterPos = new PixelPos();
+                    m2iTransform.transform(modelPoint, pinLevelRasterPos);
+                    pinLevelRasterX = (int) Math.floor(pinLevelRasterPos.getX());
+                    pinLevelRasterY = (int) Math.floor(pinLevelRasterPos.getY());
+                }
+                return ProductUtils.getGeophysicalSampleAsDouble(spectralBand, pinLevelRasterX, pinLevelRasterY, level);
             }
             return spectralBand.getGeophysicalNoDataValue();
         }
