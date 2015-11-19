@@ -16,6 +16,7 @@
 
 package org.esa.snap.binning.operator.ui;
 
+import com.bc.ceres.swing.SwingHelper;
 import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.Enablement;
@@ -193,11 +194,11 @@ class BinningFilterPanel extends JPanel {
         JTextField minDataHourTextField = new JTextField();
         startDateLabel.setEnabled(false);
         periodDurationLabel.setEnabled(false);
-        temporalFilterLabel.setToolTipText("The method that is used to decide which source pixels are used with respect to their observation time.");
-        startDateLabel.setToolTipText("The UTC start date of the binning period. If only the date part is given, the time 00:00:00 is assumed.");
-        periodDurationLabel.setToolTipText("Duration of the binning period in days.");
+        temporalFilterLabel.setToolTipText(wrap("The method that is used to decide which source pixels are used with respect to their observation time."));
+        startDateLabel.setToolTipText(wrap("The UTC start date of the binning period. If only the date part is given, the time 00:00:00 is assumed."));
+        periodDurationLabel.setToolTipText(wrap("Duration of the binning period in days."));
         minDataHourLabel.setToolTipText(
-                "A sensor-dependent constant given in hours of a day (0 to 24) at which a sensor has a minimum number of observations at the date line (the 180 degree meridian).");
+                    wrap("A sensor-dependent constant given in hours of a day (0 to 24) at which a sensor has a minimum number of observations at the date line (the 180 degree meridian)."));
         BindingContext bindingContext = binningFormModel.getBindingContext();
 
         bindingContext.bind(BinningFormModel.PROPERTY_KEY_TIME_FILTER_METHOD, temporalFilterComboBox);
@@ -230,6 +231,10 @@ class BinningFilterPanel extends JPanel {
         panel.add(minDataHourLabel);
         panel.add(minDataHourTextField);
         return panel;
+    }
+
+    private String wrap(String s) {
+        return SwingHelper.createWordWrappedHtmlTextForSwingComponents(s);
     }
 
     private static Enablement.Condition hasTimeInformation(final BinningOp.TimeFilterMethod... conditions) {

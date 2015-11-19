@@ -17,6 +17,7 @@
 package org.esa.snap.core.gpf.ui;
 
 import com.bc.ceres.binding.PropertyDescriptor;
+import com.bc.ceres.swing.SwingHelper;
 import com.bc.ceres.swing.TableLayout;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductFilter;
@@ -157,7 +158,8 @@ public class DefaultIOParametersPanel extends JPanel {
             final String description = descriptor.getDescription();
             if (description != null) {
                 final SourceProductSelector selector = sourceProductSelectorMap.get(descriptor);
-                selector.getProductNameComboBox().setToolTipText(description);
+                final String multiLineDescription = SwingHelper.createWordWrappedHtmlTextForSwingComponents(description);
+                selector.getProductNameComboBox().setToolTipText(multiLineDescription);
             }
         }
     }
