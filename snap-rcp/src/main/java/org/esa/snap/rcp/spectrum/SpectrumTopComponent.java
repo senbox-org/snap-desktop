@@ -15,6 +15,7 @@
  */
 package org.esa.snap.rcp.spectrum;
 
+import com.bc.ceres.glayer.support.ImageLayer;
 import com.bc.ceres.glevel.MultiLevelModel;
 import com.vividsolutions.jts.geom.Point;
 import org.esa.snap.core.datamodel.Band;
@@ -895,8 +896,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
                                 //todo [Multisize_products] use scenerastertransform here
                                 final PixelPos rasterPos = new PixelPos();
                                 final MultiLevelModel multiLevelModel = spectralBand.getMultiLevelModel();
-                                //todo determine this level in another way - tf 20151118
-                                int level = Math.min(rasterLevel, multiLevelModel.getLevelCount() - 1);
+                                int level = getLevel(multiLevelModel);
                                 multiLevelModel.getModelToImageTransform(level).transform(modelP, rasterPos);
                                 final int rasterX = (int) rasterPos.getX();
                                 final int rasterY = (int) rasterPos.getY();
@@ -985,8 +985,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
             final Point2D.Double modelPoint = new Point2D.Double(((Point) pinGeometry).getCoordinate().x,
                                                                  ((Point) pinGeometry).getCoordinate().y);
             final MultiLevelModel multiLevelModel = spectralBand.getMultiLevelModel();
-            //todo determine this level in another way - tf 20151118
-            int level = Math.min(rasterLevel, multiLevelModel.getLevelCount() - 1);
+            int level = getLevel(multiLevelModel);
             final AffineTransform m2iTransform = multiLevelModel.getModelToImageTransform(level);
             final PixelPos pinLevelRasterPos = new PixelPos();
             m2iTransform.transform(modelPoint, pinLevelRasterPos);
@@ -1032,6 +1031,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
             return dataset == null || dataset.getSeriesCount() == 0;
         }
 
+        //todo code duplication with spectrumtopcomponent - move to single class - tf 20151119
         private boolean isPixelValid(RasterDataNode raster, int pixelX, int pixelY, int level) {
             if (raster.isValidMaskUsed()) {
                 PlanarImage image = ImageManager.getInstance().getValidMaskImage(raster, level);
@@ -1042,10 +1042,19 @@ public class SpectrumTopComponent extends ToolTopComponent {
             }
         }
 
+        //todo code duplication with spectrumtopcomponent - move to single class - tf 20151119
         private Raster getRasterTile(PlanarImage image, int pixelX, int pixelY) {
             final int tileX = image.XToTileX(pixelX);
             final int tileY = image.YToTileY(pixelY);
             return image.getTile(tileX, tileY);
+        }
+
+        //todo code duplication with spectrumtopcomponent - move to single class - tf 20151119
+        private int getLevel(MultiLevelModel multiLevelModel) {
+            if (rasterLevel < multiLevelModel.getLevelCount()) {
+                return rasterLevel;
+            }
+            return ImageLayer.getLevel(multiLevelModel, currentView.getViewport());
         }
 
     }

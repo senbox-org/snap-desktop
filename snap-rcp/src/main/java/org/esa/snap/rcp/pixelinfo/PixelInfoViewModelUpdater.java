@@ -16,6 +16,7 @@
 package org.esa.snap.rcp.pixelinfo;
 
 import com.bc.ceres.core.Assert;
+import com.bc.ceres.glayer.support.ImageLayer;
 import com.bc.ceres.glevel.MultiLevelModel;
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.CrsGeoCoding;
@@ -440,8 +441,7 @@ public class PixelInfoViewModelUpdater {
                 PixelPos rasterPos = new PixelPos();
                 final Point2D.Double scenePos = new Point2D.Double(sceneX, sceneY);
                 final MultiLevelModel multiLevelModel = band.getMultiLevelModel();
-                //todo determine this level in another way - tf 20151119
-                final int level = Math.min(rasterLevel, multiLevelModel.getLevelCount() - 1);
+                final int level = getLevel(multiLevelModel);
                 multiLevelModel.getModelToImageTransform(level).transform(scenePos, rasterPos);
                 final int rasterX = (int) Math.floor(rasterPos.getX());
                 final int rasterY = (int) Math.floor(rasterPos.getY());
@@ -496,8 +496,7 @@ public class PixelInfoViewModelUpdater {
         PixelPos rasterPos = new PixelPos();
         final Point2D.Double scenePos = new Point2D.Double(sceneX, sceneY);
         final MultiLevelModel multiLevelModel = raster.getMultiLevelModel();
-        //todo determine this level in another way - tf 20151119
-        final int level = Math.min(rasterLevel, multiLevelModel.getLevelCount() - 1);
+        final int level = getLevel(multiLevelModel);
         multiLevelModel.getModelToImageTransform(level).transform(scenePos, rasterPos);
         final int rasterX = (int) Math.floor(rasterPos.getX());
         final int rasterY = (int) Math.floor(rasterPos.getY());
@@ -505,6 +504,14 @@ public class PixelInfoViewModelUpdater {
             return RasterDataNode.INVALID_POS_TEXT;
         }
         return getPixelString(raster, rasterX, rasterY, level);
+    }
+
+    //todo code duplication with spectrumtopcomponent - move to single class - tf 20151119
+    private int getLevel(MultiLevelModel multiLevelModel) {
+        if (rasterLevel < multiLevelModel.getLevelCount()) {
+            return rasterLevel;
+        }
+        return ImageLayer.getLevel(multiLevelModel, currentView.getViewport());
     }
 
     private String getPixelString(RasterDataNode raster, int x, int y, int level) {
@@ -525,6 +532,7 @@ public class PixelInfoViewModelUpdater {
         }
     }
 
+    //todo code duplication with spectrumtopcomponent - move to single class - tf 20151119
     private boolean isPixelValid(RasterDataNode raster, int pixelX, int pixelY, int level) {
         if (raster.isValidMaskUsed()) {
             PlanarImage image = ImageManager.getInstance().getValidMaskImage(raster, level);
@@ -535,6 +543,7 @@ public class PixelInfoViewModelUpdater {
         }
     }
 
+    //todo code duplication with spectrumtopcomponent - move to single class - tf 20151119
     private Raster getRasterTile(PlanarImage image, int pixelX, int pixelY) {
         final int tileX = image.XToTileX(pixelX);
         final int tileY = image.YToTileY(pixelY);
