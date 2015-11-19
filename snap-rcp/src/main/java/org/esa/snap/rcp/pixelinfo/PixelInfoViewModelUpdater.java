@@ -441,7 +441,7 @@ public class PixelInfoViewModelUpdater {
                 final Point2D.Double scenePos = new Point2D.Double(sceneX, sceneY);
                 final MultiLevelModel multiLevelModel = band.getMultiLevelModel();
                 //todo determine this level in another way - tf 20151119
-                final int level = Math.min(rasterLevel, multiLevelModel.getLevelCount());
+                final int level = Math.min(rasterLevel, multiLevelModel.getLevelCount() - 1);
                 multiLevelModel.getModelToImageTransform(level).transform(scenePos, rasterPos);
                 final int rasterX = (int) Math.floor(rasterPos.getX());
                 final int rasterY = (int) Math.floor(rasterPos.getY());
@@ -497,7 +497,7 @@ public class PixelInfoViewModelUpdater {
         final Point2D.Double scenePos = new Point2D.Double(sceneX, sceneY);
         final MultiLevelModel multiLevelModel = raster.getMultiLevelModel();
         //todo determine this level in another way - tf 20151119
-        final int level = Math.min(rasterLevel, multiLevelModel.getLevelCount());
+        final int level = Math.min(rasterLevel, multiLevelModel.getLevelCount() - 1);
         multiLevelModel.getModelToImageTransform(level).transform(scenePos, rasterPos);
         final int rasterX = (int) Math.floor(rasterPos.getX());
         final int rasterY = (int) Math.floor(rasterPos.getY());
