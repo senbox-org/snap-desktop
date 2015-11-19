@@ -20,6 +20,7 @@ import org.esa.snap.core.datamodel.Mask;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductNodeGroup;
 import org.esa.snap.core.datamodel.RasterDataNode;
+import org.esa.snap.core.util.ProductUtils;
 import org.jfree.chart.ChartPanel;
 
 import javax.swing.JCheckBoxMenuItem;
@@ -130,16 +131,8 @@ public abstract class MaskSelectionToolSupport implements PlotAreaSelectionTool.
                                               raster.getRasterWidth(),
                                               raster.getRasterHeight(),
                                               expression, maskColor, 0.5);
-        if (!raster.getGeoCoding().equals(product.getSceneGeoCoding())) {
-            //todo [multisize_products] Should actually ProductUtils.copyGeoCoding(raster, mask) be used? (mp - 20151118)
-            mask.setGeoCoding(raster.getGeoCoding());
-        }
-        if (!product.isSceneCrsEqualToModelCrsOf(raster)) {
-            mask.setImageToModelTransform(raster.getImageToModelTransform());
-        }
-
         product.addMask(mask);
-
+        ProductUtils.copyImageGeometry(raster, mask, false);
         return mask;
     }
 

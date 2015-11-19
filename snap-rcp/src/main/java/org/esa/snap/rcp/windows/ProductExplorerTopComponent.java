@@ -89,7 +89,7 @@ public class ProductExplorerTopComponent extends TopComponent implements Explore
         // 2. Create a node hierarchy:
         if (Config.instance().preferences().getBoolean("snap.debug.loadTestProducts", false)) {
             //Product[] products = TestProducts.createProducts();
-            SystemUtils.LOG.info("Loading test product...");
+            SystemUtils.LOG.info("Loading test products...");
             Product[] products = DummyProductBuilder.createTestProducts();
             for (Product product : products) {
                 SystemUtils.LOG.info("Loading test product " + product.getName());

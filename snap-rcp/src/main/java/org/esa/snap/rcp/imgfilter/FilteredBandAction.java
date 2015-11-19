@@ -163,14 +163,8 @@ public class FilteredBandAction extends AbstractAction  implements LookupListene
         if (sourceRaster instanceof Band) {
             ProductUtils.copySpectralBandProperties((Band) sourceRaster, targetBand);
         }
-        //todo [multisize_products] combine this two ifs? (mp - 20151118)
-        if (!sourceRaster.getGeoCoding().equals(targetProduct.getProduct())) {
-            targetBand.setGeoCoding(sourceRaster.getGeoCoding());
-        }
-        if (!targetProduct.isSceneCrsEqualToModelCrsOf(sourceRaster)) {
-            targetBand.setImageToModelTransform(sourceRaster.getImageToModelTransform());
-        }
         targetProduct.addBand(targetBand);
+        ProductUtils.copyImageGeometry(sourceRaster, targetBand, false);
         targetBand.fireProductNodeDataChanged();
         return targetBand;
     }
