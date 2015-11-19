@@ -47,6 +47,7 @@ import javax.swing.SwingUtilities;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.image.Raster;
+import java.awt.image.RenderedImage;
 import java.util.Calendar;
 import java.util.Vector;
 
@@ -250,7 +251,7 @@ public class PixelInfoViewModelUpdater {
 
     private void updatePositionValues() {
         final boolean availableInRaster = pixelPosValidInRaster &&
-                isSampleValueAvailableInRaster(levelZeroRasterX, levelZeroRasterY, currentRaster);
+                coordinatesAreInRasterBounds(currentRaster, pixelX, pixelY, rasterLevel);
         final boolean availableInScene = isSampleValueAvailableInScene();
         final double offset = 0.5 + (pixelInfoView.getShowPixelPosOffset1() ? 1.0 : 0.0);
         final double pX = levelZeroRasterX + offset;
@@ -445,7 +446,7 @@ public class PixelInfoViewModelUpdater {
                 multiLevelModel.getModelToImageTransform(level).transform(scenePos, rasterPos);
                 final int rasterX = (int) Math.floor(rasterPos.getX());
                 final int rasterY = (int) Math.floor(rasterPos.getY());
-                available = isSampleValueAvailableInRaster(rasterX, rasterY, band);
+                available = coordinatesAreInRasterBounds(band, rasterX, rasterY, level);
                 pixelValue = available ? ProductUtils.getGeophysicalSampleAsLong(band, rasterX, rasterY, level) : 0;
             }
             for (int j = 0; j < band.getFlagCoding().getNumAttributes(); j++) {
@@ -500,7 +501,7 @@ public class PixelInfoViewModelUpdater {
         multiLevelModel.getModelToImageTransform(level).transform(scenePos, rasterPos);
         final int rasterX = (int) Math.floor(rasterPos.getX());
         final int rasterY = (int) Math.floor(rasterPos.getY());
-        if (!isSampleValueAvailableInRaster(rasterX, rasterY, raster)) {
+        if (!coordinatesAreInRasterBounds(raster, rasterX, rasterY, level)) {
             return RasterDataNode.INVALID_POS_TEXT;
         }
         return getPixelString(raster, rasterX, rasterY, level);
@@ -550,13 +551,10 @@ public class PixelInfoViewModelUpdater {
         return image.getTile(tileX, tileY);
     }
 
-
-    private boolean isSampleValueAvailableInRaster(int pixelX, int pixelY, RasterDataNode raster) {
-        return raster != null
-                && pixelX >= 0
-                && pixelY >= 0
-                && pixelX < raster.getRasterWidth()
-                && pixelY < raster.getRasterHeight();
+    //todo code duplication with spectrumtopcomponent - move to single class - tf 20151119
+    private boolean coordinatesAreInRasterBounds(RasterDataNode raster, int x, int y, int level) {
+        final RenderedImage levelImage = raster.getSourceImage().getImage(level);
+        return x >= 0 && y >= 0 && x < levelImage.getWidth() && y < levelImage.getHeight();
     }
 
     private boolean isSampleValueAvailableInScene() {

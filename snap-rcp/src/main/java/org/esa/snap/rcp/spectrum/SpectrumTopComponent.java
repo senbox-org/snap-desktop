@@ -98,6 +98,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.image.Raster;
+import java.awt.image.RenderedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -900,7 +901,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
                                 multiLevelModel.getModelToImageTransform(level).transform(modelP, rasterPos);
                                 final int rasterX = (int) rasterPos.getX();
                                 final int rasterY = (int) rasterPos.getY();
-                                if (coordinatesAreInRasterBounds(spectralBand, rasterX, rasterY) &&
+                                if (coordinatesAreInRasterBounds(spectralBand, rasterX, rasterY, level) &&
                                         isPixelValid(spectralBand, rasterX, rasterY, level)) {
                                     addToSeries(spectralBand, rasterX, rasterY, level, series, wavelength);
                                     showsValidCursorSpectra = true;
@@ -921,9 +922,10 @@ public class SpectrumTopComponent extends ToolTopComponent {
             }
         }
 
-        //todo this method needs to consider the level!
-        private boolean coordinatesAreInRasterBounds(RasterDataNode raster, int x, int y) {
-            return x >= 0 && y >= 0 && x < raster.getRasterWidth() && y < raster.getRasterHeight();
+        //todo code duplication with pixelinfoviewmodelupdater - move to single class - tf 20151119
+        private boolean coordinatesAreInRasterBounds(RasterDataNode raster, int x, int y, int level) {
+            final RenderedImage levelImage = raster.getSourceImage().getImage(level);
+            return x >= 0 && y >= 0 && x < levelImage.getWidth() && y < levelImage.getHeight();
         }
 
         private void fillDatasetWithPinSeries(List<DisplayableSpectrum> spectra, XYSeriesCollection dataset, JFreeChart chart) {
@@ -991,7 +993,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
             m2iTransform.transform(modelPoint, pinLevelRasterPos);
             int pinLevelRasterX = (int) Math.floor(pinLevelRasterPos.getX());
             int pinLevelRasterY = (int) Math.floor(pinLevelRasterPos.getY());
-            if (coordinatesAreInRasterBounds(spectralBand, pinLevelRasterX, pinLevelRasterY) &&
+            if (coordinatesAreInRasterBounds(spectralBand, pinLevelRasterX, pinLevelRasterY, level) &&
                     isPixelValid(spectralBand, pinLevelRasterX, pinLevelRasterY, level)) {
                 return ProductUtils.getGeophysicalSampleAsDouble(spectralBand, pinLevelRasterX, pinLevelRasterY, level);
             }
