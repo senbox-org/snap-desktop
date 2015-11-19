@@ -294,7 +294,17 @@ public class PixelInfoView extends JPanel {
         collapsibleItemsPanel.setCollapsed(BANDS_INDEX, false);
         collapsibleItemsPanel.setCollapsed(TIE_POINT_GRIDS_INDEX, true);
         collapsibleItemsPanel.setCollapsed(FLAGS_INDEX, true);
+        collapsibleItemsPanel.addCollapseListener(new CollapsibleItemsPanel.CollapseListener() {
+            @Override
+            public void collapse(int index) {
+                //do nothing
+            }
 
+            @Override
+            public void expand(int index) {
+                updateService.requestUpdate();
+            }
+        });
         JScrollPane scrollPane = new JScrollPane(collapsibleItemsPanel,
                                                  ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
                                                  ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
