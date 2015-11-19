@@ -880,9 +880,13 @@ class MaskFormActions {
             getMaskForm().addMask(mask);
 
             final RasterDataNode refRaster = getMaskForm().getRaster();
-            if (refRaster.getProduct().isMultiSizeProduct() &&
-                refRaster.getGeoCoding() != getMaskForm().getProduct().getSceneGeoCoding()) {
-                ProductUtils.copyGeoCoding(refRaster, mask);
+            if (!refRaster.getGeoCoding().equals(getMaskForm().getProduct().getSceneGeoCoding())) {
+                //todo [multisize_products] combine these two methods? (mp - 20151118)
+                mask.setGeoCoding(refRaster.getGeoCoding());
+
+            }
+            if (!getMaskForm().getProduct().isSceneCrsEqualToModelCrsOf(refRaster)) {
+                mask.setImageToModelTransform(refRaster.getImageToModelTransform());
             }
         }
     }

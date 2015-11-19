@@ -38,7 +38,6 @@ import org.esa.snap.core.dataop.barithm.BandArithmetic;
 import org.esa.snap.core.dataop.barithm.RasterDataSymbol;
 import org.esa.snap.core.jexp.ParseException;
 import org.esa.snap.core.jexp.Term;
-import org.esa.snap.core.util.ProductUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.actions.window.OpenImageViewAction;
@@ -170,8 +169,14 @@ class BandMathsDialog extends ModalDialog {
         ProductNodeGroup<Band> bandGroup = targetProduct.getBandGroup();
         bandGroup.add(band);
 
-        if (refRasters.length > 0 && refRasters[0].getGeoCoding() != targetProduct.getSceneGeoCoding()) {
-            ProductUtils.copyGeoCoding(refRasters[0], band);
+        if (refRasters.length > 0) {
+            //todo [multisize_products] combine these two methods? (mp - 20151118)
+            if (!refRasters[0].getGeoCoding().equals(targetProduct.getSceneGeoCoding())) {
+                band.setGeoCoding(refRasters[0].getGeoCoding());
+            }
+            if (!targetProduct.isSceneCrsEqualToModelCrsOf(refRasters[0])) {
+                band.setImageToModelTransform(refRasters[0].getImageToModelTransform());
+            }
         }
 
         if (saveExpressionOnly) {

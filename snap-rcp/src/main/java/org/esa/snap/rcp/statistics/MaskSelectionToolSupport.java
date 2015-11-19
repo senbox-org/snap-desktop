@@ -130,9 +130,12 @@ public abstract class MaskSelectionToolSupport implements PlotAreaSelectionTool.
                                               raster.getRasterWidth(),
                                               raster.getRasterHeight(),
                                               expression, maskColor, 0.5);
-        if (product.isMultiSizeProduct() &&
-            !raster.getRasterSize().equals(product.getSceneRasterSize())) {
+        if (!raster.getGeoCoding().equals(product.getSceneGeoCoding())) {
+            //todo [multisize_products] Should actually ProductUtils.copyGeoCoding(raster, mask) be used? (mp - 20151118)
             mask.setGeoCoding(raster.getGeoCoding());
+        }
+        if (!product.isSceneCrsEqualToModelCrsOf(raster)) {
+            mask.setImageToModelTransform(raster.getImageToModelTransform());
         }
 
         product.addMask(mask);
