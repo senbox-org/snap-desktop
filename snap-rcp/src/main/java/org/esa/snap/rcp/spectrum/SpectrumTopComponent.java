@@ -897,7 +897,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
                                 final MultiLevelModel multiLevelModel = spectralBand.getMultiLevelModel();
                                 //todo determine this level in another way - tf 20151118
                                 int level = Math.min(rasterLevel, multiLevelModel.getLevelCount() - 1);
-                                multiLevelModel.getImageToModelTransform(level).transform(modelP, rasterPos);
+                                multiLevelModel.getModelToImageTransform(level).transform(modelP, rasterPos);
                                 final int rasterX = (int) rasterPos.getX();
                                 final int rasterY = (int) rasterPos.getY();
                                 if (coordinatesAreInRasterBounds(spectralBand, rasterX, rasterY) &&
