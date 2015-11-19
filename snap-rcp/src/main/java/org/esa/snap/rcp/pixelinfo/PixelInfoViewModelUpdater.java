@@ -16,6 +16,7 @@
 package org.esa.snap.rcp.pixelinfo;
 
 import com.bc.ceres.core.Assert;
+import com.bc.ceres.glevel.MultiLevelModel;
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.CrsGeoCoding;
 import org.esa.snap.core.datamodel.FlagCoding;
@@ -43,7 +44,6 @@ import org.opengis.referencing.operation.TransformException;
 import javax.media.jai.PlanarImage;
 import javax.swing.SwingUtilities;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.awt.image.Raster;
 import java.util.Calendar;
@@ -71,7 +71,7 @@ public class PixelInfoViewModelUpdater {
 
     private int pixelX;
     private int pixelY;
-    private int level;
+    private int rasterLevel;
     private int levelZeroRasterX;
     private int levelZeroRasterY;
     private double sceneX;
@@ -139,7 +139,7 @@ public class PixelInfoViewModelUpdater {
         }
         this.pixelX = pixelX;
         this.pixelY = pixelY;
-        this.level = level;
+        this.rasterLevel = level;
         this.pixelPosValidInRaster = pixelPosValid;
         AffineTransform i2mTransform = currentView.getBaseImageLayer().getImageToModelTransform(level);
         Point2D modelP = i2mTransform.transform(new Point2D.Double(pixelX + 0.5, pixelY + 0.5), null);
@@ -435,19 +435,18 @@ public class PixelInfoViewModelUpdater {
             boolean available;
             if (band.getImageToModelTransform().equals(currentRaster.getImageToModelTransform())) {
                 available = pixelPosValidInRaster;
-                pixelValue = available ? ProductUtils.getGeophysicalSampleAsLong(band, pixelX, pixelY, level) : 0;
+                pixelValue = available ? ProductUtils.getGeophysicalSampleAsLong(band, pixelX, pixelY, rasterLevel) : 0;
             } else {
                 PixelPos rasterPos = new PixelPos();
-                try {
-                    getRasterPos(band, rasterPos);
-                    final int rasterX = (int) Math.floor(rasterPos.getX());
-                    final int rasterY = (int) Math.floor(rasterPos.getY());
-                    available = isSampleValueAvailableInRaster(rasterX, rasterY, band);
-                    pixelValue = available ? ProductUtils.getGeophysicalSampleAsLong(band, rasterX, rasterY, 0) : 0;
-                } catch (NoninvertibleTransformException e) {
-                    available = false;
-                    pixelValue = -1;
-                }
+                final Point2D.Double scenePos = new Point2D.Double(sceneX, sceneY);
+                final MultiLevelModel multiLevelModel = band.getMultiLevelModel();
+                //todo determine this level in another way - tf 20151119
+                final int level = Math.min(rasterLevel, multiLevelModel.getLevelCount());
+                multiLevelModel.getModelToImageTransform(level).transform(scenePos, rasterPos);
+                final int rasterX = (int) Math.floor(rasterPos.getX());
+                final int rasterY = (int) Math.floor(rasterPos.getY());
+                available = isSampleValueAvailableInRaster(rasterX, rasterY, band);
+                pixelValue = available ? ProductUtils.getGeophysicalSampleAsLong(band, rasterX, rasterY, level) : 0;
             }
             for (int j = 0; j < band.getFlagCoding().getNumAttributes(); j++) {
                 if (available) {
@@ -487,31 +486,25 @@ public class PixelInfoViewModelUpdater {
         return rowCount;
     }
 
-    private void getRasterPos(RasterDataNode raster, PixelPos rasterPos) throws NoninvertibleTransformException {
-        final Point2D.Double scenePos = new Point2D.Double(sceneX, sceneY);
-        raster.getImageToModelTransform().createInverse().transform(scenePos, rasterPos);
-    }
-
     private String getPixelString(RasterDataNode raster) {
         if (raster.getImageToModelTransform().equals(currentRaster.getImageToModelTransform())) {
             if (!pixelPosValidInRaster) {
                 return RasterDataNode.INVALID_POS_TEXT;
             }
-            return getPixelString(raster, pixelX, pixelY, level);
+            return getPixelString(raster, pixelX, pixelY, rasterLevel);
         }
         PixelPos rasterPos = new PixelPos();
-        try {
-            getRasterPos(raster, rasterPos);
-        } catch (NoninvertibleTransformException e) {
-            return RasterDataNode.INVALID_POS_TEXT;
-        }
+        final Point2D.Double scenePos = new Point2D.Double(sceneX, sceneY);
+        final MultiLevelModel multiLevelModel = raster.getMultiLevelModel();
+        //todo determine this level in another way - tf 20151119
+        final int level = Math.min(rasterLevel, multiLevelModel.getLevelCount());
+        multiLevelModel.getModelToImageTransform(level).transform(scenePos, rasterPos);
         final int rasterX = (int) Math.floor(rasterPos.getX());
         final int rasterY = (int) Math.floor(rasterPos.getY());
-        final boolean pixelPosAvailable = isSampleValueAvailableInRaster(rasterX, rasterY, raster);
-        if (!pixelPosAvailable) {
+        if (!isSampleValueAvailableInRaster(rasterX, rasterY, raster)) {
             return RasterDataNode.INVALID_POS_TEXT;
         }
-        return getPixelString(raster, rasterX, rasterY, 0);
+        return getPixelString(raster, rasterX, rasterY, level);
     }
 
     private String getPixelString(RasterDataNode raster, int x, int y, int level) {
