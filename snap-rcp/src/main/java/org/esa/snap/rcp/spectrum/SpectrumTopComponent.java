@@ -1031,7 +1031,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
             return dataset == null || dataset.getSeriesCount() == 0;
         }
 
-        //todo code duplication with spectrumtopcomponent - move to single class - tf 20151119
+        //todo code duplication with pixelinfoviewmodelupdater - move to single class - tf 20151119
         private boolean isPixelValid(RasterDataNode raster, int pixelX, int pixelY, int level) {
             if (raster.isValidMaskUsed()) {
                 PlanarImage image = ImageManager.getInstance().getValidMaskImage(raster, level);
@@ -1042,14 +1042,14 @@ public class SpectrumTopComponent extends ToolTopComponent {
             }
         }
 
-        //todo code duplication with spectrumtopcomponent - move to single class - tf 20151119
+        //todo code duplication with pixelinfoviewmodelupdater - move to single class - tf 20151119
         private Raster getRasterTile(PlanarImage image, int pixelX, int pixelY) {
             final int tileX = image.XToTileX(pixelX);
             final int tileY = image.YToTileY(pixelY);
             return image.getTile(tileX, tileY);
         }
 
-        //todo code duplication with spectrumtopcomponent - move to single class - tf 20151119
+        //todo code duplication with pixelinfoviewmodelupdater - move to single class - tf 20151119
         private int getLevel(MultiLevelModel multiLevelModel) {
             if (rasterLevel < multiLevelModel.getLevelCount()) {
                 return rasterLevel;
