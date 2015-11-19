@@ -15,14 +15,11 @@
  */
 package org.esa.snap.productlibrary.rcp.utils;
 
-import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.datamodel.ProductManager;
-import org.esa.snap.engine_utilities.db.CommonReaders;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
 
 import java.io.File;
-import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
 
@@ -33,17 +30,33 @@ public class ProductOpener {
     }
 
     public void openProducts(final File[] productFiles) {
+        final ExecutorService es = Executors.newSingleThreadExecutor();
         for (File productFile : productFiles) {
             if (!productFile.exists()) {
                 continue;
             }
-            try {
-                final Product product = CommonReaders.readProduct(productFile);
+            es.submit(new Opener(productFile));
+        }
+    }
 
-                final ProductManager productManager = SnapApp.getDefault().getProductManager();
-                productManager.addProduct(product);
-            } catch (IOException e) {
-                SnapDialogs.showError("Not able to open product:\n" + productFile.getPath());
+    private static class Opener implements Runnable {
+        private final File productFile;
+
+        public Opener(File file) {
+            productFile = file;
+        }
+
+        public void run() {
+            try {
+                //Product product = CommonReaders.readProduct(productFile);
+                //SnapApp.getDefault().getProductManager().addProduct(product);
+
+                final org.esa.snap.rcp.actions.file.ProductOpener opener = new org.esa.snap.rcp.actions.file.ProductOpener();
+                opener.setFiles(new File[] {productFile});
+                opener.setMultiSelectionEnabled(true);
+                opener.openProduct();
+            } catch (Exception e) {
+                SnapApp.getDefault().handleError("Not able to open product:\n" + productFile.getPath(), e);
             }
         }
     }
