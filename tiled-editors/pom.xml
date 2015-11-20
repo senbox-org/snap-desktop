@@ -10,7 +10,7 @@
 
     <groupId>org.esa.snap.netbeans</groupId>
     <artifactId>tiled-editors</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
     <packaging>nbm</packaging>
     <description>Provides editor window tiling for NetBeans Platform applications. New actions allow
         to arrange editor windows in various layouts: tile horizontally, vertically, evenly.
