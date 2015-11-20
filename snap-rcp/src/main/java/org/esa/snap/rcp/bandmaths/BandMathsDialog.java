@@ -141,15 +141,16 @@ class BandMathsDialog extends ModalDialog {
         final String validMaskExpression;
         int width = targetProduct.getSceneRasterWidth();
         int height = targetProduct.getSceneRasterHeight();
-        final RasterDataNode[] refRasters;
+        RasterDataNode prototypeRasterDataNode = null;
         try {
             Product[] products = getCompatibleProducts();
             int defaultProductIndex = Arrays.asList(products).indexOf(targetProduct);
             validMaskExpression = BandArithmetic.getValidMaskExpression(getExpression(), products, defaultProductIndex, null);
-            refRasters = BandArithmetic.getRefRasters(getExpression(), products, defaultProductIndex);
+            final RasterDataNode[] refRasters = BandArithmetic.getRefRasters(getExpression(), products, defaultProductIndex);
             if (refRasters.length > 0) {
-                width = refRasters[0].getRasterWidth();
-                height = refRasters[0].getRasterHeight();
+                prototypeRasterDataNode = refRasters[0];
+                width = prototypeRasterDataNode.getRasterWidth();
+                height = prototypeRasterDataNode.getRasterHeight();
             }
         } catch (ParseException e) {
             String errorMessage = Bundle.CTL_BandMathsDialog_ErrBandNotCreated() + e.getMessage();
@@ -170,8 +171,8 @@ class BandMathsDialog extends ModalDialog {
         ProductNodeGroup<Band> bandGroup = targetProduct.getBandGroup();
         bandGroup.add(band);
 
-        if (refRasters.length > 0 && refRasters[0].getGeoCoding() != targetProduct.getSceneGeoCoding()) {
-            ProductUtils.copyGeoCoding(refRasters[0], band);
+        if (prototypeRasterDataNode != null) {
+            ProductUtils.copyImageGeometry(prototypeRasterDataNode, band, false);
         }
 
         if (saveExpressionOnly) {

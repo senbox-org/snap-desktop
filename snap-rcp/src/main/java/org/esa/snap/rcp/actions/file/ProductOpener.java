@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 /**
  * @author Marco Peters
  */
-class ProductOpener {
+public class ProductOpener {
 
     public static final String PREFERENCES_KEY_LAST_PRODUCT_DIR = "last_product_open_dir";
     private static final String PREFERENCES_KEY_PREFIX_ALTERNATIVE_READER = "open_alternative_reader.";

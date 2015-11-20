@@ -121,10 +121,6 @@ public abstract class WWBaseToolView extends ToolTopComponent {
                 }
             }
         });
-
-        if (isVisible()) {
-            getWwd().redrawNow();
-        }
     }
 
     public void removeProduct(final Product product) {

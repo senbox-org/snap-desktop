@@ -6,6 +6,8 @@ import org.openide.util.ImageUtilities;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * @author Norman Fomferra
@@ -17,6 +19,7 @@ public class CollapsibleItemsPanel extends JComponent {
     private JToggleButton[] toggleButtons;
     private static ImageIcon COL_ICON = ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/NodeCollapsed11.png", false);
     private static ImageIcon EXP_ICON = ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/NodeExpanded11.png", false);
+    private List<CollapseListener> collapseListenerList;
 
     public static void main(String[] args) {
         try {
@@ -50,7 +53,7 @@ public class CollapsibleItemsPanel extends JComponent {
         this.items = items;
         this.toggleButtons = new  JToggleButton[items.length];
         setLayout(null);
-
+        collapseListenerList = new ArrayList<>();
         for (int i = 0; i < items.length; i++) {
             Item item = items[i];
             JToggleButton button = new JToggleButton(item.getDisplayName());
@@ -68,9 +71,16 @@ public class CollapsibleItemsPanel extends JComponent {
             button.setHorizontalAlignment(SwingConstants.LEFT);
             button.setBorder(new EmptyBorder(2, 4, 2, 4));
             button.setIcon(EXP_ICON);
+            final int index = i;
             button.addActionListener(e -> {
-                item.getComponent().setVisible(!button.isSelected());
-                button.setIcon(button.isSelected() ? COL_ICON : EXP_ICON);
+                final boolean expand = !button.isSelected();
+                item.getComponent().setVisible(expand);
+                button.setIcon(!expand ? COL_ICON : EXP_ICON);
+                if (expand) {
+                    notifyExpand(index);
+                } else {
+                    notifyCollapse(index);
+                }
             });
             toggleButtons[i] = button;
             add(panel);
@@ -85,6 +95,26 @@ public class CollapsibleItemsPanel extends JComponent {
         items[index].getComponent().setVisible(!collapsed);
         toggleButtons[index].setSelected(collapsed);
         toggleButtons[index].setIcon(collapsed ? COL_ICON : EXP_ICON);
+    }
+
+    private void notifyCollapse(int index) {
+        for (CollapseListener collapseListener : collapseListenerList) {
+            collapseListener.collapse(index);
+        }
+    }
+
+    private void notifyExpand(int index) {
+        for (CollapseListener collapseListener : collapseListenerList) {
+            collapseListener.expand(index);
+        }
+    }
+
+    public void addCollapseListener(CollapseListener collapseListener) {
+        collapseListenerList.add(collapseListener);
+    }
+
+    public void remove(CollapseListener collapseListener) {
+        collapseListenerList.remove(collapseListener);
     }
 
     @Override
@@ -116,24 +146,6 @@ public class CollapsibleItemsPanel extends JComponent {
         return !items[index].getComponent().isVisible();
     }
 
-    /*
-    public static interface Model {
-        int getItemCount();
-
-        Item getItem(int index);
-
-        void addItem(int index, Item item);
-
-        void addItem(Item item);
-
-        void removeItem(Item item);
-
-        void addChangeListener(ChangeListener changeListener);
-
-        void removeChangeListener(ChangeListener changeListener);
-    }
-    */
-
     public static interface Item<T extends JComponent> {
         String getDisplayName();
 
@@ -159,4 +171,13 @@ public class CollapsibleItemsPanel extends JComponent {
             return component;
         }
     }
+
+    public interface CollapseListener {
+
+        void collapse(int index);
+
+        void expand(int index);
+
+    }
+
 }

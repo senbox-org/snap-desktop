@@ -20,6 +20,7 @@ import org.esa.snap.core.datamodel.Mask;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductNodeGroup;
 import org.esa.snap.core.datamodel.RasterDataNode;
+import org.esa.snap.core.util.ProductUtils;
 import org.jfree.chart.ChartPanel;
 
 import javax.swing.JCheckBoxMenuItem;
@@ -130,13 +131,8 @@ public abstract class MaskSelectionToolSupport implements PlotAreaSelectionTool.
                                               raster.getRasterWidth(),
                                               raster.getRasterHeight(),
                                               expression, maskColor, 0.5);
-        if (product.isMultiSizeProduct() &&
-            !raster.getRasterSize().equals(product.getSceneRasterSize())) {
-            mask.setGeoCoding(raster.getGeoCoding());
-        }
-
         product.addMask(mask);
-
+        ProductUtils.copyImageGeometry(raster, mask, false);
         return mask;
     }
 

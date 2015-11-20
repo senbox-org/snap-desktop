@@ -15,7 +15,9 @@
  */
 package org.esa.snap.rcp.spectrum;
 
+import com.bc.ceres.glayer.support.ImageLayer;
 import com.bc.ceres.glevel.MultiLevelModel;
+import com.vividsolutions.jts.geom.Point;
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.DataNode;
 import org.esa.snap.core.datamodel.PixelPos;
@@ -27,6 +29,7 @@ import org.esa.snap.core.datamodel.ProductNodeEvent;
 import org.esa.snap.core.datamodel.ProductNodeGroup;
 import org.esa.snap.core.datamodel.ProductNodeListenerAdapter;
 import org.esa.snap.core.datamodel.RasterDataNode;
+import org.esa.snap.core.image.ImageManager;
 import org.esa.snap.core.util.ProductUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.SnapDialogs;
@@ -45,7 +48,6 @@ import org.esa.snap.ui.product.spectrum.SpectrumChooser;
 import org.esa.snap.ui.product.spectrum.SpectrumShapeProvider;
 import org.esa.snap.ui.product.spectrum.SpectrumStrokeProvider;
 import org.esa.snap.ui.tool.ToolButtonFactory;
-import org.geotools.geometry.DirectPosition2D;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -70,8 +72,6 @@ import org.jfree.ui.HorizontalAlignment;
 import org.jfree.ui.RectangleAnchor;
 import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.RectangleInsets;
-import org.opengis.referencing.operation.MathTransform;
-import org.opengis.referencing.operation.TransformException;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -79,6 +79,7 @@ import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
+import javax.media.jai.PlanarImage;
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -95,8 +96,9 @@ import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
-import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
+import java.awt.image.Raster;
+import java.awt.image.RenderedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -772,8 +774,6 @@ public class SpectrumTopComponent extends ToolTopComponent {
         private int rasterPixelX;
         private int rasterPixelY;
         private int rasterLevel;
-        private int levelZeroRasterX;
-        private int levelZeroRasterY;
         private Range[] plotBounds;
         private XYSeriesCollection dataset;
         private Point2D modelP;
@@ -796,10 +796,6 @@ public class SpectrumTopComponent extends ToolTopComponent {
             this.pixelPosInRasterBounds = pixelPosInRasterBounds;
             final AffineTransform i2m = currentView.getBaseImageLayer().getImageToModelTransform(level);
             modelP = i2m.transform(new Point2D.Double(pixelX + 0.5, pixelY + 0.5), new Point2D.Double());
-            final AffineTransform m2iTransform = currentView.getBaseImageLayer().getModelToImageTransform();
-            Point2D levelZeroP = m2iTransform.transform(modelP, null);
-            levelZeroRasterX = (int) Math.floor(levelZeroP.getX());
-            levelZeroRasterY = (int) Math.floor(levelZeroP.getY());
         }
 
         private void updateData(JFreeChart chart, List<DisplayableSpectrum> spectra) {
@@ -883,7 +879,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
                     if (!currentProduct.isMultiSizeProduct()) {
                         for (Band spectralBand : spectralBands) {
                             final float wavelength = spectralBand.getSpectralWavelength();
-                            if (pixelPosInRasterBounds && spectralBand.isPixelValid(levelZeroRasterX, levelZeroRasterY)) {
+                            if (pixelPosInRasterBounds && isPixelValid(spectralBand, rasterPixelX, rasterPixelY, rasterLevel)) {
                                 addToSeries(spectralBand, rasterPixelX, rasterPixelY, rasterLevel, series, wavelength);
                                 showsValidCursorSpectra = true;
                             }
@@ -893,26 +889,22 @@ public class SpectrumTopComponent extends ToolTopComponent {
                             final float wavelength = spectralBand.getSpectralWavelength();
                             final AffineTransform i2m = spectralBand.getImageToModelTransform();
                             if (i2m.equals(currentView.getRaster().getImageToModelTransform())) {
-                                if (pixelPosInRasterBounds && spectralBand.isPixelValid(levelZeroRasterX, levelZeroRasterY)) {
+                                if (pixelPosInRasterBounds && isPixelValid(spectralBand, rasterPixelX, rasterPixelY, rasterLevel)) {
                                     addToSeries(spectralBand, rasterPixelX, rasterPixelY, rasterLevel, series, wavelength);
                                     showsValidCursorSpectra = true;
                                 }
                             } else {
                                 //todo [Multisize_products] use scenerastertransform here
                                 final PixelPos rasterPos = new PixelPos();
-                                try {
-                                    i2m.createInverse().transform(modelP, rasterPos);
-                                    if (coordinatesAreInRasterBounds(spectralBand, (int) rasterPos.getX(), (int) rasterPos.getY())) {
-                                        final MultiLevelModel multiLevelModel = spectralBand.getMultiLevelModel();
-                                        int level = Math.min(rasterLevel, multiLevelModel.getLevelCount() - 1);
-                                        final AffineTransform m2iTransform = multiLevelModel.getModelToImageTransform(level);
-                                        final Point2D.Double modelPoint = new Point2D.Double(modelP.getX(), modelP.getY());
-                                        m2iTransform.transform(modelPoint, rasterPos);
-                                        addToSeries(spectralBand, (int) rasterPos.getX(), (int) rasterPos.getY(), level, series, wavelength);
-                                        showsValidCursorSpectra = true;
-                                    }
-                                } catch (NoninvertibleTransformException e) {
-                                    //do not add to series
+                                final MultiLevelModel multiLevelModel = spectralBand.getMultiLevelModel();
+                                int level = getLevel(multiLevelModel);
+                                multiLevelModel.getModelToImageTransform(level).transform(modelP, rasterPos);
+                                final int rasterX = (int) rasterPos.getX();
+                                final int rasterY = (int) rasterPos.getY();
+                                if (coordinatesAreInRasterBounds(spectralBand, rasterX, rasterY, level) &&
+                                        isPixelValid(spectralBand, rasterX, rasterY, level)) {
+                                    addToSeries(spectralBand, rasterX, rasterY, level, series, wavelength);
+                                    showsValidCursorSpectra = true;
                                 }
                             }
                         }
@@ -930,8 +922,10 @@ public class SpectrumTopComponent extends ToolTopComponent {
             }
         }
 
-        private boolean coordinatesAreInRasterBounds(RasterDataNode raster, int x, int y) {
-            return x >= 0 && y >= 0 && x < raster.getRasterWidth() && y < raster.getRasterHeight();
+        //todo code duplication with pixelinfoviewmodelupdater - move to single class - tf 20151119
+        private boolean coordinatesAreInRasterBounds(RasterDataNode raster, int x, int y, int level) {
+            final RenderedImage levelImage = raster.getSourceImage().getImage(level);
+            return x >= 0 && y >= 0 && x < levelImage.getWidth() && y < levelImage.getHeight();
         }
 
         private void fillDatasetWithPinSeries(List<DisplayableSpectrum> spectra, XYSeriesCollection dataset, JFreeChart chart) {
@@ -986,38 +980,21 @@ public class SpectrumTopComponent extends ToolTopComponent {
 
         private double readEnergy(Placemark pin, Band spectralBand) {
             //todo [Multisize_products] use scenerastertransform here
-            final DirectPosition2D imagePos = new DirectPosition2D(pin.getPixelPos().getX(), pin.getPixelPos().getY());
-            final DirectPosition2D modelPos = new DirectPosition2D(pin.getPixelPos().getX(), pin.getPixelPos().getY());
-            try {
-                final MathTransform imageToMapTransform = currentProduct.getSceneGeoCoding().getImageToMapTransform();
-                if (imageToMapTransform instanceof AffineTransform) {
-                    imageToMapTransform.transform(imagePos, modelPos);
-                }
-            } catch (TransformException e) {
+            final Object pinGeometry = pin.getFeature().getDefaultGeometry();
+            if (pinGeometry == null || !(pinGeometry instanceof Point)) {
                 return spectralBand.getGeophysicalNoDataValue();
             }
-            final Point2D.Double modelPoint = new Point2D.Double(modelPos.getX(), modelPos.getY());
+            final Point2D.Double modelPoint = new Point2D.Double(((Point) pinGeometry).getCoordinate().x,
+                                                                 ((Point) pinGeometry).getCoordinate().y);
             final MultiLevelModel multiLevelModel = spectralBand.getMultiLevelModel();
-            final PixelPos pinLevelZeroRasterPos = new PixelPos();
-            final AffineTransform m2i = multiLevelModel.getModelToImageTransform(0);
-            m2i.transform(modelPoint, pinLevelZeroRasterPos);
-            int pinLevelZeroRasterX = (int) Math.floor(pinLevelZeroRasterPos.getX());
-            int pinLevelZeroRasterY = (int) Math.floor(pinLevelZeroRasterPos.getY());
-            if (coordinatesAreInRasterBounds(spectralBand, pinLevelZeroRasterX, pinLevelZeroRasterY) &&
-                    spectralBand.isPixelValid(pinLevelZeroRasterX, pinLevelZeroRasterY)) {
-                int level = Math.min(rasterLevel, multiLevelModel.getLevelCount() - 1);
-                int pinLevelRasterX;
-                int pinLevelRasterY;
-                if (level == 0) {
-                    pinLevelRasterX = pinLevelZeroRasterX;
-                    pinLevelRasterY = pinLevelZeroRasterY;
-                } else {
-                    final AffineTransform m2iTransform = multiLevelModel.getModelToImageTransform(level);
-                    final PixelPos pinLevelRasterPos = new PixelPos();
-                    m2iTransform.transform(modelPoint, pinLevelRasterPos);
-                    pinLevelRasterX = (int) Math.floor(pinLevelRasterPos.getX());
-                    pinLevelRasterY = (int) Math.floor(pinLevelRasterPos.getY());
-                }
+            int level = getLevel(multiLevelModel);
+            final AffineTransform m2iTransform = multiLevelModel.getModelToImageTransform(level);
+            final PixelPos pinLevelRasterPos = new PixelPos();
+            m2iTransform.transform(modelPoint, pinLevelRasterPos);
+            int pinLevelRasterX = (int) Math.floor(pinLevelRasterPos.getX());
+            int pinLevelRasterY = (int) Math.floor(pinLevelRasterPos.getY());
+            if (coordinatesAreInRasterBounds(spectralBand, pinLevelRasterX, pinLevelRasterY, level) &&
+                    isPixelValid(spectralBand, pinLevelRasterX, pinLevelRasterY, level)) {
                 return ProductUtils.getGeophysicalSampleAsDouble(spectralBand, pinLevelRasterX, pinLevelRasterY, level);
             }
             return spectralBand.getGeophysicalNoDataValue();
@@ -1054,6 +1031,32 @@ public class SpectrumTopComponent extends ToolTopComponent {
 
         public boolean isDatasetEmpty() {
             return dataset == null || dataset.getSeriesCount() == 0;
+        }
+
+        //todo code duplication with pixelinfoviewmodelupdater - move to single class - tf 20151119
+        private boolean isPixelValid(RasterDataNode raster, int pixelX, int pixelY, int level) {
+            if (raster.isValidMaskUsed()) {
+                PlanarImage image = ImageManager.getInstance().getValidMaskImage(raster, level);
+                Raster data = getRasterTile(image, pixelX, pixelY);
+                return data.getSample(pixelX, pixelY, 0) != 0;
+            } else {
+                return true;
+            }
+        }
+
+        //todo code duplication with pixelinfoviewmodelupdater - move to single class - tf 20151119
+        private Raster getRasterTile(PlanarImage image, int pixelX, int pixelY) {
+            final int tileX = image.XToTileX(pixelX);
+            final int tileY = image.YToTileY(pixelY);
+            return image.getTile(tileX, tileY);
+        }
+
+        //todo code duplication with pixelinfoviewmodelupdater - move to single class - tf 20151119
+        private int getLevel(MultiLevelModel multiLevelModel) {
+            if (rasterLevel < multiLevelModel.getLevelCount()) {
+                return rasterLevel;
+            }
+            return ImageLayer.getLevel(multiLevelModel, currentView.getViewport());
         }
 
     }

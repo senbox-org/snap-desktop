@@ -880,9 +880,8 @@ class MaskFormActions {
             getMaskForm().addMask(mask);
 
             final RasterDataNode refRaster = getMaskForm().getRaster();
-            if (refRaster.getProduct().isMultiSizeProduct() &&
-                refRaster.getGeoCoding() != getMaskForm().getProduct().getSceneGeoCoding()) {
-                ProductUtils.copyGeoCoding(refRaster, mask);
+            if (refRaster != null) {
+                ProductUtils.copyImageGeometry(refRaster, mask, false);
             }
         }
     }
