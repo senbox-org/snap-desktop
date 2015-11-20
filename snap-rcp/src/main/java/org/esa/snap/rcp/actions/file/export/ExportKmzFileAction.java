@@ -36,7 +36,7 @@ import org.esa.snap.core.util.Debug;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.runtime.Config;
 import org.esa.snap.ui.SnapFileChooser;
 import org.esa.snap.ui.product.ProductSceneView;
@@ -132,7 +132,7 @@ public class ExportKmzFileAction extends AbstractAction implements HelpCtx.Provi
             exportImage(view);
         } else {
             String message = "Product must be in ''Geographic Lat/Lon'' projection.";
-            SnapDialogs.showInformation(message, null);
+            Dialogs.showInformation(message, null);
         }
     }
 
@@ -205,7 +205,7 @@ public class ExportKmzFileAction extends AbstractAction implements HelpCtx.Provi
             return;
         }
 
-        if (!SnapDialogs.requestOverwriteDecision("h", file)) {
+        if (!Dialogs.requestOverwriteDecision("h", file)) {
             return;
         }
 
@@ -355,7 +355,7 @@ public class ExportKmzFileAction extends AbstractAction implements HelpCtx.Provi
                     }
                 }
             } catch (OutOfMemoryError ignored) {
-                SnapDialogs.showOutOfMemoryError("The image could not be exported."); /*I18N*/
+                Dialogs.showOutOfMemoryError("The image could not be exported."); /*I18N*/
             } catch (Throwable e) {
                 snapApp.handleError("The Image could not be exported", e);
             } finally {

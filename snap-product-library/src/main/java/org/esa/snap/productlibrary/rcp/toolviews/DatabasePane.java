@@ -27,7 +27,7 @@ import org.esa.snap.engine_utilities.db.SQLUtils;
 import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
 import org.esa.snap.productlibrary.rcp.toolviews.model.DatabaseQueryListener;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.UIUtils;
 import org.jdesktop.swingx.JXDatePicker;
 
@@ -173,7 +173,7 @@ public final class DatabasePane extends JPanel {
         t.printStackTrace();
         final SnapApp app = SnapApp.getDefault();
         if (app != null) {
-            SnapDialogs.showError(t.getMessage());
+            Dialogs.showError(t.getMessage());
         }
     }
 

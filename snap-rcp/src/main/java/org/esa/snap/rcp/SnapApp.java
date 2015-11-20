@@ -20,6 +20,8 @@ import org.esa.snap.rcp.actions.file.SaveProductAction;
 import org.esa.snap.rcp.cli.SnapArgs;
 import org.esa.snap.rcp.session.OpenSessionAction;
 import org.esa.snap.rcp.util.ContextGlobalExtenderImpl;
+import org.esa.snap.rcp.util.Dialogs;
+import org.esa.snap.rcp.util.MultiSizeIssue;
 import org.esa.snap.rcp.util.SelectionSupport;
 import org.esa.snap.rcp.util.internal.DefaultSelectionSupport;
 import org.esa.snap.runtime.Config;
@@ -251,7 +253,7 @@ public class SnapApp {
         if (t != null) {
             t.printStackTrace();
         }
-        SnapDialogs.showError("Error", message);
+        Dialogs.showError("Error", message);
         getLogger().log(Level.SEVERE, message, t);
 
         ImageIcon icon = TangoIcons.status_dialog_error(TangoIcons.Res.R16);
@@ -457,8 +459,8 @@ public class SnapApp {
                 }
                 message.append("\n\nDo you want to save them?");
             }
-            SnapDialogs.Answer answer = SnapDialogs.requestDecision("Exit", message.toString(), true, null);
-            if (answer == SnapDialogs.Answer.YES) {
+            Dialogs.Answer answer = Dialogs.requestDecision("Exit", message.toString(), true, null);
+            if (answer == Dialogs.Answer.YES) {
                 //Save Products in reverse order is necessary because derived products must be saved first
                 Collections.reverse(modifiedProducts);
                 for (Product modifiedProduct : modifiedProducts) {
@@ -468,7 +470,7 @@ public class SnapApp {
                         return false;
                     }
                 }
-            } else if (answer == SnapDialogs.Answer.CANCELLED) {
+            } else if (answer == Dialogs.Answer.CANCELLED) {
                 // decision request cancelled --> cancel SNAP shutdown
                 return false;
             }

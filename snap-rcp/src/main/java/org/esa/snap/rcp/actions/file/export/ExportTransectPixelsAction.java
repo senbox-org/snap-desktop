@@ -35,9 +35,9 @@ import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
-import org.esa.snap.rcp.MultiSizeIssue;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.util.Dialogs;
+import org.esa.snap.rcp.util.MultiSizeIssue;
 import org.esa.snap.ui.SelectExportMethodDialog;
 import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.product.ProductSceneView;
@@ -152,7 +152,7 @@ public class ExportTransectPixelsAction extends AbstractAction implements Contex
         }
 
         if (transect == null) {
-            SnapDialogs.showError(Bundle.CTL_ExportTransectPixelsAction_DialogTitle(),
+            Dialogs.showError(Bundle.CTL_ExportTransectPixelsAction_DialogTitle(),
                                   ERR_MSG_BASE + "There is no transect defined in the selected band.");
             return;
         }
@@ -164,7 +164,7 @@ public class ExportTransectPixelsAction extends AbstractAction implements Contex
                     .path(transect.getShape())
                     .build();
         } catch (IOException e) {
-            SnapDialogs.showError(Bundle.CTL_ExportTransectPixelsAction_DialogTitle(),
+            Dialogs.showError(Bundle.CTL_ExportTransectPixelsAction_DialogTitle(),
                                   ERR_MSG_BASE + "An I/O error occurred:\n" + e.getMessage());
             return;
         }
@@ -208,7 +208,7 @@ public class ExportTransectPixelsAction extends AbstractAction implements Contex
             try {
                 fileWriter = new FileWriter(file);
             } catch (IOException e) {
-                SnapDialogs.showError(Bundle.CTL_ExportTransectPixelsAction_DialogTitle(),
+                Dialogs.showError(Bundle.CTL_ExportTransectPixelsAction_DialogTitle(),
                                       ERR_MSG_BASE + "Failed to create file '" + file + "':\n" + e.getMessage());
                 return; // Error
             }
@@ -260,7 +260,7 @@ public class ExportTransectPixelsAction extends AbstractAction implements Contex
                     exception = e;
                 }
                 if (exception != null) {
-                    SnapDialogs.showError(Bundle.CTL_ExportTransectPixelsAction_DialogTitle(),
+                    Dialogs.showError(Bundle.CTL_ExportTransectPixelsAction_DialogTitle(),
                                           ERR_MSG_BASE + exception.getMessage());
                 }
             }
@@ -298,13 +298,13 @@ public class ExportTransectPixelsAction extends AbstractAction implements Contex
      */
     private static File promptForFile(String defaultFileName) {
         final SnapFileFilter fileFilter = new SnapFileFilter("TXT", "txt", "Text");
-        return SnapDialogs.requestFileForSave(Bundle.CTL_ExportTransectPixelsAction_DialogTitle(),
-                                              false,
-                                              fileFilter,
-                                              ".txt",
-                                              defaultFileName,
-                                              null,
-                                              "exportTransectPixels.lastDir");
+        return Dialogs.requestFileForSave(Bundle.CTL_ExportTransectPixelsAction_DialogTitle(),
+                                          false,
+                                          fileFilter,
+                                          ".txt",
+                                          defaultFileName,
+                                          null,
+                                          "exportTransectPixels.lastDir");
     }
 
     private static int getNumTransectPixels(final Product product,

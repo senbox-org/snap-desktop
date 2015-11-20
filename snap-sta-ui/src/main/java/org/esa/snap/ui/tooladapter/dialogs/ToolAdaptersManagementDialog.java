@@ -19,8 +19,12 @@ package org.esa.snap.ui.tooladapter.dialogs;
 
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
-import org.esa.snap.core.gpf.operators.tooladapter.*;
-import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterConstants;
+import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterIO;
+import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterOp;
+import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterOpSpi;
+import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterRegistry;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.tango.TangoIcons;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.ModelessDialog;
@@ -29,21 +33,39 @@ import org.esa.snap.ui.tooladapter.actions.ToolAdapterActionRegistrar;
 import org.esa.snap.ui.tooladapter.model.OperatorsTableModel;
 import org.openide.util.NbBundle;
 
-import javax.swing.*;
+import javax.swing.AbstractButton;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.DefaultCellEditor;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.SpringLayout;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-import static org.esa.snap.utils.SpringUtilities.DEFAULT_PADDING;
-import static org.esa.snap.utils.SpringUtilities.makeCompactGrid;
+import static org.esa.snap.utils.SpringUtilities.*;
 
 /**
  * Dialog that allows the management (create, edit, remove and execute) of external
@@ -189,11 +211,11 @@ public class ToolAdaptersManagementDialog extends ModelessDialog {
                 e -> {
                     ToolAdapterOperatorDescriptor operatorDescriptor = requestSelection();
                     if (operatorDescriptor != null) {
-                        if (SnapDialogs.Answer.YES == SnapDialogs.requestDecision(Bundle.MessageConfirmRemoval_TitleText(),
-                                Bundle.MessageConfirmRemoval_Text(), true,
-                                Bundle.MessageConfirmRemovalDontAsk_Text())) {
+                        if (Dialogs.Answer.YES == Dialogs.requestDecision(Bundle.MessageConfirmRemoval_TitleText(),
+                                                                          Bundle.MessageConfirmRemoval_Text(), true,
+                                                                          Bundle.MessageConfirmRemovalDontAsk_Text())) {
                             if (operatorDescriptor.isFromPackage()) {
-                                SnapDialogs.showWarning(String.format(Bundle.MessagePackageModules_Text(), operatorDescriptor.getName()));
+                                Dialogs.showWarning(String.format(Bundle.MessagePackageModules_Text(), operatorDescriptor.getName()));
                             } else {
                                 ToolAdapterActionRegistrar.removeOperatorMenu(operatorDescriptor);
                                 ToolAdapterIO.removeOperator(operatorDescriptor);
@@ -251,9 +273,9 @@ public class ToolAdaptersManagementDialog extends ModelessDialog {
             String newPath = model.getValueAt(0, 1).toString();
             File path = new File(newPath);
             if (!path.exists() &&
-                    SnapDialogs.Answer.YES == SnapDialogs.requestDecision("Path does not exist", "The path you have entered does not exist.\nDo you want to create it?", true, "Don't ask me in the future")) {
+                Dialogs.Answer.YES == Dialogs.requestDecision("Path does not exist", "The path you have entered does not exist.\nDo you want to create it?", true, "Don't ask me in the future")) {
                 if (!path.mkdirs()) {
-                    SnapDialogs.showError("Path could not be created!");
+                    Dialogs.showError("Path could not be created!");
                 }
             }
             if (path.exists()) {
@@ -350,7 +372,7 @@ public class ToolAdaptersManagementDialog extends ModelessDialog {
         if (selectedRow >= 0) {
              selected = ((OperatorsTableModel) operatorsTable.getModel()).getObjectAt(selectedRow);
         } else {
-            SnapDialogs.showWarning(Bundle.MessageNoSelection_Text());
+            Dialogs.showWarning(Bundle.MessageNoSelection_Text());
         }
         return selected;
     }

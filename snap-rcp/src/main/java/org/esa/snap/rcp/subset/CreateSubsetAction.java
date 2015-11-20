@@ -19,9 +19,9 @@ package org.esa.snap.rcp.subset;
 import org.esa.snap.core.dataio.ProductSubsetDef;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductNode;
-import org.esa.snap.rcp.MultiSizeIssue;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.util.Dialogs;
+import org.esa.snap.rcp.util.MultiSizeIssue;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.esa.snap.ui.product.ProductSubsetDialog;
 import org.openide.awt.ActionID;
@@ -84,9 +84,9 @@ public class CreateSubsetAction extends AbstractAction {
         }
         final ProductSubsetDef subsetDef = subsetDialog.getProductSubsetDef();
         if (subsetDef == null) {
-            SnapDialogs.showInformation(Bundle.CTL_CreateSubsetFromViewAction_Title(),
-                                        "No product subset created.",
-                                        null);
+            Dialogs.showInformation(Bundle.CTL_CreateSubsetFromViewAction_Title(),
+                                    "No product subset created.",
+                                    null);
             return;
         }
         try {

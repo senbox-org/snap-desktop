@@ -19,8 +19,8 @@ import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductManager;
 import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.actions.file.SaveProductAction;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.product.ProductNodeView;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -96,12 +96,12 @@ public class SaveSessionAction extends AbstractAction implements ContextAwareAct
 
         File sessionFile = app.getSessionFile();
         if (sessionFile == null || saveAs) {
-            sessionFile = SnapDialogs.requestFileForSave(TITLE, false,
-                                                         SessionManager.getDefault().getSessionFileFilter(),
-                                                         SessionManager.getDefault().getSessionFileFilter().getDefaultExtension(),
+            sessionFile = Dialogs.requestFileForSave(TITLE, false,
+                                                     SessionManager.getDefault().getSessionFileFilter(),
+                                                     SessionManager.getDefault().getSessionFileFilter().getDefaultExtension(),
                     sessionFile != null ? sessionFile.getName() : System.getProperty("user.name", "noname"),
-                    null,
-                    OpenSessionAction.LAST_SESSION_DIR_KEY);
+                                                     null,
+                                                     OpenSessionAction.LAST_SESSION_DIR_KEY);
 
             if (sessionFile == null) {
                 return;
@@ -116,10 +116,10 @@ public class SaveSessionAction extends AbstractAction implements ContextAwareAct
         try {
             final Session session = createSession(app);
             SessionIO.getInstance().writeSession(session, sessionFile);
-            SnapDialogs.showInformation(TITLE, "Session saved.", null);
+            Dialogs.showInformation(TITLE, "Session saved.", null);
         } catch (Exception e) {
             e.printStackTrace();
-            SnapDialogs.showError(TITLE, e.getMessage());
+            Dialogs.showError(TITLE, e.getMessage());
         } finally {
 //            app.updateState(); // to update menu entries e.g. 'Close Session'
         }
@@ -137,8 +137,8 @@ public class SaveSessionAction extends AbstractAction implements ContextAwareAct
                                 "Note: If you select 'No', the session cannot be saved.",
                         product.getDisplayName());
                 // Here: No == Cancel, its because we need a file location in the session XML
-                SnapDialogs.Answer answer = SnapDialogs.requestDecision(TITLE, message, false, null);
-                if (answer == SnapDialogs.Answer.YES) {
+                Dialogs.Answer answer = Dialogs.requestDecision(TITLE, message, false, null);
+                if (answer == Dialogs.Answer.YES) {
                     File sessionDir = sessionFile.getAbsoluteFile().getParentFile();
                     product.setFileLocation(new File(sessionDir, product.getName() + ".dim"));
                     SaveProductAction saveProductAction = new SaveProductAction(product);
@@ -159,11 +159,11 @@ public class SaveSessionAction extends AbstractAction implements ContextAwareAct
                                 "fully restore the session later.",
                         product.getDisplayName());
                 // Here: Yes, No + Cancel, its because we have file location for the session XML
-                SnapDialogs.Answer answer = SnapDialogs.requestDecision(TITLE, message, false, null);
-                if (answer == SnapDialogs.Answer.YES) {
+                Dialogs.Answer answer = Dialogs.requestDecision(TITLE, message, false, null);
+                if (answer == Dialogs.Answer.YES) {
                     SaveProductAction saveProductAction = new SaveProductAction(product);
                     saveProductAction.execute();
-                } else if (answer == SnapDialogs.Answer.YES) {
+                } else if (answer == Dialogs.Answer.YES) {
                     return false;
                 }
             }

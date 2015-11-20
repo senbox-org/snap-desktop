@@ -39,10 +39,10 @@ import org.esa.snap.core.util.ProductUtils;
 import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
-import org.esa.snap.rcp.MultiSizeIssue;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.actions.vector.CreateVectorDataNodeAction;
+import org.esa.snap.rcp.util.Dialogs;
+import org.esa.snap.rcp.util.MultiSizeIssue;
 import org.esa.snap.rcp.util.internal.RasterDataNodeDeleter;
 import org.esa.snap.rcp.windows.ToolTopComponent;
 import org.esa.snap.ui.AbstractDialog;
@@ -290,7 +290,7 @@ class MaskFormActions {
             if (rangeEditorDialog.show() == AbstractDialog.ID_OK) {
                 RasterDataNode referencedRaster = getMaskForm().getProduct().getRasterDataNode(model.getRasterName());
                 if (referencedRaster == null) {
-                    SnapDialogs.showError(String.format("Raster '%s' not found.", model.getRasterName()));
+                    Dialogs.showError(String.format("Raster '%s' not found.", model.getRasterName()));
                     return;
                 }
                 Dimension expectedSize = getMaskForm().getTargetMaskSize();
@@ -298,7 +298,7 @@ class MaskFormActions {
                         && !ProductUtils.areRastersEqualInSize(expectedSize.width, expectedSize.height, referencedRaster)) {
                     String message = String.format("'%s' does not have the expected size of %d x %d pixels.",
                                                    model.getRasterName(), expectedSize.width, expectedSize.height);
-                    SnapDialogs.showError(message);
+                    Dialogs.showError(message);
                     return;
                 }
                 Mask mask = createNewMask(Mask.RangeType.INSTANCE);
@@ -587,7 +587,7 @@ class MaskFormActions {
                 if (dialogApproved) {
                     File file = fileChooser.getSelectedFile();
                     if (file != null) {
-                        if (Boolean.TRUE.equals(SnapDialogs.requestOverwriteDecision(ACTION_NAME, file))) {
+                        if (Boolean.TRUE.equals(Dialogs.requestOverwriteDecision(ACTION_NAME, file))) {
                             setDirectory(file.getAbsoluteFile().getParentFile());
                             file = FileUtils.ensureExtension(file, ".xml");
                             writeXml(file, document);
@@ -634,7 +634,7 @@ class MaskFormActions {
                 }
                 stringBuilder.append(" to XML.");
             }
-            SnapDialogs.showInformation(ACTION_NAME, stringBuilder.toString(), null);
+            Dialogs.showInformation(ACTION_NAME, stringBuilder.toString(), null);
         }
 
         private static int countExportedMasks(boolean[] masksExported) {
@@ -855,7 +855,7 @@ class MaskFormActions {
             try {
                 refRasters = BandArithmetic.getRefRasters(code, product);
             } catch (ParseException e) {
-                SnapDialogs.showError("Invalid expression '" + code + "':\n" + e.getMessage());
+                Dialogs.showError("Invalid expression '" + code + "':\n" + e.getMessage());
                 return;
             }
             Dimension expectedSize = getMaskForm().getTargetMaskSize();
@@ -863,7 +863,7 @@ class MaskFormActions {
                     && !ProductUtils.areRastersEqualInSize(expectedSize.width, expectedSize.height, refRasters)) {
                 String message = String.format("Referenced rasters must all be the same size (%d x %d pixels).",
                                                expectedSize.width, expectedSize.height);
-                SnapDialogs.showError(message);
+                Dialogs.showError(message);
                 return;
             }
 
@@ -1029,7 +1029,7 @@ class MaskFormActions {
                     final Shape transformedModelBounds = v2mTransform.createTransformedShape(viewBounds);
                     viewport.zoom(transformedModelBounds.getBounds2D());
                 } else {
-                    SnapDialogs.showMessage("Zoom to Mask", "The selected mask is empty.", JOptionPane.INFORMATION_MESSAGE, null);
+                    Dialogs.showMessage("Zoom to Mask", "The selected mask is empty.", JOptionPane.INFORMATION_MESSAGE, null);
                 }
             }
         }

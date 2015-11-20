@@ -29,7 +29,7 @@ import com.bc.ceres.swing.binding.PropertyPane;
 import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.core.util.math.MathUtils;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.SnapFileChooser;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.openide.awt.ActionID;
@@ -292,7 +292,7 @@ public class ExportImageAction extends AbstractExportImageAction {
             final long expectedMemory = getExpectedMemory(w, h);
             if (freeMemory < expectedMemory) {
                 ;
-                if (showQuestionDialog() != SnapDialogs.Answer.YES) {
+                if (showQuestionDialog() != Dialogs.Answer.YES) {
                     final double scale = Math.sqrt((double) freeMemory / (double) expectedMemory);
                     final double scaledW = w * scale;
                     final double scaledH = h * scale;
@@ -331,11 +331,11 @@ public class ExportImageAction extends AbstractExportImageAction {
             propertyContainer.addProperty(new Property(heightDescriptor, new DefaultPropertyAccessor()));
         }
 
-        private SnapDialogs.Answer showQuestionDialog() {
-            return SnapDialogs.requestDecision(Bundle.CTL_ExportImageAction_MenuText(),
+        private Dialogs.Answer showQuestionDialog() {
+            return Dialogs.requestDecision(Bundle.CTL_ExportImageAction_MenuText(),
                                                "There may not be enough memory to export the ima because\n" +
                                                        "the image dimension is too large. \n Do you really want to keep the image dimension?",
-                                               true, null);
+                                           true, null);
         }
 
         private long getFreeMemory() {

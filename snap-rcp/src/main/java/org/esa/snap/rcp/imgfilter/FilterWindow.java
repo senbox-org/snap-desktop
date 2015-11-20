@@ -2,8 +2,8 @@ package org.esa.snap.rcp.imgfilter;
 
 
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.imgfilter.model.Filter;
+import org.esa.snap.rcp.util.Dialogs;
 import org.openide.util.NbBundle;
 
 import javax.swing.JDialog;
@@ -83,9 +83,9 @@ public class FilterWindow implements FilterEditor {
             int h = filterWindowPrefs.getInt("height", preferredSize.height);
             dialog.setBounds(x, y, w, h);
 
-            SnapDialogs.showInformation(Bundle.LBL_FilterWindow_Title(),
-                                        Bundle.TXT_FilterWindow_Hint(),
-                                        "filterWindow.moreOptions");
+            Dialogs.showInformation(Bundle.LBL_FilterWindow_Title(),
+                                    Bundle.TXT_FilterWindow_Hint(),
+                                    "filterWindow.moreOptions");
         }
         dialog.setVisible(true);
     }

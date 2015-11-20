@@ -18,7 +18,7 @@ package org.esa.snap.rcp.actions.tools;
 
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.util.SystemUtils;
-import org.esa.snap.rcp.MultiSizeIssue;
+import org.esa.snap.rcp.util.MultiSizeIssue;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;

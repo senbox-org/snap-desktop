@@ -9,7 +9,7 @@ import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductNodeList;
 import org.esa.snap.core.util.Debug;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.rcp.util.ProgressHandleMonitor;
 import org.netbeans.api.progress.ProgressHandle;
 import org.openide.util.Cancellable;
@@ -63,11 +63,11 @@ class WriteProductOperation implements Runnable, Cancellable {
 
     @Override
     public boolean cancel() {
-        SnapDialogs.Answer answer = SnapDialogs.requestDecision(Bundle.CTL_WriteProductOperationName(),
+        Dialogs.Answer answer = Dialogs.requestDecision(Bundle.CTL_WriteProductOperationName(),
                                                                 "Cancellation of writing may lead to an unreadable product.\n\n"
                                                                         + "Do you really want to cancel the write process?",
-                                                                false, null);
-        return answer == SnapDialogs.Answer.YES;
+                                                        false, null);
+        return answer == Dialogs.Answer.YES;
     }
 
     @Override

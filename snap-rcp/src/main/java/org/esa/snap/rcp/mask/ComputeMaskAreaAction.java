@@ -29,7 +29,7 @@ import org.esa.snap.core.util.Debug;
 import org.esa.snap.core.util.math.MathUtils;
 import org.esa.snap.core.util.math.RsMathUtils;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.AbstractDialog;
 import org.esa.snap.ui.GridBagUtils;
 import org.esa.snap.ui.ModalDialog;
@@ -115,7 +115,7 @@ public class ComputeMaskAreaAction extends AbstractAction implements LookupListe
         // Get selected Snap view showing a product's band
         final ProductSceneView view = lookup.lookup(ProductSceneView.class);
         if (view == null) {
-            SnapDialogs.showError(Bundle.CTL_ComputeMaskAreaAction_DialogTitle(), errMsgBase + "No view.");
+            Dialogs.showError(Bundle.CTL_ComputeMaskAreaAction_DialogTitle(), errMsgBase + "No view.");
             return;
         }
 
@@ -136,7 +136,7 @@ public class ComputeMaskAreaAction extends AbstractAction implements LookupListe
         String[] maskNames = maskNameList.toArray(new String[maskNameList.size()]);
         String maskName;
         if (maskNames.length == 0) {
-            SnapDialogs.showInformation(Bundle.CTL_ComputeMaskAreaAction_DialogTitle(), "No compatible mask available", null);
+            Dialogs.showInformation(Bundle.CTL_ComputeMaskAreaAction_DialogTitle(), "No compatible mask available", null);
             return;
         }else if (maskNames.length == 1) {
             maskName = maskNames[0];
@@ -170,7 +170,7 @@ public class ComputeMaskAreaAction extends AbstractAction implements LookupListe
 
         RenderedImage maskImage = mask.getSourceImage();
         if (maskImage == null) {
-            SnapDialogs.showError(Bundle.CTL_ComputeMaskAreaAction_DialogTitle(),
+            Dialogs.showError(Bundle.CTL_ComputeMaskAreaAction_DialogTitle(),
                                   errMsgBase + "No Mask image available.");
             return;
         }
@@ -353,13 +353,13 @@ public class ComputeMaskAreaAction extends AbstractAction implements LookupListe
                 final MaskAreaStatistics areaStatistics = get();
                 if (areaStatistics.getNumPixels() == 0) {
                     final String message = MessageFormat.format("{0}Mask is empty.", errMsgBase);
-                    SnapDialogs.showError(Bundle.CTL_ComputeMaskAreaAction_DialogTitle(), message);
+                    Dialogs.showError(Bundle.CTL_ComputeMaskAreaAction_DialogTitle(), message);
                 } else {
                     showResults(areaStatistics);
                 }
             } catch (ExecutionException | InterruptedException e) {
                 final String message = MessageFormat.format("An internal Error occurred:\n{0}", e.getMessage());
-                SnapDialogs.showError(Bundle.CTL_ComputeMaskAreaAction_DialogTitle(), message);
+                Dialogs.showError(Bundle.CTL_ComputeMaskAreaAction_DialogTitle(), message);
                 Debug.trace(e);
             }
         }

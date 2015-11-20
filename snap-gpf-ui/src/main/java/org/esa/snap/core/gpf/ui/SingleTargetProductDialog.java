@@ -28,8 +28,8 @@ import org.esa.snap.core.gpf.internal.OperatorExecutor;
 import org.esa.snap.core.gpf.internal.OperatorProductReader;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.io.FileUtils;
-import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.actions.file.SaveProductAsAction;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.ModelessDialog;
 
@@ -276,7 +276,7 @@ public abstract class SingleTargetProductDialog extends ModelessDialog {
      * @param propertyName The (simple) property name used to store the user option in the application's preferences.
      */
     public void showSuppressibleInformationDialog(String infoMessage, String propertyName) {
-        SnapDialogs.showInformation(getTitle(), infoMessage, getQualifiedPropertyName(propertyName));
+        Dialogs.showInformation(getTitle(), infoMessage, getQualifiedPropertyName(propertyName));
     }
 
     private class ProductWriterSwingWorker extends ProgressMonitorSwingWorker<Product, Object> {

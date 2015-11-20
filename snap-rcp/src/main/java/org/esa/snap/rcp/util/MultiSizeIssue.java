@@ -1,6 +1,7 @@
-package org.esa.snap.rcp;
+package org.esa.snap.rcp.util;
 
 import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.rcp.SnapApp;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 
@@ -31,12 +32,12 @@ public class MultiSizeIssue {
     }
 
     public static void showMultiSizeWarning() {
-        String title = SnapDialogs.getDialogTitle("Limited Functionality");
+        String title = Dialogs.getDialogTitle("Limited Functionality");
         final String msgText = "Please note that you have opened a product which contains <br/>" +
                                "raster of different sizes. Not all features of SNAP will work with this product. <br/>" +
                                "More info about this issue and its status can be found in the " +
                                "<a href=\"https://senbox.atlassian.net/browse/SNAP-1\">SNAP Issue Tracker</a>";
-        final String prefKey = "snap.multiSizeInfo" + SnapDialogs.PREF_KEY_SUFFIX_DONTSHOW;
+        final String prefKey = "snap.multiSizeInfo" + Dialogs.PREF_KEY_SUFFIX_DONTSHOW;
         String decision = SnapApp.getDefault().getPreferences().get(prefKey, "");
         if ("true".equals(decision)) {
             return;
@@ -51,7 +52,7 @@ public class MultiSizeIssue {
                 try {
                     Desktop.getDesktop().browse(e.getURL().toURI());
                 } catch (IOException | URISyntaxException e1) {
-                    SnapDialogs.showWarning("Could not open URL: " + e.getDescription());
+                    Dialogs.showWarning("Could not open URL: " + e.getDescription());
                 }
             }
         });

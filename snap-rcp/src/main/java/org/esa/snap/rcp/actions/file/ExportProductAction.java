@@ -20,9 +20,9 @@ import org.esa.snap.core.dataio.ProductWriterPlugIn;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.core.util.io.SnapFileFilter;
-import org.esa.snap.rcp.MultiSizeIssue;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.util.Dialogs;
+import org.esa.snap.rcp.util.MultiSizeIssue;
 import org.netbeans.api.progress.ProgressUtils;
 import org.openide.util.ContextAwareAction;
 import org.openide.util.HelpCtx;
@@ -157,13 +157,13 @@ public class ExportProductAction extends AbstractAction implements HelpCtx.Provi
         }
 
         if (newFile.isFile() && !newFile.canWrite()) {
-            SnapDialogs.showWarning(getDisplayName(),
-                                    MessageFormat.format("The product\n" +
+            Dialogs.showWarning(getDisplayName(),
+                                MessageFormat.format("The product\n" +
                                                          "''{0}''\n" +
                                                          "exists and cannot be overwritten, because it is read only.\n" +
                                                          "Please choose another file or remove the write protection.",
                                                          newFile.getPath()),
-                                    null);
+                                null);
             return false;
         }
 

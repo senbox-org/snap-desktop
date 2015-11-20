@@ -28,7 +28,7 @@ import org.esa.snap.core.datamodel.ProductNodeGroup;
 import org.esa.snap.core.layer.MaskLayerType;
 import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.product.ProductSceneView;
 
@@ -221,13 +221,13 @@ public class MagicWandInteractor extends ViewportInteractor implements MagicWand
 
     private boolean handleInvalidBandFilter(ProductSceneView view) {
         Product product = view.getProduct();
-        SnapDialogs.Answer answer = SnapDialogs.requestDecision(DIALOG_TITLE,
+        Dialogs.Answer answer = Dialogs.requestDecision(DIALOG_TITLE,
                                                                 "The currently selected band filter does not match\n" +
                                                                         "the bands of the selected data product.\n\n" +
                                                                         "Reset filter and use the ones of the selected product?",
-                                                                false,
-                                                                "reset_magic_wand_filter");
-        if (answer == SnapDialogs.Answer.YES) {
+                                                        false,
+                                                        "reset_magic_wand_filter");
+        if (answer == Dialogs.Answer.YES) {
             model.setBandNames();
             return ensureBandNamesSet(view, product);
         } else {
@@ -243,7 +243,7 @@ public class MagicWandInteractor extends ViewportInteractor implements MagicWand
             try {
                 ip = transform.inverseTransform(mp, null);
             } catch (NoninvertibleTransformException e) {
-                SnapDialogs.showError(DIALOG_TITLE, "A geographic transformation problem occurred:\n" + e.getMessage());
+                Dialogs.showError(DIALOG_TITLE, "A geographic transformation problem occurred:\n" + e.getMessage());
                 return null;
             }
         } else {
@@ -271,7 +271,7 @@ public class MagicWandInteractor extends ViewportInteractor implements MagicWand
         }
         if (model.getBandCount() == 0) {
             // It's actually hard to get here, because we have a selected image view...
-            SnapDialogs.showError(DIALOG_TITLE, "No bands selected.");
+            Dialogs.showError(DIALOG_TITLE, "No bands selected.");
             return false;
         }
         return true;

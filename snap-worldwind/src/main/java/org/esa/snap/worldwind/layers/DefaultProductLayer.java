@@ -41,7 +41,7 @@ import org.esa.snap.engine_utilities.datamodel.AbstractMetadata;
 import org.esa.snap.engine_utilities.eo.Constants;
 import org.esa.snap.engine_utilities.eo.GeoUtils;
 import org.esa.snap.engine_utilities.gpf.InputProductValidator;
-import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.util.Dialogs;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -212,7 +212,7 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
                         imageTable.put(name, si);
                     }
                 } catch (Exception e) {
-                    SnapDialogs.showError(e.getMessage());
+                    Dialogs.showError(e.getMessage());
                 }
             }
         };

@@ -6,7 +6,7 @@ import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.GridBagUtils;
 import org.esa.snap.ui.SnapFileChooser;
 import org.esa.snap.ui.product.ProductSubsetDialog;
@@ -164,7 +164,7 @@ class ProductFileChooser extends SnapFileChooser {
                 product = ProductIO.readProduct(file, formatName);
                 newProductName = createNewProductName(product.getName(), numSubsetProducts++);
             } catch (IOException e) {
-                SnapDialogs.showError("The product could not be read:\n" + e.getMessage());
+                Dialogs.showError("The product could not be read:\n" + e.getMessage());
             } finally {
                 setCursor(Cursor.getDefaultCursor());
             }
@@ -191,7 +191,7 @@ class ProductFileChooser extends SnapFileChooser {
         clearCurrentSubsetProduct();
         if (product != null) {
             if (product.isMultiSizeProduct()) {
-                SnapDialogs.showError("No subset can be created of a multi-size products.");
+                Dialogs.showError("No subset can be created of a multi-size products.");
                 return false;
             }
 
@@ -204,7 +204,7 @@ class ProductFileChooser extends SnapFileChooser {
                     }
                     return true;
                 } catch (IOException e) {
-                    SnapDialogs.showError("Could not create subset:\n" + e.getMessage());
+                    Dialogs.showError("Could not create subset:\n" + e.getMessage());
                 }
             }
         }

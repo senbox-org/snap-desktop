@@ -21,6 +21,9 @@ import org.esa.snap.core.gpf.common.ReadOp;
 import org.esa.snap.core.gpf.graph.GraphException;
 import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.engine_utilities.db.CommonReaders;
+import org.esa.snap.engine_utilities.util.MemUtils;
+import org.esa.snap.engine_utilities.util.ProductFunctions;
+import org.esa.snap.engine_utilities.util.ResourceUtils;
 import org.esa.snap.graphbuilder.gpf.ui.ProductSetReaderOpUI;
 import org.esa.snap.graphbuilder.gpf.ui.SourceUI;
 import org.esa.snap.graphbuilder.gpf.ui.UIValidation;
@@ -32,13 +35,10 @@ import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphsMenu;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.ProgressBarProgressMonitor;
 import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.tango.TangoIcons;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.ModelessDialog;
-import org.esa.snap.engine_utilities.util.MemUtils;
-import org.esa.snap.engine_utilities.util.ProductFunctions;
-import org.esa.snap.engine_utilities.util.ResourceUtils;
 import org.openide.util.HelpCtx;
 
 import javax.swing.BorderFactory;
@@ -369,7 +369,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
      */
     public void LoadGraph() {
         final SnapFileFilter fileFilter = new SnapFileFilter("XML", "xml", "Graph");
-        final File graphFile = SnapDialogs.requestFileForOpen("Load Graph", false, fileFilter, LAST_GRAPH_PATH);
+        final File graphFile = Dialogs.requestFileForOpen("Load Graph", false, fileFilter, LAST_GRAPH_PATH);
         if (graphFile == null) return;
 
         LoadGraph(graphFile);
@@ -521,7 +521,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
             return false;
         } else if (!warningStr.isEmpty()) {
             if (warningStr.length() > 100 && !warningStr.equals(lastWarningMsg)) {
-                SnapDialogs.showWarning(warningStr);
+                Dialogs.showWarning(warningStr);
                 lastWarningMsg = warningStr;
             } else {
                 statusLabel.setForeground(new Color(0, 100, 255));

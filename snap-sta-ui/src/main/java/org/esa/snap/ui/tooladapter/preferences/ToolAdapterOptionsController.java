@@ -22,15 +22,16 @@ import com.bc.ceres.binding.PropertySet;
 import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.PropertyEditorRegistry;
-import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.preferences.DefaultConfigController;
 import org.esa.snap.rcp.preferences.Preference;
+import org.esa.snap.rcp.util.Dialogs;
 import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.HelpCtx;
 import org.openide.util.NbPreferences;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+import java.awt.Insets;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
@@ -106,7 +107,7 @@ public class ToolAdapterOptionsController extends DefaultConfigController {
     @Override
     public void update() {
         // module preferences
-        Preferences preferences = NbPreferences.forModule(SnapDialogs.class);
+        Preferences preferences = NbPreferences.forModule(Dialogs.class);
         Property property = context.getPropertySet().getProperty(PREFERENCE_KEY_TABBED_WINDOW);
         if (property != null) {
             preferences.put(PREFERENCE_KEY_TABBED_WINDOW, property.getValueAsText());

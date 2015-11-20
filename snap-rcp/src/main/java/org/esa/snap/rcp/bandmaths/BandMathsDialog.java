@@ -40,9 +40,9 @@ import org.esa.snap.core.jexp.ParseException;
 import org.esa.snap.core.jexp.Term;
 import org.esa.snap.core.util.ProductUtils;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.actions.window.OpenImageViewAction;
 import org.esa.snap.rcp.nodes.UndoableProductNodeInsertion;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.GridBagUtils;
 import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.ui.product.ProductExpressionPane;
@@ -154,7 +154,7 @@ class BandMathsDialog extends ModalDialog {
             }
         } catch (ParseException e) {
             String errorMessage = Bundle.CTL_BandMathsDialog_ErrBandNotCreated() + e.getMessage();
-            SnapDialogs.showError(Bundle.CTL_BandMathsDialog_Title() + " - Error", errorMessage);
+            Dialogs.showError(Bundle.CTL_BandMathsDialog_Title() + " - Error", errorMessage);
             hide();
             return;
         }
@@ -329,7 +329,7 @@ class BandMathsDialog extends ModalDialog {
     private ActionListener createLoadExpressionButtonListener() {
         return e -> {
             try {
-                final File file = SnapDialogs.requestFileForOpen(
+                final File file = Dialogs.requestFileForOpen(
                         "Load Band Maths Expression", false, null, PREF_KEY_LAST_EXPRESSION_PATH);
                 if (file != null) {
                     expression = new String(Files.readAllBytes(file.toPath()));
@@ -345,7 +345,7 @@ class BandMathsDialog extends ModalDialog {
     private ActionListener createSaveExpressionButtonListener() {
         return e -> {
             try {
-                final File file = SnapDialogs.requestFileForSave(
+                final File file = Dialogs.requestFileForSave(
                         "Save Band Maths Expression", false, null, ".txt", "myExpression", null, PREF_KEY_LAST_EXPRESSION_PATH);
 
                 if (file != null) {
@@ -499,7 +499,7 @@ class BandMathsDialog extends ModalDialog {
                     String message = "The entered maths expression references multiple products.\n"
                             + "It will cause problems unless the session is restored as is.\n\n"
                             + "Note: You can save the session from the file menu.";
-                    SnapDialogs.showWarning(message);
+                    Dialogs.showWarning(message);
                 }
             }
         }

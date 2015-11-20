@@ -28,9 +28,9 @@ import org.esa.snap.core.datamodel.TiePointGrid;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
-import org.esa.snap.rcp.MultiSizeIssue;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.util.Dialogs;
+import org.esa.snap.rcp.util.MultiSizeIssue;
 import org.esa.snap.ui.AbstractDialog;
 import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.ui.SelectExportMethodDialog;
@@ -175,7 +175,7 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
 
         final RenderedImage maskImage = mask.getSourceImage();
         if (maskImage == null) {
-            SnapDialogs.showError(Bundle.CTL_ExportMaskPixelsAction_DialogTitle(),
+            Dialogs.showError(Bundle.CTL_ExportMaskPixelsAction_DialogTitle(),
                                   ERR_MSG_BASE + "No Mask image available.");
             return;
         }
@@ -222,7 +222,7 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
             try {
                 fileWriter = new FileWriter(file);
             } catch (IOException e) {
-                SnapDialogs.showError(Bundle.CTL_ExportMaskPixelsAction_DialogTitle(),
+                Dialogs.showError(Bundle.CTL_ExportMaskPixelsAction_DialogTitle(),
                                       ERR_MSG_BASE + "Failed to create file '" + file + "':\n" + e.getMessage());
                 return; // Error
             }
@@ -267,7 +267,7 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
                     exception = e;
                 }
                 if (exception != null) {
-                    SnapDialogs.showError(Bundle.CTL_ExportMaskPixelsAction_DialogTitle(),
+                    Dialogs.showError(Bundle.CTL_ExportMaskPixelsAction_DialogTitle(),
                                           ERR_MSG_BASE + exception.getMessage());
                 }
             }
@@ -300,13 +300,13 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
      */
     private static File promptForFile(String defaultFileName) {
         final SnapFileFilter fileFilter = new SnapFileFilter("TXT", "txt", "Text");
-        return SnapDialogs.requestFileForSave(Bundle.CTL_ExportMaskPixelsAction_DialogTitle(),
-                                              false,
-                                              fileFilter,
-                                              ".txt",
-                                              defaultFileName,
-                                              null,
-                                              "exportMaskPixels.lastDir");
+        return Dialogs.requestFileForSave(Bundle.CTL_ExportMaskPixelsAction_DialogTitle(),
+                                          false,
+                                          fileFilter,
+                                          ".txt",
+                                          defaultFileName,
+                                          null,
+                                          "exportMaskPixels.lastDir");
     }
 
     /*

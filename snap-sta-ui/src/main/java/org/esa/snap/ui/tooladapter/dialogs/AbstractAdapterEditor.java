@@ -32,12 +32,16 @@ import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.OperatorException;
 import org.esa.snap.core.gpf.OperatorSpi;
-import org.esa.snap.core.gpf.descriptor.*;
+import org.esa.snap.core.gpf.descriptor.AnnotationOperatorDescriptor;
+import org.esa.snap.core.gpf.descriptor.ParameterDescriptor;
+import org.esa.snap.core.gpf.descriptor.SystemVariable;
+import org.esa.snap.core.gpf.descriptor.TemplateParameterDescriptor;
+import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterConstants;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterIO;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterOpSpi;
 import org.esa.snap.modules.ModulePackager;
-import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.ui.tooladapter.actions.EscapeAction;
@@ -51,8 +55,22 @@ import org.openide.filesystems.FileUtil;
 import org.openide.util.NbBundle;
 import org.openide.util.NbPreferences;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.SpringLayout;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.ItemEvent;
 import java.io.File;
 import java.io.IOException;
@@ -60,13 +78,17 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static org.esa.snap.utils.SpringUtilities.DEFAULT_PADDING;
-import static org.esa.snap.utils.SpringUtilities.makeCompactGrid;
+import static org.esa.snap.utils.SpringUtilities.*;
 
 /**
  * A dialog window used to edit an operator, or to create a new operator.
@@ -166,7 +188,7 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
     }
 
     private static boolean useTabsForEditorDialog() {
-        return Boolean.parseBoolean(NbPreferences.forModule(SnapDialogs.class).get(ToolAdapterOptionsController.PREFERENCE_KEY_TABBED_WINDOW, "false"));
+        return Boolean.parseBoolean(NbPreferences.forModule(Dialogs.class).get(ToolAdapterOptionsController.PREFERENCE_KEY_TABBED_WINDOW, "false"));
     }
 
     private AbstractAdapterEditor(AppContext appContext, JDialog parent, String title) {
@@ -263,7 +285,7 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
     protected abstract JPanel createParametersPanel();
 
     protected boolean shouldValidate() {
-        String value = NbPreferences.forModule(SnapDialogs.class).get(ToolAdapterOptionsController.PREFERENCE_KEY_VALIDATE_PATHS, null);
+        String value = NbPreferences.forModule(Dialogs.class).get(ToolAdapterOptionsController.PREFERENCE_KEY_VALIDATE_PATHS, null);
         return value == null || Boolean.parseBoolean(value);
     }
 
@@ -282,13 +304,13 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
                 }
             }
             if (file == null) {
-                SnapDialogs.showWarning(Bundle.MSG_Inexistent_Tool_Path_Text());
+                Dialogs.showWarning(Bundle.MSG_Inexistent_Tool_Path_Text());
                 return false;
             }
 
             Path toolLocation = newOperatorDescriptor.resolveVariables(newOperatorDescriptor.getMainToolFileLocation()).toPath();
             if (!(Files.exists(toolLocation) && Files.isExecutable(toolLocation))) {
-                SnapDialogs.showWarning(Bundle.MSG_Inexistent_Tool_Path_Text());
+                Dialogs.showWarning(Bundle.MSG_Inexistent_Tool_Path_Text());
                 return false;
             }
             /**
@@ -296,7 +318,7 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
              */
             File workingDir = newOperatorDescriptor.resolveVariables(newOperatorDescriptor.getWorkingDir());
             if (!(workingDir != null && workingDir.exists() && workingDir.isDirectory())) {
-                SnapDialogs.showWarning(Bundle.MSG_Inexistent_WorkDir_Text());
+                Dialogs.showWarning(Bundle.MSG_Inexistent_WorkDir_Text());
                 return false;
             }
         }
@@ -308,7 +330,7 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
             for (SystemVariable variable : variables) {
                 String value = variable.getValue();
                 if (value == null || value.isEmpty()) {
-                    SnapDialogs.showWarning(String.format(Bundle.MSG_Empty_Variable_Text(), variable.getKey()));
+                    Dialogs.showWarning(String.format(Bundle.MSG_Empty_Variable_Text(), variable.getKey()));
                     return false;
                 }
             }
@@ -325,8 +347,8 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
                     if (File.class.isAssignableFrom(dataType) &&
                             (parameterDescriptor.isNotNull() || parameterDescriptor.isNotEmpty()) &&
                             (defaultValue == null || defaultValue.isEmpty() || !Files.exists(Paths.get(defaultValue)))) {
-                        SnapDialogs.showWarning(String.format(Bundle.MSG_Inexistem_Parameter_Value_Text(),
-                                parameterDescriptor.getName(), parameterDescriptor.isNotNull() ? ToolAdapterConstants.NOT_NULL : ToolAdapterConstants.NOT_EMPTY));
+                        Dialogs.showWarning(String.format(Bundle.MSG_Inexistem_Parameter_Value_Text(),
+                                                          parameterDescriptor.getName(), parameterDescriptor.isNotNull() ? ToolAdapterConstants.NOT_NULL : ToolAdapterConstants.NOT_EMPTY));
                         return false;
                     }
                 }
@@ -338,17 +360,17 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
     @Override
     protected void onOK() {
         if (!verifyUserInput()) {
-            SnapDialogs.showWarning(Bundle.MSG_Wrong_Value_Text());
+            Dialogs.showWarning(Bundle.MSG_Wrong_Value_Text());
             this.getJDialog().requestFocus();
         } else {
             String templateContent = this.templateContent.getText();
             if (!resolveTemplateProductCount(templateContent)) {
-                SnapDialogs.showWarning(Bundle.MSG_Wrong_Usage_Array_Text());
+                Dialogs.showWarning(Bundle.MSG_Wrong_Usage_Array_Text());
                 this.getJDialog().requestFocus();
             } else {
                 super.onOK();
                 if (newOperatorDescriptor.getSourceProductCount() == 0) {
-                    SnapDialogs.showInformation("The template is not using the parameter $sourceProduct.\nNo source product selection will be available at execution time.", "empty.source.info");
+                    Dialogs.showInformation("The template is not using the parameter $sourceProduct.\nNo source product selection will be available at execution time.", "empty.source.info");
                 }
                 if (!this.operatorIsNew) {
                     ToolAdapterActionRegistrar.removeOperatorMenu(oldOperatorDescriptor);
@@ -421,7 +443,7 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
                     ToolAdapterActionRegistrar.registerOperatorMenu(newOperatorDescriptor);
                 } catch (Exception e) {
                     logger.warning(e.getMessage());
-                    SnapDialogs.showError(e.getMessage());
+                    Dialogs.showError(e.getMessage());
                 }
             }
         }
@@ -443,11 +465,11 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
                 newOperatorDescriptor.setSource(ToolAdapterOperatorDescriptor.SOURCE_PACKAGE);
                 onOK();
                 ModulePackager.packModule(newOperatorDescriptor, new File(targetFolder, newOperatorDescriptor.getAlias() + ".nbm"));
-                SnapDialogs.showInformation(String.format(Bundle.MSG_Export_Complete_Text(), targetFolder.getAbsolutePath()), null);
+                Dialogs.showInformation(String.format(Bundle.MSG_Export_Complete_Text(), targetFolder.getAbsolutePath()), null);
             }
         } catch (IOException e) {
             logger.warning(e.getMessage());
-            SnapDialogs.showError(e.getMessage());
+            Dialogs.showError(e.getMessage());
         }
     }
 
@@ -597,7 +619,7 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
     }
 
     protected JTextArea createTemplateEditorField() {
-        boolean useAutocomplete = Boolean.parseBoolean(NbPreferences.forModule(SnapDialogs.class).get(ToolAdapterOptionsController.PREFERENCE_KEY_AUTOCOMPLETE, "false"));
+        boolean useAutocomplete = Boolean.parseBoolean(NbPreferences.forModule(Dialogs.class).get(ToolAdapterOptionsController.PREFERENCE_KEY_AUTOCOMPLETE, "false"));
         if (useAutocomplete) {
             templateContent = new AutoCompleteTextArea("", 15, 9);
         } else {

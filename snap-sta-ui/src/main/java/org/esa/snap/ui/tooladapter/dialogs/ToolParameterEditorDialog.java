@@ -30,7 +30,7 @@ import org.apache.commons.collections.bidimap.DualHashBidiMap;
 import org.esa.snap.core.gpf.annotations.ParameterDescriptorFactory;
 import org.esa.snap.core.gpf.descriptor.ToolParameterDescriptor;
 import org.esa.snap.core.util.StringUtils;
-import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.ui.tooladapter.actions.EscapeAction;
@@ -39,8 +39,16 @@ import org.esa.snap.ui.tooladapter.model.PropertyMemberUIWrapperFactory;
 import org.esa.snap.ui.tooladapter.validators.RequiredFieldValidator;
 import org.esa.snap.ui.tooladapter.validators.TypedValueValidator;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.io.File;
@@ -150,7 +158,7 @@ public class ToolParameterEditorDialog extends ModalDialog {
                     mainPanel.revalidate();
                 } catch (Exception e) {
                     logger.warning(e.getMessage());
-                    SnapDialogs.showError(e.getMessage());
+                    Dialogs.showError(e.getMessage());
                 }
             }
         });
@@ -198,7 +206,7 @@ public class ToolParameterEditorDialog extends ModalDialog {
                     mainPanel.revalidate();
                 } catch (Exception e) {
                     logger.warning(e.getMessage());
-                    SnapDialogs.showError(e.getMessage());
+                    Dialogs.showError(e.getMessage());
                 }
             }
         });

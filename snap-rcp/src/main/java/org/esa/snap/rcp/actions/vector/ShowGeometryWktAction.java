@@ -22,7 +22,7 @@ import com.bc.ceres.swing.figure.support.DefaultFigureSelection;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKTWriter;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.ui.product.SimpleFeatureFigure;
 import org.geotools.geometry.jts.GeometryCoordinateSequenceTransformer;
@@ -108,7 +108,7 @@ public class ShowGeometryWktAction extends AbstractAction implements LookupListe
     private void exportToWkt() {
         SimpleFeatureFigure selectedFeatureFigure = getSimpleFeatureFigure();
         if (selectedFeatureFigure == null) {
-            SnapDialogs.showInformation(DLG_TITLE, "Please select a geometry.", null);
+            Dialogs.showInformation(DLG_TITLE, "Please select a geometry.", null);
             return;
         }
         SimpleFeature simpleFeature = selectedFeatureFigure.getSimpleFeature();
@@ -120,8 +120,8 @@ public class ShowGeometryWktAction extends AbstractAction implements LookupListe
         try {
             targetGeom = transformGeometry(sourceGeom, sourceCrs, targetCrs);
         } catch (Exception e) {
-            SnapDialogs.showWarning(DLG_TITLE, "Failed to transform geometry to " + targetCrs.getName() + ".\n" +
-                    "Using " + sourceCrs.getName() + " instead.", null);
+            Dialogs.showWarning(DLG_TITLE, "Failed to transform geometry to " + targetCrs.getName() + ".\n" +
+                                           "Using " + sourceCrs.getName() + " instead.", null);
             targetGeom = sourceGeom;
             targetCrs = sourceCrs;
         }

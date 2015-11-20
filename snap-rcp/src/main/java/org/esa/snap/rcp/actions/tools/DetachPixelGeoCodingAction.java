@@ -22,7 +22,7 @@ import org.esa.snap.core.datamodel.GeoCoding;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.UIUtils;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -124,9 +124,9 @@ public class DetachPixelGeoCodingAction extends AbstractAction implements Contex
                     }
                     String dialogTitle = Bundle.CTL_DetachPixelGeoCodingDialogTitle();
                     if (value != null) {
-                        SnapDialogs.showError(dialogTitle, "An internal error occurred:\n" + value.getMessage());
+                        Dialogs.showError(dialogTitle, "An internal error occurred:\n" + value.getMessage());
                     } else {
-                        SnapDialogs.showInformation(dialogTitle, "Pixel geo-coding has been detached.", null);
+                        Dialogs.showInformation(dialogTitle, "Pixel geo-coding has been detached.", null);
                     }
                 } finally {
                     UIUtils.setRootFrameDefaultCursor(SnapApp.getDefault().getMainFrame());

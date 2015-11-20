@@ -36,7 +36,7 @@ import org.esa.snap.core.dataop.barithm.BandArithmetic;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.math.MathUtils;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.GridBagUtils;
 import org.geotools.feature.FeatureCollection;
 import org.jfree.chart.ChartFactory;
@@ -779,16 +779,16 @@ class ScatterPlotPanel extends ChartPagePanel {
                     computingData = false;
                 } catch (InterruptedException | CancellationException e) {
                     SystemUtils.LOG.log(Level.WARNING, "Failed to compute correlative plot.", e);
-                    SnapDialogs.showMessage(CHART_TITLE,
+                    Dialogs.showMessage(CHART_TITLE,
                                             "Failed to compute correlative plot.\n" +
                                             "Calculation canceled.",
-                                            JOptionPane.ERROR_MESSAGE, null);
+                                        JOptionPane.ERROR_MESSAGE, null);
                 } catch (ExecutionException e) {
                     SystemUtils.LOG.log(Level.WARNING, "Failed to compute correlative plot.", e);
-                    SnapDialogs.showMessage(CHART_TITLE,
+                    Dialogs.showMessage(CHART_TITLE,
                                             "Failed to compute correlative plot.\n" +
                                             "An error occurred:\n" + e.getCause().getMessage(),
-                                            JOptionPane.ERROR_MESSAGE, null);
+                                        JOptionPane.ERROR_MESSAGE, null);
                 }
             }
         };

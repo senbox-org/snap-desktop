@@ -32,10 +32,10 @@ import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.image.ImageManager;
 import org.esa.snap.core.util.ProductUtils;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.actions.help.HelpAction;
 import org.esa.snap.rcp.placemark.PlacemarkUtils;
 import org.esa.snap.rcp.statistics.XYPlotMarker;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.rcp.windows.ToolTopComponent;
 import org.esa.snap.ui.GridBagUtils;
 import org.esa.snap.ui.ModalDialog;
@@ -247,7 +247,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
                     "to the local values at the<br/>" +
                     "current pixel position, if you release the SHIFT key again, then the<br/>" +
                     "min/max are accumulated again.</html>";
-            SnapDialogs.showInformation("Spectrum Tip", message, SUPPRESS_MESSAGE_KEY);
+            Dialogs.showInformation("Spectrum Tip", message, SUPPRESS_MESSAGE_KEY);
             tipShown = true;
         }
     }

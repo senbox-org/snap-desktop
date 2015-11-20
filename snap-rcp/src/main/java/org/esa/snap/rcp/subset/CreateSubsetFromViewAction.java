@@ -16,7 +16,7 @@
 
 package org.esa.snap.rcp.subset;
 
-import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -57,8 +57,8 @@ public class CreateSubsetFromViewAction extends AbstractAction {
     public void actionPerformed(ActionEvent ignored) {
         Rectangle bounds = view.getVisibleImageBounds();
         if (bounds == null) {
-            SnapDialogs.showWarning(Bundle.CTL_CreateSubsetFromViewAction_Title(),
-                                    "The selected area is entirely outside the product's spatial boundaries.", null);
+            Dialogs.showWarning(Bundle.CTL_CreateSubsetFromViewAction_Title(),
+                                "The selected area is entirely outside the product's spatial boundaries.", null);
         }
         CreateSubsetAction.createSubset(view.getProduct(), bounds);
     }

@@ -18,9 +18,9 @@ package org.esa.snap.graphbuilder.rcp.dialogs.support;
 import org.esa.snap.engine_utilities.db.ProductDB;
 import org.esa.snap.engine_utilities.db.ProductEntry;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.util.Dialogs;
 
-import javax.swing.*;
+import javax.swing.SwingWorker;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumnModel;
 import java.io.File;
@@ -57,7 +57,7 @@ public abstract class BaseFileModel extends AbstractTableModel implements FileTa
             return ProductDB.instance().getProductEntry(file);
         } catch (Exception e) {
             if (SnapApp.getDefault() != null) {
-                SnapDialogs.showError("Error getting product entry: "+e.getMessage());
+                Dialogs.showError("Error getting product entry: " + e.getMessage());
             }
         }
         return null;

@@ -22,8 +22,8 @@ import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
 import org.esa.snap.core.dataio.ProductIO;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.actions.file.CloseAllProductsAction;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.product.ProductNodeView;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.openide.awt.ActionID;
@@ -64,16 +64,16 @@ public class OpenSessionAction extends AbstractAction {
         final SessionManager manager = SessionManager.getDefault();
 
         if (manager.getSessionFile() != null) {
-            SnapDialogs.Answer answer = SnapDialogs.requestDecision(TITLE,
+            Dialogs.Answer answer = Dialogs.requestDecision(TITLE,
                                                                     "This will close or reopen the current session.\n" +
                                                                             "Do you want to continue?", true, null);
-            if (answer != SnapDialogs.Answer.YES) {
+            if (answer != Dialogs.Answer.YES) {
                 return;
             }
         }
-        final File sessionFile = SnapDialogs.requestFileForOpen(TITLE, false,
-                                                                SessionManager.getDefault().getSessionFileFilter(),
-                                                                LAST_SESSION_DIR_KEY);
+        final File sessionFile = Dialogs.requestFileForOpen(TITLE, false,
+                                                            SessionManager.getDefault().getSessionFileFilter(),
+                                                            LAST_SESSION_DIR_KEY);
         if (sessionFile == null) {
             return;
         }
@@ -126,8 +126,8 @@ public class OpenSessionAction extends AbstractAction {
                 if (e.getCause() instanceof CanceledException) {
                     return;
                 }
-                SnapDialogs.showError(MessageFormat.format("An unexpected exception occurred!\nMessage: {0}",
-                                                           e.getCause().getMessage()));
+                Dialogs.showError(MessageFormat.format("An unexpected exception occurred!\nMessage: {0}",
+                                                       e.getCause().getMessage()));
                 e.printStackTrace();
                 return;
             }
@@ -141,7 +141,7 @@ public class OpenSessionAction extends AbstractAction {
                     sb.append(problem.getMessage());
                     sb.append("\n");
                 }
-                SnapDialogs.showWarning(sb.toString());
+                Dialogs.showWarning(sb.toString());
             }
 
             final Product[] products = restoredSession.getProducts();
@@ -200,7 +200,7 @@ public class OpenSessionAction extends AbstractAction {
             @Override
             public Product solveProductNotFound(int id, File file) throws CanceledException {
                 final File[] newFile = new File[1];
-                final SnapDialogs.Answer[] answer = new SnapDialogs.Answer[1];
+                final Dialogs.Answer[] answer = new Dialogs.Answer[1];
                 final String title = MessageFormat.format(TITLE + " - Resolving [{0}]", file);
                 final String msg = MessageFormat.format("Product [{0}] has been renamed or (re-)moved.\n" +
                                                                 "Its location was [{1}].\n" +
@@ -212,9 +212,9 @@ public class OpenSessionAction extends AbstractAction {
 
                         @Override
                         public void run() {
-                            answer[0] = SnapDialogs.requestDecision(title, msg, true, null);
-                            if (answer[0] == SnapDialogs.Answer.YES) {
-                                newFile[0] = SnapDialogs.requestFileForOpen(title, false, null, null);
+                            answer[0] = Dialogs.requestDecision(title, msg, true, null);
+                            if (answer[0] == Dialogs.Answer.YES) {
+                                newFile[0] = Dialogs.requestFileForOpen(title, false, null, null);
                             }
                         }
                     });
@@ -222,7 +222,7 @@ public class OpenSessionAction extends AbstractAction {
                     throw new CanceledException();
                 }
 
-                if (answer[0] == SnapDialogs.Answer.YES) {
+                if (answer[0] == Dialogs.Answer.YES) {
                     throw new CanceledException();
                 }
 

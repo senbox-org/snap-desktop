@@ -22,7 +22,7 @@ import org.esa.snap.core.datamodel.CrsGeoCoding;
 import org.esa.snap.core.datamodel.VectorDataNode;
 import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.UIUtils;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataUtilities;
@@ -119,12 +119,12 @@ public class ExportGeometryAction extends AbstractAction implements ContextAware
      * @return the selected file, <code>null</code> means "Cancel"
      */
     private static File promptForFile(String defaultFileName) {
-        return SnapDialogs.requestFileForSave(Bundle.CTL_ExportGeometryAction_DialogTitle(), false,
-                                              new SnapFileFilter(ESRI_SHAPEFILE, FILE_EXTENSION_SHAPEFILE, ESRI_SHAPEFILE),
-                                              FILE_EXTENSION_SHAPEFILE,
-                                              defaultFileName,
-                                              null,
-                                              "exportVectorDataNode.lastDir");
+        return Dialogs.requestFileForSave(Bundle.CTL_ExportGeometryAction_DialogTitle(), false,
+                                          new SnapFileFilter(ESRI_SHAPEFILE, FILE_EXTENSION_SHAPEFILE, ESRI_SHAPEFILE),
+                                          FILE_EXTENSION_SHAPEFILE,
+                                          defaultFileName,
+                                          null,
+                                          "exportVectorDataNode.lastDir");
     }
 
     /////////////////////////////////////////////////////////////////////////
@@ -139,8 +139,8 @@ public class ExportGeometryAction extends AbstractAction implements ContextAware
         if (featureListMap.size() > 1) {
             final String msg = "The selected geometry contains different types of shapes.\n" +
                     "Each type of shape will be exported as a separate shapefile.";
-            SnapDialogs.showInformation(Bundle.CTL_ExportGeometryAction_DialogTitle(),
-                                        msg, ExportGeometryAction.class.getName() + ".exportInfo");
+            Dialogs.showInformation(Bundle.CTL_ExportGeometryAction_DialogTitle(),
+                                    msg, ExportGeometryAction.class.getName() + ".exportInfo");
         }
 
         Set<Map.Entry<Class<?>, List<SimpleFeature>>> entries = featureListMap.entrySet();
@@ -261,8 +261,8 @@ public class ExportGeometryAction extends AbstractAction implements ContextAware
     private void exportVectorDataNode() {
         SnapApp snapApp = SnapApp.getDefault();
         if (vectorDataNode.getFeatureCollection().isEmpty()) {
-            SnapDialogs.showInformation(Bundle.CTL_ExportGeometryAction_DialogTitle(),
-                                        "The selected geometry is empty. Nothing to export.", null);
+            Dialogs.showInformation(Bundle.CTL_ExportGeometryAction_DialogTitle(),
+                                    "The selected geometry is empty. Nothing to export.", null);
             return;
         }
 
@@ -320,7 +320,7 @@ public class ExportGeometryAction extends AbstractAction implements ContextAware
             } finally {
                 if (exception != null) {
                     exception.printStackTrace();
-                    SnapDialogs.showError(Bundle.CTL_ExportGeometryAction_DialogTitle(),
+                    Dialogs.showError(Bundle.CTL_ExportGeometryAction_DialogTitle(),
                                           "Can not export geometry.\n" + exception.getMessage());
                 }
             }
