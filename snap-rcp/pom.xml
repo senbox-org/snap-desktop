@@ -16,7 +16,6 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <snap.nbmSpecVersion>2.0.0.9</snap.nbmSpecVersion>
     </properties>
 
     <build>
