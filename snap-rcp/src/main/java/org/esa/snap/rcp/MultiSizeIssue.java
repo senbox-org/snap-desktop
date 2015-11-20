@@ -18,6 +18,11 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 /**
+ * <i>This class is not part of the public API.</i>
+ * <p>
+ * Its purpose is to show a warning when users invoke a SNAP function
+ * that is not capable to work with multi-size products such as Sentinel-2 MSI L1C or Sentinel-3 SLSTR L1b products.
+ *
  * @author Marco Peters
  */
 public class MultiSizeIssue {
