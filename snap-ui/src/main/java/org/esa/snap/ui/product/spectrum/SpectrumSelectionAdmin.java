@@ -5,7 +5,7 @@ import com.jidesoft.swing.TristateCheckBox;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SpectrumSelectionAdmin {
+class SpectrumSelectionAdmin {
 
     private List<List<Boolean>> bandSelectionStates;
     private List<Integer> numbersOfSelectedBands;
