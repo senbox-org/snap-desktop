@@ -31,6 +31,7 @@ import org.esa.snap.core.datamodel.ProductNodeListenerAdapter;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.image.ImageManager;
 import org.esa.snap.core.util.ProductUtils;
+import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.help.HelpAction;
 import org.esa.snap.rcp.placemark.PlacemarkUtils;
@@ -505,7 +506,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
             final Product.AutoGrouping autoGrouping = currentProduct.getAutoGrouping();
             if (autoGrouping != null) {
                 final int selectedSpectrumIndex = autoGrouping.indexOf(raster.getName());
-                spectra = new DisplayableSpectrum[autoGrouping.size() + 1];
+                DisplayableSpectrum[] autoGroupingSpectra = new DisplayableSpectrum[autoGrouping.size()];
                 final Iterator<String[]> iterator = autoGrouping.iterator();
                 int i = 0;
                 while (iterator.hasNext()) {
@@ -522,30 +523,63 @@ public class SpectrumTopComponent extends ToolTopComponent {
                     DisplayableSpectrum spectrum = new DisplayableSpectrum(spectrumName, symbolIndex);
                     spectrum.setSelected(i == selectedSpectrumIndex);
                     spectrum.setLineStyle(SpectrumStrokeProvider.getStroke(i));
-                    spectra[i++] = spectrum;
+                    autoGroupingSpectra[i++] = spectrum;
                 }
-                int symbolIndex = SpectrumShapeProvider.getValidIndex(i, false);
-                DisplayableSpectrum defaultSpectrum =
-                        new DisplayableSpectrum(DisplayableSpectrum.REMAINING_BANDS_NAME, symbolIndex);
-                defaultSpectrum.setSelected(selectedSpectrumIndex == -1);
-                spectra[spectra.length - 1] = defaultSpectrum;
+                List<SpectrumBand> ungroupedBandsList = new ArrayList<>();
                 for (SpectrumBand availableSpectralBand : availableSpectralBands) {
                     final String bandName = availableSpectralBand.getName();
                     final int spectrumIndex = autoGrouping.indexOf(bandName);
                     if (spectrumIndex != -1) {
-                        spectra[spectrumIndex].addBand(availableSpectralBand);
+                        autoGroupingSpectra[spectrumIndex].addBand(availableSpectralBand);
                     } else {
-                        spectra[spectra.length - 1].addBand(availableSpectralBand);
+                        ungroupedBandsList.add(availableSpectralBand);
                     }
                 }
+                if (ungroupedBandsList.size() == 0) {
+                    spectra = autoGroupingSpectra;
+                } else {
+                    final DisplayableSpectrum[] spectraFromUngroupedBands =
+                            createSpectraFromUngroupedBands(ungroupedBandsList.toArray(new SpectrumBand[ungroupedBandsList.size()]),
+                                                            SpectrumShapeProvider.getValidIndex(i, false), i);
+                    spectra = new DisplayableSpectrum[autoGroupingSpectra.length + spectraFromUngroupedBands.length];
+                    System.arraycopy(autoGroupingSpectra, 0, spectra, 0, autoGroupingSpectra.length);
+                    System.arraycopy(spectraFromUngroupedBands, 0, spectra, autoGroupingSpectra.length, spectraFromUngroupedBands.length);
+                }
             } else {
-                spectra = new DisplayableSpectrum[1];
-                spectra[0] = new DisplayableSpectrum(
-                        DisplayableSpectrum.DEFAULT_SPECTRUM_NAME, availableSpectralBands, 1);
-                spectra[0].setLineStyle(SpectrumStrokeProvider.EMPTY_STROKE);
+                spectra = createSpectraFromUngroupedBands(availableSpectralBands, 1, 0);
             }
         }
         rasterToSpectraMap.put(raster, spectra);
+    }
+
+    //package local for testing
+    static DisplayableSpectrum[] createSpectraFromUngroupedBands(SpectrumBand[] ungroupedBands, int symbolIndex, int strokeIndex) {
+        List<String> knownUnits = new ArrayList<>();
+        List<DisplayableSpectrum> displayableSpectrumList = new ArrayList<>();
+        DisplayableSpectrum defaultSpectrum = new DisplayableSpectrum("tbd", -1);
+        for (SpectrumBand ungroupedBand : ungroupedBands) {
+            final String unit = ungroupedBand.getOriginalBand().getUnit();
+            if (StringUtils.isNullOrEmpty(unit)) {
+                defaultSpectrum.addBand(ungroupedBand);
+            } else if (knownUnits.contains(unit)) {
+                displayableSpectrumList.get(knownUnits.indexOf(unit)).addBand(ungroupedBand);
+            } else {
+                knownUnits.add(unit);
+                final DisplayableSpectrum spectrum = new DisplayableSpectrum("Bands measured in " + unit, symbolIndex++);
+                spectrum.setLineStyle(SpectrumStrokeProvider.getStroke(strokeIndex++));
+                spectrum.addBand(ungroupedBand);
+                displayableSpectrumList.add(spectrum);
+            }
+        }
+        if (strokeIndex == 0) {
+            defaultSpectrum.setName(DisplayableSpectrum.DEFAULT_SPECTRUM_NAME);
+        } else {
+            defaultSpectrum.setName(DisplayableSpectrum.REMAINING_BANDS_NAME);
+        }
+        defaultSpectrum.setSymbolIndex(symbolIndex);
+        defaultSpectrum.setLineStyle(SpectrumStrokeProvider.getStroke(strokeIndex));
+        displayableSpectrumList.add(defaultSpectrum);
+        return displayableSpectrumList.toArray(new DisplayableSpectrum[displayableSpectrumList.size()]);
     }
 
     private DisplayableSpectrum[] getAllSpectra() {
