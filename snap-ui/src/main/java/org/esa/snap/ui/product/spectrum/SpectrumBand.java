@@ -4,7 +4,7 @@ import com.bc.ceres.core.Assert;
 import org.esa.snap.core.datamodel.Band;
 
 /**
- * Created by E1001827 on 21.2.2014.
+ * @author Tonio Fincke
  */
 public class SpectrumBand {
 
