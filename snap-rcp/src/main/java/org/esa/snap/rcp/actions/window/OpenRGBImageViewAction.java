@@ -28,7 +28,7 @@ import org.esa.snap.core.jexp.ParseException;
 import org.esa.snap.core.util.ArrayUtils;
 import org.esa.snap.netbeans.docwin.DocumentWindowManager;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
 import org.esa.snap.ui.RGBImageProfilePane;
 import org.esa.snap.ui.UIUtils;
@@ -105,7 +105,7 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
         final int defaultProductIndex = ArrayUtils.getElementIndex(product, openedProducts);
         if (!BandArithmetic.areRastersEqualInSize(openedProducts,
                                                   defaultProductIndex, rgbaExpressions)) {
-            SnapDialogs.showInformation(title, "Referenced rasters must all be the same size", null);
+            Dialogs.showInformation(title, "Referenced rasters must all be the same size", null);
             return;
         }
         if (profilePane.getStoreProfileInProduct()) {
@@ -169,7 +169,7 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
                     ProductSceneView productSceneView = new ProductSceneView(get());
                     openDocumentWindow(productSceneView);
                 } catch (OutOfMemoryError e) {
-                    SnapDialogs.showOutOfMemoryError(errorMsg);
+                    Dialogs.showOutOfMemoryError(errorMsg);
                     return;
                 } catch (Exception e) {
                     SnapApp.getDefault().handleError(errorMsg, e);

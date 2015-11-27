@@ -27,7 +27,7 @@ import org.esa.snap.productlibrary.rcp.toolviews.model.ProductLibraryConfig;
 import org.esa.snap.productlibrary.rcp.toolviews.model.SortingDecorator;
 import org.esa.snap.productlibrary.rcp.toolviews.timeline.TimelinePanel;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.rcp.windows.ToolTopComponent;
 import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.tool.ToolButtonFactory;
@@ -401,10 +401,10 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         final Object selectedItem = repositoryListCombo.getSelectedItem();
         final int index = repositoryListCombo.getSelectedIndex();
         if (index == 0) {
-            final SnapDialogs.Answer status = SnapDialogs.requestDecision("Remove folders",
+            final Dialogs.Answer status = Dialogs.requestDecision("Remove folders",
                                                               "This will remove all folders and products from the database.\n" +
                                                                       "Are you sure you wish to continue?", true, null);
-            if (status == SnapDialogs.Answer.YES) {
+            if (status == Dialogs.Answer.YES) {
 
                 while (repositoryListCombo.getItemCount() > 1) {
                     final File baseDir = (File) repositoryListCombo.getItemAt(1);
@@ -416,11 +416,11 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
             }
         } else if (selectedItem instanceof File) {
             final File baseDir = (File) selectedItem;
-            final SnapDialogs.Answer status = SnapDialogs.requestDecision("Remove products",
+            final Dialogs.Answer status = Dialogs.requestDecision("Remove products",
                                                            "This will remove all products within " +
                                                                    baseDir.getAbsolutePath() + " from the database\n" +
                                                                    "Are you sure you wish to continue?", true, null);
-            if (status == SnapDialogs.Answer.YES) {
+            if (status == Dialogs.Answer.YES) {
                 libConfig.removeBaseDir(baseDir);
                 repositoryListCombo.removeItemAt(index);
                 removeProducts(baseDir);
@@ -506,16 +506,16 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
             ++cnt;
         }
         final String question = "\nWould you like to save the list to a text file?";
-        if (SnapDialogs.requestDecision("Product Errors",
+        if (Dialogs.requestDecision("Product Errors",
                                          "The follow files have errors:\n" + str.toString() + question,
-                                         false, null) == SnapDialogs.Answer.YES) {
+                                    false, null) == Dialogs.Answer.YES) {
 
             File file = FileFolderUtils.GetSaveFilePath("Save as...", "Text", "txt",
                                                         "ProductErrorList", "Products with errors");
             try {
                 writeErrors(errorList, file);
             } catch (Exception e) {
-                SnapDialogs.showError("Unable to save to " + file.getAbsolutePath());
+                Dialogs.showError("Unable to save to " + file.getAbsolutePath());
                 file = FileFolderUtils.GetSaveFilePath("Save as...", "Text", "txt",
                         "ProductErrorList", "Products with errors");
                 try {

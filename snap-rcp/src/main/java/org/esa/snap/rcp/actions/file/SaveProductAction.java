@@ -10,7 +10,7 @@ import org.esa.snap.core.dataio.dimap.DimapProductReader;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.util.Dialogs;
 import org.netbeans.api.progress.ProgressUtils;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -70,13 +70,13 @@ public final class SaveProductAction extends AbstractAction implements ContextAw
         Assert.notNull(product.getFileLocation());
         final File file = product.getFileLocation();
         if (file.isFile() && !file.canWrite()) {
-            SnapDialogs.showWarning(Bundle.CTL_SaveProductActionName(),
-                                    MessageFormat.format("The product\n" +
+            Dialogs.showWarning(Bundle.CTL_SaveProductActionName(),
+                                MessageFormat.format("The product\n" +
                                                          "''{0}''\n" +
                                                          "exists and cannot be overwritten, because it is read only.\n" +
                                                          "Please choose another file or remove the write protection.",
                                                          file.getPath()),
-                                    null);
+                                null);
             return false;
         }
 

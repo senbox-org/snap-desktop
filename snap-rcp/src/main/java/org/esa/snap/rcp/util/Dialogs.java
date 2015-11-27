@@ -1,8 +1,9 @@
-package org.esa.snap.rcp;
+package org.esa.snap.rcp.util;
 
 import com.bc.ceres.core.Assert;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.io.FileUtils;
+import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.ui.SnapFileChooser;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
@@ -35,7 +36,7 @@ import java.util.prefs.Preferences;
         "LBL_DoNotShowThisMessage=Don't show this message anymore.",
         "LBL_QuestionRemember=Remember my decision and don't ask again."
 })
-public class SnapDialogs {
+public class Dialogs {
 
     public static final String PREF_KEY_SUFFIX_DONTSHOW = ".dontShow";
 
@@ -50,7 +51,7 @@ public class SnapDialogs {
     private static final String PREF_VALUE_NO = "no";
     private static final String PREF_VALUE_TRUE = "true";
 
-    private SnapDialogs() {
+    private Dialogs() {
     }
 
     /**

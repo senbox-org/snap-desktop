@@ -26,10 +26,10 @@ import org.esa.snap.netbeans.docwin.DocumentWindow;
 import org.esa.snap.netbeans.docwin.DocumentWindowManager;
 import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.actions.window.OpenImageViewAction;
 import org.esa.snap.rcp.actions.window.OpenMetadataViewAction;
 import org.esa.snap.rcp.actions.window.OpenPlacemarkViewAction;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.rcp.util.ProgressHandleMonitor;
 import org.netbeans.api.progress.ProgressUtils;
 import org.opengis.feature.type.GeometryDescriptor;
@@ -733,7 +733,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
                     try {
                         virtualBand.readRasterDataFully(pm);
                     } catch (IOException e) {
-                        SnapDialogs.showError(e.getMessage());
+                        Dialogs.showError(e.getMessage());
                     }
                 };
                 ProgressUtils.runOffEventThreadWithProgressDialog(operation, title,
@@ -834,7 +834,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
                     (!BandArithmetic.areRastersEqualInSize(product, newValue) ||
                      refRasters[0].getRasterHeight() != raster.getRasterHeight() ||
                      refRasters[0].getRasterWidth() != raster.getRasterWidth())) {
-                    SnapDialogs.showInformation("Referenced rasters must all be the same size", null);
+                    Dialogs.showInformation("Referenced rasters must all be the same size", null);
                 } else {
                     String oldValue = raster.getValidPixelExpression();
                     performUndoableProductNodeEdit("Edit Valid-Pixel Expression",
@@ -850,7 +850,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
                     );
                 }
             } catch (ParseException e) {
-                SnapDialogs.showError("Expression is invalid: " + e.getMessage());
+                Dialogs.showError("Expression is invalid: " + e.getMessage());
             }
         }
     }

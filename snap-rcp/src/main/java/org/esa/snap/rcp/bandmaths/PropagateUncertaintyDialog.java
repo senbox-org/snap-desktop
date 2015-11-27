@@ -16,9 +16,9 @@ import org.esa.snap.core.dataop.barithm.StandardUncertaintyGenerator;
 import org.esa.snap.core.jexp.ParseException;
 import org.esa.snap.core.util.ProductUtils;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.actions.window.OpenImageViewAction;
 import org.esa.snap.rcp.nodes.UndoableProductNodeInsertion;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.GridBagUtils;
 import org.esa.snap.ui.ModalDialog;
 import org.openide.awt.UndoRedo;
@@ -114,17 +114,17 @@ public class PropagateUncertaintyDialog extends ModalDialog {
 
         String uncertaintyExpression = targetExprArea.getText();
         if (uncertaintyExpression == null || uncertaintyExpression.trim().isEmpty()) {
-            SnapDialogs.showError("Uncertainty expression is empty.");
+            Dialogs.showError("Uncertainty expression is empty.");
             return false;
         }
 
         if (uncertaintyExpression.startsWith(ERROR_PREFIX)) {
-            SnapDialogs.showError(uncertaintyExpression.substring(ERROR_PREFIX.length()));
+            Dialogs.showError(uncertaintyExpression.substring(ERROR_PREFIX.length()));
             return false;
         }
 
         if (sourceBand.getProduct().containsBand(getBandName())) {
-            SnapDialogs.showError("A raster with name '" + getBandName() + "' already exists.");
+            Dialogs.showError("A raster with name '" + getBandName() + "' already exists.");
             return false;
         }
 

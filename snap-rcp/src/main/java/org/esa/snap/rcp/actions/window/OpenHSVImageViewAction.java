@@ -31,7 +31,7 @@ import org.esa.snap.core.jexp.ParseException;
 import org.esa.snap.core.util.ArrayUtils;
 import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.HSVImageProfilePane;
 import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.product.ProductSceneImage;
@@ -113,7 +113,7 @@ public class OpenHSVImageViewAction extends AbstractAction implements HelpCtx.Pr
         final int defaultProductIndex = ArrayUtils.getElementIndex(product, openedProducts);
         if (!BandArithmetic.areRastersEqualInSize(openedProducts,
                                                   defaultProductIndex, hsvExpressions)) {
-            SnapDialogs.showInformation(title, "Referenced rasters must all be the same size", null);
+            Dialogs.showInformation(title, "Referenced rasters must all be the same size", null);
             return;
         }
         nomalizeHSVExpressions(product, hsvExpressions);
@@ -148,7 +148,7 @@ public class OpenHSVImageViewAction extends AbstractAction implements HelpCtx.Pr
                     final ProductSceneView productSceneView = new ProductSceneView(get());
                     OpenRGBImageViewAction.openDocumentWindow(productSceneView);
                 } catch (OutOfMemoryError e) {
-                    SnapDialogs.showOutOfMemoryError(errorMsg);
+                    Dialogs.showOutOfMemoryError(errorMsg);
                     return;
                 } catch (Exception e) {
                     SnapApp.getDefault().handleError(errorMsg, e);

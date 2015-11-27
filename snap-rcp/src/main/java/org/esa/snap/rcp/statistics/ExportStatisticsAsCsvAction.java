@@ -21,7 +21,7 @@ import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.statistics.output.CsvStatisticsWriter;
 import org.esa.snap.statistics.output.MetadataWriter;
 import org.esa.snap.statistics.output.StatisticsOutputContext;
@@ -129,8 +129,8 @@ class ExportStatisticsAsCsvAction extends AbstractAction {
             csvStatisticsWriter.finaliseOutput();
             metadataWriter.finaliseOutput();
         } catch (IOException exception) {
-            SnapDialogs.showMessage("Statistics export", "Failed to export statistics.\nAn error occurred:" +
-                    exception.getMessage(), JOptionPane.ERROR_MESSAGE, null);
+            Dialogs.showMessage("Statistics export", "Failed to export statistics.\nAn error occurred:" +
+                                                     exception.getMessage(), JOptionPane.ERROR_MESSAGE, null);
         } finally {
             if (metadataOutputStream != null) {
                 metadataOutputStream.close();
@@ -144,8 +144,8 @@ class ExportStatisticsAsCsvAction extends AbstractAction {
 //                                              "'.",
 //                                      "Statistics export",
 //                                      JOptionPane.INFORMATION_MESSAGE);
-        SnapDialogs.showMessage("Statistics export", "The statistics have successfully been exported to '" +
-                outputAsciiFile + "'.", JOptionPane.INFORMATION_MESSAGE, null);
+        Dialogs.showMessage("Statistics export", "The statistics have successfully been exported to '" +
+                                                 outputAsciiFile + "'.", JOptionPane.INFORMATION_MESSAGE, null);
     }
 
     public void setSelectedMasks(Mask[] selectedMasks) {

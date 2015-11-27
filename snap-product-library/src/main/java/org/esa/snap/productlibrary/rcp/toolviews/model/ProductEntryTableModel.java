@@ -15,12 +15,12 @@
  */
 package org.esa.snap.productlibrary.rcp.toolviews.model;
 
+import org.esa.snap.engine_utilities.db.ProductEntry;
 import org.esa.snap.productlibrary.rcp.toolviews.model.dataprovider.DataProvider;
 import org.esa.snap.productlibrary.rcp.toolviews.model.dataprovider.IDProvider;
 import org.esa.snap.productlibrary.rcp.toolviews.model.dataprovider.PropertiesProvider;
 import org.esa.snap.productlibrary.rcp.toolviews.model.dataprovider.QuicklookProvider;
-import org.esa.snap.engine_utilities.db.ProductEntry;
-import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.util.Dialogs;
 
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableColumnModel;
@@ -43,7 +43,7 @@ public class ProductEntryTableModel extends AbstractTableModel {
             dataProviders.add(new QuicklookProvider());
         } catch (Exception e) {
             e.printStackTrace();
-            SnapDialogs.showError(e.getMessage());
+            Dialogs.showError(e.getMessage());
         }
         for (final DataProvider provider : dataProviders) {
             final TableColumn tableColumn = provider.getTableColumn();

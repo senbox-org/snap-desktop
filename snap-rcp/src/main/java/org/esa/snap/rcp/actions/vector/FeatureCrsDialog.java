@@ -4,7 +4,7 @@ import com.bc.ceres.swing.TableLayout;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.util.ProductUtils;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.ui.crs.CrsSelectionPanel;
 import org.esa.snap.ui.crs.CustomCrsForm;
@@ -62,7 +62,7 @@ public class FeatureCrsDialog extends ModalDialog {
         try {
             crs = crsSelectionPanel.getCrs(ProductUtils.getCenterGeoPos(product));
         } catch (FactoryException e) {
-            SnapDialogs.showError(title,
+            Dialogs.showError(title,
                                   "Cannot create coordinate reference system.\n" + e.getMessage());
         }
         return crs;

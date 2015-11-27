@@ -10,7 +10,7 @@
 
     <groupId>org.esa.snap.netbeans</groupId>
     <artifactId>doc-windows</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
     <packaging>nbm</packaging>
     <description>Provides "document windows" for NetBeans Platform applications. Document windows are TopComponents which
     retain a selected state even after deactivation and can be undocked/floated into a special workspace TopComponent. 
@@ -158,7 +158,7 @@
         <dependency>
             <groupId>org.esa.snap.netbeans</groupId>
             <artifactId>tiled-editors</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0</version>
         </dependency>
     </dependencies>
 </project>

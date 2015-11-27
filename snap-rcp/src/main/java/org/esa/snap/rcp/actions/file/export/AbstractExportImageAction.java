@@ -28,7 +28,7 @@ import org.esa.snap.core.util.geotiff.GeoTIFFMetadata;
 import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.runtime.Config;
 import org.esa.snap.ui.SnapFileChooser;
 import org.esa.snap.ui.product.ProductSceneView;
@@ -131,10 +131,10 @@ public abstract class AbstractExportImageAction extends AbstractAction implement
         final SnapFileFilter fileFilter = fileChooser.getSnapFileFilter();
         String imageFormat = fileFilter != null ? fileFilter.getFormatName() : "TIFF";
         if (imageFormat.equals(GEOTIFF_FORMAT_DESCRIPTION[0]) && !entireImageSelected) {
-            SnapDialogs.Answer status = SnapDialogs.requestDecision(dialogTitle,
+            Dialogs.Answer status = Dialogs.requestDecision(dialogTitle,
                                                                     "GeoTIFF is not applicable to image clippings. " +
                                                                             "Shall TIFF format be used instead?", true, null);
-            if (status == SnapDialogs.Answer.YES) {
+            if (status == Dialogs.Answer.YES) {
                 imageFormat = "TIFF";
             } else {
                 return;
@@ -142,7 +142,7 @@ public abstract class AbstractExportImageAction extends AbstractAction implement
         }
 
 
-        if (Boolean.TRUE.equals(SnapDialogs.requestOverwriteDecision(dialogTitle, file))) {
+        if (Boolean.TRUE.equals(Dialogs.requestOverwriteDecision(dialogTitle, file))) {
             exportImage(imageFormat, view, entireImageSelected, file);
         }
     }
@@ -222,7 +222,7 @@ public abstract class AbstractExportImageAction extends AbstractAction implement
                     }
                 }
             } catch (OutOfMemoryError e) {
-                SnapDialogs.showOutOfMemoryError("The image could not be exported.");
+                Dialogs.showOutOfMemoryError("The image could not be exported.");
             } catch (Throwable e) {
                 snapApp.handleError("The image exportation is not possible\n Please check the documentation.", e); //handleUnknownException(e);
             } finally {

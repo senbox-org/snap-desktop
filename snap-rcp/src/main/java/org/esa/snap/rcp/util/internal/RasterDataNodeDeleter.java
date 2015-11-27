@@ -27,7 +27,7 @@ import org.esa.snap.core.datamodel.TiePointGrid;
 import org.esa.snap.core.datamodel.VectorDataNode;
 import org.esa.snap.core.datamodel.VirtualBand;
 import org.esa.snap.netbeans.docwin.WindowUtilities;
-import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
 
 import java.text.MessageFormat;
@@ -72,8 +72,8 @@ public class RasterDataNodeDeleter {
         } else {
             message = MessageFormat.format("Do you really want to delete the geometry ''{0}''?\nThis action cannot be undone.\n\n", vectorDataNode.getName());
         }
-        final SnapDialogs.Answer answer = SnapDialogs.requestDecision("Delete Vector Data", message, true, null);
-        if (answer == SnapDialogs.Answer.YES) {
+        final Dialogs.Answer answer = Dialogs.requestDecision("Delete Vector Data", message, true, null);
+        if (answer == Dialogs.Answer.YES) {
             product.getVectorDataGroup().remove(vectorDataNode);
         }
     }
@@ -115,8 +115,8 @@ public class RasterDataNodeDeleter {
     }
 
     private static void deleteRasterDataNodesImpl(RasterDataNode[] rasters, String message) {
-        final SnapDialogs.Answer answer = SnapDialogs.requestDecision("Delete Raster Data", message, true, null);
-        if (answer == SnapDialogs.Answer.YES) {
+        final Dialogs.Answer answer = Dialogs.requestDecision("Delete Raster Data", message, true, null);
+        if (answer == Dialogs.Answer.YES) {
             for (RasterDataNode raster : rasters) {
                 WindowUtilities.getOpened(ProductSceneViewTopComponent.class).
                         filter(topComponent -> raster == topComponent.getView().getRaster()).

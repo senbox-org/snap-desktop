@@ -28,7 +28,7 @@ import org.esa.snap.core.util.Debug;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.ui.SnapFileChooser;
 import org.esa.snap.ui.product.ProductSceneView;
@@ -86,9 +86,9 @@ public class VectorDataNodeImporter implements HelpCtx.Provider {
 
         final GeoCoding geoCoding = product.getSceneGeoCoding();
         if (geoCoding == null || !geoCoding.canGetPixelPos()) {
-            SnapDialogs.showError(dialogTitle, "Failed to import vector data.\n"
-                    +
-                    "Current geo-coding cannot convert from geographic to pixel coordinates."); /* I18N */
+            Dialogs.showError(dialogTitle, "Failed to import vector data.\n"
+                                           +
+                                           "Current geo-coding cannot convert from geographic to pixel coordinates."); /* I18N */
             return;
         }
 
@@ -99,15 +99,15 @@ public class VectorDataNodeImporter implements HelpCtx.Provider {
                 return;
             }
         } catch (Exception e) {
-            SnapDialogs.showError(dialogTitle, "Failed to import vector data.\n" + "An I/O Error occurred:\n"
-                    + e.getMessage()); /* I18N */
+            Dialogs.showError(dialogTitle, "Failed to import vector data.\n" + "An I/O Error occurred:\n"
+                                           + e.getMessage()); /* I18N */
             Debug.trace(e);
             return;
         }
 
         if (vectorDataNode.getFeatureCollection().isEmpty()) {
-            SnapDialogs.showError(dialogTitle, "The vector data was loaded successfully,\n"
-                    + "but no part is located within the scene boundaries."); /* I18N */
+            Dialogs.showError(dialogTitle, "The vector data was loaded successfully,\n"
+                                           + "but no part is located within the scene boundaries."); /* I18N */
             return;
         }
 

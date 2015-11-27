@@ -24,7 +24,7 @@ import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.runtime.Config;
 import org.esa.snap.ui.SnapFileChooser;
 import org.openide.awt.ActionID;
@@ -135,7 +135,7 @@ public class ExportEnviGcpFileAction extends AbstractAction implements LookupLis
         if (geoCoding == null) {
             return;
         }
-        final Boolean decision = SnapDialogs.requestOverwriteDecision(Bundle.CTL_ExportEnviGcpFileAction_DialogTitle(), absoluteFile);
+        final Boolean decision = Dialogs.requestOverwriteDecision(Bundle.CTL_ExportEnviGcpFileAction_DialogTitle(), absoluteFile);
         if (decision == null || !decision) {
             return;
         }
@@ -170,7 +170,7 @@ public class ExportEnviGcpFileAction extends AbstractAction implements LookupLis
                 }
             }
         } catch (IOException e) {
-            SnapDialogs.showInformation(Bundle.CTL_ExportEnviGcpFileAction_DialogTitle(),
+            Dialogs.showInformation(Bundle.CTL_ExportEnviGcpFileAction_DialogTitle(),
                                         "An I/O error occurred:\n" + e.getMessage());
         }
     }

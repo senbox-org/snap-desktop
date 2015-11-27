@@ -23,8 +23,8 @@ import org.esa.snap.core.datamodel.MetadataElement;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.metadata.MetadataViewTopComponent;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.SelectExportMethodDialog;
 import org.esa.snap.ui.UIUtils;
 import org.openide.awt.ActionID;
@@ -106,12 +106,12 @@ public class ExportMetadataAction extends AbstractAction implements HelpCtx.Prov
         // or if the user presses "Cancel"
         File file = null;
         while (file == null) {
-            file = SnapDialogs.requestFileForSave(DLG_TITLE,
-                                                  false,
-                                                  null,
-                                                  ".txt",
-                                                  defaultFileName, null,
-                                                  "exportMetadata.lastDir");
+            file = Dialogs.requestFileForSave(DLG_TITLE,
+                                              false,
+                                              null,
+                                              ".txt",
+                                              defaultFileName, null,
+                                              "exportMetadata.lastDir");
             if (file == null) {
                 return null; // Cancel
             } else if (file.exists()) {
@@ -189,7 +189,7 @@ public class ExportMetadataAction extends AbstractAction implements HelpCtx.Prov
             try {
                 fileWriter = new FileWriter(file);
             } catch (IOException e) {
-                SnapDialogs.showError(DLG_TITLE,
+                Dialogs.showError(DLG_TITLE,
                                       ERR_MSG_BASE + "Failed to create file '" + file + "':\n" + e.getMessage());
                 return; // Error
             }
@@ -246,7 +246,7 @@ public class ExportMetadataAction extends AbstractAction implements HelpCtx.Prov
                     exception = e;
                 }
                 if (exception != null) {
-                    SnapDialogs.showError(DLG_TITLE, ERR_MSG_BASE + exception.getMessage());
+                    Dialogs.showError(DLG_TITLE, ERR_MSG_BASE + exception.getMessage());
                 }
             }
         };

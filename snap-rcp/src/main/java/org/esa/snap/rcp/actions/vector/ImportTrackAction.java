@@ -32,8 +32,8 @@ import org.esa.snap.core.util.FeatureUtils;
 import org.esa.snap.core.util.io.CsvReader;
 import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.actions.AbstractSnapAction;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.geotools.data.collection.ListFeatureCollection;
 import org.geotools.feature.FeatureCollection;
@@ -131,7 +131,7 @@ public class ImportTrackAction extends AbstractSnapAction implements ContextAwar
     @Override
     public void actionPerformed(ActionEvent ae) {
         final File file =
-                SnapDialogs.requestFileForOpen(Bundle.CTL_ImportSeadasTrackActionName(), false, null, "importTrack.lastDir");
+                Dialogs.requestFileForOpen(Bundle.CTL_ImportSeadasTrackActionName(), false, null, "importTrack.lastDir");
         if (file == null) {
             return;
         }
@@ -140,12 +140,12 @@ public class ImportTrackAction extends AbstractSnapAction implements ContextAwar
         try {
             featureCollection = readTrack(file, product.getSceneGeoCoding());
         } catch (IOException e) {
-            SnapDialogs.showError(Bundle.CTL_ImportSeadasTrackActionName(), "Failed to load track file:\n" + e.getMessage());
+            Dialogs.showError(Bundle.CTL_ImportSeadasTrackActionName(), "Failed to load track file:\n" + e.getMessage());
             return;
         }
 
         if (featureCollection.isEmpty()) {
-            SnapDialogs.showError(Bundle.CTL_ImportSeadasTrackActionName(), "No records found.");
+            Dialogs.showError(Bundle.CTL_ImportSeadasTrackActionName(), "No records found.");
             return;
         }
 

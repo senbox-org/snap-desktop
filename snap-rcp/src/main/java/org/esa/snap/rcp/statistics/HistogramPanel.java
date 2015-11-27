@@ -34,7 +34,7 @@ import org.esa.snap.core.datamodel.Stx;
 import org.esa.snap.core.datamodel.StxFactory;
 import org.esa.snap.core.dataop.barithm.BandArithmetic;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.GridBagUtils;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -612,22 +612,22 @@ class HistogramPanel extends ChartPagePanel {
                     }
                     setStx(stx);
                 } else {
-                    SnapDialogs.showError("Either the selected ROI is empty or no pixels have been found within the minimum and maximum values specified.\n" +
-                            "No valid histogram could be computed.\n");
+                    Dialogs.showError("Either the selected ROI is empty or no pixels have been found within the minimum and maximum values specified.\n" +
+                                      "No valid histogram could be computed.\n");
                     handleStxChange();
                 }
             } catch (ExecutionException e) {
                 if (histogramPlotConfig.useRoiMask) {
-                    SnapDialogs.showError("An internal error occurred.\n" +
-                                                  "No valid histogram could be computed.\n" +
-                                                  "Possible reason: The selected ROI is empty.");
+                    Dialogs.showError("An internal error occurred.\n" +
+                                      "No valid histogram could be computed.\n" +
+                                      "Possible reason: The selected ROI is empty.");
                 } else {
-                    SnapDialogs.showError("An internal error occurred.\n" +
-                                                  "No valid histogram could be computed. Reason:\n" + e.getMessage());
+                    Dialogs.showError("An internal error occurred.\n" +
+                                      "No valid histogram could be computed. Reason:\n" + e.getMessage());
                 }
                 handleStxChange();
             } catch (InterruptedException e) {
-                SnapDialogs.showError("The histogram computation has been interrupted.");
+                Dialogs.showError("The histogram computation has been interrupted.");
                 handleStxChange();
             }
         }

@@ -16,6 +16,7 @@
 package org.esa.snap.productlibrary.rcp.toolviews;
 
 import org.esa.snap.engine_utilities.db.ProductEntry;
+import org.esa.snap.engine_utilities.util.ResourceUtils;
 import org.esa.snap.graphbuilder.rcp.dialogs.BatchGraphDialog;
 import org.esa.snap.graphbuilder.rcp.utils.ClipboardUtils;
 import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
@@ -25,10 +26,9 @@ import org.esa.snap.productlibrary.rcp.toolviews.extensions.ProductLibraryAction
 import org.esa.snap.productlibrary.rcp.toolviews.model.SortingDecorator;
 import org.esa.snap.productlibrary.rcp.utils.ProductOpener;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.SnapFileChooser;
 import org.esa.snap.ui.UIUtils;
-import org.esa.snap.engine_utilities.util.ResourceUtils;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -323,10 +323,10 @@ public class ProductLibraryActions {
         deleteItem = new JMenuItem("Delete Selected Files");
         deleteItem.addActionListener(new ActionListener() {
             public void actionPerformed(final ActionEvent e) {
-                final SnapDialogs.Answer status = SnapDialogs.requestDecision("Deleting selected files",
-                                                                              "Are you sure you want to delete these products",
-                                                                              true, null);
-                if (status == SnapDialogs.Answer.YES)
+                final Dialogs.Answer status = Dialogs.requestDecision("Deleting selected files",
+                                                                      "Are you sure you want to delete these products",
+                                                                      true, null);
+                if (status == Dialogs.Answer.YES)
                     performFileAction(ProductFileHandler.TYPE.DELETE);
             }
         });

@@ -30,8 +30,8 @@ import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterOp;
 import org.esa.snap.core.gpf.ui.OperatorMenu;
 import org.esa.snap.core.gpf.ui.OperatorParameterSupport;
 import org.esa.snap.core.gpf.ui.SingleTargetProductDialog;
-import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.actions.file.SaveProductAsAction;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.tooladapter.actions.EscapeAction;
 import org.esa.snap.ui.tooladapter.preferences.ToolAdapterOptionsController;
@@ -42,7 +42,7 @@ import org.openide.util.Cancellable;
 import org.openide.util.NbBundle;
 import org.openide.util.NbPreferences;
 
-import javax.swing.*;
+import javax.swing.SwingUtilities;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -50,7 +50,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -138,15 +142,15 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
         } catch (IOException ignored) {
         }
         if (Arrays.stream(sourceProducts).anyMatch(p -> p == null)) {
-            SnapDialogs.Answer decision = SnapDialogs.requestDecision("No Product Selected", Bundle.NoSourceProductWarning_Text(), false,
-                    ToolAdapterOptionsController.PREFERENCE_KEY_SHOW_EMPTY_PRODUCT_WARNING);
-            if (decision.equals(SnapDialogs.Answer.NO)) {
+            Dialogs.Answer decision = Dialogs.requestDecision("No Product Selected", Bundle.NoSourceProductWarning_Text(), false,
+                                                              ToolAdapterOptionsController.PREFERENCE_KEY_SHOW_EMPTY_PRODUCT_WARNING);
+            if (decision.equals(Dialogs.Answer.NO)) {
                 return;
             }
         }
         if (descriptors.size() == 1 && form.getPropertyValue(ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE) == null &&
                 templateContents.contains("$" + ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE)) {
-                SnapDialogs.showWarning(Bundle.RequiredTargetProductMissingWarning_Text());
+                Dialogs.showWarning(Bundle.RequiredTargetProductMissingWarning_Text());
         } else {
             if (!canApply()) {
                 displayWarnings();
@@ -293,7 +297,7 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
         for (String msg : warnings) {
             warnMessage.append("\t").append(msg).append("\n");
         }
-        SnapDialogs.showWarning(warnMessage.toString());
+        Dialogs.showWarning(warnMessage.toString());
     }
 
     /**
@@ -315,10 +319,10 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
         }
         if (throwable != null) {
             if (result != null) {
-                final SnapDialogs.Answer answer = SnapDialogs.requestDecision(Bundle.ExecutionFailed_Text(),
-                        String.format(Bundle.ExecutionFailed_Message(), throwable.getMessage()),
-                        false, null);
-                if (answer == SnapDialogs.Answer.YES) {
+                final Dialogs.Answer answer = Dialogs.requestDecision(Bundle.ExecutionFailed_Text(),
+                                                                      String.format(Bundle.ExecutionFailed_Message(), throwable.getMessage()),
+                                                                      false, null);
+                if (answer == Dialogs.Answer.YES) {
                     operatorCompleted(result);
                 }
             } else
@@ -341,7 +345,7 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
                 for (int i = messageCount; i < size; i++) {
                     builder.append(String.format("%s%n", shrinkText(output.get(i))));
                 }
-                SnapDialogs.showInformation(Bundle.OutputTitle_Text(), builder.toString(), null);
+                Dialogs.showInformation(Bundle.OutputTitle_Text(), builder.toString(), null);
             } else {
                 builder.append(Bundle.NoOutput_Text());
             }
@@ -354,7 +358,7 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
                 for (int i = 0; i < messageCount; i++) {
                     builder.append(String.format("[%s] %s%n", i + 1, shrinkText(errors.get(i))));
                 }
-                SnapDialogs.showWarning(builder.toString());
+                Dialogs.showWarning(builder.toString());
             }
         }
     }
@@ -388,7 +392,7 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
     }
 
     private boolean displayExecutionConsole() {
-        return Boolean.parseBoolean(NbPreferences.forModule(SnapDialogs.class).get(ToolAdapterOptionsController.PREFERENCE_KEY_SHOW_EXECUTION_OUTPUT, "false"));
+        return Boolean.parseBoolean(NbPreferences.forModule(Dialogs.class).get(ToolAdapterOptionsController.PREFERENCE_KEY_SHOW_EXECUTION_OUTPUT, "false"));
     }
 
     /**

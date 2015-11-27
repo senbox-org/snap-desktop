@@ -23,8 +23,8 @@ import com.vividsolutions.jts.io.WKTReader;
 import org.esa.snap.core.datamodel.PlainFeatureFactory;
 import org.esa.snap.core.util.FeatureUtils;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.actions.interactors.InsertFigureInteractorInterceptor;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.esa.snap.ui.product.VectorDataLayer;
@@ -159,8 +159,8 @@ public class InsertWktGeometryAction extends AbstractAction implements ContextAw
                     null,
                     ProgressMonitor.NULL);
             if (productFeatures.isEmpty()) {
-                SnapDialogs.showError(Bundle.CTL_InsertWktGeometryAction_MenuText(),
-                                      "The geometry is not contained in the product.");
+                Dialogs.showError(Bundle.CTL_InsertWktGeometryAction_MenuText(),
+                                  "The geometry is not contained in the product.");
             } else {
                 vectorDataLayer.getVectorDataNode().getFeatureCollection().addAll(productFeatures);
             }

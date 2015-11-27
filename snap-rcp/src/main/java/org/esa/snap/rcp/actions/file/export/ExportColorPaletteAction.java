@@ -24,7 +24,7 @@ import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -118,7 +118,7 @@ public class ExportColorPaletteAction extends AbstractAction implements LookupLi
             try {
                 writeColorPalette(raster, file);
             } catch (IOException ie) {
-                SnapDialogs.showError(Bundle.CTL_ExportColorPaletteAction_DialogTitle(),
+                Dialogs.showError(Bundle.CTL_ExportColorPaletteAction_DialogTitle(),
                                       "Failed to export colour palette:\n" + ie.getMessage());
             }
         }

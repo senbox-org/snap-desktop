@@ -31,7 +31,7 @@ import org.esa.snap.core.datamodel.Stx;
 import org.esa.snap.core.datamodel.StxFactory;
 import org.esa.snap.core.datamodel.VectorDataNode;
 import org.esa.snap.core.util.StringUtils;
-import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.statistics.output.Util;
 import org.esa.snap.ui.GridBagUtils;
 import org.esa.snap.ui.UIUtils;
@@ -347,10 +347,10 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
                     exportButton.setEnabled(true);
                 } catch (Exception e) {
                     e.printStackTrace();
-                    SnapDialogs.showMessage("<html>Statistics",
+                    Dialogs.showMessage("<html>Statistics",
                                             "Failed to compute statistics.<br/>An error occurred:"
                                                     + e.getMessage() + "</html>",
-                                            JOptionPane.ERROR_MESSAGE, null);
+                                        JOptionPane.ERROR_MESSAGE, null);
                 }
             }
         };

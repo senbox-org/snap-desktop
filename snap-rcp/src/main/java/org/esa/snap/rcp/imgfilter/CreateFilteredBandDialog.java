@@ -4,10 +4,10 @@ import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.imgfilter.model.Filter;
 import org.esa.snap.rcp.imgfilter.model.FilterSet;
 import org.esa.snap.rcp.imgfilter.model.StandardFilters;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.ModalDialog;
 
 import java.io.File;
@@ -51,7 +51,7 @@ public class CreateFilteredBandDialog extends ModalDialog implements FilterSetFo
             userFilterSets = filterSetStore.loadFilterSetModels();
         } catch (IOException e) {
             userFilterSets = new ArrayList<>();
-            SnapDialogs.showError(TITLE, "Failed to load filter sets:\n" + e.getMessage());
+            Dialogs.showError(TITLE, "Failed to load filter sets:\n" + e.getMessage());
             SystemUtils.LOG.log(Level.WARNING, "Failed to load filter sets", e);
         }
 
@@ -78,7 +78,7 @@ public class CreateFilteredBandDialog extends ModalDialog implements FilterSetFo
             try {
                 filterSetStore.storeFilterSetModel(userFilterSet);
             } catch (IOException e) {
-                SnapDialogs.showError(TITLE, "Failed to store filter sets:\n" + e.getMessage());
+                Dialogs.showError(TITLE, "Failed to store filter sets:\n" + e.getMessage());
             }
         }
     }
@@ -103,7 +103,7 @@ public class CreateFilteredBandDialog extends ModalDialog implements FilterSetFo
             message = "Please select an image filter.";    /*I18N*/
         }
         if (message != null) {
-            SnapDialogs.showError(TITLE, message);
+            Dialogs.showError(TITLE, message);
             return false;
         }
         return true;

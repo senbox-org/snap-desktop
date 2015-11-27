@@ -1,8 +1,9 @@
 package org.esa.snap.ui.tooladapter.validators;
 
-import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.util.Dialogs;
 
-import javax.swing.*;
+import javax.swing.InputVerifier;
+import javax.swing.JComponent;
 import javax.swing.text.JTextComponent;
 
 /**
@@ -25,7 +26,7 @@ public abstract class TextFieldValidator extends InputVerifier {
             String text = ((JTextComponent) input).getText();
             isValid = verifyValue(text);
             if (!isValid) {
-                SnapDialogs.showError(errorMessage);
+                Dialogs.showError(errorMessage);
             }
             return isValid;
         } else {

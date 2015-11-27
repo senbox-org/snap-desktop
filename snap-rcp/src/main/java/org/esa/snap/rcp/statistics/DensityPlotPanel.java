@@ -37,7 +37,7 @@ import org.esa.snap.core.util.Debug;
 import org.esa.snap.core.util.ProductUtils;
 import org.esa.snap.core.util.math.MathUtils;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.GridBagUtils;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -480,11 +480,11 @@ class DensityPlotPanel extends ChartPagePanel {
                     double minY = axisRangeControls[Y_VAR].getMin();
                     double maxY = axisRangeControls[Y_VAR].getMax();
                     if (minX > maxX || minY > maxY) {
-                        SnapDialogs.showMessage(/*I18N*/ CHART_TITLE, /*I18N*/
+                        Dialogs.showMessage(/*I18N*/ CHART_TITLE, /*I18N*/
                                                 "Failed to compute scatter plot.\n" +
                                                         "No Pixels considered..",
-                                                JOptionPane.ERROR_MESSAGE,
-                                                null
+                                            JOptionPane.ERROR_MESSAGE,
+                                            null
                         );
                         plot.setDataset(null);
                         return;
@@ -508,20 +508,20 @@ class DensityPlotPanel extends ChartPagePanel {
                     toggleColorCheckBox.setEnabled(true);
                 } catch (InterruptedException | CancellationException e) {
                     e.printStackTrace();
-                    SnapDialogs.showMessage(CHART_TITLE,
+                    Dialogs.showMessage(CHART_TITLE,
                                             "Failed to compute scatter plot.\n" +
                                                     "Calculation canceled.",
-                                            JOptionPane.ERROR_MESSAGE,
-                                            null
+                                        JOptionPane.ERROR_MESSAGE,
+                                        null
                     );
                 } catch (ExecutionException | IllegalArgumentException e) {
                     e.printStackTrace();
-                    SnapDialogs.showMessage(CHART_TITLE,
+                    Dialogs.showMessage(CHART_TITLE,
                                             "Failed to compute scatter plot.\n" +
                                                     "An error occurred:\n" +
                                                     e.getCause().getMessage(),
-                                            JOptionPane.ERROR_MESSAGE,
-                                            null
+                                        JOptionPane.ERROR_MESSAGE,
+                                        null
                     );
                 }
             }

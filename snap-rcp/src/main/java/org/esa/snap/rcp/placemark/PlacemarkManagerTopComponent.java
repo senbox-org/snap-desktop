@@ -28,7 +28,7 @@ import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.rcp.util.SelectionSupport;
 import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
 import org.esa.snap.runtime.Config;
@@ -91,7 +91,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.prefs.Preferences;
 
-import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.VIEW;
+import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
 
 /**
  * @author Tonio Fincke
@@ -456,11 +456,11 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
 
     private void makePlacemarkNameUnique(Placemark newPlacemark) {
         if (makePlacemarkNameUnique0(newPlacemark, product)) {
-            SnapDialogs.showWarning(MessageFormat.format("{0} has been renamed to ''{1}'',\n" +
-                                                                 "because a {2} with the former name already exists.",
-                                                         StringUtils.firstLetterUp(placemarkDescriptor.getRoleLabel()),
-                                                         newPlacemark.getName(),
-                                                         placemarkDescriptor.getRoleLabel()));
+            Dialogs.showWarning(MessageFormat.format("{0} has been renamed to ''{1}'',\n" +
+                                                     "because a {2} with the former name already exists.",
+                                                     StringUtils.firstLetterUp(placemarkDescriptor.getRoleLabel()),
+                                                     newPlacemark.getName(),
+                                                     placemarkDescriptor.getRoleLabel()));
         }
     }
 
@@ -511,7 +511,7 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
             placemarks = loadPlacemarksFromFile();
         } catch (IOException e) {
             e.printStackTrace();
-            SnapDialogs.showError(MessageFormat.format("I/O error, failed to import {0}s:\n{1}",  /*I18N*/
+            Dialogs.showError(MessageFormat.format("I/O error, failed to import {0}s:\n{1}",  /*I18N*/
                                                        placemarkDescriptor.getRoleLabel(), e.getMessage()));
             return;
         }
@@ -570,24 +570,24 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
             intoProductMessage = "into product " + targetProduct.getDisplayName() + "\n";
         }
         if (numInvalids > 0) {
-            SnapDialogs.showWarning(MessageFormat.format(
+            Dialogs.showWarning(MessageFormat.format(
                     "One or more {0}s have not been imported,\n{1}because they can not be assigned to a product without a geo-coding.",
                     placemarkDescriptor.getRoleLabel(), intoProductMessage));
         }
         if (numPinsRenamed > 0) {
-            SnapDialogs.showWarning(MessageFormat.format(
+            Dialogs.showWarning(MessageFormat.format(
                     "One or more {0}s have been renamed,\n{1}because their former names are already existing.",
                     placemarkDescriptor.getRoleLabel(), intoProductMessage));
         }
         if (numPinsOutOfBounds > 0) {
             if (numPinsOutOfBounds == placemarks.size()) {
-                SnapDialogs.showError(
+                Dialogs.showError(
                         MessageFormat.format(
                                 "No {0}s have been imported,\n{1}because their pixel positions\nare outside the product''s bounds.",
                                 placemarkDescriptor.getRoleLabel(), intoProductMessage)
                 );
             } else {
-                SnapDialogs.showError(
+                Dialogs.showError(
                         MessageFormat.format(
                                 "{0} {1}s have not been imported,\n{2}because their pixel positions\nare outside the product''s bounds.",
                                 numPinsOutOfBounds, placemarkDescriptor.getRoleLabel(), intoProductMessage)
@@ -672,7 +672,7 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
         if (result == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
             if (file != null) {
-                if (Boolean.TRUE.equals(SnapDialogs.requestOverwriteDecision(getTitle(), file))) {
+                if (Boolean.TRUE.equals(Dialogs.requestOverwriteDecision(getTitle(), file))) {
                     setIODir(file.getAbsoluteFile().getParentFile());
                     SnapFileFilter snapFileFilter = fileChooser.getSnapFileFilter();
                     String fileExtension = FileUtils.getExtension(file);
@@ -691,8 +691,8 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
                             }
                         }
                     } catch (IOException ioe) {
-                        SnapDialogs.showError(String.format("I/O Error.\n   Failed to export %ss.\n%s",
-                                                            placemarkDescriptor.getRoleLabel(), ioe.getMessage()));
+                        Dialogs.showError(String.format("I/O Error.\n   Failed to export %ss.\n%s",
+                                                        placemarkDescriptor.getRoleLabel(), ioe.getMessage()));
                         ioe.printStackTrace();
                     }
                 }
@@ -747,9 +747,9 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
                     if (existingPlacemarks.length > 0) {
                         if (notAlreadyAsked) {
                             notAlreadyAsked = false;
-                            SnapDialogs.Answer decision = SnapDialogs.requestDecision("Transfer placemarks",
-                                                                                      "Do you want to update existing placemarks?", false, null);
-                            updateExistingPins = decision == SnapDialogs.Answer.YES;
+                            Dialogs.Answer decision = Dialogs.requestDecision("Transfer placemarks",
+                                                                              "Do you want to update existing placemarks?", false, null);
+                            updateExistingPins = decision == Dialogs.Answer.YES;
                         }
                         if (updateExistingPins) {
                             for (Placemark existingPlacemark : existingPlacemarks) {
@@ -867,7 +867,7 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
         if (result == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
             if (file != null) {
-                if (Boolean.TRUE.equals(SnapDialogs.requestOverwriteDecision(getTitle(), file))) {
+                if (Boolean.TRUE.equals(Dialogs.requestOverwriteDecision(getTitle(), file))) {
                     setIODir(file.getAbsoluteFile().getParentFile());
                     file = FileUtils.ensureExtension(file, PlacemarkIO.FILE_EXTENSION_FLAT_TEXT);
                     try {
@@ -875,7 +875,7 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
                             writePlacemarkDataTableText(writer);
                         }
                     } catch (IOException ignored) {
-                        SnapDialogs.showError(MessageFormat.format("I/O Error.\nFailed to export {0} data table.",  /*I18N*/
+                        Dialogs.showError(MessageFormat.format("I/O Error.\nFailed to export {0} data table.",  /*I18N*/
                                                                    placemarkDescriptor.getRoleLabel()));
                     }
                 }

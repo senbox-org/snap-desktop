@@ -22,7 +22,7 @@ import org.esa.snap.core.datamodel.ProductNodeGroup;
 import org.esa.snap.core.datamodel.VectorDataNode;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.statistics.output.BandNameCreator;
 import org.esa.snap.statistics.output.FeatureStatisticsWriter;
 import org.esa.snap.statistics.output.StatisticsOutputContext;
@@ -93,7 +93,7 @@ class PutStatisticsIntoVectorDataAction extends AbstractAction {
             final VectorDataNode originalVDN = featureType2VDN.get(featureType);
             if (originalVDN.isPermanent()) {
                 SystemUtils.LOG.warning("Unable to put statistics into permanent vector data.");
-                SnapDialogs.showError("Unable to put statistics into permanent vector data (such as pins/GCPs).");
+                Dialogs.showError("Unable to put statistics into permanent vector data (such as pins/GCPs).");
                 continue;
             }
 
@@ -132,9 +132,9 @@ class PutStatisticsIntoVectorDataAction extends AbstractAction {
             }
 
             exchangeVDN(featureType, featureStatisticsWriter);
-            SnapDialogs.showMessage("Extending vector data with statistics",
-                                    "The vector data have successfully been extended with the computed statistics.",
-                                    JOptionPane.INFORMATION_MESSAGE, null);
+            Dialogs.showMessage("Extending vector data with statistics",
+                                "The vector data have successfully been extended with the computed statistics.",
+                                JOptionPane.INFORMATION_MESSAGE, null);
         }
     }
 

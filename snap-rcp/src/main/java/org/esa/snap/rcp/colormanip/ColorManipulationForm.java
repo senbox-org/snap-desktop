@@ -35,7 +35,7 @@ import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.rcp.util.SelectionSupport;
 import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
 import org.esa.snap.runtime.Config;
@@ -578,7 +578,7 @@ class ColorManipulationForm implements SelectionSupport.Handler<ProductSceneView
         }
         if (result == JFileChooser.APPROVE_OPTION) {
             if (file != null) {
-                if (Boolean.TRUE.equals(SnapDialogs.requestOverwriteDecision(titlePrefix, file))) {
+                if (Boolean.TRUE.equals(Dialogs.requestOverwriteDecision(titlePrefix, file))) {
                     file = FileUtils.ensureExtension(file, FILE_EXTENSION);
                     try {
                         final ColorPaletteDef colorPaletteDef = imageInfo.getColorPaletteDef();
@@ -594,7 +594,7 @@ class ColorManipulationForm implements SelectionSupport.Handler<ProductSceneView
     private void showErrorDialog(final String message) {
         if (message != null && message.trim().length() > 0) {
             if (SnapApp.getDefault() != null) {
-                SnapDialogs.showError(message);
+                Dialogs.showError(message);
             } else {
                 JOptionPane.showMessageDialog(getToolViewPaneControl(),
                                               message,

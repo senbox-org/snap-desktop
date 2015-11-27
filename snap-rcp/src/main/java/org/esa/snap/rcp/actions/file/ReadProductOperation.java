@@ -4,7 +4,7 @@ import com.bc.ceres.core.Assert;
 import org.esa.snap.core.dataio.ProductIO;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.util.Dialogs;
 import org.openide.util.Cancellable;
 
 import javax.swing.SwingUtilities;
@@ -38,7 +38,7 @@ class ReadProductOperation implements Runnable, Cancellable {
             if (!Thread.interrupted()) {
                 if (product == null) {
                     status = false;
-                    SwingUtilities.invokeLater(() -> SnapDialogs.showError(Bundle.LBL_NoReaderFoundText() + String.format("%nFile '%s' can not be opened.", file)));
+                    SwingUtilities.invokeLater(() -> Dialogs.showError(Bundle.LBL_NoReaderFoundText() + String.format("%nFile '%s' can not be opened.", file)));
                 } else {
                     status = true;
                     OpenProductAction.getRecentProductPaths().add(file.getPath());
@@ -49,16 +49,16 @@ class ReadProductOperation implements Runnable, Cancellable {
             }
         } catch (IOException problem) {
             status = false;
-            SwingUtilities.invokeLater(() -> SnapDialogs.showError(Bundle.CTL_OpenProductActionName(), problem.getMessage()));
+            SwingUtilities.invokeLater(() -> Dialogs.showError(Bundle.CTL_OpenProductActionName(), problem.getMessage()));
         }
     }
 
     @Override
     public boolean cancel() {
-        SnapDialogs.Answer answer = SnapDialogs.requestDecision(Bundle.CTL_OpenProductActionName(),
-                                                                "Do you really want to cancel the read process?",
-                                                                false, null);
-        boolean cancel = answer == SnapDialogs.Answer.YES;
+        Dialogs.Answer answer = Dialogs.requestDecision(Bundle.CTL_OpenProductActionName(),
+                                                        "Do you really want to cancel the read process?",
+                                                        false, null);
+        boolean cancel = answer == Dialogs.Answer.YES;
         if (cancel) {
             status = null;
         }

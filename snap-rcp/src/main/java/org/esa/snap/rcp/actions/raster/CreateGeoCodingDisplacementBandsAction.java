@@ -29,8 +29,8 @@ import org.esa.snap.core.datamodel.ProductData;
 import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.core.datamodel.VirtualBand;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.preferences.general.UiBehaviorController;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.UIUtils;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -170,7 +170,7 @@ public class CreateGeoCodingDisplacementBandsAction extends AbstractAction imple
                         if (cause instanceof IOException) {
                             msg = "An I/O error occurred:\n" + e.getMessage();
                         }
-                        SnapDialogs.showError(dialogTitle, msg);
+                        Dialogs.showError(dialogTitle, msg);
                     } finally {
                         UIUtils.setRootFrameDefaultCursor(mainFrame);
                     }

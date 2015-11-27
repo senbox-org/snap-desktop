@@ -9,7 +9,7 @@ import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.tango.TangoIcons;
 import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.ui.product.BandChooser;
@@ -450,14 +450,14 @@ class MagicWandForm {
     void showBandChooser() {
         final ProductSceneView view = SnapApp.getDefault().getSelectedProductSceneView();
         if (view == null) {
-            SnapDialogs.showInformation("Please select an image view first.", null);
+            Dialogs.showInformation("Please select an image view first.", null);
             return;
         }
         Product product = view.getProduct();
 
         Band[] bands = product.getBands();
         if (bands.length == 0) {
-            SnapDialogs.showInformation("No bands in product.", null);
+            Dialogs.showInformation("No bands in product.", null);
             return;
         }
 

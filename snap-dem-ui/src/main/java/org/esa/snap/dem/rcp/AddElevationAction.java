@@ -38,13 +38,12 @@ import org.esa.snap.core.dataop.dem.ElevationModelDescriptor;
 import org.esa.snap.core.dataop.dem.ElevationModelRegistry;
 import org.esa.snap.core.dataop.resamp.Resampling;
 import org.esa.snap.core.dataop.resamp.ResamplingFactory;
-import org.esa.snap.core.image.ImageManager;
 import org.esa.snap.core.image.RasterDataNodeSampleOpImage;
 import org.esa.snap.core.image.ResolutionLevel;
-import org.esa.snap.engine_utilities.datamodel.Unit;
 import org.esa.snap.dem.dataio.DEMFactory;
+import org.esa.snap.engine_utilities.datamodel.Unit;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.ModalDialog;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -166,7 +165,7 @@ public class AddElevationAction extends AbstractAction implements ContextAwareAc
         final ElevationModelRegistry elevationModelRegistry = ElevationModelRegistry.getInstance();
         final ElevationModelDescriptor demDescriptor = elevationModelRegistry.getDescriptor(demName);
         if (demDescriptor == null) {
-            SnapDialogs.showError(DIALOG_TITLE, "The DEM '" + demName + "' is not supported.");
+            Dialogs.showError(DIALOG_TITLE, "The DEM '" + demName + "' is not supported.");
             return;
         }
 

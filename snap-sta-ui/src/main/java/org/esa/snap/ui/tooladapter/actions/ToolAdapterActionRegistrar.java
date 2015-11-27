@@ -23,7 +23,7 @@ import org.esa.snap.core.gpf.OperatorSpiRegistry;
 import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterIO;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterOpSpi;
-import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.util.Dialogs;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 import org.openide.modules.OnStart;
@@ -133,7 +133,7 @@ public class ToolAdapterActionRegistrar {
             }
             actionMap.put(menuKey, operator);
         } catch (IOException e) {
-            SnapDialogs.showError("Error:" + e.getMessage());
+            Dialogs.showError("Error:" + e.getMessage());
         }
     }
 
@@ -152,7 +152,7 @@ public class ToolAdapterActionRegistrar {
                 }
             }
         } catch (IOException e) {
-            SnapDialogs.showError("Error:" + e.getMessage());
+            Dialogs.showError("Error:" + e.getMessage());
         }
         //}
     }

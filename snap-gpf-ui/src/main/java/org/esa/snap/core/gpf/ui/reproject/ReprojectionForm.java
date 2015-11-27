@@ -37,7 +37,7 @@ import org.esa.snap.core.gpf.ui.TargetProductSelectorModel;
 import org.esa.snap.core.param.ParamParseException;
 import org.esa.snap.core.param.ParamValidateException;
 import org.esa.snap.core.util.ProductUtils;
-import org.esa.snap.rcp.MultiSizeIssue;
+import org.esa.snap.rcp.util.MultiSizeIssue;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.DemSelector;
 import org.esa.snap.ui.ModalDialog;

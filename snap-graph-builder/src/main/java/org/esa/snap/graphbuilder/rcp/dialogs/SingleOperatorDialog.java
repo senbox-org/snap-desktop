@@ -45,16 +45,16 @@ import org.esa.snap.core.gpf.ui.SingleTargetProductDialog;
 import org.esa.snap.core.gpf.ui.SourceProductSelector;
 import org.esa.snap.core.gpf.ui.TargetProductSelectorModel;
 import org.esa.snap.engine_utilities.db.CommonReaders;
+import org.esa.snap.engine_utilities.util.MemUtils;
+import org.esa.snap.engine_utilities.util.ProductFunctions;
 import org.esa.snap.graphbuilder.gpf.ui.OperatorUI;
 import org.esa.snap.graphbuilder.gpf.ui.OperatorUIRegistry;
 import org.esa.snap.graphbuilder.gpf.ui.UIValidation;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.actions.file.SaveProductAsAction;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.UIUtils;
-import org.esa.snap.engine_utilities.util.MemUtils;
-import org.esa.snap.engine_utilities.util.ProductFunctions;
 
 import javax.media.jai.JAI;
 import javax.swing.JComponent;
@@ -226,7 +226,7 @@ public class SingleOperatorDialog extends SingleTargetProductDialog {
         final List<SourceProductSelector> sourceProductSelectorList = ioParametersPanel.getSourceProductSelectorList();
 
         if (sourceProductSelectorList.isEmpty()) {
-            SnapDialogs.showError("SourceProduct @Parameter not found in operator");
+            Dialogs.showError("SourceProduct @Parameter not found in operator");
         } else {
 
             sourceProductSelectorList.get(0).addSelectionChangeListener(new AbstractSelectionChangeListener() {
@@ -264,10 +264,10 @@ public class SingleOperatorDialog extends SingleTargetProductDialog {
         if (validation.getState() == UIValidation.State.WARNING) {
             final String msg = "Warning: " + validation.getMsg() +
                     "\n\nWould you like to continue?";
-            return SnapDialogs.requestDecision("Warning", msg, false, null) == SnapDialogs.Answer.YES;
+            return Dialogs.requestDecision("Warning", msg, false, null) == Dialogs.Answer.YES;
         } else if (validation.getState() == UIValidation.State.ERROR) {
             final String msg = "Error: " + validation.getMsg();
-            SnapDialogs.showError(msg);
+            Dialogs.showError(msg);
             return false;
         }
         return true;

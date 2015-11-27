@@ -22,7 +22,7 @@ import com.bc.ceres.binding.ValueSet;
 import com.bc.ceres.swing.binding.Binding;
 import com.bc.ceres.swing.binding.BindingContext;
 import org.esa.snap.core.datamodel.ImageInfo;
-import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.color.ColorComboBox;
 import org.esa.snap.ui.color.ColorComboBoxAdapter;
 
@@ -115,7 +115,7 @@ class MoreOptionsForm {
                 final String message = "<html>Histogram matching will be applied to the currently displayed image.<br/>" +
                                        "Sample values of the colour palette will not longer translate into<br/>" +
                                        "their associated colours.</html>";
-                SnapDialogs.showInformation("Histogram Matching", message, "warningHistogramMatching");
+                Dialogs.showInformation("Histogram Matching", message, "warningHistogramMatching");
             }
             updateModel();
         });

@@ -8,7 +8,7 @@ import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.util.Dialogs;
 import org.netbeans.api.progress.ProgressHandle;
 import org.netbeans.api.progress.ProgressHandleFactory;
 import org.netbeans.api.progress.ProgressUtils;
@@ -107,7 +107,7 @@ public class ProductOpener {
         if (getFileFormat() != null) {
             readerPlugIns = ProductIOPlugInManager.getInstance().getReaderPlugIns(getFileFormat());
             if (!readerPlugIns.hasNext()) {
-                SnapDialogs.showError(
+                Dialogs.showError(
                         Bundle.LBL_NoReaderFoundText() + String.format("%nCan't find reader for the given format '%s'.", getFileFormat()));
                 return false;
             }
@@ -129,7 +129,7 @@ public class ProductOpener {
             return d1 != null ? d1.compareTo(d2) : d2 == null ? 0 : 1;
         });
         if (filters.isEmpty()) {
-            SnapDialogs.showError(Bundle.LBL_NoReaderFoundText());
+            Dialogs.showError(Bundle.LBL_NoReaderFoundText());
             return false;
         }
 
@@ -196,15 +196,15 @@ public class ProductOpener {
         List<File> fileList = new ArrayList<>(Arrays.asList(files));
         for (File file : files) {
             if (openedFiles.contains(file)) {
-                SnapDialogs.Answer answer = SnapDialogs.requestDecision(Bundle.CTL_OpenProductActionName(),
-                                                                        MessageFormat.format("Product\n" +
+                Dialogs.Answer answer = Dialogs.requestDecision(Bundle.CTL_OpenProductActionName(),
+                                                                MessageFormat.format("Product\n" +
                                                                                              "{0}\n" +
                                                                                              "is already opened.\n" +
                                                                                              "Do you want to open another instance?", file),
-                                                                        true, null);
-                if (answer == SnapDialogs.Answer.NO) {
+                                                                true, null);
+                if (answer == Dialogs.Answer.NO) {
                     fileList.remove(file);
-                } else if (answer == SnapDialogs.Answer.CANCELLED) {
+                } else if (answer == Dialogs.Answer.CANCELLED) {
                     return null;
                 }
             }
@@ -218,7 +218,7 @@ public class ProductOpener {
                 final List<PluginEntry> suitablePlugIns = getPluginsForFile(file, DecodeQualification.SUITABLE);
 
                 if (intendedPlugIns.isEmpty() && suitablePlugIns.isEmpty()) {
-                    SnapDialogs.showError(Bundle.LBL_NoReaderFoundText() + String.format("%nFile '%s' can not be opened.", file));
+                    Dialogs.showError(Bundle.LBL_NoReaderFoundText() + String.format("%nFile '%s' can not be opened.", file));
                     continue;
                 } else if (intendedPlugIns.size() == 1) {
                     PluginEntry entry = intendedPlugIns.get(0);
@@ -309,7 +309,7 @@ public class ProductOpener {
         readerSelectionPanel.add(decisionCheckBox);
 
         NotifyDescriptor d = new NotifyDescriptor(readerSelectionPanel,
-                                                  SnapDialogs.getDialogTitle("Multiple Readers Available"),
+                                                  Dialogs.getDialogTitle("Multiple Readers Available"),
                                                   NotifyDescriptor.OK_CANCEL_OPTION, NotifyDescriptor.QUESTION_MESSAGE, null,
                                                   NotifyDescriptor.OK_OPTION);
         Object answer = DialogDisplayer.getDefault().notify(d);

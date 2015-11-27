@@ -16,13 +16,18 @@
 package org.esa.snap.graphbuilder.rcp.dialogs.support;
 
 import org.esa.snap.engine_utilities.db.ProductEntry;
-import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
-import org.esa.snap.graphbuilder.rcp.utils.ClipboardUtils;
 import org.esa.snap.engine_utilities.util.ProductFunctions;
+import org.esa.snap.graphbuilder.rcp.utils.ClipboardUtils;
+import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.rcp.util.Dialogs;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.DropMode;
+import javax.swing.JComponent;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
+import javax.swing.JTable;
+import javax.swing.TransferHandler;
+import java.awt.Dimension;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
@@ -125,7 +130,7 @@ public class FileTable extends JTable {
             }
         } catch (Exception e) {
             if (SnapApp.getDefault() != null) {
-                SnapDialogs.showError("Unable to paste from clipboard: "+e.getMessage());
+                Dialogs.showError("Unable to paste from clipboard: " + e.getMessage());
             }
         }
     }

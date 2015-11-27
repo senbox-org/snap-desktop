@@ -18,21 +18,21 @@ package org.esa.snap.smart.configurator.ui;
 
 import com.bc.ceres.core.SubProgressMonitor;
 import com.bc.ceres.core.VirtualDir;
-import org.esa.snap.core.gpf.ui.DefaultSingleTargetProductDialog;
-import org.esa.snap.core.util.SystemUtils;
-import org.esa.snap.rcp.util.ProgressHandleMonitor;
-import org.esa.snap.smart.configurator.Benchmark;
-import org.esa.snap.smart.configurator.BenchmarkSingleCalculus;
-import org.esa.snap.smart.configurator.ConfigurationOptimizer;
-import org.esa.snap.smart.configurator.PerformanceParameters;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.Operator;
 import org.esa.snap.core.gpf.common.WriteOp;
 import org.esa.snap.core.gpf.internal.OperatorExecutor;
 import org.esa.snap.core.gpf.internal.OperatorProductReader;
+import org.esa.snap.core.gpf.ui.DefaultSingleTargetProductDialog;
 import org.esa.snap.core.gpf.ui.TargetProductSelectorModel;
-import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.rcp.actions.file.SaveProductAsAction;
+import org.esa.snap.rcp.util.Dialogs;
+import org.esa.snap.rcp.util.ProgressHandleMonitor;
+import org.esa.snap.smart.configurator.Benchmark;
+import org.esa.snap.smart.configurator.BenchmarkSingleCalculus;
+import org.esa.snap.smart.configurator.ConfigurationOptimizer;
+import org.esa.snap.smart.configurator.PerformanceParameters;
 import org.esa.snap.ui.AppContext;
 import org.netbeans.api.progress.ProgressUtils;
 
@@ -175,7 +175,7 @@ public class BenchmarkDialog extends DefaultSingleTargetProductDialog {
         //sort benchmark results and return the fastest
         BenchmarkSingleCalculus bestBenchmarkSingleCalcul = this.benchmarkModel.getFasterBenchmarkSingleCalculus();
 
-        SnapDialogs.showInformation("Benchmark results", this.benchmarkModel.toString(), null);
+        Dialogs.showInformation("Benchmark results", this.benchmarkModel.toString(), null);
         //update parent panel with best values
         this.perfPanel.updatePerformanceParameters(bestBenchmarkSingleCalcul);
 

@@ -16,7 +16,7 @@ import org.esa.snap.netbeans.docwin.DocumentWindow;
 import org.esa.snap.netbeans.docwin.DocumentWindowManager;
 import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.util.Dialogs;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -140,8 +140,8 @@ public final class CloseProductAction extends AbstractAction implements ContextA
             for (Product productToBeClosed : closeList) {
                 Product firstSourceProduct = findFirstSourceProduct(productToBeClosed, stillOpenProducts);
                 if (firstSourceProduct != null) {
-                    SnapDialogs.showInformation("Close Not Possible",
-                            String.format("Can't close product '%s' because it is in use%n" +
+                    Dialogs.showInformation("Close Not Possible",
+                                            String.format("Can't close product '%s' because it is in use%n" +
                                             "by product '%s'.%n" +
                                             "Please close the latter first.",
                                     productToBeClosed.getName(),
@@ -153,13 +153,13 @@ public final class CloseProductAction extends AbstractAction implements ContextA
 
         for (Product product : products) {
             if (product.isModified()) {
-                SnapDialogs.Answer answer = SnapDialogs.requestDecision(Bundle.CTL_OpenProductActionName(),
-                        MessageFormat.format("Product ''{0}'' has been modified.\n" +
+                Dialogs.Answer answer = Dialogs.requestDecision(Bundle.CTL_OpenProductActionName(),
+                                                                MessageFormat.format("Product ''{0}'' has been modified.\n" +
                                         "Do you want to save it?",
                                 product.getName()), true, null);
-                if (answer == SnapDialogs.Answer.YES) {
+                if (answer == Dialogs.Answer.YES) {
                     saveList.add(product);
-                } else if (answer == SnapDialogs.Answer.CANCELLED) {
+                } else if (answer == Dialogs.Answer.CANCELLED) {
                     return null;
                 }
             }

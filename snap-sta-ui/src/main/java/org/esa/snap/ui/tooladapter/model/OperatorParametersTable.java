@@ -17,15 +17,23 @@
  */
 package org.esa.snap.ui.tooladapter.model;
 
-import com.bc.ceres.binding.*;
+import com.bc.ceres.binding.ConversionException;
+import com.bc.ceres.binding.DefaultPropertySetDescriptor;
+import com.bc.ceres.binding.PropertyContainer;
+import com.bc.ceres.binding.PropertyDescriptor;
+import com.bc.ceres.binding.PropertySet;
 import com.bc.ceres.swing.binding.BindingContext;
 import org.apache.commons.collections.BidiMap;
 import org.apache.commons.collections.bidimap.DualHashBidiMap;
 import org.esa.snap.core.gpf.annotations.ParameterDescriptorFactory;
-import org.esa.snap.core.gpf.descriptor.*;
+import org.esa.snap.core.gpf.descriptor.ParameterDescriptor;
+import org.esa.snap.core.gpf.descriptor.PropertyAttributeException;
+import org.esa.snap.core.gpf.descriptor.TemplateParameterDescriptor;
+import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
+import org.esa.snap.core.gpf.descriptor.ToolParameterDescriptor;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterConstants;
 import org.esa.snap.core.gpf.ui.OperatorParameterSupport;
-import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.AbstractDialog;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.UIUtils;
@@ -34,12 +42,17 @@ import org.esa.snap.ui.tooladapter.dialogs.TemplateParameterEditorDialog;
 import org.esa.snap.ui.tooladapter.dialogs.ToolParameterEditorDialog;
 import org.openide.util.NbBundle;
 
-import javax.swing.*;
+import javax.swing.AbstractButton;
+import javax.swing.AbstractCellEditor;
+import javax.swing.DefaultCellEditor;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
-import java.awt.*;
+import java.awt.Component;
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
@@ -279,7 +292,7 @@ public class OperatorParametersTable extends JTable {
                         repaint();
                     } catch (ConversionException e) {
                         logger.warning(e.getMessage());
-                        SnapDialogs.showError(e.getMessage());
+                        Dialogs.showError(e.getMessage());
                     }
                     break;
                 case 4:
@@ -306,7 +319,7 @@ public class OperatorParametersTable extends JTable {
                             TemplateParameterEditorDialog editor = new TemplateParameterEditorDialog(appContext, "", descriptor, propertiesValueUIDescriptorMap.get(descriptor), operator);
                             returnCode = editor.show();
                         }catch (Exception ex){
-                            SnapDialogs.showError(ex.getMessage());
+                            Dialogs.showError(ex.getMessage());
                         }
                     } else {
                         Object value = getBindingContext().getBinding(descriptor.getName()).getPropertyValue();
@@ -315,7 +328,7 @@ public class OperatorParametersTable extends JTable {
                             returnCode = editor.show();
                         }catch (Exception ex){
                             logger.warning(ex.getMessage());
-                            SnapDialogs.showError("Could not edit parameter " + descriptor.getName() + " : " + ex.getMessage());
+                            Dialogs.showError("Could not edit parameter " + descriptor.getName() + " : " + ex.getMessage());
                         }
                     }
                     if(returnCode == AbstractDialog.ID_OK){
@@ -368,7 +381,7 @@ public class OperatorParametersTable extends JTable {
             repaint();
         } catch (ConversionException e) {
             logger.warning(e.getMessage());
-            SnapDialogs.showError(e.getMessage());
+            Dialogs.showError(e.getMessage());
         }
     }
 

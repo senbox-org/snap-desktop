@@ -14,7 +14,7 @@ import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.image.BandOpImage;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.util.Dialogs;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
@@ -70,18 +70,18 @@ public final class SaveProductAsAction extends AbstractAction {
 
         ProductReader reader = product.getProductReader();
         if (reader != null && !(reader instanceof DimapProductReader)) {
-            SnapDialogs.Answer answer = SnapDialogs.requestDecision("Save Product As",
-                                                                    MessageFormat.format("In order to save the product\n" +
+            Dialogs.Answer answer = Dialogs.requestDecision("Save Product As",
+                                                            MessageFormat.format("In order to save the product\n" +
                                                                                          "   {0}\n" +
                                                                                          "it has to be converted to the BEAM-DIMAP format.\n" +
                                                                                          "Depending on the product size the conversion also may take a while.\n\n" +
                                                                                          "Do you really want to convert the product now?\n",
                                                                                          product.getDisplayName()),
-                                                                    true,
-                                                                    PREFERENCES_KEY_PRODUCT_CONVERSION_REQUIRED);
-            if (answer == SnapDialogs.Answer.NO) {
+                                                            true,
+                                                            PREFERENCES_KEY_PRODUCT_CONVERSION_REQUIRED);
+            if (answer == Dialogs.Answer.NO) {
                 return false;
-            } else if (answer == SnapDialogs.Answer.CANCELLED) {
+            } else if (answer == Dialogs.Answer.CANCELLED) {
                 return null;
             }
         }
@@ -92,13 +92,13 @@ public final class SaveProductAsAction extends AbstractAction {
         } else {
             fileName = product.getName();
         }
-        File newFile = SnapDialogs.requestFileForSave("Save Product As",
-                                                      false,
-                                                      DimapProductHelpers.createDimapFileFilter(),
-                                                      DimapProductConstants.DIMAP_HEADER_FILE_EXTENSION,
-                                                      fileName,
-                                                      null,
-                                                      OpenProductAction.PREFERENCES_KEY_LAST_PRODUCT_DIR);
+        File newFile = Dialogs.requestFileForSave("Save Product As",
+                                                  false,
+                                                  DimapProductHelpers.createDimapFileFilter(),
+                                                  DimapProductConstants.DIMAP_HEADER_FILE_EXTENSION,
+                                                  fileName,
+                                                  null,
+                                                  OpenProductAction.PREFERENCES_KEY_LAST_PRODUCT_DIR);
         if (newFile == null) {
             // cancelled
             return null;

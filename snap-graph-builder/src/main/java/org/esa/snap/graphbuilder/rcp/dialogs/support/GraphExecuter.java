@@ -36,8 +36,8 @@ import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.engine_utilities.gpf.ReaderUtils;
 import org.esa.snap.graphbuilder.gpf.ui.OperatorUI;
 import org.esa.snap.graphbuilder.gpf.ui.OperatorUIRegistry;
-import org.esa.snap.rcp.SnapDialogs;
 import org.esa.snap.rcp.actions.file.SaveProductAsAction;
+import org.esa.snap.rcp.util.Dialogs;
 
 import java.io.File;
 import java.io.FileReader;
@@ -310,8 +310,8 @@ public class GraphExecuter extends Observable {
         if (lastLoadedGraphFile != null)
             filename = lastLoadedGraphFile.getAbsolutePath();
         final SnapFileFilter fileFilter = new SnapFileFilter("XML", "xml", "Graph");
-        final File filePath = SnapDialogs.requestFileForSave("Save Graph", false, fileFilter, ".xml", filename,
-                                                             null, SaveProductAsAction.PREFERENCES_KEY_LAST_PRODUCT_DIR);
+        final File filePath = Dialogs.requestFileForSave("Save Graph", false, fileFilter, ".xml", filename,
+                                                         null, SaveProductAsAction.PREFERENCES_KEY_LAST_PRODUCT_DIR);
         if (filePath != null)
             writeGraph(filePath.getAbsolutePath());
         return filePath;
