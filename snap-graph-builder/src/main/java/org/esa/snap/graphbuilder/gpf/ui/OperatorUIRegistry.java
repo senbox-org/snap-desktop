@@ -79,7 +79,7 @@ public class OperatorUIRegistry {
                 }
 
                 operatorUIDescriptors.put(operatorUIDescriptor.getOperatorName(), operatorUIDescriptor);
-                SystemUtils.LOG.info(String.format("New operatorUI added from layer.xml path '%s': %s",
+                SystemUtils.LOG.fine(String.format("New operatorUI added from layer.xml path '%s': %s",
                                                    file.getPath(), operatorUIDescriptor.getOperatorName()));
             }
         }
