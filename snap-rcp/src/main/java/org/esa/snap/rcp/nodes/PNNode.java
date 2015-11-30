@@ -801,7 +801,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
             String oldValue = raster.getUnit();
             performUndoableProductNodeEdit("Edit Unit",
                                            raster,
-                                           node -> node.setName(newValue),
+                                           node -> node.setUnit(newValue),
                                            node -> node.setUnit(oldValue)
             );
         }
