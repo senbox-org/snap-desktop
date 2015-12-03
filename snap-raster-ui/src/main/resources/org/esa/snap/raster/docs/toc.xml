@@ -5,13 +5,11 @@
 <toc version="2.0" categoryclosedimage="folder" categoryopenimage="folder" topicimage="doc">
 
     <tocitem text="Sentinel Toolbox Application">
-        <tocitem text="Radar">
-            <tocitem text="SAR Utilities">
-                <tocitem text="Image Filtering" target="FilterOperator"/>
-                <tocitem text="Resampling">
-                    <tocitem text="Over Sample" target="OverSampleOp"/>
-                    <tocitem text="Under Sample" target="UnderSampleOp"/>
-                </tocitem>
+        <tocitem text="Raster">
+            <tocitem text="Image Filtering" target="FilterOperator"/>
+            <tocitem text="Resampling">
+                <tocitem text="Over Sample" target="OverSampleOp"/>
+                <tocitem text="Under Sample" target="UnderSampleOp"/>
             </tocitem>
         </tocitem>
     </tocitem>
