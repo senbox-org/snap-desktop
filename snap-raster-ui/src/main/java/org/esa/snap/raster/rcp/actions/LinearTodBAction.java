@@ -35,7 +35,7 @@ import org.openide.util.NbBundle;
 import org.openide.util.Utilities;
 import org.openide.util.WeakListeners;
 
-import javax.swing.Action;
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 
 @ActionID(category = "Raster", id = "org.esa.snap.raster.rcp.actions.LinearTodBAction")
@@ -98,13 +98,13 @@ public class LinearTodBAction extends AbstractSnapAction implements ContextAware
             if (!unit.contains(Unit.DB)) {
 
                 if (Dialogs.requestDecision("Convert to dB", "Would you like to convert band "
-                                                             + band.getName() + " into dB in a new virtual band?", true, null) == Dialogs.Answer.YES) {
+                        + band.getName() + " into dB in a new virtual band?", true, null) == Dialogs.Answer.YES) {
                     convert(product, band, true);
                 }
             } else {
 
                 if (Dialogs.requestDecision("Convert to linear", "Would you like to convert band "
-                                                                 + band.getName() + " into linear in a new virtual band?", true, null) == Dialogs.Answer.YES) {
+                        + band.getName() + " into linear in a new virtual band?", true, null) == Dialogs.Answer.YES) {
                     convert(product, band, false);
                 }
             }
@@ -151,10 +151,10 @@ public class LinearTodBAction extends AbstractSnapAction implements ContextAware
         }
 
         final VirtualBand virtBand = new VirtualBand(newBandName,
-                                                     ProductData.TYPE_FLOAT32,
-                                                     band.getRasterWidth(),
-                                                     band.getRasterHeight(),
-                                                     expression);
+                ProductData.TYPE_FLOAT32,
+                band.getRasterWidth(),
+                band.getRasterHeight(),
+                expression);
         virtBand.setUnit(unit);
         virtBand.setDescription(band.getDescription());
         virtBand.setNoDataValueUsed(true);

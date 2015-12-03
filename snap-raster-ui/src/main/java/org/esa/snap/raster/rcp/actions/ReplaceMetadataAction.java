@@ -15,14 +15,14 @@
  */
 package org.esa.snap.raster.rcp.actions;
 
-import org.esa.snap.raster.gpf.ReplaceMetadataOp;
-import org.esa.snap.raster.rcp.dialogs.StringSelectorDialog;
 import org.esa.snap.core.datamodel.MetadataElement;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.engine_utilities.datamodel.AbstractMetadata;
 import org.esa.snap.engine_utilities.datamodel.metadata.AbstractMetadataIO;
+import org.esa.snap.raster.gpf.ReplaceMetadataOp;
+import org.esa.snap.raster.rcp.dialogs.StringSelectorDialog;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.AbstractSnapAction;
 import org.esa.snap.rcp.util.Dialogs;
@@ -37,7 +37,7 @@ import org.openide.util.NbBundle;
 import org.openide.util.Utilities;
 import org.openide.util.WeakListeners;
 
-import javax.swing.Action;
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.util.ArrayList;
@@ -119,7 +119,7 @@ public class ReplaceMetadataAction extends AbstractSnapAction implements Context
 
                 final MetadataElement srcAbsRoot = AbstractMetadata.getAbstractedMetadata(srcProduct);
                 final File tmpMetadataFile = new File(SystemUtils.getCacheDir(),
-                                                      srcProduct.getName() + "_metadata.xml");
+                        srcProduct.getName() + "_metadata.xml");
                 AbstractMetadataIO.Save(srcProduct, srcAbsRoot, tmpMetadataFile);
 
                 clearProductMetadata(product);
@@ -130,7 +130,7 @@ public class ReplaceMetadataAction extends AbstractSnapAction implements Context
                 SnapApp.getDefault().getProductManager().addProduct(product);
 
                 ReplaceMetadataOp.resetPolarizations(AbstractMetadata.getAbstractedMetadata(product),
-                                                     isPolsar, isCalibrated);
+                        isPolsar, isCalibrated);
 
                 tmpMetadataFile.delete();
             } catch (Exception e) {

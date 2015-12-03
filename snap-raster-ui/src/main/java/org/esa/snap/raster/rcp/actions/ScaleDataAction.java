@@ -23,7 +23,7 @@ import org.esa.snap.rcp.actions.AbstractSnapAction;
 
 import java.awt.event.ActionEvent;
 
-import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
+import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.EXPLORER;
 
 /*
 @ActionID(category = "Raster", id = "org.esa.s1tbx.dat.ScaleDataAction" )

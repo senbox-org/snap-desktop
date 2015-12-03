@@ -15,11 +15,11 @@
  */
 package org.esa.snap.raster.gpf.ui;
 
-import org.esa.snap.raster.gpf.UndersamplingOp;
 import org.esa.snap.graphbuilder.gpf.ui.BaseOperatorUI;
 import org.esa.snap.graphbuilder.gpf.ui.OperatorUIUtils;
 import org.esa.snap.graphbuilder.gpf.ui.UIValidation;
 import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
+import org.esa.snap.raster.gpf.UndersamplingOp;
 import org.esa.snap.ui.AppContext;
 
 import javax.swing.*;

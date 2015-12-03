@@ -34,7 +34,7 @@ import org.openide.util.NbBundle;
 import org.openide.util.Utilities;
 import org.openide.util.WeakListeners;
 
-import javax.swing.Action;
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 
 @ActionID(category = "Raster", id = "org.esa.snap.raster.rcp.actions.AmplitudeToIntensityAction")
@@ -95,12 +95,12 @@ public class AmplitudeToIntensityAction extends AbstractSnapAction implements Co
                 bandName = replaceName(bandName, "Amplitude", "Intensity");
                 if (product.getBand(bandName) != null) {
                     Dialogs.showWarning(product.getName() + " already contains an "
-                                        + bandName + " band");
+                            + bandName + " band");
                     return;
                 }
 
                 if (Dialogs.requestDecision("Convert to Intensity", "Would you like to convert band "
-                                                                    + band.getName() + " into Intensity in a new virtual band?", true, null) == Dialogs.Answer.YES) {
+                        + band.getName() + " into Intensity in a new virtual band?", true, null) == Dialogs.Answer.YES) {
                     convert(product, band, false);
                 }
             } else if (unit != null && unit.contains(Unit.INTENSITY)) {
@@ -108,11 +108,11 @@ public class AmplitudeToIntensityAction extends AbstractSnapAction implements Co
                 bandName = replaceName(bandName, "Intensity", "Amplitude");
                 if (product.getBand(bandName) != null) {
                     Dialogs.showWarning(product.getName() + " already contains an "
-                                        + bandName + " band");
+                            + bandName + " band");
                     return;
                 }
                 if (Dialogs.requestDecision("Convert to Amplitude", "Would you like to convert band "
-                                                                    + band.getName() + " into Amplitude in a new virtual band?", true, null) == Dialogs.Answer.YES) {
+                        + band.getName() + " into Amplitude in a new virtual band?", true, null) == Dialogs.Answer.YES) {
                     convert(product, band, true);
                 }
             }
@@ -163,10 +163,10 @@ public class AmplitudeToIntensityAction extends AbstractSnapAction implements Co
         }
 
         final VirtualBand virtBand = new VirtualBand(bandName,
-                                                     ProductData.TYPE_FLOAT32,
-                                                     band.getRasterWidth(),
-                                                     band.getRasterHeight(),
-                                                     expression);
+                ProductData.TYPE_FLOAT32,
+                band.getRasterWidth(),
+                band.getRasterHeight(),
+                expression);
         virtBand.setUnit(unit);
         virtBand.setDescription(band.getDescription());
         virtBand.setNoDataValueUsed(true);
