@@ -1,0 +1,41 @@
+
+<filesystem>
+
+    <folder name="Actions">
+        <folder name="Operators">
+            <file name="org-esa-snap-landcover-gpf-LandCoverMask-Action.instance">
+                <attr name="instanceCreate" methodvalue="org.openide.awt.Actions.alwaysEnabled"/>
+                <attr name="delegate" methodvalue="org.esa.snap.graphbuilder.rcp.actions.OperatorAction.create"/>
+                <attr name="displayName" stringvalue="LandCover Mask"/>
+                <attr name="operatorName" stringvalue="Land-Cover-Mask"/>
+                <attr name="dialogTitle" stringvalue="LandCover Mask"/>
+                <attr name="targetProductNameSuffix" stringvalue="_lc-msk"/>
+                <attr name="ShortDescription" stringvalue="LandCover Mask Generation"/>
+                <attr name="helpId" stringvalue="LandCoverMask"/>
+                <attr name="icon" stringvalue="rstbIcon"/>
+            </file>
+        </folder>
+    </folder>
+
+    <folder name="Menu">
+        <folder name="Raster">
+            <folder name="Masks">
+                <file name="org-esa-snap-landcover-gpf-LandCoverMask-Action.shadow">
+                    <attr name="originalFile" stringvalue="Actions/Operators/org-esa-snap-landcover-gpf-LandCoverMask-Action.instance"/>
+                </file>
+            </folder>
+        </folder>
+    </folder>
+
+    <folder name="OperatorUIs">
+        <file name="org.esa.snap.landcover.gpf.ui.AddLandCoverOpUI">
+            <attr name="operatorUIClass" stringvalue="org.esa.snap.landcover.gpf.ui.AddLandCoverOpUI"/>
+            <attr name="operatorName" stringvalue="AddLandCover"/>
+        </file>
+        <file name="org.esa.snap.landcover.gpf.ui.LandCoverMaskOpUI">
+            <attr name="operatorUIClass" stringvalue="org.esa.snap.landcover.gpf.ui.LandCoverMaskOpUI"/>
+            <attr name="operatorName" stringvalue="Land-Cover-Mask"/>
+        </file>
+    </folder>
+
+</filesystem>

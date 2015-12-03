@@ -45,12 +45,12 @@
         <module>snap-gpf-ui</module>
         <module>snap-graph-builder</module>
         <module>snap-help</module>
+		<module>snap-land-cover-ui</module>
         <module>snap-pixel-extraction-ui</module>
         <module>snap-product-library</module>
         <!--<module>snap-scripting</module>-->
         <module>snap-ui</module>
         <module>snap-unmix-ui</module>
-        <!--<module>snap-visat-rcp</module>-->
         <module>snap-worldwind</module>
         <module>snap-sta-ui</module>
         <module>snap-smart-configurator-ui</module>

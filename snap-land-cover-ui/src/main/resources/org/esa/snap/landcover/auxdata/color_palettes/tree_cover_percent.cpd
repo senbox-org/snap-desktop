@@ -1,0 +1,16 @@
+#BEAM Colour Palette Definition File
+#Sun Nov 22 22:11:19 EST 2015
+autoDistribute=false
+color0=255,200,0
+color1=255,255,0
+color2=0,255,0
+color3=4,83,4
+color4=0,35,6
+color5=0,0,255
+numPoints=6
+sample0=1.0
+sample1=3.0
+sample2=35.0
+sample3=60.0
+sample4=100.0
+sample5=199.0
