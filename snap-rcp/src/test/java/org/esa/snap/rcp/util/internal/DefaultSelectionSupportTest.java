@@ -3,24 +3,21 @@ package org.esa.snap.rcp.util.internal;
 import org.esa.snap.rcp.util.ContextGlobalExtender;
 import org.esa.snap.rcp.util.SelectionSupport;
 import org.esa.snap.ui.product.ProductSceneView;
-import org.junit.BeforeClass;
+import org.junit.Assume;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.openide.util.Utilities;
+
+import java.awt.GraphicsEnvironment;
 
 import static org.junit.Assert.*;
 
 public class DefaultSelectionSupportTest {
 
-    private static ContextGlobalExtender globalExtender;
-
-    @BeforeClass
-    public static void setUp() throws Exception {
-        globalExtender = Utilities.actionsGlobalContext().lookup(ContextGlobalExtender.class);
-    }
-
     @Test
     public void testSingleSelection() throws Exception {
+        Assume.assumeFalse(GraphicsEnvironment.isHeadless());
+        ContextGlobalExtender globalExtender = Utilities.actionsGlobalContext().lookup(ContextGlobalExtender.class);
         DefaultSelectionSupport<ProductSceneView> selectionChangeSupport = new DefaultSelectionSupport<>(ProductSceneView.class);
         MySelectionChangeHandler changeListener = new MySelectionChangeHandler();
         selectionChangeSupport.addHandler(changeListener);
@@ -34,6 +31,8 @@ public class DefaultSelectionSupportTest {
 
     @Test
     public void testMultiSelection() throws Exception {
+        Assume.assumeFalse(GraphicsEnvironment.isHeadless());
+        ContextGlobalExtender globalExtender = Utilities.actionsGlobalContext().lookup(ContextGlobalExtender.class);
         DefaultSelectionSupport<ProductSceneView> selectionChangeSupport = new DefaultSelectionSupport<>(ProductSceneView.class);
         MySelectionChangeHandler changeListener = new MySelectionChangeHandler();
         selectionChangeSupport.addHandler(changeListener);
