@@ -26,6 +26,10 @@ before_install:
   # For building, everything is available in nexus.senbox.net, which is stored in pom.xml,
   # so we just completely remove the default repositories settings
   - sed -i -n '/<repositories>/{p; :a; N; /<\/repositories>/!ba; s/.*\n//}; p' ~/.m2/settings.xml
+  
+  # https://docs.travis-ci.com/user/gui-and-headless-browsers/#Using-xvfb-to-Run-Tests-That-Require-a-GUI
+	- "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16"
+  - sleep 3 # give xvfb some time to start
 
 install:
   - true
