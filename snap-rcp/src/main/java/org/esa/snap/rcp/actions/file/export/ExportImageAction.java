@@ -60,6 +60,9 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyVetoException;
+import java.beans.VetoableChangeListener;
 
 /**
  * Action for exporting scene views as images.
@@ -101,6 +104,7 @@ public class ExportImageAction extends AbstractExportImageAction {
     private SizeComponent sizeComponent;
     @SuppressWarnings("FieldCanBeLocal")
     private Lookup.Result<ProductSceneView> result;
+    private JRadioButton buttonFullResolution;
 
 
     public ExportImageAction() {
@@ -140,50 +144,71 @@ public class ExportImageAction extends AbstractExportImageAction {
 
     protected void configureFileChooser(final SnapFileChooser fileChooser, final ProductSceneView view,
                                         String imageBaseName) {
-        fileChooser.setDialogTitle(SnapApp.getDefault().getInstanceName() + " - " + "export Image"); /*I18N*/
+        fileChooser.setDialogTitle(SnapApp.getDefault().getInstanceName() + " - " + "Export Image"); /*I18N*/
         if (view.isRGB()) {
             fileChooser.setCurrentFilename(imageBaseName + "_RGB");
         } else {
             fileChooser.setCurrentFilename(imageBaseName + "_" + view.getRaster().getName());
         }
-        final JPanel regionPanel = new JPanel(new GridLayout(2, 1));
-        regionPanel.setBorder(BorderFactory.createTitledBorder("Image Region")); /*I18N*/
         buttonFullScene = new JRadioButton("Full scene", false);
         final JRadioButton buttonVisibleRegion = new JRadioButton("Visible region", true); /*I18N*/
-        ButtonGroup buttonGroup = new ButtonGroup();
-        buttonGroup.add(buttonVisibleRegion);
-        buttonGroup.add(buttonFullScene);
+
+        final JRadioButton buttonViewResolution =  new JRadioButton("Current view resolution", true);
+        buttonFullResolution = new JRadioButton("Full resolution", false);
+
+        ButtonGroup buttonGroupRegion = new ButtonGroup();
+        buttonGroupRegion.add(buttonVisibleRegion);
+        buttonGroupRegion.add(buttonFullScene);
+
+        ButtonGroup buttonGroupResolution = new ButtonGroup();
+        buttonGroupResolution.add(buttonViewResolution);
+        buttonGroupResolution.add(buttonFullResolution);
+
+        final JPanel regionPanel = new JPanel(new GridLayout(2, 1));
+        regionPanel.setBorder(BorderFactory.createTitledBorder("Image Region")); /*I18N*/
         regionPanel.add(buttonVisibleRegion);
         regionPanel.add(buttonFullScene);
+
+        final JPanel resolutionPanel = new JPanel(new GridLayout(2, 1));
+        resolutionPanel.setBorder(BorderFactory.createTitledBorder("Image Resolution")); /*I18N*/
+        resolutionPanel.add(buttonViewResolution);
+        resolutionPanel.add(buttonFullResolution);
+
         sizeComponent = new SizeComponent(view);
         JComponent sizePanel = sizeComponent.createComponent();
         sizePanel.setBorder(BorderFactory.createTitledBorder("Image Dimension")); /*I18N*/
+
         final JPanel accessory = new JPanel();
         accessory.setLayout(new BoxLayout(accessory, BoxLayout.Y_AXIS));
         accessory.add(regionPanel);
+        accessory.add(resolutionPanel);
         accessory.add(sizePanel);
+
         fileChooser.setAccessory(accessory);
 
-        buttonFullScene.addActionListener(e -> sizeComponent.updateDimensions());
-        buttonVisibleRegion.addActionListener(e -> sizeComponent.updateDimensions());
-
+        buttonFullScene.addPropertyChangeListener(e -> sizeComponent.updateDimensions());
+        buttonViewResolution.addPropertyChangeListener(e -> sizeComponent.updateDimensions());
+        buttonVisibleRegion.addPropertyChangeListener(evt -> {
+            final boolean b = buttonVisibleRegion.isSelected();
+            buttonViewResolution.setEnabled(b);
+            buttonFullResolution.setEnabled(b);
+            resolutionPanel.setEnabled(b);
+        });
     }
 
     protected RenderedImage createImage(String imageFormat, ProductSceneView view) {
         final boolean useAlpha = !BMP_FORMAT_DESCRIPTION[0].equals(imageFormat) && !JPEG_FORMAT_DESCRIPTION[0].equals(imageFormat);
         final boolean entireImage = isEntireImageSelected();
-
-        return createImage(view, entireImage, sizeComponent.getDimension(), useAlpha,
-                           GEOTIFF_FORMAT_DESCRIPTION[0].equals(imageFormat));
+        return createImage((ProductSceneView) view, (boolean) entireImage, (Dimension) sizeComponent.getDimension(), (boolean) useAlpha,
+                           (boolean) GEOTIFF_FORMAT_DESCRIPTION[0].equals(imageFormat));
     }
 
-    static RenderedImage createImage(ProductSceneView view, boolean fullScene, Dimension dimension,
-                                     boolean alphaChannel, boolean geoReferenced) {
+    static RenderedImage createImage(ProductSceneView view, boolean fullScene, Dimension dimension, boolean alphaChannel, boolean geoReferenced) {
         final int imageType = alphaChannel ? BufferedImage.TYPE_4BYTE_ABGR : BufferedImage.TYPE_3BYTE_BGR;
+
         final BufferedImage bufferedImage = new BufferedImage(dimension.width, dimension.height, imageType);
 
-        final BufferedImageRendering imageRendering = createRendering(view, fullScene,
-                                                                      geoReferenced, bufferedImage);
+        final BufferedImageRendering imageRendering = createRendering(view, fullScene, geoReferenced, bufferedImage);
         if (!alphaChannel) {
             final Graphics2D graphics = imageRendering.getGraphics();
             graphics.setColor(view.getLayerCanvas().getBackground());
@@ -281,6 +306,8 @@ public class ExportImageAction extends AbstractExportImageAction {
                 final double iScale = imageBounds.getHeight() / imageBounds.getWidth();
                 double scaleFactorX = mScale * iScale;
                 bounds = new Rectangle2D.Double(0, 0, scaleFactorX * imageBounds.getWidth(), 1 * imageBounds.getHeight());
+            } else if (buttonFullResolution.isSelected()) {
+                bounds = view.getVisibleImageBounds();
             } else {
                 bounds = view.getLayerCanvas().getViewport().getViewBounds();
             }
@@ -291,7 +318,6 @@ public class ExportImageAction extends AbstractExportImageAction {
             final long freeMemory = getFreeMemory();
             final long expectedMemory = getExpectedMemory(w, h);
             if (freeMemory < expectedMemory) {
-                ;
                 if (showQuestionDialog() != Dialogs.Answer.YES) {
                     final double scale = Math.sqrt((double) freeMemory / (double) expectedMemory);
                     final double scaledW = w * scale;
@@ -300,7 +326,6 @@ public class ExportImageAction extends AbstractExportImageAction {
                     w = toInteger(scaledW);
                     h = toInteger(scaledH);
                 }
-
             }
 
             setWidth(w);
