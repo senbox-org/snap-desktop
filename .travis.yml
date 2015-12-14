@@ -11,15 +11,15 @@ env:
    #   via the "travis encrypt" command using the project repo's public key
    - secure: "OC+kROtUIK3rvVl0l51uAsMA+rGFtDv+PADJ/oO+x8feGrrO/awINw9SzUDs4o8cvpkEwJd2VWKL/abhVSB4H0AIQvEou1CV1tB+4JLBwpV0h6OEG/xufS89FhHEYyVanFk6eUCu+YCKsRaH3uBxFaXgGj4ZwQqqsgwb3lxives="
 
-addons:
-  coverity_scan:
-    project:
-      name: "senbox-org/snap-desktop"
-      description: "Build submitted via Travis CI"
-    notification_email: stb-coverity@thor.si.c-s.fr
-    build_command_prepend: "mvn clean"
-    build_command:   "mvn -DskipTests=true compile"
-    branch_pattern: coverity_scan
+#addons:
+#  coverity_scan:
+#    project:
+#      name: "senbox-org/snap-desktop"
+#      description: "Build submitted via Travis CI"
+#    notification_email: stb-coverity@thor.si.c-s.fr
+#    build_command_prepend: "mvn clean"
+#    build_command:   "mvn -DskipTests=true compile"
+#    branch_pattern: coverity_scan
 
 before_install:
   # Work around discontinued nexus.codehaus.org (see https://github.com/travis-ci/travis-ci/issues/4629)
