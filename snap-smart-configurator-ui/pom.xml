@@ -42,12 +42,10 @@
         <dependency>
             <groupId>org.esa.snap</groupId>
             <artifactId>snap-smart-configurator</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.esa.snap</groupId>
             <artifactId>snap-core</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.esa.snap</groupId>
@@ -81,32 +79,32 @@
         <dependency>
             <groupId>org.esa.snap</groupId>
             <artifactId>snap-geotiff</artifactId>
-            <version>${project.version}</version>
+            <version>${snap.version}</version>
         </dependency>
         <dependency>
             <groupId>org.esa.snap</groupId>
             <artifactId>snap-envi-reader</artifactId>
-            <version>${project.version}</version>
+            <version>${snap.version}</version>
         </dependency>
         <dependency>
             <groupId>org.esa.snap</groupId>
             <artifactId>snap-envisat-reader</artifactId>
-            <version>${project.version}</version>
+            <version>${snap.version}</version>
         </dependency>
         <dependency>
             <groupId>org.esa.snap</groupId>
             <artifactId>snap-bigtiff</artifactId>
-            <version>${project.version}</version>
+            <version>${snap.version}</version>
         </dependency>
         <dependency>
             <groupId>org.esa.snap</groupId>
             <artifactId>snap-netcdf</artifactId>
-            <version>${project.version}</version>
+            <version>${snap.version}</version>
         </dependency>
         <dependency>
             <groupId>org.esa.snap</groupId>
             <artifactId>snap-graph-builder</artifactId>
-            <version>${project.version}</version>
+            <version>${snap.version}</version>
         </dependency>
 
         <dependency>
