@@ -19,6 +19,7 @@ import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.core.SubProgressMonitor;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.graph.GraphException;
+import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.engine_utilities.db.CommonReaders;
 import org.esa.snap.engine_utilities.db.ProductEntry;
@@ -460,7 +461,9 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog {
 
             final File targetFolder = productSetPanel.getTargetFolder();
             if(!targetFolder.exists()) {
-                targetFolder.mkdirs();
+                if(!targetFolder.mkdirs()) {
+                    SystemUtils.LOG.severe("Unable to create folders in "+targetFolder);
+                }
             }
             final File targetFile = new File(targetFolder, name);
             final String targetFormat = productSetPanel.getTargetFormat();
