@@ -131,9 +131,9 @@ public abstract class AbstractExportImageAction extends AbstractAction implement
         final SnapFileFilter fileFilter = fileChooser.getSnapFileFilter();
         String imageFormat = fileFilter != null ? fileFilter.getFormatName() : "TIFF";
         if (imageFormat.equals(GEOTIFF_FORMAT_DESCRIPTION[0]) && !entireImageSelected) {
-            Dialogs.Answer status = Dialogs.requestDecision(dialogTitle,
-                                                                    "GeoTIFF is not applicable to image clippings. " +
-                                                                            "Shall TIFF format be used instead?", true, null);
+            final String msg = "GeoTIFF is not applicable to image clippings. Please select 'Full scene' option." +
+                                   "\nShall TIFF format be used instead?";
+            Dialogs.Answer status = Dialogs.requestDecision(dialogTitle, msg, true, null);
             if (status == Dialogs.Answer.YES) {
                 imageFormat = "TIFF";
             } else {
