@@ -53,6 +53,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -509,13 +510,17 @@ public final class DatabasePane extends JPanel {
 
             text.append(entry.getName());
             text.append("\n\n");
-            text.append(entry.getAcquisitionMode() + "   " + sampleType + '\n');
+            text.append(entry.getMission());
+            text.append("\n");
+            text.append(entry.getAcquisitionMode() + "   " + entry.getProductType() +" "+ sampleType + '\n');
             text.append(acqTime.format());
             text.append('\n');
 
             text.append("Orbit: " + absOrbit);
             if (relOrbit != AbstractMetadata.NO_METADATA)
                 text.append("  Track: " + relOrbit);
+            text.append('\n');
+            text.append("Size: "+getSizeString(entry.getFileSize()));
             text.append('\n');
             if (!map.isEmpty()) {
                 text.append(map);
@@ -529,8 +534,40 @@ public final class DatabasePane extends JPanel {
                 text.append("Terrain Corrected ");
 
             productText.setText(text.toString());
+        } else if(selections != null && selections.length > 1) {
+            long totalSize = 0;
+            for(ProductEntry entry : selections) {
+                totalSize += entry.getFileSize();
+            }
+
+            final StringBuilder text = new StringBuilder(255);
+            text.append(selections.length + " products");
+            text.append("\n");
+            text.append("Total: "+getSizeString(totalSize));
+
+            productText.setText(text.toString());
         } else {
             productText.setText("");
         }
+    }
+
+    private static double MB = 1024*1024, GB = 1024, TB = 1024*1024;
+    private static DecimalFormat df = new DecimalFormat("#.00");
+
+    private String getSizeString(long bytes) {
+        double mb = bytes/MB;
+        String unit;
+        double value;
+        if(mb > TB) {
+            value = mb/TB;
+            unit = "TB";
+        } else if(mb > GB) {
+            value = mb/GB;
+            unit = "GB";
+        } else {
+            value = mb;
+            unit = "MB";
+        }
+        return df.format(value) + " " + unit;
     }
 }
