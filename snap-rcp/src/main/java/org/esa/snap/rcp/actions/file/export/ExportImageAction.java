@@ -60,9 +60,6 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyVetoException;
-import java.beans.VetoableChangeListener;
 
 /**
  * Action for exporting scene views as images.
@@ -358,7 +355,7 @@ public class ExportImageAction extends AbstractExportImageAction {
 
         private Dialogs.Answer showQuestionDialog() {
             return Dialogs.requestDecision(Bundle.CTL_ExportImageAction_MenuText(),
-                                               "There may not be enough memory to export the ima because\n" +
+                                               "There may not be enough memory to export the image because\n" +
                                                        "the image dimension is too large. \n Do you really want to keep the image dimension?",
                                            true, null);
         }
