@@ -221,7 +221,12 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
                 } else {
                     final RescanOptions dlg = new RescanOptions();
                     dlg.show();
-                    rescanFolder(dlg.shouldDoRecusive(), dlg.shouldDoQuicklooks());
+                    if(dlg.IsOK()) {
+                        DBScanner.Options options = new DBScanner.Options(dlg.shouldDoRecusive(),
+                                dlg.shouldValidateZips(),
+                                dlg.shouldDoQuicklooks());
+                        rescanFolder(options);
+                    }
                 }
             }
         });
@@ -367,12 +372,17 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         final RescanOptions dlg = new RescanOptions();
         dlg.show();
 
-        libConfig.addBaseDir(baseDir);
-        final int index = repositoryListCombo.getItemCount();
-        repositoryListCombo.insertItemAt(baseDir, index);
-        setUIComponentsEnabled(repositoryListCombo.getItemCount() > 1);
+        if(dlg.IsOK()) {
+            libConfig.addBaseDir(baseDir);
+            final int index = repositoryListCombo.getItemCount();
+            repositoryListCombo.insertItemAt(baseDir, index);
+            setUIComponentsEnabled(repositoryListCombo.getItemCount() > 1);
 
-        updateRepostitory(baseDir, dlg.shouldDoRecusive(), dlg.shouldDoQuicklooks());
+            DBScanner.Options options = new DBScanner.Options(dlg.shouldDoRecusive(),
+                    dlg.shouldValidateZips(),
+                    dlg.shouldDoQuicklooks());
+            updateRepostitory(baseDir, options);
+        }
     }
 
     LabelBarProgressMonitor createLabelBarProgressMonitor() {
@@ -381,10 +391,10 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         return progMon;
     }
 
-    private synchronized void updateRepostitory(final File baseDir, final boolean doRecursive, final boolean doQuicklooks) {
+    private synchronized void updateRepostitory(final File baseDir, final DBScanner.Options options) {
         if (baseDir == null) return;
         progMon = createLabelBarProgressMonitor();
-        final DBScanner scanner = new DBScanner(dbPane.getDB(), baseDir, doRecursive, doQuicklooks, progMon);
+        final DBScanner scanner = new DBScanner(dbPane.getDB(), baseDir, options, progMon);
         scanner.addListener(new MyDatabaseScannerListener());
         scanner.execute();
     }
@@ -460,13 +470,13 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         dbPane.findSlices(dataTakeId);
     }
 
-    private void rescanFolder(final boolean doRecursive, final boolean doQuicklooks) {
+    private void rescanFolder(final DBScanner.Options options) {
         if (repositoryListCombo.getSelectedIndex() != 0) {
-            updateRepostitory((File) repositoryListCombo.getSelectedItem(), doRecursive, doQuicklooks);
+            updateRepostitory((File) repositoryListCombo.getSelectedItem(), options);
         } else {
             final File[] baseDirList = libConfig.getBaseDirs();
             for (File f : baseDirList) {
-                updateRepostitory(f, doRecursive, doQuicklooks);
+                updateRepostitory(f, options);
             }
         }
     }
@@ -573,7 +583,7 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
     }
 
     public void notifyDirectoryChanged() {
-        rescanFolder(true, false);
+        rescanFolder(new DBScanner.Options(true, false, false));
         UpdateUI();
     }
 
@@ -617,14 +627,19 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
 
         @Override
         protected void initContent() {
-            items.put("Generate quicklooks?", false);
             items.put("Search folder recursively?", true);
+            items.put("CRC check zip files?", false);
+            items.put("Generate quicklooks?", false);
 
             super.initContent();
         }
 
         public boolean shouldDoRecusive() {
             return items.get("Search folder recursively?");
+        }
+
+        public boolean shouldValidateZips() {
+            return items.get("CRC check zip files?");
         }
 
         public boolean shouldDoQuicklooks() {

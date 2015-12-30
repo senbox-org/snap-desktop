@@ -15,13 +15,16 @@
  */
 package org.esa.snap.productlibrary.rcp.toolviews;
 
+import com.bc.ceres.core.ProgressMonitor;
 import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.engine_utilities.db.CommonReaders;
 import org.esa.snap.engine_utilities.db.ProductDB;
 import org.esa.snap.engine_utilities.db.ProductEntry;
 import org.esa.snap.engine_utilities.db.QuickLookGenerator;
 import org.esa.snap.engine_utilities.gpf.ThreadManager;
 import org.esa.snap.engine_utilities.util.ProductFunctions;
+import org.esa.snap.engine_utilities.util.ZipUtils;
 
 import javax.swing.SwingWorker;
 import java.io.File;
@@ -38,19 +41,17 @@ public final class DBScanner extends SwingWorker {
     private final ProductDB db;
 
     private final File baseDir;
-    private final boolean doRecursive;
-    private final boolean generateQuicklooks;
-    private final com.bc.ceres.core.ProgressMonitor pm;
+    private final Options options;
+    private final ProgressMonitor pm;
     private final List<DBScannerListener> listenerList = new ArrayList<>(1);
     private final List<ErrorFile> errorList = new ArrayList<>();
 
-    public DBScanner(final ProductDB database, final File baseDir, final boolean doRecursive,
-                     final boolean doQuicklooks, final com.bc.ceres.core.ProgressMonitor pm) {
+    public DBScanner(final ProductDB database, final File baseDir, final Options options,
+                     final ProgressMonitor pm) {
         this.db = database;
         this.pm = pm;
         this.baseDir = baseDir;
-        this.doRecursive = doRecursive;
-        this.generateQuicklooks = doQuicklooks;
+        this.options = options;
     }
 
     public void addListener(final DBScannerListener listener) {
@@ -75,7 +76,7 @@ public final class DBScanner extends SwingWorker {
 
         final List<File> dirList = new ArrayList<>(20);
         dirList.add(baseDir);
-        if (doRecursive) {
+        if (options.doRecursive) {
             final File[] subDirs = collectAllSubDirs(baseDir, 0, pm);
             dirList.addAll(Arrays.asList(subDirs));
         }
@@ -112,22 +113,29 @@ public final class DBScanner extends SwingWorker {
                 pm.setTaskName(taskMsg);
                 pm.worked(1);
 
+                if (pm.isCanceled())
+                    break;
+
+                if(options.validateZips) {
+                    if(ZipUtils.isZip(file) && !ZipUtils.isValid(file)) {
+                        errorList.add(new ErrorFile(file, ErrorFile.CORRUPT_ZIP));
+                        continue;
+                    }
+                }
+
                 // check if already exists in db
                 //final ProductEntry existingEntry = db.getProductEntry(file);
                 final ProductEntry existingEntry = fileMap.get(file);
 
                 if (existingEntry != null) {
                     // check for missing quicklook
-                    if (generateQuicklooks && !existingEntry.quickLookExists()) {
+                    if (options.generateQuicklooks && !existingEntry.quickLookExists()) {
                         qlProductFiles.add(file);
                         qlIDs.add(existingEntry.getId());
                     }
                     existingEntry.dispose();
                     continue;
                 }
-
-                if (pm.isCanceled())
-                    break;
 
                 try {
                     // quick test for common readers
@@ -142,11 +150,11 @@ public final class DBScanner extends SwingWorker {
                         sourceProduct.dispose();
                         entry.dispose();
                     } else if (!file.isDirectory()) {
-                        System.out.println("No reader for " + file.getAbsolutePath());
+                        SystemUtils.LOG.warning("No reader for " + file.getAbsolutePath());
                     }
                 } catch (Throwable e) {
                     errorList.add(new ErrorFile(file, ErrorFile.UNREADABLE));
-                    System.out.println("Unable to read " + file.getAbsolutePath() + '\n' + e.getMessage());
+                    SystemUtils.LOG.warning("Unable to read " + file.getAbsolutePath() + '\n' + e.getMessage());
                 }
             }
 
@@ -154,7 +162,7 @@ public final class DBScanner extends SwingWorker {
 
             notifyMSG(DBScannerListener.MSG.FOLDERS_SCANNED);
 
-            if (generateQuicklooks) {
+            if (options.generateQuicklooks) {
                 final int numQL = qlProductFiles.size();
                 pm.beginTask("Generating Quicklooks...", numQL);
                 final ThreadManager threadManager = new ThreadManager();
@@ -175,7 +183,7 @@ public final class DBScanner extends SwingWorker {
                             try {
                                 QuickLookGenerator.createQuickLook(qlID, file);
                             } catch (Throwable e) {
-                                System.out.println("QL Unable to read " + file.getAbsolutePath() + '\n' + e.getMessage());
+                                SystemUtils.LOG.warning("QL Unable to read " + file.getAbsolutePath() + '\n' + e.getMessage());
                             }
                         }
                     };
@@ -188,7 +196,7 @@ public final class DBScanner extends SwingWorker {
             pm.setTaskName("");
 
         } catch (Throwable e) {
-            System.out.println("Scanning Exception\n" + e.getMessage());
+            SystemUtils.LOG.severe("Scanning Exception\n" + e.getMessage());
         } finally {
             pm.done();
         }
@@ -200,7 +208,7 @@ public final class DBScanner extends SwingWorker {
         notifyMSG(DBScannerListener.MSG.DONE);
     }
 
-    private static File[] collectAllSubDirs(final File dir, int count, final com.bc.ceres.core.ProgressMonitor pm) {
+    private static File[] collectAllSubDirs(final File dir, int count, final ProgressMonitor pm) {
         final List<File> dirList = new ArrayList<>(20);
         final ProductFunctions.DirectoryFileFilter dirFilter = new ProductFunctions.DirectoryFileFilter();
 
@@ -225,7 +233,8 @@ public final class DBScanner extends SwingWorker {
     public static class ErrorFile {
         public final File file;
         public final String message;
-        public final static String CORRUPT = "Corrupt Image";
+        public final static String CORRUPT_ZIP = "Corrupt zip file";
+        public final static String CORRUPT_IMAGE = "Corrupt Image";
         public final static String UNREADABLE = "Product unreadable";
 
         public ErrorFile(final File file, final String msg) {
@@ -234,10 +243,22 @@ public final class DBScanner extends SwingWorker {
         }
     }
 
+    public static class Options {
+        private final boolean doRecursive;
+        private final boolean validateZips;
+        private final boolean generateQuicklooks;
+
+        public Options(final boolean doRecursive, final boolean validateZips, final boolean generateQuicklooks) {
+            this.doRecursive = doRecursive;
+            this.validateZips = validateZips;
+            this.generateQuicklooks = generateQuicklooks;
+        }
+    }
+
     public interface DBScannerListener {
 
-        public enum MSG {DONE, FOLDERS_SCANNED, QUICK_LOOK_GENERATED}
+        enum MSG {DONE, FOLDERS_SCANNED, QUICK_LOOK_GENERATED}
 
-        public void notifyMSG(final DBScanner dbScanner, final MSG msg);
+        void notifyMSG(final DBScanner dbScanner, final MSG msg);
     }
 }
