@@ -576,7 +576,7 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog {
         @Override
         protected Boolean doInBackground() throws Exception {
 
-            pm.beginTask("Processing Graph...", 100 * graphExecutorList.size());
+            pm.beginTask("Processing Graph...", graphExecutorList.size());
             try {
                 timeMonitor.start();
                 isProcessing = true;
@@ -588,25 +588,29 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog {
                 for (GraphExecuter graphEx : graphExecutorList) {
                     if (pm.isCanceled()) break;
 
+                    final String nOfm = String.valueOf(graphIndex + 1) + " of " + graphExecutorList.size() + ' ';
+                    final String statusText = "Processing " + nOfm + fileList[graphIndex].getName();
+                    statusLabel.setText(statusText);
+                    notifyMSG(BatchProcessListener.BatchMSG.UPDATE, statusText);
+
                     if(shouldSkip(graphEx, existingFiles)) {
+                        ++graphIndex;
+                        pm.worked(1);
                         continue;
                     }
 
                     try {
-                        final String nOfm = String.valueOf(graphIndex + 1) + " of " + graphExecutorList.size() + ' ';
-                        final String statusText = "Processing " + nOfm + fileList[graphIndex].getName();
-                        statusLabel.setText(statusText);
-                        notifyMSG(BatchProcessListener.BatchMSG.UPDATE, statusText);
-
                         MemUtils.freeAllMemory();
 
                         graphEx.InitGraph();
 
-                        graphEx.executeGraph(new SubProgressMonitor(pm, 100));
+                        graphEx.executeGraph(new SubProgressMonitor(pm, 1));
 
                         graphEx.disposeGraphContext();
+
+                        pm.worked(1);
                     } catch (Exception e) {
-                        System.out.print(e.getMessage());
+                        SystemUtils.LOG.severe(e.getMessage());
                         String filename = fileList[graphIndex].getName();
                         errMsgs.add(filename + " -> " + e.getMessage());
                     }
@@ -629,13 +633,14 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog {
                 MemUtils.freeAllMemory();
 
             } catch (Exception e) {
-                System.out.print(e.getMessage());
+                SystemUtils.LOG.severe(e.getMessage());
                 if (e.getMessage() != null && !e.getMessage().isEmpty())
                     statusLabel.setText(e.getMessage());
                 else
                     statusLabel.setText(e.toString());
                 errorOccured = true;
             } finally {
+                statusLabel.setText("Batch processing complete");
                 isProcessing = false;
                 pm.done();
             }
