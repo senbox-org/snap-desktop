@@ -584,9 +584,10 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog {
                 final File[] existingFiles = productSetPanel.getTargetFolder().listFiles();
 
                 final File[] fileList = productSetPanel.getFileList();
-                int graphIndex = 0;
+                int graphIndex = 0, processedGraphs = 0;
                 for (GraphExecuter graphEx : graphExecutorList) {
                     if (pm.isCanceled()) break;
+                    ++graphIndex;
 
                     final String nOfm = String.valueOf(graphIndex + 1) + " of " + graphExecutorList.size() + ' ';
                     final String statusText = "Processing " + nOfm + fileList[graphIndex].getName();
@@ -594,7 +595,6 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog {
                     notifyMSG(BatchProcessListener.BatchMSG.UPDATE, statusText);
 
                     if(shouldSkip(graphEx, existingFiles)) {
-                        ++graphIndex;
                         pm.worked(1);
                         continue;
                     }
@@ -608,7 +608,6 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog {
 
                         graphEx.disposeGraphContext();
 
-                        pm.worked(1);
                     } catch (Exception e) {
                         SystemUtils.LOG.severe(e.getMessage());
                         String filename = fileList[graphIndex].getName();
@@ -616,11 +615,11 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog {
                     }
 
                     graphEx = null;
-                    ++graphIndex;
+                    ++processedGraphs;
 
                     // calculate time remaining
                     final long duration = timeMonitor.getCurrentDuration();
-                    final double timePerGraph = duration / (double) graphIndex;
+                    final double timePerGraph = duration / (double) processedGraphs;
                     final long timeLeft = (long) (timePerGraph * (graphExecutorList.size() - graphIndex));
                     if (timeLeft > 0) {
                         String remainingStr = "Estimated " + ProcessTimeMonitor.formatDuration(timeLeft) + " remaining";
