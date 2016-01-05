@@ -144,7 +144,7 @@ public class SimpleFeatureShapeFigure extends AbstractShapeFigure implements Sim
                     SceneRasterTransformUtils.transformShapeToSceneCoords(shape, sceneRasterTransform)));
             fireFigureChanged();
         } catch (SceneRasterTransformException e) {
-            e.printStackTrace();
+            //todo [Multisize_products] decide what to do here. Throw exception? - tf 201516
         }
     }
 
