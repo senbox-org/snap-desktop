@@ -101,7 +101,6 @@ public abstract class InsertPlacemarkInteractor extends FigureEditorInteractor {
             forward.transform(rasterPos, sceneRasterPixelPos);
         } catch (TransformException e) {
             Dialogs.showError("Could not place pin in image due to scene raster transformation exception");
-            e.printStackTrace();
             return;
         }
         PixelPos scenePixelPos = new PixelPos();
