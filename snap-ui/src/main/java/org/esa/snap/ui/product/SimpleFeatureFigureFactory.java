@@ -89,6 +89,7 @@ public class SimpleFeatureFigureFactory implements FigureFactory {
         }
     }
 
+    //todo throw Exception - tf 20160105
     @Override
     public ShapeFigure createPolygonFigure(Shape shape, FigureStyle style) {
         if (sceneRasterTransform == null) {
