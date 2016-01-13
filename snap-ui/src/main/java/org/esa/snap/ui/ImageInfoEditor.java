@@ -1088,7 +1088,7 @@ public abstract class ImageInfoEditor extends JPanel {
             if (isVerticalInSliderArea(evt.getY())) {
                 final int sliderIndex = getNearestSliderIndex(evt.getX());
                 final double dx = Math.abs(getAbsoluteSliderPos(getSliderSample(sliderIndex)) - evt.getX());
-                if (dx < SLIDER_WIDTH / 2) {
+                if (dx < Math.floor(SLIDER_WIDTH / 2.0)) {
                     return sliderIndex;
                 }
             }
@@ -1100,7 +1100,7 @@ public abstract class ImageInfoEditor extends JPanel {
             if (dy < SLIDER_VALUES_AREA_HEIGHT) {
                 final int sliderIndex = getNearestSliderIndex(evt.getX());
                 final double dx = Math.abs(getAbsoluteSliderPos(getSliderSample(sliderIndex)) - evt.getX());
-                if (dx < FONT_SIZE / 2) {
+                if (dx < Math.floor(FONT_SIZE / 2.0)) {
                     return sliderIndex;
                 }
             }
