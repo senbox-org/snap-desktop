@@ -9,8 +9,6 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.BorderLayout;
 
 /**
@@ -39,12 +37,11 @@ public class FilterSetsForm extends JPanel implements FilterSetForm.Listener {
             filterSetForm.addListener(this);
             tabbedPane.addTab(filterSet.getName(), filterSetForm);
         }
-        tabbedPane.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                FilterSetForm filterSetForm = (FilterSetForm) tabbedPane.getSelectedComponent();
-                Filter selectedFilter = filterSetForm.getSelectedFilterModel();
-                filterSetForm.fireFilterSelected(selectedFilter);
+        tabbedPane.addChangeListener(e -> {
+            FilterSetForm filterSetForm = (FilterSetForm) tabbedPane.getSelectedComponent();
+            if (filterSetForm != null) {
+                Filter selectedFilter1 = filterSetForm.getSelectedFilterModel();
+                filterSetForm.fireFilterSelected(selectedFilter1);
             }
         });
 
