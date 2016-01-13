@@ -148,8 +148,8 @@ class GeoCodingPanel extends PagePanel {
         if (usingUniformGeoCodings) {
             nodeType = "product";
             geoCoding = product.getSceneGeoCoding();
-            sceneCenter = new PixelPos(product.getSceneRasterWidth() / 2 + 0.5f,
-                                       product.getSceneRasterHeight() / 2 + 0.5f);
+            sceneCenter = new PixelPos(Math.floor(product.getSceneRasterWidth() / 2.0) + 0.5,
+                                       Math.floor(product.getSceneRasterHeight() / 2.0) + 0.5);
             sceneUL = new PixelPos(0 + 0.5f, 0 + 0.5f);
             sceneUR = new PixelPos(product.getSceneRasterWidth() - 1 + 0.5f, 0 + 0.5f);
             sceneLL = new PixelPos(0 + 0.5f, product.getSceneRasterHeight() - 1 + 0.5f);
@@ -163,13 +163,13 @@ class GeoCodingPanel extends PagePanel {
 
             nodeType = "band";
             geoCoding = raster.getGeoCoding();
-            sceneCenter = new PixelPos(raster.getRasterWidth() / 2 + 0.5f,
-                                       raster.getRasterHeight() / 2 + 0.5f);
-            sceneUL = new PixelPos(0 + 0.5f, 0 + 0.5f);
-            sceneUR = new PixelPos(raster.getRasterWidth() - 1 + 0.5f, 0 + 0.5f);
-            sceneLL = new PixelPos(0 + 0.5f, product.getSceneRasterHeight() - 1 + 0.5f);
-            sceneLR = new PixelPos(raster.getRasterWidth() - 1 + 0.5f,
-                                   raster.getRasterHeight() - 1 + 0.5f);
+            sceneCenter = new PixelPos(Math.floor(raster.getRasterWidth() / 2.0) + 0.5,
+                                       Math.floor(raster.getRasterHeight() / 2.0) + 0.5);
+            sceneUL = new PixelPos(0 + 0.5, 0 + 0.5);
+            sceneUR = new PixelPos(raster.getRasterWidth() - 1 + 0.5, 0 + 0.5);
+            sceneLL = new PixelPos(0 + 0.5, product.getSceneRasterHeight() - 1 + 0.5);
+            sceneLR = new PixelPos(raster.getRasterWidth() - 1 + 0.5,
+                                   raster.getRasterHeight() - 1 + 0.5);
         }
         writeGeoCoding(geoCoding, sceneCenter, sceneUL, sceneUR, sceneLL, sceneLR, nodeType);
     }
