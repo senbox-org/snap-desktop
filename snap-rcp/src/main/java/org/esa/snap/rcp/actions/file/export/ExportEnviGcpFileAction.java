@@ -142,8 +142,7 @@ public class ExportEnviGcpFileAction extends AbstractAction implements LookupLis
         if (absoluteFile.exists()) {
             absoluteFile.delete();
         }
-        try {
-            FileWriter writer = new FileWriter(absoluteFile);
+        try (FileWriter writer = new FileWriter(absoluteFile)) {
             writer.write(createLineString("; ENVI Registration GCP File"));
             final int width = product.getSceneRasterWidth();
             final int height = product.getSceneRasterHeight();
@@ -171,7 +170,7 @@ public class ExportEnviGcpFileAction extends AbstractAction implements LookupLis
             }
         } catch (IOException e) {
             Dialogs.showInformation(Bundle.CTL_ExportEnviGcpFileAction_DialogTitle(),
-                                        "An I/O error occurred:\n" + e.getMessage());
+                                    "An I/O error occurred:\n" + e.getMessage());
         }
     }
 

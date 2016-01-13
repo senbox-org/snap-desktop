@@ -110,7 +110,9 @@ public class ContextWebSearch {
 
     private void loadConfig() throws IOException {
         Path file = getConfigPath();
-        config.load(new FileReader(file.toFile()));
+        try (FileReader reader = new FileReader(file.toFile())) {
+            config.load(reader);
+        }
     }
 
     private Path getConfigPath() throws IOException {
@@ -123,8 +125,9 @@ public class ContextWebSearch {
 
         Path file = fs.getPath(dir.toString(), CONFIG_FILENAME);
         if (Files.notExists(file)) {
-            InputStream resourceAsStream = getClass().getResourceAsStream(CONFIG_FILENAME);
-            Files.copy(resourceAsStream, file);
+            try (InputStream resourceAsStream = getClass().getResourceAsStream(CONFIG_FILENAME)) {
+                Files.copy(resourceAsStream, file);
+            }
         }
         return file;
     }
