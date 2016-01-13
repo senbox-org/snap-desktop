@@ -159,7 +159,6 @@ class GeoCodingPanel extends PagePanel {
             if (raster == null) {
                 return;
             }
-            assert product != null;
 
             nodeType = "band";
             geoCoding = raster.getGeoCoding();
@@ -167,7 +166,7 @@ class GeoCodingPanel extends PagePanel {
                                        Math.floor(raster.getRasterHeight() / 2.0) + 0.5);
             sceneUL = new PixelPos(0 + 0.5, 0 + 0.5);
             sceneUR = new PixelPos(raster.getRasterWidth() - 1 + 0.5, 0 + 0.5);
-            sceneLL = new PixelPos(0 + 0.5, product.getSceneRasterHeight() - 1 + 0.5);
+            sceneLL = new PixelPos(0 + 0.5, raster.getRasterHeight() - 1 + 0.5);
             sceneLR = new PixelPos(raster.getRasterWidth() - 1 + 0.5,
                                    raster.getRasterHeight() - 1 + 0.5);
         }
