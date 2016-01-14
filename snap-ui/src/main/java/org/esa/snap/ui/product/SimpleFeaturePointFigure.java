@@ -107,9 +107,6 @@ public class SimpleFeaturePointFigure extends AbstractPointFigure implements Sim
     @Override
     public void setMemento(Object memento) {
         Point point = (Point) memento;
-        if (sceneRasterTransform == null) {
-            return;
-        }
         final MathTransform2D forward = sceneRasterTransform.getForward();
         if (forward == null) {
             return;
@@ -135,9 +132,6 @@ public class SimpleFeaturePointFigure extends AbstractPointFigure implements Sim
 
     @Override
     public void setGeometry(Geometry geometry) {
-        if (sceneRasterTransform == null) {
-            return;
-        }
         Point point = (Point) geometry;
         final PixelPos startPos = new PixelPos(point.getX(), point.getY());
         PixelPos targetPos = new PixelPos();
@@ -171,9 +165,6 @@ public class SimpleFeaturePointFigure extends AbstractPointFigure implements Sim
 
     @Override
     public void setLocation(double x, double y) {
-        if (sceneRasterTransform == null) {
-            return;
-        }
         Coordinate coordinate = geometry.getCoordinate();
         coordinate.x = x;
         coordinate.y = y;
