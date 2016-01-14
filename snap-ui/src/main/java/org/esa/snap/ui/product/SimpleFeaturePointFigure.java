@@ -148,8 +148,7 @@ public class SimpleFeaturePointFigure extends AbstractPointFigure implements Sim
         try {
             inverse.transform(startPos, targetPos);
         } catch (TransformException e) {
-            e.printStackTrace();
-            return;
+            throw new IllegalStateException("simpleFeature", e);
         }
         Coordinate coordinate = new Coordinate(targetPos.getX(), targetPos.getY());
         this.geometry = new Point(new CoordinateArraySequence(new Coordinate[]{coordinate}), point.getFactory());
@@ -182,7 +181,7 @@ public class SimpleFeaturePointFigure extends AbstractPointFigure implements Sim
             final Point2D transform = sceneRasterTransform.getForward().transform(new PixelPos(x, y), new PixelPos());
             simpleFeature.setDefaultGeometry(new AwtGeomToJtsGeomConverter().createPoint(transform));
         } catch (TransformException e) {
-            e.printStackTrace();
+            throw new IllegalStateException("simpleFeature", e);
         }
         geometry.geometryChanged();
         fireFigureChanged();
