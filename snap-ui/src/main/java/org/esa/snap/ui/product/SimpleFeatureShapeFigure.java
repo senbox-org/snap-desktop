@@ -28,14 +28,12 @@ import com.vividsolutions.jts.geom.Polygonal;
 import com.vividsolutions.jts.geom.Puntal;
 import org.esa.snap.core.datamodel.SceneRasterTransform;
 import org.esa.snap.core.datamodel.SceneRasterTransformException;
+import org.esa.snap.core.datamodel.SceneRasterTransformUtils;
 import org.esa.snap.core.util.AwtGeomToJtsGeomConverter;
 import org.esa.snap.core.util.Debug;
-import org.esa.snap.core.datamodel.SceneRasterTransformUtils;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.geometry.jts.LiteShape2;
 import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.operation.TransformException;
 
 import java.awt.Shape;
 
@@ -48,7 +46,6 @@ public class SimpleFeatureShapeFigure extends AbstractShapeFigure implements Sim
 
     private SimpleFeature simpleFeature;
     private Shape geometryShape;
-    private Geometry geometry;
     private final Class<?> geometryType;
     private SceneRasterTransform sceneRasterTransform;
 
@@ -63,7 +60,6 @@ public class SimpleFeatureShapeFigure extends AbstractShapeFigure implements Sim
         this.sceneRasterTransform = sceneRasterTransform;
         this.geometryType = simpleFeature.getDefaultGeometry().getClass();
         this.geometryShape = null;
-        this.geometry = null;
     }
 
     @Override
@@ -73,21 +69,9 @@ public class SimpleFeatureShapeFigure extends AbstractShapeFigure implements Sim
 
     @Override
     public void setMemento(Object memento) {
-        if (sceneRasterTransform == null) {
-            return;
-        }
-        try {
-            final LiteShape2 shapeInRasterCoords = new LiteShape2((Geometry) memento, null, null, true);
-            setShape(shapeInRasterCoords);
-            final Geometry productGeometry =
-                    getGeometryFromShape(SceneRasterTransformUtils.transformShapeToSceneCoords(
-                            shapeInRasterCoords, sceneRasterTransform));
-            simpleFeature.setDefaultGeometry(productGeometry);
-            forceRegeneration();
-            fireFigureChanged();
-        } catch (TransformException | FactoryException | SceneRasterTransformException e) {
-            e.printStackTrace();
-        }
+        simpleFeature.setDefaultGeometry(memento);
+        forceRegeneration();
+        fireFigureChanged();
     }
 
     @Override
@@ -97,10 +81,7 @@ public class SimpleFeatureShapeFigure extends AbstractShapeFigure implements Sim
 
     @Override
     public Geometry getGeometry() {
-        if (geometry == null) {
-            geometry = getGeometryFromShape(getShape());
-        }
-        return geometry;
+        return (Geometry) simpleFeature.getDefaultGeometry();
     }
 
     @Override
@@ -113,11 +94,9 @@ public class SimpleFeatureShapeFigure extends AbstractShapeFigure implements Sim
 
     @Override
     public Shape getShape() {
-        if (sceneRasterTransform == null) {
-            return null;
-        }
         try {
             if (geometryShape == null) {
+                //todo [Multisize_products] convert geometry (keep local), then to shape, not other way round
                 final LiteShape2 shapeInProductCoords = new LiteShape2((Geometry) simpleFeature.getDefaultGeometry(), null, null, true);
                 geometryShape = SceneRasterTransformUtils.transformShapeToImageCoords(shapeInProductCoords, sceneRasterTransform);
             }
@@ -130,14 +109,11 @@ public class SimpleFeatureShapeFigure extends AbstractShapeFigure implements Sim
     @Override
     public void forceRegeneration() {
         geometryShape = null;
-        geometry = null;
     }
 
     @Override
     public void setShape(Shape shape) {
-        if (sceneRasterTransform == null) {
-            return;
-        }
+        //todo do not transform shape but geometry
         geometryShape = shape;
         try {
             simpleFeature.setDefaultGeometry(getGeometryFromShape(
@@ -145,6 +121,7 @@ public class SimpleFeatureShapeFigure extends AbstractShapeFigure implements Sim
             fireFigureChanged();
         } catch (SceneRasterTransformException e) {
             //todo [Multisize_products] decide what to do here. Throw exception? - tf 201516
+            throw new IllegalArgumentException("simpleFeature", e);
         }
     }
 
