@@ -14,6 +14,7 @@ import org.esa.snap.core.datamodel.MetadataElement;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.core.datamodel.ProductNodeGroup;
+import org.esa.snap.core.datamodel.Quicklook;
 import org.esa.snap.core.datamodel.TiePointGrid;
 import org.esa.snap.core.datamodel.VectorDataNode;
 import org.openide.nodes.Node;
@@ -33,6 +34,7 @@ import java.util.List;
         "LBL_IndexCodingGroupName=Index Codings",
         "LBL_VectorDataGroupName=Vector Data",
         "LBL_MaskGroupName=Masks",
+        "LBL_QuicklookGroupName=Quicklooks",
 })
 abstract class PNGGroup<T extends ProductNode> extends PNGroup<T> {
 
@@ -226,6 +228,18 @@ abstract class PNGGroup<T extends ProductNode> extends PNGroup<T> {
         @Override
         protected PNNode createNodeForKey(MetadataElement key) {
             return new PNNode.ME(key);
+        }
+    }
+
+    public static class QL extends PNGGroup<Quicklook> {
+
+        public QL(ProductNodeGroup<Quicklook> group) {
+            super(Bundle.LBL_QuicklookGroupName(), group);
+        }
+
+        @Override
+        protected PNNode createNodeForKey(Quicklook key) {
+            return new PNNode.QL(key);
         }
     }
 }

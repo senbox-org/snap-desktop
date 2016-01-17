@@ -294,6 +294,9 @@ class PNode extends PNNode<Product> implements PreferenceChangeListener {
                 if (product.getTiePointGridGroup().getNodeCount() > 0) {
                     list.add(new PNGroupingGroup.TPG(product.getTiePointGridGroup()));
                 }
+                if (product.getQuicklookGroup().getNodeCount() > 0) {
+                    list.add(new PNGGroup.QL(product.getQuicklookGroup()));
+                }
                 if (product.getBandGroup().getNodeCount() > 0) {
                     list.add(new PNGroupingGroup.B(product.getBandGroup()));
                 }
@@ -308,6 +311,7 @@ class PNode extends PNNode<Product> implements PreferenceChangeListener {
                 list.addAll(Arrays.asList(product.getFlagCodingGroup().toArray()));
                 list.addAll(Arrays.asList(product.getVectorDataGroup().toArray()));
                 list.addAll(Arrays.asList(product.getTiePointGridGroup().toArray()));
+                list.addAll(Arrays.asList(product.getQuicklookGroup().toArray()));
                 list.addAll(Arrays.asList(product.getBandGroup().toArray()));
                 list.addAll(Arrays.asList(product.getMaskGroup().toArray()));
             }

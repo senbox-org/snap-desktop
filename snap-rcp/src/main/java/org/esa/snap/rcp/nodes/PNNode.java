@@ -15,6 +15,7 @@ import org.esa.snap.core.datamodel.ProductData;
 import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.core.datamodel.ProductNodeEvent;
 import org.esa.snap.core.datamodel.ProductNodeGroup;
+import org.esa.snap.core.datamodel.Quicklook;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.datamodel.TiePointGrid;
 import org.esa.snap.core.datamodel.VectorDataNode;
@@ -40,7 +41,7 @@ import org.openide.nodes.PropertySupport;
 import org.openide.nodes.Sheet;
 import org.openide.util.lookup.Lookups;
 
-import javax.swing.Action;
+import javax.swing.*;
 import java.awt.datatransfer.Transferable;
 import java.beans.PropertyEditor;
 import java.io.IOException;
@@ -50,7 +51,7 @@ import java.util.Collections;
 import java.util.WeakHashMap;
 import java.util.stream.Stream;
 
-import static org.esa.snap.rcp.nodes.PNNodeSupport.*;
+import static org.esa.snap.rcp.nodes.PNNodeSupport.performUndoableProductNodeEdit;
 
 /**
  * A node that represents some {@link ProductNode} (=PN).
@@ -174,6 +175,8 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
             return new PNNode.M((Mask) productNode);
         } else if (productNode instanceof Band) {
             return new PNNode.B((Band) productNode);
+        } else if (productNode instanceof Quicklook) {
+            return new PNNode.QL((Quicklook) productNode);
         }
         throw new IllegalStateException("unhandled product node type: " + productNode.getClass() + " named '" + productNode.getName() + "'");
     }
@@ -750,6 +753,42 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
             }
             view.updateImage();
         });
+    }
+
+    /**
+     * A node that represents a {@link Quicklook} (=QL).
+     *
+     * @author Luis
+     */
+    static class QL extends PNNode<Quicklook> {
+
+        public QL(Quicklook ql) {
+            super(ql);
+            //setIconBaseWithExtension("org/esa/snap/rcp/icons/RsMask16.gif");
+        }
+
+        @Override
+        public boolean canDestroy() {
+            return true;
+        }
+
+        @Override
+        public void destroy() throws IOException {
+            deleteProductNode(getProductNode().getProduct(),
+                              getProductNode().getProduct().getQuicklookGroup(),
+                              getProductNode());
+        }
+
+        @Override
+        public Action getPreferredAction() {
+            try {
+                getProductNode().getImage();
+                return null;//OpenImageViewAction.create(this.getProductNode(), true);
+            } catch (IOException e) {
+                SnapApp.getDefault().handleError("Unable to load quicklook", e);
+            }
+            return null;
+        }
     }
 
     private static class DataTypeProperty extends PropertySupport.ReadOnly<String> {
