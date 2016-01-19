@@ -6,6 +6,7 @@ import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.CrsGeoCoding;
 import org.esa.snap.core.datamodel.DefaultSceneRasterTransform;
 import org.esa.snap.core.datamodel.GeoPos;
+import org.esa.snap.core.transform.MathTransform2D;
 import org.esa.snap.core.datamodel.MetadataElement;
 import org.esa.snap.core.datamodel.PixelPos;
 import org.esa.snap.core.datamodel.Product;
@@ -172,7 +173,7 @@ public class TestProducts {
             a_forward.scale(0.25, 0.5);
             final AffineTransform a_inverse = a_forward.createInverse();
             final DefaultSceneRasterTransform a_srt =
-                    new DefaultSceneRasterTransform(new AffineTransform2D(a_forward), new AffineTransform2D(a_inverse));
+                    new DefaultSceneRasterTransform(new AffineMathTransform2D(a_forward), new AffineMathTransform2D(a_inverse));
             band_a.setSceneRasterTransform(a_srt);
             product.addBand(band_a);
 
@@ -183,7 +184,7 @@ public class TestProducts {
             b_forward.translate(128, 0);
             final AffineTransform b_inverse = b_forward.createInverse();
             final DefaultSceneRasterTransform b_srt =
-                    new DefaultSceneRasterTransform(new AffineTransform2D(b_forward), new AffineTransform2D(b_inverse));
+                    new DefaultSceneRasterTransform(new AffineMathTransform2D(b_forward), new AffineMathTransform2D(b_inverse));
             band_b.setSceneRasterTransform(b_srt);
             band_b.setNoDataValue(Double.NaN);
             band_b.setNoDataValueUsed(true);
@@ -312,6 +313,46 @@ public class TestProducts {
 
         @Override
         public void dispose() {
+        }
+    }
+
+    private static class AffineMathTransform2D extends AffineTransform2D implements MathTransform2D {
+
+        private final AffineTransform transform;
+
+        /**
+         * Constructs a new affine transform with the same coefficient than the specified transform.
+         */
+        public AffineMathTransform2D(AffineTransform transform) {
+            super(transform);
+            this.transform = transform;
+        }
+
+        /**
+         * Constructs a new {@code AffineTransform2D} from 6 values representing the 6 specifiable
+         * entries of the 3&times;3 transformation matrix. Those values are given unchanged to the
+         * {@link AffineTransform#AffineTransform(double, double, double, double, double, double) super
+         * class constructor}.
+         *
+         * @since 2.5
+         */
+        public AffineMathTransform2D(double m00, double m10, double m01, double m11, double m02, double m12) {
+            super(m00, m10, m01, m11, m02, m12);
+            transform = new AffineTransform(m00, m10, m01, m11, m02, m12);
+        }
+
+        /**
+         * Creates the inverse transform of this object.
+         *
+         * @throws org.opengis.referencing.operation.NoninvertibleTransformException if this transform can't be inverted.
+         */
+        @Override
+        public MathTransform2D inverse() throws org.opengis.referencing.operation.NoninvertibleTransformException {
+            try {
+                return new AffineMathTransform2D(transform.createInverse());
+            } catch (java.awt.geom.NoninvertibleTransformException e) {
+                throw new org.opengis.referencing.operation.NoninvertibleTransformException(e.getMessage());
+            }
         }
     }
 }
