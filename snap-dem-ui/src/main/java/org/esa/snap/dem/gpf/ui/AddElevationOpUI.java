@@ -61,7 +61,11 @@ public class AddElevationOpUI extends BaseOperatorUI {
         final String demNameParam = (String) paramMap.get("demName");
         if (demNameParam != null) {
             ElevationModelDescriptor descriptor = ElevationModelRegistry.getInstance().getDescriptor(demNameParam);
-            demName.setSelectedItem(DEMFactory.getDEMDisplayName(descriptor));
+            if(descriptor != null) {
+                demName.setSelectedItem(DEMFactory.getDEMDisplayName(descriptor));
+            } else {
+                demName.setSelectedItem(demNameParam);
+            }
         }
         elevationBandName.setText(String.valueOf(paramMap.get("elevationBandName")));
         externalDEM.setText(String.valueOf(paramMap.get("externalDEM")));
