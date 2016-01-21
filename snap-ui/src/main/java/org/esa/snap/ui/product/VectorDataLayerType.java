@@ -91,7 +91,7 @@ public class VectorDataLayerType extends LayerType {
     }
 
     protected VectorDataLayer createLayer(VectorDataNode vectorDataNode, RasterDataNode rasterDataNode, PropertySet configuration) {
-        return new VectorDataLayer(this, vectorDataNode, rasterDataNode.getSceneRasterTransform(), configuration);
+        return new VectorDataLayer(this, vectorDataNode, rasterDataNode, configuration);
     }
 
     private VectorDataLayer createLayerInternal(ProductLayerContext ctx, VectorDataNode vectorDataNode) {

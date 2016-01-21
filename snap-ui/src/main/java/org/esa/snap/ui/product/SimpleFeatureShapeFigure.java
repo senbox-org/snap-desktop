@@ -26,14 +26,13 @@ import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geom.Polygonal;
 import com.vividsolutions.jts.geom.Puntal;
-import org.esa.snap.core.datamodel.SceneRasterTransform;
-import org.esa.snap.core.datamodel.SceneRasterTransformException;
-import org.esa.snap.core.datamodel.SceneRasterTransformUtils;
+import org.esa.snap.core.datamodel.SceneTransformProvider;
 import org.esa.snap.core.util.AwtGeomToJtsGeomConverter;
 import org.esa.snap.core.util.Debug;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.geometry.jts.LiteShape2;
 import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.referencing.operation.TransformException;
 
 import java.awt.Shape;
 
@@ -45,21 +44,21 @@ import java.awt.Shape;
 public class SimpleFeatureShapeFigure extends AbstractShapeFigure implements SimpleFeatureFigure {
 
     private SimpleFeature simpleFeature;
-    private Shape geometryShape;
+    private Shape shape;
     private final Class<?> geometryType;
-    private SceneRasterTransform sceneRasterTransform;
+    private SceneTransformProvider sceneTransformProvider;
 
-    public SimpleFeatureShapeFigure(SimpleFeature simpleFeature, SceneRasterTransform sceneRasterTransform, FigureStyle style) {
-        this(simpleFeature, sceneRasterTransform, style, style);
+    public SimpleFeatureShapeFigure(SimpleFeature simpleFeature, SceneTransformProvider provider, FigureStyle style) {
+        this(simpleFeature, provider, style, style);
     }
 
-    public SimpleFeatureShapeFigure(SimpleFeature simpleFeature, SceneRasterTransform sceneRasterTransform,
+    public SimpleFeatureShapeFigure(SimpleFeature simpleFeature, SceneTransformProvider provider,
                                     FigureStyle normalStyle, FigureStyle selectedStyle) {
         super(getRank(simpleFeature), normalStyle, selectedStyle);
         this.simpleFeature = simpleFeature;
-        this.sceneRasterTransform = sceneRasterTransform;
         this.geometryType = simpleFeature.getDefaultGeometry().getClass();
-        this.geometryShape = null;
+        this.shape = null;
+        sceneTransformProvider = provider;
     }
 
     @Override
@@ -90,37 +89,38 @@ public class SimpleFeatureShapeFigure extends AbstractShapeFigure implements Sim
             Debug.trace("WARNING: Assigning a geometry of type " + geometry.getClass() + ", should actually be a " + geometryType);
         }
         simpleFeature.setDefaultGeometry(geometry);
+        forceRegeneration();
+        fireFigureChanged();
     }
 
     @Override
     public Shape getShape() {
-        try {
-            if (geometryShape == null) {
-                //todo [Multisize_products] convert geometry (keep local), then to shape, not other way round
-                final LiteShape2 shapeInProductCoords = new LiteShape2((Geometry) simpleFeature.getDefaultGeometry(), null, null, true);
-                geometryShape = SceneRasterTransformUtils.transformShapeToImageCoords(shapeInProductCoords, sceneRasterTransform);
+        if (shape == null) {
+            final Geometry featureGeometry = (Geometry) simpleFeature.getDefaultGeometry();
+            try {
+                Geometry modelGeometry = sceneTransformProvider.getSceneToModelTransform().transform(featureGeometry);
+                shape = new LiteShape2(modelGeometry, null, null, true);
+            } catch (Exception e) {
+                throw new IllegalArgumentException("simpleFeature", e);
             }
-            return geometryShape;
-        } catch (Exception e) {
-            throw new IllegalArgumentException("simpleFeature", e);
         }
+        return shape;
     }
 
     @Override
     public void forceRegeneration() {
-        geometryShape = null;
+        shape = null;
     }
 
     @Override
     public void setShape(Shape shape) {
-        //todo do not transform shape but geometry
-        geometryShape = shape;
+        this.shape = shape;
+        Geometry modelGeometry = getGeometryFromShape(shape);
         try {
-            simpleFeature.setDefaultGeometry(getGeometryFromShape(
-                    SceneRasterTransformUtils.transformShapeToSceneCoords(shape, sceneRasterTransform)));
+            final Geometry sceneGeometry = sceneTransformProvider.getModelToSceneTransform().transform(modelGeometry);
+            simpleFeature.setDefaultGeometry(sceneGeometry);
             fireFigureChanged();
-        } catch (SceneRasterTransformException e) {
-            //todo [Multisize_products] decide what to do here. Throw exception? - tf 201516
+        } catch (TransformException e) {
             throw new IllegalArgumentException("simpleFeature", e);
         }
     }
@@ -150,7 +150,7 @@ public class SimpleFeatureShapeFigure extends AbstractShapeFigure implements Sim
         builder.init(simpleFeature);
         clone.simpleFeature = builder.buildFeature(null);
         clone.simpleFeature.setDefaultGeometry(getGeometry().clone());
-        clone.geometryShape = getShape();
+        clone.shape = getShape();
         return clone;
     }
 

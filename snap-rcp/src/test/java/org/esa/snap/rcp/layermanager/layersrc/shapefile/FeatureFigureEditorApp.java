@@ -23,7 +23,8 @@ import com.bc.ceres.swing.figure.FigureFactory;
 import com.bc.ceres.swing.figure.support.DefaultFigureStyle;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
-import org.esa.snap.core.datamodel.SceneRasterTransform;
+import org.esa.snap.core.datamodel.SceneTransformProvider;
+import org.esa.snap.core.transform.MathTransform2D;
 import org.esa.snap.ui.product.SimpleFeatureFigure;
 import org.esa.snap.ui.product.SimpleFeatureFigureFactory;
 import org.esa.snap.ui.product.SimpleFeaturePointFigure;
@@ -51,9 +52,21 @@ import java.util.Set;
 public class FeatureFigureEditorApp extends FigureEditorApp {
 
     private final SimpleFeatureType featureType;
+    private final SceneTransformProvider sceneTransformProvider;
 
     public FeatureFigureEditorApp() {
         featureType = createSimpleFeatureType("X", Geometry.class, null);
+        sceneTransformProvider = new SceneTransformProvider() {
+            @Override
+            public MathTransform2D getModelToSceneTransform() {
+                return MathTransform2D.IDENTITY;
+            }
+
+            @Override
+            public MathTransform2D getSceneToModelTransform() {
+                return MathTransform2D.IDENTITY;
+            }
+        };
     }
 
     static class XYZ {
@@ -82,7 +95,7 @@ public class FeatureFigureEditorApp extends FigureEditorApp {
 
     @Override
     protected FigureFactory getFigureFactory() {
-        return new SimpleFeatureFigureFactory(featureType);
+        return new SimpleFeatureFigureFactory(featureType, sceneTransformProvider);
     }
 
     @Override
@@ -97,9 +110,9 @@ public class FeatureFigureEditorApp extends FigureEditorApp {
             DefaultFigureStyle figureStyle = createDefaultFigureStyle();
             Object o = simpleFeature.getDefaultGeometry();
             if (o instanceof Point) {
-                figureCollection.addFigure(new SimpleFeaturePointFigure(simpleFeature, SceneRasterTransform.IDENTITY, figureStyle));
+                figureCollection.addFigure(new SimpleFeaturePointFigure(simpleFeature, sceneTransformProvider, figureStyle));
             } else {
-                figureCollection.addFigure(new SimpleFeatureShapeFigure(simpleFeature, SceneRasterTransform.IDENTITY, figureStyle));
+                figureCollection.addFigure(new SimpleFeatureShapeFigure(simpleFeature, sceneTransformProvider, figureStyle));
             }
         }
     }

@@ -24,15 +24,11 @@ import com.bc.ceres.swing.figure.support.DefaultFigureStyle;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
 import org.esa.snap.core.datamodel.PlainFeatureFactory;
-import org.esa.snap.core.datamodel.SceneRasterTransform;
-import org.esa.snap.core.datamodel.SceneRasterTransformException;
+import org.esa.snap.core.datamodel.SceneTransformProvider;
 import org.esa.snap.core.util.AwtGeomToJtsGeomConverter;
-import org.esa.snap.core.datamodel.SceneRasterTransformUtils;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.referencing.operation.MathTransform2D;
 import org.opengis.referencing.operation.TransformException;
 
 import java.awt.Color;
@@ -43,82 +39,62 @@ public class SimpleFeatureFigureFactory implements FigureFactory {
 
     private final SimpleFeatureType simpleFeatureType;
     private final AwtGeomToJtsGeomConverter toJtsGeom;
-    private final SceneRasterTransform sceneRasterTransform;
     private long currentFeatureId;
+    private SceneTransformProvider sceneTransformProvider;
 
-    public SimpleFeatureFigureFactory(SimpleFeatureType simpleFeatureType) {
+    public SimpleFeatureFigureFactory(SimpleFeatureType simpleFeatureType, SceneTransformProvider provider) {
         this.simpleFeatureType = simpleFeatureType;
-        this.sceneRasterTransform = SceneRasterTransform.IDENTITY;
         this.toJtsGeom = new AwtGeomToJtsGeomConverter();
         this.currentFeatureId = System.nanoTime();
-    }
-
-    public SimpleFeatureFigureFactory(SimpleFeatureType simpleFeatureType, SceneRasterTransform sceneRasterTransform) {
-        this.simpleFeatureType = simpleFeatureType;
-        this.sceneRasterTransform = sceneRasterTransform;
-        this.toJtsGeom = new AwtGeomToJtsGeomConverter();
-        this.currentFeatureId = System.nanoTime();
+        this.sceneTransformProvider = provider;
     }
 
     @Override
     public PointFigure createPointFigure(Point2D point, FigureStyle style) {
         final Point point1 = toJtsGeom.createPoint(point);
-        return createPointFigure(point1, sceneRasterTransform, style);
+        return createPointFigure(point1, style);
     }
 
     @Override
     public ShapeFigure createLineFigure(Shape shape, FigureStyle style) {
-        if (sceneRasterTransform == null) {
-            return null;
+        MultiLineString multiLineString = toJtsGeom.createMultiLineString(shape);
+        Geometry geometry = multiLineString;
+        if (multiLineString.getNumGeometries() == 1) {
+            geometry = multiLineString.getGeometryN(0);
         }
-        Shape shapeInProductCoords;
+        final Geometry geometryInSceneCoords;
         try {
-            final MathTransform2D forward = sceneRasterTransform.getForward();
-            if (forward == null) {
-                return null;
-            }
-            shapeInProductCoords = forward.createTransformedShape(shape);
+            geometryInSceneCoords = sceneTransformProvider.getModelToSceneTransform().transform(geometry);
         } catch (TransformException e) {
             return null;
         }
-        MultiLineString multiLineString = toJtsGeom.createMultiLineString(shapeInProductCoords);
-        if (multiLineString.getNumGeometries() == 1) {
-            return createShapeFigure(multiLineString.getGeometryN(0), style);
-        } else {
-            return createShapeFigure(multiLineString, style);
-        }
+        return createShapeFigure(geometryInSceneCoords, style);
     }
 
-    //todo throw Exception - tf 20160105
     @Override
     public ShapeFigure createPolygonFigure(Shape shape, FigureStyle style) {
-        if (sceneRasterTransform == null) {
-            return null;
-        }
-        Polygon polygon;
+        Geometry geometry = toJtsGeom.createPolygon(shape);
         try {
-            polygon = toJtsGeom.createPolygon(
-                    SceneRasterTransformUtils.transformShapeToSceneCoords(shape, sceneRasterTransform));
-        } catch (SceneRasterTransformException e) {
+            geometry = sceneTransformProvider.getModelToSceneTransform().transform(geometry);
+        } catch (TransformException e) {
             return null;
         }
-        return createShapeFigure(polygon, style);
+        return createShapeFigure(geometry, style);
     }
 
-    private PointFigure createPointFigure(Point geometry, SceneRasterTransform sceneRasterTransform, FigureStyle style) {
-        return new SimpleFeaturePointFigure(createSimpleFeature(geometry), sceneRasterTransform, style);
+    private PointFigure createPointFigure(Point geometry, FigureStyle style) {
+        return new SimpleFeaturePointFigure(createSimpleFeature(geometry), sceneTransformProvider, style);
     }
 
-    public SimpleFeatureFigure createSimpleFeatureFigure(SimpleFeature simpleFeature,
-                                                         SceneRasterTransform sceneRasterTransform, String defaultStyleCss) {
+    public SimpleFeatureFigure createSimpleFeatureFigure(SimpleFeature simpleFeature, String defaultStyleCss) {
         final String css = getStyleCss(simpleFeature, defaultStyleCss);
         final FigureStyle normalStyle = DefaultFigureStyle.createFromCss(css);
         final FigureStyle selectedStyle = deriveSelectedStyle(normalStyle);
         final Object geometry = simpleFeature.getDefaultGeometry();
         if (geometry instanceof Point) {
-            return new SimpleFeaturePointFigure(simpleFeature, sceneRasterTransform, normalStyle, selectedStyle);
+            return new SimpleFeaturePointFigure(simpleFeature, sceneTransformProvider, normalStyle, selectedStyle);
         } else {
-            return new SimpleFeatureShapeFigure(simpleFeature, sceneRasterTransform, normalStyle, selectedStyle);
+            return new SimpleFeatureShapeFigure(simpleFeature, sceneTransformProvider, normalStyle, selectedStyle);
         }
     }
 
@@ -142,7 +118,7 @@ public class SimpleFeatureFigureFactory implements FigureFactory {
     }
 
     private ShapeFigure createShapeFigure(Geometry geometry, FigureStyle style) {
-        return new SimpleFeatureShapeFigure(createSimpleFeature(geometry), sceneRasterTransform, style, deriveSelectedStyle(style));
+        return new SimpleFeatureShapeFigure(createSimpleFeature(geometry), sceneTransformProvider, style, deriveSelectedStyle(style));
     }
 
     private SimpleFeature createSimpleFeature(Geometry geometry) {

@@ -25,7 +25,6 @@ import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.product.ProductSceneView;
-import org.opengis.referencing.operation.MathTransform2D;
 import org.opengis.referencing.operation.TransformException;
 import org.openide.awt.UndoRedo;
 
@@ -89,29 +88,19 @@ public abstract class InsertPlacemarkInteractor extends FigureEditorInteractor {
                                                                                           product);
         final String name = uniqueNameAndLabel[0];
         final String label = uniqueNameAndLabel[1];
-        //todo [Multisize_products] handle this part carefully in scenerastertransformation
-        final PixelPos rasterPos = new PixelPos(view.getCurrentPixelX() + 0.5f, view.getCurrentPixelY() + 0.5f);
-        PixelPos sceneRasterPixelPos = new PixelPos();
-        final MathTransform2D forward = view.getRaster().getSceneRasterTransform().getForward();
-        if (forward == null) {
-            Dialogs.showError("Could not place pin in image due to missing scene raster transformation");
-            return;
-        }
+        PixelPos rasterPos = new PixelPos(view.getCurrentPixelX() + 0.5f, view.getCurrentPixelY() + 0.5f);
+        Point2D modelPos = view.getRaster().getImageToModelTransform().transform(rasterPos, new Point2D.Double());
+        Point2D scenePos = new Point2D.Double();
         try {
-            forward.transform(rasterPos, sceneRasterPixelPos);
-        } catch (TransformException e) {
-            Dialogs.showError("Could not place pin in image due to scene raster transformation exception");
-            return;
-        }
-        PixelPos scenePixelPos = new PixelPos();
-        Point2D scenePos = view.getRaster().getImageToModelTransform().transform(sceneRasterPixelPos, new Point2D.Double());
-        try {
+            view.getRaster().getModelToSceneTransform().transform(modelPos, scenePos);
             final AffineTransform sceneToImage = Product.findImageToModelTransform(product.getSceneGeoCoding()).createInverse();
-            sceneToImage.transform(scenePos, scenePixelPos);
-        } catch (NoninvertibleTransformException e) {
-            scenePixelPos = sceneRasterPixelPos;
+            rasterPos = (PixelPos) sceneToImage.transform(modelPos, new PixelPos());
+        } catch (TransformException | NoninvertibleTransformException e) {
+            Dialogs.showError("Could not place pin in image due to transformation exception: " + e.getMessage());
+            return;
         }
-        final Placemark newPlacemark = Placemark.createPointPlacemark(placemarkDescriptor, name, label, "", scenePixelPos, null, view.getProduct().getSceneGeoCoding());
+        final Placemark newPlacemark = Placemark.createPointPlacemark(placemarkDescriptor, name, label, "",
+                                                                      rasterPos, null, product.getSceneGeoCoding());
         placemarkDescriptor.getPlacemarkGroup(product).add(newPlacemark);
         UndoRedo.Manager undoManager = SnapApp.getDefault().getUndoManager(product);
         if (undoManager != null) {
