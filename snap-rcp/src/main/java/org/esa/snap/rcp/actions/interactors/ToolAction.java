@@ -137,7 +137,7 @@ public abstract class ToolAction extends AbstractAction
     }
 
     @Override
-    public final void actionPerformed(ActionEvent actionEvent) {
+    public void actionPerformed(ActionEvent actionEvent) {
         onSelectionStateChanged();
     }
 
