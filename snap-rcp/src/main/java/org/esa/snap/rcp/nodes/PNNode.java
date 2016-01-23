@@ -30,6 +30,7 @@ import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.window.OpenImageViewAction;
 import org.esa.snap.rcp.actions.window.OpenMetadataViewAction;
 import org.esa.snap.rcp.actions.window.OpenPlacemarkViewAction;
+import org.esa.snap.rcp.actions.window.OpenQuicklookViewAction;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.rcp.util.ProgressHandleMonitor;
 import org.netbeans.api.progress.ProgressUtils;
@@ -781,13 +782,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
 
         @Override
         public Action getPreferredAction() {
-            try {
-                getProductNode().getImage();
-                return null;//OpenImageViewAction.create(this.getProductNode(), true);
-            } catch (IOException e) {
-                SnapApp.getDefault().handleError("Unable to load quicklook", e);
-            }
-            return null;
+            return new OpenQuicklookViewAction();
         }
     }
 

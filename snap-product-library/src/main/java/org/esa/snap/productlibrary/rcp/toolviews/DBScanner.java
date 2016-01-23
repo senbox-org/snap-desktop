@@ -124,7 +124,6 @@ public final class DBScanner extends SwingWorker {
                 }
 
                 // check if already exists in db
-                //final ProductEntry existingEntry = db.getProductEntry(file);
                 final ProductEntry existingEntry = fileMap.get(file);
 
                 if (existingEntry != null) {
