@@ -48,7 +48,7 @@ import java.util.TreeSet;
 
 @TopComponent.Description(
         preferredID = "QuicklookToolView",
-        iconBase = "org/esa/snap/productlibrary/icons/quicklook.png",
+        iconBase = "org/esa/snap/rcp/icons/quicklook.png",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(
@@ -56,7 +56,7 @@ import java.util.TreeSet;
         openAtStartup = false,
         position = 1
 )
-@ActionID(category = "Window", id = "org.esa.snap.productlibrary.rcp.toolviews.quicklooks.QuicklookToolView")
+@ActionID(category = "Window", id = "org.esa.snap.rcp.quicklooks.QuicklookToolView")
 @ActionReferences({
         @ActionReference(path = "Menu/View/Tool Windows"),
         @ActionReference(path = "Toolbars/Analysis")
@@ -231,16 +231,6 @@ public class QuicklookToolView extends TopComponent {
 
             @Override
             protected BufferedImage doInBackground(com.bc.ceres.core.ProgressMonitor pm) throws Exception {
-//                ProductEntry entry = null;
-//                try {
-//                    entry = ProductDB.instance().getProductEntry(product.getFileLocation());
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//                if (entry != null) {
-//                    return QuickLookGenerator.loadQuickLook(entry);
-//                }
-//                return QuickLookGenerator.createQuickLook(product);
                 return product.getDefaultQuicklook().getImage();
             }
 
