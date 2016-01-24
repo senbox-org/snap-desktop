@@ -36,7 +36,6 @@ import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.engine_utilities.gpf.ReaderUtils;
 import org.esa.snap.graphbuilder.gpf.ui.OperatorUI;
 import org.esa.snap.graphbuilder.gpf.ui.OperatorUIRegistry;
-import org.esa.snap.rcp.actions.file.SaveProductAsAction;
 import org.esa.snap.rcp.util.Dialogs;
 
 import java.io.File;
@@ -63,6 +62,7 @@ public class GraphExecuter extends Observable {
     private File lastLoadedGraphFile = null;
 
     private final GraphNodeList graphNodeList = new GraphNodeList();
+    private final static String LAST_GRAPH_PATH = "graphbuilder.last_graph_path";
 
     public enum events {ADD_EVENT, REMOVE_EVENT, SELECT_EVENT, CONNECT_EVENT}
 
@@ -311,7 +311,7 @@ public class GraphExecuter extends Observable {
             filename = lastLoadedGraphFile.getAbsolutePath();
         final SnapFileFilter fileFilter = new SnapFileFilter("XML", "xml", "Graph");
         final File filePath = Dialogs.requestFileForSave("Save Graph", false, fileFilter, ".xml", filename,
-                                                         null, SaveProductAsAction.PREFERENCES_KEY_LAST_PRODUCT_DIR);
+                                                         null, LAST_GRAPH_PATH);
         if (filePath != null)
             writeGraph(filePath.getAbsolutePath());
         return filePath;
