@@ -402,7 +402,7 @@ public class QuicklookToolView extends TopComponent {
 
         @Override
         public void productAdded(ProductManager.Event event) {
-            showProduct(event.getProduct());
+            //showProduct(event.getProduct());
             updateButtons();
         }
 
