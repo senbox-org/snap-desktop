@@ -58,7 +58,7 @@ import java.util.Vector;
  */
 public class PixelInfoViewModelUpdater {
 
-    private static final String _INVALID_POS_TEXT = "Invalid pos.";
+    private static final String INVALID_POS_TEXT = "Invalid pos.";
 
     private final PixelInfoViewTableModel positionModel;
     private final PixelInfoViewTableModel timeModel;
@@ -145,13 +145,18 @@ public class PixelInfoViewModelUpdater {
         this.pixelPosValidInRaster = pixelPosValid;
         AffineTransform i2mTransform = currentView.getBaseImageLayer().getImageToModelTransform(level);
         Point2D modelP = i2mTransform.transform(new Point2D.Double(pixelX + 0.5, pixelY + 0.5), null);
-        //todo [Multisize_Products] use scenerastertransform instead - tf 20151113
-        sceneX = modelP.getX();
-        sceneY = modelP.getY();
+        try {
+            final Point2D sceneP = currentView.getRaster().getModelToSceneTransform().transform(modelP, new Point2D.Double());
+            sceneX = sceneP.getX();
+            sceneY = sceneP.getY();
+        } catch (TransformException e) {
+            sceneX = Double.NaN;
+            sceneY = Double.NaN;
+        }
         AffineTransform m2iTransform = view.getBaseImageLayer().getModelToImageTransform();
         Point2D levelZeroP = m2iTransform.transform(modelP, null);
-        levelZeroRasterX = (int) Math.floor(levelZeroP.getX());
-        levelZeroRasterY = (int) Math.floor(levelZeroP.getY());
+        levelZeroRasterX = floor(levelZeroP.getX());
+        levelZeroRasterY = floor(levelZeroP.getY());
         //todo [multisize_products] ask for different imagetomodeltransforms - tf 20151113
         if (product.isMultiSizeProduct()) {
             try {
@@ -162,11 +167,11 @@ public class PixelInfoViewModelUpdater {
                         final MathTransform modelToImage = imageToMapTransform.inverse();
                         final DirectPosition2D pos = new DirectPosition2D(sceneX, sceneY);
                         final DirectPosition position = modelToImage.transform(pos, pos);
-                        levelZeroSceneX = (int) Math.floor(position.getCoordinate()[0]);
-                        levelZeroSceneY = (int) Math.floor(position.getCoordinate()[1]);
+                        levelZeroSceneX = floor(position.getCoordinate()[0]);
+                        levelZeroSceneY = floor(position.getCoordinate()[1]);
                     } else {
-                        levelZeroSceneX = (int) Math.floor(sceneX);
-                        levelZeroSceneY = (int) Math.floor(sceneY);
+                        levelZeroSceneX = floor(sceneX);
+                        levelZeroSceneY = floor(sceneY);
                     }
                 }
             } catch (TransformException e) {
@@ -226,6 +231,7 @@ public class PixelInfoViewModelUpdater {
             final GeoCoding geoCoding = currentRaster.getGeoCoding();
             positionModel.addRow("Image-X", "", "pixel");
             positionModel.addRow("Image-Y", "", "pixel");
+            //todo [Multisize_products] ask for something else than multisize (scenetomodeltransform)
             if (getCurrentProduct().isMultiSizeProduct()) {
                 positionModel.addRow("Scene-X", "", "pixel");
                 positionModel.addRow("Scene-Y", "", "pixel");
@@ -258,7 +264,7 @@ public class PixelInfoViewModelUpdater {
         final double pY = levelZeroRasterY + offset;
 
         String tix, tiy, tsx, tsy, tmx, tmy, tgx, tgy;
-        tix = tiy = tsx = tsy = tmx = tmy = tgx = tgy = _INVALID_POS_TEXT;
+        tix = tiy = tsx = tsy = tmx = tmy = tgx = tgy = INVALID_POS_TEXT;
         GeoCoding geoCoding = currentRaster.getGeoCoding();
         if (availableInRaster) {
             if (pixelInfoView.getShowPixelPosDecimal()) {
@@ -269,15 +275,20 @@ public class PixelInfoViewModelUpdater {
                 tiy = String.valueOf((int) Math.floor(pY));
             }
         }
-        if (availableInScene && getCurrentProduct().isMultiSizeProduct()) {
-            double sX = levelZeroSceneX + offset;
-            double sY = levelZeroSceneY + offset;
-            if (pixelInfoView.getShowPixelPosDecimal()) {
-                tsx = String.valueOf(sX);
-                tsy = String.valueOf(sY);
+        if (getCurrentProduct().isMultiSizeProduct()) {
+            if (!availableInScene) {
+                tsx = PixelInfoViewModelUpdater.INVALID_POS_TEXT;
+                tsy = PixelInfoViewModelUpdater.INVALID_POS_TEXT;
             } else {
-                tsx = String.valueOf((int) Math.floor(sX));
-                tsy = String.valueOf((int) Math.floor(sY));
+                double sX = levelZeroSceneX + offset;
+                double sY = levelZeroSceneY + offset;
+                if (pixelInfoView.getShowPixelPosDecimal()) {
+                    tsx = String.valueOf(sX);
+                    tsy = String.valueOf(sY);
+                } else {
+                    tsx = String.valueOf((int) Math.floor(sX));
+                    tsy = String.valueOf((int) Math.floor(sY));
+                }
             }
         }
         if (availableInRaster && geoCoding != null) {
@@ -435,19 +446,27 @@ public class PixelInfoViewModelUpdater {
         for (Band band : currentFlagBands) {
             long pixelValue;
             boolean available;
-            if (band.getImageToModelTransform().equals(currentRaster.getImageToModelTransform())) {
+            if (band.getImageToModelTransform().equals(currentRaster.getImageToModelTransform())
+                    && band.getSceneToModelTransform().equals(currentRaster.getSceneToModelTransform())) {
                 available = pixelPosValidInRaster;
                 pixelValue = available ? ProductUtils.getGeophysicalSampleAsLong(band, pixelX, pixelY, rasterLevel) : 0;
             } else {
                 PixelPos rasterPos = new PixelPos();
                 final Point2D.Double scenePos = new Point2D.Double(sceneX, sceneY);
-                final MultiLevelModel multiLevelModel = band.getMultiLevelModel();
-                final int level = getLevel(multiLevelModel);
-                multiLevelModel.getModelToImageTransform(level).transform(scenePos, rasterPos);
-                final int rasterX = (int) Math.floor(rasterPos.getX());
-                final int rasterY = (int) Math.floor(rasterPos.getY());
-                available = coordinatesAreInRasterBounds(band, rasterX, rasterY, level);
-                pixelValue = available ? ProductUtils.getGeophysicalSampleAsLong(band, rasterX, rasterY, level) : 0;
+                final Point2D modelPos;
+                try {
+                    modelPos = band.getSceneToModelTransform().transform(scenePos, new Point2D.Double());
+                    final MultiLevelModel multiLevelModel = band.getMultiLevelModel();
+                    final int level = getLevel(multiLevelModel);
+                    multiLevelModel.getModelToImageTransform(level).transform(modelPos, rasterPos);
+                    final int rasterX = (int) Math.floor(rasterPos.getX());
+                    final int rasterY = (int) Math.floor(rasterPos.getY());
+                    available = coordinatesAreInRasterBounds(band, rasterX, rasterY, level);
+                    pixelValue = available ? ProductUtils.getGeophysicalSampleAsLong(band, rasterX, rasterY, level) : 0;
+                } catch (TransformException e) {
+                    available = false;
+                    pixelValue = -1;
+                }
             }
             for (int j = 0; j < band.getFlagCoding().getNumAttributes(); j++) {
                 if (available) {
@@ -455,7 +474,7 @@ public class PixelInfoViewModelUpdater {
                     int mask = attribute.getData().getElemInt();
                     flagModel.updateValue(String.valueOf((pixelValue & mask) == mask), rowIndex);
                 } else {
-                    flagModel.updateValue(_INVALID_POS_TEXT, rowIndex);
+                    flagModel.updateValue(INVALID_POS_TEXT, rowIndex);
                 }
                 rowIndex++;
             }
@@ -488,19 +507,28 @@ public class PixelInfoViewModelUpdater {
     }
 
     private String getPixelString(RasterDataNode raster) {
-        if (raster.getImageToModelTransform().equals(currentRaster.getImageToModelTransform())) {
+        if (raster.getImageToModelTransform().equals(currentRaster.getImageToModelTransform())
+                && raster.getSceneToModelTransform().equals(currentRaster.getSceneToModelTransform())) {
             if (!pixelPosValidInRaster) {
                 return RasterDataNode.INVALID_POS_TEXT;
             }
             return getPixelString(raster, pixelX, pixelY, rasterLevel);
         }
-        PixelPos rasterPos = new PixelPos();
         final Point2D.Double scenePos = new Point2D.Double(sceneX, sceneY);
+        Point2D.Double modelPos = new Point2D.Double();
+        try {
+            raster.getSceneToModelTransform().transform(scenePos, modelPos);
+            if (Double.isNaN(modelPos.getX()) || Double.isNaN(modelPos.getY())) {
+                return PixelInfoViewModelUpdater.INVALID_POS_TEXT;
+            }
+        } catch (TransformException e) {
+            return PixelInfoViewModelUpdater.INVALID_POS_TEXT;
+        }
         final MultiLevelModel multiLevelModel = raster.getMultiLevelModel();
         final int level = getLevel(multiLevelModel);
-        multiLevelModel.getModelToImageTransform(level).transform(scenePos, rasterPos);
-        final int rasterX = (int) Math.floor(rasterPos.getX());
-        final int rasterY = (int) Math.floor(rasterPos.getY());
+        final PixelPos rasterPos = (PixelPos) multiLevelModel.getModelToImageTransform(level).transform(modelPos, new PixelPos());
+        final int rasterX = floor(rasterPos.getX());
+        final int rasterY = floor(rasterPos.getY());
         if (!coordinatesAreInRasterBounds(raster, rasterX, rasterY, level)) {
             return RasterDataNode.INVALID_POS_TEXT;
         }
@@ -555,6 +583,20 @@ public class PixelInfoViewModelUpdater {
     private boolean coordinatesAreInRasterBounds(RasterDataNode raster, int x, int y, int level) {
         final RenderedImage levelImage = raster.getSourceImage().getImage(level);
         return x >= 0 && y >= 0 && x < levelImage.getWidth() && y < levelImage.getHeight();
+    }
+
+    /**
+     * Convenience method that gives the largest integer smaller than the double value or
+     * -1 if value is Doubl.NaN.
+     *
+     * @param value
+     * @return
+     */
+    private int floor(double value) {
+        if (Double.isNaN(value)) {
+            return -1;
+        }
+        return (int) Math.floor(value);
     }
 
     private boolean isSampleValueAvailableInScene() {
