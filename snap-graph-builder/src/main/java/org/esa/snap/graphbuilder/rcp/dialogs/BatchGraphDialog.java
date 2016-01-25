@@ -604,7 +604,7 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog {
 
                         graphEx.InitGraph();
 
-                        graphEx.executeGraph(new SubProgressMonitor(pm, 1));
+                        graphEx.executeGraph(SubProgressMonitor.create(pm, 1));
 
                         graphEx.disposeGraphContext();
 
