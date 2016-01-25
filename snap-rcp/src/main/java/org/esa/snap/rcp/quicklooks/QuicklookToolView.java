@@ -120,6 +120,8 @@ public class QuicklookToolView extends TopComponent {
 
         loadProducts();
 
+        updateButtons();
+
         return panel;
     }
 
@@ -141,7 +143,7 @@ public class QuicklookToolView extends TopComponent {
         productPanel.add(nameLabel, BorderLayout.CENTER);
 
         final JPanel topButtonPanel = new JPanel(new BorderLayout());
-        xBtn = createButton("Close", "Close Product", topButtonPanel, actionListener, closeIcon, false);
+        xBtn = createButton("Close", "Close Product", topButtonPanel, actionListener, closeIcon);
         topButtonPanel.add(xBtn, BorderLayout.EAST);
 
         topPanel.add(topButtonPanel, BorderLayout.CENTER);
@@ -158,11 +160,11 @@ public class QuicklookToolView extends TopComponent {
     private JPanel createButtonPanel() {
         final JPanel buttonPanel = new JPanel();
 
-        startBtn = createButton("Start", "Go to first product", buttonPanel, actionListener, firstIcon, false);
-        prevBtn = createButton("Prev", "Previous product", buttonPanel, actionListener, previousIcon, false);
-        nextBtn = createButton("Next", "Next product", buttonPanel, actionListener, nextIcon, false);
-        endBtn = createButton("End", "Go to last product", buttonPanel, actionListener, lastIcon, false);
-        refreshBtn = createButton("Refresh", "Update products", buttonPanel, actionListener, refreshIcon, false);
+        startBtn = createButton("Start", "Go to first product", buttonPanel, actionListener, firstIcon);
+        prevBtn = createButton("Prev", "Previous product", buttonPanel, actionListener, previousIcon);
+        nextBtn = createButton("Next", "Next product", buttonPanel, actionListener, nextIcon);
+        endBtn = createButton("End", "Go to last product", buttonPanel, actionListener, lastIcon);
+        refreshBtn = createButton("Refresh", "Update products", buttonPanel, actionListener, refreshIcon);
 
         buttonPanel.add(startBtn);
         buttonPanel.add(prevBtn);
@@ -174,8 +176,7 @@ public class QuicklookToolView extends TopComponent {
     }
 
     private static JButton createButton(final String name, final String text, final JPanel panel,
-                                        final ButtonActionListener actionListener,
-                                        final ImageIcon icon, final boolean state) {
+                                        final ButtonActionListener actionListener, final ImageIcon icon) {
         final JButton btn = new JButton();
         btn.setName(name);
         btn.setIcon(icon);
@@ -185,7 +186,6 @@ public class QuicklookToolView extends TopComponent {
         btn.setToolTipText(text);
         btn.setActionCommand(name);
         btn.addActionListener(actionListener);
-        btn.setEnabled(state);
 
         return btn;
     }
