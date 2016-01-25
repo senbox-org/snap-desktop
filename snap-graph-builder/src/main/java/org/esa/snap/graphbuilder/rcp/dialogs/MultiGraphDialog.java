@@ -314,7 +314,7 @@ public abstract class MultiGraphDialog extends ModelessDialog {
 
                     graphEx.InitGraph();
 
-                    graphEx.executeGraph(new SubProgressMonitor(pm, 100));
+                    graphEx.executeGraph(SubProgressMonitor.create(pm, 100));
                     graphEx.disposeGraphContext();
                 }
 
