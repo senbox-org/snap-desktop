@@ -25,8 +25,10 @@ public interface SimpleFeatureFigure extends Figure {
 
     SimpleFeature getSimpleFeature();
 
+    //todo remove this method - it is not needed and likely to cause confusion
     Geometry getGeometry();
 
+    //todo remove this method - it is not needed and likely to cause confusion
     void setGeometry(Geometry geometry);
 
     void forceRegeneration();

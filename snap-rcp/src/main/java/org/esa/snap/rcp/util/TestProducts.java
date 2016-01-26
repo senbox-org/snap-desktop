@@ -4,7 +4,6 @@ import org.esa.snap.core.dataio.ProductSubsetDef;
 import org.esa.snap.core.datamodel.AbstractGeoCoding;
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.CrsGeoCoding;
-import org.esa.snap.core.datamodel.DefaultSceneRasterTransform;
 import org.esa.snap.core.datamodel.GeoPos;
 import org.esa.snap.core.datamodel.MetadataElement;
 import org.esa.snap.core.datamodel.PixelPos;
@@ -14,8 +13,8 @@ import org.esa.snap.core.datamodel.Scene;
 import org.esa.snap.core.datamodel.TiePointGrid;
 import org.esa.snap.core.datamodel.VirtualBand;
 import org.esa.snap.core.dataop.maptransf.Datum;
+import org.esa.snap.core.transform.AffineTransform2D;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
@@ -171,9 +170,8 @@ public class TestProducts {
             final AffineTransform a_forward = new AffineTransform();
             a_forward.scale(0.25, 0.5);
             final AffineTransform a_inverse = a_forward.createInverse();
-            final DefaultSceneRasterTransform a_srt =
-                    new DefaultSceneRasterTransform(new AffineTransform2D(a_forward), new AffineTransform2D(a_inverse));
-            band_a.setSceneRasterTransform(a_srt);
+            band_a.setModelToSceneTransform(new AffineTransform2D(a_forward));
+            band_a.setSceneToModelTransform(new AffineTransform2D(a_inverse));
             product.addBand(band_a);
 
             final String b_expression = "sin(4 * PI * sqrt( 2.0 * abs(X/1000.0 * Y/500.0) ))";
@@ -182,9 +180,8 @@ public class TestProducts {
             b_forward.scale(2.0, 2.0);
             b_forward.translate(128, 0);
             final AffineTransform b_inverse = b_forward.createInverse();
-            final DefaultSceneRasterTransform b_srt =
-                    new DefaultSceneRasterTransform(new AffineTransform2D(b_forward), new AffineTransform2D(b_inverse));
-            band_b.setSceneRasterTransform(b_srt);
+            band_b.setModelToSceneTransform(new AffineTransform2D(b_forward));
+            band_b.setSceneToModelTransform(new AffineTransform2D(b_inverse));
             band_b.setNoDataValue(Double.NaN);
             band_b.setNoDataValueUsed(true);
             product.addBand(band_b);
@@ -314,4 +311,5 @@ public class TestProducts {
         public void dispose() {
         }
     }
+
 }

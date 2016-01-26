@@ -28,10 +28,12 @@ import org.esa.snap.core.datamodel.ProductNodeEvent;
 import org.esa.snap.core.datamodel.ProductNodeListenerAdapter;
 import org.esa.snap.core.datamodel.TiePointGrid;
 import org.esa.snap.core.util.math.MathUtils;
+import org.opengis.referencing.operation.TransformException;
 
 import javax.swing.table.DefaultTableModel;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
+import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -204,24 +206,19 @@ public abstract class AbstractPlacemarkTableModel extends DefaultTableModel {
             throw new IllegalStateException("A placemark must have a point feature");
         }
         final Point point = (Point) defaultGeometry;
-        PixelPos pixelPos = new PixelPos(point.getX(), point.getY());
+        Point2D.Double sceneCoords = new Point2D.Double(point.getX(), point.getY());
 
         if (index < getNumSelectedBands()) {
             final Band band = selectedBands[index];
-            //todo [Multisize_Products] use scenerastertransform (see commented code below)
-            PixelPos rasterPos = pixelPos;
             final AffineTransform modelToImageTransform;
+            final Point2D modelCoords;
             try {
+                modelCoords = band.getSceneToModelTransform().transform(sceneCoords, new Point2D.Double());
                 modelToImageTransform = band.getImageToModelTransform().createInverse();
-                modelToImageTransform.transform(pixelPos, rasterPos);
-            } catch (NoninvertibleTransformException e) {
-                return "Transformation error";
+            } catch (NoninvertibleTransformException | TransformException e) {
+                return "Indeterminate";
             }
-//            try {
-//                rasterPos = SceneRasterTransformUtils.transformToImageCoords(band, pixelPos);
-//            } catch (SceneRasterTransformException e) {
-//                do not transform
-//            }
+            PixelPos rasterPos = (PixelPos) modelToImageTransform.transform(modelCoords, new PixelPos());
             final int x = MathUtils.floorInt(rasterPos.getX());
             final int y = MathUtils.floorInt(rasterPos.getY());
             final int width = band.getRasterWidth();
@@ -245,20 +242,15 @@ public abstract class AbstractPlacemarkTableModel extends DefaultTableModel {
         index -= getNumSelectedBands();
         if (index < selectedGrids.length) {
             final TiePointGrid grid = selectedGrids[index];
-            //todo [Multisize_Products] use scenerastertransform (see commented code below)
-            PixelPos rasterPos = pixelPos;
             final AffineTransform modelToImageTransform;
+            final Point2D modelCoords;
             try {
+                modelCoords = grid.getSceneToModelTransform().transform(sceneCoords, new Point2D.Double());
                 modelToImageTransform = grid.getImageToModelTransform().createInverse();
-                modelToImageTransform.transform(pixelPos, rasterPos);
-            } catch (NoninvertibleTransformException e) {
-                return "Transformation error";
+            } catch (NoninvertibleTransformException | TransformException e) {
+                return "Indeterminate";
             }
-//            try {
-//                rasterPos = SceneRasterTransformUtils.transformToImageCoords(band, pixelPos);
-//            } catch (SceneRasterTransformException e) {
-//                do not transform
-//            }
+            PixelPos rasterPos = (PixelPos) modelToImageTransform.transform(modelCoords, new PixelPos());
             final int x = MathUtils.floorInt(rasterPos.getX());
             final int y = MathUtils.floorInt(rasterPos.getY());
             final int width = grid.getRasterWidth();
