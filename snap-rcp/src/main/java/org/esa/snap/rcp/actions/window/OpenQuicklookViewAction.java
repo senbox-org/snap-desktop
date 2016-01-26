@@ -16,7 +16,7 @@
 package org.esa.snap.rcp.actions.window;
 
 import org.esa.snap.core.datamodel.ProductNode;
-import org.esa.snap.core.datamodel.Quicklook;
+import org.esa.snap.core.datamodel.quicklooks.Quicklook;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.quicklooks.QuicklookToolView;
 import org.openide.awt.ActionID;
