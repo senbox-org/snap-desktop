@@ -125,12 +125,13 @@ public class SimpleFeaturePointFigure extends AbstractPointFigure implements Sim
         Point point = (Point) geometry;
         final Point2D.Double sceneCoords = new Point2D.Double(point.getX(), point.getY());
         Point2D.Double modelCoords = new Point2D.Double();
+        Coordinate coordinate;
         try {
             sceneTransformProvider.getSceneToModelTransform().transform(sceneCoords, modelCoords);
+            coordinate = new Coordinate(modelCoords.getX(), modelCoords.getY());
         } catch (TransformException e) {
-            throw new IllegalStateException("simpleFeature", e);
+            coordinate = new Coordinate(Double.NaN, Double.NaN);
         }
-        Coordinate coordinate = new Coordinate(modelCoords.getX(), modelCoords.getY());
         this.geometry = new Point(new CoordinateArraySequence(new Coordinate[]{coordinate}), point.getFactory());
     }
 
@@ -160,7 +161,8 @@ public class SimpleFeaturePointFigure extends AbstractPointFigure implements Sim
             sceneTransformProvider.getModelToSceneTransform().transform(modelCoords, sceneCoords);
             simpleFeature.setDefaultGeometry(new AwtGeomToJtsGeomConverter().createPoint(sceneCoords));
         } catch (TransformException e) {
-            throw new IllegalStateException("simpleFeature", e);
+            coordinate.x = Double.NaN;
+            coordinate.y = Double.NaN;
         }
         geometry.geometryChanged();
         fireFigureChanged();

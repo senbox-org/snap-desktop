@@ -32,6 +32,7 @@ import org.esa.snap.core.util.Debug;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.geometry.jts.LiteShape2;
 import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
 
 import java.awt.Shape;
@@ -47,6 +48,7 @@ public class SimpleFeatureShapeFigure extends AbstractShapeFigure implements Sim
     private Shape shape;
     private final Class<?> geometryType;
     private SceneTransformProvider sceneTransformProvider;
+    private static final Shape EMPTY_SHAPE = new java.awt.Polygon(new int[0], new int[0], 0);
 
     public SimpleFeatureShapeFigure(SimpleFeature simpleFeature, SceneTransformProvider provider, FigureStyle style) {
         this(simpleFeature, provider, style, style);
@@ -100,8 +102,9 @@ public class SimpleFeatureShapeFigure extends AbstractShapeFigure implements Sim
             try {
                 Geometry modelGeometry = sceneTransformProvider.getSceneToModelTransform().transform(featureGeometry);
                 shape = new LiteShape2(modelGeometry, null, null, true);
-            } catch (Exception e) {
-                throw new IllegalArgumentException("simpleFeature", e);
+            } catch (TransformException | FactoryException e) {
+                //return empty shape for drawing
+                return EMPTY_SHAPE;
             }
         }
         return shape;
@@ -121,7 +124,7 @@ public class SimpleFeatureShapeFigure extends AbstractShapeFigure implements Sim
             simpleFeature.setDefaultGeometry(sceneGeometry);
             fireFigureChanged();
         } catch (TransformException e) {
-            throw new IllegalArgumentException("simpleFeature", e);
+            this.shape = null;
         }
     }
 
