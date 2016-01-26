@@ -216,7 +216,7 @@ public abstract class AbstractPlacemarkTableModel extends DefaultTableModel {
                 modelCoords = band.getSceneToModelTransform().transform(sceneCoords, new Point2D.Double());
                 modelToImageTransform = band.getImageToModelTransform().createInverse();
             } catch (NoninvertibleTransformException | TransformException e) {
-                return "Transformation error";
+                return "Indeterminate";
             }
             PixelPos rasterPos = (PixelPos) modelToImageTransform.transform(modelCoords, new PixelPos());
             final int x = MathUtils.floorInt(rasterPos.getX());
@@ -248,7 +248,7 @@ public abstract class AbstractPlacemarkTableModel extends DefaultTableModel {
                 modelCoords = grid.getSceneToModelTransform().transform(sceneCoords, new Point2D.Double());
                 modelToImageTransform = grid.getImageToModelTransform().createInverse();
             } catch (NoninvertibleTransformException | TransformException e) {
-                return "Transformation error";
+                return "Indeterminate";
             }
             PixelPos rasterPos = (PixelPos) modelToImageTransform.transform(modelCoords, new PixelPos());
             final int x = MathUtils.floorInt(rasterPos.getX());
