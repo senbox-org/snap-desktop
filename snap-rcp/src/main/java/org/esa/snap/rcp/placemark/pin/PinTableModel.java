@@ -47,7 +47,7 @@ public class PinTableModel extends AbstractPlacemarkTableModel {
 
     @Override
     public String[] getStandardColumnNames() {
-        return new String[]{"X", "Y", "Lon", "Lat", "Color", "Label"};
+        return new String[]{"Scene-X", "Scene-Y", "Lon", "Lat", "Color", "Label"};
     }
 
     @Override

@@ -37,7 +37,7 @@ public class GcpTableModel extends AbstractPlacemarkTableModel {
 
     @Override
     public String[] getStandardColumnNames() {
-        return new String[]{"X", "Y", "Lon", "Lat", "Delta Lon", "Delta Lat", "Label"};
+        return new String[]{"Scene-X", "Scene-Y", "Lon", "Lat", "Delta Lon", "Delta Lat", "Label"};
     }
 
     @Override
