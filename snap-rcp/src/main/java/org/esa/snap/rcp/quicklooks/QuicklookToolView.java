@@ -19,7 +19,8 @@ import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductManager;
 import org.esa.snap.core.datamodel.ProductNode;
-import org.esa.snap.engine_utilities.gpf.InputProductValidator;
+import org.esa.snap.core.datamodel.quicklooks.Quicklook;
+import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.window.OpenRGBImageViewAction;
 import org.esa.snap.rcp.util.SelectionSupport;
@@ -38,11 +39,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
+import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -75,14 +74,17 @@ import java.util.TreeSet;
 public class QuicklookToolView extends TopComponent {
 
     private Product currentProduct;
-    private final Map<Product, BufferedImage> imageMap = new HashMap<>(100);
+    private final SortedSet<Product> productSet;
     private final JLabel nameLabel = new JLabel();
     private final ImagePanel imgPanel = new ImagePanel();
+    private final BufferedImage noDataImage;
     private JScrollPane imgScrollPanel;
     private JButton nextBtn, prevBtn, startBtn, endBtn, xBtn, refreshBtn;
     private ButtonActionListener actionListener = new ButtonActionListener();
     private boolean updateQuicklooks = false;
     private ProductNode oldNode = null;
+
+    private static final String DEFAULT_QUICKLOOK = "Default";
 
     private static final ImageIcon closeIcon = TangoIcons.actions_process_stop(TangoIcons.Res.R22);
 
@@ -97,9 +99,23 @@ public class QuicklookToolView extends TopComponent {
         setDisplayName(Bundle.CTL_QuicklookToolView_Name());
         setToolTipText(Bundle.CTL_QuicklookToolView_Description());
         add(createPanel(), BorderLayout.CENTER);
+        noDataImage = createNoDataImage();
 
         final SnapApp snapApp = SnapApp.getDefault();
         snapApp.getProductManager().addListener(new ProductManagerListener());
+
+        productSet = new TreeSet<>(new Comparator<Product>() {
+            public int compare(Product p1, Product p2) {
+                int ref1 = p1.getRefNo();
+                int ref2 = p2.getRefNo();
+                return ref1 < ref2 ? -1 : ref1 == ref2 ? 0 : 1;
+            }
+        });
+
+        addProducts();
+
+        updateButtons();
+
         snapApp.getSelectionSupport(ProductNode.class).addHandler(new SelectionSupport.Handler<ProductNode>() {
             @Override
             public void selectionChange(@NullAllowed ProductNode oldValue, @NullAllowed ProductNode newValue) {
@@ -118,22 +134,7 @@ public class QuicklookToolView extends TopComponent {
         panel.add(createImagePanel(), BorderLayout.CENTER);
         panel.add(createButtonPanel(), BorderLayout.SOUTH);
 
-        loadProducts();
-
-        updateButtons();
-
         return panel;
-    }
-
-    private void loadProducts() {
-
-        final Product[] products = SnapApp.getDefault().getProductManager().getProducts();
-        for (Product product : products) {
-            InputProductValidator validator = new InputProductValidator(product);
-            if (validator.isSARProduct()) {
-                showProduct(product);
-            }
-        }
     }
 
     private JPanel createTopPanel() {
@@ -191,7 +192,7 @@ public class QuicklookToolView extends TopComponent {
     }
 
     private void updateButtons() {
-        if (imageMap.isEmpty()) {
+        if (productSet.isEmpty()) {
             startBtn.setEnabled(false);
             prevBtn.setEnabled(false);
             nextBtn.setEnabled(false);
@@ -210,19 +211,45 @@ public class QuicklookToolView extends TopComponent {
         refreshBtn.setEnabled(true);
     }
 
+    private BufferedImage createNoDataImage() {
+        final int w = 100, h = 100;
+        final BufferedImage image = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+        final Graphics g = image.createGraphics();
+
+        g.setColor(Color.DARK_GRAY);
+        //g.setStroke(new BasicStroke(1));
+        g.drawLine(0, 0, 0 + w, h);
+        g.drawLine(0 + w, 0, 0, h);
+        g.drawRect(0, 0, w - 1, h - 1);
+
+        return image;
+    }
+
+    private void addProducts() {
+
+        final Product[] products = SnapApp.getDefault().getProductManager().getProducts();
+        Collections.addAll(productSet, products);
+    }
+
+    private void loadProducts() {
+        for (Product product : productSet) {
+            if (product.getFileLocation() != null) {
+                loadImage(product);
+            }
+        }
+    }
+
     private synchronized void showProduct(final Product product) {
         if (product == null) {
             return;
         }
 
-        BufferedImage img = imageMap.get(product);
-        if (img != null) {
-            setImage(product, img);
-        } else if (updateQuicklooks) {
+        if (updateQuicklooks) {
             if (product.getFileLocation() != null) {
                 loadImage(product);
             }
         }
+        setImage(product, DEFAULT_QUICKLOOK);
     }
 
     private void loadImage(final Product product) {
@@ -237,7 +264,7 @@ public class QuicklookToolView extends TopComponent {
             @Override
             protected void done() {
                 try {
-                    setImage(product, get());
+                    setImage(product, DEFAULT_QUICKLOOK);
                 } catch (Exception e) {
 
                 }
@@ -246,44 +273,47 @@ public class QuicklookToolView extends TopComponent {
         loader.execute();
     }
 
-    private synchronized void setImage(final Product product, final BufferedImage img) {
-        if (img != null) {
-            imageMap.put(product, img);
-            currentProduct = product;
-            nameLabel.setText(product.getDisplayName());
-            imgPanel.setImage(img);
-            updateButtons();
+    private synchronized void setImage(final Product product, final String qlName) {
+
+        currentProduct = product;
+        nameLabel.setText(product.getDisplayName());
+
+        Quicklook quicklook;
+        if (qlName.equals(DEFAULT_QUICKLOOK)) {
+            quicklook = currentProduct.getDefaultQuicklook();
+        } else {
+            quicklook = currentProduct.getQuicklook(qlName);
         }
+        if (quicklook == null) {
+            SystemUtils.LOG.severe("Quicklook " + qlName + " not found");
+            return;
+        }
+
+        BufferedImage img;
+        if(quicklook.hasImage()) {
+            img = quicklook.getImage();
+        } else {
+            img = noDataImage;
+        }
+        imgPanel.setImage(img);
+
+        updateButtons();
     }
 
     private synchronized void removeImage(final Product product) {
-        imageMap.remove(product);
-    }
-
-    private SortedSet<Product> sort(final Set<Product> set) {
-        SortedSet<Product> list = new TreeSet<>(new Comparator<Product>() {
-            public int compare(Product p1, Product p2) {
-                int ref1 = p1.getRefNo();
-                int ref2 = p2.getRefNo();
-                return ref1 < ref2 ? -1 : ref1 == ref2 ? 0 : 1;
-            }
-        });
-        list.addAll(set);
-        return list;
+        productSet.remove(product);
     }
 
     private Product getFirstProduct() {
-        final SortedSet<Product> set = sort(imageMap.keySet());
-        return set.isEmpty() ? null : set.first();
+        return productSet.isEmpty() ? null : productSet.first();
     }
 
     private Product getLastProduct() {
-        final SortedSet<Product> set = sort(imageMap.keySet());
-        return set.isEmpty() ? null : set.last();
+        return productSet.isEmpty() ? null : productSet.last();
     }
 
     private Product getNextProduct() {
-        final Iterator<Product> itr = sort(imageMap.keySet()).iterator();
+        final Iterator<Product> itr = productSet.iterator();
         while (itr.hasNext()) {
             Product p = itr.next();
             if (p == currentProduct) {
@@ -298,7 +328,7 @@ public class QuicklookToolView extends TopComponent {
     }
 
     private Product getPreviousProduct() {
-        final Iterator<Product> itr = sort(imageMap.keySet()).iterator();
+        final Iterator<Product> itr = productSet.iterator();
         Product prev = null;
         while (itr.hasNext()) {
             Product p = itr.next();
@@ -402,13 +432,13 @@ public class QuicklookToolView extends TopComponent {
 
         @Override
         public void productAdded(ProductManager.Event event) {
-            //showProduct(event.getProduct());
+            productSet.add(event.getProduct());
             updateButtons();
         }
 
         @Override
         public void productRemoved(ProductManager.Event event) {
-            if(event.getProduct() == currentProduct) {
+            if (event.getProduct() == currentProduct) {
                 getNextProduct();
             }
             removeImage(event.getProduct());
