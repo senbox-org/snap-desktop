@@ -263,11 +263,7 @@ public class QuicklookToolView extends TopComponent {
 
             @Override
             protected void done() {
-                try {
-                    setImage(product, DEFAULT_QUICKLOOK);
-                } catch (Exception e) {
-
-                }
+                showProduct(currentProduct);
             }
         };
         loader.execute();
@@ -290,7 +286,7 @@ public class QuicklookToolView extends TopComponent {
         }
 
         BufferedImage img;
-        if(quicklook.hasImage()) {
+        if(quicklook.hasImage() || quicklook.hasCachedQuicklook()) {
             img = quicklook.getImage();
         } else {
             img = noDataImage;
