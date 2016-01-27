@@ -263,9 +263,9 @@ public class QuicklookToolView extends TopComponent {
     private SortedSet<Product> sort(final Set<Product> set) {
         SortedSet<Product> list = new TreeSet<>(new Comparator<Product>() {
             public int compare(Product p1, Product p2) {
-                String ref1 = p1.getProductRefString();
-                String ref2 = p2.getProductRefString();
-                return ref1 == null || ref2 == null ? 0 : ref1.compareTo(ref2);
+                int ref1 = p1.getRefNo();
+                int ref2 = p2.getRefNo();
+                return ref1 < ref2 ? -1 : ref1 == ref2 ? 0 : 1;
             }
         });
         list.addAll(set);
