@@ -241,6 +241,11 @@ public class QuicklookToolView extends TopComponent {
         }
     }
 
+    public void setSelectedQuicklook(final Quicklook ql) {
+        updateQuicklooks = true;
+        showProduct(ql.getProduct());
+    }
+
     private synchronized void showProduct(final Product product) {
         if (product == null) {
             return;
@@ -358,7 +363,6 @@ public class QuicklookToolView extends TopComponent {
             if (img == null) {
                 setIcon(null);
             }
-            //invalidate();
             repaint();
         }
 
@@ -376,7 +380,7 @@ public class QuicklookToolView extends TopComponent {
                     newW = (int) (h * ratio);
                 }
 
-                setIcon(new ImageIcon(img.getScaledInstance(newW, newH, BufferedImage.SCALE_FAST)));
+                setIcon(new ImageIcon(img.getScaledInstance(newW, newH, BufferedImage.SCALE_SMOOTH)));
             }
             super.paintComponent(g);
         }
@@ -420,6 +424,7 @@ public class QuicklookToolView extends TopComponent {
                 case "Refresh":
                     updateQuicklooks = true;
                     loadProducts();
+                    showProduct(currentProduct);
                     break;
                 case "Close":
                     if (currentProduct != null) {

@@ -167,6 +167,7 @@ public final class DBScanner extends SwingWorker {
                 final int numQL = qlProducts.size();
                 pm.beginTask("Generating Quicklooks...", numQL);
                 final ThreadManager threadManager = new ThreadManager();
+                threadManager.setNumConsecutiveThreads(Math.min(threadManager.getNumConsecutiveThreads(), 4));
 
                 for (int j = 0; j < numQL; ++j) {
                     pm.setTaskName("Generating Quicklook... " + (j + 1) + " of " + numQL);

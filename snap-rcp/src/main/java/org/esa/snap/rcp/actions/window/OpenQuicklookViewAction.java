@@ -97,6 +97,7 @@ public class OpenQuicklookViewAction extends AbstractAction implements ContextAw
                 if(window != null) {
                     window.open();
                     window.requestActive();
+                    window.setSelectedQuicklook(ql);
                 }
             }
         });
