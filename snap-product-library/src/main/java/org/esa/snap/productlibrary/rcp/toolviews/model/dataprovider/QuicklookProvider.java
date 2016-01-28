@@ -15,6 +15,7 @@
  */
 package org.esa.snap.productlibrary.rcp.toolviews.model.dataprovider;
 
+import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.engine_utilities.db.ProductEntry;
 
 import javax.swing.AbstractCellEditor;
@@ -61,7 +62,7 @@ public class QuicklookProvider implements DataProvider {
                 quickLookColumn.setCellRenderer(new QuickLookRenderer(preferredHeight));
                 quickLookColumn.setCellEditor(new QuickLookEditor());
             } catch (Throwable e) {
-                System.out.println("QuicklookProvider: " + e.getMessage());
+                SystemUtils.LOG.severe("QuicklookProvider: " + e.getMessage());
             }
         }
         return quickLookColumn;
@@ -127,7 +128,7 @@ public class QuicklookProvider implements DataProvider {
                     //tableComponent.setText("Not available!");
                 }
             } catch (Throwable e) {
-                System.out.println("QuicklookRenderer: " + e.getMessage());
+                SystemUtils.LOG.severe("QuicklookRenderer: " + e.getMessage());
             }
             return tableComponent;
         }
@@ -181,7 +182,7 @@ public class QuicklookProvider implements DataProvider {
                 scrollPane.setBackground(backgroundColor);
                 scrollPane.setBorder(BorderFactory.createLineBorder(backgroundColor, 3));
             } catch (Throwable e) {
-                System.out.println("QuicklookEditor: " + e.getMessage());
+                SystemUtils.LOG.severe("QuicklookEditor: " + e.getMessage());
             }
             return scrollPane;
         }

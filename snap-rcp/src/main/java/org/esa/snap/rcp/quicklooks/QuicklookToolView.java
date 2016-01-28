@@ -15,11 +15,13 @@
  */
 package org.esa.snap.rcp.quicklooks;
 
+import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductManager;
 import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.core.datamodel.quicklooks.Quicklook;
+import org.esa.snap.core.dataop.downloadable.StatusProgressMonitor;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.window.OpenRGBImageViewAction;
@@ -253,17 +255,21 @@ public class QuicklookToolView extends TopComponent {
     }
 
     private void loadImage(final Product product) {
+        final StatusProgressMonitor qlPM = new StatusProgressMonitor(StatusProgressMonitor.TYPE.SUBTASK);
+        qlPM.beginTask("Creating quicklook " + product.getName() + "... ", 100);
+
         ProgressMonitorSwingWorker<BufferedImage, Object> loader = new ProgressMonitorSwingWorker<BufferedImage, Object>
                 (SnapApp.getDefault().getMainFrame(), "Loading quicklook image...") {
 
             @Override
             protected BufferedImage doInBackground(com.bc.ceres.core.ProgressMonitor pm) throws Exception {
-                return product.getDefaultQuicklook().getImage();
+                return product.getDefaultQuicklook().getImage(qlPM);
             }
 
             @Override
             protected void done() {
                 showProduct(currentProduct);
+                qlPM.done();
             }
         };
         loader.execute();
@@ -287,7 +293,7 @@ public class QuicklookToolView extends TopComponent {
 
         BufferedImage img;
         if(quicklook.hasImage() || quicklook.hasCachedQuicklook()) {
-            img = quicklook.getImage();
+            img = quicklook.getImage(ProgressMonitor.NULL);
         } else {
             img = noDataImage;
         }

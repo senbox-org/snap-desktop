@@ -17,16 +17,16 @@ package org.esa.snap.productlibrary.rcp.toolviews;
 
 import com.bc.ceres.core.ProgressMonitor;
 import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.dataop.downloadable.StatusProgressMonitor;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.engine_utilities.db.CommonReaders;
 import org.esa.snap.engine_utilities.db.ProductDB;
 import org.esa.snap.engine_utilities.db.ProductEntry;
-import org.esa.snap.engine_utilities.db.QuickLookGenerator;
 import org.esa.snap.engine_utilities.gpf.ThreadManager;
 import org.esa.snap.engine_utilities.util.ProductFunctions;
 import org.esa.snap.engine_utilities.util.ZipUtils;
 
-import javax.swing.SwingWorker;
+import javax.swing.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -91,9 +91,7 @@ public final class DBScanner extends SwingWorker {
             pm.setTaskName("Collecting "+fileList.size()+" files...");
         }
 
-        final List<File> qlProductFiles = new ArrayList<>(fileList.size());
-        final List<Integer> qlIDs = new ArrayList<>(fileList.size());
-
+        final List<Product> qlProducts = new ArrayList<>(fileList.size());
         final ProductEntry[] entriesInPath = db.getProductEntryInPath(baseDir);
         final Map<File, ProductEntry> fileMap = new ConcurrentHashMap<>(entriesInPath.length);
         for (ProductEntry entry : entriesInPath) {
@@ -129,8 +127,10 @@ public final class DBScanner extends SwingWorker {
                 if (existingEntry != null) {
                     // check for missing quicklook
                     if (options.generateQuicklooks && !existingEntry.quickLookExists()) {
-                        qlProductFiles.add(file);
-                        qlIDs.add(existingEntry.getId());
+                        final Product sourceProduct = CommonReaders.readProduct(file);
+                        if (sourceProduct != null) {
+                            qlProducts.add(sourceProduct);
+                        }
                     }
                     existingEntry.dispose();
                     continue;
@@ -142,11 +142,13 @@ public final class DBScanner extends SwingWorker {
                     if (sourceProduct != null) {
                         final ProductEntry entry = db.saveProduct(sourceProduct);
                         ++prodCount;
-                        if (!entry.quickLookExists()) {
-                            qlProductFiles.add(file);
-                            qlIDs.add(entry.getId());
+                        if (!sourceProduct.getDefaultQuicklook().hasCachedQuicklook()) {
+                            qlProducts.add(sourceProduct);
+                            // product to be freed later
+                        } else {
+                            // free now
+                            sourceProduct.dispose();
                         }
-                        sourceProduct.dispose();
                         entry.dispose();
                     } else if (!file.isDirectory()) {
                         SystemUtils.LOG.warning("No reader for " + file.getAbsolutePath());
@@ -162,7 +164,7 @@ public final class DBScanner extends SwingWorker {
             notifyMSG(DBScannerListener.MSG.FOLDERS_SCANNED);
 
             if (options.generateQuicklooks) {
-                final int numQL = qlProductFiles.size();
+                final int numQL = qlProducts.size();
                 pm.beginTask("Generating Quicklooks...", numQL);
                 final ThreadManager threadManager = new ThreadManager();
 
@@ -172,17 +174,22 @@ public final class DBScanner extends SwingWorker {
                     if (pm.isCanceled())
                         break;
 
-                    final File file = qlProductFiles.get(j);
-                    final int qlID = qlIDs.get(j);
+                    final Product product = qlProducts.get(j);
+
+                    final StatusProgressMonitor qlPM = new StatusProgressMonitor(StatusProgressMonitor.TYPE.SUBTASK);
+                    qlPM.beginTask("Creating quicklook " + product.getName() + "... ", 100);
 
                     final Thread worker = new Thread() {
 
                         @Override
                         public void run() {
                             try {
-                                QuickLookGenerator.createQuickLook(qlID, file);
+                                product.getDefaultQuicklook().getImage(qlPM);
                             } catch (Throwable e) {
-                                SystemUtils.LOG.warning("QL Unable to read " + file.getAbsolutePath() + '\n' + e.getMessage());
+                                SystemUtils.LOG.warning("Unable to create quicklook for " + product.getName() + '\n' + e.getMessage());
+                            } finally {
+                                product.dispose();
+                                qlPM.done();
                             }
                         }
                     };
