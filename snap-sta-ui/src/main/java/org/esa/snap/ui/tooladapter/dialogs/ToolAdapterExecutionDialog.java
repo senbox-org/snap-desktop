@@ -40,9 +40,8 @@ import org.netbeans.api.progress.ProgressHandleFactory;
 import org.netbeans.api.progress.ProgressUtils;
 import org.openide.util.Cancellable;
 import org.openide.util.NbBundle;
-import org.openide.util.NbPreferences;
 
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -50,11 +49,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -178,7 +173,7 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
                     String progressPattern = operatorDescriptor.getProgressPattern();
                     ((ToolAdapterOp) op).setProgressMonitor(new ProgressWrapper(progressHandle,
                                                                                 progressPattern == null || progressPattern.isEmpty(),
-                                                                                displayExecutionConsole()));
+                                                                                form.shouldDisplayOutput()));
                     ProgressUtils.runOffEventThreadWithProgressDialog(operatorTask, this.getTitle(), progressHandle, true, 1, 1);
                 } else {
                     if (warnings.size() > 0) {
@@ -309,7 +304,7 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
     private void operatorCompleted(Product result) {
         this.result = result;
         super.onApply();
-        displayErrors();
+        //displayErrors();
     }
 
     private void tearDown(Throwable throwable, Product result) {
@@ -325,8 +320,8 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
                 if (answer == Dialogs.Answer.YES) {
                     operatorCompleted(result);
                 }
-            } else
-                displayErrors();
+            } /*else
+                displayErrors();*/
                 //SnapDialogs.showError(Bundle.ExecutionFailed_Text(), throwable.getMessage());
         }
         //displayErrors();
@@ -389,10 +384,6 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
             }
             return builder.toString();
         }
-    }
-
-    private boolean displayExecutionConsole() {
-        return Boolean.parseBoolean(NbPreferences.forModule(Dialogs.class).get(ToolAdapterOptionsController.PREFERENCE_KEY_SHOW_EXECUTION_OUTPUT, "false"));
     }
 
     /**

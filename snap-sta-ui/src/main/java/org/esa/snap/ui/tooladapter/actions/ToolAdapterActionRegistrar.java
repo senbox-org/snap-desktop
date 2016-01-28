@@ -31,6 +31,7 @@ import org.openide.modules.Places;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
@@ -46,7 +47,7 @@ import java.util.stream.Collectors;
  * Helper class for creating menu entries for tool adapter operators.
  * The inner runnable class should be invoked when the IDE starts, and will
  * register the available adapters as menu actions.
- *
+ * TODO: Delegate registration of SPIs to snap-sta. Register actions only for what was already registered
  * @author Cosmin Cara
  */
 
@@ -166,7 +167,7 @@ public class ToolAdapterActionRegistrar {
         public void run() {
             OperatorSpiRegistry spiRegistry = GPF.getDefaultInstance().getOperatorSpiRegistry();
             Path jarPaths = Paths.get(Places.getUserDirectory().getAbsolutePath(), "modules");
-            Map<String, File> jarAdapters = getJarAdapters(jarPaths.toFile());
+            Map<String, File> jarAdapters = Files.exists(jarPaths) ? getJarAdapters(jarPaths.toFile()) : null;
             if (spiRegistry != null) {
                 Collection<OperatorSpi> operatorSpis = spiRegistry.getOperatorSpis();
                 if (operatorSpis != null) {
@@ -176,7 +177,7 @@ public class ToolAdapterActionRegistrar {
                     final List<OperatorSpi> orphaned = operatorSpis.stream()
                             .filter(spi -> spi instanceof ToolAdapterOpSpi &&
                                     ((ToolAdapterOperatorDescriptor) spi.getOperatorDescriptor()).isFromPackage() &&
-                                    !jarAdapters.containsKey(spi.getOperatorDescriptor().getAlias()))
+                                    jarAdapters != null && !jarAdapters.containsKey(spi.getOperatorDescriptor().getAlias()))
                             .collect(Collectors.toList());
                     orphaned.forEach(spi -> {
                         ToolAdapterOperatorDescriptor operatorDescriptor = (ToolAdapterOperatorDescriptor) spi.getOperatorDescriptor();
