@@ -17,14 +17,15 @@ import javax.swing.event.ListSelectionEvent;
 import java.awt.*;
 import java.io.File;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Created by kraftek on 10/7/2015.
+ * Editor for properties of type File[].
+ *
+ * @author Cosmin Cara
  */
 public class FileListEditor extends PropertyEditor {
-
-    private int lastIndex = -1;
 
     @Override
     public boolean isValidFor(PropertyDescriptor propertyDescriptor) {
@@ -34,29 +35,17 @@ public class FileListEditor extends PropertyEditor {
     @Override
     public JComponent createEditorComponent(PropertyDescriptor propertyDescriptor, BindingContext bindingContext) {
         JPanel panel = new JPanel(new SpringLayout());
-        DefaultListModel listModel = new DefaultListModel();
-        JList list = new JList(listModel);
+        DefaultListModel<File> listModel = new DefaultListModel<>();
+        JList<File> list = new JList<>(listModel);
         ComponentAdapter adapter = new ListSelectionAdapter(list) {
             public void valueChanged(ListSelectionEvent event) {
-                if (event.getValueIsAdjusting()) {
-                    return;
-                }
-                if (getBinding().isAdjustingComponents()) {
+                if (event.getValueIsAdjusting() || getBinding().isAdjustingComponents()) {
                     return;
                 }
                 final Property model = getBinding().getContext().getPropertySet().getProperty(getBinding().getPropertyName());
-                Object[] values = listModel.toArray();
-                File[] files = Arrays.stream(values)
-                        .map(item -> new File(item.toString()))
-                        .collect(Collectors.toList())
-                        .toArray(new File[values.length]);
-                //Object[] selectedValues = list.getSelectedValues();
-//                Object array = Array.newInstance(File.class, selectedValues.length);
-//                for (int i = 0; i < selectedValues.length; i++) {
-//                    Array.set(array, i, selectedValues[i]);
-//                }
                 try {
-                    model.setValue(files);
+                    List<File> selectedValuesList = list.getSelectedValuesList();
+                    model.setValue(selectedValuesList.toArray(new File[selectedValuesList.size()]));
                     // Now model is in sync with UI
                     getBinding().clearProblem();
                 } catch (ValidationException e) {
@@ -65,31 +54,19 @@ public class FileListEditor extends PropertyEditor {
             }
         };
         final Binding binding = bindingContext.bind(propertyDescriptor.getName(), adapter);
-        /*for (int i = 0; i < 4; i++)
-            listModel.addElement("");*/
         list.setMinimumSize(new Dimension(250, 24*5));
         list.setPreferredSize(new Dimension(250, 24 * 5));
         panel.add(new JScrollPane(list, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER));
         AbstractButton addFileBtn = ToolButtonFactory.createButton(UIUtils.loadImageIcon("/org/esa/snap/resources/images/icons/Add16.png"), false);
         addFileBtn.setMaximumSize(new Dimension(20, 20));
         addFileBtn.setAlignmentX(Component.LEFT_ALIGNMENT);
-        lastIndex = -1;
         addFileBtn.addActionListener(e -> {
             final JFileChooser fileChooser = new JFileChooser();
-            if (lastIndex != -1) {
-                fileChooser.setSelectedFile(new File(listModel.get(lastIndex).toString()));
-            }
             int i = fileChooser.showDialog(panel, "Select");
             final File selectedFile = fileChooser.getSelectedFile();
             if (i == JFileChooser.APPROVE_OPTION && selectedFile != null) {
-                /*if (++lastIndex < 4) {
-                    listModel.set(lastIndex, selectedFile.getAbsolutePath());
-                } else {*/
-                    listModel.addElement(selectedFile.getAbsolutePath());
-                    lastIndex++;
-                //}
-                final Object[] objects = listModel.toArray();
-                binding.setPropertyValue(Arrays.stream(objects).map(item -> new File(item.toString())).collect(Collectors.toList()).toArray(new File[objects.length]));
+                listModel.addElement(selectedFile);
+                syncPropertyValue(binding, listModel);
             }
         });
         AbstractButton removeFileBtn = ToolButtonFactory.createButton(UIUtils.loadImageIcon("/org/esa/snap/resources/images/icons/Remove16.png"), false);
@@ -99,7 +76,7 @@ public class FileListEditor extends PropertyEditor {
             Object selection = list.getSelectedValue();
             if (selection != null) {
                 listModel.removeElement(selection);
-                binding.setPropertyValue(Arrays.stream(listModel.toArray()).map(item -> new File(item.toString())).collect(Collectors.toList()).toArray());
+                syncPropertyValue(binding, listModel);
             }
         });
 
@@ -107,13 +84,20 @@ public class FileListEditor extends PropertyEditor {
         buttonsPannel.add(addFileBtn);
         buttonsPannel.add(removeFileBtn);
         SpringUtilities.makeCompactGrid(buttonsPannel, 2, 1, 0, 0, 0, 0);
-        //buttonsPannel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         panel.add(buttonsPannel);
 
         SpringUtilities.makeCompactGrid(panel, 1, 2, 0, 0, 0, 0);
 
         return panel;
+    }
+
+    private void syncPropertyValue(Binding binding, DefaultListModel<File> listModel) {
+        Object[] objects = listModel.toArray();
+        binding.setPropertyValue(Arrays.stream(objects)
+                                        .map(item -> new File(item.toString()))
+                                        .collect(Collectors.toList())
+                                        .toArray(new File[objects.length]));
     }
 
 }

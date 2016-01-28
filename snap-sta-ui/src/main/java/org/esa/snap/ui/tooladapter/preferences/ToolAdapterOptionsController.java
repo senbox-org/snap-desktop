@@ -19,6 +19,7 @@ package org.esa.snap.ui.tooladapter.preferences;
 
 import com.bc.ceres.binding.Property;
 import com.bc.ceres.binding.PropertySet;
+import com.bc.ceres.binding.ValidationException;
 import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.PropertyEditorRegistry;
@@ -29,14 +30,15 @@ import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.HelpCtx;
 import org.openide.util.NbPreferences;
 
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import java.awt.Insets;
+import javax.swing.*;
+import java.awt.*;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 /**
- * Created by kraftek on 10/8/2015.
+ * Options controller for Standalone Tool Adapter.
+ *
+ * @author Cosmin Cara
  */
 @OptionsPanelController.SubRegistration(location = "GeneralPreferences",
         displayName = "#Options_DisplayName_STAOptions",
@@ -62,6 +64,7 @@ public class ToolAdapterOptionsController extends DefaultConfigController {
     public static final boolean DEFAULT_VALUE_AUTOCOMPLETE = false;
     private static final String DECISION_SUFFIX = ".decision";
     private BindingContext context;
+    private Preferences preferences;
 
     @Override
     protected PropertySet createPropertySet() {
@@ -71,6 +74,8 @@ public class ToolAdapterOptionsController extends DefaultConfigController {
     @Override
     protected JPanel createPanel(BindingContext context) {
         this.context = context;
+        preferences = NbPreferences.forModule(Dialogs.class);
+
         TableLayout tableLayout = new TableLayout(1);
         tableLayout.setTableAnchor(TableLayout.Anchor.NORTHWEST);
         tableLayout.setTablePadding(4, 10);
@@ -82,10 +87,19 @@ public class ToolAdapterOptionsController extends DefaultConfigController {
 
         PropertyEditorRegistry registry = PropertyEditorRegistry.getInstance();
         Property useTabsControl = context.getPropertySet().getProperty(PREFERENCE_KEY_TABBED_WINDOW);
+        setPropertyValue(useTabsControl, DEFAULT_VALUE_TABBED_WINDOW);
+
         Property pathValidationControl = context.getPropertySet().getProperty(PREFERENCE_KEY_VALIDATE_PATHS);
+        setPropertyValue(pathValidationControl, DEFAULT_VALUE_VALIDATE_PATHS);
+
         Property noProductWarningControl = context.getPropertySet().getProperty(PREFERENCE_KEY_SHOW_EMPTY_PRODUCT_WARNING);
+        setPropertyValue(noProductWarningControl, DEFAULT_VALUE_SHOW_EMPTY_PRODUCT_WARINING);
+
         Property displayOutputControl = context.getPropertySet().getProperty(PREFERENCE_KEY_SHOW_EXECUTION_OUTPUT);
+        setPropertyValue(displayOutputControl, DEFAULT_VALUE_SHOW_EXECUTION_OUTPUT);
+
         Property autocompleteControl = context.getPropertySet().getProperty(PREFERENCE_KEY_AUTOCOMPLETE);
+        setPropertyValue(autocompleteControl, DEFAULT_VALUE_AUTOCOMPLETE);
 
         JComponent[] useTabsComponents = registry.findPropertyEditor(useTabsControl.getDescriptor()).createComponents(useTabsControl.getDescriptor(), context);
         JComponent[] pathValidationComponents = registry.findPropertyEditor(pathValidationControl.getDescriptor()).createComponents(pathValidationControl.getDescriptor(), context);
@@ -106,8 +120,6 @@ public class ToolAdapterOptionsController extends DefaultConfigController {
 
     @Override
     public void update() {
-        // module preferences
-        Preferences preferences = NbPreferences.forModule(Dialogs.class);
         Property property = context.getPropertySet().getProperty(PREFERENCE_KEY_TABBED_WINDOW);
         if (property != null) {
             preferences.put(PREFERENCE_KEY_TABBED_WINDOW, property.getValueAsText());
@@ -142,6 +154,21 @@ public class ToolAdapterOptionsController extends DefaultConfigController {
     @Override
     public HelpCtx getHelpCtx() {
         return new HelpCtx("sta_editor");
+    }
+
+    private boolean getPropertyValue(String key, boolean defaultValue) {
+        if (preferences == null) {
+            preferences = NbPreferences.forModule(Dialogs.class);
+        }
+        return preferences.getBoolean(key, defaultValue);
+    }
+
+    private void setPropertyValue(Property property, boolean defaultValue) {
+        try {
+            property.setValue(getPropertyValue(property.getName(), defaultValue));
+        } catch (ValidationException e) {
+            e.printStackTrace();
+        }
     }
 
     static class STAOptionsBean {

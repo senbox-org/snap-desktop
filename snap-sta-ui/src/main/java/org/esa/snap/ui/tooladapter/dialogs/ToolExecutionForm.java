@@ -31,13 +31,17 @@ import org.esa.snap.core.gpf.ui.SourceProductSelector;
 import org.esa.snap.core.gpf.ui.TargetProductSelector;
 import org.esa.snap.core.gpf.ui.TargetProductSelectorModel;
 import org.esa.snap.core.util.io.FileUtils;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.AppContext;
+import org.esa.snap.ui.tooladapter.preferences.ToolAdapterOptionsController;
 import org.esa.snap.utils.SpringUtilities;
+import org.openide.util.NbPreferences;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -91,6 +95,7 @@ class ToolExecutionForm extends JTabbedPane {
         addTab("I/O Parameters", ioParamPanel);
         JPanel processingParamPanel = new JPanel(new SpringLayout());
         checkDisplayOutput = new JCheckBox("Display execution output");
+        checkDisplayOutput.setSelected(Boolean.parseBoolean(NbPreferences.forModule(Dialogs.class).get(ToolAdapterOptionsController.PREFERENCE_KEY_SHOW_EXECUTION_OUTPUT, "false")));
         processingParamPanel.add(checkDisplayOutput);
         processingParamPanel.add(createProcessingParamTab());
         SpringUtilities.makeCompactGrid(processingParamPanel, 2, 1, 2, 2, 2, 2);
@@ -159,6 +164,15 @@ class ToolExecutionForm extends JTabbedPane {
     }
 
     private JScrollPane createProcessingParamTab() {
+        Arrays.stream(operatorDescriptor.getParameterDescriptors()).forEach(p ->
+        {
+            String label = p.getAlias();
+            String propName = p.getName();
+            if (label != null && !label.isEmpty() && propertySet.isPropertyDefined(propName)) {
+                Property property = propertySet.getProperty(propName);
+                property.getDescriptor().setDisplayName(label);
+            }
+        });
         PropertyPane parametersPane = new PropertyPane(propertySet);
         final JPanel parametersPanel = parametersPane.createPanel();
         parametersPanel.setBorder(new EmptyBorder(4, 4, 4, 4));
@@ -169,6 +183,7 @@ class ToolExecutionForm extends JTabbedPane {
     private void updateTargetProductFields() {
         TargetProductSelectorModel model = targetProductSelector.getModel();
         Property property = propertySet.getProperty(ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE);
+        model.setSaveToFileSelected(false);
         if (!operatorDescriptor.isHandlingOutputName()) {
             Object value = property.getValue();
             if (value != null) {
@@ -185,11 +200,12 @@ class ToolExecutionForm extends JTabbedPane {
                 if (property != null) {
                     property.setValue(null);
                 }
+                targetProductSelector.setEnabled(false);
+                targetProductSelector.getSaveToFileCheckBox().setEnabled(false);
             } catch (ValidationException e) {
                 Logger.getLogger(ToolExecutionForm.class.getName()).severe(e.getMessage());
             }
         }
-        model.setSaveToFileSelected(false);
         targetProductSelector.getProductDirTextField().setEnabled(false);
     }
 
