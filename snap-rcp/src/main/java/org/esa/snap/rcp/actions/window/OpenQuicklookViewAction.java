@@ -30,6 +30,7 @@ import org.openide.util.LookupListener;
 import org.openide.util.NbBundle;
 import org.openide.util.Utilities;
 import org.openide.util.WeakListeners;
+import org.openide.windows.WindowManager;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -61,7 +62,7 @@ public class OpenQuicklookViewAction extends AbstractAction implements ContextAw
         result.addLookupListener(
                 WeakListeners.create(LookupListener.class, this, result));
         setEnableState();
-        putValue(Action.NAME, "QL");//Bundle.CTL_OpenQuicklookViewAction_MenuText());
+        putValue(Action.NAME, Bundle.CTL_OpenQuicklookViewAction_MenuText());
     }
 
     @Override
@@ -88,11 +89,16 @@ public class OpenQuicklookViewAction extends AbstractAction implements ContextAw
         openDocumentWindow(ql);
     }
 
-    private QuicklookToolView openDocumentWindow(final Quicklook ql) {
+    private void openDocumentWindow(final Quicklook ql) {
 
-        final QuicklookToolView window = new QuicklookToolView();
-        window.open();
-        window.requestActive();
-        return window;
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                final QuicklookToolView window = (QuicklookToolView)WindowManager.getDefault().findTopComponent("QuicklookToolView");
+                if(window != null) {
+                    window.open();
+                    window.requestActive();
+                }
+            }
+        });
     }
 }

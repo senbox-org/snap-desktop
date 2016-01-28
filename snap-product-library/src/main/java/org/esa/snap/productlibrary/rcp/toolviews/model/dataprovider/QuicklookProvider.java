@@ -37,8 +37,8 @@ public class QuicklookProvider implements DataProvider {
 
     private final static Comparator quickLookComparator = new QuickLookComparator();
     private TableColumn quickLookColumn;
-    private static final int preferredWidth = 100;
-    private static final int preferredHeight = 65;
+    private static final int preferredWidth = 150;
+    private static final int preferredHeight = 100;
 
     public QuicklookProvider() {
     }

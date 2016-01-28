@@ -765,7 +765,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
 
         public QL(Quicklook ql) {
             super(ql);
-            //setIconBaseWithExtension("org/esa/snap/rcp/icons/RsMask16.gif");
+            setIconBaseWithExtension("org/esa/snap/rcp/icons/quicklook16.png");
         }
 
         @Override
