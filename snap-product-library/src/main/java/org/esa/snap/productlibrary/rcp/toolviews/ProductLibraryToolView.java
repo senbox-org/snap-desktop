@@ -134,7 +134,7 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         }
     }
 
-    private void initialize() {
+    private synchronized void initialize() {
         initDatabase();
         initUI();
         dbPane.getDB();
