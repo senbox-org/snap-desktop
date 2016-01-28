@@ -17,6 +17,7 @@ package org.esa.snap.graphbuilder.rcp.progress;
 
 import org.esa.snap.core.dataop.downloadable.ProgressMonitorList;
 import org.esa.snap.core.dataop.downloadable.StatusProgressMonitor;
+import org.esa.snap.core.util.SystemUtils;
 import org.openide.awt.StatusLineElementProvider;
 import org.openide.util.lookup.ServiceProvider;
 
@@ -42,17 +43,22 @@ public class StatusProgress implements StatusLineElementProvider, ProgressMonito
     }
 
     public void notifyMsg(final ProgressMonitorList.Notification msg, final StatusProgressMonitor pm) {
-        if(msg.equals(ProgressMonitorList.Notification.ADD)) {
-            final StatusProgressPanel progressPanel = new StatusProgressPanel(pm);
-            progressPanelMap.put(pm, progressPanel);
+        try {
+            if (msg.equals(ProgressMonitorList.Notification.ADD)) {
+                final StatusProgressPanel progressPanel = new StatusProgressPanel(pm);
+                progressPanelMap.put(pm, progressPanel);
 
-            statusPanel.add(progressPanel);
+                statusPanel.add(progressPanel);
 
-        } else if(msg.equals(ProgressMonitorList.Notification.REMOVE)) {
-            final StatusProgressPanel progressPanel = progressPanelMap.get(pm);
-
-            statusPanel.remove(progressPanel);
-            progressPanelMap.remove(pm);
+            } else if (msg.equals(ProgressMonitorList.Notification.REMOVE)) {
+                final StatusProgressPanel progressPanel = progressPanelMap.get(pm);
+                if(progressPanel != null) {
+                    statusPanel.remove(progressPanel);
+                }
+                progressPanelMap.remove(pm);
+            }
+        } catch (Exception e) {
+            SystemUtils.LOG.severe("StatusProgress "+e.getMessage());
         }
     }
 }
