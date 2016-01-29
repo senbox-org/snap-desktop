@@ -17,6 +17,7 @@ package org.esa.snap.rcp.quicklooks;
 
 import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
+import net.coobird.thumbnailator.makers.FixedSizeThumbnailMaker;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductManager;
 import org.esa.snap.core.datamodel.ProductNode;
@@ -216,10 +217,17 @@ public class QuicklookToolView extends TopComponent {
     private BufferedImage createNoDataImage() {
         final int w = 100, h = 100;
         final BufferedImage image = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-        final Graphics g = image.createGraphics();
+        final Graphics2D g = image.createGraphics();
+
+        g.addRenderingHints(new RenderingHints(
+                RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON));
+        g.addRenderingHints(new RenderingHints(
+                RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY));
+        g.addRenderingHints(new RenderingHints(
+                RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC));
 
         g.setColor(Color.DARK_GRAY);
-        //g.setStroke(new BasicStroke(1));
+        g.setStroke(new BasicStroke(1));
         g.drawLine(0, 0, 0 + w, h);
         g.drawLine(0 + w, 0, 0, h);
         g.drawRect(0, 0, w - 1, h - 1);
@@ -233,7 +241,7 @@ public class QuicklookToolView extends TopComponent {
         Collections.addAll(productSet, products);
     }
 
-    private void loadProducts() {
+    private synchronized void loadProducts() {
         for (Product product : productSet) {
             if (product.getFileLocation() != null) {
                 loadImage(product);
@@ -273,7 +281,6 @@ public class QuicklookToolView extends TopComponent {
 
             @Override
             protected void done() {
-                showProduct(currentProduct);
                 qlPM.done();
             }
         };
@@ -369,18 +376,19 @@ public class QuicklookToolView extends TopComponent {
         @Override
         public void paintComponent(Graphics g) {
             if (img != null) {
-                final float ratio = img.getWidth() / (float) img.getHeight();
-                final int w = imgScrollPanel.getWidth() - 10;
-                final int h = imgScrollPanel.getHeight() - 10;
-                int newW = w;
-                int newH = h;
-                if (w < h) {
-                    newH = (int) (w * ratio);
-                } else {
-                    newW = (int) (h * ratio);
-                }
+                Graphics2D g2 = (Graphics2D)g;
+                g2.addRenderingHints(new RenderingHints(
+                        RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON));
+                g2.addRenderingHints(new RenderingHints(
+                        RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY));
+                g2.addRenderingHints(new RenderingHints(
+                        RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC));
 
-                setIcon(new ImageIcon(img.getScaledInstance(newW, newH, BufferedImage.SCALE_SMOOTH)));
+                setIcon(new ImageIcon(new FixedSizeThumbnailMaker()
+                        .size(imgScrollPanel.getWidth() - 10, imgScrollPanel.getHeight() - 10)
+                        .keepAspectRatio(true)
+                        .fitWithinDimensions(true)
+                        .make(img)));
             }
             super.paintComponent(g);
         }
