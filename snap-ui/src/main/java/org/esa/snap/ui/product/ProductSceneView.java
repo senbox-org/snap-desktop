@@ -71,6 +71,7 @@ import org.esa.snap.ui.PixelPositionListener;
 import org.esa.snap.ui.PopupMenuHandler;
 import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.tool.ToolButtonFactory;
+import org.opengis.referencing.operation.TransformException;
 import org.openide.util.Utilities;
 
 import javax.swing.AbstractButton;
@@ -1005,32 +1006,43 @@ public class ProductSceneView extends BasicView
         final RasterDataNode thisRaster = getRaster();
         final RasterDataNode thatRaster = thatView.getRaster();
         final Product thisProduct = thisRaster.getProduct();
-
         if (thisProduct.isSceneCrsEqualToModelCrsOf(thatRaster)) {
             final Viewport thisViewport = layerCanvas.getViewport();
             final Viewport thatViewport = thatView.layerCanvas.getViewport();
             thatViewport.setTransform(thisViewport);
             return true;
-        } else {
-            final GeoCoding thisGeoCoding = thisRaster.getGeoCoding();
-            final GeoCoding thatGeoCoding = thatRaster.getGeoCoding();
-            if (thisGeoCoding != null && thatGeoCoding != null && thisGeoCoding.canGetGeoPos() && thatGeoCoding.canGetPixelPos()) {
-                final Viewport thisViewport = layerCanvas.getViewport();
-                final Viewport thatViewport = thatView.layerCanvas.getViewport();
-                final double viewCenterX = thisViewport.getViewBounds().getCenterX();
-                final double viewCenterY = thisViewport.getViewBounds().getCenterY();
-                final Point2D viewCenter = new Point2D.Double(viewCenterX, viewCenterY);
-                final Point2D modelCenter = thisViewport.getViewToModelTransform().transform(viewCenter, null);
-                final PixelPos imageCenter = new PixelPos();
-                getBaseImageLayer().getModelToImageTransform().transform(modelCenter, imageCenter);
-                final GeoPos geoCenter = new GeoPos();
-                thisGeoCoding.getGeoPos(imageCenter, geoCenter);
-                thatGeoCoding.getPixelPos(geoCenter, imageCenter);
-                if (imageCenter.isValid()) {
-                    thatView.getBaseImageLayer().getImageToModelTransform().transform(imageCenter, modelCenter);
-                    thatViewport.setZoomFactor(thisViewport.getZoomFactor(), modelCenter.getX(), modelCenter.getY());
-                    return true;
-                }
+        } else if (thisProduct == thatRaster.getProduct()) {
+            final Viewport thisViewport = layerCanvas.getViewport();
+            final Viewport thatViewport = thatView.layerCanvas.getViewport();
+            final Rectangle thisViewBounds = thisViewport.getViewBounds();
+            final Rectangle thisModelBounds = thisViewport.getViewToModelTransform().createTransformedShape(thisViewBounds).getBounds();
+            try {
+                final Rectangle sceneBounds = thisRaster.getModelToSceneTransform().createTransformedShape(thisModelBounds).getBounds();
+                final Rectangle thatModelBounds = thatRaster.getSceneToModelTransform().createTransformedShape(sceneBounds).getBounds();
+                thatViewport.zoom(thatModelBounds);
+                return true;
+            } catch (TransformException e) {
+                //try code below
+            }
+        }
+        final GeoCoding thisGeoCoding = thisRaster.getGeoCoding();
+        final GeoCoding thatGeoCoding = thatRaster.getGeoCoding();
+        if (thisGeoCoding != null && thatGeoCoding != null && thisGeoCoding.canGetGeoPos() && thatGeoCoding.canGetPixelPos()) {
+            final Viewport thisViewport = layerCanvas.getViewport();
+            final Viewport thatViewport = thatView.layerCanvas.getViewport();
+            final double viewCenterX = thisViewport.getViewBounds().getCenterX();
+            final double viewCenterY = thisViewport.getViewBounds().getCenterY();
+            final Point2D viewCenter = new Point2D.Double(viewCenterX, viewCenterY);
+            final Point2D modelCenter = thisViewport.getViewToModelTransform().transform(viewCenter, null);
+            final PixelPos imageCenter = new PixelPos();
+            getBaseImageLayer().getModelToImageTransform().transform(modelCenter, imageCenter);
+            final GeoPos geoCenter = new GeoPos();
+            thisGeoCoding.getGeoPos(imageCenter, geoCenter);
+            thatGeoCoding.getPixelPos(geoCenter, imageCenter);
+            if (imageCenter.isValid()) {
+                thatView.getBaseImageLayer().getImageToModelTransform().transform(imageCenter, modelCenter);
+                thatViewport.setZoomFactor(thisViewport.getZoomFactor(), modelCenter.getX(), modelCenter.getY());
+                return true;
             }
         }
         return false;
