@@ -45,9 +45,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
-import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -81,11 +82,13 @@ public class QuicklookToolView extends TopComponent {
 
     private Product currentProduct;
     private final SortedSet<Product> productSet;
+    private final SortedSet<String> quicklookNameSet = new TreeSet<>();
+    private final JComboBox<String> quicklookNameCombo = new JComboBox<>();
     private final JLabel nameLabel = new JLabel();
     private final ImagePanel imgPanel = new ImagePanel();
     private final BufferedImage noDataImage;
     private JScrollPane imgScrollPanel;
-    private JButton nextBtn, prevBtn, startBtn, endBtn, xBtn, refreshBtn;
+    private JButton nextBtn, prevBtn, startBtn, endBtn, openBtn, closeBtn, refreshBtn;
     private ButtonActionListener actionListener = new ButtonActionListener();
     private boolean updateQuicklooks = false;
     private ProductNode oldNode = null;
@@ -94,7 +97,8 @@ public class QuicklookToolView extends TopComponent {
 
     private static final String DEFAULT_QUICKLOOK = "Default";
 
-    private static final ImageIcon closeIcon = TangoIcons.actions_process_stop(TangoIcons.Res.R22);
+    private static final ImageIcon openIcon = TangoIcons.actions_document_open(TangoIcons.Res.R22);
+    private static final ImageIcon closeIcon = TangoIcons.actions_list_remove(TangoIcons.Res.R22);
 
     private static final ImageIcon firstIcon = TangoIcons.actions_go_first(TangoIcons.Res.R32);
     private static final ImageIcon lastIcon = TangoIcons.actions_go_last(TangoIcons.Res.R32);
@@ -120,9 +124,12 @@ public class QuicklookToolView extends TopComponent {
             }
         });
 
+        quicklookNameSet.add(DEFAULT_QUICKLOOK);
         addProducts();
 
         updateButtons();
+
+        quicklookNameCombo.setSelectedItem(DEFAULT_QUICKLOOK);
 
         snapApp.getSelectionSupport(ProductNode.class).addHandler(new SelectionSupport.Handler<ProductNode>() {
             @Override
@@ -139,6 +146,7 @@ public class QuicklookToolView extends TopComponent {
 
         final JPanel panel = new JPanel(new BorderLayout());
         panel.add(createTopPanel(), BorderLayout.NORTH);
+        panel.add(createSidePanel(), BorderLayout.EAST);
         panel.add(createImagePanel(), BorderLayout.CENTER);
         panel.add(createButtonPanel(), BorderLayout.SOUTH);
 
@@ -148,17 +156,29 @@ public class QuicklookToolView extends TopComponent {
     private JPanel createTopPanel() {
         final JPanel topPanel = new JPanel(new BorderLayout());
 
-        final JPanel productPanel = new JPanel(new BorderLayout());
-        productPanel.add(nameLabel, BorderLayout.CENTER);
+        //final JPanel productPanel = new JPanel(new BorderLayout());
+        topPanel.add(nameLabel, BorderLayout.CENTER);
 
-        final JPanel topButtonPanel = new JPanel(new BorderLayout());
-        xBtn = createButton("Close", "Close Product", topButtonPanel, actionListener, closeIcon);
-        topButtonPanel.add(xBtn, BorderLayout.EAST);
+        //final JPanel topButtonPanel = new JPanel(new BorderLayout());
+        topPanel.add(quicklookNameCombo, BorderLayout.EAST);
 
-        topPanel.add(topButtonPanel, BorderLayout.CENTER);
-        topPanel.add(productPanel, BorderLayout.SOUTH);
+        //topPanel.add(topButtonPanel, BorderLayout.CENTER);
+       // topPanel.add(productPanel, BorderLayout.SOUTH);
 
         return topPanel;
+    }
+
+    private JPanel createSidePanel() {
+
+        final JPanel sidePanel = new JPanel();
+        sidePanel.setLayout(new BoxLayout(sidePanel, BoxLayout.Y_AXIS));
+
+        openBtn = createButton("Open", "Open RGB", sidePanel, actionListener, openIcon);
+        sidePanel.add(openBtn);
+        closeBtn = createButton("Close", "Close Product", sidePanel, actionListener, closeIcon);
+        sidePanel.add(closeBtn);
+
+        return sidePanel;
     }
 
     private JScrollPane createImagePanel() {
@@ -206,7 +226,8 @@ public class QuicklookToolView extends TopComponent {
             prevBtn.setEnabled(false);
             nextBtn.setEnabled(false);
             endBtn.setEnabled(false);
-            xBtn.setEnabled(false);
+            openBtn.setEnabled(false);
+            closeBtn.setEnabled(false);
             imgPanel.setImage(null);
             nameLabel.setText("");
             currentProduct = null;
@@ -215,7 +236,8 @@ public class QuicklookToolView extends TopComponent {
             prevBtn.setEnabled(getPreviousProduct() != null);
             nextBtn.setEnabled(getNextProduct() != null);
             endBtn.setEnabled(true);
-            xBtn.setEnabled(true);
+            openBtn.setEnabled(true);
+            closeBtn.setEnabled(true);
         }
         refreshBtn.setEnabled(true);
     }
@@ -241,13 +263,7 @@ public class QuicklookToolView extends TopComponent {
         return image;
     }
 
-    private void addProducts() {
-
-        final Product[] products = SnapApp.getDefault().getProductManager().getProducts();
-        Collections.addAll(productSet, products);
-    }
-
-    private synchronized void loadProducts() {
+    private synchronized void loadProducts(final String qlName) {
         try {
             final ThreadManager threadManager = new ThreadManager();
             threadManager.setNumConsecutiveThreads(Math.min(threadManager.getNumConsecutiveThreads(), 4));
@@ -269,7 +285,13 @@ public class QuicklookToolView extends TopComponent {
                                 @Override
                                 public void run() {
                                     try {
-                                        product.getDefaultQuicklook().getImage(SubProgressMonitor.create(pm, 1));
+                                        final Quicklook quicklook;
+                                        if (qlName.equals(DEFAULT_QUICKLOOK)) {
+                                            quicklook = product.getDefaultQuicklook();
+                                        } else {
+                                            quicklook = product.getQuicklook(qlName);
+                                        }
+                                        quicklook.getImage(SubProgressMonitor.create(pm, 1));
                                     } catch (Throwable e) {
                                         SystemUtils.LOG.warning("Unable to create quicklook for " + product.getName() + '\n' + e.getMessage());
                                     }
@@ -280,7 +302,7 @@ public class QuicklookToolView extends TopComponent {
                         MemUtils.freeAllMemory();
                         pm.setTaskName("Generating quicklooks " + cnt + " of " + total);
                         ++cnt;
-                        pm.worked(1);
+                        //pm.worked(1);
                     }
                     pm.done();
                     threadManager.finish();
@@ -312,15 +334,16 @@ public class QuicklookToolView extends TopComponent {
             return;
         }
 
+        final String qlName = (String)quicklookNameCombo.getSelectedItem();
         if (updateQuicklooks) {
             if (product.getFileLocation() != null) {
-                loadImage(product);
+                loadImage(product, qlName);
             }
         }
-        setImage(product, DEFAULT_QUICKLOOK);
+        setImage(product, qlName);
     }
 
-    private void loadImage(final Product product) {
+    private void loadImage(final Product product, final String qlName) {
         final StatusProgressMonitor qlPM = new StatusProgressMonitor(StatusProgressMonitor.TYPE.SUBTASK);
         qlPM.beginTask("Creating quicklook " + product.getName() + "... ", 100);
 
@@ -329,13 +352,18 @@ public class QuicklookToolView extends TopComponent {
 
             @Override
             protected BufferedImage doInBackground(com.bc.ceres.core.ProgressMonitor pm) throws Exception {
-                return product.getDefaultQuicklook().getImage(qlPM);
+                final Quicklook quicklook;
+                if (qlName.equals(DEFAULT_QUICKLOOK)) {
+                    quicklook = product.getDefaultQuicklook();
+                } else {
+                    quicklook = product.getQuicklook(qlName);
+                }
+                return quicklook.getImage(qlPM);
             }
 
             @Override
             protected void done() {
                 qlPM.done();
-                showProduct(product);
             }
         };
         loader.execute();
@@ -346,19 +374,15 @@ public class QuicklookToolView extends TopComponent {
         currentProduct = product;
         nameLabel.setText(product.getDisplayName());
 
-        Quicklook quicklook;
+        final Quicklook quicklook;
         if (qlName.equals(DEFAULT_QUICKLOOK)) {
             quicklook = currentProduct.getDefaultQuicklook();
         } else {
             quicklook = currentProduct.getQuicklook(qlName);
         }
-        if (quicklook == null) {
-            SystemUtils.LOG.severe("Quicklook " + qlName + " not found");
-            return;
-        }
 
-        BufferedImage img;
-        if(quicklook.hasImage() || quicklook.hasCachedQuicklook()) {
+        final BufferedImage img;
+        if(quicklook != null && (quicklook.hasImage() || quicklook.hasCachedQuicklook())) {
             img = quicklook.getImage(ProgressMonitor.NULL);
         } else {
             img = noDataImage;
@@ -368,8 +392,61 @@ public class QuicklookToolView extends TopComponent {
         updateButtons();
     }
 
-    private synchronized void removeImage(final Product product) {
+    private void addProducts() {
+
+        final Product[] products = SnapApp.getDefault().getProductManager().getProducts();
+        for(Product product : products) {
+            addProduct(product);
+        }
+    }
+
+    private synchronized void addProduct(final Product product) {
+        productSet.add(product);
+        for(int i=0; i < product.getQuicklookGroup().getNodeCount(); ++i) {
+            quicklookNameSet.add(product.getQuicklookGroup().get(i).getName());
+        }
+        updateQuicklookNameCombo();
+    }
+
+    private synchronized void removeProduct(final Product product) {
         productSet.remove(product);
+        cleanUpQuicklookNameSet();
+        updateQuicklookNameCombo();
+    }
+
+    private void cleanUpQuicklookNameSet() {
+        Set<String> toRemove = new HashSet<>();
+        for(String name : quicklookNameSet) {
+            boolean exists = false;
+            for(Product product : productSet) {
+                for(int i=0; i < product.getQuicklookGroup().getNodeCount(); ++i) {
+                    if(name.equals(product.getQuicklookGroup().get(i).getName())) {
+                        exists = true;
+                        break;
+                    }
+                }
+            }
+            if(!exists) {
+                toRemove.add(name);
+            }
+        }
+        for(String name : toRemove) {
+            quicklookNameSet.remove(name);
+        }
+    }
+
+    private void updateQuicklookNameCombo() {
+        String selected = (String)quicklookNameCombo.getSelectedItem();
+        quicklookNameCombo.removeAllItems();
+        for(String name : quicklookNameSet) {
+            quicklookNameCombo.addItem(name);
+        }
+        // restore selection
+        if(((DefaultComboBoxModel)quicklookNameCombo.getModel()).getIndexOf(selected) != -1 ) {
+            quicklookNameCombo.setSelectedItem(selected);
+        } else {
+            quicklookNameCombo.setSelectedItem(DEFAULT_QUICKLOOK);
+        }
     }
 
     private Product getFirstProduct() {
@@ -406,6 +483,11 @@ public class QuicklookToolView extends TopComponent {
             prev = p;
         }
         return null;
+    }
+
+    private void openProduct() {
+        final OpenRGBImageViewAction rgbAction = new OpenRGBImageViewAction(currentProduct);
+        rgbAction.openProductSceneViewRGB(currentProduct, "");
     }
 
     private void closeProduct() {
@@ -466,8 +548,7 @@ public class QuicklookToolView extends TopComponent {
 
         public void mousePressed(MouseEvent e) {
             if (e.getClickCount() == 2 && currentProduct != null) {
-                OpenRGBImageViewAction rgbAction = new OpenRGBImageViewAction(currentProduct);
-                rgbAction.openProductSceneViewRGB(currentProduct, "");
+                openProduct();
             }
         }
 
@@ -498,7 +579,12 @@ public class QuicklookToolView extends TopComponent {
                     showProduct(getLastProduct());
                     break;
                 case "Refresh":
-                    loadProducts();
+                    if(!productSet.isEmpty()) {
+                        loadProducts((String)quicklookNameCombo.getSelectedItem());
+                    }
+                    break;
+                case "Open":
+                    openProduct();
                     break;
                 case "Close":
                     closeProduct();
@@ -511,7 +597,7 @@ public class QuicklookToolView extends TopComponent {
 
         @Override
         public void productAdded(ProductManager.Event event) {
-            productSet.add(event.getProduct());
+            addProduct(event.getProduct());
             updateButtons();
         }
 
@@ -520,7 +606,7 @@ public class QuicklookToolView extends TopComponent {
             if (event.getProduct() == currentProduct) {
                 getNextProduct();
             }
-            removeImage(event.getProduct());
+            removeProduct(event.getProduct());
             updateButtons();
         }
     }
