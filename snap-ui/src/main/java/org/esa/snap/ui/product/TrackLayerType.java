@@ -4,8 +4,11 @@ import com.bc.ceres.binding.PropertySet;
 import com.bc.ceres.grender.Rendering;
 import com.bc.ceres.swing.figure.support.DefaultFigureStyle;
 import com.vividsolutions.jts.geom.Geometry;
+import org.esa.snap.core.datamodel.RasterDataNode;
+import org.esa.snap.core.datamodel.SceneTransformProvider;
 import org.esa.snap.core.datamodel.VectorDataNode;
 import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.referencing.operation.TransformException;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -13,6 +16,7 @@ import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
+import java.awt.geom.Point2D;
 
 /**
  * A special layer type that is used to create layers for {@link VectorDataNode}s that
@@ -31,9 +35,10 @@ public class TrackLayerType extends VectorDataLayerType {
     }
 
     @Override
-    protected VectorDataLayer createLayer(VectorDataNode vectorDataNode, PropertySet configuration) {
-        return new TrackLayer(this, vectorDataNode, configuration);
+    protected VectorDataLayer createLayer(VectorDataNode vectorDataNode, RasterDataNode rasterDataNode, PropertySet configuration) {
+        return new TrackLayer(this, vectorDataNode, rasterDataNode, configuration);
     }
+
 
     public static class TrackLayer extends VectorDataLayer {
 
@@ -44,9 +49,11 @@ public class TrackLayerType extends VectorDataLayerType {
         public static final Color FILL_COLOR = Color.WHITE;
 
         private final Paint strokePaint;
+        private final SceneTransformProvider sceneTransformProvider;
 
-        public TrackLayer(VectorDataLayerType vectorDataLayerType, VectorDataNode vectorDataNode, PropertySet configuration) {
-            super(vectorDataLayerType, vectorDataNode, configuration);
+        public TrackLayer(VectorDataLayerType vectorDataLayerType, VectorDataNode vectorDataNode,
+                          SceneTransformProvider provider, PropertySet configuration) {
+            super(vectorDataLayerType, vectorDataNode, provider, configuration);
             String styleCss = vectorDataNode.getDefaultStyleCss();
             DefaultFigureStyle style = new DefaultFigureStyle(styleCss);
             style.fromCssString(styleCss);
@@ -58,6 +65,7 @@ public class TrackLayerType extends VectorDataLayerType {
             style.setFillOpacity(FILL_OPACITY);
             strokePaint = style.getStrokePaint();
             vectorDataNode.setDefaultStyleCss(style.toCssString());
+            sceneTransformProvider = provider;
         }
 
         @Override
@@ -104,11 +112,18 @@ public class TrackLayerType extends VectorDataLayerType {
                 SimpleFeature feature = features[i];
                 Geometry geometry = (Geometry) feature.getDefaultGeometry();
                 com.vividsolutions.jts.geom.Point centroid = geometry.getCentroid();
-                if (i > 0) {
-                    rendering.getGraphics().draw(new Line2D.Double(lastX, lastY, centroid.getX(), centroid.getY()));
+                try {
+                    final Point2D.Double sceneCoords = new Point2D.Double(centroid.getX(), centroid.getY());
+                    final Point2D.Double modelCoords = new Point2D.Double();
+                    sceneTransformProvider.getSceneToModelTransform().transform(sceneCoords, modelCoords);
+                    if (i > 0) {
+                        rendering.getGraphics().draw(new Line2D.Double(lastX, lastY, centroid.getX(), centroid.getY()));
+                    }
+                    lastX = modelCoords.getX();
+                    lastY = modelCoords.getY();
+                } catch (TransformException e) {
+                    //continue loop
                 }
-                lastX = centroid.getX();
-                lastY = centroid.getY();
             }
         }
     }

@@ -28,9 +28,13 @@ import com.bc.ceres.swing.figure.support.ShapeSymbol;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
 import org.esa.snap.core.datamodel.Placemark;
+import org.esa.snap.core.datamodel.SceneTransformProvider;
+import org.esa.snap.core.util.AwtGeomToJtsGeomConverter;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.referencing.operation.TransformException;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -40,6 +44,7 @@ import java.awt.Paint;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.font.GlyphVector;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 
@@ -61,6 +66,7 @@ public class SimpleFeaturePointFigure extends AbstractPointFigure implements Sim
             "Label",
     };
 
+    private SceneTransformProvider sceneTransformProvider;
     private SimpleFeature simpleFeature;
     private Point geometry;
 
@@ -74,13 +80,15 @@ public class SimpleFeaturePointFigure extends AbstractPointFigure implements Sim
         }
     }
 
-    public SimpleFeaturePointFigure(SimpleFeature simpleFeature, FigureStyle style) {
-        this(simpleFeature, style, style);
+    public SimpleFeaturePointFigure(SimpleFeature simpleFeature, SceneTransformProvider provider, FigureStyle style) {
+        this(simpleFeature, provider, style, style);
     }
 
-    public SimpleFeaturePointFigure(SimpleFeature simpleFeature, FigureStyle normalStyle, FigureStyle selectedStyle) {
+    public SimpleFeaturePointFigure(SimpleFeature simpleFeature, SceneTransformProvider provider,
+                                    FigureStyle normalStyle, FigureStyle selectedStyle) {
         super(normalStyle, selectedStyle);
         this.simpleFeature = simpleFeature;
+        sceneTransformProvider = provider;
         Object o = simpleFeature.getDefaultGeometry();
         if (!(o instanceof Point)) {
             throw new IllegalArgumentException("simpleFeature");
@@ -98,7 +106,6 @@ public class SimpleFeaturePointFigure extends AbstractPointFigure implements Sim
     public void setMemento(Object memento) {
         Point point = (Point) memento;
         simpleFeature.setDefaultGeometry(point);
-        geometry = point;
         forceRegeneration();
         fireFigureChanged();
     }
@@ -110,12 +117,22 @@ public class SimpleFeaturePointFigure extends AbstractPointFigure implements Sim
 
     @Override
     public Point getGeometry() {
-        return geometry;
+        return (Point) simpleFeature.getDefaultGeometry();
     }
 
     @Override
     public void setGeometry(Geometry geometry) {
-        this.geometry = (Point) geometry;
+        Point point = (Point) geometry;
+        final Point2D.Double sceneCoords = new Point2D.Double(point.getX(), point.getY());
+        Point2D.Double modelCoords = new Point2D.Double();
+        Coordinate coordinate;
+        try {
+            sceneTransformProvider.getSceneToModelTransform().transform(sceneCoords, modelCoords);
+            coordinate = new Coordinate(modelCoords.getX(), modelCoords.getY());
+        } catch (TransformException e) {
+            coordinate = new Coordinate(Double.NaN, Double.NaN);
+        }
+        this.geometry = new Point(new CoordinateArraySequence(new Coordinate[]{coordinate}), point.getFactory());
     }
 
     @Override
@@ -138,6 +155,15 @@ public class SimpleFeaturePointFigure extends AbstractPointFigure implements Sim
         Coordinate coordinate = geometry.getCoordinate();
         coordinate.x = x;
         coordinate.y = y;
+        final Point2D.Double modelCoords = new Point2D.Double(x, y);
+        final Point2D.Double sceneCoords = new Point2D.Double();
+        try {
+            sceneTransformProvider.getModelToSceneTransform().transform(modelCoords, sceneCoords);
+            simpleFeature.setDefaultGeometry(new AwtGeomToJtsGeomConverter().createPoint(sceneCoords));
+        } catch (TransformException e) {
+            coordinate.x = Double.NaN;
+            coordinate.y = Double.NaN;
+        }
         geometry.geometryChanged();
         fireFigureChanged();
     }
@@ -154,7 +180,8 @@ public class SimpleFeaturePointFigure extends AbstractPointFigure implements Sim
         builder.init(simpleFeature);
         clone.simpleFeature = builder.buildFeature(null);
         clone.simpleFeature.setDefaultGeometry(getGeometry().clone());
-        clone.geometry = (Point) clone.simpleFeature.getDefaultGeometry();
+        clone.geometry = (Point) geometry.clone();
+        clone.sceneTransformProvider = sceneTransformProvider;
         return clone;
     }
 
