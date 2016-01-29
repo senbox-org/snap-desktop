@@ -291,10 +291,11 @@ public class QuicklookToolView extends TopComponent {
                 @Override
                 protected void done() {
                     super.done();
+                    updateQuicklooks = true;
+                    showProduct(currentProduct);
                 }
             };
-
-            worker.executeWithBlocking();
+            worker.execute();
 
         } catch (Exception e) {
             SnapApp.getDefault().handleError("Unable to load quicklooks", e);
@@ -334,6 +335,7 @@ public class QuicklookToolView extends TopComponent {
             @Override
             protected void done() {
                 qlPM.done();
+                showProduct(product);
             }
         };
         loader.execute();
@@ -496,9 +498,7 @@ public class QuicklookToolView extends TopComponent {
                     showProduct(getLastProduct());
                     break;
                 case "Refresh":
-                    updateQuicklooks = true;
                     loadProducts();
-                    showProduct(currentProduct);
                     break;
                 case "Close":
                     closeProduct();
