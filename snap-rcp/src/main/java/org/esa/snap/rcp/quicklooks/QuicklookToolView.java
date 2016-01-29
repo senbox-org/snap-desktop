@@ -90,6 +90,8 @@ public class QuicklookToolView extends TopComponent {
     private boolean updateQuicklooks = false;
     private ProductNode oldNode = null;
 
+    private int zoom = 1;
+
     private static final String DEFAULT_QUICKLOOK = "Default";
 
     private static final ImageIcon closeIcon = TangoIcons.actions_process_stop(TangoIcons.Res.R22);
@@ -161,6 +163,7 @@ public class QuicklookToolView extends TopComponent {
 
     private JScrollPane createImagePanel() {
         imgScrollPanel = new JScrollPane(imgPanel);
+        imgPanel.setComponentPopupMenu(createImagePopup());
         return imgScrollPanel;
     }
 
@@ -403,6 +406,18 @@ public class QuicklookToolView extends TopComponent {
         return null;
     }
 
+    private void closeProduct() {
+        if (currentProduct != null) {
+            Product productToClose = currentProduct;
+            if(productToClose == getLastProduct()) {
+                showProduct(getPreviousProduct());
+            } else {
+                showProduct(getNextProduct());
+            }
+            SnapApp.getDefault().getProductManager().removeProduct(productToClose);
+        }
+    }
+
     private class ImagePanel extends JLabel implements MouseListener {
 
         private BufferedImage img = null;
@@ -433,8 +448,10 @@ public class QuicklookToolView extends TopComponent {
                 g2.addRenderingHints(new RenderingHints(
                         RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC));
 
+                int w = imgScrollPanel.getWidth()*zoom - 10;
+                int h = imgScrollPanel.getHeight()*zoom - 10;
                 setIcon(new ImageIcon(new FixedSizeThumbnailMaker()
-                        .size(imgScrollPanel.getWidth() - 10, imgScrollPanel.getHeight() - 10)
+                        .size(w, h)
                         .keepAspectRatio(true)
                         .fitWithinDimensions(true)
                         .make(img)));
@@ -484,9 +501,7 @@ public class QuicklookToolView extends TopComponent {
                     showProduct(currentProduct);
                     break;
                 case "Close":
-                    if (currentProduct != null) {
-                        SnapApp.getDefault().getProductManager().removeProduct(currentProduct);
-                    }
+                    closeProduct();
                     break;
             }
         }
@@ -508,5 +523,41 @@ public class QuicklookToolView extends TopComponent {
             removeImage(event.getProduct());
             updateButtons();
         }
+    }
+
+    public JPopupMenu createImagePopup() {
+        final JPopupMenu popup = new JPopupMenu();
+
+        final JMenuItem zoomInItem = new JMenuItem("Zoom in");
+        zoomInItem.addActionListener(new ActionListener() {
+            public void actionPerformed(final ActionEvent e) {
+                if(zoom < 10) {
+                    zoom += 2;
+                }
+            }
+        });
+        popup.add(zoomInItem);
+
+        final JMenuItem zoomOutItem = new JMenuItem("Zoom out");
+        zoomOutItem.addActionListener(new ActionListener() {
+            public void actionPerformed(final ActionEvent e) {
+                if(zoom > 2) {
+                    zoom -= 2;
+                }
+            }
+        });
+        popup.add(zoomOutItem);
+
+        popup.addSeparator();
+
+        final JMenuItem closeItem = new JMenuItem("Close Product");
+        closeItem.addActionListener(new ActionListener() {
+            public void actionPerformed(final ActionEvent e) {
+                closeProduct();
+            }
+        });
+        popup.add(closeItem);
+
+        return popup;
     }
 }
