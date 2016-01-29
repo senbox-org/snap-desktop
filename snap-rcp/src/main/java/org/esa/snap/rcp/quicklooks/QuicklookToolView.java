@@ -16,6 +16,7 @@
 package org.esa.snap.rcp.quicklooks;
 
 import com.bc.ceres.core.ProgressMonitor;
+import com.bc.ceres.core.SubProgressMonitor;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
 import net.coobird.thumbnailator.makers.FixedSizeThumbnailMaker;
 import org.esa.snap.core.datamodel.Product;
@@ -24,6 +25,8 @@ import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.core.datamodel.quicklooks.Quicklook;
 import org.esa.snap.core.dataop.downloadable.StatusProgressMonitor;
 import org.esa.snap.core.util.SystemUtils;
+import org.esa.snap.engine_utilities.gpf.ThreadManager;
+import org.esa.snap.engine_utilities.util.MemUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.window.OpenRGBImageViewAction;
 import org.esa.snap.rcp.util.SelectionSupport;
@@ -242,10 +245,56 @@ public class QuicklookToolView extends TopComponent {
     }
 
     private synchronized void loadProducts() {
-        for (Product product : productSet) {
-            if (product.getFileLocation() != null) {
-                loadImage(product);
-            }
+        try {
+            final ThreadManager threadManager = new ThreadManager();
+            threadManager.setNumConsecutiveThreads(Math.min(threadManager.getNumConsecutiveThreads(), 4));
+
+            ProgressMonitorSwingWorker<Boolean, Object> worker = new ProgressMonitorSwingWorker<Boolean, Object>
+                    (SnapApp.getDefault().getMainFrame(), "Loading quicklooks") {
+                @Override
+                protected Boolean doInBackground(com.bc.ceres.core.ProgressMonitor pm) throws Exception {
+                    final int total = productSet.size();
+                    pm.beginTask("Generating quicklooks", total);
+                    int cnt = 1;
+                    for (final Product product : productSet) {
+                        if(pm.isCanceled())
+                            break;
+                        if (product.getFileLocation() != null) {
+
+                            final Thread worker = new Thread() {
+
+                                @Override
+                                public void run() {
+                                    try {
+                                        product.getDefaultQuicklook().getImage(SubProgressMonitor.create(pm, 1));
+                                    } catch (Throwable e) {
+                                        SystemUtils.LOG.warning("Unable to create quicklook for " + product.getName() + '\n' + e.getMessage());
+                                    }
+                                }
+                            };
+                            threadManager.add(worker);
+                        }
+                        MemUtils.freeAllMemory();
+                        pm.setTaskName("Generating quicklooks " + cnt + " of " + total);
+                        ++cnt;
+                        pm.worked(1);
+                    }
+                    pm.done();
+                    threadManager.finish();
+
+                    return true;
+                }
+
+                @Override
+                protected void done() {
+                    super.done();
+                }
+            };
+
+            worker.executeWithBlocking();
+
+        } catch (Exception e) {
+            SnapApp.getDefault().handleError("Unable to load quicklooks", e);
         }
     }
 
