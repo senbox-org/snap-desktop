@@ -100,11 +100,11 @@ public class QuicklookToolView extends TopComponent {
     private static final ImageIcon openIcon = TangoIcons.actions_document_open(TangoIcons.Res.R22);
     private static final ImageIcon closeIcon = TangoIcons.actions_list_remove(TangoIcons.Res.R22);
 
-    private static final ImageIcon firstIcon = TangoIcons.actions_go_first(TangoIcons.Res.R32);
-    private static final ImageIcon lastIcon = TangoIcons.actions_go_last(TangoIcons.Res.R32);
-    private static final ImageIcon nextIcon = TangoIcons.actions_go_next(TangoIcons.Res.R32);
-    private static final ImageIcon previousIcon = TangoIcons.actions_go_previous(TangoIcons.Res.R32);
-    private static final ImageIcon refreshIcon = TangoIcons.actions_view_refresh(TangoIcons.Res.R32);
+    private static final ImageIcon firstIcon = TangoIcons.actions_go_first(TangoIcons.Res.R22);
+    private static final ImageIcon lastIcon = TangoIcons.actions_go_last(TangoIcons.Res.R22);
+    private static final ImageIcon nextIcon = TangoIcons.actions_go_next(TangoIcons.Res.R22);
+    private static final ImageIcon previousIcon = TangoIcons.actions_go_previous(TangoIcons.Res.R22);
+    private static final ImageIcon refreshIcon = TangoIcons.actions_view_refresh(TangoIcons.Res.R22);
 
     public QuicklookToolView() {
         setLayout(new BorderLayout());
@@ -130,6 +130,12 @@ public class QuicklookToolView extends TopComponent {
         updateButtons();
 
         quicklookNameCombo.setSelectedItem(DEFAULT_QUICKLOOK);
+        quicklookNameCombo.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showProduct(currentProduct);
+            }
+        });
 
         snapApp.getSelectionSupport(ProductNode.class).addHandler(new SelectionSupport.Handler<ProductNode>() {
             @Override
@@ -335,12 +341,14 @@ public class QuicklookToolView extends TopComponent {
         }
 
         final String qlName = (String)quicklookNameCombo.getSelectedItem();
-        if (updateQuicklooks) {
-            if (product.getFileLocation() != null) {
-                loadImage(product, qlName);
+        if(qlName != null) {
+            if (updateQuicklooks) {
+                if (product.getFileLocation() != null) {
+                    loadImage(product, qlName);
+                }
             }
+            setImage(product, qlName);
         }
-        setImage(product, qlName);
     }
 
     private void loadImage(final Product product, final String qlName) {
@@ -417,6 +425,9 @@ public class QuicklookToolView extends TopComponent {
     private void cleanUpQuicklookNameSet() {
         Set<String> toRemove = new HashSet<>();
         for(String name : quicklookNameSet) {
+            if(name.equals(DEFAULT_QUICKLOOK))
+                continue;
+
             boolean exists = false;
             for(Product product : productSet) {
                 for(int i=0; i < product.getQuicklookGroup().getNodeCount(); ++i) {
@@ -442,7 +453,7 @@ public class QuicklookToolView extends TopComponent {
             quicklookNameCombo.addItem(name);
         }
         // restore selection
-        if(((DefaultComboBoxModel)quicklookNameCombo.getModel()).getIndexOf(selected) != -1 ) {
+        if(selected != null && ((DefaultComboBoxModel)quicklookNameCombo.getModel()).getIndexOf(selected) != -1 ) {
             quicklookNameCombo.setSelectedItem(selected);
         } else {
             quicklookNameCombo.setSelectedItem(DEFAULT_QUICKLOOK);
