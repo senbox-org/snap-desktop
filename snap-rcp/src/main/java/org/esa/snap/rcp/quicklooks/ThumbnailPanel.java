@@ -16,6 +16,7 @@
 package org.esa.snap.rcp.quicklooks;
 
 import com.bc.ceres.core.ProgressMonitor;
+import net.coobird.thumbnailator.makers.FixedSizeThumbnailMaker;
 import org.esa.snap.core.datamodel.quicklooks.Thumbnail;
 
 import javax.swing.*;
@@ -30,8 +31,8 @@ import java.awt.image.BufferedImage;
  */
 public class ThumbnailPanel extends JPanel {
 
-    private final static int imgWidth = 150;
-    private final static int imgHeight = 150;
+    private final static int imgWidth = 200;
+    private final static int imgHeight = 200;
     private final static int margin = 6;
     private final static BasicStroke thickStroke = new BasicStroke(5);
 
@@ -92,6 +93,8 @@ public class ThumbnailPanel extends JPanel {
             this.thumbnail = thumbnail;
             setPreferredSize(new Dimension(imgWidth, imgHeight));
 
+            setToolTipText("hi");
+
             addMouseListener(this);
         }
 
@@ -99,11 +102,13 @@ public class ThumbnailPanel extends JPanel {
         public void paintComponent(Graphics graphics) {
             super.paintComponent(graphics);
             final Graphics2D g = (Graphics2D) graphics;
+            g.setColor(Color.BLACK);
+            g.fillRect(0,0, imgWidth, imgHeight);
 
             if(thumbnail.hasImage() || thumbnail.hasCachedImage()) {
-                drawIcon(g, thumbnail.getImage(ProgressMonitor.NULL), 0);
+                drawIcon(g, thumbnail.getImage(ProgressMonitor.NULL));
             } else {
-                drawIcon(g, null, 0);
+                drawIcon(g, null);
             }
 
             if (this.equals(selection) && selectionMode == SelectionMode.RECT) {
@@ -111,16 +116,24 @@ public class ThumbnailPanel extends JPanel {
             }
         }
 
-        private void drawIcon(Graphics2D g, BufferedImage icon, int xOff) {
+        private void drawIcon(Graphics2D g, BufferedImage icon) {
             if (icon != null) {
-                g.drawImage(icon, xOff, 0, imgWidth, imgHeight, null);
+                BufferedImage img = new FixedSizeThumbnailMaker()
+                        .size(imgWidth, imgHeight)
+                        .keepAspectRatio(true)
+                        .fitWithinDimensions(true)
+                        .make(icon);
+                int xOff = (imgWidth - img.getWidth())/2;
+                int yOff = (imgHeight - img.getHeight())/2;
+                g.drawImage(img, xOff, yOff, img.getWidth(), img.getHeight(), null);
+
             } else {
                 // Draw cross to indicate missing image
                 g.setColor(Color.DARK_GRAY);
                 g.setStroke(thickStroke);
-                g.drawLine(xOff, 0, xOff + imgWidth, imgHeight);
-                g.drawLine(xOff + imgWidth, 0, xOff, imgHeight);
-                g.drawRect(xOff, 0, imgWidth-1, imgHeight-1);
+                g.drawLine(0, 0, 0 + imgWidth, imgHeight);
+                g.drawLine(0 + imgWidth, 0, 0, imgHeight);
+                g.drawRect(0, 0, imgWidth-1, imgHeight-1);
             }
         }
 
@@ -133,6 +146,31 @@ public class ThumbnailPanel extends JPanel {
                 g.setColor(new Color(0,100,255,alpha));
                 g.drawRoundRect(i, i, imgWidth-i-i, imgHeight-i-i, 25, 25);
             }
+        }
+
+        @Override
+        public JToolTip createToolTip() {
+            if(!thumbnail.hasImage() || !thumbnail.hasCachedImage()) {
+                return super.createToolTip();
+            }
+            final BufferedImage thumbnailImage = thumbnail.getImage(ProgressMonitor.NULL);
+
+            BufferedImage img = new FixedSizeThumbnailMaker()
+                    .size(imgWidth*3, imgHeight*3)
+                    .keepAspectRatio(true)
+                    .fitWithinDimensions(true)
+                    .make(thumbnailImage);
+
+            final JToolTip toolTip = new JToolTip() {
+                {
+                    setLayout(new BorderLayout());
+                    add(new JLabel(new ImageIcon(img)));
+                }
+                public Dimension getPreferredSize() {
+                    return new Dimension(img.getWidth(), img.getHeight());
+                }
+            };
+            return toolTip;
         }
 
         @Override
