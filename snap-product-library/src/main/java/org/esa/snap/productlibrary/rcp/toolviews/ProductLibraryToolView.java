@@ -20,11 +20,12 @@ import org.esa.snap.engine_utilities.db.ProductEntry;
 import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
 import org.esa.snap.graphbuilder.rcp.utils.FileFolderUtils;
 import org.esa.snap.productlibrary.rcp.dialogs.CheckListDialog;
-import org.esa.snap.productlibrary.rcp.toolviews.ListView.ProductEntryList;
-import org.esa.snap.productlibrary.rcp.toolviews.ListView.ProductEntryTable;
+import org.esa.snap.productlibrary.rcp.toolviews.listviews.ListView;
+import org.esa.snap.productlibrary.rcp.toolviews.listviews.ProductEntryList;
+import org.esa.snap.productlibrary.rcp.toolviews.listviews.ProductEntryTable;
+import org.esa.snap.productlibrary.rcp.toolviews.listviews.ThumbnailView;
 import org.esa.snap.productlibrary.rcp.toolviews.model.DatabaseQueryListener;
 import org.esa.snap.productlibrary.rcp.toolviews.model.DatabaseStatistics;
-import org.esa.snap.productlibrary.rcp.toolviews.model.ListView;
 import org.esa.snap.productlibrary.rcp.toolviews.model.ProductLibraryConfig;
 import org.esa.snap.productlibrary.rcp.toolviews.model.SortingDecorator;
 import org.esa.snap.productlibrary.rcp.toolviews.timeline.TimelinePanel;
@@ -86,7 +87,7 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
     private static final ImageIcon addButtonIcon = UIUtils.loadImageIcon("icons/Plus24.gif");
     private static final ImageIcon removeButtonIcon = UIUtils.loadImageIcon("icons/Minus24.gif");
     private static final ImageIcon listViewButtonIcon = UIUtils.loadImageIcon("/org/esa/snap/productlibrary/icons/list_view24.png", ProductLibraryToolView.class);
-    private static final ImageIcon listQlViewButtonIcon = UIUtils.loadImageIcon("/org/esa/snap/productlibrary/icons/list_ql_view24.png", ProductLibraryToolView.class);
+    private static final ImageIcon tableViewButtonIcon = UIUtils.loadImageIcon("/org/esa/snap/productlibrary/icons/list_ql_view24.png", ProductLibraryToolView.class);
     private static final ImageIcon thumbnailViewButtonIcon = UIUtils.loadImageIcon("/org/esa/snap/productlibrary/icons/thumbnails_view24.png", ProductLibraryToolView.class);
     private static final ImageIcon helpButtonIcon = UIUtils.loadImageIcon("icons/Help24.gif");
 
@@ -94,11 +95,12 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
     private JComboBox repositoryListCombo;
     private ProductEntryTable productEntryTable;
     private ProductEntryList productEntryList;
+    private ThumbnailView thumbnailView;
     private ListView currentListView;
 
     private JLabel statusLabel;
     private JPanel progressPanel;
-    private JScrollPane listViewPane, tableViewPane;
+    private JScrollPane listViewPane, tableViewPane, thumbnailPane;
     private JSplitPane splitPaneV;
     private JButton addButton, removeButton, viewButton, updateButton;
 
@@ -123,6 +125,10 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         }
     }
 
+    protected void componentHidden() {
+        currentListView.setProductEntryList(new ProductEntry[] {});
+    }
+
     private synchronized void initialize() {
         initDatabase();
         initUI();
@@ -144,6 +150,8 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         productEntryTable.addListener(this);
         productEntryList = new ProductEntryList(productLibraryActions);
         productEntryList.addListener(this);
+        thumbnailView  = new ThumbnailView();
+        thumbnailView.addListener(this);
 
         currentListView = productEntryTable;
     }
@@ -265,18 +273,25 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         });
         headerBar.add(removeButton, gbc);
 
-        viewButton = DialogUtils.createButton("viewButton", "Change View", listQlViewButtonIcon, headerBar, DialogUtils.ButtonStyle.Icon);
+        viewButton = DialogUtils.createButton("viewButton", "Change View", thumbnailViewButtonIcon, headerBar, DialogUtils.ButtonStyle.Icon);
         viewButton.addActionListener(new ActionListener() {
-            public void actionPerformed(final ActionEvent e) {
+            public synchronized void actionPerformed(final ActionEvent e) {
+                currentListView.setProductEntryList(new ProductEntry[] {}); // force to empty
+
                 if(currentListView instanceof ProductEntryList) {
                     currentListView = productEntryTable;
-                    viewButton.setIcon(listViewButtonIcon);
-                    viewButton.setPressedIcon(listViewButtonIcon);
+                    viewButton.setIcon(thumbnailViewButtonIcon);
+                    viewButton.setRolloverIcon(thumbnailViewButtonIcon);
                     splitPaneV.setLeftComponent(tableViewPane);
                 } else if(currentListView instanceof ProductEntryTable) {
+                    currentListView = thumbnailView;
+                    viewButton.setIcon(listViewButtonIcon);
+                    viewButton.setRolloverIcon(listViewButtonIcon);
+                    splitPaneV.setLeftComponent(thumbnailPane);
+                } else if(currentListView instanceof ThumbnailView) {
                     currentListView = productEntryList;
-                    viewButton.setIcon(listQlViewButtonIcon);
-                    viewButton.setPressedIcon(listQlViewButtonIcon);
+                    viewButton.setIcon(tableViewButtonIcon);
+                    viewButton.setRolloverIcon(tableViewButtonIcon);
                     splitPaneV.setLeftComponent(listViewPane);
                 }
                 notifyNewEntryListAvailable();
@@ -286,7 +301,7 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
 
         //final JButton helpButton = DialogUtils.createButton("helpButton", "Help", helpButtonIcon, headerBar, DialogUtils.ButtonStyle.Icon);
         //HelpSys.enableHelpOnButton(helpButton, helpId);
-       // headerBar.add(helpButton, gbc);
+        //headerBar.add(helpButton, gbc);
 
         return headerBar;
     }
@@ -322,6 +337,9 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         listViewPane.setMinimumSize(new Dimension(400, 400));
         tableViewPane = new JScrollPane(productEntryTable);
         tableViewPane.setMinimumSize(new Dimension(400, 400));
+        thumbnailPane = new JScrollPane(thumbnailView);
+        thumbnailPane.setMinimumSize(new Dimension(400, 400));
+        thumbnailPane.getViewport().setScrollMode(JViewport.SIMPLE_SCROLL_MODE);
 
         worldMapUI = new WorldMapUI();
         worldMapUI.addListener(this);

@@ -15,21 +15,16 @@
  */
 package org.esa.snap.productlibrary.rcp.toolviews.model.dataprovider;
 
+import com.bc.ceres.core.ProgressMonitor;
+import org.esa.snap.core.datamodel.quicklooks.Quicklook;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.engine_utilities.db.ProductEntry;
 
-import javax.swing.AbstractCellEditor;
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.SwingConstants;
+import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
-import java.awt.Color;
-import java.awt.Component;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Comparator;
 
@@ -106,7 +101,8 @@ public class QuicklookProvider implements DataProvider {
                 }
 
                 if (value instanceof ProductEntry) {
-                    final BufferedImage image = ((ProductEntry) value).getQuickLook();
+                    final Quicklook quicklook = ((ProductEntry) value).getQuickLook();
+                    final BufferedImage image = quicklook.hasCachedQuicklook() ? quicklook.getImage(ProgressMonitor.NULL) : null;
                     if (image == null) {
                         tableComponent.setIcon(null);
                         tableComponent.setText("Not available!");
@@ -172,7 +168,8 @@ public class QuicklookProvider implements DataProvider {
                 if (!(value instanceof ProductEntry)) {
                     return scrollPane;
                 }
-                final BufferedImage image = ((ProductEntry) value).getQuickLook();
+                final Quicklook quicklook = ((ProductEntry) value).getQuickLook();
+                final BufferedImage image = quicklook.hasCachedQuicklook() ? quicklook.getImage(ProgressMonitor.NULL) : null;
                 if (image == null) {
                     return scrollPane;
                 }
@@ -205,8 +202,8 @@ public class QuicklookProvider implements DataProvider {
                 return 1;
             }
 
-            final BufferedImage image1 = ((ProductEntry) o1).getQuickLook();
-            final BufferedImage image2 = ((ProductEntry) o2).getQuickLook();
+            final Quicklook image1 = ((ProductEntry) o1).getQuickLook();
+            final Quicklook image2 = ((ProductEntry) o2).getQuickLook();
 
             if (image1 == null) {
                 return -1;
@@ -214,10 +211,13 @@ public class QuicklookProvider implements DataProvider {
                 return 1;
             }
 
-            final Integer height1 = image1.getHeight();
-            final Integer height2 = image2.getHeight();
+            if (!image1.hasImage()) {
+                return -1;
+            } else if (!image2.hasImage()) {
+                return 1;
+            }
 
-            return height1.compareTo(height2);
+            return 0;
         }
     }
 }

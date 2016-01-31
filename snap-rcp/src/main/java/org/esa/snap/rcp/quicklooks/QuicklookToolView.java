@@ -161,15 +161,8 @@ public class QuicklookToolView extends TopComponent {
 
     private JPanel createTopPanel() {
         final JPanel topPanel = new JPanel(new BorderLayout());
-
-        //final JPanel productPanel = new JPanel(new BorderLayout());
         topPanel.add(nameLabel, BorderLayout.CENTER);
-
-        //final JPanel topButtonPanel = new JPanel(new BorderLayout());
         topPanel.add(quicklookNameCombo, BorderLayout.EAST);
-
-        //topPanel.add(topButtonPanel, BorderLayout.CENTER);
-       // topPanel.add(productPanel, BorderLayout.SOUTH);
 
         return topPanel;
     }

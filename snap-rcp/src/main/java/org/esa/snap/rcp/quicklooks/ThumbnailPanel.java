@@ -15,10 +15,14 @@
  */
 package org.esa.snap.rcp.quicklooks;
 
+import com.bc.ceres.core.ProgressMonitor;
+import org.esa.snap.core.datamodel.quicklooks.Thumbnail;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
 
 
 /**
@@ -37,10 +41,14 @@ public class ThumbnailPanel extends JPanel {
 
     private ThumbnailDrawing selection = null;
 
-    public ThumbnailPanel(final boolean multiRow, final Thumbnail[] imageList) {
+    public ThumbnailPanel(final boolean multiRow) {
         super(new FlowLayout(FlowLayout.LEADING));
         this.multiRow = multiRow;
-        update(imageList);
+
+        final DragScrollListener dragScrollListener = new DragScrollListener(this);
+        dragScrollListener.setDraggableElements(DragScrollListener.DRAGABLE_VERTICAL_SCROLL_BAR);
+        addMouseListener(dragScrollListener);
+        addMouseMotionListener(dragScrollListener);
     }
 
     public void update(final Thumbnail[] imageList) {
@@ -74,20 +82,25 @@ public class ThumbnailPanel extends JPanel {
     }
 
     public class ThumbnailDrawing extends JLabel implements MouseListener {
-        private ImageIcon icon1;
+        private final Thumbnail thumbnail;
 
         public ThumbnailDrawing(final Thumbnail thumbnail) {
-
+            this.thumbnail = thumbnail;
             setPreferredSize(new Dimension(imgWidth, imgHeight));
 
-            addMouseListener(this);
+            //addMouseListener(this);
         }
 
         @Override
         public void paintComponent(Graphics graphics) {
+            super.paintComponent(graphics);
             final Graphics2D g = (Graphics2D) graphics;
 
-            drawIcon(g, icon1, 0);
+            if(thumbnail.hasImage()) {
+                drawIcon(g, thumbnail.getImage(ProgressMonitor.NULL), 0);
+            } else {
+                drawIcon(g, null, 0);
+            }
 
             if (this.equals(selection) && selectionMode == SelectionMode.RECT) {
                 g.setColor(Color.CYAN);
@@ -96,9 +109,9 @@ public class ThumbnailPanel extends JPanel {
             }
         }
 
-        private void drawIcon(Graphics2D g, ImageIcon icon, int xOff) {
-            if (icon != null && icon.getImage() != null) {
-                g.drawImage(icon.getImage(), xOff, 0, imgWidth, imgHeight, null);
+        private void drawIcon(Graphics2D g, BufferedImage icon, int xOff) {
+            if (icon != null) {
+                g.drawImage(icon, xOff, 0, imgWidth, imgHeight, null);
             } else {
                 // Draw cross to indicate missing image
                 g.setColor(Color.DARK_GRAY);
@@ -125,7 +138,6 @@ public class ThumbnailPanel extends JPanel {
         public void mousePressed(MouseEvent e) {
             if (e.getButton() == MouseEvent.BUTTON1) {
 
-                repaint();
             } else if (e.getButton() == MouseEvent.BUTTON3) {
 
             }

@@ -13,11 +13,10 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, see http://www.gnu.org/licenses/
  */
-package org.esa.snap.productlibrary.rcp.toolviews.ListView;
+package org.esa.snap.productlibrary.rcp.toolviews.listviews;
 
 import org.esa.snap.engine_utilities.db.ProductEntry;
 import org.esa.snap.productlibrary.rcp.toolviews.ProductLibraryActions;
-import org.esa.snap.productlibrary.rcp.toolviews.model.ListView;
 import org.esa.snap.productlibrary.rcp.toolviews.model.ProductEntryTableModel;
 import org.esa.snap.productlibrary.rcp.toolviews.model.SortingDecorator;
 
