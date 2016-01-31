@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 by Array Systems Computing Inc. http://www.array.ca
+ * Copyright (C) 2016 by Array Systems Computing Inc. http://www.array.ca
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -20,9 +20,11 @@ import org.esa.snap.engine_utilities.db.ProductEntry;
 import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
 import org.esa.snap.graphbuilder.rcp.utils.FileFolderUtils;
 import org.esa.snap.productlibrary.rcp.dialogs.CheckListDialog;
+import org.esa.snap.productlibrary.rcp.toolviews.ListView.ProductEntryList;
+import org.esa.snap.productlibrary.rcp.toolviews.ListView.ProductEntryTable;
 import org.esa.snap.productlibrary.rcp.toolviews.model.DatabaseQueryListener;
 import org.esa.snap.productlibrary.rcp.toolviews.model.DatabaseStatistics;
-import org.esa.snap.productlibrary.rcp.toolviews.model.ProductEntryTableModel;
+import org.esa.snap.productlibrary.rcp.toolviews.model.ListView;
 import org.esa.snap.productlibrary.rcp.toolviews.model.ProductLibraryConfig;
 import org.esa.snap.productlibrary.rcp.toolviews.model.SortingDecorator;
 import org.esa.snap.productlibrary.rcp.toolviews.timeline.TimelinePanel;
@@ -37,31 +39,14 @@ import org.openide.awt.ActionReferences;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-import java.awt.BorderLayout;
-import java.awt.Cursor;
-import java.awt.Desktop;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
@@ -92,7 +77,7 @@ import java.util.Map;
         "CTL_ProductLibraryTopComponentDescription=Product Library",
 })
 public class ProductLibraryToolView extends ToolTopComponent implements LabelBarProgressMonitor.ProgressBarListener,
-        DatabaseQueryListener, ProductLibraryActions.ProductLibraryActionListener {
+        DatabaseQueryListener, ListView.ListViewListener, ProductLibraryActions.ProductLibraryActionListener {
 
     private static final ImageIcon updateIcon = UIUtils.loadImageIcon("/org/esa/snap/productlibrary/icons/refresh24.png", ProductLibraryToolView.class);
     private static final ImageIcon updateRolloverIcon = ToolButtonFactory.createRolloverIcon(updateIcon);
@@ -100,18 +85,22 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
     private static final ImageIcon stopRolloverIcon = ToolButtonFactory.createRolloverIcon(stopIcon);
     private static final ImageIcon addButtonIcon = UIUtils.loadImageIcon("icons/Plus24.gif");
     private static final ImageIcon removeButtonIcon = UIUtils.loadImageIcon("icons/Minus24.gif");
+    private static final ImageIcon listViewButtonIcon = UIUtils.loadImageIcon("/org/esa/snap/productlibrary/icons/list_view24.png", ProductLibraryToolView.class);
+    private static final ImageIcon listQlViewButtonIcon = UIUtils.loadImageIcon("/org/esa/snap/productlibrary/icons/list_ql_view24.png", ProductLibraryToolView.class);
+    private static final ImageIcon thumbnailViewButtonIcon = UIUtils.loadImageIcon("/org/esa/snap/productlibrary/icons/thumbnails_view24.png", ProductLibraryToolView.class);
     private static final ImageIcon helpButtonIcon = UIUtils.loadImageIcon("icons/Help24.gif");
 
     private JPanel mainPanel;
     private JComboBox repositoryListCombo;
-    private JTable productEntryTable  = new JTable();
+    private ProductEntryTable productEntryTable;
+    private ProductEntryList productEntryList;
+    private ListView currentListView;
 
     private JLabel statusLabel;
     private JPanel progressPanel;
-    private JButton addToProjectButton;
-    private JButton addButton;
-    private JButton removeButton;
-    private JButton updateButton;
+    private JScrollPane listViewPane, tableViewPane;
+    private JSplitPane splitPaneV;
+    private JButton addButton, removeButton, viewButton, updateButton;
 
     private LabelBarProgressMonitor progMon;
     private JProgressBar progressBar;
@@ -148,8 +137,15 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         dbPane = new DatabasePane();
         dbPane.addListener(this);
 
-        productLibraryActions = new ProductLibraryActions(productEntryTable, this);
+        productLibraryActions = new ProductLibraryActions(this);
         productLibraryActions.addListener(this);
+
+        productEntryTable = new ProductEntryTable(productLibraryActions);
+        productEntryTable.addListener(this);
+        productEntryList = new ProductEntryList(productLibraryActions);
+        productEntryList.addListener(this);
+
+        currentListView = productEntryTable;
     }
 
     public void initUI() {
@@ -269,6 +265,25 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         });
         headerBar.add(removeButton, gbc);
 
+        viewButton = DialogUtils.createButton("viewButton", "Change View", listQlViewButtonIcon, headerBar, DialogUtils.ButtonStyle.Icon);
+        viewButton.addActionListener(new ActionListener() {
+            public void actionPerformed(final ActionEvent e) {
+                if(currentListView instanceof ProductEntryList) {
+                    currentListView = productEntryTable;
+                    viewButton.setIcon(listViewButtonIcon);
+                    viewButton.setPressedIcon(listViewButtonIcon);
+                    splitPaneV.setLeftComponent(tableViewPane);
+                } else if(currentListView instanceof ProductEntryTable) {
+                    currentListView = productEntryList;
+                    viewButton.setIcon(listQlViewButtonIcon);
+                    viewButton.setPressedIcon(listQlViewButtonIcon);
+                    splitPaneV.setLeftComponent(listViewPane);
+                }
+                notifyNewEntryListAvailable();
+            }
+        });
+        headerBar.add(viewButton, gbc);
+
         //final JButton helpButton = DialogUtils.createButton("helpButton", "Help", helpButtonIcon, headerBar, DialogUtils.ButtonStyle.Icon);
         //HelpSys.enableHelpOnButton(helpButton, helpId);
        // headerBar.add(helpButton, gbc);
@@ -277,23 +292,11 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
     }
 
     private JPanel createStatusPanel() {
-       /* addToProjectButton = new JButton();
-        setComponentName(addToProjectButton, "addToProject");
-        addToProjectButton.setText("Import to Project");
-        addToProjectButton.addActionListener(new ActionListener() {
-            public void actionPerformed(final ActionEvent e) {
-                Project.instance().ImportFileList(productLibraryActions.getSelectedFiles());
-            }
-        });
-
-        final JPanel openPanel = new JPanel(new BorderLayout(4, 4));
-        openPanel.add(addToProjectButton, BorderLayout.WEST);*/
 
         final JPanel southPanel = new JPanel(new BorderLayout(4, 4));
         statusLabel = new JLabel("");
         statusLabel.setMinimumSize(new Dimension(100, 10));
         southPanel.add(statusLabel, BorderLayout.CENTER);
-        //southPanel.add(openPanel, BorderLayout.WEST);
 
         progressBar = new JProgressBar();
         progressBar.setName(getClass().getName() + "progressBar");
@@ -313,31 +316,17 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         leftPanel.setMinimumSize(new Dimension(200, 577));
         leftPanel.add(dbPane, BorderLayout.NORTH);
 
-        productEntryTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
-        productEntryTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-        productEntryTable.setComponentPopupMenu(productLibraryActions.createEntryTablePopup());
-        productEntryTable.addMouseListener(new MouseAdapter() {
-
-            @Override
-            public void mouseClicked(final MouseEvent e) {
-                final int clickCount = e.getClickCount();
-                if (clickCount == 2) {
-                    productLibraryActions.performOpenAction();
-                } else if (clickCount == 1) {
-                    notifySelectionChanged();
-                }
-            }
-        });
-
         final JPanel commandPanel = productLibraryActions.createCommandPanel();
 
-        final JScrollPane tablePane = new JScrollPane(productEntryTable);
-        tablePane.setMinimumSize(new Dimension(400, 400));
+        listViewPane = new JScrollPane(productEntryList);
+        listViewPane.setMinimumSize(new Dimension(400, 400));
+        tableViewPane = new JScrollPane(productEntryTable);
+        tableViewPane.setMinimumSize(new Dimension(400, 400));
 
         worldMapUI = new WorldMapUI();
         worldMapUI.addListener(this);
 
-        final JSplitPane splitPaneV = new JSplitPane(JSplitPane.VERTICAL_SPLIT, tablePane, worldMapUI.getWorlMapPane());
+        splitPaneV = new JSplitPane(JSplitPane.VERTICAL_SPLIT, tableViewPane, worldMapUI.getWorlMapPane());
         splitPaneV.setOneTouchExpandable(true);
         splitPaneV.setResizeWeight(0.8);
 
@@ -389,6 +378,32 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         progMon = new LabelBarProgressMonitor(progressBar, statusLabel);
         progMon.addListener(this);
         return progMon;
+    }
+
+    public File[] getSelectedFiles() {
+        return currentListView.getSelectedFiles();
+    }
+
+    public ProductEntry[] getSelectedProductEntries() {
+        return currentListView.getSelectedProductEntries();
+    }
+
+    public ProductEntry getEntryOverMouse() {
+        return currentListView.getEntryOverMouse();
+    }
+
+    public void sort(final SortingDecorator.SORT_BY sortBy) {
+        currentListView.sort(sortBy);
+    }
+
+    public void selectAll() {
+        currentListView.selectAll();
+        notifySelectionChanged();
+    }
+
+    public void selectNone() {
+        currentListView.clearSelection();
+        notifySelectionChanged();
     }
 
     private synchronized void updateRepostitory(final File baseDir, final DBScanner.Options options) {
@@ -463,7 +478,7 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
 
     public void UpdateUI() {
         dbPane.refresh();
-        productEntryTable.updateUI();
+        currentListView.updateUI();
     }
 
     public void findSlices(int dataTakeId) {
@@ -483,19 +498,18 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
 
     private void updateStatusLabel() {
         String selectedText = "";
-        final int selecteRows = productEntryTable.getSelectedRowCount();
+        final int selectedCount = currentListView.getSelectionCount();
 
-        if (selecteRows > 0)
-            selectedText = ", " + selecteRows + " Selected";
-        else
+        if (selectedCount > 0) {
+            selectedText = ", " + selectedCount + " Selected";
+        } else {
             dbPane.updateProductSelectionText(null);
-        statusLabel.setText(productEntryTable.getRowCount() + " Products" + selectedText);
+        }
+        statusLabel.setText(selectedCount + " Products" + selectedText);
     }
 
     public void ShowRepository(final ProductEntry[] productEntryList) {
-        final ProductEntryTableModel tableModel = new ProductEntryTableModel(productEntryList);
-        productEntryTable.setModel(new SortingDecorator(tableModel, productEntryTable.getTableHeader()));
-        productEntryTable.setColumnModel(tableModel.getColumnModel());
+        currentListView.setProductEntryList(productEntryList);
         notifySelectionChanged();
         worldMapUI.setProductEntryList(productEntryList);
         worldMapUI.setSelectedProductEntryList(null);
@@ -589,7 +603,7 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
 
     public void notifySelectionChanged() {
         updateStatusLabel();
-        final ProductEntry[] selections = productLibraryActions.getSelectedProductEntries();
+        final ProductEntry[] selections = getSelectedProductEntries();
         productLibraryActions.selectionChanged(selections);
 
         productLibraryActions.updateContextMenu(selections);

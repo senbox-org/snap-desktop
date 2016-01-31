@@ -35,15 +35,17 @@ public class ProductEntryTableModel extends AbstractTableModel {
     final List<DataProvider> dataProviders = new ArrayList<>(5);
     private final List<TableColumn> columnList = new ArrayList<>();
 
-    public ProductEntryTableModel(final ProductEntry[] productList) {
+    public ProductEntryTableModel(final ProductEntry[] productList, boolean minimalView) {
         this.productEntryList = productList;
         dataProviders.add(new IDProvider());
-        dataProviders.add(new PropertiesProvider());
-        try {
-            dataProviders.add(new QuicklookProvider());
-        } catch (Exception e) {
-            e.printStackTrace();
-            Dialogs.showError(e.getMessage());
+        dataProviders.add(new PropertiesProvider(minimalView));
+        if(!minimalView) {
+            try {
+                dataProviders.add(new QuicklookProvider());
+            } catch (Exception e) {
+                e.printStackTrace();
+                Dialogs.showError(e.getMessage());
+            }
         }
         for (final DataProvider provider : dataProviders) {
             final TableColumn tableColumn = provider.getTableColumn();

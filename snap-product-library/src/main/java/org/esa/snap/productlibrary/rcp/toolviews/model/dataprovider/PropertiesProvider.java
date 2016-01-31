@@ -17,6 +17,7 @@ package org.esa.snap.productlibrary.rcp.toolviews.model.dataprovider;
 
 import org.esa.snap.core.datamodel.MetadataElement;
 import org.esa.snap.core.datamodel.ProductData;
+import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.engine_utilities.datamodel.AbstractMetadata;
 import org.esa.snap.engine_utilities.db.ProductEntry;
 
@@ -54,9 +55,14 @@ public class PropertiesProvider implements DataProvider {
             "File Format:"
     };
 
-    private final Comparator productPropertiesComparator = new ProductPropertiesComparator();
-
+    private final Comparator productPropertiesComparator;
     private TableColumn propertiesColumn;
+    private final boolean minimalView;
+
+    public PropertiesProvider(boolean minimalView) {
+        this.minimalView = minimalView;
+        this.productPropertiesComparator = new ProductPropertiesComparator();
+    }
 
     public Comparator getComparator() {
         return productPropertiesComparator;
@@ -74,7 +80,7 @@ public class PropertiesProvider implements DataProvider {
                 propertiesColumn.setHeaderValue("Product Properties");
                 propertiesColumn.setCellRenderer(new ProductPropertiesRenderer());
             } catch (Throwable e) {
-                System.out.println("PropertiesProvider: " + e.getMessage());
+                SystemUtils.LOG.severe("PropertiesProvider: " + e.getMessage());
             }
         }
         return propertiesColumn;
@@ -82,7 +88,7 @@ public class PropertiesProvider implements DataProvider {
 
     private class ProductPropertiesRenderer extends JTable implements TableCellRenderer {
 
-        private static final int ROW_HEIGHT = 68;
+        private final int ROW_HEIGHT = minimalView ? 34 : 68;
         private final JPanel centeringPanel = new JPanel(new BorderLayout());
         private final Font valueFont, boldFont;
 
@@ -137,12 +143,21 @@ public class PropertiesProvider implements DataProvider {
                             polStr += ' ' + pol4;
                     }
 
-                    values = new String[]{
-                            entry.getName(),
-                            entry.getMission() + "   " + entry.getProductType() + "   " + entry.getPass() + "  " + polStr,
-                            dateString + "   " + pixelSpacing,
-                            entry.getFileFormat() + "   " + fileSize
-                    };
+                    if(minimalView) {
+                        values = new String[]{
+                                entry.getName(),
+                                entry.getMission() + "   " + entry.getProductType() + "   " + entry.getPass() + "  " + polStr
+                                +"   " + dateString + "   " + pixelSpacing,
+                        };
+                    } else {
+                        values = new String[]{
+                                entry.getName(),
+                                entry.getMission() + "   " + entry.getProductType() + "   " + entry.getPass() + "  " + polStr,
+                                dateString + "   " + pixelSpacing,
+                                entry.getFileFormat() + "   " + fileSize
+                        };
+                    }
+
                     for (int i = 0; i < values.length; i++) {
                         setValueAt(values[i], i, 0);
                     }
@@ -172,7 +187,7 @@ public class PropertiesProvider implements DataProvider {
                 centeringPanel.setToolTipText(toolTip);
                 adjustCellSize(table, row, column, values);
             } catch (Throwable e) {
-                System.out.println("ProductPropertiesRenderer: " + e.getMessage());
+                SystemUtils.LOG.severe("ProductPropertiesRenderer: " + e.getMessage());
             }
             return centeringPanel;
         }
@@ -240,7 +255,7 @@ public class PropertiesProvider implements DataProvider {
                         return jLabel;
                     }
                 } catch (Throwable e) {
-                    System.out.println("PropertyValueCellRenderer: " + e.getMessage());
+                    SystemUtils.LOG.severe("PropertyValueCellRenderer: " + e.getMessage());
                 }
                 return null;
             }

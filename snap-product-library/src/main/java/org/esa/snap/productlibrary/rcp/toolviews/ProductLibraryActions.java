@@ -30,21 +30,9 @@ import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.SnapFileChooser;
 import org.esa.snap.ui.UIUtils;
 
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JTable;
+import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
-import javax.swing.table.TableModel;
-import java.awt.Desktop;
-import java.awt.Dimension;
-import java.awt.Point;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -63,20 +51,18 @@ public class ProductLibraryActions {
     private static final ImageIcon copyIcon = UIUtils.loadImageIcon("/org/esa/snap/productlibrary/icons/copy24.png", ProductLibraryToolView.class);
     private static final ImageIcon batchIcon = UIUtils.loadImageIcon("/org/esa/snap/productlibrary/icons/batch24.png", ProductLibraryToolView.class);
 
-    private final JTable productEntryTable;
     private final ProductLibraryToolView toolView;
     private final ProductOpener openHandler;
     private JButton selectAllButton, openAllSelectedButton, copySelectedButton, batchProcessButton;
 
     private List<ProductLibraryActionExt> actionExtList = new ArrayList<>();
 
-    private JMenuItem copyToItem,  moveToItem, deleteItem;
+    private JMenuItem copyToItem, moveToItem, deleteItem;
 
     private File currentDirectory;
     private final java.util.List<ProductLibraryActionListener> listenerList = new ArrayList<>(1);
 
-    public ProductLibraryActions(final JTable productEntryTable, final ProductLibraryToolView toolView) {
-        this.productEntryTable = productEntryTable;
+    public ProductLibraryActions(final ProductLibraryToolView toolView) {
         this.toolView = toolView;
         this.openHandler = new ProductOpener();
     }
@@ -88,7 +74,7 @@ public class ProductLibraryActions {
         selectAllButton = DialogUtils.createButton("selectAllButton", "Select all", selectAllIcon, panel, DialogUtils.ButtonStyle.Icon);
         selectAllButton.addActionListener(new ActionListener() {
             public void actionPerformed(final ActionEvent e) {
-                performSelectAllAction();
+                toolView.selectAll();
             }
         });
 
@@ -111,7 +97,7 @@ public class ProductLibraryActions {
         batchProcessButton.setComponentPopupMenu(createGraphPopup());
         batchProcessButton.addActionListener(new ActionListener() {
             public void actionPerformed(final ActionEvent e) {
-                batchProcess(getSelectedProductEntries(), null);
+                batchProcess(toolView.getSelectedProductEntries(), null);
             }
         });
 
@@ -159,45 +145,11 @@ public class ProductLibraryActions {
         }
     }
 
-    public ProductEntry[] getSelectedProductEntries() {
-        final int[] selectedRows = productEntryTable.getSelectedRows();
-        final ProductEntry[] selectedEntries = new ProductEntry[selectedRows.length];
-        for (int i = 0; i < selectedRows.length; i++) {
-            final Object entry = productEntryTable.getValueAt(selectedRows[i], 0);
-            if (entry instanceof ProductEntry) {
-                selectedEntries[i] = (ProductEntry) entry;
-            }
-        }
-        return selectedEntries;
-    }
-
-    public File[] getSelectedFiles() {
-        final int[] selectedRows = productEntryTable.getSelectedRows();
-        final File[] selectedFiles = new File[selectedRows.length];
-        for (int i = 0; i < selectedRows.length; i++) {
-            final Object entry = productEntryTable.getValueAt(selectedRows[i], 0);
-            if (entry instanceof ProductEntry) {
-                selectedFiles[i] = ((ProductEntry) entry).getFile();
-            }
-        }
-        return selectedFiles;
-    }
-
-    private void performSelectAllAction() {
-        productEntryTable.selectAll();
-        notifySelectionChanged();
-    }
-
-    private void performSelectNoneAction() {
-        productEntryTable.clearSelection();
-        notifySelectionChanged();
-    }
-
     /**
      * Copy the selected file list to the clipboard
      */
     private void performCopyAction() {
-        final File[] fileList = getSelectedFiles();
+        final File[] fileList = toolView.getSelectedFiles();
         if (fileList.length != 0)
             ClipboardUtils.copyToClipboard(fileList);
     }
@@ -211,7 +163,7 @@ public class ProductLibraryActions {
             if (targetFolder == null) return;
         }
 
-        final ProductEntry[] entries = getSelectedProductEntries();
+        final ProductEntry[] entries = toolView.getSelectedProductEntries();
         final LabelBarProgressMonitor progMon = toolView.createLabelBarProgressMonitor();
 
         final ProductFileHandler fileHandler = new ProductFileHandler(entries, operationType, targetFolder, progMon);
@@ -219,10 +171,16 @@ public class ProductLibraryActions {
         fileHandler.execute();
     }
 
+    public File[] getSelectedFiles() {
+        return toolView.getSelectedFiles();
+    }
+
+    public ProductEntry[] getSelectedProductEntries() {
+        return toolView.getSelectedProductEntries();
+    }
+
     public void performOpenAction() {
-        if (openHandler != null) {
-            openHandler.openProducts(getSelectedFiles());
-        }
+        openHandler.openProducts(toolView.getSelectedFiles());
     }
 
     public void findSlices(final int dataTakeId) {
@@ -274,14 +232,14 @@ public class ProductLibraryActions {
         final JMenuItem selectAllItem = new JMenuItem("Select All");
         selectAllItem.addActionListener(new ActionListener() {
             public void actionPerformed(final ActionEvent e) {
-                performSelectAllAction();
+                toolView.selectAll();
             }
         });
         popup.add(selectAllItem);
         final JMenuItem selectNoneItem = new JMenuItem("Select None");
         selectNoneItem.addActionListener(new ActionListener() {
             public void actionPerformed(final ActionEvent e) {
-                performSelectNoneAction();
+                toolView.selectNone();
             }
         });
         popup.add(selectNoneItem);
@@ -335,11 +293,7 @@ public class ProductLibraryActions {
         final JMenuItem exploreItem = new JMenuItem("Browse Folder");
         exploreItem.addActionListener(new ActionListener() {
             public void actionPerformed(final ActionEvent e) {
-                final Point pos = productEntryTable.getMousePosition();
-                int row = 0;
-                if (pos != null)
-                    row = productEntryTable.rowAtPoint(pos);
-                final Object entry = productEntryTable.getValueAt(row, 0);
+                final ProductEntry entry = toolView.getEntryOverMouse();
                 if (entry != null && entry instanceof ProductEntry) {
                     final ProductEntry prodEntry = (ProductEntry) entry;
                     try {
@@ -370,11 +324,7 @@ public class ProductLibraryActions {
         final JMenuItem item = new JMenuItem(name);
         item.addActionListener(new ActionListener() {
             public void actionPerformed(final ActionEvent e) {
-                final TableModel model = productEntryTable.getModel();
-                if(model instanceof SortingDecorator) {
-                    SortingDecorator sortedModel = (SortingDecorator) model;
-                    sortedModel.sortBy(sortBy);
-                }
+                toolView.sort(sortBy);
             }
         });
         return item;
@@ -407,7 +357,7 @@ public class ProductLibraryActions {
                     public void actionPerformed(final ActionEvent e) {
                         //todo
                         if (batchProcessButton.isEnabled())
-                            batchProcess(getSelectedProductEntries(), file);
+                            batchProcess(toolView.getSelectedProductEntries(), file);
                     }
                 });
                 menu.add(item);
@@ -432,7 +382,7 @@ public class ProductLibraryActions {
                     public void actionPerformed(final ActionEvent e) {
                         //todo
                         if (batchProcessButton.isEnabled())
-                            batchProcess(getSelectedProductEntries(), file);
+                            batchProcess(toolView.getSelectedProductEntries(), file);
                     }
                 });
                 menu.add(item);

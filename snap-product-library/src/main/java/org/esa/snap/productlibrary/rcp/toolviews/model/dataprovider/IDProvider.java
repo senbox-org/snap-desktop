@@ -15,6 +15,7 @@
  */
 package org.esa.snap.productlibrary.rcp.toolviews.model.dataprovider;
 
+import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.engine_utilities.db.ProductEntry;
 
 import javax.swing.JLabel;
@@ -42,7 +43,7 @@ public class IDProvider implements DataProvider {
                 column.setResizable(true);
                 column.setCellRenderer(new IDCellRenderer());
             } catch (Throwable e) {
-                System.out.println("IDProvider: " + e.getMessage());
+                SystemUtils.LOG.severe("IDProvider: " + e.getMessage());
             }
         }
         return column;
@@ -69,7 +70,7 @@ public class IDProvider implements DataProvider {
                     return jlabel;
                 }
             } catch (Throwable e) {
-                System.out.println("IDCellRenderer: " + e.getMessage());
+                SystemUtils.LOG.severe("IDCellRenderer: " + e.getMessage());
             }
             return null;
         }
