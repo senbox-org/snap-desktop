@@ -25,7 +25,7 @@ import org.esa.snap.productlibrary.rcp.toolviews.model.SortingDecorator;
  */
 public class ProductEntryList extends ProductEntryTable {
 
-    public ProductEntryList(ProductLibraryActions productLibraryActions) {
+    public ProductEntryList(final ProductLibraryActions productLibraryActions) {
         super(productLibraryActions);
     }
 

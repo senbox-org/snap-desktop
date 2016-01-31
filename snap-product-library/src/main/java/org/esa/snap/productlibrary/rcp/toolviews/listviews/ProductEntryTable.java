@@ -32,7 +32,7 @@ import java.io.File;
  */
 public class ProductEntryTable extends JTable implements ListView {
 
-    public ProductEntryTable(ProductLibraryActions productLibraryActions) {
+    public ProductEntryTable(final ProductLibraryActions productLibraryActions) {
         setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
         setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         setComponentPopupMenu(productLibraryActions.createEntryTablePopup());

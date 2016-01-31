@@ -18,6 +18,7 @@ package org.esa.snap.productlibrary.rcp.toolviews.listviews;
 import org.esa.snap.core.datamodel.quicklooks.Quicklook;
 import org.esa.snap.core.datamodel.quicklooks.Thumbnail;
 import org.esa.snap.engine_utilities.db.ProductEntry;
+import org.esa.snap.productlibrary.rcp.toolviews.ProductLibraryActions;
 import org.esa.snap.productlibrary.rcp.toolviews.model.SortingDecorator;
 import org.esa.snap.rcp.quicklooks.ThumbnailPanel;
 
@@ -31,8 +32,10 @@ import java.util.List;
 public class ThumbnailView extends ThumbnailPanel implements ListView {
 
 
-    public ThumbnailView() {
+    public ThumbnailView(final ProductLibraryActions productLibraryActions) {
         super(true);
+
+        setComponentPopupMenu(productLibraryActions.createEntryTablePopup());
     }
 
     public File[] getSelectedFiles() {

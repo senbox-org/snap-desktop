@@ -150,7 +150,7 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         productEntryTable.addListener(this);
         productEntryList = new ProductEntryList(productLibraryActions);
         productEntryList.addListener(this);
-        thumbnailView  = new ThumbnailView();
+        thumbnailView  = new ThumbnailView(productLibraryActions);
         thumbnailView.addListener(this);
 
         currentListView = productEntryTable;
