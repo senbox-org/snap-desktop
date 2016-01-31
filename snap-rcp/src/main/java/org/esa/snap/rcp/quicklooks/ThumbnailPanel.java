@@ -26,24 +26,26 @@ import java.awt.image.BufferedImage;
 
 
 /**
- * Displays a list of thumbnails
+ * Displays a panel of thumbnails
  */
 public class ThumbnailPanel extends JPanel {
 
     private final static int imgWidth = 150;
     private final static int imgHeight = 150;
-    private final static int margin = 4;
-    private final boolean multiRow;
+    private final static int margin = 6;
+    private final static BasicStroke thickStroke = new BasicStroke(5);
 
     private enum SelectionMode {CHECK, RECT}
 
-    private SelectionMode selectionMode = SelectionMode.CHECK;
+    private final boolean multiRow;
+    private SelectionMode selectionMode;
 
-    private ThumbnailDrawing selection = null;
+    private ThumbnailDrawing selection;
 
     public ThumbnailPanel(final boolean multiRow) {
         super(new FlowLayout(FlowLayout.LEADING));
         this.multiRow = multiRow;
+        this.selectionMode = SelectionMode.RECT;
 
         final DragScrollListener dragScrollListener = new DragScrollListener(this);
         dragScrollListener.setDraggableElements(DragScrollListener.DRAGABLE_VERTICAL_SCROLL_BAR);
@@ -75,20 +77,22 @@ public class ThumbnailPanel extends JPanel {
             }
 
             for (Thumbnail thumbnail : imageList) {
-                this.add(new ThumbnailDrawing(thumbnail));
+                this.add(new ThumbnailDrawing(this, thumbnail));
             }
         }
         updateUI();
     }
 
     public class ThumbnailDrawing extends JLabel implements MouseListener {
+        private final ThumbnailPanel parent;
         private final Thumbnail thumbnail;
 
-        public ThumbnailDrawing(final Thumbnail thumbnail) {
+        public ThumbnailDrawing(final ThumbnailPanel parent, final Thumbnail thumbnail) {
+            this.parent = parent;
             this.thumbnail = thumbnail;
             setPreferredSize(new Dimension(imgWidth, imgHeight));
 
-            //addMouseListener(this);
+            addMouseListener(this);
         }
 
         @Override
@@ -103,9 +107,7 @@ public class ThumbnailPanel extends JPanel {
             }
 
             if (this.equals(selection) && selectionMode == SelectionMode.RECT) {
-                g.setColor(Color.CYAN);
-                g.setStroke(new BasicStroke(5));
-                g.drawRoundRect(0, 0, imgWidth, imgHeight - 5, 25, 25);
+                drawSelected(g);
             }
         }
 
@@ -115,10 +117,21 @@ public class ThumbnailPanel extends JPanel {
             } else {
                 // Draw cross to indicate missing image
                 g.setColor(Color.DARK_GRAY);
-                g.setStroke(new BasicStroke(1));
+                g.setStroke(thickStroke);
                 g.drawLine(xOff, 0, xOff + imgWidth, imgHeight);
                 g.drawLine(xOff + imgWidth, 0, xOff, imgHeight);
                 g.drawRect(xOff, 0, imgWidth-1, imgHeight-1);
+            }
+        }
+
+        private void drawSelected(Graphics2D g) {
+            g.setColor(new Color(0,100,255));
+            g.setStroke(thickStroke);
+            g.drawRect(0, 0, imgWidth, imgHeight);
+            for(int i=0; i <= 20; ++i) {
+                int alpha = 40-(i*2);
+                g.setColor(new Color(0,100,255,alpha));
+                g.drawRoundRect(i, i, imgWidth-i-i, imgHeight-i-i, 25, 25);
             }
         }
 
@@ -129,7 +142,8 @@ public class ThumbnailPanel extends JPanel {
         @Override
         public void mousePressed(MouseEvent e) {
             if (e.getButton() == MouseEvent.BUTTON1) {
-
+                selection = this.equals(selection) ? null : this;
+                parent.repaint();
             } else if (e.getButton() == MouseEvent.BUTTON3) {
 
             }
