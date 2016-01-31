@@ -59,19 +59,19 @@ public class ThumbnailPanel extends JPanel {
 
         if (imageList.length == 0) {
             setPreferredSize(new Dimension(width, imgHeight + 2 * margin));
-            JLabel label = new JLabel("Nothing to see here");
+            JLabel label = new JLabel("");
             this.add(label);
         } else {
             if (multiRow) {
                 int numImages = 1;
-                int effecitveImageWidth = imgWidth * numImages + margin;
+                int effectiveImageWidth = imgWidth * numImages + margin;
 
-                int numCol = Math.max(width / effecitveImageWidth, 1);
+                int numCol = Math.max(width / effectiveImageWidth, 1);
                 int numRow = (int)Math.ceil(imageList.length / (double)numCol);
 
-                int preferedWidth = effecitveImageWidth * numCol + margin;
-                int preferedHeight = (imgHeight + margin) * numRow + margin;
-                setPreferredSize(new Dimension(preferedWidth, preferedHeight));
+                int preferredWidth = effectiveImageWidth * numCol + margin;
+                int preferredHeight = (imgHeight + margin) * numRow + margin;
+                setPreferredSize(new Dimension(preferredWidth, preferredHeight));
             }
 
             for (Thumbnail thumbnail : imageList) {
@@ -96,7 +96,7 @@ public class ThumbnailPanel extends JPanel {
             super.paintComponent(graphics);
             final Graphics2D g = (Graphics2D) graphics;
 
-            if(thumbnail.hasImage()) {
+            if(thumbnail.hasImage() || thumbnail.hasCachedImage()) {
                 drawIcon(g, thumbnail.getImage(ProgressMonitor.NULL), 0);
             } else {
                 drawIcon(g, null, 0);
@@ -122,18 +122,10 @@ public class ThumbnailPanel extends JPanel {
             }
         }
 
-        /**
-         * Invoked when the mouse button has been clicked (pressed
-         * and released) on a component.
-         */
         @Override
         public void mouseClicked(MouseEvent e) {
-
         }
 
-        /**
-         * Invoked when a mouse button has been pressed on a component.
-         */
         @Override
         public void mousePressed(MouseEvent e) {
             if (e.getButton() == MouseEvent.BUTTON1) {
@@ -143,23 +135,14 @@ public class ThumbnailPanel extends JPanel {
             }
         }
 
-        /**
-         * Invoked when a mouse button has been released on a component.
-         */
         @Override
         public void mouseReleased(MouseEvent e) {
         }
 
-        /**
-         * Invoked when the mouse enters a component.
-         */
         @Override
         public void mouseEntered(MouseEvent e) {
         }
 
-        /**
-         * Invoked when the mouse exits a component.
-         */
         @Override
         public void mouseExited(MouseEvent e) {
         }

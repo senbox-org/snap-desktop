@@ -142,7 +142,7 @@ public final class DBScanner extends SwingWorker {
                     if (sourceProduct != null) {
                         final ProductEntry entry = db.saveProduct(sourceProduct);
                         ++prodCount;
-                        if (!sourceProduct.getDefaultQuicklook().hasCachedQuicklook()) {
+                        if (!sourceProduct.getDefaultQuicklook().hasCachedImage()) {
                             qlProducts.add(sourceProduct);
                             // product to be freed later
                         } else {

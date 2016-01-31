@@ -63,6 +63,14 @@ public class QuicklookProvider implements DataProvider {
         return quickLookColumn;
     }
 
+    private static BufferedImage getImage(final ProductEntry productEntry) {
+        if(productEntry.quickLookExists()) {
+            final Quicklook quicklook = productEntry.getQuickLook();
+            return quicklook.getImage(ProgressMonitor.NULL);
+        }
+        return null;
+    }
+
     private static class QuickLookRenderer extends DefaultTableCellRenderer {
 
         private final int rowHeight;
@@ -101,8 +109,7 @@ public class QuicklookProvider implements DataProvider {
                 }
 
                 if (value instanceof ProductEntry) {
-                    final Quicklook quicklook = ((ProductEntry) value).getQuickLook();
-                    final BufferedImage image = quicklook.hasCachedQuicklook() ? quicklook.getImage(ProgressMonitor.NULL) : null;
+                    final BufferedImage image = getImage((ProductEntry) value);
                     if (image == null) {
                         tableComponent.setIcon(null);
                         tableComponent.setText("Not available!");
@@ -168,8 +175,7 @@ public class QuicklookProvider implements DataProvider {
                 if (!(value instanceof ProductEntry)) {
                     return scrollPane;
                 }
-                final Quicklook quicklook = ((ProductEntry) value).getQuickLook();
-                final BufferedImage image = quicklook.hasCachedQuicklook() ? quicklook.getImage(ProgressMonitor.NULL) : null;
+                final BufferedImage image = getImage((ProductEntry) value);
                 if (image == null) {
                     return scrollPane;
                 }

@@ -383,7 +383,7 @@ public class QuicklookToolView extends TopComponent {
         }
 
         final BufferedImage img;
-        if(quicklook != null && (quicklook.hasImage() || quicklook.hasCachedQuicklook())) {
+        if(quicklook != null && (quicklook.hasImage() || quicklook.hasCachedImage())) {
             img = quicklook.getImage(ProgressMonitor.NULL);
         } else {
             img = noDataImage;
