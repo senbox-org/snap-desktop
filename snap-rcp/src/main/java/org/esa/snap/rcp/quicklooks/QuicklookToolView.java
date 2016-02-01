@@ -31,6 +31,7 @@ import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.window.OpenRGBImageViewAction;
 import org.esa.snap.rcp.util.SelectionSupport;
 import org.esa.snap.tango.TangoIcons;
+import org.esa.snap.ui.tool.ToolButtonFactory;
 import org.netbeans.api.annotations.common.NullAllowed;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -206,7 +207,7 @@ public class QuicklookToolView extends TopComponent {
 
     private static JButton createButton(final String name, final String text, final JPanel panel,
                                         final ButtonActionListener actionListener, final ImageIcon icon) {
-        final JButton btn = new JButton();
+        final JButton btn = (JButton) ToolButtonFactory.createButton(icon, false);
         btn.setName(name);
         btn.setIcon(icon);
         if (panel != null) {

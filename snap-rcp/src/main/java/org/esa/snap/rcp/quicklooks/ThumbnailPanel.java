@@ -21,9 +21,13 @@ import org.esa.snap.core.datamodel.quicklooks.Thumbnail;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -35,23 +39,55 @@ public class ThumbnailPanel extends JPanel {
     private final static int imgHeight = 200;
     private final static int margin = 6;
     private final static BasicStroke thickStroke = new BasicStroke(5);
+    private final static String vkControl = "VK_CONTROL";
+    private final static String vkShift = "VK_SHIFT";
 
     private enum SelectionMode {CHECK, RECT}
 
     private final boolean multiRow;
     private SelectionMode selectionMode;
 
-    private ThumbnailDrawing selection;
+    private List<ThumbnailDrawing> selection;
+    private boolean ctrlPressed;
 
     public ThumbnailPanel(final boolean multiRow) {
         super(new FlowLayout(FlowLayout.LEADING));
         this.multiRow = multiRow;
         this.selectionMode = SelectionMode.RECT;
+        this.selection = new ArrayList<>();
 
         final DragScrollListener dragScrollListener = new DragScrollListener(this);
         dragScrollListener.setDraggableElements(DragScrollListener.DRAGABLE_VERTICAL_SCROLL_BAR);
         addMouseListener(dragScrollListener);
         addMouseMotionListener(dragScrollListener);
+        setKeyBindings();
+    }
+
+    private void setKeyBindings() {
+        final InputMap inputMap = getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_CONTROL, KeyEvent.CTRL_DOWN_MASK), vkControl+"DOWN");
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_SHIFT, KeyEvent.SHIFT_DOWN_MASK), vkShift+"DOWN");
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_CONTROL, KeyEvent.CTRL_DOWN_MASK, true), vkControl+"UP");
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_SHIFT, KeyEvent.SHIFT_DOWN_MASK, true), vkShift+"UP");
+
+        final ActionMap actionMap = getActionMap();
+        actionMap.put(vkControl+"DOWN", new KeyAction(vkControl+"DOWN"));
+        actionMap.put(vkShift+"DOWN", new KeyAction(vkShift+"DOWN"));
+        actionMap.put(vkControl+"UP", new KeyAction(vkControl+"UP"));
+        actionMap.put(vkShift+"UP", new KeyAction(vkShift+"UP"));
+    }
+
+    private class KeyAction extends AbstractAction {
+        public KeyAction(String actionCommand) {
+            putValue(ACTION_COMMAND_KEY, actionCommand);
+        }
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            final String cmd = e.getActionCommand();
+            ctrlPressed = cmd.equals(vkControl+"DOWN");
+
+            System.out.println(getValue(ACTION_COMMAND_KEY) +" "+ e.toString());
+        }
     }
 
     public void update(final Thumbnail[] imageList) {
@@ -84,6 +120,45 @@ public class ThumbnailPanel extends JPanel {
         updateUI();
     }
 
+    private void setSelection(final ThumbnailDrawing item) {
+        if(selection.contains(item)) {
+            selection.remove(item);
+        } else {
+            if(ctrlPressed) {
+                selection.add(item);
+            } else {
+                selection.clear();
+                selection.add(item);
+            }
+        }
+        onSelectionChanged();
+    }
+
+    public void onSelectionChanged() {
+
+    }
+
+    public void selectAll() {
+        selection.clear();
+        for(Component component : this.getComponents()) {
+            selection.add((ThumbnailDrawing)component);
+        }
+        repaint();
+    }
+
+    public void clearSelection() {
+        selection.clear();
+        repaint();
+    }
+
+    public ThumbnailDrawing[] getSelection() {
+        return selection.toArray(new ThumbnailDrawing[selection.size()]);
+    }
+
+    private boolean isSelected(final ThumbnailDrawing item) {
+        return selection.contains(item);
+    }
+
     public class ThumbnailDrawing extends JLabel implements MouseListener {
         private final ThumbnailPanel parent;
         private final Thumbnail thumbnail;
@@ -92,10 +167,13 @@ public class ThumbnailPanel extends JPanel {
             this.parent = parent;
             this.thumbnail = thumbnail;
             setPreferredSize(new Dimension(imgWidth, imgHeight));
-
-            setToolTipText("hi");
+            setToolTipText("");
 
             addMouseListener(this);
+        }
+
+        public Thumbnail getThumbnail() {
+            return thumbnail;
         }
 
         @Override
@@ -111,7 +189,7 @@ public class ThumbnailPanel extends JPanel {
                 drawIcon(g, null);
             }
 
-            if (this.equals(selection) && selectionMode == SelectionMode.RECT) {
+            if (isSelected(this) && selectionMode == SelectionMode.RECT) {
                 drawSelected(g);
             }
         }
@@ -180,7 +258,7 @@ public class ThumbnailPanel extends JPanel {
         @Override
         public void mousePressed(MouseEvent e) {
             if (e.getButton() == MouseEvent.BUTTON1) {
-                selection = this.equals(selection) ? null : this;
+                setSelection(this);
                 parent.repaint();
             } else if (e.getButton() == MouseEvent.BUTTON3) {
 

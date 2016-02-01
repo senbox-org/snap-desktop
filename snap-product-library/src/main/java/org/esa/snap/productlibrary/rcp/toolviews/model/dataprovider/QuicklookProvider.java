@@ -128,7 +128,6 @@ public class QuicklookProvider implements DataProvider {
                     }
                 } else {
                     tableComponent.setIcon(null);
-                    //tableComponent.setText("Not available!");
                 }
             } catch (Throwable e) {
                 SystemUtils.LOG.severe("QuicklookRenderer: " + e.getMessage());

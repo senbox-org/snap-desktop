@@ -31,6 +31,7 @@ import java.util.List;
  */
 public class ThumbnailView extends ThumbnailPanel implements ListView {
 
+    private ProductEntry[] productEntryList;
 
     public ThumbnailView(final ProductLibraryActions productLibraryActions) {
         super(true);
@@ -38,12 +39,35 @@ public class ThumbnailView extends ThumbnailPanel implements ListView {
         setComponentPopupMenu(productLibraryActions.createEntryTablePopup());
     }
 
+    @Override
+    public void onSelectionChanged() {
+        notifySelectionChanged();
+    }
+
     public File[] getSelectedFiles() {
-        return new File[] {};
+        final List<File> list = new ArrayList<>();
+        for(ThumbnailDrawing item : getSelection()) {
+            Quicklook ql = (Quicklook)item.getThumbnail();
+            for(ProductEntry entry : productEntryList) {
+                if(entry.getQuickLook().equals(ql)) {
+                    list.add(entry.getFile());
+                }
+            }
+        }
+        return list.toArray(new File[list.size()]);
     }
 
     public ProductEntry[] getSelectedProductEntries() {
-        return new ProductEntry[] {};
+        final List<ProductEntry> list = new ArrayList<>();
+        for(ThumbnailDrawing item : getSelection()) {
+            Quicklook ql = (Quicklook)item.getThumbnail();
+            for(ProductEntry entry : productEntryList) {
+                if(entry.getQuickLook().equals(ql)) {
+                    list.add(entry);
+                }
+            }
+        }
+        return list.toArray(new ProductEntry[list.size()]);
     }
 
     public ProductEntry getEntryOverMouse() {
@@ -54,16 +78,8 @@ public class ThumbnailView extends ThumbnailPanel implements ListView {
 
     }
 
-    public void selectAll() {
-
-    }
-
-    public void clearSelection() {
-
-    }
-
     public int getSelectionCount() {
-        return 0;
+        return getSelection().length;
     }
 
     public void updateUI() {
@@ -71,6 +87,7 @@ public class ThumbnailView extends ThumbnailPanel implements ListView {
     }
 
     public void setProductEntryList(final ProductEntry[] productEntryList) {
+        this.productEntryList = productEntryList;
         final List<Quicklook> thumbnails = new ArrayList<>(productEntryList.length);
         for(ProductEntry productEntry : productEntryList) {
             if(productEntry.getQuickLook() != null) {
