@@ -78,6 +78,10 @@ public class ThumbnailView extends ThumbnailPanel implements ListView {
 
     }
 
+    public int getTotalCount() {
+        return productEntryList.length;
+    }
+
     public int getSelectionCount() {
         return getSelection().length;
     }

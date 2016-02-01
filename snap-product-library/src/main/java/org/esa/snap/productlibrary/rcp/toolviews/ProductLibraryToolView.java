@@ -523,7 +523,7 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         } else {
             dbPane.updateProductSelectionText(null);
         }
-        statusLabel.setText(selectedCount + " Products" + selectedText);
+        statusLabel.setText(currentListView.getTotalCount() + " Products" + selectedText);
     }
 
     public void ShowRepository(final ProductEntry[] productEntryList) {

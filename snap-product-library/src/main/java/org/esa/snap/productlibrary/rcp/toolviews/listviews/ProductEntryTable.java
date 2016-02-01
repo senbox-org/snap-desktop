@@ -97,6 +97,10 @@ public class ProductEntryTable extends JTable implements ListView {
         }
     }
 
+    public int getTotalCount() {
+        return getRowCount();
+    }
+
     public int getSelectionCount() {
         return getSelectedRowCount();
     }

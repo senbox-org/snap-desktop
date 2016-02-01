@@ -41,6 +41,8 @@ public interface ListView {
 
     void clearSelection();
 
+    int getTotalCount();
+
     int getSelectionCount();
 
     void updateUI();
