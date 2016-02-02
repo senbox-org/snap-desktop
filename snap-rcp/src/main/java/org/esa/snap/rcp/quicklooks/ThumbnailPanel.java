@@ -227,6 +227,11 @@ public class ThumbnailPanel extends JPanel {
         }
 
         @Override
+        public Point getToolTipLocation(MouseEvent e) {
+            return new Point(-700, 0);
+        }
+
+        @Override
         public JToolTip createToolTip() {
             if(!thumbnail.hasImage() || !thumbnail.hasCachedImage()) {
                 return super.createToolTip();
