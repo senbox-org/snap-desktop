@@ -31,6 +31,7 @@ import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.window.OpenRGBImageViewAction;
 import org.esa.snap.rcp.util.SelectionSupport;
 import org.esa.snap.tango.TangoIcons;
+import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.tool.ToolButtonFactory;
 import org.netbeans.api.annotations.common.NullAllowed;
 import org.openide.awt.ActionID;
@@ -89,7 +90,7 @@ public class QuicklookToolView extends TopComponent {
     private final ImagePanel imgPanel = new ImagePanel();
     private final BufferedImage noDataImage;
     private JScrollPane imgScrollPanel;
-    private JButton nextBtn, prevBtn, startBtn, endBtn, openBtn, closeBtn, refreshBtn;
+    private JButton nextBtn, prevBtn, startBtn, endBtn, openBtn, closeBtn, refreshBtn, viewBtn;
     private ButtonActionListener actionListener = new ButtonActionListener();
     private boolean updateQuicklooks = false;
     private ProductNode oldNode = null;
@@ -106,6 +107,9 @@ public class QuicklookToolView extends TopComponent {
     private static final ImageIcon nextIcon = TangoIcons.actions_go_next(TangoIcons.Res.R22);
     private static final ImageIcon previousIcon = TangoIcons.actions_go_previous(TangoIcons.Res.R22);
     private static final ImageIcon refreshIcon = TangoIcons.actions_view_refresh(TangoIcons.Res.R22);
+
+    private static final ImageIcon singleViewIcon = UIUtils.loadImageIcon("/org/esa/snap/rcp/icons/view_single24.png", ThumbnailPanel.class);
+    private static final ImageIcon thumbnailViewIcon = UIUtils.loadImageIcon("/org/esa/snap/rcp/icons/view_thumbnails24.png", ThumbnailPanel.class);
 
     public QuicklookToolView() {
         setLayout(new BorderLayout());
@@ -172,6 +176,14 @@ public class QuicklookToolView extends TopComponent {
 
         final JPanel sidePanel = new JPanel();
         sidePanel.setLayout(new BoxLayout(sidePanel, BoxLayout.Y_AXIS));
+
+//        viewBtn = createButton("viewButton", "Change View", sidePanel, actionListener, thumbnailViewIcon);
+//        viewBtn.addActionListener(new ActionListener() {
+//            public synchronized void actionPerformed(final ActionEvent e) {
+//
+//            }
+//        });
+//        sidePanel.add(viewBtn);
 
         openBtn = createButton("Open", "Open RGB", sidePanel, actionListener, openIcon);
         sidePanel.add(openBtn);

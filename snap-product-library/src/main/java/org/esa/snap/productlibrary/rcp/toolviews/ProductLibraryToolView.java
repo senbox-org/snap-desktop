@@ -30,6 +30,7 @@ import org.esa.snap.productlibrary.rcp.toolviews.model.ProductLibraryConfig;
 import org.esa.snap.productlibrary.rcp.toolviews.model.SortingDecorator;
 import org.esa.snap.productlibrary.rcp.toolviews.timeline.TimelinePanel;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.rcp.quicklooks.ThumbnailPanel;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.rcp.windows.ToolTopComponent;
 import org.esa.snap.ui.UIUtils;
@@ -86,9 +87,9 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
     private static final ImageIcon stopRolloverIcon = ToolButtonFactory.createRolloverIcon(stopIcon);
     private static final ImageIcon addButtonIcon = UIUtils.loadImageIcon("icons/Plus24.gif");
     private static final ImageIcon removeButtonIcon = UIUtils.loadImageIcon("icons/Minus24.gif");
-    private static final ImageIcon listViewButtonIcon = UIUtils.loadImageIcon("/org/esa/snap/productlibrary/icons/list_view24.png", ProductLibraryToolView.class);
-    private static final ImageIcon tableViewButtonIcon = UIUtils.loadImageIcon("/org/esa/snap/productlibrary/icons/list_ql_view24.png", ProductLibraryToolView.class);
-    private static final ImageIcon thumbnailViewButtonIcon = UIUtils.loadImageIcon("/org/esa/snap/productlibrary/icons/thumbnails_view24.png", ProductLibraryToolView.class);
+    private static final ImageIcon listViewButtonIcon = UIUtils.loadImageIcon("/org/esa/snap/rcp/icons/view_list24.png", ThumbnailPanel.class);
+    private static final ImageIcon tableViewButtonIcon = UIUtils.loadImageIcon("/org/esa/snap/rcp/icons/view_table24.png", ThumbnailPanel.class);
+    private static final ImageIcon thumbnailViewButtonIcon = UIUtils.loadImageIcon("/org/esa/snap/rcp/icons/view_thumbnails24.png", ThumbnailPanel.class);
     private static final ImageIcon helpButtonIcon = UIUtils.loadImageIcon("icons/Help24.gif");
 
     private JPanel mainPanel;
