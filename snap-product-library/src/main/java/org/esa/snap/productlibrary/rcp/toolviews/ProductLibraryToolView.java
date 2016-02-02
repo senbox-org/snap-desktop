@@ -129,6 +129,10 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         currentListView.setProductEntryList(new ProductEntry[] {});
     }
 
+    protected void componentDeactivated() {
+        currentListView.setProductEntryList(new ProductEntry[] {});
+    }
+
     private synchronized void initialize() {
         initDatabase();
         initUI();
