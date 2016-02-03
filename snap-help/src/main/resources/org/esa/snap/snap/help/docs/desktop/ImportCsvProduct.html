@@ -39,15 +39,22 @@
 </p>
 
 <p>
-    Note that the CSV Product Reader interprets each column as band.
-    There is no support yet for metadata, flag codings, or spectral attributes.
-</p>
-
+    Note that the CSV Product Reader interprets all columns as band if it has not the data type time or string.
+    The following data types are supported for bands <b>float</b>, <b>double</b>, <b>byte</b>, <b>short</b>, <b>integer</b>.
+    There is <b>no support</b> yet for metadata, tie-point grids, flag codings, or spectral attributes.
 <p>
-    There are a number of reserved properties which may be set within the file:
+    If the data contains columns for latitude values ("lat", "latitude", "northing") and for
+    longitude values ("lon", "long", "longitude", "easting") a geo-coding will be created using this data.
+<p>
+    If for one cell no data is present it can either be indicated by NaN or simply by leaving the cell empty.
+<p>
+    There are a number of reserved properties which may be set within the file.The properties are written as comments into the
+    CSV file. Normally at the beginning of the file. The general format to specify a property is as follows:<br>
+    <code>#PropertyName=PropertyValue</code>
+
 <ul>
     <li><b>separator</b>: When this property is set, e.g. using <code>#separator=;</code>, the specified separator
-        is being used for parsing the file.
+        is being used for parsing the file. By default the data values are separated by tabulator characters.
     </li>
     <li><b>sceneRasterWidth</b>: Per default, the product will have quadratic dimensions, e.g. if the CSV file contains
         144 data entries, the product will have width and height 12. If the CSV file contains no square number of data
@@ -55,8 +62,31 @@
         however, the property is set, the product's width will be set to the property's value and the height will be
         computed accordingly.
     </li>
+    <li><b>timeColumn</b>: In order to provide the product with a start and stop time the column which holds the time
+        information must be specified.
+    </li>
+    <li><b>timePattern</b>: In order to parse the time provided in one of the columns the format can be specified.
+        This must follow the documentation of
+        <object classid="java:org.netbeans.modules.javahelp.BrowserDisplayer">
+            <param name="content" value="https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html">
+            <param name="text" value="<html><u>SimpleDateFormat</u></html>">
+        </object>
+        <br>
+        As default value the following pattern is used: <code>dd-MMM-yyyy'T'HH:mm:ss</code>
+    </li>
 </ul>
-</p>
+
+<h5>Example</h5>
+<pre>#sceneRasterWidth=2
+#timeColumn=time_coding
+#timePattern=yyyy-MM-dd HH:mm:ss
+lat:float	lon:float	date_time:time	radiance_1:float	radiance_2:float	time_coding:time
+30.0	50.0	2010-06-01 12:45:00	NaN	13.4	2013-06-01 10:45:00
+30.0	50.0	2010-06-01 12:46:00	18.3	2.4	2013-06-01 11:45:00
+40.0	120.0	2010-06-01 12:47:00	10.5	10.6	2013-06-01 12:45:00
+40.0	120.0	2010-06-01 12:48:00		10.6	2013-06-01 13:45:00
+35.0	60.0	2010-06-01 12:49:00	25	10.6	2013-06-01 12:45:00
+35.0	60.0	2010-06-01 12:50:00	10.5	10.6	2013-06-01 13:45:00</pre>
 
 <hr>
 </body>
