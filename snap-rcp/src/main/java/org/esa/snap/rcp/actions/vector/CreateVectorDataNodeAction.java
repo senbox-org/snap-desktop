@@ -26,6 +26,7 @@ import com.bc.ceres.glayer.support.LayerUtils;
 import com.bc.ceres.swing.binding.PropertyPane;
 import org.esa.snap.core.datamodel.PlainFeatureFactory;
 import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.core.datamodel.ProductNodeGroup;
 import org.esa.snap.core.datamodel.VectorDataNode;
 import org.esa.snap.rcp.SnapApp;
@@ -56,12 +57,7 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.text.MessageFormat;
 
-import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
-
-@ActionID(
-        category = "Tools",
-        id = "CreateVectorDataNodeAction"
-)
+@ActionID(category = "Tools", id = "CreateVectorDataNodeAction" )
 @ActionRegistration(
         displayName = "#CTL_CreateVectorDataNodeActionText",
         popupText = "#CTL_CreateVectorDataNodeActionPopupText",
@@ -76,9 +72,10 @@ import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
         "CTL_CreateVectorDataNodeActionPopupText=New Vector Data Container"
 })
 public class CreateVectorDataNodeAction extends AbstractAction implements ContextAwareAction, LookupListener {
-    // TODO: Make sure help page is available for ID
     private static final String HELP_ID = "vectorDataManagement";
     private static int numItems = 1;
+    private Lookup lkp;
+    private Lookup.Result<ProductNode> result;
 
     public CreateVectorDataNodeAction() {
         this(Utilities.actionsGlobalContext());
@@ -86,7 +83,8 @@ public class CreateVectorDataNodeAction extends AbstractAction implements Contex
 
     public CreateVectorDataNodeAction(Lookup lkp) {
         super(Bundle.CTL_CreateVectorDataNodeActionText());
-        Lookup.Result<Product> result = lkp.lookupResult(Product.class);
+        this.lkp = lkp;
+        result = this.lkp.lookupResult(ProductNode.class);
         result.addLookupListener(WeakListeners.create(LookupListener.class, this, result));
         putValue(Action.SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/NewVectorDataNode24.gif", false));
         setEnabled(false);
@@ -147,13 +145,14 @@ public class CreateVectorDataNodeAction extends AbstractAction implements Contex
 
     @Override
     public void resultChanged(LookupEvent ev) {
-        Product[] products = SnapApp.getDefault().getProductManager().getProducts();
-        setEnabled(products.length > 0);
+        ProductNode productNode = lkp.lookup(ProductNode.class);
+        setEnabled(productNode != null);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        Product product = SnapApp.getDefault().getSelectedProduct(AUTO);
+        ProductNode productNode = lkp.lookup(ProductNode.class);
+        Product product = productNode.getProduct();
         if (product != null) {
             DialogData dialogData = new DialogData(product.getVectorDataGroup());
             PropertySet propertySet = PropertyContainer.createObjectBacked(dialogData);
