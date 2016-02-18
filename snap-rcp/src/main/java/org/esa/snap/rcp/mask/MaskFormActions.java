@@ -281,7 +281,7 @@ class MaskFormActions {
         @Override
         public void actionPerformed(ActionEvent e) {
             final String[] rasterNames = collectNamesOfRastersOfSameSize();
-            final RangeEditorDialog.Model model = new RangeEditorDialog.Model(rasterNames);;
+            final RangeEditorDialog.Model model = new RangeEditorDialog.Model(rasterNames);
             model.setMinValue(0.0);
             model.setMaxValue(1.0);
             model.setRasterName(rasterNames[0]);
@@ -947,7 +947,7 @@ class MaskFormActions {
 
 
         private static void reprojectBandData(Mask[] selectedMasks, Product sourceProduct, Product targetProduct) {
-            final Map<String, Object> projParameters = Collections.EMPTY_MAP;
+            final Map<String, Object> projParameters = Collections.emptyMap();
             Map<String, Product> projProducts = new HashMap<>();
             projProducts.put("source", sourceProduct);
             projProducts.put("collocateWith", targetProduct);
@@ -974,7 +974,7 @@ class MaskFormActions {
             int index = 1;
             String foundName = name;
             while (maskGroup.contains(foundName)) {
-                foundName = name + "_" + index;
+                foundName = name + "_" + index++;
             }
             return foundName;
         }
@@ -983,7 +983,7 @@ class MaskFormActions {
             int index = 1;
             String foundName = name;
             while (product.containsBand(foundName)) {
-                foundName = name + "_" + index;
+                foundName = name + "_" + index++;
             }
             return foundName;
         }
