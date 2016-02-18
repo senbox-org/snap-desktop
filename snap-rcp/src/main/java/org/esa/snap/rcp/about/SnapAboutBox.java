@@ -7,15 +7,15 @@ package org.esa.snap.rcp.about;
 
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.util.SystemUtils;
+import org.esa.snap.rcp.util.BrowserUtils;
 import org.openide.modules.ModuleInfo;
 import org.openide.modules.Modules;
 
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import java.awt.BorderLayout;
-import java.awt.Font;
+import javax.swing.*;
+import java.awt.*;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -26,13 +26,16 @@ import java.util.logging.Level;
  */
 public class SnapAboutBox extends JPanel {
 
+    private final static String releaseNotesHTTP = "https://github.com/senbox-org/snap-desktop/blob/master/ReleaseNotes.md";
+    private JLabel versionText;
+
     public SnapAboutBox() {
         super(new BorderLayout(4, 4));
         ModuleInfo desktopModuleInfo = Modules.getDefault().ownerOf(SnapAboutBox.class);
         ModuleInfo engineModuleInfo = Modules.getDefault().ownerOf(Product.class);
         ImageIcon image = new ImageIcon(SnapAboutBox.class.getResource("SNAP_Banner.png"));
         JLabel banner = new JLabel(image);
-        JLabel versionText = new JLabel("<html><b>SNAP " + getReleaseVersion() + "</b>");
+        versionText = new JLabel("<html><b>SNAP " + getReleaseVersion() + "</b>");
 
         JLabel infoText = new JLabel("<html>"
                                              + "This program is free software: you can redistribute it and/or modify it<br>"
@@ -58,7 +61,7 @@ public class SnapAboutBox extends JPanel {
         }
 
         JPanel innerPanel = new JPanel(new BorderLayout(4, 4));
-        innerPanel.add(versionText, BorderLayout.NORTH);
+        innerPanel.add(createVersionPanel(), BorderLayout.NORTH);
         innerPanel.add(infoText, BorderLayout.SOUTH);
 
         add(banner, BorderLayout.WEST);
@@ -88,5 +91,27 @@ public class SnapAboutBox extends JPanel {
             return version;
         }
         return "[no version info, missing ${SNAP_HOME}/VERSION.txt]";
+    }
+
+    private JPanel createVersionPanel() {
+        final JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
+        panel.add(versionText);
+        final URI releaseNotesURI = getReleaseNotesURI();
+        if (releaseNotesURI != null) {
+            final JLabel releaseNoteLabel = new JLabel("<html><a href=\"" + releaseNotesURI.toString() + "\">Release Notes</a>");
+            releaseNoteLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+            releaseNoteLabel.addMouseListener(new BrowserUtils.URLClickAdaptor(releaseNotesHTTP));
+            panel.add(releaseNoteLabel);
+        }
+        return panel;
+    }
+
+    private URI getReleaseNotesURI() {
+        try {
+            return new URI(releaseNotesHTTP);
+        } catch (URISyntaxException e) {
+            return null;
+        }
     }
 }
