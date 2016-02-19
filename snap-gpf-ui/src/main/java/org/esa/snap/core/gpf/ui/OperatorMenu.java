@@ -251,7 +251,7 @@ public class OperatorMenu {
     }
 
     private FileNameExtensionFilter createParameterFileFilter() {
-        return new FileNameExtensionFilter("BEAM GPF Parameter Files (XML)", "xml");
+        return new FileNameExtensionFilter("GPF Parameter Files (XML)", "xml");
     }
 
     private class DisplayParametersAction extends AbstractAction {
