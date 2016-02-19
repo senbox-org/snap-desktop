@@ -274,6 +274,14 @@ However, currently not supported are any kind of type conversions or type castin
         <td><b><code>Y</code></b></td>
         <td><b>The Y-position of the current pixel.</b></td>
     </tr>
+    <tr>
+        <td><b><code>LAT</code></b></td>
+        <td><b>The latitude value of the current pixel.</b></td>
+    </tr>
+    <tr>
+        <td><b><code>LON</code></b></td>
+        <td><b>The longitude value of the current pixel.</b></td>
+    </tr>
 </table>
 
 <a name="func"><h5>Mathematical Functions</h5></a>
@@ -284,89 +292,87 @@ However, currently not supported are any kind of type conversions or type castin
     </tr>
     <tr>
         <td><b><code>pow(</code></b> X <b><code>,</code></b> Y <b><code>)</code></b></td>
-        <td><i>X</i> raised to the
-            power of <i>Y</i></td>
+        <td><i>X</i> raised to the power of <i>Y</i></td>
     </tr>
     <tr>
         <td><b><code>exp(</code></b> X <b><code>)</code></b></td>
-        <td> Returns euler's number <i>e</i> raised to the
-            power of <i>X</i></td>
+        <td> Returns euler's number <i>e</i> raised to the power of <i>X</i></td>
     </tr>
     <tr>
         <td><b><code>exp10(</code></b> X <b><code>)</code></b></td>
-        <td> Returns the value of <i>10</i> raised to the
-            power of <i>X</i></td>
+        <td> Returns the value of <i>10</i> raised to the power of <i>X</i></td>
     </tr>
     <tr>
         <td><b><code>log(</code></b> X <b><code>)</code></b></td>
-        <td> Returns the natural logarithm (base <i>e</i>) of
-            <i>X</i></td>
+        <td> Returns the natural logarithm (base <i>e</i>) of <i>X</i></td>
     </tr>
     <tr>
         <td><b><code>log10(</code></b> X <b><code>)</code></b></td>
-        <td> Returns the common logarithm, the logarithm
-            with base 10 of <i>X</i>.
-        </td>
+        <td> Returns the common logarithm, the logarithm with base 10 of <i>X</i></td>
     </tr>
     <tr>
         <td><b><code>sin(</code></b> X <b><code>)</code></b></td>
-        <td> Returns the trigonometric sine of an angle
-            <i>X</i> in radians
-        </td>
+        <td> Returns the trigonometric sine of an angle <i>X</i> in radians</td>
+    </tr>
+    <tr>
+        <td><b><code>sinh(</code></b> X <b><code>)</code></b></td>
+        <td> Returns the hyperbolic sine of an angle <i>X</i> in radians</td>
     </tr>
     <tr>
         <td><b><code>cos(</code></b> X <b><code>)</code></b></td>
-        <td> Returns the trigonometric cosine of an angle <i>X</i>
-            in radians
-        </td>
+        <td> Returns the trigonometric cosine of an angle <i>X</i> in radians</td>
+    </tr>
+    <tr>
+        <td><b><code>cosh(</code></b> X <b><code>)</code></b></td>
+        <td> Returns the hyperbolic cosine of an angle <i>X</i> in radians</td>
     </tr>
     <tr>
         <td><b><code>tan(</code></b> X <b><code>)</code></b></td>
-        <td> Returns the trigonometric tangent of an angle
-            <i>X</i> in radians
-        </td>
+        <td> Returns the trigonometric tangent of an angle <i>X</i> in radians</td>
+    </tr>
+    <tr>
+        <td><b><code>tanh(</code></b> X <b><code>)</code></b></td>
+        <td> Returns the hyperbolic tangent of an angle <i>X</i> in radians</td>
     </tr>
     <tr>
         <td><b><code>asin(</code></b> X <b><code>)</code></b></td>
-        <td> Returns the trigonometric arc-sine of <i>X</i>
-        </td>
+        <td> Returns the trigonometric arc-sine of <i>X</i></td>
     </tr>
     <tr>
         <td><b><code>acos(</code></b> X <b><code>)</code></b></td>
-        <td> Returns the trigonometric arc-cosine of
-            <i>X</i></td>
+        <td> Returns the trigonometric arc-cosine of <i>X</i></td>
     </tr>
     <tr>
         <td><b><code>atan(</code></b> X <b><code>)</code></b></td>
-        <td> Returns the trigonometric arc-tangent of
-            <i>X</i></td>
+        <td> Returns the trigonometric arc-tangent of <i>X</i></td>
     </tr>
     <tr>
         <td><b><code>atan2(</code></b> Y <b><code>,</code></b> X <b><code>)</code></b></td>
-        <td> Returns the angle of
-            polar co-ordinate of <i>X</i>,<i>Y</i></td>
+        <td> Returns the angle of polar co-ordinate of <i>X</i>,<i>Y</i></td>
+    </tr>
+    <tr>
+        <td><b><code>sech(</code></b> X <b><code>)</code></b></td>
+        <td> Returns the hyperbolic secant of an angle <i>X</i> in radians</td>
+    </tr>
+    <tr>
+        <td><b><code>sech(</code></b> X <b><code>)</code></b></td>
+        <td> Returns the hyperbolic cosecant of an angle <i>X</i> in radians</td>
     </tr>
     <tr>
         <td><b><code>ampl(</code></b> R <b><code>,</code></b> I <b><code>)</code></b></td>
-        <td> Returns the amplitude
-            function of a complex argument, same as sqrt(<i>R</i> * <i>R</i> + <i>I</i> * <i>I</i>)
-        </td>
+        <td> Returns the amplitude function of a complex argument, same as sqrt(<i>R</i> * <i>R</i> + <i>I</i> * <i>I</i>)</td>
     </tr>
     <tr>
         <td><b><code>phase(</code></b> R <b><code>,</code></b> I <b><code>)</code></b></td>
-        <td> Returns the phase
-            function of a complex argument, same as atan2(<i>I</i>, <i>R</i>)
-        </td>
+        <td> Returns the phase function of a complex argument, same as atan2(<i>I</i>, <i>R</i>)</td>
     </tr>
     <tr>
         <td><b><code>rad(</code></b> X <b><code>)</code></b></td>
-        <td> Converts <i>X</i> from decimal degree to radian
-        </td>
+        <td> Converts <i>X</i> from decimal degree to radian</td>
     </tr>
     <tr>
         <td><b><code>deg(</code></b> X <b><code>)</code></b></td>
-        <td> Converts <i>X</i> from radian to decimal degree
-        </td>
+        <td> Converts <i>X</i> from radian to decimal degree</td>
     </tr>
     <tr>
         <td><b><code>abs(</code></b> X <b><code>)</code></b></td>
@@ -374,84 +380,78 @@ However, currently not supported are any kind of type conversions or type castin
     </tr>
     <tr>
         <td><b><code>sign(</code></b> X <b><code>)</code></b></td>
-        <td> Returns the sign of <i>A</i>, always one of -1,
-            0, +1
-        </td>
+        <td> Returns the sign of <i>A</i>, always one of -1, 0, +1</td>
     </tr>
     <tr>
         <td><b><code>min(</code></b> X <b><code>,</code></b> Y <b><code>)</code></b></td>
-        <td> Returns the smaller
-            value of <i>X</i> and <i>Y</i></td>
+        <td> Returns the smaller value of <i>X</i> and <i>Y</i></td>
     </tr>
     <tr>
         <td><b><code>max(</code></b> X <b><code>,</code></b> Y <b><code>)</code></b></td>
-        <td> Returns the greater
-            value of <i>X</i> and <i>Y</i></td>
+        <td> Returns the greater value of <i>X</i> and <i>Y</i></td>
     </tr>
     <tr>
         <td><b><code>floor(</code></b> X <b><code>)</code></b></td>
-        <td> Returns the largest (closest to positive
-            infinity) double value that is less than or equal to <i>X</i> and is equal to a mathematical integer
-        </td>
+        <td> Returns the largest (closest to positive infinity) double value that is less than or equal to <i>X</i> and is equal to a mathematical integer</td>
     </tr>
     <tr>
         <td><b><code>round(</code></b> X <b><code>)</code></b></td>
-        <td> Returns the closest long to <i>X</i>. The
-            result is rounded to an integer by adding 1/2, taking the floor of the result, and casting the result to
-            type
-            long
-        </td>
+        <td> Returns the closest long to <i>X</i>. The result is rounded to an integer by adding 1/2, taking the floor of the result, and casting the result to type long</td>
     </tr>
     <tr>
         <td><b><code>ceil(</code></b> X <b><code>)</code></b></td>
-        <td> Returns the smallest (closest to negative
-            infinity) double value that is greater than or equal to <i>X</i> and is equal to a mathematical integer
-        </td>
+        <td> Returns the smallest (closest to negative infinity) double value that is greater than or equal to <i>X</i> and is equal to a mathematical integer</td>
     </tr>
     <tr>
         <td><b><code>rint(</code></b> X <b><code>)</code></b></td>
-        <td> Returns the double value that is closest in
-            value to <i>X</i> and is equal to a mathematical integer. If two double values that are mathematical
-            integers
-            are equally close, the result is the integer value that is even
-        </td>
+        <td> Returns the double value that is closest in value to <i>X</i> and is equal to a mathematical integer. If two double values that are mathematical integers
+            are equally close, the result is the integer value that is even</td>
     </tr>
     <tr>
         <td><b><code>feq(</code></b> X <b><code>,</code></b> Y <b><code>)</code></b></td>
-        <td> Performs a fuzzy equal
-            operation for the <i>X</i> and <i>Y</i> arguments
-        </td>
+        <td> Performs a fuzzy equal operation for the <i>X</i> and <i>Y</i> arguments</td>
     </tr>
     <tr>
         <td><b><code>feq(</code></b> X <b><code>,</code></b> Y <b><code>,</code></b> EPS <b><code>)</code></b></td>
-        <td> Performs a fuzzy equal operation for the <i>X</i> and <i>Y</i> arguments by using <i>EPS</i> as maximum
-            deviation
-        </td>
+        <td> Performs a fuzzy equal operation for the <i>X</i> and <i>Y</i> arguments by using <i>EPS</i> as maximum deviation</td>
     </tr>
     <tr>
         <td><b><code>fneq(</code></b> X <b><code>,</code></b> Y <b><code>)</code></b></td>
-        <td> Performs a fuzzy not
-            equal operation for the <i>X</i> and <i>Y</i> arguments
-        </td>
+        <td> Performs a fuzzy not equal operation for the <i>X</i> and <i>Y</i> arguments</td>
     </tr>
     <tr>
         <td><b><code>fneq(</code></b> X <b><code>,</code></b> Y <b><code>,</code></b> EPS <b><code>)</code></b></td>
-        <td> Performs a fuzzy not equal operation for the <i>X</i> and <i>Y</i> arguments by using <i>EPS</i> as maximum
-            deviation
-        </td>
+        <td> Performs a fuzzy not equal operation for the <i>X</i> and <i>Y</i> arguments by using <i>EPS</i> as maximum deviation</td>
     </tr>
     <tr>
         <td><b><code>nan(</code></b> X <b><code>)</code></b></td>
-        <td> Returns true if <i>X</i> is a Not-a-Number (NaN)
-            value, false otherwise
-        </td>
+        <td> Returns true if <i>X</i> is a Not-a-Number (NaN) value, false otherwise</td>
     </tr>
     <tr>
         <td><b><code>inf(</code></b> X <b><code>)</code></b></td>
-        <td> Returns true if <i>X</i> is infinitely large in
-            magnitude, false otherwise
-        </td>
+        <td> Returns true if <i>X</i> is infinitely large in magnitude, false otherwise</td>
     </tr>
+    <tr>
+        <td><b><code>random_gaussian()</code></b></td>
+        <td> Returns the next pseudorandom, uniformly distributed value between 0.0 and 1.0</td>
+    </tr>
+    <tr>
+        <td><b><code>random_gaussian()</code></b></td>
+        <td> Returns the next pseudorandom, Gaussian ("normally") distributed value</td>
+    </tr>
+    <tr>
+        <td><b><code>stddev(</code></b> X <b><code>, </code></b> Y <b><code>, ...)</code></b></td>
+        <td> Returns the standard deviation of the elements provided as comma separated list</td>
+    </tr>
+    <tr>
+        <td><b><code>coef_var(</code></b> X <b><code>, </code></b> Y <b><code>, ...)</code></b></td>
+        <td> Returns the coefficient of variation of the elements provided as comma separated list</td>
+    </tr>
+    <tr>
+        <td><b><code>bit_set(</code></b> X <b><code>, </code></b> N <b><code>)</code></b></td>
+        <td> Returns <code>true</code> or <code>false</code> depending on the <i>N</i>th bit of the value <i>X</i> </td>
+    </tr>
+
 </table>
 
 

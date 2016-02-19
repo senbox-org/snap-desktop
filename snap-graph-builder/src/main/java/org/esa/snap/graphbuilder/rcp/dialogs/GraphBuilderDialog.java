@@ -130,9 +130,9 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
      */
     private void initUI() {
         if (this.allowGraphBuilding) {
-            super.getJDialog().setMinimumSize(new Dimension(600, 750));
+            super.getJDialog().setMinimumSize(new Dimension(650, 750));
         } else {
-            super.getJDialog().setMinimumSize(new Dimension(600, 500));
+            super.getJDialog().setMinimumSize(new Dimension(650, 500));
         }
 
         final JPanel mainPanel = new JPanel(new BorderLayout(4, 4));
