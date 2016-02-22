@@ -25,22 +25,28 @@ import javax.swing.SwingUtilities;
 public class StatusProgressPanel extends JPanel implements StatusProgressMonitor.Listener
 {
     private final StatusProgressMonitor pm;
-
-    ProgressHandle p;
+    private final ProgressHandle p;
+    private boolean active;
 
     public StatusProgressPanel(final StatusProgressMonitor pm) {
         this.pm = pm;
-        pm.addListener(this);
 
-        p = ProgressHandleFactory.createHandle(pm.getName());
-        p.start(100);
-        p.switchToDeterminate(100);
+        if(pm != null) {
+            p = ProgressHandleFactory.createHandle(pm.getName());
+            p.start(100);
+            p.switchToDeterminate(100);
+            active = true;
+            pm.addListener(this);
+        } else {
+            p = null;
+            active = false;
+        }
     }
 
     private void update() {
         runInUI(new Runnable() {
             public void run() {
-                if (pm != null) {
+                if (active) {
                     p.progress(pm.getText(), pm.getPercentComplete());
                 }
             }
@@ -59,6 +65,7 @@ public class StatusProgressPanel extends JPanel implements StatusProgressMonitor
         if (msg.equals(StatusProgressMonitor.Notification.UPDATE)) {
             update();
         } else if (msg.equals(StatusProgressMonitor.Notification.DONE)) {
+            active = false;
             p.finish();
         }
     }
