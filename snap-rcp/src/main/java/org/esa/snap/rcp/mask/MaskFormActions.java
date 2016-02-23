@@ -27,7 +27,6 @@ import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.Mask;
 import org.esa.snap.core.datamodel.Mask.ImageType;
 import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.datamodel.ProductNodeGroup;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.datamodel.VectorDataNode;
 import org.esa.snap.core.dataop.barithm.BandArithmetic;
@@ -961,8 +960,8 @@ class MaskFormActions {
         }
 
         private static Band createBandCopy(Product targetProduct, Mask mask) {
-            String bandName = getAvailableBandName("mask_" + mask.getName(), targetProduct);
-            String maskName = getAvailableMaskName(mask.getName(), targetProduct.getMaskGroup());
+            String bandName = ProductUtils.getAvailableNodeName("mask_" + mask.getName(), targetProduct.getBandGroup());
+            String maskName = ProductUtils.getAvailableNodeName(mask.getName(), targetProduct.getMaskGroup());
             int dataType = mask.getDataType();
             Band band = targetProduct.addBand(bandName, dataType);
             String description = mask.getDescription() + " (from " + mask.getProduct().getDisplayName() + ")";
@@ -970,23 +969,6 @@ class MaskFormActions {
             return band;
         }
 
-        private static String getAvailableMaskName(String name, ProductNodeGroup<Mask> maskGroup) {
-            int index = 1;
-            String foundName = name;
-            while (maskGroup.contains(foundName)) {
-                foundName = name + "_" + index++;
-            }
-            return foundName;
-        }
-
-        private static String getAvailableBandName(String name, Product product) {
-            int index = 1;
-            String foundName = name;
-            while (product.containsBand(foundName)) {
-                foundName = name + "_" + index++;
-            }
-            return foundName;
-        }
     }
 
     private static class ZoomToVectorMaskAction extends MaskAction {
