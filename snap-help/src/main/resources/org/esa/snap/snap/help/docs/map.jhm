@@ -116,5 +116,5 @@
     <mapID target="geometryWKT" url="desktop/GeometryWKT.html"/>
     <mapID target="convertBand" url="desktop/ConvertComputedBand.html"/>
     <mapID target="displacementBands" url="desktop/CreateGCDisplacementBands.html"/>
-    C
+
 </map>
