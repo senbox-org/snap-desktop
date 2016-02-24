@@ -136,6 +136,7 @@
                     <tocitem text="Reprojection Dialog" target="reprojectionAction"/>
                     <tocitem text="Resampling Methods" target="resamplingMethods"/>
                 </tocitem>
+                <tocitem text="Resample" target="resampleAction"/>
                 <tocitem text="Data Flip" target="dataFlip"/>
             </tocitem>
             <tocitem text="DEM Tools">
