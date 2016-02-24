@@ -64,40 +64,53 @@ import java.util.Map;
  */
 public class BatchGraphDialog extends ModelessDialog implements GraphDialog {
 
-    private final AppContext appContext;
-    protected final ProductSetPanel productSetPanel;
-    protected final List<GraphExecuter> graphExecutorList = new ArrayList<>(10);
-
     protected final static Path defaultGraphPath = ResourceUtils.getGraphFolder("");
 
-    private final JTabbedPane tabbedPane;
-    private final JLabel statusLabel;
-    private final JLabel bottomStatusLabel;
-    private final JPanel progressPanel;
-    private final JProgressBar progressBar;
-    private final JLabel progressMsgLabel;
-    private ProgressBarProgressMonitor progBarMonitor = null;
+    private final AppContext appContext;
+    private final String baseTitle;
 
-    private Map<File, File[]> slaveFileMap = null;
+    protected final List<GraphExecuter> graphExecutorList = new ArrayList<>(10);
     private final List<BatchProcessListener> listenerList = new ArrayList<>(1);
-    private final boolean closeOnDone;
-    private boolean skipExistingTargetFiles = false;
 
-    private boolean isProcessing = false;
+    protected ProductSetPanel productSetPanel;
+    private JTabbedPane tabbedPane;
+    private JLabel statusLabel, bottomStatusLabel;
+    private JPanel progressPanel;
+    private JProgressBar progressBar;
+    private JLabel progressMsgLabel;
+    private ProgressBarProgressMonitor progBarMonitor;
+
+    private Map<File, File[]> slaveFileMap;
+    private final boolean closeOnDone;
+    private boolean skipExistingTargetFiles;
+
+    private boolean isProcessing;
     protected File graphFile;
-    protected boolean openProcessedProducts = true;
+    protected boolean openProcessedProducts;
 
     public BatchGraphDialog(final AppContext theAppContext, final String title, final String helpID,
                             final boolean closeOnDone) {
         super(theAppContext.getApplicationWindow(), title, ID_YES | ID_APPLY_CLOSE_HELP, helpID);
         this.appContext = theAppContext;
+        this.baseTitle = title;
         this.closeOnDone = closeOnDone;
+        openProcessedProducts = true;
 
+        setContent(createUI());
+
+        if (getJDialog().getJMenuBar() == null) {
+            final GraphsMenu operatorMenu =  new GraphsMenu(getJDialog(), this);
+            getJDialog().setJMenuBar(operatorMenu.createDefaultMenu());
+        }
+
+        super.getJDialog().setMinimumSize(new Dimension(400, 300));
+    }
+
+    private JPanel createUI() {
         final JPanel mainPanel = new JPanel(new BorderLayout(4, 4));
 
         tabbedPane = new JTabbedPane();
         tabbedPane.addChangeListener(new ChangeListener() {
-
             public void stateChanged(final ChangeEvent e) {
                 ValidateAllNodes();
             }
@@ -123,7 +136,6 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog {
         progressPanel.add(progressMsgLabel, BorderLayout.NORTH);
         final JButton progressCancelBtn = new JButton("Cancel");
         progressCancelBtn.addActionListener(new ActionListener() {
-
             public void actionPerformed(final ActionEvent e) {
                 CancelProcessing();
             }
@@ -138,14 +150,7 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog {
         getButton(ID_APPLY).setText("Run");
         getButton(ID_YES).setText("Load Graph");
 
-        if (getJDialog().getJMenuBar() == null) {
-            final GraphsMenu operatorMenu =  new GraphsMenu(getJDialog(), this);
-
-            getJDialog().setJMenuBar(operatorMenu.createDefaultMenu());
-        }
-
-        setContent(mainPanel);
-        super.getJDialog().setMinimumSize(new Dimension(400, 300));
+        return mainPanel;
     }
 
     @Override
@@ -247,7 +252,7 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog {
 
     @Override
     public void setTitle(final String title) {
-        super.setTitle("Batch Processing : " + title);
+        super.setTitle(baseTitle +" : " + title);
     }
 
     public boolean canSaveGraphs() {
