@@ -100,6 +100,7 @@
 
 
     <mapID target="reprojectionAction" url="desktop/Reprojection.html"/>
+    <mapID target="resampleAction" url="desktop/Resample.html"/>
     <mapID target="orthorectificationAction" url="desktop/Orthorectification.html"/>
     <mapID target="orthorectificationAlgo" url="desktop/OrthorectificationAlgo.html"/>
     <mapID target="mosaicAction" url="desktop/Mosaic.html"/>
