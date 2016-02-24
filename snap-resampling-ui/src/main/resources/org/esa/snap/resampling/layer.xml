@@ -1,0 +1,12 @@
+<filesystem>
+    <folder name="Services">
+
+        <file name="org-esa-snap-resampling-ResamplingDialog.instance">
+            <attr name="instanceOf"
+                  stringvalue="org.esa.snap.core.datamodel.Resampler"/>
+            <attr name="instanceCreate"
+                  stringvalue="org.esa.snap.resampling.ResamplingDialog.create"/>
+        </file>
+
+    </folder>
+</filesystem>
