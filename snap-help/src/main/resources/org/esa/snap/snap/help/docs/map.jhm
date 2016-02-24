@@ -18,7 +18,6 @@
     <mapID target="pconvertTool" url="general/overview/PConvertUsage.html"/>
     <mapID target="resamplingMethods" url="general/overview/ResamplingMethods.html"/>
     <mapID target="envisatProducts" url="general/envisat-products/index.html"/>
-    <!-- todo -->
 
     <mapID target="desktop" url="desktop/index.html"/>
     <mapID target="mainToolbar" url="desktop/Toolbars.html"/>
