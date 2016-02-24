@@ -196,7 +196,7 @@ public class LabelBarProgressMonitor implements ProgressMonitor {
     ////////////////////////////////////////////////////////////////////////
     // Stuff to be performed in Swing's event-dispatching thread
 
-    private void runInUI(Runnable task) {
+    private static void runInUI(Runnable task) {
         if (SwingUtilities.isEventDispatchThread()) {
             task.run();
         } else {

@@ -221,7 +221,7 @@ public class ProductLibraryActions {
 
     public void performOpenAction() {
         if (openHandler != null) {
-            openHandler.openProducts(getSelectedFiles());
+            ProductOpener.openProducts(getSelectedFiles());
         }
     }
 

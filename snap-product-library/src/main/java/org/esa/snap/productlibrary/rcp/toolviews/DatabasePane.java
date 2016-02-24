@@ -373,7 +373,7 @@ public final class DatabasePane extends JPanel {
         }
     }
 
-    private Calendar getDate(final JXDatePicker dateField) {
+    private static Calendar getDate(final JXDatePicker dateField) {
         final Date date = dateField.getDate();
         if(date == null)
             return null;
@@ -551,10 +551,10 @@ public final class DatabasePane extends JPanel {
         }
     }
 
-    private static double MB = 1024*1024, GB = 1024, TB = 1024*1024;
-    private static DecimalFormat df = new DecimalFormat("#.00");
+    private final static double MB = 1024*1024, GB = 1024, TB = 1024*1024;
+    private final static DecimalFormat df = new DecimalFormat("#.00");
 
-    private String getSizeString(long bytes) {
+    private static String getSizeString(long bytes) {
         double mb = bytes/MB;
         String unit;
         double value;
