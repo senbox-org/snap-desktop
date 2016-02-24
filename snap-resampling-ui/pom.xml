@@ -25,18 +25,19 @@
         </dependency>
         <dependency>
             <groupId>org.esa.snap</groupId>
+            <artifactId>snap-gpf</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.esa.snap</groupId>
             <artifactId>snap-gpf-ui</artifactId>
         </dependency>
-
-        <!-- NetBeans Platform -->
-
         <dependency>
-            <groupId>org.netbeans.external</groupId>
-            <artifactId>beansbinding-1.2.1</artifactId>
+            <groupId>org.esa.snap</groupId>
+            <artifactId>ceres-ui</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.netbeans.api</groupId>
-            <artifactId>org-openide-windows</artifactId>
+            <groupId>org.esa.snap</groupId>
+            <artifactId>ceres-binding</artifactId>
         </dependency>
         <dependency>
             <groupId>org.netbeans.api</groupId>
@@ -44,19 +45,13 @@
         </dependency>
         <dependency>
             <groupId>org.netbeans.api</groupId>
-            <artifactId>org-openide-util</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.netbeans.api</groupId>
-            <artifactId>org-openide-dialogs</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.netbeans.api</groupId>
-            <artifactId>org-openide-loaders</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-util-lookup</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
         </dependency>
 
     </dependencies>

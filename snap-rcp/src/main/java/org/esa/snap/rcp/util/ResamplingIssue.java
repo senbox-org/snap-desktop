@@ -47,8 +47,8 @@ public class ResamplingIssue {
             optionType = JOptionPane.OK_CANCEL_OPTION;
             messageType = JOptionPane.INFORMATION_MESSAGE;
         } else if (availableResamplers.size() == 1) {
-            msgTextBuilder.append("You can use ").append(availableResamplers.get(0).getName()).
-                    append("to resample this product to a single-size product, <br/>" +
+            msgTextBuilder.append("You can use the ").append(availableResamplers.get(0).getName()).
+                    append(" to resample this product to a single-size product, <br/>" +
                                    "which will enable you to use this feature.<br/>" +
                                    "Do you want to resample the product now?");
             optionType = JOptionPane.YES_NO_OPTION;
@@ -76,13 +76,13 @@ public class ResamplingIssue {
         });
         panel.add(textPane, BorderLayout.CENTER);
         final JComboBox<Object> resamplerBox = new JComboBox<>();
-        if (!availableResamplers.isEmpty()) {
+        if (availableResamplers.size() > 1) {
             String[] resamplerNames = new String[availableResamplers.size()];
             for (int i = 0; i < availableResamplers.size(); i++) {
                 resamplerNames[i] = availableResamplers.get(i).getName();
                 resamplerBox.addItem(resamplerNames[i]);
             }
-            panel.add(resamplerBox);
+            panel.add(resamplerBox, BorderLayout.SOUTH);
         }
         NotifyDescriptor d = new NotifyDescriptor(panel, title, optionType, messageType, null, null);
         DialogDisplayer.getDefault().notify(d);
