@@ -17,10 +17,10 @@ package org.esa.snap.graphbuilder.rcp.actions;
 
 import org.esa.snap.core.gpf.ui.DefaultOperatorAction;
 import org.esa.snap.graphbuilder.rcp.dialogs.SingleOperatorDialog;
-import org.esa.snap.graphbuilder.rcp.utils.IconUtils;
 import org.esa.snap.ui.ModelessDialog;
+import org.esa.snap.ui.UIUtils;
 
-import javax.swing.ImageIcon;
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -36,6 +36,12 @@ import java.util.Set;
  * file name suffix for the target product can be given via the {@code targetProductNameSuffix} property.</p>
  */
 public class OperatorAction extends DefaultOperatorAction {
+    public static ImageIcon esaIcon = UIUtils.loadImageIcon("/org/esa/snap/graphbuilder/icons/esa.png", OperatorAction.class);
+    public static ImageIcon rstbIcon = UIUtils.loadImageIcon("/org/esa/snap/graphbuilder/icons/csa.png", OperatorAction.class);
+    public static ImageIcon arrayIcon = UIUtils.loadImageIcon("/org/esa/snap/graphbuilder/icons/array_logo.png", OperatorAction.class);
+    public static ImageIcon esaPlanetIcon = UIUtils.loadImageIcon("/org/esa/snap/graphbuilder/icons/esa-planet.png", OperatorAction.class);
+    public static ImageIcon geoAusIcon = UIUtils.loadImageIcon("/org/esa/snap/graphbuilder/icons/geo_aus.png", OperatorAction.class);
+
     protected static final Set<String> KNOWN_KEYS = new HashSet<>(Arrays.asList("displayName", "operatorName",
                                                                                 "dialogTitle", "targetProductNameSuffix",
                                                                                 "helpId", "icon"));
@@ -87,13 +93,13 @@ public class OperatorAction extends DefaultOperatorAction {
         if (iconName == null) {
             //setIcon(dlg, IconUtils.esaPlanetIcon);
         } else if (iconName.equals("esaIcon")) {
-            setIcon(dlg, IconUtils.esaPlanetIcon);
+            setIcon(dlg, esaPlanetIcon);
         } else if (iconName.equals("rstbIcon")) {
-            setIcon(dlg, IconUtils.rstbIcon);
+            setIcon(dlg, rstbIcon);
         } else if (iconName.equals("geoAusIcon")) {
-            setIcon(dlg, IconUtils.geoAusIcon);
+            setIcon(dlg, geoAusIcon);
         } else {
-            final ImageIcon icon = IconUtils.LoadIcon(iconName);
+            final ImageIcon icon = UIUtils.loadImageIcon(iconName, OperatorAction.class);
             if (icon != null)
                 setIcon(dlg, icon);
         }
