@@ -47,9 +47,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -280,6 +282,27 @@ public class QuicklookToolView extends TopComponent implements Quicklook.Quicklo
             final ThreadManager threadManager = new ThreadManager();
             threadManager.setNumConsecutiveThreads(Math.min(threadManager.getNumConsecutiveThreads(), 4));
 
+            // collect quicklooks that need to load
+            final List<Quicklook> quicklooksToLoad = new ArrayList<>();
+            for (final Product product : productSet) {
+                if(product.getFileLocation() != null) {
+                    final Quicklook quicklook;
+                    if (qlName.equals(DEFAULT_QUICKLOOK)) {
+                        quicklook = product.getDefaultQuicklook();
+                    } else {
+                        quicklook = product.getQuicklook(qlName);
+                    }
+                    if (!quicklook.hasImage() && !quicklook.hasCachedImage()) {
+                        quicklooksToLoad.add(quicklook);
+                    }
+                }
+            }
+            if(quicklooksToLoad.isEmpty()) {
+                updateQuicklooks = true;
+                showProduct(currentProduct);
+                return;
+            }
+
             ProgressMonitorSwingWorker<Boolean, Object> worker = new ProgressMonitorSwingWorker<Boolean, Object>
                     (SnapApp.getDefault().getMainFrame(), "Loading quicklooks") {
                 @Override
@@ -287,30 +310,23 @@ public class QuicklookToolView extends TopComponent implements Quicklook.Quicklo
                     final int total = productSet.size();
                     pm.beginTask("Generating quicklooks", total);
                     int cnt = 1;
-                    for (final Product product : productSet) {
+                    for (final Quicklook quicklook : quicklooksToLoad) {
                         if(pm.isCanceled())
                             break;
-                        if (product.getFileLocation() != null) {
 
-                            final Thread worker = new Thread() {
+                        final Thread worker = new Thread() {
 
-                                @Override
-                                public void run() {
-                                    try {
-                                        final Quicklook quicklook;
-                                        if (qlName.equals(DEFAULT_QUICKLOOK)) {
-                                            quicklook = product.getDefaultQuicklook();
-                                        } else {
-                                            quicklook = product.getQuicklook(qlName);
-                                        }
-                                        quicklook.getImage(SubProgressMonitor.create(pm, 1));
-                                    } catch (Throwable e) {
-                                        SystemUtils.LOG.warning("Unable to create quicklook for " + product.getName() + '\n' + e.getMessage());
-                                    }
+                            @Override
+                            public void run() {
+                                try {
+                                    quicklook.getImage(SubProgressMonitor.create(pm, 1));
+                                } catch (Throwable e) {
+                                    SystemUtils.LOG.warning("Unable to create quicklook for " + quicklook.getProductFile() + '\n' + e.getMessage());
                                 }
-                            };
-                            threadManager.add(worker);
-                        }
+                            }
+                        };
+                        threadManager.add(worker);
+
                         MemUtils.freeAllMemory();
                         pm.setTaskName("Generating quicklooks " + cnt + " of " + total);
                         ++cnt;
