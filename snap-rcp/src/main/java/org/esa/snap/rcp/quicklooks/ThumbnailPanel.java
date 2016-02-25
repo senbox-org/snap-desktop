@@ -40,7 +40,6 @@ public class ThumbnailPanel extends JPanel {
     private final static int margin = 6;
     private final static BasicStroke thickStroke = new BasicStroke(5);
     private final static String vkControl = "VK_CONTROL";
-    private final static String vkShift = "VK_SHIFT";
 
     private enum SelectionMode {CHECK, RECT}
 
@@ -66,15 +65,11 @@ public class ThumbnailPanel extends JPanel {
     private void setKeyBindings() {
         final InputMap inputMap = getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_CONTROL, KeyEvent.CTRL_DOWN_MASK), vkControl+"DOWN");
-        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_SHIFT, KeyEvent.SHIFT_DOWN_MASK), vkShift+"DOWN");
-        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_CONTROL, KeyEvent.CTRL_DOWN_MASK, true), vkControl+"UP");
-        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_SHIFT, KeyEvent.SHIFT_DOWN_MASK, true), vkShift+"UP");
+        inputMap.put(KeyStroke.getKeyStroke("released CONTROL"), vkControl+"UP");
 
         final ActionMap actionMap = getActionMap();
         actionMap.put(vkControl+"DOWN", new KeyAction(vkControl+"DOWN"));
-        actionMap.put(vkShift+"DOWN", new KeyAction(vkShift+"DOWN"));
         actionMap.put(vkControl+"UP", new KeyAction(vkControl+"UP"));
-        actionMap.put(vkShift+"UP", new KeyAction(vkShift+"UP"));
     }
 
     private class KeyAction extends AbstractAction {
@@ -85,8 +80,6 @@ public class ThumbnailPanel extends JPanel {
         public void actionPerformed(ActionEvent e) {
             final String cmd = e.getActionCommand();
             ctrlPressed = cmd.equals(vkControl+"DOWN");
-
-            System.out.println(getValue(ACTION_COMMAND_KEY) +" "+ e.toString());
         }
     }
 
