@@ -621,29 +621,34 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
     }
 
     private class RescanOptions extends CheckListDialog {
+        private final static String TITLE = "Scan Folder Options";
+        private final static String SEARCH_RECURSIVELY = "Search folder recursively?";
+        private final static String VERIFY_ZIP_FILES = "Test zip files for errors?";
+        private final static String GENERATE_QUICKLOOKS = "Generate quicklooks?";
+
         RescanOptions() {
-            super("Scan Folder Options");
+            super(TITLE);
         }
 
         @Override
         protected void initContent() {
-            items.put("Search folder recursively?", true);
-            items.put("CRC check zip files?", false);
-            items.put("Generate quicklooks?", false);
+            items.put(SEARCH_RECURSIVELY, true);
+            items.put(VERIFY_ZIP_FILES, false);
+            items.put(GENERATE_QUICKLOOKS, false);
 
             super.initContent();
         }
 
         public boolean shouldDoRecusive() {
-            return items.get("Search folder recursively?");
+            return items.get(SEARCH_RECURSIVELY);
         }
 
         public boolean shouldValidateZips() {
-            return items.get("CRC check zip files?");
+            return items.get(VERIFY_ZIP_FILES);
         }
 
         public boolean shouldDoQuicklooks() {
-            return items.get("Generate quicklooks?");
+            return items.get(GENERATE_QUICKLOOKS);
         }
     }
 }
