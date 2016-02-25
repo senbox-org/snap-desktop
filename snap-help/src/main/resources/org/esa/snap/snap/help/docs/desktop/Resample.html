@@ -150,39 +150,39 @@
                 Every pixel value in the output product is set to the median of all source pixel values that need to be combined.
             </p>
 
-            <h5>Flag and Index Aggregation Method</h5>
+            <h5>Flag Aggregation Method</h5>
 
             <p class="i1">
-                Defines how flag and index bands shall be resampled from a finer grid onto a coarser grid.
-                In this case, not only multiple pixel values have to be combined to a single pixel value, but also multiple flags or indexes.
+                Defines how flag bands shall be resampled from a finer grid onto a coarser grid.
+                In this case, not only multiple pixel values have to be combined to a single pixel value, but also multiple flags.
                 The following options are available:
             </p>
 
             <p class="i1">
                 <b>First:</b>
                 Every pixel value in the output product is set to the nearest input pixel value,
-                i.e., flags and indexes are taken from the nearest neighbour.
+                i.e., flags are taken from the nearest neighbour.
             </p>
 
             <p class="i1">
                 <b>Min:</b>
-                A flag or index is only set if it is set for every pixel that needs to be combined.
+                A flag is only set if it is set for every pixel that needs to be combined.
             </p>
 
             <p class="i1">
                 <b>Max:</b>
-                A flag or index is set if it is set for at least one of the pixels that need to be combined.
+                A flag is set if it is set for at least one of the pixels that need to be combined.
             </p>
 
             <p class="i1">
                 <b>MinMedian:</b>
-                A flag or index is set if it is set for at least half of the pixels that need to be combined.
+                A flag is set if it is set for at least half of the pixels that need to be combined.
                 If it is set for exactly half the pixels, it is not set for the output pixel.
             </p>
 
             <p class="i1">
                 <b>MaxMedian:</b>
-                A flag or index is set if it is set for at least half of the pixels that need to be combined.
+                A flag is set if it is set for at least half of the pixels that need to be combined.
                 If it is set for exactly half the pixels, it is set for the output pixel.
             </p>
 
