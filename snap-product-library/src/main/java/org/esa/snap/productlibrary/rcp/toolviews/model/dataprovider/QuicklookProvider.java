@@ -16,6 +16,7 @@
 package org.esa.snap.productlibrary.rcp.toolviews.model.dataprovider;
 
 import com.bc.ceres.core.ProgressMonitor;
+import org.esa.snap.core.dataio.ProductIO;
 import org.esa.snap.core.datamodel.quicklooks.Quicklook;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.engine_utilities.db.ProductEntry;
@@ -26,6 +27,7 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.Comparator;
 
 public class QuicklookProvider implements DataProvider {
@@ -66,6 +68,13 @@ public class QuicklookProvider implements DataProvider {
     private static BufferedImage getImage(final ProductEntry productEntry) {
         if(productEntry.quickLookExists()) {
             final Quicklook quicklook = productEntry.getQuickLook();
+            if(!quicklook.hasProduct() && !quicklook.hasCachedImage() && quicklook.getProductFile() != null) {
+                try {
+                    quicklook.setProduct(ProductIO.readProduct(quicklook.getProductFile()));
+                } catch (IOException e) {
+                    SystemUtils.LOG.warning("Quicklook unable to load product "+quicklook.getProductFile());
+                }
+            }
             return quicklook.getImage(ProgressMonitor.NULL);
         }
         return null;
