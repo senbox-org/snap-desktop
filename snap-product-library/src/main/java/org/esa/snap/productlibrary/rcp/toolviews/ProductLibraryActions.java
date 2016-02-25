@@ -52,7 +52,6 @@ public class ProductLibraryActions {
     private static final ImageIcon batchIcon = UIUtils.loadImageIcon("/org/esa/snap/productlibrary/icons/batch24.png", ProductLibraryToolView.class);
 
     private final ProductLibraryToolView toolView;
-    private final ProductOpener openHandler;
     private JButton selectAllButton, openAllSelectedButton, copySelectedButton, batchProcessButton;
 
     private List<ProductLibraryActionExt> actionExtList = new ArrayList<>();
@@ -64,7 +63,6 @@ public class ProductLibraryActions {
 
     public ProductLibraryActions(final ProductLibraryToolView toolView) {
         this.toolView = toolView;
-        this.openHandler = new ProductOpener();
     }
 
     public JPanel createCommandPanel() {
@@ -180,9 +178,7 @@ public class ProductLibraryActions {
     }
 
     public void performOpenAction() {
-        if (openHandler != null) {
-            ProductOpener.openProducts(getSelectedFiles());
-        }
+        ProductOpener.openProducts(getSelectedFiles());
     }
 
     public void findSlices(final int dataTakeId) {
