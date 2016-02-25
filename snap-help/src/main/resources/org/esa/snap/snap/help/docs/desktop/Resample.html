@@ -1,0 +1,198 @@
+<!--
+  ~ Copyright (C) 2010 Brockmann Consult GmbH (info@brockmann-consult.de)
+  ~
+  ~ This program is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU General Public License as published by the Free
+  ~ Software Foundation; either version 3 of the License, or (at your option)
+  ~ any later version.
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+  ~ more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License along
+  ~ with this program; if not, see http://www.gnu.org/licenses/
+  -->
+
+<html>
+<head>
+    <title>Sentinel Toolbox Help - Resampling</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<table class="header">
+    <tr class="header">
+        <td class="header">&nbsp;
+            resampling
+        </td>
+        <td class="header" align="right"><a href="../general/overview/SnapOverview.html">
+            <img src="../images/snap_header.jpg" border=0></a></td>
+    </tr>
+</table>
+
+<h3>Resampling Dialog</h3>
+
+<p>
+    Here you can resample a multi-size product to a single-size product.
+    A multi-size product is a product in which bands are of different sizes and/or resolutions.
+    This can be useful for those instances when a SNAP feature is not supported for a multi-size product.
+
+<p>
+    After the new product has been created, you can change to the
+    <a href="ProductExplorer.html">Product Explorer</a> in order to open
+    an <a href="ProductSceneView.html">Image View</a> for a band of the new product.
+
+<h4>I/O Parameters</h4>
+<table border="0">
+    <tr>
+        <td style="border-width:0;" valign="top">
+            <h5>Source Product</h5>
+
+            <p class="i1">
+                <b>Name:</b>
+                Here the user selects the source product. The combo box presents
+                a list of all products opened in the Sentinel Toolbox. The user may select one of these
+                or, by clicking on the button next to the combo box, choose a product
+                from the file system.
+
+            <h5>Target Product</h5>
+
+            <p class="i1">
+                <b>Name:</b>
+                Used to specify the name of the target product.
+            </p>
+
+            <p class="i1">
+                <b>Save as:</b>
+                Used to specify whether the target product should be saved to the file system. The
+                combo box presents a list of file formats.
+                The text field allows to specify a target directory.
+            </p>
+
+            <p class="i1">
+                <b>Open in SNAP:</b>
+                Used to specify whether the target product should be opened in the Sentinel Toolbox.
+                When the target product is not saved, it is opened in the Sentinel Toolbox automatically.
+            </p></td>
+        <td style="border-width:0;" valign="top"><img src="images/ReprojectionIOParameters.png"></td>
+    </tr>
+</table>
+
+<h4>Processing Parameters</h4>
+<table border="0">
+    <tr>
+        <td style="border-width:0;" valign="top">
+
+            <h5>Reference band</h5>
+
+            <p class="i1">
+                The band with the reference size.
+                All other nodes will be resampled to match it's size.
+                The user can select any of the bands available in the product.
+            </p>
+
+            <h5>Interpolation Method</h5>
+
+            <p class="i1">
+                Defines how bands shall be resampled from a coarser grid onto a finer grid.
+                The following methods are available:
+            </p>
+
+            <p class="i1">
+                <b>Nearest:</b>
+                Every pixel value in the output product is set to the nearest input pixel value.
+                This is always used for flag and index bands.
+            </p>
+
+            <p class="i1">
+                <b>Bilinear:</b>
+                Calculation of the new pixel value is performed by the weight of the four surrounding pixels.
+            </p>
+
+            <p class="i1">
+                <b>Bicubic:</b>
+                Calculation of the new pixel value is performed by weighting the 16 surrounding pixels.
+            </p>
+
+            <h5>Aggregation Method</h5>
+
+            <p class="i1">
+                Defines how bands shall be resampled from a finer grid onto a coarser grid.
+                In this case, multiple pixel values have to be combined to a single pixel value.
+                (See also <a href="../general/overview/ResamplingMethods.html">Resampling Methods</a>.)
+                The following methods are available:
+            </p>
+
+            <p class="i1">
+                <b>First:</b>
+                Every pixel value in the output product is set to the nearest input pixel value.
+            </p>
+
+            <p class="i1">
+                <b>Min:</b>
+                Of all source pixel values that need to be combined, the smallest is set as output pixel value.
+            </p>
+
+            <p class="i1">
+                <b>Max:</b>
+                Of all source pixel values that need to be combined, the largest is set as output pixel value.
+            </p>
+
+            <p class="i1">
+                <b>Mean:</b>
+                Every pixel value in the output product is set to the mean of all source pixel values that need to be combined.
+            </p>
+
+            <p class="i1">
+                <b>Median:</b>
+                Every pixel value in the output product is set to the median of all source pixel values that need to be combined.
+            </p>
+
+            <h5>Flag Aggregation Method</h5>
+
+            <p class="i1">
+                Defines how flag bands shall be resampled from a finer grid onto a coarser grid.
+                In this case, not only multiple pixel values have to be combined to a single pixel value, but also multiple flags.
+                The following options are available:
+            </p>
+
+            <p class="i1">
+                <b>First:</b>
+                Every pixel value in the output product is set to the nearest input pixel value,
+                i.e., flags are taken from the nearest neighbour.
+            </p>
+
+            <p class="i1">
+                <b>Min:</b>
+                A flag is only set if it is set for every pixel that needs to be combined.
+            </p>
+
+            <p class="i1">
+                <b>Max:</b>
+                A flag is set if it is set for at least one of the pixels that need to be combined.
+            </p>
+
+            <p class="i1">
+                <b>MinMedian:</b>
+                A flag is set if it is set for at least half of the pixels that need to be combined.
+                If it is set for exactly half the pixels, it is not set for the output pixel.
+            </p>
+
+            <p class="i1">
+                <b>MaxMedian:</b>
+                A flag is set if it is set for at least half of the pixels that need to be combined.
+                If it is set for exactly half the pixels, it is set for the output pixel.
+            </p>
+
+        </td>
+        <td style="border-width:0;" valign="top"><img src="images/ReprojectionProjectionParameters.png">
+        </td>
+    </tr>
+</table>
+
+
+<hr>
+</body>
+</html>

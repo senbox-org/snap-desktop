@@ -1,6 +1,5 @@
 package org.esa.snap.rcp.util;
 
-import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.rcp.SnapApp;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
@@ -68,11 +67,6 @@ public class MultiSizeIssue {
             }
         }
     }
-
-    public static boolean isMultiSize(Product selectedProduct) {
-        return selectedProduct != null && selectedProduct.isMultiSizeProduct();
-    }
-
 
     private static void setFont(JEditorPane textPane) {
         if (textPane.getDocument() instanceof HTMLDocument) {

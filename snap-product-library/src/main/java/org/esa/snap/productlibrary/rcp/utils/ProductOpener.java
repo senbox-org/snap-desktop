@@ -29,7 +29,7 @@ public class ProductOpener {
     public ProductOpener() {
     }
 
-    public void openProducts(final File[] productFiles) {
+    public static void openProducts(final File[] productFiles) {
         final ExecutorService es = Executors.newSingleThreadExecutor();
         for (File productFile : productFiles) {
             if (!productFile.exists()) {

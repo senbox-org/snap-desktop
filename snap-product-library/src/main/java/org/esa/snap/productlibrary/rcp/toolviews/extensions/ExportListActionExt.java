@@ -72,7 +72,7 @@ public class ExportListActionExt implements ProductLibraryActionExt {
         }
     }
 
-    private File getExportFile() {
+    private static File getExportFile() {
         final Preferences preferences = SnapApp.getDefault().getPreferences();
         final File currentDir = new File(preferences.get(lastExportDirPreferenceKey, SystemUtils.getUserHomeDir().getPath()));
 
@@ -94,7 +94,7 @@ public class ExportListActionExt implements ProductLibraryActionExt {
         return null;
     }
 
-    private void exportFileList(final File file, final File[] fileList) {
+    private static void exportFileList(final File file, final File[] fileList) {
         PrintStream p = null;
         try (FileOutputStream out = new FileOutputStream(file.getAbsolutePath(), false)) {
             p = new PrintStream(out);
@@ -111,7 +111,7 @@ public class ExportListActionExt implements ProductLibraryActionExt {
         }
     }
 
-    private void viewFile(final File file) {
+    private static void viewFile(final File file) {
         if (Desktop.isDesktopSupported() && file.exists()) {
             try {
                 Desktop.getDesktop().open(file);

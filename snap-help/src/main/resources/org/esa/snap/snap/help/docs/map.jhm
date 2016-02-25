@@ -18,7 +18,6 @@
     <mapID target="pconvertTool" url="general/overview/PConvertUsage.html"/>
     <mapID target="resamplingMethods" url="general/overview/ResamplingMethods.html"/>
     <mapID target="envisatProducts" url="general/envisat-products/index.html"/>
-    <!-- todo -->
 
     <mapID target="desktop" url="desktop/index.html"/>
     <mapID target="mainToolbar" url="desktop/Toolbars.html"/>
@@ -101,6 +100,7 @@
 
 
     <mapID target="reprojectionAction" url="desktop/Reprojection.html"/>
+    <mapID target="resampleAction" url="desktop/Resample.html"/>
     <mapID target="orthorectificationAction" url="desktop/Orthorectification.html"/>
     <mapID target="orthorectificationAlgo" url="desktop/OrthorectificationAlgo.html"/>
     <mapID target="mosaicAction" url="desktop/Mosaic.html"/>
@@ -116,5 +116,5 @@
     <mapID target="geometryWKT" url="desktop/GeometryWKT.html"/>
     <mapID target="convertBand" url="desktop/ConvertComputedBand.html"/>
     <mapID target="displacementBands" url="desktop/CreateGCDisplacementBands.html"/>
-    C
+
 </map>

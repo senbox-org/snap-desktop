@@ -18,7 +18,7 @@ package org.esa.snap.rcp.actions.tools;
 
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.util.SystemUtils;
-import org.esa.snap.rcp.util.MultiSizeIssue;
+import org.esa.snap.rcp.util.ResamplingIssue;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -97,8 +97,8 @@ public class CopyPixelInfoToClipboardAction extends AbstractAction implements Co
             final Product product = view.getProduct();
             if(product != null ) {
                 if(product.isMultiSizeProduct()) {
-                    MultiSizeIssue.showMultiSizeWarning();
-                }else {
+                    ResamplingIssue.showResamplingIssueNotification();
+                } else {
                     SystemUtils.copyToClipboard(product.createPixelInfoString(view.getCurrentPixelX(), view.getCurrentPixelY()));
                 }
             }

@@ -85,7 +85,7 @@ public class DatabaseStatistics implements DatabaseQueryListener {
         return calendar;
     }
 
-    private Calendar getAsCalendar(final ProductData.UTC utc) {
+    private static Calendar getAsCalendar(final ProductData.UTC utc) {
         calendar.clear();
         calendar.set(2000, 0, 1);
         calendar.add(Calendar.DATE, utc.getDaysFraction());

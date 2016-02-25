@@ -180,7 +180,9 @@ public class ProductLibraryActions {
     }
 
     public void performOpenAction() {
-        openHandler.openProducts(toolView.getSelectedFiles());
+        if (openHandler != null) {
+            ProductOpener.openProducts(getSelectedFiles());
+        }
     }
 
     public void findSlices(final int dataTakeId) {
