@@ -80,7 +80,7 @@ import java.util.TreeSet;
 /**
  * Tool window to display quicklooks
  */
-public class QuicklookToolView extends TopComponent {
+public class QuicklookToolView extends TopComponent implements Quicklook.QuicklookListener {
 
     private Product currentProduct;
     private final SortedSet<Product> productSet;
@@ -254,7 +254,7 @@ public class QuicklookToolView extends TopComponent {
         refreshBtn.setEnabled(true);
     }
 
-    private BufferedImage createNoDataImage() {
+    private static BufferedImage createNoDataImage() {
         final int w = 100, h = 100;
         final BufferedImage image = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
         final Graphics2D g = image.createGraphics();
@@ -361,17 +361,20 @@ public class QuicklookToolView extends TopComponent {
         final StatusProgressMonitor qlPM = new StatusProgressMonitor(StatusProgressMonitor.TYPE.SUBTASK);
         qlPM.beginTask("Creating quicklook " + product.getName() + "... ", 100);
 
+        final Quicklook quicklook;
+        if (qlName.equals(DEFAULT_QUICKLOOK)) {
+            quicklook = product.getDefaultQuicklook();
+        } else {
+            quicklook = product.getQuicklook(qlName);
+        }
+        quicklook.addListener(this);
+
         ProgressMonitorSwingWorker<BufferedImage, Object> loader = new ProgressMonitorSwingWorker<BufferedImage, Object>
                 (SnapApp.getDefault().getMainFrame(), "Loading quicklook image...") {
 
             @Override
             protected BufferedImage doInBackground(com.bc.ceres.core.ProgressMonitor pm) throws Exception {
-                final Quicklook quicklook;
-                if (qlName.equals(DEFAULT_QUICKLOOK)) {
-                    quicklook = product.getDefaultQuicklook();
-                } else {
-                    quicklook = product.getQuicklook(qlName);
-                }
+
                 return quicklook.getImage(qlPM);
             }
 
@@ -662,5 +665,9 @@ public class QuicklookToolView extends TopComponent {
         popup.add(closeItem);
 
         return popup;
+    }
+
+    public void notifyImageUpdated(Quicklook ql) {
+        showProduct(ql.getProduct());
     }
 }
