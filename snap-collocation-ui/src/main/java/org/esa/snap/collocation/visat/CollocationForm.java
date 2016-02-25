@@ -90,7 +90,7 @@ class CollocationForm extends JPanel {
 
         if(ResamplingIssue.isMultiSize(masterProductSelector.getSelectedProduct()) ||
                 ResamplingIssue.isMultiSize(slaveProductSelector.getSelectedProduct())) {
-            ResamplingIssue.showResamplingIssueNotification();
+            ResamplingIssue.showResamplingIssueNotification(false);
         }
     }
 

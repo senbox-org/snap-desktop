@@ -15,10 +15,12 @@
  */
 package org.esa.snap.raster.gpf.ui;
 
+import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.graphbuilder.gpf.ui.BaseOperatorUI;
 import org.esa.snap.graphbuilder.gpf.ui.OperatorUIUtils;
 import org.esa.snap.graphbuilder.gpf.ui.UIValidation;
 import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
+import org.esa.snap.rcp.util.ResamplingIssue;
 import org.esa.snap.ui.AppContext;
 
 import javax.swing.*;
@@ -49,7 +51,6 @@ public class CreateLandMaskOpUI extends BaseOperatorUI {
 
     @Override
     public JComponent CreateOpTab(String operatorName, Map<String, Object> parameterMap, AppContext appContext) {
-
         initializeOperatorUI(operatorName, parameterMap);
         final JComponent panel = createPanel();
         initParameters();
@@ -163,6 +164,14 @@ public class CreateLandMaskOpUI extends BaseOperatorUI {
         DialogUtils.fillPanel(contentPane, gbc);
 
         return contentPane;
+    }
+
+    @Override
+    public void setSourceProducts(Product[] products) {
+        super.setSourceProducts(products);
+        if (products.length > 0 && products[0] != null && products[0].isMultiSizeProduct()) {
+            ResamplingIssue.showResamplingIssueNotification(true);
+        }
     }
 
     private class RadioListener implements ActionListener {

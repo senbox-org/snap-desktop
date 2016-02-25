@@ -17,6 +17,7 @@
 package org.esa.snap.rcp.bandmaths;
 
 import org.esa.snap.core.datamodel.VirtualBand;
+import org.esa.snap.rcp.util.ResamplingIssue;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -48,6 +49,9 @@ public class PropagateUncertaintyAction extends AbstractAction {
 
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
+        if (virtualBand.getProduct() != null && virtualBand.getProduct().isMultiSizeProduct()) {
+            ResamplingIssue.showResamplingIssueNotification(true);
+        }
         PropagateUncertaintyDialog dialog = new PropagateUncertaintyDialog(virtualBand);
         dialog.show();
     }

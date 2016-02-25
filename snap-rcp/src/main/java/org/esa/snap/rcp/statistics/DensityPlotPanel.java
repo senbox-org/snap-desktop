@@ -38,6 +38,7 @@ import org.esa.snap.core.util.ProductUtils;
 import org.esa.snap.core.util.math.MathUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
+import org.esa.snap.rcp.util.ResamplingIssue;
 import org.esa.snap.ui.GridBagUtils;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -169,6 +170,9 @@ class DensityPlotPanel extends ChartPagePanel {
     @Override
     protected void updateComponents() {
         super.updateComponents();
+        if (isProductChanged() && getProduct() != null && getProduct().isMultiSizeProduct()) {
+            ResamplingIssue.showResamplingIssueNotification(true);
+        }
         if (isRasterChanged() || isProductChanged()) {
             plot.setImage(null);
             plot.setDataset(null);
@@ -229,7 +233,11 @@ class DensityPlotPanel extends ChartPagePanel {
         xProductList = new JComboBox<>();
         xProductList.addItemListener(event -> {
             if (event.getStateChange() == ItemEvent.SELECTED) {
-                updateBandList((Product) event.getItem(), xBandProperty, false);
+                final Product selectedProduct = (Product) event.getItem();
+                if (selectedProduct != null && selectedProduct.isMultiSizeProduct()) {
+                    ResamplingIssue.showResamplingIssueNotification(true);
+                }
+                updateBandList(selectedProduct, xBandProperty, false);
             }
         });
         xProductList.setRenderer(new ProductListCellRenderer());
@@ -239,7 +247,11 @@ class DensityPlotPanel extends ChartPagePanel {
         yProductList = new JComboBox<>();
         yProductList.addItemListener(event -> {
             if (event.getStateChange() == ItemEvent.SELECTED) {
-                updateBandList((Product) event.getItem(), yBandProperty, true);
+                final Product selectedProduct = (Product) event.getItem();
+                if (selectedProduct != null && selectedProduct.isMultiSizeProduct()) {
+                    ResamplingIssue.showResamplingIssueNotification(true);
+                }
+                updateBandList(selectedProduct, yBandProperty, true);
             }
         });
         yProductList.setRenderer(new ProductListCellRenderer());

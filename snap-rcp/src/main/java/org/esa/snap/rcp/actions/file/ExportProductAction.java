@@ -127,7 +127,7 @@ public class ExportProductAction extends AbstractAction implements HelpCtx.Provi
         Product product = productRef.get();
         if (product != null) {
             if(product.isMultiSizeProduct()) {
-                ResamplingIssue.showResamplingIssueNotification();
+                ResamplingIssue.showResamplingIssueNotification(true);
             }
             return exportProduct(product, (String) getValue(PROPERTY_FORMAT_NAME));
         } else {
