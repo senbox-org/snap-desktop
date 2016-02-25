@@ -1,4 +1,4 @@
-package org.esa.snap.resampling;
+package org.esa.snap.core.gpf.ui.resample;
 
 import com.bc.ceres.binding.Property;
 import com.bc.ceres.binding.ValidationException;

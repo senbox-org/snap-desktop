@@ -1,8 +1,0 @@
-Manifest-Version: 1.0
-OpenIDE-Module-Specification-Version: ${snap.nbmSpecVersion}
-AutoUpdate-Essential-Module: true
-AutoUpdate-Show-In-Client: true
-OpenIDE-Module-Display-Category: SNAP Resampling UI
-OpenIDE-Module-Layer: org/esa/snap/resampling/layer.xml
-OpenIDE-Module-Long-Description: NB-Module providing core GUI compone
- nts for SNAP Desktop
