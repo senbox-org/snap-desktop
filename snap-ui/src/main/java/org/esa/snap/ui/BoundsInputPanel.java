@@ -29,11 +29,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import java.awt.Insets;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.ParseException;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -106,26 +102,26 @@ public class BoundsInputPanel {
         layout.setColumnPadding(2, new Insets(3, 0, 3, 12));
         layout.setColumnPadding(5, new Insets(3, 0, 3, 12));
         final JPanel panel = new JPanel(layout);
-        final DoubleFormatter doubleFormatter = new DoubleFormatter("###0.0##");
+        final DecimalFormatter decimalFormatter = new DecimalFormatter("###0.0##");
         pixelXUnit = new JLabel(NonSI.DEGREE_ANGLE.toString());
         pixelYUnit = new JLabel(NonSI.DEGREE_ANGLE.toString());
 
         panel.add(new JLabel("West:"));
-        final JFormattedTextField westLonField = new JFormattedTextField(doubleFormatter);
+        final JFormattedTextField westLonField = new JFormattedTextField(decimalFormatter);
         westLonField.setHorizontalAlignment(JTextField.RIGHT);
         bindingContext.bind(PROPERTY_WEST_BOUND, westLonField);
         bindingContext.bindEnabledState(PROPERTY_WEST_BOUND, false, enablePropertyKey, disableUIProperty);
         panel.add(westLonField);
         panel.add(new JLabel(NonSI.DEGREE_ANGLE.toString()));
         panel.add(new JLabel("East:"));
-        final JFormattedTextField eastLonField = new JFormattedTextField(doubleFormatter);
+        final JFormattedTextField eastLonField = new JFormattedTextField(decimalFormatter);
         eastLonField.setHorizontalAlignment(JTextField.RIGHT);
         bindingContext.bind(PROPERTY_EAST_BOUND, eastLonField);
         bindingContext.bindEnabledState(PROPERTY_EAST_BOUND, false, enablePropertyKey, disableUIProperty);
         panel.add(eastLonField);
         panel.add(new JLabel(NonSI.DEGREE_ANGLE.toString()));
         panel.add(new JLabel("Pixel size X:"));
-        pixelSizeXField = new JFormattedTextField(doubleFormatter);
+        pixelSizeXField = new JFormattedTextField(decimalFormatter);
         pixelSizeXField.setHorizontalAlignment(JTextField.RIGHT);
         bindingContext.bind(PROPERTY_PIXEL_SIZE_X, pixelSizeXField);
         bindingContext.bindEnabledState(PROPERTY_PIXEL_SIZE_X, false, enablePropertyKey, disableUIProperty);
@@ -133,21 +129,21 @@ public class BoundsInputPanel {
         panel.add(pixelXUnit);
 
         panel.add(new JLabel("North:"));
-        final JFormattedTextField northLatField = new JFormattedTextField(doubleFormatter);
+        final JFormattedTextField northLatField = new JFormattedTextField(decimalFormatter);
         northLatField.setHorizontalAlignment(JTextField.RIGHT);
         bindingContext.bind(PROPERTY_NORTH_BOUND, northLatField);
         bindingContext.bindEnabledState(PROPERTY_NORTH_BOUND, false, enablePropertyKey, disableUIProperty);
         panel.add(northLatField);
         panel.add(new JLabel(NonSI.DEGREE_ANGLE.toString()));
         panel.add(new JLabel("South:"));
-        final JFormattedTextField southLatField = new JFormattedTextField(doubleFormatter);
+        final JFormattedTextField southLatField = new JFormattedTextField(decimalFormatter);
         southLatField.setHorizontalAlignment(JTextField.RIGHT);
         bindingContext.bind(PROPERTY_SOUTH_BOUND, southLatField);
         bindingContext.bindEnabledState(PROPERTY_SOUTH_BOUND, false, enablePropertyKey, disableUIProperty);
         panel.add(southLatField);
         panel.add(new JLabel(NonSI.DEGREE_ANGLE.toString()));
         panel.add(new JLabel("Pixel size Y:"));
-        pixelSizeYField = new JFormattedTextField(doubleFormatter);
+        pixelSizeYField = new JFormattedTextField(decimalFormatter);
         pixelSizeYField.setHorizontalAlignment(JTextField.RIGHT);
         bindingContext.bind(PROPERTY_PIXEL_SIZE_Y, pixelSizeYField);
         bindingContext.bindEnabledState(PROPERTY_PIXEL_SIZE_Y, false, enablePropertyKey, disableUIProperty);
@@ -193,30 +189,4 @@ public class BoundsInputPanel {
         }
     }
 
-    private static class DoubleFormatter extends JFormattedTextField.AbstractFormatter {
-
-        private final DecimalFormat format;
-
-        DoubleFormatter(String pattern) {
-            final DecimalFormatSymbols decimalFormatSymbols = new DecimalFormatSymbols(Locale.ENGLISH);
-            format = new DecimalFormat(pattern, decimalFormatSymbols);
-
-            format.setParseIntegerOnly(false);
-            format.setParseBigDecimal(false);
-            format.setDecimalSeparatorAlwaysShown(true);
-        }
-
-        @Override
-        public Object stringToValue(String text) throws ParseException {
-            return format.parse(text).doubleValue();
-        }
-
-        @Override
-        public String valueToString(Object value) throws ParseException {
-            if (value == null) {
-                return "";
-            }
-            return format.format(value);
-        }
-    }
 }
