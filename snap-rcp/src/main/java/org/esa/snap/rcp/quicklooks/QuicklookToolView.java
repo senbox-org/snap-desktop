@@ -292,7 +292,7 @@ public class QuicklookToolView extends TopComponent implements Thumbnail.Thumbna
                     } else {
                         quicklook = product.getQuicklook(qlName);
                     }
-                    if (!quicklook.hasImage() && !quicklook.hasCachedImage()) {
+                    if (quicklook != null && !quicklook.hasImage() && !quicklook.hasCachedImage()) {
                         quicklooksToLoad.add(quicklook);
                     }
                 }
@@ -370,13 +370,17 @@ public class QuicklookToolView extends TopComponent implements Thumbnail.Thumbna
             } else {
                 quicklook = product.getQuicklook(qlName);
             }
-            quicklook.addListener(this);
 
-            if(quicklook == null || (quicklook.hasImage() || quicklook.hasCachedImage())) {
-                setImage(product, quicklook);
-            } else if (updateQuicklooks) {
-                if (product.getFileLocation() != null) {
-                    loadImage(product, quicklook);
+            if(quicklook != null) {
+                quicklook.addListener(this);
+                if ((quicklook.hasImage() || quicklook.hasCachedImage())) {
+                    setImage(product, quicklook);
+                } else if (quicklook != null && updateQuicklooks) {
+                    if (product.getFileLocation() != null) {
+                        loadImage(product, quicklook);
+                    }
+                } else {
+                    setImage(product, null);
                 }
             } else {
                 setImage(product, null);
