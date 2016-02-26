@@ -33,23 +33,35 @@ import java.util.List;
  */
 public class ResamplingIssue {
 
-    public static void showResamplingIssueNotification() {
+    /**
+     * Call this method when to notify to the user that the selected functionality is either only available #
+     * with restrictions or not at all for multi-size products.
+     *
+     * @param soft if true, the functionality is available for multi-size-products with restrictions; if false, not at all
+     */
+    public static void showResamplingIssueNotification(boolean soft) {
         String title = Dialogs.getDialogTitle("Resampling required");
         final Product selectedProduct = SnapApp.getDefault().getSelectedProduct(SnapApp.SelectionSourceHint.AUTO);
         final List<Resampler> availableResamplers = getAvailableResamplers(selectedProduct);
         int optionType;
         int messageType;
-        final StringBuilder msgTextBuilder = new StringBuilder(
-                "The functionality you have chosen is not supported for multi-size products.<br/>" +
-                        "More info about this issue and its status can be found in the " +
-                        "<a href=\"https://senbox.atlassian.net/browse/SNAP-1\">SNAP Issue Tracker</a>.<br/>");
+        final StringBuilder msgTextBuilder = new StringBuilder("The functionality you have chosen is not ");
+        if (soft) {
+            msgTextBuilder.append("fully ");
+        }
+        msgTextBuilder.append("supported for multi-size products.<br/>" +
+                                      "More info about this issue and its status can be found in the " +
+                                      "<a href=\"https://senbox.atlassian.net/browse/SNAP-1\">SNAP Issue Tracker</a>.<br/>");
+        if (soft) {
+            msgTextBuilder.append("You can continue using this feature, though you will find some restrictions. <br/>");
+        }
         if (availableResamplers.isEmpty()) {
             optionType = JOptionPane.OK_CANCEL_OPTION;
             messageType = JOptionPane.INFORMATION_MESSAGE;
         } else if (availableResamplers.size() == 1) {
             msgTextBuilder.append("You can use the ").append(availableResamplers.get(0).getName()).
                     append(" to resample this product to a single-size product, <br/>" +
-                                   "which will enable you to use this feature.<br/>" +
+                                   "which will give enable you to use this feature without restrictions.<br/>" +
                                    "Do you want to resample the product now?");
             optionType = JOptionPane.YES_NO_OPTION;
             messageType = JOptionPane.QUESTION_MESSAGE;

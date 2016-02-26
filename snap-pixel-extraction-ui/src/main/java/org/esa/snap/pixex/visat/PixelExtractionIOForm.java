@@ -23,7 +23,9 @@ import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.jidesoft.swing.FolderChooser;
 import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.util.ArrayUtils;
 import org.esa.snap.core.util.SystemUtils;
+import org.esa.snap.rcp.util.ResamplingIssue;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.product.SourceProductList;
 
@@ -35,6 +37,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -79,6 +82,29 @@ class PixelExtractionIOForm {
         sourceProductList.setPropertyNameLastOpenedFormat(PROPERTY_NAME_LAST_OPEN_FORMAT);
         sourceProductList.setPropertyNameLastOpenInputDir(PROPERTY_NAME_LAST_OPEN_INPUT_DIR);
         sourceProductList.addChangeListener(changeListener);
+        sourceProductList.addChangeListener(new ListDataListener() {
+            @Override
+            public void intervalAdded(ListDataEvent e) {
+                final Product[] propertySourceProducts = container.getValue("sourceProducts");
+                final Product[] newSourceProducts = sourceProductList.getSourceProducts();
+                for (Product newSourceProduct : newSourceProducts) {
+                    if ((propertySourceProducts == null || !ArrayUtils.isMemberOf(newSourceProduct, propertySourceProducts))
+                            && newSourceProduct.isMultiSizeProduct()) {
+                        ResamplingIssue.showResamplingIssueNotification(false);
+                    }
+                }
+            }
+
+            @Override
+            public void intervalRemoved(ListDataEvent e) {
+
+            }
+
+            @Override
+            public void contentsChanged(ListDataEvent e) {
+
+            }
+        });
         sourceProductList.setXAxis(true);
         context.bind("sourceProductPaths", sourceProductList);
         JComponent[] components = sourceProductList.getComponents();
