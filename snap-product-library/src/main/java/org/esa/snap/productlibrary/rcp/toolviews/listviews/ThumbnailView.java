@@ -44,6 +44,11 @@ public class ThumbnailView extends ThumbnailPanel implements ListView {
         notifySelectionChanged();
     }
 
+    @Override
+    public void onOpenAction() {
+        notifyOpenAction();
+    }
+
     public File[] getSelectedFiles() {
         final List<File> list = new ArrayList<>();
         for(ThumbnailDrawing item : getSelection()) {

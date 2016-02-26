@@ -634,6 +634,10 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         worldMapUI.setSelectedProductEntryList(selections);
     }
 
+    public void notifyOpenAction() {
+        productLibraryActions.performOpenAction();
+    }
+
     private class MyDatabaseScannerListener implements DBScanner.DBScannerListener {
 
         public void notifyMSG(final DBScanner dbScanner, final MSG msg) {

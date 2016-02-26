@@ -23,6 +23,7 @@ import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductManager;
 import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.core.datamodel.quicklooks.Quicklook;
+import org.esa.snap.core.datamodel.quicklooks.Thumbnail;
 import org.esa.snap.core.dataop.downloadable.StatusProgressMonitor;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.engine_utilities.gpf.ThreadManager;
@@ -82,7 +83,7 @@ import java.util.TreeSet;
 /**
  * Tool window to display quicklooks
  */
-public class QuicklookToolView extends TopComponent implements Quicklook.QuicklookListener {
+public class QuicklookToolView extends TopComponent implements Thumbnail.ThumbnailListener {
 
     private Product currentProduct;
     private final SortedSet<Product> productSet;
@@ -685,7 +686,7 @@ public class QuicklookToolView extends TopComponent implements Quicklook.Quicklo
         return popup;
     }
 
-    public void notifyImageUpdated(Quicklook ql) {
-        showProduct(ql.getProduct());
+    public void notifyImageUpdated(Thumbnail thumbnail) {
+        showProduct(thumbnail.getProduct());
     }
 }

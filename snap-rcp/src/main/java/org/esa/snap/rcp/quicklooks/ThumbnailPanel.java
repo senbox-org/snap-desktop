@@ -128,7 +128,9 @@ public class ThumbnailPanel extends JPanel {
     }
 
     public void onSelectionChanged() {
+    }
 
+    public void onOpenAction() {
     }
 
     public void selectAll() {
@@ -152,13 +154,15 @@ public class ThumbnailPanel extends JPanel {
         return selection.contains(item);
     }
 
-    public class ThumbnailDrawing extends JLabel implements MouseListener {
+    public class ThumbnailDrawing extends JLabel implements MouseListener, Thumbnail.ThumbnailListener {
         private final ThumbnailPanel parent;
         private final Thumbnail thumbnail;
 
         public ThumbnailDrawing(final ThumbnailPanel parent, final Thumbnail thumbnail) {
             this.parent = parent;
             this.thumbnail = thumbnail;
+            this.thumbnail.addListener(this);
+
             setPreferredSize(new Dimension(imgWidth, imgHeight));
             setToolTipText("");
 
@@ -167,6 +171,10 @@ public class ThumbnailPanel extends JPanel {
 
         public Thumbnail getThumbnail() {
             return thumbnail;
+        }
+
+        public void notifyImageUpdated(Thumbnail thumbnail) {
+            parent.repaint();
         }
 
         @Override
@@ -255,7 +263,9 @@ public class ThumbnailPanel extends JPanel {
 
         @Override
         public void mousePressed(MouseEvent e) {
-            if (e.getButton() == MouseEvent.BUTTON1) {
+            if (e.getClickCount() == 2) {
+                onOpenAction();
+            } else if (e.getButton() == MouseEvent.BUTTON1) {
                 setSelection(this);
                 parent.repaint();
             } else if (e.getButton() == MouseEvent.BUTTON3) {
