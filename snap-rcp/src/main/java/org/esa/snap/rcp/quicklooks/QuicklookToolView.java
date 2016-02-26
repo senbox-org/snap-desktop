@@ -235,25 +235,24 @@ public class QuicklookToolView extends TopComponent implements Quicklook.Quicklo
     }
 
     private void updateButtons() {
-        if (productSet.isEmpty()) {
-            startBtn.setEnabled(false);
-            prevBtn.setEnabled(false);
-            nextBtn.setEnabled(false);
-            endBtn.setEnabled(false);
-            openBtn.setEnabled(false);
-            closeBtn.setEnabled(false);
+
+        boolean hasProducts = !productSet.isEmpty();
+        boolean hasPrevProd = getPreviousProduct() != null;
+        boolean hasNextProd = getNextProduct() != null;
+
+        startBtn.setEnabled(hasPrevProd);
+        prevBtn.setEnabled(hasPrevProd);
+        nextBtn.setEnabled(hasNextProd);
+        endBtn.setEnabled(hasNextProd);
+        openBtn.setEnabled(hasProducts);
+        closeBtn.setEnabled(hasProducts);
+        refreshBtn.setEnabled(hasProducts);
+
+        if(!hasProducts) {
             imgPanel.setImage(null);
             nameLabel.setText("");
             currentProduct = null;
-        } else {
-            startBtn.setEnabled(true);
-            prevBtn.setEnabled(getPreviousProduct() != null);
-            nextBtn.setEnabled(getNextProduct() != null);
-            endBtn.setEnabled(true);
-            openBtn.setEnabled(true);
-            closeBtn.setEnabled(true);
         }
-        refreshBtn.setEnabled(true);
     }
 
     private static BufferedImage createNoDataImage() {
@@ -364,26 +363,29 @@ public class QuicklookToolView extends TopComponent implements Quicklook.Quicklo
 
         final String qlName = (String)quicklookNameCombo.getSelectedItem();
         if(qlName != null) {
-            if (updateQuicklooks) {
-                if (product.getFileLocation() != null) {
-                    loadImage(product, qlName);
-                }
+            final Quicklook quicklook;
+            if (qlName.equals(DEFAULT_QUICKLOOK)) {
+                quicklook = product.getDefaultQuicklook();
+            } else {
+                quicklook = product.getQuicklook(qlName);
             }
-            setImage(product, qlName);
+            quicklook.addListener(this);
+
+            if(quicklook == null || (quicklook.hasImage() || quicklook.hasCachedImage())) {
+                setImage(product, quicklook);
+            } else if (updateQuicklooks) {
+                if (product.getFileLocation() != null) {
+                    loadImage(product, quicklook);
+                }
+            } else {
+                setImage(product, null);
+            }
         }
     }
 
-    private void loadImage(final Product product, final String qlName) {
+    private static void loadImage(final Product product, final Quicklook quicklook) {
         final StatusProgressMonitor qlPM = new StatusProgressMonitor(StatusProgressMonitor.TYPE.SUBTASK);
         qlPM.beginTask("Creating quicklook " + product.getName() + "... ", 100);
-
-        final Quicklook quicklook;
-        if (qlName.equals(DEFAULT_QUICKLOOK)) {
-            quicklook = product.getDefaultQuicklook();
-        } else {
-            quicklook = product.getQuicklook(qlName);
-        }
-        quicklook.addListener(this);
 
         ProgressMonitorSwingWorker<BufferedImage, Object> loader = new ProgressMonitorSwingWorker<BufferedImage, Object>
                 (SnapApp.getDefault().getMainFrame(), "Loading quicklook image...") {
@@ -402,17 +404,7 @@ public class QuicklookToolView extends TopComponent implements Quicklook.Quicklo
         loader.execute();
     }
 
-    private synchronized void setImage(final Product product, final String qlName) {
-
-        currentProduct = product;
-        nameLabel.setText(product.getDisplayName());
-
-        final Quicklook quicklook;
-        if (qlName.equals(DEFAULT_QUICKLOOK)) {
-            quicklook = currentProduct.getDefaultQuicklook();
-        } else {
-            quicklook = currentProduct.getQuicklook(qlName);
-        }
+    private void setImage(final Product product, final Quicklook quicklook) {
 
         final BufferedImage img;
         if(quicklook != null && (quicklook.hasImage() || quicklook.hasCachedImage())) {
@@ -420,6 +412,12 @@ public class QuicklookToolView extends TopComponent implements Quicklook.Quicklo
         } else {
             img = noDataImage;
         }
+
+        if(currentProduct == product && imgPanel.getImage() == img) {
+            return;
+        }
+        currentProduct = product;
+        nameLabel.setText(product.getDisplayName());
         imgPanel.setImage(img);
 
         updateButtons();
@@ -547,6 +545,10 @@ public class QuicklookToolView extends TopComponent implements Quicklook.Quicklo
             setVerticalAlignment(JLabel.CENTER);
 
             addMouseListener(this);
+        }
+
+        public BufferedImage getImage() {
+            return img;
         }
 
         public void setImage(final BufferedImage img) {
