@@ -19,15 +19,11 @@ import org.esa.snap.engine_utilities.db.ProductEntry;
 import org.esa.snap.engine_utilities.util.ProductFunctions;
 import org.esa.snap.graphbuilder.rcp.utils.ClipboardUtils;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.rcp.nodes.PNode;
 import org.esa.snap.rcp.util.Dialogs;
 
-import javax.swing.DropMode;
-import javax.swing.JComponent;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-import javax.swing.JTable;
-import javax.swing.TransferHandler;
-import java.awt.Dimension;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
@@ -145,7 +141,14 @@ public class FileTable extends JTable {
 
         @Override
         public boolean canImport(TransferHandler.TransferSupport info) {
-            return info.isDataFlavorSupported(DataFlavor.stringFlavor);
+            if(info.isDataFlavorSupported(DataFlavor.stringFlavor))
+                return true;
+            try {
+                return (info.getDataFlavors().length > 0 &&
+                        info.getTransferable().getTransferData(info.getDataFlavors()[0]) instanceof PNode);
+            } catch (Exception e) {
+                return false;
+            }
         }
 
         @Override
@@ -164,27 +167,33 @@ public class FileTable extends JTable {
 
             // Get the string that is being dropped.
             final Transferable t = info.getTransferable();
-            String data;
             try {
-                data = (String) t.getTransferData(DataFlavor.stringFlavor);
+                if (info.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+                    String data = (String) t.getTransferData(DataFlavor.stringFlavor);
+
+                    // Wherever there is a newline in the incoming data,
+                    // break it into a separate item in the list.
+                    final String[] values = data.split("\n");
+                    
+                    for (String value : values) {
+                        final File file = new File(value);
+                        if (file.exists()) {
+                            if (ProductFunctions.isValidProduct(file)) {
+                                fileModel.addFile(file);
+                            }
+                        }
+                    }
+                } else {
+                    PNode node = (PNode)t.getTransferData(t.getTransferDataFlavors()[0]);
+                    File file = node.getProduct().getFileLocation();
+                    if (file.exists()) {
+                        fileModel.addFile(file);
+                    }
+                }
             } catch (Exception e) {
                 return false;
             }
 
-            // Wherever there is a newline in the incoming data,
-            // break it into a separate item in the list.
-            final String[] values = data.split("\n");
-
-            // Perform the actual import.
-            for (String value : values) {
-
-                final File file = new File(value);
-                if (file.exists()) {
-                    if (ProductFunctions.isValidProduct(file)) {
-                        fileModel.addFile(file);
-                    }
-                }
-            }
             return true;
         }
 

@@ -39,7 +39,7 @@ import static org.esa.snap.rcp.nodes.PNNodeSupport.*;
  *
  * @author Norman
  */
-class PNode extends PNNode<Product> implements PreferenceChangeListener {
+public class PNode extends PNNode<Product> implements PreferenceChangeListener {
 
     private final PContent group;
 
