@@ -58,6 +58,8 @@ class SpectralUnmixingForm extends JPanel {
     JComboBox unmixingModelName;
     JCheckBox computeErrorBands;
 
+    private static final String NAME = "SpectralUnmixingForm";
+
     SpectralUnmixingForm(AppContext appContext, PropertySet propertySet, TargetProductSelector targetProductSelector) {
         this.appContext = appContext;
         this.targetProductSelector = targetProductSelector;
@@ -119,7 +121,7 @@ class SpectralUnmixingForm extends JPanel {
                 final String[] validNames;
                 if (selectedProduct != null) {
                     if (selectedProduct.isMultiSizeProduct()) {
-                        ResamplingIssue.showResamplingIssueNotification(true);
+                        ResamplingIssue.showResamplingIssueNotification(selectedProduct);
                     }
                     String[] bandNames = selectedProduct.getBandNames();
                     ArrayList<String> names = new ArrayList<>(bandNames.length);

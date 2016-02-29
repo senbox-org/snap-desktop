@@ -171,7 +171,7 @@ class DensityPlotPanel extends ChartPagePanel {
     protected void updateComponents() {
         super.updateComponents();
         if (isProductChanged() && getProduct() != null && getProduct().isMultiSizeProduct()) {
-            ResamplingIssue.showResamplingIssueNotification(true);
+            ResamplingIssue.showResamplingIssueNotification(getProduct());
         }
         if (isRasterChanged() || isProductChanged()) {
             plot.setImage(null);
@@ -231,11 +231,12 @@ class DensityPlotPanel extends ChartPagePanel {
         bindingContext = new BindingContext(PropertyContainer.createObjectBacked(dataSourceConfig));
 
         xProductList = new JComboBox<>();
+        final Object source = this;
         xProductList.addItemListener(event -> {
             if (event.getStateChange() == ItemEvent.SELECTED) {
                 final Product selectedProduct = (Product) event.getItem();
                 if (selectedProduct != null && selectedProduct.isMultiSizeProduct()) {
-                    ResamplingIssue.showResamplingIssueNotification(true);
+                    ResamplingIssue.showResamplingIssueNotification(selectedProduct);
                 }
                 updateBandList(selectedProduct, xBandProperty, false);
             }
@@ -249,7 +250,7 @@ class DensityPlotPanel extends ChartPagePanel {
             if (event.getStateChange() == ItemEvent.SELECTED) {
                 final Product selectedProduct = (Product) event.getItem();
                 if (selectedProduct != null && selectedProduct.isMultiSizeProduct()) {
-                    ResamplingIssue.showResamplingIssueNotification(true);
+                    ResamplingIssue.showResamplingIssueNotification(selectedProduct);
                 }
                 updateBandList(selectedProduct, yBandProperty, true);
             }

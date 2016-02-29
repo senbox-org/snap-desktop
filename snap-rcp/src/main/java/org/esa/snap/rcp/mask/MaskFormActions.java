@@ -180,7 +180,7 @@ class MaskFormActions {
         String getCode(ActionEvent e) {
             Product product = getMaskForm().getProduct();
             if(product.isMultiSizeProduct()) {
-                ResamplingIssue.showResamplingIssueNotification(true);
+                ResamplingIssue.showResamplingIssueNotification(product);
             }
             ProductExpressionPane expressionPane = ProductExpressionPane.createBooleanExpressionPane(
                     new Product[]{product}, product, null);
