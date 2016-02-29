@@ -38,9 +38,6 @@ public class ResamplingIssue {
         int optionType;
         int messageType;
         final StringBuilder msgTextBuilder = new StringBuilder("The functionality you have chosen is not supported for products with bands of different sizes.<br/>");
-//                                      "More info about this issue and its status can be found in the " +
-//                                      "<a href=\"https://senbox.atlassian.net/browse/SNAP-1\">SNAP Issue Tracker</a>.<br/>"
-//        );
         if (availableResamplers.isEmpty()) {
             optionType = JOptionPane.OK_CANCEL_OPTION;
             messageType = JOptionPane.INFORMATION_MESSAGE;
