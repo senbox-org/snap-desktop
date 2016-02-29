@@ -37,6 +37,7 @@ public class ResamplingOpResampler implements Resampler {
         final DefaultSingleTargetProductDialog resamplingDialog =
                 new DefaultSingleTargetProductDialog("Resample", SnapApp.getDefault().getAppContext(), "Resampling", "resampleAction");
         resamplingDialog.setTargetProductNameSuffix("_resampled");
+        resamplingDialog.getTargetProductSelector().getModel().setSaveToFileSelected(false);
         final Property referenceNodeNameProperty = resamplingDialog.getBindingContext().getPropertySet().getProperty("referenceBandName");
         final String[] bandNames = multiSizeProduct.getBandNames();
         if (bandNames.length > 0) {
