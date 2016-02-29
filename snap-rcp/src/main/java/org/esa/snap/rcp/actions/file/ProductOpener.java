@@ -49,6 +49,7 @@ public class ProductOpener {
     private boolean subsetImportEnabled;
     private File[] files;
     private boolean multiSelectionEnabled;
+    private int dialogAfter = 2000;
 
     static List<File> getOpenedProductFiles() {
         return Arrays.stream(SnapApp.getDefault().getProductManager().getProducts())
@@ -93,6 +94,12 @@ public class ProductOpener {
         this.multiSelectionEnabled = multiSelectionEnabled;
     }
 
+    public void setTimeBeforeDialogAppears(final Integer time) {
+        if(time != null) {
+            this.dialogAfter = time;
+        }
+    }
+
     public boolean isMultiSelectionEnabled() {
         return multiSelectionEnabled;
     }
@@ -100,7 +107,7 @@ public class ProductOpener {
     public Boolean openProduct() {
         File[] configuredFiles = getFiles();
         if (configuredFiles != null) {
-            return openProductFilesCheckOpened(getFileFormat(), configuredFiles);
+            return openProductFilesCheckOpened(getFileFormat(), dialogAfter, configuredFiles);
         }
 
         Iterator<ProductReaderPlugIn> readerPlugIns;
@@ -175,7 +182,7 @@ public class ProductOpener {
                             ? ((SnapFileFilter) fc.getFileFilter()).getFormatName()
                             : null;
 
-        return openProductFilesCheckOpened(formatName, files);
+        return openProductFilesCheckOpened(formatName, dialogAfter, files);
     }
 
     private File[] getSelectedFiles(ProductFileChooser fc) {
@@ -191,7 +198,7 @@ public class ProductOpener {
         return files;
     }
 
-    private static Boolean openProductFilesCheckOpened(final String formatName, final File... files) {
+    private static Boolean openProductFilesCheckOpened(final String formatName, final int dialogAfter, final File... files) {
         List<File> openedFiles = getOpenedProductFiles();
         List<File> fileList = new ArrayList<>(Arrays.asList(files));
         for (File file : files) {
@@ -239,7 +246,7 @@ public class ProductOpener {
             }
 
 
-            Boolean status = openProductFileDoNotCheckOpened(file, fileFormatName);
+            Boolean status = openProductFileDoNotCheckOpened(file, fileFormatName, dialogAfter);
             if (status == null) {
                 // Cancelled
                 summaryStatus = null;
@@ -327,12 +334,12 @@ public class ProductOpener {
     }
 
 
-    private static Boolean openProductFileDoNotCheckOpened(File file, String formatName) {
+    private static Boolean openProductFileDoNotCheckOpened(File file, String formatName, int dialogAfter) {
         SnapApp.getDefault().setStatusBarMessage(MessageFormat.format("Reading product ''{0}''...", file.getName()));
 
         ReadProductOperation operation = new ReadProductOperation(file, formatName);
         final ProgressHandle progressHandle = ProgressHandleFactory.createHandle("Please wait while the data product is being read...", operation);
-        ProgressUtils.runOffEventThreadWithProgressDialog(operation, "Reading Product", progressHandle, false, 50, 2000);
+        ProgressUtils.runOffEventThreadWithProgressDialog(operation, "Reading Product", progressHandle, false, 50, dialogAfter);
         progressHandle.start();
         progressHandle.switchToIndeterminate();
 
