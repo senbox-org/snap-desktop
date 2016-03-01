@@ -65,6 +65,7 @@ public class ImportProductAction extends AbstractAction implements HelpCtx.Provi
         importProductAction.setFormatName((String) configuration.get("formatName"));
         importProductAction.setHelpCtx((String) configuration.get("helpId"));
         importProductAction.setUseAllFileFilter((Boolean) configuration.get("useAllFileFilter"));
+        importProductAction.setTimeBeforeDialogAppears((Integer) configuration.get("timeBeforeDialogAppears"));
         return importProductAction;
     }
 
@@ -93,6 +94,14 @@ public class ImportProductAction extends AbstractAction implements HelpCtx.Provi
         return Boolean.TRUE.equals(getValue("useAllFileFilter"));
     }
 
+    public void setTimeBeforeDialogAppears(Integer time) {
+        putValue("timeBeforeDialogAppears", time);
+    }
+
+    Integer getTimeBeforeDialogAppears() {
+        return (Integer) getValue("timeBeforeDialogAppears");
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         final ProductOpener opener = new ProductOpener();
@@ -100,6 +109,7 @@ public class ImportProductAction extends AbstractAction implements HelpCtx.Provi
         opener.setUseAllFileFilter(getUseAllFileFilter());
         opener.setMultiSelectionEnabled(false);
         opener.setSubsetImportEnabled(true);
+        opener.setTimeBeforeDialogAppears(getTimeBeforeDialogAppears());
         opener.openProduct();
     }
 
