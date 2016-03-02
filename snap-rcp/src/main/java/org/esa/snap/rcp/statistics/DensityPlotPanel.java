@@ -122,6 +122,7 @@ class DensityPlotPanel extends ChartPagePanel {
     private static final Color backgroundColor = new Color(255, 255, 255, 0);
     private boolean plotColorsInverted;
     private JCheckBox toggleColorCheckBox;
+    private MultiSizeChecker multiSizeChecker;
 
     DensityPlotPanel(TopComponent parentComponent, String helpId) {
         super(parentComponent, helpId, CHART_TITLE, true);
@@ -132,6 +133,7 @@ class DensityPlotPanel extends ChartPagePanel {
         initParameters();
         createUI();
         initActionEnablers();
+        multiSizeChecker = new MultiSizeChecker();
         updateComponents();
     }
 
@@ -170,8 +172,8 @@ class DensityPlotPanel extends ChartPagePanel {
     @Override
     protected void updateComponents() {
         super.updateComponents();
-        if (isProductChanged() && getProduct() != null && getProduct().isMultiSizeProduct()) {
-            ResamplingIssue.showResamplingIssueNotification(getProduct());
+        if (isProductChanged()) {
+            multiSizeChecker.maybeShowMultiSizeIssue(getProduct());
         }
         if (isRasterChanged() || isProductChanged()) {
             plot.setImage(null);
@@ -231,13 +233,11 @@ class DensityPlotPanel extends ChartPagePanel {
         bindingContext = new BindingContext(PropertyContainer.createObjectBacked(dataSourceConfig));
 
         xProductList = new JComboBox<>();
-        final Object source = this;
+        final MultiSizeChecker xProductMultiSizeChecker = new MultiSizeChecker();
         xProductList.addItemListener(event -> {
             if (event.getStateChange() == ItemEvent.SELECTED) {
                 final Product selectedProduct = (Product) event.getItem();
-                if (selectedProduct != null && selectedProduct.isMultiSizeProduct()) {
-                    ResamplingIssue.showResamplingIssueNotification(selectedProduct);
-                }
+                xProductMultiSizeChecker.maybeShowMultiSizeIssue(selectedProduct);
                 updateBandList(selectedProduct, xBandProperty, false);
             }
         });
@@ -246,12 +246,11 @@ class DensityPlotPanel extends ChartPagePanel {
         xProductProperty = bindingContext.getPropertySet().getProperty(PROPERTY_NAME_X_PRODUCT);
 
         yProductList = new JComboBox<>();
+        final MultiSizeChecker yProductMultiSizeChecker = new MultiSizeChecker();
         yProductList.addItemListener(event -> {
             if (event.getStateChange() == ItemEvent.SELECTED) {
                 final Product selectedProduct = (Product) event.getItem();
-                if (selectedProduct != null && selectedProduct.isMultiSizeProduct()) {
-                    ResamplingIssue.showResamplingIssueNotification(selectedProduct);
-                }
+                yProductMultiSizeChecker.maybeShowMultiSizeIssue(selectedProduct);
                 updateBandList(selectedProduct, yBandProperty, true);
             }
         });
@@ -753,5 +752,23 @@ class DensityPlotPanel extends ChartPagePanel {
             return this;
         }
     }
+
+    private static class MultiSizeChecker {
+
+        private boolean calledForFirstTime;
+
+        MultiSizeChecker() {
+            calledForFirstTime = true;
+        }
+
+        void maybeShowMultiSizeIssue(Product product) {
+            if (!calledForFirstTime && product != null && product.isMultiSizeProduct()) {
+                ResamplingIssue.showResamplingIssueNotification(product);
+            }
+            calledForFirstTime = false;
+        }
+
+    }
+
 }
 
