@@ -38,7 +38,7 @@ import javax.swing.SwingUtilities;
 import java.awt.BorderLayout;
 import java.awt.geom.Rectangle2D;
 
-import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
+import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.EXPLORER;
 
 /**
  * The window containing all statistics.
@@ -75,6 +75,7 @@ public abstract class AbstractStatisticsTopComponent extends TopComponent implem
     }
 
     protected abstract PagePanel createPagePanel();
+
     public abstract HelpCtx getHelpCtx();
 
 
