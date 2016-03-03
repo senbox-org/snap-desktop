@@ -263,7 +263,7 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog {
     }
 
     public String getGraphAsString() throws GraphException, IOException {
-        if(graphExecutorList.size() > 0) {
+        if(!graphExecutorList.isEmpty()) {
             return graphExecutorList.get(0).getGraphAsString();
         }
         return "";
@@ -589,10 +589,9 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog {
                 final File[] existingFiles = productSetPanel.getTargetFolder().listFiles();
 
                 final File[] fileList = productSetPanel.getFileList();
-                int graphIndex = 0, processedGraphs = 0;
+                int graphIndex = 0;
                 for (GraphExecuter graphEx : graphExecutorList) {
                     if (pm.isCanceled()) break;
-                    ++graphIndex;
 
                     final String nOfm = String.valueOf(graphIndex + 1) + " of " + graphExecutorList.size() + ' ';
                     final String statusText = "Processing " + nOfm + fileList[graphIndex].getName();
@@ -620,11 +619,11 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog {
                     }
 
                     graphEx = null;
-                    ++processedGraphs;
+                    ++graphIndex;
 
                     // calculate time remaining
                     final long duration = timeMonitor.getCurrentDuration();
-                    final double timePerGraph = duration / (double) processedGraphs;
+                    final double timePerGraph = duration / (double) graphIndex;
                     final long timeLeft = (long) (timePerGraph * (graphExecutorList.size() - graphIndex));
                     if (timeLeft > 0) {
                         String remainingStr = "Estimated " + ProcessTimeMonitor.formatDuration(timeLeft) + " remaining";
