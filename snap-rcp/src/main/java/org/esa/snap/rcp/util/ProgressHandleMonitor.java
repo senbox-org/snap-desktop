@@ -5,7 +5,6 @@ import com.bc.ceres.core.ProgressMonitor;
 import org.netbeans.api.progress.ProgressHandle;
 import org.netbeans.api.progress.ProgressHandleFactory;
 import org.openide.util.Cancellable;
-import org.openide.util.RequestProcessor;
 
 /**
  * A progress monitor that notifies a {@code ProgressHandle} instance (of the NetBeans Progress API).
@@ -87,7 +86,11 @@ public class ProgressHandleMonitor implements ProgressMonitor, Cancellable {
 
     @Override
     public void beginTask(String taskName, int totalWork) {
-        this.totalWorkUnits = F * totalWork;
+        if(totalWork < 0) {
+            this.totalWorkUnits = 0;
+        }else {
+            this.totalWorkUnits = F * totalWork;
+        }
         this.currentWorkUnits = 0;
         this.currentWorkUnitsRational = 0.0;
         if (progressHandle == null) {
