@@ -570,7 +570,7 @@ public class SnapApp {
                 SystemUtils.initJAI(Lookup.getDefault().lookup(ClassLoader.class));
                 // uncomment if we encounter problems with the stmt above
                 //SystemUtils.init3rdPartyLibs(null);
-                initGPF();
+                SnapApp.getDefault().initGPF();
             }
         }
     }
@@ -645,13 +645,14 @@ public class SnapApp {
         }
     }
 
-    private static void initGPF() {
+    private void initGPF() {
         OperatorSpiRegistry operatorSpiRegistry = GPF.getDefaultInstance().getOperatorSpiRegistry();
         operatorSpiRegistry.loadOperatorSpis();
         Set<OperatorSpi> services = operatorSpiRegistry.getServiceRegistry().getServices();
         for (OperatorSpi service : services) {
             LOG.info(String.format("GPF operator SPI: %s (alias '%s')", service.getClass(), service.getOperatorAlias()));
         }
+        GPF.getDefaultInstance().setProductManager(getProductManager());
     }
 
     /**
