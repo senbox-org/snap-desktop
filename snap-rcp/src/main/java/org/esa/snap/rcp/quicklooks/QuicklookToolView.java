@@ -355,6 +355,7 @@ public class QuicklookToolView extends TopComponent implements Thumbnail.Thumbna
     public void setSelectedQuicklook(final Quicklook ql) {
         updateQuicklooks = true;
         showProduct(ql.getProduct());
+        quicklookNameCombo.setSelectedItem(ql.getName());
     }
 
     private synchronized void showProduct(final Product product) {
