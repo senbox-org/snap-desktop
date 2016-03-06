@@ -70,7 +70,7 @@ import java.util.TreeSet;
 @ActionID(category = "Window", id = "org.esa.snap.rcp.quicklooks.QuicklookToolView")
 @ActionReferences({
         @ActionReference(path = "Menu/View/Tool Windows"),
-        @ActionReference(path = "Toolbars/Analysis")
+        @ActionReference(path = "Toolbars/Tool Windows")
 })
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_QuicklookToolView_Name",
