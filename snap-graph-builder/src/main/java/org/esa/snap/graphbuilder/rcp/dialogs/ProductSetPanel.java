@@ -20,6 +20,7 @@ import org.esa.snap.core.gpf.ui.TargetProductSelectorModel;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.engine_utilities.db.DBSearch;
 import org.esa.snap.engine_utilities.db.ProductEntry;
+import org.esa.snap.engine_utilities.util.ProductFunctions;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.FileTable;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.FileTableModel;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.TargetFolderSelector;
@@ -31,21 +32,13 @@ import org.esa.snap.rcp.util.ProgressHandleMonitor;
 import org.esa.snap.tango.TangoIcons;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.FileChooserFactory;
-import org.esa.snap.engine_utilities.util.ProductFunctions;
+import org.esa.snap.ui.GridLayout2;
 import org.netbeans.api.progress.ProgressUtils;
 
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
+import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.GridLayout;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -96,7 +89,7 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
         this.productSetTable = fileTable;
         setBorderTitle(title);
 
-        final JPanel productSetContent = createComponent(productSetTable, false);
+        final JPanel productSetContent = createComponent(productSetTable);
         if (incButtonPanel) {
             buttonPanel = createButtonPanel(productSetTable);
             productSetContent.add(buttonPanel, BorderLayout.EAST);
@@ -129,17 +122,13 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
         return buttonPanel;
     }
 
-    private JPanel createComponent(final FileTable table, final boolean incButtonPanel) {
+    private static JPanel createComponent(final FileTable table) {
 
         final JPanel fileListPanel = new JPanel(new BorderLayout(4, 4));
 
         final JScrollPane scrollPane = new JScrollPane(table);
         fileListPanel.add(scrollPane, BorderLayout.CENTER);
 
-        if (incButtonPanel) {
-            final JPanel buttonPanel = createButtonPanel(table);
-            fileListPanel.add(buttonPanel, BorderLayout.EAST);
-        }
         return fileListPanel;
     }
 
@@ -179,7 +168,7 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
     public JPanel createButtonPanel(final FileTable table) {
         final FileTableModel tableModel = table.getModel();
 
-        final JPanel panel = new JPanel(new GridLayout(10, 1));
+        final JPanel panel = new JPanel(new GridLayout2(20, 1));
 
         addButton = DialogUtils.createButton("addButton", "Add", addIcon, panel, DialogUtils.ButtonStyle.Icon);
         addButton.addActionListener(new ActionListener() {
@@ -241,77 +230,16 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
         });
 
         moveTopButton = DialogUtils.createButton("moveTopButton", "Move Top", moveTopIcon, panel, DialogUtils.ButtonStyle.Icon);
-        moveTopButton.addActionListener(new ActionListener() {
-
-            public void actionPerformed(final ActionEvent e) {
-                final int[] selRows = table.getSelectedRows();
-                final java.util.List<File> filesToMove = new ArrayList<>(selRows.length);
-                for (int row : selRows) {
-                    filesToMove.add(tableModel.getFileAt(row));
-                }
-                int pos = 0;
-                for (File file : filesToMove) {
-                    int index = tableModel.getIndexOf(file);
-                    if (index > 0) {
-                        tableModel.move(index, pos++);
-                    }
-                }
-            }
-        });
+        moveTopButton.addActionListener(new MoveButtonActionListener(table, tableModel, MOVE.TOP));
 
         moveUpButton = DialogUtils.createButton("moveUpButton", "Move Up", moveUpIcon, panel, DialogUtils.ButtonStyle.Icon);
-        moveUpButton.addActionListener(new ActionListener() {
-
-            public void actionPerformed(final ActionEvent e) {
-                final int[] selRows = table.getSelectedRows();
-                final java.util.List<File> filesToMove = new ArrayList<>(selRows.length);
-                for (int row : selRows) {
-                    filesToMove.add(tableModel.getFileAt(row));
-                }
-                for (File file : filesToMove) {
-                    int index = tableModel.getIndexOf(file);
-                    if (index > 0) {
-                        tableModel.move(index, index - 1);
-                    }
-                }
-            }
-        });
+        moveUpButton.addActionListener(new MoveButtonActionListener(table, tableModel, MOVE.UP));
 
         moveDownButton = DialogUtils.createButton("moveDownButton", "Move Down", moveDownIcon, panel, DialogUtils.ButtonStyle.Icon);
-        moveDownButton.addActionListener(new ActionListener() {
-
-            public void actionPerformed(final ActionEvent e) {
-                final int[] selRows = table.getSelectedRows();
-                final java.util.List<File> filesToMove = new ArrayList<>(selRows.length);
-                for (int row : selRows) {
-                    filesToMove.add(tableModel.getFileAt(row));
-                }
-                for (File file : filesToMove) {
-                    int index = tableModel.getIndexOf(file);
-                    if (index < tableModel.getRowCount()) {
-                        tableModel.move(index, index + 1);
-                    }
-                }
-            }
-        });
+        moveDownButton.addActionListener(new MoveButtonActionListener(table, tableModel, MOVE.DOWN));
 
         moveBottomButton = DialogUtils.createButton("moveBottomButton", "Move Bottom", moveBottomIcon, panel, DialogUtils.ButtonStyle.Icon);
-        moveBottomButton.addActionListener(new ActionListener() {
-
-            public void actionPerformed(final ActionEvent e) {
-                final int[] selRows = table.getSelectedRows();
-                final java.util.List<File> filesToMove = new ArrayList<>(selRows.length);
-                for (int row : selRows) {
-                    filesToMove.add(tableModel.getFileAt(row));
-                }
-                for (File file : filesToMove) {
-                    int index = tableModel.getIndexOf(file);
-                    if (index < tableModel.getRowCount()) {
-                        tableModel.move(index, tableModel.getRowCount()-1);
-                    }
-                }
-            }
-        });
+        moveBottomButton.addActionListener(new MoveButtonActionListener(table, tableModel, MOVE.BOTTOM));
 
         clearButton = DialogUtils.createButton("clearButton", "Clear", clearIcon, panel, DialogUtils.ButtonStyle.Icon);
         clearButton.addActionListener(new ActionListener() {
@@ -335,7 +263,7 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
         return panel;
     }
 
-    private void addProducts(final FileTableModel tableModel, final File[] files) {
+    private static void addProducts(final FileTableModel tableModel, final File[] files) {
         final ProgressHandleMonitor pm = ProgressHandleMonitor.create("Populating table");
         Runnable operation = () -> {
             pm.beginTask("Populating table...", files.length);
@@ -351,7 +279,7 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
         ProgressUtils.runOffEventThreadWithProgressDialog(operation, "Adding Products", pm.getProgressHandle(), true, 50, 1000);
     }
 
-    private void addAllOpenProducts(final FileTableModel tableModel) {
+    private static void addAllOpenProducts(final FileTableModel tableModel) {
         final ProgressHandleMonitor pm = ProgressHandleMonitor.create("Populating table");
         Runnable operation = () -> {
             final Product[] products = SnapApp.getDefault().getProductManager().getProducts();
@@ -461,5 +389,41 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
 
     public boolean isSkippingExistingTargetFiles() {
         return targetProductSelector.isSkippingExistingTargetFiles();
+    }
+
+    private enum MOVE { UP, DOWN, TOP, BOTTOM }
+
+    private static class MoveButtonActionListener implements ActionListener {
+
+        private final FileTable table;
+        private final FileTableModel tableModel;
+        private final MOVE movement;
+
+        public MoveButtonActionListener(FileTable table, FileTableModel tableModel, MOVE movement) {
+            this.table = table;
+            this.tableModel = tableModel;
+            this.movement = movement;
+        }
+
+        public void actionPerformed(final ActionEvent e) {
+            final int[] selRows = table.getSelectedRows();
+            final java.util.List<File> filesToMove = new ArrayList<>(selRows.length);
+            for (int row : selRows) {
+                filesToMove.add(tableModel.getFileAt(row));
+            }
+            int pos = 0;
+            for (File file : filesToMove) {
+                int index = tableModel.getIndexOf(file);
+                if (index > 0 && movement.equals(MOVE.TOP)) {
+                    tableModel.move(index, pos++);
+                } else if (index > 0 && movement.equals(MOVE.UP)) {
+                    tableModel.move(index, index - 1);
+                } else if (index < tableModel.getRowCount() && movement.equals(MOVE.DOWN)) {
+                    tableModel.move(index, index + 1);
+                } else if (index < tableModel.getRowCount() && movement.equals(MOVE.BOTTOM)) {
+                    tableModel.move(index, tableModel.getRowCount()-1);
+                }
+            }
+        }
     }
 }

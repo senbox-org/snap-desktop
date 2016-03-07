@@ -44,15 +44,17 @@ public class FileTable extends JTable {
     }
 
     public FileTable(FileTableModel fileModel) {
+        this(fileModel, new Dimension(500, 100));
+    }
+
+    public FileTable(FileTableModel fileModel, Dimension dim) {
         if (fileModel == null) {
             fileModel = new FileModel();
         }
         this.fileModel = fileModel;
         this.setModel(fileModel);
 
-        final int width = 500;
-        final int height = 100;
-        setPreferredScrollableViewportSize(new Dimension(width, height));
+        setPreferredScrollableViewportSize(dim);
         fileModel.setColumnWidths(getColumnModel());
         setColumnSelectionAllowed(true);
         setDropMode(DropMode.ON);
