@@ -38,12 +38,12 @@ public class Resampling2Action extends AbstractSnapAction implements Resampler {
 
     @Override
     public String getName() {
-        return Bundle.CTL_ResamplingAction_OpName();
+        return Bundle.CTL_Resampling2Action_OpName();
     }
 
     @Override
     public String getDescription() {
-        return Bundle.CTL_ResamplingAction_Description();
+        return Bundle.CTL_Resampling2Action_Description();
     }
 
     @Override
