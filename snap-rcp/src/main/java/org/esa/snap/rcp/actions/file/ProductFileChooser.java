@@ -25,7 +25,7 @@ import java.io.IOException;
 /**
  * @author Marco Peters
  */
-class ProductFileChooser extends SnapFileChooser {
+public class ProductFileChooser extends SnapFileChooser {
 
     private static int numSubsetProducts = 0;
 

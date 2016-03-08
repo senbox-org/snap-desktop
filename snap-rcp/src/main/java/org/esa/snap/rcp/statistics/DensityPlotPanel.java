@@ -132,7 +132,6 @@ class DensityPlotPanel extends ChartPagePanel {
         initParameters();
         createUI();
         initActionEnablers();
-        updateComponents();
     }
 
     private void initActionEnablers() {
@@ -170,8 +169,8 @@ class DensityPlotPanel extends ChartPagePanel {
     @Override
     protected void updateComponents() {
         super.updateComponents();
-        if (isProductChanged() && getProduct() != null && getProduct().isMultiSizeProduct()) {
-            ResamplingIssue.showResamplingIssueNotification(true);
+        if (isProductChanged() && isShowing()) {
+            checkForMultiSize();
         }
         if (isRasterChanged() || isProductChanged()) {
             plot.setImage(null);
@@ -234,8 +233,8 @@ class DensityPlotPanel extends ChartPagePanel {
         xProductList.addItemListener(event -> {
             if (event.getStateChange() == ItemEvent.SELECTED) {
                 final Product selectedProduct = (Product) event.getItem();
-                if (selectedProduct != null && selectedProduct.isMultiSizeProduct()) {
-                    ResamplingIssue.showResamplingIssueNotification(true);
+                if (!isProductChanged()) {
+                    checkForMultiSize(selectedProduct);
                 }
                 updateBandList(selectedProduct, xBandProperty, false);
             }
@@ -248,8 +247,8 @@ class DensityPlotPanel extends ChartPagePanel {
         yProductList.addItemListener(event -> {
             if (event.getStateChange() == ItemEvent.SELECTED) {
                 final Product selectedProduct = (Product) event.getItem();
-                if (selectedProduct != null && selectedProduct.isMultiSizeProduct()) {
-                    ResamplingIssue.showResamplingIssueNotification(true);
+                if (!isProductChanged()) {
+                    checkForMultiSize(selectedProduct);
                 }
                 updateBandList(selectedProduct, yBandProperty, true);
             }
@@ -277,6 +276,16 @@ class DensityPlotPanel extends ChartPagePanel {
         yBandList.setRenderer(new BandListCellRenderer());
         bindingContext.bind(PROPERTY_NAME_Y_BAND, yBandList);
         yBandProperty = bindingContext.getPropertySet().getProperty(PROPERTY_NAME_Y_BAND);
+    }
+
+    void checkForMultiSize() {
+        checkForMultiSize(getProduct());
+    }
+
+    private void checkForMultiSize(Product product) {
+        if (product != null && product.isMultiSizeProduct()) {
+            ResamplingIssue.showResamplingIssueNotification(product);
+        }
     }
 
     private static String formatProductName(final Product product) {
@@ -752,5 +761,6 @@ class DensityPlotPanel extends ChartPagePanel {
             return this;
         }
     }
+
 }
 

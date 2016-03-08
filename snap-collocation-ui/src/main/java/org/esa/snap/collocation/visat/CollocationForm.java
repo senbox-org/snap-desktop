@@ -88,9 +88,11 @@ class CollocationForm extends JPanel {
             slaveProductSelector.setSelectedIndex(1);
         }
 
-        if(ResamplingIssue.isMultiSize(masterProductSelector.getSelectedProduct()) ||
-                ResamplingIssue.isMultiSize(slaveProductSelector.getSelectedProduct())) {
-            ResamplingIssue.showResamplingIssueNotification(false);
+        if(ResamplingIssue.isMultiSize(masterProductSelector.getSelectedProduct())) {
+            ResamplingIssue.showResamplingIssueNotification(masterProductSelector.getSelectedProduct());
+        }
+        if(ResamplingIssue.isMultiSize(slaveProductSelector.getSelectedProduct())) {
+            ResamplingIssue.showResamplingIssueNotification(slaveProductSelector.getSelectedProduct());
         }
     }
 

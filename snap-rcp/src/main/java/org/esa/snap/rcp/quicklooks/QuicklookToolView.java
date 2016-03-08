@@ -70,7 +70,7 @@ import java.util.TreeSet;
 @ActionID(category = "Window", id = "org.esa.snap.rcp.quicklooks.QuicklookToolView")
 @ActionReferences({
         @ActionReference(path = "Menu/View/Tool Windows"),
-        @ActionReference(path = "Toolbars/Analysis")
+        @ActionReference(path = "Toolbars/Tool Windows")
 })
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_QuicklookToolView_Name",
@@ -355,6 +355,7 @@ public class QuicklookToolView extends TopComponent implements Thumbnail.Thumbna
     public void setSelectedQuicklook(final Quicklook ql) {
         updateQuicklooks = true;
         showProduct(ql.getProduct());
+        quicklookNameCombo.setSelectedItem(ql.getName());
     }
 
     private synchronized void showProduct(final Product product) {

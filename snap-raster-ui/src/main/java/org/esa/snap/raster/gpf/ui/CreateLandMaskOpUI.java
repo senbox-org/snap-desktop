@@ -170,7 +170,7 @@ public class CreateLandMaskOpUI extends BaseOperatorUI {
     public void setSourceProducts(Product[] products) {
         super.setSourceProducts(products);
         if (products.length > 0 && products[0] != null && products[0].isMultiSizeProduct()) {
-            ResamplingIssue.showResamplingIssueNotification(true);
+            ResamplingIssue.showResamplingIssueNotification(products[0]);
         }
     }
 

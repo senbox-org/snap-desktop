@@ -29,6 +29,7 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 import java.io.File;
 
 /**
@@ -43,21 +44,38 @@ public class FileTable extends JTable {
     }
 
     public FileTable(FileTableModel fileModel) {
+        this(fileModel, new Dimension(500, 100));
+    }
+
+    public FileTable(FileTableModel fileModel, Dimension dim) {
         if (fileModel == null) {
             fileModel = new FileModel();
         }
         this.fileModel = fileModel;
         this.setModel(fileModel);
 
-        final int width = 500;
-        final int height = 100;
-        setPreferredScrollableViewportSize(new Dimension(width, height));
+        setPreferredScrollableViewportSize(dim);
         fileModel.setColumnWidths(getColumnModel());
         setColumnSelectionAllowed(true);
         setDropMode(DropMode.ON);
         setDragEnabled(true);
         setComponentPopupMenu(createTablePopup());
         setTransferHandler(new ProductSetTransferHandler(fileModel));
+    }
+
+    @Override
+    public String getToolTipText(MouseEvent e) {
+        String tip = null;
+        java.awt.Point p = e.getPoint();
+        int rowIndex = rowAtPoint(p);
+        int colIndex = columnAtPoint(p);
+
+        try {
+            tip = getValueAt(rowIndex, colIndex).toString();
+        } catch (RuntimeException e1) {
+            //catch null pointer exception if mouse is over an empty line
+        }
+        return tip;
     }
 
     public void setFiles(final File[] fileList) {

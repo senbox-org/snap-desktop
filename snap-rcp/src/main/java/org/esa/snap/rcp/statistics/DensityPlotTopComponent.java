@@ -53,13 +53,22 @@ import org.openide.windows.TopComponent;
  */
 public class DensityPlotTopComponent extends AbstractStatisticsTopComponent {
 
+    private DensityPlotPanel densityPlotPanel;
+
     @Override
     protected PagePanel createPagePanel() {
-        return new DensityPlotPanel(this, Bundle.CTL_DensityPlotTopComponent_HelpId());
+        densityPlotPanel = new DensityPlotPanel(this, Bundle.CTL_DensityPlotTopComponent_HelpId());
+        return densityPlotPanel;
     }
 
     @Override
     public HelpCtx getHelpCtx() {
         return new HelpCtx(Bundle.CTL_DensityPlotTopComponent_HelpId());
+    }
+
+    @Override
+    protected void componentOpened() {
+        super.componentOpened();
+        densityPlotPanel.checkForMultiSize();
     }
 }

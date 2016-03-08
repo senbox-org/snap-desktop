@@ -67,7 +67,7 @@ public class CreateSubsetAction extends AbstractAction {
 
     public static void createSubset(Product sourceProduct, Rectangle bounds) {
         if (sourceProduct.isMultiSizeProduct()) {
-            ResamplingIssue.showResamplingIssueNotification(false);
+            ResamplingIssue.showResamplingIssueNotification(sourceProduct);
             return;
         }
 

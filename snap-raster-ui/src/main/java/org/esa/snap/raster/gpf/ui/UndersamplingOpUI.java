@@ -153,7 +153,7 @@ public class UndersamplingOpUI extends BaseOperatorUI {
     public void setSourceProducts(Product[] products) {
         super.setSourceProducts(products);
         if (products.length > 0 && products[0] != null && products[0].isMultiSizeProduct()) {
-            ResamplingIssue.showResamplingIssueNotification(false);
+            ResamplingIssue.showResamplingIssueNotification(products[0]);
         }
     }
 

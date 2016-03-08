@@ -119,7 +119,7 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
     public void actionPerformed(ActionEvent event) {
         ProductSceneView sceneView = SnapApp.getDefault().getSelectedProductSceneView();
         if(sceneView.getProduct().isMultiSizeProduct()) {
-            ResamplingIssue.showResamplingIssueNotification(false);
+            ResamplingIssue.showResamplingIssueNotification(sceneView.getProduct());
         } else {
             exportMaskPixels();
         }

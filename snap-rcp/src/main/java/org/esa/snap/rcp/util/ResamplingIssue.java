@@ -2,7 +2,6 @@ package org.esa.snap.rcp.util;
 
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.Resampler;
-import org.esa.snap.rcp.SnapApp;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.util.Lookup;
@@ -33,45 +32,34 @@ import java.util.List;
  */
 public class ResamplingIssue {
 
-    /**
-     * Call this method when to notify to the user that the selected functionality is either only available #
-     * with restrictions or not at all for multi-size products.
-     *
-     * @param soft if true, the functionality is available for multi-size-products with restrictions; if false, not at all
-     */
-    public static void showResamplingIssueNotification(boolean soft) {
+    public static void showResamplingIssueNotification(Product product) {
         String title = Dialogs.getDialogTitle("Resampling required");
-        final Product selectedProduct = SnapApp.getDefault().getSelectedProduct(SnapApp.SelectionSourceHint.AUTO);
-        final List<Resampler> availableResamplers = getAvailableResamplers(selectedProduct);
+        final List<Resampler> availableResamplers = getAvailableResamplers(product);
         int optionType;
         int messageType;
-        final StringBuilder msgTextBuilder = new StringBuilder("The functionality you have chosen is not ");
-        if (soft) {
-            msgTextBuilder.append("fully ");
-        }
-        msgTextBuilder.append("supported for multi-size products.<br/>" +
-                                      "More info about this issue and its status can be found in the " +
-                                      "<a href=\"https://senbox.atlassian.net/browse/SNAP-1\">SNAP Issue Tracker</a>.<br/>");
-        if (soft) {
-            msgTextBuilder.append("You can continue using this feature, though you will find some restrictions. <br/>");
-        }
+        final StringBuilder msgTextBuilder = new StringBuilder("The functionality you have chosen is not supported for products with bands of different sizes.<br/>");
         if (availableResamplers.isEmpty()) {
             optionType = JOptionPane.OK_CANCEL_OPTION;
             messageType = JOptionPane.INFORMATION_MESSAGE;
         } else if (availableResamplers.size() == 1) {
             msgTextBuilder.append("You can use the ").append(availableResamplers.get(0).getName()).
-                    append(" to resample this product to a single-size product, <br/>" +
-                                   "which will give enable you to use this feature without restrictions.<br/>" +
+                    append(" to resample this product so that all bands have the same size, <br/>" +
+                                   "which will enable you to use this feature.<br/>" +
                                    "Do you want to resample the product now?");
             optionType = JOptionPane.YES_NO_OPTION;
             messageType = JOptionPane.QUESTION_MESSAGE;
         } else {
-            msgTextBuilder.append("You can use one of these resamplers to resample this product to a single-size product, <br/>" +
+            msgTextBuilder.append("You can use one of these resamplers to resample this product so that all bands have the same size, <br/>" +
                                           "which will enable you to use this feature.<br/>" +
                                           "Do you want to resample the product now?");
             optionType = JOptionPane.YES_NO_OPTION;
             messageType = JOptionPane.QUESTION_MESSAGE;
         }
+        msgTextBuilder.append("<br/>" +
+                                      "<br/>" +
+                                      "More info about this issue and its status can be found in the " +
+                                      "<a href=\\\"https://senbox.atlassian.net/browse/SNAP-1\\\">SNAP Issue Tracker</a>."
+        );
         JPanel panel = new JPanel(new BorderLayout(4, 4));
         final JEditorPane textPane = new JEditorPane("text/html", msgTextBuilder.toString());
         setFont(textPane);
@@ -105,7 +93,7 @@ public class ResamplingIssue {
             } else {
                 selectedResampler = availableResamplers.get(resamplerBox.getSelectedIndex());
             }
-            selectedResampler.resample(selectedProduct);
+            selectedResampler.resample(product);
         }
     }
 
