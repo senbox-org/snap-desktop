@@ -32,17 +32,12 @@ import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.ui.AppContext;
+import org.openide.util.NbBundle;
 
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JFileChooser;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Cursor;
-import java.awt.Window;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
@@ -83,7 +78,7 @@ final class PerformancePanel extends javax.swing.JPanel {
 
     private final PerformanceOptionsPanelController controller;
 
-
+    private GPF.TileCacheStrategyEnum tileCacheStrategy;
 
     private static Path getUserDirPathFromString(String userDirString) {
         Path userDirPath = null;
@@ -165,6 +160,10 @@ final class PerformancePanel extends javax.swing.JPanel {
         jPanel3 = new javax.swing.JPanel();
         processingParamsComputeButton = new javax.swing.JButton();
         processingParamsResetButton = new javax.swing.JButton();
+        tileCacheModeRadioGroup = new javax.swing.ButtonGroup();
+        memoryTileCacheButton = new JRadioButton(GPF.TileCacheStrategyEnum.Memory.toString());
+        fileTileCacheButton =  new JRadioButton(GPF.TileCacheStrategyEnum.File.toString());
+        noTileCacheButton =  new JRadioButton(GPF.TileCacheStrategyEnum.None.toString());
 
         BoxLayout perfPanelLayout = new BoxLayout(this, BoxLayout.Y_AXIS);
         setLayout(perfPanelLayout);
@@ -285,11 +284,48 @@ final class PerformancePanel extends javax.swing.JPanel {
 
         add(systemParametersPanel);
 
-        Box.createVerticalGlue();
+        //
+        // Processing parameters
+        //
 
         processingParametersPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.border.title"))); 
         processingParametersPanel.setName("");
-        processingParametersPanel.setLayout(new java.awt.GridBagLayout());
+        processingParametersPanel.setLayout(new BoxLayout(processingParametersPanel, BoxLayout.Y_AXIS));
+
+        // selection of tile cache mode
+
+        JPanel tileCacheModePanel = new JPanel();
+        FlowLayout tileCacheSelectionPanelLayout = new FlowLayout(FlowLayout.LEFT, 10, 10);
+        tileCacheModePanel.setLayout(tileCacheSelectionPanelLayout);
+        tileCacheModePanel.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
+
+        JLabel tileCacheModeLabel = new JLabel(NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.tileCacheModeLabel.text"));
+        tileCacheModeLabel.setToolTipText(NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.tileCacheModeLabel.tooltip"));
+        tileCacheModeLabel.setMaximumSize(new java.awt.Dimension(100, 14));
+        tileCacheModeLabel.setPreferredSize(new java.awt.Dimension(80, 14));
+        tileCacheModePanel.add(tileCacheModeLabel);
+
+        memoryTileCacheButton.setSelected(true);
+        memoryTileCacheButton.addActionListener(this::tileCacheModeButtonActionPerformed);
+        fileTileCacheButton.addActionListener(this::tileCacheModeButtonActionPerformed);
+        noTileCacheButton.addActionListener(this::tileCacheModeButtonActionPerformed);
+
+        tileCacheModeRadioGroup.add(memoryTileCacheButton);
+        tileCacheModeRadioGroup.add(fileTileCacheButton);
+        tileCacheModeRadioGroup.add(noTileCacheButton);
+
+        tileCacheModePanel.add(memoryTileCacheButton);
+        tileCacheModePanel.add(fileTileCacheButton);
+        tileCacheModePanel.add(noTileCacheButton);
+
+        processingParametersPanel.add(tileCacheModePanel);
+
+
+        // benchmarking
+
+        JPanel benchmarkPanel = new JPanel();
+        benchmarkPanel.setBorder(BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.benchmarkLabel.text")));
+        benchmarkPanel.setLayout(new java.awt.GridBagLayout());
 
         jPanel2.setLayout(new java.awt.GridLayout(3, 0, 0, 15));
 
@@ -309,9 +345,9 @@ final class PerformancePanel extends javax.swing.JPanel {
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridy = 1;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 0);
-        processingParametersPanel.add(jPanel2, gridBagConstraints);
+        benchmarkPanel.add(jPanel2, gridBagConstraints);
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.jPanel1.border.title"))); 
         jPanel1.setMinimumSize(new java.awt.Dimension(100, 100));
@@ -334,10 +370,10 @@ final class PerformancePanel extends javax.swing.JPanel {
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 0;
-        processingParametersPanel.add(jPanel1, gridBagConstraints);
+        gridBagConstraints.gridy = 1;
+        benchmarkPanel.add(jPanel1, gridBagConstraints);
 
-        jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.jPanel4.border.title"))); 
+        jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.jPanel4.border.title")));
         jPanel4.setMinimumSize(new java.awt.Dimension(190, 107));
         jPanel4.setLayout(new java.awt.GridLayout(3, 1, 0, 10));
 
@@ -358,34 +394,37 @@ final class PerformancePanel extends javax.swing.JPanel {
         benchmarkNbThreadsTextField.setPreferredSize(new java.awt.Dimension(150, 20));
         jPanel4.add(benchmarkNbThreadsTextField);
 
+
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridy = 1;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 2.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 10);
-        processingParametersPanel.add(jPanel4, gridBagConstraints);
+        benchmarkPanel.add(jPanel4, gridBagConstraints);
 
         org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.jLabel1.text")); 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridy = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 0);
-        processingParametersPanel.add(jLabel1, gridBagConstraints);
+        benchmarkPanel.add(jLabel1, gridBagConstraints);
+
 
         procGraphJComboBox.setMinimumSize(new java.awt.Dimension(180, 22));
         nbThreadsTextField.setMinimumSize(new java.awt.Dimension(100, 20));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridy = 2;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 10);
-        processingParametersPanel.add(procGraphJComboBox, gridBagConstraints);
+        benchmarkPanel.add(procGraphJComboBox, gridBagConstraints);
 
-        org.openide.awt.Mnemonics.setLocalizedText(processingParamsComputeButton, org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.text")); 
-        processingParamsComputeButton.setName(""); 
+        org.openide.awt.Mnemonics.setLocalizedText(processingParamsComputeButton, org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.processingParamsComputeButton.text"));
+        processingParamsComputeButton.setToolTipText(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.processingParamsComputeButton.tooltip"));
         processingParamsComputeButton.addActionListener(this::processingParamsComputeButtonActionPerformed);
         jPanel3.add(processingParamsComputeButton);
 
@@ -395,10 +434,12 @@ final class PerformancePanel extends javax.swing.JPanel {
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridy = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 5);
-        processingParametersPanel.add(jPanel3, gridBagConstraints);
+        benchmarkPanel.add(jPanel3, gridBagConstraints);
+
+        processingParametersPanel.add(benchmarkPanel);
 
         add(processingParametersPanel);
     }
@@ -451,6 +492,25 @@ final class PerformancePanel extends javax.swing.JPanel {
 
 
         return defaultCacheSizeValues.toString();
+    }
+
+    GPF.TileCacheStrategyEnum getTileCacheStrategySelection() {
+        return tileCacheStrategy;
+    }
+
+    private void setTileCacheStrategySelection(GPF.TileCacheStrategyEnum tileCacheStrategy) {
+        switch (tileCacheStrategy) {
+            case File:
+                tileCacheModeRadioGroup.setSelected(fileTileCacheButton.getModel(), true);
+                break;
+            case None:
+                tileCacheModeRadioGroup.setSelected(noTileCacheButton.getModel(), true);
+                break;
+            case Memory:
+            default:
+                tileCacheModeRadioGroup.setSelected(memoryTileCacheButton.getModel(), true);
+                break;
+        }
     }
 
     private void editVMParametersButtonActionPerformed(ActionEvent e) {
@@ -534,6 +594,26 @@ final class PerformancePanel extends javax.swing.JPanel {
         }
     }
 
+    private void tileCacheModeButtonActionPerformed(java.awt.event.ActionEvent evt) {
+
+        tileCacheStrategy = GPF.TileCacheStrategyEnum.valueOf(evt.getActionCommand());
+
+        switch(tileCacheStrategy) {
+            case None:
+                benchmarkCacheSizeTextField.setEnabled(false);
+                cacheSizeLabel.setEnabled(false);
+                cacheSizeTextField.setEnabled(false);
+                break;
+            case File:
+            case Memory:
+            default:
+                benchmarkCacheSizeTextField.setEnabled(true);
+                cacheSizeLabel.setEnabled(true);
+                cacheSizeTextField.setEnabled(true);
+                break;
+        }
+    }
+
     private void processingParamsComputeButtonActionPerformed(java.awt.event.ActionEvent evt) {
         if(validCompute()){
             //Create performance parameters benchmark lists
@@ -544,13 +624,18 @@ final class PerformancePanel extends javax.swing.JPanel {
             for(String tileSize : StringUtils.split(benchmarkTileSizeTextField.getText(), ';')){
                 tileSizesList.add(Integer.parseInt(tileSize));
             }
-            for(String cacheSize : StringUtils.split(benchmarkCacheSizeTextField.getText(), ';')){
-                cacheSizesList.add(Integer.parseInt(cacheSize));
+            if(tileCacheStrategy != GPF.TileCacheStrategyEnum.None) {
+                for (String cacheSize : StringUtils.split(benchmarkCacheSizeTextField.getText(), ';')) {
+                    cacheSizesList.add(Integer.parseInt(cacheSize));
+                }
+            } else {
+                // add actual cache size because Benchmark needs a non empty list but this value will not be used
+                cacheSizesList.add(confOptimizer.getActualPerformanceParameters().getCacheSize());
             }
             for(String nbThread : StringUtils.split(benchmarkNbThreadsTextField.getText(), ';')){
                 nbThreadsList.add(Integer.parseInt(nbThread));
             }
-            Benchmark benchmarkModel = new Benchmark(tileSizesList, cacheSizesList, nbThreadsList);
+            Benchmark benchmarkModel = new Benchmark(tileSizesList, cacheSizesList, nbThreadsList, tileCacheStrategy);
             String opName = procGraphJComboBox.getSelectedItem().toString();
             AppContext appContext = SnapApp.getDefault().getAppContext();
             //launch Benchmark dialog
@@ -605,6 +690,7 @@ final class PerformancePanel extends javax.swing.JPanel {
         parameters.setDefaultTileSize(Integer.parseInt(defaultTileSizeTextField.getText()));
         parameters.setCacheSize(Integer.parseInt(cacheSizeTextField.getText()));
         parameters.setNbThreads(Integer.parseInt(nbThreadsTextField.getText()));
+        parameters.setTileCacheStrategy(tileCacheStrategy);
         return parameters;
     }
 
@@ -710,6 +796,9 @@ final class PerformancePanel extends javax.swing.JPanel {
     private void setProcessingPerformanceParametersToActualValues() {
         PerformanceParameters actualPerformanceParameters = confOptimizer.getActualPerformanceParameters();
 
+        tileCacheStrategy = actualPerformanceParameters.getTileCacheStrategy();
+        setTileCacheStrategySelection(tileCacheStrategy);
+
         defaultTileSizeTextField.setText(Integer.toString(actualPerformanceParameters.getDefaultTileSize()));
         defaultTileSizeTextField.setForeground(CURRENT_VALUES_COLOR);
 
@@ -749,4 +838,8 @@ final class PerformancePanel extends javax.swing.JPanel {
     private javax.swing.JTextField cachePathTextField;
     private javax.swing.JLabel vmParametersInfoLabel;
     private javax.swing.JTextField vmParametersTextField;
+    private javax.swing.ButtonGroup tileCacheModeRadioGroup;
+    private javax.swing.JRadioButton memoryTileCacheButton;
+    private javax.swing.JRadioButton fileTileCacheButton;
+    private javax.swing.JRadioButton noTileCacheButton;
 }

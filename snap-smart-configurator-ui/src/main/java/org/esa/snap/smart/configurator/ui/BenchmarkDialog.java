@@ -159,7 +159,8 @@ public class BenchmarkDialog extends DefaultSingleTargetProductDialog {
             currentBenchmarkSingleCalcul = new BenchmarkSingleCalculus(
                     currentPerformanceParameters.getDefaultTileSize(),
                     currentPerformanceParameters.getCacheSize(),
-                    currentPerformanceParameters.getNbThreads());
+                    currentPerformanceParameters.getNbThreads(),
+                    perfPanel.getTileCacheStrategySelection());
 
             benchmarkModel.addBenchmarkCalcul(currentBenchmarkSingleCalcul);
 
