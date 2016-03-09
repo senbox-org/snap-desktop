@@ -2,7 +2,7 @@ package org.esa.snap.core.gpf.ui.resample;
 
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.Resampler;
-import org.esa.snap.core.gpf.common.resample.ResamplingOp;
+import org.esa.snap.core.gpf.common.resample.ResamplingOp2;
 import org.esa.snap.core.gpf.ui.DefaultSingleTargetProductDialog;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.AbstractSnapAction;
@@ -16,7 +16,7 @@ import org.openide.util.lookup.ServiceProvider;
 import java.awt.event.ActionEvent;
 
 /**
- * Action to access the Resampling Op.
+ * Action to access the Resampling2 Op.
  *
  * @author Tonio Fincke
  */
@@ -48,7 +48,7 @@ public class ResamplingAction extends AbstractSnapAction implements Resampler {
 
     @Override
     public boolean canResample(Product multiSizeProduct) {
-        return ResamplingOp.canBeApplied(multiSizeProduct);
+        return ResamplingOp2.canBeApplied(multiSizeProduct);
     }
 
     @Override
@@ -60,3 +60,4 @@ public class ResamplingAction extends AbstractSnapAction implements Resampler {
         resamplingDialog.show();
     }
 }
+
