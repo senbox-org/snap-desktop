@@ -32,7 +32,7 @@ import java.util.List;
  */
 public class MultisizeIssue {
 
-    public static void showMultisizeIssueNotification(Product product) {
+    public static Product maybeResample(Product product) {
         String title = Dialogs.getDialogTitle("Resampling required");
         final List<Resampler> availableResamplers = getAvailableResamplers(product);
         int optionType;
@@ -93,8 +93,9 @@ public class MultisizeIssue {
             } else {
                 selectedResampler = availableResamplers.get(resamplerBox.getSelectedIndex());
             }
-            selectedResampler.resample(product);
+            return selectedResampler.resample(product);
         }
+        return null;
     }
 
     private static List<Resampler> getAvailableResamplers(Product product) {

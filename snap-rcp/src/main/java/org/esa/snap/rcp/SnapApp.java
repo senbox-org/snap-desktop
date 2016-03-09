@@ -747,7 +747,7 @@ public class SnapApp {
         public void productAdded(ProductManager.Event event) {
             final Product product = event.getProduct();
             if(product.isMultiSizeProduct()) {
-                MultisizeIssue.showMultisizeIssueNotification(product);
+                MultisizeIssue.maybeResample(product);
             }
         }
 

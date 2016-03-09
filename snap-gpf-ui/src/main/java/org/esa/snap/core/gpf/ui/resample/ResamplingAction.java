@@ -6,6 +6,7 @@ import org.esa.snap.core.gpf.common.resample.ResamplingOp2;
 import org.esa.snap.core.gpf.ui.DefaultSingleTargetProductDialog;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.AbstractSnapAction;
+import org.esa.snap.ui.AppContext;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -32,8 +33,7 @@ public class ResamplingAction extends AbstractSnapAction implements Resampler {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        final Product selectedProduct = SnapApp.getDefault().getSelectedProduct(SnapApp.SelectionSourceHint.AUTO);
-        resample(selectedProduct);
+        resample(false);
     }
 
     @Override
@@ -52,12 +52,45 @@ public class ResamplingAction extends AbstractSnapAction implements Resampler {
     }
 
     @Override
-    public void resample(Product multiSizeProduct) {
-        final DefaultSingleTargetProductDialog resamplingDialog =
-                new DefaultSingleTargetProductDialog("Resample", SnapApp.getDefault().getAppContext(), "Resampling", "resampleAction");
-        resamplingDialog.setTargetProductNameSuffix("_resampled");
-        resamplingDialog.getTargetProductSelector().getModel().setSaveToFileSelected(false);
+    public Product resample(Product multiSizeProduct) {
+        return resample(true);
+    }
+
+    public Product resample(boolean modal) {
+        final AppContext appContext = SnapApp.getDefault().getAppContext();
+        final ResamplingDialog resamplingDialog = new ResamplingDialog(appContext, modal);
         resamplingDialog.show();
+        return resamplingDialog.getTargetProduct();
+    }
+
+    private class ResamplingDialog extends DefaultSingleTargetProductDialog {
+
+        Product targetProduct;
+
+        public ResamplingDialog(AppContext appContext, boolean modal) {
+            super("Resample", appContext, "Resampling", "resampleAction");
+            setTargetProductNameSuffix("_resampled");
+            getTargetProductSelector().getModel().setSaveToFileSelected(false);
+            getJDialog().setModal(modal);
+        }
+
+        @Override
+        protected Product createTargetProduct() throws Exception {
+            targetProduct = super.createTargetProduct();
+            return targetProduct;
+        }
+
+        @Override
+        protected void onApply() {
+            super.onApply();
+            if (getJDialog().isModal()) {
+                close();
+            }
+        }
+
+        Product getTargetProduct() {
+            return targetProduct;
+        }
     }
 }
 

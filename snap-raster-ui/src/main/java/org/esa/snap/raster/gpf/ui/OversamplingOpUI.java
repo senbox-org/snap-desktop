@@ -15,17 +15,23 @@
  */
 package org.esa.snap.raster.gpf.ui;
 
-import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.graphbuilder.gpf.ui.BaseOperatorUI;
 import org.esa.snap.graphbuilder.gpf.ui.OperatorUIUtils;
 import org.esa.snap.graphbuilder.gpf.ui.UIValidation;
 import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
 import org.esa.snap.raster.gpf.UndersamplingOp;
-import org.esa.snap.rcp.util.MultisizeIssue;
 import org.esa.snap.ui.AppContext;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.Map;
@@ -78,14 +84,6 @@ public class OversamplingOpUI extends BaseOperatorUI {
         });
 
         return panel;
-    }
-
-    @Override
-    public void setSourceProducts(Product[] products) {
-        super.setSourceProducts(products);
-        if (products.length > 0 && products[0] != null && products[0].isMultiSizeProduct()) {
-            MultisizeIssue.showMultisizeIssueNotification(products[0]);
-        }
     }
 
     public void initParameters() {
