@@ -37,7 +37,6 @@ import org.esa.snap.core.gpf.ui.TargetProductSelectorModel;
 import org.esa.snap.core.param.ParamParseException;
 import org.esa.snap.core.param.ParamValidateException;
 import org.esa.snap.core.util.ProductUtils;
-import org.esa.snap.rcp.util.MultisizeIssue;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.DemSelector;
 import org.esa.snap.ui.ModalDialog;
@@ -117,6 +116,7 @@ class ReprojectionForm extends JTabbedPane {
             targetProductSuffix = "reprojected";
             this.sourceProductSelector.setProductFilter(new GeoCodingProductFilter());
         }
+        sourceProductSelector.setCanBeMultisize(false);
         this.reprojectionModel = new Model();
         this.reprojectionContainer = PropertyContainer.createObjectBacked(reprojectionModel);
         createUI();
@@ -228,10 +228,6 @@ class ReprojectionForm extends JTabbedPane {
 
     void prepareShow() {
         sourceProductSelector.initProducts();
-        final Product selectedProduct = sourceProductSelector.getSelectedProduct();
-        if(isMultiSize(selectedProduct)) {
-            MultisizeIssue.maybeResample(selectedProduct);
-        }
         crsSelectionPanel.prepareShow();
     }
 

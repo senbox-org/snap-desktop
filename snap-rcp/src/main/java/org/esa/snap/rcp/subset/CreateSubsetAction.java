@@ -66,9 +66,13 @@ public class CreateSubsetAction extends AbstractAction {
     }
 
     public static void createSubset(Product sourceProduct, Rectangle bounds) {
-        if (sourceProduct.isMultiSizeProduct()) {
-            MultisizeIssue.maybeResample(sourceProduct);
-            return;
+        if (MultisizeIssue.isMultiSize(sourceProduct)) {
+            final Product resampledProduct = MultisizeIssue.maybeResample(sourceProduct);
+            if (resampledProduct != null) {
+                sourceProduct = resampledProduct;
+            } else {
+                return;
+            }
         }
 
         final String subsetName = "subset_" + CreateSubsetAction.subsetNumber + "_of_" + sourceProduct.getName();

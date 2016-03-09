@@ -15,17 +15,22 @@
  */
 package org.esa.snap.raster.gpf.ui;
 
-import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.graphbuilder.gpf.ui.BaseOperatorUI;
 import org.esa.snap.graphbuilder.gpf.ui.OperatorUIUtils;
 import org.esa.snap.graphbuilder.gpf.ui.UIValidation;
 import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
 import org.esa.snap.raster.gpf.UndersamplingOp;
-import org.esa.snap.rcp.util.MultisizeIssue;
 import org.esa.snap.ui.AppContext;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.Map;
@@ -147,14 +152,6 @@ public class UndersamplingOpUI extends BaseOperatorUI {
         paramMap.put("heightRatio", Float.parseFloat(heightRatio.getText()));
         paramMap.put("rangeSpacing", Float.parseFloat(rangeSpacing.getText()));
         paramMap.put("azimuthSpacing", Float.parseFloat(azimuthSpacing.getText()));
-    }
-
-    @Override
-    public void setSourceProducts(Product[] products) {
-        super.setSourceProducts(products);
-        if (products.length > 0 && products[0] != null && products[0].isMultiSizeProduct()) {
-            MultisizeIssue.maybeResample(products[0]);
-        }
     }
 
     private JComponent createPanel() {

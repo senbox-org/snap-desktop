@@ -17,18 +17,23 @@ package org.esa.snap.landcover.gpf.ui;
 
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.IndexCoding;
-import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.engine_utilities.datamodel.Unit;
 import org.esa.snap.graphbuilder.gpf.ui.BaseOperatorUI;
 import org.esa.snap.graphbuilder.gpf.ui.OperatorUIUtils;
 import org.esa.snap.graphbuilder.gpf.ui.UIValidation;
 import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
-import org.esa.snap.rcp.util.MultisizeIssue;
 import org.esa.snap.ui.AppContext;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
@@ -91,14 +96,6 @@ public class LandCoverMaskOpUI extends BaseOperatorUI {
         final Boolean includeOtherBands = (Boolean) paramMap.get("includeOtherBands");
         if (includeOtherBands != null) {
             includeOtherBandsCheckBox.setSelected(includeOtherBands);
-        }
-    }
-
-    @Override
-    public void setSourceProducts(Product[] products) {
-        super.setSourceProducts(products);
-        if (products.length > 0 && products[0] != null && products[0].isMultiSizeProduct()) {
-            MultisizeIssue.maybeResample(products[0]);
         }
     }
 
