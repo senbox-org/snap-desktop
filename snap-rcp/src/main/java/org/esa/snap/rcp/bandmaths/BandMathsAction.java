@@ -22,6 +22,7 @@ import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.core.datamodel.ProductNodeList;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.rcp.util.MultisizeIssue;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -36,7 +37,7 @@ import java.awt.event.ActionEvent;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
+import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.EXPLORER;
 
 @ActionID(
         category = "Tools",
@@ -85,6 +86,14 @@ public class BandMathsAction extends AbstractAction implements HelpCtx.Provider 
         Product product = SnapApp.getDefault().getSelectedProduct(EXPLORER);
         if (product == null) {
             product = products.getAt(0);
+        }
+
+        if (MultisizeIssue.isMultiSize(product)) {
+            final Product resampledProduct = MultisizeIssue.maybeResample(product);
+            if (resampledProduct != null) {
+                product = resampledProduct;
+                products.add(resampledProduct);
+            }
         }
 
         Collection<? extends RasterDataNode> selectedRasters = Utilities.actionsGlobalContext().lookupAll(RasterDataNode.class);

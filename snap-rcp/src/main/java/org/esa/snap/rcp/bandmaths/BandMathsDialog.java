@@ -68,7 +68,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
+import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.EXPLORER;
 
 @NbBundle.Messages({
         "CTL_BandMathsDialog_Title=Band Maths",

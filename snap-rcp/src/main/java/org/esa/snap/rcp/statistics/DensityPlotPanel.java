@@ -284,7 +284,7 @@ class DensityPlotPanel extends ChartPagePanel {
 
     private void checkForMultiSize(Product product) {
         if (product != null && product.isMultiSizeProduct()) {
-            MultisizeIssue.showMultisizeIssueNotification(product);
+            MultisizeIssue.maybeResample(product);
         }
     }
 

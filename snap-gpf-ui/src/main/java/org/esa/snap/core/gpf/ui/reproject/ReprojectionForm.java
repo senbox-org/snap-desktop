@@ -230,7 +230,7 @@ class ReprojectionForm extends JTabbedPane {
         sourceProductSelector.initProducts();
         final Product selectedProduct = sourceProductSelector.getSelectedProduct();
         if(isMultiSize(selectedProduct)) {
-            MultisizeIssue.showMultisizeIssueNotification(selectedProduct);
+            MultisizeIssue.maybeResample(selectedProduct);
         }
         crsSelectionPanel.prepareShow();
     }

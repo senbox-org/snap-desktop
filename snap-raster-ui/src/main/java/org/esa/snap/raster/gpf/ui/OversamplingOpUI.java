@@ -84,7 +84,7 @@ public class OversamplingOpUI extends BaseOperatorUI {
     public void setSourceProducts(Product[] products) {
         super.setSourceProducts(products);
         if (products.length > 0 && products[0] != null && products[0].isMultiSizeProduct()) {
-            MultisizeIssue.showMultisizeIssueNotification(products[0]);
+            MultisizeIssue.maybeResample(products[0]);
         }
     }
 

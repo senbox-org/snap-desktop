@@ -121,7 +121,7 @@ class SpectralUnmixingForm extends JPanel {
                 final String[] validNames;
                 if (selectedProduct != null) {
                     if (selectedProduct.isMultiSizeProduct()) {
-                        MultisizeIssue.showMultisizeIssueNotification(selectedProduct);
+                        MultisizeIssue.maybeResample(selectedProduct);
                     }
                     String[] bandNames = selectedProduct.getBandNames();
                     ArrayList<String> names = new ArrayList<>(bandNames.length);
