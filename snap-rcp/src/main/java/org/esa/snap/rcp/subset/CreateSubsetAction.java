@@ -21,7 +21,7 @@ import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
-import org.esa.snap.rcp.util.MultisizeIssue2;
+import org.esa.snap.rcp.util.MultisizeIssue;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.esa.snap.ui.product.ProductSubsetDialog;
 import org.openide.awt.ActionID;
@@ -67,7 +67,7 @@ public class CreateSubsetAction extends AbstractAction {
 
     public static void createSubset(Product sourceProduct, Rectangle bounds) {
         if (sourceProduct.isMultiSizeProduct()) {
-            MultisizeIssue2.showMultisizeIssueNotification(sourceProduct);
+            MultisizeIssue.showMultisizeIssueNotification(sourceProduct);
             return;
         }
 
