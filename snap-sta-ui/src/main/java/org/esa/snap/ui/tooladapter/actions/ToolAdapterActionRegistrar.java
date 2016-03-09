@@ -22,11 +22,15 @@ import org.esa.snap.core.gpf.OperatorSpi;
 import org.esa.snap.core.gpf.OperatorSpiRegistry;
 import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterIO;
+import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterListener;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterOpSpi;
+import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterRegistry;
 import org.esa.snap.rcp.util.Dialogs;
+import org.esa.snap.utils.AdapterWatcher;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 import org.openide.modules.OnStart;
+import org.openide.modules.OnStop;
 import org.openide.modules.Places;
 
 import java.io.File;
@@ -57,9 +61,21 @@ public class ToolAdapterActionRegistrar {
 
     private static final Map<String, ToolAdapterOperatorDescriptor> actionMap = new HashMap<>();
 
+    private static final ToolAdapterListener listener = new ToolAdapterListener() {
+        @Override
+        public void adapterAdded(ToolAdapterOperatorDescriptor operatorDescriptor) {
+            registerOperatorMenu(operatorDescriptor);
+        }
+
+        @Override
+        public void adapterRemoved(ToolAdapterOperatorDescriptor operatorDescriptor) {
+            removeOperatorMenu(operatorDescriptor);
+        }
+    };
+
     static {
         try {
-        FileObject defaultMenu = FileUtil.getConfigFile(DEFAULT_MENU_PATH);
+            FileObject defaultMenu = FileUtil.getConfigFile(DEFAULT_MENU_PATH);
             if (defaultMenu == null) {
                 defaultMenu = FileUtil.getConfigFile("Menu").createFolder(DEFAULT_MENU_PATH.replace("Menu/", ""));
             }
@@ -190,6 +206,8 @@ public class ToolAdapterActionRegistrar {
                         registerOperatorMenu(operatorDescriptor, false);
                     });
                 }
+                ToolAdapterRegistry.INSTANCE.addListener(listener);
+                AdapterWatcher.INSTANCE.startMonitor();
             }
         }
 
@@ -215,6 +233,14 @@ public class ToolAdapterActionRegistrar {
                 }
             }
             return output;
+        }
+    }
+
+    @OnStop
+    public static class StopOp implements Runnable {
+        @Override
+        public void run() {
+            AdapterWatcher.INSTANCE.stopMonitor();
         }
     }
 }
