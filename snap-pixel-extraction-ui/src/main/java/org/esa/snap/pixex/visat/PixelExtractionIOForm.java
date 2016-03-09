@@ -90,7 +90,7 @@ class PixelExtractionIOForm {
                 for (Product newSourceProduct : newSourceProducts) {
                     if ((propertySourceProducts == null || !ArrayUtils.isMemberOf(newSourceProduct, propertySourceProducts))
                             && newSourceProduct.isMultiSizeProduct()) {
-                        MultisizeIssue.showMultisizeIssueNotification(newSourceProduct);
+                        MultisizeIssue.maybeResample(newSourceProduct);
                     }
                 }
             }

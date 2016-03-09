@@ -50,7 +50,7 @@ public class PropagateUncertaintyAction extends AbstractAction {
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
         if (virtualBand.getProduct() != null && virtualBand.getProduct().isMultiSizeProduct()) {
-            MultisizeIssue.showMultisizeIssueNotification(virtualBand.getProduct());
+            MultisizeIssue.maybeResample(virtualBand.getProduct());
         }
         PropagateUncertaintyDialog dialog = new PropagateUncertaintyDialog(virtualBand);
         dialog.show();

@@ -29,6 +29,7 @@ import org.esa.snap.core.util.ArrayUtils;
 import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
+import org.esa.snap.rcp.util.MultisizeIssue;
 import org.esa.snap.ui.ExpressionPane;
 import org.esa.snap.ui.GridBagUtils;
 import org.esa.snap.ui.ModalDialog;
@@ -66,7 +67,9 @@ import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
@@ -117,7 +120,30 @@ public class AttachPixelGeoCodingAction extends AbstractAction implements Contex
 
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
-        attachPixelGeoCoding(lkp.lookup(ProductNode.class).getProduct());
+        Product selectedProduct = lkp.lookup(ProductNode.class).getProduct();
+        if (MultisizeIssue.isMultiSize(selectedProduct)) {
+            final Product resampledProduct = MultisizeIssue.maybeResample(selectedProduct);
+            if (resampledProduct != null) {
+                selectedProduct = resampledProduct;
+            } else {
+                final Band[] bands = selectedProduct.getBands();
+                int validBandsCount = 0;
+                for (Band band : bands) {
+                    if (band.getRasterSize().equals(selectedProduct.getSceneRasterSize()) &&
+                            band.getGeoCoding().equals(selectedProduct.getSceneGeoCoding())) {
+                        validBandsCount++;
+                        if (validBandsCount == 2) {
+                            break;
+                        }
+                    }
+                    if (validBandsCount < 2) {
+                        Dialogs.showError("Pixel Geo-Coding cannot be attached: Too few bands of product scene size");
+                        return;
+                    }
+                }
+            }
+        }
+        attachPixelGeoCoding(selectedProduct);
     }
 
     private void setEnableState() {
@@ -125,7 +151,7 @@ public class AttachPixelGeoCodingAction extends AbstractAction implements Contex
         boolean state = false;
         if (productNode != null) {
             Product product = productNode.getProduct();
-            if (product != null && !product.isMultiSizeProduct()) {
+            if (product != null) {
                 final boolean hasPixelGeoCoding = product.getSceneGeoCoding() instanceof BasicPixelGeoCoding;
                 final boolean hasSomeBands = product.getNumBands() >= 2;
                 state = !hasPixelGeoCoding && hasSomeBands;
@@ -231,7 +257,18 @@ public class AttachPixelGeoCodingAction extends AbstractAction implements Contex
             super(parent, title, ModalDialog.ID_OK_CANCEL_HELP, helpID);
             this.product = product;
             final Band[] bands = product.getBands();
-            bandNames = Arrays.stream(bands).map(Band::getName).toArray(String[]::new);
+            if (product.isMultiSizeProduct()) {
+                List<String> bandNameList = new ArrayList<>();
+                for (Band band : bands) {
+                    if (band.getRasterSize().equals(product.getSceneRasterSize()) &&
+                            band.getGeoCoding() == product.getSceneGeoCoding()) {
+                        bandNameList.add(band.getName());
+                    }
+                }
+                bandNames = bandNameList.toArray(new String[bandNameList.size()]);
+            } else {
+                bandNames = Arrays.stream(bands).map(Band::getName).toArray(String[]::new);
+            }
         }
 
         @Override
