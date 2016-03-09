@@ -21,7 +21,7 @@ import org.esa.snap.graphbuilder.gpf.ui.OperatorUIUtils;
 import org.esa.snap.graphbuilder.gpf.ui.UIValidation;
 import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
 import org.esa.snap.raster.gpf.UndersamplingOp;
-import org.esa.snap.rcp.util.MultisizeIssue;
+import org.esa.snap.rcp.util.MultisizeIssue2;
 import org.esa.snap.ui.AppContext;
 
 import javax.swing.*;
@@ -84,7 +84,7 @@ public class OversamplingOpUI extends BaseOperatorUI {
     public void setSourceProducts(Product[] products) {
         super.setSourceProducts(products);
         if (products.length > 0 && products[0] != null && products[0].isMultiSizeProduct()) {
-            MultisizeIssue.showMultisizeIssueNotification(products[0]);
+            MultisizeIssue2.showMultisizeIssueNotification(products[0]);
         }
     }
 

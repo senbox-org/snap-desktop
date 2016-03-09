@@ -25,7 +25,7 @@ import com.jidesoft.swing.FolderChooser;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.util.ArrayUtils;
 import org.esa.snap.core.util.SystemUtils;
-import org.esa.snap.rcp.util.MultisizeIssue;
+import org.esa.snap.rcp.util.MultisizeIssue2;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.product.SourceProductList;
 
@@ -90,7 +90,7 @@ class PixelExtractionIOForm {
                 for (Product newSourceProduct : newSourceProducts) {
                     if ((propertySourceProducts == null || !ArrayUtils.isMemberOf(newSourceProduct, propertySourceProducts))
                             && newSourceProduct.isMultiSizeProduct()) {
-                        MultisizeIssue.showMultisizeIssueNotification(newSourceProduct);
+                        MultisizeIssue2.showMultisizeIssueNotification(newSourceProduct);
                     }
                 }
             }

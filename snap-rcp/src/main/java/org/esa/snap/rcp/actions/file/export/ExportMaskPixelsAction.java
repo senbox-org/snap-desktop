@@ -30,7 +30,7 @@ import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
-import org.esa.snap.rcp.util.MultisizeIssue;
+import org.esa.snap.rcp.util.MultisizeIssue2;
 import org.esa.snap.ui.AbstractDialog;
 import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.ui.SelectExportMethodDialog;
@@ -119,7 +119,7 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
     public void actionPerformed(ActionEvent event) {
         ProductSceneView sceneView = SnapApp.getDefault().getSelectedProductSceneView();
         if(sceneView.getProduct().isMultiSizeProduct()) {
-            MultisizeIssue.showMultisizeIssueNotification(sceneView.getProduct());
+            MultisizeIssue2.showMultisizeIssueNotification(sceneView.getProduct());
         } else {
             exportMaskPixels();
         }

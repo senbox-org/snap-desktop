@@ -41,7 +41,7 @@ import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.vector.CreateVectorDataNodeAction;
 import org.esa.snap.rcp.util.Dialogs;
-import org.esa.snap.rcp.util.MultisizeIssue;
+import org.esa.snap.rcp.util.MultisizeIssue2;
 import org.esa.snap.rcp.util.internal.RasterDataNodeDeleter;
 import org.esa.snap.rcp.windows.ToolTopComponent;
 import org.esa.snap.ui.AbstractDialog;
@@ -180,7 +180,7 @@ class MaskFormActions {
         String getCode(ActionEvent e) {
             Product product = getMaskForm().getProduct();
             if(product.isMultiSizeProduct()) {
-                MultisizeIssue.showMultisizeIssueNotification(product);
+                MultisizeIssue2.showMultisizeIssueNotification(product);
             }
             ProductExpressionPane expressionPane = ProductExpressionPane.createBooleanExpressionPane(
                     new Product[]{product}, product, null);

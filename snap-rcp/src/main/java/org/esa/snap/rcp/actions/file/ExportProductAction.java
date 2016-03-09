@@ -22,7 +22,7 @@ import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
-import org.esa.snap.rcp.util.MultisizeIssue;
+import org.esa.snap.rcp.util.MultisizeIssue2;
 import org.netbeans.api.progress.ProgressUtils;
 import org.openide.util.ContextAwareAction;
 import org.openide.util.HelpCtx;
@@ -127,7 +127,7 @@ public class ExportProductAction extends AbstractAction implements HelpCtx.Provi
         Product product = productRef.get();
         if (product != null) {
             if(product.isMultiSizeProduct()) {
-                MultisizeIssue.showMultisizeIssueNotification(product);
+                MultisizeIssue2.showMultisizeIssueNotification(product);
             }
             return exportProduct(product, (String) getValue(PROPERTY_FORMAT_NAME));
         } else {
