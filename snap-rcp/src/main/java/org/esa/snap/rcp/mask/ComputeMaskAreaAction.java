@@ -30,6 +30,7 @@ import org.esa.snap.core.util.math.MathUtils;
 import org.esa.snap.core.util.math.RsMathUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
+import org.esa.snap.rcp.util.MultisizeIssue;
 import org.esa.snap.ui.AbstractDialog;
 import org.esa.snap.ui.GridBagUtils;
 import org.esa.snap.ui.ModalDialog;
@@ -67,7 +68,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 
-@ActionID(category = "Tools", id = "ComputeMaskAreaAction" )
+@ActionID(category = "Tools", id = "ComputeMaskAreaAction")
 @ActionRegistration(
         displayName = "#CTL_ComputeMaskAreaAction_MenuText",
         popupText = "#CTL_ComputeMaskAreaAction_ShortDescription",
@@ -120,10 +121,17 @@ public class ComputeMaskAreaAction extends AbstractAction implements LookupListe
         }
 
         // Get the current raster data node (band or tie-point grid)
-        final RasterDataNode raster = view.getRaster();
+        RasterDataNode raster = view.getRaster();
         assert raster != null;
 
-        final Product product = raster.getProduct();
+        Product product = raster.getProduct();
+        if (MultisizeIssue.isMultiSize(product)) {
+            final Product resampledProduct = MultisizeIssue.maybeResample(product);
+            if (resampledProduct != null) {
+                product = resampledProduct;
+                raster = resampledProduct.getRasterDataNode(raster.getName());
+            }
+        }
         final ProductNodeGroup<Mask> maskGroup = product.getMaskGroup();
         final List<String> maskNameList = new ArrayList<>();
         for (int i = 0; i < maskGroup.getNodeCount(); i++) {
@@ -138,7 +146,7 @@ public class ComputeMaskAreaAction extends AbstractAction implements LookupListe
         if (maskNames.length == 0) {
             Dialogs.showInformation(Bundle.CTL_ComputeMaskAreaAction_DialogTitle(), "No compatible mask available", null);
             return;
-        }else if (maskNames.length == 1) {
+        } else if (maskNames.length == 1) {
             maskName = maskNames[0];
         } else {
             JPanel selectPanel = new JPanel();
@@ -147,8 +155,8 @@ public class ComputeMaskAreaAction extends AbstractAction implements LookupListe
             JComboBox<String> maskCombo = new JComboBox<>(maskNames);
             selectPanel.add(maskCombo);
             JPanel dialogPanel = selectPanel;
-            if(product.isMultiSizeProduct()) {
-                final JPanel wrapperPanel = new JPanel(new BorderLayout(4,3));
+            if (product.isMultiSizeProduct()) {
+                final JPanel wrapperPanel = new JPanel(new BorderLayout(4, 3));
                 wrapperPanel.add(selectPanel, BorderLayout.CENTER);
                 wrapperPanel.add(new JLabel("<html><i>Product has rasters of different size. <br/>Only compatible masks are shown.</i>"), BorderLayout.SOUTH);
                 dialogPanel = wrapperPanel;
@@ -159,7 +167,7 @@ public class ComputeMaskAreaAction extends AbstractAction implements LookupListe
                                                       getHelpCtx().getHelpID());
             if (modalDialog.show() == AbstractDialog.ID_OK) {
                 maskName = (String) maskCombo.getSelectedItem();
-                if(maskName == null) {
+                if (maskName == null) {
                     return;
                 }
             } else {
@@ -171,7 +179,7 @@ public class ComputeMaskAreaAction extends AbstractAction implements LookupListe
         RenderedImage maskImage = mask.getSourceImage();
         if (maskImage == null) {
             Dialogs.showError(Bundle.CTL_ComputeMaskAreaAction_DialogTitle(),
-                                  errMsgBase + "No Mask image available.");
+                              errMsgBase + "No Mask image available.");
             return;
         }
 
