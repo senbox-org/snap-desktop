@@ -24,6 +24,7 @@ import org.esa.snap.core.dataio.ProductReaderPlugIn;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.ui.SourceProductSelector;
 import org.esa.snap.engine_utilities.db.CommonReaders;
+import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.ui.AppContext;
 
 import javax.swing.JComboBox;
@@ -128,8 +129,20 @@ public class SourceUI extends BaseOperatorUI {
         final Object fileValue = paramMap.get(FILE_PARAMETER);
         if (fileValue != null) {
             try {
-                final Product product = CommonReaders.readProduct((File) fileValue);
-                sourceProductSelector.setSelectedProduct(product);
+                final File file = (File) fileValue;
+                Product srcProduct = null;
+                // check if product is already opened
+                final Product[] openedProducts = SnapApp.getDefault().getProductManager().getProducts();
+                for(Product openedProduct : openedProducts) {
+                    if(file.equals(openedProduct.getFileLocation())) {
+                        srcProduct = openedProduct;
+                        break;
+                    }
+                }
+                if(srcProduct == null) {
+                    srcProduct = CommonReaders.readProduct(file);
+                }
+                sourceProductSelector.setSelectedProduct(srcProduct);
             } catch (IOException e) {
                 // do nothing
             }
