@@ -281,13 +281,14 @@ public class SingleOperatorDialog extends SingleTargetProductDialog {
 
         String productDir = targetProductSelector.getModel().getProductDir().getAbsolutePath();
         SnapApp.getDefault().getPreferences().put(SaveProductAsAction.PREFERENCES_KEY_LAST_PRODUCT_DIR, productDir);
+        statusLabel.setText("");
 
         Product targetProduct = null;
         try {
             targetProduct = createTargetProduct();
-            if (targetProduct == null) {
+            //if (targetProduct == null) {
                 //throw new NullPointerException("Target product is null.");
-            }
+            //}
         } catch (Throwable t) {
             handleInitialisationError(t);
         }
