@@ -2,7 +2,7 @@ package org.esa.snap.core.gpf.ui.resample;
 
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.Resampler;
-import org.esa.snap.core.gpf.common.resample.ResamplingOp2;
+import org.esa.snap.core.gpf.common.resample.ResamplingOp;
 import org.esa.snap.core.gpf.ui.DefaultSingleTargetProductDialog;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.AbstractSnapAction;
@@ -48,7 +48,7 @@ public class ResamplingAction extends AbstractSnapAction implements Resampler {
 
     @Override
     public boolean canResample(Product multiSizeProduct) {
-        return ResamplingOp2.canBeApplied(multiSizeProduct);
+        return ResamplingOp.canBeApplied(multiSizeProduct);
     }
 
     @Override
