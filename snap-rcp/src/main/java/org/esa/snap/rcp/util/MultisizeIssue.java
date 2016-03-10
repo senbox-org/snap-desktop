@@ -58,7 +58,7 @@ public class MultisizeIssue {
         msgTextBuilder.append("<br/>" +
                                       "<br/>" +
                                       "More info about this issue and its status can be found in the " +
-                                      "<a href=\\\"https://senbox.atlassian.net/browse/SNAP-1\\\">SNAP Issue Tracker</a>."
+                                      "<a href=\"https://senbox.atlassian.net/browse/SNAP-1\">SNAP Issue Tracker</a>."
         );
         JPanel panel = new JPanel(new BorderLayout(4, 4));
         final JEditorPane textPane = new JEditorPane("text/html", msgTextBuilder.toString());
