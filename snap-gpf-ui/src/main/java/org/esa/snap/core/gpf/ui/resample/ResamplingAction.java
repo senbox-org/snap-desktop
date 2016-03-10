@@ -99,7 +99,7 @@ public class ResamplingAction extends AbstractSnapAction implements Resampler {
         @Override
         protected void onApply() {
             super.onApply();
-            if (getJDialog().isModal()) {
+            if (targetProduct != null && getJDialog().isModal()) {
                 close();
             }
         }
