@@ -37,7 +37,7 @@ import javax.swing.Action;
 import java.awt.event.ActionEvent;
 
 
-@ActionID(category = "Tools", id = "org.esa.snap.rcp.actions.tools.CopyPixelInfoToClipboardAction" )
+@ActionID(category = "Tools", id = "org.esa.snap.rcp.actions.tools.CopyPixelInfoToClipboardAction")
 @ActionRegistration(
         displayName = "#CTL_CopyPixelInfoToClipboardAction_MenuText",
         popupText = "#CTL_CopyPixelInfoToClipboardAction_PopupText",
@@ -45,7 +45,7 @@ import java.awt.event.ActionEvent;
 )
 @ActionReferences({
         @ActionReference(path = "Menu/Raster/Export", position = 300),
-        @ActionReference(path = "Context/ProductSceneView" , position = 110)
+        @ActionReference(path = "Context/ProductSceneView", position = 110)
 })
 @NbBundle.Messages({
         "CTL_CopyPixelInfoToClipboardAction_MenuText=Pixel-Info to Clipboard",
@@ -54,7 +54,7 @@ import java.awt.event.ActionEvent;
         "CTL_CopyPixelInfoToClipboardAction_ShortDescription=Copy Pixel-Info to Clipboard."
 })
 
-public class CopyPixelInfoToClipboardAction extends AbstractAction implements ContextAwareAction, LookupListener{
+public class CopyPixelInfoToClipboardAction extends AbstractAction implements ContextAwareAction, LookupListener {
 
     private final Lookup.Result<ProductSceneView> result;
 
@@ -94,13 +94,17 @@ public class CopyPixelInfoToClipboardAction extends AbstractAction implements Co
     private void copyPixelInfoStringToClipboard() {
         final ProductSceneView view = getCurrentSceneView();
         if (view != null) {
-            final Product product = view.getProduct();
-            if(product != null ) {
-                if(product.isMultiSizeProduct()) {
-                    MultisizeIssue.maybeResample(product);
-                } else {
-                    SystemUtils.copyToClipboard(product.createPixelInfoString(view.getCurrentPixelX(), view.getCurrentPixelY()));
+            Product product = view.getProduct();
+            if (product != null) {
+                if (product.isMultiSizeProduct()) {
+                    final Product resampledProduct = MultisizeIssue.maybeResample(product);
+                    if (resampledProduct != null) {
+                        product = resampledProduct;
+                    } else {
+                        return;
+                    }
                 }
+                SystemUtils.copyToClipboard(product.createPixelInfoString(view.getCurrentPixelX(), view.getCurrentPixelY()));
             }
         }
     }

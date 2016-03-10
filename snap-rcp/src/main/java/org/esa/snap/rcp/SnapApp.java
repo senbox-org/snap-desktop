@@ -21,7 +21,6 @@ import org.esa.snap.rcp.cli.SnapArgs;
 import org.esa.snap.rcp.session.OpenSessionAction;
 import org.esa.snap.rcp.util.ContextGlobalExtenderImpl;
 import org.esa.snap.rcp.util.Dialogs;
-import org.esa.snap.rcp.util.MultisizeIssue;
 import org.esa.snap.rcp.util.SelectionSupport;
 import org.esa.snap.rcp.util.internal.DefaultSelectionSupport;
 import org.esa.snap.runtime.Config;
@@ -746,9 +745,6 @@ public class SnapApp {
         @Override
         public void productAdded(ProductManager.Event event) {
             final Product product = event.getProduct();
-            if(product.isMultiSizeProduct()) {
-                MultisizeIssue.maybeResample(product);
-            }
         }
 
         @Override
