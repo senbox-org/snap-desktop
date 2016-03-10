@@ -4,8 +4,6 @@
         "http://java.sun.com/products/javahelp/map_2_0.dtd">
 
 <map version="2.0">
-    <mapID target="ConvertDatatypeOp" url="operators/ConvertDatatypeOp.html"/>
-
     <mapID target="gpf.overview" url="gpf/GpfOverview.html"/>
     <mapID target="gpf.graphProcessingTool" url="gpf/GraphProcessingTool.html"/>
     <mapID target="gpf.operatorIndex" url="gpf/OperatorIndex.html"/>

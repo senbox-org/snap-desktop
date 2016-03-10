@@ -6,6 +6,9 @@
 
     <tocitem text="Sentinel Toolbox Application">
         <tocitem text="Raster">
+            <tocitem text="Data Conversion">
+                <tocitem text="Convert Datatype" target="ConvertDatatypeOp"/>
+            </tocitem>
             <tocitem text="Masks">
                 <tocitem text="Land/Sea Mask" target="LandSeaMask"/>
                 <tocitem text="Terrain Mask" target="TerrainMask"/>

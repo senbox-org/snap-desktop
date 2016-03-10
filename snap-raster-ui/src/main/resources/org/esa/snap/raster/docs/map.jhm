@@ -6,6 +6,7 @@
 <map version="2.0">
 
     <!--Raster Operators-->
+    <mapID target="ConvertDatatypeOp" url="operators/ConvertDatatypeOp.html"/>
     <mapID target="FilterOperator" url="operators/FilterOperator.html"/>
 
     <!--Mask Operators-->
