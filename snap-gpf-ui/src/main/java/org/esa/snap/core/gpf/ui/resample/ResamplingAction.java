@@ -1,12 +1,8 @@
 package org.esa.snap.core.gpf.ui.resample;
 
-import com.bc.ceres.binding.Property;
-import com.bc.ceres.binding.ValidationException;
-import com.bc.ceres.binding.ValueSet;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.Resampler;
 import org.esa.snap.core.gpf.common.resample.ResamplingOp;
-import org.esa.snap.core.gpf.ui.DefaultSingleTargetProductDialog;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.AbstractSnapAction;
 import org.esa.snap.ui.AppContext;
@@ -20,7 +16,7 @@ import org.openide.util.lookup.ServiceProvider;
 import java.awt.event.ActionEvent;
 
 /**
- * Action to access the Resampling2 Op.
+ * Action to access the Resampling Op.
  *
  * @author Tonio Fincke
  */
@@ -36,7 +32,8 @@ public class ResamplingAction extends AbstractSnapAction implements Resampler {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        resample(false);
+        final Product product = SnapApp.getDefault().getSelectedProduct(SnapApp.SelectionSourceHint.AUTO);
+        resample(product, false);
     }
 
     @Override
@@ -56,57 +53,14 @@ public class ResamplingAction extends AbstractSnapAction implements Resampler {
 
     @Override
     public Product resample(Product multiSizeProduct) {
-        return resample(true);
+        return resample(multiSizeProduct, true);
     }
 
-    public Product resample(boolean modal) {
+    public Product resample(Product product, boolean modal) {
         final AppContext appContext = SnapApp.getDefault().getAppContext();
-        final ResamplingDialog resamplingDialog = new ResamplingDialog(appContext, modal);
+        final ResamplingDialog resamplingDialog = new ResamplingDialog(appContext, product, modal);
         resamplingDialog.show();
         return resamplingDialog.getTargetProduct();
-    }
-
-    private class ResamplingDialog extends DefaultSingleTargetProductDialog {
-
-        Product targetProduct;
-
-        public ResamplingDialog(AppContext appContext, boolean modal) {
-            super("Resample", appContext, "Resampling", "resampleAction");
-            setTargetProductNameSuffix("_resampled");
-            getTargetProductSelector().getModel().setSaveToFileSelected(false);
-            getJDialog().setModal(modal);
-            final Property referenceBandNameProperty = getBindingContext().getPropertySet().getProperty("referenceBandName");
-            referenceBandNameProperty.getDescriptor().addAttributeChangeListener(evt -> {
-                if (evt.getPropertyName().equals("valueSet")) {
-                    final Object[] valueSetItems = ((ValueSet) evt.getNewValue()).getItems();
-                    if (valueSetItems.length > 0) {
-                        try {
-                            referenceBandNameProperty.setValue(valueSetItems[0].toString());
-                        } catch (ValidationException e) {
-                            //don't set it then
-                        }
-                    }
-                }
-            });
-        }
-
-        @Override
-        protected Product createTargetProduct() throws Exception {
-            targetProduct = super.createTargetProduct();
-            return targetProduct;
-        }
-
-        @Override
-        protected void onApply() {
-            super.onApply();
-            if (targetProduct != null && getJDialog().isModal()) {
-                close();
-            }
-        }
-
-        Product getTargetProduct() {
-            return targetProduct;
-        }
     }
 }
 
