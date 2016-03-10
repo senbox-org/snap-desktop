@@ -179,8 +179,11 @@ class MaskFormActions {
         @Override
         String getCode(ActionEvent e) {
             Product product = getMaskForm().getProduct();
-            if(product.isMultiSizeProduct()) {
-                MultisizeIssue.maybeResample(product);
+            if (product.isMultiSizeProduct()) {
+                final Product resampledProduct = MultisizeIssue.maybeResample(product);
+                if (resampledProduct != null) {
+                    product = resampledProduct;
+                }
             }
             ProductExpressionPane expressionPane = ProductExpressionPane.createBooleanExpressionPane(
                     new Product[]{product}, product, null);
@@ -926,13 +929,25 @@ class MaskFormActions {
             }
         }
 
-        private static void copyMaskPixel(Mask[] selectedMasks, Product sourcProduct,
+        private static void copyMaskPixel(Mask[] selectedMasks, Product sourceProduct,
                                           Product[] maskPixelTargetProducts) {
+            if (MultisizeIssue.isMultiSize(sourceProduct)) {
+                final Product resampledProduct = MultisizeIssue.maybeResample(sourceProduct);
+                if (resampledProduct != null) {
+                    sourceProduct = resampledProduct;
+                    for (int i = 0; i < selectedMasks.length; i++) {
+                        Mask selectedMask = selectedMasks[i];
+                        selectedMasks[i] = sourceProduct.getMaskGroup().get(selectedMask.getName());
+                    }
+                } else {
+                    return;
+                }
+            }
             for (Product targetProduct : maskPixelTargetProducts) {
-                if (sourcProduct.isCompatibleProduct(targetProduct, 1.0e-3f)) {
+                if (sourceProduct.isCompatibleProduct(targetProduct, 1.0e-3f)) {
                     copyBandData(selectedMasks, targetProduct);
                 } else {
-                    reprojectBandData(selectedMasks, sourcProduct, targetProduct);
+                    reprojectBandData(selectedMasks, sourceProduct, targetProduct);
                 }
             }
         }
