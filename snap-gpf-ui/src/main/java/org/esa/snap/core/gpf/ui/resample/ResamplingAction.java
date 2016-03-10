@@ -1,5 +1,8 @@
 package org.esa.snap.core.gpf.ui.resample;
 
+import com.bc.ceres.binding.Property;
+import com.bc.ceres.binding.ValidationException;
+import com.bc.ceres.binding.ValueSet;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.Resampler;
 import org.esa.snap.core.gpf.common.resample.ResamplingOp;
@@ -72,6 +75,19 @@ public class ResamplingAction extends AbstractSnapAction implements Resampler {
             setTargetProductNameSuffix("_resampled");
             getTargetProductSelector().getModel().setSaveToFileSelected(false);
             getJDialog().setModal(modal);
+            final Property referenceBandNameProperty = getBindingContext().getPropertySet().getProperty("referenceBandName");
+            referenceBandNameProperty.getDescriptor().addAttributeChangeListener(evt -> {
+                if (evt.getPropertyName().equals("valueSet")) {
+                    final Object[] valueSetItems = ((ValueSet) evt.getNewValue()).getItems();
+                    if (valueSetItems.length > 0) {
+                        try {
+                            referenceBandNameProperty.setValue(valueSetItems[0].toString());
+                        } catch (ValidationException e) {
+                            //don't set it then
+                        }
+                    }
+                }
+            });
         }
 
         @Override
