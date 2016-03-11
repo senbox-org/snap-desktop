@@ -176,7 +176,7 @@ class MosaicDialog extends SingleTargetProductDialog {
         }
         for (Map.Entry<String, Product> productEntry : sourceProductMap.entrySet()) {
             if (productEntry.getValue().isMultiSizeProduct()) {
-                showErrorDialog(String.format("Product '%s'contains bands of different sizes. " +
+                showErrorDialog(String.format("Product '%s' contains bands of different sizes. " +
                                               "Currently it is not possible to use it for mosaicking.",
                                               productEntry.getKey()));
                 return false;
