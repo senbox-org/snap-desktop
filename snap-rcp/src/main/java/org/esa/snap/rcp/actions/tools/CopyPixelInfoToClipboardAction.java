@@ -96,7 +96,7 @@ public class CopyPixelInfoToClipboardAction extends AbstractAction implements Co
         if (view != null) {
             Product product = view.getProduct();
             if (product != null) {
-                if (product.isMultiSizeProduct()) {
+                if (product.isMultiSize()) {
                     final Product resampledProduct = MultisizeIssue.maybeResample(product);
                     if (resampledProduct != null) {
                         product = resampledProduct;

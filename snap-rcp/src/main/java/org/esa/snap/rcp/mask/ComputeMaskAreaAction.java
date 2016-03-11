@@ -155,7 +155,7 @@ public class ComputeMaskAreaAction extends AbstractAction implements LookupListe
             JComboBox<String> maskCombo = new JComboBox<>(maskNames);
             selectPanel.add(maskCombo);
             JPanel dialogPanel = selectPanel;
-            if (product.isMultiSizeProduct()) {
+            if (product.isMultiSize()) {
                 final JPanel wrapperPanel = new JPanel(new BorderLayout(4, 3));
                 wrapperPanel.add(selectPanel, BorderLayout.CENTER);
                 wrapperPanel.add(new JLabel("<html><i>Product has rasters of different size. <br/>Only compatible masks are shown.</i>"), BorderLayout.SOUTH);

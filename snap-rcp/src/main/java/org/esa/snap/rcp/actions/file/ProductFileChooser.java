@@ -190,7 +190,7 @@ public class ProductFileChooser extends SnapFileChooser {
     private boolean openProductSubsetDialog(Product product, String newProductName) {
         clearCurrentSubsetProduct();
         if (product != null) {
-            if (product.isMultiSizeProduct()) {
+            if (product.isMultiSize()) {
                 Dialogs.showError("No subset can be created of a multi-size products.");
                 return false;
             }

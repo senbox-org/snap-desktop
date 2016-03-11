@@ -52,7 +52,7 @@ public class PropagateUncertaintyAction extends AbstractAction {
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
         final Product product = virtualBand.getProduct();
-        if (product != null && product.isMultiSizeProduct()) {
+        if (product != null && product.isMultiSize()) {
             virtualBand = null;
             final Product resampledProduct = MultisizeIssue.maybeResample(product);
             if (resampledProduct != null) {

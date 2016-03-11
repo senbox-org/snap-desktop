@@ -108,7 +108,7 @@ class BinningIOPanel extends JPanel {
                 final Product[] newSourceProducts = sourceProductList.getSourceProducts();
                 for (Product newSourceProduct : newSourceProducts) {
                     if ((propertySourceProducts == null || !ArrayUtils.isMemberOf(newSourceProduct, propertySourceProducts))
-                            && newSourceProduct.isMultiSizeProduct()) {
+                            && newSourceProduct.isMultiSize()) {
                         MultisizeIssue.maybeResample(newSourceProduct);
                     }
                 }

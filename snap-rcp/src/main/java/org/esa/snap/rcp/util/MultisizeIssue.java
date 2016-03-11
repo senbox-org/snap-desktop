@@ -110,7 +110,7 @@ public class MultisizeIssue {
     }
 
     public static boolean isMultiSize(Product selectedProduct) {
-        return selectedProduct != null && selectedProduct.isMultiSizeProduct();
+        return selectedProduct != null && selectedProduct.isMultiSize();
     }
 
     private static void setFont(JEditorPane textPane) {

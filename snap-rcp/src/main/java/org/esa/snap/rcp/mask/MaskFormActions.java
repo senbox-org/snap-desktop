@@ -179,7 +179,7 @@ class MaskFormActions {
         @Override
         String getCode(ActionEvent e) {
             Product product = getMaskForm().getProduct();
-            if (product.isMultiSizeProduct()) {
+            if (product.isMultiSize()) {
                 final Product resampledProduct = MultisizeIssue.maybeResample(product);
                 if (resampledProduct != null) {
                     product = resampledProduct;

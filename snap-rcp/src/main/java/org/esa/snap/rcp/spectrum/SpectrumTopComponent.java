@@ -910,7 +910,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
                 for (DisplayableSpectrum spectrum : spectra) {
                     XYSeries series = new XYSeries(spectrum.getName());
                     final Band[] spectralBands = spectrum.getSelectedBands();
-                    if (!currentProduct.isMultiSizeProduct()) {
+                    if (!currentProduct.isMultiSize()) {
                         for (Band spectralBand : spectralBands) {
                             final float wavelength = spectralBand.getSpectralWavelength();
                             if (pixelPosInRasterBounds && isPixelValid(spectralBand, rasterPixelX, rasterPixelY, rasterLevel)) {

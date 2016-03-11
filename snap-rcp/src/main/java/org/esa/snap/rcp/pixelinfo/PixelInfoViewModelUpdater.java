@@ -158,7 +158,7 @@ public class PixelInfoViewModelUpdater {
         levelZeroRasterX = floor(levelZeroP.getX());
         levelZeroRasterY = floor(levelZeroP.getY());
         //todo [multisize_products] ask for different imagetomodeltransforms - tf 20151113
-        if (product.isMultiSizeProduct()) {
+        if (product.isMultiSize()) {
             try {
                 final GeoCoding sceneGeoCoding = product.getSceneGeoCoding();
                 if (sceneGeoCoding != null) {
@@ -232,7 +232,7 @@ public class PixelInfoViewModelUpdater {
             positionModel.addRow("Image-X", "", "pixel");
             positionModel.addRow("Image-Y", "", "pixel");
             //todo [Multisize_products] ask for something else than multisize (scenetomodeltransform)
-            if (getCurrentProduct().isMultiSizeProduct()) {
+            if (getCurrentProduct().isMultiSize()) {
                 positionModel.addRow("Scene-X", "", "pixel");
                 positionModel.addRow("Scene-Y", "", "pixel");
             }
@@ -275,7 +275,7 @@ public class PixelInfoViewModelUpdater {
                 tiy = String.valueOf((int) Math.floor(pY));
             }
         }
-        if (getCurrentProduct().isMultiSizeProduct()) {
+        if (getCurrentProduct().isMultiSize()) {
             if (!availableInScene) {
                 tsx = PixelInfoViewModelUpdater.INVALID_POS_TEXT;
                 tsy = PixelInfoViewModelUpdater.INVALID_POS_TEXT;
@@ -321,7 +321,7 @@ public class PixelInfoViewModelUpdater {
         int rowCount = 0;
         positionModel.updateValue(tix, rowCount++);
         positionModel.updateValue(tiy, rowCount++);
-        if (getCurrentProduct().isMultiSizeProduct()) {
+        if (getCurrentProduct().isMultiSize()) {
             positionModel.updateValue(tsx, rowCount++);
             positionModel.updateValue(tsy, rowCount++);
         }

@@ -88,7 +88,7 @@ public class OpenHSVImageViewAction extends AbstractAction implements HelpCtx.Pr
     @Override
     public void actionPerformed(final ActionEvent event) {
         if (product != null) {
-            if (product.isMultiSizeProduct()) {
+            if (product.isMultiSize()) {
                 final Product resampledProduct = MultisizeIssue.maybeResample(this.product);
                 if (resampledProduct != null) {
                     product = resampledProduct;

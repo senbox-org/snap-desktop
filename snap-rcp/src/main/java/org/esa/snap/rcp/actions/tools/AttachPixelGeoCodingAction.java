@@ -257,7 +257,7 @@ public class AttachPixelGeoCodingAction extends AbstractAction implements Contex
             super(parent, title, ModalDialog.ID_OK_CANCEL_HELP, helpID);
             this.product = product;
             final Band[] bands = product.getBands();
-            if (product.isMultiSizeProduct()) {
+            if (product.isMultiSize()) {
                 List<String> bandNameList = new ArrayList<>();
                 for (Band band : bands) {
                     if (band.getRasterSize().equals(product.getSceneRasterSize()) &&

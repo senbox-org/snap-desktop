@@ -120,7 +120,7 @@ public class SourceProductSelector {
             final Object selected = productNameComboBox.getSelectedItem();
             if (selected != null && selected instanceof Product) {
                 Product product = (Product) selected;
-                if (!initializingBands && checkForMultisize && product.isMultiSizeProduct()) {
+                if (!initializingBands && checkForMultisize && product.isMultiSize()) {
                     maybeCheckForMultisize(product);
                 }
                 if (product.getFileLocation() != null) {
@@ -167,7 +167,7 @@ public class SourceProductSelector {
                 final Object element = productListModel.getElementAt(i);
                 if (element != null && element instanceof Product) {
                     final Product someProduct = (Product) element;
-                    if (!someProduct.isMultiSizeProduct()) {
+                    if (!someProduct.isMultiSize()) {
                         productListModel.setSelectedItem(someProduct);
                         break;
                     }
@@ -209,7 +209,7 @@ public class SourceProductSelector {
         }
 
         if (selectedProduct != null && productFilter.accept(selectedProduct)) {
-            if (checkForMultisize && selectedProduct.isMultiSizeProduct()) {
+            if (checkForMultisize && selectedProduct.isMultiSize()) {
                 maybeCheckForMultisize(selectedProduct);
             } else {
                 productListModel.setSelectedItem(selectedProduct);
