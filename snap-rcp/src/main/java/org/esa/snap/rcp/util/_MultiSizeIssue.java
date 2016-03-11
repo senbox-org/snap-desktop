@@ -30,7 +30,7 @@ import java.util.List;
  *
  * @author Tonio Fincke
  */
-public class MultisizeIssue {
+public class _MultiSizeIssue {
 
     public static Product maybeResample(Product product) {
         String title = Dialogs.getDialogTitle("Resampling required");

@@ -29,7 +29,7 @@ import org.esa.snap.core.util.ArrayUtils;
 import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
-import org.esa.snap.rcp.util.MultiSizeIssue0;
+import org.esa.snap.rcp.util._MultiSizeIssue;
 import org.esa.snap.ui.ExpressionPane;
 import org.esa.snap.ui.GridBagUtils;
 import org.esa.snap.ui.ModalDialog;
@@ -121,8 +121,8 @@ public class AttachPixelGeoCodingAction extends AbstractAction implements Contex
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
         Product selectedProduct = lkp.lookup(ProductNode.class).getProduct();
-        if (MultiSizeIssue0.isMultiSize(selectedProduct)) {
-            final Product resampledProduct = MultiSizeIssue0.maybeResample(selectedProduct);
+        if (_MultiSizeIssue.isMultiSize(selectedProduct)) {
+            final Product resampledProduct = _MultiSizeIssue.maybeResample(selectedProduct);
             if (resampledProduct != null) {
                 selectedProduct = resampledProduct;
             } else {

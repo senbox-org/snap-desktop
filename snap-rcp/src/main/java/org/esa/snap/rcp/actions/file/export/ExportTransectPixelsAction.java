@@ -37,7 +37,7 @@ import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
-import org.esa.snap.rcp.util.MultiSizeIssue0;
+import org.esa.snap.rcp.util._MultiSizeIssue;
 import org.esa.snap.ui.SelectExportMethodDialog;
 import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.product.ProductSceneView;
@@ -115,7 +115,7 @@ public class ExportTransectPixelsAction extends AbstractAction implements Contex
     public void actionPerformed(ActionEvent event) {
         final ProductSceneView sceneView = SnapApp.getDefault().getSelectedProductSceneView();
         if(sceneView != null && sceneView.getProduct().isMultiSize()) {
-            MultiSizeIssue0.maybeResample(sceneView.getProduct());
+            _MultiSizeIssue.maybeResample(sceneView.getProduct());
             //as the following code relies on current selections, nothing else is done after resampling
         } else {
             exportTransectPixels();
