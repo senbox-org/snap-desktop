@@ -231,10 +231,6 @@ class ReprojectionForm extends JTabbedPane {
         crsSelectionPanel.prepareShow();
     }
 
-    private boolean isMultiSize(Product selectedProduct) {
-        return selectedProduct != null && selectedProduct.isMultiSizeProduct();
-    }
-
     void prepareHide() {
         sourceProductSelector.releaseProducts();
         crsSelectionPanel.prepareHide();
