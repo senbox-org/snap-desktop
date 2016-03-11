@@ -126,7 +126,6 @@ public class DefaultIOParametersPanel extends JPanel {
             final ProductFilter productFilter = new AnnotatedSourceProductFilter(descriptor);
             SourceProductSelector sourceProductSelector = new SourceProductSelector(appContext, descriptor.isOptional());
             sourceProductSelector.setProductFilter(productFilter);
-            sourceProductSelector.setCanBeMultisize(descriptor.canBeMultisize());
             sourceProductSelectorList.add(sourceProductSelector);
             sourceProductSelectorMap.put(descriptor, sourceProductSelector);
         }

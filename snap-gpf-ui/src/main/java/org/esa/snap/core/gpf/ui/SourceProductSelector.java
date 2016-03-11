@@ -30,7 +30,6 @@ import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.rcp.actions.file.OpenProductAction;
-import org.esa.snap.rcp.util.MultiSizeIssue;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.SnapFileChooser;
 import org.openide.util.Utilities;
@@ -83,8 +82,6 @@ public class SourceProductSelector {
     private final ProductManager.Listener productManagerListener;
     private ComboBoxSelectionContext selectionContext;
     private boolean enableEmptySelection;
-    private boolean checkForMultisize;
-    private boolean initializingBands;
 
     public SourceProductSelector(AppContext appContext) {
         this(appContext, false);
@@ -101,8 +98,6 @@ public class SourceProductSelector {
     public SourceProductSelector(AppContext appContext, String labelText, boolean enableEmptySelection) {
         this.appContext = appContext;
         this.enableEmptySelection = enableEmptySelection;
-        this.checkForMultisize = false;
-        this.initializingBands = false;
 
         productListModel = new DefaultComboBoxModel<>();
 
@@ -120,9 +115,6 @@ public class SourceProductSelector {
             final Object selected = productNameComboBox.getSelectedItem();
             if (selected != null && selected instanceof Product) {
                 Product product = (Product) selected;
-                if (!initializingBands && checkForMultisize && product.isMultiSize()) {
-                    maybeCheckForMultisize(product);
-                }
                 if (product.getFileLocation() != null) {
                     productNameComboBox.setToolTipText(product.getFileLocation().getPath());
                 } else {
@@ -153,29 +145,6 @@ public class SourceProductSelector {
         };
     }
 
-    public void setCanBeMultisize(boolean canBeMultisize) {
-        checkForMultisize = !canBeMultisize;
-    }
-
-    private void maybeCheckForMultisize(Product product) {
-        final Product resampledProduct = MultiSizeIssue.maybeResample(product);
-        if (resampledProduct != null) {
-            productListModel.setSelectedItem(resampledProduct);
-        } else {
-            productListModel.setSelectedItem(null);
-            for (int i = 0; i < getProductCount(); i++) {
-                final Object element = productListModel.getElementAt(i);
-                if (element != null && element instanceof Product) {
-                    final Product someProduct = (Product) element;
-                    if (!someProduct.isMultiSize()) {
-                        productListModel.setSelectedItem(someProduct);
-                        break;
-                    }
-                }
-            }
-        }
-    }
-
     /**
      * @return the product filter, default is a filter which accepts all products
      */
@@ -192,14 +161,12 @@ public class SourceProductSelector {
 
     public synchronized void initProducts() {
         productListModel.removeAllElements();
-        initializingBands = true;
         if (enableEmptySelection) {
             productListModel.addElement(null);
         }
         for (Product product : appContext.getProductManager().getProducts()) {
             addProduct(product);
         }
-        initializingBands = false;
 
         Product selectedProduct = appContext.getSelectedProduct();
         final ProductNode productNode = Utilities.actionsGlobalContext().lookup(ProductNode.class);
@@ -209,11 +176,7 @@ public class SourceProductSelector {
         }
 
         if (selectedProduct != null && productFilter.accept(selectedProduct)) {
-            if (checkForMultisize && selectedProduct.isMultiSize()) {
-                maybeCheckForMultisize(selectedProduct);
-            } else {
-                productListModel.setSelectedItem(selectedProduct);
-            }
+            productListModel.setSelectedItem(selectedProduct);
         }
         appContext.getProductManager().addListener(productManagerListener);
     }
@@ -443,8 +406,7 @@ public class SourceProductSelector {
             if (!(comp instanceof JPopupMenu)) {
                 return;
             }
-            JComponent scrollPane = (JComponent) ((JPopupMenu) comp)
-                    .getComponent(0);
+            JComponent scrollPane = (JComponent) ((JPopupMenu) comp).getComponent(0);
             Dimension size = new Dimension();
             size.width = scrollPane.getPreferredSize().width;
             final int boxItemCount = box.getModel().getSize();

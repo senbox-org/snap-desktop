@@ -116,7 +116,6 @@ class ReprojectionForm extends JTabbedPane {
             targetProductSuffix = "reprojected";
             this.sourceProductSelector.setProductFilter(new GeoCodingProductFilter());
         }
-        sourceProductSelector.setCanBeMultisize(false);
         this.reprojectionModel = new Model();
         this.reprojectionContainer = PropertyContainer.createObjectBacked(reprojectionModel);
         createUI();

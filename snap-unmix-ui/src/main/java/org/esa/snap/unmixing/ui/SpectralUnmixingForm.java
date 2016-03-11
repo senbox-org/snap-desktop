@@ -57,15 +57,12 @@ class SpectralUnmixingForm extends JPanel {
     JComboBox unmixingModelName;
     JCheckBox computeErrorBands;
 
-    private static final String NAME = "SpectralUnmixingForm";
-
     SpectralUnmixingForm(AppContext appContext, PropertySet propertySet, TargetProductSelector targetProductSelector) {
         this.appContext = appContext;
         this.targetProductSelector = targetProductSelector;
         this.formModel = new SpectralUnmixingFormModel(appContext.getSelectedProduct(), propertySet);
         this.endmemberForm = new EndmemberForm(appContext);
         this.sourceProductSelector = new SourceProductSelector(appContext);
-        sourceProductSelector.setCanBeMultisize(false);
         createComponents();
         bindComponents();
     }
