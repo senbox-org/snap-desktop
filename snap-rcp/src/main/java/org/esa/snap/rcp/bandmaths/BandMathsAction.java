@@ -22,7 +22,7 @@ import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.core.datamodel.ProductNodeList;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.util.MultisizeIssue;
+import org.esa.snap.rcp.util.MultiSizeIssue0;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -88,8 +88,8 @@ public class BandMathsAction extends AbstractAction implements HelpCtx.Provider 
             product = products.getAt(0);
         }
 
-        if (MultisizeIssue.isMultiSize(product)) {
-            final Product resampledProduct = MultisizeIssue.maybeResample(product);
+        if (MultiSizeIssue0.isMultiSize(product)) {
+            final Product resampledProduct = MultiSizeIssue0.maybeResample(product);
             if (resampledProduct != null) {
                 product = resampledProduct;
                 products.add(resampledProduct);

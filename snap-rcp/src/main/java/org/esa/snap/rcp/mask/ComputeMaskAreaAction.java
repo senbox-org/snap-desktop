@@ -30,7 +30,7 @@ import org.esa.snap.core.util.math.MathUtils;
 import org.esa.snap.core.util.math.RsMathUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
-import org.esa.snap.rcp.util.MultisizeIssue;
+import org.esa.snap.rcp.util.MultiSizeIssue0;
 import org.esa.snap.ui.AbstractDialog;
 import org.esa.snap.ui.GridBagUtils;
 import org.esa.snap.ui.ModalDialog;
@@ -125,8 +125,8 @@ public class ComputeMaskAreaAction extends AbstractAction implements LookupListe
         assert raster != null;
 
         Product product = raster.getProduct();
-        if (MultisizeIssue.isMultiSize(product)) {
-            final Product resampledProduct = MultisizeIssue.maybeResample(product);
+        if (MultiSizeIssue0.isMultiSize(product)) {
+            final Product resampledProduct = MultiSizeIssue0.maybeResample(product);
             if (resampledProduct != null) {
                 product = resampledProduct;
                 raster = resampledProduct.getRasterDataNode(raster.getName());

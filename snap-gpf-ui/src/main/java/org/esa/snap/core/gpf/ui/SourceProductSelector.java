@@ -30,7 +30,7 @@ import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.rcp.actions.file.OpenProductAction;
-import org.esa.snap.rcp.util.MultisizeIssue;
+import org.esa.snap.rcp.util.MultiSizeIssue0;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.SnapFileChooser;
 import org.openide.util.Utilities;
@@ -158,7 +158,7 @@ public class SourceProductSelector {
     }
 
     private void maybeCheckForMultisize(Product product) {
-        final Product resampledProduct = MultisizeIssue.maybeResample(product);
+        final Product resampledProduct = MultiSizeIssue0.maybeResample(product);
         if (resampledProduct != null) {
             productListModel.setSelectedItem(resampledProduct);
         } else {
