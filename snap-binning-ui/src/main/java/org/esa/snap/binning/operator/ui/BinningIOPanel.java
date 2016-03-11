@@ -21,10 +21,8 @@ import com.bc.ceres.swing.TableLayout;
 import org.esa.snap.core.dataio.ProductIO;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.ui.TargetProductSelector;
-import org.esa.snap.core.util.ArrayUtils;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.io.WildcardMatcher;
-import org.esa.snap.rcp.util.MultiSizeIssue;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.product.SourceProductList;
 
@@ -104,14 +102,6 @@ class BinningIOPanel extends JPanel {
 
             @Override
             public void intervalAdded(ListDataEvent e) {
-                final Product[] propertySourceProducts = binningFormModel.getPropertyValue(BinningFormModel.PROPERTY_KEY_SOURCE_PRODUCTS);
-                final Product[] newSourceProducts = sourceProductList.getSourceProducts();
-                for (Product newSourceProduct : newSourceProducts) {
-                    if ((propertySourceProducts == null || !ArrayUtils.isMemberOf(newSourceProduct, propertySourceProducts))
-                            && newSourceProduct.isMultiSize()) {
-                        MultiSizeIssue.maybeResample(newSourceProduct);
-                    }
-                }
                 contentsChanged(e);
             }
 
