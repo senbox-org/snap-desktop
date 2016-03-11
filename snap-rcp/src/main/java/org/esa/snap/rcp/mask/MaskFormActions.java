@@ -41,7 +41,7 @@ import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.vector.CreateVectorDataNodeAction;
 import org.esa.snap.rcp.util.Dialogs;
-import org.esa.snap.rcp.util._MultiSizeIssue;
+import org.esa.snap.rcp.util.MultiSizeIssue;
 import org.esa.snap.rcp.util.internal.RasterDataNodeDeleter;
 import org.esa.snap.rcp.windows.ToolTopComponent;
 import org.esa.snap.ui.AbstractDialog;
@@ -180,7 +180,7 @@ class MaskFormActions {
         String getCode(ActionEvent e) {
             Product product = getMaskForm().getProduct();
             if (product.isMultiSize()) {
-                final Product resampledProduct = _MultiSizeIssue.maybeResample(product);
+                final Product resampledProduct = MultiSizeIssue.maybeResample(product);
                 if (resampledProduct != null) {
                     product = resampledProduct;
                 }
@@ -931,8 +931,8 @@ class MaskFormActions {
 
         private static void copyMaskPixel(Mask[] selectedMasks, Product sourceProduct,
                                           Product[] maskPixelTargetProducts) {
-            if (_MultiSizeIssue.isMultiSize(sourceProduct)) {
-                final Product resampledProduct = _MultiSizeIssue.maybeResample(sourceProduct);
+            if (MultiSizeIssue.isMultiSize(sourceProduct)) {
+                final Product resampledProduct = MultiSizeIssue.maybeResample(sourceProduct);
                 if (resampledProduct != null) {
                     sourceProduct = resampledProduct;
                     for (int i = 0; i < selectedMasks.length; i++) {

@@ -32,7 +32,7 @@ import org.esa.snap.core.util.ArrayUtils;
 import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
-import org.esa.snap.rcp.util._MultiSizeIssue;
+import org.esa.snap.rcp.util.MultiSizeIssue;
 import org.esa.snap.ui.HSVImageProfilePane;
 import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.product.ProductSceneImage;
@@ -89,7 +89,7 @@ public class OpenHSVImageViewAction extends AbstractAction implements HelpCtx.Pr
     public void actionPerformed(final ActionEvent event) {
         if (product != null) {
             if (product.isMultiSize()) {
-                final Product resampledProduct = _MultiSizeIssue.maybeResample(this.product);
+                final Product resampledProduct = MultiSizeIssue.maybeResample(this.product);
                 if (resampledProduct != null) {
                     product = resampledProduct;
                 }

@@ -24,7 +24,7 @@ import org.esa.snap.core.gpf.ui.TargetProductSelector;
 import org.esa.snap.core.util.ArrayUtils;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.io.WildcardMatcher;
-import org.esa.snap.rcp.util._MultiSizeIssue;
+import org.esa.snap.rcp.util.MultiSizeIssue;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.product.SourceProductList;
 
@@ -109,7 +109,7 @@ class BinningIOPanel extends JPanel {
                 for (Product newSourceProduct : newSourceProducts) {
                     if ((propertySourceProducts == null || !ArrayUtils.isMemberOf(newSourceProduct, propertySourceProducts))
                             && newSourceProduct.isMultiSize()) {
-                        _MultiSizeIssue.maybeResample(newSourceProduct);
+                        MultiSizeIssue.maybeResample(newSourceProduct);
                     }
                 }
                 contentsChanged(e);
