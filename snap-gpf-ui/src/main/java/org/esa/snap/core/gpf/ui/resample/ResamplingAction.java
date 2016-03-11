@@ -22,7 +22,7 @@ import java.awt.event.ActionEvent;
  */
 @ActionID(category = "Operators", id = "org.esa.snap.core.gpf.ui.resample.ResamplingAction")
 @ActionRegistration(displayName = "#CTL_ResamplingAction_Name")
-@ActionReferences({@ActionReference(path = "Menu/Raster", position = 60)})
+@ActionReferences({@ActionReference(path = "Menu/Raster/Geometric Operations", position = 60)})
 @NbBundle.Messages({"CTL_ResamplingAction_Name=Resampling",
         "CTL_ResamplingAction_Description=Uses the SNAP resampling op to resample all bands of a product to the same size.",
         "CTL_ResamplingAction_OpName=Resampling Operator",
