@@ -215,7 +215,10 @@ public class ProductOpener {
             String fileFormatName;
             if (formatName == null) {
                 final List<PluginEntry> intendedPlugIns = getPluginsForFile(file, DecodeQualification.INTENDED);
-                final List<PluginEntry> suitablePlugIns = getPluginsForFile(file, DecodeQualification.SUITABLE);
+                List<PluginEntry> suitablePlugIns = new ArrayList<>();
+                if (intendedPlugIns.size() == 0) { // check for suitable readers only if no intended reader was found
+                    suitablePlugIns.addAll(getPluginsForFile(file, DecodeQualification.SUITABLE));
+                }
 
                 if (intendedPlugIns.isEmpty() && suitablePlugIns.isEmpty()) {
                     Dialogs.showError(Bundle.LBL_NoReaderFoundText() + String.format("%nFile '%s' can not be opened.", file));
