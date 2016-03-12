@@ -29,6 +29,7 @@ import org.esa.snap.core.util.ArrayUtils;
 import org.esa.snap.netbeans.docwin.DocumentWindowManager;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
+import org.esa.snap.rcp.util.MultiSizeIssue;
 import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
 import org.esa.snap.ui.RGBImageProfilePane;
 import org.esa.snap.ui.UIUtils;
@@ -71,7 +72,7 @@ import java.awt.event.ActionEvent;
 public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Provider {
 
     private static final String HELP_ID = "rgbImageProfile";
-    private final Product product;
+    private Product product;
 
     public OpenRGBImageViewAction(ProductNode node) {
         super(Bundle.CTL_OpenRGBImageViewAction_MenuText());
@@ -81,7 +82,16 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        openProductSceneViewRGB(product, HELP_ID);
+        if (product != null) {
+            if (product.isMultiSize()) {
+                final Product resampledProduct = MultiSizeIssue.maybeResample(this.product);
+                if (resampledProduct != null) {
+                    product = resampledProduct;
+                }
+            }
+            openProductSceneViewRGB(product, HELP_ID);
+        }
+
     }
 
     @Override

@@ -367,7 +367,7 @@ public class SourceProductSelector {
 
         private void handleError(final Component component, final String message) {
             SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(component, message, "Error",
-                                                                   JOptionPane.ERROR_MESSAGE));
+                                                                           JOptionPane.ERROR_MESSAGE));
         }
     }
 
@@ -377,7 +377,7 @@ public class SourceProductSelector {
         public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
                                                       boolean cellHasFocus) {
             final Component cellRendererComponent =
-                        super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                    super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 
             if (cellRendererComponent instanceof JLabel) {
                 final JLabel label = (JLabel) cellRendererComponent;
@@ -406,8 +406,7 @@ public class SourceProductSelector {
             if (!(comp instanceof JPopupMenu)) {
                 return;
             }
-            JComponent scrollPane = (JComponent) ((JPopupMenu) comp)
-                        .getComponent(0);
+            JComponent scrollPane = (JComponent) ((JPopupMenu) comp).getComponent(0);
             Dimension size = new Dimension();
             size.width = scrollPane.getPreferredSize().width;
             final int boxItemCount = box.getModel().getSize();

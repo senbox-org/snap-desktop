@@ -330,8 +330,10 @@ public class ToolAdaptersManagementDialog extends ModelessDialog {
         toolboxSpis.sort((o1, o2) -> o1.getAlias().compareTo(o2.getAlias()));
         OperatorsTableModel model = new OperatorsTableModel(toolboxSpis);
         operatorsTable = new JTable(model);
-        operatorsTable.getColumnModel().getColumn(0).setMaxWidth(250);
-        operatorsTable.getColumnModel().getColumn(1).setMaxWidth(LABEL_COLUMN_WIDTH);
+        operatorsTable.getColumnModel().getColumn(0).setPreferredWidth(LABEL_COLUMN_WIDTH);
+        operatorsTable.getColumnModel().getColumn(0).setMaxWidth(300);
+        operatorsTable.getColumnModel().getColumn(1).setResizable(true);
+        operatorsTable.getColumnModel().getColumn(1).setPreferredWidth(LABEL_COLUMN_WIDTH);
         operatorsTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
         operatorsTable.addMouseListener(new MouseListener() {
             @Override

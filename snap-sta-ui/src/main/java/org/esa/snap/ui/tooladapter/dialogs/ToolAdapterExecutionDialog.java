@@ -17,6 +17,7 @@
  */
 package org.esa.snap.ui.tooladapter.dialogs;
 
+import com.bc.ceres.binding.Property;
 import com.bc.ceres.core.ProgressMonitor;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.GPF;
@@ -35,6 +36,7 @@ import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.tooladapter.actions.EscapeAction;
 import org.esa.snap.ui.tooladapter.preferences.ToolAdapterOptionsController;
+import org.esa.snap.utils.PrivilegedAccessor;
 import org.netbeans.api.progress.ProgressHandle;
 import org.netbeans.api.progress.ProgressHandleFactory;
 import org.netbeans.api.progress.ProgressUtils;
@@ -109,6 +111,33 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
         warnings = new ArrayList<>();
     }
 
+    /* Add workaround for SNAP-402 (JIRA) issue */
+    private void updatePrimitiveZeroValuesHashMap(){
+
+        try {
+
+            HashMap<Class<?>, Object> primitiveZeroValuesMap = (HashMap<Class<?>, Object>) PrivilegedAccessor.getStaticValue(Property.class, "PRIMITIVE_ZERO_VALUES");
+
+            /* Update dictionary with primitive default values */
+            primitiveZeroValuesMap.put(Boolean.class,false);
+            primitiveZeroValuesMap.put(Character.class, (char) 0);
+            primitiveZeroValuesMap.put(Byte.class, (byte) 0);
+            primitiveZeroValuesMap.put(Short.class, (short) 0);
+            primitiveZeroValuesMap.put(Integer.class, 0);
+            primitiveZeroValuesMap.put(Long.class, (long) 0);
+            primitiveZeroValuesMap.put(Float.class, (float) 0);
+            primitiveZeroValuesMap.put(Double.class, (double) 0);
+
+        }
+        catch (IllegalAccessException iaExc){
+            logger.severe(iaExc.getMessage());
+        }
+        catch (NoSuchFieldException nsfExc){
+            logger.severe(nsfExc.getMessage());
+        }
+
+    }
+
     private void initialize(ToolAdapterOperatorDescriptor descriptor) {
         this.operatorDescriptor = descriptor;
         this.parameterSupport = new OperatorParameterSupport(descriptor);
@@ -121,6 +150,10 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
                 helpID);
         getJDialog().setJMenuBar(operatorMenu.createDefaultMenu());
         EscapeAction.register(getJDialog());
+
+        /* Add workaround for SNAP-402 (JIRA) issue */
+        updatePrimitiveZeroValuesHashMap();
+
     }
 
     /* Begin @Override methods section */

@@ -32,6 +32,7 @@ import org.esa.snap.core.util.ArrayUtils;
 import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
+import org.esa.snap.rcp.util.MultiSizeIssue;
 import org.esa.snap.ui.HSVImageProfilePane;
 import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.product.ProductSceneImage;
@@ -70,7 +71,7 @@ import java.awt.event.ActionEvent;
 public class OpenHSVImageViewAction extends AbstractAction implements HelpCtx.Provider {
 
     private static final String HELP_ID = "hsvImageProfile";
-    private final Product product;
+    private Product product;
 
     private static final String r = "min(round( (floor((6*(h))%6)==0?(v): (floor((6*(h))%6)==1?((1-((s)*((6*(h))%6)-floor((6*(h))%6)))*(v)): (floor((6*(h))%6)==2?((1-(s))*(v)): (floor((6*(h))%6)==3?((1-(s))*(v)): (floor((6*(h))%6)==4?((1-((s)*(1-((6*(h))%6)-floor((6*(h))%6))))*(v)): (floor((6*(h))%6)==5?(v):0)))))) *256), 255)";
 
@@ -87,6 +88,12 @@ public class OpenHSVImageViewAction extends AbstractAction implements HelpCtx.Pr
     @Override
     public void actionPerformed(final ActionEvent event) {
         if (product != null) {
+            if (product.isMultiSize()) {
+                final Product resampledProduct = MultiSizeIssue.maybeResample(this.product);
+                if (resampledProduct != null) {
+                    product = resampledProduct;
+                }
+            }
             openProductSceneViewHSV(product, HELP_ID);
         }
     }

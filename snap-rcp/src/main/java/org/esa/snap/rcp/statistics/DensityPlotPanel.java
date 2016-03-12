@@ -38,7 +38,7 @@ import org.esa.snap.core.util.ProductUtils;
 import org.esa.snap.core.util.math.MathUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
-import org.esa.snap.rcp.util.ResamplingIssue;
+import org.esa.snap.rcp.util.MultiSizeIssue;
 import org.esa.snap.ui.GridBagUtils;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -283,8 +283,11 @@ class DensityPlotPanel extends ChartPagePanel {
     }
 
     private void checkForMultiSize(Product product) {
-        if (product != null && product.isMultiSizeProduct()) {
-            ResamplingIssue.showResamplingIssueNotification(product);
+        if (product != null && product.isMultiSize()) {
+            final Product resampledProduct = MultiSizeIssue.maybeResample(product);
+            if (resampledProduct != null) {
+                selectionChanged(resampledProduct, null, null);
+            }
         }
     }
 

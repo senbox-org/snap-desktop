@@ -24,7 +24,6 @@ import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.ui.SourceProductSelector;
 import org.esa.snap.core.gpf.ui.TargetProductSelector;
-import org.esa.snap.rcp.util.ResamplingIssue;
 import org.esa.snap.ui.AppContext;
 
 import javax.swing.BorderFactory;
@@ -86,13 +85,6 @@ class CollocationForm extends JPanel {
         slaveProductSelector.initProducts();
         if (slaveProductSelector.getProductCount() > 1) {
             slaveProductSelector.setSelectedIndex(1);
-        }
-
-        if(ResamplingIssue.isMultiSize(masterProductSelector.getSelectedProduct())) {
-            ResamplingIssue.showResamplingIssueNotification(masterProductSelector.getSelectedProduct());
-        }
-        if(ResamplingIssue.isMultiSize(slaveProductSelector.getSelectedProduct())) {
-            ResamplingIssue.showResamplingIssueNotification(slaveProductSelector.getSelectedProduct());
         }
     }
 

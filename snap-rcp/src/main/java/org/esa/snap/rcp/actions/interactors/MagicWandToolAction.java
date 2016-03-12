@@ -54,7 +54,7 @@ public class MagicWandToolAction extends ToolAction {
             return;
         }
         if (productSceneView.getProduct() != null) {
-            setEnabled(!productSceneView.getProduct().isMultiSizeProduct());
+            setEnabled(!productSceneView.getProduct().isMultiSize());
         }
     }
 

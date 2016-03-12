@@ -25,7 +25,7 @@ import com.jidesoft.swing.FolderChooser;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.util.ArrayUtils;
 import org.esa.snap.core.util.SystemUtils;
-import org.esa.snap.rcp.util.ResamplingIssue;
+import org.esa.snap.rcp.util.MultiSizeIssue;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.product.SourceProductList;
 
@@ -78,7 +78,7 @@ class PixelExtractionIOForm {
         panel = new JPanel(tableLayout);
 
         sourceProductList = new SourceProductList(appContext);
-        sourceProductList.setProductFilter(product -> !product.isMultiSizeProduct());
+        sourceProductList.setProductFilter(product -> !product.isMultiSize());
         sourceProductList.setPropertyNameLastOpenedFormat(PROPERTY_NAME_LAST_OPEN_FORMAT);
         sourceProductList.setPropertyNameLastOpenInputDir(PROPERTY_NAME_LAST_OPEN_INPUT_DIR);
         sourceProductList.addChangeListener(changeListener);
@@ -89,8 +89,8 @@ class PixelExtractionIOForm {
                 final Product[] newSourceProducts = sourceProductList.getSourceProducts();
                 for (Product newSourceProduct : newSourceProducts) {
                     if ((propertySourceProducts == null || !ArrayUtils.isMemberOf(newSourceProduct, propertySourceProducts))
-                            && newSourceProduct.isMultiSizeProduct()) {
-                        ResamplingIssue.showResamplingIssueNotification(newSourceProduct);
+                            && newSourceProduct.isMultiSize()) {
+                        MultiSizeIssue.maybeResample(newSourceProduct);
                     }
                 }
             }

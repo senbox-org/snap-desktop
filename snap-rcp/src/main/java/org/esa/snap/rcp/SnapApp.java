@@ -21,7 +21,6 @@ import org.esa.snap.rcp.cli.SnapArgs;
 import org.esa.snap.rcp.session.OpenSessionAction;
 import org.esa.snap.rcp.util.ContextGlobalExtenderImpl;
 import org.esa.snap.rcp.util.Dialogs;
-import org.esa.snap.rcp.util.MultiSizeIssue;
 import org.esa.snap.rcp.util.SelectionSupport;
 import org.esa.snap.rcp.util.internal.DefaultSelectionSupport;
 import org.esa.snap.runtime.Config;
@@ -570,7 +569,7 @@ public class SnapApp {
                 SystemUtils.initJAI(Lookup.getDefault().lookup(ClassLoader.class));
                 // uncomment if we encounter problems with the stmt above
                 //SystemUtils.init3rdPartyLibs(null);
-                initGPF();
+                SnapApp.getDefault().initGPF();
             }
         }
     }
@@ -645,13 +644,14 @@ public class SnapApp {
         }
     }
 
-    private static void initGPF() {
+    private void initGPF() {
         OperatorSpiRegistry operatorSpiRegistry = GPF.getDefaultInstance().getOperatorSpiRegistry();
         operatorSpiRegistry.loadOperatorSpis();
         Set<OperatorSpi> services = operatorSpiRegistry.getServiceRegistry().getServices();
         for (OperatorSpi service : services) {
             LOG.info(String.format("GPF operator SPI: %s (alias '%s')", service.getClass(), service.getOperatorAlias()));
         }
+        GPF.getDefaultInstance().setProductManager(getProductManager());
     }
 
     /**
@@ -745,9 +745,6 @@ public class SnapApp {
         @Override
         public void productAdded(ProductManager.Event event) {
             final Product product = event.getProduct();
-            if(product.isMultiSizeProduct()) {
-                MultiSizeIssue.showMultiSizeWarning();
-            }
         }
 
         @Override

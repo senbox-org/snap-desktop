@@ -145,13 +145,16 @@ public class CreateVectorDataNodeAction extends AbstractAction implements Contex
 
     @Override
     public void resultChanged(LookupEvent ev) {
-        ProductNode productNode = lkp.lookup(ProductNode.class);
+        ProductNode productNode = SnapApp.getDefault().getSelectedProductNode(SnapApp.SelectionSourceHint.VIEW);
         setEnabled(productNode != null);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        ProductNode productNode = lkp.lookup(ProductNode.class);
+        ProductNode productNode = SnapApp.getDefault().getSelectedProductNode(SnapApp.SelectionSourceHint.VIEW);
+        if (productNode == null) {
+            return;
+        }
         Product product = productNode.getProduct();
         if (product != null) {
             DialogData dialogData = new DialogData(product.getVectorDataGroup());

@@ -28,7 +28,6 @@ import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.ui.SourceProductSelector;
 import org.esa.snap.core.gpf.ui.TargetProductSelector;
 import org.esa.snap.core.gpf.ui.TargetProductSelectorModel;
-import org.esa.snap.rcp.util.ResamplingIssue;
 import org.esa.snap.ui.AppContext;
 
 import javax.swing.BorderFactory;
@@ -57,8 +56,6 @@ class SpectralUnmixingForm extends JPanel {
     JTextField minBandwidth;
     JComboBox unmixingModelName;
     JCheckBox computeErrorBands;
-
-    private static final String NAME = "SpectralUnmixingForm";
 
     SpectralUnmixingForm(AppContext appContext, PropertySet propertySet, TargetProductSelector targetProductSelector) {
         this.appContext = appContext;
@@ -120,9 +117,6 @@ class SpectralUnmixingForm extends JPanel {
                 final Product selectedProduct = (Product) event.getSelection().getSelectedValue();
                 final String[] validNames;
                 if (selectedProduct != null) {
-                    if (selectedProduct.isMultiSizeProduct()) {
-                        ResamplingIssue.showResamplingIssueNotification(selectedProduct);
-                    }
                     String[] bandNames = selectedProduct.getBandNames();
                     ArrayList<String> names = new ArrayList<>(bandNames.length);
                     for (String bandName : bandNames) {

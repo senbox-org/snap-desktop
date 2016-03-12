@@ -30,7 +30,7 @@ import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
-import org.esa.snap.rcp.util.ResamplingIssue;
+import org.esa.snap.rcp.util.MultiSizeIssue;
 import org.esa.snap.ui.AbstractDialog;
 import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.ui.SelectExportMethodDialog;
@@ -104,7 +104,7 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
 
     public ExportMaskPixelsAction(Lookup lkp) {
         super(Bundle.CTL_ExportMaskPixelsAction_MenuText());
-        putValue("popupText",Bundle.CTL_ExportMaskPixelsAction_PopupText());
+        putValue("popupText", Bundle.CTL_ExportMaskPixelsAction_PopupText());
         result = lkp.lookupResult(ProductSceneView.class);
         result.addLookupListener(WeakListeners.create(LookupListener.class, this, result));
         setEnabled(false);
@@ -118,10 +118,17 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
     @Override
     public void actionPerformed(ActionEvent event) {
         ProductSceneView sceneView = SnapApp.getDefault().getSelectedProductSceneView();
-        if(sceneView.getProduct().isMultiSizeProduct()) {
-            ResamplingIssue.showResamplingIssueNotification(sceneView.getProduct());
-        } else {
-            exportMaskPixels();
+        if (sceneView != null) {
+            Product product = sceneView.getProduct();
+            if (product.isMultiSize()) {
+                final Product resampledProduct = MultiSizeIssue.maybeResample(product);
+                if (resampledProduct != null) {
+                    product = resampledProduct;
+                } else {
+                    return;
+                }
+            }
+            exportMaskPixels(product);
         }
     }
 
@@ -147,10 +154,9 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
 
     /**
      * Performs the actual "export Mask Pixels" command.
+     * @param product
      */
-    private void exportMaskPixels() {
-        ProductSceneView sceneView = SnapApp.getDefault().getSelectedProductSceneView();
-        Product product = sceneView.getProduct();
+    private void exportMaskPixels(Product product) {
         String[] maskNames = product.getMaskGroup().getNodeNames();
         final String maskName;
         if (maskNames.length == 1) {
@@ -176,7 +182,7 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
         final RenderedImage maskImage = mask.getSourceImage();
         if (maskImage == null) {
             Dialogs.showError(Bundle.CTL_ExportMaskPixelsAction_DialogTitle(),
-                                  ERR_MSG_BASE + "No Mask image available.");
+                              ERR_MSG_BASE + "No Mask image available.");
             return;
         }
         // Compute total number of Mask pixels
@@ -223,7 +229,7 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
                 fileWriter = new FileWriter(file);
             } catch (IOException e) {
                 Dialogs.showError(Bundle.CTL_ExportMaskPixelsAction_DialogTitle(),
-                                      ERR_MSG_BASE + "Failed to create file '" + file + "':\n" + e.getMessage());
+                                  ERR_MSG_BASE + "Failed to create file '" + file + "':\n" + e.getMessage());
                 return; // Error
             }
             out = new PrintWriter(new BufferedWriter(fileWriter, initialBufferSize));
@@ -268,7 +274,7 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
                 }
                 if (exception != null) {
                     Dialogs.showError(Bundle.CTL_ExportMaskPixelsAction_DialogTitle(),
-                                          ERR_MSG_BASE + exception.getMessage());
+                                      ERR_MSG_BASE + exception.getMessage());
                 }
             }
 
