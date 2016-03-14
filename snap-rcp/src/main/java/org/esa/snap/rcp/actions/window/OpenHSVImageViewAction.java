@@ -88,12 +88,6 @@ public class OpenHSVImageViewAction extends AbstractAction implements HelpCtx.Pr
     @Override
     public void actionPerformed(final ActionEvent event) {
         if (product != null) {
-            if (product.isMultiSize()) {
-                final Product resampledProduct = MultiSizeIssue.maybeResample(this.product);
-                if (resampledProduct != null) {
-                    product = resampledProduct;
-                }
-            }
             openProductSceneViewHSV(product, HELP_ID);
         }
     }
@@ -103,12 +97,12 @@ public class OpenHSVImageViewAction extends AbstractAction implements HelpCtx.Pr
         return new HelpCtx(HELP_ID);
     }
 
-    public void openProductSceneViewHSV(final Product product, final String helpId) {
+    public void openProductSceneViewHSV(Product hsvProduct, final String helpId) {
 
         final Product[] openedProducts = SnapApp.getDefault().getProductManager().getProducts();
-        final int[] defaultBandIndices = OpenRGBImageViewAction.getDefaultBandIndices(product);
+        final int[] defaultBandIndices = OpenRGBImageViewAction.getDefaultBandIndices(hsvProduct);
 
-        final HSVImageProfilePane profilePane = new HSVImageProfilePane(SnapApp.getDefault().getPreferencesPropertyMap(), product,
+        final HSVImageProfilePane profilePane = new HSVImageProfilePane(SnapApp.getDefault().getPreferencesPropertyMap(), hsvProduct,
                                                                         openedProducts, defaultBandIndices);
 
         final String title = "Select HSV-Image Channels";
@@ -117,19 +111,24 @@ public class OpenHSVImageViewAction extends AbstractAction implements HelpCtx.Pr
             return;
         }
         final String[] hsvExpressions = profilePane.getRgbaExpressions();
-        final int defaultProductIndex = ArrayUtils.getElementIndex(product, openedProducts);
+        final int defaultProductIndex = ArrayUtils.getElementIndex(hsvProduct, openedProducts);
         if (!BandArithmetic.areRastersEqualInSize(openedProducts,
                                                   defaultProductIndex, hsvExpressions)) {
-            Dialogs.showInformation(title, "Referenced rasters must all be the same size", null);
-            return;
+//            Dialogs.showInformation(title, "Referenced rasters must all be the same size", null);
+            final Product resampledProduct = MultiSizeIssue.maybeResample(hsvProduct);
+            if (resampledProduct == null) {
+                return;
+            } else {
+                hsvProduct = resampledProduct;
+            }
         }
-        nomalizeHSVExpressions(product, hsvExpressions);
+        nomalizeHSVExpressions(hsvProduct, hsvExpressions);
         if (profilePane.getStoreProfileInProduct()) {
-            RGBImageProfile.storeRgbaExpressions(product, hsvExpressions, HSVImageProfilePane.HSV_COMP_NAMES);
+            RGBImageProfile.storeRgbaExpressions(hsvProduct, hsvExpressions, HSVImageProfilePane.HSV_COMP_NAMES);
         }
 
-        final String sceneName = OpenRGBImageViewAction.createSceneName(product, profilePane.getSelectedProfile(), "HSV");
-        openProductSceneViewHSV(sceneName, product, hsvExpressions);
+        final String sceneName = OpenRGBImageViewAction.createSceneName(hsvProduct, profilePane.getSelectedProfile(), "HSV");
+        openProductSceneViewHSV(sceneName, hsvProduct, hsvExpressions);
     }
 
     /**

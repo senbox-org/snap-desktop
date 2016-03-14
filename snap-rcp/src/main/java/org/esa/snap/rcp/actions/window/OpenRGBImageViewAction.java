@@ -83,12 +83,6 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
     @Override
     public void actionPerformed(ActionEvent e) {
         if (product != null) {
-            if (product.isMultiSize()) {
-                final Product resampledProduct = MultiSizeIssue.maybeResample(this.product);
-                if (resampledProduct != null) {
-                    product = resampledProduct;
-                }
-            }
             openProductSceneViewRGB(product, HELP_ID);
         }
 
@@ -99,11 +93,11 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
         return new HelpCtx(HELP_ID);
     }
 
-    public void openProductSceneViewRGB(final Product product, final String helpId) {
+    public void openProductSceneViewRGB(Product rgbProduct, final String helpId) {
         final Product[] openedProducts = SnapApp.getDefault().getProductManager().getProducts();
-        final int[] defaultBandIndices = getDefaultBandIndices(product);
+        final int[] defaultBandIndices = getDefaultBandIndices(rgbProduct);
 
-        final RGBImageProfilePane profilePane = new RGBImageProfilePane(SnapApp.getDefault().getPreferencesPropertyMap(), product,
+        final RGBImageProfilePane profilePane = new RGBImageProfilePane(SnapApp.getDefault().getPreferencesPropertyMap(), rgbProduct,
                                                                         openedProducts, defaultBandIndices);
 
         final String title = "Select RGB-Image Channels";
@@ -112,18 +106,23 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
             return;
         }
         final String[] rgbaExpressions = profilePane.getRgbaExpressions();
-        final int defaultProductIndex = ArrayUtils.getElementIndex(product, openedProducts);
+        final int defaultProductIndex = ArrayUtils.getElementIndex(rgbProduct, openedProducts);
         if (!BandArithmetic.areRastersEqualInSize(openedProducts,
                                                   defaultProductIndex, rgbaExpressions)) {
-            Dialogs.showInformation(title, "Referenced rasters must all be the same size", null);
-            return;
+//            Dialogs.showInformation(title, "Referenced rasters must all be the same size", null);
+            final Product resampledProduct = MultiSizeIssue.maybeResample(rgbProduct);
+            if (resampledProduct == null) {
+                return;
+            } else {
+                rgbProduct = resampledProduct;
+            }
         }
         if (profilePane.getStoreProfileInProduct()) {
-            RGBImageProfile.storeRgbaExpressions(product, rgbaExpressions);
+            RGBImageProfile.storeRgbaExpressions(rgbProduct, rgbaExpressions);
         }
 
-        final String sceneName = createSceneName(product, profilePane.getSelectedProfile(), "RGB");
-        openProductSceneViewRGB(sceneName, product, rgbaExpressions);
+        final String sceneName = createSceneName(rgbProduct, profilePane.getSelectedProfile(), "RGB");
+        openProductSceneViewRGB(sceneName, rgbProduct, rgbaExpressions);
     }
 
     public static int[] getDefaultBandIndices(final Product product) {
