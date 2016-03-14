@@ -68,11 +68,13 @@ public class CreateSubsetAction extends AbstractAction {
     public static void createSubset(Product sourceProduct, Rectangle bounds) {
         if (MultiSizeIssue.isMultiSize(sourceProduct)) {
             final Product resampledProduct = MultiSizeIssue.maybeResample(sourceProduct);
-            if (resampledProduct != null) {
-                sourceProduct = resampledProduct;
-            } else {
-                return;
-            }
+            //todo use resampled product to call subsetDialog from here using the code below - tf 20160314
+//            if (resampledProduct != null) {
+//                sourceProduct = resampledProduct;
+//            } else {
+//                return;
+//            }
+            return;
         }
 
         final String subsetName = "subset_" + CreateSubsetAction.subsetNumber + "_of_" + sourceProduct.getName();
