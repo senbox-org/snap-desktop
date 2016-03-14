@@ -24,7 +24,6 @@ import org.esa.snap.core.datamodel.TiePointGrid;
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.OperatorSpi;
 import org.esa.snap.core.gpf.descriptor.OperatorDescriptor;
-import org.esa.snap.core.gpf.internal.RasterDataNodeValues;
 import org.esa.snap.core.gpf.ui.DefaultIOParametersPanel;
 import org.esa.snap.core.gpf.ui.OperatorMenu;
 import org.esa.snap.core.gpf.ui.OperatorParameterSupport;
@@ -46,14 +45,9 @@ import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * @author Tonio Fincke
@@ -66,7 +60,6 @@ class ResamplingDialog extends SingleTargetProductDialog {
     private final BindingContext bindingContext;
 
     private JTabbedPane form;
-    private PropertyDescriptor[] rasterDataNodeTypeProperties;
     private String targetProductNameSuffix;
     private ProductChangedHandler productChangedHandler;
 
@@ -102,18 +95,6 @@ class ResamplingDialog extends SingleTargetProductDialog {
         final ArrayList<SourceProductSelector> sourceProductSelectorList = ioParametersPanel.getSourceProductSelectorList();
         final PropertySet propertySet = parameterSupport.getPropertySet();
         bindingContext = new BindingContext(propertySet);
-        if (propertySet.getProperties().length > 0) {
-            Property[] properties = propertySet.getProperties();
-            List<PropertyDescriptor> rdnTypeProperties = new ArrayList<>(properties.length);
-            for (Property property : properties) {
-                PropertyDescriptor parameterDescriptor = property.getDescriptor();
-                if (parameterDescriptor.getAttribute(RasterDataNodeValues.ATTRIBUTE_NAME) != null) {
-                    rdnTypeProperties.add(parameterDescriptor);
-                }
-            }
-            rasterDataNodeTypeProperties = rdnTypeProperties.toArray(
-                    new PropertyDescriptor[rdnTypeProperties.size()]);
-        }
         final Property referenceBandNameProperty = bindingContext.getPropertySet().getProperty("referenceBandName");
         referenceBandNameProperty.getDescriptor().addAttributeChangeListener(evt -> {
             if (evt.getPropertyName().equals("valueSet")) {
@@ -221,76 +202,49 @@ class ResamplingDialog extends SingleTargetProductDialog {
         defineTargetResolutionPanel.add(resolutionSpinner);
         referenceBandButton.setSelected(true);
 
-        referenceBandButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (referenceBandButton.isSelected()) {
-                    referenceBandNameBox.setEnabled(true);
-                    widthSpinner.setEnabled(false);
-                    heightSpinner.setEnabled(false);
-                    resolutionSpinner.setEnabled(false);
-                    updateReferenceBandName();
-                }
-            }
-        });
-        referenceBandNameBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        referenceBandButton.addActionListener(e -> {
+            if (referenceBandButton.isSelected()) {
+                referenceBandNameBox.setEnabled(true);
+                widthSpinner.setEnabled(false);
+                heightSpinner.setEnabled(false);
+                resolutionSpinner.setEnabled(false);
                 updateReferenceBandName();
             }
         });
-        widthAndHeightButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (widthAndHeightButton.isSelected()) {
-                    referenceBandNameBox.setEnabled(false);
-                    widthSpinner.setEnabled(true);
-                    heightSpinner.setEnabled(true);
-                    resolutionSpinner.setEnabled(false);
-                    updateTargetWidthAndHeight();
-                }
+        referenceBandNameBox.addActionListener(e -> updateReferenceBandName());
+        widthAndHeightButton.addActionListener(e -> {
+            if (widthAndHeightButton.isSelected()) {
+                referenceBandNameBox.setEnabled(false);
+                widthSpinner.setEnabled(true);
+                heightSpinner.setEnabled(true);
+                resolutionSpinner.setEnabled(false);
+                updateTargetWidthAndHeight();
             }
         });
-        widthSpinner.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                updateTargetWidth();
-            }
-        });
-        heightSpinner.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                updateTargetHeight();
-            }
-        });
-        resolutionButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (resolutionButton.isSelected()) {
-                    referenceBandNameBox.setEnabled(false);
-                    widthSpinner.setEnabled(false);
-                    heightSpinner.setEnabled(false);
-                    resolutionSpinner.setEnabled(true);
-                    updateTargetResolution();
-                }
-            }
-        });
-        resolutionSpinner.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
+        widthSpinner.addChangeListener(e -> updateTargetWidth());
+        heightSpinner.addChangeListener(e -> updateTargetHeight());
+        resolutionButton.addActionListener(e -> {
+            if (resolutionButton.isSelected()) {
+                referenceBandNameBox.setEnabled(false);
+                widthSpinner.setEnabled(false);
+                heightSpinner.setEnabled(false);
+                resolutionSpinner.setEnabled(true);
                 updateTargetResolution();
             }
         });
+        resolutionSpinner.addChangeListener(e -> updateTargetResolution());
 
         final JPanel upsamplingMethodPanel = createPropertyPanel(propertySet, "upsamplingMethod", registry);
         final JPanel downsamplingMethodPanel = createPropertyPanel(propertySet, "downsamplingMethod", registry);
         final JPanel flagDownsamplingMethodPanel = createPropertyPanel(propertySet, "flagDownsamplingMethod", registry);
+        final JPanel resampleOnPyramidLevelsPanel = createPropertyPanel(propertySet, "resampleOnPyramidLevels", registry);
         final JPanel parametersPanel = new JPanel(tableLayout);
         parametersPanel.setBorder(new EmptyBorder(4, 4, 4, 4));
         parametersPanel.add(defineTargetResolutionPanel);
         parametersPanel.add(upsamplingMethodPanel);
         parametersPanel.add(downsamplingMethodPanel);
         parametersPanel.add(flagDownsamplingMethodPanel);
+        parametersPanel.add(resampleOnPyramidLevelsPanel);
         parametersPanel.add(tableLayout.createVerticalSpacer());
         return parametersPanel;
     }
@@ -346,9 +300,10 @@ class ResamplingDialog extends SingleTargetProductDialog {
         final PropertyDescriptor descriptor = propertySet.getProperty(propertyName).getDescriptor();
         PropertyEditor propertyEditor = registry.findPropertyEditor(descriptor);
         JComponent[] components = propertyEditor.createComponents(descriptor, bindingContext);
-        final JPanel propertyPanel = new JPanel(new GridLayout(1, 2));
-        propertyPanel.add(components[1]);
-        propertyPanel.add(components[0]);
+        final JPanel propertyPanel = new JPanel(new GridLayout(1, components.length));
+        for (int i = components.length - 1; i >= 0; i--) {
+            propertyPanel.add(components[i]);
+        }
         return propertyPanel;
     }
 
