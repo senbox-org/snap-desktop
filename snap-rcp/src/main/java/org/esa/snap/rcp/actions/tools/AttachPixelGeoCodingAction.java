@@ -129,17 +129,16 @@ public class AttachPixelGeoCodingAction extends AbstractAction implements Contex
                 final Band[] bands = selectedProduct.getBands();
                 int validBandsCount = 0;
                 for (Band band : bands) {
-                    if (band.getRasterSize().equals(selectedProduct.getSceneRasterSize()) &&
-                            band.getGeoCoding().equals(selectedProduct.getSceneGeoCoding())) {
+                    if (band.getRasterSize().equals(selectedProduct.getSceneRasterSize())) {
                         validBandsCount++;
                         if (validBandsCount == 2) {
                             break;
                         }
                     }
-                    if (validBandsCount < 2) {
-                        Dialogs.showError("Pixel Geo-Coding cannot be attached: Too few bands of product scene size");
-                        return;
-                    }
+                }
+                if (validBandsCount < 2) {
+                    Dialogs.showError("Pixel Geo-Coding cannot be attached: Too few bands of product scene size");
+                    return;
                 }
             }
         }
@@ -260,8 +259,7 @@ public class AttachPixelGeoCodingAction extends AbstractAction implements Contex
             if (product.isMultiSize()) {
                 List<String> bandNameList = new ArrayList<>();
                 for (Band band : bands) {
-                    if (band.getRasterSize().equals(product.getSceneRasterSize()) &&
-                            band.getGeoCoding() == product.getSceneGeoCoding()) {
+                    if (band.getRasterSize().equals(product.getSceneRasterSize())) {
                         bandNameList.add(band.getName());
                     }
                 }
