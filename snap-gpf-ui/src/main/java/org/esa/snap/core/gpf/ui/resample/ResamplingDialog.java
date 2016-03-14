@@ -19,6 +19,7 @@ import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductNodeEvent;
 import org.esa.snap.core.datamodel.ProductNodeGroup;
 import org.esa.snap.core.datamodel.ProductNodeListener;
+import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.datamodel.TiePointGrid;
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.OperatorSpi;
@@ -77,6 +78,8 @@ class ResamplingDialog extends SingleTargetProductDialog {
     private JSpinner widthSpinner;
     private JSpinner heightSpinner;
     private JSpinner resolutionSpinner;
+    private double targetWidthHeightRatio;
+    private boolean updatingTargetWidthAndHeight;
 
     ResamplingDialog(AppContext appContext, Product product, boolean modal) {
         super(appContext, "Resampling", ID_APPLY_CLOSE, "resampleAction");
@@ -92,6 +95,8 @@ class ResamplingDialog extends SingleTargetProductDialog {
         operatorDescriptor = operatorSpi.getOperatorDescriptor();
         ioParametersPanel = new DefaultIOParametersPanel(getAppContext(), operatorDescriptor, getTargetProductSelector(), true);
         targetProduct = null;
+        targetWidthHeightRatio = 1.0;
+        updatingTargetWidthAndHeight = false;
 
         parameterSupport = new OperatorParameterSupport(operatorDescriptor);
         final ArrayList<SourceProductSelector> sourceProductSelectorList = ioParametersPanel.getSourceProductSelectorList();
@@ -249,13 +254,13 @@ class ResamplingDialog extends SingleTargetProductDialog {
         widthSpinner.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
-                updateTargetWidthAndHeight();
+                updateTargetWidth();
             }
         });
         heightSpinner.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
-                updateTargetWidthAndHeight();
+                updateTargetHeight();
             }
         });
         resolutionButton.addActionListener(new ActionListener() {
@@ -299,6 +304,28 @@ class ResamplingDialog extends SingleTargetProductDialog {
         bindingContext.getPropertySet().setValue("targetWidth", null);
         bindingContext.getPropertySet().setValue("targetHeight", null);
         bindingContext.getPropertySet().setValue("targetResolution", null);
+    }
+
+    private void updateTargetWidth() {
+        if (!updatingTargetWidthAndHeight) {
+            updatingTargetWidthAndHeight = true;
+            final int targetWidth = Integer.parseInt(widthSpinner.getValue().toString());
+            final int targetHeight = (int) (targetWidth / targetWidthHeightRatio);
+            heightSpinner.setValue(targetHeight);
+            updateTargetWidthAndHeight();
+            updatingTargetWidthAndHeight = false;
+        }
+    }
+
+    private void updateTargetHeight() {
+        if (!updatingTargetWidthAndHeight) {
+            updatingTargetWidthAndHeight = true;
+            final int targetHeight = Integer.parseInt(heightSpinner.getValue().toString());
+            final int targetWidth = (int) (targetHeight * targetWidthHeightRatio);
+            widthSpinner.setValue(targetWidth);
+            updateTargetWidthAndHeight();
+            updatingTargetWidthAndHeight = false;
+        }
     }
 
     private void updateTargetWidthAndHeight() {
@@ -354,29 +381,33 @@ class ResamplingDialog extends SingleTargetProductDialog {
             }
             boolean allowToSetWidthAndHeight = true;
             if (!Double.isNaN(xOffset) && !Double.isNaN(yOffset)) {
-                for (int i = 0; i < productBands.getNodeCount(); i++) {
-                    final double nodeXOffset = productBands.get(i).getImageToModelTransform().getTranslateX();
-                    final double nodeYOffset = productBands.get(i).getImageToModelTransform().getTranslateY();
-                    if (Math.abs(nodeXOffset - xOffset) > 1e-8 || Math.abs(nodeYOffset - yOffset) > 1e-8) {
-                        allowToSetWidthAndHeight = false;
-                        break;
-                    }
-                }
-                if (allowToSetWidthAndHeight) {
-                    for (int i = 0; i < productTiePointGrids.getNodeCount(); i++) {
-                        final double nodeXOffset = productTiePointGrids.get(i).getImageToModelTransform().getTranslateX();
-                        final double nodeYOffset = productTiePointGrids.get(i).getImageToModelTransform().getTranslateY();
-                        if (Math.abs(nodeXOffset - xOffset) > 1e-8 || Math.abs(nodeYOffset - yOffset) > 1e-8) {
-                            allowToSetWidthAndHeight = false;
-                            break;
-                        }
-                    }
-                }
+                allowToSetWidthAndHeight = allOffsetsAreEqual(productBands, xOffset, yOffset) &&
+                        allOffsetsAreEqual(productTiePointGrids, xOffset, yOffset);
             }
             widthAndHeightButton.setEnabled(allowToSetWidthAndHeight);
+            if (allowToSetWidthAndHeight) {
+                targetWidthHeightRatio = product.getSceneRasterWidth() / (double) product.getSceneRasterHeight();
+                widthSpinner.setValue(product.getSceneRasterWidth());
+                heightSpinner.setValue(product.getSceneRasterHeight());
+            } else {
+                targetWidthHeightRatio = 1.0;
+                widthSpinner.setValue(100);
+                heightSpinner.setValue(100);
+            }
             final GeoCoding sceneGeoCoding = product.getSceneGeoCoding();
             resolutionButton.setEnabled(sceneGeoCoding != null && sceneGeoCoding instanceof CrsGeoCoding);
         }
+    }
+
+    private boolean allOffsetsAreEqual(ProductNodeGroup productNodeGroup, double xOffset, double yOffset) {
+        for (int i = 0; i < productNodeGroup.getNodeCount(); i++) {
+            final double nodeXOffset = ((RasterDataNode) productNodeGroup.get(i)).getImageToModelTransform().getTranslateX();
+            final double nodeYOffset = ((RasterDataNode) productNodeGroup.get(i)).getImageToModelTransform().getTranslateY();
+            if (Math.abs(nodeXOffset - xOffset) > 1e-8 || Math.abs(nodeYOffset - yOffset) > 1e-8) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private class ProductChangedHandler extends AbstractSelectionChangeListener implements ProductNodeListener {
