@@ -73,6 +73,11 @@ class ResamplingDialog extends SingleTargetProductDialog {
     private JSpinner resolutionSpinner;
     private double targetWidthHeightRatio;
     private boolean updatingTargetWidthAndHeight;
+    private JLabel referenceBandTargetWidthLabel;
+    private JLabel referenceBandTargetHeightLabel;
+    private JLabel widthHeightRatioLabel;
+    private JLabel targetResolutionTargetWidthLabel;
+    private JLabel targetResolutionTargetHeightLabel;
 
     ResamplingDialog(AppContext appContext, Product product, boolean modal) {
         super(appContext, "Resampling", ID_APPLY_CLOSE, "resampleAction");
@@ -170,7 +175,9 @@ class ResamplingDialog extends SingleTargetProductDialog {
         tableLayout.setTableWeightX(1.0);
         tableLayout.setTablePadding(4, 4);
 
-        final JPanel defineTargetResolutionPanel = new JPanel(new GridLayout(3, 2));
+        final GridLayout defineTargetResolutionPanelLayout = new GridLayout(3, 2);
+        defineTargetResolutionPanelLayout.setVgap(4);
+        final JPanel defineTargetResolutionPanel = new JPanel(defineTargetResolutionPanelLayout);
         defineTargetResolutionPanel.setBorder(BorderFactory.createTitledBorder("Define size of resampled product"));
         final ButtonGroup targetSizeButtonGroup = new ButtonGroup();
         referenceBandButton = new JRadioButton("By reference band from source product:");
@@ -182,32 +189,94 @@ class ResamplingDialog extends SingleTargetProductDialog {
 
         defineTargetResolutionPanel.add(referenceBandButton);
         referenceBandNameBox = new JComboBox<>();
-        defineTargetResolutionPanel.add(referenceBandNameBox);
+        referenceBandNameBox.addActionListener(e -> {
+            updateReferenceBandTargetWidthAndHeight();
+        });
+        final GridLayout referenceBandNameBoxPanelLayout = new GridLayout(3, 1);
+        referenceBandNameBoxPanelLayout.setVgap(2);
+        JPanel referenceBandNameBoxPanel = new JPanel(referenceBandNameBoxPanelLayout);
+        referenceBandNameBoxPanel.add(referenceBandNameBox);
+        JPanel referenceBandNameTargetWidthPanel = new JPanel(new GridLayout(1, 2));
+        final JLabel referenceBandTargetWidthNameLabel = new JLabel("Resulting target width: ");
+        referenceBandNameTargetWidthPanel.add(referenceBandTargetWidthNameLabel);
+        referenceBandTargetWidthLabel = new JLabel();
+        referenceBandNameTargetWidthPanel.add(referenceBandTargetWidthLabel);
+        JPanel referenceBandNameTargetHeightPanel = new JPanel(new GridLayout(1, 2));
+        final JLabel referenceBandNameTargetHeightLabel = new JLabel("Resulting target height: ");
+        referenceBandNameTargetHeightPanel.add(referenceBandNameTargetHeightLabel);
+        referenceBandTargetHeightLabel = new JLabel();
+        referenceBandNameTargetHeightPanel.add(referenceBandTargetHeightLabel);
+        referenceBandNameBoxPanel.add(referenceBandNameTargetWidthPanel);
+        referenceBandNameBoxPanel.add(referenceBandNameTargetHeightPanel);
+        defineTargetResolutionPanel.add(referenceBandNameBoxPanel);
 
         defineTargetResolutionPanel.add(widthAndHeightButton);
-        final JPanel widthAndHeightPanel = new JPanel(new GridLayout(2, 2));
-        widthAndHeightPanel.add(new JLabel("Target Width:"));
+        final GridLayout widthAndHeightPanelLayout = new GridLayout(3, 2);
+        widthAndHeightPanelLayout.setVgap(2);
+        final JPanel widthAndHeightPanel = new JPanel(widthAndHeightPanelLayout);
+        final JLabel targetWidthNameLabel = new JLabel("Target width:");
+        targetWidthNameLabel.setEnabled(false);
+        widthAndHeightPanel.add(targetWidthNameLabel);
         widthSpinner = new JSpinner(new SpinnerNumberModel(100, 0, 1000000, 1));
         widthSpinner.setEnabled(false);
         widthAndHeightPanel.add(widthSpinner);
-        widthAndHeightPanel.add(new JLabel("Target Height:"));
+        final JLabel targetHeightNameLabel = new JLabel("Target height:");
+        targetHeightNameLabel.setEnabled(false);
+        widthAndHeightPanel.add(targetHeightNameLabel);
         heightSpinner = new JSpinner(new SpinnerNumberModel(100, 0, 1000000, 1));
         heightSpinner.setEnabled(false);
         widthAndHeightPanel.add(heightSpinner);
+        final JLabel widthHeightRatioNameLabel = new JLabel("Width / height ratio: ");
+        widthHeightRatioNameLabel.setEnabled(false);
+        widthAndHeightPanel.add(widthHeightRatioNameLabel);
+        widthHeightRatioLabel = new JLabel();
+        widthHeightRatioLabel.setEnabled(false);
+        widthAndHeightPanel.add(widthHeightRatioLabel);
         defineTargetResolutionPanel.add(widthAndHeightPanel);
 
         defineTargetResolutionPanel.add(resolutionButton);
         resolutionSpinner = new JSpinner(new SpinnerNumberModel(1, 1, Integer.MAX_VALUE, 1));
         resolutionSpinner.setEnabled(false);
-        defineTargetResolutionPanel.add(resolutionSpinner);
-        referenceBandButton.setSelected(true);
+        final GridLayout targetResolutionBoxPanelLayout = new GridLayout(3, 1);
+        targetResolutionBoxPanelLayout.setVgap(2);
+        final JPanel targetResolutionBoxPanel = new JPanel(targetResolutionBoxPanelLayout);
+        JPanel targetResolutionTargetWidthPanel = new JPanel(new GridLayout(1, 2));
+        final JLabel targetResolutionTargetWidthNameLabel = new JLabel("Resulting target width: ");
+        targetResolutionTargetWidthNameLabel.setEnabled(false);
+        targetResolutionTargetWidthPanel.add(targetResolutionTargetWidthNameLabel);
+        targetResolutionTargetWidthLabel = new JLabel();
+        targetResolutionTargetWidthLabel.setEnabled(false);
+        targetResolutionTargetWidthPanel.add(targetResolutionTargetWidthLabel);
+        JPanel targetResolutionTargetHeightPanel = new JPanel(new GridLayout(1, 2));
+        final JLabel targetResolutionNameTargetHeightLabel = new JLabel("Resulting target height: ");
+        targetResolutionNameTargetHeightLabel.setEnabled(false);
+        targetResolutionTargetHeightPanel.add(targetResolutionNameTargetHeightLabel);
+        targetResolutionTargetHeightLabel = new JLabel();
+        targetResolutionTargetHeightLabel.setEnabled(false);
+        targetResolutionTargetHeightPanel.add(targetResolutionTargetHeightLabel);
+        targetResolutionBoxPanel.add(resolutionSpinner);
+        targetResolutionBoxPanel.add(targetResolutionTargetWidthPanel);
+        targetResolutionBoxPanel.add(targetResolutionTargetHeightPanel);
+        defineTargetResolutionPanel.add(targetResolutionBoxPanel);
 
         referenceBandButton.addActionListener(e -> {
             if (referenceBandButton.isSelected()) {
                 referenceBandNameBox.setEnabled(true);
+                referenceBandTargetWidthNameLabel.setEnabled(true);
+                referenceBandTargetWidthLabel.setEnabled(true);
+                referenceBandNameTargetHeightLabel.setEnabled(true);
+                referenceBandTargetHeightLabel.setEnabled(true);
+                targetWidthNameLabel.setEnabled(false);
                 widthSpinner.setEnabled(false);
+                targetHeightNameLabel.setEnabled(false);
                 heightSpinner.setEnabled(false);
+                widthHeightRatioNameLabel.setEnabled(false);
+                widthHeightRatioLabel.setEnabled(false);
                 resolutionSpinner.setEnabled(false);
+                targetResolutionTargetWidthNameLabel.setEnabled(false);
+                targetResolutionTargetWidthLabel.setEnabled(false);
+                targetResolutionNameTargetHeightLabel.setEnabled(false);
+                targetResolutionTargetHeightLabel.setEnabled(false);
                 updateReferenceBandName();
             }
         });
@@ -215,9 +284,21 @@ class ResamplingDialog extends SingleTargetProductDialog {
         widthAndHeightButton.addActionListener(e -> {
             if (widthAndHeightButton.isSelected()) {
                 referenceBandNameBox.setEnabled(false);
+                referenceBandTargetWidthNameLabel.setEnabled(false);
+                referenceBandTargetWidthLabel.setEnabled(false);
+                referenceBandNameTargetHeightLabel.setEnabled(false);
+                referenceBandTargetHeightLabel.setEnabled(false);
+                targetWidthNameLabel.setEnabled(true);
                 widthSpinner.setEnabled(true);
+                targetHeightNameLabel.setEnabled(true);
                 heightSpinner.setEnabled(true);
+                widthHeightRatioNameLabel.setEnabled(true);
+                widthHeightRatioLabel.setEnabled(true);
                 resolutionSpinner.setEnabled(false);
+                targetResolutionTargetWidthNameLabel.setEnabled(false);
+                targetResolutionTargetWidthLabel.setEnabled(false);
+                targetResolutionNameTargetHeightLabel.setEnabled(false);
+                targetResolutionTargetHeightLabel.setEnabled(false);
                 updateTargetWidthAndHeight();
             }
         });
@@ -226,13 +307,27 @@ class ResamplingDialog extends SingleTargetProductDialog {
         resolutionButton.addActionListener(e -> {
             if (resolutionButton.isSelected()) {
                 referenceBandNameBox.setEnabled(false);
+                referenceBandTargetWidthNameLabel.setEnabled(false);
+                referenceBandTargetWidthLabel.setEnabled(false);
+                referenceBandNameTargetHeightLabel.setEnabled(false);
+                referenceBandTargetHeightLabel.setEnabled(false);
+                targetWidthNameLabel.setEnabled(false);
                 widthSpinner.setEnabled(false);
+                targetHeightNameLabel.setEnabled(false);
                 heightSpinner.setEnabled(false);
+                widthHeightRatioNameLabel.setEnabled(false);
+                widthHeightRatioLabel.setEnabled(false);
                 resolutionSpinner.setEnabled(true);
+                targetResolutionTargetWidthNameLabel.setEnabled(true);
+                targetResolutionTargetWidthLabel.setEnabled(true);
+                targetResolutionNameTargetHeightLabel.setEnabled(true);
+                targetResolutionTargetHeightLabel.setEnabled(true);
                 updateTargetResolution();
             }
         });
         resolutionSpinner.addChangeListener(e -> updateTargetResolution());
+
+        referenceBandButton.setSelected(true);
 
         final JPanel upsamplingMethodPanel = createPropertyPanel(propertySet, "upsamplingMethod", registry);
         final JPanel downsamplingMethodPanel = createPropertyPanel(propertySet, "downsamplingMethod", registry);
@@ -247,6 +342,15 @@ class ResamplingDialog extends SingleTargetProductDialog {
         parametersPanel.add(resampleOnPyramidLevelsPanel);
         parametersPanel.add(tableLayout.createVerticalSpacer());
         return parametersPanel;
+    }
+
+    private void updateReferenceBandTargetWidthAndHeight() {
+        if (referenceBandNameBox.getSelectedItem() != null) {
+            final String bandName = referenceBandNameBox.getSelectedItem().toString();
+            final Band band = ioParametersPanel.getSourceProductSelectorList().get(0).getSelectedProduct().getBand(bandName);
+            referenceBandTargetWidthLabel.setText("" + band.getRasterWidth());
+            referenceBandTargetHeightLabel.setText("" + band.getRasterHeight());
+        }
     }
 
     private void updateReferenceBandName() {
@@ -289,11 +393,27 @@ class ResamplingDialog extends SingleTargetProductDialog {
         bindingContext.getPropertySet().setValue("targetResolution", null);
     }
 
+    private void updateTargetResolutionTargetWidthAndHeight() {
+        final Product selectedProduct = ioParametersPanel.getSourceProductSelectorList().get(0).getSelectedProduct();
+        final RasterDataNode node = getAnyRasterDataNode(selectedProduct);
+        int targetWidth = 0;
+        int targetHeight = 0;
+        if (node != null) {
+            final int resolution = Integer.parseInt(resolutionSpinner.getValue().toString());
+            final double nodeResolution = node.getImageToModelTransform().getScaleX();
+            targetWidth = (int) (node.getRasterWidth() * (nodeResolution / resolution));
+            targetHeight = (int) (node.getRasterHeight() * (nodeResolution / resolution));
+        }
+        targetResolutionTargetWidthLabel.setText("" + targetWidth);
+        targetResolutionTargetHeightLabel.setText("" + targetHeight);
+    }
+
     private void updateTargetResolution() {
         bindingContext.getPropertySet().setValue("referenceBandName", null);
         bindingContext.getPropertySet().setValue("targetWidth", null);
         bindingContext.getPropertySet().setValue("targetHeight", null);
         bindingContext.getPropertySet().setValue("targetResolution", Integer.parseInt(resolutionSpinner.getValue().toString()));
+        updateTargetResolutionTargetWidthAndHeight();
     }
 
     private JPanel createPropertyPanel(PropertySet propertySet, String propertyName, PropertyEditorRegistry registry) {
@@ -322,6 +442,7 @@ class ResamplingDialog extends SingleTargetProductDialog {
             bindingContext.getPropertySet().getProperty("referenceBandName").
                     getDescriptor().setValueSet(new ValueSet(bandNames));
             referenceBandNameBox.setModel(new DefaultComboBoxModel<>(bandNames));
+            updateReferenceBandTargetWidthAndHeight();
 
             final ProductNodeGroup<Band> productBands = product.getBandGroup();
             final ProductNodeGroup<TiePointGrid> productTiePointGrids = product.getTiePointGridGroup();
@@ -342,16 +463,40 @@ class ResamplingDialog extends SingleTargetProductDialog {
             widthAndHeightButton.setEnabled(allowToSetWidthAndHeight);
             if (allowToSetWidthAndHeight) {
                 targetWidthHeightRatio = product.getSceneRasterWidth() / (double) product.getSceneRasterHeight();
-                widthSpinner.setValue(product.getSceneRasterWidth());
-                heightSpinner.setValue(product.getSceneRasterHeight());
             } else {
                 targetWidthHeightRatio = 1.0;
-                widthSpinner.setValue(100);
-                heightSpinner.setValue(100);
             }
+            widthSpinner.setValue(product.getSceneRasterWidth());
+            heightSpinner.setValue(product.getSceneRasterHeight());
+            widthHeightRatioLabel.setText(String.format("%.5f", targetWidthHeightRatio));
             final GeoCoding sceneGeoCoding = product.getSceneGeoCoding();
             resolutionButton.setEnabled(sceneGeoCoding != null && sceneGeoCoding instanceof CrsGeoCoding);
+            resolutionSpinner.setValue(determineResolutionFromProduct(product));
         }
+    }
+
+    private int determineResolutionFromProduct(Product product) {
+        final RasterDataNode node = getAnyRasterDataNode(product);
+        if (node != null) {
+            return (int) node.getImageToModelTransform().getScaleX();
+        }
+        return 1;
+    }
+
+    private RasterDataNode getAnyRasterDataNode(Product product) {
+        RasterDataNode node = null;
+        if (product != null) {
+            final ProductNodeGroup<Band> bandGroup = product.getBandGroup();
+            if (bandGroup.getNodeCount() == 0) {
+                final ProductNodeGroup<TiePointGrid> tiePointGridGroup = product.getTiePointGridGroup();
+                if (tiePointGridGroup.getNodeCount() > 0) {
+                    node = tiePointGridGroup.get(0);
+                }
+            } else {
+                node = bandGroup.get(0);
+            }
+        }
+        return node;
     }
 
     private boolean allOffsetsAreEqual(ProductNodeGroup productNodeGroup, double xOffset, double yOffset) {
