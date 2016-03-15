@@ -857,12 +857,15 @@ public class SpectrumTopComponent extends ToolTopComponent {
         }
 
         private void setPlotUnit(List<DisplayableSpectrum> spectra, XYPlot plot) {
-            String unitToBeDisplayed = spectra.get(0).getUnit();
-            int i = 1;
-            while (i < spectra.size() && !unitToBeDisplayed.equals(DisplayableSpectrum.MIXED_UNITS)) {
-                DisplayableSpectrum displayableSpectrum = spectra.get(i++);
-                if (displayableSpectrum.hasSelectedBands() && !unitToBeDisplayed.equals(displayableSpectrum.getUnit())) {
-                    unitToBeDisplayed = DisplayableSpectrum.MIXED_UNITS;
+            String unitToBeDisplayed = "";
+            if (spectra.size() > 0) {
+                unitToBeDisplayed = spectra.get(0).getUnit();
+                int i = 1;
+                while (i < spectra.size() && !unitToBeDisplayed.equals(DisplayableSpectrum.MIXED_UNITS)) {
+                    DisplayableSpectrum displayableSpectrum = spectra.get(i++);
+                    if (displayableSpectrum.hasSelectedBands() && !unitToBeDisplayed.equals(displayableSpectrum.getUnit())) {
+                        unitToBeDisplayed = DisplayableSpectrum.MIXED_UNITS;
+                    }
                 }
             }
             isCodeInducedAxisChange = true;
