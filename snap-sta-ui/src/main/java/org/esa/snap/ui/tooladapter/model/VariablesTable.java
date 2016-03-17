@@ -25,10 +25,7 @@ import org.esa.snap.ui.tool.ToolButtonFactory;
 import org.esa.snap.ui.tooladapter.dialogs.SystemDependentVariableEditorDialog;
 
 import javax.swing.*;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableCellRenderer;
+import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -38,8 +35,8 @@ import java.util.List;
  * @author Ramona Manda
  */
 public class VariablesTable extends JTable {
-    private static String[] columnNames = {"", "Key", "Value"};
-    private static int[] widths = {24, 100, 250};
+    private static String[] columnNames = {"", "Shared", "Key", "Value"};
+    private static int[] widths = {24, 40, 100, 250};
     private List<SystemVariable> variables;
     private MultiRenderer tableRenderer;
     private AppContext appContext;
@@ -51,7 +48,8 @@ public class VariablesTable extends JTable {
         setModel(new VariablesTableModel());
         setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
         for(int i=0; i < widths.length; i++) {
-            getColumnModel().getColumn(i).setPreferredWidth(widths[i]);
+            TableColumn column = getColumnModel().getColumn(i);
+            column.setPreferredWidth(widths[i]);
         }
     }
 
@@ -69,6 +67,8 @@ public class VariablesTable extends JTable {
             case 0:
             case 2:
                 return tableRenderer;
+            case 1:
+                return getDefaultEditor(Boolean.class);
             default:
                 return getDefaultEditor(String.class);
         }
@@ -83,7 +83,7 @@ public class VariablesTable extends JTable {
 
         @Override
         public Class<?> getColumnClass(int columnIndex) {
-            return String.class;
+            return columnIndex != 1 ? String.class : Boolean.class;
         }
 
         @Override
@@ -102,8 +102,10 @@ public class VariablesTable extends JTable {
                 case 0:
                     return false;
                 case 1:
-                    return variables.get(row).getKey();
+                    return variables.get(row).isShared();
                 case 2:
+                    return variables.get(row).getKey();
+                case 3:
                     return variables.get(row).getValue();
             }
             return null;
@@ -123,9 +125,12 @@ public class VariablesTable extends JTable {
                         fireTableDataChanged();
                         break;
                     case 1:
-                        variables.get(rowIndex).setKey(aValue.toString());
+                        variables.get(rowIndex).setShared(Boolean.valueOf(aValue.toString()));
                         break;
                     case 2:
+                        variables.get(rowIndex).setKey(aValue.toString());
+                        break;
+                    case 3:
                         variables.get(rowIndex).setValue(aValue.toString());
                         break;
                 }
@@ -159,7 +164,10 @@ public class VariablesTable extends JTable {
                 case 0:
                     lastEditor = null;
                     return delButton;
-                case 2:
+                case 1:
+                    lastEditor = getDefaultEditor(Boolean.class);
+                    return lastEditor.getTableCellEditorComponent(table, value, isSelected, row, column);
+                case 3:
                     SystemVariable variable = variables.get(row);
                     if (variable instanceof SystemDependentVariable) {
                         lastEditor = new SystemDependentVariableCellEditor(appContext.getApplicationWindow(), (SystemDependentVariable)variable, null);

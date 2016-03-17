@@ -32,11 +32,7 @@ import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.OperatorException;
 import org.esa.snap.core.gpf.OperatorSpi;
-import org.esa.snap.core.gpf.descriptor.AnnotationOperatorDescriptor;
-import org.esa.snap.core.gpf.descriptor.ParameterDescriptor;
-import org.esa.snap.core.gpf.descriptor.SystemVariable;
-import org.esa.snap.core.gpf.descriptor.TemplateParameterDescriptor;
-import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
+import org.esa.snap.core.gpf.descriptor.*;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterConstants;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterIO;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterOpSpi;
@@ -45,7 +41,6 @@ import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.ui.tooladapter.actions.EscapeAction;
-import org.esa.snap.ui.tooladapter.actions.ToolAdapterActionRegistrar;
 import org.esa.snap.ui.tooladapter.model.AutoCompleteTextArea;
 import org.esa.snap.ui.tooladapter.model.OperatorParametersTable;
 import org.esa.snap.ui.tooladapter.preferences.ToolAdapterOptionsController;
@@ -55,22 +50,8 @@ import org.openide.filesystems.FileUtil;
 import org.openide.util.NbBundle;
 import org.openide.util.NbPreferences;
 
-import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.SpringLayout;
-import java.awt.Color;
-import java.awt.Dimension;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.io.File;
 import java.io.IOException;
@@ -78,17 +59,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static org.esa.snap.utils.SpringUtilities.*;
+import static org.esa.snap.utils.SpringUtilities.DEFAULT_PADDING;
+import static org.esa.snap.utils.SpringUtilities.makeCompactGrid;
 
 /**
  * A dialog window used to edit an operator, or to create a new operator.
@@ -372,10 +349,7 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
                 if (newOperatorDescriptor.getSourceProductCount() == 0) {
                     Dialogs.showInformation("The template is not using the parameter $sourceProduct.\nNo source product selection will be available at execution time.", "empty.source.info");
                 }
-                if (!this.operatorIsNew) {
-                    ToolAdapterActionRegistrar.removeOperatorMenu(oldOperatorDescriptor);
-                    ToolAdapterIO.removeOperator(oldOperatorDescriptor, false);
-                }
+
                 if (!newOperatorDescriptor.isFromPackage()) {
                     newOperatorDescriptor.setSource(ToolAdapterOperatorDescriptor.SOURCE_USER);
                 }
@@ -427,6 +401,10 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
                     if (menuLocation != null && !menuLocation.startsWith("Menu/")) {
                         newOperatorDescriptor.setMenuLocation("Menu/" + menuLocation);
                     }
+                    /*if (!this.operatorIsNew) {
+                        ToolAdapterActionRegistrar.removeOperatorMenu(oldOperatorDescriptor);
+                        //ToolAdapterIO.removeOperator(oldOperatorDescriptor, false);
+                    }*/
                     ToolAdapterIO.removeOperator(oldOperatorDescriptor, true);
                     ToolAdapterIO.saveAndRegisterOperator(newOperatorDescriptor, templateContent);
                     templates.keySet().stream().forEach(k -> {
@@ -440,7 +418,7 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
                             }
                         }
                     });
-                    ToolAdapterActionRegistrar.registerOperatorMenu(newOperatorDescriptor);
+                    //ToolAdapterActionRegistrar.registerOperatorMenu(newOperatorDescriptor);
                 } catch (Exception e) {
                     logger.warning(e.getMessage());
                     Dialogs.showError(e.getMessage());

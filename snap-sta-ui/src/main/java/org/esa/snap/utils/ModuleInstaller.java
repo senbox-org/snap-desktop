@@ -93,7 +93,7 @@ public class ModuleInstaller extends ModuleInstall {
         registeredDescriptors.stream()
                              .filter(descriptor -> !jarAdapters.containsKey(descriptor.getAlias()))
                              .forEach(descriptor -> {
-                                 ToolAdapterActionRegistrar.removeOperatorMenu(descriptor);
+                                 //ToolAdapterActionRegistrar.removeOperatorMenu(descriptor);
                                  ToolAdapterIO.removeOperator(descriptor);
                                  logger.info(String.format("%s was removed from adapter user location", descriptor.getAlias()));
                              });

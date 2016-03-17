@@ -96,7 +96,7 @@ public class ModuleInstaller extends ModuleInstall {
                         .findFirst().get();
                 if (spi != null) {
                     final ToolAdapterOperatorDescriptor descriptor = (ToolAdapterOperatorDescriptor) spi.getOperatorDescriptor();
-                    ToolAdapterActionRegistrar.removeOperatorMenu(descriptor);
+                    //ToolAdapterActionRegistrar.removeOperatorMenu(descriptor);
                     ToolAdapterIO.removeOperator(descriptor);
                 }
             } catch (IOException e) {

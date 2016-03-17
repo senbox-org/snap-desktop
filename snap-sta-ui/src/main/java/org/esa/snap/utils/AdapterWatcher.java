@@ -1,6 +1,8 @@
 package org.esa.snap.utils;
 
+import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterIO;
+import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterRegistry;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,7 +27,7 @@ public enum AdapterWatcher {
                 while (isRunning) {
                     WatchKey key;
                     try {
-                        key = directoryWatcher.take();
+                         key = directoryWatcher.take();
                     } catch (InterruptedException ex) {
                         return;
                     }
@@ -35,9 +37,9 @@ public enum AdapterWatcher {
                         WatchEvent<Path> ev = (WatchEvent<Path>) event;
                         Path fileName = ev.context();
                         if (kind == StandardWatchEventKinds.ENTRY_CREATE) {
-                            folderAdded(fileName.toFile());
+                            folderAdded(path.resolve(fileName).toFile());
                         } else if (kind == StandardWatchEventKinds.ENTRY_DELETE) {
-                            folderDeleted(fileName.toFile());
+                            folderDeleted(path.resolve(fileName).toFile());
                         }
                     }
                     boolean valid = key.reset();
@@ -64,6 +66,12 @@ public enum AdapterWatcher {
     }
 
     private void folderDeleted(File folder) {
-        // NO OP
+        if (folder != null) {
+            String alias = folder.getName();
+            ToolAdapterOperatorDescriptor operatorDescriptor = ToolAdapterRegistry.INSTANCE.findByAlias(alias);
+            if (operatorDescriptor != null) {
+                ToolAdapterIO.removeOperator(operatorDescriptor);
+            }
+        }
     }
 }

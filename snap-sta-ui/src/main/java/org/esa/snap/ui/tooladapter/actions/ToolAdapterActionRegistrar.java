@@ -198,7 +198,7 @@ public class ToolAdapterActionRegistrar {
                     orphaned.forEach(spi -> {
                         ToolAdapterOperatorDescriptor operatorDescriptor = (ToolAdapterOperatorDescriptor) spi.getOperatorDescriptor();
                         operatorSpis.remove(spi);
-                        ToolAdapterActionRegistrar.removeOperatorMenu(operatorDescriptor);
+                        //ToolAdapterActionRegistrar.removeOperatorMenu(operatorDescriptor);
                         ToolAdapterIO.removeOperator(operatorDescriptor);
                     });
                     operatorSpis.stream().filter(spi -> spi instanceof ToolAdapterOpSpi).forEach(spi -> {

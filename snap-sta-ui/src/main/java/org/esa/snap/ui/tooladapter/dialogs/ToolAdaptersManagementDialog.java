@@ -19,11 +19,7 @@ package org.esa.snap.ui.tooladapter.dialogs;
 
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
-import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterConstants;
-import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterIO;
-import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterOp;
-import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterOpSpi;
-import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterRegistry;
+import org.esa.snap.core.gpf.operators.tooladapter.*;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.tango.TangoIcons;
 import org.esa.snap.ui.AppContext;
@@ -33,39 +29,21 @@ import org.esa.snap.ui.tooladapter.actions.ToolAdapterActionRegistrar;
 import org.esa.snap.ui.tooladapter.model.OperatorsTableModel;
 import org.openide.util.NbBundle;
 
-import javax.swing.AbstractButton;
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.DefaultCellEditor;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.SpringLayout;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.*;
+import java.awt.event.*;
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-import static org.esa.snap.utils.SpringUtilities.*;
+import static org.esa.snap.utils.SpringUtilities.DEFAULT_PADDING;
+import static org.esa.snap.utils.SpringUtilities.makeCompactGrid;
 
 /**
  * Dialog that allows the management (create, edit, remove and execute) of external
@@ -116,6 +94,17 @@ public class ToolAdaptersManagementDialog extends ModelessDialog {
         setContent(contentPanel);
         super.getJDialog().setMinimumSize(contentPanel.getPreferredSize());
         EscapeAction.register(super.getJDialog());
+        ToolAdapterRegistry.INSTANCE.addListener(new ToolAdapterListener() {
+            @Override
+            public void adapterAdded(ToolAdapterOperatorDescriptor operatorDescriptor) {
+                refreshContent();
+            }
+
+            @Override
+            public void adapterRemoved(ToolAdapterOperatorDescriptor operatorDescriptor) {
+                refreshContent();
+            }
+        });
     }
 
     private JPanel createContentPanel() {
@@ -217,7 +206,7 @@ public class ToolAdaptersManagementDialog extends ModelessDialog {
                             if (operatorDescriptor.isFromPackage()) {
                                 Dialogs.showWarning(String.format(Bundle.MessagePackageModules_Text(), operatorDescriptor.getName()));
                             } else {
-                                ToolAdapterActionRegistrar.removeOperatorMenu(operatorDescriptor);
+                                //ToolAdapterActionRegistrar.removeOperatorMenu(operatorDescriptor);
                                 ToolAdapterIO.removeOperator(operatorDescriptor);
                             }
                             refreshContent();
@@ -283,14 +272,15 @@ public class ToolAdaptersManagementDialog extends ModelessDialog {
                 ToolAdapterOperatorDescriptor[] operatorDescriptors = ToolAdapterActionRegistrar.getActionMap().values()
                         .toArray(new ToolAdapterOperatorDescriptor[ToolAdapterActionRegistrar.getActionMap().values().size()]);
                 for (ToolAdapterOperatorDescriptor descriptor : operatorDescriptors) {
-                    ToolAdapterActionRegistrar.removeOperatorMenu(descriptor);
+                    // ToolAdapterActionRegistrar.removeOperatorMenu(descriptor);
+                    ToolAdapterIO.removeOperator(descriptor, false);
                 }
                 ToolAdapterIO.setAdaptersPath(Paths.get(newPath));
                 if (!newPath.equals(oldPath.getAbsolutePath())) {
                     Collection<ToolAdapterOpSpi> toolAdapterOpSpis = ToolAdapterIO.searchAndRegisterAdapters();
-                    for (ToolAdapterOpSpi spi : toolAdapterOpSpis) {
+                    /*for (ToolAdapterOpSpi spi : toolAdapterOpSpis) {
                         ToolAdapterActionRegistrar.registerOperatorMenu((ToolAdapterOperatorDescriptor)spi.getOperatorDescriptor());
-                    }
+                    }*/
                     refreshContent();
                 }
             }
