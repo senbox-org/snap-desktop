@@ -259,8 +259,7 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
                 width = refRasters[0].getRasterWidth();
             }
         } catch (ParseException e) {
-            e.printStackTrace();
-            //should not come here
+            throw new IllegalArgumentException("Invalid expression: " + expression);
         }
         return width;
     }
@@ -273,8 +272,7 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
                 height = refRasters[0].getRasterHeight();
             }
         } catch (ParseException e) {
-            e.printStackTrace();
-            //should not come here
+            throw new IllegalArgumentException("Invalid expression: " + expression);
         }
         return height;
     }

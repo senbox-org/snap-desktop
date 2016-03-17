@@ -22,10 +22,7 @@ class MetadataOutlineCellRenderer extends DefaultOutlineCellRenderer {
      * Gray Color for the odd lines in the view.
      */
     private static final Color VERY_LIGHT_GRAY = new Color(236, 236, 236);
-    /**
-     * Center the content of the cells displaying text.
-     */
-    protected boolean centered = System.getProperty("os.name").toLowerCase().indexOf("windows") != 0;
+
     /**
      * Highlight the non editable cells making the foreground lighter.
      */
@@ -58,14 +55,9 @@ class MetadataOutlineCellRenderer extends DefaultOutlineCellRenderer {
         }
         if (cell != null) {
             if (cell instanceof HtmlRenderer.Renderer) {
-                ((HtmlRenderer.Renderer) cell).setCentered(centered);
                 ((HtmlRenderer.Renderer) cell).setIndent(5);
             } else if (cell instanceof DefaultTableCellRenderer.UIResource) {
-                if (centered) {
-                    ((DefaultTableCellRenderer.UIResource) cell).setHorizontalAlignment(JLabel.CENTER);
-                } else {
-                    ((DefaultTableCellRenderer.UIResource) cell).setHorizontalAlignment(JLabel.LEFT);
-                }
+                ((UIResource) cell).setHorizontalAlignment(JLabel.LEFT);
             }
             Color foregroundColor = table.getForeground();
             cell.setForeground(foregroundColor);

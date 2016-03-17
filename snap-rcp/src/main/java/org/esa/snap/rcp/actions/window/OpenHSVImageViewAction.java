@@ -243,11 +243,12 @@ public class OpenHSVImageViewAction extends AbstractAction implements HelpCtx.Pr
         int height = product.getSceneRasterHeight();
         try {
             final RasterDataNode[] refRasters = BandArithmetic.getRefRasters(expression, product);
-            width = refRasters[0].getRasterWidth();
-            height = refRasters[0].getRasterHeight();
+            if (refRasters.length > 0) {
+                width = refRasters[0].getRasterWidth();
+                height = refRasters[0].getRasterHeight();
+            }
         } catch (ParseException e) {
-            e.printStackTrace();
-            //should not come here
+            throw new IllegalArgumentException("Invalid expression: " + expression);
         }
 
         final VirtualBand virtBand = new VirtualBand(name,
