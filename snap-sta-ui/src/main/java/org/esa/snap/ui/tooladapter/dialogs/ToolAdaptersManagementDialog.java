@@ -26,6 +26,7 @@ import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.ModelessDialog;
 import org.esa.snap.ui.tooladapter.actions.EscapeAction;
 import org.esa.snap.ui.tooladapter.actions.ToolAdapterActionRegistrar;
+import org.esa.snap.ui.tooladapter.model.OperationType;
 import org.esa.snap.ui.tooladapter.model.OperatorsTableModel;
 import org.openide.util.NbBundle;
 
@@ -152,7 +153,7 @@ public class ToolAdaptersManagementDialog extends ModelessDialog {
                     Bundle.ToolTipNewOperator_Text(),
                     e -> {
                         ToolAdapterOperatorDescriptor newOperatorSpi = new ToolAdapterOperatorDescriptor(ToolAdapterConstants.OPERATOR_NAMESPACE + "NewOperator", ToolAdapterOp.class, "NewOperator", null, null, null, null, null, null);
-                        AbstractAdapterEditor dialog = AbstractAdapterEditor.createEditorDialog(appContext, getJDialog(), newOperatorSpi, true);
+                        AbstractAdapterEditor dialog = AbstractAdapterEditor.createEditorDialog(appContext, getJDialog(), newOperatorSpi, OperationType.NEW);
                         dialog.show();
                         refreshContent();
                     }));
@@ -171,8 +172,7 @@ public class ToolAdaptersManagementDialog extends ModelessDialog {
                                 newNameIndex++;
                                 opName = operatorDesc.getName() + ToolAdapterConstants.OPERATOR_GENERATED_NAME_SEPARATOR + newNameIndex;
                             }
-                            ToolAdapterOperatorDescriptor newOperator = new ToolAdapterOperatorDescriptor(operatorDesc, opName, opName);
-                            AbstractAdapterEditor dialog = AbstractAdapterEditor.createEditorDialog(appContext, getJDialog(), newOperator, newNameIndex);
+                            AbstractAdapterEditor dialog = AbstractAdapterEditor.createEditorDialog(appContext, getJDialog(), operatorDesc, newNameIndex, OperationType.COPY);
                             dialog.show();
                             refreshContent();
                         }
@@ -186,7 +186,7 @@ public class ToolAdaptersManagementDialog extends ModelessDialog {
                 e -> {
                     ToolAdapterOperatorDescriptor operatorDesc = requestSelection();
                     if (operatorDesc != null) {
-                        AbstractAdapterEditor dialog = AbstractAdapterEditor.createEditorDialog(appContext, getJDialog(), operatorDesc, false);
+                        AbstractAdapterEditor dialog = AbstractAdapterEditor.createEditorDialog(appContext, getJDialog(), operatorDesc, OperationType.EDIT);
                         dialog.show();
                         refreshContent();
                     }
@@ -333,7 +333,7 @@ public class ToolAdaptersManagementDialog extends ModelessDialog {
                     //operatorsTable.getModel().setValueAt(true, selectedRow, 0);
                     operatorsTable.repaint();
                     ToolAdapterOperatorDescriptor operatorDesc = ((OperatorsTableModel) operatorsTable.getModel()).getObjectAt(selectedRow);
-                    AbstractAdapterEditor dialog = AbstractAdapterEditor.createEditorDialog(appContext, getJDialog(), operatorDesc, false);
+                    AbstractAdapterEditor dialog = AbstractAdapterEditor.createEditorDialog(appContext, getJDialog(), operatorDesc, OperationType.EDIT);
                     dialog.show();
                     refreshContent();
                 }

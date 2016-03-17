@@ -31,6 +31,7 @@ import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterConstants;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.tool.ToolButtonFactory;
+import org.esa.snap.ui.tooladapter.model.OperationType;
 import org.esa.snap.ui.tooladapter.model.VariablesTable;
 import org.esa.snap.ui.tooladapter.validators.RegexFieldValidator;
 import org.esa.snap.utils.SpringUtilities;
@@ -53,12 +54,12 @@ import static org.esa.snap.utils.SpringUtilities.DEFAULT_PADDING;
  */
 public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
 
-    public ToolAdapterTabbedEditorDialog(AppContext appContext, JDialog parent, ToolAdapterOperatorDescriptor operatorDescriptor, boolean operatorIsNew) {
-        super(appContext, parent, operatorDescriptor, operatorIsNew);
+    public ToolAdapterTabbedEditorDialog(AppContext appContext, JDialog parent, ToolAdapterOperatorDescriptor operatorDescriptor, OperationType operation) {
+        super(appContext, parent, operatorDescriptor, operation);
     }
 
-    public ToolAdapterTabbedEditorDialog(AppContext appContext, JDialog parent, ToolAdapterOperatorDescriptor operatorDescriptor, int newNameIndex) {
-        super(appContext, parent, operatorDescriptor, newNameIndex);
+    public ToolAdapterTabbedEditorDialog(AppContext appContext, JDialog parent, ToolAdapterOperatorDescriptor operatorDescriptor, int newNameIndex, OperationType operation) {
+        super(appContext, parent, operatorDescriptor, newNameIndex, operation);
     }
 
     @Override

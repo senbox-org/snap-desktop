@@ -42,6 +42,7 @@ import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.ui.tooladapter.actions.EscapeAction;
 import org.esa.snap.ui.tooladapter.model.AutoCompleteTextArea;
+import org.esa.snap.ui.tooladapter.model.OperationType;
 import org.esa.snap.ui.tooladapter.model.OperatorParametersTable;
 import org.esa.snap.ui.tooladapter.preferences.ToolAdapterOptionsController;
 import org.esa.snap.ui.tooladapter.validators.RequiredFieldValidator;
@@ -129,7 +130,6 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
     protected static int MAX_4K_HEIGHT = 2160;
     protected ToolAdapterOperatorDescriptor oldOperatorDescriptor;
     protected ToolAdapterOperatorDescriptor newOperatorDescriptor;
-    protected boolean operatorIsNew = false;
     protected int newNameIndex = -1;
     protected PropertyContainer propertyContainer;
     protected BindingContext bindingContext;
@@ -144,22 +144,24 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
     protected int formWidth;
     protected int controlHeight = 24;
 
-    public static AbstractAdapterEditor createEditorDialog(AppContext appContext, JDialog parent, ToolAdapterOperatorDescriptor operatorDescriptor, boolean operatorIsNew) {
+    protected OperationType currentOperation;
+
+    public static AbstractAdapterEditor createEditorDialog(AppContext appContext, JDialog parent, ToolAdapterOperatorDescriptor operatorDescriptor, OperationType operation) {
         AbstractAdapterEditor dialog;
         if (useTabsForEditorDialog()) {
-            dialog = new ToolAdapterTabbedEditorDialog(appContext, parent, operatorDescriptor, operatorIsNew);
+            dialog = new ToolAdapterTabbedEditorDialog(appContext, parent, operatorDescriptor, operation);
         } else {
-            dialog = new ToolAdapterEditorDialog(appContext, parent, operatorDescriptor, operatorIsNew);
+            dialog = new ToolAdapterEditorDialog(appContext, parent, operatorDescriptor, operation);
         }
         return dialog;
     }
 
-    public static AbstractAdapterEditor createEditorDialog(AppContext appContext, JDialog parent, ToolAdapterOperatorDescriptor operatorDescriptor, int newNameIndex) {
+    public static AbstractAdapterEditor createEditorDialog(AppContext appContext, JDialog parent, ToolAdapterOperatorDescriptor operatorDescriptor, int newNameIndex, OperationType operation) {
         AbstractAdapterEditor dialog;
         if (useTabsForEditorDialog()) {
-            dialog = new ToolAdapterTabbedEditorDialog(appContext, parent, operatorDescriptor, newNameIndex);
+            dialog = new ToolAdapterTabbedEditorDialog(appContext, parent, operatorDescriptor, newNameIndex, operation);
         } else {
-            dialog = new ToolAdapterEditorDialog(appContext, parent, operatorDescriptor, newNameIndex);
+            dialog = new ToolAdapterEditorDialog(appContext, parent, operatorDescriptor, newNameIndex, operation);
         }
         return dialog;
     }
@@ -217,11 +219,11 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
      * Constructs a new window for editing the operator
      * @param appContext the application context
      * @param operatorDescriptor the descriptor of the operator to be edited
-     * @param operatorIsNew true if the operator was not previously registered (so it is a new operator) and false if the operator was registered and the editing operation is requested
+     * @param operation is the type of desired operation: NEW/COPY if the operator was not previously registered (so it is a new operator) and EDIT if the operator was registered and the editing operation is requested
      */
-    public AbstractAdapterEditor(AppContext appContext, JDialog parent, ToolAdapterOperatorDescriptor operatorDescriptor, boolean operatorIsNew) {
+    public AbstractAdapterEditor(AppContext appContext, JDialog parent, ToolAdapterOperatorDescriptor operatorDescriptor, OperationType operation) {
         this(appContext, parent, operatorDescriptor);
-        this.operatorIsNew = operatorIsNew;
+        this.currentOperation = operation;
         this.newNameIndex = -1;
         setContent(createMainPanel());
         EscapeAction.register(this.getJDialog());
@@ -232,11 +234,12 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
      * @param appContext the application context
      * @param operatorDescriptor the descriptor of the operator to be edited
      * @param newNameIndex an integer value representing the suffix for the new operator name; if this value is less than 1, the editing operation of the current operator is executed; if the value is equal to or greater than 1, the operator is duplicated and the index value is used to compute the name of the new operator
+     * @param operation is the type of desired operation: NEW/COPY if the operator was not previously registered (so it is a new operator) and EDIT if the operator was registered and the editing operation is requested
      */
-    public AbstractAdapterEditor(AppContext appContext, JDialog parent, ToolAdapterOperatorDescriptor operatorDescriptor, int newNameIndex) {
+    public AbstractAdapterEditor(AppContext appContext, JDialog parent, ToolAdapterOperatorDescriptor operatorDescriptor, int newNameIndex, OperationType operation) {
         this(appContext, parent, operatorDescriptor);
         this.newNameIndex = newNameIndex;
-        this.operatorIsNew = this.newNameIndex >= 1;
+        this.currentOperation = operation;
         if(this.newNameIndex >= 1) {
             this.newOperatorDescriptor.setName(this.oldOperatorDescriptor.getName() + ToolAdapterConstants.OPERATOR_GENERATED_NAME_SEPARATOR + this.newNameIndex);
             this.newOperatorDescriptor.setAlias(this.oldOperatorDescriptor.getAlias() + ToolAdapterConstants.OPERATOR_GENERATED_NAME_SEPARATOR + this.newNameIndex);
@@ -405,7 +408,9 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
                         ToolAdapterActionRegistrar.removeOperatorMenu(oldOperatorDescriptor);
                         //ToolAdapterIO.removeOperator(oldOperatorDescriptor, false);
                     }*/
-                    ToolAdapterIO.removeOperator(oldOperatorDescriptor, true);
+                    if (this.currentOperation == OperationType.EDIT) {
+                        ToolAdapterIO.removeOperator(oldOperatorDescriptor, true);
+                    }
                     ToolAdapterIO.saveAndRegisterOperator(newOperatorDescriptor, templateContent);
                     templates.keySet().stream().forEach(k -> {
                         if (!k.exists()) {
@@ -604,7 +609,7 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
             templateContent = new JTextArea("", 15, 9);
         }
         try {
-            if (operatorIsNew) {
+            if ( (currentOperation == OperationType.NEW) || (currentOperation == OperationType.COPY) ) {
                 if (oldOperatorDescriptor.getTemplateFileLocation() != null) {
                     templateContent.setText(ToolAdapterIO.readOperatorTemplate(oldOperatorDescriptor.getName()));
                 }
