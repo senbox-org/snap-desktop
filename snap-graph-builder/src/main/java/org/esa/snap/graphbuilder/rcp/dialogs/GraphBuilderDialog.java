@@ -328,9 +328,9 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
                 statusLabel.setText("Graph is incomplete");
         } catch (Exception e) {
             if (e.getMessage() != null)
-                statusLabel.setText(e.getMessage());
+                statusLabel.setText("Error in graph: " + e.getMessage());
             else
-                statusLabel.setText(e.toString());
+                statusLabel.setText("Error in graph: " + e.toString());
             result = false;
         }
         return result;
