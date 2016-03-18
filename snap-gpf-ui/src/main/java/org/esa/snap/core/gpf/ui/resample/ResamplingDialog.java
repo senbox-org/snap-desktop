@@ -443,6 +443,7 @@ class ResamplingDialog extends SingleTargetProductDialog {
                     getDescriptor().setValueSet(new ValueSet(bandNames));
             referenceBandNameBox.setModel(new DefaultComboBoxModel<>(bandNames));
             updateReferenceBandTargetWidthAndHeight();
+            referenceBandButton.setEnabled(bandNames.length > 0);
 
             final ProductNodeGroup<Band> productBands = product.getBandGroup();
             final ProductNodeGroup<TiePointGrid> productTiePointGrids = product.getTiePointGridGroup();
@@ -460,18 +461,22 @@ class ResamplingDialog extends SingleTargetProductDialog {
                 allowToSetWidthAndHeight = allOffsetsAreEqual(productBands, xOffset, yOffset) &&
                         allOffsetsAreEqual(productTiePointGrids, xOffset, yOffset);
             }
-            widthAndHeightButton.setEnabled(allowToSetWidthAndHeight);
-            if (allowToSetWidthAndHeight) {
-                targetWidthHeightRatio = product.getSceneRasterWidth() / (double) product.getSceneRasterHeight();
-            } else {
-                targetWidthHeightRatio = 1.0;
-            }
+            targetWidthHeightRatio = product.getSceneRasterWidth() / (double) product.getSceneRasterHeight();
             widthSpinner.setValue(product.getSceneRasterWidth());
             heightSpinner.setValue(product.getSceneRasterHeight());
             widthHeightRatioLabel.setText(String.format("%.5f", targetWidthHeightRatio));
+            widthAndHeightButton.setEnabled(allowToSetWidthAndHeight);
             final GeoCoding sceneGeoCoding = product.getSceneGeoCoding();
-            resolutionButton.setEnabled(sceneGeoCoding != null && sceneGeoCoding instanceof CrsGeoCoding);
             resolutionSpinner.setValue(determineResolutionFromProduct(product));
+            resolutionButton.setEnabled(sceneGeoCoding != null && sceneGeoCoding instanceof CrsGeoCoding);
+
+            if (referenceBandButton.isEnabled()) {
+                referenceBandButton.setSelected(true);
+            } else if (widthAndHeightButton.isEnabled()) {
+                widthAndHeightButton.setSelected(true);
+            } else if (resolutionButton.isEnabled()) {
+                resolutionButton.setSelected(true);
+            }
         }
     }
 

@@ -35,6 +35,7 @@ import org.esa.snap.rcp.actions.file.SaveProductAsAction;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.tooladapter.actions.EscapeAction;
+import org.esa.snap.ui.tooladapter.model.OperationType;
 import org.esa.snap.ui.tooladapter.preferences.ToolAdapterOptionsController;
 import org.esa.snap.utils.PrivilegedAccessor;
 import org.netbeans.api.progress.ProgressHandle;
@@ -182,7 +183,7 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
         } else {
             if (!canApply()) {
                 displayWarnings();
-                AbstractAdapterEditor dialog = AbstractAdapterEditor.createEditorDialog(appContext, getJDialog(), operatorDescriptor, false);
+                AbstractAdapterEditor dialog = AbstractAdapterEditor.createEditorDialog(appContext, getJDialog(), operatorDescriptor, OperationType.EDIT);
                 dialog.getJDialog().addWindowListener(new WindowAdapter() {
                     @Override
                     public void windowClosed(WindowEvent e) {
