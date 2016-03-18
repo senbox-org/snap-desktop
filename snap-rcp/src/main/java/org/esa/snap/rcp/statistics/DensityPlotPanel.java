@@ -38,7 +38,6 @@ import org.esa.snap.core.util.ProductUtils;
 import org.esa.snap.core.util.math.MathUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
-import org.esa.snap.rcp.util.MultiSizeIssue;
 import org.esa.snap.ui.GridBagUtils;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -169,9 +168,6 @@ class DensityPlotPanel extends ChartPagePanel {
     @Override
     protected void updateComponents() {
         super.updateComponents();
-        if (isProductChanged() && isShowing()) {
-            checkForMultiSize();
-        }
         if (isRasterChanged() || isProductChanged()) {
             plot.setImage(null);
             plot.setDataset(null);
@@ -233,9 +229,6 @@ class DensityPlotPanel extends ChartPagePanel {
         xProductList.addItemListener(event -> {
             if (event.getStateChange() == ItemEvent.SELECTED) {
                 final Product selectedProduct = (Product) event.getItem();
-                if (!isProductChanged()) {
-                    checkForMultiSize(selectedProduct);
-                }
                 updateBandList(selectedProduct, xBandProperty, false);
             }
         });
@@ -247,9 +240,6 @@ class DensityPlotPanel extends ChartPagePanel {
         yProductList.addItemListener(event -> {
             if (event.getStateChange() == ItemEvent.SELECTED) {
                 final Product selectedProduct = (Product) event.getItem();
-                if (!isProductChanged()) {
-                    checkForMultiSize(selectedProduct);
-                }
                 updateBandList(selectedProduct, yBandProperty, true);
             }
         });
@@ -276,19 +266,6 @@ class DensityPlotPanel extends ChartPagePanel {
         yBandList.setRenderer(new BandListCellRenderer());
         bindingContext.bind(PROPERTY_NAME_Y_BAND, yBandList);
         yBandProperty = bindingContext.getPropertySet().getProperty(PROPERTY_NAME_Y_BAND);
-    }
-
-    void checkForMultiSize() {
-        checkForMultiSize(getProduct());
-    }
-
-    private void checkForMultiSize(Product product) {
-        if (product != null && product.isMultiSize()) {
-            final Product resampledProduct = MultiSizeIssue.maybeResample(product);
-            if (resampledProduct != null) {
-                selectionChanged(resampledProduct, null, null);
-            }
-        }
     }
 
     private static String formatProductName(final Product product) {

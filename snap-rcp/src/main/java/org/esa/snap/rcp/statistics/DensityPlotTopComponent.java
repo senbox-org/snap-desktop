@@ -53,12 +53,9 @@ import org.openide.windows.TopComponent;
  */
 public class DensityPlotTopComponent extends AbstractStatisticsTopComponent {
 
-    private DensityPlotPanel densityPlotPanel;
-
     @Override
     protected PagePanel createPagePanel() {
-        densityPlotPanel = new DensityPlotPanel(this, Bundle.CTL_DensityPlotTopComponent_HelpId());
-        return densityPlotPanel;
+        return new DensityPlotPanel(this, Bundle.CTL_DensityPlotTopComponent_HelpId());
     }
 
     @Override
@@ -69,6 +66,5 @@ public class DensityPlotTopComponent extends AbstractStatisticsTopComponent {
     @Override
     protected void componentOpened() {
         super.componentOpened();
-        densityPlotPanel.checkForMultiSize();
     }
 }

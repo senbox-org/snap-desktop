@@ -29,7 +29,6 @@ import org.esa.snap.core.util.ArrayUtils;
 import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
-import org.esa.snap.rcp.util.MultiSizeIssue;
 import org.esa.snap.ui.ExpressionPane;
 import org.esa.snap.ui.GridBagUtils;
 import org.esa.snap.ui.ModalDialog;
@@ -83,7 +82,7 @@ import java.util.logging.Level;
         popupText = "#CTL_AttachPixelGeoCodingActionText",
         lazy = false
 )
-@ActionReference(path = "Menu/Tools", position = 210, separatorBefore = 200 )
+@ActionReference(path = "Menu/Tools", position = 210, separatorBefore = 200)
 @Messages({
         "CTL_AttachPixelGeoCodingActionText=Attach Pixel Geo-Coding...",
         "CTL_AttachPixelGeoCodingDialogTitle=Attach Pixel Geo-Coding",
@@ -121,26 +120,19 @@ public class AttachPixelGeoCodingAction extends AbstractAction implements Contex
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
         Product selectedProduct = lkp.lookup(ProductNode.class).getProduct();
-        if (MultiSizeIssue.isMultiSize(selectedProduct)) {
-            final Product resampledProduct = MultiSizeIssue.maybeResample(selectedProduct);
-            if (resampledProduct != null) {
-                selectedProduct = resampledProduct;
-            } else {
-                final Band[] bands = selectedProduct.getBands();
-                int validBandsCount = 0;
-                for (Band band : bands) {
-                    if (band.getRasterSize().equals(selectedProduct.getSceneRasterSize())) {
-                        validBandsCount++;
-                        if (validBandsCount == 2) {
-                            break;
-                        }
-                    }
-                }
-                if (validBandsCount < 2) {
-                    Dialogs.showError("Pixel Geo-Coding cannot be attached: Too few bands of product scene size");
-                    return;
+        final Band[] bands = selectedProduct.getBands();
+        int validBandsCount = 0;
+        for (Band band : bands) {
+            if (band.getRasterSize().equals(selectedProduct.getSceneRasterSize())) {
+                validBandsCount++;
+                if (validBandsCount == 2) {
+                    break;
                 }
             }
+        }
+        if (validBandsCount < 2) {
+            Dialogs.showError("Pixel Geo-Coding cannot be attached: Too few bands of product scene size");
+            return;
         }
         attachPixelGeoCoding(selectedProduct);
     }
@@ -187,8 +179,8 @@ public class AttachPixelGeoCodingAction extends AbstractAction implements Contex
         final long freeMegas = Runtime.getRuntime().freeMemory() / (1024 * 1024);
         if (freeMegas < requiredMegas) {
             final String message = MessageFormat.format("This operation requires to load at least {0} M\n" +
-                                                        "of additional data into memory.\n\n" +
-                                                        "Do you really want to continue?",
+                                                                "of additional data into memory.\n\n" +
+                                                                "Do you really want to continue?",
                                                         requiredMegas);
             final Dialogs.Answer answer = Dialogs.requestDecision(dialogTitle, message, false, "load_latlon_band_data");
             if (answer != Dialogs.Answer.YES) {

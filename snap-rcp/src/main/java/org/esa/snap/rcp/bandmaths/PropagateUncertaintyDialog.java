@@ -12,6 +12,7 @@ import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductData;
 import org.esa.snap.core.datamodel.ProductNodeGroup;
 import org.esa.snap.core.datamodel.VirtualBand;
+import org.esa.snap.core.dataop.barithm.BandArithmetic;
 import org.esa.snap.core.dataop.barithm.StandardUncertaintyGenerator;
 import org.esa.snap.core.jexp.ParseException;
 import org.esa.snap.core.util.ProductUtils;
@@ -30,6 +31,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.beans.PropertyChangeListener;
 
@@ -48,6 +52,9 @@ public class PropagateUncertaintyDialog extends ModalDialog {
 
     private static final String ERROR_PREFIX = "Error: ";
 
+    private static Color OK_MSG_COLOR = new Color(0, 128, 0);
+    private static Color WARN_MSG_OLOR = new Color(128, 0, 0);
+
     private final BindingContext bindingContext;
     private VirtualBand sourceBand;
 
@@ -60,6 +67,7 @@ public class PropagateUncertaintyDialog extends ModalDialog {
 
     private JTextArea sourceExprArea;
     private JTextArea targetExprArea;
+    private JLabel expressionIsCompatibleLabel;
 
     public PropagateUncertaintyDialog(VirtualBand virtualBand) {
         super(SnapApp.getDefault().getMainFrame(), Bundle.CTL_PropagateUncertaintyDialog_Title(), ID_OK_CANCEL_HELP, "propagateUncertainty");
@@ -143,7 +151,25 @@ public class PropagateUncertaintyDialog extends ModalDialog {
 
         targetExprArea = new JTextArea(6, 40);
         targetExprArea.setEditable(true);
+        expressionIsCompatibleLabel = new JLabel();
         updateTargetExprArea();
+
+        targetExprArea.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                validateTargExpression();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                validateTargExpression();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                validateTargExpression();
+            }
+        });
 
         final JComboBox<String> comboBox = new JComboBox<>(new String[]{"uncertainty", "standard_deviation", "error"});
         comboBox.setEditable(true);
@@ -183,13 +209,35 @@ public class PropagateUncertaintyDialog extends ModalDialog {
         gbc.gridy = ++line;
         GridBagUtils.addToPanel(panel, new JScrollPane(targetExprArea), gbc,
                                 "weightx=1, weighty=1, insets.top=3, gridwidth=3, fill=BOTH, anchor=WEST");
+        gbc.gridy = ++line;
+        GridBagUtils.addToPanel(panel, expressionIsCompatibleLabel, gbc,
+                                "weightx=0, weighty=1, insets.top=3, gridwidth=3, fill=NONE, anchor=EAST");
         setContent(panel);
+    }
+
+    private void validateTargExpression() {
+        final String targExpression = targetExprArea.getText();
+        final Product product = sourceBand.getProduct();
+        try {
+            BandArithmetic.parseExpression(targExpression, product);
+            if (!BandArithmetic.areRastersEqualInSize(product, sourceExprArea.getText(), targExpression)) {
+                expressionIsCompatibleLabel.setText("Referenced rasters must be of the same size");
+                expressionIsCompatibleLabel.setForeground(WARN_MSG_OLOR);
+            } else {
+                expressionIsCompatibleLabel.setText("Ok, no errors");
+                expressionIsCompatibleLabel.setForeground(OK_MSG_COLOR);
+            }
+        } catch (ParseException e) {
+            expressionIsCompatibleLabel.setText("Expression is invalid");
+            expressionIsCompatibleLabel.setForeground(WARN_MSG_OLOR);
+        }
     }
 
     private void updateTargetExprArea() {
         try {
             String uncertaintyExpression = generateUncertaintyExpression();
             targetExprArea.setText(uncertaintyExpression);
+            validateTargExpression();
         } catch (ParseException | UnsupportedOperationException e) {
             targetExprArea.setText(ERROR_PREFIX + e.getMessage());
         }

@@ -179,12 +179,6 @@ class MaskFormActions {
         @Override
         String getCode(ActionEvent e) {
             Product product = getMaskForm().getProduct();
-            if (product.isMultiSize()) {
-                final Product resampledProduct = MultiSizeIssue.maybeResample(product);
-                if (resampledProduct != null) {
-                    product = resampledProduct;
-                }
-            }
             ProductExpressionPane expressionPane = ProductExpressionPane.createBooleanExpressionPane(
                     new Product[]{product}, product, null);
             expressionPane.setEmptyExpressionAllowed(false);
