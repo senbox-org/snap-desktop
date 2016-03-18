@@ -726,7 +726,7 @@ public class ExpressionPane extends JPanel {
                 try {
                     Term term = parser.parse(code);
                     if (term != null && !BandArithmetic.areRastersEqualInSize(term)) {
-                        message = "Referenced rasters must all be the same size";
+                        message = "Referenced rasters must all be of the same size";
                         foreground = warnMsgColor;
                     } else if (term == null || !booleanExpressionPreferred || term.isB()) {
                         message = "Ok, no errors.";  /*I18N*/
