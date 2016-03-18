@@ -74,10 +74,9 @@ public class PropagateUncertaintyDialog extends ModalDialog {
     @Override
     protected void onOK() {
         String uncertaintyExpression = targetExprArea.getText();
-
         Product targetProduct = sourceBand.getProduct();
-        int width = targetProduct.getSceneRasterWidth();
-        int height = targetProduct.getSceneRasterHeight();
+        int width = sourceBand.getRasterWidth();
+        int height = sourceBand.getRasterHeight();
 
         ProductNodeGroup<Band> bandGroup = targetProduct.getBandGroup();
 
@@ -189,7 +188,7 @@ public class PropagateUncertaintyDialog extends ModalDialog {
 
     private void updateTargetExprArea() {
         try {
-            String uncertaintyExpression= generateUncertaintyExpression();
+            String uncertaintyExpression = generateUncertaintyExpression();
             targetExprArea.setText(uncertaintyExpression);
         } catch (ParseException | UnsupportedOperationException e) {
             targetExprArea.setText(ERROR_PREFIX + e.getMessage());

@@ -16,10 +16,7 @@
 
 package org.esa.snap.rcp.bandmaths;
 
-import org.esa.snap.core.datamodel.Band;
-import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.VirtualBand;
-import org.esa.snap.rcp.util.MultiSizeIssue;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -30,11 +27,11 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import java.awt.event.ActionEvent;
 
-@ActionID(category = "Tools", id = "PropagateUncertaintyAction" )
-@ActionRegistration(displayName = "#CTL_PropagateUncertaintyAction_MenuText", lazy = true )
+@ActionID(category = "Tools", id = "PropagateUncertaintyAction")
+@ActionRegistration(displayName = "#CTL_PropagateUncertaintyAction_MenuText", lazy = true)
 @ActionReferences({
         @ActionReference(path = "Menu/Raster", position = 25),
-        @ActionReference(path = "Context/Product/VirtualBand", position = 200), })
+        @ActionReference(path = "Context/Product/VirtualBand", position = 200),})
 @Messages({
         "CTL_PropagateUncertaintyAction_MenuText=Propagate Uncertainty...",
         "CTL_PropagateUncertaintyAction_ShortDescription=Perform Gaussian uncertainty propagation from virtual band according to GUM 1995, chapter 5"
@@ -51,20 +48,7 @@ public class PropagateUncertaintyAction extends AbstractAction {
 
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
-        final Product product = virtualBand.getProduct();
-        if (product != null && product.isMultiSize()) {
-            virtualBand = null;
-            final Product resampledProduct = MultiSizeIssue.maybeResample(product);
-            if (resampledProduct != null) {
-                final Band band = resampledProduct.getBand(virtualBand.getName());
-                if (band instanceof VirtualBand) {
-                    virtualBand = (VirtualBand) band;
-                }
-            }
-        }
-        if (virtualBand != null) {
-            PropagateUncertaintyDialog dialog = new PropagateUncertaintyDialog(virtualBand);
-            dialog.show();
-        }
+        PropagateUncertaintyDialog dialog = new PropagateUncertaintyDialog(virtualBand);
+        dialog.show();
     }
 }
