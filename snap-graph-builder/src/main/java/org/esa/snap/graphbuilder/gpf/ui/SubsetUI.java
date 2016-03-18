@@ -119,8 +119,14 @@ public class SubsetUI extends BaseOperatorUI {
             worldMapUI.getWorlMapPane().zoomToProduct(sourceProducts[0]);
         }
 
-        subSamplingX.setText(String.valueOf(paramMap.get("subSamplingX")));
-        subSamplingY.setText(String.valueOf(paramMap.get("subSamplingY")));
+        Integer subSamplingXVal = (Integer) paramMap.get("subSamplingX");
+        if(subSamplingXVal != null) {
+            subSamplingX.setText(subSamplingXVal.toString());
+        }
+        Integer subSamplingYVal = (Integer) paramMap.get("subSamplingY");
+        if(subSamplingYVal != null) {
+            subSamplingY.setText(subSamplingYVal.toString());
+        }
 
         geoRegion = (Geometry) paramMap.get("geoRegion");
         if (geoRegion != null) {
