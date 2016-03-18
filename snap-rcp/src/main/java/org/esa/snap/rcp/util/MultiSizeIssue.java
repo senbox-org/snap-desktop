@@ -33,7 +33,7 @@ import java.util.List;
 public class MultiSizeIssue {
 
     public static Product maybeResample(Product product) {
-        String title = Dialogs.getDialogTitle("Resampling required");
+        String title = Dialogs.getDialogTitle("Resampling Required");
         final List<Resampler> availableResamplers = getAvailableResamplers(product);
         int optionType;
         int messageType;
