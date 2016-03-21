@@ -20,13 +20,8 @@ import java.awt.event.ActionListener;
  *
  * @author Norman Fomferra
  */
-@ActionID(
-        category = "Help",
-        id = "org.esa.snap.rcp.about.AboutAction"
-)
-@ActionRegistration(
-        displayName = "#CTL_AboutAction_Name"
-)
+@ActionID(category = "Help", id = "org.esa.snap.rcp.about.AboutAction" )
+@ActionRegistration(displayName = "#CTL_AboutAction_Name" )
 @ActionReference(path = "Menu/Help", position = 1600, separatorBefore = 1550)
 @Messages({
         "CTL_AboutAction_Name=About SNAP...",
