@@ -150,7 +150,7 @@ class WriteProductOperation implements Runnable, Cancellable {
         } catch (RuntimeException e) {
             throw e;
         } catch (Exception e) {
-            SnapApp.getDefault().handleError("Writing failed", e);
+            javax.swing.SwingUtilities.invokeLater(() -> Dialogs.showError("Writing failed", e.getMessage()));
             return false;
         }
     }
