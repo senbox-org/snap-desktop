@@ -15,14 +15,16 @@
  */
 package org.esa.snap.rcp.actions.file;
 
+import org.esa.snap.core.dataio.EncodeQualification;
+import org.esa.snap.core.dataio.ProductIO;
 import org.esa.snap.core.dataio.ProductIOPlugInManager;
+import org.esa.snap.core.dataio.ProductWriter;
 import org.esa.snap.core.dataio.ProductWriterPlugIn;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
-import org.esa.snap.rcp.util.MultiSizeIssue;
 import org.netbeans.api.progress.ProgressUtils;
 import org.openide.util.ContextAwareAction;
 import org.openide.util.HelpCtx;
@@ -72,7 +74,6 @@ public class ExportProductAction extends AbstractAction implements HelpCtx.Provi
      *
      * @param configuration Configuration attributes from layer.xml.
      * @return The action.
-     *
      * @since SNAP 2
      */
     public static ExportProductAction create(Map<String, Object> configuration) {
@@ -126,14 +127,6 @@ public class ExportProductAction extends AbstractAction implements HelpCtx.Provi
     public Boolean execute() {
         Product product = productRef.get();
         if (product != null) {
-            if(product.isMultiSize()) {
-                final Product resampledProduct = MultiSizeIssue.maybeResample(product);
-                if (resampledProduct != null) {
-                    product = resampledProduct;
-                } else {
-                    return false;
-                }
-            }
             return exportProduct(product, (String) getValue(PROPERTY_FORMAT_NAME));
         } else {
             // reference was garbage collected, that's fine, no need to save.
@@ -143,6 +136,19 @@ public class ExportProductAction extends AbstractAction implements HelpCtx.Provi
     }
 
     private Boolean exportProduct(Product product, String formatName) {
+        final ProductWriter productWriter = ProductIO.getProductWriter(formatName);
+        if (productWriter == null) {
+            Dialogs.showError(getDisplayName(), MessageFormat.format("No writer found for format {0}.", formatName));
+            return null;
+        }
+        final EncodeQualification encodeQualification = productWriter.getWriterPlugIn().getEncodeQualification(product);
+        if (encodeQualification.getPreservation() == EncodeQualification.Preservation.UNABLE) {
+            Dialogs.showError(getDisplayName(), MessageFormat.format("Writing this product as {0} is not possible:\n"
+                                                                             + encodeQualification.getInfoString(),
+                                                                     formatName
+            ));
+            return null;
+        }
         Preferences preferences = SnapApp.getDefault().getPreferences();
         ProductFileChooser fc = new ProductFileChooser(new File(preferences.get(ProductOpener.PREFERENCES_KEY_LAST_PRODUCT_DIR, ".")));
         fc.setDialogType(JFileChooser.SAVE_DIALOG);
@@ -194,7 +200,7 @@ public class ExportProductAction extends AbstractAction implements HelpCtx.Provi
 
     private FileFilter getFileFilter(String formatName) {
         Iterator<ProductWriterPlugIn> writerPlugIns = ProductIOPlugInManager.getInstance().getWriterPlugIns(formatName);
-        if(writerPlugIns.hasNext()) {
+        if (writerPlugIns.hasNext()) {
             return writerPlugIns.next().getProductFileFilter();
         }
         return null;
@@ -203,9 +209,9 @@ public class ExportProductAction extends AbstractAction implements HelpCtx.Provi
     private String getFileExtension(String formatName) {
         Iterator<ProductWriterPlugIn> writerPlugIns = ProductIOPlugInManager.getInstance().getWriterPlugIns(formatName);
         String fileExtension = null;
-        if(writerPlugIns.hasNext()) {
+        if (writerPlugIns.hasNext()) {
             SnapFileFilter fileFilter = writerPlugIns.next().getProductFileFilter();
-            if(fileFilter != null) {
+            if (fileFilter != null) {
                 fileExtension = fileFilter.getDefaultExtension();
             }
         }
