@@ -19,6 +19,9 @@ import com.bc.ceres.swing.TableLayout;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.RGBImageProfile;
 import org.esa.snap.core.datamodel.RGBImageProfileManager;
+import org.esa.snap.core.dataop.barithm.BandArithmetic;
+import org.esa.snap.core.jexp.ParseException;
+import org.esa.snap.core.util.ArrayUtils;
 import org.esa.snap.core.util.Debug;
 import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.core.util.io.FileUtils;
@@ -43,6 +46,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
@@ -71,6 +75,9 @@ public class RGBImageProfilePane extends JPanel {
     };
     public static final Font EXPRESSION_FONT = new Font("Courier", Font.PLAIN, 12);
 
+    private static Color okMsgColor = new Color(0, 128, 0);
+    private static Color warnMsgColor = new Color(128, 0, 0);
+
     private PropertyMap preferences;
     private Product product;
     private final Product[] openedProducts;
@@ -83,6 +90,7 @@ public class RGBImageProfilePane extends JPanel {
     private boolean settingRgbaExpressions;
     private File lastDir;
     protected JCheckBox storeInProductCheck;
+    private JLabel referencedRastersAreCompatibleLabel;
 
     public RGBImageProfilePane(PropertyMap preferences) {
         this(preferences, null, null, null);
@@ -164,6 +172,7 @@ public class RGBImageProfilePane extends JPanel {
             c3.gridy = i;
             addColorComponentRow(p3, c3, i);
         }
+        referencedRastersAreCompatibleLabel = new JLabel();
 
         TableLayout layout = new TableLayout(1);
         layout.setTableFill(TableLayout.Fill.BOTH);
@@ -173,6 +182,9 @@ public class RGBImageProfilePane extends JPanel {
         setLayout(layout);
         add(p1);
         add(p3);
+        layout.setCellFill(2, 0, TableLayout.Fill.NONE);
+        layout.setCellAnchor(2, 0, TableLayout.Anchor.NORTHEAST);
+        add(referencedRastersAreCompatibleLabel);
         add(storeInProductCheck);
         add(layout.createVerticalSpacer());
 
@@ -577,6 +589,21 @@ public class RGBImageProfilePane extends JPanel {
                 profileBox.revalidate();
                 profileBox.repaint();
             }
+        }
+        final String[] rgbaExpressions = getRgbaExpressions();
+        final int defaultProductIndex = ArrayUtils.getElementIndex(product, openedProducts);
+        try {
+            if (!BandArithmetic.areRastersEqualInSize(openedProducts,
+                                                      defaultProductIndex, rgbaExpressions)) {
+                referencedRastersAreCompatibleLabel.setText("Referenced rasters are not of the same size");
+                referencedRastersAreCompatibleLabel.setForeground(warnMsgColor);
+            } else {
+                referencedRastersAreCompatibleLabel.setText("Expressions are valid");
+                referencedRastersAreCompatibleLabel.setForeground(okMsgColor);
+            }
+        } catch (ParseException e) {
+            referencedRastersAreCompatibleLabel.setText("Expressions are invalid");
+            referencedRastersAreCompatibleLabel.setForeground(warnMsgColor);
         }
         updateUIState();
     }

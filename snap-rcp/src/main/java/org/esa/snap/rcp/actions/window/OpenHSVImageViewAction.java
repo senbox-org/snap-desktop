@@ -28,11 +28,9 @@ import org.esa.snap.core.datamodel.Stx;
 import org.esa.snap.core.datamodel.VirtualBand;
 import org.esa.snap.core.dataop.barithm.BandArithmetic;
 import org.esa.snap.core.jexp.ParseException;
-import org.esa.snap.core.util.ArrayUtils;
 import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
-import org.esa.snap.rcp.util.MultiSizeIssue;
 import org.esa.snap.ui.HSVImageProfilePane;
 import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.product.ProductSceneImage;
@@ -111,17 +109,6 @@ public class OpenHSVImageViewAction extends AbstractAction implements HelpCtx.Pr
             return;
         }
         final String[] hsvExpressions = profilePane.getRgbaExpressions();
-        final int defaultProductIndex = ArrayUtils.getElementIndex(hsvProduct, openedProducts);
-        if (!BandArithmetic.areRastersEqualInSize(openedProducts,
-                                                  defaultProductIndex, hsvExpressions)) {
-//            Dialogs.showInformation(title, "Referenced rasters must all be the same size", null);
-            final Product resampledProduct = MultiSizeIssue.maybeResample(hsvProduct);
-            if (resampledProduct == null) {
-                return;
-            } else {
-                hsvProduct = resampledProduct;
-            }
-        }
         nomalizeHSVExpressions(hsvProduct, hsvExpressions);
         if (profilePane.getStoreProfileInProduct()) {
             RGBImageProfile.storeRgbaExpressions(hsvProduct, hsvExpressions, HSVImageProfilePane.HSV_COMP_NAMES);
