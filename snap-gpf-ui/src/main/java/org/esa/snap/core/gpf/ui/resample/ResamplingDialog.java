@@ -55,6 +55,13 @@ import java.util.HashMap;
 class ResamplingDialog extends SingleTargetProductDialog {
     private final String operatorName;
     private final OperatorDescriptor operatorDescriptor;
+    private final String REFERENCE_BAND_TOOLTIP_TEXT = "<html>Set the reference band.<br/>" +
+            "All other bands will be resampled to match its size and resolution.</html>";
+    private final String TARGET_WIDTH_AND_HEIGHT_TOOLTIP_TEXT =
+            "<html>Set explicitly the width and height of the resampled product.<br/>" +
+            "This option is only available when all bands have the same offset.</html>";
+    private final String TARGET_RESOLUTION_TOOLTIP_TEXT = "<html>Define the target resolution of the resampled product.<br/>" +
+            "This option is only available for products with a geocoding based on a cartographic map CRS.</html>";
     private DefaultIOParametersPanel ioParametersPanel;
     private final OperatorParameterSupport parameterSupport;
     private final BindingContext bindingContext;
@@ -171,8 +178,11 @@ class ResamplingDialog extends SingleTargetProductDialog {
         defineTargetSizePanel.setBorder(BorderFactory.createTitledBorder("Define size of resampled product"));
         final ButtonGroup targetSizeButtonGroup = new ButtonGroup();
         referenceBandButton = new JRadioButton("By reference band from source product:");
+        referenceBandButton.setToolTipText(REFERENCE_BAND_TOOLTIP_TEXT);
         widthAndHeightButton = new JRadioButton("By target width and height:");
+        widthAndHeightButton.setToolTipText(TARGET_WIDTH_AND_HEIGHT_TOOLTIP_TEXT);
         resolutionButton = new JRadioButton("By pixel resolution (in m):");
+        resolutionButton.setToolTipText(TARGET_RESOLUTION_TOOLTIP_TEXT);
         targetSizeButtonGroup.add(referenceBandButton);
         targetSizeButtonGroup.add(widthAndHeightButton);
         targetSizeButtonGroup.add(resolutionButton);
@@ -321,6 +331,7 @@ class ResamplingDialog extends SingleTargetProductDialog {
         private final JLabel targetResolutionNameTargetHeightLabel;
 
         TargetResolutionPanel() {
+            setToolTipText(TARGET_RESOLUTION_TOOLTIP_TEXT);
             resolutionSpinner = new JSpinner(new SpinnerNumberModel(1, 1, Integer.MAX_VALUE, 1));
             resolutionSpinner.setEnabled(false);
             resolutionSpinner.addChangeListener(e -> updateTargetResolution());
@@ -412,6 +423,7 @@ class ResamplingDialog extends SingleTargetProductDialog {
         private boolean updatingTargetWidthAndHeight;
 
         TargetWidthAndHeightPanel() {
+            setToolTipText(TARGET_WIDTH_AND_HEIGHT_TOOLTIP_TEXT);
             updatingTargetWidthAndHeight = false;
             targetWidthHeightRatio = 1.0;
             final GridLayout layout = new GridLayout(3, 2);
@@ -506,6 +518,7 @@ class ResamplingDialog extends SingleTargetProductDialog {
         private final JLabel referenceBandTargetWidthNameLabel;
 
         ReferenceBandNameBoxPanel() {
+            setToolTipText(REFERENCE_BAND_TOOLTIP_TEXT);
             referenceBandNameBox = new JComboBox<>();
             referenceBandNameBox.addActionListener(e -> {
                 updateReferenceBandTargetWidthAndHeight();
