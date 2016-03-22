@@ -116,7 +116,7 @@ public class ExportTransectPixelsAction extends AbstractAction implements Contex
         final ProductSceneView sceneView = SnapApp.getDefault().getSelectedProductSceneView();
         if(sceneView != null && sceneView.getProduct().isMultiSize()) {
             MultiSizeIssue.maybeResample(sceneView.getProduct());
-            //as the following code relies on current selections, nothing else is done after resampling
+            //as the following code relies on current selections, nothing is done after resampling
         } else {
             exportTransectPixels();
         }
