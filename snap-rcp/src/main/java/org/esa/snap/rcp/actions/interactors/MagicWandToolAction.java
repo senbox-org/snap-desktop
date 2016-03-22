@@ -17,7 +17,6 @@
 package org.esa.snap.rcp.actions.interactors;
 
 import org.esa.snap.rcp.magicwand.MagicWandInteractor;
-import org.esa.snap.ui.product.ProductSceneView;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
@@ -44,18 +43,6 @@ public class MagicWandToolAction extends ToolAction {
         putValue(NAME, Bundle.CTL_MagicWandToolActionText());
         putValue(SHORT_DESCRIPTION, Bundle.CTL_MagicWandToolActionDescription());
         putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/MagicWand22.png", false));
-    }
-
-    @Override
-    protected void updateEnabledState() {
-        final ProductSceneView productSceneView = getProductSceneView();
-        if (productSceneView == null) {
-            setEnabled(false);
-            return;
-        }
-        if (productSceneView.getProduct() != null) {
-            setEnabled(!productSceneView.getProduct().isMultiSize());
-        }
     }
 
     @Override
