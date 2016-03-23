@@ -216,14 +216,11 @@ public class ExportImageAction extends AbstractExportImageAction {
         switch (regionAC) {
             case AC_FULL_REGION:
                 buttonViewResolution.setEnabled(false);
-                buttonFullResolution.setEnabled(false);
-                buttonUserResolution.setEnabled(true);
-                buttonUserResolution.setSelected(true);
+
+                buttonFullResolution.setSelected(true);
                 break;
             default:
                 buttonViewResolution.setEnabled(true);
-                buttonFullResolution.setEnabled(true);
-                buttonUserResolution.setEnabled(true);
         }
         String resolutionAC = buttonGroupResolution.getSelection().getActionCommand();
         switch (resolutionAC) {
