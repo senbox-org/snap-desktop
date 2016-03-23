@@ -219,7 +219,6 @@ public class PropagateUncertaintyDialog extends ModalDialog {
         final String targExpression = targetExprArea.getText();
         final Product product = sourceBand.getProduct();
         try {
-            BandArithmetic.parseExpression(targExpression, product);
             if (!BandArithmetic.areRastersEqualInSize(product, sourceExprArea.getText(), targExpression)) {
                 expressionIsCompatibleLabel.setText("Referenced rasters must be of the same size");
                 expressionIsCompatibleLabel.setForeground(WARN_MSG_OLOR);

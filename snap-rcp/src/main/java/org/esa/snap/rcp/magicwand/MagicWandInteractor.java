@@ -29,6 +29,7 @@ import org.esa.snap.core.layer.MaskLayerType;
 import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
+import org.esa.snap.rcp.util.MultiSizeIssue;
 import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.product.ProductSceneView;
 
@@ -163,6 +164,11 @@ public class MagicWandInteractor extends ViewportInteractor implements MagicWand
         }
 
         final Product product = view.getProduct();
+        if (MultiSizeIssue.isMultiSize(product)) {
+            MultiSizeIssue.maybeResample(product);
+            //as the following code requires an exact pixel location, nothing is done after resampling
+            return;
+        }
         if (!ensureBandNamesSet(view, product)) {
             return;
         }
