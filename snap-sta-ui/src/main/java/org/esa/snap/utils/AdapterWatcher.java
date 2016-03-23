@@ -1,5 +1,6 @@
 package org.esa.snap.utils;
 
+import org.esa.snap.core.gpf.OperatorException;
 import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterIO;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterRegistry;
@@ -7,12 +8,15 @@ import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterRegistry;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by kraftek on 3/8/2016.
  */
 public enum AdapterWatcher {
     INSTANCE;
+    private final Logger logger = Logger.getLogger(AdapterWatcher.class.getName());
 
     private WatchService directoryWatcher;
     private Thread thread;
@@ -62,7 +66,11 @@ public enum AdapterWatcher {
     }
 
     private void folderAdded(File folder) {
-        ToolAdapterIO.registerAdapter(folder);
+        try {
+            ToolAdapterIO.registerAdapter(folder);
+        }catch (OperatorException ex){
+            logger.log(Level.INFO, "Could not load adapter for folder added in repository: " + folder.toString() + " (error:" + ex.getMessage());
+        }
     }
 
     private void folderDeleted(File folder) {

@@ -348,7 +348,6 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
                 Dialogs.showWarning(Bundle.MSG_Wrong_Usage_Array_Text());
                 this.getJDialog().requestFocus();
             } else {
-                super.onOK();
                 if (newOperatorDescriptor.getSourceProductCount() == 0) {
                     Dialogs.showInformation("The template is not using the parameter $sourceProduct.\nNo source product selection will be available at execution time.", "empty.source.info");
                 }
@@ -408,9 +407,12 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
                         ToolAdapterActionRegistrar.removeOperatorMenu(oldOperatorDescriptor);
                         //ToolAdapterIO.removeOperator(oldOperatorDescriptor, false);
                     }*/
-                    if (this.currentOperation == OperationType.EDIT) {
+                    //deleting the files on disk was moved to the saveAndRegister method, since in any situation, the old files must be deleted
+                    //(on new, there are no old files, on edit, it must be deleted, and on duplicate, the duplicated operator is transmited,
+                    // and his files doesn't exist)
+                    /*if (this.currentOperation == OperationType.EDIT) {
                         ToolAdapterIO.removeOperator(oldOperatorDescriptor, true);
-                    }
+                    }*/
                     ToolAdapterIO.saveAndRegisterOperator(newOperatorDescriptor, templateContent);
                     templates.keySet().stream().forEach(k -> {
                         if (!k.exists()) {
@@ -424,9 +426,11 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
                         }
                     });
                     //ToolAdapterActionRegistrar.registerOperatorMenu(newOperatorDescriptor);
+                    //the editing window is closed only if no error occur
+                    super.onOK();
                 } catch (Exception e) {
                     logger.warning(e.getMessage());
-                    Dialogs.showError(e.getMessage());
+                    Dialogs.showError("There was an error on saving the operator; check the disk space and permissions and try again! " + e.toString());
                 }
             }
         }
