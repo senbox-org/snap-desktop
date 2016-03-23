@@ -47,6 +47,7 @@ import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
+import javax.swing.ButtonModel;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -97,6 +98,7 @@ public class ExportImageAction extends AbstractExportImageAction {
     private static final String AC_USER_RES = "userRes";
     private static final String AC_FULL_REGION = "fullRegion";
     private static final String AC_VIEW_REGION = "viewRegion";
+    private static final String PSEUDO_AC_INIT = "INIT";
 
     private SnapFileFilter[] sceneImageFileFilters;
 
@@ -157,10 +159,9 @@ public class ExportImageAction extends AbstractExportImageAction {
         }
 
         final JPanel regionPanel = new JPanel(new GridLayout(2, 1));
-        regionPanel.setBorder(BorderFactory.createTitledBorder("Image Region")); /*I18N*/
-        buttonFullRegion = new JRadioButton("Full scene", false);
+        regionPanel.setBorder(BorderFactory.createTitledBorder("Image Region"));
+        buttonFullRegion = new JRadioButton("Full scene");
         buttonFullRegion.setActionCommand(AC_FULL_REGION);
-        /*I18N*/
         buttonVisibleRegion = new JRadioButton("View region", true);
         buttonVisibleRegion.setActionCommand(AC_VIEW_REGION);
         regionPanel.add(buttonVisibleRegion);
@@ -171,12 +172,12 @@ public class ExportImageAction extends AbstractExportImageAction {
         buttonGroupRegion.add(buttonFullRegion);
 
         final JPanel resolutionPanel = new JPanel(new GridLayout(3, 1));
-        resolutionPanel.setBorder(BorderFactory.createTitledBorder("Image Resolution")); /*I18N*/
-        buttonViewResolution = new JRadioButton("View resolution", true);
+        resolutionPanel.setBorder(BorderFactory.createTitledBorder("Image Resolution"));
+        buttonViewResolution = new JRadioButton("View resolution");
         buttonViewResolution.setActionCommand(AC_VIEW_RES);
-        buttonFullResolution = new JRadioButton("Full resolution", false);
+        buttonFullResolution = new JRadioButton("Full resolution");
         buttonFullResolution.setActionCommand(AC_FULL_RES);
-        buttonUserResolution = new JRadioButton("User resolution", false);
+        buttonUserResolution = new JRadioButton("User resolution");
         buttonUserResolution.setActionCommand(AC_USER_RES);
         resolutionPanel.add(buttonViewResolution);
         resolutionPanel.add(buttonFullResolution);
@@ -198,40 +199,45 @@ public class ExportImageAction extends AbstractExportImageAction {
         accessory.add(sizePanel);
 
         fileChooser.setAccessory(accessory);
-        buttonViewResolution.addActionListener(e -> updateComponents());
-        buttonFullResolution.addActionListener(e -> updateComponents());
-        buttonUserResolution.addActionListener(e -> updateComponents());
-        buttonFullRegion.addActionListener(e -> updateComponents());
-        buttonVisibleRegion.addActionListener(e -> updateComponents());
-        updateComponents();
+        buttonVisibleRegion.addActionListener(e -> updateComponents(e.getActionCommand()));
+        buttonFullRegion.addActionListener(e -> updateComponents(e.getActionCommand()));
+        buttonViewResolution.addActionListener(e -> updateComponents(e.getActionCommand()));
+        buttonFullResolution.addActionListener(e -> updateComponents(e.getActionCommand()));
+        buttonUserResolution.addActionListener(e -> updateComponents(e.getActionCommand()));
+        updateComponents(PSEUDO_AC_INIT);
+
     }
 
-    private void updateComponents() {
-        updateEnableState();
+    private void updateComponents(String actionCommand) {
+        updateEnableState(actionCommand);
         sizeComponent.updateDimensions();
     }
 
-    private void updateEnableState() {
-        String regionAC = buttonGroupRegion.getSelection().getActionCommand();
-        switch (regionAC) {
+    private void updateEnableState(String actionCommand) {
+        switch (actionCommand) {
             case AC_FULL_REGION:
                 buttonViewResolution.setEnabled(false);
-
                 buttonFullResolution.setSelected(true);
                 break;
-            default:
+            case AC_VIEW_REGION:
+                buttonViewResolution.setEnabled(true);
+                break;
+            case "INIT":
+                buttonVisibleRegion.setEnabled(true);
                 buttonViewResolution.setEnabled(true);
         }
-        String resolutionAC = buttonGroupResolution.getSelection().getActionCommand();
-        switch (resolutionAC) {
+        switch (actionCommand) {
             case AC_FULL_RES:
                 sizeComponent.setEnabled(false);
                 break;
             case AC_VIEW_RES:
                 sizeComponent.setEnabled(false);
                 break;
-            default: // AC_USER_RES:
+            case AC_USER_RES:
                 sizeComponent.setEnabled(true);
+                break;
+            case "INIT":
+                sizeComponent.setEnabled(false);
 
         }
 
@@ -316,7 +322,8 @@ public class ExportImageAction extends AbstractExportImageAction {
     }
 
     protected boolean isEntireImageSelected() {
-        return AC_FULL_REGION.equals(buttonGroupRegion.getSelection().getActionCommand());
+        ButtonModel selection = buttonGroupRegion.getSelection();
+        return selection != null && AC_FULL_REGION.equals(selection.getActionCommand());
     }
 
 
@@ -333,7 +340,6 @@ public class ExportImageAction extends AbstractExportImageAction {
             this.view = view;
             propertyContainer = new PropertyContainer();
             initValueContainer();
-            updateDimensions();
             bindingContext = new BindingContext(propertyContainer);
         }
 
@@ -344,7 +350,11 @@ public class ExportImageAction extends AbstractExportImageAction {
 
         private void updateDimensions() {
             final Rectangle2D bounds;
-            String resolutionAC = buttonGroupResolution.getSelection().getActionCommand();
+            ButtonModel selection = buttonGroupResolution.getSelection();
+            if (selection == null) {
+                return;
+            }
+            String resolutionAC = selection.getActionCommand();
             if (isEntireImageSelected()) {
                 final ImageLayer imageLayer = view.getBaseImageLayer();
                 final Rectangle2D modelBounds = imageLayer.getModelBounds();
