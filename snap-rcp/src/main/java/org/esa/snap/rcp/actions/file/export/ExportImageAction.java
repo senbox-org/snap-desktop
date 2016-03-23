@@ -67,10 +67,7 @@ import java.awt.image.RenderedImage;
  * @author Marco Peters
  * @author Ralf Quast
  */
-@ActionID(
-        category = "File",
-        id = "org.esa.snap.rcp.actions.file.export.ExportImageAction"
-)
+@ActionID(category = "File", id = "org.esa.snap.rcp.actions.file.export.ExportImageAction")
 @ActionRegistration(
         displayName = "#CTL_ExportImageAction_MenuText",
         popupText = "#CTL_ExportImageAction_PopupText",
@@ -78,7 +75,7 @@ import java.awt.image.RenderedImage;
 )
 @ActionReferences({
         @ActionReference(path = "Menu/File/Export/Other", position = 80, separatorAfter = 200),
-        @ActionReference(path = "Context/ProductSceneView",position = 70)
+        @ActionReference(path = "Context/ProductSceneView", position = 70)
 })
 @NbBundle.Messages({
         "CTL_ExportImageAction_MenuText=View as Image",
@@ -86,6 +83,7 @@ import java.awt.image.RenderedImage;
         "CTL_ExportImageAction_ShortDescription=Export the current view as an image."
 })
 public class ExportImageAction extends AbstractExportImageAction {
+
     private final static String[][] SCENE_IMAGE_FORMAT_DESCRIPTIONS = {
             BMP_FORMAT_DESCRIPTION,
             PNG_FORMAT_DESCRIPTION,
@@ -94,14 +92,24 @@ public class ExportImageAction extends AbstractExportImageAction {
             GEOTIFF_FORMAT_DESCRIPTION,
     };
     private static final String HELP_ID = "exportImageFile";
+    private static final String AC_VIEW_RES = "viewRes";
+    private static final String AC_FULL_RES = "fullRes";
+    private static final String AC_USER_RES = "userRes";
+    private static final String AC_FULL_REGION = "fullRegion";
+    private static final String AC_VIEW_REGION = "viewRegion";
 
     private SnapFileFilter[] sceneImageFileFilters;
 
-    private JRadioButton buttonFullScene;
     private SizeComponent sizeComponent;
     @SuppressWarnings("FieldCanBeLocal")
     private Lookup.Result<ProductSceneView> result;
+    private ButtonGroup buttonGroupResolution;
+    private ButtonGroup buttonGroupRegion;
+    private JRadioButton buttonVisibleRegion;
+    private JRadioButton buttonViewResolution;
     private JRadioButton buttonFullResolution;
+    private JRadioButton buttonUserResolution;
+    private JRadioButton buttonFullRegion;
 
 
     public ExportImageAction() {
@@ -110,7 +118,7 @@ public class ExportImageAction extends AbstractExportImageAction {
 
     public ExportImageAction(Lookup lookup) {
         super(Bundle.CTL_ExportImageAction_MenuText(), HELP_ID);
-        putValue("popupText",Bundle.CTL_ExportImageAction_PopupText());
+        putValue("popupText", Bundle.CTL_ExportImageAction_PopupText());
         sceneImageFileFilters = new SnapFileFilter[SCENE_IMAGE_FORMAT_DESCRIPTIONS.length];
         for (int i = 0; i < SCENE_IMAGE_FORMAT_DESCRIPTIONS.length; i++) {
             sceneImageFileFilters[i] = createFileFilter(SCENE_IMAGE_FORMAT_DESCRIPTIONS[i]);
@@ -147,29 +155,37 @@ public class ExportImageAction extends AbstractExportImageAction {
         } else {
             fileChooser.setCurrentFilename(imageBaseName + "_" + view.getRaster().getName());
         }
-        buttonFullScene = new JRadioButton("Full scene", false);
-        final JRadioButton buttonVisibleRegion = new JRadioButton("Visible region", true); /*I18N*/
-
-        final JRadioButton buttonViewResolution =  new JRadioButton("Current view resolution", true);
-        buttonFullResolution = new JRadioButton("Full resolution", false);
-
-        ButtonGroup buttonGroupRegion = new ButtonGroup();
-        buttonGroupRegion.add(buttonVisibleRegion);
-        buttonGroupRegion.add(buttonFullScene);
-
-        ButtonGroup buttonGroupResolution = new ButtonGroup();
-        buttonGroupResolution.add(buttonViewResolution);
-        buttonGroupResolution.add(buttonFullResolution);
 
         final JPanel regionPanel = new JPanel(new GridLayout(2, 1));
         regionPanel.setBorder(BorderFactory.createTitledBorder("Image Region")); /*I18N*/
+        buttonFullRegion = new JRadioButton("Full scene", false);
+        buttonFullRegion.setActionCommand(AC_FULL_REGION);
+        /*I18N*/
+        buttonVisibleRegion = new JRadioButton("View region", true);
+        buttonVisibleRegion.setActionCommand(AC_VIEW_REGION);
         regionPanel.add(buttonVisibleRegion);
-        regionPanel.add(buttonFullScene);
+        regionPanel.add(buttonFullRegion);
 
-        final JPanel resolutionPanel = new JPanel(new GridLayout(2, 1));
+        buttonGroupRegion = new ButtonGroup();
+        buttonGroupRegion.add(buttonVisibleRegion);
+        buttonGroupRegion.add(buttonFullRegion);
+
+        final JPanel resolutionPanel = new JPanel(new GridLayout(3, 1));
         resolutionPanel.setBorder(BorderFactory.createTitledBorder("Image Resolution")); /*I18N*/
+        buttonViewResolution = new JRadioButton("View resolution", true);
+        buttonViewResolution.setActionCommand(AC_VIEW_RES);
+        buttonFullResolution = new JRadioButton("Full resolution", false);
+        buttonFullResolution.setActionCommand(AC_FULL_RES);
+        buttonUserResolution = new JRadioButton("User resolution", false);
+        buttonUserResolution.setActionCommand(AC_USER_RES);
         resolutionPanel.add(buttonViewResolution);
         resolutionPanel.add(buttonFullResolution);
+        resolutionPanel.add(buttonUserResolution);
+
+        buttonGroupResolution = new ButtonGroup();
+        buttonGroupResolution.add(buttonViewResolution);
+        buttonGroupResolution.add(buttonFullResolution);
+        buttonGroupResolution.add(buttonUserResolution);
 
         sizeComponent = new SizeComponent(view);
         JComponent sizePanel = sizeComponent.createComponent();
@@ -182,22 +198,52 @@ public class ExportImageAction extends AbstractExportImageAction {
         accessory.add(sizePanel);
 
         fileChooser.setAccessory(accessory);
+        buttonViewResolution.addActionListener(e -> updateComponents());
+        buttonFullResolution.addActionListener(e -> updateComponents());
+        buttonUserResolution.addActionListener(e -> updateComponents());
+        buttonFullRegion.addActionListener(e -> updateComponents());
+        buttonVisibleRegion.addActionListener(e -> updateComponents());
+        updateComponents();
+    }
 
-        buttonFullScene.addPropertyChangeListener(e -> sizeComponent.updateDimensions());
-        buttonViewResolution.addPropertyChangeListener(e -> sizeComponent.updateDimensions());
-        buttonVisibleRegion.addPropertyChangeListener(evt -> {
-            final boolean b = buttonVisibleRegion.isSelected();
-            buttonViewResolution.setEnabled(b);
-            buttonFullResolution.setEnabled(b);
-            resolutionPanel.setEnabled(b);
-        });
+    private void updateComponents() {
+        updateEnableState();
+        sizeComponent.updateDimensions();
+    }
+
+    private void updateEnableState() {
+        String regionAC = buttonGroupRegion.getSelection().getActionCommand();
+        switch (regionAC) {
+            case AC_FULL_REGION:
+                buttonViewResolution.setEnabled(false);
+                buttonFullResolution.setEnabled(false);
+                buttonUserResolution.setEnabled(true);
+                buttonUserResolution.setSelected(true);
+                break;
+            default:
+                buttonViewResolution.setEnabled(true);
+                buttonFullResolution.setEnabled(true);
+                buttonUserResolution.setEnabled(true);
+        }
+        String resolutionAC = buttonGroupResolution.getSelection().getActionCommand();
+        switch (resolutionAC) {
+            case AC_FULL_RES:
+                sizeComponent.setEnabled(false);
+                break;
+            case AC_VIEW_RES:
+                sizeComponent.setEnabled(false);
+                break;
+            default: // AC_USER_RES:
+                sizeComponent.setEnabled(true);
+
+        }
+
     }
 
     protected RenderedImage createImage(String imageFormat, ProductSceneView view) {
         final boolean useAlpha = !BMP_FORMAT_DESCRIPTION[0].equals(imageFormat) && !JPEG_FORMAT_DESCRIPTION[0].equals(imageFormat);
         final boolean entireImage = isEntireImageSelected();
-        return createImage((ProductSceneView) view, (boolean) entireImage, (Dimension) sizeComponent.getDimension(), (boolean) useAlpha,
-                           (boolean) GEOTIFF_FORMAT_DESCRIPTION[0].equals(imageFormat));
+        return createImage(view, entireImage, sizeComponent.getDimension(), useAlpha, GEOTIFF_FORMAT_DESCRIPTION[0].equals(imageFormat));
     }
 
     static RenderedImage createImage(ProductSceneView view, boolean fullScene, Dimension dimension, boolean alphaChannel, boolean geoReferenced) {
@@ -273,7 +319,7 @@ public class ExportImageAction extends AbstractExportImageAction {
     }
 
     protected boolean isEntireImageSelected() {
-        return buttonFullScene.isSelected();
+        return AC_FULL_REGION.equals(buttonGroupRegion.getSelection().getActionCommand());
     }
 
 
@@ -284,16 +330,24 @@ public class ExportImageAction extends AbstractExportImageAction {
 
         private final PropertyContainer propertyContainer;
         private final ProductSceneView view;
+        private BindingContext bindingContext;
 
-        public SizeComponent(ProductSceneView view) {
+        SizeComponent(ProductSceneView view) {
             this.view = view;
             propertyContainer = new PropertyContainer();
             initValueContainer();
             updateDimensions();
+            bindingContext = new BindingContext(propertyContainer);
         }
 
-        public void updateDimensions() {
+        private void setEnabled(boolean enabled) {
+            bindingContext.setComponentsEnabled(PROPERTY_NAME_HEIGHT, enabled);
+            bindingContext.setComponentsEnabled(PROPERTY_NAME_WIDTH, enabled);
+        }
+
+        private void updateDimensions() {
             final Rectangle2D bounds;
+            String resolutionAC = buttonGroupResolution.getSelection().getActionCommand();
             if (isEntireImageSelected()) {
                 final ImageLayer imageLayer = view.getBaseImageLayer();
                 final Rectangle2D modelBounds = imageLayer.getModelBounds();
@@ -303,20 +357,29 @@ public class ExportImageAction extends AbstractExportImageAction {
                 final double iScale = imageBounds.getHeight() / imageBounds.getWidth();
                 double scaleFactorX = mScale * iScale;
                 bounds = new Rectangle2D.Double(0, 0, scaleFactorX * imageBounds.getWidth(), 1 * imageBounds.getHeight());
-            } else if (buttonFullResolution.isSelected()) {
-                bounds = view.getVisibleImageBounds();
             } else {
-                bounds = view.getLayerCanvas().getViewport().getViewBounds();
+                switch (resolutionAC) {
+                    case AC_FULL_RES:
+                        bounds = view.getVisibleImageBounds();
+                        break;
+                    case AC_VIEW_RES:
+                        bounds = view.getLayerCanvas().getViewport().getViewBounds();
+                        break;
+                    default: // AC_USER_RES
+                        bounds = new Rectangle(getWidth(), getHeight());
+                        break;
+                }
+
             }
 
             int w = toInteger(bounds.getWidth());
             int h = toInteger(bounds.getHeight());
 
-            final long freeMemory = getFreeMemory();
-            final long expectedMemory = getExpectedMemory(w, h);
+            final double freeMemory = getFreeMemory();
+            final double expectedMemory = getExpectedMemory(w, h);
             if (freeMemory < expectedMemory) {
                 if (showQuestionDialog() != Dialogs.Answer.YES) {
-                    final double scale = Math.sqrt((double) freeMemory / (double) expectedMemory);
+                    final double scale = Math.sqrt(freeMemory / expectedMemory);
                     final double scaledW = w * scale;
                     final double scaledH = h * scale;
 
@@ -333,8 +396,7 @@ public class ExportImageAction extends AbstractExportImageAction {
             return MathUtils.floorInt(value);
         }
 
-        public JComponent createComponent() {
-            BindingContext bindingContext = new BindingContext(propertyContainer);
+        private JComponent createComponent() {
             PropertyPane propertyPane = new PropertyPane(bindingContext);
             return propertyPane.createPanel();
         }
@@ -355,8 +417,8 @@ public class ExportImageAction extends AbstractExportImageAction {
 
         private Dialogs.Answer showQuestionDialog() {
             return Dialogs.requestDecision(Bundle.CTL_ExportImageAction_MenuText(),
-                                               "There may not be enough memory to export the image because\n" +
-                                                       "the image dimension is too large. \n Do you really want to keep the image dimension?",
+                                           "There may not be enough memory to export the image because\n" +
+                                           "the image dimension is too large. \n Do you really want to keep the image dimension?",
                                            true, null);
         }
 
