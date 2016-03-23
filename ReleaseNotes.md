@@ -1,6 +1,10 @@
 #New in SNAP v3.0
 
 ###New Features and Important Changes
+* A new Resampling Operator has been introduced. Its main purpose is to make the bands of a multi-size 
+product equal in size. It is possible to choose for the resampling different aggregation and 
+interpolation methods. If a user invokes an action which can not handle multi-size products the user is 
+asked to resample the product.   
 * New function *bit_set(bandName, bitNumber)* in Band Maths available. The method tests if the bit at 
 the specified number is set or not.
 * GPF operators can now compute multi-size target products. To do so the computeTile(band, tile) must 
@@ -9,9 +13,9 @@ and therefore the target is single-size) the methods *boolean canComputeTile()* 
 *boolean canComputeTileStack()* can be overridden.
 * GPF operators can now access a product manager *Operator.getProductManager()*. This is useful to 
 provide auxiliary products to other operators in the graph. 
-* Quicklooks integrated with Products and Product Library
-* Land masking
-* LinearTodB renamed to LinearToFromdB
+* Support for quicklooks have been integrated in Products Explorer and Product Library
+* Operations to perform land masking have been added.
+* The operator LinearTodB has been renamed to LinearToFromdB
 
 A comprehensive list of all issues resolved in this version of the Sentinel-3 Toolbox can be found in our 
 [issue tracking system](https://senbox.atlassian.net/projects/SNAP/versions/11000)
