@@ -162,7 +162,7 @@ public class ExportImageAction extends AbstractExportImageAction {
         regionPanel.setBorder(BorderFactory.createTitledBorder("Image Region"));
         buttonFullRegion = new JRadioButton("Full scene");
         buttonFullRegion.setActionCommand(AC_FULL_REGION);
-        buttonVisibleRegion = new JRadioButton("View region", true);
+        buttonVisibleRegion = new JRadioButton("View region");
         buttonVisibleRegion.setActionCommand(AC_VIEW_REGION);
         regionPanel.add(buttonVisibleRegion);
         regionPanel.add(buttonFullRegion);
@@ -217,14 +217,16 @@ public class ExportImageAction extends AbstractExportImageAction {
         switch (actionCommand) {
             case AC_FULL_REGION:
                 buttonViewResolution.setEnabled(false);
-                buttonFullResolution.setSelected(true);
+                if (buttonViewResolution.isSelected()) {
+                    buttonFullResolution.setSelected(true);
+                }
                 break;
             case AC_VIEW_REGION:
                 buttonViewResolution.setEnabled(true);
                 break;
-            case "INIT":
-                buttonVisibleRegion.setEnabled(true);
-                buttonViewResolution.setEnabled(true);
+            case PSEUDO_AC_INIT:
+                buttonVisibleRegion.setSelected(true);
+                buttonViewResolution.setSelected(true);
         }
         switch (actionCommand) {
             case AC_FULL_RES:
@@ -236,7 +238,7 @@ public class ExportImageAction extends AbstractExportImageAction {
             case AC_USER_RES:
                 sizeComponent.setEnabled(true);
                 break;
-            case "INIT":
+            case PSEUDO_AC_INIT:
                 sizeComponent.setEnabled(false);
 
         }
