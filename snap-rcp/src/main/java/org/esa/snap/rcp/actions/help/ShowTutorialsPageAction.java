@@ -28,7 +28,8 @@ import java.awt.event.ActionEvent;
  * This action launches the default browser to display the project tutorials.
  */
 @ActionID(category = "Help", id = "ShowTutorialsPageAction" )
-@ActionRegistration(displayName = "#CTL_ShowTutorialsPageAction_MenuText",
+@ActionRegistration(
+        displayName = "#CTL_ShowTutorialsPageAction_MenuText",
         popupText = "#CTL_ShowTutorialsPageAction_MenuText")
 @ActionReference(path = "Menu/Help", position = 310)
 @NbBundle.Messages({

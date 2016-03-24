@@ -28,7 +28,8 @@ import java.awt.event.ActionEvent;
  * This action launches the default browser to display the project web page.
  */
 @ActionID(category = "Help", id = "ShowHomePageAction")
-@ActionRegistration(displayName = "#CTL_ShowHomePageAction_MenuText",
+@ActionRegistration(
+        displayName = "#CTL_ShowHomePageAction_MenuText",
         popupText = "#CTL_ShowHomePageAction_MenuText")
 @ActionReference(path = "Menu/Help", position = 300)
 @NbBundle.Messages({
