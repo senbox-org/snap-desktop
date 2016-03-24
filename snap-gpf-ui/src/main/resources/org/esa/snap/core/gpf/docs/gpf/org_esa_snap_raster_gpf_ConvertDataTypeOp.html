@@ -1,0 +1,70 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <title>Convert-Datatype Operator</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<table class="header">
+    <tr class="header">
+        <td class="header">&nbsp;Convert-Datatype Operator</td>
+        <td class="header" align="right">
+          <a href="../general/overview/SnapOverview.html">             <img src="images/snap_header.jpg" border="0"/></a>
+        </td>
+    </tr>
+</table>
+<h1>Convert-Datatype Operator Description</h1>
+<h2>Overview</h2>
+<table>
+  <tr><td><b>Name:</b></td><td><code>Convert-Datatype</code></td></tr>
+  <tr><td><b>Full name:</b></td><td><code>org.esa.snap.raster.gpf.ConvertDataTypeOp</code></td></tr>
+  <tr><td><b>Purpose:</b></td><td>Convert product data type</td></tr>
+  <tr><td><b>Version:</b></td><td>null</td></tr>
+</table>
+<h2>Description</h2>
+Format-Change
+<h2>Sources</h2>
+<table>
+<tr>
+  <th>Name</th>
+  <th>Description</th>
+</tr>
+<tr>
+  <td><code>sourceProduct</code></td>
+  <td></td>
+</tr>
+</table>
+<h2>Parameters</h2>
+<table>
+<tr>
+  <th>Name</th>
+  <th>Data Type</th>
+  <th>Default</th>
+  <th>Description</th>
+  <th>Constraints</th>
+</tr>
+<tr>
+  <td><code>sourceBands</code></td>
+  <td><code>String[]</code></td>
+  <td><code></code></td>
+  <td>The list of source bands.</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>targetDataType</code></td>
+  <td><code>String</code></td>
+  <td><code>uint8</code></td>
+  <td></td>
+  <td>value set: [int8, int16, int32, uint8, uint16, uint32, float32, float64]</td>
+</tr>
+<tr>
+  <td><code>targetScalingStr</code></td>
+  <td><code>String</code></td>
+  <td><code>Linear (between 95% clipped histogram)</code></td>
+  <td></td>
+  <td>value set: [Truncate, Linear (slope and intercept), Linear (between 95% clipped histogram), Linear (peak clipped histogram), Logarithmic]</td>
+</tr>
+</table>
+<hr/>
+</body>
+</html>

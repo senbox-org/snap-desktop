@@ -1,0 +1,174 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <title>GLCM Operator</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<table class="header">
+    <tr class="header">
+        <td class="header">&nbsp;GLCM Operator</td>
+        <td class="header" align="right">
+          <a href="../general/overview/SnapOverview.html">             <img src="images/snap_header.jpg" border="0"/></a>
+        </td>
+    </tr>
+</table>
+<h1>GLCM Operator Description</h1>
+<h2>Overview</h2>
+<table>
+  <tr><td><b>Name:</b></td><td><code>GLCM</code></td></tr>
+  <tr><td><b>Full name:</b></td><td><code>org.esa.snap.raster.gpf.texture.GLCMOp</code></td></tr>
+  <tr><td><b>Purpose:</b></td><td>Extract Texture Features</td></tr>
+  <tr><td><b>Version:</b></td><td>1.0</td></tr>
+</table>
+<h2>Description</h2>
+The operator extracts 10 texture features using GLCM:
+ 1. Contrast
+ 2. Dissimilarity (DIS)
+ 3. Homogeneity (HOM)
+ 4. Angular Second Moment (ASM)
+ 5. Energy
+ 6. Maximum Probability (MAX)
+ 7. Entropy (ENT)
+ 8. GLCM Mean
+ 9. GLCM Variance
+ 10. GLCM Correlation
+ <p>
+ [1] Robert M. Haralick, K. Shanmugam, and Its'hak Dinstein. "Textural Features for Image Classification"
+ IEEE Trans. on Systems, Man and Cybernetics, Vol 3 , No. 6, pp. 610-621, Nov. 1973.
+<h2>Sources</h2>
+<table>
+<tr>
+  <th>Name</th>
+  <th>Description</th>
+</tr>
+<tr>
+  <td><code>sourceProduct</code></td>
+  <td></td>
+</tr>
+</table>
+<h2>Parameters</h2>
+<table>
+<tr>
+  <th>Name</th>
+  <th>Data Type</th>
+  <th>Default</th>
+  <th>Description</th>
+  <th>Constraints</th>
+</tr>
+<tr>
+  <td><code>sourceBands</code></td>
+  <td><code>String[]</code></td>
+  <td><code></code></td>
+  <td>The list of source bands.</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>windowSizeStr</code></td>
+  <td><code>String</code></td>
+  <td><code>9x9</code></td>
+  <td></td>
+  <td>value set: [5x5, 7x7, 9x9, 11x11]</td>
+</tr>
+<tr>
+  <td><code>angleStr</code></td>
+  <td><code>String</code></td>
+  <td><code>ALL</code></td>
+  <td></td>
+  <td>value set: [0, 45, 90, 135, ALL]</td>
+</tr>
+<tr>
+  <td><code>quantizerStr</code></td>
+  <td><code>String</code></td>
+  <td><code>Probabilistic Quantizer</code></td>
+  <td></td>
+  <td>value set: [Equal Distance Quantizer, Probabilistic Quantizer]</td>
+</tr>
+<tr>
+  <td><code>quantizationLevelsStr</code></td>
+  <td><code>String</code></td>
+  <td><code>32</code></td>
+  <td></td>
+  <td>value set: [8, 16, 32, 64, 128]</td>
+</tr>
+<tr>
+  <td><code>displacement</code></td>
+  <td><code>int</code></td>
+  <td><code>4</code></td>
+  <td>Pixel displacement</td>
+  <td>interval: [1, 8]</td>
+</tr>
+<tr>
+  <td><code>outputContrast</code></td>
+  <td><code>Boolean</code></td>
+  <td><code>true</code></td>
+  <td>Output Contrast</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>outputDissimilarity</code></td>
+  <td><code>Boolean</code></td>
+  <td><code>true</code></td>
+  <td>Output Dissimilarity</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>outputHomogeneity</code></td>
+  <td><code>Boolean</code></td>
+  <td><code>true</code></td>
+  <td>Output Homogeneity</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>outputASM</code></td>
+  <td><code>Boolean</code></td>
+  <td><code>true</code></td>
+  <td>Output Angular Second Moment</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>outputEnergy</code></td>
+  <td><code>Boolean</code></td>
+  <td><code>true</code></td>
+  <td>Output Energy</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>outputMAX</code></td>
+  <td><code>Boolean</code></td>
+  <td><code>true</code></td>
+  <td>Output Maximum Probability</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>outputEntropy</code></td>
+  <td><code>Boolean</code></td>
+  <td><code>true</code></td>
+  <td>Output Entropy</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>outputMean</code></td>
+  <td><code>Boolean</code></td>
+  <td><code>true</code></td>
+  <td>Output GLCM Mean</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>outputVariance</code></td>
+  <td><code>Boolean</code></td>
+  <td><code>true</code></td>
+  <td>Output GLCM Variance</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>outputCorrelation</code></td>
+  <td><code>Boolean</code></td>
+  <td><code>true</code></td>
+  <td>Output GLCM Correlation</td>
+  <td></td>
+</tr>
+</table>
+<hr/>
+</body>
+</html>

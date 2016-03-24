@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <title>Terrain-Mask Operator</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<table class="header">
+    <tr class="header">
+        <td class="header">&nbsp;Terrain-Mask Operator</td>
+        <td class="header" align="right">
+          <a href="../general/overview/SnapOverview.html">             <img src="images/snap_header.jpg" border="0"/></a>
+        </td>
+    </tr>
+</table>
+<h1>Terrain-Mask Operator Description</h1>
+<h2>Overview</h2>
+<table>
+  <tr><td><b>Name:</b></td><td><code>Terrain-Mask</code></td></tr>
+  <tr><td><b>Full name:</b></td><td><code>org.esa.snap.raster.gpf.masks.TerrainMaskOp</code></td></tr>
+  <tr><td><b>Purpose:</b></td><td>Terrain Mask Generation</td></tr>
+  <tr><td><b>Version:</b></td><td>1.0</td></tr>
+</table>
+<h2>Description</h2>
+This operator detects mountain area using DEM and gnerates a terrain mask for given SAR image.
+<h2>Sources</h2>
+<table>
+<tr>
+  <th>Name</th>
+  <th>Description</th>
+</tr>
+<tr>
+  <td><code>sourceProduct</code></td>
+  <td></td>
+</tr>
+</table>
+<h2>Parameters</h2>
+<table>
+<tr>
+  <th>Name</th>
+  <th>Data Type</th>
+  <th>Default</th>
+  <th>Description</th>
+  <th>Constraints</th>
+</tr>
+<tr>
+  <td><code>demName</code></td>
+  <td><code>String</code></td>
+  <td><code>SRTM 3Sec</code></td>
+  <td>The digital elevation model.</td>
+  <td>value set: [ACE, ASTER 1sec GDEM, GETASSE30, SRTM 1Sec HGT, SRTM 3Sec]</td>
+</tr>
+<tr>
+  <td><code>demResamplingMethod</code></td>
+  <td><code>String</code></td>
+  <td><code>NEAREST_NEIGHBOUR</code></td>
+  <td></td>
+  <td>value set: [NEAREST_NEIGHBOUR, BILINEAR_INTERPOLATION, CUBIC_CONVOLUTION, BICUBIC_INTERPOLATION, BISINC_5_POINT_INTERPOLATION]</td>
+</tr>
+<tr>
+  <td><code>externalDEMFile</code></td>
+  <td><code>File</code></td>
+  <td><code></code></td>
+  <td></td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>externalDEMNoDataValue</code></td>
+  <td><code>double</code></td>
+  <td><code>0</code></td>
+  <td></td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>windowSizeStr</code></td>
+  <td><code>String</code></td>
+  <td><code>15x15</code></td>
+  <td></td>
+  <td>value set: [5x5, 7x7, 9x9, 11x11, 13x13, 15x15, 17x17]</td>
+</tr>
+<tr>
+  <td><code>thresholdInMeter</code></td>
+  <td><code>double</code></td>
+  <td><code>40.0</code></td>
+  <td>Threshold for detection</td>
+  <td>interval: (0, *)</td>
+</tr>
+</table>
+<hr/>
+</body>
+</html>

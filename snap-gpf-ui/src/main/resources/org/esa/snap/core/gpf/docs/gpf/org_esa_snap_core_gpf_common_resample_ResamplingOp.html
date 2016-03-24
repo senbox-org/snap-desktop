@@ -1,0 +1,105 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <title>Resample Operator</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<table class="header">
+    <tr class="header">
+        <td class="header">&nbsp;Resample Operator</td>
+        <td class="header" align="right">
+          <a href="../general/overview/SnapOverview.html">             <img src="images/snap_header.jpg" border="0"/></a>
+        </td>
+    </tr>
+</table>
+<h1>Resample Operator Description</h1>
+<h2>Overview</h2>
+<table>
+  <tr><td><b>Name:</b></td><td><code>Resample</code></td></tr>
+  <tr><td><b>Full name:</b></td><td><code>org.esa.snap.core.gpf.common.resample.ResamplingOp</code></td></tr>
+  <tr><td><b>Purpose:</b></td><td>Resampling of a multi-size source product to a single-size target product.</td></tr>
+  <tr><td><b>Version:</b></td><td>2.0</td></tr>
+</table>
+<h2>Description</h2>
+<i>No description available.</i>
+<h2>Sources</h2>
+<table>
+<tr>
+  <th>Name</th>
+  <th>Description</th>
+</tr>
+<tr>
+  <td><code>sourceProduct</code></td>
+  <td>The source product which is to be resampled.</td>
+</tr>
+</table>
+<h2>Parameters</h2>
+<table>
+<tr>
+  <th>Name</th>
+  <th>Data Type</th>
+  <th>Default</th>
+  <th>Description</th>
+  <th>Constraints</th>
+</tr>
+<tr>
+  <td><code>referenceBand</code></td>
+  <td><code>String</code></td>
+  <td><code></code></td>
+  <td>The name of the reference band. All other bands will be re-sampled to match its size and resolution. Either this or targetResolutionor targetWidth and targetHeight must be set.</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>targetWidth</code></td>
+  <td><code>Integer</code></td>
+  <td><code></code></td>
+  <td>The width that all bands of the target product shall have. If this is set, targetHeight must be set, too. Either this and targetHeight or referenceBand or targetResolution must be set.</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>targetHeight</code></td>
+  <td><code>Integer</code></td>
+  <td><code></code></td>
+  <td>The height that all bands of the target product shall have. If this is set, targetWidth must be set, too. Either this and targetWidth or referenceBand or targetResolution must be set.</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>targetResolution</code></td>
+  <td><code>Integer</code></td>
+  <td><code></code></td>
+  <td>The resolution that all bands of the target product shall have. The same value will be applied to scale image widths and heights. Either this or referenceBand or targetwidth and targetHeight must be set.</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>upsampling</code></td>
+  <td><code>String</code></td>
+  <td><code>NearestNeighbour</code></td>
+  <td>The method used for interpolation (upsampling to a finer resolution).</td>
+  <td>value set: [NearestNeighbour, Bilinear]</td>
+</tr>
+<tr>
+  <td><code>downsampling</code></td>
+  <td><code>String</code></td>
+  <td><code>First</code></td>
+  <td>The method used for aggregation (downsampling to a coarser resolution).</td>
+  <td>value set: [First, Min, Max, Mean, Median]</td>
+</tr>
+<tr>
+  <td><code>flagDownsampling</code></td>
+  <td><code>String</code></td>
+  <td><code>First</code></td>
+  <td>The method used for aggregation (downsampling to a coarser resolution) of flags.</td>
+  <td>value set: [First, FlagAnd, FlagOr, FlagMedianAnd, FlagMedianOr]</td>
+</tr>
+<tr>
+  <td><code>resampleOnPyramidLevels</code></td>
+  <td><code>boolean</code></td>
+  <td><code>true</code></td>
+  <td>This setting will increase performance when viewing the image, but accurate resamplings are only retrieved when zooming in on a pixel.</td>
+  <td></td>
+</tr>
+</table>
+<hr/>
+</body>
+</html>
