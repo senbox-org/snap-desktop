@@ -14,56 +14,35 @@ import org.esa.snap.rcp.util.Dialogs;
 import org.netbeans.api.progress.ProgressUtils;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
-import org.openide.util.ContextAwareAction;
-import org.openide.util.Lookup;
-import org.openide.util.LookupEvent;
-import org.openide.util.LookupListener;
 import org.openide.util.NbBundle;
-import org.openide.util.Utilities;
-import org.openide.util.WeakListeners;
 
 import javax.swing.AbstractAction;
-import javax.swing.Action;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.lang.ref.WeakReference;
 import java.text.MessageFormat;
-
-import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
 
 /**
  * Action which closes a selected product.
  *
  * @author Norman
  */
-@ActionID(category = "File", id = "SaveProductAction" )
-@ActionRegistration(displayName = "#CTL_SaveProductActionName", lazy = false )
-@ActionReference(path = "Menu/File", position = 40, separatorBefore = 38)
+@ActionID(category = "File", id = "SaveProductAction")
+@ActionRegistration(displayName = "#CTL_SaveProductActionName")
+@ActionReferences({
+        @ActionReference(path = "Menu/File", position = 40, separatorBefore = 38),
+        @ActionReference(path = "Context/Product/Product", position = 90)
+})
 @NbBundle.Messages({"CTL_SaveProductActionName=Save Product"})
-public final class SaveProductAction extends AbstractAction implements ContextAwareAction, LookupListener {
+public final class SaveProductAction extends AbstractAction{
 
 
-    private WeakReference<Product> productRef;
-    private Lookup lookup;
-    private Lookup.Result<ProductNode> result;
+    private WeakReference<ProductNode> productNodeRef;
 
-
-    public SaveProductAction(Product products) {
-        productRef = new WeakReference<>(products);
-    }
-
-
-    public SaveProductAction() {
-        this(Utilities.actionsGlobalContext());
-    }
-
-    public SaveProductAction(Lookup actionContext) {
-        super(Bundle.CTL_SaveProductActionName());
-        this.lookup = actionContext;
-        result = lookup.lookupResult(ProductNode.class);
-        result.addLookupListener(WeakListeners.create(LookupListener.class, this, result));
-        setEnabled(false);
+    public SaveProductAction(ProductNode productNode) {
+        productNodeRef = new WeakReference<>(productNode);
     }
 
     static Boolean saveProduct(Product product) {
@@ -72,10 +51,10 @@ public final class SaveProductAction extends AbstractAction implements ContextAw
         if (file.isFile() && !file.canWrite()) {
             Dialogs.showWarning(Bundle.CTL_SaveProductActionName(),
                                 MessageFormat.format("The product\n" +
-                                                         "''{0}''\n" +
-                                                         "exists and cannot be overwritten, because it is read only.\n" +
-                                                         "Please choose another file or remove the write protection.",
-                                                         file.getPath()),
+                                                     "''{0}''\n" +
+                                                     "exists and cannot be overwritten, because it is read only.\n" +
+                                                     "Please choose another file or remove the write protection.",
+                                                     file.getPath()),
                                 null);
             return false;
         }
@@ -97,17 +76,6 @@ public final class SaveProductAction extends AbstractAction implements ContextAw
     }
 
     @Override
-    public Action createContextAwareInstance(Lookup actionContext) {
-        return new SaveProductAction(actionContext);
-    }
-
-    @Override
-    public void resultChanged(LookupEvent lookupEvent) {
-        ProductNode productNode = lookup.lookup(ProductNode.class);
-        setEnabled(productNode != null);
-    }
-
-    @Override
     public void actionPerformed(ActionEvent e) {
         execute();
     }
@@ -118,23 +86,22 @@ public final class SaveProductAction extends AbstractAction implements ContextAw
      * @return {@code Boolean.TRUE} on success, {@code Boolean.FALSE} on failure, or {@code null} on cancellation.
      */
     public Boolean execute() {
-        Product product = null;
-        if (productRef != null) {
-            product = productRef.get();
-        } else {
-            product = SnapApp.getDefault().getSelectedProduct(EXPLORER);
-        }
-        if (product != null) {
-            if (product.getFileLocation() != null && (product.getProductReader() == null || product.getProductReader() instanceof DimapProductReader)) {
-                return saveProduct(product);
+        ProductNode productNode = productNodeRef.get();
+        if (productNode != null && productNode.getProduct() != null) {
+            Product product = productNode.getProduct();
+            if (product != null) {
+                if (product.getFileLocation() != null && (product.getProductReader() == null || product.getProductReader() instanceof DimapProductReader)) {
+                    return saveProduct(product);
+                } else {
+                    // if file location not set, delegate to save-as
+                    return new SaveProductAsAction(product).execute();
+                }
             } else {
-                // if file location not set, delegate to save-as
-                return new SaveProductAsAction(product).execute();
+                // reference was garbage collected, that's fine, no need to save.
+                return true;
             }
-        } else {
-            // reference was garbage collected, that's fine, no need to save.
-            return true;
         }
+        return true;
     }
 
 

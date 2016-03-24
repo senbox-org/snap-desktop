@@ -12,11 +12,13 @@ import org.esa.snap.core.dataio.dimap.DimapProductHelpers;
 import org.esa.snap.core.dataio.dimap.DimapProductReader;
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.core.image.BandOpImage;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle;
 
@@ -34,16 +36,20 @@ import java.text.MessageFormat;
  */
 @ActionID(category = "File", id = "SaveProductAsAction")
 @ActionRegistration(displayName = "#CTL_SaveProductAsActionName")
-@ActionReference(path = "Menu/File", position = 45, separatorAfter = 46)
+@ActionReferences({
+        @ActionReference(path = "Menu/File", position = 45, separatorAfter = 46),
+        @ActionReference(path = "Context/Product/Product", position = 95, separatorAfter = 96)
+})
 @NbBundle.Messages({"CTL_SaveProductAsActionName=Save Product As..."})
 public final class SaveProductAsAction extends AbstractAction {
 
     public static final String PREFERENCES_KEY_PRODUCT_CONVERSION_REQUIRED = "product_conversion_required";
     public static final String PREFERENCES_KEY_LAST_PRODUCT_DIR = "last_product_save_dir";
-    private final WeakReference<Product> productRef;
+    private final WeakReference<ProductNode> productNodeRef;
 
-    public SaveProductAsAction(Product product) {
-        productRef = new WeakReference<>(product);
+
+    public SaveProductAsAction(ProductNode productNode) {
+        productNodeRef = new WeakReference<>(productNode);
     }
 
     @Override
@@ -57,9 +63,9 @@ public final class SaveProductAsAction extends AbstractAction {
      * @return {@code Boolean.TRUE} on success, {@code Boolean.FALSE} on failure, or {@code null} on cancellation.
      */
     public Boolean execute() {
-        Product product = productRef.get();
-        if (product != null) {
-            return saveProductAs(product);
+        ProductNode productNode = productNodeRef.get();
+        if (productNode != null && productNode.getProduct() != null) {
+            return saveProductAs(productNode.getProduct());
         } else {
             // reference was garbage collected, that's fine, no need to save.
             return true;
@@ -72,11 +78,11 @@ public final class SaveProductAsAction extends AbstractAction {
         if (reader != null && !(reader instanceof DimapProductReader)) {
             Dialogs.Answer answer = Dialogs.requestDecision("Save Product As",
                                                             MessageFormat.format("In order to save the product\n" +
-                                                                                         "   {0}\n" +
-                                                                                         "it has to be converted to the BEAM-DIMAP format.\n" +
-                                                                                         "Depending on the product size the conversion also may take a while.\n\n" +
-                                                                                         "Do you really want to convert the product now?\n",
-                                                                                         product.getDisplayName()),
+                                                                                 "   {0}\n" +
+                                                                                 "it has to be converted to the BEAM-DIMAP format.\n" +
+                                                                                 "Depending on the product size the conversion also may take a while.\n\n" +
+                                                                                 "Do you really want to convert the product now?\n",
+                                                                                 product.getDisplayName()),
                                                             true,
                                                             PREFERENCES_KEY_PRODUCT_CONVERSION_REQUIRED);
             if (answer == Dialogs.Answer.NO) {
