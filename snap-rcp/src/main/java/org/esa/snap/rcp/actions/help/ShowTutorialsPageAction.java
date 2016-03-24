@@ -18,7 +18,6 @@ package org.esa.snap.rcp.actions.help;
 import org.esa.snap.runtime.Config;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
-import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle;
 
@@ -28,21 +27,10 @@ import java.awt.event.ActionEvent;
 /**
  * This action launches the default browser to display the project tutorials.
  */
-@ActionID(
-        category = "Help",
-        id = "ShowTutorialsPageAction"
-)
-@ActionRegistration(
-        displayName = "#CTL_ShowTutorialsPageAction_MenuText",
-        popupText = "#CTL_ShowTutorialsPageAction_MenuText",
-        lazy = true
-)
-@ActionReferences({
-        @ActionReference(
-                path = "Menu/Help",
-                position = 310
-        )
-})
+@ActionID(category = "Help", id = "ShowTutorialsPageAction" )
+@ActionRegistration(displayName = "#CTL_ShowTutorialsPageAction_MenuText",
+        popupText = "#CTL_ShowTutorialsPageAction_MenuText")
+@ActionReference(path = "Menu/Help", position = 310)
 @NbBundle.Messages({
         "CTL_ShowTutorialsPageAction_MenuText=Tutorials",
         "CTL_ShowTutorialsPageAction_ShortDescription=Browse the SNAP Toolboxes tutorials web page"
