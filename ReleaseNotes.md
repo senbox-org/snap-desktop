@@ -17,7 +17,7 @@ provide auxiliary products to other operators in the graph.
 * Operations to perform land masking have been added.
 * The operator LinearTodB has been renamed to LinearToFromdB
 
-A comprehensive list of all issues resolved in this version of the Sentinel-3 Toolbox can be found in our 
+A comprehensive list of all issues resolved in this version of SNAP can be found in our 
 [issue tracking system](https://senbox.atlassian.net/projects/SNAP/versions/11000)
 
 #Release notes of former versions
