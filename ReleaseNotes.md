@@ -17,14 +17,14 @@ provide auxiliary products to other operators in the graph.
 * Operations to perform land masking have been added.
 * The operator LinearTodB has been renamed to LinearToFromdB
 
-A comprehensive list of all issues resolved in this version of the Sentinel-3 Toolbox can be found in our 
-[issue tracking system](https://senbox.atlassian.net/projects/SNAP/versions/11000)
+A comprehensive list of all issues resolved in this version of SNAP can be found in our 
+[issue tracking system](https://senbox.atlassian.net/issues/?filter=11500)
 
 #Release notes of former versions
 
-* [Resolved issues in version 2.x](https://senbox.atlassian.net/projects/SNAP/versions/11001)
-* [Resolved issues in version 2.0](https://senbox.atlassian.net/projects/SNAP/versions/10200)
-* [Resolved issues in version 2.0 beta](https://senbox.atlassian.net/projects/SNAP/versions/10901)
-* [Resolved issues in version 1.0.1](https://senbox.atlassian.net/projects/SNAP/versions/10203)
+* [Resolved issues in version 2.x](https://senbox.atlassian.net/issues/?filter=11501)
+* [Resolved issues in version 2.0](https://senbox.atlassian.net/issues/?filter=11502)
+* [Resolved issues in version 2.0 beta](https://senbox.atlassian.net/issues/?filter=11503)
+* [Resolved issues in version 1.0.1](https://senbox.atlassian.net/issues/?filter=11504)
 
 
