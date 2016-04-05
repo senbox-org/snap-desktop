@@ -20,6 +20,7 @@ import com.bc.ceres.binding.Converter;
 import com.bc.ceres.binding.Property;
 import com.bc.ceres.binding.PropertyContainer;
 import com.bc.ceres.binding.PropertyDescriptor;
+import com.bc.ceres.binding.dom.DomConverter;
 import com.bc.ceres.binding.dom.DomElement;
 import com.bc.ceres.binding.dom.XppDomElement;
 import com.thoughtworks.xstream.io.xml.xppdom.XppDom;
@@ -31,21 +32,11 @@ import org.esa.snap.core.gpf.annotations.ParameterDescriptorFactory;
 import org.esa.snap.core.gpf.graph.GraphException;
 import org.esa.snap.core.gpf.graph.Node;
 import org.esa.snap.core.gpf.graph.NodeSource;
+import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.graphbuilder.gpf.ui.OperatorUI;
 import org.esa.snap.graphbuilder.gpf.ui.UIValidation;
 
-import java.awt.AlphaComposite;
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.GradientPaint;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.awt.Stroke;
+import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.util.HashMap;
 import java.util.Map;
@@ -115,24 +106,34 @@ public class GraphNode {
                     if (converter == null) {
                         final String msg = "Graph parameter " + name + " not found for Operator " + operatorSpi.getOperatorAlias();
                         //throw new IllegalArgumentException(msg);
-                        System.out.println(msg);
+                        SystemUtils.LOG.warning(msg);
                     } else {
                         parameterMap.put(name, converter.parse(value));
                     }
                 } else {
-                    final Converter converter = getConverter(valueContainer, name);
-                    final Object[] objArray = new Object[child.getChildCount()];
-                    int c = 0;
-                    for (DomElement ch : child.getChildren()) {
-                        final String v = ch.getValue();
-
-                        if (converter != null) {
-                            objArray[c++] = converter.parse(v);
-                        } else {
-                            objArray[c++] = v;
+                    final DomConverter domConverter = getDomConverter(valueContainer, name);
+                    if(domConverter != null) {
+                        try {
+                            final Object obj = domConverter.convertDomToValue(child, null);
+                            parameterMap.put(name, obj);
+                        } catch (Exception e) {
+                            SystemUtils.LOG.warning(e.getMessage());
                         }
+                    } else {
+                        final Converter converter = getConverter(valueContainer, name);
+                        final Object[] objArray = new Object[child.getChildCount()];
+                        int c = 0;
+                        for (DomElement ch : child.getChildren()) {
+                            final String v = ch.getValue();
+
+                            if (converter != null) {
+                                objArray[c++] = converter.parse(v);
+                            } else {
+                                objArray[c++] = v;
+                            }
+                        }
+                        parameterMap.put(name, objArray);
                     }
-                    parameterMap.put(name, objArray);
                 }
 
             } catch (ConversionException e) {
@@ -150,6 +151,20 @@ public class GraphNode {
             if (descriptor != null && (descriptor.getName().equals(name) ||
                     (descriptor.getAlias() != null && descriptor.getAlias().equals(name)))) {
                 return descriptor.getConverter();
+            }
+        }
+        return null;
+    }
+
+    private static DomConverter getDomConverter(final PropertyContainer valueContainer, final String name) {
+        final Property[] properties = valueContainer.getProperties();
+
+        for (Property p : properties) {
+
+            final PropertyDescriptor descriptor = p.getDescriptor();
+            if (descriptor != null && (descriptor.getName().equals(name) ||
+                    (descriptor.getAlias() != null && descriptor.getAlias().equals(name)))) {
+                return descriptor.getDomConverter();
             }
         }
         return null;
