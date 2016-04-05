@@ -12,6 +12,7 @@ import org.esa.snap.core.param.ParamChangeListener;
 import org.esa.snap.core.param.ParamProperties;
 import org.esa.snap.core.param.Parameter;
 import org.esa.snap.core.util.Debug;
+import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.GridBagUtils;
 import org.esa.snap.ui.ModalDialog;
@@ -66,18 +67,18 @@ public class BandMathsOpUI extends BaseOperatorUI {
         Object[] bandDescriptors = (Object[])paramMap.get("targetBands");
         if(bandDescriptors == null)
             bandDescriptors = (Object[])paramMap.get("targetBandDescriptors");
-        if(bandDescriptors !=null && bandDescriptors.length > 0) {
-            bandDesc = (BandMathsOp.BandDescriptor)bandDescriptors[0];
+        if(bandDescriptors != null && bandDescriptors.length > 0) {
+            bandDesc = (BandMathsOp.BandDescriptor)(bandDescriptors[0]);
             bandDesc.type = ProductData.TYPESTRING_FLOAT32;
 
             try {
                 paramBand.setValueAsText(bandDesc.name);
                 paramBandType.setValueAsText(bandDesc.type);
-                paramBandUnit.setValueAsText(bandDesc.unit);
+                paramBandUnit.setValueAsText(bandDesc.unit != null ? bandDesc.unit : "");
                 paramNoDataValue.setValueAsText(String.valueOf(bandDesc.noDataValue));
                 paramExpression.setValueAsText(bandDesc.expression);
             } catch(Exception e) {
-                //
+                SystemUtils.LOG.warning(e.getMessage());
             }
         }
         if(sourceProducts != null && sourceProducts.length > 0) {
@@ -128,7 +129,7 @@ public class BandMathsOpUI extends BaseOperatorUI {
         if(bandDescriptors != null && bandDescriptors.length > 0) {
             bandDesc = bandDescriptors[1];
         } else {
-            bandDesc.name = "newVirtualBand";
+            bandDesc.name = "newBand";
             bandDesc.type = "float32";
         }
 
@@ -227,7 +228,7 @@ public class BandMathsOpUI extends BaseOperatorUI {
         if (targetProduct == null) {
             return null;
         }
-        final Vector<Product> compatibleProducts = new Vector<Product>();
+        final Vector<Product> compatibleProducts = new Vector<>();
         compatibleProducts.add(targetProduct);
             final float geolocationEps = 180;
             Debug.trace("BandArithmetikDialog.geolocationEps = " + geolocationEps);
