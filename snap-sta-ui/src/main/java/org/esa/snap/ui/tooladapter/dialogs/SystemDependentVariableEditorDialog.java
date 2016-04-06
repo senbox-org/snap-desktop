@@ -3,12 +3,14 @@ package org.esa.snap.ui.tooladapter.dialogs;
 import org.esa.snap.core.gpf.descriptor.SystemDependentVariable;
 import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.ui.tooladapter.actions.EscapeAction;
+import org.esa.snap.ui.tooladapter.model.VariableChangedListener;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.lang.reflect.Method;
+import java.util.*;
 import java.util.logging.Logger;
 
 /**
@@ -20,11 +22,13 @@ public class SystemDependentVariableEditorDialog extends ModalDialog {
 
     private SystemDependentVariable oldVariable;
     private SystemDependentVariable newVariable;
+    private java.util.List<VariableChangedListener> listeners;
 
     private Logger logger;
 
     public SystemDependentVariableEditorDialog(Window parent, SystemDependentVariable variable, String helpID) {
         super(parent, String.format("Edit %s", variable.getKey()), ID_OK_CANCEL, helpID);
+        listeners = new ArrayList<>();
         oldVariable = variable;
         newVariable = (SystemDependentVariable)oldVariable.createCopy();
         newVariable.setTransient(true);
@@ -39,6 +43,9 @@ public class SystemDependentVariableEditorDialog extends ModalDialog {
         oldVariable.setWindows(newVariable.getWindows());
         oldVariable.setLinux(newVariable.getLinux());
         oldVariable.setMacosx(newVariable.getMacosx());
+        for (VariableChangedListener l : listeners) {
+            l.variableChanged(null);
+        }
     }
 
     private JPanel createPanel() {
@@ -110,6 +117,14 @@ public class SystemDependentVariableEditorDialog extends ModalDialog {
                 }
             });
         }
+    }
+
+    public void addListener(VariableChangedListener l){
+        this.listeners.add(l);
+    }
+
+    public void removeListener(VariableChangedListener l){
+        this.listeners.remove(l);
     }
 
 }
