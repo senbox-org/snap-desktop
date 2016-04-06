@@ -32,7 +32,6 @@ import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.tool.ToolButtonFactory;
 import org.esa.snap.ui.tooladapter.model.OperationType;
-import org.esa.snap.ui.tooladapter.model.VariablesTable;
 import org.esa.snap.ui.tooladapter.validators.RegexFieldValidator;
 import org.esa.snap.utils.SpringUtilities;
 
@@ -128,7 +127,6 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
         buttonsPannel.setAlignmentX(Component.LEFT_ALIGNMENT);
         variablesBorderPanel.add(buttonsPannel);
 
-        VariablesTable varTable = new VariablesTable(newOperatorDescriptor.getVariables(), context);
         varTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
         varTable.setRowHeight(controlHeight);
         int widths[] = {controlHeight, (int)(formWidth * 0.3), (int)(formWidth * 0.7) - controlHeight};

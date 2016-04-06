@@ -44,6 +44,7 @@ import org.esa.snap.ui.tooladapter.actions.EscapeAction;
 import org.esa.snap.ui.tooladapter.model.AutoCompleteTextArea;
 import org.esa.snap.ui.tooladapter.model.OperationType;
 import org.esa.snap.ui.tooladapter.model.OperatorParametersTable;
+import org.esa.snap.ui.tooladapter.model.VariablesTable;
 import org.esa.snap.ui.tooladapter.preferences.ToolAdapterOptionsController;
 import org.esa.snap.ui.tooladapter.validators.RequiredFieldValidator;
 import org.openide.filesystems.FileObject;
@@ -117,7 +118,8 @@ import static org.esa.snap.utils.SpringUtilities.makeCompactGrid;
         "MSG_Wrong_Usage_Array_Text=You have used array notation for source products, but only one product will be used.\n" +
                 "Please correct the problem before saving the adapter.",
         "MSG_Empty_Variable_Text=The variable %s has no value set",
-        "MSG_Empty_MenuLocation_Text=Value of 'Menu location' cannot be empty"
+        "MSG_Empty_MenuLocation_Text=Value of 'Menu location' cannot be empty",
+        "MSG_Empty_Variable_Key_Text=Empty variable key/name is not allowed"
 })
 public abstract class AbstractAdapterEditor extends ModalDialog {
 
@@ -145,6 +147,8 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
     protected int controlHeight = 24;
 
     protected OperationType currentOperation;
+
+    protected VariablesTable varTable;
 
     public static AbstractAdapterEditor createEditorDialog(AppContext appContext, JDialog parent, ToolAdapterOperatorDescriptor operatorDescriptor, OperationType operation) {
         AbstractAdapterEditor dialog;
@@ -213,6 +217,8 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
         bindingContext = new BindingContext(propertyContainer);
 
         paramsTable = new OperatorParametersTable(newOperatorDescriptor, appContext);
+
+        varTable = new VariablesTable(newOperatorDescriptor.getVariables(), appContext);
     }
 
     /**
@@ -271,6 +277,11 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
 
     @Override
     protected boolean verifyUserInput() {
+
+        /* Make sure we have stopped table cell editing for both: VariablesTable and  OperatorParametersTable */
+        varTable.stopVariablesTableEditing();
+        paramsTable.stopVariablesTableEditing();
+
         /**
          * Verify the existence of the tool executable
          */
@@ -308,9 +319,14 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
         java.util.List<SystemVariable> variables = newOperatorDescriptor.getVariables();
         if (variables != null) {
             for (SystemVariable variable : variables) {
+                String key = variable.getKey();
+                if (key == null || key.isEmpty()) {
+                    Dialogs.showWarning(String.format(Bundle.MSG_Empty_Variable_Key_Text()));
+                    return false;
+                }
                 String value = variable.getValue();
                 if (value == null || value.isEmpty()) {
-                    Dialogs.showWarning(String.format(Bundle.MSG_Empty_Variable_Text(), variable.getKey()));
+                    Dialogs.showWarning(String.format(Bundle.MSG_Empty_Variable_Text(), key));
                     return false;
                 }
             }

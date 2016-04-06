@@ -113,6 +113,12 @@ public class OperatorParametersTable extends JTable {
         typesMap.put(Bundle.Type_FloatClass_Text(), CustomParameterClass.FloatClass);
     }
 
+    public void stopVariablesTableEditing(){
+        if(getEditingRow() >= 0 && getEditingColumn() >= 0) {
+            getCellEditor(getEditingRow(), getEditingColumn()).stopCellEditing();
+        }
+    }
+
     public OperatorParametersTable(ToolAdapterOperatorDescriptor operator, AppContext appContext) {
         logger = Logger.getLogger(OperatorParametersTable.class.getName());
         this.operator = operator;

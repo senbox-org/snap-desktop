@@ -53,6 +53,17 @@ public class VariablesTable extends JTable {
         }
     }
 
+    public void stopVariablesTableEditing(){
+        int row = getEditingRow();
+        int column = getEditingColumn();
+        if(row >= 0 && column >= 0){
+            /* For System Dependent Variables, the value is edited by using a dedicated form and not the Table Editor */
+            if(!(variables.get(row) instanceof SystemDependentVariable) || column != 3){
+                getCellEditor(getEditingRow(), getEditingColumn()).stopCellEditing();
+            }
+        }
+    }
+
     @Override
     public TableCellRenderer getCellRenderer(int row, int column) {
         if (column == 0) {
@@ -66,6 +77,7 @@ public class VariablesTable extends JTable {
         switch (column) {
             case 0:
             case 2:
+            case 3:
                 return tableRenderer;
             case 1:
                 return getDefaultEditor(Boolean.class);
@@ -193,7 +205,7 @@ public class VariablesTable extends JTable {
         }
     }
 
-    class SystemDependentVariableCellEditor extends DefaultCellEditor implements TableCellEditor {
+    class SystemDependentVariableCellEditor extends DefaultCellEditor implements TableCellEditor, VariableChangedListener {
 
         private static final int CLICK_COUNT_TO_START = 2;
         private JButton button;
@@ -217,6 +229,7 @@ public class VariablesTable extends JTable {
             this.variable = variable;
             // Dialog which will do the actual editing
             dialog = new SystemDependentVariableEditorDialog(window, this.variable, helpID);
+            dialog.addListener(this);
             button.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
@@ -234,6 +247,13 @@ public class VariablesTable extends JTable {
         }
 
         @Override
+        public Component getComponent() {
+            /* The button is used for editing System Dependent Variables;
+            therefore the table cell editor is calling this method to get the current value for the stop editing event */
+            return button;
+        }
+
+        @Override
         public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
             /*SwingUtilities.invokeLater(() -> {
                 dialog.show();
@@ -241,5 +261,12 @@ public class VariablesTable extends JTable {
             });*/
             return button;
         }
+
+        @Override
+        public void variableChanged(VariableChangedEvent ev) {
+            String currentOSValue = variable.getCurrentOSValue();
+            button.setText(currentOSValue);
+        }
+
     }
 }
