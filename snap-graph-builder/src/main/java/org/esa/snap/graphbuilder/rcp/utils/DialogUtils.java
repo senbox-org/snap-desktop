@@ -18,12 +18,7 @@ package org.esa.snap.graphbuilder.rcp.utils;
 import org.esa.snap.ui.GridBagUtils;
 import org.esa.snap.ui.tool.ToolButtonFactory;
 
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JFormattedTextField;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -32,6 +27,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.beans.PropertyChangeListener;
 import java.text.NumberFormat;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Common functions for working with dialog controls
@@ -125,6 +122,14 @@ public final class DialogUtils {
         button.setToolTipText(text);
         button.setActionCommand(name);
         return button;
+    }
+
+    public static boolean contains(final JComboBox<String> comboBox, final Object item) {
+        final Set<Object> items = new HashSet<>();
+        for (int i = 0; i < comboBox.getItemCount(); i++) {
+            items.add(comboBox.getItemAt(i));
+        }
+        return items.contains(item);
     }
 
     public static class ComponentListPanel extends JPanel {
