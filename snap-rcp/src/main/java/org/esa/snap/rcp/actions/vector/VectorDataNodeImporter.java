@@ -67,13 +67,16 @@ public class VectorDataNodeImporter implements HelpCtx.Provider {
         fileChooser.setDialogTitle(dialogTitle);
         fileChooser.setFileFilter(filter);
         fileChooser.setAcceptAllFileFilterUsed(false);
+        fileChooser.setMultiSelectionEnabled(true);
         fileChooser.setCurrentDirectory(getIODir(preferences));
         final int result = fileChooser.showOpenDialog(snapApp.getMainFrame());
         if (result == JFileChooser.APPROVE_OPTION) {
-            final File file = fileChooser.getSelectedFile();
-            if (file != null) {
-                setIODir(preferences, file.getAbsoluteFile().getParentFile());
-                importGeometry(snapApp, file);
+            final File[] files = fileChooser.getSelectedFiles();
+            if (files != null && files.length > 0) {
+                setIODir(preferences, files[0].getAbsoluteFile().getParentFile());
+                for(File file : files) {
+                    importGeometry(snapApp, file);
+                }
             }
         }
     }
