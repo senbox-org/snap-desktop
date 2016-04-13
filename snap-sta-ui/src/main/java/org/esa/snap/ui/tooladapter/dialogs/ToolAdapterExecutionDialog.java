@@ -359,6 +359,18 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
                 //SnapDialogs.showError(Bundle.ExecutionFailed_Text(), throwable.getMessage());
         }
         //displayErrors();
+        displayErrorMessage();
+    }
+
+    private void displayErrorMessage() {
+        if (operatorTask != null) {
+            List<String> errors = operatorTask.getErrors();
+            if (errors != null && errors.size() > 0){
+                StringBuilder builder = new StringBuilder();
+                builder.append("\nIt seems there was en error on execution or the defined tool output error pattern was found.\nPlease consult the SNAP log file");
+                Dialogs.showWarning(builder.toString());
+            }
+        }
     }
 
     private void displayErrors() {
