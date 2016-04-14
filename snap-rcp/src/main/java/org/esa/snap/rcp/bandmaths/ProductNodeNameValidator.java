@@ -12,7 +12,7 @@ import org.openide.util.NbBundle;
  */
 @NbBundle.Messages({
         "CTL_PNNV_ExMsg_UniqueBandName=The band name must be unique within the product scope.\n"
-                + "The scope comprises bands and tie-point grids.",
+                + "The scope comprises bands, tie-point grids and masks.",
         "CTL_PNNV_ExMsg_ContainedCharacter=The band name ''{0}'' is not valid.\n\n"
                 + "Names must not start with a dot and must not\n"
                 + "contain any of the following characters: \\/:*?\"<>|"
