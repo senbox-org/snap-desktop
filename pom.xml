@@ -16,14 +16,6 @@
     <description>Desktop GUI for SNAP based on NetBeans Platform</description>
 
     <properties>
-        <!--
-            snap.version is the Maven module version.
-            snap.nbmSpecVersion is the NetBeans module specification version.
-            It is used to filter manifest.mf and set the manifest's "OpenIDE-Module-Specification-Version" header.
-            This is necessary to make NetBeans modules updatable and independent from the Maven version (= snap.version).
-        -->
-        <snap.version>${project.version}</snap.version>
-        <snap.nbmSpecVersion>4.0.0</snap.nbmSpecVersion>
         <netbeans.version>RELEASE802</netbeans.version>
         <doc-windows.version>1.0</doc-windows.version>
         <user.language>en</user.language>
