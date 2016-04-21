@@ -25,9 +25,9 @@ import org.esa.snap.core.datamodel.PixelPos;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductNodeGroup;
 import org.esa.snap.core.datamodel.RasterDataNode;
+import org.esa.snap.core.util.AreaCalculator;
 import org.esa.snap.core.util.Debug;
 import org.esa.snap.core.util.math.MathUtils;
-import org.esa.snap.core.util.math.RsMathUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.AbstractDialog;
@@ -287,9 +287,9 @@ public class ComputeMaskAreaAction extends AbstractAction implements LookupListe
                 geoPoints[i] = new GeoPos();
             }
 
-            MaskAreaStatistics areaStatistics = new MaskAreaStatistics(RsMathUtils.MEAN_EARTH_RADIUS / 1000.0);
             GeoCoding geoCoding = mask.getGeoCoding();
-
+            AreaCalculator areaCalculator = new AreaCalculator(geoCoding);
+            MaskAreaStatistics areaStatistics = new MaskAreaStatistics(areaCalculator.getEarthRadius() / 1000.0);
             pm.beginTask("Computing Mask area...", numXTiles * numYTiles);
             try {
                 for (int tileX = minTileX; tileX < minTileX + numXTiles; ++tileX) {
@@ -308,30 +308,10 @@ public class ComputeMaskAreaAction extends AbstractAction implements LookupListe
                             for (int y = r.y; y < r.y + r.height; y++) {
                                 for (int x = r.x; x < r.x + r.width; x++) {
                                     if (maskTile.getSample(x, y, 0) != 0) {
-                                        // 0: pixel center point
-                                        pixelPoints[0].setLocation(x + 0.5f, y + 0.5f);
-                                        // 1 --> 2 : parallel (geogr. hor. line) crossing pixel center point
-                                        pixelPoints[1].setLocation(x + 0.0f, y + 0.5f);
-                                        pixelPoints[2].setLocation(x + 1.0f, y + 0.5f);
-                                        // 3 --> 4 : meridian (geogr. ver. line) crossing pixel center point
-                                        pixelPoints[3].setLocation(x + 0.5f, y + 0.0f);
-                                        pixelPoints[4].setLocation(x + 0.5f, y + 1.0f);
-
-                                        for (int i = 0; i < geoPoints.length; i++) {
-                                            geoCoding.getGeoPos(pixelPoints[i], geoPoints[i]);
-                                        }
-                                        double deltaLon = Math.abs(geoPoints[2].getLon() - geoPoints[1].getLon());
-                                        double deltaLat = Math.abs(geoPoints[4].getLat() - geoPoints[3].getLat());
-                                        double r2 = areaStatistics.getEarthRadius() * Math.cos(
-                                                geoPoints[0].getLat() * MathUtils.DTOR);
-                                        double a = r2 * deltaLon * MathUtils.DTOR;
-                                        double b = areaStatistics.getEarthRadius() * deltaLat * MathUtils.DTOR;
-                                        double pixelArea = a * b;
-                                        areaStatistics.setPixelAreaMin(
-                                                Math.min(areaStatistics.getPixelAreaMin(), pixelArea));
-                                        areaStatistics.setPixelAreaMax(
-                                                Math.max(areaStatistics.getPixelAreaMax(), pixelArea));
-                                        areaStatistics.setMaskArea(areaStatistics.getMaskArea() + a * b);
+                                        double pixelArea = areaCalculator.calculatePixelSize(x, y) / Math.pow(1000.0, 2);
+                                        areaStatistics.setPixelAreaMin(Math.min(areaStatistics.getPixelAreaMin(), pixelArea));
+                                        areaStatistics.setPixelAreaMax(Math.max(areaStatistics.getPixelAreaMax(), pixelArea));
+                                        areaStatistics.setMaskArea(areaStatistics.getMaskArea() + pixelArea);
                                         areaStatistics.setNumPixels(areaStatistics.getNumPixels() + 1);
                                     }
                                 }
