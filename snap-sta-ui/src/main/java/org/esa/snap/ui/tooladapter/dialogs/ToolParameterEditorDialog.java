@@ -112,7 +112,7 @@ public class ToolParameterEditorDialog extends ModalDialog {
         }
         propertySetDescriptor.addPropertyDescriptor(property);
         PropertyContainer container = PropertyContainer.createMapBacked(new HashMap<>(), propertySetDescriptor);
-        container.getProperty(property.getName()).setValue(this.parameter.getDefaultValue());
+        container.getProperty(property.getName()).setValueFromText(this.parameter.getDefaultValue());
         paramContext = new BindingContext(container);
 
         this.uiWrapper = PropertyMemberUIWrapperFactory.buildPropertyWrapper("defaultValue", this.parameter, null, paramContext, null);
