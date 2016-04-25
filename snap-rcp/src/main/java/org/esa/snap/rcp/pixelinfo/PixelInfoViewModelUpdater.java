@@ -351,7 +351,12 @@ public class PixelInfoViewModelUpdater {
             timeModel.updateValue("No date information", 0);
             timeModel.updateValue("No time information", 1);
         } else {
-            final ProductData.UTC utcCurrentLine = ProductUtils.getScanLineTime(currentProduct, levelZeroSceneY + 0.5);
+            final ProductData.UTC utcCurrentLine;
+            if(currentProduct.isMultiSize()) {
+                utcCurrentLine = ProductUtils.getScanLineTime(currentProduct, levelZeroSceneY + 0.5);
+            } else {
+                utcCurrentLine = ProductUtils.getScanLineTime(currentProduct, levelZeroRasterY + 0.5);
+            }
             Assert.notNull(utcCurrentLine, "utcCurrentLine");
             final Calendar currentLineTime = utcCurrentLine.getAsCalendar();
 
@@ -588,9 +593,6 @@ public class PixelInfoViewModelUpdater {
     /**
      * Convenience method that gives the largest integer smaller than the double value or
      * -1 if value is Doubl.NaN.
-     *
-     * @param value
-     * @return
      */
     private int floor(double value) {
         if (Double.isNaN(value)) {
