@@ -353,9 +353,9 @@ public class PixelInfoViewModelUpdater {
         } else {
             final ProductData.UTC utcCurrentLine;
             if(currentProduct.isMultiSize()) {
-                utcCurrentLine = ProductUtils.getScanLineTime(currentProduct, levelZeroSceneY + 0.5);
+                utcCurrentLine = ProductUtils.getPixelScanTime(currentProduct, levelZeroSceneX + 0.5, levelZeroSceneY + 0.5);
             } else {
-                utcCurrentLine = ProductUtils.getScanLineTime(currentProduct, levelZeroRasterY + 0.5);
+                utcCurrentLine = ProductUtils.getPixelScanTime(currentRaster, levelZeroRasterX + 0.5, levelZeroRasterY + 0.5);
             }
             Assert.notNull(utcCurrentLine, "utcCurrentLine");
             final Calendar currentLineTime = utcCurrentLine.getAsCalendar();
