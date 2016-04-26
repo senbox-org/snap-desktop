@@ -53,7 +53,7 @@ class InputListModel extends AbstractListModel<Object> {
         return sourceProducts.toArray(new Product[sourceProducts.size()]);
     }
 
-    void setElements(String[] elements) throws ValidationException {
+    void setPaths(String[] elements) throws ValidationException {
         if (!list.isEmpty()) {
             final int endIndex = list.size() - 1;
             list.clear();
@@ -63,10 +63,14 @@ class InputListModel extends AbstractListModel<Object> {
         for (int i = 0; i < files.length; i++) {
             files[i] = new File(elements[i]);
         }
-        addElements(files);
+        addElements((Object[]) getSourceProducts());
+        addElements((Object[]) files);
     }
 
     void addElements(Object... elements) throws ValidationException {
+        if (elements == null || elements.length == 0) {
+            return;
+        }
         final int startIndex = list.size();
         for (Object element : elements) {
             if (!(element instanceof File || element instanceof Product)) {
@@ -160,12 +164,14 @@ class InputListModel extends AbstractListModel<Object> {
                         Object newValue = evt.getNewValue();
                         try {
                             if (newValue == null) {
+                                final Object[] sourceProducts = getSourceProducts();
                                 clear();
+                                addElements(sourceProducts);
                             } else {
-                                setElements((String[]) newValue);
+                                setPaths((String[]) newValue);
                             }
                         } catch (ValidationException e) {
-                            SystemUtils.LOG.log(Level.SEVERE, "Problems at setElements.", e);
+                            SystemUtils.LOG.log(Level.SEVERE, "Problems at setPaths.", e);
                         }
                     }
                 }

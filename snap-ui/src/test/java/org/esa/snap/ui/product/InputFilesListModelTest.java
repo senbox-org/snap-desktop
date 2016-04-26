@@ -99,16 +99,31 @@ public class InputFilesListModelTest {
     @Test
     public void testSetElements() throws ValidationException {
         final String[] elements1 = {"a", "b", "c"};
-        listModel.setElements(elements1);
+        listModel.setPaths(elements1);
         assertEquals(3, listModel.getSize());
         final String[] values1 = property.getValue();
         assertArrayEquals(elements1, values1);
 
         final String[] elements2 = {"f", "s", "g", "k"};
-        listModel.setElements(elements2);
+        listModel.setPaths(elements2);
         assertEquals(4, listModel.getSize());
         final String[] values2 = property.getValue();
         assertArrayEquals(elements2, values2);
+    }
+
+    @Test
+    public void testSetPropertyEmptyDoesNotDeleteSourceProducts() throws ValidationException {
+        final Product product = new Product("name", "type", 1, 1);
+        listModel.addElements(product);
+        assertEquals(1, listModel.getSize());
+        final String[] elements1 = {"a", "b", "c"};
+        listModel.setPaths(elements1);
+        assertEquals(4, listModel.getSize());
+        final String[] values1 = property.getValue();
+        assertArrayEquals(elements1, values1);
+        property.setValue(null);
+        assertEquals(1, listModel.getSize());
+        assertSame(product, listModel.getElementAt(0));
     }
 
     @Test
