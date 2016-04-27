@@ -14,10 +14,12 @@ import java.awt.event.*;
 public class ConsoleDialog extends JDialog {
 
     private JTextPane textArea;
+    private Dimension dimension;
 
     public ConsoleDialog(ToolAdapterExecutionDialog parent) {
         super(parent.getJDialog());
         JDialog owner = parent.getJDialog();
+        dimension = computeDimension(owner);
         owner.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -43,7 +45,8 @@ public class ConsoleDialog extends JDialog {
         textArea = new JTextPane();
         textArea.setBackground(Color.BLACK);
         final Container contentPane = super.getContentPane();
-        contentPane.setPreferredSize(new Dimension(2 * owner.getWidth(), owner.getHeight()));
+        //contentPane.setPreferredSize(new Dimension(2 * owner.getWidth(), owner.getHeight()));
+        contentPane.setPreferredSize(dimension);
         this.setLocation(owner.getX() + owner.getWidth(), owner.getY());
         JScrollPane scrollPane = new JScrollPane(textArea);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -71,10 +74,22 @@ public class ConsoleDialog extends JDialog {
         AttributeSet aset = sc.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Foreground, Color.WHITE);
         aset = sc.addAttribute(aset, StyleConstants.FontFamily, "Lucida Console");
         aset = sc.addAttribute(aset, StyleConstants.Alignment, StyleConstants.ALIGN_LEFT);
+        //aset = sc.addAttribute(aset, StyleConstants.FontSize, 8);
         int len = textArea.getDocument().getLength();
         textArea.setCaretPosition(len);
         textArea.setCharacterAttributes(aset, false);
         textArea.replaceSelection("\n" + text);
+    }
+
+    private Dimension computeDimension(JDialog owner) {
+        GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+        int screenWidth = gd.getDisplayMode().getWidth();
+        int x = owner.getX() + owner.getWidth();
+        int width = owner.getWidth() * 2;
+        while (x + width > screenWidth) {
+            width -= 50;
+        }
+        return new Dimension(width, owner.getHeight());
     }
 
 }

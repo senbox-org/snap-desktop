@@ -131,7 +131,7 @@ public class TemplateParameterEditorDialog extends ModalDialog {
             File defaultValue = ToolAdapterIO.ensureLocalCopy(fileWrapper.getContext().getPropertySet().getProperty(this.parameter.getName()).getValue(),
                                                               parentDescriptor.getAlias());
             fileWrapper.getContext().getPropertySet().getProperty(this.parameter.getName()).setValue(defaultValue);
-            if(defaultValue.exists()) {
+            if(defaultValue != null && defaultValue.exists()) {
                 byte[] encoded = Files.readAllBytes(Paths.get((defaultValue).getAbsolutePath()));
                 result = new String(encoded, Charset.defaultCharset());
             } else {
@@ -154,24 +154,26 @@ public class TemplateParameterEditorDialog extends ModalDialog {
         super.onOK();
         //set value
         File defaultValue = ToolAdapterIO.ensureLocalCopy(fileWrapper.getContext().getPropertySet().getProperty(this.parameter.getName()).getValue(),
-                parentDescriptor.getAlias());
-        this.parameter.setDefaultValue(defaultValue.getName());
-        //save parameters
-        parameter.getToolParameterDescriptors().clear();
-        for (TemplateParameterDescriptor subparameter : fakeDescriptor.getToolParameterDescriptors()){
-            if (paramsTable.getBindingContext().getBinding(subparameter.getName()) != null){
-                Object propertyValue = paramsTable.getBindingContext().getBinding(subparameter.getName()).getPropertyValue();
-                if (propertyValue != null) {
-                    subparameter.setDefaultValue(propertyValue.toString());
+                    parentDescriptor.getAlias());
+        if (defaultValue != null) {
+            this.parameter.setDefaultValue(defaultValue.getName());
+            //save parameters
+            parameter.getToolParameterDescriptors().clear();
+            for (TemplateParameterDescriptor subparameter : fakeDescriptor.getToolParameterDescriptors()) {
+                if (paramsTable.getBindingContext().getBinding(subparameter.getName()) != null) {
+                    Object propertyValue = paramsTable.getBindingContext().getBinding(subparameter.getName()).getPropertyValue();
+                    if (propertyValue != null) {
+                        subparameter.setDefaultValue(propertyValue.toString());
+                    }
                 }
+                parameter.addParameterDescriptor(subparameter);
             }
-            parameter.addParameterDescriptor(subparameter);
-        }
-        //save file content
-        try {
-            ToolAdapterIO.saveFileContent(defaultValue, fileContentArea.getText());
-        } catch (IOException e) {
-            logger.warning(e.getMessage());
+            //save file content
+            try {
+                ToolAdapterIO.saveFileContent(defaultValue, fileContentArea.getText());
+            } catch (IOException e) {
+                logger.warning(e.getMessage());
+            }
         }
     }
 

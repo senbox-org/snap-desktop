@@ -25,6 +25,7 @@ import org.esa.snap.core.gpf.Operator;
 import org.esa.snap.core.gpf.descriptor.ParameterDescriptor;
 import org.esa.snap.core.gpf.descriptor.SystemVariable;
 import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
+import org.esa.snap.core.gpf.operators.tooladapter.DefaultOutputConsumer;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterConstants;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterIO;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterOp;
@@ -130,11 +131,8 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
             primitiveZeroValuesMap.put(Double.class, (double) 0);
 
         }
-        catch (IllegalAccessException iaExc){
+        catch (IllegalAccessException | NoSuchFieldException iaExc){
             logger.severe(iaExc.getMessage());
-        }
-        catch (NoSuchFieldException nsfExc){
-            logger.severe(nsfExc.getMessage());
         }
 
     }
@@ -205,9 +203,18 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
                     operatorTask = new OperatorTask(op, ToolAdapterExecutionDialog.this::operatorCompleted);
                     ProgressHandle progressHandle = ProgressHandleFactory.createHandle(this.getTitle());
                     String progressPattern = operatorDescriptor.getProgressPattern();
-                    ((ToolAdapterOp) op).setProgressMonitor(new ProgressWrapper(progressHandle,
-                                                                                progressPattern == null || progressPattern.isEmpty(),
-                                                                                form.shouldDisplayOutput()));
+                    ConsoleConsumer consumer = null;
+                    ProgressWrapper progressWrapper = new ProgressWrapper(progressHandle, progressPattern == null || progressPattern.isEmpty());
+                    if (form.shouldDisplayOutput()) {
+                        consumer = new ConsoleConsumer(operatorDescriptor.getProgressPattern(),
+                                                    operatorDescriptor.getErrorPattern(),
+                                                    operatorDescriptor.getStepPattern(),
+                                                    progressWrapper,
+                                                    new ConsoleDialog(this));
+                    }
+                    progressWrapper.setConsumer(consumer);
+                    ((ToolAdapterOp) op).setProgressMonitor(progressWrapper);
+                    ((ToolAdapterOp) op).setConsumer(consumer);
                     ProgressUtils.runOffEventThreadWithProgressDialog(operatorTask, this.getTitle(), progressHandle, true, 1, 1);
                 } else {
                     if (warnings.size() > 0) {
@@ -366,14 +373,12 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
         if (operatorTask != null) {
             List<String> errors = operatorTask.getErrors();
             if (errors != null && errors.size() > 0){
-                StringBuilder builder = new StringBuilder();
-                builder.append("\nIt seems there was en error on execution or the defined tool output error pattern was found.\nPlease consult the SNAP log file");
-                Dialogs.showWarning(builder.toString());
+                Dialogs.showWarning("\nIt seems there was en error on execution or the defined tool output error pattern was found.\nPlease consult the SNAP log file");
             }
         }
     }
 
-    private void displayErrors() {
+    /*private void displayErrors() {
         if (form.shouldDisplayOutput()) {
             List<String> output = operatorTask.getOutput();
             StringBuilder builder = new StringBuilder();
@@ -402,9 +407,9 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
                 Dialogs.showWarning(builder.toString());
             }
         }
-    }
+    }*/
 
-    private String shrinkText(String input) {
+    /*private String shrinkText(String input) {
         int charLimit = 80;
         if (input.length() <= charLimit) {
             return input;
@@ -430,7 +435,7 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
             }
             return builder.toString();
         }
-    }
+    }*/
 
     /**
      * Runnable for executing the operator. It requires a callback
@@ -499,18 +504,46 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
         }
     }
 
+    class ConsoleConsumer extends DefaultOutputConsumer {
+        private ConsoleDialog consoleDialog;
+
+        public ConsoleConsumer(String progressPattern, String errorPattern, String stepPattern, ProgressMonitor pm, ConsoleDialog consoleDialog) {
+            super(progressPattern, errorPattern, stepPattern, pm);
+            this.consoleDialog = consoleDialog;
+        }
+
+        @Override
+        public void consumeOutput(String line) {
+            super.consumeOutput(line);
+            if (consoleDialog != null) {
+                if (SwingUtilities.isEventDispatchThread()) {
+                    consoleDialog.append(line);
+                } else {
+                    SwingUtilities.invokeLater(() -> consoleDialog.append(line));
+                }
+            }
+        }
+
+        public void setVisible(boolean value) {
+            if (this.consoleDialog != null) {
+                this.consoleDialog.setVisible(value);
+            }
+        }
+    }
+
     class ProgressWrapper implements ProgressMonitor {
 
         private ProgressHandle progressHandle;
         private boolean isIndeterminate;
-        private ConsoleDialog consoleDialog;
+        private ConsoleConsumer console;
 
-        ProgressWrapper(ProgressHandle handle, boolean indeterminate, boolean showConsole) {
+        ProgressWrapper(ProgressHandle handle, boolean indeterminate) {
             this.progressHandle = handle;
             this.isIndeterminate = indeterminate;
-            if (showConsole) {
-                consoleDialog = new ConsoleDialog(ToolAdapterExecutionDialog.this);
-            }
+        }
+
+        public void setConsumer(ConsoleConsumer consumer) {
+            console = consumer;
         }
 
         @Override
@@ -520,8 +553,8 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
             if (this.isIndeterminate) {
                 this.progressHandle.switchToIndeterminate();
             }
-            if (this.consoleDialog != null) {
-                this.consoleDialog.setVisible(true);
+            if (this.console != null) {
+                this.console.setVisible(true);
             }
         }
 
@@ -553,20 +586,12 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
         @Override
         public void setSubTaskName(String subTaskName) {
             this.progressHandle.progress(subTaskName);
-            if (consoleDialog != null) {
-                if (SwingUtilities.isEventDispatchThread()) {
-                    consoleDialog.append(subTaskName);
-                } else {
-                    SwingUtilities.invokeLater(() -> {
-                        consoleDialog.append(subTaskName);
-                    });
-                }
-            }
         }
 
         @Override
         public void worked(int work) {
             internalWorked(work);
         }
+
     }
 }
