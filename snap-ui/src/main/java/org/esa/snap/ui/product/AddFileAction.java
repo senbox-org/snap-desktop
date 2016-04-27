@@ -63,13 +63,15 @@ class AddFileAction extends AbstractAction {
         fileChooser.setMultiSelectionEnabled(true);
 
         FileFilter actualFileFilter = fileChooser.getAcceptAllFileFilter();
-        Iterator<ProductReaderPlugIn> allReaderPlugIns = ProductIOPlugInManager.getInstance().getAllReaderPlugIns();
-        List<SnapFileFilter> sortedFileFilters = SnapFileFilter.getSortedFileFilters(allReaderPlugIns);
-        for (SnapFileFilter productFileFilter : sortedFileFilters) {
-            fileChooser.addChoosableFileFilter(productFileFilter);
-            if (!ALL_FILES_FORMAT.equals(lastFormat) &&
-                productFileFilter.getFormatName().equals(lastFormat)) {
-                actualFileFilter = productFileFilter;
+        if (!ALL_FILES_FORMAT.equals(lastFormat)) {
+            Iterator<ProductReaderPlugIn> allReaderPlugIns = ProductIOPlugInManager.getInstance().getAllReaderPlugIns();
+            List<SnapFileFilter> sortedFileFilters = SnapFileFilter.getSortedFileFilters(allReaderPlugIns);
+            for (SnapFileFilter productFileFilter : sortedFileFilters) {
+                fileChooser.addChoosableFileFilter(productFileFilter);
+                if (productFileFilter.getFormatName().equals(lastFormat)) {
+                    actualFileFilter = productFileFilter;
+                    break;
+                }
             }
         }
         fileChooser.setFileFilter(actualFileFilter);
