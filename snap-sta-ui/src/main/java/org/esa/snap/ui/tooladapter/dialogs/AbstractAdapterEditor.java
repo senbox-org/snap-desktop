@@ -189,15 +189,27 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
 
         //see if all necessary parameters are present:
         if (newOperatorDescriptor.getToolParameterDescriptors().stream().filter(p -> p.getName().equals(ToolAdapterConstants.TOOL_SOURCE_PRODUCT_ID)).count() == 0){
-            newOperatorDescriptor.getToolParameterDescriptors().add(new TemplateParameterDescriptor(ToolAdapterConstants.TOOL_SOURCE_PRODUCT_ID, Product[].class));
+            TemplateParameterDescriptor parameterDescriptor = new TemplateParameterDescriptor(ToolAdapterConstants.TOOL_SOURCE_PRODUCT_ID, Product[].class);
+            parameterDescriptor.setDescription("Input product");
+            newOperatorDescriptor.getToolParameterDescriptors().add(parameterDescriptor);
         }
         if (newOperatorDescriptor.getToolParameterDescriptors().stream().filter(p -> p.getName().equals(ToolAdapterConstants.TOOL_SOURCE_PRODUCT_FILE)).count() == 0){
-            newOperatorDescriptor.getToolParameterDescriptors().add(new TemplateParameterDescriptor(ToolAdapterConstants.TOOL_SOURCE_PRODUCT_FILE, File[].class));
+            TemplateParameterDescriptor parameterDescriptor = new TemplateParameterDescriptor(ToolAdapterConstants.TOOL_SOURCE_PRODUCT_FILE, File[].class);
+            parameterDescriptor.setDescription("Input file");
+            newOperatorDescriptor.getToolParameterDescriptors().add(parameterDescriptor);
         }
         if (newOperatorDescriptor.getToolParameterDescriptors().stream().filter(p -> p.getName().equals(ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE)).count() == 0){
             TemplateParameterDescriptor parameterDescriptor = new TemplateParameterDescriptor(ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE, File.class);
+            parameterDescriptor.setDescription("Output file");
             parameterDescriptor.setNotNull(false);
             newOperatorDescriptor.getToolParameterDescriptors().add(parameterDescriptor);
+        } else {
+            Optional<TemplateParameterDescriptor> result = newOperatorDescriptor.getToolParameterDescriptors()
+                    .stream()
+                    .filter(p -> p.getName().equals(ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE)).findFirst();
+            if (result.isPresent()) {
+                result.get().setDescription("Output file");
+            }
         }
 
         propertyContainer = PropertyContainer.createObjectBacked(newOperatorDescriptor);

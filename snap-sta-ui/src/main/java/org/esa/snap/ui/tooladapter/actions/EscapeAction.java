@@ -64,7 +64,9 @@ public class EscapeAction extends AbstractAction {
             escapeAction.actionPerformed(null);
         } else {
             Window window = SwingUtilities.windowForComponent(component);
-            window.dispose();
+            if (window != null) {
+                window.dispose();
+            }
         }
     }
 

@@ -222,10 +222,12 @@ public class ToolAdapterActionRegistrar {
                         for (File file : files) {
                             JarFile jarFile = new JarFile(file);
                             Manifest manifest = jarFile.getManifest();
-                            Attributes manifestEntries = manifest.getMainAttributes();
-                            if (manifestEntries.containsKey(typeKey) &&
-                                    "STA".equals(manifestEntries.getValue(typeKey.toString()))) {
-                                output.put(manifestEntries.getValue(descriptionKeyName), file);
+                            if (manifest != null) {
+                                Attributes manifestEntries = manifest.getMainAttributes();
+                                if (manifestEntries.containsKey(typeKey) &&
+                                        "STA".equals(manifestEntries.getValue(typeKey.toString()))) {
+                                    output.put(manifestEntries.getValue(descriptionKeyName), file);
+                                }
                             }
                         }
                     } catch (Exception ignored) {

@@ -119,14 +119,14 @@ public class SpringUtilities {
                 lastRowCons = lastCons;
                 cons.setX(initialXSpring);
             } else { //x position depends on previous component
-                cons.setX(Spring.sum(lastCons.getConstraint(SpringLayout.EAST),
+                cons.setX(Spring.sum(lastCons != null ? lastCons.getConstraint(SpringLayout.EAST) : null,
                         xPadSpring));
             }
 
             if (i / cols == 0) { //first row
                 cons.setY(initialYSpring);
             } else { //y position depends on previous row
-                cons.setY(Spring.sum(lastRowCons.getConstraint(SpringLayout.SOUTH),
+                cons.setY(Spring.sum(lastRowCons != null ? lastRowCons.getConstraint(SpringLayout.SOUTH) : null,
                         yPadSpring));
             }
             lastCons = cons;
@@ -137,11 +137,11 @@ public class SpringUtilities {
         pCons.setConstraint(SpringLayout.SOUTH,
                 Spring.sum(
                         Spring.constant(yPad),
-                        lastCons.getConstraint(SpringLayout.SOUTH)));
+                        lastCons != null ? lastCons.getConstraint(SpringLayout.SOUTH) : null));
         pCons.setConstraint(SpringLayout.EAST,
                 Spring.sum(
                         Spring.constant(xPad),
-                        lastCons.getConstraint(SpringLayout.EAST)));
+                        lastCons != null ? lastCons.getConstraint(SpringLayout.EAST) : null));
     }
 
     /* Used by makeCompactGrid. */

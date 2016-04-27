@@ -54,7 +54,8 @@ public class ModuleInstaller extends ModuleInstall {
     private final static FilenameFilter jarFilter = (dir, name) -> name.endsWith("jar");
 
     private final Logger logger = Logger.getGlobal();
-    private final Path nbUserModulesPath = Paths.get(Places.getUserDirectory().getAbsolutePath(), "modules");
+    private final File userDir = Places.getUserDirectory();
+    private final Path nbUserModulesPath = Paths.get(userDir != null ? userDir.getAbsolutePath() : "", "modules");
     private final File userModulePath = ToolAdapterIO.getUserAdapterPath();
 
     @Override

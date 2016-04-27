@@ -190,10 +190,7 @@ public class PropertyMemberUIWrapperFactory {
             @Override
             public Boolean getMemberValue() throws PropertyAttributeException {
                 Object obj = property.getAttribute(attributeName);
-                if (obj == null) {
-                    return false;
-                }
-                return (boolean) obj;
+                return obj != null && (boolean) obj;
             }
 
             @Override
@@ -230,7 +227,7 @@ public class PropertyMemberUIWrapperFactory {
 
             @Override
             protected void setMemberValue(Object value) throws PropertyAttributeException {
-                property.setName(value.toString());
+                property.setName(value != null ? value.toString() : "null");
             }
 
             @Override
@@ -240,8 +237,7 @@ public class PropertyMemberUIWrapperFactory {
 
             @Override
             protected JComponent buildUIComponent() {
-                JTextField field = new JTextField(getMemberValue());
-                return field;
+                return new JTextField(getMemberValue());
             }
 
             @Override
@@ -262,7 +258,7 @@ public class PropertyMemberUIWrapperFactory {
 
             @Override
             protected void setMemberValue(Object value) throws PropertyAttributeException {
-                property.setDataType((Class<?>) value);
+                property.setDataType(value != null ? (Class<?>) value : String.class);
             }
 
             @Override
@@ -272,8 +268,7 @@ public class PropertyMemberUIWrapperFactory {
 
             @Override
             protected JComponent buildUIComponent() {
-                JTextField field = new JTextField(getMemberValue().getCanonicalName());
-                return field;
+                return new JTextField(getMemberValue().getCanonicalName());
             }
 
             @Override
@@ -344,9 +339,8 @@ public class PropertyMemberUIWrapperFactory {
                 PropertyDescriptor propertydescriptor = context.getPropertySet().getDescriptor(property.getName());
                 PropertyEditor propertyEditor = PropertyEditorRegistry.getInstance().findPropertyEditor(
                         propertydescriptor);
-                JComponent editorComponent = propertyEditor.createEditorComponent(propertydescriptor,
+                return propertyEditor.createEditorComponent(propertydescriptor,
                         context);
-                return editorComponent;
             }
 
             @Override
