@@ -44,6 +44,10 @@ class InputListModel extends AbstractListModel<Object> {
         return list.get(index);
     }
 
+    int getIndexOf(Object object) {
+        return list.indexOf(object);
+    }
+
     @Override
     public int getSize() {
         return list.size();

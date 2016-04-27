@@ -39,6 +39,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListDataListener;
+import javax.swing.event.ListSelectionListener;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -244,6 +245,30 @@ public class SourceProductList extends ComponentAdapter {
      */
     public void removeChangeListener(ListDataListener changeListener) {
         listModel.removeListDataListener(changeListener);
+    }
+
+    /**
+     * Add a listener that is informed every time the list's selection is changed.
+     * @param selectionListener the listener to add
+     */
+    public void addSelectionListener(ListSelectionListener selectionListener) {
+        inputPathsList.addListSelectionListener(selectionListener);
+    }
+
+    /**
+     * Remove a selection listener
+     * @param selectionListener the listener to remove
+     */
+    public void removeSelectionListener(ListSelectionListener selectionListener) {
+        inputPathsList.removeListSelectionListener(selectionListener);
+    }
+
+    /**
+     * @param object the object which may be selected or not
+     * @return true, if the object is selected
+     */
+    public boolean isSelected(Object object) {
+        return inputPathsList.isSelectedIndex(listModel.getIndexOf(object));
     }
 
     /**
