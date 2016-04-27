@@ -78,6 +78,7 @@ public class SourceProductList extends ComponentAdapter {
     private boolean xAxis;
     private JComponent[] components;
     private ProductFilter productFilter;
+    private String explicitPattern;
 
     /**
      * Constructor.
@@ -92,6 +93,7 @@ public class SourceProductList extends ComponentAdapter {
         this.propertyNameLastOpenInputDir = "org.esa.snap.core.ui.product.lastOpenInputDir";
         this.propertyNameLastOpenedFormat = "org.esa.snap.core.ui.product.lastOpenedFormat";
         this.xAxis = true;
+        this.explicitPattern = null;
         productFilter = product -> true;
     }
 
@@ -175,6 +177,17 @@ public class SourceProductList extends ComponentAdapter {
         return list;
     }
 
+    /**
+     * If set, this pattern will be used for collecting products from directories.
+     * If not set, users will be asked which pattern shall be used.
+     * To unset this, pass {@code null} as pattern.
+     *
+     * @param pattern The pattern to be used when collecting products from directories
+     */
+    public void setExplicitPattern(String pattern) {
+        this.explicitPattern = pattern;
+    }
+
     private AbstractButton createAddInputButton() {
         final AbstractButton addButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon("icons/Plus24.gif"),
                                                                         false);
@@ -185,8 +198,8 @@ public class SourceProductList extends ComponentAdapter {
             addProductAction.setProductFilter(productFilter);
             popup.add(addProductAction);
             popup.add(new AddFileAction(appContext, listModel, propertyNameLastOpenInputDir, propertyNameLastOpenedFormat));
-            popup.add(new AddDirectoryAction(appContext, listModel, false, propertyNameLastOpenInputDir));
-            popup.add(new AddDirectoryAction(appContext, listModel, true, propertyNameLastOpenInputDir));
+            popup.add(new AddDirectoryAction(appContext, listModel, false, propertyNameLastOpenInputDir, explicitPattern));
+            popup.add(new AddDirectoryAction(appContext, listModel, true, propertyNameLastOpenInputDir, explicitPattern));
             popup.show(addButton, 1, buttonBounds.height + 1);
         });
         return addButton;
