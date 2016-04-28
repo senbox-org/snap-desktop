@@ -347,7 +347,8 @@ public class PixelInfoViewModelUpdater {
         final ProductData.UTC utcStartTime = currentProduct.getStartTime();
         final ProductData.UTC utcEndTime = currentProduct.getEndTime();
 
-        if (utcStartTime == null || utcEndTime == null || !isSampleValueAvailableInScene()) {
+        boolean isAvailable = currentProduct.isMultiSize() ? isSampleValueAvailableInScene() : isSampleValueAvailableInRaster() ;
+        if (utcStartTime == null || utcEndTime == null || !isAvailable) {
             timeModel.updateValue("No date information", 0);
             timeModel.updateValue("No time information", 1);
         } else {
@@ -606,6 +607,13 @@ public class PixelInfoViewModelUpdater {
                 && levelZeroSceneY >= 0
                 && levelZeroSceneX < currentProduct.getSceneRasterWidth()
                 && levelZeroSceneY < currentProduct.getSceneRasterHeight();
+    }
+
+    private boolean isSampleValueAvailableInRaster() {
+        return levelZeroRasterX >= 0
+                && levelZeroRasterY >= 0
+                && levelZeroRasterX < currentRaster.getRasterWidth()
+                && levelZeroRasterY < currentRaster.getRasterHeight();
     }
 
     void clearProductNodeRefs() {
