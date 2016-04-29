@@ -13,10 +13,10 @@ class FileSelectionPatternDialog extends ModalDialog {
 
     private final JTextField textField;
 
-    public FileSelectionPatternDialog(String defaultPattern, Window parent) {
-        super(parent, "File Selection Pattern", ModalDialog.ID_OK_CANCEL_HELP, null);
+    FileSelectionPatternDialog(String defaultPattern, Window parent) {
+        super(parent, "File/Directory Selection Pattern", ModalDialog.ID_OK_CANCEL_HELP, null);
         final JPanel contentPane = new JPanel(new BorderLayout(8, 8));
-        contentPane.add(new JLabel("Please define a file selection pattern. For example '*.nc'"), BorderLayout.NORTH);
+        contentPane.add(new JLabel("Please define a file/directory selection pattern. For example '*.nc'"), BorderLayout.NORTH);
         contentPane.add(new JLabel("Pattern:"), BorderLayout.WEST);
         textField = new JTextField(defaultPattern);
         contentPane.add(textField, BorderLayout.CENTER);
@@ -34,7 +34,7 @@ class FileSelectionPatternDialog extends ModalDialog {
         if (button == ID_OK) {
             final String text = getPattern();
             if (text == null || text.length() == 0) {
-                JOptionPane.showMessageDialog(getParent(), "Pattern field may not be empty.", "File Selection Pattern", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(getParent(), "Pattern field may not be empty.", "File/Directory Selection Pattern", JOptionPane.ERROR_MESSAGE);
                 return ID_CANCEL;
             }
         }

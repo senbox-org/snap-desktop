@@ -38,11 +38,16 @@ class AddDirectoryAction extends AbstractAction {
     private boolean recursive;
     private AppContext appContext;
     private InputListModel listModel;
+    private String defaultPattern;
 
-    AddDirectoryAction(AppContext appContext, InputListModel listModel, boolean recursive, String lastDirProperty) {
+    AddDirectoryAction(AppContext appContext, InputListModel listModel, boolean recursive, String lastDirProperty, String defaultPattern) {
         this(recursive, lastDirProperty);
         this.appContext = appContext;
         this.listModel = listModel;
+        if (defaultPattern == null) {
+            this.defaultPattern = recursive ? "*.dim" : "*";
+        }
+        this.defaultPattern = defaultPattern;
     }
 
     private AddDirectoryAction(boolean recursive, String lastDirProperty) {
@@ -73,7 +78,6 @@ class AddDirectoryAction extends AbstractAction {
             return;
         }
 
-        final String defaultPattern = recursive ? "*.dim" : "*";
         final FileSelectionPatternDialog dialog = new FileSelectionPatternDialog(defaultPattern, parent);
         if (dialog.show() != ModalDialog.ID_OK) {
             return;

@@ -39,6 +39,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListDataListener;
+import javax.swing.event.ListSelectionListener;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -78,6 +79,7 @@ public class SourceProductList extends ComponentAdapter {
     private boolean xAxis;
     private JComponent[] components;
     private ProductFilter productFilter;
+    private String defaultPattern;
 
     /**
      * Constructor.
@@ -92,6 +94,7 @@ public class SourceProductList extends ComponentAdapter {
         this.propertyNameLastOpenInputDir = "org.esa.snap.core.ui.product.lastOpenInputDir";
         this.propertyNameLastOpenedFormat = "org.esa.snap.core.ui.product.lastOpenedFormat";
         this.xAxis = true;
+        this.defaultPattern = null;
         productFilter = product -> true;
     }
 
@@ -175,6 +178,17 @@ public class SourceProductList extends ComponentAdapter {
         return list;
     }
 
+    /**
+     * If set, users will be asked whether to use this pattern for recursively collecting products from directories.
+     * To unset this, pass {@code null} as pattern.
+     * @since SNAP 3.2
+     *
+     * @param pattern The pattern to be used when collecting products from directories
+     */
+    public void setDefaultPattern(String pattern) {
+        this.defaultPattern = pattern;
+    }
+
     private AbstractButton createAddInputButton() {
         final AbstractButton addButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon("icons/Plus24.gif"),
                                                                         false);
@@ -185,8 +199,8 @@ public class SourceProductList extends ComponentAdapter {
             addProductAction.setProductFilter(productFilter);
             popup.add(addProductAction);
             popup.add(new AddFileAction(appContext, listModel, propertyNameLastOpenInputDir, propertyNameLastOpenedFormat));
-            popup.add(new AddDirectoryAction(appContext, listModel, false, propertyNameLastOpenInputDir));
-            popup.add(new AddDirectoryAction(appContext, listModel, true, propertyNameLastOpenInputDir));
+            popup.add(new AddDirectoryAction(appContext, listModel, false, propertyNameLastOpenInputDir, defaultPattern));
+            popup.add(new AddDirectoryAction(appContext, listModel, true, propertyNameLastOpenInputDir, defaultPattern));
             popup.show(addButton, 1, buttonBounds.height + 1);
         });
         return addButton;
@@ -231,6 +245,34 @@ public class SourceProductList extends ComponentAdapter {
      */
     public void removeChangeListener(ListDataListener changeListener) {
         listModel.removeListDataListener(changeListener);
+    }
+
+    /**
+     * Add a listener that is informed every time the list's selection is changed.
+     * @since SNAP 3.2
+     * @param selectionListener the listener to add
+     */
+    public void addSelectionListener(ListSelectionListener selectionListener) {
+        inputPathsList.addListSelectionListener(selectionListener);
+    }
+
+    /**
+     * Remove a selection listener
+     * @since SNAP 3.2
+     *
+     * @param selectionListener the listener to remove
+     */
+    public void removeSelectionListener(ListSelectionListener selectionListener) {
+        inputPathsList.removeListSelectionListener(selectionListener);
+    }
+
+    /**
+     * @since SNAP 3.2
+     * @param object the object which may be selected or not
+     * @return true, if the object is selected
+     */
+    public boolean isSelected(Object object) {
+        return inputPathsList.isSelectedIndex(listModel.getIndexOf(object));
     }
 
     /**

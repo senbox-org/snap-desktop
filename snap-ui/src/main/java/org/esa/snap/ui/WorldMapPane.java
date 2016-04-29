@@ -252,7 +252,7 @@ public class WorldMapPane extends JPanel {
         return new Action[]{new ZoomAllAction(), new ZoomToSelectedAction()};
     }
 
-    private void fireScrolled() {
+    protected void fireScrolled() {
         for (ZoomListener zoomListener : zoomListeners) {
             zoomListener.zoomed();
         }
@@ -291,7 +291,7 @@ public class WorldMapPane extends JPanel {
         zoomAll();
     }
 
-    private Rectangle2D cropToMaxModelBounds(Rectangle2D modelBounds) {
+    protected Rectangle2D cropToMaxModelBounds(Rectangle2D modelBounds) {
         final Rectangle2D maxModelBounds = worldMapLayer.getModelBounds();
         if (modelBounds.getWidth() >= maxModelBounds.getWidth() - 1 ||
                 modelBounds.getHeight() >= maxModelBounds.getHeight() - 1) {
