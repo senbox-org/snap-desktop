@@ -32,6 +32,7 @@
         <module>doc-windows</module>
 
         <module>snap-binning-ui</module>
+        <module>snap-classification-ui</module>
         <module>snap-collocation-ui</module>
         <module>snap-dem-ui</module>
         <module>snap-gpf-ui</module>
