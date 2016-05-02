@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='ISO-8859-1'  ?>
+<!DOCTYPE toc PUBLIC "-//Sun Microsystems Inc.//DTD JavaHelp TOC Version 2.0//EN"
+        "http://java.sun.com/products/javahelp/toc_2_0.dtd">
+
+<toc version="2.0" categoryclosedimage="folder" categoryopenimage="folder" topicimage="doc">
+
+    <tocitem text="Sentinel Toolbox Application">
+        <tocitem text="Raster">
+            <tocitem text="Classification">
+                <tocitem text="Supervised Classifiers" target="SupervisedClassifiers">
+                    <tocitem text="Random Forest" target="RandomForestClassifierOp"/>
+					<tocitem text="Maximum Likelihood" target="MaximumLikelihoodClassifierOp"/>
+					<tocitem text="Minimum Distance" target="MinimumDistanceClassifierOp"/>
+					<tocitem text="KNN" target="KNNClassifierOp"/>
+					<tocitem text="KD Tree KNN" target="KDTreeKNNClassifierOp"/>
+                </tocitem>
+            </tocitem>
+        </tocitem>
+    </tocitem>
+
+</toc>

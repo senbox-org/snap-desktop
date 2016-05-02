@@ -1,0 +1,113 @@
+
+<filesystem>
+
+    <folder name="Actions">
+        <folder name="Operators">
+            <file name="org-esa-snap-classification-gpf-Random-Forest-Classifier-Action.instance">
+                <attr name="instanceCreate" methodvalue="org.openide.awt.Actions.alwaysEnabled"/>
+                <attr name="delegate" methodvalue="org.esa.snap.graphbuilder.rcp.actions.GraphAction.create"/>
+                <attr name="displayName" stringvalue="Random Forest Classifier"/>
+                <attr name="graphFile" stringvalue="classification/RandomForestClassifierGraph.xml"/>
+                <attr name="dialogTitle" stringvalue="Random Forest Classifier"/>
+                <attr name="targetProductNameSuffix"  stringvalue="_RFClass"/>
+                <attr name="ShortDescription" stringvalue="Random Forest based classifier"/>
+                <attr name="helpId" stringvalue="RandomForestClassifierOp"/>
+            </file>
+            <file name="org-esa-snap-classification-gpf-KNN-Classifier-Action.instance">
+                <attr name="instanceCreate" methodvalue="org.openide.awt.Actions.alwaysEnabled"/>
+                <attr name="delegate" methodvalue="org.esa.snap.graphbuilder.rcp.actions.GraphAction.create"/>
+                <attr name="displayName" stringvalue="KNN Classifier"/>
+                <attr name="graphFile" stringvalue="classification/KNNClassifierGraph.xml"/>
+                <attr name="dialogTitle" stringvalue="KNN Classifier"/>
+                <attr name="targetProductNameSuffix"  stringvalue="_KNNClass"/>
+                <attr name="ShortDescription" stringvalue="KNN based classifier"/>
+                <attr name="helpId" stringvalue="KNNClassifierOp"/>
+            </file>
+            <file name="org-esa-snap-classification-gpf-KDTree-KNN-Classifier-Action.instance">
+                <attr name="instanceCreate" methodvalue="org.openide.awt.Actions.alwaysEnabled"/>
+                <attr name="delegate" methodvalue="org.esa.snap.graphbuilder.rcp.actions.GraphAction.create"/>
+                <attr name="displayName" stringvalue="KDTree KNN Classifier"/>
+                <attr name="graphFile" stringvalue="classification/KDTreeKNNClassifierGraph.xml"/>
+                <attr name="dialogTitle" stringvalue="KDTree KNN Classifier"/>
+                <attr name="targetProductNameSuffix"  stringvalue="_KD-KNNClass"/>
+                <attr name="ShortDescription" stringvalue="KDTree KNN based classifier"/>
+                <attr name="helpId" stringvalue="KDTreeKNNClassifierOp"/>
+            </file>
+            <file name="org-esa-snap-classification-gpf-Maximumlikelihood-Classifier-Action.instance">
+                <attr name="instanceCreate" methodvalue="org.openide.awt.Actions.alwaysEnabled"/>
+                <attr name="delegate" methodvalue="org.esa.snap.graphbuilder.rcp.actions.GraphAction.create"/>
+                <attr name="displayName" stringvalue="Maximum Likelihood Classifier"/>
+                <attr name="graphFile" stringvalue="classification/MaximumlikelihoodClassifierGraph.xml"/>
+                <attr name="dialogTitle" stringvalue="Maximum Likelihood Classifier"/>
+                <attr name="targetProductNameSuffix"  stringvalue="_MLClass"/>
+                <attr name="ShortDescription" stringvalue="Maximum Likelihood based classifier"/>
+                <attr name="helpId" stringvalue="MaximumlikelihoodClassifierOp"/>
+            </file>
+            <file name="org-esa-snap-classification-gpf-MinimumDistance-Classifier-Action.instance">
+                <attr name="instanceCreate" methodvalue="org.openide.awt.Actions.alwaysEnabled"/>
+                <attr name="delegate" methodvalue="org.esa.snap.graphbuilder.rcp.actions.GraphAction.create"/>
+                <attr name="displayName" stringvalue="Minimum Distance Classifier"/>
+                <attr name="graphFile" stringvalue="classification/MinimumDistanceClassifierGraph.xml"/>
+                <attr name="dialogTitle" stringvalue="Minimum Distance Classifier"/>
+                <attr name="targetProductNameSuffix"  stringvalue="_MDClass"/>
+                <attr name="ShortDescription" stringvalue="Minimum Distance based classifier"/>
+                <attr name="helpId" stringvalue="MinimumDistanceClassifierOp"/>
+            </file>
+        </folder>
+    </folder>
+
+    <folder name="Menu">
+        <folder name="Raster">
+            <folder name="Classification">
+                <attr name="position" intvalue="450"/>
+                <folder name="Supervised Classification">
+                    <attr name="position" intvalue="200"/>
+                    <file name="org-esa-snap-classification-gpf-Random-Forest-Classifier-Action.shadow">
+                        <attr name="originalFile" stringvalue="Actions/Operators/org-esa-snap-classification-gpf-Random-Forest-Classifier-Action.instance"/>
+                        <attr name="position" intvalue="300"/>
+                    </file>
+                    <file name="org-esa-snap-classification-gpf-KNN-Classifier-Action.shadow">
+                        <attr name="originalFile" stringvalue="Actions/Operators/org-esa-snap-classification-gpf-KNN-Classifier-Action.instance"/>
+                        <attr name="position" intvalue="400"/>
+                    </file>
+                    <file name="org-esa-snap-classification-gpf-KDTree-KNN-Classifier-Action.shadow">
+                        <attr name="originalFile" stringvalue="Actions/Operators/org-esa-snap-classification-gpf-KDTree-KNN-Classifier-Action.instance"/>
+                        <attr name="position" intvalue="500"/>
+                    </file>
+                    <file name="org-esa-snap-classification-gpf-Maximumlikelihood-Classifier-Action.shadow">
+                        <attr name="originalFile" stringvalue="Actions/Operators/org-esa-snap-classification-gpf-Maximumlikelihood-Classifier-Action.instance"/>
+                        <attr name="position" intvalue="600"/>
+                    </file>
+                    <file name="org-esa-snap-classification-gpf-MinimumDistance-Classifier-Action.shadow">
+                        <attr name="originalFile" stringvalue="Actions/Operators/org-esa-snap-classification-gpf-MinimumDistance-Classifier-Action.instance"/>
+                        <attr name="position" intvalue="700"/>
+                    </file>
+                </folder>
+            </folder>
+        </folder>
+    </folder>
+
+    <folder name="OperatorUIs">
+        <file name="org.esa.snap.classification.gpf.ui.RandomForestClassifierOpUI">
+            <attr name="operatorUIClass" stringvalue="org.esa.snap.classification.gpf.ui.RandomForestClassifierOpUI"/>
+            <attr name="operatorName" stringvalue="Random-Forest-Classifier"/>
+        </file>
+        <file name="org.esa.snap.classification.gpf.ui.KNNClassifierOpUI">
+            <attr name="operatorUIClass" stringvalue="org.esa.snap.classification.gpf.ui.KNNClassifierOpUI"/>
+            <attr name="operatorName" stringvalue="KNN-Classifier"/>
+        </file>
+        <file name="org.esa.snap.classification.gpf.ui.KDTreeKNNClassifierOpUI">
+            <attr name="operatorUIClass" stringvalue="org.esa.snap.classification.gpf.ui.KDTreeKNNClassifierOpUI"/>
+            <attr name="operatorName" stringvalue="KDTree-KNN-Classifier"/>
+        </file>
+        <file name="org.esa.snap.classification.gpf.ui.MaximumLikelihoodClassifierOpUI">
+            <attr name="operatorUIClass" stringvalue="org.esa.snap.classification.gpf.ui.MaximumLikelihoodClassifierOpUI"/>
+            <attr name="operatorName" stringvalue="Maximum-Likelihood-Classifier"/>
+        </file>
+        <file name="org.esa.snap.classification.gpf.ui.MinimumDistanceClassifierOpUI">
+            <attr name="operatorUIClass" stringvalue="org.esa.snap.classification.gpf.ui.MinimumDistanceClassifierOpUI"/>
+            <attr name="operatorName" stringvalue="Minimum-Distance-Classifier"/>
+        </file>
+    </folder>
+
+</filesystem>

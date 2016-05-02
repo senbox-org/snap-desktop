@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='ISO-8859-1' ?>
+<!DOCTYPE map
+        PUBLIC "-//Sun Microsystems Inc.//DTD JavaHelp Map Version 2.0//EN"
+        "http://java.sun.com/products/javahelp/map_2_0.dtd">
+
+<map version="2.0">
+    <mapID target="RandomForestClassifierOp" url="operators/RandomForestClassifierOp.html"/>
+	<mapID target="MaximumLikelihoodClassifierOp" url="operators/MaximumLikelihoodClassifierOp.html"/>
+	<mapID target="MinimumDistanceClassifierOp" url="operators/MinimumDistanceClassifierOp.html"/>
+	<mapID target="KNNClassifierOp" url="operators/KNNClassifierOp.html"/>
+	<mapID target="KDTreeKNNClassifierOp" url="operators/KDTreeKNNClassifierOp.html"/>
+	<mapID target="SupervisedClassifiers" url="operators/SupervisedClassification.html"/>
+</map>
