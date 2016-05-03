@@ -375,9 +375,11 @@ public abstract class BaseClassifierOpUI extends BaseOperatorUI {
 
         final Double minVal = (Double) paramMap.get("minClassValue");
         final Double stepSize = (Double) paramMap.get("classValStepSize");
-        final int levels = (int) paramMap.get("classLevels");
-        final double maxClassVal = BaseClassifier.getMaxValue(minVal, stepSize, levels);
-        maxClassValue.setText(String.valueOf(maxClassVal));
+        final Integer levels = (Integer) paramMap.get("classLevels");
+        if(minVal != null && stepSize != null && levels != null) {
+            final double maxClassVal = BaseClassifier.getMaxValue(minVal, stepSize, levels);
+            maxClassValue.setText(String.valueOf(maxClassVal));
+        }
 
         Boolean trainOnRastersVal = (Boolean) paramMap.get("trainOnRaster");
         boolean trainOnRasters = trainOnRastersVal != null && trainOnRastersVal;
