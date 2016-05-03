@@ -16,9 +16,8 @@
 package org.esa.snap.classification.gpf.ui;
 
 import org.esa.snap.classification.gpf.BaseClassifier;
+import org.esa.snap.classification.gpf.VectorUtils;
 import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.datamodel.ProductNodeGroup;
-import org.esa.snap.core.datamodel.VectorDataNode;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.graphbuilder.gpf.ui.BaseOperatorUI;
@@ -27,10 +26,6 @@ import org.esa.snap.graphbuilder.gpf.ui.UIValidation;
 import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.AppContext;
-import org.geotools.feature.FeatureCollection;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.AttributeDescriptor;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -143,7 +138,8 @@ public abstract class BaseClassifierOpUI extends BaseOperatorUI {
             @Override
             public void itemStateChanged(ItemEvent e) {
                 if (e.getStateChange() == ItemEvent.SELECTED) {
-                    final AttributeDialog dlg = new AttributeDialog("Labels from Attribute", getAttributesList(), null);
+                    final AttributeDialog dlg = new AttributeDialog("Labels from Attribute",
+                                                                    VectorUtils.getAttributesList(sourceProducts), null);
                     dlg.show();
                     if (dlg.IsOK()) {
                         labelSourceAttribute.setText(dlg.getValue());
@@ -180,37 +176,6 @@ public abstract class BaseClassifierOpUI extends BaseOperatorUI {
     private Path getClassifierFolder() {
         return SystemUtils.getAuxDataPath().
                 resolve(BaseClassifier.CLASSIFIER_ROOT_FOLDER).resolve(classifierType);
-    }
-
-    public static boolean hasFeatures(final VectorDataNode node) {
-
-        final FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection = node.getFeatureCollection();
-        return featureCollection != null && !featureCollection.isEmpty();
-    }
-
-    private String[] getAttributesList() {
-
-        final ArrayList<String> attributeNames = new ArrayList<>();
-
-        if (sourceProducts != null && sourceProducts.length > 0) {
-
-            final ProductNodeGroup<VectorDataNode> vectorGroup = sourceProducts[0].getVectorDataGroup();
-            final int numNodes = vectorGroup.getNodeCount();
-            for (int i = 0; i < numNodes; i++) {
-                final VectorDataNode vectorDataNode = vectorGroup.get(i);
-                if (hasFeatures(vectorDataNode)) {
-                    final FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection = vectorDataNode.getFeatureCollection();
-                    final SimpleFeature simpleFeature = featureCollection.features().next();
-                    final java.util.List<AttributeDescriptor> attributeDescriptors = simpleFeature.getFeatureType().getAttributeDescriptors();
-                    for (AttributeDescriptor ad : attributeDescriptors) {
-                        if (!attributeNames.contains(ad.getLocalName())) {
-                            attributeNames.add(ad.getLocalName());
-                        }
-                    }
-                }
-            }
-        }
-        return attributeNames.toArray(new String[attributeNames.size()]);
     }
 
     private void populateClassifierNames() {
