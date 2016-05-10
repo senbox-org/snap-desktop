@@ -3,6 +3,7 @@ package org.esa.snap.pixex.visat;
 import org.esa.snap.core.datamodel.GenericPlacemarkDescriptor;
 import org.esa.snap.core.datamodel.GeoPos;
 import org.esa.snap.core.datamodel.Placemark;
+import org.esa.snap.core.datamodel.ProductData;
 import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
@@ -17,11 +18,16 @@ import javax.swing.JPanel;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.util.Date;
 import java.util.List;
 
 class AddCsvFileAction extends AbstractAction {
 
     private static final String LAST_OPEN_CSV_DIR = "beam.pixex.lastOpenCsvDir";
+    private static final String ISO8601_PATTERN = "yyyy-MM-dd'T'HH:mm:ss";
+    private static final DateFormat dateFormat = ProductData.UTC.createDateFormat(ISO8601_PATTERN);
 
     private final AppContext appContext;
     private final JPanel parent;
@@ -49,9 +55,8 @@ class AddCsvFileAction extends AbstractAction {
                     final GenericPlacemarkDescriptor placemarkDescriptor = new GenericPlacemarkDescriptor(
                             extendedFeature.getFeatureType());
                     final Placemark placemark = placemarkDescriptor.createPlacemark(extendedFeature);
-                    if (extendedFeature.getAttribute("Name") != null) {
-                        placemark.setName(extendedFeature.getAttribute("Name").toString());
-                    }
+                    setName(extendedFeature, placemark);
+                    setDateTime(extendedFeature, placemark);
                     setPlacemarkGeoPos(extendedFeature, placemark);
                     tableModel.addPlacemark(placemark);
                 }
@@ -60,6 +65,23 @@ class AddCsvFileAction extends AbstractAction {
                                                              exception.getLocalizedMessage() +
                                                              "\nPossible reason: Other char separator than tabulator used",
                                                      selectedFile), exception);
+            }
+        }
+    }
+
+    private void setName(SimpleFeature extendedFeature, Placemark placemark) {
+        if (extendedFeature.getAttribute("Name") != null) {
+            placemark.setName(extendedFeature.getAttribute("Name").toString());
+        }
+    }
+
+    private void setDateTime(SimpleFeature extendedFeature, Placemark placemark) {
+        Object dateTime = extendedFeature.getAttribute("DateTime");
+        if (dateTime != null && dateTime instanceof String) {
+            try {
+                final Date date = dateFormat.parse((String) dateTime);
+                placemark.getFeature().setAttribute(Placemark.PROPERTY_NAME_DATETIME, date);
+            } catch (ParseException ignored) {
             }
         }
     }
