@@ -317,16 +317,18 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
      * @return  <code>true</code> if the input is valid, <code>false</code> otherwise
      */
     private boolean validateUserInput() {
-        boolean isValid;
-        File productDir = null;//targetProductSelector.getModel().getProductDir();
-        Object value = form.getPropertyValue(ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE);
-        if(value != null && value instanceof File){
-            productDir = ((File) value).getParentFile();
-            appContext.getPreferences().setPropertyString(SaveProductAsAction.PREFERENCES_KEY_LAST_PRODUCT_DIR, ((File) value).getAbsolutePath());
-        }
-        isValid = (productDir != null) && productDir.exists();
-        if (!isValid) {
-            warnings.add("Target product folder is not accessible or does not exist");
+        boolean isValid = true;
+        if(!operatorDescriptor.isHandlingOutputName()) {
+            File productDir = null;//targetProductSelector.getModel().getProductDir();
+            Object value = form.getPropertyValue(ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE);
+            if (value != null && value instanceof File) {
+                productDir = ((File) value).getParentFile();
+                appContext.getPreferences().setPropertyString(SaveProductAsAction.PREFERENCES_KEY_LAST_PRODUCT_DIR, ((File) value).getAbsolutePath());
+            }
+            isValid = (productDir != null) && productDir.exists();
+            if (!isValid) {
+                warnings.add("Target product folder is not accessible or does not exist");
+            }
         }
         if (operatorDescriptor.getSourceProductCount() > 0) {
             Product[] sourceProducts = form.getSourceProducts();

@@ -27,7 +27,6 @@ import com.bc.ceres.binding.dom.DomConverter;
 import com.bc.ceres.binding.dom.DomElement;
 import com.bc.ceres.binding.dom.XppDomElement;
 import com.thoughtworks.xstream.io.xml.xppdom.XppDom;
-import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.OperatorSpi;
@@ -181,18 +180,6 @@ public abstract class BaseOperatorUI implements OperatorUI {
             }
         }
         return bandNames.toArray(new String[bandNames.size()]);
-    }
-
-    protected boolean isComplexSrcProduct() {
-        if (sourceProducts != null && sourceProducts.length > 0) {
-            for (Band band : sourceProducts[0].getBands()) {
-                final String unit = band.getUnit();
-                if (unit != null && (unit.contains("real") || unit.contains("imaginary"))) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     protected String[] getGeometries() {
