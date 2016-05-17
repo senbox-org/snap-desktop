@@ -73,17 +73,6 @@ public class ToolAdapterActionRegistrar {
         }
     };
 
-    static {
-        try {
-            FileObject defaultMenu = FileUtil.getConfigFile(DEFAULT_MENU_PATH);
-            if (defaultMenu == null) {
-                defaultMenu = FileUtil.getConfigFile("Menu").createFolder(DEFAULT_MENU_PATH.replace("Menu/", ""));
-            }
-            defaultMenu.setAttribute("position", 9999);
-        } catch (IOException ignored) {
-        }
-    }
-
     /**
      * Returns the map of menu items (actions) and operator descriptors.
      *
@@ -118,6 +107,11 @@ public class ToolAdapterActionRegistrar {
      */
     public static void registerOperatorMenu(ToolAdapterOperatorDescriptor operator, boolean hasChanged) {
         String menuLocation = operator.getMenuLocation();
+        try {
+            getDefaultLocation();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         if (menuLocation == null) {
             menuLocation = getDefaultMenuLocation();
             operator.setMenuLocation(menuLocation);
@@ -168,10 +162,30 @@ public class ToolAdapterActionRegistrar {
                     actionMap.remove(operatorAlias);
                 }
             }
+            FileObject defaultLocation = getDefaultLocation();
+            FileObject[] children = defaultLocation.getChildren();
+            if (children == null || children.length == 0) {
+                defaultLocation.delete();
+            }
         } catch (IOException e) {
             Dialogs.showError("Error:" + e.getMessage());
         }
         //}
+    }
+
+    private static FileObject getDefaultLocation() throws IOException {
+        FileObject defaultMenu = FileUtil.getConfigFile(DEFAULT_MENU_PATH);
+        if (defaultMenu == null) {
+            defaultMenu = FileUtil.getConfigFile("Menu").createFolder(DEFAULT_MENU_PATH.replace("Menu/", ""));
+            FileObject[] objects = defaultMenu.getParent().getChildren();
+            int position = 9999;
+            Object value = objects[objects.length - 1].getAttribute("position");
+            if (value != null) {
+                position = ((Integer) value) + 1;
+            }
+            defaultMenu.setAttribute("position", position);
+        }
+        return defaultMenu;
     }
 
     /**

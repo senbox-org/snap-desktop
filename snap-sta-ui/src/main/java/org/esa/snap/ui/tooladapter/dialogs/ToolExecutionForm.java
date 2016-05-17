@@ -60,6 +60,7 @@ class ToolExecutionForm extends JTabbedPane {
     private DefaultIOParametersPanel ioParamPanel;
     private String fileExtension;
     private JCheckBox checkDisplayOutput;
+    ConsolePane console;
     private final String TIF_EXTENSION = ".tif";
 
     public ToolExecutionForm(AppContext appContext, ToolAdapterOperatorDescriptor descriptor, PropertySet propertySet,
@@ -97,7 +98,24 @@ class ToolExecutionForm extends JTabbedPane {
         checkDisplayOutput = new JCheckBox("Display execution output");
         checkDisplayOutput.setSelected(Boolean.parseBoolean(NbPreferences.forModule(Dialogs.class).get(ToolAdapterOptionsController.PREFERENCE_KEY_SHOW_EXECUTION_OUTPUT, "false")));
         processingParamPanel.add(checkDisplayOutput);
-        processingParamPanel.add(createProcessingParamTab());
+        JSplitPane bottomPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+        bottomPane.setTopComponent(createProcessingParamTab());
+        console = new ConsolePane();
+        if (checkDisplayOutput.isSelected()) {
+            bottomPane.setBottomComponent(console);
+            bottomPane.setDividerLocation(0.6);
+        }
+        processingParamPanel.add(bottomPane);
+        checkDisplayOutput.addActionListener(e -> {
+            if (!checkDisplayOutput.isSelected()) {
+                bottomPane.remove(console);
+            } else {
+                bottomPane.setBottomComponent(console);
+                bottomPane.setDividerLocation(0.6);
+            }
+            bottomPane.revalidate();
+            bottomPane.repaint();
+        });
         SpringUtilities.makeCompactGrid(processingParamPanel, 2, 1, 2, 2, 2, 2);
         addTab("Processing Parameters", processingParamPanel);
         updateTargetProductFields();
@@ -154,7 +172,7 @@ class ToolExecutionForm extends JTabbedPane {
 
     private DefaultIOParametersPanel createIOParamTab() {
         final DefaultIOParametersPanel ioPanel = new DefaultIOParametersPanel(appContext, operatorDescriptor,
-                targetProductSelector);
+                targetProductSelector, !operatorDescriptor.isHandlingOutputName());
         final ArrayList<SourceProductSelector> sourceProductSelectorList = ioPanel.getSourceProductSelectorList();
         if (!sourceProductSelectorList.isEmpty()) {
             final SourceProductSelector sourceProductSelector = sourceProductSelectorList.get(0);

@@ -34,6 +34,7 @@ import org.esa.snap.core.gpf.ui.OperatorParameterSupport;
 import org.esa.snap.core.gpf.ui.SingleTargetProductDialog;
 import org.esa.snap.rcp.actions.file.SaveProductAsAction;
 import org.esa.snap.rcp.util.Dialogs;
+import org.esa.snap.ui.AbstractDialog;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.tooladapter.actions.EscapeAction;
 import org.esa.snap.ui.tooladapter.model.OperationType;
@@ -46,8 +47,6 @@ import org.openide.util.Cancellable;
 import org.openide.util.NbBundle;
 
 import javax.swing.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -182,14 +181,11 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
             if (!canApply()) {
                 displayWarnings();
                 AbstractAdapterEditor dialog = AbstractAdapterEditor.createEditorDialog(appContext, getJDialog(), operatorDescriptor, OperationType.EDIT);
-                dialog.getJDialog().addWindowListener(new WindowAdapter() {
-                    @Override
-                    public void windowClosed(WindowEvent e) {
-                        super.windowClosed(e);
-                        onOperatorDescriptorChanged(dialog.getUpdatedOperatorDescriptor());
-                    }
-                });
-                dialog.show();
+                final int code = dialog.show();
+                if (code == AbstractDialog.ID_OK) {
+                    onOperatorDescriptorChanged(dialog.getUpdatedOperatorDescriptor());
+                }
+                dialog.close();
             } else {
                 if (validateUserInput()) {
                     Map<String, Product> sourceProductMap = new HashMap<>();
@@ -203,13 +199,13 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
                     String progressPattern = operatorDescriptor.getProgressPattern();
                     ConsoleConsumer consumer = null;
                     ProgressWrapper progressWrapper = new ProgressWrapper(progressHandle, progressPattern == null || progressPattern.isEmpty());
-                    if (form.shouldDisplayOutput()) {
+                    //if (form.shouldDisplayOutput()) {
                         consumer = new ConsoleConsumer(operatorDescriptor.getProgressPattern(),
                                                     operatorDescriptor.getErrorPattern(),
                                                     operatorDescriptor.getStepPattern(),
                                                     progressWrapper,
-                                                    new ConsoleDialog(this));
-                    }
+                                                    form.console);
+                    //}
                     progressWrapper.setConsumer(consumer);
                     ((ToolAdapterOp) op).setProgressMonitor(progressWrapper);
                     ((ToolAdapterOp) op).setConsumer(consumer);
@@ -516,28 +512,28 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
     }
 
     class ConsoleConsumer extends DefaultOutputConsumer {
-        private ConsoleDialog consoleDialog;
+        private ConsolePane consolePane;
 
-        public ConsoleConsumer(String progressPattern, String errorPattern, String stepPattern, ProgressMonitor pm, ConsoleDialog consoleDialog) {
+        public ConsoleConsumer(String progressPattern, String errorPattern, String stepPattern, ProgressMonitor pm, ConsolePane consolePane) {
             super(progressPattern, errorPattern, stepPattern, pm);
-            this.consoleDialog = consoleDialog;
+            this.consolePane = consolePane;
         }
 
         @Override
         public void consumeOutput(String line) {
             super.consumeOutput(line);
-            if (consoleDialog != null) {
+            if (consolePane != null) {
                 if (SwingUtilities.isEventDispatchThread()) {
-                    consoleDialog.append(line);
+                    consolePane.append(line);
                 } else {
-                    SwingUtilities.invokeLater(() -> consoleDialog.append(line));
+                    SwingUtilities.invokeLater(() -> consolePane.append(line));
                 }
             }
         }
 
         public void setVisible(boolean value) {
-            if (this.consoleDialog != null) {
-                this.consoleDialog.setVisible(value);
+            if (this.consolePane != null) {
+                this.consolePane.setVisible(value);
             }
         }
     }

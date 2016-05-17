@@ -455,7 +455,9 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
                     });
                     //ToolAdapterActionRegistrar.registerOperatorMenu(newOperatorDescriptor);
                     //the editing window is closed only if no error occur
-                    super.onOK();
+                    //super.onOK();
+                    super.setButtonID(ID_OK);
+                    super.hide();
                 } catch (Exception e) {
                     logger.warning(e.getMessage());
                     Dialogs.showError("There was an error on saving the operator; check the disk space and permissions and try again! " + e.toString());
