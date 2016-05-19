@@ -24,6 +24,7 @@ import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.Operator;
 import org.esa.snap.core.gpf.descriptor.ParameterDescriptor;
 import org.esa.snap.core.gpf.descriptor.SystemVariable;
+import org.esa.snap.core.gpf.descriptor.TemplateParameterDescriptor;
 import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
 import org.esa.snap.core.gpf.operators.tooladapter.DefaultOutputConsumer;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterConstants;
@@ -327,6 +328,21 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
                 warnings.add("Target product folder is not accessible or does not exist");
             }
         }
+        List<TemplateParameterDescriptor> mandatoryParams = operatorDescriptor.getToolParameterDescriptors()
+                                                                .stream()
+                                                                .filter(d -> d.isNotEmpty() || d.isNotNull())
+                                                                .collect(Collectors.toList());
+        Map<String, Object> parameterMap = parameterSupport.getParameterMap();
+        for (TemplateParameterDescriptor mandatoryParam : mandatoryParams) {
+            String name = mandatoryParam.getName();
+            if (!parameterMap.containsKey(name) ||
+                    parameterMap.get(name) == null ||
+                    parameterMap.get(name).toString().isEmpty()) {
+                isValid = false;
+                warnings.add(String.format("No value was assigned for the mandatory parameter [%s]", name));
+            }
+        }
+
         if (operatorDescriptor.getSourceProductCount() > 0) {
             Product[] sourceProducts = form.getSourceProducts();
             isValid &= (sourceProducts != null) && sourceProducts.length > 0 && Arrays.stream(sourceProducts).filter(sp -> sp == null).count() == 0;
