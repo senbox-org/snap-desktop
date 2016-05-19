@@ -193,19 +193,20 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
                         sourceProductMap.put(SOURCE_PRODUCT_FIELD, sourceProducts[0]);
                     }
                     Operator op = GPF.getDefaultInstance().createOperator(operatorDescriptor.getName(), parameterSupport.getParameterMap(), sourceProductMap, null);
+                    for (Property property : parameterSupport.getPropertySet().getProperties()) {
+                        op.setParameter(property.getName(), property.getValue());
+                    }
                     op.setSourceProducts(sourceProducts);
                     operatorTask = new OperatorTask(op, ToolAdapterExecutionDialog.this::operatorCompleted);
                     ProgressHandle progressHandle = ProgressHandleFactory.createHandle(this.getTitle());
                     String progressPattern = operatorDescriptor.getProgressPattern();
                     ConsoleConsumer consumer = null;
                     ProgressWrapper progressWrapper = new ProgressWrapper(progressHandle, progressPattern == null || progressPattern.isEmpty());
-                    //if (form.shouldDisplayOutput()) {
-                        consumer = new ConsoleConsumer(operatorDescriptor.getProgressPattern(),
-                                                    operatorDescriptor.getErrorPattern(),
-                                                    operatorDescriptor.getStepPattern(),
-                                                    progressWrapper,
-                                                    form.console);
-                    //}
+                    consumer = new ConsoleConsumer(operatorDescriptor.getProgressPattern(),
+                                                operatorDescriptor.getErrorPattern(),
+                                                operatorDescriptor.getStepPattern(),
+                                                progressWrapper,
+                                                form.console);
                     progressWrapper.setConsumer(consumer);
                     ((ToolAdapterOp) op).setProgressMonitor(progressWrapper);
                     ((ToolAdapterOp) op).setConsumer(consumer);
@@ -384,65 +385,6 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
             }
         }
     }
-
-    /*private void displayErrors() {
-        if (form.shouldDisplayOutput()) {
-            List<String> output = operatorTask.getOutput();
-            StringBuilder builder = new StringBuilder();
-            int size = output.size();
-            if (size > 0) {
-                int messageCount = Math.max(size - 10, 0);
-                if (size > 10) {
-                    builder.append("\n(for the rest of the output please see the log file)");
-                }
-                for (int i = messageCount; i < size; i++) {
-                    builder.append(String.format("%s%n", shrinkText(output.get(i))));
-                }
-                Dialogs.showInformation(Bundle.OutputTitle_Text(), builder.toString(), null);
-            } else {
-                builder.append(Bundle.NoOutput_Text());
-            }
-        } else if (operatorTask != null) {
-            List<String> errors = operatorTask.getErrors();
-            if (errors != null && errors.size() > 0) {
-                StringBuilder builder = new StringBuilder();
-                builder.append(Bundle.BeginOfErrorMessages_Text());
-                int messageCount = Math.min(errors.size(), 10);
-                for (int i = 0; i < messageCount; i++) {
-                    builder.append(String.format("[%s] %s%n", i + 1, shrinkText(errors.get(i))));
-                }
-                Dialogs.showWarning(builder.toString());
-            }
-        }
-    }*/
-
-    /*private String shrinkText(String input) {
-        int charLimit = 80;
-        if (input.length() <= charLimit) {
-            return input;
-        } else {
-            StringBuilder builder= new StringBuilder();
-            boolean endOfString = false;
-            int start = 0, end;
-            while (start < input.length() - 1) {
-                int charCount = 0, lastSpace = 0;
-                while (charCount < charLimit) {
-                    if (input.charAt(charCount + start) == ' ') {
-                        lastSpace = charCount;
-                    }
-                    charCount++;
-                    if (charCount + start == input.length()) {
-                        endOfString = true;
-                        break;
-                    }
-                }
-                end = endOfString ? input.length() : (lastSpace > 0) ? lastSpace + start : charCount + start;
-                builder.append(input.substring(start, end)).append(String.format("%n\t"));
-                start = end + 1;
-            }
-            return builder.toString();
-        }
-    }*/
 
     /**
      * Runnable for executing the operator. It requires a callback
