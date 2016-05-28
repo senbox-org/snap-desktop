@@ -227,6 +227,7 @@ public class ToolAdaptersManagementDialog extends ModelessDialog {
                                 operatorDesc,
                                 appContext,
                                 operatorDesc.getLabel());
+                        operatorDialog.getJDialog().setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
                         operatorDialog.show();
                     }
                 }));

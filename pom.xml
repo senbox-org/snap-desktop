@@ -45,6 +45,7 @@
         <!--<module>snap-scripting</module>-->
         <module>snap-ui</module>
         <module>snap-unmix-ui</module>
+        <module>snap-watermask-ui</module>
         <module>snap-worldwind</module>
         <module>snap-sta-ui</module>
         <module>snap-smart-configurator-ui</module>
