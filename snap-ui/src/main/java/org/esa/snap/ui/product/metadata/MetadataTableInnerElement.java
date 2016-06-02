@@ -57,12 +57,16 @@ public class MetadataTableInnerElement implements MetadataTableElement {
                         addDoubleMetadataAttributes(attribute, (double[]) dataElems, metadataTableElementList);
                     }
                 } else if (ProductData.isIntType(dataType)) {
-                    if(dataElems instanceof byte[]) {
-                        addByteMetadataAttributes(attribute, (byte[]) dataElems, metadataTableElementList);
-                    } else if(dataElems instanceof short[]) {
-                        addShortMetadataAttributes(attribute, (short[]) dataElems, metadataTableElementList);
+                    if(attribute.getData() instanceof ProductData.UTC) {
+                        metadataTableElementList.add(new MetadataTableLeaf(attribute));
                     } else {
-                        addIntMetadataAttributes(attribute, (int[]) dataElems, metadataTableElementList);
+                        if (dataElems instanceof byte[]) {
+                            addByteMetadataAttributes(attribute, (byte[]) dataElems, metadataTableElementList);
+                        } else if (dataElems instanceof short[]) {
+                            addShortMetadataAttributes(attribute, (short[]) dataElems, metadataTableElementList);
+                        } else {
+                            addIntMetadataAttributes(attribute, (int[]) dataElems, metadataTableElementList);
+                        }
                     }
                 } else {
                     metadataTableElementList.add(new MetadataTableLeaf(attribute));

@@ -63,6 +63,10 @@ class MetadataElementLeafNode extends AbstractNode {
                 attributePropertyList.add(new IntegerProperty("Value"));
                 break;
             case ProductData.TYPE_UINT32:
+                if(leaf.getData() instanceof ProductData.UTC) {
+                    attributePropertyList.add(new StringProperty("Value"));
+                    break;
+                }
                 attributePropertyList.add(new IntegerProperty("Value"));
                 break;
             case ProductData.TYPE_FLOAT64:
