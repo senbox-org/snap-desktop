@@ -17,7 +17,6 @@ package org.esa.snap.graphbuilder.rcp.wizards;
 
 import org.esa.snap.graphbuilder.rcp.actions.OperatorAction;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.ui.ModelessDialog;
 import org.openide.modules.ModuleInfo;
 import org.openide.util.Lookup;
 
@@ -58,12 +57,6 @@ public class WizardAction extends OperatorAction {
 
     @Override
     public void actionPerformed(ActionEvent event) {
-        ModelessDialog dialog = createOperatorDialog();
-        dialog.show();
-    }
-
-    @Override
-    protected ModelessDialog createOperatorDialog() {
         try {
             Class<?> wizardClass = getClass(getWizardPanelClass());
             final WizardPanel wizardPanel = (WizardPanel) wizardClass.newInstance();
@@ -72,12 +65,11 @@ public class WizardAction extends OperatorAction {
                                                          getDialogTitle(), getHelpId(), wizardPanel);
             dialog.setVisible(true);
         } catch (Exception e) {
-            e.printStackTrace();
+            SnapApp.getDefault().handleError("Unable to create wizard", e);
         }
-        return null;
     }
 
-    private Class<?> getClass(String className) {
+    private static Class<?> getClass(String className) {
         Collection<? extends ModuleInfo> modules = Lookup.getDefault().lookupAll(ModuleInfo.class);
         for (ModuleInfo module : modules) {
             if (module.isEnabled()) {
