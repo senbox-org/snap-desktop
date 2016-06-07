@@ -62,6 +62,7 @@ import java.util.logging.Logger;
         "Type_BeforeTemplateFileClass_Text=Template Before",
         "Type_AfterTemplateFileClass_Text=Template After",
         "Type_RegularFileClass_Text=File",
+        "Type_FolderClass_Text=Folder",
         "Type_FileListClass_Text=File List",
         "Type_StringClass_Text=String",
         "Type_IntegerClass_Text=Integer",
@@ -92,6 +93,7 @@ public class OperatorParametersTable extends JTable {
         typesMap.put(Bundle.Type_BeforeTemplateFileClass_Text(), CustomParameterClass.BeforeTemplateFileClass);
         typesMap.put(Bundle.Type_AfterTemplateFileClass_Text(), CustomParameterClass.AfterTemplateFileClass);
         typesMap.put(Bundle.Type_RegularFileClass_Text(), CustomParameterClass.RegularFileClass);
+        typesMap.put(Bundle.Type_FolderClass_Text(), CustomParameterClass.FolderClass);
         typesMap.put(Bundle.Type_FileListClass_Text(), CustomParameterClass.FileListClass);
         typesMap.put(Bundle.Type_StringClass_Text(), CustomParameterClass.StringClass);
         typesMap.put(Bundle.Type_IntegerClass_Text(), CustomParameterClass.IntegerClass);
@@ -173,6 +175,7 @@ public class OperatorParametersTable extends JTable {
                 break;
             default:
                 component.setBackground(SystemColor.text);
+                component.setForeground(SystemColor.textText);
                 break;
         }
         return component;
@@ -247,6 +250,8 @@ public class OperatorParametersTable extends JTable {
                         return Bundle.Type_ProductList_Text();
                     } else if (descriptor.getName().equals(ToolAdapterConstants.TOOL_SOURCE_PRODUCT_FILE)) {
                         return Bundle.Type_FileListClass_Text();
+                    } else if (CustomParameterClass.getObject(descriptor.getDataType(), descriptor.getParameterType()).equals(CustomParameterClass.FolderClass)) {
+                        return Bundle.Type_FolderClass_Text();
                     } else {
                         return typesMap.getKey(CustomParameterClass.getObject(descriptor.getDataType(), descriptor.getParameterType()));
                     }
@@ -308,15 +313,20 @@ public class OperatorParametersTable extends JTable {
                     break;
                 case 4:
                     //type editing
+                    Map<String, Object> extra = null;
                     CustomParameterClass customClass = (CustomParameterClass)typesMap.get(aValue);
                     if (customClass == null) {
                         customClass = CustomParameterClass.StringClass;
+                    }
+                    if (customClass.equals(CustomParameterClass.FolderClass)) {
+                        extra = new HashMap<>();
+                        extra.put("directory", Boolean.TRUE);
                     }
                     descriptor.setParameterType(customClass.getTypeMask());
                     if(descriptor.getDataType() != customClass.getParameterClass()) {
                         descriptor.setDataType(customClass.getParameterClass());
                         descriptor.setDefaultValue(defaultValue);
-                        rebuildEditorCell(descriptor);
+                        rebuildEditorCell(descriptor, extra);
                     }
                     break;
                 case 5:
@@ -343,7 +353,7 @@ public class OperatorParametersTable extends JTable {
                         }
                     }
                     if(returnCode == AbstractDialog.ID_OK){
-                        rebuildEditorCell(descriptor);
+                        rebuildEditorCell(descriptor, null);
                     }
                     break;
                 default:
@@ -356,8 +366,10 @@ public class OperatorParametersTable extends JTable {
         }
     }
 
-    private void rebuildEditorCell(TemplateParameterDescriptor descriptor){
+    private void rebuildEditorCell(TemplateParameterDescriptor descriptor, Map<String, Object> attributes){
 
+        Object attribute = context.getPropertySet().getProperty(descriptor.getName()).getDescriptor().getAttribute("directory");
+        boolean flag = attribute != null && (boolean) attribute;
         context.getPropertySet().removeProperty(context.getPropertySet().getProperty(descriptor.getName()));
         PropertyDescriptor property;
         try {
@@ -374,6 +386,11 @@ public class OperatorParametersTable extends JTable {
                 logger.warning(ex.getMessage());
                 property.setDefaultValue("");
             }
+            if (attributes != null) {
+                for (Map.Entry<String, Object> entry : attributes.entrySet()) {
+                    property.setAttribute(entry.getKey(), entry.getValue());
+                }
+            }
             DefaultPropertySetDescriptor propertySetDescriptor = new DefaultPropertySetDescriptor();
             propertySetDescriptor.addPropertyDescriptor(property);
             PropertyContainer container = PropertyContainer.createMapBacked(new HashMap<>(), propertySetDescriptor);
@@ -383,7 +400,7 @@ public class OperatorParametersTable extends JTable {
                 logger.warning(ex.getMessage());
                 try {
                     container.getProperty(property.getName()).setValue("");
-                } catch (Exception exx){}
+                } catch (Exception ignored){}
             }
             context.getPropertySet().addProperties(container.getProperties());
             propertiesValueUIDescriptorMap.put(descriptor, PropertyMemberUIWrapperFactory.buildPropertyWrapper("defaultValue", descriptor, operator, context, null));

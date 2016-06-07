@@ -57,10 +57,10 @@ public class ToolAdapterOptionsController extends DefaultConfigController {
     public static final String PREFERENCE_KEY_SHOW_EMPTY_PRODUCT_WARNING = "sta.warn.no.product";
     public static final String PREFERENCE_KEY_AUTOCOMPLETE = "sta.autocomplete";
     public static final String PREFERENCE_KEY_SHOW_EXECUTION_OUTPUT = "sta.display.output";
-    public static final boolean DEFAULT_VALUE_TABBED_WINDOW = false;
+    public static final boolean DEFAULT_VALUE_TABBED_WINDOW = true;
     public static final boolean DEFAULT_VALUE_VALIDATE_PATHS = true;
     public static final boolean DEFAULT_VALUE_SHOW_EMPTY_PRODUCT_WARINING = true;
-    public static final boolean DEFAULT_VALUE_SHOW_EXECUTION_OUTPUT = false;
+    public static final boolean DEFAULT_VALUE_SHOW_EXECUTION_OUTPUT = true;
     public static final boolean DEFAULT_VALUE_AUTOCOMPLETE = false;
     private static final String DECISION_SUFFIX = ".decision";
     private BindingContext context;
