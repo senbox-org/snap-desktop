@@ -49,6 +49,10 @@ public class CustomParameterClass {
      */
     public static final CustomParameterClass RegularFileClass = new CustomParameterClass(File.class, ToolAdapterConstants.REGULAR_PARAM_MASK);
     /**
+     * Represents a folder parameter
+     */
+    public static final CustomParameterClass FolderClass = new CustomParameterClass(File.class, ToolAdapterConstants.FOLDER_PARAM_MASK);
+    /**
      * Represents a file list parameter
      */
     public static final CustomParameterClass FileListClass = new CustomParameterClass(File[].class, ToolAdapterConstants.REGULAR_PARAM_MASK);
@@ -107,7 +111,7 @@ public class CustomParameterClass {
      * Checks if the parameter is a regular parameter
      */
     public boolean isParameter() {
-        return typeMask.equals(ToolAdapterConstants.REGULAR_PARAM_MASK);
+        return typeMask.equals(ToolAdapterConstants.REGULAR_PARAM_MASK) || typeMask.equals(ToolAdapterConstants.FOLDER_PARAM_MASK);
     }
 
     /**
@@ -128,6 +132,9 @@ public class CustomParameterClass {
         }
         if (result == null) {
             result = matchClass(RegularFileClass, aClass, typeMask);
+        }
+        if (result == null) {
+            result = matchClass(FolderClass, aClass, typeMask);
         }
         if (result == null) {
             result = matchClass(StringClass, aClass, typeMask);
@@ -152,7 +159,6 @@ public class CustomParameterClass {
 
     private static CustomParameterClass matchClass(CustomParameterClass paramClass, Class<?> aClass, String typeMask){
         return (paramClass.getParameterClass().equals(aClass) && paramClass.typeMask.equals(typeMask)) ?
-            paramClass : null;
+                paramClass : null;
     }
-
 }

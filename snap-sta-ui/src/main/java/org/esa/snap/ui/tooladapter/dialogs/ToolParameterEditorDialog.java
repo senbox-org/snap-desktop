@@ -39,16 +39,8 @@ import org.esa.snap.ui.tooladapter.model.PropertyMemberUIWrapperFactory;
 import org.esa.snap.ui.tooladapter.validators.RequiredFieldValidator;
 import org.esa.snap.ui.tooladapter.validators.TypedValueValidator;
 
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.io.File;
@@ -89,9 +81,8 @@ public class ToolParameterEditorDialog extends ModalDialog {
         super(appContext.getApplicationWindow(), parameter.getName(), ID_OK_CANCEL, helpID);
         this.oldParameter = parameter;
         this.parameter = new ToolParameterDescriptor(parameter);
-        if(value != null) {
-            this.parameter.setDefaultValue(value.toString());
-        }
+        this.parameter.setDefaultValue(value != null ? value.toString() : parameter.getDataType().newInstance().toString());
+
         container = PropertyContainer.createObjectBacked(parameter);
         valuesContext = new BindingContext(container);
         createContextForValueEditor();
