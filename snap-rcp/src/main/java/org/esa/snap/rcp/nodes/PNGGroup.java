@@ -33,7 +33,6 @@ import java.util.List;
         "LBL_FlagCodingGroupName=Flag Codings",
         "LBL_IndexCodingGroupName=Index Codings",
         "LBL_VectorDataGroupName=Vector Data",
-        "LBL_MaskGroupName=Masks",
         "LBL_QuicklookGroupName=Quicklooks",
 })
 abstract class PNGGroup<T extends ProductNode> extends PNGroup<T> {
@@ -185,13 +184,46 @@ abstract class PNGGroup<T extends ProductNode> extends PNGroup<T> {
 
     public static class M extends PNGGroup<Mask> {
 
-        public M(ProductNodeGroup<Mask> group) {
-            super(Bundle.LBL_MaskGroupName(), group);
+        private final Product product;
+        private final ProductNodeGroup<Mask> group;
+
+        public M(String displayName, ProductNodeGroup<Mask> group, Product product) {
+            super(displayName, group);
+            this.product = product;
+            this.group = group;
         }
 
         @Override
         protected PNNode createNodeForKey(Mask key) {
             return new PNNode.M(key);
+        }
+
+        @Override
+        void refresh() {
+            refreshGroup();
+            super.refresh();
+        }
+
+        private void refreshGroup() {
+            final ProductNodeGroup<Mask> productMaskGroup = product.getMaskGroup();
+            if (group != productMaskGroup) {
+                final Product.AutoGrouping autoGrouping = product.getAutoGrouping();
+                if (autoGrouping != null) {
+                    final int groupIndex = autoGrouping.indexOf(group.getDisplayName());
+                    group.removeAll();
+                    for (int i = 0; i < productMaskGroup.getNodeCount(); i++) {
+                        final Mask mask = productMaskGroup.get(i);
+                        if (autoGrouping.indexOf(mask.getName()) == groupIndex) {
+                            group.add(mask);
+                        }
+                    }
+                }
+            }
+        }
+
+        @Override
+        public Product getProduct() {
+            return product;
         }
     }
 

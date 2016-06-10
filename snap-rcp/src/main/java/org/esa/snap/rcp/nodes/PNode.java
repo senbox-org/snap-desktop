@@ -301,7 +301,7 @@ public class PNode extends PNNode<Product> implements PreferenceChangeListener {
                     list.add(new PNGroupingGroup.B(product.getBandGroup()));
                 }
                 if (product.getMaskGroup().getNodeCount() > 0) {
-                    list.add(new PNGGroup.M(product.getMaskGroup()));
+                    list.add(new PNGroupingGroup.M(product.getMaskGroup()));
                 }
             } else {
                 if (metadataElementGroup != null) {
