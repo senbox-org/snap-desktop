@@ -175,9 +175,12 @@ public class SourceProductSelector {
             selectedProduct = productNode.getProduct();
         }
 
-        if (selectedProduct != null && productFilter.accept(selectedProduct)) {
+        if (enableEmptySelection) {
+            productListModel.setSelectedItem(null);
+        } else if (selectedProduct != null && productFilter.accept(selectedProduct)) {
             productListModel.setSelectedItem(selectedProduct);
         }
+
         appContext.getProductManager().addListener(productManagerListener);
     }
 
