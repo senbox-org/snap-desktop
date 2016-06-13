@@ -34,7 +34,7 @@ public class MosaicForm extends JTabbedPane {
 
     public MosaicForm(TargetProductSelector targetProductSelector, AppContext appContext) {
         this.appContext = appContext;
-        mosaicModel = new MosaicFormModel();
+        mosaicModel = new MosaicFormModel(this);
         createUI(targetProductSelector);
     }
 
@@ -60,6 +60,13 @@ public class MosaicForm extends JTabbedPane {
     void prepareHide() {
         mapProjectionPanel.prepareHide();
         ioPanel.prepareHide();
+    }
+
+    void setCardinalBounds(double southBoundValue, double northBoundValue, double westBoundValue, double eastBoundValue){
+        mapProjectionPanel.getBindingContext().getPropertySet().setValue(MosaicFormModel.PROPERTY_SOUTH_BOUND, southBoundValue);
+        mapProjectionPanel.getBindingContext().getPropertySet().setValue(MosaicFormModel.PROPERTY_NORTH_BOUND, northBoundValue);
+        mapProjectionPanel.getBindingContext().getPropertySet().setValue(MosaicFormModel.PROPERTY_WEST_BOUND, westBoundValue);
+        mapProjectionPanel.getBindingContext().getPropertySet().setValue(MosaicFormModel.PROPERTY_EAST_BOUND, eastBoundValue);
     }
 
 }

@@ -70,6 +70,8 @@ class MosaicMapProjectionPanel extends JPanel {
         bindingCtx.adjustComponents();
     }
 
+    public BindingContext getBindingContext(){ return bindingCtx;}
+
     private void init() {
         final ElevationModelDescriptor[] descriptors = ElevationModelRegistry.getInstance().getAllDescriptors();
         demValueSet = new String[descriptors.length];
