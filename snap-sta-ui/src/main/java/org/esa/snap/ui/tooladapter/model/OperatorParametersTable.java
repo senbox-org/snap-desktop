@@ -118,7 +118,7 @@ public class OperatorParametersTable extends JTable {
         comboCellRenderer = new DefaultTableCellRenderer();
         labelTypeCellRenderer.setText(Bundle.Type_ProductList_Text());
 
-        List<TemplateParameterDescriptor> data = operator.getToolParameterDescriptors();
+        List<ToolParameterDescriptor> data = operator.getToolParameterDescriptors();
         PropertySet propertySet = new OperatorParameterSupport(operator).getPropertySet();
         //if there is an exception in the line above, can be because the default value does not match the type
         //TODO determine if (and which) param has a wrong type
@@ -142,7 +142,7 @@ public class OperatorParametersTable extends JTable {
         this.setRowHeight(20);
     }
 
-    public void addParameterToTable(TemplateParameterDescriptor param){
+    public void addParameterToTable(ToolParameterDescriptor param){
         try {
             PropertyDescriptor property =  ParameterDescriptorFactory.convert(param, new ParameterDescriptorFactory().getSourceProductMap());
             operator.getToolParameterDescriptors().add(param);
@@ -280,7 +280,7 @@ public class OperatorParametersTable extends JTable {
 
         @Override
         public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-            TemplateParameterDescriptor descriptor = operator.getToolParameterDescriptors().get(rowIndex);
+            ToolParameterDescriptor descriptor = operator.getToolParameterDescriptors().get(rowIndex);
             String defaultValue = descriptor.getDefaultValue();
             switch (columnIndex) {
                 case 0:
@@ -313,6 +313,12 @@ public class OperatorParametersTable extends JTable {
                     break;
                 case 4:
                     //type editing
+                    if (descriptor.isTemplateParameter() &&
+                            ToolAdapterConstants.TEMPLATE_PARAM_MASK.equals(descriptor.getParameterType()) &&
+                            (((TemplateParameterDescriptor)descriptor).getTemplate() != null ||
+                             ((TemplateParameterDescriptor)descriptor).getParameterDescriptors().stream().findFirst().isPresent()))
+                        return;
+
                     Map<String, Object> extra = null;
                     CustomParameterClass customClass = (CustomParameterClass)typesMap.get(aValue);
                     if (customClass == null) {
@@ -337,7 +343,7 @@ public class OperatorParametersTable extends JTable {
                     int returnCode = -1;
                     if(!descriptor.isParameter() && descriptor.getDataType().equals(File.class)){
                         try {
-                            TemplateParameterEditorDialog editor = new TemplateParameterEditorDialog(appContext, "", descriptor, propertiesValueUIDescriptorMap.get(descriptor), operator);
+                            TemplateParameterEditorDialog editor = new TemplateParameterEditorDialog(appContext, "", (TemplateParameterDescriptor) descriptor, propertiesValueUIDescriptorMap.get(descriptor), operator);
                             returnCode = editor.show();
                         }catch (Exception ex){
                             Dialogs.showError(ex.getMessage());
@@ -366,11 +372,12 @@ public class OperatorParametersTable extends JTable {
         }
     }
 
-    private void rebuildEditorCell(TemplateParameterDescriptor descriptor, Map<String, Object> attributes){
-
-        Object attribute = context.getPropertySet().getProperty(descriptor.getName()).getDescriptor().getAttribute("directory");
+    private void rebuildEditorCell(ToolParameterDescriptor descriptor, Map<String, Object> attributes){
+        Property actualProperty = context.getPropertySet().getProperty(descriptor.getName());
+        Object attribute = actualProperty.getDescriptor().getAttribute("directory");
         boolean flag = attribute != null && (boolean) attribute;
-        context.getPropertySet().removeProperty(context.getPropertySet().getProperty(descriptor.getName()));
+        //Object value = actualProperty.getValue();
+        context.getPropertySet().removeProperty(actualProperty);
         PropertyDescriptor property;
         try {
             try {
@@ -395,7 +402,7 @@ public class OperatorParametersTable extends JTable {
             propertySetDescriptor.addPropertyDescriptor(property);
             PropertyContainer container = PropertyContainer.createMapBacked(new HashMap<>(), propertySetDescriptor);
             try {
-                container.getProperty(property.getName()).setValue(descriptor.getDefaultValue());
+                container.getProperty(property.getName()).setValue(descriptor.getDefaultTypedValue());
             } catch (Exception ex){
                 logger.warning(ex.getMessage());
                 try {

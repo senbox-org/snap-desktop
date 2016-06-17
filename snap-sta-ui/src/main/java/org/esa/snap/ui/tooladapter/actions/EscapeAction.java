@@ -71,7 +71,7 @@ public class EscapeAction extends AbstractAction {
     }
 
     private ActionListener getEscapeAction(JComponent rootPane) {
-        //  Search the parent InputMap to see if a binding for the ESCAPE key
+        //  Search the operatorDescriptor InputMap to see if a binding for the ESCAPE key
         //  exists. This binding is added when a popup menu is made visible
         //  (and removed when the popup menu is hidden).
         InputMap im = rootPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);

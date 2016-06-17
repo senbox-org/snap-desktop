@@ -39,6 +39,8 @@ import org.openide.util.NbPreferences;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -193,6 +195,17 @@ class ToolExecutionForm extends JTabbedPane {
         });
         PropertyPane parametersPane = new PropertyPane(propertySet);
         final JPanel parametersPanel = parametersPane.createPanel();
+        parametersPanel.addPropertyChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                if (!(evt.getNewValue() instanceof JTextField)) return;
+                JTextField field = (JTextField) evt.getNewValue();
+                String text = field.getText();
+                if (text != null && text.isEmpty()) {
+                    field.setCaretPosition(text.length());
+                }
+            }
+        });
         parametersPanel.setBorder(new EmptyBorder(4, 4, 4, 4));
         //parametersPanel.setPreferredSize(ioParamPanel.getPreferredSize());
         return new JScrollPane(parametersPanel);

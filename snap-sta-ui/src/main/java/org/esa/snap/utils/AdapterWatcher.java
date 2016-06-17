@@ -5,14 +5,15 @@ import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterIO;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterRegistry;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Created by kraftek on 3/8/2016.
+ * This singleton class watches for changes (additions/deletions) in the tool adapters folder.
+ *
+ * @author Cosmin Cara
  */
 public enum AdapterWatcher {
     INSTANCE;
@@ -24,9 +25,8 @@ public enum AdapterWatcher {
     AdapterWatcher() {
         try {
             directoryWatcher = FileSystems.getDefault().newWatchService();
-            File adaptersFolder = ToolAdapterIO.getUserAdapterPath();
-            Path path = adaptersFolder.toPath();
-            path.register(directoryWatcher, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_DELETE);
+            Path adaptersFolder = ToolAdapterIO.getUserAdapterPath();
+            adaptersFolder.register(directoryWatcher, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_DELETE);
             thread = new Thread(() -> {
                 while (isRunning) {
                     WatchKey key;
@@ -41,9 +41,9 @@ public enum AdapterWatcher {
                         WatchEvent<Path> ev = (WatchEvent<Path>) event;
                         Path fileName = ev.context();
                         if (kind == StandardWatchEventKinds.ENTRY_CREATE) {
-                            folderAdded(path.resolve(fileName).toFile());
+                            folderAdded(adaptersFolder.resolve(fileName));
                         } else if (kind == StandardWatchEventKinds.ENTRY_DELETE) {
-                            folderDeleted(path.resolve(fileName).toFile());
+                            folderDeleted(adaptersFolder.resolve(fileName));
                         }
                     }
                     boolean valid = key.reset();
@@ -65,17 +65,18 @@ public enum AdapterWatcher {
         isRunning = false;
     }
 
-    private void folderAdded(File folder) {
+    private void folderAdded(Path folder) {
         try {
+            Thread.sleep(500);
             ToolAdapterIO.registerAdapter(folder);
-        }catch (OperatorException ex){
+        }catch (InterruptedException | OperatorException ex){
             logger.log(Level.INFO, "Could not load adapter for folder added in repository: " + folder.toString() + " (error:" + ex.getMessage());
         }
     }
 
-    private void folderDeleted(File folder) {
+    private void folderDeleted(Path folder) {
         if (folder != null) {
-            String alias = folder.getName();
+            String alias = folder.toFile().getName();
             ToolAdapterOperatorDescriptor operatorDescriptor = ToolAdapterRegistry.INSTANCE.findByAlias(alias);
             if (operatorDescriptor != null) {
                 ToolAdapterIO.removeOperator(operatorDescriptor);

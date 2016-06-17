@@ -82,7 +82,7 @@ public final class ModulePackager {
         //attributes.put(new Attributes.Name("OpenIDE-Module-Layer"), LAYER_XML_PATH);
         attributes.put(ATTR_DESCRIPTION_NAME, "External tool adapter");
 
-        modulesPath = ToolAdapterIO.getUserAdapterPath();
+        modulesPath = ToolAdapterIO.getUserAdapterPath().toFile();
     }
 
     /**

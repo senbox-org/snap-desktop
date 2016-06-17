@@ -56,7 +56,7 @@ public class ModuleInstaller extends ModuleInstall {
     private final Logger logger = Logger.getGlobal();
     private final File userDir = Places.getUserDirectory();
     private final Path nbUserModulesPath = Paths.get(userDir != null ? userDir.getAbsolutePath() : "", "modules");
-    private final File userModulePath = ToolAdapterIO.getUserAdapterPath();
+    private final File userModulePath = ToolAdapterIO.getUserAdapterPath().toFile();
 
     @Override
     public void restored() {
@@ -64,7 +64,7 @@ public class ModuleInstaller extends ModuleInstall {
         if (jarFile != null) {
             File unpackLocation = processJarFile(new File(jarFile));
             if (unpackLocation != null) {
-                registerAdapterAction(ToolAdapterIO.registerAdapter(unpackLocation));
+                registerAdapterAction(ToolAdapterIO.registerAdapter(unpackLocation.toPath()));
             } else {
                 logger.warning(String.format("Jar %s could not be unpacked. See previous exception.", jarFile));
             }
