@@ -24,11 +24,11 @@ import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.Operator;
 import org.esa.snap.core.gpf.descriptor.ParameterDescriptor;
 import org.esa.snap.core.gpf.descriptor.SystemVariable;
-import org.esa.snap.core.gpf.descriptor.TemplateParameterDescriptor;
 import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
+import org.esa.snap.core.gpf.descriptor.ToolParameterDescriptor;
+import org.esa.snap.core.gpf.descriptor.template.TemplateFile;
 import org.esa.snap.core.gpf.operators.tooladapter.DefaultOutputConsumer;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterConstants;
-import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterIO;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterOp;
 import org.esa.snap.core.gpf.ui.OperatorMenu;
 import org.esa.snap.core.gpf.ui.OperatorParameterSupport;
@@ -49,7 +49,6 @@ import org.openide.util.NbBundle;
 
 import javax.swing.*;
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -163,10 +162,14 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
         List<ParameterDescriptor> descriptors = Arrays.stream(operatorDescriptor.getParameterDescriptors())
                 .filter(p -> ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE.equals(p.getName()))
                 .collect(Collectors.toList());
-        String templateContents = "";
+        String templateContents;
         try {
-            templateContents = ToolAdapterIO.readOperatorTemplate(operatorDescriptor.getName());
-        } catch (IOException ignored) {
+            //templateContents = ToolAdapterIO.readOperatorTemplate(operatorDescriptor.getName());
+            TemplateFile template = operatorDescriptor.getTemplate();
+            templateContents = template.getContents();
+        } catch (Exception ex) {
+            showErrorDialog(String.format("Cannot read operator template [%s]", ex.getMessage()));
+            return;
         }
         if (Arrays.stream(sourceProducts).anyMatch(p -> p == null)) {
             Dialogs.Answer decision = Dialogs.requestDecision("No Product Selected", Bundle.NoSourceProductWarning_Text(), false,
@@ -328,12 +331,12 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
                 warnings.add("Target product folder is not accessible or does not exist");
             }
         }
-        List<TemplateParameterDescriptor> mandatoryParams = operatorDescriptor.getToolParameterDescriptors()
+        List<ToolParameterDescriptor> mandatoryParams = operatorDescriptor.getToolParameterDescriptors()
                                                                 .stream()
                                                                 .filter(d -> d.isNotEmpty() || d.isNotNull())
                                                                 .collect(Collectors.toList());
         Map<String, Object> parameterMap = parameterSupport.getParameterMap();
-        for (TemplateParameterDescriptor mandatoryParam : mandatoryParams) {
+        for (ToolParameterDescriptor mandatoryParam : mandatoryParams) {
             String name = mandatoryParam.getName();
             if (!parameterMap.containsKey(name) ||
                     parameterMap.get(name) == null ||

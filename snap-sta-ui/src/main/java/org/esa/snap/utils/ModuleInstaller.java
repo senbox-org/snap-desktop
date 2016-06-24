@@ -64,7 +64,7 @@ public class ModuleInstaller extends ModuleInstall {
         if (jarFile != null) {
             File unpackLocation = processJarFile(new File(jarFile));
             if (unpackLocation != null) {
-                registerAdapterAction(ToolAdapterIO.registerAdapter(unpackLocation));
+                registerAdapterAction(ToolAdapterIO.registerAdapter(unpackLocation.toPath()));
             } else {
                 logger.warning(String.format("Jar %s could not be unpacked. See previous exception.", jarFile));
             }

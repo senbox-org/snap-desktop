@@ -54,10 +54,10 @@ public class SpringUtilities {
 
     /**
      * Aligns the first <code>rows</code> * <code>cols</code>
-     * components of <code>parent</code> in
+     * components of <code>operatorDescriptor</code> in
      * a grid. Each component is as big as the maximum
      * preferred width and height of the components.
-     * The parent is made just big enough to fit them all.
+     * The operatorDescriptor is made just big enough to fit them all.
      *
      * @param rows number of rows
      * @param cols number of columns
@@ -132,7 +132,7 @@ public class SpringUtilities {
             lastCons = cons;
         }
 
-        //Set the parent's size.
+        //Set the operatorDescriptor's size.
         SpringLayout.Constraints pCons = layout.getConstraints(parent);
         pCons.setConstraint(SpringLayout.SOUTH,
                 Spring.sum(
@@ -156,11 +156,11 @@ public class SpringUtilities {
 
     /**
      * Aligns the first <code>rows</code> * <code>cols</code>
-     * components of <code>parent</code> in
+     * components of <code>operatorDescriptor</code> in
      * a grid. Each component in a column is as wide as the maximum
      * preferred width of the components in that column;
      * height is similarly determined for each row.
-     * The parent is made just big enough to fit them all.
+     * The operatorDescriptor is made just big enough to fit them all.
      *
      * @param rows number of rows
      * @param cols number of columns
@@ -217,7 +217,7 @@ public class SpringUtilities {
             y = Spring.sum(y, Spring.sum(height, Spring.constant(yPad)));
         }
 
-        //Set the parent's size.
+        //Set the operatorDescriptor's size.
         SpringLayout.Constraints pCons = layout.getConstraints(parent);
         pCons.setConstraint(SpringLayout.SOUTH, y);
         pCons.setConstraint(SpringLayout.EAST, x);
