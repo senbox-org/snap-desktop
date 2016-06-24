@@ -39,6 +39,7 @@ import org.openide.util.NbPreferences;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -118,6 +119,8 @@ class ToolExecutionForm extends JTabbedPane {
             bottomPane.revalidate();
             bottomPane.repaint();
         });
+        Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
+        setPreferredSize(new Dimension((int)(screen.getWidth() / 3), (int)(screen.getHeight() / 2.5)));
         SpringUtilities.makeCompactGrid(processingParamPanel, 2, 1, 2, 2, 2, 2);
         addTab("Processing Parameters", processingParamPanel);
         updateTargetProductFields();

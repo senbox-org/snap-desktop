@@ -211,6 +211,7 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
                                                 operatorDescriptor.getStepPattern(),
                                                 progressWrapper,
                                                 form.console);
+                    form.console.clear();
                     progressWrapper.setConsumer(consumer);
                     ((ToolAdapterOp) op).setProgressMonitor(progressWrapper);
                     ((ToolAdapterOp) op).setConsumer(consumer);

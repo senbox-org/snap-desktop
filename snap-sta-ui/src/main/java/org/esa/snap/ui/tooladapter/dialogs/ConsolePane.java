@@ -73,4 +73,8 @@ public class ConsolePane extends JScrollPane {
         }
     }
 
+    public void clear() {
+        textArea.setText("");
+    }
+
 }

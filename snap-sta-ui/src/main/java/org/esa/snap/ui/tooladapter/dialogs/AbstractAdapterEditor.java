@@ -51,6 +51,7 @@ import org.esa.snap.ui.tooladapter.model.OperatorParametersTable;
 import org.esa.snap.ui.tooladapter.model.VariablesTable;
 import org.esa.snap.ui.tooladapter.preferences.ToolAdapterOptionsController;
 import org.esa.snap.ui.tooladapter.validators.RequiredFieldValidator;
+import org.esa.snap.utils.AdapterWatcher;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 import org.openide.util.NbBundle;
@@ -426,8 +427,9 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
                     if (menuLocation != null && !menuLocation.startsWith("Menu/")) {
                         newOperatorDescriptor.setMenuLocation("Menu/" + menuLocation);
                     }
-
+                    AdapterWatcher.INSTANCE.suspend();
                     ToolAdapterIO.saveAndRegisterOperator(newOperatorDescriptor);
+                    AdapterWatcher.INSTANCE.resume();
                     ToolAdapterIO.deleteFolder(backupCopy);
                     super.setButtonID(ID_OK);
                     super.hide();

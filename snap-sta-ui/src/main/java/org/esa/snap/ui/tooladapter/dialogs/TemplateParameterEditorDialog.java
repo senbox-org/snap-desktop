@@ -132,8 +132,10 @@ public class TemplateParameterEditorDialog extends ModalDialog {
         try {
             /*File defaultValue = ToolAdapterIO.ensureLocalCopy(fileWrapper.getContext().getPropertySet().getProperty(this.parameter.getName()).getValue(),
                                                               parentDescriptor.getAlias());*/
-            File templatePath = parameter.getTemplate().getTemplatePath();
             File actualValue = fileWrapper.getContext().getPropertySet().getProperty(parameter.getName()).getValue();
+            File templatePath = parameter.getTemplate().getTemplatePath();
+
+            //File actualValue = fileWrapper.getContext().getPropertySet().getProperty(parameter.getName()).getValue();
             if (actualValue.getName().equals(templatePath.getName()) && !actualValue.isAbsolute()) {
                 actualValue = templatePath;
                 fileWrapper.getContext().removePropertyChangeListener(pcListener);

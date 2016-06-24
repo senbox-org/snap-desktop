@@ -28,6 +28,7 @@ public enum AdapterWatcher {
     private final WatchEvent.Kind[] eventTypes = new WatchEvent.Kind[] { StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_DELETE };
     private Thread thread;
     private volatile boolean isRunning;
+    private volatile boolean isSuspended;
     private Map<Path, String> jarAliases;
 
     AdapterWatcher() {
@@ -50,7 +51,7 @@ public enum AdapterWatcher {
                     } catch (InterruptedException ex) {
                         return;
                     }
-                    for (WatchEvent<?> event : key.pollEvents()) {
+                    key.pollEvents().stream().filter(event -> !isSuspended).forEach(event -> {
                         WatchEvent.Kind<?> kind = event.kind();
                         @SuppressWarnings("unchecked")
                         WatchEvent<Path> ev = (WatchEvent<Path>) event;
@@ -69,7 +70,7 @@ public enum AdapterWatcher {
                                 jarDeleted(nbUserModulesPath.resolve(fileName));
                             }
                         }
-                    }
+                    });
                     boolean valid = key.reset();
                     if (!valid) {
                         break;
@@ -82,11 +83,20 @@ public enum AdapterWatcher {
 
     public void startMonitor() {
         isRunning = true;
+        isSuspended = false;
         thread.start();
     }
 
     public void stopMonitor() {
         isRunning = false;
+    }
+
+    public void suspend() {
+        isSuspended = true;
+    }
+
+    public void resume() {
+        isSuspended = false;
     }
 
     private void monitorPath(Path path) throws IOException {
