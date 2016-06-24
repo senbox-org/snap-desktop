@@ -39,6 +39,8 @@ import org.openide.util.NbPreferences;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -193,6 +195,17 @@ class ToolExecutionForm extends JTabbedPane {
         });
         PropertyPane parametersPane = new PropertyPane(propertySet);
         final JPanel parametersPanel = parametersPane.createPanel();
+        parametersPanel.addPropertyChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                if (!(evt.getNewValue() instanceof JTextField)) return;
+                JTextField field = (JTextField) evt.getNewValue();
+                String text = field.getText();
+                if (text != null && text.isEmpty()) {
+                    field.setCaretPosition(text.length());
+                }
+            }
+        });
         parametersPanel.setBorder(new EmptyBorder(4, 4, 4, 4));
         //parametersPanel.setPreferredSize(ioParamPanel.getPreferredSize());
         return new JScrollPane(parametersPanel);
@@ -206,6 +219,9 @@ class ToolExecutionForm extends JTabbedPane {
             Object value = property.getValue();
             if (value != null) {
                 File file = operatorDescriptor.resolveVariables(new File(property.getValueAsText()));
+                if (!file.isAbsolute()) {
+                    file = new File(operatorDescriptor.getWorkingDir(), file.getAbsolutePath());
+                }
                 String productName = FileUtils.getFilenameWithoutExtension(file);
                 if (fileExtension == null) {
                     fileExtension = FileUtils.getExtension(file);
@@ -248,7 +264,15 @@ class ToolExecutionForm extends JTabbedPane {
                     File oldValue = operatorDescriptor.resolveVariables(value instanceof File ? (File) value : new File((String) value));
                     if (fileExtension == null)
                         fileExtension = TIF_EXTENSION;
-                    propertySet.setValue(ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE, new File(oldValue.getParentFile().getAbsolutePath(), productName + fileExtension));
+                    File current;
+                    File workingDir = operatorDescriptor.getWorkingDir();
+                    File parent;
+                    if (oldValue != null && (parent = oldValue.getParentFile()) != null) {
+                        current = new File(parent.getAbsolutePath(), productName + fileExtension);
+                    } else {
+                        current = new File(workingDir, productName + fileExtension);
+                    }
+                    propertySet.setValue(ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE, current);
                 } else {
                     File workingDir = operatorDescriptor.resolveVariables(operatorDescriptor.getWorkingDir());
                     try {

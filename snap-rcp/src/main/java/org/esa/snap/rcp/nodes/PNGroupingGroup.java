@@ -7,6 +7,7 @@ package org.esa.snap.rcp.nodes;
 
 import com.bc.ceres.core.Assert;
 import org.esa.snap.core.datamodel.Band;
+import org.esa.snap.core.datamodel.Mask;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.core.datamodel.ProductNodeGroup;
@@ -29,6 +30,7 @@ import java.util.Map;
 @NbBundle.Messages({
         "LBL_TiePointGroupName=Tie-Point Grids",
         "LBL_BandGroupName=Bands",
+        "LBL_MaskGroupName=Masks",
 })
 abstract class PNGroupingGroup extends PNGroup<Object> {
 
@@ -204,4 +206,66 @@ abstract class PNGroupingGroup extends PNGroup<Object> {
 
     }
 
+
+    /**
+     * A group that represents a {@link ProductNodeGroup}
+     * of {@link Mask} members
+     *
+     * @author Tonio
+     */
+    static class M extends PNGroupingGroup {
+
+        private final ProductNodeGroup<Mask> group;
+
+        protected M(ProductNodeGroup<Mask> group) {
+            super(Bundle.LBL_MaskGroupName(), group);
+            this.group = group;
+        }
+
+        @Override
+        protected Node createNodeForKey(Object key) {
+            if (key instanceof Mask) {
+                return new PNNode.M((Mask) key);
+            } else {
+                final PNGroupNode pnGroupNode = new PNGroupNode((PNGroup) key);
+                nodes.add(pnGroupNode);
+                return pnGroupNode;
+            }
+        }
+
+        @Override
+        protected boolean createKeys(List<Object> list) {
+            final Product.AutoGrouping autoGrouping = getProduct().getAutoGrouping();
+            if (autoGrouping == null) {
+                for (int i = 0; i < group.getNodeCount(); i++) {
+                    list.add(group.get(i));
+                }
+                return true;
+            }
+            ProductNodeGroup<Mask>[] autogroupingNodes = new ProductNodeGroup[autoGrouping.size() + 1];
+            for (int i = 0; i < autoGrouping.size(); i++) {
+                autogroupingNodes[i] = new ProductNodeGroup<>(autoGrouping.get(i)[0]);
+            }
+            autogroupingNodes[autoGrouping.size()] = new ProductNodeGroup<>(Bundle.LBL_MaskGroupName());
+            for (int i = 0; i < this.group.getNodeCount(); i++) {
+                final Mask mask = this.group.get(i);
+                final int index = autoGrouping.indexOf(mask.getName());
+                if (index != -1) {
+                    autogroupingNodes[index].add(mask);
+                } else {
+                    autogroupingNodes[autoGrouping.size()].add(mask);
+                }
+            }
+            for (int i = 0; i < autoGrouping.size(); i++) {
+                if (autogroupingNodes[i].getNodeCount() > 0) {
+                    list.add(new PNGGroup.M(autoGrouping.get(i)[0], autogroupingNodes[i], getProduct()));
+                }
+            }
+            for (int i = 0; i < autogroupingNodes[autoGrouping.size()].getNodeCount(); i++) {
+                list.add(autogroupingNodes[autoGrouping.size()].get(i));
+            }
+            return true;
+        }
+
+    }
 }

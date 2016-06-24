@@ -300,7 +300,10 @@ public class PropertyMemberUIWrapperFactory {
             public JComponent reloadUIComponent(Class<?> newParamType) throws Exception{
                 property.setDataType(newParamType);
                 Property oldProp = context.getPropertySet().getProperty(property.getName());
+                Object dirAttr = null;
                 if(oldProp != null) {
+                    PropertyDescriptor descriptor = ParameterDescriptorFactory.convert(property, new ParameterDescriptorFactory().getSourceProductMap());
+                    dirAttr = descriptor.getAttribute("directory");
                     context.getPropertySet().removeProperty(oldProp);
                 }
 
@@ -323,6 +326,9 @@ public class PropertyMemberUIWrapperFactory {
                     Logger.getLogger(PropertyMemberUIWrapper.class.getName()).warning(ex.getMessage());
                 }
                 DefaultPropertySetDescriptor propertySetDescriptor = new DefaultPropertySetDescriptor();
+                if (dirAttr != null) {
+                    descriptor.setAttribute("directory", dirAttr);
+                }
                 propertySetDescriptor.addPropertyDescriptor(descriptor);
                 PropertyContainer container = PropertyContainer.createMapBacked(new HashMap<>(), propertySetDescriptor);
                 context.getPropertySet().addProperties(container.getProperties());

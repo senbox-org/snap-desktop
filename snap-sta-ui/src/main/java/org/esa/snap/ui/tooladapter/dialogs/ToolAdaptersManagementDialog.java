@@ -38,9 +38,11 @@ import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.stream.Collectors;
 
 import static org.esa.snap.utils.SpringUtilities.DEFAULT_PADDING;
@@ -258,30 +260,28 @@ public class ToolAdaptersManagementDialog extends ModelessDialog {
             }
         };
         model.setValueAt(Bundle.PathLabel_Text(), 0, 0);
-        model.setValueAt(ToolAdapterIO.getUserAdapterPath(), 0, 1);
+        model.setValueAt(ToolAdapterIO.getAdaptersPath(), 0, 1);
         model.addTableModelListener(l -> {
             String newPath = model.getValueAt(0, 1).toString();
-            File path = new File(newPath);
-            if (!path.exists() &&
+            Path path = Paths.get(newPath);
+            if (!Files.exists(path) &&
                 Dialogs.Answer.YES == Dialogs.requestDecision("Path does not exist", "The path you have entered does not exist.\nDo you want to create it?", true, "Don't ask me in the future")) {
-                if (!path.mkdirs()) {
+                try {
+                    Files.createDirectories(Files.isDirectory(path) ? path : path.getParent());
+                } catch (IOException ex) {
                     Dialogs.showError("Path could not be created!");
                 }
             }
-            if (path.exists()) {
-                File oldPath = ToolAdapterIO.getUserAdapterPath();
+            if (Files.exists(path)) {
+                Path oldPath = ToolAdapterIO.getAdaptersPath();
                 ToolAdapterOperatorDescriptor[] operatorDescriptors = ToolAdapterActionRegistrar.getActionMap().values()
                         .toArray(new ToolAdapterOperatorDescriptor[ToolAdapterActionRegistrar.getActionMap().values().size()]);
                 for (ToolAdapterOperatorDescriptor descriptor : operatorDescriptors) {
-                    // ToolAdapterActionRegistrar.removeOperatorMenu(descriptor);
                     ToolAdapterIO.removeOperator(descriptor, false);
                 }
                 ToolAdapterIO.setAdaptersPath(Paths.get(newPath));
-                if (!newPath.equals(oldPath.getAbsolutePath())) {
-                    Collection<ToolAdapterOpSpi> toolAdapterOpSpis = ToolAdapterIO.searchAndRegisterAdapters();
-                    /*for (ToolAdapterOpSpi spi : toolAdapterOpSpis) {
-                        ToolAdapterActionRegistrar.registerOperatorMenu((ToolAdapterOperatorDescriptor)spi.getOperatorDescriptor());
-                    }*/
+                if (!newPath.equals(oldPath.toAbsolutePath().toString())) {
+                    ToolAdapterIO.searchAndRegisterAdapters();
                     refreshContent();
                 }
             }
@@ -331,7 +331,6 @@ public class ToolAdaptersManagementDialog extends ModelessDialog {
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() >= 2) {
                     int selectedRow = operatorsTable.getSelectedRow();
-                    //operatorsTable.getModel().setValueAt(true, selectedRow, 0);
                     operatorsTable.repaint();
                     ToolAdapterOperatorDescriptor operatorDesc = ((OperatorsTableModel) operatorsTable.getModel()).getObjectAt(selectedRow);
                     AbstractAdapterEditor dialog = AbstractAdapterEditor.createEditorDialog(appContext, getJDialog(), operatorDesc, OperationType.EDIT);
