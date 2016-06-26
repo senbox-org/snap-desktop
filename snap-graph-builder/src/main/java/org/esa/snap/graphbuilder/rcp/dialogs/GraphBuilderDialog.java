@@ -382,7 +382,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
      */
     public void LoadGraph(final File file) {
         try {
-            LoadGraph(new FileInputStream(file));
+            LoadGraph(new FileInputStream(file), file);
             if (allowGraphBuilding) {
                 setTitle(file.getName());
             }
@@ -396,11 +396,11 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
      *
      * @param fileStream the graph file to load
      */
-    public void LoadGraph(final InputStream fileStream) {
+    public void LoadGraph(final InputStream fileStream, final File file) {
         try {
             initGraphEnabled = false;
             tabbedPanel.removeAll();
-            graphEx.loadGraph(fileStream, true);
+            graphEx.loadGraph(fileStream, file, true);
             if (allowGraphBuilding) {
                 graphPanel.showRightClickHelp(false);
                 graphPanel.repaint();
