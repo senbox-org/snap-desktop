@@ -56,7 +56,7 @@ public enum AdapterWatcher {
                         @SuppressWarnings("unchecked")
                         WatchEvent<Path> ev = (WatchEvent<Path>) event;
                         Path fileName = ev.context();
-                        boolean isJar = fileName.endsWith(".jar");
+                        boolean isJar = fileName.toString().endsWith(".jar");
                         if (kind == StandardWatchEventKinds.ENTRY_CREATE) {
                             if (!isJar) {
                                 folderAdded(adaptersFolder.resolve(fileName));
