@@ -100,7 +100,9 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
         java.util.List<String> menus = getAvailableMenuOptions(null);
         addComboField(descriptorPanel, Bundle.CTL_Label_MenuLocation_Text(), ToolAdapterConstants.MENU_LOCATION, menus, true, true);
 
-        SpringUtilities.makeCompactGrid(descriptorPanel, 8, 2, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING);
+        addComboField(descriptorPanel, Bundle.CTL_Label_TemplateType_Text(), ToolAdapterConstants.TEMPLATE_TYPE, true, false);
+
+        SpringUtilities.makeCompactGrid(descriptorPanel, 9, 2, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING);
         return descriptorPanel;
     }
 
@@ -190,10 +192,11 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
     protected JPanel createToolInfoPanel() {
         final JPanel configPanel = new JPanel(new SpringLayout());
         JPanel panelToolFiles = new JPanel(new SpringLayout());
+        PropertyEditorRegistry editorRegistry = PropertyEditorRegistry.getInstance();
 
         PropertyDescriptor propertyDescriptor = propertyContainer.getDescriptor(ToolAdapterConstants.MAIN_TOOL_FILE_LOCATION);
         propertyDescriptor.setValidator(new NotEmptyValidator());
-        PropertyEditor editor = PropertyEditorRegistry.getInstance().findPropertyEditor(propertyDescriptor);
+        PropertyEditor editor = editorRegistry.findPropertyEditor(propertyDescriptor);
         JComponent editorComponent = editor.createEditorComponent(propertyDescriptor, bindingContext);
         editorComponent.setMaximumSize(new Dimension(editorComponent.getMaximumSize().width, controlHeight));
         editorComponent.setPreferredSize(new Dimension(editorComponent.getPreferredSize().width, controlHeight));
@@ -209,7 +212,7 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
                         property.getDescriptor().getDisplayName()));
             }
         });
-        editor = PropertyEditorRegistry.getInstance().findPropertyEditor(propertyDescriptor);
+        editor = editorRegistry.findPropertyEditor(propertyDescriptor);
         editorComponent = editor.createEditorComponent(propertyDescriptor, bindingContext);
         editorComponent.setMaximumSize(new Dimension(editorComponent.getMaximumSize().width, controlHeight));
         editorComponent.setPreferredSize(new Dimension(editorComponent.getPreferredSize().width, controlHeight));
@@ -224,7 +227,7 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
         JPanel checkPanel = new JPanel(new SpringLayout());
 
         propertyDescriptor = propertyContainer.getDescriptor(ToolAdapterConstants.HANDLE_OUTPUT);
-        editor = PropertyEditorRegistry.getInstance().findPropertyEditor(propertyDescriptor);
+        editor = editorRegistry.findPropertyEditor(propertyDescriptor);
         editorComponent = editor.createEditorComponent(propertyDescriptor, bindingContext);
         editorComponent.setMaximumSize(new Dimension(editorComponent.getMaximumSize().width, controlHeight));
         editorComponent.setPreferredSize(new Dimension(editorComponent.getPreferredSize().width, controlHeight));
