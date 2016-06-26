@@ -47,8 +47,8 @@ import java.util.Map;
  */
 public abstract class BaseClassifierOpUI extends BaseOperatorUI {
 
-    private final JRadioButton loadBtn = new JRadioButton("Load and apply classifier", true);
-    private final JRadioButton trainBtn = new JRadioButton("Train and apply classifier", false);
+    private final JRadioButton loadBtn = new JRadioButton("Load and apply classifier", false);
+    private final JRadioButton trainBtn = new JRadioButton("Train and apply classifier", true);
 
     private final JComboBox<String> classifierNameComboBox = new JComboBox();
     private final JButton deleteClassiferBtn = new JButton("X");
@@ -450,21 +450,21 @@ public abstract class BaseClassifierOpUI extends BaseOperatorUI {
         classifiergbc = DialogUtils.createGridBagConstraints();
 
         final ButtonGroup group1 = new ButtonGroup();
-        group1.add(loadBtn);
         group1.add(trainBtn);
+        group1.add(loadBtn);
 
+        classifierPanel.add(trainBtn, classifiergbc);
+        classifiergbc.gridx = 1;
+        classifierPanel.add(newClassifierNameField, classifiergbc);
+        classifiergbc.gridx = 0;
+
+        classifiergbc.gridx = 0;
+        classifiergbc.gridy++;
         classifierPanel.add(loadBtn, classifiergbc);
         classifiergbc.gridx = 1;
         classifierPanel.add(classifierNameComboBox, classifiergbc);
         classifiergbc.gridx = 2;
         classifierPanel.add(deleteClassiferBtn, classifiergbc);
-
-        classifiergbc.gridx = 0;
-        classifiergbc.gridy++;
-        classifierPanel.add(trainBtn, classifiergbc);
-        classifiergbc.gridx = 1;
-        classifierPanel.add(newClassifierNameField, classifiergbc);
-        classifiergbc.gridx = 0;
 
         final ButtonGroup group2 = new ButtonGroup();
         group2.add(trainOnRasterBtn);
