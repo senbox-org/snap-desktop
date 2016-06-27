@@ -22,10 +22,7 @@ import com.bc.ceres.core.ProgressMonitor;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.Operator;
-import org.esa.snap.core.gpf.descriptor.ParameterDescriptor;
-import org.esa.snap.core.gpf.descriptor.SystemVariable;
-import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
-import org.esa.snap.core.gpf.descriptor.ToolParameterDescriptor;
+import org.esa.snap.core.gpf.descriptor.*;
 import org.esa.snap.core.gpf.descriptor.template.TemplateFile;
 import org.esa.snap.core.gpf.operators.tooladapter.DefaultOutputConsumer;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterConstants;
@@ -98,6 +95,8 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
 
     public static final String helpID = "sta_execution";
 
+    private List<ToolParameterDescriptor> artificiallyAddedParams;
+
     /**
      * Constructor.
      *
@@ -137,12 +136,18 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
     }
 
     private void initialize(ToolAdapterOperatorDescriptor descriptor) {
+        //this.operatorDescriptor = new ToolAdapterOperatorDescriptor(descriptor);
         this.operatorDescriptor = descriptor;
-        this.parameterSupport = new OperatorParameterSupport(descriptor);
-        form = new ToolExecutionForm(appContext, descriptor, parameterSupport.getPropertySet(),
+        //add paraeters of template parameters
+        artificiallyAddedParams = new ArrayList<>();
+        Arrays.stream(this.operatorDescriptor.getToolParameterDescriptors().toArray()).filter(p -> ((ToolParameterDescriptor)p).isTemplateParameter()).
+                forEach(p -> artificiallyAddedParams.addAll(((TemplateParameterDescriptor)p).getParameterDescriptors()));
+        this.operatorDescriptor.getToolParameterDescriptors().addAll(artificiallyAddedParams);
+        this.parameterSupport = new OperatorParameterSupport(this.operatorDescriptor);
+        form = new ToolExecutionForm(appContext, this.operatorDescriptor, parameterSupport.getPropertySet(),
                 getTargetProductSelector());
         OperatorMenu operatorMenu = new OperatorMenu(this.getJDialog(),
-                descriptor,
+                this.operatorDescriptor,
                 parameterSupport,
                 appContext,
                 helpID);
@@ -398,6 +403,7 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
         }
         //displayErrors();
         displayErrorMessage();
+        this.operatorDescriptor.getToolParameterDescriptors().removeAll(artificiallyAddedParams);
     }
 
     private void displayErrorMessage() {
