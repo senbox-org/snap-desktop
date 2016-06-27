@@ -94,6 +94,7 @@ public class TemplateParameterEditorDialog extends ModalDialog {
             }
         }
         pcListener = evt -> updateFileAreaContent();
+        this.fileWrapper.getContext().addPropertyChangeListener(pcListener);
         setContent(createMainPanel());
     }
 
@@ -132,13 +133,16 @@ public class TemplateParameterEditorDialog extends ModalDialog {
         } catch (Exception e) {
             logger.warning(e.getMessage());
         }
-        this.fileWrapper.getContext().addPropertyChangeListener(pcListener);
-
         mainPanel.add(filePanel, BorderLayout.PAGE_START);
+
+        //to create UI component for outputFile
+
         fileContentArea.setAutoCompleteEntries(getAutocompleteEntries());
         fileContentArea.setTriggerChar('$');
         mainPanel.add(new JScrollPane(fileContentArea), BorderLayout.CENTER);
+
         updateFileAreaContent();
+
         mainPanel.add(createParametersPanel(), BorderLayout.PAGE_END);
 
         return mainPanel;
