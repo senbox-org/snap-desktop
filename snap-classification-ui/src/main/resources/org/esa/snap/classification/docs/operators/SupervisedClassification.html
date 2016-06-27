@@ -1,8 +1,8 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html><head><title>Help - Supervised Classification</title>
 
-    <link rel="stylesheet" href="../style.css"></head>
-<body>
+
+    <link rel="stylesheet" href="../style.css"></head><body>
 <table class="header">
     <tbody>
     <tr class="header">
@@ -20,13 +20,7 @@ training samples are used to train a classifier. Each training sample
 vector is made up of the class the pixel belongs to and feature values
 of the pixel. In the classification stage, the trained classifier is
 used to classify pixels with known feature values but unknown class.<br><br>User has a choice of <br><ul><li>train (and save) a
-classifier; or </li><li>load a previously saved classifier </li></ul>to perform classification.<br><br>To do the former, type in a new filename
-(remember to press ENTER). <br><br>To do the latter, select a filename from the list.&nbsp;<br><br>The
-label should indicate which case it is. If the file already exists, the
-label will be "Load classifier"; otherwise it will be "Train and save
-classifier".<br><br><br><span style="font-weight: bold;">Train and save a classifier</span><br><br>One
-"class" product and one or more "feature" products are required. The
-first (i.e., top most) product is always taken as the "class" product. <br><br>User is required to provide the number of training samples to use. <br><br>Note that in
+classifier; or </li><li>load a previously saved classifier </li></ul>to perform classification.<br><br>To do the former, type in a new filename. <br><br>To do the latter, select a filename from the list. <br><br><br><span style="font-weight: bold;">Train and save a classifier</span><br><br>User is required to provide the number of training samples to use. <br><br>Note that in
 addition to training,&nbsp;evaluation of the classifier is also performed.
 E.g., if the number of training samples to use is 5000, then 5000 x 2 =
 10,000 samples will be extracted. The first 5000 will be used as
@@ -60,5 +54,5 @@ taken as the "class" product. &nbsp;<br><br>If
 the saved classifier was constructed using "regions" as classes,
 &nbsp;the "class" product must contain "vectors" with the same names.
 The names can be found in the XML file under "regionVectorNames".<br><br>If "regions" were not used, then the operator will use the first band in the "class"
-product without "lat_band" or "lon_band" in its name&nbsp;as the
+product as the
 "class" band.</body></html>
