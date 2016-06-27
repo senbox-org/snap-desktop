@@ -116,6 +116,8 @@ import static org.esa.snap.utils.SpringUtilities.makeCompactGrid;
                 "Please specify the location of an existing executable.",
         "MSG_Inexistent_WorkDir_Text=The working directory does not exist.\n" +
                 "Please specify a valid location.",
+        "MSG_Existing_UniqueName_Text=An operator with the same unique name is already registered.\n" +
+                "Please specify an unique name for the operator.",
         "MSG_Inexistem_Parameter_Value_Text=The file or folder for parameter %s does not exist.\n" +
                 "Please specify a valid location or change the %s property of the parameter.",
         "MSG_Wrong_Value_Text=One or more form parameters have invalid values.\n" +
@@ -366,6 +368,14 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
                         return false;
                     }
                 }
+            }
+        }
+        //verify the adapter unique name really is unique
+        if (currentOperation.equals(OperationType.COPY) || currentOperation.equals(OperationType.NEW) ||
+                (currentOperation.equals(OperationType.COPY) && !newOperatorDescriptor.getName().equals(oldOperatorDescriptor.getName()))) {
+            if (GPF.getDefaultInstance().getOperatorSpiRegistry().getOperatorSpi(newOperatorDescriptor.getName()) != null) {
+                Dialogs.showWarning(String.format(Bundle.MSG_Existing_UniqueName_Text()));
+                return false;
             }
         }
         return true;
