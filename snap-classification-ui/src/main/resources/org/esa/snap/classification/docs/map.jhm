@@ -4,7 +4,8 @@
         "http://java.sun.com/products/javahelp/map_2_0.dtd">
 
 <map version="2.0">
-    <mapID target="RandomForestClassifierOp" url="operators/RandomForestClassifierOp.html"/>
+	<mapID target="SVMClassifierOp" url="operators/SVMClassifierOp.html"/>
+	<mapID target="RandomForestClassifierOp" url="operators/RandomForestClassifierOp.html"/>
 	<mapID target="MaximumLikelihoodClassifierOp" url="operators/MaximumLikelihoodClassifierOp.html"/>
 	<mapID target="MinimumDistanceClassifierOp" url="operators/MinimumDistanceClassifierOp.html"/>
 	<mapID target="KNNClassifierOp" url="operators/KNNClassifierOp.html"/>
