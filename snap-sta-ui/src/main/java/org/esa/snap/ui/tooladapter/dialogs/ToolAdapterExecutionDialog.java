@@ -144,6 +144,9 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
                 forEach(p -> artificiallyAddedParams.addAll(((TemplateParameterDescriptor)p).getParameterDescriptors()));
         this.operatorDescriptor.getToolParameterDescriptors().addAll(artificiallyAddedParams);
         this.parameterSupport = new OperatorParameterSupport(this.operatorDescriptor);
+        Arrays.stream(this.operatorDescriptor.getToolParameterDescriptors().toArray()).
+                filter(p -> ToolAdapterConstants.FOLDER_PARAM_MASK.equals(((ToolParameterDescriptor)p).getParameterType())).
+                forEach(p -> parameterSupport.getPropertySet().getProperty(((ToolParameterDescriptor)p).getName()).getDescriptor().setAttribute("directory", true));
         form = new ToolExecutionForm(appContext, this.operatorDescriptor, parameterSupport.getPropertySet(),
                 getTargetProductSelector());
         OperatorMenu operatorMenu = new OperatorMenu(this.getJDialog(),
@@ -241,6 +244,7 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
     public void hide() {
         form.prepareHide();
         super.hide();
+        this.operatorDescriptor.getToolParameterDescriptors().removeAll(artificiallyAddedParams);
     }
 
     @Override
@@ -403,7 +407,6 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
         }
         //displayErrors();
         displayErrorMessage();
-        this.operatorDescriptor.getToolParameterDescriptors().removeAll(artificiallyAddedParams);
     }
 
     private void displayErrorMessage() {
