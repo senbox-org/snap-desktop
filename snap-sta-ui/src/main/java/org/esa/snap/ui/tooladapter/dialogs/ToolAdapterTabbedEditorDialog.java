@@ -97,6 +97,8 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
         addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_Authors_Text(), ToolAdapterConstants.AUTHORS, false);
         addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_Description_Text(), ToolAdapterConstants.DESCRIPTION, false);
 
+        propertyContainer.addPropertyChangeListener(ToolAdapterConstants.ALIAS, evt -> propertyContainer.setValue(ToolAdapterConstants.NAME, ToolAdapterConstants.OPERATOR_NAMESPACE + evt.getNewValue().toString()));
+
         java.util.List<String> menus = getAvailableMenuOptions(null);
         addComboField(descriptorPanel, Bundle.CTL_Label_MenuLocation_Text(), ToolAdapterConstants.MENU_LOCATION, menus, true, true);
 
