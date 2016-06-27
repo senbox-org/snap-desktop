@@ -1,3 +1,20 @@
+/*
+ *
+ *  * Copyright (C) 2016 CS ROMANIA
+ *  *
+ *  * This program is free software; you can redistribute it and/or modify it
+ *  * under the terms of the GNU General Public License as published by the Free
+ *  * Software Foundation; either version 3 of the License, or (at your option)
+ *  * any later version.
+ *  * This program is distributed in the hope that it will be useful, but WITHOUT
+ *  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ *  * more details.
+ *  *
+ *  * You should have received a copy of the GNU General Public License along
+ *  * with this program; if not, see http://www.gnu.org/licenses/
+ *
+ */
 package org.esa.snap.utils;
 
 import org.esa.snap.core.gpf.OperatorException;
@@ -84,24 +101,41 @@ public enum AdapterWatcher {
         }
     }
 
+    /**
+     * Enables this watch service to monitor the registered paths
+     */
     public void startMonitor() {
         isRunning = true;
         isSuspended = false;
         thread.start();
     }
 
+    /**
+     * Stops this watch service to monitor the registered paths
+     */
     public void stopMonitor() {
         isRunning = false;
     }
 
+    /**
+     * Pauses monitoring on the registered paths
+     */
     public void suspend() {
         isSuspended = true;
     }
 
+    /**
+     * Resumes monitoring on the registered paths
+     */
     public void resume() {
         isSuspended = false;
     }
 
+    /**
+     * Registers the watch service for the given path to monitor changes.
+     *
+     * @param path The path to monitor
+     */
     public void monitorPath(Path path) throws IOException {
         if (path != null && Files.isDirectory(path)) {
             WatchKey key = path.register(watcher, eventTypes);
@@ -110,6 +144,11 @@ public enum AdapterWatcher {
         }
     }
 
+    /**
+     * Unregisters the watch service from the given path.
+     *
+     * @param path  The path to unregister for
+     */
     public void unmonitorPath(Path path) {
         if (path != null && Files.isDirectory(path)) {
             WatchKey key = monitoredPaths.remove(path);
