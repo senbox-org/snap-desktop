@@ -266,6 +266,13 @@ public class ToolAdaptersManagementDialog extends ModelessDialog {
         model.addTableModelListener(l -> {
             String newPath = model.getValueAt(0, 1).toString();
             Path path = Paths.get(newPath);
+            Path oldPath = ToolAdapterIO.getAdaptersPath();
+            try {
+                if (Files.isSameFile(oldPath, path)) {
+                    return;
+                }
+            } catch (IOException ignored) {
+            }
             if (!Files.exists(path) &&
                 Dialogs.Answer.YES == Dialogs.requestDecision("Path does not exist", "The path you have entered does not exist.\nDo you want to create it?", true, "Don't ask me in the future")) {
                 try {
@@ -275,7 +282,6 @@ public class ToolAdaptersManagementDialog extends ModelessDialog {
                 }
             }
             if (Files.exists(path)) {
-                Path oldPath = ToolAdapterIO.getAdaptersPath();
                 ToolAdapterOperatorDescriptor[] operatorDescriptors = ToolAdapterActionRegistrar.getActionMap().values()
                         .toArray(new ToolAdapterOperatorDescriptor[ToolAdapterActionRegistrar.getActionMap().values().size()]);
                 for (ToolAdapterOperatorDescriptor descriptor : operatorDescriptors) {
