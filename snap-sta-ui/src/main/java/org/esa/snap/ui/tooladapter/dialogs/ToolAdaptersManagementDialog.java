@@ -20,6 +20,7 @@ package org.esa.snap.ui.tooladapter.dialogs;
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
 import org.esa.snap.core.gpf.operators.tooladapter.*;
+import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.tango.TangoIcons;
 import org.esa.snap.ui.AppContext;
@@ -28,6 +29,7 @@ import org.esa.snap.ui.tooladapter.actions.EscapeAction;
 import org.esa.snap.ui.tooladapter.actions.ToolAdapterActionRegistrar;
 import org.esa.snap.ui.tooladapter.model.OperationType;
 import org.esa.snap.ui.tooladapter.model.OperatorsTableModel;
+import org.esa.snap.utils.AdapterWatcher;
 import org.openide.util.NbBundle;
 
 import javax.swing.*;
@@ -279,10 +281,16 @@ public class ToolAdaptersManagementDialog extends ModelessDialog {
                 for (ToolAdapterOperatorDescriptor descriptor : operatorDescriptors) {
                     ToolAdapterIO.removeOperator(descriptor, false);
                 }
-                ToolAdapterIO.setAdaptersPath(Paths.get(newPath));
+                AdapterWatcher.INSTANCE.unmonitorPath(oldPath);
+                ToolAdapterIO.setAdaptersPath(path);
                 if (!newPath.equals(oldPath.toAbsolutePath().toString())) {
                     ToolAdapterIO.searchAndRegisterAdapters();
                     refreshContent();
+                }
+                try {
+                    AdapterWatcher.INSTANCE.monitorPath(path);
+                } catch (IOException e) {
+                    SystemUtils.LOG.warning(String.format("Could not watch for the new adapter path %s [%s]", path.toString(), e.getMessage()));
                 }
             }
         });

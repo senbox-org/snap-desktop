@@ -4,6 +4,7 @@ import org.esa.snap.core.gpf.OperatorException;
 import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterIO;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterRegistry;
+import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.modules.ModulePackager;
 import org.openide.modules.Places;
 
@@ -30,10 +31,12 @@ public enum AdapterWatcher {
     private volatile boolean isRunning;
     private volatile boolean isSuspended;
     private Map<Path, String> jarAliases;
+    private Map<Path, WatchKey> monitoredPaths;
 
     AdapterWatcher() {
         try {
             watcher = FileSystems.getDefault().newWatchService();
+            monitoredPaths = new HashMap<>();
             jarAliases = new HashMap<>();
             Path adaptersFolder = ToolAdapterIO.getAdaptersPath();
             File userDirectory = Places.getUserDirectory();
@@ -99,9 +102,21 @@ public enum AdapterWatcher {
         isSuspended = false;
     }
 
-    private void monitorPath(Path path) throws IOException {
+    public void monitorPath(Path path) throws IOException {
         if (path != null && Files.isDirectory(path)) {
-            path.register(watcher, eventTypes);
+            WatchKey key = path.register(watcher, eventTypes);
+            monitoredPaths.put(path, key);
+            SystemUtils.LOG.info(String.format("Registered %s for watching", path.toString()));
+        }
+    }
+
+    public void unmonitorPath(Path path) {
+        if (path != null && Files.isDirectory(path)) {
+            WatchKey key = monitoredPaths.remove(path);
+            if (key != null) {
+                key.cancel();
+                SystemUtils.LOG.info(String.format("Unregistered %s for watching", path.toString()));
+            }
         }
     }
 
