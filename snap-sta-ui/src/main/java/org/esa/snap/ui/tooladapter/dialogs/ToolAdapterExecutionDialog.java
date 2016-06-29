@@ -45,11 +45,17 @@ import org.openide.util.Cancellable;
 import org.openide.util.NbBundle;
 
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -160,6 +166,13 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
         /* Add workaround for SNAP-402 (JIRA) issue */
         updatePrimitiveZeroValuesHashMap();
 
+        this.getJDialog().addWindowListener(new WindowAdapter() {
+            public void windowOpened(WindowEvent e) {form.refreshDimension();}
+        });
+        this.getJDialog().addComponentListener(new ComponentAdapter() {
+            public void componentResized(ComponentEvent e) {form.refreshDimension();}
+        });
+        this.getJDialog().setMinimumSize(new Dimension(250, 250));
     }
 
     /* Begin @Override methods section */
