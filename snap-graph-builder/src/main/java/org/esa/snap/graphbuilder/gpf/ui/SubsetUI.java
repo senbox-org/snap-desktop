@@ -168,7 +168,9 @@ public class SubsetUI extends BaseOperatorUI {
             h = Integer.parseInt(heightStr);
 
         Rectangle rectRegion = new Rectangle(x, y, w, h);
-        if (!rectRegion.isEmpty()) {
+        if (rectRegion.isEmpty()) {
+            paramMap.remove("region");
+        } else {
             paramMap.put("region", rectRegion);
         }
 
