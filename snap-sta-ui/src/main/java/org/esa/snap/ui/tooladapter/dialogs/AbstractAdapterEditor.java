@@ -33,6 +33,10 @@ import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.OperatorException;
 import org.esa.snap.core.gpf.OperatorSpi;
 import org.esa.snap.core.gpf.descriptor.*;
+import org.esa.snap.core.gpf.descriptor.template.TemplateEngine;
+import org.esa.snap.core.gpf.descriptor.template.TemplateException;
+import org.esa.snap.core.gpf.descriptor.template.TemplateFile;
+import org.esa.snap.core.gpf.descriptor.template.TemplateType;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterConstants;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterIO;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterOpSpi;
@@ -47,6 +51,7 @@ import org.esa.snap.ui.tooladapter.model.OperatorParametersTable;
 import org.esa.snap.ui.tooladapter.model.VariablesTable;
 import org.esa.snap.ui.tooladapter.preferences.ToolAdapterOptionsController;
 import org.esa.snap.ui.tooladapter.validators.RequiredFieldValidator;
+import org.esa.snap.utils.AdapterWatcher;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 import org.openide.util.NbBundle;
@@ -60,7 +65,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -79,25 +83,26 @@ import static org.esa.snap.utils.SpringUtilities.makeCompactGrid;
  */
 @NbBundle.Messages({
         "CTL_Label_Alias_Text=Alias:",
-        "CTL_Label_UniqueName_Text=Unique name:",
+        "CTL_Label_UniqueName_Text=Unique Name:",
         "CTL_Label_Label_Text=Label:",
         "CTL_Label_Version_Text=Version:",
         "CTL_Label_Copyright_Text=Copyright:",
         "CTL_Label_Authors_Text=Authors:",
         "CTL_Label_Description_Text=Description:",
-        "CTL_Label_MenuLocation_Text=Menu location:",
+        "CTL_Label_MenuLocation_Text=Menu Location:",
+        "CTL_Label_TemplateType_Text=Template Type:",
         "CTL_Panel_OperatorDescriptor_Text=Operator Descriptor",
-        "CTL_Label_PreprocessingTool_Text=Preprocessing tool",
-        "CTL_Label_WriteBefore_Text=Write before processing using:",
+        "CTL_Label_PreprocessingTool_Text=Preprocessing Tool: ",
+        "CTL_Label_WriteBefore_Text=Before Processing Convert To: ",
         "CTL_Panel_PreProcessing_Border_TitleText=Preprocessing",
         "CTL_Panel_ConfigParams_Text=Configuration Parameters",
-        "CTL_Label_ToolLocation_Text=Tool location: ",
-        "CTL_Label_WorkDir_Text=Working directory: ",
-        "CTL_Label_CmdLineTemplate_Text=Command line template:",
+        "CTL_Label_ToolLocation_Text=Tool Executable: ",
+        "CTL_Label_WorkDir_Text=Working Directory: ",
+        "CTL_Label_CmdLineTemplate_Text=Command Line Template:",
         "CTL_Panel_OutputPattern_Border_TitleText=Tool Output Patterns",
-        "CTL_Label_ProgressPattern=Progress pattern:",
-        "CTL_Label_ErrorPattern=Error pattern:",
-        "CTL_Label_StepPattern=Step operation pattern:",
+        "CTL_Label_ProgressPattern=Numeric Progress Pattern: ",
+        "CTL_Label_ErrorPattern=Error Pattern: ",
+        "CTL_Label_StepPattern=Intermediate Operation Pattern: ",
         "CTL_Panel_SysVar_Border_TitleText=System Variables",
         "CTL_Label_RadioButton_ExistingMenus=Existing Menus",
         "CTL_Label_RadioButton_NewMenu=Create Menu",
@@ -111,6 +116,8 @@ import static org.esa.snap.utils.SpringUtilities.makeCompactGrid;
                 "Please specify the location of an existing executable.",
         "MSG_Inexistent_WorkDir_Text=The working directory does not exist.\n" +
                 "Please specify a valid location.",
+        "MSG_Existing_UniqueName_Text=An operator with the same unique name is already registered.\n" +
+                "Please specify an unique name for the operator.",
         "MSG_Inexistem_Parameter_Value_Text=The file or folder for parameter %s does not exist.\n" +
                 "Please specify a valid location or change the %s property of the parameter.",
         "MSG_Wrong_Value_Text=One or more form parameters have invalid values.\n" +
@@ -171,7 +178,8 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
     }
 
     private static boolean useTabsForEditorDialog() {
-        return Boolean.parseBoolean(NbPreferences.forModule(Dialogs.class).get(ToolAdapterOptionsController.PREFERENCE_KEY_TABBED_WINDOW, "false"));
+        //return Boolean.parseBoolean(NbPreferences.forModule(Dialogs.class).get(ToolAdapterOptionsController.PREFERENCE_KEY_TABBED_WINDOW, "false"));
+        return true;
     }
 
     private AbstractAdapterEditor(AppContext appContext, JDialog parent, String title) {
@@ -204,7 +212,7 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
             parameterDescriptor.setNotNull(false);
             newOperatorDescriptor.getToolParameterDescriptors().add(parameterDescriptor);
         } else {
-            Optional<TemplateParameterDescriptor> result = newOperatorDescriptor.getToolParameterDescriptors()
+            Optional<ToolParameterDescriptor> result = newOperatorDescriptor.getToolParameterDescriptors()
                     .stream()
                     .filter(p -> p.getName().equals(ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE)).findFirst();
             if (result.isPresent()) {
@@ -362,6 +370,14 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
                 }
             }
         }
+        //verify the adapter unique name really is unique
+        if (currentOperation.equals(OperationType.COPY) || currentOperation.equals(OperationType.NEW) ||
+                (currentOperation.equals(OperationType.COPY) && !newOperatorDescriptor.getName().equals(oldOperatorDescriptor.getName()))) {
+            if (GPF.getDefaultInstance().getOperatorSpiRegistry().getOperatorSpi(newOperatorDescriptor.getName()) != null) {
+                Dialogs.showWarning(String.format(Bundle.MSG_Existing_UniqueName_Text()));
+                return false;
+            }
+        }
         return true;
     }
 
@@ -376,51 +392,42 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
                 Dialogs.showWarning(Bundle.MSG_Wrong_Usage_Array_Text());
                 this.getJDialog().requestFocus();
             } else {
-                if (newOperatorDescriptor.getSourceProductCount() == 0) {
-                    Dialogs.showInformation("The template is not using the parameter $sourceProduct.\nNo source product selection will be available at execution time.", "empty.source.info");
-                }
-
-                if (!newOperatorDescriptor.isFromPackage()) {
-                    newOperatorDescriptor.setSource(ToolAdapterOperatorDescriptor.SOURCE_USER);
-                }
-                Map<File, String> templates = new HashMap<>();
-                newOperatorDescriptor.setTemplateFileLocation(newOperatorDescriptor.getAlias() + ToolAdapterConstants.TOOL_VELO_TEMPLATE_SUFIX);
-                java.util.List<TemplateParameterDescriptor> toolParameterDescriptors = newOperatorDescriptor.getToolParameterDescriptors();
-                toolParameterDescriptors.stream().filter(param -> paramsTable.getBindingContext().getBinding(param.getName()) != null)
-                        .filter(param -> paramsTable.getBindingContext().getBinding(param.getName()).getPropertyValue() != null)
-                        .forEach(param -> {
-                            Object propertyValue = paramsTable.getBindingContext().getBinding(param.getName()).getPropertyValue();
-                            if (param.isTemplateBefore() || param.isTemplateAfter()) {
-                                final File paramTemplateFile = new File(propertyValue.toString());
-                                param.setDefaultValue(paramTemplateFile.getName());
-                                File fileToAdd;
-                                if (!newOperatorDescriptor.getAlias().equals(oldOperatorDescriptor.getAlias())) {
-                                    File oldFile = ToolAdapterIO.ensureLocalCopy(paramTemplateFile, oldOperatorDescriptor.getAlias());
-                                    fileToAdd = ToolAdapterIO.ensureLocalCopy(oldFile, newOperatorDescriptor.getAlias());
-                                } else {
-                                    fileToAdd = ToolAdapterIO.ensureLocalCopy(paramTemplateFile, newOperatorDescriptor.getAlias());
-                                }
-                                try {
-                                    templates.put(fileToAdd, new String(Files.readAllBytes(Paths.get(fileToAdd.toURI()))));
-                                } catch (IOException e) {
-                                    logger.severe(e.getMessage());
-                                }
-                            } else {
-                                String defaultValueString = "";
-                                if (propertyValue.getClass().isArray()) {
-                                    defaultValueString = String.join(ArrayConverter.SEPARATOR,
-                                            Arrays.asList((Object[]) propertyValue).stream().map(Object::toString).collect(Collectors.toList()));
-                                } else {
-                                    defaultValueString = propertyValue.toString();
-                                }
-                                param.setDefaultValue(defaultValueString);
-                            }
-                        });
-                java.util.List<TemplateParameterDescriptor> remParameters = toolParameterDescriptors.stream().filter(param ->
-                        (ToolAdapterConstants.TOOL_SOURCE_PRODUCT_ID.equals(param.getName()) || ToolAdapterConstants.TOOL_SOURCE_PRODUCT_FILE.equals(param.getName()))).
-                        collect(Collectors.toList());
-                newOperatorDescriptor.removeParamDescriptors(remParameters);
+                Path backupCopy = null;
+                Exception thrown = null;
                 try {
+                    backupCopy = ToolAdapterIO.backupOperator(oldOperatorDescriptor);
+                    if (newOperatorDescriptor.getSourceProductCount() == 0) {
+                        Dialogs.showInformation("The template is not using the parameter $sourceProduct.\nNo source product selection will be available at execution time.", "empty.source.info");
+                    }
+
+                    if (!newOperatorDescriptor.isFromPackage()) {
+                        newOperatorDescriptor.setSource(ToolAdapterOperatorDescriptor.SOURCE_USER);
+                    }
+                    TemplateFile template = new TemplateFile(TemplateEngine.createInstance(newOperatorDescriptor, TemplateType.VELOCITY),
+                                                             newOperatorDescriptor.getAlias() + ToolAdapterConstants.TOOL_VELO_TEMPLATE_SUFIX);
+                    template.setContents(templateContent, true);
+                    newOperatorDescriptor.setTemplate(template);
+                    java.util.List<ToolParameterDescriptor> toolParameterDescriptors = newOperatorDescriptor.getToolParameterDescriptors();
+                    toolParameterDescriptors.stream().filter(param -> paramsTable.getBindingContext().getBinding(param.getName()) != null)
+                            .filter(param -> paramsTable.getBindingContext().getBinding(param.getName()).getPropertyValue() != null)
+                            .forEach(param -> {
+                                Object propertyValue = paramsTable.getBindingContext().getBinding(param.getName()).getPropertyValue();
+                                if (param.isParameter()) {
+                                    String defaultValueString = "";
+                                    if (propertyValue.getClass().isArray()) {
+                                        defaultValueString = String.join(ArrayConverter.SEPARATOR,
+                                                Arrays.asList((Object[]) propertyValue).stream().map(Object::toString).collect(Collectors.toList()));
+                                    } else {
+                                        defaultValueString = propertyValue.toString();
+                                    }
+                                    param.setDefaultValue(defaultValueString);
+                                }
+                            });
+                    java.util.List<ToolParameterDescriptor> remParameters = toolParameterDescriptors.stream().filter(param ->
+                            (ToolAdapterConstants.TOOL_SOURCE_PRODUCT_ID.equals(param.getName()) || ToolAdapterConstants.TOOL_SOURCE_PRODUCT_FILE.equals(param.getName()))).
+                            collect(Collectors.toList());
+                    newOperatorDescriptor.removeParamDescriptors(remParameters);
+
                     if (rbMenuNew.isSelected()) {
                         String customMenuLocationText = customMenuLocation.getText();
                         if (customMenuLocationText != null && !customMenuLocationText.isEmpty()) {
@@ -431,36 +438,31 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
                     if (menuLocation != null && !menuLocation.startsWith("Menu/")) {
                         newOperatorDescriptor.setMenuLocation("Menu/" + menuLocation);
                     }
-                    /*if (!this.operatorIsNew) {
-                        ToolAdapterActionRegistrar.removeOperatorMenu(oldOperatorDescriptor);
-                        //ToolAdapterIO.removeOperator(oldOperatorDescriptor, false);
-                    }*/
-                    //deleting the files on disk was moved to the saveAndRegister method, since in any situation, the old files must be deleted
-                    //(on new, there are no old files, on edit, it must be deleted, and on duplicate, the duplicated operator is transmited,
-                    // and his files doesn't exist)
-                    /*if (this.currentOperation == OperationType.EDIT) {
-                        ToolAdapterIO.removeOperator(oldOperatorDescriptor, true);
-                    }*/
-                    ToolAdapterIO.saveAndRegisterOperator(newOperatorDescriptor, templateContent);
-                    templates.keySet().stream().forEach(k -> {
-                        if (!k.exists()) {
-                            try {
-                                if (k.createNewFile()) {
-                                    Files.write(Paths.get(k.toURI()), templates.get(k).getBytes(), StandardOpenOption.WRITE);
-                                }
-                            } catch (IOException e) {
-                                logger.severe(e.getMessage());
-                            }
-                        }
-                    });
-                    //ToolAdapterActionRegistrar.registerOperatorMenu(newOperatorDescriptor);
-                    //the editing window is closed only if no error occur
-                    //super.onOK();
+                    AdapterWatcher.INSTANCE.suspend();
+                    ToolAdapterIO.saveAndRegisterOperator(newOperatorDescriptor);
+                    AdapterWatcher.INSTANCE.resume();
+                    ToolAdapterIO.deleteFolder(backupCopy);
                     super.setButtonID(ID_OK);
                     super.hide();
+                } catch (TemplateException tex) {
+                    logger.warning(tex.getMessage());
+                    Dialogs.showError("The adapter template contains errors [" + tex.toString() + "]!");
+                    thrown = tex;
                 } catch (Exception e) {
                     logger.warning(e.getMessage());
                     Dialogs.showError("There was an error on saving the operator; check the disk space and permissions and try again! " + e.toString());
+                    thrown = e;
+                } finally {
+                    if (thrown != null) {
+                        if (backupCopy != null) {
+                            try {
+                                ToolAdapterIO.restoreOperator(oldOperatorDescriptor, backupCopy);
+                            } catch (IOException e) {
+                                logger.severe(e.getMessage());
+                                Dialogs.showError("The operator could not be restored [" + e.getMessage() + "]");
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -527,6 +529,22 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
         JComponent editorComponent = textEditor.createEditorComponent(propertyDescriptor, bindingContext);
         editorComponent.setPreferredSize(new Dimension(editorComponent.getPreferredSize().width, controlHeight));
         editorComponent.setMaximumSize(new Dimension(editorComponent.getMaximumSize().width, controlHeight));
+        parent.add(editorComponent);
+    }
+
+    protected void addComboField(JPanel parent, String labelText, String propertyName, boolean isRequired, boolean isEditable) {
+        PropertyDescriptor propertyDescriptor = propertyContainer.getDescriptor(propertyName);
+        propertyDescriptor.setNotEmpty(isRequired);
+        PropertyEditor editor = PropertyEditorRegistry.getInstance().findPropertyEditor(propertyDescriptor);
+        JComponent editorComponent = editor.createEditorComponent(propertyDescriptor, bindingContext);
+        editorComponent.setMaximumSize(new Dimension(editorComponent.getMaximumSize().width, controlHeight));
+        editorComponent.setPreferredSize(new Dimension(editorComponent.getPreferredSize().width, controlHeight));
+        if (editorComponent instanceof JComboBox) {
+            JComboBox comboBox = (JComboBox)editorComponent;
+            comboBox.setEditable(isEditable);
+            comboBox.setEnabled(isEditable);
+        }
+        parent.add(new JLabel(labelText));
         parent.add(editorComponent);
     }
 
@@ -643,12 +661,19 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
             templateContent = new JTextArea("", 15, 9);
         }
         try {
+            TemplateFile template;
             if ( (currentOperation == OperationType.NEW) || (currentOperation == OperationType.COPY) ) {
-                if (oldOperatorDescriptor.getTemplateFileLocation() != null) {
-                    templateContent.setText(ToolAdapterIO.readOperatorTemplate(oldOperatorDescriptor.getName()));
+                template = oldOperatorDescriptor.getTemplate();
+                if (template != null) {
+                    //templateContent.setText(ToolAdapterIO.readOperatorTemplate(oldOperatorDescriptor.getName()));
+                    templateContent.setText(template.getContents());
                 }
             } else {
-                templateContent.setText(ToolAdapterIO.readOperatorTemplate(newOperatorDescriptor.getName()));
+                template = newOperatorDescriptor.getTemplate();
+                if (template != null) {
+                    //templateContent.setText(ToolAdapterIO.readOperatorTemplate(newOperatorDescriptor.getName()));
+                    templateContent.setText(template.getContents());
+                }
             }
         } catch (IOException | OperatorException e) {
             logger.warning(e.getMessage());

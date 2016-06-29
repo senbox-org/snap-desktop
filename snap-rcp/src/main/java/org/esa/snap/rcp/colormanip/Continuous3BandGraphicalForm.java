@@ -251,7 +251,7 @@ class Continuous3BandGraphicalForm implements ColorManipulationChildForm {
         Continuous1BandGraphicalForm.setDisplayProperties(model, channelSource);
         imageInfoEditor.setModel(model);
         moreOptionsForm.getBindingContext().getBinding(CHANNEL_SOURCE_NAME_PROPERTY).setPropertyValue(channelSource.getName());
-        moreOptionsForm.getBindingContext().getBinding(GAMMA_PROPERTY).setPropertyValue(model.getGamma());
+        moreOptionsForm.getBindingContext().getBinding(GAMMA_PROPERTY).setPropertyValue(gamma);
     }
 
     private void handleGammaChanged() {

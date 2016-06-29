@@ -40,12 +40,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
-import java.util.stream.Collectors;
 
 /**
  * Helper class for creating menu entries for tool adapter operators.
@@ -205,7 +203,7 @@ public class ToolAdapterActionRegistrar {
                     if (operatorSpis.size() == 0) {
                         operatorSpis.addAll(ToolAdapterIO.searchAndRegisterAdapters());
                     }
-                    final List<OperatorSpi> orphaned = operatorSpis.stream()
+                    /*final List<OperatorSpi> orphaned = operatorSpis.stream()
                             .filter(spi -> spi instanceof ToolAdapterOpSpi &&
                                     ((ToolAdapterOperatorDescriptor) spi.getOperatorDescriptor()).isFromPackage() &&
                                     jarAdapters != null && !jarAdapters.containsKey(spi.getOperatorDescriptor().getAlias()))
@@ -215,7 +213,7 @@ public class ToolAdapterActionRegistrar {
                         operatorSpis.remove(spi);
                         //ToolAdapterActionRegistrar.removeOperatorMenu(operatorDescriptor);
                         ToolAdapterIO.removeOperator(operatorDescriptor);
-                    });
+                    });*/
                     operatorSpis.stream().filter(spi -> spi instanceof ToolAdapterOpSpi).forEach(spi -> {
                         ToolAdapterOperatorDescriptor operatorDescriptor = (ToolAdapterOperatorDescriptor) spi.getOperatorDescriptor();
                         registerOperatorMenu(operatorDescriptor, false);

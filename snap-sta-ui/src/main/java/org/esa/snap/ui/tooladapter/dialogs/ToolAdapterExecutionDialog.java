@@ -22,13 +22,10 @@ import com.bc.ceres.core.ProgressMonitor;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.Operator;
-import org.esa.snap.core.gpf.descriptor.ParameterDescriptor;
-import org.esa.snap.core.gpf.descriptor.SystemVariable;
-import org.esa.snap.core.gpf.descriptor.TemplateParameterDescriptor;
-import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
+import org.esa.snap.core.gpf.descriptor.*;
+import org.esa.snap.core.gpf.descriptor.template.TemplateFile;
 import org.esa.snap.core.gpf.operators.tooladapter.DefaultOutputConsumer;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterConstants;
-import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterIO;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterOp;
 import org.esa.snap.core.gpf.ui.OperatorMenu;
 import org.esa.snap.core.gpf.ui.OperatorParameterSupport;
@@ -49,7 +46,6 @@ import org.openide.util.NbBundle;
 
 import javax.swing.*;
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -99,6 +95,8 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
 
     public static final String helpID = "sta_execution";
 
+    private List<ToolParameterDescriptor> artificiallyAddedParams;
+
     /**
      * Constructor.
      *
@@ -138,12 +136,21 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
     }
 
     private void initialize(ToolAdapterOperatorDescriptor descriptor) {
+        //this.operatorDescriptor = new ToolAdapterOperatorDescriptor(descriptor);
         this.operatorDescriptor = descriptor;
-        this.parameterSupport = new OperatorParameterSupport(descriptor);
-        form = new ToolExecutionForm(appContext, descriptor, parameterSupport.getPropertySet(),
+        //add paraeters of template parameters
+        artificiallyAddedParams = new ArrayList<>();
+        Arrays.stream(this.operatorDescriptor.getToolParameterDescriptors().toArray()).filter(p -> ((ToolParameterDescriptor)p).isTemplateParameter()).
+                forEach(p -> artificiallyAddedParams.addAll(((TemplateParameterDescriptor)p).getParameterDescriptors()));
+        this.operatorDescriptor.getToolParameterDescriptors().addAll(artificiallyAddedParams);
+        this.parameterSupport = new OperatorParameterSupport(this.operatorDescriptor);
+        Arrays.stream(this.operatorDescriptor.getToolParameterDescriptors().toArray()).
+                filter(p -> ToolAdapterConstants.FOLDER_PARAM_MASK.equals(((ToolParameterDescriptor)p).getParameterType())).
+                forEach(p -> parameterSupport.getPropertySet().getProperty(((ToolParameterDescriptor)p).getName()).getDescriptor().setAttribute("directory", true));
+        form = new ToolExecutionForm(appContext, this.operatorDescriptor, parameterSupport.getPropertySet(),
                 getTargetProductSelector());
         OperatorMenu operatorMenu = new OperatorMenu(this.getJDialog(),
-                descriptor,
+                this.operatorDescriptor,
                 parameterSupport,
                 appContext,
                 helpID);
@@ -163,10 +170,14 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
         List<ParameterDescriptor> descriptors = Arrays.stream(operatorDescriptor.getParameterDescriptors())
                 .filter(p -> ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE.equals(p.getName()))
                 .collect(Collectors.toList());
-        String templateContents = "";
+        String templateContents;
         try {
-            templateContents = ToolAdapterIO.readOperatorTemplate(operatorDescriptor.getName());
-        } catch (IOException ignored) {
+            //templateContents = ToolAdapterIO.readOperatorTemplate(operatorDescriptor.getName());
+            TemplateFile template = operatorDescriptor.getTemplate();
+            templateContents = template.getContents();
+        } catch (Exception ex) {
+            showErrorDialog(String.format("Cannot read operator template [%s]", ex.getMessage()));
+            return;
         }
         if (Arrays.stream(sourceProducts).anyMatch(p -> p == null)) {
             Dialogs.Answer decision = Dialogs.requestDecision("No Product Selected", Bundle.NoSourceProductWarning_Text(), false,
@@ -208,6 +219,7 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
                                                 operatorDescriptor.getStepPattern(),
                                                 progressWrapper,
                                                 form.console);
+                    form.console.clear();
                     progressWrapper.setConsumer(consumer);
                     ((ToolAdapterOp) op).setProgressMonitor(progressWrapper);
                     ((ToolAdapterOp) op).setConsumer(consumer);
@@ -232,6 +244,7 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
     public void hide() {
         form.prepareHide();
         super.hide();
+        this.operatorDescriptor.getToolParameterDescriptors().removeAll(artificiallyAddedParams);
     }
 
     @Override
@@ -328,12 +341,12 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
                 warnings.add("Target product folder is not accessible or does not exist");
             }
         }
-        List<TemplateParameterDescriptor> mandatoryParams = operatorDescriptor.getToolParameterDescriptors()
+        List<ToolParameterDescriptor> mandatoryParams = operatorDescriptor.getToolParameterDescriptors()
                                                                 .stream()
                                                                 .filter(d -> d.isNotEmpty() || d.isNotNull())
                                                                 .collect(Collectors.toList());
         Map<String, Object> parameterMap = parameterSupport.getParameterMap();
-        for (TemplateParameterDescriptor mandatoryParam : mandatoryParams) {
+        for (ToolParameterDescriptor mandatoryParam : mandatoryParams) {
             String name = mandatoryParam.getName();
             if (!parameterMap.containsKey(name) ||
                     parameterMap.get(name) == null ||

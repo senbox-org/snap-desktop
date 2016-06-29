@@ -23,6 +23,7 @@ import com.bc.ceres.binding.accessors.MapEntryAccessor;
 import org.esa.snap.core.dataio.ProductIO;
 import org.esa.snap.core.datamodel.CrsGeoCoding;
 import org.esa.snap.core.datamodel.GeoCoding;
+import org.esa.snap.core.datamodel.PixelPos;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.annotations.ParameterDescriptorFactory;
@@ -70,13 +71,18 @@ class MosaicFormModel {
     public static final String PROPERTY_CRS = "crs";
     public static final String PROPERTY_PIXEL_SIZE_X = "pixelSizeX";
     public static final String PROPERTY_PIXEL_SIZE_Y = "pixelSizeY";
+    public static final String PROPERTY_MAX_VALUE = "maxValue";
+    public static final String PROPERTY_MIN_VALUE = "minValue";
 
     private final PropertySet container;
     private final Map<String, Object> parameterMap = new HashMap<>();
     private final Map<File, Product> sourceProductMap = Collections.synchronizedMap(new HashMap<File, Product>());
     private final WorldMapPaneDataModel worldMapModel = new WorldMapPaneDataModel();
+    private MosaicForm parentForm;
 
-    MosaicFormModel() {
+    MosaicFormModel(MosaicForm parentForm) {
+        this.parentForm = parentForm;
+
         container = ParameterDescriptorFactory.createMapBackedOperatorPropertyContainer("Mosaic", parameterMap);
         addTransientProperty(PROPERTY_UPDATE_PRODUCT, Product.class);
         addTransientProperty(PROPERTY_UPDATE_MODE, Boolean.class);
@@ -106,6 +112,7 @@ class MosaicFormModel {
     }
 
     void setSourceProducts(File[] files) throws IOException {
+        boolean changeSourceProducts = false;
         final List<File> fileList = Arrays.asList(files);
         final Iterator<Map.Entry<File, Product>> iterator = sourceProductMap.entrySet().iterator();
         while (iterator.hasNext()) {
@@ -115,8 +122,10 @@ class MosaicFormModel {
                 worldMapModel.removeProduct(product);
                 iterator.remove();
                 product.dispose();
+                changeSourceProducts = true;
             }
         }
+
         for (int i = 0; i < files.length; i++) {
             final File file = files[i];
             Product product = sourceProductMap.get(file);
@@ -126,12 +135,88 @@ class MosaicFormModel {
                 if (Boolean.TRUE.equals(getPropertyValue(PROPERTY_SHOW_SOURCE_PRODUCTS))) {
                     worldMapModel.addProduct(product);
                 }
+                changeSourceProducts = true;
             }
             final int refNo = i + 1;
             if (product.getRefNo() != refNo) {
                 product.resetRefNo();
                 product.setRefNo(refNo);
             }
+        }
+
+        /* update region selectable map bounds according to the SourceProducts status: REMOVE or NEW product(s) */
+        if (changeSourceProducts) updateRegionSelectableMapBounds(files);
+    }
+
+    void updateRegionSelectableMapBounds(File[] files){
+
+        /* set default values in case files.length == 0 */
+        double southBoundVal = 35.0;
+        double northBoundVal = 75.0;
+        double westBoundVal = -15.0;
+        double eastBoundVal = 30.0;
+
+        if ( (files.length >= 1) && (sourceProductMap.get(files[0]) != null) ) {
+            southBoundVal = computeLatitude(sourceProductMap.get(files[0]), PROPERTY_MIN_VALUE);
+            northBoundVal = computeLatitude(sourceProductMap.get(files[0]), PROPERTY_MAX_VALUE);
+            westBoundVal = computeLongitude(sourceProductMap.get(files[0]), PROPERTY_MIN_VALUE);
+            eastBoundVal = computeLongitude(sourceProductMap.get(files[0]), PROPERTY_MAX_VALUE);
+        }
+
+        for (int i = 1; i < files.length; i++) {
+            if (sourceProductMap.get(files[i]) != null) {
+                double southBoundValTemp = computeLatitude(sourceProductMap.get(files[i]), PROPERTY_MIN_VALUE);
+                double northBoundValTemp = computeLatitude(sourceProductMap.get(files[i]), PROPERTY_MAX_VALUE);
+                double westBoundValTemp = computeLongitude(sourceProductMap.get(files[i]), PROPERTY_MIN_VALUE);
+                double eastBoundValTemp = computeLongitude(sourceProductMap.get(files[i]), PROPERTY_MAX_VALUE);
+
+                if (southBoundValTemp < southBoundVal) southBoundVal = southBoundValTemp;
+                if (northBoundValTemp > northBoundVal) northBoundVal = northBoundValTemp;
+                if (westBoundValTemp < westBoundVal) westBoundVal = westBoundValTemp;
+                if (eastBoundValTemp > eastBoundVal) eastBoundVal = eastBoundValTemp;
+            }
+        }
+
+        parentForm.setCardinalBounds(southBoundVal, northBoundVal, westBoundVal,eastBoundVal);
+
+    }
+
+    double computeLatitude(Product product, String level){
+
+        Double[] latitudePoints = {
+                            product.getSceneGeoCoding().getGeoPos(new PixelPos(0, 0), null).getLat(),
+                            product.getSceneGeoCoding().getGeoPos(new PixelPos(0, product.getSceneRasterHeight()), null).getLat(),
+                            product.getSceneGeoCoding().getGeoPos(new PixelPos(product.getSceneRasterWidth(), 0), null).getLat(),
+                            product.getSceneGeoCoding().getGeoPos(new PixelPos(product.getSceneRasterWidth(), product.getSceneRasterHeight()), null).getLat()
+        };
+
+        switch(level) {
+            case PROPERTY_MIN_VALUE :
+                return (double) Collections.min(Arrays.asList(latitudePoints));
+            case PROPERTY_MAX_VALUE :
+                return (double) Collections.max(Arrays.asList(latitudePoints));
+            default :
+                return Double.MAX_VALUE;
+        }
+
+    }
+
+    double computeLongitude(Product product, String level){
+
+        Double[] longitudePoints = {
+                product.getSceneGeoCoding().getGeoPos(new PixelPos(0, 0), null).getLon(),
+                product.getSceneGeoCoding().getGeoPos(new PixelPos(0, product.getSceneRasterHeight()), null).getLon(),
+                product.getSceneGeoCoding().getGeoPos(new PixelPos(product.getSceneRasterWidth(), 0), null).getLon(),
+                product.getSceneGeoCoding().getGeoPos(new PixelPos(product.getSceneRasterWidth(), product.getSceneRasterHeight()), null).getLon()
+        };
+
+        switch(level) {
+            case PROPERTY_MIN_VALUE :
+                return (double) Collections.min(Arrays.asList(longitudePoints));
+            case PROPERTY_MAX_VALUE :
+                return (double) Collections.max(Arrays.asList(longitudePoints));
+            default :
+                return Double.MAX_VALUE;
         }
     }
 
