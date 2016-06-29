@@ -22,6 +22,7 @@ import com.thoughtworks.xstream.io.copy.HierarchicalStreamCopier;
 import com.thoughtworks.xstream.io.xml.XppDomWriter;
 import com.thoughtworks.xstream.io.xml.XppReader;
 import com.thoughtworks.xstream.io.xml.xppdom.XppDom;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.Operator;
 import org.esa.snap.core.gpf.OperatorSpi;
@@ -197,11 +198,12 @@ public class OperatorMenu {
             }
         }
 
-        private XppDom createDom(String xml) {
-            XppDomWriter domWriter = new XppDomWriter();
-            new HierarchicalStreamCopier().copy(new XppReader(new StringReader(xml), new MXParser()), domWriter);
-            return domWriter.getConfiguration();
-        }
+    }
+
+    static XppDom createDom(String xml) {
+        XppDomWriter domWriter = new XppDomWriter();
+        new HierarchicalStreamCopier().copy(new XppReader(new StringReader(xml), new MXParser()), domWriter);
+        return domWriter.getConfiguration();
     }
 
     private class SaveParametersAction extends AbstractAction {
@@ -228,7 +230,9 @@ public class OperatorMenu {
                     File selectedFile = fileChooser.getSelectedFile();
                     selectedFile = FileUtils.ensureExtension(selectedFile,
                                                              "." + parameterFileFilter.getExtensions()[0]);
-                    String xmlString = parameterSupport.toDomElement().toXml();
+                    DomElement domElement = parameterSupport.toDomElement();
+                    escapeXmlElements(domElement);
+                    String xmlString = domElement.toXml();
                     writeToFile(xmlString, selectedFile);
                 } catch (Exception e) {
                     Debug.trace(e);
@@ -247,6 +251,18 @@ public class OperatorMenu {
             try (BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile))) {
                 bw.write(s);
             }
+        }
+    }
+
+    static void escapeXmlElements(DomElement domElement) {
+        domElement.setValue(StringEscapeUtils.escapeXml(domElement.getValue()));
+        String[] attributeNames = domElement.getAttributeNames();
+        for (String attributeName : attributeNames) {
+            domElement.setAttribute(attributeName, StringEscapeUtils.escapeXml(domElement.getAttribute(attributeName)));
+        }
+        DomElement[] children = domElement.getChildren();
+        for (DomElement child : children) {
+            escapeXmlElements(child);
         }
     }
 
