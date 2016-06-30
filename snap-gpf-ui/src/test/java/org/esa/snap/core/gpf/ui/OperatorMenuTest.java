@@ -16,6 +16,8 @@
 
 package org.esa.snap.core.gpf.ui;
 
+import com.bc.ceres.binding.dom.DefaultDomElement;
+import com.thoughtworks.xstream.io.xml.xppdom.XppDom;
 import org.esa.snap.HeadlessTestRunner;
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.ui.DefaultAppContext;
@@ -53,5 +55,28 @@ public class OperatorMenuTest {
 
         String operatorDescription = support.getOperatorAboutText();
         assertTrue(operatorDescription.length() > 80);
+    }
+
+    @Test
+    public void testEscapingXmlParameters() throws Exception {
+        DefaultDomElement domElement = new DefaultDomElement("parameter");
+        String unescapedString = "12 < 13 && 56 > 42 & \"true\" + 'a name'";
+        String escapedString = "12 &lt; 13 &amp;&amp; 56 &gt; 42 &amp; &quot;true&quot; + &apos;a name&apos;";
+
+        domElement.addChild(new DefaultDomElement("expression", unescapedString));
+        DefaultDomElement withAttribute = new DefaultDomElement("withAttribute");
+        withAttribute.setAttribute("attrib", unescapedString);
+        domElement.addChild(withAttribute);
+
+        OperatorMenu.escapeXmlElements(domElement);
+
+        assertEquals(escapedString, domElement.getChild("expression").getValue());
+        assertEquals(escapedString, domElement.getChild("withAttribute").getAttribute("attrib"));
+
+        String xmlString = domElement.toXml();
+        XppDom readDomElement = OperatorMenu.createDom(xmlString);
+
+        assertEquals(unescapedString, readDomElement.getChild("expression").getValue());
+        assertEquals(unescapedString, readDomElement.getChild("withAttribute").getAttribute("attrib"));
     }
 }

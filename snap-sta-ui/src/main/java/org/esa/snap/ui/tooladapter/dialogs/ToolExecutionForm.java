@@ -24,7 +24,9 @@ import com.bc.ceres.swing.binding.PropertyPane;
 import com.bc.ceres.swing.selection.AbstractSelectionChangeListener;
 import com.bc.ceres.swing.selection.SelectionChangeEvent;
 import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.gpf.descriptor.TemplateParameterDescriptor;
 import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
+import org.esa.snap.core.gpf.descriptor.ToolParameterDescriptor;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterConstants;
 import org.esa.snap.core.gpf.ui.DefaultIOParametersPanel;
 import org.esa.snap.core.gpf.ui.SourceProductSelector;
@@ -127,6 +129,9 @@ class ToolExecutionForm extends JTabbedPane {
         updateTargetProductFields();
     }
 
+    /**
+     * Reset the split procentage to 60%.
+     */
     public void refreshDimension(){
         bottomPane.setDividerLocation(0.6);
         bottomPane.revalidate();
@@ -194,14 +199,31 @@ class ToolExecutionForm extends JTabbedPane {
     }
 
     private JScrollPane createProcessingParamTab() {
-        Arrays.stream(operatorDescriptor.getParameterDescriptors()).forEach(p ->
+        Arrays.stream(operatorDescriptor.getToolParameterDescriptors().toArray()).filter(p -> !((ToolParameterDescriptor)p).isTemplateParameter()).forEach(p ->
         {
-            String label = p.getAlias();
-            String propName = p.getName();
+            ToolParameterDescriptor param = (ToolParameterDescriptor)p;
+            String label = param.getAlias();
+            String propName = param.getName();
             if (label != null && !label.isEmpty() && propertySet.isPropertyDefined(propName)) {
                 Property property = propertySet.getProperty(propName);
                 property.getDescriptor().setDisplayName(label);
             }
+        });
+
+        Arrays.stream(operatorDescriptor.getToolParameterDescriptors().toArray()).filter(p -> ((ToolParameterDescriptor)p).isTemplateParameter()).forEach(p ->
+        {
+            TemplateParameterDescriptor param = (TemplateParameterDescriptor)p;
+            propertySet.getProperty(param.getName()).getDescriptor().setAttribute("visible", false);
+            Arrays.stream(param.getParameterDescriptors().toArray()).forEach(pp ->
+            {
+                ToolParameterDescriptor paramm = (ToolParameterDescriptor)pp;
+                String label = paramm.getAlias();
+                String propName = paramm.getName();
+                if (label != null && !label.isEmpty() && propertySet.isPropertyDefined(propName)) {
+                    Property property = propertySet.getProperty(propName);
+                    property.getDescriptor().setDisplayName(label);
+                }
+            });
         });
         PropertyPane parametersPane = new PropertyPane(propertySet);
         final JPanel parametersPanel = parametersPane.createPanel();
@@ -229,6 +251,9 @@ class ToolExecutionForm extends JTabbedPane {
             Object value = property.getValue();
             if (value != null) {
                 File file = operatorDescriptor.resolveVariables(new File(property.getValueAsText()));
+                if (!file.isAbsolute()) {
+                    file = new File(operatorDescriptor.getWorkingDir(), file.getAbsolutePath());
+                }
                 String productName = FileUtils.getFilenameWithoutExtension(file);
                 if (fileExtension == null) {
                     fileExtension = FileUtils.getExtension(file);
@@ -271,7 +296,15 @@ class ToolExecutionForm extends JTabbedPane {
                     File oldValue = operatorDescriptor.resolveVariables(value instanceof File ? (File) value : new File((String) value));
                     if (fileExtension == null)
                         fileExtension = TIF_EXTENSION;
-                    propertySet.setValue(ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE, new File(oldValue.getParentFile().getAbsolutePath(), productName + fileExtension));
+                    File current;
+                    File workingDir = operatorDescriptor.getWorkingDir();
+                    File parent;
+                    if (oldValue != null && (parent = oldValue.getParentFile()) != null) {
+                        current = new File(parent.getAbsolutePath(), productName + fileExtension);
+                    } else {
+                        current = new File(workingDir, productName + fileExtension);
+                    }
+                    propertySet.setValue(ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE, current);
                 } else {
                     File workingDir = operatorDescriptor.resolveVariables(operatorDescriptor.getWorkingDir());
                     try {

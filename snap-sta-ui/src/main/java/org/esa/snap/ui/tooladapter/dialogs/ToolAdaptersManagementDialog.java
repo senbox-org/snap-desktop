@@ -20,6 +20,7 @@ package org.esa.snap.ui.tooladapter.dialogs;
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
 import org.esa.snap.core.gpf.operators.tooladapter.*;
+import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.tango.TangoIcons;
 import org.esa.snap.ui.AppContext;
@@ -28,6 +29,7 @@ import org.esa.snap.ui.tooladapter.actions.EscapeAction;
 import org.esa.snap.ui.tooladapter.actions.ToolAdapterActionRegistrar;
 import org.esa.snap.ui.tooladapter.model.OperationType;
 import org.esa.snap.ui.tooladapter.model.OperatorsTableModel;
+import org.esa.snap.utils.AdapterWatcher;
 import org.openide.util.NbBundle;
 
 import javax.swing.*;
@@ -260,10 +262,17 @@ public class ToolAdaptersManagementDialog extends ModelessDialog {
             }
         };
         model.setValueAt(Bundle.PathLabel_Text(), 0, 0);
-        model.setValueAt(ToolAdapterIO.getUserAdapterPath(), 0, 1);
+        model.setValueAt(ToolAdapterIO.getAdaptersPath(), 0, 1);
         model.addTableModelListener(l -> {
             String newPath = model.getValueAt(0, 1).toString();
             Path path = Paths.get(newPath);
+            Path oldPath = ToolAdapterIO.getAdaptersPath();
+            try {
+                if (Files.isSameFile(oldPath, path)) {
+                    return;
+                }
+            } catch (IOException ignored) {
+            }
             if (!Files.exists(path) &&
                 Dialogs.Answer.YES == Dialogs.requestDecision("Path does not exist", "The path you have entered does not exist.\nDo you want to create it?", true, "Don't ask me in the future")) {
                 try {
@@ -273,16 +282,21 @@ public class ToolAdaptersManagementDialog extends ModelessDialog {
                 }
             }
             if (Files.exists(path)) {
-                Path oldPath = ToolAdapterIO.getUserAdapterPath();
                 ToolAdapterOperatorDescriptor[] operatorDescriptors = ToolAdapterActionRegistrar.getActionMap().values()
                         .toArray(new ToolAdapterOperatorDescriptor[ToolAdapterActionRegistrar.getActionMap().values().size()]);
                 for (ToolAdapterOperatorDescriptor descriptor : operatorDescriptors) {
                     ToolAdapterIO.removeOperator(descriptor, false);
                 }
-                ToolAdapterIO.setAdaptersPath(Paths.get(newPath));
+                AdapterWatcher.INSTANCE.unmonitorPath(oldPath);
+                ToolAdapterIO.setAdaptersPath(path);
                 if (!newPath.equals(oldPath.toAbsolutePath().toString())) {
                     ToolAdapterIO.searchAndRegisterAdapters();
                     refreshContent();
+                }
+                try {
+                    AdapterWatcher.INSTANCE.monitorPath(path);
+                } catch (IOException e) {
+                    SystemUtils.LOG.warning(String.format("Could not watch for the new adapter path %s [%s]", path.toString(), e.getMessage()));
                 }
             }
         });

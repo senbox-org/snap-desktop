@@ -359,11 +359,12 @@ public class GraphExecuter extends Observable {
         }
     }
 
-    public void loadGraph(final InputStream fileStream, final boolean addUI) throws GraphException {
+    public void loadGraph(final InputStream fileStream, final File file, final boolean addUI) throws GraphException {
 
         try {
             if (fileStream == null) return;
             final Graph graphFromFile = GPFProcessor.readGraph(new InputStreamReader(fileStream), null);
+            lastLoadedGraphFile = file;
 
             setGraph(graphFromFile, addUI);
         } catch (Throwable e) {

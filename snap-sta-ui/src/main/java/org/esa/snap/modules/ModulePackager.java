@@ -17,7 +17,6 @@ package org.esa.snap.modules;
 
 import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterIO;
-import org.esa.snap.utils.ModuleInstaller;
 
 import java.io.*;
 import java.net.URL;
@@ -82,7 +81,7 @@ public final class ModulePackager {
         //attributes.put(new Attributes.Name("OpenIDE-Module-Layer"), LAYER_XML_PATH);
         attributes.put(ATTR_DESCRIPTION_NAME, "External tool adapter");
 
-        modulesPath = ToolAdapterIO.getUserAdapterPath().toFile();
+        modulesPath = ToolAdapterIO.getAdaptersPath().toFile();
     }
 
     /**
@@ -240,14 +239,13 @@ public final class ModulePackager {
         _manifest.getMainAttributes().put(ATTR_MODULE_ALIAS, descriptor.getAlias());
         File moduleFolder = new File(modulesPath, descriptor.getAlias());
         ByteArrayOutputStream fOut = new ByteArrayOutputStream();
-        _manifest.getMainAttributes().put(new Attributes.Name("OpenIDE-Module-Install"), ModuleInstaller.class.getName().replace('.', '/') + ".class");
+        //_manifest.getMainAttributes().put(new Attributes.Name("OpenIDE-Module-Install"), ModuleInstaller.class.getName().replace('.', '/') + ".class");
         try (JarOutputStream jarOut = new JarOutputStream(fOut, _manifest)) {
             File[] files = moduleFolder.listFiles();
             if (files != null) {
                 for (File child : files) {
                     try {
                         // ModuleInstaller from adapter folder should not be included
-                        // because it may be an older version.
                         if (child.getName().endsWith("ModuleInstaller.class")) {
                             child.delete();
                         } else {
@@ -256,11 +254,11 @@ public final class ModulePackager {
                     } catch (Exception ignored) {
                     }
                 }
-                try {
+                /*try {
                     addFile(ModuleInstaller.class, jarOut);
                 } catch (Exception ignored) {
                     // the module possibly had ModuleInsteller.class
-                }
+                }*/
             }
             try {
                 String contents = layerXml.replace("#NAME#", descriptor.getLabel());

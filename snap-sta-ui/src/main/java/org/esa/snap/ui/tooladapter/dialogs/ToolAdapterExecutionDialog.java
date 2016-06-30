@@ -22,10 +22,7 @@ import com.bc.ceres.core.ProgressMonitor;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.Operator;
-import org.esa.snap.core.gpf.descriptor.ParameterDescriptor;
-import org.esa.snap.core.gpf.descriptor.SystemVariable;
-import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
-import org.esa.snap.core.gpf.descriptor.ToolParameterDescriptor;
+import org.esa.snap.core.gpf.descriptor.*;
 import org.esa.snap.core.gpf.descriptor.template.TemplateFile;
 import org.esa.snap.core.gpf.operators.tooladapter.DefaultOutputConsumer;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterConstants;
@@ -104,6 +101,8 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
 
     public static final String helpID = "sta_execution";
 
+    private List<ToolParameterDescriptor> artificiallyAddedParams;
+
     /**
      * Constructor.
      *
@@ -143,12 +142,21 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
     }
 
     private void initialize(ToolAdapterOperatorDescriptor descriptor) {
+        //this.operatorDescriptor = new ToolAdapterOperatorDescriptor(descriptor);
         this.operatorDescriptor = descriptor;
-        this.parameterSupport = new OperatorParameterSupport(descriptor);
-        form = new ToolExecutionForm(appContext, descriptor, parameterSupport.getPropertySet(),
+        //add paraeters of template parameters
+        artificiallyAddedParams = new ArrayList<>();
+        Arrays.stream(this.operatorDescriptor.getToolParameterDescriptors().toArray()).filter(p -> ((ToolParameterDescriptor)p).isTemplateParameter()).
+                forEach(p -> artificiallyAddedParams.addAll(((TemplateParameterDescriptor)p).getParameterDescriptors()));
+        this.operatorDescriptor.getToolParameterDescriptors().addAll(artificiallyAddedParams);
+        this.parameterSupport = new OperatorParameterSupport(this.operatorDescriptor);
+        Arrays.stream(this.operatorDescriptor.getToolParameterDescriptors().toArray()).
+                filter(p -> ToolAdapterConstants.FOLDER_PARAM_MASK.equals(((ToolParameterDescriptor)p).getParameterType())).
+                forEach(p -> parameterSupport.getPropertySet().getProperty(((ToolParameterDescriptor)p).getName()).getDescriptor().setAttribute("directory", true));
+        form = new ToolExecutionForm(appContext, this.operatorDescriptor, parameterSupport.getPropertySet(),
                 getTargetProductSelector());
         OperatorMenu operatorMenu = new OperatorMenu(this.getJDialog(),
-                descriptor,
+                this.operatorDescriptor,
                 parameterSupport,
                 appContext,
                 helpID);
@@ -159,10 +167,10 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
         updatePrimitiveZeroValuesHashMap();
 
         this.getJDialog().addWindowListener(new WindowAdapter() {
-            public void windowOpened(WindowEvent e) {form.refreshDimension();}
+            public void windowOpened(WindowEvent e) { form.refreshDimension(); }
         });
         this.getJDialog().addComponentListener(new ComponentAdapter() {
-            public void componentResized(ComponentEvent e) {form.refreshDimension();}
+            public void componentResized(ComponentEvent e) { form.refreshDimension(); }
         });
         this.getJDialog().setMinimumSize(new Dimension(250, 250));
     }
@@ -224,6 +232,7 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
                                                 operatorDescriptor.getStepPattern(),
                                                 progressWrapper,
                                                 form.console);
+                    form.console.clear();
                     progressWrapper.setConsumer(consumer);
                     ((ToolAdapterOp) op).setProgressMonitor(progressWrapper);
                     ((ToolAdapterOp) op).setConsumer(consumer);
@@ -248,6 +257,7 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
     public void hide() {
         form.prepareHide();
         super.hide();
+        this.operatorDescriptor.getToolParameterDescriptors().removeAll(artificiallyAddedParams);
     }
 
     @Override

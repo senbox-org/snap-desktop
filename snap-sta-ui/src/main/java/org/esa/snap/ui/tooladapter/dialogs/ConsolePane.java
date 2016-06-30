@@ -12,12 +12,13 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
 /**
- * Created by kraftek on 10/8/2015.
+ * Console-like panel for displaying tool output.
+ *
+ * @author Cosmin Cara
  */
 public class ConsolePane extends JScrollPane {
 
     private JTextPane textArea;
-    private Dimension dimension;
     private final StringBuilder buffer;
 
     public ConsolePane() {
@@ -28,7 +29,6 @@ public class ConsolePane extends JScrollPane {
         textArea.setFont(new Font("Lucida Console", Font.PLAIN, 10));
         textArea.setForeground(Color.WHITE);
         setViewportView(textArea);
-        //JScrollPane scrollPane = new JScrollPane(textArea);
         setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         setWheelScrollingEnabled(true);
@@ -56,13 +56,16 @@ public class ConsolePane extends JScrollPane {
         });
     }
 
+    /**
+     * Appends text to this console.
+     *
+     * @param text  The text to append
+     */
     public void append(String text) {
         if (this.isVisible()) {
             StyleContext sc = StyleContext.getDefaultStyleContext();
             AttributeSet aset = sc.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Foreground, Color.WHITE);
-//        aset = sc.addAttribute(aset, StyleConstants.FontFamily, "Lucida Console");
             aset = sc.addAttribute(aset, StyleConstants.Alignment, StyleConstants.ALIGN_LEFT);
-            //aset = sc.addAttribute(aset, StyleConstants.FontSize, 8);
             int len = textArea.getDocument().getLength();
             textArea.setCaretPosition(len);
             textArea.setCharacterAttributes(aset, false);
@@ -71,6 +74,13 @@ public class ConsolePane extends JScrollPane {
         } else {
             buffer.append(text);
         }
+    }
+
+    /**
+     * Clears the contents of this console
+     */
+    public void clear() {
+        textArea.setText("");
     }
 
 }

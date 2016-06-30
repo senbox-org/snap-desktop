@@ -22,7 +22,10 @@ import com.bc.ceres.swing.binding.BindingContext;
 import org.apache.commons.collections.BidiMap;
 import org.apache.commons.collections.bidimap.DualHashBidiMap;
 import org.esa.snap.core.gpf.annotations.ParameterDescriptorFactory;
-import org.esa.snap.core.gpf.descriptor.*;
+import org.esa.snap.core.gpf.descriptor.PropertyAttributeException;
+import org.esa.snap.core.gpf.descriptor.TemplateParameterDescriptor;
+import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
+import org.esa.snap.core.gpf.descriptor.ToolParameterDescriptor;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterConstants;
 import org.esa.snap.core.gpf.ui.OperatorParameterSupport;
 import org.esa.snap.rcp.util.Dialogs;
@@ -281,27 +284,38 @@ public class OperatorParametersTable extends JTable {
         @Override
         public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
             ToolParameterDescriptor descriptor = operator.getToolParameterDescriptors().get(rowIndex);
-            String defaultValue = descriptor.getDefaultValue();
+            String oldName = descriptor.getName();
+            Object defaultValue = context.getPropertySet().getProperty(oldName).getValue();
             switch (columnIndex) {
                 case 0:
                     operator.removeParamDescriptor(descriptor);
                     revalidate();
                     break;
                 case 1:
-                    String oldName = descriptor.getName();
                     descriptor.setName(aValue.toString());
                     //since the name is changed, the context must be changed also
                     context.getPropertySet().removeProperty(context.getPropertySet().getProperty(oldName));
                     try {
                         PropertyDescriptor property =  ParameterDescriptorFactory.convert(descriptor, new ParameterDescriptorFactory().getSourceProductMap());
-                        try {
-                            property.setDefaultValue(defaultValue);
-                        }catch (Exception ex){
-                            logger.warning(ex.getMessage());
+                        if(defaultValue != null) {
+                            descriptor.setDefaultValue(defaultValue.toString());
+                            try {
+                                property.setDefaultValue(defaultValue);
+                            }catch (Exception ex){
+                                logger.warning(ex.getMessage());
+                            }
+                        }
+                        if (descriptor.getParameterType().equals(ToolAdapterConstants.FOLDER_PARAM_MASK)) {
+                            property.setAttribute("directory", true);
                         }
                         DefaultPropertySetDescriptor propertySetDescriptor = new DefaultPropertySetDescriptor();
                         propertySetDescriptor.addPropertyDescriptor(property);
                         PropertyContainer container = PropertyContainer.createMapBacked(new HashMap<>(), propertySetDescriptor);
+                        try {
+                            container.setDefaultValues();
+                        }catch (IllegalStateException ex){
+                            logger.warning(ex.getMessage());
+                        }
                         context.getPropertySet().addProperties(container.getProperties());
                         propertiesValueUIDescriptorMap.put(descriptor, PropertyMemberUIWrapperFactory.buildPropertyWrapper("defaultValue", descriptor, operator, context, null));
                         revalidate();
@@ -316,7 +330,7 @@ public class OperatorParametersTable extends JTable {
                     if (descriptor.isTemplateParameter() &&
                             ToolAdapterConstants.TEMPLATE_PARAM_MASK.equals(descriptor.getParameterType()) &&
                             (((TemplateParameterDescriptor)descriptor).getTemplate() != null ||
-                             ((TemplateParameterDescriptor)descriptor).getParameterDescriptors().stream().findFirst().isPresent()))
+                                    ((TemplateParameterDescriptor)descriptor).getParameterDescriptors().stream().findFirst().isPresent()))
                         return;
 
                     Map<String, Object> extra = null;
@@ -331,7 +345,10 @@ public class OperatorParametersTable extends JTable {
                     descriptor.setParameterType(customClass.getTypeMask());
                     if(descriptor.getDataType() != customClass.getParameterClass()) {
                         descriptor.setDataType(customClass.getParameterClass());
-                        descriptor.setDefaultValue(defaultValue);
+                        if(defaultValue != null) {
+                            //this can rise new problems if the old value is incompatible with the new type
+                            descriptor.setDefaultValue(defaultValue.toString());
+                        }
                         rebuildEditorCell(descriptor, extra);
                     }
                     break;
@@ -433,7 +450,7 @@ public class OperatorParametersTable extends JTable {
         }
 
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            ParameterDescriptor descriptor = operator.getToolParameterDescriptors().get(row);
+            ToolParameterDescriptor descriptor = operator.getToolParameterDescriptors().get(row);
             switch (column) {
                 case 0:
                     return delButton;
@@ -453,7 +470,7 @@ public class OperatorParametersTable extends JTable {
 
         @Override
         public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-            ParameterDescriptor descriptor = operator.getToolParameterDescriptors().get(row);
+            ToolParameterDescriptor descriptor = operator.getToolParameterDescriptors().get(row);
             switch (column) {
                 case 0:
                     return delButton;

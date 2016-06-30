@@ -1,0 +1,58 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>Help - Supervised Classification</title>
+
+
+    <link rel="stylesheet" href="../style.css"></head><body>
+<table class="header">
+    <tbody>
+    <tr class="header">
+        <td class="header">&nbsp; Supervised Classification<br>
+        </td>
+        <td class="header" align="right"><a href="../general/Overview.html"><img src="../images/snap_header.jpg" border="0"></a></td>
+    </tr>
+    </tbody>
+</table><br>Supervised classification is a technique for extracting
+information from image data. The goal is to classify pixels in an image
+into different classes based on features of the pixels. There are two
+stages: training stage and classification stage. During the training
+stage, a set of vectors (each vector is associated with a pixel) called
+training samples are used to train a classifier. Each training sample
+vector is made up of the class the pixel belongs to and feature values
+of the pixel. In the classification stage, the trained classifier is
+used to classify pixels with known feature values but unknown class.<br><br>User has a choice of <br><ul><li>train (and save) a
+classifier; or </li><li>load a previously saved classifier </li></ul>to perform classification.<br><br>To do the former, type in a new filename. <br><br>To do the latter, select a filename from the list. <br><br><br><span style="font-weight: bold;">Train and save a classifier</span><br><br>User is required to provide the number of training samples to use. <br><br>Note that in
+addition to training,&nbsp;evaluation of the classifier is also performed.
+E.g., if the number of training samples to use is 5000, then 5000 x 2 =
+10,000 samples will be extracted. The first 5000 will be used as
+training samples and the remaining 5000 will be used as test samples
+for evaluation.<br><br>All bands in the "feature" products are used.<br><br>User has a choice of <br><ol><li>using
+the data in the "class" band as classes (the first band in the "class"
+product without "lat_band" or "lon_band" in its name is used as the
+"class" band); or </li><li>pick the classes from the list of "regions" in the "class" product. </li></ol><br>To choose (1), deselect all in the "Classes" list. <br><br><div style="margin-left: 40px;">In
+this case, if the data in the training samples&nbsp;only assume the
+values 0 (representing, say, water) or 1 (representing, say, land),
+then there will only be two classes. <br><br>If the data is biomass,
+there will be as many classes as there are biomass values in the
+training set. For data values that are continuous like biomass, it is
+recommended to quantize the&nbsp;values. <br><br>Remember to uncheck the "Quantize class value" box if the data is discrete labels such as landcover classes. <br><br>It is up to the user to ensure that the training or test samples set contains roughly equal number of samples for each class.<br></div><br>To
+choose (2), select the "regions" in the "Classes" list that correspond
+to&nbsp;classes (e.g., a "region" called "water" will become the class
+with label "water"). <br><br><div style="margin-left: 40px;">"Regions"
+are represented as "vectors" and can be&nbsp;created using the "New
+Vector Data Container" tool and other drawing tools such as "Rectangle
+drawing tool". <br><br>A pixel inside that "region" will have the name of the region as its class instead of its data value.<br><br>The
+operator will endeavour to extract the same number samples for each
+class when constructing the training or test samples set.<br></div><br>Two separate files are created: one with no extension and one with extension .xml. <br><br><br><span style="font-weight: bold;">Load a previously saved classifier</span><br><br>The minimum information the user needs to know to use a saved
+classifier is the list of features which is contained in the XML
+file among other useful information.<br><br>At &nbsp;least one "feature" product is required. &nbsp;However, user can specify more than one.<br><br>For
+each name in "featureNames" in the XML file, the operator will search
+for a band in the "feature" products&nbsp;whose name contains it.<br><br>If evaluation of the classifier is desired, then the user must provide<br><ul><li>a "class" product as the first product in the list ahead of all the "feature" products; and</li><li>the number of test samples to use for evaluation.</li></ul>If
+there is more than one product in the list, the operator will determine
+if the first one is a "class" product by looking for a "feature" band
+in the product. If it does not contain any "feature" band, then it is
+taken as the "class" product. &nbsp;<br><br>If
+the saved classifier was constructed using "regions" as classes,
+&nbsp;the "class" product must contain "vectors" with the same names.
+The names can be found in the XML file under "regionVectorNames".<br><br>If "regions" were not used, then the operator will use the first band in the "class"
+product as the
+"class" band.</body></html>

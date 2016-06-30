@@ -51,6 +51,7 @@ import org.esa.snap.ui.tooladapter.model.OperatorParametersTable;
 import org.esa.snap.ui.tooladapter.model.VariablesTable;
 import org.esa.snap.ui.tooladapter.preferences.ToolAdapterOptionsController;
 import org.esa.snap.ui.tooladapter.validators.RequiredFieldValidator;
+import org.esa.snap.utils.AdapterWatcher;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 import org.openide.util.NbBundle;
@@ -82,25 +83,26 @@ import static org.esa.snap.utils.SpringUtilities.makeCompactGrid;
  */
 @NbBundle.Messages({
         "CTL_Label_Alias_Text=Alias:",
-        "CTL_Label_UniqueName_Text=Unique name:",
+        "CTL_Label_UniqueName_Text=Unique Name:",
         "CTL_Label_Label_Text=Label:",
         "CTL_Label_Version_Text=Version:",
         "CTL_Label_Copyright_Text=Copyright:",
         "CTL_Label_Authors_Text=Authors:",
         "CTL_Label_Description_Text=Description:",
-        "CTL_Label_MenuLocation_Text=Menu location:",
+        "CTL_Label_MenuLocation_Text=Menu Location:",
+        "CTL_Label_TemplateType_Text=Template Type:",
         "CTL_Panel_OperatorDescriptor_Text=Operator Descriptor",
-        "CTL_Label_PreprocessingTool_Text=Preprocessing tool",
-        "CTL_Label_WriteBefore_Text=Write before processing using:",
+        "CTL_Label_PreprocessingTool_Text=Preprocessing Tool: ",
+        "CTL_Label_WriteBefore_Text=Before Processing Convert To: ",
         "CTL_Panel_PreProcessing_Border_TitleText=Preprocessing",
         "CTL_Panel_ConfigParams_Text=Configuration Parameters",
-        "CTL_Label_ToolLocation_Text=Tool location: ",
-        "CTL_Label_WorkDir_Text=Working directory: ",
-        "CTL_Label_CmdLineTemplate_Text=Command line template:",
+        "CTL_Label_ToolLocation_Text=Tool Executable: ",
+        "CTL_Label_WorkDir_Text=Working Directory: ",
+        "CTL_Label_CmdLineTemplate_Text=Command Line Template:",
         "CTL_Panel_OutputPattern_Border_TitleText=Tool Output Patterns",
-        "CTL_Label_ProgressPattern=Progress pattern:",
-        "CTL_Label_ErrorPattern=Error pattern:",
-        "CTL_Label_StepPattern=Step operation pattern:",
+        "CTL_Label_ProgressPattern=Numeric Progress Pattern: ",
+        "CTL_Label_ErrorPattern=Error Pattern: ",
+        "CTL_Label_StepPattern=Intermediate Operation Pattern: ",
         "CTL_Panel_SysVar_Border_TitleText=System Variables",
         "CTL_Label_RadioButton_ExistingMenus=Existing Menus",
         "CTL_Label_RadioButton_NewMenu=Create Menu",
@@ -114,6 +116,8 @@ import static org.esa.snap.utils.SpringUtilities.makeCompactGrid;
                 "Please specify the location of an existing executable.",
         "MSG_Inexistent_WorkDir_Text=The working directory does not exist.\n" +
                 "Please specify a valid location.",
+        "MSG_Existing_UniqueName_Text=An operator with the same unique name is already registered.\n" +
+                "Please specify an unique name for the operator.",
         "MSG_Inexistem_Parameter_Value_Text=The file or folder for parameter %s does not exist.\n" +
                 "Please specify a valid location or change the %s property of the parameter.",
         "MSG_Wrong_Value_Text=One or more form parameters have invalid values.\n" +
@@ -366,6 +370,14 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
                 }
             }
         }
+        //verify the adapter unique name really is unique
+        if (currentOperation.equals(OperationType.COPY) || currentOperation.equals(OperationType.NEW) ||
+                (currentOperation.equals(OperationType.COPY) && !newOperatorDescriptor.getName().equals(oldOperatorDescriptor.getName()))) {
+            if (GPF.getDefaultInstance().getOperatorSpiRegistry().getOperatorSpi(newOperatorDescriptor.getName()) != null) {
+                Dialogs.showWarning(String.format(Bundle.MSG_Existing_UniqueName_Text()));
+                return false;
+            }
+        }
         return true;
     }
 
@@ -426,8 +438,9 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
                     if (menuLocation != null && !menuLocation.startsWith("Menu/")) {
                         newOperatorDescriptor.setMenuLocation("Menu/" + menuLocation);
                     }
-
+                    AdapterWatcher.INSTANCE.suspend();
                     ToolAdapterIO.saveAndRegisterOperator(newOperatorDescriptor);
+                    AdapterWatcher.INSTANCE.resume();
                     ToolAdapterIO.deleteFolder(backupCopy);
                     super.setButtonID(ID_OK);
                     super.hide();
@@ -516,6 +529,22 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
         JComponent editorComponent = textEditor.createEditorComponent(propertyDescriptor, bindingContext);
         editorComponent.setPreferredSize(new Dimension(editorComponent.getPreferredSize().width, controlHeight));
         editorComponent.setMaximumSize(new Dimension(editorComponent.getMaximumSize().width, controlHeight));
+        parent.add(editorComponent);
+    }
+
+    protected void addComboField(JPanel parent, String labelText, String propertyName, boolean isRequired, boolean isEditable) {
+        PropertyDescriptor propertyDescriptor = propertyContainer.getDescriptor(propertyName);
+        propertyDescriptor.setNotEmpty(isRequired);
+        PropertyEditor editor = PropertyEditorRegistry.getInstance().findPropertyEditor(propertyDescriptor);
+        JComponent editorComponent = editor.createEditorComponent(propertyDescriptor, bindingContext);
+        editorComponent.setMaximumSize(new Dimension(editorComponent.getMaximumSize().width, controlHeight));
+        editorComponent.setPreferredSize(new Dimension(editorComponent.getPreferredSize().width, controlHeight));
+        if (editorComponent instanceof JComboBox) {
+            JComboBox comboBox = (JComboBox)editorComponent;
+            comboBox.setEditable(isEditable);
+            comboBox.setEnabled(isEditable);
+        }
+        parent.add(new JLabel(labelText));
         parent.add(editorComponent);
     }
 
