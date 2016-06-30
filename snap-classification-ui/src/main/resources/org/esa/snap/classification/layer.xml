@@ -51,7 +51,7 @@
                 <attr name="dialogTitle" stringvalue="Maximum Likelihood Classifier"/>
                 <attr name="targetProductNameSuffix"  stringvalue="_MLClass"/>
                 <attr name="ShortDescription" stringvalue="Maximum Likelihood based classifier"/>
-                <attr name="helpId" stringvalue="MaximumlikelihoodClassifierOp"/>
+                <attr name="helpId" stringvalue="MaximumLikelihoodClassifierOp"/>
             </file>
             <file name="org-esa-snap-classification-gpf-MinimumDistance-Classifier-Action.instance">
                 <attr name="instanceCreate" methodvalue="org.openide.awt.Actions.alwaysEnabled"/>
