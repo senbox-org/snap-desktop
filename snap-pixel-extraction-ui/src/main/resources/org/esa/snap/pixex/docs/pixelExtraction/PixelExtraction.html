@@ -27,8 +27,9 @@
         <td class="header">&nbsp;
             Pixel Extraction
         </td>
-        <td class="header" align="right"><a href="nbdocs://org.esa.snap.snap.help/org/esa/snap/snap/help/docs/general/overview/SnapOverview.html"><img src="../images/snap_header.jpg"
-                                                                                     border=0></a>
+        <td class="header" align="right"><a href="nbdocs://org.esa.snap.snap.help/org/esa/snap/snap/help/docs/general/overview/SnapOverview.html"><img
+                src="../images/snap_header.jpg"
+                border=0></a>
         </td>
     </tr>
 </table>
@@ -243,10 +244,38 @@ next.
 <p class="i1">
     <b>Time extraction:</b>
     If the products carry no time information that is readable by the reader, it is possible to extract the time
-    information from the product filename. In order to do so, the date/time pattern needs to be provided (which would
-    be, e.g., ddMMyyyy_HHmmss or for files like sst_26012010_164712.nc or yyyyDDD for SST L3 product like
-    A2010159.L3m_DAY_SST_4),
-    and the pattern in the filename needs to be provided, telling the software if the pattern appears once or twice.
+    information from the product filename. In order to do so, the <b>date/time pattern</b> needs to be provided.
+    This date pattern can be composed of the following components:
+<ul>
+    <li>year, given as <i><b>yyyy</b></i></li>
+    <li>month, given as <i><b>MM</b></i></li>
+    <li>days in month, given as <i><b>dd</b></i></li>
+    <li>day in year, given as <i><b>DDD</b></i></li>
+    <li>hour of day, given as <i><b>hh</b></i></li>
+    <li>minute of hour, given as <i><b>mm</b></i></li>
+    <li>second of minute, given as <i><b>ss</b></i></li>
+</ul>
+<p class="i1">
+    , which may appear in arbitrary order. Following some examples which for date format to parse by pattern:
+<ul>
+    <li><code>yyyyMMdd</code> would parse a string like <code>20111103</code>
+        and leads to a date <code>2011-11-03 00:00:00 UTC</code></li>
+    <li><code>yyyyMMdd_hh_mm_ss</code> would parse a string like <code>20061126_08_56_12</code>
+        and leads to a date <code>2006-11-26 08:56:12 UTC</code></li>
+    <li><code>yyyyDDD</code> would parse a string like <code>2010159</code>
+        and leads to a date <code>2010-06-08 00:00:00 UTC</code></li>
+</ul>
+<p class="i1">
+    The <b>pattern in the filename</b> needs to be provided, in order to tell the software where the pattern occurs within the filename and
+    if it is the start or end date.
+    The pattern must contain at least one of the placeholders <code>${startDate}</code> and <code>${endDate}</code>. Examples:
+    <ul>
+        <li><code>sst_*_${startDate}.nc</code></li>
+        <li><code>sst_*_${startDate}_${endDate}*.nc</code></li>
+        <li><code>LC8......${startDate}*.nc</code></li>
+    </ul>
+<p class="i1">
+    The '<code>*</code>' is a placeholder for multiple characters while the '<code>.</code>' is a placeholder for a single character.
 </p>
 
 <p class="i1">
