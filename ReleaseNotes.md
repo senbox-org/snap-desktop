@@ -2,9 +2,65 @@
 
 ###New Features and Important Changes
 * Supervised Classification - Random Forest, KNN, Maximum Likelihood, Minimum Distance
+* Fractional Land/Water Mask operator has been integrated into SNAP
+* It is now possible to import multiple shape files at once
+
+### Solved issues
+####Bugs
+    [SNAP-186] - Metadata Table View incorrectly renders UTC attributes
+    [SNAP-357] - Message needed: source product not found and operator finished
+    [SNAP-358] - Sen2Cor operator is disapearing when restarting SNAP
+    [SNAP-401] - Adapter suppressed when error occures
+    [SNAP-408] - Problems with field content being edited
+    [SNAP-420] - External Tool adapter deleted on startup
+    [SNAP-438] - Resampling operator duplicates masks
+    [SNAP-439] - STA: System variables are not working
+    [SNAP-442] - STA: Error is not displayed
+    [SNAP-443] - STA: No popup window if operator terminated ok
+    [SNAP-444] - STA: Sytem parameters are not visible
+    [SNAP-446] - STA: Product does not open or opens with blank images
+    [SNAP-447] - STA: Execution output window hidden
+    [SNAP-448] - STA: execution output window does not display output
+    [SNAP-449] - STA: Source product and source product file looks editable
+    [SNAP-451] - STA: target product name tag is not right
+    [SNAP-456] - Netcdf check if Conventions is empty and not just null
+    [SNAP-459] - SubsetOp throws exception if no intersection with region
+    [SNAP-461] - Generated executables suppress log output
+    [SNAP-462] - Updated modules are not considered by gpt
+    [SNAP-470] - Time information is not correctly shown
+    [SNAP-473] - STA: Error pattern not saved
+    [SNAP-478] - No help content shown for some entries
+    [SNAP-483] - DateTime is not considered in measurement files in Pixel Extraction Tool
+    [SNAP-485] - Pixel size is not preserved for rectified products when exporting to ENVI file format
+    [SNAP-486] - Writing NetCDF4-BEAM file fails if metadata has very long attributes
+    [SNAP-504] - Error when reading processor parameters
+    [SNAP-508] - All source product selectors are initialised with the selected product
+    [SNAP-512] - Sen2Cor adapter crashes at startup with latest STA
+    [SNAP-513] - Sen2Cor adapter does not open the output product
+    [SNAP-514] - STA: new operator parameters are blank
+    [SNAP-516] - Subset broken from Graphs
+    [SNAP-517] - NullPointerException occurs when when using PixelGeoCoding with OLCI data
+    [SNAP-519] - Graph builder does not remember the name of the current graph when saving a graph.
+    [SNAP-524] - Pixel Extraction writes only the lower 16 bit of a flag band
+####Task
+    [SNAP-489] - Integrate Fractional Land/Water Mask operator into SNAP
+####Improvement
+    [SNAP-404] - There is no easy way to have optional parameters on an adapter
+    [SNAP-450] - NodeId should be included in exception message
+    [SNAP-452] - STA: external tools menu appears even if there are no tools
+    [SNAP-453] - STA: Target product is displayed even if there are no target product to open
+    [SNAP-457] - Duplicate lat lon bands in readOp if source product has pixel geocoding
+    [SNAP-460] - Allow selection of mulitple shape files to be imported at once
+    [SNAP-471] - SRTM 3 sec cannot download due to site down
+    [SNAP-479] - Allow dragging view when pressing space bar
+    [SNAP-487] - Assembly of snap-engine should contain scripts to start gpt
+    [SNAP-490] - Allow merging of scenes without geographic boundary check
+    [SNAP-515] - STA: folders are not supported as processor parameters
+
 
 A comprehensive list of all issues resolved in this version of SNAP can be found in our 
 [issue tracking system](https://senbox.atlassian.net/issues/?filter=11700)
+
 
 #New in SNAP v3.0
 
