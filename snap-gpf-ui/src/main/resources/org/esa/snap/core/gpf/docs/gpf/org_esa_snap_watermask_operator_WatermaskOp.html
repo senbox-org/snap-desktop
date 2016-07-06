@@ -1,0 +1,82 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <title>LandWaterMask Operator</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<table class="header">
+    <tr class="header">
+        <td class="header">&nbsp;LandWaterMask Operator</td>
+        <td class="header" align="right">
+          <a href="../general/overview/SnapOverview.html">             <img src="images/snap_header.jpg" border="0"/></a>
+        </td>
+    </tr>
+</table>
+<h1>LandWaterMask Operator Description</h1>
+<h2>Overview</h2>
+<table>
+  <tr><td><b>Name:</b></td><td><code>LandWaterMask</code></td></tr>
+  <tr><td><b>Full name:</b></td><td><code>org.esa.snap.watermask.operator.WatermaskOp</code></td></tr>
+  <tr><td><b>Purpose:</b></td><td>Operator creating a target product with a single band containing a land/water-mask.</td></tr>
+  <tr><td><b>Version:</b></td><td>1.3</td></tr>
+</table>
+<h2>Description</h2>
+The watermask operator is a GPF-Operator. It takes the geographic bounds of the input product and creates a new
+ product with the same bounds. The output product contains a single band, which is a land/water fraction mask.
+ For each pixel, it contains the fraction of water; a value of 0.0 indicates land, a value of 100.0 indicates water,
+ and every value in between indicates a mixed pixel.
+ <br/>
+ There are two auxiliary data sets on which the watermask can be based. The first, high-res dataset is based on data
+ given by SRTM-shapefiles between 60° north and 58° south, and by the GlobCover world map above 60° north. Below 58°
+ south, this dataset does not contain any data, so the resulting product will contain the fill value for these parts.
+ This high-res dataset will be employed when the resolution parameter is set to 50 or 150.<br/>
+ The second dataset is based on GSHHS data in a resolution of 1 km. It covers the whole earth, and will be employed
+ when the resolution parameter is set to 1000.<br/>
+ Since the base data may exhibit a higher resolution than the input product, a subsampling &ge;1 may be specified.
+ This means that mixed pixels may occur.<br/>
+<h2>Sources</h2>
+<table>
+<tr>
+  <th>Name</th>
+  <th>Description</th>
+</tr>
+<tr>
+  <td><code>sourceProduct</code></td>
+  <td>The Product the land/water-mask shall be computed for.</td>
+</tr>
+</table>
+<h2>Parameters</h2>
+<table>
+<tr>
+  <th>Name</th>
+  <th>Data Type</th>
+  <th>Default</th>
+  <th>Description</th>
+  <th>Constraints</th>
+</tr>
+<tr>
+  <td><code>resolution</code></td>
+  <td><code>int</code></td>
+  <td><code>50</code></td>
+  <td>Specifies on which resolution the water mask shall be based.</td>
+  <td>value set: [50, 150, 1000]</td>
+</tr>
+<tr>
+  <td><code>subSamplingFactorX</code></td>
+  <td><code>int</code></td>
+  <td><code>1</code></td>
+  <td>Specifies the factor between the resolution of the source product and the watermask in x direction. A value of '1' means no subsampling at all.</td>
+  <td>not null</td>
+</tr>
+<tr>
+  <td><code>subSamplingFactorY</code></td>
+  <td><code>int</code></td>
+  <td><code>1</code></td>
+  <td>Specifies the factor between the resolution of the source product and the watermask iny direction. A value of '1' means no subsampling at all.</td>
+  <td>not null</td>
+</tr>
+</table>
+<hr/>
+</body>
+</html>
