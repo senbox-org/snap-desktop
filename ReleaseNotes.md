@@ -1,3 +1,11 @@
+#New in SNAP v4.0
+
+###New Features and Important Changes
+* Supervised Classification - Random Forest, KNN, Maximum Likelihood, Minimum Distance
+
+A comprehensive list of all issues resolved in this version of SNAP can be found in our 
+[issue tracking system](https://senbox.atlassian.net/issues/?filter=11700)
+
 #New in SNAP v3.0
 
 ###New Features and Important Changes
