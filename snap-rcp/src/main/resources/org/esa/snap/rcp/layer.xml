@@ -222,7 +222,7 @@
                 <attr name="instanceCreate"
                       methodvalue="org.netbeans.modules.autoupdate.updateprovider.AutoupdateCatalogFactory.createUpdateProvider"/>
                 <attr name="instanceOf" stringvalue="org.netbeans.spi.autoupdate.UpdateProvider"/>
-                <attr name="url" urlvalue="http://step.esa.int/updatecenter/3.0/snap/updates.xml.gz"/>
+                <attr name="url" urlvalue="http://step.esa.int/updatecenter/4.0/snap/updates.xml.gz"/>
             </file>
             <file name="snap_extensions_update_center.instance">
                 <attr name="displayName" stringvalue="SNAP Extensions"/>
@@ -230,7 +230,7 @@
                 <attr name="instanceCreate"
                       methodvalue="org.netbeans.modules.autoupdate.updateprovider.AutoupdateCatalogFactory.createUpdateProvider"/>
                 <attr name="instanceOf" stringvalue="org.netbeans.spi.autoupdate.UpdateProvider"/>
-                <attr name="url" urlvalue="http://step.esa.int/updatecenter/3.0/snap-extensions/updates.xml.gz"/>
+                <attr name="url" urlvalue="http://step.esa.int/updatecenter/4.0/snap-extensions/updates.xml.gz"/>
             </file>
             <file name="snap_community_update_center.instance">
                 <attr name="displayName" stringvalue="SNAP Community Extensions"/>
@@ -238,7 +238,7 @@
                 <attr name="instanceCreate"
                       methodvalue="org.netbeans.modules.autoupdate.updateprovider.AutoupdateCatalogFactory.createUpdateProvider"/>
                 <attr name="instanceOf" stringvalue="org.netbeans.spi.autoupdate.UpdateProvider"/>
-                <attr name="url" urlvalue="http://step.esa.int/updatecenter/3.0/snap-community/updates.xml.gz"/>
+                <attr name="url" urlvalue="http://step.esa.int/updatecenter/4.0/snap-community/updates.xml.gz"/>
             </file>
         </folder>
     </folder>
