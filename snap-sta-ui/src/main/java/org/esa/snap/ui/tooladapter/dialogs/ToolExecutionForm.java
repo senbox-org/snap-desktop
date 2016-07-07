@@ -99,8 +99,10 @@ class ToolExecutionForm extends JTabbedPane {
         final TargetProductSelectorModel targetProductSelectorModel = targetProductSelector.getModel();
         targetProductSelectorModel.setProductDir(operatorDescriptor.resolveVariables(operatorDescriptor.getWorkingDir()));
 
-        ioParamPanel = createIOParamTab();
-        addTab("I/O Parameters", ioParamPanel);
+        if(!operatorDescriptor.isHandlingOutputName() || operatorDescriptor.getSourceProductCount() > 0) {
+            ioParamPanel = createIOParamTab();
+            addTab("I/O Parameters", ioParamPanel);
+        }
         JPanel processingParamPanel = new JPanel(new SpringLayout());
         checkDisplayOutput = new JCheckBox("Display execution output");
         checkDisplayOutput.setSelected(Boolean.parseBoolean(NbPreferences.forModule(Dialogs.class).get(ToolAdapterOptionsController.PREFERENCE_KEY_SHOW_EXECUTION_OUTPUT, "false")));
@@ -143,7 +145,9 @@ class ToolExecutionForm extends JTabbedPane {
      * initialisation may occur.
      */
     public void prepareShow() {
-        ioParamPanel.initSourceProductSelectors();
+        if (ioParamPanel != null) {
+            ioParamPanel.initSourceProductSelectors();
+        }
     }
 
     /**
@@ -151,7 +155,9 @@ class ToolExecutionForm extends JTabbedPane {
      * cleanup may be performed.
      */
     public void prepareHide() {
-        ioParamPanel.releaseSourceProductSelectors();
+        if (ioParamPanel != null) {
+            ioParamPanel.releaseSourceProductSelectors();
+        }
     }
 
     /**
@@ -161,8 +167,10 @@ class ToolExecutionForm extends JTabbedPane {
      */
     public Product[] getSourceProducts() {
         List<Product> sourceProducts = new ArrayList<>();
-        ArrayList<SourceProductSelector> sourceProductSelectorList = ioParamPanel.getSourceProductSelectorList();
-        sourceProducts.addAll(sourceProductSelectorList.stream().map(SourceProductSelector::getSelectedProduct).collect(Collectors.toList()));
+        if (ioParamPanel != null){
+            ArrayList<SourceProductSelector> sourceProductSelectorList = ioParamPanel.getSourceProductSelectorList();
+            sourceProducts.addAll(sourceProductSelectorList.stream().map(SourceProductSelector::getSelectedProduct).collect(Collectors.toList()));
+        }
         return sourceProducts.toArray(new Product[sourceProducts.size()]);
     }
 

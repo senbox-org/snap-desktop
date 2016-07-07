@@ -167,10 +167,10 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
         updatePrimitiveZeroValuesHashMap();
 
         this.getJDialog().addWindowListener(new WindowAdapter() {
-            public void windowOpened(WindowEvent e) { form.refreshDimension(); }
+            public void windowOpened(WindowEvent e) {form.refreshDimension();}
         });
         this.getJDialog().addComponentListener(new ComponentAdapter() {
-            public void componentResized(ComponentEvent e) { form.refreshDimension(); }
+            public void componentResized(ComponentEvent e) {form.refreshDimension();}
         });
         this.getJDialog().setMinimumSize(new Dimension(250, 250));
     }
