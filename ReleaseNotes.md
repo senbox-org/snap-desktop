@@ -56,6 +56,7 @@
     [SNAP-487] - Assembly of snap-engine should contain scripts to start gpt
     [SNAP-490] - Allow merging of scenes without geographic boundary check
     [SNAP-515] - STA: folders are not supported as processor parameters
+    [SNAP-523] - STA: processors with no input and no output declared show an "almost" empty I/O Pannel
 
 
 A comprehensive list of all issues resolved in this version of SNAP can be found in our 
