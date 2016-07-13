@@ -29,6 +29,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -61,8 +62,11 @@ public enum AdapterWatcher {
             if (!Files.exists(nbUserModulesPath)) {
                 Files.createDirectory(nbUserModulesPath);
             }
+            readMap();
             monitorPath(adaptersFolder);
             monitorPath(nbUserModulesPath);
+            handleUninstalledModules();
+
             thread = new Thread(() -> {
                 while (isRunning) {
                     WatchKey key;
@@ -71,23 +75,25 @@ public enum AdapterWatcher {
                     } catch (InterruptedException ex) {
                         return;
                     }
-                    key.pollEvents().stream().filter(event -> !isSuspended).forEach(event -> {
+                    key.pollEvents().stream().forEach(event -> {
                         WatchEvent.Kind<?> kind = event.kind();
                         @SuppressWarnings("unchecked")
                         WatchEvent<Path> ev = (WatchEvent<Path>) event;
                         Path fileName = ev.context();
                         boolean isJar = fileName.toString().endsWith(".jar");
-                        if (kind == StandardWatchEventKinds.ENTRY_CREATE) {
-                            if (!isJar) {
-                                folderAdded(adaptersFolder.resolve(fileName));
-                            } else {
-                                jarAdded(nbUserModulesPath.resolve(fileName));
-                            }
-                        } else if (kind == StandardWatchEventKinds.ENTRY_DELETE) {
-                            if (!isJar) {
-                                folderDeleted(adaptersFolder.resolve(fileName));
-                            } else {
-                                jarDeleted(nbUserModulesPath.resolve(fileName));
+                        if (!isSuspended) {
+                            if (kind == StandardWatchEventKinds.ENTRY_CREATE) {
+                                if (!isJar) {
+                                    folderAdded(adaptersFolder.resolve(fileName));
+                                } else {
+                                    jarAdded(nbUserModulesPath.resolve(fileName));
+                                }
+                            } else if (kind == StandardWatchEventKinds.ENTRY_DELETE) {
+                                if (!isJar) {
+                                    folderDeleted(adaptersFolder.resolve(fileName));
+                                } else {
+                                    jarDeleted(nbUserModulesPath.resolve(fileName));
+                                }
                             }
                         }
                     });
@@ -138,6 +144,18 @@ public enum AdapterWatcher {
      */
     public void monitorPath(Path path) throws IOException {
         if (path != null && Files.isDirectory(path)) {
+            try {
+                File[] files = path.toFile().listFiles();
+                if (files != null) {
+                    for (File jar : files) {
+                        if (jar.getName().endsWith(".jar")) {
+                            jarAdded(jar.toPath());
+                        }
+                    }
+                }
+            } catch (Exception ex) {
+                SystemUtils.LOG.warning(String.format("Exception occured while inspecting %s for adapter jars", path.toString()));
+            }
             WatchKey key = path.register(watcher, eventTypes);
             monitoredPaths.put(path, key);
             SystemUtils.LOG.info(String.format("Registered %s for watching", path.toString()));
@@ -155,6 +173,16 @@ public enum AdapterWatcher {
             if (key != null) {
                 key.cancel();
                 SystemUtils.LOG.info(String.format("Unregistered %s for watching", path.toString()));
+            }
+        }
+    }
+
+    private void handleUninstalledModules() {
+        Path[] paths = new Path[jarAliases.size()];
+        jarAliases.keySet().toArray(paths);
+        for (Path path : paths) {
+            if (!Files.exists(path)) {
+                jarDeleted(path);
             }
         }
     }
@@ -181,9 +209,12 @@ public enum AdapterWatcher {
     private void jarAdded(Path jarFile) {
         Path unpackLocation = processJarFile(jarFile);
         if (unpackLocation != null) {
+            suspend();
             folderAdded(unpackLocation);
+            saveMap();
+            resume();
         } else {
-            logger.warning(String.format("Jar %s could not be unpacked. See previous exception.", jarFile));
+            logger.warning(String.format("Jar %s has not been unpacked.", jarFile.toString()));
         }
     }
 
@@ -200,42 +231,80 @@ public enum AdapterWatcher {
         }
         ToolAdapterOperatorDescriptor operatorDescriptor = ToolAdapterRegistry.INSTANCE.findByAlias(alias);
         if (operatorDescriptor != null) {
+            suspend();
             ToolAdapterIO.removeOperator(operatorDescriptor);
+            jarAliases.remove(jarFile);
+            saveMap();
+            resume();
         } else {
             logger.warning(String.format("Cannot find adapter for %s", jarFile.toString()));
         }
     }
 
     private Path processJarFile(Path jarFile) {
-        String unpackPath = jarFile.getFileName().toString().replace(".jar", "");
+        Path destination = null;
+        String aliasOrName = null;
         try {
-            unpackPath = ModulePackager.getAdapterAlias(jarFile.toFile());
-        } catch (IOException e) {
-            logger.warning(e.getMessage());
+            aliasOrName = ModulePackager.getAdapterAlias(jarFile.toFile());
+        } catch (IOException ignored) {
         }
-        jarAliases.put(jarFile, unpackPath);
-        Path destination = ToolAdapterIO.getAdaptersPath().resolve(unpackPath);
-        try{
-            if (!Files.exists(destination)) {
-                ModulePackager.unpackAdapterJar(jarFile.toFile(), destination.toFile());
-            } else {
-                Path versionFile = destination.resolve("version.txt");
-                if (Files.exists(versionFile)) {
-                    String versionText = new String(Files.readAllBytes(versionFile));
-                    String jarVersion = ModulePackager.getAdapterVersion(jarFile.toFile());
-                    if (jarVersion != null && !versionText.equals(jarVersion)) {
-                        ModulePackager.unpackAdapterJar(jarFile.toFile(), destination.toFile());
-                        logger.info(String.format("The adapter with the name %s and version %s was replaced by version %s", unpackPath, versionText, jarVersion));
-                    } else {
-                        logger.info(String.format("An adapter with the name %s and version %s already exists", unpackPath, versionText));
-                    }
-                } else {
+        if (aliasOrName != null) {
+            jarAliases.put(jarFile, aliasOrName);
+            destination = ToolAdapterIO.getAdaptersPath().resolve(aliasOrName);
+            try {
+                if (!Files.exists(destination)) {
                     ModulePackager.unpackAdapterJar(jarFile.toFile(), destination.toFile());
+                } else {
+                    Path versionFile = destination.resolve("version.txt");
+                    if (Files.exists(versionFile)) {
+                        String versionText = new String(Files.readAllBytes(versionFile));
+                        String jarVersion = ModulePackager.getAdapterVersion(jarFile.toFile());
+                        if (jarVersion != null && !versionText.equals(jarVersion)) {
+                            ModulePackager.unpackAdapterJar(jarFile.toFile(), destination.toFile());
+                            logger.info(String.format("The adapter with the name %s and version %s was replaced by version %s", aliasOrName, versionText, jarVersion));
+                        } else {
+                            logger.info(String.format("An adapter with the name %s and version %s already exists", aliasOrName, versionText));
+                        }
+                    } else {
+                        ModulePackager.unpackAdapterJar(jarFile.toFile(), destination.toFile());
+                    }
                 }
+            } catch (Exception e) {
+                logger.severe(e.getMessage());
             }
-        } catch (Exception e) {
-            logger.severe(e.getMessage());
         }
         return destination;
+    }
+
+    private void saveMap() {
+        Path path = ToolAdapterIO.getAdaptersPath().resolve("installed.dat");
+        StringBuilder builder = new StringBuilder();
+        for (Map.Entry<Path, String> entry : jarAliases.entrySet()) {
+            builder.append(entry.getKey().toString())
+                    .append(",")
+                    .append(entry.getValue())
+                    .append("\n");
+        }
+        try {
+            Files.write(path, builder.toString().getBytes());
+        } catch (IOException e) {
+            SystemUtils.LOG.severe(String.format("ToolAdapterIO: %s", e.getMessage()));
+        }
+    }
+
+    private void readMap() {
+        Path path = ToolAdapterIO.getAdaptersPath().resolve("installed.dat");
+        jarAliases.clear();
+        try {
+            if (Files.exists(path)) {
+                List<String> lines = Files.readAllLines(path);
+                for (String line : lines) {
+                    String[] tokens = line.split(",");
+                    jarAliases.put(Paths.get(tokens[0]), tokens[1]);
+                }
+            }
+        } catch (IOException e) {
+            SystemUtils.LOG.severe(String.format("ToolAdapterIO: %s", e.getMessage()));
+        }
     }
 }

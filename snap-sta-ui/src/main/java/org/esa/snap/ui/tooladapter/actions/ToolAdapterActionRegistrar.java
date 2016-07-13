@@ -17,11 +17,8 @@
  */
 package org.esa.snap.ui.tooladapter.actions;
 
-import org.esa.snap.core.gpf.GPF;
-import org.esa.snap.core.gpf.OperatorSpi;
-import org.esa.snap.core.gpf.OperatorSpiRegistry;
 import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
-import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterIO;
+import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterActivator;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterListener;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterOpSpi;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterRegistry;
@@ -31,19 +28,10 @@ import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 import org.openide.modules.OnStart;
 import org.openide.modules.OnStop;
-import org.openide.modules.Places;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.jar.Attributes;
-import java.util.jar.JarFile;
-import java.util.jar.Manifest;
 
 /**
  * Helper class for creating menu entries for tool adapter operators.
@@ -147,7 +135,6 @@ public class ToolAdapterActionRegistrar {
     }
 
     public static void removeOperatorMenu(ToolAdapterOperatorDescriptor operator) {
-        //if (!operator.isFromPackage()) {
         FileObject menuFolder = FileUtil.getConfigFile(operator.getMenuLocation());
         try {
             if (menuFolder != null) {
@@ -159,6 +146,10 @@ public class ToolAdapterActionRegistrar {
                 if (actionMap.containsKey(operatorAlias)) {
                     actionMap.remove(operatorAlias);
                 }
+                FileObject[] children = menuFolder.getChildren();
+                if (children == null || children.length == 0) {
+                    menuFolder.delete();
+                }
             }
             FileObject defaultLocation = getDefaultLocation();
             FileObject[] children = defaultLocation.getChildren();
@@ -168,7 +159,6 @@ public class ToolAdapterActionRegistrar {
         } catch (IOException e) {
             Dialogs.showError("Error:" + e.getMessage());
         }
-        //}
     }
 
     private static FileObject getDefaultLocation() throws IOException {
@@ -194,60 +184,18 @@ public class ToolAdapterActionRegistrar {
     public static class StartOp implements Runnable {
         @Override
         public void run() {
-            OperatorSpiRegistry spiRegistry = GPF.getDefaultInstance().getOperatorSpiRegistry();
-            Path jarPaths = Paths.get(Places.getUserDirectory().getAbsolutePath(), "modules");
-            Map<String, File> jarAdapters = Files.exists(jarPaths) ? getJarAdapters(jarPaths.toFile()) : null;
-            if (spiRegistry != null) {
-                Collection<OperatorSpi> operatorSpis = spiRegistry.getOperatorSpis();
-                if (operatorSpis != null) {
-                    if (operatorSpis.size() == 0) {
-                        operatorSpis.addAll(ToolAdapterIO.searchAndRegisterAdapters());
-                    }
-                    /*final List<OperatorSpi> orphaned = operatorSpis.stream()
-                            .filter(spi -> spi instanceof ToolAdapterOpSpi &&
-                                    ((ToolAdapterOperatorDescriptor) spi.getOperatorDescriptor()).isFromPackage() &&
-                                    jarAdapters != null && !jarAdapters.containsKey(spi.getOperatorDescriptor().getAlias()))
-                            .collect(Collectors.toList());
-                    orphaned.forEach(spi -> {
-                        ToolAdapterOperatorDescriptor operatorDescriptor = (ToolAdapterOperatorDescriptor) spi.getOperatorDescriptor();
-                        operatorSpis.remove(spi);
-                        //ToolAdapterActionRegistrar.removeOperatorMenu(operatorDescriptor);
-                        ToolAdapterIO.removeOperator(operatorDescriptor);
-                    });*/
-                    operatorSpis.stream().filter(spi -> spi instanceof ToolAdapterOpSpi).forEach(spi -> {
-                        ToolAdapterOperatorDescriptor operatorDescriptor = (ToolAdapterOperatorDescriptor) spi.getOperatorDescriptor();
-                        registerOperatorMenu(operatorDescriptor, false);
-                    });
-                }
-                ToolAdapterRegistry.INSTANCE.addListener(listener);
-                AdapterWatcher.INSTANCE.startMonitor();
+            while (!ToolAdapterActivator.isInitialized()) {
+                Thread.yield();
             }
-        }
-
-        private Map<String, File> getJarAdapters(File fromPath) {
-            Map<String, File> output = new HashMap<>();
-            if (fromPath != null && fromPath.exists()) {
-                String descriptionKeyName = "OpenIDE-Module-Short-Description";
-                Attributes.Name typeKey = new Attributes.Name("OpenIDE-Module-Type");
-                File[] files = fromPath.listFiles((dir, name) -> name.endsWith("jar"));
-                if (files != null) {
-                    try {
-                        for (File file : files) {
-                            JarFile jarFile = new JarFile(file);
-                            Manifest manifest = jarFile.getManifest();
-                            if (manifest != null) {
-                                Attributes manifestEntries = manifest.getMainAttributes();
-                                if (manifestEntries.containsKey(typeKey) &&
-                                        "STA".equals(manifestEntries.getValue(typeKey.toString()))) {
-                                    output.put(manifestEntries.getValue(descriptionKeyName), file);
-                                }
-                            }
-                        }
-                    } catch (Exception ignored) {
-                    }
+            Map<String, ToolAdapterOpSpi> operatorMap = ToolAdapterRegistry.INSTANCE.getOperatorMap();
+            if (operatorMap.size() > 0) {
+                for (ToolAdapterOpSpi opSpiEntry : operatorMap.values()) {
+                    ToolAdapterOperatorDescriptor operatorDescriptor = (ToolAdapterOperatorDescriptor) opSpiEntry.getOperatorDescriptor();
+                    registerOperatorMenu(operatorDescriptor, false);
                 }
             }
-            return output;
+            ToolAdapterRegistry.INSTANCE.addListener(listener);
+            AdapterWatcher.INSTANCE.startMonitor();
         }
     }
 

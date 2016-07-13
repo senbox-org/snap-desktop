@@ -22,7 +22,6 @@ import java.io.*;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.jar.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -37,6 +36,7 @@ public final class ModulePackager {
 
     private static final Manifest _manifest;
     private static final Attributes.Name ATTR_DESCRIPTION_NAME;
+    private static final Attributes.Name ATTR_MODULE;
     private static final Attributes.Name ATTR_MODULE_NAME;
     private static final Attributes.Name ATTR_MODULE_TYPE;
     private static final Attributes.Name ATTR_MODULE_VERSION;
@@ -69,7 +69,8 @@ public final class ModulePackager {
         _manifest = new Manifest();
         Attributes attributes = _manifest.getMainAttributes();
         ATTR_DESCRIPTION_NAME = new Attributes.Name("OpenIDE-Module-Short-Description");
-        ATTR_MODULE_NAME = new Attributes.Name("OpenIDE-Module");
+        ATTR_MODULE = new Attributes.Name("OpenIDE-Module");
+        ATTR_MODULE_NAME = new Attributes.Name("OpenIDE-Module-Name");
         ATTR_MODULE_TYPE = new Attributes.Name("OpenIDE-Module-Type");
         ATTR_MODULE_VERSION = new Attributes.Name("OpenIDE-Module-Implementation-Version");
         ATTR_MODULE_ALIAS = new Attributes.Name("OpenIDE-Module-Alias");
@@ -173,39 +174,16 @@ public final class ModulePackager {
      * @throws IOException
      */
     public static void unpackAdapterJar(File jarFile, File unpackFolder) throws IOException {
-        JarFile jar = new JarFile(jarFile);
-        Enumeration enumEntries = jar.entries();
-        if (unpackFolder == null) {
-            unpackFolder = new File(modulesPath, jarFile.getName().replace(".jar", ""));
-        }
-        if (!unpackFolder.exists())
-            unpackFolder.mkdir();
-        Attributes attributes = jar.getManifest().getMainAttributes();
-        if (attributes.containsKey(ATTR_MODULE_VERSION)) {
-            String version = attributes.getValue(ATTR_MODULE_VERSION);
-            File versionFile = new File(unpackFolder, "version.txt");
-            try (FileOutputStream fos = new FileOutputStream(versionFile)) {
-                fos.write(version.getBytes());
-                fos.close();
-            }
-        }
-        while (enumEntries.hasMoreElements()) {
-            JarEntry file = (JarEntry) enumEntries.nextElement();
-            File f = new File(unpackFolder, file.getName());
-            if (file.isDirectory()) {
-                f.mkdir();
-                continue;
-            } else {
-                f.getParentFile().mkdirs();
-            }
-            try (InputStream is = jar.getInputStream(file)) {
-                try (FileOutputStream fos = new FileOutputStream(f)) {
-                    while (is.available() > 0) {
-                        fos.write(is.read());
-                    }
+        ToolAdapterIO.unpackAdapterJar(jarFile, unpackFolder);
+        try (JarFile jar = new JarFile(jarFile)) {
+            Attributes attributes = jar.getManifest().getMainAttributes();
+            if (attributes.containsKey(ATTR_MODULE_VERSION)) {
+                String version = attributes.getValue(ATTR_MODULE_VERSION);
+                File versionFile = new File(unpackFolder, "version.txt");
+                try (FileOutputStream fos = new FileOutputStream(versionFile)) {
+                    fos.write(version.getBytes());
                     fos.close();
                 }
-                is.close();
             }
         }
     }
@@ -222,18 +200,25 @@ public final class ModulePackager {
     }
 
     public static String getAdapterAlias(File jarFile) throws IOException {
-        String version = null;
+        String attrValue = null;
         JarFile jar = new JarFile(jarFile);
         Attributes attributes = jar.getManifest().getMainAttributes();
-        if (attributes.containsKey(ATTR_MODULE_ALIAS)) {
-            version = attributes.getValue(ATTR_MODULE_ALIAS);
+        if (attributes.containsKey(ATTR_MODULE_TYPE) && "STA".equals(attributes.getValue(ATTR_MODULE_TYPE))) {
+            if (attributes.containsKey(ATTR_MODULE_ALIAS)) {
+                attrValue = attributes.getValue(ATTR_MODULE_ALIAS);
+            } else if (attributes.containsKey(ATTR_MODULE_NAME)) {
+                attrValue = attributes.getValue(ATTR_MODULE_NAME);
+            } else if (attributes.containsKey(ATTR_MODULE)) {
+                attrValue = attributes.getValue(ATTR_MODULE);
+            }
         }
         jar.close();
-        return version;
+        return attrValue;
     }
 
     private static byte[] packAdapterJar(ToolAdapterOperatorDescriptor descriptor) throws IOException {
         _manifest.getMainAttributes().put(ATTR_DESCRIPTION_NAME, descriptor.getAlias());
+        _manifest.getMainAttributes().put(ATTR_MODULE, descriptor.getName());
         _manifest.getMainAttributes().put(ATTR_MODULE_NAME, descriptor.getName());
         _manifest.getMainAttributes().put(ATTR_MODULE_VERSION, descriptor.getVersion());
         _manifest.getMainAttributes().put(ATTR_MODULE_ALIAS, descriptor.getAlias());
