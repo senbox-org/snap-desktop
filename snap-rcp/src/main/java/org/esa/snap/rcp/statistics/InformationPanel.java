@@ -28,6 +28,7 @@ import org.openide.windows.TopComponent;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import java.awt.*;
 import java.util.List;
 
 /**
@@ -148,6 +149,12 @@ class InformationPanel extends TablePagePanel {
                  product.getFileLocation() != null ? product.getFileLocation().getPath() : "Not yet saved", "");
         addEntry("Product scene width:", String.valueOf(product.getSceneRasterWidth()), "pixels");
         addEntry("Product scene height:", String.valueOf(product.getSceneRasterHeight()), "pixels");
+
+        Dimension preferredTileSize = product.getPreferredTileSize();
+        if (preferredTileSize != null) {
+            addEntry("Product preferred tile width:", String.valueOf((int)preferredTileSize.getWidth()), "pixels");
+            addEntry("Product preferred tile height:", String.valueOf((int)preferredTileSize.getHeight()), "pixels");
+        }
 
         final String startTimeString = product.getStartTime() != null ?
                 product.getStartTime().getElemString() : "Not available";
