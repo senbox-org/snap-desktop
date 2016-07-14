@@ -83,7 +83,7 @@ public class ToolParameterEditorDialog extends ModalDialog {
         this.parameter = new ToolParameterDescriptor(parameter);
         this.parameter.setDefaultValue(value != null ? value.toString() : parameter.getDataType().newInstance().toString());
 
-        container = PropertyContainer.createObjectBacked(parameter);
+        container = PropertyContainer.createObjectBacked(this.parameter);
         valuesContext = new BindingContext(container);
         createContextForValueEditor();
 
