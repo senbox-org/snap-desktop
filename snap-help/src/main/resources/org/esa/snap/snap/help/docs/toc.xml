@@ -91,7 +91,6 @@
                 <tocitem text="Transect Pixels" target="exportTransectPixels"/>
             </tocitem>
             <tocitem text="Product Subset Dialog" target="subsetDialog"/>
-            <tocitem text="Product Grabber" target="productGrabber"/>
             <tocitem text="No-Data Value" target="noDataValue"/>
         </tocitem>
         <tocitem text="Analysis" target="analysisMenu">
@@ -137,7 +136,6 @@
                     <tocitem text="Resampling Methods" target="resamplingMethods"/>
                 </tocitem>
                 <tocitem text="Resample" target="resampleAction"/>
-                <tocitem text="Data Flip" target="dataFlip"/>
             </tocitem>
             <tocitem text="DEM Tools">
                 <tocitem text="Create DEM-related Bands" target="createDemRelatedBands"/>

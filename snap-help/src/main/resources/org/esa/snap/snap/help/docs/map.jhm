@@ -34,7 +34,6 @@
     <mapID target="productExplorer" url="desktop/ProductExplorer.html"/>
     <mapID target="pixelInfoView" url="desktop/ProductExplorer.html#pixelView"/>
     <mapID target="propertyEditor" url="desktop/PropertyEditor.html"/>
-    <mapID target="productGrabber" url="desktop/ProductGrabber.html"/>
     <mapID target="subsetDialog" url="desktop/ProductSubsetDialog.html"/>
     <mapID target="importDimapProduct" url="desktop/ImportDimap.html"/>
     <mapID target="importEnvisatProduct" url="desktop/ImportEnvisat.html"/>
@@ -109,8 +108,6 @@
 
     <mapID target="demGETASSE30" url="desktop/GETASSE30ElevationModel.html"/>
     <mapID target="createDemRelatedBands" url="desktop/CreateDemRelatedBands.html"/>
-    <mapID target="dataFlip" url="desktop/DataFlip.html"/>
-    <mapID target="flipDialog" url="desktop/DataFlip.html"/>
     <mapID target="pixelGeoCodingSetup" url="desktop/PixelGeoCoding.html"/>
 
     <mapID target="geometryWKT" url="desktop/GeometryWKT.html"/>
