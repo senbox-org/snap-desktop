@@ -194,14 +194,14 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
         }
         if (Arrays.stream(sourceProducts).anyMatch(p -> p == null)) {
             Dialogs.Answer decision = Dialogs.requestDecision("No Product Selected", Bundle.NoSourceProductWarning_Text(), false,
-                                                              ToolAdapterOptionsController.PREFERENCE_KEY_SHOW_EMPTY_PRODUCT_WARNING);
+                    ToolAdapterOptionsController.PREFERENCE_KEY_SHOW_EMPTY_PRODUCT_WARNING);
             if (decision.equals(Dialogs.Answer.NO)) {
                 return;
             }
         }
         if (descriptors.size() == 1 && form.getPropertyValue(ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE) == null &&
                 templateContents.contains("$" + ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE)) {
-                Dialogs.showWarning(Bundle.RequiredTargetProductMissingWarning_Text());
+            Dialogs.showWarning(Bundle.RequiredTargetProductMissingWarning_Text());
         } else {
             if (!canApply()) {
                 displayWarnings();
@@ -217,7 +217,7 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
                     if (sourceProducts.length > 0) {
                         sourceProductMap.put(SOURCE_PRODUCT_FIELD, sourceProducts[0]);
                     }
-                    Operator op = GPF.getDefaultInstance().createOperator(operatorDescriptor.getName(), parameterSupport.getParameterMap(), sourceProductMap, null);
+                    Operator op = GPF.getDefaultInstance().createOperator(operatorDescriptor.getAlias(), parameterSupport.getParameterMap(), sourceProductMap, null);
                     for (Property property : parameterSupport.getPropertySet().getProperties()) {
                         op.setParameter(property.getName(), property.getValue());
                     }
@@ -228,10 +228,10 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
                     ConsoleConsumer consumer = null;
                     ProgressWrapper progressWrapper = new ProgressWrapper(progressHandle, progressPattern == null || progressPattern.isEmpty());
                     consumer = new ConsoleConsumer(operatorDescriptor.getProgressPattern(),
-                                                operatorDescriptor.getErrorPattern(),
-                                                operatorDescriptor.getStepPattern(),
-                                                progressWrapper,
-                                                form.console);
+                            operatorDescriptor.getErrorPattern(),
+                            operatorDescriptor.getStepPattern(),
+                            progressWrapper,
+                            form.console);
                     form.console.clear();
                     progressWrapper.setConsumer(consumer);
                     ((ToolAdapterOp) op).setProgressMonitor(progressWrapper);
@@ -355,9 +355,9 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
             }
         }
         List<ToolParameterDescriptor> mandatoryParams = operatorDescriptor.getToolParameterDescriptors()
-                                                                .stream()
-                                                                .filter(d -> d.isNotEmpty() || d.isNotNull())
-                                                                .collect(Collectors.toList());
+                .stream()
+                .filter(d -> d.isNotEmpty() || d.isNotNull())
+                .collect(Collectors.toList());
         Map<String, Object> parameterMap = parameterSupport.getParameterMap();
         for (ToolParameterDescriptor mandatoryParam : mandatoryParams) {
             String name = mandatoryParam.getName();
@@ -409,14 +409,14 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
         if (throwable != null) {
             if (result != null) {
                 final Dialogs.Answer answer = Dialogs.requestDecision(Bundle.ExecutionFailed_Text(),
-                                                                      String.format(Bundle.ExecutionFailed_Message(), throwable.getMessage()),
-                                                                      false, null);
+                        String.format(Bundle.ExecutionFailed_Message(), throwable.getMessage()),
+                        false, null);
                 if (answer == Dialogs.Answer.YES) {
                     operatorCompleted(result);
                 }
             } /*else
                 displayErrors();*/
-                //SnapDialogs.showError(Bundle.ExecutionFailed_Text(), throwable.getMessage());
+            //SnapDialogs.showError(Bundle.ExecutionFailed_Text(), throwable.getMessage());
         }
         //displayErrors();
         displayErrorMessage();
@@ -511,9 +511,9 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
             super.consumeOutput(line);
             if (consolePane != null) {
                 if (SwingUtilities.isEventDispatchThread()) {
-                    consolePane.append(line);
+                    consume(line);
                 } else {
-                    SwingUtilities.invokeLater(() -> consolePane.append(line));
+                    SwingUtilities.invokeLater(() -> consume(line));
                 }
             }
         }
@@ -521,6 +521,14 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
         public void setVisible(boolean value) {
             if (this.consolePane != null) {
                 this.consolePane.setVisible(value);
+            }
+        }
+
+        private void consume(String line) {
+            if (this.error == null || !this.error.matcher(line).matches()) {
+                consolePane.appendInfo(line);
+            } else {
+                consolePane.appendError(line);
             }
         }
     }
