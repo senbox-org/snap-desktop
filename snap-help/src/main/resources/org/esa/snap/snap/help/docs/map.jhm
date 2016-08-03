@@ -26,6 +26,7 @@
     <mapID target="editMenu" url="desktop/EditMenu.html"/>
     <mapID target="viewMenu" url="desktop/ViewMenu.html"/>
     <mapID target="analysisMenu" url="desktop/AnalysisMenu.html"/>
+    <mapID target="layerMenu" url="desktop/LayerMenu.html"/>
     <mapID target="utilitiesMenu" url="desktop/UtilitiesMenu.html"/>
     <mapID target="processingMenu" url="desktop/ProcessingMenu.html"/>
     <mapID target="windowMenu" url="desktop/WindowMenu.html"/>

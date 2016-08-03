@@ -103,7 +103,7 @@
             <tocitem text="Band Statistics" target="statisticsDialog"/>
         </tocitem>
         <tocitem text="Layer">
-            <tocitem text="The Layer menu" target="layerMenu"/>
+            <tocitem text="The Layer Menu" target="layerMenu"/>
             <tocitem text="No-Data Overlay" target="noDataOverlay"/>
             <tocitem text="Layer Manager" target="showLayerManagerWnd"/>
         </tocitem>
