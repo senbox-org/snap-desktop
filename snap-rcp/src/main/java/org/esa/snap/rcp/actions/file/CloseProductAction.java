@@ -5,6 +5,8 @@
  */
 package org.esa.snap.rcp.actions.file;
 
+import java.util.Collection;
+import java.util.Iterator;
 import org.esa.snap.core.dataio.ProductReader;
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.Product;
@@ -41,6 +43,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+
 import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
 
 /**
@@ -67,6 +70,8 @@ public final class CloseProductAction extends AbstractAction implements ContextA
 
     private final WeakSet<Product> productSet = new WeakSet<>();
     private Lookup lkp;
+    private Collection collectionSelectProduct;
+    private static Collection collectionSelectedProduct;
 
     public CloseProductAction() {
         this(Utilities.actionsGlobalContext());
@@ -92,6 +97,8 @@ public final class CloseProductAction extends AbstractAction implements ContextA
     @Override
     public void resultChanged(LookupEvent lookupEvent) {
         setEnableState();
+        Lookup.Result result = (Lookup.Result) lookupEvent.getSource();
+        collectionSelectedProduct = result.allInstances();
     }
 
     @Override
@@ -111,6 +118,15 @@ public final class CloseProductAction extends AbstractAction implements ContextA
      */
     public Boolean execute() {
         Boolean status;
+        if (collectionSelectedProduct.size() > 1) {
+            for (Iterator i = collectionSelectedProduct.iterator(); i.hasNext(); ) {
+                Product product = (Product) i.next();
+                closeProducts(new HashSet<>(Collections.singletonList(product)));
+            }
+            collectionSelectedProduct.clear();
+            return true;
+        }
+
         if (!productSet.isEmpty()) {
             // Case 1: If productSet is not empty, action has been constructed with selected products
             status = closeProducts(new HashSet<>(productSet));
@@ -128,12 +144,12 @@ public final class CloseProductAction extends AbstractAction implements ContextA
         return status;
     }
 
+
     private static Boolean closeProducts(Set<Product> products) {
         List<Product> closeList = new ArrayList<>(products);
         List<Product> saveList = new ArrayList<>();
 
-        Product[] products1 = SnapApp.getDefault().getProductManager().getProducts();
-        HashSet<Product> stillOpenProducts = new HashSet<>(Arrays.asList(products1));
+        HashSet<Product> stillOpenProducts = new HashSet<>(Arrays.asList(SnapApp.getDefault().getProductManager().getProducts()));
         stillOpenProducts.removeAll(closeList);
 
         if (!stillOpenProducts.isEmpty()) {
@@ -141,7 +157,7 @@ public final class CloseProductAction extends AbstractAction implements ContextA
                 Product firstSourceProduct = findFirstSourceProduct(productToBeClosed, stillOpenProducts);
                 if (firstSourceProduct != null) {
                     Dialogs.showInformation("Close Not Possible",
-                                            String.format("Can't close product '%s' because it is in use%n" +
+                            String.format("Can't close product '%s' because it is in use%n" +
                                             "by product '%s'.%n" +
                                             "Please close the latter first.",
                                     productToBeClosed.getName(),
@@ -154,7 +170,7 @@ public final class CloseProductAction extends AbstractAction implements ContextA
         for (Product product : products) {
             if (product.isModified()) {
                 Dialogs.Answer answer = Dialogs.requestDecision(Bundle.CTL_OpenProductActionName(),
-                                                                MessageFormat.format("Product ''{0}'' has been modified.\n" +
+                        MessageFormat.format("Product ''{0}'' has been modified.\n" +
                                         "Do you want to save it?",
                                 product.getName()), true, null);
                 if (answer == Dialogs.Answer.YES) {
@@ -248,6 +264,4 @@ public final class CloseProductAction extends AbstractAction implements ContextA
         }
         return null;
     }
-
-
 }
