@@ -20,6 +20,7 @@ import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.jexp.impl.Tokenizer;
 import org.esa.snap.core.util.ArrayUtils;
 import org.esa.snap.core.util.MouseEventFilterFactory;
 import org.esa.snap.core.util.StringUtils;
@@ -350,8 +351,8 @@ class MosaicExpressionsPanel extends JPanel {
                         final String name = (String) row.get(0);
                         final String expression = (String) row.get(1);
                         if (name == null || expression == null
-                                || !StringUtils.contains(availableBandNames, name.trim())
-                                || !name.trim().equals(expression.trim())) {
+                            || !StringUtils.contains(availableBandNames, name.trim())
+                            || !name.trim().equals(expression.trim())) {
                             continue;
                         }
                         existingBands.add(product.getBand(name.trim()));
@@ -367,7 +368,8 @@ class MosaicExpressionsPanel extends JPanel {
                         for (Band selectedBand : selectedBands) {
                             if (!existingBands.contains(selectedBand)) {
                                 final String name = selectedBand.getName();
-                                addRow(variablesTable, new Object[]{name, name});
+                                final String expression = Tokenizer.createExternalName(name);
+                                addRow(variablesTable, new Object[]{name, expression});
                             } else {
                                 existingBands.remove(selectedBand);
                             }

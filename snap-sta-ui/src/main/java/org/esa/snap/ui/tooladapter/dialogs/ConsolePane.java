@@ -20,9 +20,11 @@ public class ConsolePane extends JScrollPane {
 
     private JTextPane textArea;
     private final StringBuilder buffer;
+    private final StyleContext styleContext;
 
     public ConsolePane() {
         super();
+        styleContext = StyleContext.getDefaultStyleContext();
         buffer = new StringBuilder();
         textArea = new JTextPane();
         textArea.setBackground(Color.BLACK);
@@ -49,7 +51,7 @@ public class ConsolePane extends JScrollPane {
             @Override
             public void componentShown(ComponentEvent e) {
                 if (buffer.length() > 0) {
-                    append(buffer.toString());
+                    appendInfo(buffer.toString());
                 }
                 buffer.setLength(0);
             }
@@ -59,21 +61,18 @@ public class ConsolePane extends JScrollPane {
     /**
      * Appends text to this console.
      *
-     * @param text  The text to append
+     * @param text  The text to appendInfo
      */
-    public void append(String text) {
-        if (this.isVisible()) {
-            StyleContext sc = StyleContext.getDefaultStyleContext();
-            AttributeSet aset = sc.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Foreground, Color.WHITE);
-            aset = sc.addAttribute(aset, StyleConstants.Alignment, StyleConstants.ALIGN_LEFT);
-            int len = textArea.getDocument().getLength();
-            textArea.setCaretPosition(len);
-            textArea.setCharacterAttributes(aset, false);
-            textArea.replaceSelection("\n" + text);
-            textArea.repaint();
-        } else {
-            buffer.append(text);
-        }
+    public void appendInfo(String text) {
+        AttributeSet aset = styleContext.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Foreground, Color.WHITE);
+        aset = styleContext.addAttribute(aset, StyleConstants.Alignment, StyleConstants.ALIGN_LEFT);
+        append(text, aset);
+    }
+
+    public void appendError(String text) {
+        AttributeSet aset = styleContext.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Foreground, Color.RED);
+        aset = styleContext.addAttribute(aset, StyleConstants.Alignment, StyleConstants.ALIGN_LEFT);
+        append(text, aset);
     }
 
     /**
@@ -83,4 +82,15 @@ public class ConsolePane extends JScrollPane {
         textArea.setText("");
     }
 
+    private void append(String text, AttributeSet attributes) {
+        if (this.isVisible()) {
+            int len = textArea.getDocument().getLength();
+            textArea.setCaretPosition(len);
+            textArea.setCharacterAttributes(attributes, false);
+            textArea.replaceSelection("\n" + text);
+            textArea.repaint();
+        } else {
+            buffer.append(text);
+        }
+    }
 }
