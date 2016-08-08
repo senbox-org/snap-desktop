@@ -101,7 +101,7 @@ public final class ImageViewController extends DefaultConfigController {
                 key = ProductSceneView.PREFERENCE_KEY_IMAGE_SCROLL_BARS_SHOWN)
         boolean showScrollBars = false;
 
-        @Preference(label = "Reverse scroll functionality (zoom-in / zoom-out) using the mouse scroll-wheel",
+        @Preference(label = "Invert mouse wheel scrolling (zoom-in/out)",
                 key = ProductSceneView.PREFERENCE_KEY_ZOOM_IN_OUT_REVERSE)
         boolean reverseZom = false;
     }
