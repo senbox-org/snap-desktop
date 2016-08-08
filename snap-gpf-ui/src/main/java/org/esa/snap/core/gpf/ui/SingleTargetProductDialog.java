@@ -49,6 +49,7 @@ public abstract class SingleTargetProductDialog extends ModelessDialog {
 
     protected TargetProductSelector targetProductSelector;
     protected AppContext appContext;
+    private long createTargetProductTime;
 
     protected SingleTargetProductDialog(AppContext appContext, String title, String helpID) {
         this(appContext, title, ID_APPLY_CLOSE_HELP, helpID);
@@ -122,10 +123,13 @@ public abstract class SingleTargetProductDialog extends ModelessDialog {
 
         Product targetProduct = null;
         try {
+            long t0 = System.currentTimeMillis();
             targetProduct = createTargetProduct();
+            createTargetProductTime = System.currentTimeMillis() - t0;
             if (targetProduct == null) {
                 throw new NullPointerException("Target product is null.");
             }
+
         } catch (Throwable t) {
             handleInitialisationError(t);
         }
@@ -148,10 +152,10 @@ public abstract class SingleTargetProductDialog extends ModelessDialog {
         String msg;
         if (isInternalException(t)) {
             msg = MessageFormat.format("An internal error occurred during the target product initialisation.\n{0}",
-                                       formatThrowable(t));
+                    formatThrowable(t));
         } else {
             msg = MessageFormat.format("A problem occurred during the target product initialisation.\n{0}",
-                                       formatThrowable(t));
+                    formatThrowable(t));
         }
         appContext.handleError(msg, t);
     }
@@ -160,10 +164,10 @@ public abstract class SingleTargetProductDialog extends ModelessDialog {
         String msg;
         if (isInternalException(t)) {
             msg = MessageFormat.format("An internal error occurred during the target product processing.\n{0}",
-                                       formatThrowable(t));
+                    formatThrowable(t));
         } else {
             msg = MessageFormat.format("A problem occurred during processing the target product processing.\n{0}",
-                                       formatThrowable(t));
+                    formatThrowable(t));
         }
         appContext.handleError(msg, t);
     }
@@ -174,8 +178,8 @@ public abstract class SingleTargetProductDialog extends ModelessDialog {
 
     private String formatThrowable(Throwable t) {
         return MessageFormat.format("Type: {0}\nMessage: {1}\n",
-                                    t.getClass().getSimpleName(),
-                                    t.getMessage());
+                t.getClass().getSimpleName(),
+                t.getMessage());
     }
 
     protected boolean canApply() {
@@ -195,7 +199,7 @@ public abstract class SingleTargetProductDialog extends ModelessDialog {
                         productName, appContext.getApplicationName()
                 );
                 final int answer = JOptionPane.showConfirmDialog(getJDialog(), message,
-                                                                 getTitle(), JOptionPane.YES_NO_OPTION);
+                        getTitle(), JOptionPane.YES_NO_OPTION);
                 if (answer != JOptionPane.YES_OPTION) {
                     return false;
                 }
@@ -210,7 +214,7 @@ public abstract class SingleTargetProductDialog extends ModelessDialog {
                         productFile.getPath()
                 );
                 final int answer = JOptionPane.showConfirmDialog(getJDialog(), message,
-                                                                 getTitle(), JOptionPane.YES_NO_OPTION);
+                        getTitle(), JOptionPane.YES_NO_OPTION);
                 if (answer != JOptionPane.YES_OPTION) {
                     return false;
                 }
@@ -326,8 +330,8 @@ public abstract class SingleTargetProductDialog extends ModelessDialog {
                         if (product == null) {
                             product = targetProduct; // todo - check - this cannot be ok!!! (nf)
                         }
-                        pm.worked(5);
                     }
+                    pm.worked(5);
                 }
             } finally {
                 pm.done();
@@ -341,13 +345,14 @@ public abstract class SingleTargetProductDialog extends ModelessDialog {
         @Override
         protected void done() {
             final TargetProductSelectorModel model = getTargetProductSelector().getModel();
+            long totalSaveTime = saveTime + createTargetProductTime;
             try {
                 final Product targetProduct = get();
                 if (model.isOpenInAppSelected()) {
                     appContext.getProductManager().addProduct(targetProduct);
-                    showSaveAndOpenInAppInfo(saveTime);
+                    showSaveAndOpenInAppInfo(totalSaveTime);
                 } else {
-                    showSaveInfo(saveTime);
+                    showSaveInfo(totalSaveTime);
                 }
             } catch (InterruptedException e) {
                 // ignore

@@ -22,6 +22,8 @@ import com.bc.ceres.binding.PropertySet;
 import com.bc.ceres.binding.ValidationException;
 import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
+import java.util.Objects;
+import java.util.Optional;
 import org.esa.snap.binning.AggregatorConfig;
 import org.esa.snap.binning.AggregatorDescriptor;
 import org.esa.snap.binning.TypedDescriptorsRegistry;
@@ -68,14 +70,14 @@ public class BinningDialog extends SingleTargetProductDialog {
 
         ParameterUpdater parameterUpdater = new BinningParameterUpdater();
         OperatorParameterSupport parameterSupport = new OperatorParameterSupport(operatorSpi.getOperatorDescriptor(),
-                                                                                 formModel.getPropertySet(),
-                                                                                 formModel.getParameterMap(),
-                                                                                 parameterUpdater);
+                formModel.getPropertySet(),
+                formModel.getParameterMap(),
+                parameterUpdater);
         OperatorMenu operatorMenu = new OperatorMenu(this.getJDialog(),
-                                                     operatorSpi.getOperatorDescriptor(),
-                                                     parameterSupport,
-                                                     appContext,
-                                                     helpID);
+                operatorSpi.getOperatorDescriptor(),
+                parameterSupport,
+                appContext,
+                helpID);
         getJDialog().setJMenuBar(operatorMenu.createDefaultMenu());
     }
 
@@ -130,10 +132,10 @@ public class BinningDialog extends SingleTargetProductDialog {
             AggregatorDescriptor descriptor = registry.getDescriptor(AggregatorDescriptor.class, aggregatorConfigName);
             String[] sourceVarNames = descriptor.getSourceVarNames(aggregatorConfig);
             for (String sourceVarName : sourceVarNames) {
-                if (!contextProduct.containsBand(sourceVarName)) {
+                if (Objects.isNull(contextProduct) || !contextProduct.containsBand(sourceVarName)) {
                     String msg = String.format(
                             "Source band name '%s' of aggregator '%s' is unknown.\nIt is neither one of the bands of the source products,\n" +
-                            "nor is it defined by an intermediate source band.", sourceVarName, aggregatorConfigName
+                                    "nor is it defined by an intermediate source band.", sourceVarName, aggregatorConfigName
                     );
                     showErrorDialog(msg);
                     return false;
