@@ -71,7 +71,7 @@ public final class CloseProductAction extends AbstractAction implements ContextA
     private final WeakSet<Product> productSet = new WeakSet<>();
     private Lookup lkp;
     private Collection collectionSelectProduct;
-    private static Collection collectionSelectedProduct;
+    private static Collection selectedProduct = new ArrayList();
 
     public CloseProductAction() {
         this(Utilities.actionsGlobalContext());
@@ -83,6 +83,7 @@ public final class CloseProductAction extends AbstractAction implements ContextA
         Lookup.Result<ProductNode> productNode = lkp.lookupResult(ProductNode.class);
         productNode.addLookupListener(WeakListeners.create(LookupListener.class, this, productNode));
         setEnableState();
+        setActionName();
     }
 
     public CloseProductAction(List<Product> products) {
@@ -98,7 +99,16 @@ public final class CloseProductAction extends AbstractAction implements ContextA
     public void resultChanged(LookupEvent lookupEvent) {
         setEnableState();
         Lookup.Result result = (Lookup.Result) lookupEvent.getSource();
-        collectionSelectedProduct = result.allInstances();
+        selectedProduct = result.allInstances();
+        setActionName();
+    }
+
+    private void setActionName() {
+        if (selectedProduct.size() > 1) {
+            this.putValue(Action.NAME, String.format("Close %d Products", selectedProduct.size()));
+        } else {
+            this.putValue(Action.NAME, "Close Product");
+        }
     }
 
     @Override
@@ -118,12 +128,12 @@ public final class CloseProductAction extends AbstractAction implements ContextA
      */
     public Boolean execute() {
         Boolean status;
-        if (collectionSelectedProduct.size() > 1) {
-            for (Iterator i = collectionSelectedProduct.iterator(); i.hasNext(); ) {
+        if (selectedProduct.size() > 1) {
+            for (Iterator i = selectedProduct.iterator(); i.hasNext(); ) {
                 Product product = (Product) i.next();
                 closeProducts(new HashSet<>(Collections.singletonList(product)));
             }
-            collectionSelectedProduct.clear();
+            selectedProduct.clear();
             return true;
         }
 
