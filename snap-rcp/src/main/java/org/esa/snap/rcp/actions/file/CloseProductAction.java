@@ -7,6 +7,7 @@ package org.esa.snap.rcp.actions.file;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.stream.Collectors;
 import org.esa.snap.core.dataio.ProductReader;
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.Product;
@@ -129,12 +130,10 @@ public final class CloseProductAction extends AbstractAction implements ContextA
     public Boolean execute() {
         Boolean status;
         if (selectedProduct.size() > 1) {
-            for (Iterator i = selectedProduct.iterator(); i.hasNext(); ) {
-                Product product = (Product) i.next();
-                closeProducts(new HashSet<>(Collections.singletonList(product)));
-            }
+            Object collect = selectedProduct.stream().collect(Collectors.toSet());
+            status = closeProducts((Set<Product>) collect);
             selectedProduct.clear();
-            return true;
+            return status;
         }
 
         if (!productSet.isEmpty()) {
