@@ -45,7 +45,7 @@ public class ProductFileChooser extends SnapFileChooser {
         this.productToExport = product;
         if (productToExport != null) {
             String fileName;
-            if (productToExport.getFileLocation() != null) {
+            if (productToExport.getFileLocation() != null && !productToExport.getFileLocation().getName().contains("xfdumanifest.xml")) {
                 fileName = productToExport.getFileLocation().getName();
             } else {
                 fileName = productToExport.getName();
