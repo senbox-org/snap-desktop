@@ -31,6 +31,7 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import java.awt.Insets;
 
+
 import static com.bc.ceres.swing.TableLayout.*;
 
 /**
@@ -74,13 +75,16 @@ public final class ImageViewController extends DefaultConfigController {
         PropertyEditorRegistry registry = PropertyEditorRegistry.getInstance();
         Property showNavigationControl = context.getPropertySet().getProperty(ProductSceneView.PREFERENCE_KEY_IMAGE_NAV_CONTROL_SHOWN);
         Property showScrollBars = context.getPropertySet().getProperty(ProductSceneView.PREFERENCE_KEY_IMAGE_SCROLL_BARS_SHOWN);
+        Property reverseZoom = context.getPropertySet().getProperty(ProductSceneView.PREFERENCE_KEY_ZOOM_IN_OUT_REVERSE);
 
         JComponent[] showNavigationControlComponents = registry.findPropertyEditor(showNavigationControl.getDescriptor()).createComponents(showNavigationControl.getDescriptor(), context);
         JComponent[] showScrollBarsComponents = registry.findPropertyEditor(showScrollBars.getDescriptor()).createComponents(showScrollBars.getDescriptor(), context);
+        JComponent[] reverseZoomComponents = registry.findPropertyEditor(showScrollBars.getDescriptor()).createComponents(reverseZoom.getDescriptor(), context);
 
         tableLayout.setRowPadding(0, new Insets(10, 80, 10, 4));
         pageUI.add(showNavigationControlComponents[0]);
         pageUI.add(showScrollBarsComponents[0]);
+        pageUI.add(reverseZoomComponents[0]);
         pageUI.add(tableLayout.createVerticalSpacer());
 
         return pageUI;
@@ -96,6 +100,10 @@ public final class ImageViewController extends DefaultConfigController {
         @Preference(label = "Show scroll bars in image views",
                 key = ProductSceneView.PREFERENCE_KEY_IMAGE_SCROLL_BARS_SHOWN)
         boolean showScrollBars = false;
+
+        @Preference(label = "Reverse scroll functionality (zoom-in / zoom-out) using the mouse scroll-wheel",
+                key = ProductSceneView.PREFERENCE_KEY_ZOOM_IN_OUT_REVERSE)
+        boolean reverseZom = false;
     }
 
 }

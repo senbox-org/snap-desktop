@@ -45,6 +45,8 @@ import com.bc.ceres.swing.selection.SelectionChangeEvent;
 import com.bc.ceres.swing.selection.SelectionContext;
 import com.bc.ceres.swing.undo.UndoContext;
 import com.bc.ceres.swing.undo.support.DefaultUndoContext;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
 import org.esa.snap.core.datamodel.GeoCoding;
 import org.esa.snap.core.datamodel.GeoPos;
 import org.esa.snap.core.datamodel.ImageInfo;
@@ -66,12 +68,14 @@ import org.esa.snap.core.layer.NoDataLayerType;
 import org.esa.snap.core.layer.ProductLayerContext;
 import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.core.util.StringUtils;
+import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.BasicView;
 import org.esa.snap.ui.PixelPositionListener;
 import org.esa.snap.ui.PopupMenuHandler;
 import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.tool.ToolButtonFactory;
 import org.opengis.referencing.operation.TransformException;
+import org.openide.util.NbPreferences;
 import org.openide.util.Utilities;
 
 import javax.swing.AbstractButton;
@@ -139,6 +143,9 @@ public class ProductSceneView extends BasicView
      */
     public static final String PREFERENCE_KEY_IMAGE_SCROLL_BARS_SHOWN = "image.scrollBarsShown";
 
+    public static final String PREFERENCE_KEY_ZOOM_IN_OUT_REVERSE = "image.zoomInAndOut";
+    ;
+
     /**
      * Name of property of image info
      */
@@ -153,8 +160,8 @@ public class ProductSceneView extends BasicView
      * Name of property of selected pin
      */
     public static final String PROPERTY_NAME_SELECTED_PIN = "selectedPin";
-
     public static final Color DEFAULT_IMAGE_BACKGROUND_COLOR = new Color(51, 51, 51);
+    private final Boolean zoomInOut;
 
 
     private ProductSceneImage sceneImage;
@@ -232,6 +239,9 @@ public class ProductSceneView extends BasicView
         });
         final boolean navControlShown = sceneImage.getConfiguration().getPropertyBool(
                 PREFERENCE_KEY_IMAGE_NAV_CONTROL_SHOWN, true);
+
+        System.out.println("navControlShown = " + navControlShown);
+
         this.layerCanvas.setNavControlShown(navControlShown);
         this.layerCanvas.setAntialiasing(true);
         this.layerCanvas.setPreferredSize(new Dimension(400, 400));
@@ -244,13 +254,15 @@ public class ProductSceneView extends BasicView
         figureEditor.addSelectionChangeListener(new PinSelectionChangeListener());
 
         this.scrollBarsShown = sceneImage.getConfiguration().getPropertyBool(PREFERENCE_KEY_IMAGE_SCROLL_BARS_SHOWN,
-                                                                             false);
+                false);
         if (scrollBarsShown) {
             this.scrollPane = createScrollPane();
             add(scrollPane, BorderLayout.CENTER);
         } else {
             add(layerCanvas, BorderLayout.CENTER);
         }
+
+        this.zoomInOut = sceneImage.getConfiguration().getPropertyBool(PREFERENCE_KEY_ZOOM_IN_OUT_REVERSE, false);
 
         registerLayerCanvasListeners();
 
@@ -300,7 +312,7 @@ public class ProductSceneView extends BasicView
 
     private AdjustableViewScrollPane createScrollPane() {
         AbstractButton zoomAllButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon("icons/ZoomAll13.gif"),
-                                                                      false);
+                false);
         zoomAllButton.setFocusable(false);
         zoomAllButton.setFocusPainted(false);
         zoomAllButton.addActionListener(e -> getLayerCanvas().zoomAll());
@@ -597,8 +609,8 @@ public class ProductSceneView extends BasicView
         for (VectorDataNode vectorDataNode : vectorDataNodes) {
             final LayerFilter nodeFilter = VectorDataLayerFilterFactory.createNodeFilter(vectorDataNode);
             Layer vectorDataLayer = LayerUtils.getChildLayer(getRootLayer(),
-                                                             LayerUtils.SEARCH_DEEP,
-                                                             nodeFilter);
+                    LayerUtils.SEARCH_DEEP,
+                    nodeFilter);
             if (vectorDataLayer != null) {
                 vectorDataLayer.setVisible(true);
             }
@@ -627,7 +639,7 @@ public class ProductSceneView extends BasicView
 
             if (layer == null) {
                 layer = LayerUtils.getChildLayer(getRootLayer(), LayerUtils.SearchMode.DEEP,
-                                                 VectorDataLayerFilterFactory.createGeometryFilter());
+                        VectorDataLayerFilterFactory.createGeometryFilter());
             }
             if (layer != null) {
                 final VectorDataLayer vectorDataLayer = (VectorDataLayer) layer;
@@ -741,8 +753,8 @@ public class ProductSceneView extends BasicView
     public VectorDataLayer selectVectorDataLayer(VectorDataNode vectorDataNode) {
         LayerFilter layerFilter = new VectorDataLayerFilter(vectorDataNode);
         VectorDataLayer layer = (VectorDataLayer) LayerUtils.getChildLayer(getRootLayer(),
-                                                                           LayerUtils.SEARCH_DEEP,
-                                                                           layerFilter);
+                LayerUtils.SEARCH_DEEP,
+                layerFilter);
         if (layer != null) {
             setSelectedLayer(layer);
         }
@@ -1069,8 +1081,8 @@ public class ProductSceneView extends BasicView
                 final Color color = noDataLayer.getConfiguration().getValue(
                         NoDataLayerType.PROPERTY_NAME_COLOR);
                 final MultiLevelSource multiLevelSource = ColoredMaskImageMultiLevelSource.create(getRaster().getProduct(),
-                                                                                                  color, expression, true,
-                                                                                                  getBaseImageLayer().getImageToModelTransform());
+                        color, expression, true,
+                        getBaseImageLayer().getImageToModelTransform());
                 noDataLayer.setMultiLevelSource(multiLevelSource);
             } else {
                 noDataLayer.setMultiLevelSource(MultiLevelSource.NULL);
@@ -1101,10 +1113,10 @@ public class ProductSceneView extends BasicView
          */
         public RGBChannel(final Product product, final int width, final int height, final String name, final String expression) {
             super(name,
-                  ProductData.TYPE_FLOAT32,
-                  width,
-                  height,
-                  expression);
+                    ProductData.TYPE_FLOAT32,
+                    width,
+                    height,
+                    expression);
             setOwner(product);
             setModified(false);
         }
@@ -1325,6 +1337,11 @@ public class ProductSceneView extends BasicView
             }
             Viewport viewport = layerCanvas.getViewport();
             int wheelRotation = e.getWheelRotation();
+            if (zoomInOut) {
+                wheelRotation *= -1;
+                System.out.println("wheelRotation = INside" + zoomInOut);
+            }
+            System.out.println("wheelRotation = " + zoomInOut);
             double oldZoomFactor = viewport.getZoomFactor();
             double newZoomFactor = oldZoomFactor * Math.pow(1.1, wheelRotation);
             viewport.setZoomFactor(newZoomFactor);
