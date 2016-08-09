@@ -27,7 +27,6 @@ import org.esa.snap.core.gpf.ui.DefaultSingleTargetProductDialog;
 import org.esa.snap.core.gpf.ui.TargetProductSelectorModel;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.rcp.actions.file.SaveProductAsAction;
-import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.rcp.util.ProgressHandleMonitor;
 import org.esa.snap.smart.configurator.Benchmark;
 import org.esa.snap.smart.configurator.BenchmarkSingleCalculus;
@@ -35,9 +34,17 @@ import org.esa.snap.smart.configurator.ConfigurationOptimizer;
 import org.esa.snap.smart.configurator.PerformanceParameters;
 import org.esa.snap.ui.AppContext;
 import org.netbeans.api.progress.ProgressUtils;
+import org.openide.DialogDisplayer;
+import org.openide.NotifyDescriptor;
 import org.openide.util.Cancellable;
 
 import javax.media.jai.JAI;
+import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
+import java.awt.*;
 import java.io.File;
 import java.util.List;
 
@@ -63,13 +70,13 @@ public class BenchmarkDialog extends DefaultSingleTargetProductDialog {
     /**
      * Constructor
      *
-     * @param perfPanel Parent JPanel
-     * @param operatorName Operator name
+     * @param perfPanel      Parent JPanel
+     * @param operatorName   Operator name
      * @param benchmarkModel Benchmark model
-     * @param appContext Application context
+     * @param appContext     Application context
      */
-    public BenchmarkDialog(PerformancePanel perfPanel, String operatorName, Benchmark benchmarkModel, AppContext appContext){
-        super(operatorName, appContext, "Benchmark "+operatorName, null, false);
+    public BenchmarkDialog(PerformancePanel perfPanel, String operatorName, Benchmark benchmarkModel, AppContext appContext) {
+        super(operatorName, appContext, "Benchmark " + operatorName, null, false);
 
         this.benchmarkModel = benchmarkModel;
         this.getJDialog().setModal(true);
@@ -146,7 +153,7 @@ public class BenchmarkDialog extends DefaultSingleTargetProductDialog {
 
             canceled = false;
 
-            if(progressHandleMonitor == null) {
+            if (progressHandleMonitor == null) {
                 throw new IllegalStateException("Progress Handle Monitor not set");
             }
 
@@ -161,13 +168,17 @@ public class BenchmarkDialog extends DefaultSingleTargetProductDialog {
                     currentPerformanceParameters.getCacheSize(),
                     currentPerformanceParameters.getNbThreads());
 
-            benchmarkModel.addBenchmarkCalcul(currentBenchmarkSingleCalcul);
+            if (!benchmarkModel.isAlreadyInList(currentBenchmarkSingleCalcul)) {
+                benchmarkModel.addBenchmarkCalcul(currentBenchmarkSingleCalcul);
+            }
 
             try {
 
                 progressHandleMonitor.beginTask("Benchmark running... ", benchmarkModel.getBenchmarkCalculus().size() * 100);
 
                 List<BenchmarkSingleCalculus> benchmarkSingleCalculusList = benchmarkModel.getBenchmarkCalculus();
+
+                int executionOrder = 0;
 
                 for (BenchmarkSingleCalculus benchmarkSingleCalcul : benchmarkSingleCalculusList) {
                     progressHandleMonitor.getProgressHandle().progress(
@@ -198,6 +209,8 @@ public class BenchmarkDialog extends DefaultSingleTargetProductDialog {
                     //save execution time
                     long endTime = System.currentTimeMillis();
                     benchmarkSingleCalcul.setExecutionTime(endTime - startTime);
+                    benchmarkSingleCalcul.setExecutionOrder(executionOrder);
+                    executionOrder++;
 
                     SystemUtils.LOG.fine(String.format("Start time: %d, end time: %d, diff: %d", startTime, endTime, endTime - startTime));
 
@@ -221,16 +234,65 @@ public class BenchmarkDialog extends DefaultSingleTargetProductDialog {
 
 
         private void managePostBenchmark() {
-            if(!canceled) {
+            if (!canceled) {
                 //sort benchmark results and return the fastest
                 BenchmarkSingleCalculus bestBenchmarkSingleCalcul = benchmarkModel.getFasterBenchmarkSingleCalculus();
 
-                Dialogs.showInformation("Benchmark results", benchmarkModel.toString(), null);
+                showResults();
+
                 //update parent panel with best values
                 perfPanel.updatePerformanceParameters(bestBenchmarkSingleCalcul);
             }
 
             close();
+        }
+
+        private void showResults() {
+            // table model
+            class BenchmarkTableModel extends AbstractTableModel {
+                final String[] columnNames = benchmarkModel.getColumnsNames();
+                final int[][] data = benchmarkModel.getRowsToShow();
+
+                @Override
+                public Class getColumnClass(int column) {
+                    return Integer.class;
+                }
+
+                public int getColumnCount() {
+                    return columnNames.length;
+                }
+
+                public int getRowCount() {
+                    return data.length;
+                }
+
+                public String getColumnName(int col) {
+                    return columnNames[col];
+                }
+
+                public Object getValueAt(int row, int col) {
+                    return data[row][col];
+                }
+            }
+
+            BenchmarkTableModel tableModel = new BenchmarkTableModel();
+            JTable table = new JTable(tableModel);
+
+            // For sorting
+            TableRowSorter<TableModel> rowSorter = new TableRowSorter<TableModel>(tableModel);
+            table.setRowSorter(rowSorter);
+
+            DefaultTableCellRenderer tcr = new DefaultTableCellRenderer();
+            tcr.setHorizontalAlignment(SwingConstants.CENTER);
+            table.getColumnModel().getColumn(table.getColumnCount() - 1).setCellRenderer(tcr);
+
+            //Dialogs.showMessageTable("Benchmark results",table,JOptionPane.INFORMATION_MESSAGE,null);
+
+            JPanel panel = new JPanel(new BorderLayout(4, 4));
+            JScrollPane panelTable = new JScrollPane(table);
+            panel.add(panelTable, BorderLayout.CENTER);
+            NotifyDescriptor d = new NotifyDescriptor(panel, "Benchmark results", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, null);
+            DialogDisplayer.getDefault().notify(d);
         }
     }
 }
