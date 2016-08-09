@@ -45,8 +45,6 @@ import com.bc.ceres.swing.selection.SelectionChangeEvent;
 import com.bc.ceres.swing.selection.SelectionContext;
 import com.bc.ceres.swing.undo.UndoContext;
 import com.bc.ceres.swing.undo.support.DefaultUndoContext;
-import java.util.prefs.BackingStoreException;
-import java.util.prefs.Preferences;
 import org.esa.snap.core.datamodel.GeoCoding;
 import org.esa.snap.core.datamodel.GeoPos;
 import org.esa.snap.core.datamodel.ImageInfo;
@@ -68,14 +66,12 @@ import org.esa.snap.core.layer.NoDataLayerType;
 import org.esa.snap.core.layer.ProductLayerContext;
 import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.core.util.StringUtils;
-import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.BasicView;
 import org.esa.snap.ui.PixelPositionListener;
 import org.esa.snap.ui.PopupMenuHandler;
 import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.tool.ToolButtonFactory;
 import org.opengis.referencing.operation.TransformException;
-import org.openide.util.NbPreferences;
 import org.openide.util.Utilities;
 
 import javax.swing.AbstractButton;
@@ -135,16 +131,17 @@ public class ProductSceneView extends BasicView
      */
     public static final String PREFERENCE_KEY_PIXEL_BORDER_SHOWN = "pixel.border.shown";
     /**
-     * Name of property which switches display of af a navigataion control in the image view.
+     * Name of property which switches display of af a navigation control in the image view.
      */
     public static final String PREFERENCE_KEY_IMAGE_NAV_CONTROL_SHOWN = "image.navControlShown";
     /**
-     * Name of property which switches display of af a navigataion control in the image view.
+     * Name of property which switches display of af a navigation control in the image view.
      */
     public static final String PREFERENCE_KEY_IMAGE_SCROLL_BARS_SHOWN = "image.scrollBarsShown";
-
-    public static final String PREFERENCE_KEY_ZOOM_IN_OUT_REVERSE = "image.zoomInAndOut";
-    ;
+    /**
+     * Name of property which inverts the zooming with the mouse wheel.
+     */
+    public static final String PREFERENCE_KEY_INVERT_ZOOMING = "image.reverseZooming";
 
     /**
      * Name of property of image info
@@ -161,7 +158,6 @@ public class ProductSceneView extends BasicView
      */
     public static final String PROPERTY_NAME_SELECTED_PIN = "selectedPin";
     public static final Color DEFAULT_IMAGE_BACKGROUND_COLOR = new Color(51, 51, 51);
-    private final Boolean zoomInOut;
 
 
     private ProductSceneImage sceneImage;
@@ -240,7 +236,6 @@ public class ProductSceneView extends BasicView
         final boolean navControlShown = sceneImage.getConfiguration().getPropertyBool(
                 PREFERENCE_KEY_IMAGE_NAV_CONTROL_SHOWN, true);
 
-        System.out.println("navControlShown = " + navControlShown);
 
         this.layerCanvas.setNavControlShown(navControlShown);
         this.layerCanvas.setAntialiasing(true);
@@ -261,8 +256,6 @@ public class ProductSceneView extends BasicView
         } else {
             add(layerCanvas, BorderLayout.CENTER);
         }
-
-        this.zoomInOut = sceneImage.getConfiguration().getPropertyBool(PREFERENCE_KEY_ZOOM_IN_OUT_REVERSE, false);
 
         registerLayerCanvasListeners();
 
@@ -684,6 +677,8 @@ public class ProductSceneView extends BasicView
         layerCanvas.setNavControlShown(configuration.getPropertyBool(PREFERENCE_KEY_IMAGE_NAV_CONTROL_SHOWN, true));
         layerCanvas.setBackground(
                 configuration.getPropertyColor("image.background.color", DEFAULT_IMAGE_BACKGROUND_COLOR));
+
+        layerCanvasMouseHandler.setInvertZooming(configuration.getPropertyBool(PREFERENCE_KEY_INVERT_ZOOMING, false));
 
         ImageLayer imageLayer = getBaseImageLayer();
         if (imageLayer != null) {
@@ -1295,6 +1290,16 @@ public class ProductSceneView extends BasicView
 
     private final class LayerCanvasMouseHandler implements MouseInputListener, MouseWheelListener {
 
+        private boolean invertZooming;
+
+        public LayerCanvasMouseHandler() {
+            invertZooming = sceneImage.getConfiguration().getPropertyBool(PREFERENCE_KEY_INVERT_ZOOMING, false);
+        }
+
+        public void setInvertZooming(boolean invertZooming) {
+            this.invertZooming = invertZooming;
+        }
+
         @Override
         public void mouseClicked(MouseEvent e) {
             updatePixelPos(e, false);
@@ -1337,11 +1342,9 @@ public class ProductSceneView extends BasicView
             }
             Viewport viewport = layerCanvas.getViewport();
             int wheelRotation = e.getWheelRotation();
-            if (zoomInOut) {
+            if (invertZooming) {
                 wheelRotation *= -1;
-                System.out.println("wheelRotation = INside" + zoomInOut);
             }
-            System.out.println("wheelRotation = " + zoomInOut);
             double oldZoomFactor = viewport.getZoomFactor();
             double newZoomFactor = oldZoomFactor * Math.pow(1.1, wheelRotation);
             viewport.setZoomFactor(newZoomFactor);
