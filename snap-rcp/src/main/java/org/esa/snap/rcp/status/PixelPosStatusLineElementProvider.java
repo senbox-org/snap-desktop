@@ -28,6 +28,7 @@ import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
 import java.util.prefs.Preferences;
 
+
 import static org.esa.snap.rcp.pixelinfo.PixelInfoView.*;
 
 /**
@@ -174,24 +175,14 @@ public class PixelPosStatusLineElementProvider
         }
     }
 
-    /**
-     * Invoked when a document window has been opened.
-     *
-     * @param e The event object.
-     */
     @Override
-    public void windowOpened(DocumentWindowManager.Event<Object, ProductSceneView> e) {
+    public void windowSelected(DocumentWindowManager.Event<Object, ProductSceneView> e) {
         ProductSceneView view = e.getWindow().getView();
         view.addPixelPositionListener(this);
     }
 
-    /**
-     * Invoked when a document window has been closed.
-     *
-     * @param e The event object.
-     */
     @Override
-    public void windowClosed(DocumentWindowManager.Event<Object, ProductSceneView> e) {
+    public void windowDeselected(DocumentWindowManager.Event<Object, ProductSceneView> e) {
         ProductSceneView view = e.getWindow().getView();
         view.removePixelPositionListener(this);
     }
