@@ -84,7 +84,7 @@ public class SnapFileChooser extends JFileChooser {
      *
      * @param parent the parent
      * @return the dialog
-     * @throws HeadlessException
+     * @throws HeadlessException if GraphicsEnvironment.isHeadless() returns true.
      */
     @Override
     protected JDialog createDialog(Component parent) throws HeadlessException {
