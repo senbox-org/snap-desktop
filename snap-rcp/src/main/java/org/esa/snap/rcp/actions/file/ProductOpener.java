@@ -1,28 +1,6 @@
 package org.esa.snap.rcp.actions.file;
 
 import com.bc.ceres.swing.TableLayout;
-import org.esa.snap.core.dataio.DecodeQualification;
-import org.esa.snap.core.dataio.ProductIOPlugInManager;
-import org.esa.snap.core.dataio.ProductReaderPlugIn;
-import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.util.SystemUtils;
-import org.esa.snap.core.util.io.SnapFileFilter;
-import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.util.Dialogs;
-import org.netbeans.api.progress.ProgressHandle;
-import org.netbeans.api.progress.ProgressHandleFactory;
-import org.netbeans.api.progress.ProgressUtils;
-import org.openide.DialogDisplayer;
-import org.openide.NotifyDescriptor;
-
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
 import java.awt.Component;
 import java.io.File;
 import java.text.MessageFormat;
@@ -33,7 +11,26 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.prefs.Preferences;
-import java.util.stream.Collectors;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+import org.esa.snap.core.dataio.DecodeQualification;
+import org.esa.snap.core.dataio.ProductIOPlugInManager;
+import org.esa.snap.core.dataio.ProductReaderPlugIn;
+import org.esa.snap.core.util.SystemUtils;
+import org.esa.snap.core.util.io.SnapFileFilter;
+import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.rcp.util.Dialogs;
+import org.netbeans.api.progress.ProgressHandle;
+import org.netbeans.api.progress.ProgressHandleFactory;
+import org.netbeans.api.progress.ProgressUtils;
+import org.openide.DialogDisplayer;
+import org.openide.NotifyDescriptor;
 
 /**
  * @author Marco Peters
@@ -50,12 +47,6 @@ public class ProductOpener {
     private File[] files;
     private boolean multiSelectionEnabled;
 
-    static List<File> getOpenedProductFiles() {
-        return Arrays.stream(SnapApp.getDefault().getProductManager().getProducts())
-                .map(Product::getFileLocation)
-                .filter(file -> file != null)
-                .collect(Collectors.toList());
-    }
 
     public void setFiles(File... files) {
         this.files = files;
@@ -192,7 +183,7 @@ public class ProductOpener {
     }
 
     private static Boolean openProductFilesCheckOpened(final String formatName, final File... files) {
-        List<File> openedFiles = getOpenedProductFiles();
+        List<File> openedFiles = OpenProductAction.getOpenedProductFiles();
         List<File> fileList = new ArrayList<>(Arrays.asList(files));
         for (File file : files) {
             if (openedFiles.contains(file)) {
