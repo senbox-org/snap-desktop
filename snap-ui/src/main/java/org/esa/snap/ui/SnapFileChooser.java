@@ -15,6 +15,10 @@
  */
 package org.esa.snap.ui;
 
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.Point;
+import java.util.Objects;
 import org.esa.snap.core.util.Debug;
 import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
@@ -46,6 +50,9 @@ public class SnapFileChooser extends JFileChooser {
     private static final Object syncFileFiltersObejct  = new Object();
     private String lastFilename;
     private Rectangle dialogBounds;
+
+
+    private Point dialogPosition;
     private ResizeHandler resizeHandler;
 
     public SnapFileChooser() {
@@ -92,6 +99,9 @@ public class SnapFileChooser extends JFileChooser {
         dialog.addComponentListener(resizeHandler);
         if (dialogBounds != null) {
             dialog.setBounds(dialogBounds);
+        }
+        if (Objects.nonNull(dialogPosition)) {
+            dialog.setLocation(dialogPosition);
         }
         return dialog;
     }
@@ -231,6 +241,19 @@ public class SnapFileChooser extends JFileChooser {
             w = w.getParent();
         }
         return (Window) w;
+    }
+
+    public void setDialogPosition(int x, int y) {
+        if (x < 0 || y < 0) {
+            GraphicsDevice[] screenDevices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
+            if (screenDevices.length > 1) {
+                this.dialogPosition = new Point(x, y);
+            } else {
+                this.dialogPosition = null;
+            }
+            return;
+        }
+        this.dialogPosition = new Point(x, y);
     }
 
     ///////////////////////////////////////////////////////////////////////////
