@@ -5,9 +5,18 @@
  */
 package org.esa.snap.rcp.actions.file;
 
+import java.awt.event.ActionEvent;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import org.esa.snap.core.dataio.ProductReader;
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.Product;
@@ -33,19 +42,8 @@ import org.openide.util.Utilities;
 import org.openide.util.WeakListeners;
 import org.openide.util.WeakSet;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import java.awt.event.ActionEvent;
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
-
-import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
+import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.EXPLORER;
 
 /**
  * Action which closes a selected product.
@@ -130,9 +128,8 @@ public final class CloseProductAction extends AbstractAction implements ContextA
     public Boolean execute() {
         Boolean status;
         if (selectedProduct.size() > 1) {
-            Object collect = selectedProduct.stream().collect(Collectors.toSet());
-            status = closeProducts((Set<Product>) collect);
-            selectedProduct.clear();
+            Set<Product> collect = (Set<Product>) selectedProduct.stream().collect(Collectors.toSet());
+            status = closeProducts(collect);
             return status;
         }
 
