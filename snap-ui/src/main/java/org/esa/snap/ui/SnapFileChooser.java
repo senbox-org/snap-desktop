@@ -15,14 +15,21 @@
  */
 package org.esa.snap.ui;
 
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Graphics;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
-import java.awt.Point;
+import java.awt.HeadlessException;
+import java.awt.Rectangle;
+import java.awt.Window;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.File;
 import java.util.Objects;
-import org.esa.snap.core.util.Debug;
-import org.esa.snap.core.util.io.FileUtils;
-import org.esa.snap.core.util.io.SnapFileFilter;
-
+import java.util.prefs.Preferences;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
@@ -30,15 +37,11 @@ import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Graphics;
-import java.awt.HeadlessException;
-import java.awt.Rectangle;
-import java.awt.Window;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.io.File;
+import org.esa.snap.core.util.Debug;
+import org.esa.snap.core.util.converters.RectangleConverter;
+import org.esa.snap.core.util.io.FileUtils;
+import org.esa.snap.core.util.io.SnapFileFilter;
+import org.openide.util.NbPreferences;
 
 /**
  * The general SNAP file chooser.
@@ -47,13 +50,18 @@ import java.io.File;
  */
 public class SnapFileChooser extends JFileChooser {
 
-    private static final Object syncFileFiltersObejct  = new Object();
+    private static final Object syncFileFiltersObject = new Object();
+    public static final int OPEN_DIALOG = 0;
+    public static final int SAVE_DIALOG = 1;
+    public static final String PREPERENCES_OPEN_DIALOG = "open.dialog.bounds";
+    private static final String PREPERENCES_SAVE_DIALOG = "save.dialog.bounds";
     private String lastFilename;
     private Rectangle dialogBounds;
+    private RectangleConverter rectangleConverter = new RectangleConverter();
 
 
-    private Point dialogPosition;
     private ResizeHandler resizeHandler;
+    private Preferences preferences;
 
     public SnapFileChooser() {
         this(null, null);
@@ -96,12 +104,21 @@ public class SnapFileChooser extends JFileChooser {
     @Override
     protected JDialog createDialog(Component parent) throws HeadlessException {
         final JDialog dialog = super.createDialog(parent);
+        preferences = Objects.isNull(preferences) ? NbPreferences.forModule(getClass()) : preferences;
         dialog.addComponentListener(resizeHandler);
-        if (dialogBounds != null) {
-            dialog.setBounds(dialogBounds);
+        dialog.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent e) {
+                setDialogPosition();
+            }
+        });
+        Rectangle rectangleFromPreferences = getRectangleFromPreferences();
+        if (Objects.nonNull(rectangleFromPreferences)) {
+            setDialogBounds(rectangleFromPreferences);
         }
-        if (Objects.nonNull(dialogPosition)) {
-            dialog.setLocation(dialogPosition);
+
+        if (Objects.nonNull(dialogBounds)) {
+            dialog.setBounds(dialogBounds);
         }
         return dialog;
     }
@@ -133,10 +150,19 @@ public class SnapFileChooser extends JFileChooser {
     /**
      * Sets the dialog bounds to be used for the next {@link #showDialog(java.awt.Component, String)} call.
      *
-     * @param dialogBounds the dialog bounds
+     * @param rectangle the dialog bounds
      */
-    public void setDialogBounds(Rectangle dialogBounds) {
-        this.dialogBounds = dialogBounds;
+    public void setDialogBounds(Rectangle rectangle) {
+        if (rectangle.getX() < 0 || rectangle.getY() < 0 || rectangle.getWidth() < 0 || rectangle.getHeight() < 0) {
+            GraphicsDevice[] screenDevices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
+            if (screenDevices.length > 1) {
+                this.dialogBounds = rectangle;
+            } else {
+                this.dialogBounds = null;
+            }
+            return;
+        }
+        this.dialogBounds = rectangle;
     }
 
     /**
@@ -243,19 +269,25 @@ public class SnapFileChooser extends JFileChooser {
         return (Window) w;
     }
 
-    public void setDialogPosition(int x, int y) {
-        if (x < 0 || y < 0) {
-            GraphicsDevice[] screenDevices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
-            if (screenDevices.length > 1) {
-                this.dialogPosition = new Point(x, y);
-            } else {
-                this.dialogPosition = null;
-            }
-            return;
+    private Rectangle getRectangleFromPreferences() {
+        String rectanglePreferences = null;
+        Rectangle rectangle = null;
+        int dialogType = getDialogType();
+        if (dialogType == OPEN_DIALOG) {
+            rectanglePreferences = preferences.get(PREPERENCES_OPEN_DIALOG, null);
+        } else if (dialogType == SAVE_DIALOG) {
+            rectanglePreferences = preferences.get(PREPERENCES_SAVE_DIALOG, null);
         }
-        this.dialogPosition = new Point(x, y);
+        if (Objects.isNull(rectanglePreferences)) {
+            return null;
+        }
+        try {
+            rectangle = rectangleConverter.parse(rectanglePreferences);
+        } catch (com.bc.ceres.binding.ConversionException e) {
+            e.printStackTrace();
+        }
+        return rectangle;
     }
-
     ///////////////////////////////////////////////////////////////////////////
     // private stuff
     ///////////////////////////////////////////////////////////////////////////
@@ -286,6 +318,19 @@ public class SnapFileChooser extends JFileChooser {
             }
             setCurrentFilename(lastFilename);
         });
+        addActionListener(e -> {
+            setDialogPosition();
+        });
+    }
+
+    private void setDialogPosition() {
+        Rectangle dialogBounds = getDialogBounds();
+        int dialogType = getDialogType();
+        if (dialogType == OPEN_DIALOG) {
+            preferences.put(PREPERENCES_OPEN_DIALOG, dialogBounds.toString());
+        } else if (dialogType == SAVE_DIALOG) {
+            preferences.put(PREPERENCES_SAVE_DIALOG, dialogBounds.toString());
+        }
     }
 
     private boolean isCompoundDocument(File file) {
@@ -303,15 +348,14 @@ public class SnapFileChooser extends JFileChooser {
 
     @Override
     public FileFilter[] getChoosableFileFilters() {
-        synchronized (syncFileFiltersObejct) {
+        synchronized (syncFileFiltersObject) {
             return super.getChoosableFileFilters();
         }
     }
 
-
     @Override
     public void addChoosableFileFilter(FileFilter filter) {
-        synchronized (syncFileFiltersObejct) {
+        synchronized (syncFileFiltersObject) {
             super.addChoosableFileFilter(filter);
         }
     }
@@ -321,8 +365,8 @@ public class SnapFileChooser extends JFileChooser {
         if (selectedFile != null) {
             SnapFileFilter mff = getSnapFileFilter();
             if (mff != null
-                && mff.getDefaultExtension() != null
-                && !mff.checkExtension(selectedFile)) {
+                    && mff.getDefaultExtension() != null
+                    && !mff.checkExtension(selectedFile)) {
                 selectedFile = FileUtils.exchangeExtension(selectedFile, mff.getDefaultExtension());
                 Debug.trace("mod. selected file: " + selectedFile.getPath());
                 setSelectedFile(selectedFile);
@@ -357,8 +401,8 @@ public class SnapFileChooser extends JFileChooser {
         public void paintIcon(Component c, Graphics g, int x, int y) {
             baseIcon.paintIcon(c, g, x, y);
             compoundDocumentIcon.paintIcon(c, g,
-                                           x + baseIcon.getIconWidth() - compoundDocumentIcon.getIconWidth(),
-                                           y + baseIcon.getIconHeight() - compoundDocumentIcon.getIconHeight());
+                    x + baseIcon.getIconWidth() - compoundDocumentIcon.getIconWidth(),
+                    y + baseIcon.getIconHeight() - compoundDocumentIcon.getIconHeight());
         }
 
         @Override

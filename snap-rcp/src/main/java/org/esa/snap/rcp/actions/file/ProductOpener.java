@@ -2,7 +2,6 @@ package org.esa.snap.rcp.actions.file;
 
 import com.bc.ceres.swing.TableLayout;
 import java.awt.Component;
-import java.awt.Point;
 import java.io.File;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -41,8 +40,6 @@ public class ProductOpener {
     public static final String PREFERENCES_KEY_LAST_PRODUCT_DIR = "last_product_open_dir";
     private static final String PREFERENCES_KEY_PREFIX_ALTERNATIVE_READER = "open_alternative_reader.";
     private static final String PREFERENCES_KEY_DONT_SHOW_DIALOG = "multipleReadersDialog.dontShow";
-    private static final String PREFERENCES_KEY_POSITION_X = "dialog.position.x";
-    private static final String PREFERENCES_KEY_POSITION_Y = "dialog.position.y";
 
     private String fileFormat;
     private boolean useAllFileFilter;
@@ -131,12 +128,6 @@ public class ProductOpener {
         String userHomePath = SystemUtils.getUserHomeDir().getAbsolutePath();
         ProductFileChooser fc = new ProductFileChooser(new File(preferences.get(PREFERENCES_KEY_LAST_PRODUCT_DIR, userHomePath)));
 
-        Integer xPosition = Integer.valueOf(preferences.get(PREFERENCES_KEY_POSITION_X, "1"));
-        Integer yPosition = Integer.valueOf(preferences.get(PREFERENCES_KEY_POSITION_Y, "1"));
-        if (yPosition != 1 && xPosition != 1) {
-            fc.setDialogPosition(xPosition, yPosition);
-        }
-
         fc.setSubsetEnabled(isSubsetImportEnabled());
         fc.setDialogTitle(SnapApp.getDefault().getInstanceName() + " - " + Bundle.CTL_OpenProductActionName());
         fc.setAcceptAllFileFilterUsed(isUseAllFileFilter());
@@ -150,11 +141,6 @@ public class ProductOpener {
         fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
         int returnVal = fc.showOpenDialog(SnapApp.getDefault().getMainFrame());
-
-        Point location = fc.getDialogBounds().getLocation();
-        preferences.put(PREFERENCES_KEY_POSITION_X, String.valueOf(location.x));
-        preferences.put(PREFERENCES_KEY_POSITION_Y, String.valueOf(location.y));
-
         if (returnVal != JFileChooser.APPROVE_OPTION) {
             // cancelled
             return null;
