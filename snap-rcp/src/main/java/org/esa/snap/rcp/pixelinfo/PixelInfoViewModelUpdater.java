@@ -477,8 +477,16 @@ public class PixelInfoViewModelUpdater {
             for (int j = 0; j < band.getFlagCoding().getNumAttributes(); j++) {
                 if (available) {
                     MetadataAttribute attribute = band.getFlagCoding().getAttributeAt(j);
-                    int mask = attribute.getData().getElemInt();
-                    flagModel.updateValue(String.valueOf((pixelValue & mask) == mask), rowIndex);
+                    final ProductData flagData = attribute.getData();
+                    final int flagMask;
+                    final int flagValue;
+                    if (flagData.getNumElems() == 2) {
+                        flagMask = flagData.getElemIntAt(0);
+                        flagValue = flagData.getElemIntAt(1);
+                    } else {
+                        flagMask = flagValue = flagData.getElemInt();
+                    }
+                    flagModel.updateValue(String.valueOf((pixelValue & flagMask) == flagValue), rowIndex);
                 } else {
                     flagModel.updateValue(INVALID_POS_TEXT, rowIndex);
                 }
