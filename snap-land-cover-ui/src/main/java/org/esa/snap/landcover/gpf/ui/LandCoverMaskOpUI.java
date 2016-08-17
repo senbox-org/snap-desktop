@@ -46,10 +46,10 @@ import java.util.Map;
  */
 public class LandCoverMaskOpUI extends BaseOperatorUI {
 
-    private final JList bandList = new JList();
+    private final JList<String> bandList = new JList();
 
     private final JComboBox<String> landCoverBandCombo = new JComboBox();
-    private final JList validLandCoverClassesList = new JList();
+    private final JList<String> validLandCoverClassesList = new JList();
 
     private final JCheckBox includeOtherBandsCheckBox = new JCheckBox("Include all other bands");
     private final Map<Integer, Integer> classMap = new HashMap<>();
@@ -60,7 +60,6 @@ public class LandCoverMaskOpUI extends BaseOperatorUI {
 
         initializeOperatorUI(operatorName, parameterMap);
         final JComponent panel = createPanel();
-        initParameters();
 
         landCoverBandCombo.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
@@ -74,6 +73,7 @@ public class LandCoverMaskOpUI extends BaseOperatorUI {
             }
         });
 
+        initParameters();
         return new JScrollPane(panel);
     }
 
