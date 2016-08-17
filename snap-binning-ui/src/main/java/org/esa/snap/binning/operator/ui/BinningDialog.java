@@ -22,8 +22,6 @@ import com.bc.ceres.binding.PropertySet;
 import com.bc.ceres.binding.ValidationException;
 import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
-import java.util.Objects;
-import java.util.Optional;
 import org.esa.snap.binning.AggregatorConfig;
 import org.esa.snap.binning.AggregatorDescriptor;
 import org.esa.snap.binning.TypedDescriptorsRegistry;
@@ -45,6 +43,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -105,7 +104,6 @@ public class BinningDialog extends SingleTargetProductDialog {
 
     @Override
     protected Product createTargetProduct() throws Exception {
-        GPF.getDefaultInstance().getOperatorSpiRegistry().addOperatorSpi(new BinningOp.Spi());
         final TargetProductCreator targetProductCreator = new TargetProductCreator();
         targetProductCreator.executeWithBlocking();
         return targetProductCreator.get();

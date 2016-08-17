@@ -19,15 +19,15 @@ import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.OperatorSpi;
 import org.esa.snap.engine_utilities.util.TestUtils;
 import org.esa.snap.raster.gpf.ui.FilterOpUI;
-import org.junit.Before;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.swing.*;
+import javax.swing.JComponent;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Unit test for SingleTileOperator.
@@ -42,13 +42,16 @@ public class TestFilterOpUI {
     private final static String operatorName = "Image-Filter";
 
     private FilterOpUI filterOpUI = new FilterOpUI();
-    private final Map<String, Object> parameterMap = new HashMap<String, Object>(5);
+    private final Map<String, Object> parameterMap = new HashMap<>(5);
 
-    @Before
-    public void Setup() {
-        //if(GPF.getDefaultInstance().getOperatorSpiRegistry().getOperatorSpi(operatorName) != null) {
+    @BeforeClass
+    public static void Setup() {
         GPF.getDefaultInstance().getOperatorSpiRegistry().addOperatorSpi(spi);
-        //}
+    }
+
+    @AfterClass
+    public static void tearDown() throws Exception {
+        GPF.getDefaultInstance().getOperatorSpiRegistry().removeOperatorSpi(spi);
     }
 
     @Test
@@ -72,7 +75,7 @@ public class TestFilterOpUI {
         filterOpUI.updateParameters();
 
         Object o = parameterMap.get("selectedFilterName");
-        assertTrue(((String) o).equals("Arithmetic 5x5 Mean"));
+        assertTrue(o.equals("Arithmetic 5x5 Mean"));
     }
 
 }
