@@ -646,7 +646,6 @@ public class SnapApp {
 
     private void initGPF() {
         OperatorSpiRegistry operatorSpiRegistry = GPF.getDefaultInstance().getOperatorSpiRegistry();
-        operatorSpiRegistry.loadOperatorSpis();
         Set<OperatorSpi> services = operatorSpiRegistry.getServiceRegistry().getServices();
         for (OperatorSpi service : services) {
             LOG.info(String.format("GPF operator SPI: %s (alias '%s')", service.getClass(), service.getOperatorAlias()));

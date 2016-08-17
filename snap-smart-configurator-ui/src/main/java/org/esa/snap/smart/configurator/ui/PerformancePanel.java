@@ -19,6 +19,10 @@ import com.bc.ceres.core.ServiceRegistry;
 import com.bc.ceres.core.ServiceRegistryManager;
 import org.apache.commons.lang.StringUtils;
 import org.esa.snap.SnapCoreActivator;
+import org.esa.snap.core.gpf.OperatorSpi;
+import org.esa.snap.core.util.SystemUtils;
+import org.esa.snap.core.util.io.FileUtils;
+import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.smart.configurator.Benchmark;
 import org.esa.snap.smart.configurator.BenchmarkOperatorProvider;
 import org.esa.snap.smart.configurator.BenchmarkSingleCalculus;
@@ -26,11 +30,6 @@ import org.esa.snap.smart.configurator.ConfigurationOptimizer;
 import org.esa.snap.smart.configurator.JavaSystemInfos;
 import org.esa.snap.smart.configurator.PerformanceParameters;
 import org.esa.snap.smart.configurator.VMParameters;
-import org.esa.snap.core.gpf.GPF;
-import org.esa.snap.core.gpf.OperatorSpi;
-import org.esa.snap.core.util.SystemUtils;
-import org.esa.snap.core.util.io.FileUtils;
-import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.ui.AppContext;
 
 import javax.swing.Box;
@@ -476,10 +475,6 @@ final class PerformancePanel extends javax.swing.JPanel {
     }
 
     private Object[] getBenchmarkOperators() {
-        GPF gpf = GPF.getDefaultInstance();
-        if (gpf.getOperatorSpiRegistry().getOperatorSpis().isEmpty()) {
-            gpf.getOperatorSpiRegistry().loadOperatorSpis();
-        }
         ServiceRegistry<BenchmarkOperatorProvider> benchemarkOperatorServiceRegistry =
                 ServiceRegistryManager.getInstance().getServiceRegistry(BenchmarkOperatorProvider.class);
         SnapCoreActivator.loadServices(benchemarkOperatorServiceRegistry);

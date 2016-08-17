@@ -69,9 +69,6 @@ public class GraphExecuter extends Observable {
     public GraphExecuter() {
 
         gpf = GPF.getDefaultInstance();
-        if (gpf.getOperatorSpiRegistry().getOperatorSpis().isEmpty()) {
-            gpf.getOperatorSpiRegistry().loadOperatorSpis();
-        }
 
         graph = new Graph("Graph");
     }
@@ -453,13 +450,6 @@ public class GraphExecuter extends Observable {
 
     /**
      * Update the nodes in the graph with the given reader file and writer file
-     *
-     * @param graphEx
-     * @param readID
-     * @param readPath
-     * @param writeID
-     * @param writePath
-     * @param format
      */
     public static void setGraphIO(final GraphExecuter graphEx,
                                   final String readID, final File readPath,
