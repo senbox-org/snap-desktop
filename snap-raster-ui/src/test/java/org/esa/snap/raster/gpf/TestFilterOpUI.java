@@ -15,12 +15,8 @@
  */
 package org.esa.snap.raster.gpf;
 
-import org.esa.snap.core.gpf.GPF;
-import org.esa.snap.core.gpf.OperatorSpi;
 import org.esa.snap.engine_utilities.util.TestUtils;
 import org.esa.snap.raster.gpf.ui.FilterOpUI;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.swing.JComponent;
@@ -38,21 +34,10 @@ public class TestFilterOpUI {
         TestUtils.initTestEnvironment();
     }
 
-    private final static OperatorSpi spi = new FilterOperator.Spi();
     private final static String operatorName = "Image-Filter";
 
     private FilterOpUI filterOpUI = new FilterOpUI();
     private final Map<String, Object> parameterMap = new HashMap<>(5);
-
-    @BeforeClass
-    public static void Setup() {
-        GPF.getDefaultInstance().getOperatorSpiRegistry().addOperatorSpi(spi);
-    }
-
-    @AfterClass
-    public static void tearDown() throws Exception {
-        GPF.getDefaultInstance().getOperatorSpiRegistry().removeOperatorSpi(spi);
-    }
 
     @Test
     public void testCreateOpTab() {
