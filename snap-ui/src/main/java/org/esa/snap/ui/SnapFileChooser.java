@@ -15,6 +15,21 @@
  */
 package org.esa.snap.ui;
 
+import com.bc.ceres.binding.ConversionException;
+import org.esa.snap.core.util.Debug;
+import org.esa.snap.core.util.SystemUtils;
+import org.esa.snap.core.util.converters.RectangleConverter;
+import org.esa.snap.core.util.io.FileUtils;
+import org.esa.snap.core.util.io.SnapFileFilter;
+import org.esa.snap.runtime.Config;
+
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.filechooser.FileSystemView;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Graphics;
@@ -25,23 +40,9 @@ import java.awt.Rectangle;
 import java.awt.Window;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.File;
-import java.util.Objects;
+import java.util.logging.Level;
 import java.util.prefs.Preferences;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileFilter;
-import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.filechooser.FileSystemView;
-import org.esa.snap.core.util.Debug;
-import org.esa.snap.core.util.converters.RectangleConverter;
-import org.esa.snap.core.util.io.FileUtils;
-import org.esa.snap.core.util.io.SnapFileFilter;
-import org.openide.util.NbPreferences;
 
 /**
  * The general SNAP file chooser.
@@ -51,17 +52,12 @@ import org.openide.util.NbPreferences;
 public class SnapFileChooser extends JFileChooser {
 
     private static final Object syncFileFiltersObject = new Object();
-    public static final int OPEN_DIALOG = 0;
-    public static final int SAVE_DIALOG = 1;
-    public static final String PREPERENCES_OPEN_DIALOG = "open.dialog.bounds";
-    private static final String PREPERENCES_SAVE_DIALOG = "save.dialog.bounds";
+    private static final String PREFERENCES_OPEN_DIALOG = "snap.fileChooser.dialogBounds.open";
+    private static final String PREFERENCES_SAVE_DIALOG = "snap.fileChooser.dialogBounds.save";
+    private static final String PREFERENCES_CUSTOM_DIALOG = "snap.fileChooser.dialogBounds.custom";
     private String lastFilename;
     private Rectangle dialogBounds;
-    private RectangleConverter rectangleConverter = new RectangleConverter();
-
-
     private ResizeHandler resizeHandler;
-    private Preferences preferences;
 
     public SnapFileChooser() {
         this(null, null);
@@ -99,27 +95,18 @@ public class SnapFileChooser extends JFileChooser {
      *
      * @param parent the parent
      * @return the dialog
+     *
      * @throws HeadlessException if GraphicsEnvironment.isHeadless() returns true.
      */
     @Override
     protected JDialog createDialog(Component parent) throws HeadlessException {
         final JDialog dialog = super.createDialog(parent);
-        preferences = Objects.isNull(preferences) ? NbPreferences.forModule(getClass()) : preferences;
-        dialog.addComponentListener(resizeHandler);
-        dialog.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosed(WindowEvent e) {
-                setDialogPosition();
-            }
-        });
-        Rectangle rectangleFromPreferences = getRectangleFromPreferences();
-        if (Objects.nonNull(rectangleFromPreferences)) {
-            setDialogBounds(rectangleFromPreferences);
-        }
-
-        if (Objects.nonNull(dialogBounds)) {
+        Rectangle dialogBounds = loadDialogBounds();
+        if (dialogBounds != null) {
             dialog.setBounds(dialogBounds);
         }
+
+        dialog.addComponentListener(resizeHandler);
         return dialog;
     }
 
@@ -153,20 +140,12 @@ public class SnapFileChooser extends JFileChooser {
      * @param rectangle the dialog bounds
      */
     public void setDialogBounds(Rectangle rectangle) {
-        if (rectangle.getX() < 0 || rectangle.getY() < 0 || rectangle.getWidth() < 0 || rectangle.getHeight() < 0) {
-            GraphicsDevice[] screenDevices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
-            if (screenDevices.length > 1) {
-                this.dialogBounds = rectangle;
-            } else {
-                this.dialogBounds = null;
-            }
-            return;
-        }
         this.dialogBounds = rectangle;
+        storeDialogBounds(dialogBounds);
     }
 
     /**
-     * @return The current filename, or <code>null</code>.
+     * @return The current filename, or {@code null}.
      */
     public String getCurrentFilename() {
         File selectedFile = getSelectedFile();
@@ -179,7 +158,7 @@ public class SnapFileChooser extends JFileChooser {
     /**
      * Sets the current filename.
      *
-     * @param currentFilename The current filename, or <code>null</code>.
+     * @param currentFilename The current filename, or {@code null}.
      */
     public void setCurrentFilename(String currentFilename) {
         Debug.trace("SnapFileChooser: setCurrentFilename(\"" + currentFilename + "\")");
@@ -210,7 +189,7 @@ public class SnapFileChooser extends JFileChooser {
     /**
      * Returns the currently selected SNAP file filter.
      *
-     * @return the current SNAP file filter, or <code>null</code>
+     * @return the current SNAP file filter, or {@code null}
      */
     public SnapFileFilter getSnapFileFilter() {
         FileFilter ff = getFileFilter();
@@ -221,7 +200,7 @@ public class SnapFileChooser extends JFileChooser {
     }
 
     /**
-     * @return The current extension or <code>null</code> if it is unknown.
+     * @return The current extension or {@code null} if it is unknown.
      */
     public String getDefaultExtension() {
         if (getSnapFileFilter() != null) {
@@ -236,7 +215,8 @@ public class SnapFileChooser extends JFileChooser {
      * file chooser are those, which are registered using a {@link SnapFileFilter}.
      *
      * @param filename the filename to be checked
-     * @return <code>true</code>, if the given file has a "known" extension
+     * @return {@code true}, if the given file has a "known" extension
+     *
      * @see SnapFileFilter
      */
     public boolean checkExtension(String filename) {
@@ -256,10 +236,24 @@ public class SnapFileChooser extends JFileChooser {
         return false;
     }
 
+    @Override
+    public FileFilter[] getChoosableFileFilters() {
+        synchronized (syncFileFiltersObject) {
+            return super.getChoosableFileFilters();
+        }
+    }
+
+    @Override
+    public void addChoosableFileFilter(FileFilter filter) {
+        synchronized (syncFileFiltersObject) {
+            super.addChoosableFileFilter(filter);
+        }
+    }
+
     /**
      * Utility method which returns this file chooser's parent window.
      *
-     * @return the parent window or <code>null</code>
+     * @return the parent window or {@code null}
      */
     protected Window getWindow() {
         Container w = this;
@@ -269,31 +263,13 @@ public class SnapFileChooser extends JFileChooser {
         return (Window) w;
     }
 
-    private Rectangle getRectangleFromPreferences() {
-        String rectanglePreferences = null;
-        Rectangle rectangle = null;
-        int dialogType = getDialogType();
-        if (dialogType == OPEN_DIALOG) {
-            rectanglePreferences = preferences.get(PREPERENCES_OPEN_DIALOG, null);
-        } else if (dialogType == SAVE_DIALOG) {
-            rectanglePreferences = preferences.get(PREPERENCES_SAVE_DIALOG, null);
-        }
-        if (Objects.isNull(rectanglePreferences)) {
-            return null;
-        }
-        try {
-            rectangle = rectangleConverter.parse(rectanglePreferences);
-        } catch (com.bc.ceres.binding.ConversionException e) {
-            e.printStackTrace();
-        }
-        return rectangle;
-    }
     ///////////////////////////////////////////////////////////////////////////
     // private stuff
     ///////////////////////////////////////////////////////////////////////////
 
     private void init() {
         resizeHandler = new ResizeHandler();
+
         setAcceptAllFileFilterUsed(false);
 
         addPropertyChangeListener(JFileChooser.SELECTED_FILE_CHANGED_PROPERTY, evt -> {
@@ -318,19 +294,6 @@ public class SnapFileChooser extends JFileChooser {
             }
             setCurrentFilename(lastFilename);
         });
-        addActionListener(e -> {
-            setDialogPosition();
-        });
-    }
-
-    private void setDialogPosition() {
-        Rectangle dialogBounds = getDialogBounds();
-        int dialogType = getDialogType();
-        if (dialogType == OPEN_DIALOG) {
-            preferences.put(PREPERENCES_OPEN_DIALOG, dialogBounds.toString());
-        } else if (dialogType == SAVE_DIALOG) {
-            preferences.put(PREPERENCES_SAVE_DIALOG, dialogBounds.toString());
-        }
     }
 
     private boolean isCompoundDocument(File file) {
@@ -346,32 +309,70 @@ public class SnapFileChooser extends JFileChooser {
         return false;
     }
 
-    @Override
-    public FileFilter[] getChoosableFileFilters() {
-        synchronized (syncFileFiltersObject) {
-            return super.getChoosableFileFilters();
-        }
-    }
-
-    @Override
-    public void addChoosableFileFilter(FileFilter filter) {
-        synchronized (syncFileFiltersObject) {
-            super.addChoosableFileFilter(filter);
-        }
-    }
-
     private void ensureSelectedFileHasValidExtension() {
         File selectedFile = getSelectedFile();
         if (selectedFile != null) {
             SnapFileFilter mff = getSnapFileFilter();
             if (mff != null
-                    && mff.getDefaultExtension() != null
-                    && !mff.checkExtension(selectedFile)) {
+                && mff.getDefaultExtension() != null
+                && !mff.checkExtension(selectedFile)) {
                 selectedFile = FileUtils.exchangeExtension(selectedFile, mff.getDefaultExtension());
                 Debug.trace("mod. selected file: " + selectedFile.getPath());
                 setSelectedFile(selectedFile);
             }
         }
+    }
+
+    private void storeDialogBounds(Rectangle dialogBounds) {
+        int dialogType = getDialogType();
+        switch (dialogType) {
+            case OPEN_DIALOG:
+                putRectangleToPreferences(PREFERENCES_OPEN_DIALOG, dialogBounds);
+                break;
+            case SAVE_DIALOG:
+                putRectangleToPreferences(PREFERENCES_SAVE_DIALOG, this.dialogBounds);
+                break;
+            case CUSTOM_DIALOG:
+            default:
+                putRectangleToPreferences(PREFERENCES_CUSTOM_DIALOG, this.dialogBounds);
+        }
+    }
+
+    private Rectangle loadDialogBounds() {
+        switch (getDialogType()) {
+            case OPEN_DIALOG:
+                return getRectangleFromPreferences(PREFERENCES_OPEN_DIALOG);
+            case SAVE_DIALOG:
+                return getRectangleFromPreferences(PREFERENCES_SAVE_DIALOG);
+            case CUSTOM_DIALOG:
+            default:
+                return getRectangleFromPreferences(PREFERENCES_CUSTOM_DIALOG);
+        }
+
+    }
+
+    private void putRectangleToPreferences(String key, Rectangle dialogBounds) {
+        Preferences preferences = Config.instance("snap").preferences();
+        preferences.put(key, new RectangleConverter().format(dialogBounds));
+    }
+
+    private Rectangle getRectangleFromPreferences(String key) {
+        Preferences preferences = Config.instance("snap").preferences();
+        String rectString = preferences.get(key, null);
+        if (rectString != null) {
+            try {
+                Rectangle rectangle = new RectangleConverter().parse(rectString);
+                GraphicsDevice[] screenDevices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
+                for (GraphicsDevice screenDevice : screenDevices) {
+                    if(screenDevice.getDefaultConfiguration().getBounds().contains(rectangle.getLocation())) {
+                        return rectangle;
+                    }
+                }
+            } catch (ConversionException e) {
+                SystemUtils.LOG.log(Level.WARNING, "Not able to parse preferences value: " + rectString, e);
+            }
+        }
+        return null;
     }
 
     private class ResizeHandler extends ComponentAdapter {
@@ -390,8 +391,7 @@ public class SnapFileChooser extends JFileChooser {
     private static class CompoundDocumentIcon implements Icon {
 
         private final Icon baseIcon;
-        private static final Icon compoundDocumentIcon = new ImageIcon(
-                CompoundDocumentIcon.class.getResource("CompoundDocument12.png"));
+        private static final Icon compoundDocumentIcon = new ImageIcon(CompoundDocumentIcon.class.getResource("CompoundDocument12.png"));
 
         public CompoundDocumentIcon(Icon baseIcon) {
             this.baseIcon = baseIcon;
@@ -401,8 +401,8 @@ public class SnapFileChooser extends JFileChooser {
         public void paintIcon(Component c, Graphics g, int x, int y) {
             baseIcon.paintIcon(c, g, x, y);
             compoundDocumentIcon.paintIcon(c, g,
-                    x + baseIcon.getIconWidth() - compoundDocumentIcon.getIconWidth(),
-                    y + baseIcon.getIconHeight() - compoundDocumentIcon.getIconHeight());
+                                           x + baseIcon.getIconWidth() - compoundDocumentIcon.getIconWidth(),
+                                           y + baseIcon.getIconHeight() - compoundDocumentIcon.getIconHeight());
         }
 
         @Override
