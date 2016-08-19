@@ -22,6 +22,7 @@ import org.esa.snap.core.util.converters.RectangleConverter;
 import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.runtime.Config;
+import sun.swing.FilePane;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -40,8 +41,11 @@ import java.awt.Rectangle;
 import java.awt.Window;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.logging.Level;
+import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 /**
@@ -52,12 +56,15 @@ import java.util.prefs.Preferences;
 public class SnapFileChooser extends JFileChooser {
 
     private static final Object syncFileFiltersObject = new Object();
-    private static final String PREFERENCES_OPEN_DIALOG = "snap.fileChooser.dialogBounds.open";
-    private static final String PREFERENCES_SAVE_DIALOG = "snap.fileChooser.dialogBounds.save";
-    private static final String PREFERENCES_CUSTOM_DIALOG = "snap.fileChooser.dialogBounds.custom";
+    private static final String PREFERENCES_BOUNDS_OPEN = "snap.fileChooser.dialogBounds.open";
+    private static final String PREFERENCES_BOUNDS_SAVE = "snap.fileChooser.dialogBounds.save";
+    private static final String PREFERENCES_BOUNDS_CUSTOM = "snap.fileChooser.dialogBounds.custom";
+    private static final String PREFERENCES_VIEW_TYPE = "snap.fileChooser.viewType";
+    private final ResizeHandler resizeHandler;
+    private final CloseHandler windowCloseHandler;
+    private final Preferences snapPreferences;
     private String lastFilename;
     private Rectangle dialogBounds;
-    private ResizeHandler resizeHandler;
 
     public SnapFileChooser() {
         this(null, null);
@@ -73,6 +80,9 @@ public class SnapFileChooser extends JFileChooser {
 
     public SnapFileChooser(File currentDirectory, FileSystemView fsv) {
         super(currentDirectory, fsv);
+        snapPreferences = Config.instance("snap").preferences();
+        resizeHandler = new ResizeHandler();
+        windowCloseHandler = new CloseHandler();
         init();
     }
 
@@ -105,8 +115,10 @@ public class SnapFileChooser extends JFileChooser {
         if (dialogBounds != null) {
             dialog.setBounds(dialogBounds);
         }
-
         dialog.addComponentListener(resizeHandler);
+        dialog.addWindowListener(windowCloseHandler);
+        initViewType();
+
         return dialog;
     }
 
@@ -268,8 +280,6 @@ public class SnapFileChooser extends JFileChooser {
     ///////////////////////////////////////////////////////////////////////////
 
     private void init() {
-        resizeHandler = new ResizeHandler();
-
         setAcceptAllFileFilterUsed(false);
 
         addPropertyChangeListener(JFileChooser.SELECTED_FILE_CHANGED_PROPERTY, evt -> {
@@ -294,6 +304,7 @@ public class SnapFileChooser extends JFileChooser {
             }
             setCurrentFilename(lastFilename);
         });
+
     }
 
     private boolean isCompoundDocument(File file) {
@@ -323,53 +334,75 @@ public class SnapFileChooser extends JFileChooser {
         }
     }
 
-    private void storeDialogBounds(Rectangle dialogBounds) {
+    private void storeDialogBounds(Rectangle bounds) {
         int dialogType = getDialogType();
         switch (dialogType) {
             case OPEN_DIALOG:
-                putRectangleToPreferences(PREFERENCES_OPEN_DIALOG, dialogBounds);
+                putRectangleToPreferences(PREFERENCES_BOUNDS_OPEN, bounds);
                 break;
             case SAVE_DIALOG:
-                putRectangleToPreferences(PREFERENCES_SAVE_DIALOG, this.dialogBounds);
+                putRectangleToPreferences(PREFERENCES_BOUNDS_SAVE, bounds);
                 break;
             case CUSTOM_DIALOG:
             default:
-                putRectangleToPreferences(PREFERENCES_CUSTOM_DIALOG, this.dialogBounds);
+                putRectangleToPreferences(PREFERENCES_BOUNDS_CUSTOM, bounds);
         }
     }
 
     private Rectangle loadDialogBounds() {
         switch (getDialogType()) {
             case OPEN_DIALOG:
-                return getRectangleFromPreferences(PREFERENCES_OPEN_DIALOG);
+                return getRectangleFromPreferences(PREFERENCES_BOUNDS_OPEN);
             case SAVE_DIALOG:
-                return getRectangleFromPreferences(PREFERENCES_SAVE_DIALOG);
+                return getRectangleFromPreferences(PREFERENCES_BOUNDS_SAVE);
             case CUSTOM_DIALOG:
             default:
-                return getRectangleFromPreferences(PREFERENCES_CUSTOM_DIALOG);
+                return getRectangleFromPreferences(PREFERENCES_BOUNDS_CUSTOM);
         }
 
     }
 
-    private void putRectangleToPreferences(String key, Rectangle dialogBounds) {
-        Preferences preferences = Config.instance("snap").preferences();
-        preferences.put(key, new RectangleConverter().format(dialogBounds));
+    private void putRectangleToPreferences(String key, Rectangle bounds) {
+        snapPreferences.put(key, new RectangleConverter().format(bounds));
     }
 
     private Rectangle getRectangleFromPreferences(String key) {
-        Preferences preferences = Config.instance("snap").preferences();
-        String rectString = preferences.get(key, null);
+        String rectString = snapPreferences.get(key, null);
         if (rectString != null) {
             try {
                 Rectangle rectangle = new RectangleConverter().parse(rectString);
                 GraphicsDevice[] screenDevices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
                 for (GraphicsDevice screenDevice : screenDevices) {
-                    if(screenDevice.getDefaultConfiguration().getBounds().contains(rectangle.getLocation())) {
+                    if (screenDevice.getDefaultConfiguration().getBounds().contains(rectangle.getLocation())) {
                         return rectangle;
                     }
                 }
             } catch (ConversionException e) {
                 SystemUtils.LOG.log(Level.WARNING, "Not able to parse preferences value: " + rectString, e);
+            }
+        }
+        return null;
+    }
+
+    private void initViewType() {
+        FilePane filePane = findFilePane(this);
+        if(filePane != null) {
+            int viewType = snapPreferences.getInt(PREFERENCES_VIEW_TYPE, FilePane.VIEWTYPE_LIST);
+            filePane.setViewType(viewType);
+        }
+    }
+
+    private FilePane findFilePane(Container root) {
+        Component[] components = root.getComponents();
+        for (Component component : components) {
+            if (component instanceof FilePane) {
+                return (FilePane) component;
+            }
+            if(component instanceof Container) {
+                FilePane filePane = findFilePane((Container) component);
+                if (filePane != null) {
+                    return filePane;
+                }
             }
         }
         return null;
@@ -413,6 +446,26 @@ public class SnapFileChooser extends JFileChooser {
         @Override
         public int getIconHeight() {
             return baseIcon.getIconHeight();
+        }
+    }
+
+    private class CloseHandler extends WindowAdapter {
+
+        @Override
+        public void windowClosed(WindowEvent e) {
+            FilePane filePane = findFilePane(SnapFileChooser.this);
+            if (filePane != null) {
+                snapPreferences.putInt(PREFERENCES_VIEW_TYPE, filePane.getViewType());
+                flushPreferences();
+            }
+        }
+
+        private void flushPreferences() {
+            try {
+                snapPreferences.flush();
+            } catch (BackingStoreException bse) {
+                SystemUtils.LOG.severe("Could not store preferences: " + bse.getMessage());
+            }
         }
     }
 }
