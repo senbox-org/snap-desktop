@@ -312,7 +312,13 @@ public class ProductSceneView extends BasicView
         return scrollPane;
     }
 
-    ProductSceneImage getSceneImage() {
+    /**
+     * Gets the current scene image, if any.
+     *
+     * @return The current scene image, or {@code null} if none exists.
+     * @since SNAP 5.0
+     */
+    public ProductSceneImage getSceneImage() {
         return sceneImage;
     }
 
