@@ -309,13 +309,8 @@ public abstract class BaseClassifierOpUI extends BaseOperatorUI {
     public void initParameters() {
 
         String newClassifierName = (String) paramMap.get("savedClassifierName");
-        boolean doTraining;
         if (DialogUtils.contains(classifierNameComboBox, newClassifierName)) {
             classifierNameComboBox.setSelectedItem(newClassifierName);
-            loadBtn.setSelected(false);
-            doTraining = false;
-        } else {
-            doTraining = true;
         }
 
         String numSamples = String.valueOf(paramMap.get("numTrainSamples"));
@@ -355,6 +350,7 @@ public abstract class BaseClassifierOpUI extends BaseOperatorUI {
             labelSourceVectorName.setSelected(true);
         }
 
+        boolean doTraining = true;
         enableTraining(doTraining);
         enableTrainOnRaster(doTraining, trainOnRasters);
 
