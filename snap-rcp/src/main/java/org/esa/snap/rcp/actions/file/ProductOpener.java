@@ -1,6 +1,27 @@
 package org.esa.snap.rcp.actions.file;
 
 import com.bc.ceres.swing.TableLayout;
+import org.esa.snap.core.dataio.DecodeQualification;
+import org.esa.snap.core.dataio.ProductIOPlugInManager;
+import org.esa.snap.core.dataio.ProductReaderPlugIn;
+import org.esa.snap.core.util.SystemUtils;
+import org.esa.snap.core.util.io.SnapFileFilter;
+import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.rcp.util.Dialogs;
+import org.netbeans.api.progress.ProgressHandle;
+import org.netbeans.api.progress.ProgressHandleFactory;
+import org.openide.DialogDisplayer;
+import org.openide.NotifyDescriptor;
+import org.openide.util.RequestProcessor;
+
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import java.awt.Component;
 import java.io.File;
 import java.text.MessageFormat;
@@ -11,26 +32,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.prefs.Preferences;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
-import org.esa.snap.core.dataio.DecodeQualification;
-import org.esa.snap.core.dataio.ProductIOPlugInManager;
-import org.esa.snap.core.dataio.ProductReaderPlugIn;
-import org.esa.snap.core.util.SystemUtils;
-import org.esa.snap.core.util.io.SnapFileFilter;
-import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.util.Dialogs;
-import org.netbeans.api.progress.ProgressHandle;
-import org.netbeans.api.progress.ProgressHandleFactory;
-import org.netbeans.api.progress.ProgressUtils;
-import org.openide.DialogDisplayer;
-import org.openide.NotifyDescriptor;
 
 /**
  * @author Marco Peters
@@ -40,6 +41,7 @@ public class ProductOpener {
     public static final String PREFERENCES_KEY_LAST_PRODUCT_DIR = "last_product_open_dir";
     private static final String PREFERENCES_KEY_PREFIX_ALTERNATIVE_READER = "open_alternative_reader.";
     private static final String PREFERENCES_KEY_DONT_SHOW_DIALOG = "multipleReadersDialog.dontShow";
+    private static final int IMMEDIATELY = 0;
 
     private String fileFormat;
     private boolean useAllFileFilter;
@@ -190,9 +192,9 @@ public class ProductOpener {
             if (openedFiles.contains(file)) {
                 Dialogs.Answer answer = Dialogs.requestDecision(Bundle.CTL_OpenProductActionName(),
                                                                 MessageFormat.format("Product\n" +
-                                                                                             "{0}\n" +
-                                                                                             "is already opened.\n" +
-                                                                                             "Do you want to open another instance?", file),
+                                                                                     "{0}\n" +
+                                                                                     "is already opened.\n" +
+                                                                                     "Do you want to open another instance?", file),
                                                                 true, null);
                 if (answer == Dialogs.Answer.NO) {
                     fileList.remove(file);
@@ -202,7 +204,7 @@ public class ProductOpener {
             }
         }
 
-        Boolean summaryStatus = true;
+        RequestProcessor rp = new RequestProcessor("Opening Products", 4, true, true);
         for (File file : fileList) {
             String fileFormatName;
             if (formatName == null) {
@@ -233,18 +235,16 @@ public class ProductOpener {
                 fileFormatName = formatName;
             }
 
-
-            Boolean status = openProductFileDoNotCheckOpened(file, fileFormatName);
-            if (status == null) {
-                // Cancelled
-                summaryStatus = null;
-                break;
-            } else if (!Boolean.TRUE.equals(status)) {
-                summaryStatus = status;
-            }
+            ReadProductOperation operation = new ReadProductOperation(file, fileFormatName);
+            RequestProcessor.Task task = rp.create(operation);
+            // TODO (mp/20160830) - Cancellation is not working; the thread is not interrupted. Why?
+            ProgressHandle handle = ProgressHandleFactory.createHandle("Reading " + file.getName()/*, operation.createCancellable(task)*/);
+            operation.attacheProgressHandle(handle);
+            task.schedule(IMMEDIATELY);
         }
 
-        return summaryStatus;
+
+        return true;
     }
 
     private static List<PluginEntry> getPluginsForFile(File file, DecodeQualification desiredQualification) {
@@ -321,20 +321,6 @@ public class ProductOpener {
         return null;
     }
 
-
-    private static Boolean openProductFileDoNotCheckOpened(File file, String formatName) {
-        SnapApp.getDefault().setStatusBarMessage(MessageFormat.format("Reading product ''{0}''...", file.getName()));
-
-        ReadProductOperation operation = new ReadProductOperation(file, formatName);
-        final ProgressHandle progressHandle = ProgressHandleFactory.createHandle("Please wait while the data product is being read...", operation);
-        ProgressUtils.runOffEventThreadWithProgressDialog(operation, "Reading Product", progressHandle, false, 50, 2000);
-        progressHandle.start();
-        progressHandle.switchToIndeterminate();
-
-        SnapApp.getDefault().setStatusBarMessage("");
-
-        return operation.getStatus();
-    }
 
     private static class PluginEntry implements Comparable<PluginEntry> {
 
