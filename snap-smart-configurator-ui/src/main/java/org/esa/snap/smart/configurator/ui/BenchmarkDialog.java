@@ -189,6 +189,13 @@ public class BenchmarkDialog extends DefaultSingleTargetProductDialog {
                                           benchmarkSingleCalcul.getNbThreads()));
 
                     final Product targetProduct;
+
+                    //load performance parameters for current benchmark
+                    benchmarkModel.loadBenchmarkPerfParams(benchmarkSingleCalcul);
+
+                    //processing start time
+                    long startTime = System.currentTimeMillis();
+                    
                     try {
                         targetProduct = createTargetProduct();
 
@@ -199,11 +206,6 @@ public class BenchmarkDialog extends DefaultSingleTargetProductDialog {
                     if (targetProduct == null) {
                         throw new NullPointerException("Target product is null.");
                     }
-                    //load performance parameters for current benchmark
-                    benchmarkModel.loadBenchmarkPerfParams(benchmarkSingleCalcul);
-
-                    //processing start time
-                    long startTime = System.currentTimeMillis();
 
                     executeOperator(targetProduct, progressHandleMonitor);
 
@@ -216,7 +218,7 @@ public class BenchmarkDialog extends DefaultSingleTargetProductDialog {
                     SystemUtils.LOG.fine(String.format("Start time: %d, end time: %d, diff: %d", startTime, endTime, endTime - startTime));
 
                     // we remove all tiles
-                    JAI.getDefaultInstance().setTileCache(JAI.createTileCache());
+                    JAI.getDefaultInstance().getTileCache().flush();
                 }
 
                 progressHandleMonitor.done();
