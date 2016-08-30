@@ -46,6 +46,7 @@ import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import java.awt.*;
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.List;
 
 /**
@@ -158,7 +159,7 @@ public class BenchmarkDialog extends DefaultSingleTargetProductDialog {
             }
 
             //temporary directory for benchmark
-            String tmpdirPath = System.getProperty("java.io.tmpdir") + "/snap-benchmark-tmp";
+            String tmpdirPath = Paths.get(SystemUtils.getCacheDir().toString(), "snap-benchmark-tmp").toString();
             appContext.getPreferences().setPropertyString(SaveProductAsAction.PREFERENCES_KEY_LAST_PRODUCT_DIR, tmpdirPath);
 
             //add current performance parameters to benchmark
