@@ -88,9 +88,12 @@ public class SnapFileChooser extends JFileChooser {
 
     @Override
     public Icon getIcon(File f) {
-        final Icon icon = super.getIcon(f);
-        if (f.isDirectory() && isCompoundDocument(f)) {
-            return new CompoundDocumentIcon(icon);
+        Icon icon = null;
+        if (f != null) {
+            icon = super.getIcon(f);
+            if (f.isDirectory() && isCompoundDocument(f)) {
+                return new CompoundDocumentIcon(icon);
+            }
         }
         return icon;
     }
