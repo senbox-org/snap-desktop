@@ -27,6 +27,14 @@ class ReadProductOperation implements Runnable {
         ph = PhWrapper.NULL;
     }
 
+    public File getFile() {
+        return file;
+    }
+
+    public String getFormatName() {
+        return formatName;
+    }
+
     public Cancellable createCancellable(RequestProcessor.Task task) {
         return new Cancel(this, task);
     }
