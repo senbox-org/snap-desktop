@@ -44,13 +44,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Marco Peters
@@ -113,37 +107,38 @@ class MosaicFormModel {
 
     void setSourceProducts(File[] files) throws IOException {
         boolean changeSourceProducts = false;
-        final List<File> fileList = Arrays.asList(files);
-        final Iterator<Map.Entry<File, Product>> iterator = sourceProductMap.entrySet().iterator();
-        while (iterator.hasNext()) {
-            final Map.Entry<File, Product> entry = iterator.next();
-            if (!fileList.contains(entry.getKey())) {
-                final Product product = entry.getValue();
-                worldMapModel.removeProduct(product);
-                iterator.remove();
-                product.dispose();
-                changeSourceProducts = true;
-            }
-        }
-
-        for (int i = 0; i < files.length; i++) {
-            final File file = files[i];
-            Product product = sourceProductMap.get(file);
-            if (product == null) {
-                product = ProductIO.readProduct(file);
-                sourceProductMap.put(file, product);
-                if (Boolean.TRUE.equals(getPropertyValue(PROPERTY_SHOW_SOURCE_PRODUCTS))) {
-                    worldMapModel.addProduct(product);
+        if (files != null && files.length > 0) {
+            final List<File> fileList = Arrays.asList(files);
+            final Iterator<Map.Entry<File, Product>> iterator = sourceProductMap.entrySet().iterator();
+            while (iterator.hasNext()) {
+                final Map.Entry<File, Product> entry = iterator.next();
+                if (!fileList.contains(entry.getKey())) {
+                    final Product product = entry.getValue();
+                    worldMapModel.removeProduct(product);
+                    iterator.remove();
+                    product.dispose();
+                    changeSourceProducts = true;
                 }
-                changeSourceProducts = true;
             }
-            final int refNo = i + 1;
-            if (product.getRefNo() != refNo) {
-                product.resetRefNo();
-                product.setRefNo(refNo);
+
+            for (int i = 0; i < files.length; i++) {
+                final File file = files[i];
+                Product product = sourceProductMap.get(file);
+                if (product == null) {
+                    product = ProductIO.readProduct(file);
+                    sourceProductMap.put(file, product);
+                    if (Boolean.TRUE.equals(getPropertyValue(PROPERTY_SHOW_SOURCE_PRODUCTS))) {
+                        worldMapModel.addProduct(product);
+                    }
+                    changeSourceProducts = true;
+                }
+                final int refNo = i + 1;
+                if (product.getRefNo() != refNo) {
+                    product.resetRefNo();
+                    product.setRefNo(refNo);
+                }
             }
         }
-
         /* update region selectable map bounds according to the SourceProducts status: REMOVE or NEW product(s) */
         if (changeSourceProducts) updateRegionSelectableMapBounds(files);
     }
