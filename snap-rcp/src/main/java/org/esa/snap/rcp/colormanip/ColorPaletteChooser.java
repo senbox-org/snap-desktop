@@ -91,7 +91,7 @@ class ColorPaletteChooser extends JComboBox<ColorPaletteChooser.ColorPaletteWrap
         final List<ColorPaletteDef> defList = colorPaletteManager.getColorPaletteDefList();
         final Vector<ColorPaletteWrapper> paletteWrappers = new Vector<>();
         for (ColorPaletteDef colorPaletteDef : defList) {
-            String nameFor = colorPaletteManager.getFileNameWithoutExtension(colorPaletteDef);
+            String nameFor = colorPaletteManager.getNameFor(colorPaletteDef);
             paletteWrappers.add(new ColorPaletteWrapper(nameFor, colorPaletteDef));
         }
         return paletteWrappers;

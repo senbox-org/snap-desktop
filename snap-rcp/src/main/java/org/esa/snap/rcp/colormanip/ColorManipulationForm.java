@@ -70,6 +70,8 @@ import java.util.concurrent.Executors;
 })
 class ColorManipulationForm implements SelectionSupport.Handler<ProductSceneView> {
 //    private final static String FILE_EXTENSION = ".cpd";
+    private final static String PREFERENCES_KEY_IO_DIR = "snap.color_palettes.dir";
+
     private AbstractButton resetButton;
     private AbstractButton multiApplyButton;
     private AbstractButton importButton;
@@ -88,6 +90,7 @@ class ColorManipulationForm implements SelectionSupport.Handler<ProductSceneView
     private ColorManipulationChildForm continuous3BandGraphicalForm;
     private JPanel toolButtonsPanel;
     private AbstractButton helpButton;
+    private Path ioDir;
     private JPanel editorPanel;
     private MoreOptionsPane moreOptionsPane;
     private SceneViewImageInfoChangeListener sceneViewChangeListener;
@@ -452,12 +455,16 @@ class ColorManipulationForm implements SelectionSupport.Handler<ProductSceneView
         });
     }
 
-    private void setIODir(File dir) {
-        ColorPaletteManager.getDefault().setIODir(dir);
+    private void setIODir(final File dir) {
+        ioDir = dir.toPath();
+        Config.instance().preferences().put(PREFERENCES_KEY_IO_DIR, ioDir.toString());
     }
 
-    private Path getIODir() {
-        return ColorPaletteManager.getDefault().getIODir();
+    protected Path getIODir() {
+        if (ioDir == null) {
+            ioDir = Paths.get(Config.instance().preferences().get(PREFERENCES_KEY_IO_DIR, getColorPalettesDir().toString()));
+        }
+        return ioDir;
     }
 
     private SnapFileFilter getOrCreateColorPaletteDefinitionFileFilter() {
