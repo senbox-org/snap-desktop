@@ -162,6 +162,12 @@ public class ProductFileChooser extends SnapFileChooser {
                 final FileFilter fileFilter = getFileFilter();
                 String formatName = (fileFilter instanceof SnapFileFilter) ? ((SnapFileFilter) fileFilter).getFormatName() : null;
                 product = ProductIO.readProduct(file, formatName);
+                if(product == null) {
+                    String msg = "The product could not be read.";
+                    String optionalMsg = file.isDirectory() ? "\nSelection points to a directory." : "";
+                    Dialogs.showError(msg + optionalMsg);
+                    return;
+                }
                 newProductName = createNewProductName(product.getName(), numSubsetProducts++);
             } catch (IOException e) {
                 Dialogs.showError("The product could not be read:\n" + e.getMessage());
