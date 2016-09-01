@@ -20,6 +20,7 @@ package org.esa.snap.ui.tooladapter.actions;
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.OperatorSpi;
 import org.esa.snap.core.gpf.OperatorSpiRegistry;
+import org.esa.snap.core.gpf.descriptor.OperatorDescriptor;
 import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterIO;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterListener;
@@ -215,8 +216,10 @@ public class ToolAdapterActionRegistrar {
                         ToolAdapterIO.removeOperator(operatorDescriptor);
                     });*/
                     operatorSpis.stream().filter(spi -> spi instanceof ToolAdapterOpSpi).forEach(spi -> {
-                        ToolAdapterOperatorDescriptor operatorDescriptor = (ToolAdapterOperatorDescriptor) spi.getOperatorDescriptor();
-                        registerOperatorMenu(operatorDescriptor, false);
+                        OperatorDescriptor descriptor = spi.getOperatorDescriptor();
+                        if (descriptor instanceof ToolAdapterOperatorDescriptor) {
+                            registerOperatorMenu((ToolAdapterOperatorDescriptor) descriptor, false);
+                        }
                     });
                 }
                 ToolAdapterRegistry.INSTANCE.addListener(listener);
