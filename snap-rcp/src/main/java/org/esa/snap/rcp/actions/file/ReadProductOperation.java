@@ -50,7 +50,6 @@ class ReadProductOperation implements Runnable {
             ph.switchToIndeterminate();
             Product product = ProductIO.readProduct(file, formatName);
             boolean interrupted = Thread.interrupted();
-            System.out.println("Thread interrupted = " + interrupted);
             if (!interrupted) {
                 if (product == null) {
                     SwingUtilities.invokeLater(
