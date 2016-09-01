@@ -17,17 +17,7 @@ package org.esa.snap.rcp.colormanip;
 
 import com.bc.ceres.core.Assert;
 import com.bc.ceres.core.ProgressMonitor;
-import org.esa.snap.core.datamodel.Band;
-import org.esa.snap.core.datamodel.ColorPaletteDef;
-import org.esa.snap.core.datamodel.ImageInfo;
-import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.datamodel.ProductManager;
-import org.esa.snap.core.datamodel.ProductNode;
-import org.esa.snap.core.datamodel.ProductNodeEvent;
-import org.esa.snap.core.datamodel.ProductNodeListener;
-import org.esa.snap.core.datamodel.ProductNodeListenerAdapter;
-import org.esa.snap.core.datamodel.RasterDataNode;
-import org.esa.snap.core.datamodel.Stx;
+import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.util.ProductUtils;
 import org.esa.snap.core.util.ResourceInstaller;
 import org.esa.snap.core.util.SystemUtils;
@@ -79,10 +69,7 @@ import java.util.concurrent.Executors;
         "CTL_ColorManipulationForm_TitlePrefix=Colour Manipulation"
 })
 class ColorManipulationForm implements SelectionSupport.Handler<ProductSceneView> {
-
-    private final static String PREFERENCES_KEY_IO_DIR = "snap.color_palettes.dir";
-
-    private final static String FILE_EXTENSION = ".cpd";
+//    private final static String FILE_EXTENSION = ".cpd";
     private AbstractButton resetButton;
     private AbstractButton multiApplyButton;
     private AbstractButton importButton;
@@ -101,7 +88,6 @@ class ColorManipulationForm implements SelectionSupport.Handler<ProductSceneView
     private ColorManipulationChildForm continuous3BandGraphicalForm;
     private JPanel toolButtonsPanel;
     private AbstractButton helpButton;
-    private Path ioDir;
     private JPanel editorPanel;
     private MoreOptionsPane moreOptionsPane;
     private SceneViewImageInfoChangeListener sceneViewChangeListener;
@@ -466,23 +452,19 @@ class ColorManipulationForm implements SelectionSupport.Handler<ProductSceneView
         });
     }
 
-    private void setIODir(final File dir) {
-        ioDir = dir.toPath();
-        Config.instance().preferences().put(PREFERENCES_KEY_IO_DIR, ioDir.toString());
+    private void setIODir(File dir) {
+        ColorPaletteManager.getDefault().setIODir(dir);
     }
 
-    protected Path getIODir() {
-        if (ioDir == null) {
-            ioDir = Paths.get(Config.instance().preferences().get(PREFERENCES_KEY_IO_DIR, getColorPalettesDir().toString()));
-        }
-        return ioDir;
+    private Path getIODir() {
+        return ColorPaletteManager.getDefault().getIODir();
     }
 
     private SnapFileFilter getOrCreateColorPaletteDefinitionFileFilter() {
         if (snapFileFilter == null) {
             final String formatName = "COLOR_PALETTE_DEFINITION_FILE";
-            final String description = "Colour palette files (*" + FILE_EXTENSION + ")";  /*I18N*/
-            snapFileFilter = new SnapFileFilter(formatName, FILE_EXTENSION, description);
+            final String description = "Colour palette files (*" + ColorPaletteManager.FILE_EXTENSION + ")";  /*I18N*/
+            snapFileFilter = new SnapFileFilter(formatName, ColorPaletteManager.FILE_EXTENSION, description);
         }
         return snapFileFilter;
     }
@@ -579,7 +561,7 @@ class ColorManipulationForm implements SelectionSupport.Handler<ProductSceneView
         if (result == JFileChooser.APPROVE_OPTION) {
             if (file != null) {
                 if (Boolean.TRUE.equals(Dialogs.requestOverwriteDecision(titlePrefix, file))) {
-                    file = FileUtils.ensureExtension(file, FILE_EXTENSION);
+                    file = FileUtils.ensureExtension(file, ColorPaletteManager.FILE_EXTENSION);
                     try {
                         final ColorPaletteDef colorPaletteDef = imageInfo.getColorPaletteDef();
                         ColorPaletteDef.storeColorPaletteDef(colorPaletteDef, file);

@@ -17,11 +17,7 @@
 package org.esa.snap.rcp.colormanip;
 
 import com.bc.ceres.swing.TableLayout;
-import org.esa.snap.core.datamodel.ColorPaletteDef;
-import org.esa.snap.core.datamodel.ImageInfo;
-import org.esa.snap.core.datamodel.ProductNodeEvent;
-import org.esa.snap.core.datamodel.RasterDataNode;
-import org.esa.snap.core.datamodel.Stx;
+import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.util.math.Range;
 
 import javax.swing.AbstractButton;
@@ -54,7 +50,7 @@ class Continuous1BandBasicForm implements ColorManipulationChildForm {
     private boolean hidden = false;
 
     Continuous1BandBasicForm(final ColorManipulationForm parentForm) {
-        ColorPaletteManager.getDefault().loadAvailableColorPalettes(parentForm.getIODir().toFile());
+        //ColorPaletteManager.getDefault().loadAvailableColorPalettes();
 
         this.parentForm = parentForm;
 
@@ -158,7 +154,7 @@ class Continuous1BandBasicForm implements ColorManipulationChildForm {
     @Override
     public void updateFormModel(FormModel formModel) {
         if (!hidden) {
-            ColorPaletteManager.getDefault().loadAvailableColorPalettes(parentForm.getIODir().toFile());
+            //ColorPaletteManager.getDefault().loadAvailableColorPalettes();
             colorPaletteChooser.reloadPalettes();
         }
 

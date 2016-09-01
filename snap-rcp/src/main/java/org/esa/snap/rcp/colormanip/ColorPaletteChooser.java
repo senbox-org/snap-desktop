@@ -25,9 +25,9 @@ import java.util.List;
 import java.util.Vector;
 
 class ColorPaletteChooser extends JComboBox<ColorPaletteChooser.ColorPaletteWrapper> {
+    private static final String DERIVED_FROM = "derived from";
+    private static final String UNNAMED = "unnamed";
 
-    private final String DERIVED_FROM = "derived from";
-    private final String UNNAMED = "unnamed";
     private boolean discreteDisplay;
     private boolean log10Display;
 
@@ -59,7 +59,8 @@ class ColorPaletteChooser extends JComboBox<ColorPaletteChooser.ColorPaletteWrap
         removeUserDefinedPalette();
         final ComboBoxModel<ColorPaletteWrapper> model = getModel();
         for (int i = 0; i < model.getSize(); i++) {
-            if (model.getElementAt(i).cpd.equals(cpd)) {
+            ColorPaletteWrapper existingItem = model.getElementAt(i);
+            if (existingItem.getCpd().equals(cpd)) {
                 setSelectedIndex(i);
                 return;
             }
@@ -86,22 +87,14 @@ class ColorPaletteChooser extends JComboBox<ColorPaletteChooser.ColorPaletteWrap
     }
 
     private static Vector<ColorPaletteWrapper> getPalettes() {
-        final List<ColorPaletteDef> defList = ColorPaletteManager.getDefault().getColorPaletteDefList();
+        ColorPaletteManager colorPaletteManager = ColorPaletteManager.getDefault();
+        final List<ColorPaletteDef> defList = colorPaletteManager.getColorPaletteDefList();
         final Vector<ColorPaletteWrapper> paletteWrappers = new Vector<>();
         for (ColorPaletteDef colorPaletteDef : defList) {
-            final String nameFor = getNameForWithoutExtension(colorPaletteDef);
+            String nameFor = colorPaletteManager.getFileNameWithoutExtension(colorPaletteDef);
             paletteWrappers.add(new ColorPaletteWrapper(nameFor, colorPaletteDef));
         }
         return paletteWrappers;
-    }
-
-    private static String getNameForWithoutExtension(ColorPaletteDef colorPaletteDef) {
-        final String nameFor = ColorPaletteManager.getDefault().getNameFor(colorPaletteDef);
-        if (nameFor.toLowerCase().endsWith(".cpd")) {
-            return nameFor.substring(0, nameFor.length() - 4);
-        } else {
-            return nameFor;
-        }
     }
 
     private ListCellRenderer<ColorPaletteWrapper> createPaletteRenderer() {
@@ -200,6 +193,14 @@ class ColorPaletteChooser extends JComboBox<ColorPaletteChooser.ColorPaletteWrap
         private ColorPaletteWrapper(String name, ColorPaletteDef cpd) {
             this.name = name;
             this.cpd = cpd;
+        }
+
+        public ColorPaletteDef getCpd() {
+            return cpd;
+        }
+
+        public String getName() {
+            return name;
         }
     }
 }
