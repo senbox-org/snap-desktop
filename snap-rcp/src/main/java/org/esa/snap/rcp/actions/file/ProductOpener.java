@@ -205,7 +205,6 @@ public class ProductOpener {
         }
 
         RequestProcessor rp = new RequestProcessor("Opening Products", 4, true, true);
-        List<ReadProductOperation> readOpList = new ArrayList<>();
         for (File file : fileList) {
             String fileFormatName;
             if (formatName == null) {
@@ -237,16 +236,13 @@ public class ProductOpener {
             }
 
             ReadProductOperation operation = new ReadProductOperation(file, fileFormatName);
-            readOpList.add(operation);
-        }
-
-        for (ReadProductOperation operation : readOpList) {
             RequestProcessor.Task task = rp.create(operation);
             // TODO (mp/20160830) - Cancellation is not working; the thread is not interrupted. Why?
-            ProgressHandle handle = ProgressHandleFactory.createHandle("Reading " + operation.getFile().getName()/*, operation.createCancellable(task)*/);
+            ProgressHandle handle = ProgressHandleFactory.createHandle("Reading " + file.getName()/*, operation.createCancellable(task)*/);
             operation.attacheProgressHandle(handle);
             task.schedule(IMMEDIATELY);
         }
+
 
         return true;
     }
