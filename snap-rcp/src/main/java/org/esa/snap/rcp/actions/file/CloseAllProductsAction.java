@@ -5,6 +5,11 @@
  */
 package org.esa.snap.rcp.actions.file;
 
+import java.awt.event.ActionEvent;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javax.swing.AbstractAction;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductManager;
 import org.esa.snap.rcp.SnapApp;
@@ -14,25 +19,20 @@ import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle;
 
-import javax.swing.AbstractAction;
-import java.awt.event.ActionEvent;
-import java.util.Arrays;
-import java.util.List;
-
 /**
  * Action which closes all opened products.
  *
  * @author Norman
  */
 @ActionID(category = "File", id = "CloseAllProductsAction")
-@ActionRegistration(displayName = "#CTL_CloseAllProductsActionName",lazy = false)
+@ActionRegistration(displayName = "#CTL_CloseAllProductsActionName", lazy = false)
 
 @ActionReferences({
         @ActionReference(path = "Menu/File", position = 25),
         @ActionReference(path = "Context/Product/Product", position = 70)
 })
 @NbBundle.Messages({"CTL_CloseAllProductsActionName=Close All Products"})
-public final class CloseAllProductsAction extends AbstractAction{
+public final class CloseAllProductsAction extends AbstractAction {
 
     public CloseAllProductsAction() {
         super(Bundle.CTL_CloseAllProductsActionName());
@@ -53,8 +53,8 @@ public final class CloseAllProductsAction extends AbstractAction{
      * @return {@code Boolean.TRUE} on success, {@code Boolean.FALSE} on failure, or {@code null} on cancellation.
      */
     public Boolean execute() {
-        List<Product> products = Arrays.asList(SnapApp.getDefault().getProductManager().getProducts());
-        return new CloseProductAction(products).execute();
+        Set<Product> collect = Stream.of(SnapApp.getDefault().getProductManager().getProducts()).collect(Collectors.toSet());
+        return CloseProductAction.closeProducts(collect);
     }
 
     private class CloseAllProductListener implements ProductManager.Listener {
