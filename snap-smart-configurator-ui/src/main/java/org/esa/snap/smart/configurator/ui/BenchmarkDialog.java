@@ -21,6 +21,7 @@ import com.bc.ceres.core.VirtualDir;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.Operator;
 import org.esa.snap.core.gpf.common.WriteOp;
+import org.esa.snap.core.gpf.internal.OperatorContext;
 import org.esa.snap.core.gpf.internal.OperatorExecutor;
 import org.esa.snap.core.gpf.internal.OperatorProductReader;
 import org.esa.snap.core.gpf.ui.DefaultSingleTargetProductDialog;
@@ -165,7 +166,7 @@ public class BenchmarkDialog extends DefaultSingleTargetProductDialog {
             //add current performance parameters to benchmark
             PerformanceParameters currentPerformanceParameters = ConfigurationOptimizer.getInstance().getActualPerformanceParameters();
             currentBenchmarkSingleCalcul = new BenchmarkSingleCalculus(
-                    currentPerformanceParameters.getDefaultTileSize(),
+                    /*currentPerformanceParameters.getDefaultTileSize(), */currentPerformanceParameters.getTileHeight(),currentPerformanceParameters.getTileWidth(),
                     currentPerformanceParameters.getCacheSize(),
                     currentPerformanceParameters.getNbThreads());
 
@@ -182,9 +183,14 @@ public class BenchmarkDialog extends DefaultSingleTargetProductDialog {
                 int executionOrder = 0;
 
                 for (BenchmarkSingleCalculus benchmarkSingleCalcul : benchmarkSingleCalculusList) {
+                    /*progressHandleMonitor.getProgressHandle().progress(
+                            String.format("Benchmarking ( tile size:%s , cache size:%d , nb threads:%d )",
+                                          benchmarkSingleCalcul.getDimensionString(),
+                                          benchmarkSingleCalcul.getCacheSize(),
+                                          benchmarkSingleCalcul.getNbThreads()));*/
+
                     progressHandleMonitor.getProgressHandle().progress(
-                            String.format("Benchmarking ( tile size:%d , cache size:%d , nb threads:%d )",
-                                          benchmarkSingleCalcul.getTileSize(),
+                            String.format("Benchmarking ( cache size:%d , nb threads:%d )",
                                           benchmarkSingleCalcul.getCacheSize(),
                                           benchmarkSingleCalcul.getNbThreads()));
 
@@ -207,6 +213,13 @@ public class BenchmarkDialog extends DefaultSingleTargetProductDialog {
                         throw new NullPointerException("Target product is null.");
                     }
 
+                    //When the source product is read at the beginning, a preferred tile size is selected (tipically, the tile size of the properties).
+                    //There are some operators which do not use the properties for setting the tile size of the product and they use directly the tile size of the inputs.
+                    //Since the inputs are loaded only one time, the first tile size is always used.
+                    //In the line below, we re-write that preferred tile size in order to generate the output with the benchmark value.
+                    //TODO review because getTile from benchmarkSingleCalcul could be null or *...
+                    //targetProduct.setPreferredTileSize(new Dimension(Integer.parseInt(benchmarkSingleCalcul.getTileWidth()),Integer.parseInt(benchmarkSingleCalcul.getTileHeight())));
+
                     executeOperator(targetProduct, progressHandleMonitor);
 
                     //save execution time
@@ -218,6 +231,7 @@ public class BenchmarkDialog extends DefaultSingleTargetProductDialog {
                     SystemUtils.LOG.fine(String.format("Start time: %d, end time: %d, diff: %d", startTime, endTime, endTime - startTime));
 
                     // we remove all tiles
+                    //TODO cambiar, esto solo funciona si es cache in memery, pero no si es en file
                     JAI.getDefaultInstance().getTileCache().flush();
                 }
 
@@ -240,6 +254,8 @@ public class BenchmarkDialog extends DefaultSingleTargetProductDialog {
             if (!canceled) {
                 //sort benchmark results and return the fastest
                 BenchmarkSingleCalculus bestBenchmarkSingleCalcul = benchmarkModel.getFasterBenchmarkSingleCalculus();
+                //load fastest params?
+                benchmarkModel.loadBenchmarkPerfParams(bestBenchmarkSingleCalcul);
 
                 showResults();
 
@@ -253,8 +269,12 @@ public class BenchmarkDialog extends DefaultSingleTargetProductDialog {
         private void showResults() {
             // table model
             class BenchmarkTableModel extends AbstractTableModel {
-                final String[] columnNames = benchmarkModel.getColumnsNames();
-                final int[][] data = benchmarkModel.getRowsToShow();
+                //final String[] columnNames = benchmarkModel.getColumnsNames();
+                //final int[][] data = benchmarkModel.getRowsToShow();
+
+                final String[] columnNames = benchmarkModel.getColumnsNamesWithoutTileSize();
+                final int[][] data = benchmarkModel.getRowsToShowWhitoutTileSize();
+
 
                 @Override
                 public Class getColumnClass(int column) {
@@ -288,8 +308,6 @@ public class BenchmarkDialog extends DefaultSingleTargetProductDialog {
             DefaultTableCellRenderer tcr = new DefaultTableCellRenderer();
             tcr.setHorizontalAlignment(SwingConstants.CENTER);
             table.getColumnModel().getColumn(table.getColumnCount() - 1).setCellRenderer(tcr);
-
-            //Dialogs.showMessageTable("Benchmark results",table,JOptionPane.INFORMATION_MESSAGE,null);
 
             JPanel panel = new JPanel(new BorderLayout(4, 4));
             JScrollPane panelTable = new JScrollPane(table);
