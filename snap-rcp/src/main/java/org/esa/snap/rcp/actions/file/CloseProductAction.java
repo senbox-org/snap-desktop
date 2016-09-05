@@ -151,7 +151,7 @@ public final class CloseProductAction extends AbstractAction implements ContextA
     }
 
 
-    private static Boolean closeProducts(Set<Product> products) {
+    public static Boolean closeProducts(Set<Product> products) {
         List<Product> closeList = new ArrayList<>(products);
         List<Product> saveList = new ArrayList<>();
 

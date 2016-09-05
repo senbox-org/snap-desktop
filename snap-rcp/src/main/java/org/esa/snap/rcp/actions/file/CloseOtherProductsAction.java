@@ -15,6 +15,14 @@
  */
 package org.esa.snap.rcp.actions.file;
 
+import java.awt.event.ActionEvent;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductManager;
 import org.esa.snap.core.datamodel.ProductNode;
@@ -31,17 +39,11 @@ import org.openide.util.NbBundle;
 import org.openide.util.Utilities;
 import org.openide.util.WeakListeners;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * This action closes all opened products other than the one selected.
  */
 @ActionID(category = "File", id = "CloseOtherProductsAction")
-@ActionRegistration(displayName = "#CTL_CloseAllOthersActionName",lazy = false)
+@ActionRegistration(displayName = "#CTL_CloseAllOthersActionName", lazy = false)
 @ActionReferences({
         @ActionReference(path = "Menu/File", position = 30),
         @ActionReference(path = "Context/Product/Product", position = 80, separatorAfter = 85),
@@ -51,6 +53,7 @@ public class CloseOtherProductsAction extends AbstractAction implements ContextA
 
     private final Lookup lkp;
     private Product[] products;
+    private static Collection selectedProductList;
 
     public CloseOtherProductsAction() {
         this(Utilities.actionsGlobalContext());
@@ -74,26 +77,29 @@ public class CloseOtherProductsAction extends AbstractAction implements ContextA
     @Override
     public void resultChanged(LookupEvent ev) {
         setEnableState();
+        Lookup.Result result = (Lookup.Result) ev.getSource();
+        selectedProductList = result.allInstances();
     }
 
     private void setEnableState() {
         products = SnapApp.getDefault().getProductManager().getProducts();
         ProductNode productNode = lkp.lookup(ProductNode.class);
-        setEnabled(productNode != null && products.length>1);
+        setEnabled(productNode != null && products.length > 1);
     }
 
     @Override
     public void actionPerformed(final ActionEvent event) {
         final ProductNode productNode = lkp.lookup(ProductNode.class);
         products = SnapApp.getDefault().getProductManager().getProducts();
-        final Product selectedProduct = productNode.getProduct();
-        final List<Product> productsToClose = new ArrayList<>(products.length);
+//        final Product selectedProduct = productNode.getProduct();
+        List<Product> selectedProduct = (List<Product>) selectedProductList.stream().collect(Collectors.toList());
+        final Set<Product> productsToClose = new HashSet<>();
         for (Product product : products) {
-            if (product != selectedProduct) {
+            if (!selectedProduct.contains(product)) {
                 productsToClose.add(product);
             }
         }
-        new CloseProductAction(productsToClose).execute();
+        CloseProductAction.closeProducts(productsToClose);
         setEnableState();
     }
 
