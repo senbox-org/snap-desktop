@@ -37,6 +37,7 @@ import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 import java.util.Locale;
 
+
 import static com.bc.ceres.swing.TableLayout.*;
 
 /**
@@ -63,7 +64,7 @@ class RangeEditorDialog extends ModalDialog {
 
     RangeEditorDialog(Window window, Model model) {
         super(window, "New Range Mask",
-              ModalDialog.ID_OK_CANCEL | ModalDialog.ID_HELP, "rangeEditor");
+                ModalDialog.ID_OK_CANCEL | ModalDialog.ID_HELP, "rangeEditor");
         this.model = model;
         container = PropertyContainer.createObjectBacked(this.model);
         getJDialog().setResizable(false);
@@ -111,7 +112,7 @@ class RangeEditorDialog extends ModalDialog {
     @Override
     protected boolean verifyUserInput() {
         String errorMsg = null;
-        final boolean minGreaterMax = model.getMaxValue() <= model.getMinValue();
+        final boolean minGreaterMax = model.getMaxValue() < model.getMinValue();
         if (minGreaterMax) {
             errorMsg = "The specified maximum is less or equal to the minimum.";
         }
@@ -121,7 +122,7 @@ class RangeEditorDialog extends ModalDialog {
         }
         if (errorMsg != null) {
             JOptionPane.showMessageDialog(this.getJDialog(), errorMsg,
-                                          "New Range Mask", JOptionPane.ERROR_MESSAGE);
+                    "New Range Mask", JOptionPane.ERROR_MESSAGE);
             return false;
         }
         return true;
