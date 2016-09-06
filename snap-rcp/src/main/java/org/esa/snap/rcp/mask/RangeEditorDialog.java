@@ -37,7 +37,6 @@ import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 import java.util.Locale;
 
-
 import static com.bc.ceres.swing.TableLayout.*;
 
 /**
@@ -114,7 +113,7 @@ class RangeEditorDialog extends ModalDialog {
         String errorMsg = null;
         final boolean minGreaterMax = model.getMaxValue() < model.getMinValue();
         if (minGreaterMax) {
-            errorMsg = "The specified maximum is less or equal to the minimum.";
+            errorMsg = "The specified maximum is less than the minimum.";
         }
         final boolean nameEmpty = StringUtils.isNullOrEmpty(model.getRasterName());
         if (nameEmpty) {
