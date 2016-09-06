@@ -16,6 +16,7 @@
 
 package org.esa.snap.smart.configurator.ui;
 
+import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.core.SubProgressMonitor;
 import com.bc.ceres.core.VirtualDir;
 import org.esa.snap.core.datamodel.Product;
@@ -33,6 +34,7 @@ import org.esa.snap.smart.configurator.Benchmark;
 import org.esa.snap.smart.configurator.BenchmarkSingleCalculus;
 import org.esa.snap.smart.configurator.ConfigurationOptimizer;
 import org.esa.snap.smart.configurator.PerformanceParameters;
+import org.esa.snap.smart.configurator.StoredGraphOp;
 import org.esa.snap.ui.AppContext;
 import org.netbeans.api.progress.ProgressUtils;
 import org.openide.DialogDisplayer;
@@ -89,6 +91,11 @@ public class BenchmarkDialog extends DefaultSingleTargetProductDialog {
     protected void executeOperator(Product targetProduct, ProgressHandleMonitor pm) throws Exception {
         final TargetProductSelectorModel model = getTargetProductSelector().getModel();
 
+        //To avoid a nullPointerException in model.getProductFile()
+        if(model.getProductName()==null) {
+            model.setProductName(targetProduct.getName());
+        }
+
         Operator execOp = null;
         if (targetProduct.getProductReader() instanceof OperatorProductReader) {
             final OperatorProductReader opReader = (OperatorProductReader) targetProduct.getProductReader();
@@ -107,7 +114,18 @@ public class BenchmarkDialog extends DefaultSingleTargetProductDialog {
             execOp = writeOp;
         }
         final OperatorExecutor executor = OperatorExecutor.create(execOp);
-        executor.execute(SubProgressMonitor.create(pm, 95));
+        //executor.execute(SubProgressMonitor.create(pm, 95));
+
+        //Temporary solution, an specific progress management for StoredGraph
+        SubProgressMonitor pm2 = (SubProgressMonitor) SubProgressMonitor.create(pm, 95);
+        if(execOp instanceof StoredGraphOp) {
+            executor.execute(ProgressMonitor.NULL);
+            pm2.beginTask("...",1);
+            pm2.worked(1);
+        } else {
+            executor.execute(pm2);
+        }
+        pm2.done();
     }
 
     @Override
