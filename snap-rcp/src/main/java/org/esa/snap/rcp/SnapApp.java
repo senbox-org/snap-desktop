@@ -2,12 +2,36 @@ package org.esa.snap.rcp;
 
 import com.bc.ceres.core.ExtensionFactory;
 import com.bc.ceres.core.ExtensionManager;
+import java.awt.Desktop;
+import java.awt.Frame;
+import java.awt.Window;
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
+import javax.imageio.spi.IIORegistry;
+import javax.imageio.spi.ImageReaderSpi;
+import javax.imageio.spi.ImageWriterSpi;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JLabel;
 import org.esa.snap.core.dataio.ProductReader;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductManager;
 import org.esa.snap.core.datamodel.ProductNode;
-import org.esa.snap.core.datamodel.ProductNodeEvent;
-import org.esa.snap.core.datamodel.ProductNodeListener;
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.OperatorSpi;
 import org.esa.snap.core.gpf.OperatorSpiRegistry;
@@ -43,33 +67,6 @@ import org.openide.util.Utilities;
 import org.openide.util.lookup.ServiceProvider;
 import org.openide.windows.OnShowing;
 import org.openide.windows.WindowManager;
-
-import javax.imageio.spi.IIORegistry;
-import javax.imageio.spi.ImageReaderSpi;
-import javax.imageio.spi.ImageWriterSpi;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import java.awt.Desktop;
-import java.awt.Frame;
-import java.awt.Window;
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.prefs.BackingStoreException;
-import java.util.prefs.Preferences;
 
 /**
  * The class {@code SnapApp} is a facade for SNAP Desktop applications. There is only a single instance of
@@ -266,11 +263,11 @@ public class SnapApp {
             }
         });
         NotificationDisplayer.getDefault().notify("Error",
-                                                  icon,
-                                                  balloonDetails,
-                                                  popupDetails,
-                                                  NotificationDisplayer.Priority.HIGH,
-                                                  NotificationDisplayer.Category.ERROR);
+                icon,
+                balloonDetails,
+                popupDetails,
+                NotificationDisplayer.Priority.HIGH,
+                NotificationDisplayer.Category.ERROR);
     }
 
     /**
@@ -302,7 +299,7 @@ public class SnapApp {
      * The {@link SelectionSourceHint hint} defines what is the primary and secondary selection source. Source is either the
      * {@link SelectionSourceHint#VIEW scene view} or the {@link SelectionSourceHint#EXPLORER product explorer}. If it is set to
      * {@link SelectionSourceHint#AUTO} the algorithm tries to make a good guess, checking which component has the focus.
-
+     *
      * @return The currently selected product node, or {@code null}.
      */
     public ProductNode getSelectedProductNode(SelectionSourceHint hint) {
@@ -391,20 +388,9 @@ public class SnapApp {
      * Overrides should call {@code super.onShowing()} as a first step unless they know whet they are doing.
      */
     public void onShowing() {
-        updateMainFrameTitle();
+        updateMainFrameTitle(getInstanceName());
         MainFrameTitleUpdater updater = new MainFrameTitleUpdater();
-        getSelectionSupport(ProductNode.class).addHandler(updater);
-        getProductManager().addListener(new ProductManager.Listener() {
-            @Override
-            public void productAdded(ProductManager.Event event) {
-                event.getProduct().addProductNodeListener(updater);
-            }
-
-            @Override
-            public void productRemoved(ProductManager.Event event) {
-                event.getProduct().removeProductNodeListener(updater);
-            }
-        });
+        getSelectionSupport(ProductSceneView.class).addHandler(updater);
         if (SnapArgs.getDefault().getSessionFile() != null) {
             File sessionFile = SnapArgs.getDefault().getSessionFile().toFile();
             if (sessionFile != null) {
@@ -478,51 +464,31 @@ public class SnapApp {
         return true;
     }
 
-    private String getMainFrameTitle() {
-
-        ProductNode selectedProductNode = getSelectedProductNode(SelectionSourceHint.VIEW);
-        Product selectedProduct = null;
-        if (selectedProductNode != null) {
-            selectedProduct = selectedProductNode.getProduct();
-            if (selectedProduct == null) {
-                selectedProduct = getSelectedProduct(SelectionSourceHint.VIEW);
-            }
-        }
-
+    private String getMainFrameTitle(ProductSceneView newValue) {
         String title;
-        if (selectedProduct == null) {
+        Optional<ProductSceneView> selectedProductSceneView = Optional.ofNullable(newValue);
+        if (selectedProductSceneView.isPresent()) {
+            title = getTitle(selectedProductSceneView.get());
+        } else {
             if (Utilities.isMac()) {
                 title = String.format("[%s]", "Empty");
             } else {
                 title = String.format("%s", getInstanceName());
             }
-        } else if (selectedProduct == selectedProductNode) {
-            File fileLocation = selectedProduct.getFileLocation();
-            String path = fileLocation != null ? fileLocation.getPath() : "not saved";
-            if (Utilities.isMac()) {
-                title = String.format("%s - [%s]",
-                                      selectedProduct.getName(), path);
-            } else {
-                title = String.format("%s - [%s] - %s",
-                                      selectedProduct.getName(), path, getInstanceName());
-            }
-        } else {
-            File fileLocation = selectedProduct.getFileLocation();
-            String path = fileLocation != null ? fileLocation.getPath() : "not saved";
-            if (Utilities.isMac()) {
-                title = String.format("%s - [%s] - [%s]",
-                                      selectedProduct.getName(), path, selectedProductNode.getName());
-            } else {
-                title = String.format("%s - [%s] - [%s] - %s",
-                                      selectedProduct.getName(), path, selectedProductNode.getName(), getInstanceName());
-            }
         }
-
         return title;
     }
 
-    private void updateMainFrameTitle() {
-        getMainFrame().setTitle(getMainFrameTitle());
+    private String getTitle(ProductSceneView selectedProduct) {
+        File fileLocation = selectedProduct.getProduct().getFileLocation();
+        String path = fileLocation != null ? fileLocation.toString() : "not saved";
+        String sceneViewSelected = selectedProduct.getSceneName();
+        String productName = selectedProduct.getProduct().getName();
+        return String.format("[%s] - [%s] - [%s]", sceneViewSelected, productName, path);
+    }
+
+    private void updateMainFrameTitle(String title) {
+        getMainFrame().setTitle(title);
     }
 
     private static <T extends ProductNode> T getProductNode(T explorerNode, T viewNode, ProductSceneView sceneView, SelectionSourceHint hint) {
@@ -752,32 +718,14 @@ public class SnapApp {
         }
     }
 
-    private class MainFrameTitleUpdater implements SelectionSupport.Handler<ProductNode>, ProductNodeListener {
-
+    private class MainFrameTitleUpdater implements SelectionSupport.Handler<ProductSceneView> {
         @Override
-        public void selectionChange(ProductNode oldValue, ProductNode newValue) {
-            updateMainFrameTitle();
-        }
-
-        @Override
-        public void nodeChanged(ProductNodeEvent event) {
-            if (ProductNode.PROPERTY_NAME_NAME.equals(event.getPropertyName())) {
-                updateMainFrameTitle();
-            }
-        }
-
-        @Override
-        public void nodeDataChanged(ProductNodeEvent event) {
-        }
-
-        @Override
-        public void nodeAdded(ProductNodeEvent event) {
-        }
-
-        @Override
-        public void nodeRemoved(ProductNodeEvent event) {
+        public void selectionChange(ProductSceneView oldValue, ProductSceneView newValue) {
+            String mainFrameTitle = getMainFrameTitle(newValue);
+            updateMainFrameTitle(mainFrameTitle);
         }
     }
+
 
     /**
      * Provides a hint to {@link SnapApp#getSelectedProduct(SelectionSourceHint)} } which selection provider should be used as primary selection source
