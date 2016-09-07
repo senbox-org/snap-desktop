@@ -86,6 +86,7 @@ public class CreateVectorDataNodeAction extends AbstractAction implements Contex
         this.lkp = lkp;
         result = this.lkp.lookupResult(ProductNode.class);
         result.addLookupListener(WeakListeners.create(LookupListener.class, this, result));
+        putValue(Action.LARGE_ICON_KEY, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/NewVectorDataNode16.gif", false));
         putValue(Action.SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/NewVectorDataNode24.gif", false));
         setEnabled(false);
     }
