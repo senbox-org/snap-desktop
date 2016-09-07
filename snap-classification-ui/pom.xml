@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.esa.snap</groupId>
         <artifactId>snap-desktop</artifactId>
-        <version>4.0.2-SNAPSHOT</version>
+        <version>4.0.2</version>
     </parent>
 
     <name>SNAP Classification UI</name>
