@@ -32,7 +32,6 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
@@ -64,9 +63,9 @@ class AggregatorItemDialog extends ModalDialog {
         aggregatorConfig = aggregatorItem.aggregatorConfig;
         aggregatorDescriptor = aggregatorItem.aggregatorDescriptor;
         aggregatorPropertySet = createPropertySet(aggregatorConfig);
-        if(initWithDefaults) {
+        if (initWithDefaults) {
             aggregatorPropertySet.setDefaultValues();
-        }else {
+        } else {
             PropertySet objectPropertySet = PropertyContainer.createObjectBacked(aggregatorConfig);
             Property[] objectProperties = objectPropertySet.getProperties();
             for (Property objectProperty : objectProperties) {
@@ -84,6 +83,7 @@ class AggregatorItemDialog extends ModalDialog {
                 hide();
             }
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
+
         getJDialog().setResizable(false);
         return super.show();
     }
@@ -91,13 +91,13 @@ class AggregatorItemDialog extends ModalDialog {
 
     @Override
     protected boolean verifyUserInput() {
+        System.out.println("m");
         try {
             for (Property property : aggregatorPropertySet.getProperties()) {
                 property.validate(property.getValue());
             }
         } catch (ValidationException e) {
-            JOptionPane.showMessageDialog(getContent(), "Aggregator properties are not valid.\n" + e.getMessage(),
-                                          "Invalid Aggregator Properties", JOptionPane.ERROR_MESSAGE);
+            this.showErrorDialog(e.getMessage(), "Invalid Aggregator Properties");
             return false;
         }
         return true;
@@ -153,7 +153,7 @@ class AggregatorItemDialog extends ModalDialog {
 
     private PropertySet createPropertySet(AggregatorConfig config) {
         return PropertyContainer.createMapBacked(new HashMap<String, Object>(), config.getClass(),
-                                                                              new ParameterDescriptorFactory());
+                                                 new ParameterDescriptorFactory());
     }
 
     private AggregatorDescriptor getDescriptorFromComboBox() {

@@ -30,6 +30,7 @@ import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.rcp.actions.file.OpenProductAction;
+import org.esa.snap.ui.AbstractDialog;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.SnapFileChooser;
 import org.openide.util.Utilities;
@@ -369,8 +370,9 @@ public class SourceProductSelector {
         }
 
         private void handleError(final Component component, final String message) {
-            SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(component, message, "Error",
-                                                                           JOptionPane.ERROR_MESSAGE));
+            SwingUtilities.invokeLater(() -> {
+                AbstractDialog.showWarningDialog(component, message, "Error");
+            });
         }
     }
 

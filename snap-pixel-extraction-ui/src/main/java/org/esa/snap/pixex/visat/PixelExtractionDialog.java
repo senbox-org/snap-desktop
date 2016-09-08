@@ -35,7 +35,6 @@ import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.ModelessDialog;
 
 import javax.swing.AbstractButton;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.border.EmptyBorder;
@@ -252,7 +251,7 @@ class PixelExtractionDialog extends ModelessDialog implements ParameterUpdater {
                 } else {
                     message = "The pixel extraction tool has run successfully and written the result file to to std.out.";
                 }
-                JOptionPane.showMessageDialog(getJDialog(), message);
+                showInformationDialog(message);
             } catch (InterruptedException ignore) {
             } catch (ExecutionException e) {
                 appContext.handleError(e.getMessage(), e);

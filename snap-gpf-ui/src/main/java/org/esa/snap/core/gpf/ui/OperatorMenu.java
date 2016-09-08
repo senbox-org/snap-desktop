@@ -31,6 +31,7 @@ import org.esa.snap.core.gpf.descriptor.OperatorDescriptor;
 import org.esa.snap.core.util.Debug;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.io.FileUtils;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.AbstractDialog;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.ModalDialog;
@@ -45,7 +46,6 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -168,8 +168,7 @@ public class OperatorMenu {
                     readFromFile(fileChooser.getSelectedFile());
                 } catch (Exception e) {
                     Debug.trace(e);
-                    JOptionPane.showMessageDialog(parentComponent, "Could not load parameters.\n" + e.getMessage(),
-                                                  TITLE, JOptionPane.ERROR_MESSAGE);
+                    Dialogs.showError(TITLE, "Could not load parameters.\n" + e.getMessage());
                 }
             }
         }
@@ -236,8 +235,7 @@ public class OperatorMenu {
                     writeToFile(xmlString, selectedFile);
                 } catch (Exception e) {
                     Debug.trace(e);
-                    JOptionPane.showMessageDialog(parentComponent, "Could not save parameters.\n" + e.getMessage(),
-                                                  TITLE, JOptionPane.ERROR_MESSAGE);
+                    Dialogs.showError(TITLE, "Could not load parameters.\n" + e.getMessage());
                 }
             }
         }
@@ -286,10 +284,7 @@ public class OperatorMenu {
                 parameterXml = domElement.toXml();
             } catch (Exception e) {
                 Debug.trace(e);
-                JOptionPane.showMessageDialog(UIUtils.getRootWindow(parentComponent),
-                                              "Failed to convert parameters to XML.",
-                                              TITLE,
-                                              JOptionPane.ERROR_MESSAGE);
+                Dialogs.showError(TITLE, "Failed to convert parameters to XML." + e.getMessage());
                 return;
             }
             JTextArea textArea = new JTextArea(parameterXml);
@@ -333,15 +328,15 @@ public class OperatorMenu {
 
     String getOperatorAboutText() {
         return makeHtmlConform(String.format("" +
-                                             "<html>" +
-                                             "<h2>%s Operator</h2>" +
-                                             "<table>" +
-                                             "<tr><td><b>Name:</b></td><td><code>%s</code></td></tr>" +
-                                             "<tr><td><b>Version:</b></td><td>%s</td></tr>" +
-                                             "<tr><td><b>Full name:</b></td><td><code>%s</code></td></tr>" +
-                                             "<tr><td><b>Description:</b></td><td>%s</td></tr>" +
-                                             "<tr><td><b>Authors:</b></td><td>%s</td></tr>" +
-                                             "<tr><td><b>Copyright:</b></td><td>%s</td></tr></table></html>",
+                                                     "<html>" +
+                                                     "<h2>%s Operator</h2>" +
+                                                     "<table>" +
+                                                     "<tr><td><b>Name:</b></td><td><code>%s</code></td></tr>" +
+                                                     "<tr><td><b>Version:</b></td><td>%s</td></tr>" +
+                                                     "<tr><td><b>Full name:</b></td><td><code>%s</code></td></tr>" +
+                                                     "<tr><td><b>Description:</b></td><td>%s</td></tr>" +
+                                                     "<tr><td><b>Authors:</b></td><td>%s</td></tr>" +
+                                                     "<tr><td><b>Copyright:</b></td><td>%s</td></tr></table></html>",
                                              getOperatorName(),
                                              getOperatorName(),
                                              opDescriptor.getVersion(),

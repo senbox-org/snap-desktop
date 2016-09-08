@@ -9,6 +9,7 @@ import org.esa.snap.binning.AggregatorConfig;
 import org.esa.snap.binning.operator.VariableConfig;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.util.StringUtils;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.tool.ToolButtonFactory;
@@ -120,14 +121,14 @@ class AggregatorTableController extends ListControlBar.AbstractListController {
         try {
             binningFormModel.setProperty(BinningFormModel.PROPERTY_KEY_AGGREGATOR_CONFIGS, aggregatorConfigs);
         } catch (ValidationException e) {
-            JOptionPane.showMessageDialog(grid, e.getMessage(), "Aggregator Configuration", JOptionPane.ERROR_MESSAGE);
+            Dialogs.showError("Aggregator Configuration", e.getMessage());
         }
     }
 
     private boolean editAggregatorItem(AggregatorItem aggregatorItem, int rowIndex) {
         Product contextProduct = binningFormModel.getContextProduct();
         if (contextProduct == null) {
-            JOptionPane.showMessageDialog(grid, "Please select source products before adding aggregators.", "", JOptionPane.INFORMATION_MESSAGE);
+            Dialogs.showInformation("Please select source products before adding aggregators.");
             return false;
         }
         String[] varNames = getVariableNames(binningFormModel.getVariableConfigs());

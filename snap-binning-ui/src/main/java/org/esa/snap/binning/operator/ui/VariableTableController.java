@@ -5,6 +5,7 @@ import com.bc.ceres.swing.Grid;
 import com.bc.ceres.swing.ListControlBar;
 import org.esa.snap.binning.operator.VariableConfig;
 import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.ui.AbstractDialog;
 import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.tool.ToolButtonFactory;
@@ -12,7 +13,6 @@ import org.esa.snap.ui.tool.ToolButtonFactory;
 import javax.swing.AbstractButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import java.awt.event.ActionEvent;
@@ -123,11 +123,11 @@ class VariableTableController extends ListControlBar.AbstractListController {
     private boolean editVariableItem(VariableItem variableItem, int rowIndex) {
         final Product contextProduct = binningFormModel.getContextProduct();
         if (contextProduct == null) {
-            JOptionPane.showMessageDialog(grid, "At least one source product must be set first");
+            AbstractDialog.showInformationDialog(grid, "At least one source product must be set first", "Information");
             return false;
         }
         boolean newVariable = rowIndex == -1;
-        if(newVariable) {
+        if (newVariable) {
             int newVarIndex = variableItems.size();
             String varName;
             do {
@@ -141,7 +141,7 @@ class VariableTableController extends ListControlBar.AbstractListController {
         final VariableItemDialog variableItemDialog = new VariableItemDialog(SwingUtilities.getWindowAncestor(grid), variableItem,
                                                                              newVariable, contextProduct);
         if (variableItemDialog.show() == ModalDialog.ID_OK) {
-            if(newVariable) {
+            if (newVariable) {
                 addDataRow(variableItem);
             } else {
                 updateDataRow(variableItem, rowIndex);
@@ -176,7 +176,7 @@ class VariableTableController extends ListControlBar.AbstractListController {
         try {
             binningFormModel.setVariableConfigs(variableConfigs);
         } catch (ValidationException e) {
-            JOptionPane.showMessageDialog(grid, e.getMessage(), "Aggregator Configuration", JOptionPane.ERROR_MESSAGE);
+            AbstractDialog.showErrorDialog(grid, e.getMessage(), "Aggregator Configuration");
         }
 
     }

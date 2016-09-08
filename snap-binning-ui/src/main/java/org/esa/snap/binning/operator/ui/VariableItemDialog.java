@@ -16,13 +16,13 @@ import org.esa.snap.core.dataop.barithm.BandArithmetic;
 import org.esa.snap.core.gpf.annotations.ParameterDescriptorFactory;
 import org.esa.snap.core.jexp.ParseException;
 import org.esa.snap.core.util.StringUtils;
+import org.esa.snap.ui.AbstractDialog;
 import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.ui.product.ProductExpressionPane;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import java.awt.Window;
@@ -53,24 +53,24 @@ class VariableItemDialog extends ModalDialog {
     protected boolean verifyUserInput() {
         String expression = variableItem.variableConfig.getExpr() != null ? variableItem.variableConfig.getExpr().trim() : "";
         if (StringUtils.isNullOrEmpty(expression)) {
-            JOptionPane.showMessageDialog(getParent(), "The source band could not be created. The expression is empty.");
+            AbstractDialog.showInformationDialog(getParent(), "The source band could not be created. The expression is empty.", "Information");
             return false;
         }
         String variableName = variableItem.variableConfig.getName() != null ? variableItem.variableConfig.getName().trim() : "";
         if (StringUtils.isNullOrEmpty(variableName)) {
-            JOptionPane.showMessageDialog(getParent(), "The source band could not be created. The name is empty.");
+            AbstractDialog.showInformationDialog(getParent(), "The source band could not be created. The name is empty.", "Information");
             return false;
         }
         if (newVariable && contextProduct.containsBand(variableName)) {
             String message = String.format("A source band or band with the name '%s' is already defined", variableName);
-            JOptionPane.showMessageDialog(getParent(), message);
+            AbstractDialog.showInformationDialog(getParent(), message, "Information");
             return false;
         }
         try {
             BandArithmetic.getValidMaskExpression(expression, contextProduct, null);
         } catch (ParseException e) {
             String errorMessage = "The source band could not be created.\nThe expression could not be parsed:\n" + e.getMessage(); /*I18N*/
-            JOptionPane.showMessageDialog(getParent(), errorMessage);
+            AbstractDialog.showErrorDialog(getParent(), errorMessage, "Error");
             return false;
         }
         return true;

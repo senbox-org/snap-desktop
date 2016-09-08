@@ -3,7 +3,6 @@ package org.esa.snap.ui.product;
 import org.esa.snap.ui.ModalDialog;
 
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import java.awt.BorderLayout;
@@ -34,7 +33,7 @@ class FileSelectionPatternDialog extends ModalDialog {
         if (button == ID_OK) {
             final String text = getPattern();
             if (text == null || text.length() == 0) {
-                JOptionPane.showMessageDialog(getParent(), "Pattern field may not be empty.", "File/Directory Selection Pattern", JOptionPane.ERROR_MESSAGE);
+                this.showErrorDialog("Pattern field may not be empty.", "File/Directory Selection Pattern");
                 return ID_CANCEL;
             }
         }

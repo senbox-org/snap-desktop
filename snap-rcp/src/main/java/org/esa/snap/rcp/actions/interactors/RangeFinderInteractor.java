@@ -26,6 +26,7 @@ import org.esa.snap.core.datamodel.PixelPos;
 import org.esa.snap.core.dataop.maptransf.Ellipsoid;
 import org.esa.snap.core.util.math.MathUtils;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.openide.util.ImageUtilities;
@@ -182,8 +183,7 @@ class RangeFinderInteractor extends ViewportInteractor {
         //todo [multisize_products] ask for scenerastertransform instead of geocoding
         GeoCoding geoCoding = view.getRaster().getGeoCoding();
         if (geoCoding == null) {
-            JOptionPane.showMessageDialog(SnapApp.getDefault().getMainFrame(), String.format("No geo-coding information for %s.", view.getRaster().getName()),
-                                          TITLE, JOptionPane.INFORMATION_MESSAGE);
+            Dialogs.showInformation(TITLE,String.format("No geo-coding information for %s.", view.getRaster().getName()),null);
             return;
         }
 
@@ -234,24 +234,24 @@ class RangeFinderInteractor extends ViewportInteractor {
             distanceError += dd.distanceError;
             message.append(
                     "Distance between points " + i + " to " + (i + 1) + " in pixels:\n" +
-                    "XH[" + dd.xH + "] to XN[" + dd.xN + "]: " + Math.abs(dd.xH - dd.xN) + "\n" +
-                    "YH[" + dd.yH + "] to YN[" + dd.yN + "]: " + Math.abs(dd.yH - dd.yN) + "\n" +
-                    "\n" +
-                    "LonH: " + dd.lonH + "   LatH: " + dd.latH + "\n" +
-                    "LonN: " + dd.lonN + "   LatN: " + dd.latN + "\n" +
-                    "\n" +
-                    "LamH: " + dd.lamH + "   PhiH: " + dd.phiH + "\n" +
-                    "LamN: " + dd.lamN + "   PhiN: " + dd.phiN + "\n" +
-                    "\n" +
-                    "Mean earth radius used: " + DistanceData.MEAN_EARTH_RADIUS_KM + " km" + "\n" +
-                    "\n" +
-                    "Distance: " + dd.distance + " +/- " + dd.distanceError + " km\n" +
-                    "\n\n"
+                            "XH[" + dd.xH + "] to XN[" + dd.xN + "]: " + Math.abs(dd.xH - dd.xN) + "\n" +
+                            "YH[" + dd.yH + "] to YN[" + dd.yN + "]: " + Math.abs(dd.yH - dd.yN) + "\n" +
+                            "\n" +
+                            "LonH: " + dd.lonH + "   LatH: " + dd.latH + "\n" +
+                            "LonN: " + dd.lonN + "   LatN: " + dd.latN + "\n" +
+                            "\n" +
+                            "LamH: " + dd.lamH + "   PhiH: " + dd.phiH + "\n" +
+                            "LamN: " + dd.lamN + "   PhiN: " + dd.phiN + "\n" +
+                            "\n" +
+                            "Mean earth radius used: " + DistanceData.MEAN_EARTH_RADIUS_KM + " km" + "\n" +
+                            "\n" +
+                            "Distance: " + dd.distance + " +/- " + dd.distanceError + " km\n" +
+                            "\n\n"
             );
         }
         message.insert(0, "Total distance: " + distance + " +/- " + distanceError + " km\n" +
-                          "\n" +
-                          "computed as described below:\n\n");
+                "\n" +
+                "computed as described below:\n\n");
 
         final JScrollPane content = new JScrollPane(new JTextArea(message.toString()));
         content.setPreferredSize(new Dimension(300, 150));

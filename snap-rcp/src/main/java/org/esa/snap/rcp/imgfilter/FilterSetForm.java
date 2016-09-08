@@ -3,6 +3,7 @@ package org.esa.snap.rcp.imgfilter;
 import org.esa.snap.rcp.imgfilter.model.Filter;
 import org.esa.snap.rcp.imgfilter.model.FilterSet;
 import org.esa.snap.rcp.imgfilter.model.FilterSetStore;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.tango.TangoIcons;
 
 import javax.swing.DropMode;
@@ -10,7 +11,6 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
@@ -158,7 +158,7 @@ public class FilterSetForm extends JPanel {
                     filterSetStore.storeFilterSetModel(filterSet);
                     setModified(false);
                 } catch (IOException ioe) {
-                    JOptionPane.showMessageDialog(null, "Failed to save:\n" + ioe.getMessage(), "Save", JOptionPane.ERROR_MESSAGE);
+                    Dialogs.showError("Save","Failed to save:\n" + ioe.getMessage());
                 }
 
             }

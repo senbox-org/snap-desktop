@@ -334,7 +334,7 @@ class MagicWandForm {
                 updateState();
             } catch (IOException e) {
                 String msg = MessageFormat.format("Failed to open settings:\n{0}", e.getMessage());
-                JOptionPane.showMessageDialog(parent, msg, "I/O Error", JOptionPane.ERROR_MESSAGE);
+                Dialogs.showError("I/O Error", msg);
             }
         }
     }
@@ -356,7 +356,7 @@ class MagicWandForm {
             interactor.updateForm();
         } catch (IOException e) {
             String msg = MessageFormat.format("Failed to safe settings:\n{0}", e.getMessage());
-            JOptionPane.showMessageDialog(parent, msg, "I/O Error", JOptionPane.ERROR_MESSAGE);
+            Dialogs.showError("I/O Error", msg);
         }
     }
 

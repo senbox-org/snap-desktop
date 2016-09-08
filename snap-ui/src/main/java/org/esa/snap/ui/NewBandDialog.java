@@ -76,12 +76,12 @@ public class NewBandDialog extends ModalDialog {
     protected boolean verifyUserInput() {
         String name = _paramName.getValueAsText();
         if (name == null || name.length() == 0) {
-            showWarningDialog("The field '" + _paramName.getProperties().getLabel() + "' must not be empty"); /*I18N*/
+            this.showWarningDialog("The field '" + _paramName.getProperties().getLabel() + "' must not be empty"); /*I18N*/
             return false;
         }
         if (StringUtils.contains(_currentProduct.getBandNames(), name)) {
             showErrorDialog("A band with the name '" + name + "' already exists.\n"
-                            + "Please choose a another one."); /*I18N*/
+                                    + "Please choose a another one."); /*I18N*/
             return false;
         }
         return super.verifyUserInput();

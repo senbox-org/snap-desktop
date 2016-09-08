@@ -762,12 +762,12 @@ class MaskFormActions {
                     selectedMaskConfig.setValue(Mask.RangeType.PROPERTY_NAME_RASTER, model.getRasterName());
                 }
             } else if (type == Mask.VectorDataType.INSTANCE) {
-                JOptionPane.showMessageDialog(window,
-                                              "Use the geometry tools to add new points, lines or polygons.\n" +
-                                                      "You can then use the select tool to select and modify the shape\n" +
-                                                      "and position of the geometries.",
-                                              "Edit Geometry Mask",
-                                              JOptionPane.INFORMATION_MESSAGE);
+                Dialogs.showInformation(
+                        "Use the geometry tools to add new points, lines or polygons.\n" +
+                                "You can then use the select tool to select and modify the shape\n" +
+                                "and position of the geometries.",
+                        "Edit Geometry Mask"
+                );
             } else {
                 // todo - implement for other types too
             }

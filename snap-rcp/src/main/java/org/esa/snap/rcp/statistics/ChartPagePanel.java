@@ -19,6 +19,7 @@ package org.esa.snap.rcp.statistics;
 import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.jidesoft.swing.SimpleScrollPane;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.GridBagUtils;
 import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.tool.ToolButtonFactory;
@@ -99,10 +100,10 @@ public abstract class ChartPagePanel extends PagePanel {
         final TableLayout tableLayout = new TableLayout(6);
         tableLayout.setColumnFill(2, TableLayout.Fill.HORIZONTAL);
         tableLayout.setColumnWeightX(2, 1.0);
-        tableLayout.setRowPadding(0, new Insets(0,4,0,0));
+        tableLayout.setRowPadding(0, new Insets(0, 4, 0, 0));
         JPanel buttonPanel = new JPanel(tableLayout);
         buttonPanel.add(refreshButton);
-        tableLayout.setRowPadding(0, new Insets(0,0,0,0));
+        tableLayout.setRowPadding(0, new Insets(0, 0, 0, 0));
         buttonPanel.add(switchToTableButton);
         buttonPanel.add(new JPanel());
 
@@ -142,10 +143,7 @@ public abstract class ChartPagePanel extends PagePanel {
             try {
                 chartPanel.doSaveAs();
             } catch (IOException e1) {
-                JOptionPane.showMessageDialog(chartPanel,
-                                              "Could not save chart:\n" + e1.getMessage(),
-                                              "Error",
-                                              JOptionPane.ERROR_MESSAGE);
+                Dialogs.showError("Error", "Could not save chart:\n" + e1.getMessage());
             }
         });
 
@@ -160,9 +158,9 @@ public abstract class ChartPagePanel extends PagePanel {
         tableLayout.setColumnFill(4, TableLayout.Fill.HORIZONTAL);
         tableLayout.setColumnWeightX(4, 1.0);
         JPanel buttonPanel = new JPanel(tableLayout);
-        tableLayout.setRowPadding(0, new Insets(0,4,0,0));
+        tableLayout.setRowPadding(0, new Insets(0, 4, 0, 0));
         buttonPanel.add(zoomAllButton);
-        tableLayout.setRowPadding(0, new Insets(0,0,0,0));
+        tableLayout.setRowPadding(0, new Insets(0, 0, 0, 0));
         buttonPanel.add(propertiesButton);
         buttonPanel.add(saveButton);
         buttonPanel.add(printButton);
@@ -184,8 +182,8 @@ public abstract class ChartPagePanel extends PagePanel {
         GridBagUtils.addToPanel(extendedOptionsPanel, new JSeparator(), extendedOptionsPanelConstraints, "insets.left=4,insets.right=2,gridy=5,anchor=SOUTHWEST");
 
         final SimpleScrollPane optionsScrollPane = new SimpleScrollPane(extendedOptionsPanel,
-                                                                   ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
-                                                                   ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+                                                                        ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+                                                                        ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         optionsScrollPane.setBorder(null);
         optionsScrollPane.getVerticalScrollBar().setUnitIncrement(20);
 

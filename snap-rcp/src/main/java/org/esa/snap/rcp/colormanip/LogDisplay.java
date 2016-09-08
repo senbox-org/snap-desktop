@@ -1,9 +1,9 @@
 package org.esa.snap.rcp.colormanip;
 
 import org.esa.snap.core.datamodel.ColorPaletteDef;
+import org.esa.snap.rcp.util.Dialogs;
 
 import javax.swing.AbstractButton;
-import javax.swing.JOptionPane;
 import java.awt.Component;
 
 class LogDisplay {
@@ -16,7 +16,7 @@ class LogDisplay {
     }
 
     static void showNotApplicableInfo(Component parent) {
-        JOptionPane.showMessageDialog(parent, "Log display is not applicable!\nThe color palette must contain only positive slider values.");
+        Dialogs.showInformation("Log display is not applicable!\nThe color palette must contain only positive slider values.");
     }
 
     static boolean checkApplicability(ColorPaletteDef cpd) {

@@ -37,6 +37,7 @@ import org.esa.snap.core.gpf.ui.TargetProductSelectorModel;
 import org.esa.snap.core.param.ParamParseException;
 import org.esa.snap.core.param.ParamValidateException;
 import org.esa.snap.core.util.ProductUtils;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.DemSelector;
 import org.esa.snap.ui.ModalDialog;
@@ -60,7 +61,6 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -586,7 +586,7 @@ class ReprojectionForm extends JTabbedPane {
     }
 
     private void showWarningMessage(String message) {
-        JOptionPane.showMessageDialog(getParent(), message, "Reprojection", JOptionPane.WARNING_MESSAGE);
+        Dialogs.showWarning("Reprojection", message, null);
     }
 
     private class OutputParametersDialog extends ModalDialog {

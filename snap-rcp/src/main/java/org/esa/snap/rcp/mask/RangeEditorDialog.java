@@ -27,7 +27,6 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import java.awt.Insets;
@@ -37,7 +36,7 @@ import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 import java.util.Locale;
 
-import static com.bc.ceres.swing.TableLayout.*;
+import static com.bc.ceres.swing.TableLayout.cell;
 
 /**
  * @author Marco Peters
@@ -120,8 +119,7 @@ class RangeEditorDialog extends ModalDialog {
             errorMsg = "No raster selected.";
         }
         if (errorMsg != null) {
-            JOptionPane.showMessageDialog(this.getJDialog(), errorMsg,
-                    "New Range Mask", JOptionPane.ERROR_MESSAGE);
+            this.showErrorDialog(errorMsg);
             return false;
         }
         return true;

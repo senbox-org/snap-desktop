@@ -1,10 +1,12 @@
 package org.esa.snap.ui.product;
 
 import org.esa.snap.core.util.SystemUtils;
+import org.esa.snap.ui.AbstractDialog;
 import org.esa.snap.ui.tool.ToolButtonFactory;
 import org.openide.util.ImageUtilities;
 
 import javax.swing.AbstractButton;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import java.awt.event.ActionEvent;
@@ -29,7 +31,7 @@ public class LoadSaveRasterDataNodesConfigurationsProvider {
     }
 
     public AbstractButton getLoadButton() {
-        if(loadButton == null) {
+        if (loadButton == null) {
             loadButton = createButton("tango/22x22/actions/document-open.png");
             loadButton.setToolTipText("Load configuration");
             loadButton.addActionListener(new LoadConfigurationActionListener());
@@ -38,7 +40,7 @@ public class LoadSaveRasterDataNodesConfigurationsProvider {
     }
 
     public AbstractButton getSaveButton() {
-        if(saveButton == null) {
+        if (saveButton == null) {
             saveButton = createButton("tango/22x22/actions/document-save-as.png");
             saveButton.setToolTipText("Save configuration");
             saveButton.addActionListener(new SaveConfigurationActionListener());
@@ -78,7 +80,7 @@ public class LoadSaveRasterDataNodesConfigurationsProvider {
                     String[] bandNames = bandNameList.toArray(new String[bandNameList.size()]);
                     component.setReadRasterDataNodeNames(bandNames);
                 } catch (IOException e1) {
-                    JOptionPane.showMessageDialog(component.getParent(), "Could not load configuration");
+                    AbstractDialog.showInformationDialog((JDialog) component.getParent(), "Could not load configuration", "Information");
                 }
             }
         }

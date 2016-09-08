@@ -33,6 +33,7 @@ import org.esa.snap.core.datamodel.TransectProfileDataBuilder;
 import org.esa.snap.core.datamodel.VectorDataNode;
 import org.esa.snap.core.dataop.barithm.BandArithmetic;
 import org.esa.snap.rcp.sync.DefaultCursorSynchronizer;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.GridBagUtils;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -57,7 +58,6 @@ import org.openide.windows.TopComponent;
 
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.table.DefaultTableModel;
@@ -84,9 +84,9 @@ class ProfilePlotPanel extends ChartPagePanel {
 
     public static final String CHART_TITLE = "Profile Plot";
     private static final String NO_DATA_MESSAGE = "No profile plot computed yet.\n" +
-            "It will be computed if vector data (a polygon, an ellipse, or a line)\n"+
+            "It will be computed if vector data (a polygon, an ellipse, or a line)\n" +
             "is selected within the image view.\n" +
-            HELP_TIP_MESSAGE+"\n"+
+            HELP_TIP_MESSAGE + "\n" +
             ZOOM_TIP_MESSAGE;
 
     public static final String PROPERTY_NAME_MARK_SEGMENTS = "markSegments";
@@ -185,7 +185,7 @@ class ProfilePlotPanel extends ChartPagePanel {
         } else {
             model = new DefaultTableModel();
         }
-        final TableViewPagePanel alternativePanel = (TableViewPagePanel)getAlternativeView();
+        final TableViewPagePanel alternativePanel = (TableViewPagePanel) getAlternativeView();
         alternativePanel.setModel(model);
         super.showAlternativeView();
     }
@@ -422,11 +422,8 @@ class ProfilePlotPanel extends ChartPagePanel {
                     }
                 }
             } catch (IOException e) {
-                JOptionPane.showMessageDialog(getParent(),
-                                              "Failed to compute profile plot.\n" +
-                                                      "An I/O error occurred:" + e.getMessage(),
-                                              "I/O error",
-                                              JOptionPane.ERROR_MESSAGE);   /*I18N*/
+                Dialogs.showError("I/O error", "Failed to compute profile plot.\n" +
+                        "An I/O error occurred:" + e.getMessage());/*I18N*/
             }
         }
     }

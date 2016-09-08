@@ -113,13 +113,13 @@ class ScatterPlotPanel extends ChartPagePanel {
 
     public static final String CHART_TITLE = "Correlative Plot";
     private static final String NO_DATA_MESSAGE = "No correlative plot computed yet.\n" +
-                                                  "To create a correlative plot\n" +
-                                                  "   -Select a band" + "\n" +
-                                                  "   -Select vector data (e.g., a SeaDAS 6.x track)" + "\n" +
-                                                  "   -Select the data as point data source" + "\n" +
-                                                  "   -Select a data field" + "\n" +
-                                                  HELP_TIP_MESSAGE + "\n" +
-                                                  ZOOM_TIP_MESSAGE;
+            "To create a correlative plot\n" +
+            "   -Select a band" + "\n" +
+            "   -Select vector data (e.g., a SeaDAS 6.x track)" + "\n" +
+            "   -Select the data as point data source" + "\n" +
+            "   -Select a data field" + "\n" +
+            HELP_TIP_MESSAGE + "\n" +
+            ZOOM_TIP_MESSAGE;
 
     private final String PROPERTY_NAME_X_AXIS_LOG_SCALED = "xAxisLogScaled";
     private final String PROPERTY_NAME_Y_AXIS_LOG_SCALED = "yAxisLogScaled";
@@ -598,14 +598,14 @@ class ScatterPlotPanel extends ChartPagePanel {
         // need to do this later: all GUI events must be processed first in order to get the correct state
         SwingUtilities.invokeLater(() -> {
             if (scatterPlotModel.pointDataSource != null
-                && scatterPlotModel.dataField != null
-                && scatterPlotModel.pointDataSource.getFeatureCollection() != null
-                && scatterPlotModel.pointDataSource.getFeatureCollection().features() != null
-                && scatterPlotModel.pointDataSource.getFeatureCollection().features().hasNext()
-                && scatterPlotModel.pointDataSource.getFeatureCollection().features().next() != null
-                && scatterPlotModel.pointDataSource.getFeatureCollection().features().next().getAttribute(
+                    && scatterPlotModel.dataField != null
+                    && scatterPlotModel.pointDataSource.getFeatureCollection() != null
+                    && scatterPlotModel.pointDataSource.getFeatureCollection().features() != null
+                    && scatterPlotModel.pointDataSource.getFeatureCollection().features().hasNext()
+                    && scatterPlotModel.pointDataSource.getFeatureCollection().features().next() != null
+                    && scatterPlotModel.pointDataSource.getFeatureCollection().features().next().getAttribute(
                     scatterPlotModel.dataField.getLocalName()) != null
-                && getRaster() != null) {
+                    && getRaster() != null) {
                 compute(scatterPlotModel.useRoiMask ? scatterPlotModel.roiMask : null);
             } else {
                 scatterpointsDataset.removeAllSeries();
@@ -780,14 +780,14 @@ class ScatterPlotPanel extends ChartPagePanel {
                 } catch (InterruptedException | CancellationException e) {
                     SystemUtils.LOG.log(Level.WARNING, "Failed to compute correlative plot.", e);
                     Dialogs.showMessage(CHART_TITLE,
-                                            "Failed to compute correlative plot.\n" +
-                                            "Calculation canceled.",
+                                        "Failed to compute correlative plot.\n" +
+                                                "Calculation canceled.",
                                         JOptionPane.ERROR_MESSAGE, null);
                 } catch (ExecutionException e) {
                     SystemUtils.LOG.log(Level.WARNING, "Failed to compute correlative plot.", e);
                     Dialogs.showMessage(CHART_TITLE,
-                                            "Failed to compute correlative plot.\n" +
-                                            "An error occurred:\n" + e.getCause().getMessage(),
+                                        "Failed to compute correlative plot.\n" +
+                                                "An error occurred:\n" + e.getCause().getMessage(),
                                         JOptionPane.ERROR_MESSAGE, null);
                 }
             }
@@ -828,8 +828,8 @@ class ScatterPlotPanel extends ChartPagePanel {
             }
             return xyIntervalRegression;
         } else {
-            JOptionPane.showMessageDialog(this, "Unable to compute regression line.\n" +
-                                                "At least 2 values are needed to compute regression coefficients.");
+            Dialogs.showInformation("Unable to compute regression line.\n" +
+                                            "At least 2 values are needed to compute regression coefficients.");
             return null;
         }
     }
@@ -854,7 +854,7 @@ class ScatterPlotPanel extends ChartPagePanel {
             varY += Math.pow(scatterpointsDataset.getYValue(0, i) - arithmeticMeanOfY, 2);
             coVarXY += (scatterpointsDataset.getXValue(0, i) - arithmeticMeanOfX) * (scatterpointsDataset.getYValue(0,
                                                                                                                     i) -
-                                                                                     arithmeticMeanOfY);
+                    arithmeticMeanOfY);
         }
         //computation of coefficient of determination
         double r2 = Math.pow(coVarXY, 2) / (varX * varY);

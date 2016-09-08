@@ -16,6 +16,7 @@
 
 package org.esa.snap.ui.assistant;
 
+import org.esa.snap.ui.AbstractDialog;
 import org.esa.snap.ui.UIUtils;
 
 import javax.swing.AbstractAction;
@@ -24,7 +25,6 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import java.awt.BorderLayout;
@@ -152,7 +152,7 @@ public class AssistantPane implements AssistantPageContext {
         } else {
             dialogTitle = "Unexpected Error";
         }
-        JOptionPane.showMessageDialog(dialog, message, dialogTitle, JOptionPane.ERROR_MESSAGE);
+        AbstractDialog.showErrorDialog(dialog, message, dialogTitle);
     }
 
     /**

@@ -431,10 +431,7 @@ class ColorManipulationForm implements SelectionSupport.Handler<ProductSceneView
         availableBandList.clear();
 
         if (availableBands.length == 0) {
-            JOptionPane.showMessageDialog(getToolViewPaneControl(),
-                                          "No other bands available.", /*I18N*/
-                                          titlePrefix,
-                                          JOptionPane.WARNING_MESSAGE);
+            Dialogs.showWarning(titlePrefix, "No other bands available.", null); /*I18N*/
             return;
         }
 
@@ -543,7 +540,7 @@ class ColorManipulationForm implements SelectionSupport.Handler<ProductSceneView
         }
         int answer = JOptionPane.showConfirmDialog(getToolViewPaneControl(),
                                                    "Automatically distribute points of\n" +
-                                                   "colour palette between min/max?",
+                                                           "colour palette between min/max?",
                                                    "Import Colour Palette",
                                                    JOptionPane.YES_NO_CANCEL_OPTION
         );
@@ -596,10 +593,7 @@ class ColorManipulationForm implements SelectionSupport.Handler<ProductSceneView
             if (SnapApp.getDefault() != null) {
                 Dialogs.showError(message);
             } else {
-                JOptionPane.showMessageDialog(getToolViewPaneControl(),
-                                              message,
-                                              "Error",
-                                              JOptionPane.ERROR_MESSAGE);
+                Dialogs.showError("Error", message);
             }
         }
     }

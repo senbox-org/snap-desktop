@@ -15,6 +15,7 @@
  */
 package org.esa.snap.ui;
 
+import org.esa.snap.core.util.SystemUtils;
 import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle;
 
@@ -31,7 +32,10 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
 import java.awt.Window;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
@@ -143,6 +147,7 @@ public abstract class AbstractDialog {
     public int getButtonID() {
         return buttonId;
     }
+
 
     /**
      * Sets the identifier for the most recently pressed button.
@@ -270,7 +275,15 @@ public abstract class AbstractDialog {
      * @param errorMessage The message.
      */
     public void showErrorDialog(String errorMessage) {
-        showMessageDialog(errorMessage, JOptionPane.ERROR_MESSAGE);
+        showErrorDialog(errorMessage, null);
+    }
+
+    public void showErrorDialog(String message, String title) {
+        showMessageDialog(getJDialog(), message, title, JOptionPane.ERROR_MESSAGE);
+    }
+
+    public static void showErrorDialog(Component component, String message, String dialogTitle) {
+        showMessageDialog(component, message, dialogTitle, JOptionPane.ERROR_MESSAGE);
     }
 
     /**
@@ -279,7 +292,15 @@ public abstract class AbstractDialog {
      * @param infoMessage The message.
      */
     public void showInformationDialog(String infoMessage) {
-        showMessageDialog(infoMessage, JOptionPane.INFORMATION_MESSAGE);
+        showInformationDialog(infoMessage, null);
+    }
+
+    public void showInformationDialog(String infoMessage, String title) {
+        showMessageDialog(getJDialog(), infoMessage, title, JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    public static void showInformationDialog(Component component, String message, String dialogTitle) {
+        showMessageDialog(component, message, dialogTitle, JOptionPane.INFORMATION_MESSAGE);
     }
 
     /**
@@ -288,7 +309,15 @@ public abstract class AbstractDialog {
      * @param warningMessage The message.
      */
     public void showWarningDialog(String warningMessage) {
-        showMessageDialog(warningMessage, JOptionPane.WARNING_MESSAGE);
+        showWarningDialog(warningMessage, null);
+    }
+
+    public void showWarningDialog(String warningMessage, String title) {
+        showMessageDialog(getJDialog(), warningMessage, title, JOptionPane.WARNING_MESSAGE);
+    }
+
+    public static void showWarningDialog(Component component, String message, String dialogTitle) {
+        showMessageDialog(component, message, dialogTitle, JOptionPane.WARNING_MESSAGE);
     }
 
     /**
@@ -575,8 +604,30 @@ public abstract class AbstractDialog {
         }
     }
 
-    private void showMessageDialog(String message, int messageType) {
-        JOptionPane.showMessageDialog(getJDialog(), message, getJDialog().getTitle(), messageType);
+    private static void showMessageDialog(Component dialog, String message, String dialogTitle, int messageType) {
+        KeyEventDispatcher keyEventDispatcher = installKeyListener(message);
+        JOptionPane.showMessageDialog(dialog, message, dialogTitle, messageType);
+        uninstallKeyListener(keyEventDispatcher);
+    }
+
+    private static void uninstallKeyListener(KeyEventDispatcher keyEventDispatcher) {
+        KeyboardFocusManager.getCurrentKeyboardFocusManager().removeKeyEventDispatcher(keyEventDispatcher);
+    }
+
+    private static KeyEventDispatcher installKeyListener(String message) {
+        KeyEventDispatcher keyEventDispatcher = getKeyEventDispatcher(message);
+        KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(keyEventDispatcher);
+        return keyEventDispatcher;
+    }
+
+    private static KeyEventDispatcher getKeyEventDispatcher(String message) {
+        return e -> {
+            if ((e.getKeyCode() == KeyEvent.VK_C) && e.isControlDown()) {
+                SystemUtils.copyToClipboard(message);
+            }
+            e.consume();
+            return false;
+        };
     }
 
     private void setComponentName(JDialog dialog) {

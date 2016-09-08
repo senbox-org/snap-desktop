@@ -341,28 +341,25 @@ public class RGBImageProfilePane extends JPanel {
         try {
             profile = RGBImageProfile.loadProfile(file);
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(this,
-                                          "Failed to open RGB-profile '"
-                                                  + file.getName() + "':\n" + e.getMessage(),
-                                          "Open RGB-Image Profile",
-                                          JOptionPane.ERROR_MESSAGE);
+
+            AbstractDialog.showErrorDialog(this, "Failed to open RGB-profile '"
+                    + file.getName() + "':\n" + e.getMessage(), "Open RGB-Image Profile");
+
             return;
         }
         if (profile == null) {
-            JOptionPane.showMessageDialog(this,
-                                          "Invalid RGB-Profile '" + file.getName() + "'.",
-                                          "Open RGB-Image Profile",
-                                          JOptionPane.ERROR_MESSAGE);
+            AbstractDialog.showErrorDialog(this,
+                                           "Invalid RGB-Profile '" + file.getName() + "'.",
+                                           "Open RGB-Image Profile");
             return;
         }
 
         RGBImageProfileManager.getInstance().addProfile(profile);
         if (product != null && !profile.isApplicableTo(product)) {
-            JOptionPane.showMessageDialog(this,
-                                          "The selected RGB-Profile '" + profile.getName() + "'\n" +
-                                                  "is not applicable to the current product.",
-                                          "Open RGB-Image Profile",
-                                          JOptionPane.ERROR_MESSAGE);
+            AbstractDialog.showErrorDialog(this,
+                                           "The selected RGB-Profile '" + profile.getName() + "'\n" +
+                                                   "is not applicable to the current product.",
+                                           "Open RGB-Image Profile");
             return;
         }
         addNewProfile(profile);
@@ -378,11 +375,10 @@ public class RGBImageProfilePane extends JPanel {
         try {
             profile.store(file);
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(this,
-                                          "Failed to save RGB-profile '" + file.getName() + "':\n"
-                                                  + e.getMessage(),
-                                          "Open RGB-Image Profile",
-                                          JOptionPane.ERROR_MESSAGE);
+            AbstractDialog.showErrorDialog(this,
+                                           "Failed to save RGB-profile '" + file.getName() + "':\n"
+                                                   + e.getMessage(),
+                                           "Open RGB-Image Profile");
             return;
         }
 
