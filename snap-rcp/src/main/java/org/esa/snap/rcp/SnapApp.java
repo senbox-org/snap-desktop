@@ -6,6 +6,8 @@ import org.esa.snap.core.dataio.ProductReader;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductManager;
 import org.esa.snap.core.datamodel.ProductNode;
+import org.esa.snap.core.datamodel.ProductNodeEvent;
+import org.esa.snap.core.datamodel.ProductNodeListenerAdapter;
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.OperatorSpi;
 import org.esa.snap.core.gpf.OperatorSpiRegistry;
@@ -194,6 +196,7 @@ public class SnapApp {
 
     /**
      * @return The (display) name of this application.
+     *
      * @deprecated use {@link #getInstanceName()}
      */
     @Deprecated
@@ -226,6 +229,7 @@ public class SnapApp {
      * the {@link PropertyMap} interface.
      *
      * @return The user's application preferences as {@link PropertyMap} instance.
+     *
      * @deprecated Use {@link #getPreferences()} or {@link Config#preferences()} instead.
      */
     @Deprecated
@@ -389,9 +393,21 @@ public class SnapApp {
      * Overrides should call {@code super.onShowing()} as a first step unless they know whet they are doing.
      */
     public void onShowing() {
-        updateMainFrameTitle(getInstanceName());
-        MainFrameTitleUpdater updater = new MainFrameTitleUpdater();
-        getSelectionSupport(ProductSceneView.class).addHandler(updater);
+        getMainFrame().setTitle(getEmptyTitle());
+        getSelectionSupport(ProductSceneView.class).addHandler(new SceneViewListener());
+        getSelectionSupport(ProductNode.class).addHandler(new ProductNodeListener());
+        NodeNameListener nodeNameListener = new NodeNameListener();
+        getProductManager().addListener(new ProductManager.Listener() {
+            @Override
+            public void productAdded(ProductManager.Event event) {
+                event.getProduct().addProductNodeListener(nodeNameListener);
+            }
+
+            @Override
+            public void productRemoved(ProductManager.Event event) {
+                event.getProduct().removeProductNodeListener(nodeNameListener);
+            }
+        });
         if (SnapArgs.getDefault().getSessionFile() != null) {
             File sessionFile = SnapArgs.getDefault().getSessionFile().toFile();
             if (sessionFile != null) {
@@ -463,56 +479,6 @@ public class SnapApp {
         }
 
         return true;
-    }
-
-    private String getMainFrameTitle(ProductSceneView newValue) {
-        String title;
-        Optional<ProductSceneView> selectedProductSceneView = Optional.ofNullable(newValue);
-        if (selectedProductSceneView.isPresent()) {
-            title = getTitle(selectedProductSceneView.get());
-        } else {
-            if (Utilities.isMac()) {
-                title = String.format("[%s]", "Empty");
-            } else {
-                title = String.format("%s", getInstanceName());
-            }
-        }
-        return title;
-    }
-
-    private String getTitle(ProductSceneView selectedProduct) {
-        File fileLocation = selectedProduct.getProduct().getFileLocation();
-        String path = fileLocation != null ? fileLocation.toString() : "not saved";
-        String sceneViewSelected = selectedProduct.getSceneName();
-        String productName = selectedProduct.getProduct().getName();
-        return String.format("[%s] - [%s] - [%s]", sceneViewSelected, productName, path);
-    }
-
-    private void updateMainFrameTitle(String title) {
-        getMainFrame().setTitle(title);
-    }
-
-    private static <T extends ProductNode> T getProductNode(T explorerNode, T viewNode, ProductSceneView sceneView, SelectionSourceHint hint) {
-        switch (hint) {
-            case VIEW:
-                if (viewNode != null) {
-                    return viewNode;
-                } else {
-                    return explorerNode;
-                }
-            case EXPLORER:
-                if (explorerNode != null) {
-                    return explorerNode;
-                } else {
-                    return viewNode;
-                }
-            case AUTO:
-            default:
-                if (sceneView != null && sceneView.hasFocus()) {
-                    return viewNode;
-                }
-                return explorerNode;
-        }
     }
 
     /**
@@ -620,6 +586,93 @@ public class SnapApp {
         GPF.getDefaultInstance().setProductManager(getProductManager());
     }
 
+    private void updateMainFrameTitle(ProductSceneView sceneView) {
+        String title;
+        if (sceneView != null) {
+            Product product = sceneView.getProduct();
+            if (product != null) {
+                title = String.format("%s - %s - %s", sceneView.getSceneName(), product.getName(), getProductPath(product));
+            } else {
+                title = sceneView.getSceneName();
+            }
+            title = appendTitleSuffix(title);
+        } else {
+            title = getEmptyTitle();
+        }
+        getMainFrame().setTitle(title);
+    }
+
+    private void updateMainFrameTitle(ProductNode node) {
+        String title;
+        if (node != null) {
+            Product product = node.getProduct();
+            if (product != null) {
+                if (node == product) {
+                    title = String.format("%s - [%s]", product.getDisplayName(), getProductPath(product));
+                } else {
+                    title = String.format("%s - [%s] - [%s]", node.getDisplayName(), product.getName(), getProductPath(product));
+                }
+            } else {
+                title = node.getDisplayName();
+            }
+            title = appendTitleSuffix(title);
+        } else {
+            title = getEmptyTitle();
+        }
+        getMainFrame().setTitle(title);
+    }
+
+    private String getProductPath(Product product) {
+        File fileLocation = product.getFileLocation();
+        if (fileLocation != null) {
+            try {
+                return fileLocation.getCanonicalPath();
+            } catch (IOException e) {
+                return fileLocation.getAbsolutePath();
+            }
+        } else {
+            return "not saved";
+        }
+    }
+
+    private String appendTitleSuffix(String title) {
+        String appendix = !Utilities.isMac() ? String.format(" - %s", getInstanceName()) : "";
+        return title + appendix;
+    }
+
+    private String getEmptyTitle() {
+        String title;
+        if (Utilities.isMac()) {
+            title = String.format("[%s]", "Empty");
+        } else {
+            title = String.format("%s", getInstanceName());
+        }
+        return title;
+    }
+
+    private static <T extends ProductNode> T getProductNode(T explorerNode, T viewNode, ProductSceneView sceneView, SelectionSourceHint hint) {
+        switch (hint) {
+            case VIEW:
+                if (viewNode != null) {
+                    return viewNode;
+                } else {
+                    return explorerNode;
+                }
+            case EXPLORER:
+                if (explorerNode != null) {
+                    return explorerNode;
+                } else {
+                    return viewNode;
+                }
+            case AUTO:
+            default:
+                if (sceneView != null && sceneView.hasFocus()) {
+                    return viewNode;
+                }
+                return explorerNode;
+        }
+    }
+
     /**
      * This non-API class is public as an implementation detail. Don't use it, it may be removed anytime.
      * <p>
@@ -634,6 +687,7 @@ public class SnapApp {
             supersedes = "org.netbeans.modules.openide.windows.GlobalActionContextImpl"
     )
     public static class ActionContextExtender extends ContextGlobalExtenderImpl {
+
     }
 
     /**
@@ -719,14 +773,31 @@ public class SnapApp {
         }
     }
 
-    private class MainFrameTitleUpdater implements SelectionSupport.Handler<ProductSceneView> {
+    private class SceneViewListener implements SelectionSupport.Handler<ProductSceneView> {
+
         @Override
         public void selectionChange(ProductSceneView oldValue, ProductSceneView newValue) {
-            String mainFrameTitle = getMainFrameTitle(newValue);
-            updateMainFrameTitle(mainFrameTitle);
+            updateMainFrameTitle(newValue);
         }
     }
 
+    private class ProductNodeListener implements SelectionSupport.Handler<ProductNode> {
+
+        @Override
+        public void selectionChange(ProductNode oldValue, ProductNode newValue) {
+            updateMainFrameTitle(newValue);
+        }
+    }
+
+    private class NodeNameListener extends ProductNodeListenerAdapter {
+
+        @Override
+        public void nodeChanged(ProductNodeEvent event) {
+            if (ProductNode.PROPERTY_NAME_NAME.equals(event.getPropertyName())) {
+                updateMainFrameTitle(event.getSourceNode());
+            }
+        }
+    }
 
     /**
      * Provides a hint to {@link SnapApp#getSelectedProduct(SelectionSourceHint)} } which selection provider should be used as primary selection source
