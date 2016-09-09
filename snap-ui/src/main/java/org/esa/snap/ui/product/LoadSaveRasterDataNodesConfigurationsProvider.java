@@ -6,7 +6,6 @@ import org.esa.snap.ui.tool.ToolButtonFactory;
 import org.openide.util.ImageUtilities;
 
 import javax.swing.AbstractButton;
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import java.awt.event.ActionEvent;
@@ -80,7 +79,7 @@ public class LoadSaveRasterDataNodesConfigurationsProvider {
                     String[] bandNames = bandNameList.toArray(new String[bandNameList.size()]);
                     component.setReadRasterDataNodeNames(bandNames);
                 } catch (IOException e1) {
-                    AbstractDialog.showInformationDialog((JDialog) component.getParent(), "Could not load configuration", "Information");
+                    AbstractDialog.showInformationDialog(component.getParent(), "Could not load configuration", "Information");
                 }
             }
         }
