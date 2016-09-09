@@ -181,6 +181,7 @@ class MaskFormActions {
             Product product = getMaskForm().getProduct();
             ProductExpressionPane expressionPane = ProductExpressionPane.createBooleanExpressionPane(
                     new Product[]{product}, product, null);
+
             expressionPane.setEmptyExpressionAllowed(false);
             expressionPane.setCode("");
             if (expressionPane.showModalDialog(null, "New Logical Band Maths Expression") == AbstractDialog.ID_OK) {

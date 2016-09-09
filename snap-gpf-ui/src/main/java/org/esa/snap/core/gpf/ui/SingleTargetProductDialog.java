@@ -20,6 +20,7 @@ import com.bc.ceres.core.SubProgressMonitor;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
 import org.esa.snap.core.dataio.ProductIO;
 import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.gpf.CancellationOperatorException;
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.Operator;
 import org.esa.snap.core.gpf.OperatorException;
@@ -162,6 +163,11 @@ public abstract class SingleTargetProductDialog extends ModelessDialog {
 
     protected void handleProcessingError(Throwable t) {
         String msg;
+
+        if (t instanceof CancellationOperatorException) {
+            return;
+        }
+
         if (isInternalException(t)) {
             msg = MessageFormat.format("An internal error occurred during the target product processing.\n{0}",
                     formatThrowable(t));
