@@ -8,6 +8,8 @@ import org.openide.nodes.AbstractNode;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.esa.snap.core.datamodel.ProductData.*;
+
 /**
  * @author Tonio Fincke
  */
@@ -47,27 +49,10 @@ public class MetadataTableInnerElement implements MetadataTableElement {
         for (MetadataAttribute attribute : attributes) {
             final long dataElemSize = attribute.getNumDataElems();
             if (dataElemSize > 1) {
-                //todo refactor this
-                final Object dataElems = attribute.getDataElems();
                 final int dataType = attribute.getDataType();
-                if (ProductData.isFloatingPointType(dataType)) {
-                    if(dataElems instanceof float[]) {
-                        addFloatMetadataAttributes(attribute, (float[]) dataElems, metadataTableElementList);
-                    } else {
-                        addDoubleMetadataAttributes(attribute, (double[]) dataElems, metadataTableElementList);
-                    }
-                } else if (ProductData.isIntType(dataType)) {
-                    if(attribute.getData() instanceof ProductData.UTC) {
-                        metadataTableElementList.add(new MetadataTableLeaf(attribute));
-                    } else {
-                        if (dataElems instanceof byte[]) {
-                            addByteMetadataAttributes(attribute, (byte[]) dataElems, metadataTableElementList);
-                        } else if (dataElems instanceof short[]) {
-                            addShortMetadataAttributes(attribute, (short[]) dataElems, metadataTableElementList);
-                        } else {
-                            addIntMetadataAttributes(attribute, (int[]) dataElems, metadataTableElementList);
-                        }
-                    }
+                ProductData data = attribute.getData();
+                if ((ProductData.isFloatingPointType(dataType) || ProductData.isIntType(dataType)) && !(data instanceof ProductData.UTC)) {
+                    addMetadataAttributes(attribute, data, metadataTableElementList);
                 } else {
                     metadataTableElementList.add(new MetadataTableLeaf(attribute));
                 }
@@ -78,84 +63,43 @@ public class MetadataTableInnerElement implements MetadataTableElement {
         return metadataTableElementList.toArray(new MetadataTableElement[metadataTableElementList.size()]);
     }
 
-    private static void addFloatMetadataAttributes(MetadataAttribute attribute, float[] elems,
+    private static void addMetadataAttributes(MetadataAttribute attribute, ProductData data,
                                                    List<MetadataTableElement> metadataTableElementList) {
         final String name = attribute.getName();
-        final String unit = attribute.getUnit();
         final int dataType = attribute.getDataType();
+        final String unit = attribute.getUnit();
         final String description = attribute.getDescription();
-        for (int j = 0; j < elems.length; j++) {
-            final MetadataAttribute partAttribute =
-                    new MetadataAttribute(name + "." + (j + 1), dataType);
-            partAttribute.setDataElems(new float[]{elems[j]});
+        for (int j = 0; j < data.getNumElems(); j++) {
+            final MetadataAttribute partAttribute = new MetadataAttribute(name + "." + (j + 1), dataType);
+            try {
+                partAttribute.setDataElems(getDataElemArray(data, j));
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+            }
             partAttribute.setUnit(unit);
             partAttribute.setDescription(description);
             metadataTableElementList.add(new MetadataTableLeaf(partAttribute));
         }
     }
 
-    private static void addDoubleMetadataAttributes(MetadataAttribute attribute, double[] elems,
-                                                   List<MetadataTableElement> metadataTableElementList) {
-        final String name = attribute.getName();
-        final String unit = attribute.getUnit();
-        final int dataType = attribute.getDataType();
-        final String description = attribute.getDescription();
-        for (int j = 0; j < elems.length; j++) {
-            final MetadataAttribute partAttribute =
-                    new MetadataAttribute(name + "." + (j + 1), dataType);
-            partAttribute.setDataElems(new double[]{elems[j]});
-            partAttribute.setUnit(unit);
-            partAttribute.setDescription(description);
-            metadataTableElementList.add(new MetadataTableLeaf(partAttribute));
+    private static Object getDataElemArray(ProductData data, int index) {
+        switch (data.getType()) {
+            case TYPE_INT8:
+            case TYPE_INT16:
+            case TYPE_INT32:
+                return new int[]{data.getElemIntAt(index)};
+            case TYPE_UINT8:
+            case TYPE_UINT16:
+            case TYPE_UINT32:
+                return new long[]{data.getElemUIntAt(index)};
+            case TYPE_INT64:
+                return new long[]{data.getElemLongAt(index)};
+            case TYPE_FLOAT32:
+                return new float[]{data.getElemFloatAt(index)};
+            case TYPE_FLOAT64:
+                return new double[]{data.getElemDoubleAt(index)};
+            default:
+                return null;
         }
     }
-
-    private static void addByteMetadataAttributes(MetadataAttribute attribute, byte[] elems,
-                                                  List<MetadataTableElement> metadataTableElementList) {
-        final String name = attribute.getName();
-        final int dataType = attribute.getDataType();
-        final String unit = attribute.getUnit();
-        final String description = attribute.getDescription();
-        for (int j = 0; j < elems.length; j++) {
-            final MetadataAttribute partAttribute =
-                    new MetadataAttribute(name + "." + (j + 1), dataType);
-            partAttribute.setDataElems(new byte[]{elems[j]});
-            partAttribute.setUnit(unit);
-            partAttribute.setDescription(description);
-            metadataTableElementList.add(new MetadataTableLeaf(partAttribute));
-        }
-    }
-
-    private static void addShortMetadataAttributes(MetadataAttribute attribute, short[] elems,
-                                                  List<MetadataTableElement> metadataTableElementList) {
-        final String name = attribute.getName();
-        final int dataType = attribute.getDataType();
-        final String unit = attribute.getUnit();
-        final String description = attribute.getDescription();
-        for (int j = 0; j < elems.length; j++) {
-            final MetadataAttribute partAttribute =
-                    new MetadataAttribute(name + "." + (j + 1), dataType);
-            partAttribute.setDataElems(new short[]{elems[j]});
-            partAttribute.setUnit(unit);
-            partAttribute.setDescription(description);
-            metadataTableElementList.add(new MetadataTableLeaf(partAttribute));
-        }
-    }
-
-    private static void addIntMetadataAttributes(MetadataAttribute attribute, int[] elems,
-                                                 List<MetadataTableElement> metadataTableElementList) {
-        final String name = attribute.getName();
-        final int dataType = attribute.getDataType();
-        final String unit = attribute.getUnit();
-        final String description = attribute.getDescription();
-        for (int j = 0; j < elems.length; j++) {
-            final MetadataAttribute partAttribute =
-                    new MetadataAttribute(name + "." + (j + 1), dataType);
-            partAttribute.setDataElems(new int[]{elems[j]});
-            partAttribute.setUnit(unit);
-            partAttribute.setDescription(description);
-            metadataTableElementList.add(new MetadataTableLeaf(partAttribute));
-        }
-    }
-
 }
