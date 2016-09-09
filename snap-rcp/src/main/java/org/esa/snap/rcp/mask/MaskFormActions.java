@@ -84,7 +84,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.VIEW;
+import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
 
 /**
  * @author Marco Peters
@@ -763,7 +763,7 @@ class MaskFormActions {
                     selectedMaskConfig.setValue(Mask.RangeType.PROPERTY_NAME_RASTER, model.getRasterName());
                 }
             } else if (type == Mask.VectorDataType.INSTANCE) {
-                Dialogs.showInformation(
+                AbstractDialog.showInformationDialog(window,
                         "Use the geometry tools to add new points, lines or polygons.\n" +
                                 "You can then use the select tool to select and modify the shape\n" +
                                 "and position of the geometries.",

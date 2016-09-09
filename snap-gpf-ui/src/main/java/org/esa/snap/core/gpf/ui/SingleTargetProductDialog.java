@@ -20,9 +20,9 @@ import com.bc.ceres.core.SubProgressMonitor;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
 import org.esa.snap.core.dataio.ProductIO;
 import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.gpf.CancellationOperatorException;
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.Operator;
+import org.esa.snap.core.gpf.OperatorCancelException;
 import org.esa.snap.core.gpf.OperatorException;
 import org.esa.snap.core.gpf.common.WriteOp;
 import org.esa.snap.core.gpf.internal.OperatorExecutor;
@@ -164,7 +164,7 @@ public abstract class SingleTargetProductDialog extends ModelessDialog {
     protected void handleProcessingError(Throwable t) {
         String msg;
 
-        if (t instanceof CancellationOperatorException) {
+        if (t instanceof OperatorCancelException) {
             return;
         }
 

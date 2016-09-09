@@ -341,15 +341,14 @@ public class RGBImageProfilePane extends JPanel {
         try {
             profile = RGBImageProfile.loadProfile(file);
         } catch (IOException e) {
-
-            AbstractDialog.showErrorDialog(this, "Failed to open RGB-profile '"
-                    + file.getName() + "':\n" + e.getMessage(), "Open RGB-Image Profile");
-
+            AbstractDialog.showErrorDialog(this,
+                                           String.format("Failed to open RGB-profile '%s':\n%s", file.getName(), e.getMessage()),
+                                           "Open RGB-Image Profile");
             return;
         }
         if (profile == null) {
             AbstractDialog.showErrorDialog(this,
-                                           "Invalid RGB-Profile '" + file.getName() + "'.",
+                                           String.format("Invalid RGB-Profile '%s'.", file.getName()),
                                            "Open RGB-Image Profile");
             return;
         }
@@ -357,8 +356,8 @@ public class RGBImageProfilePane extends JPanel {
         RGBImageProfileManager.getInstance().addProfile(profile);
         if (product != null && !profile.isApplicableTo(product)) {
             AbstractDialog.showErrorDialog(this,
-                                           "The selected RGB-Profile '" + profile.getName() + "'\n" +
-                                                   "is not applicable to the current product.",
+                                           String.format("The selected RGB-Profile '%s'\nis not applicable to the current product.",
+                                                         profile.getName()),
                                            "Open RGB-Image Profile");
             return;
         }

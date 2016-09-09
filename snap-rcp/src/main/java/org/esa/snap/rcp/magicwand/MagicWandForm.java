@@ -11,6 +11,7 @@ import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.tango.TangoIcons;
+import org.esa.snap.ui.AbstractDialog;
 import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.ui.product.BandChooser;
 import org.esa.snap.ui.product.ProductSceneView;
@@ -334,7 +335,7 @@ class MagicWandForm {
                 updateState();
             } catch (IOException e) {
                 String msg = MessageFormat.format("Failed to open settings:\n{0}", e.getMessage());
-                Dialogs.showError("I/O Error", msg);
+                AbstractDialog.showErrorDialog(parent, msg, "I/O Error");
             }
         }
     }
@@ -356,7 +357,7 @@ class MagicWandForm {
             interactor.updateForm();
         } catch (IOException e) {
             String msg = MessageFormat.format("Failed to safe settings:\n{0}", e.getMessage());
-            Dialogs.showError("I/O Error", msg);
+            AbstractDialog.showErrorDialog(parent, msg, "I/O Error");
         }
     }
 

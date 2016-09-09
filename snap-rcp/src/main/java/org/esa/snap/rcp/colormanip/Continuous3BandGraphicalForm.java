@@ -27,7 +27,7 @@ import org.esa.snap.core.datamodel.ImageInfo;
 import org.esa.snap.core.datamodel.ProductNodeEvent;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.datamodel.Stx;
-import org.esa.snap.rcp.util.Dialogs;
+import org.esa.snap.ui.AbstractDialog;
 import org.esa.snap.ui.ImageInfoEditorModel;
 
 import javax.swing.AbstractButton;
@@ -268,7 +268,7 @@ class Continuous3BandGraphicalForm implements ColorManipulationChildForm {
             }
         }
         if (newChannelSource == null) {
-            Dialogs.showError("Error", MessageFormat.format("Unknown band: ''{0}''", channelSourceName));
+            AbstractDialog.showErrorDialog(contentPanel, MessageFormat.format("Unknown band: ''{0}''", channelSourceName), "Error");
             return;
         }
 

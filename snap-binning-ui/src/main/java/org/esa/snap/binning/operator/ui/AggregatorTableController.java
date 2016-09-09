@@ -17,7 +17,6 @@ import org.esa.snap.ui.tool.ToolButtonFactory;
 import javax.swing.AbstractButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import java.awt.event.ActionEvent;

@@ -36,7 +36,7 @@ import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 import java.util.Locale;
 
-import static com.bc.ceres.swing.TableLayout.cell;
+import static com.bc.ceres.swing.TableLayout.*;
 
 /**
  * @author Marco Peters
@@ -119,7 +119,7 @@ class RangeEditorDialog extends ModalDialog {
             errorMsg = "No raster selected.";
         }
         if (errorMsg != null) {
-            this.showErrorDialog(errorMsg);
+            showErrorDialog(getJDialog(), errorMsg, "New Range Mask");
             return false;
         }
         return true;

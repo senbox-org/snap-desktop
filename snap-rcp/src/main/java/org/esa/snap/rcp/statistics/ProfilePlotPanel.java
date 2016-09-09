@@ -33,7 +33,7 @@ import org.esa.snap.core.datamodel.TransectProfileDataBuilder;
 import org.esa.snap.core.datamodel.VectorDataNode;
 import org.esa.snap.core.dataop.barithm.BandArithmetic;
 import org.esa.snap.rcp.sync.DefaultCursorSynchronizer;
-import org.esa.snap.rcp.util.Dialogs;
+import org.esa.snap.ui.AbstractDialog;
 import org.esa.snap.ui.GridBagUtils;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -422,8 +422,8 @@ class ProfilePlotPanel extends ChartPagePanel {
                     }
                 }
             } catch (IOException e) {
-                Dialogs.showError("I/O error", "Failed to compute profile plot.\n" +
-                        "An I/O error occurred:" + e.getMessage());/*I18N*/
+                AbstractDialog.showErrorDialog(getParent(), "Failed to compute profile plot.\n" +
+                                                      "An I/O error occurred:" + e.getMessage(), "I/O error");
             }
         }
     }

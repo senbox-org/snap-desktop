@@ -39,6 +39,7 @@ import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.rcp.util.SelectionSupport;
 import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
 import org.esa.snap.runtime.Config;
+import org.esa.snap.ui.AbstractDialog;
 import org.esa.snap.ui.GridBagUtils;
 import org.esa.snap.ui.SnapFileChooser;
 import org.esa.snap.ui.product.BandChooser;
@@ -431,12 +432,12 @@ class ColorManipulationForm implements SelectionSupport.Handler<ProductSceneView
         availableBandList.clear();
 
         if (availableBands.length == 0) {
-            Dialogs.showWarning(titlePrefix, "No other bands available.", null); /*I18N*/
+            AbstractDialog.showWarningDialog(getToolViewPaneControl(), "No other bands available.", titlePrefix);
             return;
         }
 
         final BandChooser bandChooser = new BandChooser(SwingUtilities.getWindowAncestor(toolView),
-                                                        "Apply to other bands", /*I18N*/
+                                                        "Apply to other bands",
                                                         toolView.getHelpCtx().getHelpID(),
                                                         availableBands,
                                                         bandsToBeModified, false);

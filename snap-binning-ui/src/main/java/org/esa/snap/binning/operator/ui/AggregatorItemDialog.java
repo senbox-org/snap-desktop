@@ -24,6 +24,7 @@ import com.bc.ceres.binding.ValueSet;
 import com.bc.ceres.swing.binding.PropertyPane;
 import org.esa.snap.binning.AggregatorConfig;
 import org.esa.snap.binning.AggregatorDescriptor;
+import org.esa.snap.binning.TypedDescriptor;
 import org.esa.snap.binning.TypedDescriptorsRegistry;
 import org.esa.snap.core.gpf.annotations.ParameterDescriptorFactory;
 import org.esa.snap.ui.ModalDialog;
@@ -39,13 +40,11 @@ import javax.swing.WindowConstants;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 class AggregatorItemDialog extends ModalDialog {
 
@@ -77,13 +76,7 @@ class AggregatorItemDialog extends ModalDialog {
     @Override
     public int show() {
         setContent(createUI());
-        this.getJDialog().getRootPane().registerKeyboardAction(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                hide();
-            }
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
-
+        this.getJDialog().getRootPane().registerKeyboardAction(e -> close(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
         getJDialog().setResizable(false);
         return super.show();
     }
@@ -91,7 +84,6 @@ class AggregatorItemDialog extends ModalDialog {
 
     @Override
     protected boolean verifyUserInput() {
-        System.out.println("m");
         try {
             for (Property property : aggregatorPropertySet.getProperties()) {
                 property.validate(property.getValue());
@@ -122,26 +114,20 @@ class AggregatorItemDialog extends ModalDialog {
 
         final TypedDescriptorsRegistry registry = TypedDescriptorsRegistry.getInstance();
         List<AggregatorDescriptor> aggregatorDescriptors = registry.getDescriptors(AggregatorDescriptor.class);
-        List<String> aggregatorNames = new ArrayList<>();
-        for (AggregatorDescriptor aggregatorDescriptor1 : aggregatorDescriptors) {
-            aggregatorNames.add(aggregatorDescriptor1.getName());
-        }
+        List<String> aggregatorNames = aggregatorDescriptors.stream().map(TypedDescriptor::getName).collect(Collectors.toList());
         Collections.sort(aggregatorNames);
 
         aggregatorComboBox = new JComboBox<>(aggregatorNames.toArray(new String[aggregatorNames.size()]));
         aggregatorComboBox.setSelectedItem(aggregatorConfig.getName());
-        aggregatorComboBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                aggregatorDescriptor = getDescriptorFromComboBox();
-                aggregatorConfig = aggregatorDescriptor.createConfig();
-                aggregatorPropertySet = createPropertySet(aggregatorConfig);
-                JPanel aggrPropertyPanel = createPropertyPanel(aggregatorPropertySet);
-                mainPanel.remove(1);
-                mainPanel.add(aggrPropertyPanel, BorderLayout.CENTER);
-                getJDialog().getContentPane().revalidate();
-                getJDialog().pack();
-            }
+        aggregatorComboBox.addActionListener(e -> {
+            aggregatorDescriptor = getDescriptorFromComboBox();
+            aggregatorConfig = aggregatorDescriptor.createConfig();
+            aggregatorPropertySet = createPropertySet(aggregatorConfig);
+            JPanel aggrPropertyPanel = createPropertyPanel(aggregatorPropertySet);
+            mainPanel.remove(1);
+            mainPanel.add(aggrPropertyPanel, BorderLayout.CENTER);
+            getJDialog().getContentPane().revalidate();
+            getJDialog().pack();
         });
 
         JPanel aggrPropertyPanel = createPropertyPanel(aggregatorPropertySet);
@@ -152,7 +138,7 @@ class AggregatorItemDialog extends ModalDialog {
     }
 
     private PropertySet createPropertySet(AggregatorConfig config) {
-        return PropertyContainer.createMapBacked(new HashMap<String, Object>(), config.getClass(),
+        return PropertyContainer.createMapBacked(new HashMap<>(), config.getClass(),
                                                  new ParameterDescriptorFactory());
     }
 
@@ -177,31 +163,25 @@ class AggregatorItemDialog extends ModalDialog {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                final JFrame jFrame = new JFrame();
-                jFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-                final JButton aggregatorComboBox = new JButton("Show Dialog...");
-                aggregatorComboBox.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        AggregatorItemDialog dialog = new AggregatorItemDialog(jFrame, new String[]{
-                                "stein",
-                                "papier",
-                                "schere",
-                                "echse",
-                                "spock"
-                        }, new AggregatorItem(), true);
-                        dialog.getJDialog().setLocation(550, 300);
-                        dialog.show();
+        SwingUtilities.invokeLater(() -> {
+            final JFrame jFrame = new JFrame();
+            jFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+            final JButton aggregatorComboBox1 = new JButton("Show Dialog...");
+            aggregatorComboBox1.addActionListener(e -> {
+                AggregatorItemDialog dialog1 = new AggregatorItemDialog(jFrame, new String[]{
+                        "stein",
+                        "papier",
+                        "schere",
+                        "echse",
+                        "spock"
+                }, new AggregatorItem(), true);
+                dialog1.getJDialog().setLocation(550, 300);
+                dialog1.show();
 
-                    }
-                });
-                jFrame.setContentPane(aggregatorComboBox);
-                jFrame.setBounds(300, 300, 200, 80);
-                jFrame.setVisible(true);
-            }
+            });
+            jFrame.setContentPane(aggregatorComboBox1);
+            jFrame.setBounds(300, 300, 200, 80);
+            jFrame.setVisible(true);
         });
     }
 }

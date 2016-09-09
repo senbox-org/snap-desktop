@@ -275,7 +275,7 @@ public abstract class AbstractDialog {
      * @param errorMessage The message.
      */
     public void showErrorDialog(String errorMessage) {
-        showErrorDialog(errorMessage, null);
+        showErrorDialog(errorMessage, getJDialog().getTitle());
     }
 
     public void showErrorDialog(String message, String title) {
@@ -292,7 +292,7 @@ public abstract class AbstractDialog {
      * @param infoMessage The message.
      */
     public void showInformationDialog(String infoMessage) {
-        showInformationDialog(infoMessage, null);
+        showInformationDialog(infoMessage, getJDialog().getTitle());
     }
 
     public void showInformationDialog(String infoMessage, String title) {
@@ -309,7 +309,7 @@ public abstract class AbstractDialog {
      * @param warningMessage The message.
      */
     public void showWarningDialog(String warningMessage) {
-        showWarningDialog(warningMessage, null);
+        showWarningDialog(warningMessage, getJDialog().getTitle());
     }
 
     public void showWarningDialog(String warningMessage, String title) {

@@ -30,7 +30,7 @@ import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.rcp.actions.file.OpenProductAction;
-import org.esa.snap.rcp.util.Dialogs;
+import org.esa.snap.ui.AbstractDialog;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.SnapFileChooser;
 import org.openide.util.Utilities;
@@ -339,7 +339,7 @@ public class SourceProductSelector {
             chooser.setCurrentDirectory(currentDirectory);
 
             if (chooser.showDialog(window, APPROVE_BUTTON_TEXT) == JFileChooser.APPROVE_OPTION) {
-                SwingWorker cursorWorker = new CursorWorker<Product, Void>(window, chooser);
+                SwingWorker cursorWorker = new CursorWorker(window, chooser);
                 cursorWorker.execute();
                 currentDirectory = chooser.getCurrentDirectory();
                 appContext.getPreferences().setPropertyString(OpenProductAction.PREFERENCES_KEY_LAST_PRODUCT_DIR,
@@ -350,7 +350,7 @@ public class SourceProductSelector {
 
     }
 
-    private class CursorWorker<P extends ProductNode, Void> extends SwingWorker<Product, Void> {
+    private class CursorWorker extends SwingWorker<Product, Void> {
         private final Component window;
         private final JFileChooser chooser;
         private Cursor defaultCursor;
@@ -405,7 +405,7 @@ public class SourceProductSelector {
 
         private void handleError(final String message) {
             SwingUtilities.invokeLater(() -> {
-                Dialogs.showWarning("Error", message, null);
+                AbstractDialog.showWarningDialog(window, message, "Error");
             });
         }
     }

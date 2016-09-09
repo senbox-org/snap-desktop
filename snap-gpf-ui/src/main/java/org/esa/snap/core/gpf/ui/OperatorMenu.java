@@ -168,7 +168,7 @@ public class OperatorMenu {
                     readFromFile(fileChooser.getSelectedFile());
                 } catch (Exception e) {
                     Debug.trace(e);
-                    Dialogs.showError(TITLE, "Could not load parameters.\n" + e.getMessage());
+                    AbstractDialog.showErrorDialog(parentComponent, "Could not load parameters.\n" + e.getMessage(), TITLE);
                 }
             }
         }

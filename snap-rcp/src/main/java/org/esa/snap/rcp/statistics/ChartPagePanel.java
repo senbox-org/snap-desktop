@@ -19,7 +19,7 @@ package org.esa.snap.rcp.statistics;
 import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.jidesoft.swing.SimpleScrollPane;
-import org.esa.snap.rcp.util.Dialogs;
+import org.esa.snap.ui.AbstractDialog;
 import org.esa.snap.ui.GridBagUtils;
 import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.tool.ToolButtonFactory;
@@ -31,7 +31,6 @@ import org.openide.windows.TopComponent;
 import javax.swing.AbstractButton;
 import javax.swing.ImageIcon;
 import javax.swing.JLayeredPane;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.ScrollPaneConstants;
@@ -143,7 +142,7 @@ public abstract class ChartPagePanel extends PagePanel {
             try {
                 chartPanel.doSaveAs();
             } catch (IOException e1) {
-                Dialogs.showError("Error", "Could not save chart:\n" + e1.getMessage());
+                AbstractDialog.showErrorDialog(chartPanel, "Could not save chart:\n" + e1.getMessage(), "Error");
             }
         });
 

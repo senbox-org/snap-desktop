@@ -33,7 +33,7 @@ class FileSelectionPatternDialog extends ModalDialog {
         if (button == ID_OK) {
             final String text = getPattern();
             if (text == null || text.length() == 0) {
-                this.showErrorDialog("Pattern field may not be empty.", "File/Directory Selection Pattern");
+                showErrorDialog(getParent(), "Pattern field may not be empty.", "File/Directory Selection Pattern");
                 return ID_CANCEL;
             }
         }

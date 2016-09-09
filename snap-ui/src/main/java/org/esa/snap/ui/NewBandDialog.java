@@ -76,7 +76,7 @@ public class NewBandDialog extends ModalDialog {
     protected boolean verifyUserInput() {
         String name = _paramName.getValueAsText();
         if (name == null || name.length() == 0) {
-            this.showWarningDialog("The field '" + _paramName.getProperties().getLabel() + "' must not be empty"); /*I18N*/
+            showWarningDialog("The field '" + _paramName.getProperties().getLabel() + "' must not be empty"); /*I18N*/
             return false;
         }
         if (StringUtils.contains(_currentProduct.getBandNames(), name)) {

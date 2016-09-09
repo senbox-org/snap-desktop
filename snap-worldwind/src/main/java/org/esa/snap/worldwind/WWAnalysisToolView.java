@@ -29,8 +29,8 @@ import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.rcp.util.SelectionSupport;
-import org.esa.snap.ui.AbstractDialog;
 import org.esa.snap.worldwind.layers.DefaultProductLayer;
 import org.esa.snap.worldwind.layers.WWLayer;
 import org.esa.snap.worldwind.layers.WWLayerDescriptor;
@@ -364,7 +364,7 @@ public class WWAnalysisToolView extends WWBaseToolView implements WWView {
 
             return layersPanel;
         } catch (URISyntaxException e) {
-            AbstractDialog.showErrorDialog(null, "Server URL is invalid", "Invalid Server URL");
+            Dialogs.showError("Invalid Server URL", "Server URL is invalid");
             tabbedPane.setSelectedIndex(previousTabIndex);
             return null;
         }
