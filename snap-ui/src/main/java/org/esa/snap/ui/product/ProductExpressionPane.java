@@ -67,7 +67,7 @@ public class ProductExpressionPane extends ExpressionPane {
         init();
     }
 
-    public static ProductExpressionPane createBooleanExpressionPane(Product[] products, 
+    public static ProductExpressionPane createBooleanExpressionPane(Product[] products,
                                                                     Product currentProduct,
                                                                     PropertyMap preferences) {
         return new ProductExpressionPane(true, products, currentProduct, preferences);
@@ -100,7 +100,9 @@ public class ProductExpressionPane extends ExpressionPane {
 
         inclBandsCheck = new JCheckBox("Show bands");
         inclBandsCheck.addActionListener(resetNodeListAL);
-        if (!isBooleanExpressionPreferred()) {
+        if (currentProduct.getAllFlagNames().length > 0) {
+            inclBandsCheck.setSelected(false);
+        } else {
             inclBandsCheck.setSelected(true);
         }
 
@@ -118,6 +120,7 @@ public class ProductExpressionPane extends ExpressionPane {
         if (isBooleanExpressionPreferred()) {
             inclFlagsCheck.setSelected(true);
         }
+
 
         nodeList = createPatternList();
         JScrollPane scrollableNodeList = new JScrollPane(nodeList);
