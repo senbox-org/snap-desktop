@@ -373,7 +373,7 @@ public class ProductSubsetDialog extends ModalDialog {
         }
 
         metadataSubsetPane = createAnnotationSubsetPane();
-        setComponentName(metadataSubsetPane, "TiePointGridSubsetPane");
+        setComponentName(metadataSubsetPane, "MetadataSubsetPane");
         if (metadataSubsetPane != null) {
             tabbedPane.addTab("Metadata Subset", metadataSubsetPane);
         }
