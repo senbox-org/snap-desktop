@@ -100,10 +100,10 @@ public class ProductExpressionPane extends ExpressionPane {
 
         inclBandsCheck = new JCheckBox("Show bands");
         inclBandsCheck.addActionListener(resetNodeListAL);
-        if (currentProduct.getAllFlagNames().length > 0) {
-            inclBandsCheck.setSelected(false);
-        } else {
+        if(!isBooleanExpressionPreferred() || currentProduct.getAllFlagNames().length == 0) {
             inclBandsCheck.setSelected(true);
+        } else {
+            inclBandsCheck.setSelected(false);
         }
 
         inclMasksCheck = new JCheckBox("Show masks");
