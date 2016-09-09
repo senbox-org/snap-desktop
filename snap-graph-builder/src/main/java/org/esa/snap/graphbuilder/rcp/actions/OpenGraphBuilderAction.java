@@ -34,7 +34,7 @@ import java.io.InputStream;
 @ActionRegistration(
         displayName = "#CTL_GraphBuilderAction_MenuText",
         popupText = "#CTL_GraphBuilderAction_MenuText",
-        iconBase = "org/esa/snap/graphbuilder/icons/graph24.png",
+        iconBase = "org/esa/snap/graphbuilder/icons/graph.png",
         lazy = true
 )
 @ActionReferences({

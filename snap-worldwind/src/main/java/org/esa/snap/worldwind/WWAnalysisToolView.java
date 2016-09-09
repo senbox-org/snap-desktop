@@ -63,7 +63,7 @@ import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
 
 @TopComponent.Description(
         preferredID = "WWAnalysisToolView",
-        iconBase = "org/esa/snap/worldwind/icons/earth24.png",
+        iconBase = "org/esa/snap/worldwind/icons/worldwind.png",
         persistenceType = TopComponent.PERSISTENCE_NEVER
 )
 @TopComponent.Registration(

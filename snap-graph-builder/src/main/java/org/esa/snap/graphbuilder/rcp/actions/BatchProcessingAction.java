@@ -33,7 +33,7 @@ import java.awt.event.ActionEvent;
 @ActionRegistration(
         displayName = "#CTL_BatchProcessingAction_MenuText",
         popupText = "#CTL_BatchProcessingAction_MenuText",
-        iconBase = "org/esa/snap/graphbuilder/icons/batch24.png",
+        iconBase = "org/esa/snap/graphbuilder/icons/batch.png",
         lazy = true
 )
 @ActionReferences({

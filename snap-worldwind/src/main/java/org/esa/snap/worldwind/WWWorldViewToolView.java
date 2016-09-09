@@ -46,7 +46,7 @@ import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
 
 @TopComponent.Description(
         preferredID = "WWWorldMapToolView",
-        iconBase = "org/esa/snap/icons/WorldMap24.png",
+        iconBase = "org/esa/snap/icons/earth.png",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(
