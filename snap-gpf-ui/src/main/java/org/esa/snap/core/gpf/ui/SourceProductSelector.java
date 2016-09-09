@@ -30,7 +30,7 @@ import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.rcp.actions.file.OpenProductAction;
-import org.esa.snap.ui.AbstractDialog;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.SnapFileChooser;
 import org.openide.util.Utilities;
@@ -45,14 +45,15 @@ import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
@@ -61,6 +62,7 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 /**
  * WARNING: This class belongs to a preliminary API and may change in future releases.
@@ -337,41 +339,73 @@ public class SourceProductSelector {
             chooser.setCurrentDirectory(currentDirectory);
 
             if (chooser.showDialog(window, APPROVE_BUTTON_TEXT) == JFileChooser.APPROVE_OPTION) {
-                final File file = chooser.getSelectedFile();
-
-                Product product = null;
-                try {
-                    product = ProductIO.readProduct(file);
-                    if (product == null) {
-                        throw new IOException(MessageFormat.format("File ''{0}'' could not be read.", file.getPath()));
-                    }
-
-                    if (productFilter.accept(product)) {
-                        setSelectedProduct(product);
-                    } else {
-                        final String message = String.format("Product [%s] is not a valid source.",
-                                                             product.getFileLocation().getCanonicalPath());
-                        handleError(window, message);
-                        product.dispose();
-                    }
-                } catch (IOException e) {
-                    handleError(window, e.getMessage());
-                } catch (Exception e) {
-                    if (product != null) {
-                        product.dispose();
-                    }
-                    handleError(window, e.getMessage());
-                    e.printStackTrace();
-                }
+                SwingWorker cursorWorker = new CursorWorker<Product, Void>(window, chooser);
+                cursorWorker.execute();
                 currentDirectory = chooser.getCurrentDirectory();
                 appContext.getPreferences().setPropertyString(OpenProductAction.PREFERENCES_KEY_LAST_PRODUCT_DIR,
                                                               currentDirectory.getAbsolutePath());
             }
         }
 
-        private void handleError(final Component component, final String message) {
+
+    }
+
+    private class CursorWorker<P extends ProductNode, Void> extends SwingWorker<Product, Void> {
+        private final Component window;
+        private final JFileChooser chooser;
+        private Cursor defaultCursor;
+        private File file;
+
+        public CursorWorker(Component window, JFileChooser chooser) {
+            this.window = window;
+            this.chooser = chooser;
+        }
+
+        @Override
+        protected Product doInBackground() throws Exception {
+            Product product = null;
+            try {
+                defaultCursor = window.getCursor();
+                window.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+                file = chooser.getSelectedFile();
+                product = ProductIO.readProduct(file);
+            } catch (IOException e) {
+                handleError(e.getMessage());
+            }
+            return product;
+        }
+
+        @Override
+        protected void done() {
+            Product product = null;
+            try {
+                product = get();
+                if (product == null) {
+                    throw new IOException(MessageFormat.format("File ''{0}'' could not be read.", this.file.getPath()));
+                }
+                if (productFilter.accept(product)) {
+                    setSelectedProduct(product);
+                } else {
+                    final String message = String.format("Product [%s] is not a valid source.",
+                                                         product.getFileLocation().getCanonicalPath());
+                    handleError(message);
+                    product.dispose();
+                }
+
+            } catch (InterruptedException | IOException | ExecutionException e) {
+                if (product != null) {
+                    product.dispose();
+                }
+                handleError(e.getMessage());
+                e.printStackTrace();
+            } finally {
+                window.setCursor(defaultCursor);
+            }
+        }
+
+        private void handleError(final String message) {
             SwingUtilities.invokeLater(() -> {
-                AbstractDialog.showWarningDialog(component, message, "Error");
+                Dialogs.showWarning("Error", message, null);
             });
         }
     }
