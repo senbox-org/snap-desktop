@@ -5,18 +5,6 @@
  */
 package org.esa.snap.rcp.actions.file;
 
-import java.awt.event.ActionEvent;
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
 import org.esa.snap.core.dataio.ProductReader;
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.Product;
@@ -42,8 +30,17 @@ import org.openide.util.Utilities;
 import org.openide.util.WeakListeners;
 import org.openide.util.WeakSet;
 
-
-import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.EXPLORER;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import java.awt.event.ActionEvent;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Action which closes a selected product.
@@ -69,8 +66,6 @@ public final class CloseProductAction extends AbstractAction implements ContextA
 
     private final WeakSet<Product> productSet = new WeakSet<>();
     private Lookup lkp;
-    private Collection collectionSelectProduct;
-    private static Collection selectedProduct = new ArrayList();
 
     public CloseProductAction() {
         this(Utilities.actionsGlobalContext());
@@ -97,14 +92,18 @@ public final class CloseProductAction extends AbstractAction implements ContextA
     @Override
     public void resultChanged(LookupEvent lookupEvent) {
         setEnableState();
-        Lookup.Result result = (Lookup.Result) lookupEvent.getSource();
-        selectedProduct = result.allInstances();
         setActionName();
     }
 
+    private Set<Product> getSelectedProducts() {
+        Collection<? extends ProductNode> selectedNodes = lkp.lookupAll(ProductNode.class);
+        return selectedNodes.stream().map(ProductNode::getProduct).collect(Collectors.toSet());
+    }
+
     private void setActionName() {
-        if (selectedProduct.size() > 1) {
-            this.putValue(Action.NAME, String.format("Close %d Products", selectedProduct.size()));
+        Set<Product> selectedProducts = getSelectedProducts();
+        if (selectedProducts.size() > 1) {
+            this.putValue(Action.NAME, String.format("Close %d Products", selectedProducts.size()));
         } else {
             this.putValue(Action.NAME, "Close Product");
         }
@@ -116,8 +115,7 @@ public final class CloseProductAction extends AbstractAction implements ContextA
     }
 
     private void setEnableState() {
-        ProductNode productNode = lkp.lookup(ProductNode.class);
-        setEnabled(productNode != null);
+        setEnabled(lkp.lookup(ProductNode.class) != null);
     }
 
     /**
@@ -127,29 +125,16 @@ public final class CloseProductAction extends AbstractAction implements ContextA
      */
     public Boolean execute() {
         Boolean status;
-        if (selectedProduct.size() > 1) {
-            Set<Product> collect = (Set<Product>) selectedProduct.stream().collect(Collectors.toSet());
-            status = closeProducts(collect);
-            return status;
-        }
-
         if (!productSet.isEmpty()) {
             // Case 1: If productSet is not empty, action has been constructed with selected products
-            status = closeProducts(new HashSet<>(productSet));
+            status = closeProducts(productSet);
             productSet.clear();
         } else {
             // Case 2: If productSet is empty, default constructor has been called
-            ProductNode productNode = SnapApp.getDefault().getSelectedProductNode(EXPLORER);
-            if (productNode != null) {
-                Product product = productNode.getProduct();
-                status = closeProducts(new HashSet<>(Collections.singletonList(product)));
-            } else {
-                status = false;
-            }
+            status = closeProducts(getSelectedProducts());
         }
         return status;
     }
-
 
     public static Boolean closeProducts(Set<Product> products) {
         List<Product> closeList = new ArrayList<>(products);
@@ -163,11 +148,11 @@ public final class CloseProductAction extends AbstractAction implements ContextA
                 Product firstSourceProduct = findFirstSourceProduct(productToBeClosed, stillOpenProducts);
                 if (firstSourceProduct != null) {
                     Dialogs.showInformation("Close Not Possible",
-                            String.format("Can't close product '%s' because it is in use%n" +
-                                            "by product '%s'.%n" +
-                                            "Please close the latter first.",
-                                    productToBeClosed.getName(),
-                                    firstSourceProduct.getName()), null);
+                                            String.format("Can't close product '%s' because it is in use%n" +
+                                                          "by product '%s'.%n" +
+                                                          "Please close the latter first.",
+                                                          productToBeClosed.getName(),
+                                                          firstSourceProduct.getName()), null);
                     return false;
                 }
             }
@@ -176,9 +161,9 @@ public final class CloseProductAction extends AbstractAction implements ContextA
         for (Product product : products) {
             if (product.isModified()) {
                 Dialogs.Answer answer = Dialogs.requestDecision(Bundle.CTL_OpenProductActionName(),
-                        MessageFormat.format("Product ''{0}'' has been modified.\n" +
-                                        "Do you want to save it?",
-                                product.getName()), true, null);
+                                                                MessageFormat.format("Product ''{0}'' has been modified.\n" +
+                                                                                     "Do you want to save it?",
+                                                                                     product.getName()), true, null);
                 if (answer == Dialogs.Answer.YES) {
                     saveList.add(product);
                 } else if (answer == Dialogs.Answer.CANCELLED) {
