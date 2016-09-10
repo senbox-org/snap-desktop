@@ -16,7 +16,7 @@
 package org.esa.snap.classification.gpf.ui;
 
 import org.esa.snap.classification.gpf.BaseClassifier;
-import org.esa.snap.classification.gpf.VectorUtils;
+import org.esa.snap.engine_utilities.util.VectorUtils;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.io.FileUtils;
