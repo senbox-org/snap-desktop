@@ -143,7 +143,9 @@ public class DetachPixelGeoCodingAction extends AbstractAction implements Contex
         boolean state = false;
         if (productNode != null) {
             Product product = productNode.getProduct();
-            state = product.getSceneGeoCoding() instanceof BasicPixelGeoCoding;
+            if (product != null) {
+                state = product.getSceneGeoCoding() instanceof BasicPixelGeoCoding;
+            }
         }
         setEnabled(state);
     }
