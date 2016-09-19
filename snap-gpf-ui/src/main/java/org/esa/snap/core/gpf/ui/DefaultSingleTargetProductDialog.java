@@ -137,6 +137,10 @@ public class DefaultSingleTargetProductDialog extends SingleTargetProductDialog 
         return GPF.createProduct(operatorName, parameterSupport.getParameterMap(), sourceProducts);
     }
 
+    protected DefaultIOParametersPanel getDefaultIOParametersPanel() {
+        return ioParametersPanel;
+    }
+
     public String getTargetProductNameSuffix() {
         return targetProductNameSuffix;
     }
