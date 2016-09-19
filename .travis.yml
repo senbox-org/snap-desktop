@@ -4,7 +4,7 @@ sudo: false
 
 jdk:
   - oraclejdk8
-  
+
 env:
   global:
    # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
@@ -20,6 +20,10 @@ addons:
     build_command_prepend: "mvn clean"
     build_command:   "mvn -DskipTests=true compile"
     branch_pattern: coverity_scan
+    apt:
+      packages:
+      # ensure latest jdk update
+        - oracle-java8-installer
 
 before_install:
   # Work around discontinued nexus.codehaus.org (see https://github.com/travis-ci/travis-ci/issues/4629)
