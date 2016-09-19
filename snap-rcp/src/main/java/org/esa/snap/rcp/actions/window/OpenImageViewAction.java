@@ -31,7 +31,13 @@ import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.awt.UndoRedo;
+import org.openide.util.ContextAwareAction;
+import org.openide.util.Lookup;
+import org.openide.util.LookupEvent;
+import org.openide.util.LookupListener;
 import org.openide.util.NbBundle;
+import org.openide.util.Utilities;
+import org.openide.util.WeakListeners;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -39,7 +45,9 @@ import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import java.awt.event.ActionEvent;
 import java.text.MessageFormat;
+import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -58,40 +66,40 @@ import java.util.stream.Collectors;
         @ActionReference(path = "Context/Product/RasterDataNode", position = 100),
 })
 @NbBundle.Messages("CTL_OpenImageViewActionName=Open Image Window")
-public class OpenImageViewAction extends AbstractAction {
+public class OpenImageViewAction extends AbstractAction implements ContextAwareAction, LookupListener {
 
-    RasterDataNode raster;
+    private RasterDataNode rasterDataNode;
+    private Lookup lookup;
 
-    public OpenImageViewAction(RasterDataNode rasterDataNode) {
-        this.raster = rasterDataNode;
-        putValue(Action.NAME, Bundle.CTL_OpenImageViewActionName());
-        setActivateIfExists(true);
+    public OpenImageViewAction() {
+        this(Utilities.actionsGlobalContext());
     }
 
-    public static OpenImageViewAction create(RasterDataNode rasterDataNode, boolean activateIfExists) {
-        OpenImageViewAction action = new OpenImageViewAction(rasterDataNode);
-        action.setActivateIfExists(activateIfExists);
-        return action;
+
+    public OpenImageViewAction(Lookup lookup) {
+        putValue(Action.NAME, Bundle.CTL_OpenImageViewActionName());
+        this.lookup = lookup;
+        Lookup.Result<RasterDataNode> rasterDataNodeResult = lookup.lookupResult(RasterDataNode.class);
+        rasterDataNodeResult.addLookupListener(WeakListeners.create(LookupListener.class, this, rasterDataNodeResult));
+        setEnabledState();
+        setActionName();
+    }
+
+    public OpenImageViewAction(RasterDataNode rasterDataNode) {
+        putValue(Action.NAME, Bundle.CTL_OpenImageViewActionName());
+        this.rasterDataNode = rasterDataNode;
+    }
+
+    public static OpenImageViewAction create(RasterDataNode rasterDataNode) {
+        return new OpenImageViewAction(rasterDataNode);
     }
 
     public static void showImageView(RasterDataNode rasterDataNode) {
-        create(rasterDataNode, true).execute();
+        new OpenImageViewAction().openRasterDataNode(rasterDataNode);
     }
 
     public static void openImageView(RasterDataNode rasterDataNode) {
-        create(rasterDataNode, false).execute();
-    }
-
-    public boolean getActivateIfExists() {
-        Object value = getValue("activateIfExists");
-        if (value instanceof Boolean) {
-            return (Boolean) value;
-        }
-        return false;
-    }
-
-    public void setActivateIfExists(boolean value) {
-        putValue("activateIfExists", value);
+        new OpenImageViewAction().openRasterDataNode(rasterDataNode);
     }
 
     @Override
@@ -99,40 +107,112 @@ public class OpenImageViewAction extends AbstractAction {
         execute();
     }
 
+
     public void execute() {
-        if (getActivateIfExists()) {
-            ProductSceneViewTopComponent tc = getProductSceneViewTopComponent(raster);
-            if (tc != null) {
-                tc.requestSelected();
-            } else {
-                openProductSceneView();
+        List<? extends RasterDataNode> selectedRasterD = getSelectedRasterDataNode();
+        if (Objects.nonNull(selectedRasterD)) {
+            for (RasterDataNode rasterDataNode : selectedRasterD) {
+                openRasterDataNode(rasterDataNode);
             }
-        } else {
-            openProductSceneView();
+        } else if (Objects.nonNull(rasterDataNode)) {
+            openRasterDataNode(rasterDataNode);
         }
     }
 
-    private void openProductSceneView() {
+    public static ProductSceneViewTopComponent getProductSceneViewTopComponent(RasterDataNode raster) {
+        return WindowUtilities.getOpened(ProductSceneViewTopComponent.class)
+                .filter(topComponent -> topComponent.getView().getNumRasters() == 1 && raster == topComponent.getView().getRaster())
+                .findFirst()
+                .orElse(null);
+    }
+
+    public static ProductSceneView getProductSceneView(RasterDataNode raster) {
+        ProductSceneViewTopComponent component = getProductSceneViewTopComponent(raster);
+        return component != null ? component.getView() : null;
+    }
+
+    public static void updateProductSceneViewImage(final ProductSceneView view) {
+        SwingUtilities.invokeLater(view::updateImage);
+    }
+
+    public static void updateProductSceneViewImages(final RasterDataNode[] rasters) {
+        updateProductSceneViewImages(rasters, ProductSceneViewImageUpdater.DEFAULT);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // ProductSceneView helper methods
+
+    public static void updateProductSceneViewImages(final RasterDataNode[] rasters, ProductSceneViewImageUpdater updateMethod) {
+        List<ProductSceneView> views = WindowUtilities.getOpened(ProductSceneViewTopComponent.class).map(ProductSceneViewTopComponent::getView).collect(Collectors.toList());
+        for (ProductSceneView view : views) {
+            boolean updateView = false;
+            for (int j = 0; j < rasters.length && !updateView; j++) {
+                final RasterDataNode raster = rasters[j];
+                for (int k = 0; k < view.getNumRasters() && !updateView; k++) {
+                    if (view.getRaster(k) == raster) {
+                        updateView = true;
+                    }
+                }
+            }
+            if (updateView) {
+                SwingUtilities.invokeLater(() -> updateMethod.updateView(view));
+            }
+        }
+    }
+
+    @Override
+    public Action createContextAwareInstance(Lookup actionContext) {
+        return new OpenImageViewAction(actionContext);
+    }
+
+    @Override
+    public void resultChanged(LookupEvent ev) {
+        setEnabledState();
+        setActionName();
+    }
+
+    private void openRasterDataNode(RasterDataNode rasterDataNode) {
+        ProductSceneViewTopComponent tc = getProductSceneViewTopComponent(rasterDataNode);
+        if (tc != null) {
+            tc.requestSelected();
+        } else {
+            openProductSceneView(rasterDataNode);
+        }
+    }
+
+    private List<? extends RasterDataNode> getSelectedRasterDataNode() {
+        Collection<? extends RasterDataNode> rasterDataNodes = lookup.lookupAll(RasterDataNode.class);
+        List<? extends RasterDataNode> collect = rasterDataNodes.stream().collect(Collectors.toList());
+        return collect;
+    }
+
+    private void setActionName() {
+        List<? extends RasterDataNode> selectedRasterDataNode = getSelectedRasterDataNode();
+        int size = selectedRasterDataNode.size();
+        if (size > 1) {
+            this.putValue(Action.NAME, String.format("Open %d Image Window", size));
+        } else {
+            this.putValue(Action.NAME, Bundle.CTL_OpenImageViewActionName());
+        }
+
+    }
+
+    private void setEnabledState() {
+        if (Objects.nonNull(lookup)) {
+            setEnabled(lookup.lookup(RasterDataNode.class) != null);
+        }
+    }
+
+    private void openProductSceneView(RasterDataNode rasterDataNode) {
         SnapApp snapApp = SnapApp.getDefault();
         snapApp.setStatusBarMessage("Opening image view...");
 
         UIUtils.setRootFrameWaitCursor(snapApp.getMainFrame());
 
-        String progressMonitorTitle = MessageFormat.format("Creating image for ''{0}''", raster.getName());
+        String progressMonitorTitle = MessageFormat.format("Creating image for ''{0}''", rasterDataNode.getName());
 
-        ProductSceneView existingView = getProductSceneView(raster);
+        ProductSceneView existingView = getProductSceneView(rasterDataNode);
         SwingWorker worker = new ProgressMonitorSwingWorker<ProductSceneImage, Object>(snapApp.getMainFrame(), progressMonitorTitle) {
-
-            @Override
-            protected ProductSceneImage doInBackground(com.bc.ceres.core.ProgressMonitor pm) throws Exception {
-                try {
-                    return createProductSceneImage(raster, existingView, pm);
-                } finally {
-                    if (pm.isCanceled()) {
-                        raster.unloadRasterData();
-                    }
-                }
-            }
 
             @Override
             public void done() {
@@ -146,8 +226,20 @@ public class OpenImageViewAction extends AbstractAction {
                     // get the preferences: SnapApp.getInstance().getPreferences()
                     // add the view (as listener) to it
                     openDocumentWindow(view);
+
                 } catch (Exception e) {
                     snapApp.handleError(MessageFormat.format("Failed to open image view.\n\n{0}", e.getMessage()), e);
+                }
+            }
+
+            @Override
+            protected ProductSceneImage doInBackground(com.bc.ceres.core.ProgressMonitor pm) throws Exception {
+                try {
+                    return createProductSceneImage(rasterDataNode, existingView, pm);
+                } finally {
+                    if (pm.isCanceled()) {
+                        rasterDataNode.unloadRasterData();
+                    }
                 }
             }
         };
@@ -185,47 +277,6 @@ public class OpenImageViewAction extends AbstractAction {
             return sceneImage;
         } finally {
             pm.done();
-        }
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // ProductSceneView helper methods
-
-    public static ProductSceneViewTopComponent getProductSceneViewTopComponent(RasterDataNode raster) {
-        return WindowUtilities.getOpened(ProductSceneViewTopComponent.class)
-                .filter(topComponent -> topComponent.getView().getNumRasters() == 1 && raster == topComponent.getView().getRaster())
-                .findFirst()
-                .orElse(null);
-    }
-
-    public static ProductSceneView getProductSceneView(RasterDataNode raster) {
-        ProductSceneViewTopComponent component = getProductSceneViewTopComponent(raster);
-        return component != null ? component.getView() : null;
-    }
-
-    public static void updateProductSceneViewImage(final ProductSceneView view) {
-        SwingUtilities.invokeLater(view::updateImage);
-    }
-
-    public static void updateProductSceneViewImages(final RasterDataNode[] rasters) {
-        updateProductSceneViewImages(rasters, ProductSceneViewImageUpdater.DEFAULT);
-    }
-
-    public static void updateProductSceneViewImages(final RasterDataNode[] rasters, ProductSceneViewImageUpdater updateMethod) {
-        List<ProductSceneView> views = WindowUtilities.getOpened(ProductSceneViewTopComponent.class).map(ProductSceneViewTopComponent::getView).collect(Collectors.toList());
-        for (ProductSceneView view : views) {
-            boolean updateView = false;
-            for (int j = 0; j < rasters.length && !updateView; j++) {
-                final RasterDataNode raster = rasters[j];
-                for (int k = 0; k < view.getNumRasters() && !updateView; k++) {
-                    if (view.getRaster(k) == raster) {
-                        updateView = true;
-                    }
-                }
-            }
-            if (updateView) {
-                SwingUtilities.invokeLater(() -> updateMethod.updateView(view));
-            }
         }
     }
 

@@ -212,6 +212,55 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
         return stringBuilder;
     }
 
+    private static void setAncillaryVariables(Band band,
+                                              WeakHashMap<RasterDataNode, Integer> newNodes,
+                                              WeakHashMap<RasterDataNode, Integer> oldNodes) {
+        ArrayList<RasterDataNode> nodes = new ArrayList<>(newNodes.keySet());
+        Collections.sort(nodes, (n1, n2) -> newNodes.get(n1) - newNodes.get(n2));
+        for (RasterDataNode node : nodes) {
+            band.addAncillaryVariable(node);
+        }
+        oldNodes.keySet().stream().filter(oldVar -> !newNodes.containsKey(oldVar)).forEach(band::removeAncillaryVariable);
+    }
+
+    private static WeakHashMap<RasterDataNode, Integer> toWeakMap(RasterDataNode[] oldValue) {
+        WeakHashMap<RasterDataNode, Integer> oldNodes = new WeakHashMap<>();
+        for (int i = 0; i < oldValue.length; i++) {
+            RasterDataNode rasterDataNode = oldValue[i];
+            oldNodes.put(rasterDataNode, i);
+        }
+        return oldNodes;
+    }
+
+    private static void updateImages(RasterDataNode rasterDataNode, boolean validMaskPropertyChanged) {
+
+        if (rasterDataNode instanceof VirtualBand) {
+            VirtualBand virtualBand = (VirtualBand) rasterDataNode;
+            if (virtualBand.hasRasterData()) {
+                String title = "Recomputing Raster Data";
+                ProgressHandleMonitor pm = ProgressHandleMonitor.create(title);
+                Runnable operation = () -> {
+                    try {
+                        virtualBand.readRasterDataFully(pm);
+                    } catch (IOException e) {
+                        Dialogs.showError(e.getMessage());
+                    }
+                };
+                ProgressUtils.runOffEventThreadWithProgressDialog(operation, title,
+                                                                  pm.getProgressHandle(),
+                                                                  true,
+                                                                  50,  // time in ms after which wait cursor is shown
+                                                                  1000);  // time in ms after which dialog with "Cancel" button is shown
+            }
+        }
+
+        OpenImageViewAction.updateProductSceneViewImages(new RasterDataNode[]{rasterDataNode}, view -> {
+            if (validMaskPropertyChanged) {
+                view.updateNoDataImage();
+            }
+            view.updateImage();
+        });
+    }
 
     /**
      * A node that represents a {@link MetadataElement} (=ME).
@@ -316,14 +365,6 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
             setShortDescription(createToolTip(vectorDataNode));
         }
 
-        private String createToolTip(final VectorDataNode vectorDataNode) {
-            final StringBuilder tooltip = new StringBuilder();
-            append(tooltip, vectorDataNode.getDescription());
-            append(tooltip, String.format("type %s, %d feature(s)", vectorDataNode.getFeatureType().getTypeName(),
-                                          vectorDataNode.getFeatureCollection().size()));
-            return tooltip.toString();
-        }
-
         @Override
         public boolean canDestroy() {
             return true;
@@ -393,6 +434,14 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
 
             return Stream.concat(Stream.of(super.getPropertySets()), Stream.of(set)).toArray(PropertySet[]::new);
         }
+
+        private String createToolTip(final VectorDataNode vectorDataNode) {
+            final StringBuilder tooltip = new StringBuilder();
+            append(tooltip, vectorDataNode.getDescription());
+            append(tooltip, String.format("type %s, %d feature(s)", vectorDataNode.getFeatureType().getTypeName(),
+                                          vectorDataNode.getFeatureCollection().size()));
+            return tooltip.toString();
+        }
     }
 
     /**
@@ -406,18 +455,6 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
             super(tiePointGrid);
             setIconBaseWithExtension("org/esa/snap/rcp/icons/RsBandAsTiePoint16.gif");
             setShortDescription(createToolTip(tiePointGrid));
-        }
-
-        private String createToolTip(final TiePointGrid tiePointGrid) {
-            StringBuilder tooltip = new StringBuilder();
-            append(tooltip, tiePointGrid.getDescription());
-            append(tooltip, String.format("%d x %d --> %d x %d pixels",
-                                          tiePointGrid.getGridWidth(), tiePointGrid.getGridHeight(),
-                                          tiePointGrid.getRasterWidth(), tiePointGrid.getRasterHeight()));
-            if (tiePointGrid.getUnit() != null) {
-                append(tooltip, String.format(" (%s)", tiePointGrid.getUnit()));
-            }
-            return tooltip.toString();
         }
 
         @Override
@@ -434,7 +471,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
 
         @Override
         public Action getPreferredAction() {
-            return OpenImageViewAction.create(this.getProductNode(), true);
+            return OpenImageViewAction.create(this.getProductNode());
         }
 
         @Override
@@ -452,6 +489,18 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
 
 
             return Stream.concat(Stream.of(super.getPropertySets()), Stream.of(set)).toArray(PropertySet[]::new);
+        }
+
+        private String createToolTip(final TiePointGrid tiePointGrid) {
+            StringBuilder tooltip = new StringBuilder();
+            append(tooltip, tiePointGrid.getDescription());
+            append(tooltip, String.format("%d x %d --> %d x %d pixels",
+                                          tiePointGrid.getGridWidth(), tiePointGrid.getGridHeight(),
+                                          tiePointGrid.getRasterWidth(), tiePointGrid.getRasterHeight()));
+            if (tiePointGrid.getUnit() != null) {
+                append(tooltip, String.format(" (%s)", tiePointGrid.getUnit()));
+            }
+            return tooltip.toString();
         }
     }
 
@@ -481,7 +530,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
 
         @Override
         public Action getPreferredAction() {
-            return OpenImageViewAction.create(this.getProductNode(), true);
+            return OpenImageViewAction.create(this.getProductNode());
         }
     }
 
@@ -509,25 +558,6 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
                 }
             }
             setShortDescription(createToolTip(band));
-        }
-
-        private String createToolTip(final Band band) {
-            StringBuilder tooltip = new StringBuilder();
-            append(tooltip, band.getDescription());
-            if (band.getSpectralWavelength() > 0.0) {
-                append(tooltip, String.format("%s nm", band.getSpectralWavelength()));
-                if (band.getSpectralBandwidth() > 0.0) {
-                    append(tooltip, String.format("+/-%s nm", 0.5 * band.getSpectralBandwidth()));
-                }
-            }
-            append(tooltip, String.format("%d x %d pixels", band.getRasterWidth(), band.getRasterHeight()));
-            if (band instanceof VirtualBand) {
-                append(tooltip, String.format("Expr.: %s", ((VirtualBand) band).getExpression()));
-            }
-            if (band.getUnit() != null) {
-                append(tooltip, String.format(" (%s)", band.getUnit()));
-            }
-            return tooltip.toString();
         }
 
         @Override
@@ -564,7 +594,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
 
         @Override
         public Action getPreferredAction() {
-            return OpenImageViewAction.create(this.getProductNode(), true);
+            return OpenImageViewAction.create(this.getProductNode());
         }
 
         @Override
@@ -704,56 +734,25 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
             return Stream.concat(Stream.of(super.getPropertySets()), Stream.of(set)).toArray(PropertySet[]::new);
         }
 
-    }
-
-    private static void setAncillaryVariables(Band band,
-                                              WeakHashMap<RasterDataNode, Integer> newNodes,
-                                              WeakHashMap<RasterDataNode, Integer> oldNodes) {
-        ArrayList<RasterDataNode> nodes = new ArrayList<>(newNodes.keySet());
-        Collections.sort(nodes, (n1, n2) -> newNodes.get(n1) - newNodes.get(n2));
-        for (RasterDataNode node : nodes) {
-            band.addAncillaryVariable(node);
-        }
-        oldNodes.keySet().stream().filter(oldVar -> !newNodes.containsKey(oldVar)).forEach(band::removeAncillaryVariable);
-    }
-
-    private static WeakHashMap<RasterDataNode, Integer> toWeakMap(RasterDataNode[] oldValue) {
-        WeakHashMap<RasterDataNode, Integer> oldNodes = new WeakHashMap<>();
-        for (int i = 0; i < oldValue.length; i++) {
-            RasterDataNode rasterDataNode = oldValue[i];
-            oldNodes.put(rasterDataNode, i);
-        }
-        return oldNodes;
-    }
-
-    private static void updateImages(RasterDataNode rasterDataNode, boolean validMaskPropertyChanged) {
-
-        if (rasterDataNode instanceof VirtualBand) {
-            VirtualBand virtualBand = (VirtualBand) rasterDataNode;
-            if (virtualBand.hasRasterData()) {
-                String title = "Recomputing Raster Data";
-                ProgressHandleMonitor pm = ProgressHandleMonitor.create(title);
-                Runnable operation = () -> {
-                    try {
-                        virtualBand.readRasterDataFully(pm);
-                    } catch (IOException e) {
-                        Dialogs.showError(e.getMessage());
-                    }
-                };
-                ProgressUtils.runOffEventThreadWithProgressDialog(operation, title,
-                                                                  pm.getProgressHandle(),
-                                                                  true,
-                                                                  50,  // time in ms after which wait cursor is shown
-                                                                  1000);  // time in ms after which dialog with "Cancel" button is shown
+        private String createToolTip(final Band band) {
+            StringBuilder tooltip = new StringBuilder();
+            append(tooltip, band.getDescription());
+            if (band.getSpectralWavelength() > 0.0) {
+                append(tooltip, String.format("%s nm", band.getSpectralWavelength()));
+                if (band.getSpectralBandwidth() > 0.0) {
+                    append(tooltip, String.format("+/-%s nm", 0.5 * band.getSpectralBandwidth()));
+                }
             }
+            append(tooltip, String.format("%d x %d pixels", band.getRasterWidth(), band.getRasterHeight()));
+            if (band instanceof VirtualBand) {
+                append(tooltip, String.format("Expr.: %s", ((VirtualBand) band).getExpression()));
+            }
+            if (band.getUnit() != null) {
+                append(tooltip, String.format(" (%s)", band.getUnit()));
+            }
+            return tooltip.toString();
         }
 
-        OpenImageViewAction.updateProductSceneViewImages(new RasterDataNode[]{rasterDataNode}, view -> {
-            if (validMaskPropertyChanged) {
-                view.updateNoDataImage();
-            }
-            view.updateImage();
-        });
     }
 
     /**
@@ -865,9 +864,9 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
                 final Product product = raster.getProduct();
                 final RasterDataNode[] refRasters = BandArithmetic.getRefRasters(newValue, product);
                 if (refRasters.length > 0 &&
-                    (!BandArithmetic.areRastersEqualInSize(product, newValue) ||
-                     refRasters[0].getRasterHeight() != raster.getRasterHeight() ||
-                     refRasters[0].getRasterWidth() != raster.getRasterWidth())) {
+                        (!BandArithmetic.areRastersEqualInSize(product, newValue) ||
+                                refRasters[0].getRasterHeight() != raster.getRasterHeight() ||
+                                refRasters[0].getRasterWidth() != raster.getRasterWidth())) {
                     Dialogs.showInformation("Referenced rasters must all be the same size", null);
                 } else {
                     String oldValue = raster.getValidPixelExpression();
