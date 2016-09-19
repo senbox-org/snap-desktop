@@ -109,7 +109,7 @@ public class OpenImageViewAction extends AbstractAction implements ContextAwareA
 
 
     public void execute() {
-        List<? extends RasterDataNode> selectedRasterD = getSelectedRasterDataNode();
+        Collection<? extends RasterDataNode> selectedRasterD = getSelectedRasterDataNodes();
         if (Objects.nonNull(selectedRasterD)) {
             for (RasterDataNode rasterDataNode : selectedRasterD) {
                 openRasterDataNode(rasterDataNode);
@@ -180,14 +180,12 @@ public class OpenImageViewAction extends AbstractAction implements ContextAwareA
         }
     }
 
-    private List<? extends RasterDataNode> getSelectedRasterDataNode() {
-        Collection<? extends RasterDataNode> rasterDataNodes = lookup.lookupAll(RasterDataNode.class);
-        List<? extends RasterDataNode> collect = rasterDataNodes.stream().collect(Collectors.toList());
-        return collect;
+    private Collection<? extends RasterDataNode> getSelectedRasterDataNodes() {
+        return lookup.lookupAll(RasterDataNode.class);
     }
 
     private void setActionName() {
-        List<? extends RasterDataNode> selectedRasterDataNode = getSelectedRasterDataNode();
+        Collection<? extends RasterDataNode> selectedRasterDataNode = getSelectedRasterDataNodes();
         int size = selectedRasterDataNode.size();
         if (size > 1) {
             this.putValue(Action.NAME, String.format("Open %d Image Window", size));
