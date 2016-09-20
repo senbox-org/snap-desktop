@@ -138,10 +138,6 @@ public final class UiBehaviorController extends DefaultConfigController {
                 key = PREFERENCE_KEY_SHOW_SUPPRESSED)
         boolean showSuppressedDialogsAgain = false;
 
-        @Preference(label = "Beep a sound after completion of process",
-                key = PREFERENCE_KEY_SOUND_BEEP)
-        boolean beepSound = false;
-
     }
 
     protected PropertySet createPropertySet() {
@@ -167,7 +163,6 @@ public final class UiBehaviorController extends DefaultConfigController {
 
         Property listOfFilesToReopen = context.getPropertySet().getProperty(PREFERENCE_KEY_LIST_FILES_TO_REOPEN);
         Property showSuppressedAgain = context.getPropertySet().getProperty(PREFERENCE_KEY_SHOW_SUPPRESSED);
-        Property beepSound = context.getPropertySet().getProperty(PREFERENCE_KEY_SOUND_BEEP);
 
         JComponent[] autoShowNavigationComponents = registry.findPropertyEditor(autoShowNavigation.getDescriptor()).createComponents(autoShowNavigation.getDescriptor(), context);
         JComponent[] showNewBandsComponents = registry.findPropertyEditor(showNewBands.getDescriptor()).createComponents(showNewBands.getDescriptor(), context);
@@ -175,7 +170,6 @@ public final class UiBehaviorController extends DefaultConfigController {
 
         JComponent[] listOfFilesToReopenComponent = registry.findPropertyEditor(listOfFilesToReopen.getDescriptor()).createComponents(listOfFilesToReopen.getDescriptor(), context);
         JComponent[] showSuppressedAgainComponent = registry.findPropertyEditor(showSuppressedAgain.getDescriptor()).createComponents(showSuppressedAgain.getDescriptor(), context);
-        JComponent[] beepSoundComponent = registry.findPropertyEditor(beepSound.getDescriptor()).createComponents(beepSound.getDescriptor(), context);
 
         pageUI.add(PreferenceUtils.createTitleLabel("Display Settings"));
         pageUI.add(autoShowNavigationComponents[0]);
@@ -191,7 +185,6 @@ public final class UiBehaviorController extends DefaultConfigController {
         layout.setTablePadding(new Insets(1, 10, 0, 0));
         panel.add(listOfFilesToReopenComponent[1]);
         panel.add(listOfFilesToReopenComponent[0]);
-        pageUI.add(beepSoundComponent[0]);
         tableLayout.setTableFill(TableLayout.Fill.VERTICAL);
         pageUI.add(panel);
 
