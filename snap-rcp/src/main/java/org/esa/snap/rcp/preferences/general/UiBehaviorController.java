@@ -72,62 +72,7 @@ public final class UiBehaviorController extends DefaultConfigController {
 
 
     private static final String PREFERENCE_KEY_SHOW_SUPPRESSED = "showSuppressedDialogsAgain";
-
-    protected PropertySet createPropertySet() {
-        return createPropertySet(new UiBehaviorBean());
-    }
-
-    @Override
-    protected JPanel createPanel(BindingContext context) {
-        TableLayout tableLayout = new TableLayout(1);
-        tableLayout.setTableAnchor(TableLayout.Anchor.NORTHWEST);
-        tableLayout.setTablePadding(new Insets(4, 10, 0, 0));
-        tableLayout.setTableFill(TableLayout.Fill.BOTH);
-
-        tableLayout.setColumnWeightX(0, 1.0);
-
-
-        JPanel pageUI = new JPanel(tableLayout);
-
-        PropertyEditorRegistry registry = PropertyEditorRegistry.getInstance();
-        Property autoShowNavigation = context.getPropertySet().getProperty(PREFERENCE_KEY_AUTO_SHOW_NAVIGATION);
-        Property showNewBands = context.getPropertySet().getProperty(PREFERENCE_KEY_AUTO_SHOW_NEW_BANDS);
-        Property showOnlyDisplayed = context.getPropertySet().getProperty(PixelInfoView.PREFERENCE_KEY_SHOW_ONLY_DISPLAYED_BAND_PIXEL_VALUES);
-
-        Property listOfFilesToReopen = context.getPropertySet().getProperty(PREFERENCE_KEY_LIST_FILES_TO_REOPEN);
-        Property showSuppressedAgain = context.getPropertySet().getProperty(PREFERENCE_KEY_SHOW_SUPPRESSED);
-
-        JComponent[] autoShowNavigationComponents = registry.findPropertyEditor(autoShowNavigation.getDescriptor()).createComponents(autoShowNavigation.getDescriptor(), context);
-        JComponent[] showNewBandsComponents = registry.findPropertyEditor(showNewBands.getDescriptor()).createComponents(showNewBands.getDescriptor(), context);
-        JComponent[] showOnlyDisplayedComponents = registry.findPropertyEditor(showOnlyDisplayed.getDescriptor()).createComponents(showOnlyDisplayed.getDescriptor(), context);
-
-        JComponent[] listOfFilesToReopenComponent = registry.findPropertyEditor(listOfFilesToReopen.getDescriptor()).createComponents(listOfFilesToReopen.getDescriptor(), context);
-        JComponent[] showSuppressedAgainComponent = registry.findPropertyEditor(showSuppressedAgain.getDescriptor()).createComponents(showSuppressedAgain.getDescriptor(), context);
-
-        pageUI.add(PreferenceUtils.createTitleLabel("Display Settings"));
-        pageUI.add(autoShowNavigationComponents[0]);
-        pageUI.add(showNewBandsComponents[0]);
-        pageUI.add(showOnlyDisplayedComponents[0]);
-
-        pageUI.add(tableLayout.createHorizontalSpacer());
-        pageUI.add(PreferenceUtils.createTitleLabel("Other Settings"));
-        pageUI.add(showSuppressedAgainComponent[0]);
-        // Adding the number of file that can be reopen
-        TableLayout layout = new TableLayout(2);
-        JPanel panel = new JPanel(layout);
-        layout.setTablePadding(new Insets(1, 10, 0, 0));
-        panel.add(listOfFilesToReopenComponent[1]);
-        panel.add(listOfFilesToReopenComponent[0]);
-        tableLayout.setTableFill(TableLayout.Fill.VERTICAL);
-        pageUI.add(panel);
-
-        pageUI.add(tableLayout.createVerticalSpacer());
-
-        JPanel parent = new JPanel(new BorderLayout());
-        parent.add(pageUI, BorderLayout.CENTER);
-        parent.add(Box.createHorizontalStrut(100), BorderLayout.EAST);
-        return parent;
-    }
+    private static final String PREFERENCE_KEY_SOUND_BEEP = "playSoundBeepAfterProcess";
 
     @Override
     public void applyChanges() {
@@ -193,6 +138,69 @@ public final class UiBehaviorController extends DefaultConfigController {
                 key = PREFERENCE_KEY_SHOW_SUPPRESSED)
         boolean showSuppressedDialogsAgain = false;
 
+        @Preference(label = "Beep a sound after completion of process",
+                key = PREFERENCE_KEY_SOUND_BEEP)
+        boolean beepSound = false;
+
+    }
+
+    protected PropertySet createPropertySet() {
+        return createPropertySet(new UiBehaviorBean());
+    }
+
+    @Override
+    protected JPanel createPanel(BindingContext context) {
+        TableLayout tableLayout = new TableLayout(1);
+        tableLayout.setTableAnchor(TableLayout.Anchor.NORTHWEST);
+        tableLayout.setTablePadding(new Insets(4, 10, 0, 0));
+        tableLayout.setTableFill(TableLayout.Fill.BOTH);
+
+        tableLayout.setColumnWeightX(0, 1.0);
+
+
+        JPanel pageUI = new JPanel(tableLayout);
+
+        PropertyEditorRegistry registry = PropertyEditorRegistry.getInstance();
+        Property autoShowNavigation = context.getPropertySet().getProperty(PREFERENCE_KEY_AUTO_SHOW_NAVIGATION);
+        Property showNewBands = context.getPropertySet().getProperty(PREFERENCE_KEY_AUTO_SHOW_NEW_BANDS);
+        Property showOnlyDisplayed = context.getPropertySet().getProperty(PixelInfoView.PREFERENCE_KEY_SHOW_ONLY_DISPLAYED_BAND_PIXEL_VALUES);
+
+        Property listOfFilesToReopen = context.getPropertySet().getProperty(PREFERENCE_KEY_LIST_FILES_TO_REOPEN);
+        Property showSuppressedAgain = context.getPropertySet().getProperty(PREFERENCE_KEY_SHOW_SUPPRESSED);
+        Property beepSound = context.getPropertySet().getProperty(PREFERENCE_KEY_SOUND_BEEP);
+
+        JComponent[] autoShowNavigationComponents = registry.findPropertyEditor(autoShowNavigation.getDescriptor()).createComponents(autoShowNavigation.getDescriptor(), context);
+        JComponent[] showNewBandsComponents = registry.findPropertyEditor(showNewBands.getDescriptor()).createComponents(showNewBands.getDescriptor(), context);
+        JComponent[] showOnlyDisplayedComponents = registry.findPropertyEditor(showOnlyDisplayed.getDescriptor()).createComponents(showOnlyDisplayed.getDescriptor(), context);
+
+        JComponent[] listOfFilesToReopenComponent = registry.findPropertyEditor(listOfFilesToReopen.getDescriptor()).createComponents(listOfFilesToReopen.getDescriptor(), context);
+        JComponent[] showSuppressedAgainComponent = registry.findPropertyEditor(showSuppressedAgain.getDescriptor()).createComponents(showSuppressedAgain.getDescriptor(), context);
+        JComponent[] beepSoundComponent = registry.findPropertyEditor(beepSound.getDescriptor()).createComponents(beepSound.getDescriptor(), context);
+
+        pageUI.add(PreferenceUtils.createTitleLabel("Display Settings"));
+        pageUI.add(autoShowNavigationComponents[0]);
+        pageUI.add(showNewBandsComponents[0]);
+        pageUI.add(showOnlyDisplayedComponents[0]);
+
+        pageUI.add(tableLayout.createHorizontalSpacer());
+        pageUI.add(PreferenceUtils.createTitleLabel("Other Settings"));
+        pageUI.add(showSuppressedAgainComponent[0]);
+        // Adding the number of file that can be reopen
+        TableLayout layout = new TableLayout(2);
+        JPanel panel = new JPanel(layout);
+        layout.setTablePadding(new Insets(1, 10, 0, 0));
+        panel.add(listOfFilesToReopenComponent[1]);
+        panel.add(listOfFilesToReopenComponent[0]);
+        pageUI.add(beepSoundComponent[0]);
+        tableLayout.setTableFill(TableLayout.Fill.VERTICAL);
+        pageUI.add(panel);
+
+        pageUI.add(tableLayout.createVerticalSpacer());
+
+        JPanel parent = new JPanel(new BorderLayout());
+        parent.add(pageUI, BorderLayout.CENTER);
+        parent.add(Box.createHorizontalStrut(100), BorderLayout.EAST);
+        return parent;
     }
 
 }

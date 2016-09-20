@@ -17,6 +17,7 @@ package org.esa.snap.graphbuilder.rcp.dialogs;
 
 import com.bc.ceres.core.ProgressMonitor;
 import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.common.ReadOp;
 import org.esa.snap.core.gpf.graph.GraphException;
 import org.esa.snap.core.util.io.SnapFileFilter;
@@ -59,6 +60,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -202,7 +204,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         mainPanel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
 
         if (getJDialog().getJMenuBar() == null && allowGraphBuilding) {
-            final GraphsMenu operatorMenu =  new GraphsMenu(getJDialog(), this);
+            final GraphsMenu operatorMenu = new GraphsMenu(getJDialog(), this);
 
             getJDialog().setJMenuBar(operatorMenu.createDefaultMenu());
         }
@@ -302,8 +304,8 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         for (File file : files) {
             if (file.exists()) {
                 final int answer = JOptionPane.showOptionDialog(getJDialog(),
-                        "File " + file.getPath() + " already exists.\nWould you like to overwrite?", "Overwrite?",
-                        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+                                                                "File " + file.getPath() + " already exists.\nWould you like to overwrite?", "Overwrite?",
+                                                                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
 
                 if (answer == JOptionPane.NO_OPTION) {
                     return false;
@@ -348,7 +350,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         //if(ValidateAllNodes()) {
         try {
             final File file = graphEx.saveGraph();
-            if(file != null) {
+            if (file != null) {
                 setTitle(file.getName());
             }
         } catch (GraphException e) {
@@ -587,7 +589,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
             }
         } catch (Exception e) {
             String msg = e.getMessage();
-            if(msg == null || msg.isEmpty()) {
+            if (msg == null || msg.isEmpty()) {
                 msg = e.toString();
             }
             statusLabel.setText(msg);
@@ -650,6 +652,9 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
 
                 ProcessingStats stats = openTargetProducts(files);
                 statusLabel.setText(ProductFunctions.getProcessingStatistics(totalSeconds, stats.totalBytes, stats.totalPixels));
+                if (SnapApp.getDefault().getPreferences().getBoolean(GPF.GPF_BEEP_AFTER_PROCESSING, false)) {
+                    Toolkit.getDefaultToolkit().beep();
+                }
             }
         }
     }

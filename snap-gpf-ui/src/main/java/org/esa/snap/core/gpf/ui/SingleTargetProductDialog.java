@@ -29,6 +29,7 @@ import org.esa.snap.core.gpf.internal.OperatorExecutor;
 import org.esa.snap.core.gpf.internal.OperatorProductReader;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.io.FileUtils;
+import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.file.SaveProductAsAction;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.AppContext;
@@ -36,9 +37,11 @@ import org.esa.snap.ui.ModelessDialog;
 
 import javax.swing.AbstractButton;
 import javax.swing.JOptionPane;
+import java.awt.Toolkit;
 import java.io.File;
 import java.text.MessageFormat;
 import java.util.concurrent.ExecutionException;
+import java.util.prefs.Preferences;
 
 /**
  * WARNING: This class belongs to a preliminary API and may change in future releases.
@@ -153,10 +156,10 @@ public abstract class SingleTargetProductDialog extends ModelessDialog {
         String msg;
         if (isInternalException(t)) {
             msg = MessageFormat.format("An internal error occurred during the target product initialisation.\n{0}",
-                    formatThrowable(t));
+                                       formatThrowable(t));
         } else {
             msg = MessageFormat.format("A problem occurred during the target product initialisation.\n{0}",
-                    formatThrowable(t));
+                                       formatThrowable(t));
         }
         appContext.handleError(msg, t);
     }
@@ -170,10 +173,10 @@ public abstract class SingleTargetProductDialog extends ModelessDialog {
 
         if (isInternalException(t)) {
             msg = MessageFormat.format("An internal error occurred during the target product processing.\n{0}",
-                    formatThrowable(t));
+                                       formatThrowable(t));
         } else {
             msg = MessageFormat.format("A problem occurred during processing the target product processing.\n{0}",
-                    formatThrowable(t));
+                                       formatThrowable(t));
         }
         appContext.handleError(msg, t);
     }
@@ -184,8 +187,8 @@ public abstract class SingleTargetProductDialog extends ModelessDialog {
 
     private String formatThrowable(Throwable t) {
         return MessageFormat.format("Type: {0}\nMessage: {1}\n",
-                t.getClass().getSimpleName(),
-                t.getMessage());
+                                    t.getClass().getSimpleName(),
+                                    t.getMessage());
     }
 
     protected boolean canApply() {
@@ -205,7 +208,7 @@ public abstract class SingleTargetProductDialog extends ModelessDialog {
                         productName, appContext.getApplicationName()
                 );
                 final int answer = JOptionPane.showConfirmDialog(getJDialog(), message,
-                        getTitle(), JOptionPane.YES_NO_OPTION);
+                                                                 getTitle(), JOptionPane.YES_NO_OPTION);
                 if (answer != JOptionPane.YES_OPTION) {
                     return false;
                 }
@@ -220,7 +223,7 @@ public abstract class SingleTargetProductDialog extends ModelessDialog {
                         productFile.getPath()
                 );
                 final int answer = JOptionPane.showConfirmDialog(getJDialog(), message,
-                        getTitle(), JOptionPane.YES_NO_OPTION);
+                                                                 getTitle(), JOptionPane.YES_NO_OPTION);
                 if (answer != JOptionPane.YES_OPTION) {
                     return false;
                 }
@@ -343,6 +346,10 @@ public abstract class SingleTargetProductDialog extends ModelessDialog {
                 pm.done();
                 if (product != targetProduct) {
                     targetProduct.dispose();
+                }
+                Preferences preferences = SnapApp.getDefault().getPreferences();
+                if (preferences.getBoolean(GPF.GPF_BEEP_AFTER_PROCESSING, false)) {
+                    Toolkit.getDefaultToolkit().beep();
                 }
             }
             return product;
