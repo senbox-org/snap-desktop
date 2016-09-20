@@ -160,6 +160,7 @@
         </tocitem>
         <tocitem text="Tools">
             <tocitem text="Attach Pixel-based Geo-Coding" target="pixelGeoCodingSetup"/>
+            <tocitem text="Plugins" target="plugins"/>
         </tocitem>
     </tocitem>
 
