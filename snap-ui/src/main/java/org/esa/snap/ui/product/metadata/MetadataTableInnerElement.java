@@ -85,11 +85,15 @@ public class MetadataTableInnerElement implements MetadataTableElement {
     private static Object getDataElemArray(ProductData data, int index) {
         switch (data.getType()) {
             case TYPE_INT8:
+                return new byte[]{(byte)data.getElemIntAt(index)};
             case TYPE_INT16:
+                return new short[]{(short)data.getElemIntAt(index)};
             case TYPE_INT32:
                 return new int[]{data.getElemIntAt(index)};
             case TYPE_UINT8:
+                return new short[]{(short)data.getElemIntAt(index)};
             case TYPE_UINT16:
+                return new int[]{data.getElemIntAt(index)};
             case TYPE_UINT32:
                 return new long[]{data.getElemUIntAt(index)};
             case TYPE_INT64:
