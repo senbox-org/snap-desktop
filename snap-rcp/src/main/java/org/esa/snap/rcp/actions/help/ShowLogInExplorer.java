@@ -28,6 +28,7 @@ import javax.swing.AbstractAction;
 import java.awt.Desktop;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -39,7 +40,7 @@ import java.nio.file.Paths;
         displayName = "#CTL_ShowLogFileInExplorerAction_MenuText")
 @ActionReference(path = "Menu/Help", position = 300)
 @NbBundle.Messages({
-        "CTL_ShowLogFileInExplorerAction_MenuText=Show log File"
+        "CTL_ShowLogFileInExplorerAction_MenuText=Show Log Directory"
 })
 public class ShowLogInExplorer extends AbstractAction {
     @Override
@@ -50,20 +51,18 @@ public class ShowLogInExplorer extends AbstractAction {
     private void openLogFile() {
         String os = System.getProperty("os.name");
         Path userHomeDir = Paths.get(System.getProperty("user.home"));
-        Path resolve = null;
-        try {
-            if (os.equals("Darwin")) {
-                Dialogs.showInformation("Not yet implemented for Mac OS");
-            } else if (os.startsWith("Linux") || os.startsWith("LINUX")) {
-                resolve = userHomeDir.resolve("var").resolve("log");
-            } else if (os.startsWith("Windows")) {
-                resolve = userHomeDir.resolve("AppData").resolve("Roaming").resolve("SNAP").resolve("var").resolve("log");
+        Path logDir = null;
+        if (os.equals("Darwin") || os.startsWith("Linux") || os.startsWith("LINUX")) {
+            logDir = userHomeDir.resolve("./snap/system/var/log");
+        } else if (os.startsWith("Windows")) {
+            logDir = userHomeDir.resolve("AppData/Roaming/SNAP/var/log");
+        }
+        if (logDir != null && Files.exists(logDir)) {
+            try {
+                Desktop.getDesktop().open(logDir.toFile());
+            } catch (IOException e) {
+                Dialogs.showError("Could not open log directory!");
             }
-            if (resolve.isAbsolute()) {
-                Desktop.getDesktop().open(resolve.toFile());
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 }
