@@ -58,7 +58,7 @@ public class GPFController extends DefaultConfigController {
 
     static class GPFBean {
         @Preference(label = "Beep a sound after completion of process",
-                key = GPF.GPF_BEEP_AFTER_PROCESSING)
+                key = GPF.BEEP_AFTER_PROCESSING_PROPERTY)
         boolean beepSound = false;
 
     }

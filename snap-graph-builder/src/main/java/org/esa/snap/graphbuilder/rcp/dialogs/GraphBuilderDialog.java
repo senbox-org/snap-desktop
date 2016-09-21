@@ -652,7 +652,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
 
                 ProcessingStats stats = openTargetProducts(files);
                 statusLabel.setText(ProductFunctions.getProcessingStatistics(totalSeconds, stats.totalBytes, stats.totalPixels));
-                if (SnapApp.getDefault().getPreferences().getBoolean(GPF.GPF_BEEP_AFTER_PROCESSING, false)) {
+                if (SnapApp.getDefault().getPreferences().getBoolean(GPF.BEEP_AFTER_PROCESSING_PROPERTY, false)) {
                     Toolkit.getDefaultToolkit().beep();
                 }
             }
