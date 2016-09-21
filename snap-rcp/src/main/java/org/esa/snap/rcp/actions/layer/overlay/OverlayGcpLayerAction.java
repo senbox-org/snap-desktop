@@ -5,6 +5,7 @@
  */
 package org.esa.snap.rcp.actions.layer.overlay;
 
+import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -42,7 +43,8 @@ public final class OverlayGcpLayerAction extends AbstractOverlayAction {
 
     @Override
     protected boolean getActionEnabledState(ProductSceneView view) {
-        return view.getProduct().getGcpGroup().getNodeCount() > 0;
+        Product product = view.getProduct();
+        return product != null && product.getGcpGroup().getNodeCount() > 0;
     }
 
     @Override

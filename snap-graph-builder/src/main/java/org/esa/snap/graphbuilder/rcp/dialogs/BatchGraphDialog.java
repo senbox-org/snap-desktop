@@ -25,6 +25,8 @@ import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.engine_utilities.db.CommonReaders;
 import org.esa.snap.engine_utilities.db.ProductEntry;
 import org.esa.snap.engine_utilities.gpf.ProcessTimeMonitor;
+import org.esa.snap.engine_utilities.util.MemUtils;
+import org.esa.snap.engine_utilities.util.ResourceUtils;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.FileTable;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphDialog;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphExecuter;
@@ -35,8 +37,6 @@ import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.FileChooserFactory;
 import org.esa.snap.ui.ModelessDialog;
-import org.esa.snap.engine_utilities.util.MemUtils;
-import org.esa.snap.engine_utilities.util.ResourceUtils;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -676,7 +676,7 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog {
             if (closeOnDone)
                 close();
 
-            if (SnapApp.getDefault().getPreferences().getBoolean(GPF.GPF_BEEP_AFTER_PROCESSING, false)) {
+            if (SnapApp.getDefault().getPreferences().getBoolean(GPF.BEEP_AFTER_PROCESSING_PROPERTY, false)) {
                 Toolkit.getDefaultToolkit().beep();
             }
         }

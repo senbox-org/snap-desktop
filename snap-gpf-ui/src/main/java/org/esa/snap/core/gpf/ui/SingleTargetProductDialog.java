@@ -348,7 +348,7 @@ public abstract class SingleTargetProductDialog extends ModelessDialog {
                     targetProduct.dispose();
                 }
                 Preferences preferences = SnapApp.getDefault().getPreferences();
-                if (preferences.getBoolean(GPF.GPF_BEEP_AFTER_PROCESSING, false)) {
+                if (preferences.getBoolean(GPF.BEEP_AFTER_PROCESSING_PROPERTY, false)) {
                     Toolkit.getDefaultToolkit().beep();
                 }
             }

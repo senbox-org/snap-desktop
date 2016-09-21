@@ -22,12 +22,12 @@ import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.OperatorException;
 import org.esa.snap.core.gpf.graph.GraphException;
 import org.esa.snap.engine_utilities.db.CommonReaders;
+import org.esa.snap.engine_utilities.util.MemUtils;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphExecuter;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.ProgressBarProgressMonitor;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.ModelessDialog;
-import org.esa.snap.engine_utilities.util.MemUtils;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -331,7 +331,7 @@ public abstract class MultiGraphDialog extends ModelessDialog {
             } finally {
                 isProcessing = false;
                 pm.done();
-                if (SnapApp.getDefault().getPreferences().getBoolean(GPF.GPF_BEEP_AFTER_PROCESSING, false)) {
+                if (SnapApp.getDefault().getPreferences().getBoolean(GPF.BEEP_AFTER_PROCESSING_PROPERTY, false)) {
                     Toolkit.getDefaultToolkit().beep();
                 }
             }
