@@ -77,7 +77,7 @@ import java.util.stream.Collectors;
 })
 public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
 
-    public static final String SOURCE_PRODUCT_FIELD = "sourceProduct";
+    private static final String SOURCE_PRODUCT_FIELD = "sourceProduct";
     /**
      * Operator identifier.
      */
@@ -99,7 +99,7 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
 
     private List<String> warnings;
 
-    public static final String helpID = "sta_execution";
+    private static final String helpID = "sta_execution";
 
     private List<ToolParameterDescriptor> artificiallyAddedParams;
 
@@ -225,7 +225,7 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
                     operatorTask = new OperatorTask(op, ToolAdapterExecutionDialog.this::operatorCompleted);
                     ProgressHandle progressHandle = ProgressHandleFactory.createHandle(this.getTitle());
                     String progressPattern = operatorDescriptor.getProgressPattern();
-                    ConsoleConsumer consumer = null;
+                    ConsoleConsumer consumer;
                     ProgressWrapper progressWrapper = new ProgressWrapper(progressHandle, progressPattern == null || progressPattern.isEmpty());
                     consumer = new ConsoleConsumer(operatorDescriptor.getProgressPattern(),
                             operatorDescriptor.getErrorPattern(),
@@ -269,48 +269,42 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
     protected boolean canApply() {
         warnings.clear();
         try {
-            String message;
             Path toolLocation = operatorDescriptor.resolveVariables(operatorDescriptor.getMainToolFileLocation()).toPath();
             if (!(Files.exists(toolLocation) && Files.isExecutable(toolLocation))) {
-                message = String.format("Path does not exist: '%s'", toolLocation.toString());
-                logger.warning(message);
-                warnings.add(message);
+                warnings.add(logAndReturn(String.format("Path does not exist: '%s'", toolLocation)));
             }
             Path workLocation = operatorDescriptor.resolveVariables(operatorDescriptor.getWorkingDir()).toPath();
             if (!(Files.exists(workLocation))) {
-                message = String.format("Working path does not exist: '%s'", workLocation.toString());
-                logger.warning(message);
-                warnings.add(message);
+                warnings.add(logAndReturn("Working path does not exist: '%s'", workLocation));
             }
-            /*File workingDir = operatorDescriptor.resolveVariables(operatorDescriptor.getWorkingDir());
-            if (!(workingDir != null && workingDir.exists() && workingDir.isDirectory())) {
-                message = String.format("Working directory does not exist: '%s'", workingDir == null ? "null" : workingDir.getPath());
-                logger.warning(message);
-                warnings.add(message);
-            }*/
             ParameterDescriptor[] parameterDescriptors = operatorDescriptor.getParameterDescriptors();
             if (parameterDescriptors != null && parameterDescriptors.length > 0) {
                 for (ParameterDescriptor parameterDescriptor : parameterDescriptors) {
                     Class<?> dataType = parameterDescriptor.getDataType();
-                    String currentValue = parameterSupport.getParameterMap().get(parameterDescriptor.getName()).toString();
-                    if (File.class.isAssignableFrom(dataType) &&
-                            (parameterDescriptor.isNotNull() || parameterDescriptor.isNotEmpty()) &&
-                            (currentValue == null || currentValue.isEmpty() || !Files.exists(Paths.get(currentValue)))) {
-                        message = String.format("Path does not exist: '%s'", currentValue == null ? "null" : currentValue);
-                        logger.warning(message);
-                        warnings.add(message);
+                    String paramName = parameterDescriptor.getName();
+                    if (parameterSupport.getParameterMap().containsKey(paramName)) {
+                        Object value = parameterSupport.getParameterMap().get(paramName);
+                        String currentValue = value != null ? value.toString() : null;
+                        try {
+                            if (File.class.isAssignableFrom(dataType) &&
+                                    (parameterDescriptor.isNotNull() || parameterDescriptor.isNotEmpty()) &&
+                                    (currentValue == null || currentValue.isEmpty() || !Files.exists(Paths.get(currentValue)))) {
+                                warnings.add(logAndReturn("Path does not exist: '%s'", currentValue == null ? "null" : currentValue));
+                            }
+                        } catch (Exception ex) {
+                            warnings.add(logAndReturn("Cannot access path %s [%s]", currentValue, ex.getMessage()));
+                        }
                     }
                 }
             }
             for (SystemVariable variable : operatorDescriptor.getVariables()) {
                 String value = variable.getValue();
                 if (value == null || value.isEmpty()) {
-                    message = String.format("Variable %s is not set", variable.getKey());
-                    logger.warning(message);
-                    warnings.add(message);
+                    warnings.add(logAndReturn("Variable %s is not set", variable.getKey()));
                 }
             }
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            warnings.add(logAndReturn(e.getMessage()));
         }
         return warnings.size() == 0;
     }
@@ -379,6 +373,12 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
         return isValid;
     }
 
+    private String logAndReturn(String templateMessage, Object...params) {
+        String message = String.format(templateMessage, params);
+        logger.warning(message);
+        return message;
+    }
+
     private void displayWarnings() {
         StringBuilder warnMessage = new StringBuilder();
         warnMessage.append("Before executing the tool, please correct the errors below:")
@@ -436,7 +436,7 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
      * method that is to be called when the operator has finished its
      * execution.
      */
-    public class OperatorTask implements Runnable, Cancellable {
+    private class OperatorTask implements Runnable, Cancellable {
 
         private Operator operator;
         private Consumer<Product> callbackMethod;
@@ -449,7 +449,7 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
          * @param op        The operator to be executed
          * @param callback  The callback method to be invoked at completion
          */
-        public OperatorTask(Operator op, Consumer<Product> callback) {
+        OperatorTask(Operator op, Consumer<Product> callback) {
             operator = op;
             callbackMethod = callback;
         }
@@ -481,7 +481,7 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
             }
         }
 
-        public List<String> getErrors() {
+        List<String> getErrors() {
             List<String> errors = null;
             if (operator != null && operator instanceof ToolAdapterOp) {
                 errors = ((ToolAdapterOp) operator).getErrors();
@@ -498,10 +498,10 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
         }
     }
 
-    class ConsoleConsumer extends DefaultOutputConsumer {
+    private class ConsoleConsumer extends DefaultOutputConsumer {
         private ConsolePane consolePane;
 
-        public ConsoleConsumer(String progressPattern, String errorPattern, String stepPattern, ProgressMonitor pm, ConsolePane consolePane) {
+        ConsoleConsumer(String progressPattern, String errorPattern, String stepPattern, ProgressMonitor pm, ConsolePane consolePane) {
             super(progressPattern, errorPattern, stepPattern, pm);
             this.consolePane = consolePane;
         }
@@ -518,7 +518,7 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
             }
         }
 
-        public void setVisible(boolean value) {
+        void setVisible(boolean value) {
             if (this.consolePane != null) {
                 this.consolePane.setVisible(value);
             }
@@ -533,7 +533,7 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
         }
     }
 
-    class ProgressWrapper implements ProgressMonitor {
+    private class ProgressWrapper implements ProgressMonitor {
 
         private ProgressHandle progressHandle;
         private boolean isIndeterminate;
@@ -544,7 +544,7 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
             this.isIndeterminate = indeterminate;
         }
 
-        public void setConsumer(ConsoleConsumer consumer) {
+        void setConsumer(ConsoleConsumer consumer) {
             console = consumer;
         }
 
