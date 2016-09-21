@@ -18,7 +18,6 @@ package org.esa.snap.rcp.actions.window;
 import org.esa.snap.core.datamodel.MetadataElement;
 import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.netbeans.docwin.DocumentWindowManager;
-import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.metadata.MetadataViewTopComponent;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -35,14 +34,13 @@ import org.openide.util.WeakListeners;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import java.awt.event.ActionEvent;
-
-import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
+import java.util.Collection;
 
 /**
  * This action opens an Metadata View of the currently selected Metadata Node
  */
-@ActionID(category = "File", id = "OpenMetadataViewAction" )
-@ActionRegistration(displayName = "#CTL_OpenMetadataViewAction_MenuText" )
+@ActionID(category = "File", id = "OpenMetadataViewAction")
+@ActionRegistration(displayName = "#CTL_OpenMetadataViewAction_MenuText")
 @ActionReferences({
         @ActionReference(path = "Context/Product/MetadataElement", position = 100),
         @ActionReference(path = "Menu/Window", position = 120)
@@ -62,8 +60,17 @@ public class OpenMetadataViewAction extends AbstractAction implements ContextAwa
         result = lookup.lookupResult(ProductNode.class);
         result.addLookupListener(
                 WeakListeners.create(LookupListener.class, this, result));
+        setActionName();
         setEnableState();
-        putValue(Action.NAME, Bundle.CTL_OpenMetadataViewAction_MenuText());
+    }
+
+    private void setActionName() {
+        int size = getSelectedMetadataView().size();
+        if (size > 1) {
+            putValue(Action.NAME, String.format("Open %d Metadata Window", size));
+        } else {
+            putValue(Action.NAME, Bundle.CTL_OpenMetadataViewAction_MenuText());
+        }
     }
 
     @Override
@@ -74,6 +81,7 @@ public class OpenMetadataViewAction extends AbstractAction implements ContextAwa
     @Override
     public void resultChanged(LookupEvent lookupEvent) {
         setEnableState();
+        setActionName();
     }
 
     private void setEnableState() {
@@ -81,11 +89,16 @@ public class OpenMetadataViewAction extends AbstractAction implements ContextAwa
         setEnabled(productNode != null && productNode instanceof MetadataElement);
     }
 
+
+    private Collection<? extends ProductNode> getSelectedMetadataView() {
+        return lookup.lookupAll(ProductNode.class);
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
-        openMetadataView((MetadataElement) SnapApp.getDefault().getSelectedProductNode(EXPLORER));
+        getSelectedMetadataView().forEach(productNode -> openMetadataView((MetadataElement) productNode));
     }
-    
+
     public void openMetadataView(final MetadataElement element) {
         openDocumentWindow(element);
     }
