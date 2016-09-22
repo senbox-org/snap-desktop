@@ -26,7 +26,6 @@ import com.bc.ceres.swing.binding.PropertyEditorRegistry;
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.rcp.preferences.DefaultConfigController;
 import org.esa.snap.rcp.preferences.Preference;
-import org.esa.snap.rcp.preferences.PreferenceUtils;
 import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.HelpCtx;
 
@@ -46,7 +45,7 @@ import java.awt.Insets;
         id = "GPF",
         position = 10)
 @org.openide.util.NbBundle.Messages({
-        "AdvancedOption_DisplayName_GPF_Ui=GPF Settings",
+        "AdvancedOption_DisplayName_GPF_Ui=GPF",
         "AdvancedOption_Keyboard_GPF_Ui=GPF,sound beep"
 })
 public class GPFController extends DefaultConfigController {
@@ -57,7 +56,7 @@ public class GPFController extends DefaultConfigController {
     }
 
     static class GPFBean {
-        @Preference(label = "Beep a sound after completion of process",
+        @Preference(label = "Beep when processing has finished",
                 key = GPF.BEEP_AFTER_PROCESSING_PROPERTY)
         boolean beepSound = false;
 
@@ -77,10 +76,9 @@ public class GPFController extends DefaultConfigController {
 
         JPanel pageUI = new JPanel(tableLayout);
         PropertyEditorRegistry registry = PropertyEditorRegistry.getInstance();
-        Property beepSound = context.getPropertySet().getProperty("snap.gpf.beepAfterProcessing");
+        Property beepSound = context.getPropertySet().getProperty(GPF.BEEP_AFTER_PROCESSING_PROPERTY);
         JComponent[] beepSoundComponent = registry.findPropertyEditor(beepSound.getDescriptor()).createComponents(beepSound.getDescriptor(), context);
 
-        pageUI.add(PreferenceUtils.createTitleLabel("Sound Beep"));
         pageUI.add(beepSoundComponent[0]);
         tableLayout.setTableFill(TableLayout.Fill.VERTICAL);
         pageUI.add(tableLayout.createVerticalSpacer());

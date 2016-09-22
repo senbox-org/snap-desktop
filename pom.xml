@@ -16,7 +16,7 @@
     <description>Desktop GUI for SNAP based on NetBeans Platform</description>
 
     <properties>
-        <netbeans.version>RELEASE802</netbeans.version>
+        <netbeans.version>RELEASE81</netbeans.version>
         <doc-windows.version>1.0</doc-windows.version>
         <user.language>en</user.language>
     </properties>
@@ -38,10 +38,10 @@
         <module>snap-gpf-ui</module>
         <module>snap-graph-builder</module>
         <module>snap-help</module>
-		<module>snap-land-cover-ui</module>
+        <module>snap-land-cover-ui</module>
         <module>snap-pixel-extraction-ui</module>
         <module>snap-product-library</module>
-		<module>snap-raster-ui</module>
+        <module>snap-raster-ui</module>
         <module>snap-ui</module>
         <module>snap-unmix-ui</module>
         <module>snap-watermask-ui</module>
@@ -172,6 +172,16 @@
             <dependency>
                 <groupId>org.netbeans.external</groupId>
                 <artifactId>beansbinding-1.2.1</artifactId>
+                <version>${netbeans.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.netbeans.api</groupId>
+                <artifactId>org-netbeans-api-progress-nb</artifactId>
+                <version>${netbeans.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.netbeans.api</groupId>
+                <artifactId>org-openide-util-ui</artifactId>
                 <version>${netbeans.version}</version>
             </dependency>
 

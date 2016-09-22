@@ -18,6 +18,7 @@
 
 package org.esa.snap.rcp.actions.help;
 
+import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.rcp.util.Dialogs;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -30,7 +31,6 @@ import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 /**
  * @author muhammad.bc.
@@ -50,7 +50,8 @@ public class ShowLogInExplorer extends AbstractAction {
 
     private void openLogFile() {
         String os = System.getProperty("os.name");
-        Path userHomeDir = Paths.get(System.getProperty("user.home"));
+
+        Path userHomeDir = SystemUtils.getUserHomeDir().toPath();
         Path logDir = null;
         if (os.equals("Darwin") || os.startsWith("Linux") || os.startsWith("LINUX")) {
             logDir = userHomeDir.resolve("./snap/system/var/log");
