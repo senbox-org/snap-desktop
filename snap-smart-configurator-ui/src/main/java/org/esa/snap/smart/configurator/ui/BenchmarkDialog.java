@@ -113,17 +113,16 @@ public class BenchmarkDialog extends DefaultSingleTargetProductDialog {
             writeOp.setClearCacheAfterRowWrite(false);
             execOp = writeOp;
         }
-        final OperatorExecutor executor = OperatorExecutor.create(execOp);
-        //executor.execute(SubProgressMonitor.create(pm, 95));
 
-        //Temporary solution, an specific progress management for StoredGraph
+
         SubProgressMonitor pm2 = (SubProgressMonitor) SubProgressMonitor.create(pm, 95);
-        if(execOp instanceof StoredGraphOp) {
-            executor.execute(ProgressMonitor.NULL);
-            pm2.beginTask("...",1);
-            pm2.worked(1);
-        } else {
+
+        //execute
+        if(execOp.canComputeTile() || execOp.canComputeTileStack()) {
+            final OperatorExecutor executor = OperatorExecutor.create(execOp);
             executor.execute(pm2);
+        } else {
+            execOp.execute(pm2);
         }
         pm2.done();
     }
