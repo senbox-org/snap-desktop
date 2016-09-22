@@ -25,6 +25,9 @@
     <mapID target="org.netbeans.modules.autoupdate.ui.UnitTab.LOCAL" url="desktop/plugins.html"/>
     <mapID target="org.netbeans.modules.autoupdate.ui.UnitTab.INSTALLED" url="desktop/plugins.html"/>
 
+    <mapID target="gpf.option.controller" url="desktop/Gpf.html"/>
+
+
     <mapID target="desktop" url="desktop/index.html"/>
     <mapID target="mainToolbar" url="desktop/Toolbars.html"/>
     <mapID target="menuBar" url="desktop/MenuBar.html"/>
