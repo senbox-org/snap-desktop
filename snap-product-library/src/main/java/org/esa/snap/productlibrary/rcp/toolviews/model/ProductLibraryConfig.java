@@ -19,14 +19,14 @@ import org.esa.snap.core.util.DefaultPropertyMap;
 import org.esa.snap.core.util.Guardian;
 import org.esa.snap.rcp.SnapApp;
 
-import java.awt.Rectangle;
+import java.awt.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.Preferences;
 
 /**
- * This class handles the configuration of the ProductGrabber.
+ * This class handles the configuration of the Product Library.
  */
 public class ProductLibraryConfig {
 
@@ -93,7 +93,7 @@ public class ProductLibraryConfig {
     }
 
     /**
-     * Sets the window bounds of the ProductGrabber dialog.
+     * Sets the window bounds of the Product Library dialog.
      *
      * @param windowBounds the window bounds.
      */
@@ -105,7 +105,7 @@ public class ProductLibraryConfig {
     }
 
     /**
-     * Retrieves the window bounds of the ProductGrabber dialog.
+     * Retrieves the window bounds of the Product Library dialog.
      *
      * @return the window bounds.
      */
