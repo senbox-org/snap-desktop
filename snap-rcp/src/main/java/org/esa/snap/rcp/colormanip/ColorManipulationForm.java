@@ -47,13 +47,7 @@ import org.esa.snap.ui.product.ProductSceneView;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
-import javax.swing.AbstractButton;
-import javax.swing.BorderFactory;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Cursor;
@@ -108,6 +102,8 @@ class ColorManipulationForm implements SelectionSupport.Handler<ProductSceneView
     private SceneViewImageInfoChangeListener sceneViewChangeListener;
     private String titlePrefix;
     private ColorManipulationChildForm emptyForm;
+    private BrightnessContrastPanel brightnessContrastPanel;
+    private JTabbedPane tabbedPane;
 
     public ColorManipulationForm(TopComponent colorManipulationToolView, FormModel formModel) {
         Assert.notNull(colorManipulationToolView);
@@ -274,8 +270,8 @@ class ColorManipulationForm implements SelectionSupport.Handler<ProductSceneView
     }
 
     private void initContentPanel() {
-
-        moreOptionsPane = new MoreOptionsPane(this, formModel.isMoreOptionsFormCollapsedOnInit());
+        this.moreOptionsPane = new MoreOptionsPane(this, formModel.isMoreOptionsFormCollapsedOnInit());
+        this.brightnessContrastPanel = new BrightnessContrastPanel(this);
 
         resetButton = createButton("org/esa/snap/rcp/icons/Undo24.gif");
         resetButton.setName("ResetButton");
@@ -324,7 +320,6 @@ class ColorManipulationForm implements SelectionSupport.Handler<ProductSceneView
         SnapApp.getDefault().getSelectionSupport(ProductSceneView.class).addHandler(this);
     }
 
-
     public void updateMultiApplyState() {
         multiApplyButton.setEnabled(getFormModel().isValid() && !getFormModel().isContinuous3BandImage());
     }
@@ -371,7 +366,14 @@ class ColorManipulationForm implements SelectionSupport.Handler<ProductSceneView
         final MoreOptionsForm moreOptionsForm = childForm.getMoreOptionsForm();
         if (moreOptionsForm != null) {
             moreOptionsForm.updateForm();
-            moreOptionsPane.setComponent(moreOptionsForm.getContentPanel());
+
+            if (this.tabbedPane == null) {
+                this.tabbedPane = new JTabbedPane();
+                this.tabbedPane.addTab("Histogram", moreOptionsForm.getContentPanel());
+                this.tabbedPane.addTab("Brightness, contrast", this.brightnessContrastPanel);
+            }
+
+            this.moreOptionsPane.setComponent(this.tabbedPane);
         }
     }
 
@@ -677,14 +679,25 @@ class ColorManipulationForm implements SelectionSupport.Handler<ProductSceneView
             setProductSceneView(null);
         }
         setProductSceneView(newValue);
+        if (this.brightnessContrastPanel != null) {
+            if (oldValue != null) {
+                this.brightnessContrastPanel.productSceneViewDeselected(oldValue);
+            }
+            if (newValue != null) {
+                this.brightnessContrastPanel.productSceneViewSelected(newValue);
+            }
+        }
     }
 
     private class SceneViewImageInfoChangeListener implements PropertyChangeListener {
 
+        public SceneViewImageInfoChangeListener() {
+        }
+
         @Override
         public void propertyChange(PropertyChangeEvent evt) {
             if (ProductSceneView.PROPERTY_NAME_IMAGE_INFO.equals(evt.getPropertyName())) {
-                boolean correctFormForRaster = getFormModel().getRaster() == getFormModel().getProductSceneView().getRaster();
+                boolean correctFormForRaster = (getFormModel().getRaster() == getFormModel().getProductSceneView().getRaster());
                 if (correctFormForRaster) {
                     ImageInfo modifiedImageInfo = (ImageInfo) evt.getNewValue();
                     getFormModel().setModifiedImageInfo(modifiedImageInfo);
