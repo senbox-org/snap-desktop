@@ -18,7 +18,7 @@ import java.util.Map;
 /**
  * Created by jcoravu on 9/27/2016.
  */
-public class BrightnessContrastPanel extends JPanel {
+class BrightnessContrastPanel extends JPanel {
     private final ColorManipulationForm parentForm;
     private SliderPanel brightnessPanel;
     private SliderPanel contrastPanel;
@@ -26,7 +26,7 @@ public class BrightnessContrastPanel extends JPanel {
     private PropertyChangeListener imageInfoChangeListener;
     private Map<ProductSceneView, BrightnessContrastData> visibleProductScenes;
 
-    public BrightnessContrastPanel(ColorManipulationForm parentForm) {
+    BrightnessContrastPanel(ColorManipulationForm parentForm) {
         super(new BorderLayout());
 
         this.parentForm = parentForm;

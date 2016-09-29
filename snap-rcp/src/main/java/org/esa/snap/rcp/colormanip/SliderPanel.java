@@ -16,13 +16,13 @@ import java.awt.event.MouseListener;
  *
  * @author Jean Coravu
  */
-public class SliderPanel extends JPanel {
+class SliderPanel extends JPanel {
     private final ChangeListener localChangeListener;
-    private JSlider slider;
-    private JTextField input;
-    private ChangeListener sliderChangeListener;
+    private final JSlider slider;
+    private final JTextField input;
+    private final ChangeListener sliderChangeListener;
+    private final JLabel titleLabel;
     private int previousValue;
-    private JLabel titleLabel;
 
     /**
      * Constructs a new item.
@@ -30,7 +30,7 @@ public class SliderPanel extends JPanel {
      * @param title the panel title
      * @param sliderChangeListener the slider listener
      */
-    public SliderPanel(String title, ChangeListener sliderChangeListener) {
+    SliderPanel(String title, ChangeListener sliderChangeListener) {
         super(new BorderLayout());
 
         int maximumNumber = 100;
@@ -56,9 +56,11 @@ public class SliderPanel extends JPanel {
         BasicSliderUI.TrackListener trackListener = ui.new TrackListener() {
             @Override
             public void mouseClicked(MouseEvent event) {
-                Point mousePoint = event.getPoint();
-                int value = ui.valueForXPosition(mousePoint.x);
-                slider.setValue(value);
+                if (slider.isEnabled()) {
+                    Point mousePoint = event.getPoint();
+                    int value = ui.valueForXPosition(mousePoint.x);
+                    slider.setValue(value);
+                }
             }
 
             @Override

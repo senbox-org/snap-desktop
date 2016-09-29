@@ -370,7 +370,7 @@ class ColorManipulationForm implements SelectionSupport.Handler<ProductSceneView
             if (this.tabbedPane == null) {
                 this.tabbedPane = new JTabbedPane();
                 this.tabbedPane.addTab("Histogram", moreOptionsForm.getContentPanel());
-                this.tabbedPane.addTab("Brightness, contrast", this.brightnessContrastPanel);
+                this.tabbedPane.addTab("Brightness/Contrast", this.brightnessContrastPanel);
             }
 
             this.moreOptionsPane.setComponent(this.tabbedPane);
