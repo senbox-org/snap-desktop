@@ -154,6 +154,14 @@ public abstract class SingleTargetProductDialog extends ModelessDialog {
 
     protected void handleInitialisationError(Throwable t) {
         String msg;
+        if (t instanceof OperatorCancelException) {
+            msg = MessageFormat.format("An internal error occurred during the target product initialisation.\n{0}",
+                                       formatThrowable(t));
+            showErrorDialog(msg);
+
+            return;
+        }
+
         if (isInternalException(t)) {
             msg = MessageFormat.format("An internal error occurred during the target product initialisation.\n{0}",
                                        formatThrowable(t));
