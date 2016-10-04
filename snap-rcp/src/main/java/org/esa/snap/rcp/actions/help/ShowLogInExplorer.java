@@ -49,13 +49,13 @@ public class ShowLogInExplorer extends AbstractAction {
     }
 
     private void openLogFile() {
-        String os = System.getProperty("os.name");
+        String os = System.getProperty("os.name").toLowerCase();
 
         Path userHomeDir = SystemUtils.getUserHomeDir().toPath();
         Path logDir = null;
-        if (os.equals("Darwin") || os.startsWith("Linux") || os.startsWith("LINUX")) {
-            logDir = userHomeDir.resolve("./snap/system/var/log");
-        } else if (os.startsWith("Windows")) {
+        if (os.equals("darwin") || os.startsWith("linux")) {
+            logDir = userHomeDir.resolve(".snap/system/var/log");
+        } else if (os.startsWith("windows")) {
             logDir = userHomeDir.resolve("AppData/Roaming/SNAP/var/log");
         }
         if (logDir != null && Files.exists(logDir)) {
