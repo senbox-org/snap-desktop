@@ -50,10 +50,9 @@ public class ShowLogInExplorer extends AbstractAction {
 
     private void openLogFile() {
         String os = System.getProperty("os.name").toLowerCase();
-
         Path userHomeDir = SystemUtils.getUserHomeDir().toPath();
         Path logDir = null;
-        if (os.equals("darwin") || os.startsWith("linux")) {
+        if (isLinuxOrMac(os)) {
             logDir = userHomeDir.resolve(".snap/system/var/log");
         } else if (os.startsWith("windows")) {
             logDir = userHomeDir.resolve("AppData/Roaming/SNAP/var/log");
@@ -65,5 +64,9 @@ public class ShowLogInExplorer extends AbstractAction {
                 Dialogs.showError("Could not open log directory!");
             }
         }
+    }
+
+    private Boolean isLinuxOrMac(String os) {
+        return os.equals("darwin") || os.startsWith("linux") || os.startsWith("mac os");
     }
 }
