@@ -67,6 +67,6 @@ public class ShowLogInExplorer extends AbstractAction {
     }
 
     private Boolean isLinuxOrMac(String os) {
-        return os.equals("darwin") || os.startsWith("linux") || os.startsWith("mac os");
+        return os.equals("darwin") || os.startsWith("linux") || os.startsWith("mac") ;
     }
 }
