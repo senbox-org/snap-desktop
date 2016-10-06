@@ -36,13 +36,11 @@ import java.nio.file.Path;
  * @author muhammad.bc.
  */
 @ActionID(category = "Help", id = "ShowLogFileInExplorerAction")
-@ActionRegistration(
-        displayName = "#CTL_ShowLogFileInExplorerAction_MenuText")
+@ActionRegistration(displayName = "#CTL_ShowLogFileInExplorerAction_MenuText")
 @ActionReference(path = "Menu/Help", position = 300)
-@NbBundle.Messages({
-        "CTL_ShowLogFileInExplorerAction_MenuText=Show Log Directory"
-})
+@NbBundle.Messages({"CTL_ShowLogFileInExplorerAction_MenuText=Show Log Directory"})
 public class ShowLogInExplorer extends AbstractAction {
+
     @Override
     public void actionPerformed(ActionEvent e) {
         openLogFile();
@@ -66,7 +64,7 @@ public class ShowLogInExplorer extends AbstractAction {
         }
     }
 
-    private Boolean isLinuxOrMac(String os) {
-        return os.equals("darwin") || os.startsWith("linux") || os.startsWith("mac") ;
+    private boolean isLinuxOrMac(String os) {
+        return os.startsWith("darwin") || os.startsWith("mac") || os.startsWith("linux");
     }
 }
