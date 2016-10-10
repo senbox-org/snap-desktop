@@ -1,23 +1,9 @@
-/*
- *
- *  * Copyright (C) 2015 CS SI
- *  *
- *  * This program is free software; you can redistribute it and/or modify it
- *  * under the terms of the GNU General Public License as published by the Free
- *  * Software Foundation; either version 3 of the License, or (at your option)
- *  * any later version.
- *  * This program is distributed in the hope that it will be useful, but WITHOUT
- *  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- *  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- *  * more details.
- *  *
- *  * You should have received a copy of the GNU General Public License along
- *  * with this program; if not, see http://www.gnu.org/licenses/
- *
- */
 package org.esa.snap.ui.tooladapter.dialogs;
 
-import com.bc.ceres.binding.ValidationException;
+import com.bc.ceres.binding.*;
+import com.bc.ceres.swing.binding.BindingContext;
+import com.bc.ceres.swing.binding.internal.FileEditor;
+import org.esa.snap.core.gpf.annotations.ParameterDescriptorFactory;
 import org.esa.snap.core.gpf.descriptor.*;
 import org.esa.snap.core.gpf.descriptor.template.TemplateException;
 import org.esa.snap.core.gpf.descriptor.template.TemplateFile;
@@ -29,7 +15,6 @@ import org.esa.snap.ui.tool.ToolButtonFactory;
 import org.esa.snap.ui.tooladapter.actions.EscapeAction;
 import org.esa.snap.ui.tooladapter.model.AutoCompleteTextArea;
 import org.esa.snap.ui.tooladapter.model.OperatorParametersTable;
-import org.esa.snap.ui.tooladapter.model.PropertyMemberUIWrapper;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -41,6 +26,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -50,96 +36,100 @@ import java.util.stream.Collectors;
  * @author Ramona Manda
  */
 public class TemplateParameterEditorDialog extends ModalDialog {
+    private static final Logger logger = Logger.getLogger(TemplateParameterEditorDialog.class.getName());
+
+    private static String EMPTY_FILE_CONTENT = "[no content]";
 
     private TemplateParameterDescriptor parameter;
     private ToolAdapterOperatorDescriptor fakeOperatorDescriptor;
     private ToolAdapterOperatorDescriptor parentDescriptor;
-    private PropertyMemberUIWrapper fileWrapper;
     private AppContext appContext;
-    private AutoCompleteTextArea fileContentArea = new AutoCompleteTextArea("", 10, 10);
-    OperatorParametersTable paramsTable;
-    private Logger logger;
-    private PropertyChangeListener pcListener;
-    private static String EMPTY_FILE_CONTENT = "[no content]";
+    private AutoCompleteTextArea fileContentArea;
+    private OperatorParametersTable paramsTable;
+    private BindingContext paramContext;
 
-    public TemplateParameterEditorDialog(AppContext appContext, String title, String helpID) {
-        super(appContext.getApplicationWindow(), title, ID_OK_CANCEL, helpID);
+    public TemplateParameterEditorDialog(AppContext appContext, TemplateParameterDescriptor parameter, ToolAdapterOperatorDescriptor parent) {
+        super(appContext.getApplicationWindow(), parameter.getName(), ID_OK_CANCEL, "");
+
         this.appContext = appContext;
-        this.logger = Logger.getLogger(TemplateParameterEditorDialog.class.getName());
         EscapeAction.register(getJDialog());
-    }
 
-    public TemplateParameterEditorDialog(AppContext appContext, String helpID, TemplateParameterDescriptor parameter, PropertyMemberUIWrapper fileWrapper, ToolAdapterOperatorDescriptor parent) {
-        this(appContext, parameter.getName(), helpID);
+        this.fileContentArea = new AutoCompleteTextArea("", 10, 10);
         this.parameter = parameter;
         this.parentDescriptor = parent;
 
         try {
-             parameter.setTemplateEngine(parentDescriptor.getTemplateEngine());
-         } catch (TemplateException e) {
-             e.printStackTrace();
-             logger.warning(e.getMessage());
-         }
+            PropertyDescriptor propertyDescriptor = ParameterDescriptorFactory.convert(this.parameter, new ParameterDescriptorFactory().getSourceProductMap());
+            DefaultPropertySetDescriptor propertySetDescriptor = new DefaultPropertySetDescriptor();
+            propertySetDescriptor.addPropertyDescriptor(propertyDescriptor);
+            PropertyContainer paramContainer = PropertyContainer.createMapBacked(new HashMap<>(), propertySetDescriptor);
+            this.paramContext = new BindingContext(paramContainer);
+        } catch (ConversionException e) {
+            logger.warning(e.getMessage());
+        }
+
+        try {
+            parameter.setTemplateEngine(parentDescriptor.getTemplateEngine());
+        } catch (TemplateException e) {
+            e.printStackTrace();
+            logger.warning(e.getMessage());
+        }
 
         this.fakeOperatorDescriptor = new ToolAdapterOperatorDescriptor("OperatorForParameters", ToolAdapterOp.class);
-        for(ToolParameterDescriptor param : parameter.getParameterDescriptors()) {
+        for (ToolParameterDescriptor param : parameter.getParameterDescriptors()) {
             this.fakeOperatorDescriptor.getToolParameterDescriptors().add(new ToolParameterDescriptor(param));
         }
-        this.fileWrapper = fileWrapper;
-        if(this.fileWrapper.getContext().getPropertySet().getProperty(this.parameter.getName()).getValue() == null){
-            try {
-                this.fileWrapper.getContext().getPropertySet().getProperty(this.parameter.getName()).setValue(parameter.getTemplate().getTemplatePath());
-            } catch (ValidationException e) {
-                e.printStackTrace();
-                logger.warning(e.getMessage());
-            }
-        }
-        pcListener = evt -> updateFileAreaContent();
-        this.fileWrapper.getContext().addPropertyChangeListener(pcListener);
-        setContent(createMainPanel());
-        pcListener = evt -> updateFileAreaContent();
+        PropertyChangeListener pcListener = evt -> updateFileAreaContent();
+        this.paramContext.addPropertyChangeListener(pcListener);
+
+        addComponents();
     }
 
-    public JPanel createParametersPanel() {
+    private JPanel createParametersPanel() {
         JPanel paramsPanel = new JPanel();
         BoxLayout layout = new BoxLayout(paramsPanel, BoxLayout.PAGE_AXIS);
         paramsPanel.setLayout(layout);
-        AbstractButton addParamBut = ToolButtonFactory.createButton(UIUtils.loadImageIcon("/org/esa/snap/resources/images/icons/Add16.png"),
-                false);
+        AbstractButton addParamBut = ToolButtonFactory.createButton(UIUtils.loadImageIcon("/org/esa/snap/resources/images/icons/Add16.png"), false);
         addParamBut.setAlignmentX(Component.LEFT_ALIGNMENT);
         paramsPanel.add(addParamBut);
 
-        paramsTable =  new OperatorParametersTable(this.fakeOperatorDescriptor, appContext);
+        this.paramsTable =  new OperatorParametersTable(this.fakeOperatorDescriptor, appContext);
         JScrollPane tableScrollPane = new JScrollPane(paramsTable);
         tableScrollPane.setPreferredSize(new Dimension(500, 130));
         tableScrollPane.setAlignmentX(Component.LEFT_ALIGNMENT);
         paramsPanel.add(tableScrollPane);
-        addParamBut.addActionListener((ActionEvent e) -> paramsTable.addParameterToTable(new ToolParameterDescriptor("parameterName", String.class)));
+        addParamBut.addActionListener((ActionEvent e) -> paramsTable.addParameterToTable());
         TitledBorder title = BorderFactory.createTitledBorder("Template Parameters");
         paramsPanel.setBorder(title);
         return paramsPanel;
     }
 
-    private JPanel createMainPanel(){
+    private Property getProperty() {
+        Property[] properties = this.paramContext.getPropertySet().getProperties();
+        return properties[0];
+    }
 
-        BorderLayout layout = new BorderLayout();
-        JPanel mainPanel = new JPanel(layout);
-        mainPanel.setPreferredSize(new Dimension(800, 550));
-
-        JPanel filePanel = new JPanel();
-        filePanel.add(new JLabel("File:"));
+    private void addComponents() {
+        Property property = getProperty();
         try {
-            JComponent fileEditor = this.fileWrapper.getUIComponent();
-            fileEditor.setPreferredSize(new Dimension(770, 25));
-            filePanel.add(fileEditor);
-        } catch (Exception e) {
+            property.setValue(this.parameter.getTemplate().getTemplatePath());
+        } catch (ValidationException e) {
             logger.warning(e.getMessage());
         }
 
+        FileEditor fileEditor = new FileEditor();
+        JComponent filePathComponent = fileEditor.createEditorComponent(property.getDescriptor(), this.paramContext);
+        filePathComponent.setPreferredSize(new Dimension(770, 25));
+
+        JPanel filePanel = new JPanel();
+        filePanel.add(new JLabel("File:"));
+        filePanel.add(filePathComponent);
+
+        JPanel mainPanel = new JPanel(new BorderLayout());
+        mainPanel.setPreferredSize(new Dimension(800, 550));
         mainPanel.add(filePanel, BorderLayout.PAGE_START);
 
         //to create UI component for outputFile
-
         fileContentArea.setAutoCompleteEntries(getAutocompleteEntries());
         fileContentArea.setTriggerChar('$');
         mainPanel.add(new JScrollPane(fileContentArea), BorderLayout.CENTER);
@@ -148,65 +138,39 @@ public class TemplateParameterEditorDialog extends ModalDialog {
 
         mainPanel.add(createParametersPanel(), BorderLayout.PAGE_END);
 
-        return mainPanel;
+        setContent(mainPanel);
     }
 
-    private void updateFileAreaContent(){
+    private void updateFileAreaContent() {
         String result = null;
         try {
-            File file = fileWrapper.getContext().getPropertySet().getProperty(this.parameter.getName()).getValue();
-            parameter.getTemplate().setFileName(file.getName());
-            if(!file.isAbsolute()){
-                file = parameter.getTemplate().getTemplatePath();
+            File file = getProperty().getValue();
+            this.parameter.getTemplate().setFileName(file.getName());
+            if (!file.isAbsolute()) {
+                file = this.parameter.getTemplate().getTemplatePath();
             }
-            if(file.exists()){
+            if (file.exists()) {
                 result = new String(Files.readAllBytes(file.toPath()));
             }
-            /*File defaultValue = ToolAdapterIO.ensureLocalCopy(fileWrapper.getContext().getPropertySet().getProperty(this.parameter.getName()).getValue(),
-                                                              parentDescriptor.getAlias());
-            File actualValue = fileWrapper.getContext().getPropertySet().getProperty(parameter.getName()).getValue();
-            File templatePath = parameter.getTemplate().getTemplatePath();
-
-            //File actualValue = fileWrapper.getContext().getPropertySet().getProperty(parameter.getName()).getValue();
-            if (actualValue.getName().equals(templatePath.getName()) && !actualValue.isAbsolute()) {
-                actualValue = templatePath;
-                fileWrapper.getContext().removePropertyChangeListener(pcListener);
-                fileWrapper.getContext().getPropertySet().getProperty(parameter.getName()).setValue(actualValue);
-                fileWrapper.getContext().addPropertyChangeListener(pcListener);
-                result = parameter.getTemplate().getContents();
-            } else {
-                if (!actualValue.exists()) {
-                    if (templatePath.exists()) {
-                        Files.copy(templatePath.toPath(), actualValue.toPath());
-                    } else {
-                        actualValue.createNewFile();
-                    }
-                }
-                if (actualValue.length() > 0) {
-                    parameter.setTemplate(TemplateFile.fromFile(actualValue.toString()));
-                    result = parameter.getTemplate().getContents();
-                } else {
-                    parameter.getTemplate().setFileName(actualValue.toString());
-                    result = fileContentArea.getText();
-                }
-            }*/
         } catch (Exception e) {
             logger.warning(e.getMessage());
             showWarningDialog("There was an error loading the template file: " + e.getMessage());
         }
         if (result != null){
-            fileContentArea.setText(result);
-            fileContentArea.setCaretPosition(0);
+            this.fileContentArea.setText(result);
+            this.fileContentArea.setCaretPosition(0);
         } else {
-            fileContentArea.setText(EMPTY_FILE_CONTENT);
+            this.fileContentArea.setText(EMPTY_FILE_CONTENT);
         }
     }
 
     @Override
     protected void onOK() {
         super.onOK();
+
         TemplateFile template = this.parameter.getTemplate();
         this.parameter.setDefaultValue(template.getFileName());
+
         //save parameters
         parameter.getParameterDescriptors().clear();
         for (ToolParameterDescriptor subparameter : fakeOperatorDescriptor.getToolParameterDescriptors()) {
@@ -239,3 +203,4 @@ public class TemplateParameterEditorDialog extends ModalDialog {
         return entries;
     }
 }
+

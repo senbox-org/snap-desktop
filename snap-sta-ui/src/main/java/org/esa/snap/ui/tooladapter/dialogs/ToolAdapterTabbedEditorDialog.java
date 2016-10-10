@@ -23,10 +23,7 @@ import com.bc.ceres.binding.validators.NotEmptyValidator;
 import com.bc.ceres.swing.binding.PropertyEditor;
 import com.bc.ceres.swing.binding.PropertyEditorRegistry;
 import com.bc.ceres.swing.binding.internal.TextFieldEditor;
-import org.esa.snap.core.gpf.descriptor.SystemDependentVariable;
-import org.esa.snap.core.gpf.descriptor.SystemVariable;
-import org.esa.snap.core.gpf.descriptor.TemplateParameterDescriptor;
-import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
+import org.esa.snap.core.gpf.descriptor.*;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterConstants;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.UIUtils;
@@ -38,6 +35,8 @@ import org.esa.snap.utils.SpringUtilities;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.text.MessageFormat;
 
 import static org.esa.snap.utils.SpringUtilities.DEFAULT_PADDING;
@@ -289,10 +288,7 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
         tableScrollPane.setAlignmentX(Component.LEFT_ALIGNMENT);
         paramsPanel.add(tableScrollPane);
         addParamBut.addActionListener(e -> {
-            paramsTable.addParameterToTable(new TemplateParameterDescriptor("parameterName", String.class));
-            int rowIndex = paramsTable.getRowCount() - 1;
-            paramsTable.setRowSelectionInterval(rowIndex, rowIndex);
-            paramsTable.setEditingRow(rowIndex);
+            paramsTable.addParameterToTable();
         });
         return paramsPanel;
     }

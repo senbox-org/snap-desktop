@@ -17,34 +17,31 @@
  */
 package org.esa.snap.ui.tooladapter.dialogs;
 
-import com.bc.ceres.binding.DefaultPropertySetDescriptor;
-import com.bc.ceres.binding.PropertyContainer;
-import com.bc.ceres.binding.PropertyDescriptor;
-import com.bc.ceres.binding.ValidationException;
+import com.bc.ceres.binding.*;
 import com.bc.ceres.binding.converters.ArrayConverter;
+import com.bc.ceres.binding.converters.FloatConverter;
+import com.bc.ceres.binding.converters.IntegerConverter;
+import com.bc.ceres.binding.converters.NumberConverter;
+import com.bc.ceres.swing.binding.Binding;
 import com.bc.ceres.swing.binding.BindingContext;
-import com.bc.ceres.swing.binding.internal.CheckBoxEditor;
-import com.bc.ceres.swing.binding.internal.TextFieldEditor;
-import org.apache.commons.collections.BidiMap;
-import org.apache.commons.collections.bidimap.DualHashBidiMap;
+import com.bc.ceres.swing.binding.ComponentAdapter;
+import com.bc.ceres.swing.binding.internal.*;
 import org.esa.snap.core.gpf.annotations.ParameterDescriptorFactory;
+import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
 import org.esa.snap.core.gpf.descriptor.ToolParameterDescriptor;
+import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterConstants;
 import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.ui.tooladapter.actions.EscapeAction;
-import org.esa.snap.ui.tooladapter.model.PropertyMemberUIWrapper;
-import org.esa.snap.ui.tooladapter.model.PropertyMemberUIWrapperFactory;
-import org.esa.snap.ui.tooladapter.validators.RequiredFieldValidator;
-import org.esa.snap.ui.tooladapter.validators.TypedValueValidator;
+import org.esa.snap.ui.tooladapter.model.OperatorParametersTable;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.io.File;
-import java.util.HashMap;
+import java.util.*;
 import java.util.logging.Logger;
 
 /**
@@ -53,193 +50,585 @@ import java.util.logging.Logger;
  * @author Ramona Manda
  */
 public class ToolParameterEditorDialog extends ModalDialog {
+    private static final Logger logger = Logger.getLogger(ToolAdapterEditorDialog.class.getName());
+
+    public static final String helpID = "sta_editor";
+
+    private static final Map<String, Class<?>> typesMap = new LinkedHashMap<String, Class<?>>();
+    static {
+        typesMap.put("String", String.class);
+        typesMap.put("File", File.class);
+        typesMap.put("Folder", File.class);
+        typesMap.put("Integer", Integer.class);
+        typesMap.put("Decimal", Float.class);
+        typesMap.put("List", String[].class);
+        typesMap.put("Boolean", Boolean.class);
+    }
 
     private ToolParameterDescriptor parameter;
     private ToolParameterDescriptor oldParameter;
     private PropertyContainer container;
     private BindingContext valuesContext;
     private BindingContext paramContext;
-    private PropertyMemberUIWrapper uiWrapper;
-    private JComponent editorComponent;
+    private JComponent defaultValueComponent;
     private JPanel mainPanel;
-    public static final String helpID = "sta_editor";
-    private Logger logger;
+    private JTextField valueSetTextComponent;
+    private final ToolAdapterOperatorDescriptor operator;
 
-    private static final BidiMap typesMap;
+    public ToolParameterEditorDialog(AppContext appContext, ToolAdapterOperatorDescriptor operator, ToolParameterDescriptor inputParameter) {
+        super(appContext.getApplicationWindow(), inputParameter.getName(), ID_OK_CANCEL, helpID);
 
-    static{
-        typesMap = new DualHashBidiMap();
-        typesMap.put("String", String.class);
-        typesMap.put("File", File.class);
-        typesMap.put("Integer", Integer.class);
-        typesMap.put("List", String[].class);
-        typesMap.put("Boolean", Boolean.class);
-    }
+        this.operator = operator;
+        this.oldParameter = inputParameter;
 
+        this.parameter = new ToolParameterDescriptor(inputParameter);
+        this.parameter.setDeprecated(inputParameter.isDeprecated()); // copy the value
 
-    public ToolParameterEditorDialog(AppContext appContext, String title, ToolParameterDescriptor parameter, Object value) throws Exception{
-        super(appContext.getApplicationWindow(), parameter.getName(), ID_OK_CANCEL, helpID);
-        this.oldParameter = parameter;
-        this.parameter = new ToolParameterDescriptor(parameter);
-        this.parameter.setDefaultValue(value != null ? value.toString() : parameter.getDataType().newInstance().toString());
+        this.container = PropertyContainer.createObjectBacked(this.parameter);
+        this.valuesContext = new BindingContext(this.container);
 
-        container = PropertyContainer.createObjectBacked(parameter);
-        valuesContext = new BindingContext(container);
-        createContextForValueEditor();
+        addComponents();
 
-        this.logger = Logger.getLogger(ToolAdapterEditorDialog.class.getName());
-        setContent(createMainPanel());
-        getJDialog().setPreferredSize(new Dimension(500, 500));
         EscapeAction.register(getJDialog());
     }
 
-    private void createContextForValueEditor() throws Exception{
-        PropertyDescriptor property = ParameterDescriptorFactory.convert(this.parameter, new ParameterDescriptorFactory().getSourceProductMap());
-        DefaultPropertySetDescriptor propertySetDescriptor = new DefaultPropertySetDescriptor();
-        try {
-            property.setDefaultValue(this.parameter.getDefaultValue());
-        } catch (Exception ex){
-            logger.warning(ex.getMessage());
+    @Override
+    protected void onOK() {
+        if (!OperatorParametersTable.checkUniqueParameterName(this.operator, parameter.getName(), this.oldParameter)) {
+            return;
         }
-        propertySetDescriptor.addPropertyDescriptor(property);
-        PropertyContainer container = PropertyContainer.createMapBacked(new HashMap<>(), propertySetDescriptor);
-        container.getProperty(property.getName()).setValueFromText(this.parameter.getDefaultValue());
-        paramContext = new BindingContext(container);
 
-        this.uiWrapper = PropertyMemberUIWrapperFactory.buildPropertyWrapper("defaultValue", this.parameter, null, paramContext, null);
-        this.editorComponent = this.uiWrapper.getUIComponent();
+        super.onOK();
+
+        oldParameter.setName(parameter.getName());
+        oldParameter.setAlias(parameter.getAlias());
+        oldParameter.setDataType(parameter.getDataType());
+        Object defaultValue = getProperty().getValue();
+        String defaultValueAsString = processDefaultValue(defaultValue);
+        oldParameter.setDefaultValue(defaultValueAsString);
+        oldParameter.setDescription(parameter.getDescription());
+        oldParameter.setLabel(parameter.getLabel());
+        oldParameter.setUnit(parameter.getUnit());
+        oldParameter.setInterval(parameter.getInterval());
+        oldParameter.setValueSet(parameter.getValueSet());
+        oldParameter.setCondition(parameter.getCondition());
+        oldParameter.setPattern(parameter.getPattern());
+        oldParameter.setFormat(parameter.getFormat());
+        oldParameter.setNotNull(parameter.isNotNull());
+        oldParameter.setNotEmpty(parameter.isNotEmpty());
+        oldParameter.setRasterDataNodeClass(parameter.getRasterDataNodeClass());
+        oldParameter.setValidatorClass(parameter.getValidatorClass());
+        oldParameter.setConverterClass(parameter.getConverterClass());
+        oldParameter.setDomConverterClass(parameter.getDomConverterClass());
+        oldParameter.setItemAlias(parameter.getItemAlias());
+        oldParameter.setDeprecated(parameter.isDeprecated());
+        oldParameter.setParameterType(parameter.getParameterType());
     }
 
-    public JPanel createMainPanel(){
+    private void addComponents() {
         GridBagLayout layout = new GridBagLayout();
         layout.columnWidths = new int[]{100, 390};
 
-        mainPanel = new JPanel(layout);
+        this.mainPanel = new JPanel(layout);
 
-        addTextPropertyEditor(mainPanel, "Name: ", "name", parameter.getName(), 0, true);
-        addTextPropertyEditor(mainPanel, "Alias: ", "alias", parameter.getAlias(), 1, true);
+        addTextPropertyEditor(mainPanel, "Name: ", "name", 0, "The 'Name' field is required.");
+        addTextPropertyEditor(mainPanel, "Alias: ", "alias", 1, "The 'Alias' field is required.");
 
+        String itemNameToSelect = null;
+        if (this.parameter.getDataType() == File.class) {
+            itemNameToSelect = "File";
+            if (this.parameter.getDefaultValue() != null) {
+                File f = new File(this.parameter.getDefaultValue());
+                if (f.isDirectory()) {
+                    itemNameToSelect = "Folder";
+                }
+            }
+        } else {
+            Iterator<Map.Entry<String, Class<?>>> it = typesMap.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry<String, Class<?>> entry = it.next();
+                if (entry.getValue() == this.parameter.getDataType()) {
+                    itemNameToSelect = entry.getKey();
+                    break;
+                }
+            }
+        }
         //dataType
-        mainPanel.add(new JLabel("Type"), getConstraints(2, 0, 1));
         JComboBox comboEditor = new JComboBox(typesMap.keySet().toArray());
-        comboEditor.setSelectedItem(typesMap.getKey(parameter.getDataType()));
+        comboEditor.setSelectedItem(itemNameToSelect);
         comboEditor.addActionListener(ev -> {
             JComboBox cb = (JComboBox) ev.getSource();
-            String typeName = (String) cb.getSelectedItem();
-            if (!parameter.getDataType().equals(typesMap.get(typeName))) {
-                parameter.setDataType((Class<?>) typesMap.get(typeName));
-                //reset value set
-                parameter.setValueSet(null);
-                paramContext.getPropertySet().getProperty(parameter.getName()).getDescriptor().setValueSet(null);
+            String selectedTypeName = (String) cb.getSelectedItem();
+            Class<?> selectedTypeClass = typesMap.get(selectedTypeName);
+            if (!parameter.getDataType().equals(selectedTypeClass)) {
+                Class<?> previousTypeClass = parameter.getDataType();
+                parameter.setDataType(selectedTypeClass);
                 try {
-                    valuesContext.getPropertySet().getProperty("valueSet").setValue(null);
+                    valuesContext.getPropertySet().getProperty("defaultValue").setValue(null); // reset the default value
                 } catch (ValidationException e) {
                     logger.warning(e.getMessage());
                 }
-                //editor must updated
-                try {
-                    if(editorComponent != null) {
-                        mainPanel.remove(editorComponent);
+                Object defaultValue = getProperty().getValue();
+                String defaultValueAsString = processDefaultValue(defaultValue);
+
+                boolean canResetValueSet = true;
+                if (selectedTypeClass == String.class || selectedTypeClass == String[].class) {
+                    canResetValueSet = false;
+                    if (previousTypeClass == Float.class) {
+                        defaultValueAsString = null; // reset the default value
                     }
-                    editorComponent = uiWrapper.reloadUIComponent((Class<?>) typesMap.get(typeName));
-                    if (!("File".equals(typeName) || "List".equals(typeName))) {
-                        editorComponent.setInputVerifier(new TypedValueValidator("The value entered is not of the specified data type", parameter.getDataType()));
+                } else if (selectedTypeClass == Integer.class) {
+                    if (previousTypeClass == Float.class || previousTypeClass == String.class || previousTypeClass == String[].class) {
+                        if (canConvertArrayToNumber(new IntegerConverter(), parameter.getValueSet())) {
+                            canResetValueSet = false;
+                            if (previousTypeClass == Float.class) {
+                                defaultValueAsString = null; // reset the default value
+                            }
+                        }
                     }
-                    mainPanel.add(editorComponent, getConstraints(3, 1, 1));
-                    mainPanel.revalidate();
-                } catch (Exception e) {
-                    logger.warning(e.getMessage());
-                    Dialogs.showError(e.getMessage());
+                } else if (selectedTypeClass == Float.class) {
+                    if (previousTypeClass == Integer.class || previousTypeClass == String.class || previousTypeClass == String[].class) {
+                        if (canConvertArrayToNumber(new FloatConverter(), parameter.getValueSet())) {
+                            canResetValueSet = false;
+                        }
+                    }
                 }
+                if (canResetValueSet) {
+                    try {
+                        valuesContext.getPropertySet().getProperty("valueSet").setValue(null); // reset the value set
+                    } catch (ValidationException e) {
+                        logger.warning(e.getMessage());
+                    }
+                }
+
+                newDataTypeSelected(selectedTypeName, selectedTypeClass, defaultValueAsString);
             }
         });
-        mainPanel.add(comboEditor, getConstraints(2, 1, 1));
+
+        this.mainPanel.add(new JLabel("Data type"), getConstraints(2, 0, 1));
+        this.mainPanel.add(comboEditor, getConstraints(2, 1, 1));
+
+        addTextPropertyEditor(mainPanel, "Description: ", "description", 4, null);
+        addTextPropertyEditor(mainPanel, "Label: ", "label", 5, null);
+        addTextPropertyEditor(mainPanel, "Unit: ", "unit", 6, null);
+        addTextPropertyEditor(mainPanel, "Interval: ", "interval", 7, null);
+
+        this.valueSetTextComponent = new JTextField();
+        ValidateTextComponentAdapter adapter = new ValidateTextComponentAdapter(this.valueSetTextComponent) {
+            @Override
+            protected boolean validateText(String valueSetToValidate) {
+                return validateValueSetText(valueSetToValidate);
+            }
+        };
+        addTextPropertyEditor(mainPanel, adapter, "Value set: ", "valueSet", 8);
+
+        addTextPropertyEditor(mainPanel, "Condition: ", "condition", 9, null);
+        addTextPropertyEditor(mainPanel, "Pattern: ", "pattern", 10, null);
+        addTextPropertyEditor(mainPanel, "Format: ", "format", 11, null);
+        addBoolPropertyEditor(mainPanel, "Not null", "notNull", 12);
+        addBoolPropertyEditor(mainPanel, "Not empty", "notEmpty", 13);
+        addTextPropertyEditor(mainPanel, "ItemAlias: ", "itemAlias", 14, null);
+        addBoolPropertyEditor(mainPanel, "Deprecated", "deprecated", 15);
 
         //defaultValue
-        mainPanel.add(new JLabel("Default value"), getConstraints(3, 0, 1));
-        try {
-            editorComponent = uiWrapper.getUIComponent();
-            mainPanel.add(editorComponent, getConstraints(3, 1, 1));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        JLabel label = new JLabel("Default value");
+        label.setPreferredSize(new Dimension(150, 35));
+        this.mainPanel.add(label, getConstraints(3, 0, 1));
+        newDataTypeSelected(itemNameToSelect, this.parameter.getDataType(), this.parameter.getDefaultValue());
 
-        addTextPropertyEditor(mainPanel, "Description: ", "description", parameter.getDescription(), 4, false);
-        addTextPropertyEditor(mainPanel, "Label: ", "label", parameter.getLabel(), 5, false);
-        addTextPropertyEditor(mainPanel, "Unit: ", "unit", parameter.getUnit(), 6, false);
-        addTextPropertyEditor(mainPanel, "Interval: ", "interval", parameter.getInterval(), 7, false);
-        JComponent valueSetEditor =  addTextPropertyEditor(mainPanel, "Value set: ", "valueSet", StringUtils.join(parameter.getValueSet(), ArrayConverter.SEPARATOR), 8, false);
-        valueSetEditor.addFocusListener(new FocusListener() {
-            @Override
-            public void focusGained(FocusEvent e) {
-            }
+        setContent(this.mainPanel);
+    }
 
-            @Override
-            public void focusLost(FocusEvent ev) {
-                //the value set may impact the editor
+    private boolean validateDefaultValueText(String textToValidate) {
+        if (!StringUtils.isNullOrEmpty(textToValidate)) {
+            if (this.parameter.getDataType() == Integer.class) {
                 try {
-                    String newValueSet = ((JTextField) valueSetEditor).getText();
-                    if (newValueSet.isEmpty()) {
-                        parameter.setValueSet(null);
-                        valuesContext.getPropertySet().getProperty("valueSet").setValue(null);
-                    } else {
-                        parameter.setValueSet(newValueSet.split(ArrayConverter.SEPARATOR));
-                        valuesContext.getPropertySet().getProperty("valueSet").setValue(newValueSet.split(ArrayConverter.SEPARATOR));
-                    }
-                    if (editorComponent != null) {
-                        mainPanel.remove(editorComponent);
-                    }
-                    createContextForValueEditor();
-                    if (!(File.class.equals(parameter.getDataType()) || parameter.getDataType().isArray())) {
-                        editorComponent.setInputVerifier(new TypedValueValidator("The value entered is not of the specified data type", parameter.getDataType()));
-                    }
-                    mainPanel.add(editorComponent, getConstraints(3, 1, 1));
-                    mainPanel.revalidate();
-                } catch (Exception e) {
-                    logger.warning(e.getMessage());
-                    Dialogs.showError(e.getMessage());
+                    Integer.parseInt(textToValidate);
+                } catch (NumberFormatException ex) {
+                    Dialogs.showError("Failed to convert '" + textToValidate + "' to integer number.");
+                    return false;
+                }
+            } else if (this.parameter.getDataType() == Float.class) {
+                try {
+                    Float.parseFloat(textToValidate);
+                } catch (NumberFormatException ex) {
+                    Dialogs.showError("Failed to convert '" + textToValidate + "' to decimal number.");
+                    return false;
                 }
             }
-        });
-        addTextPropertyEditor(mainPanel, "Condition: ", "condition", parameter.getCondition(), 9, false);
-        addTextPropertyEditor(mainPanel, "Pattern: ", "pattern", parameter.getPattern(), 10, false);
-        addTextPropertyEditor(mainPanel, "Format: ", "format", parameter.getFormat(), 11, false);
-        addBoolPropertyEditor(mainPanel, "Not null", "notNull", parameter.isNotNull(), 12);
-        addBoolPropertyEditor(mainPanel, "Not empty", "notEmpty", parameter.isNotEmpty(), 13);
-        addTextPropertyEditor(mainPanel, "ItemAlias: ", "itemAlias", parameter.getItemAlias(), 14, false);
-        addBoolPropertyEditor(mainPanel, "Deprecated", "deprecated", parameter.isDeprecated(), 15);
-
-        return mainPanel;
-    }
-
-    private JComponent addTextPropertyEditor(JPanel parent, String label, String propertyName, String value, int line, boolean isRequired){
-        parent.add(new JLabel(label), getConstraints(line, 0, 1));
-        PropertyDescriptor propertyDescriptor = container.getDescriptor(propertyName);
-        TextFieldEditor textEditor = new TextFieldEditor();
-        JComponent editorComponent = textEditor.createEditorComponent(propertyDescriptor, valuesContext);
-        ((JTextField) editorComponent).setText(value);
-        if (isRequired) {
-            editorComponent.setInputVerifier(new RequiredFieldValidator("This field is required"));
         }
+        return true;
+    }
+
+    private boolean validateValueSetText(String valueSetToValidate) {
+        String[] valueSet = null;
+        if (!StringUtils.isNullOrEmpty(valueSetToValidate)) {
+            valueSet = valueSetToValidate.split(ArrayConverter.SEPARATOR);
+        }
+        if (this.parameter.getDataType() == Integer.class) {
+            String wrongValue = null;
+            Integer[] numbers = null;
+            if (valueSet != null && valueSet.length > 0) {
+                numbers = new Integer[valueSet.length];
+                IntegerConverter integerConverter = new IntegerConverter();
+                for (int i = 0; i < valueSet.length && wrongValue == null; i++) {
+                    try {
+                        numbers[i] = integerConverter.parse(valueSet[i]);
+                        if (numbers[i] == null) {
+                            wrongValue = ""; // an empty value
+                        }
+                    } catch (ConversionException ex) {
+                        wrongValue = valueSet[i];
+                    }
+                }
+            }
+            if (wrongValue == null) {
+                populateDefaultValueComponent(numbers, null);
+            } else {
+                Dialogs.showError("Failed to convert '" + wrongValue + "' to integer number.");
+                return false;
+            }
+        } else if (this.parameter.getDataType() == Float.class) {
+            String wrongValue = null;
+            Float[] numbers = null;
+            if (valueSet != null && valueSet.length > 0) {
+                numbers = new Float[valueSet.length];
+                FloatConverter floatConverter = new FloatConverter();
+                for (int i = 0; i < valueSet.length && wrongValue == null; i++) {
+                    try {
+                        numbers[i] = floatConverter.parse(valueSet[i]);
+                        if (numbers[i] == null) {
+                            wrongValue = ""; // an empty value
+                        }
+                    } catch (ConversionException ex) {
+                        wrongValue = valueSet[i];
+                    }
+                }
+            }
+            if (wrongValue == null) {
+                populateDefaultValueComponent(numbers, null);
+            } else {
+                Dialogs.showError("Failed to convert '" + wrongValue + "' to decimal number.");
+                return false;
+            }
+        } else if (this.parameter.getDataType() == String.class) {
+            populateDefaultValueComponent(valueSet, null);
+        } else if (this.parameter.getDataType() == String[].class) {
+            populateListComponent(valueSet);
+        } else {
+            throw new IllegalArgumentException("Unknown parameter data type '" + this.parameter.getDataType().getName() + "'.");
+        }
+        return true;
+    }
+
+    private void populateDefaultValueComponent(Object[] valueSet, Object valueToSelect) {
+        if (valueSet == null || valueSet.length == 0) {
+            removeDefaultValueComponent();
+            createDefaultValueTextComponent();
+            addDefaultValueComponent();
+        } else {
+            if (!(defaultValueComponent instanceof JComboBox)) {
+                removeDefaultValueComponent();
+                createDefaultValueComboBoxComponent();
+                addDefaultValueComponent();
+            }
+            populateDefaultValueComboBoxComponent(valueSet, valueToSelect);
+        }
+    }
+
+    private void createDefaultValueTextComponent() {
+        this.defaultValueComponent = new JTextField();
+        ValidateTextComponentAdapter adapter = new ValidateTextComponentAdapter((JTextField)this.defaultValueComponent) {
+            @Override
+            protected boolean validateText(String textToValidate) {
+                return validateDefaultValueText(textToValidate);
+            }
+        };
+        PropertyDescriptor descriptor = getProperty().getDescriptor();
+        this.paramContext.bind(descriptor.getName(), adapter);
+    }
+
+    private void createDefaultValueComboBoxComponent() {
+        PropertyDescriptor descriptor = getProperty().getDescriptor();
+        SingleSelectionEditor singleSelectionEditor = new SingleSelectionEditor();
+        this.defaultValueComponent = singleSelectionEditor.createEditorComponent(descriptor, this.paramContext);
+    }
+
+    private void createDefaultValueComponent(Object[] valueSet, Object valueToSelect) {
+        if (valueSet == null || valueSet.length == 0) {
+            createDefaultValueTextComponent();
+        } else {
+            createDefaultValueComboBoxComponent();
+        }
+    }
+
+    private void addDefaultValueComponent() {
+        this.mainPanel.add(this.defaultValueComponent, getConstraints(3, 1, 1));
+        this.mainPanel.revalidate();
+    }
+
+    private void removeDefaultValueComponent() {
+        if (this.defaultValueComponent != null) {
+            Property property = getProperty();
+            Binding binding = this.paramContext.getBinding(property.getName());
+            binding.getComponentAdapter().unbindComponents();
+
+            this.mainPanel.remove(this.defaultValueComponent);
+        }
+    }
+
+    private void populateDefaultValueComboBoxComponent(Object[] valueSet, Object valueToSelect) {
+        JComboBox comboBox = (JComboBox)defaultValueComponent;
+        DefaultComboBoxModel model = new DefaultComboBoxModel();
+        if (valueSet != null && valueSet.length > 0) {
+            Object itemToSelect = null;
+            for (int i=0; i<valueSet.length; i++) {
+                model.addElement(valueSet[i]);
+                if (valueToSelect != null && valueToSelect.equals(valueSet[i])) {
+                    itemToSelect = valueSet[i];
+                }
+            }
+            model.setSelectedItem(itemToSelect);
+        }
+        comboBox.setModel(model);
+    }
+
+    private void populateListComponent(String[] valueSet) {
+        JScrollPane scrollPane = (JScrollPane)this.defaultValueComponent;
+        JList list = (JList)scrollPane.getViewport().getView();
+        DefaultListModel model = new DefaultListModel();
+        if (valueSet != null) {
+            for (int i=0; i<valueSet.length; i++) {
+                model.addElement(valueSet[i]);
+            }
+        }
+        list.setModel(model);
+    }
+
+    private Property getProperty() {
+        Property[] properties = this.paramContext.getPropertySet().getProperties();
+        return properties[0];
+    }
+
+    private void newDataTypeSelected(String typeName, Class<?> typeClass, String defaultValue) {
+        removeDefaultValueComponent();
+
+        // recreate context of the default value
+        try {
+            if (this.paramContext != null) {
+                // remove the old properties
+                PropertySet propertySet = this.paramContext.getPropertySet();
+                Property property = getProperty();
+                propertySet.removeProperty(property);
+            }
+            PropertyDescriptor propertyDescriptor = ParameterDescriptorFactory.convert(this.parameter, new ParameterDescriptorFactory().getSourceProductMap());
+
+            DefaultPropertySetDescriptor propertySetDescriptor = new DefaultPropertySetDescriptor();
+            propertySetDescriptor.addPropertyDescriptor(propertyDescriptor);
+            PropertyContainer paramContainer = PropertyContainer.createMapBacked(new HashMap<>(), propertySetDescriptor);
+            this.paramContext = new BindingContext(paramContainer);
+        } catch (ConversionException e) {
+            logger.warning(e.getMessage());
+        }
+
+        boolean enabled = false;
+        String parameterType = ToolAdapterConstants.REGULAR_PARAM_MASK;
+        if (typeClass == Boolean.class) {
+            changeBooleanDataType(defaultValue);
+        } else if (typeClass == String.class) {
+            enabled = true;
+            changeStringDataType(defaultValue);
+        } else if (typeClass == String[].class) {
+            enabled = true;
+            changeListDataType(defaultValue);
+        } else if (typeName.equals("File")) {
+            changeFileDataType(defaultValue);
+        } else if (typeName.equals("Folder")) {
+            parameterType = ToolAdapterConstants.FOLDER_PARAM_MASK;
+            changeFolderDataType(defaultValue);
+        } else if (typeClass == Integer.class) {
+            enabled = true;
+            changeIntegerDataType(defaultValue);
+        } else if (typeClass == Float.class) {
+            enabled = true;
+            changeFloatDataType(defaultValue);
+        } else {
+            throw new IllegalArgumentException("Unknown type name '"+ typeName+"' and type class '" + typeClass.getName() + "'.");
+        }
+        this.parameter.setParameterType(parameterType);
+
+        this.valueSetTextComponent.setEnabled(enabled);
+
+        addDefaultValueComponent();
+    }
+
+    private void changeBooleanDataType(String defaultValue) {
+        Property property = getProperty();
+        ValueSet valueSet = new ValueSet(new Object[]{true, false});
+        property.getDescriptor().setValueSet(valueSet);
+        boolean isSelected = Boolean.parseBoolean(defaultValue);
+        try {
+            property.setValue(isSelected);
+        } catch (ValidationException e) {
+            logger.warning(e.getMessage());
+        }
+        CheckBoxEditor checkBoxEditor = new CheckBoxEditor();
+        defaultValueComponent = checkBoxEditor.createEditorComponent(property.getDescriptor(), this.paramContext);
+        defaultValueComponent.setBorder(new EmptyBorder(1, 0, 1, 0));
+    }
+
+    private void changeListDataType(String defaultValue) {
+        String[] valueSet = null;
+        if (!StringUtils.isNullOrEmpty(defaultValue)) {
+            valueSet = defaultValue.split(ArrayConverter.SEPARATOR);
+        }
+        try {
+            getProperty().setValue(valueSet);
+        } catch (ValidationException e) {
+            logger.warning(e.getMessage());
+        }
+        MultiSelectionEditor multiSelectionEditor = new MultiSelectionEditor();
+        this.defaultValueComponent = multiSelectionEditor.createEditorComponent(getProperty().getDescriptor(), this.paramContext);
+        JScrollPane scrollPane = (JScrollPane)this.defaultValueComponent;
+        JList list = (JList)scrollPane.getViewport().getView();
+        list.setVisibleRowCount(2);
+        if (valueSet != null && valueSet.length > 0) {
+            java.util.List<Integer> selectedIndices = new ArrayList<Integer>();
+            for (int i=0; i<list.getModel().getSize(); i++) {
+                Object item = list.getModel().getElementAt(i);
+                for (int k=0; k<valueSet.length; k++) {
+                    if (item.equals(valueSet[k])) {
+                        selectedIndices.add(i);
+                        break;
+                    }
+                }
+            }
+            int[] indices = new int[selectedIndices.size()];
+            for (int i=0; i<selectedIndices.size(); i++) {
+                indices[i] = selectedIndices.get(i).intValue();
+            }
+            list.setSelectedIndices(indices);
+        }
+    }
+
+    private void changeStringDataType(String defaultValue) {
+        try {
+            getProperty().setValue(defaultValue);
+        } catch (ValidationException e) {
+            logger.warning(e.getMessage());
+        }
+        String[] valueSet = this.valuesContext.getPropertySet().getProperty("valueSet").getValue();
+        createDefaultValueComponent(valueSet, defaultValue);
+    }
+
+    private void changeFolderDataType(String defaultValue) {
+        File file = null;
+        if (!StringUtils.isNullOrEmpty(defaultValue)) {
+            file = new File(defaultValue);
+        }
+        Property property = getProperty();
+        try {
+            property.setValue(file);
+        } catch (ValidationException e) {
+            logger.warning(e.getMessage());
+        }
+        DirectoryEditor folderEditor = new DirectoryEditor();
+        this.defaultValueComponent = folderEditor.createEditorComponent(property.getDescriptor(), this.paramContext);
+    }
+
+    private void changeFileDataType(String defaultValue) {
+        File file = null;
+        if (!StringUtils.isNullOrEmpty(defaultValue)) {
+            file = new File(defaultValue);
+        }
+        Property property = getProperty();
+        try {
+            property.setValue(file);
+        } catch (ValidationException e) {
+            logger.warning(e.getMessage());
+        }
+        FileEditor fileEditor = new FileEditor();
+        this.defaultValueComponent = fileEditor.createEditorComponent(property.getDescriptor(), this.paramContext);
+    }
+
+    private void changeIntegerDataType(String defaultValue) {
+        changeNumberDataType(new IntegerConverter(), defaultValue);
+    }
+
+    private void changeFloatDataType(String defaultValue) {
+        changeNumberDataType(new FloatConverter(), defaultValue);
+    }
+
+    private <NumberType extends Number> void changeNumberDataType(NumberConverter<NumberType> converter, String defaultValue) {
+        String[] valueSet = this.valuesContext.getPropertySet().getProperty("valueSet").getValue();
+        Number[] numbers = null;
+        if (valueSet != null && valueSet.length > 0) {
+            numbers = new Number[valueSet.length];
+            for (int i=0; i<valueSet.length; i++) {
+                try {
+                    numbers[i] = converter.parse(valueSet[i]);
+                } catch (ConversionException ex) {
+                    // ignore exception
+                }
+            }
+        }
+        Number defaultNumber = null;
+        if (!StringUtils.isNullOrEmpty(defaultValue)) {
+            try {
+                defaultNumber = converter.parse(defaultValue);
+            } catch (ConversionException e) {
+                logger.warning(e.getMessage());
+            }
+        }
+        try {
+            getProperty().setValue(defaultNumber);
+        } catch (ValidationException e) {
+            logger.warning(e.getMessage());
+        }
+        createDefaultValueComponent(numbers, defaultNumber);
+    }
+
+    private JComponent addTextPropertyEditor(JPanel parent, String label, String propertyName, int line, String requiredMessage) {
+        PropertyDescriptor propertyDescriptor = this.container.getDescriptor(propertyName);
+        JTextField editorComponent = new JTextField();
+        ComponentAdapter adapter = null;
+        if (StringUtils.isNullOrEmpty(requiredMessage)) {
+            adapter = new TextComponentAdapter(editorComponent);
+        } else {
+            adapter = new RequiredTextComponentAdapter(editorComponent, requiredMessage);
+        }
+        this.valuesContext.bind(propertyDescriptor.getName(), adapter);
+
+        parent.add(new JLabel(label), getConstraints(line, 0, 1));
         parent.add(editorComponent, getConstraints(line, 1, 1));
+
         return editorComponent;
     }
 
-    private JComponent addBoolPropertyEditor(JPanel parent, String label, String propertyName, Boolean value, int line){
-        parent.add(new JLabel(label), getConstraints(line, 1, 1));
-        PropertyDescriptor propertyDescriptor = container.getDescriptor(propertyName);
+    private JComponent addTextPropertyEditor(JPanel parent, ComponentAdapter adapter, String label, String propertyName, int line) {
+        JComponent editorComponent = adapter.getComponents()[0];
+        PropertyDescriptor propertyDescriptor = this.container.getDescriptor(propertyName);
+        this.valuesContext.bind(propertyDescriptor.getName(), adapter);
+
+        parent.add(new JLabel(label), getConstraints(line, 0, 1));
+        parent.add(editorComponent, getConstraints(line, 1, 1));
+
+        return editorComponent;
+    }
+
+    private JComponent addBoolPropertyEditor(JPanel parent, String label, String propertyName, int line) {
+        PropertyDescriptor propertyDescriptor = this.container.getDescriptor(propertyName);
         CheckBoxEditor boolEditor = new CheckBoxEditor();
-        JComponent editorComponent = boolEditor.createEditorComponent(propertyDescriptor, valuesContext);
-        ((JCheckBox) editorComponent).setSelected(value);
-        editorComponent.setPreferredSize(new Dimension(30, 30));
-        GridBagConstraints constraints = getConstraints(line, 0, 1);
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.anchor  = GridBagConstraints.LINE_END;
-        parent.add(editorComponent, constraints);
-        return editorComponent;
+        JCheckBox checkBoxComponent = (JCheckBox)boolEditor.createEditorComponent(propertyDescriptor, valuesContext);
+        checkBoxComponent.setBorder(new EmptyBorder(1, 0, 1, 0));
+
+        parent.add(new JLabel(label), getConstraints(line, 0, 1));
+        parent.add(checkBoxComponent, getConstraints(line, 1, 1));
+
+        return checkBoxComponent;
     }
 
-    private GridBagConstraints getConstraints(int row, int col, int noCells) {
+    private static GridBagConstraints getConstraints(int row, int col, int noCells) {
         GridBagConstraints c = new GridBagConstraints();
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = col;
@@ -251,63 +640,39 @@ public class ToolParameterEditorDialog extends ModalDialog {
         return c;
     }
 
-    protected void onOK(){
-        super.onOK();
-        if(parameter.getName() != null) {
-            oldParameter.setName(parameter.getName());
+    public static String processDefaultValue(Object defaultValue) {
+        String defaultValueAsString = null;
+        if (defaultValue != null) {
+            if (defaultValue.getClass().isArray()) {
+                Object[] array = (Object[])defaultValue;
+                defaultValueAsString = "";
+                for (int i=0; i<array.length; i++) {
+                    if (i > 0) {
+                        defaultValueAsString += ",";
+                    }
+                    defaultValueAsString += array[i].toString();
+                }
+            } else {
+                defaultValueAsString = defaultValue.toString();
+            }
         }
-        if(parameter.getAlias() != null) {
-            oldParameter.setAlias(parameter.getAlias());
-        }
-        if(parameter.getDataType() != null) {
-            oldParameter.setDataType(parameter.getDataType());
-        }
-        if(paramContext.getBinding(parameter.getName()).getPropertyValue() != null) {
-            oldParameter.setDefaultValue(paramContext.getBinding(parameter.getName()).getPropertyValue().toString());
-        }
-        if(parameter.getDescription() != null) {
-            oldParameter.setDescription(parameter.getDescription());
-        }
-        if(parameter.getLabel() != null) {
-            oldParameter.setLabel(parameter.getLabel());
-        }
-        if(parameter.getUnit() != null) {
-            oldParameter.setUnit(parameter.getUnit());
-        }
-        if(parameter.getInterval() != null) {
-            oldParameter.setInterval(parameter.getInterval());
-        }
-        if(parameter.getValueSet() != null) {
-            oldParameter.setValueSet(parameter.getValueSet());
-        }
-        if(parameter.getCondition() != null) {
-            oldParameter.setCondition(parameter.getCondition());
-        }
-        if(parameter.getPattern() != null) {
-            oldParameter.setPattern(parameter.getPattern());
-        }
-        if(parameter.getFormat() != null) {
-            oldParameter.setFormat(parameter.getFormat());
-        }
-        oldParameter.setNotNull(parameter.isNotNull());
-        oldParameter.setNotEmpty(parameter.isNotEmpty());
-        if(parameter.getRasterDataNodeClass() != null) {
-            oldParameter.setRasterDataNodeClass(parameter.getRasterDataNodeClass());
-        }
-        if(parameter.getValidatorClass() != null) {
-            oldParameter.setValidatorClass(parameter.getValidatorClass());
-        }
-        if(parameter.getConverterClass() != null) {
-            oldParameter.setConverterClass(parameter.getConverterClass());
-        }
-        if(parameter.getDomConverterClass() != null) {
-            oldParameter.setDomConverterClass(parameter.getDomConverterClass());
-        }
-        if(parameter.getItemAlias() != null) {
-            oldParameter.setItemAlias(parameter.getItemAlias());
-        }
-        oldParameter.setDeprecated(parameter.isDeprecated());
-        oldParameter.setParameterType(parameter.getParameterType());
+        return defaultValueAsString;
     }
 
+    private static <NumberType extends Number> boolean canConvertArrayToNumber(NumberConverter<NumberType> converter, String[] valueSet) {
+        if (valueSet != null && valueSet.length > 0) {
+            for (int i=0; i<valueSet.length; i++) {
+                try {
+                    NumberType number = converter.parse(valueSet[i]);
+                    if (number == null) {
+                        return false;
+                    }
+                } catch (ConversionException e) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
 }
