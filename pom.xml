@@ -16,7 +16,7 @@
     <description>Desktop GUI for SNAP based on NetBeans Platform</description>
 
     <properties>
-        <netbeans.version>RELEASE81</netbeans.version>
+        <netbeans.version>RELEASE82</netbeans.version>
         <doc-windows.version>1.0</doc-windows.version>
         <user.language>en</user.language>
     </properties>
