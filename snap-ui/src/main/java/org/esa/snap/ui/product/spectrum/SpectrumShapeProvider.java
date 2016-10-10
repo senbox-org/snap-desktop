@@ -23,17 +23,17 @@ public class SpectrumShapeProvider {
     private static final int crossXPoints[] = {-5, -1, -1, 1, 1, 5, 5, 1, 1, -1, -1, -5};
     private static final int crossYPoints[] = {-1, -1, -5, -5, -1, -1, 1, 1, 5, 5, 1, 1};
     private static final Shape[] shapes = new Shape[]{
-            new Polygon(),
-            new Polygon(new int[]{-4, 0, 4, 0}, new int[]{0, -4, 0, 4}, 4),
-            new Polygon(new int[]{-4, 0, 4}, new int[]{4, -4, 4}, 3),
-            new Polygon(new int[]{-4, 0, 4}, new int[]{-4, 4, -4}, 3),
-            new Polygon(starXPoints, starYPoints, starXPoints.length),
-            new Polygon(xXPoints, xYPoints, xXPoints.length),
-            new Polygon(crossXPoints, crossYPoints, crossXPoints.length),
-            new Ellipse2D.Double(-3, -3, 6, 6),
-            new Rectangle2D.Double(-3.0, -3.0, 6.0, 6.0),
-            new Rectangle2D.Double(-2.0, -5.0, 4.0, 10.0),
-            new Rectangle2D.Double(-5.0, -2.0, 10.0, 4.0)
+           /*0*/ new Polygon(),
+           /*1*/ new Polygon(new int[]{-4, 0, 4, 0}, new int[]{0, -4, 0, 4}, 4),
+           /*2*/ new Polygon(new int[]{-4, 0, 4}, new int[]{4, -4, 4}, 3),
+           /*3*/ new Polygon(new int[]{-4, 0, 4}, new int[]{-4, 4, -4}, 3),
+           /*4*/ new Polygon(starXPoints, starYPoints, starXPoints.length),
+           /*5*/ new Polygon(xXPoints, xYPoints, xXPoints.length),
+           /*6*/ new Polygon(crossXPoints, crossYPoints, crossXPoints.length),
+           /*7*/ new Ellipse2D.Double(-3, -3, 6, 6),
+           /*8*/ new Rectangle2D.Double(-3.0, -3.0, 6.0, 6.0),
+           /*9*/ new Rectangle2D.Double(-2.0, -5.0, 4.0, 10.0),
+           /*10*/ new Rectangle2D.Double(-5.0, -2.0, 10.0, 4.0)
     };
     private static final ImageIcon[] shapeIcons = convertShapesToIcons();
     public static final int DEFAULT_SCALE_GRADE = 3;
@@ -53,7 +53,7 @@ public class SpectrumShapeProvider {
         Rectangle rectangle = seriesShape.getBounds();
         if (rectangle.getWidth() > 0 && rectangle.getHeight() > 0) {
             BufferedImage image = new BufferedImage((int) (rectangle.getWidth() - rectangle.getX()),
-                    (int) (rectangle.getHeight() - rectangle.getY()), BufferedImage.TYPE_INT_ARGB);
+                                                    (int) (rectangle.getHeight() - rectangle.getY()), BufferedImage.TYPE_INT_ARGB);
             final Graphics2D graphics = image.createGraphics();
             graphics.translate(-rectangle.x, -rectangle.y);
             graphics.setColor(Color.BLACK);
@@ -65,7 +65,7 @@ public class SpectrumShapeProvider {
     }
 
     public static Shape getScaledShape(int shapeIndex, int scaleGrade) {
-        if(scaleGrade == DEFAULT_SCALE_GRADE) {
+        if (scaleGrade == DEFAULT_SCALE_GRADE) {
             return shapes[shapeIndex];
         } else {
             final Path2D.Double convertedShape = new Path2D.Double(shapes[shapeIndex]);
@@ -76,11 +76,11 @@ public class SpectrumShapeProvider {
     }
 
     public static int getValidIndex(int i, boolean allowEmptySymbol) {
-        int symbolIndex = i % shapes.length;
-        if (!allowEmptySymbol) {
-            symbolIndex = Math.max(1, (symbolIndex + 1) % shapes.length);
+        if(allowEmptySymbol) {
+            return i % shapes.length;
+        } else {
+            return i % (shapes.length - 1) + 1;
         }
-        return symbolIndex;
     }
 
     public static ImageIcon getShapeIcon(int symbolIndex) {
