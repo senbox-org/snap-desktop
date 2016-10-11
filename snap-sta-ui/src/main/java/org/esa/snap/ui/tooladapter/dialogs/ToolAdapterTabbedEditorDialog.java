@@ -35,9 +35,11 @@ import org.esa.snap.utils.SpringUtilities;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.MessageFormat;
+import java.util.HashSet;
 
 import static org.esa.snap.utils.SpringUtilities.DEFAULT_PADDING;
 
@@ -51,6 +53,7 @@ import static org.esa.snap.utils.SpringUtilities.DEFAULT_PADDING;
  * @author Cosmin Cara
  */
 public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
+    private JTabbedPane tabbedPane;
 
     public ToolAdapterTabbedEditorDialog(AppContext appContext, JDialog parent, ToolAdapterOperatorDescriptor operatorDescriptor, OperationType operation) {
         super(appContext, parent, operatorDescriptor, operation);
@@ -62,8 +65,8 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
 
     @Override
     protected JTabbedPane createMainPanel() {
-        JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.LEFT);
-        tabbedPane.setBorder(BorderFactory.createEmptyBorder());
+        this.tabbedPane = new JTabbedPane(JTabbedPane.LEFT);
+        this.tabbedPane.setBorder(BorderFactory.createEmptyBorder());
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         double widthRatio = 0.5;
         formWidth = Math.max((int) (screenSize.width * widthRatio), MIN_TABBED_WIDTH);
@@ -132,8 +135,8 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
 
         varTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
         varTable.setRowHeight(controlHeight);
-        int widths[] = {controlHeight, (int)(formWidth * 0.3), (int)(formWidth * 0.7) - controlHeight};
-        for(int i=0; i < widths.length; i++) {
+        int widths[] = {controlHeight, (int) (formWidth * 0.3), (int) (formWidth * 0.7) - controlHeight};
+        for (int i = 0; i < widths.length; i++) {
             varTable.getColumnModel().getColumn(i).setPreferredWidth(widths[i]);
 
         }
@@ -160,31 +163,39 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
     }
 
     @Override
-    protected JPanel createPreProcessingPanel(){
-        final JPanel preProcessingPanel = new JPanel(new SpringLayout());
-
+    protected JPanel createPreProcessingPanel() {
         PropertyDescriptor propertyDescriptor = propertyContainer.getDescriptor("preprocessorExternalTool");
         PropertyEditor editor = PropertyEditorRegistry.getInstance().findPropertyEditor(propertyDescriptor);
-        JComponent editorComponent = editor.createEditorComponent(propertyDescriptor, bindingContext);
-        editorComponent.setMaximumSize(new Dimension(editorComponent.getMaximumSize().width, controlHeight));
-        editorComponent.setPreferredSize(new Dimension(editorComponent.getPreferredSize().width, controlHeight));
+        JComponent firstEditorComponent = editor.createEditorComponent(propertyDescriptor, bindingContext);
+        firstEditorComponent.setMaximumSize(new Dimension(firstEditorComponent.getMaximumSize().width, controlHeight));
+        firstEditorComponent.setPreferredSize(new Dimension(firstEditorComponent.getPreferredSize().width, controlHeight));
 
-        preProcessingPanel.add(createCheckboxComponent("preprocessTool", editorComponent, newOperatorDescriptor.getPreprocessTool()));
-        preProcessingPanel.add(new JLabel(Bundle.CTL_Label_PreprocessingTool_Text()));
-        preProcessingPanel.add(editorComponent);
+        JCheckBox checkBoxComponent = (JCheckBox)createCheckboxComponent("preprocessTool", firstEditorComponent, newOperatorDescriptor.getPreprocessTool());
+        checkBoxComponent.setText(Bundle.CTL_Label_PreprocessingTool_Text());
+
+        JCheckBox writeComponent = (JCheckBox)createCheckboxComponent("writeForProcessing", firstEditorComponent, newOperatorDescriptor.shouldWriteBeforeProcessing());
+        writeComponent.setText(Bundle.CTL_Label_WriteBefore_Text());
 
         propertyDescriptor = propertyContainer.getDescriptor("processingWriter");
         editor = PropertyEditorRegistry.getInstance().findPropertyEditor(propertyDescriptor);
-        editorComponent = editor.createEditorComponent(propertyDescriptor, bindingContext);
-        editorComponent.setMaximumSize(new Dimension(editorComponent.getMaximumSize().width, controlHeight));
-        editorComponent.setPreferredSize(new Dimension(editorComponent.getPreferredSize().width, controlHeight));
+        JComponent secondEditorComponent = editor.createEditorComponent(propertyDescriptor, bindingContext);
+        secondEditorComponent.setMaximumSize(new Dimension(secondEditorComponent.getMaximumSize().width, controlHeight));
+        secondEditorComponent.setPreferredSize(new Dimension(secondEditorComponent.getPreferredSize().width, controlHeight));
 
-        JComponent writeComponent = createCheckboxComponent("writeForProcessing", editorComponent, newOperatorDescriptor.shouldWriteBeforeProcessing());
+        JPanel preProcessingPanel = new JPanel(new SpringLayout());
+        preProcessingPanel.add(checkBoxComponent);
+        preProcessingPanel.add(firstEditorComponent);
+
+
         preProcessingPanel.add(writeComponent);
-        preProcessingPanel.add(new JLabel(Bundle.CTL_Label_WriteBefore_Text()));
-        preProcessingPanel.add(editorComponent);
+        preProcessingPanel.add(secondEditorComponent);
 
-        SpringUtilities.makeCompactGrid(preProcessingPanel, 2, 3, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING);
+        SpringUtilities.makeCompactGrid(preProcessingPanel, 2, 2, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING);
+
+        forwardFocusWhenTabKeyReleased(checkBoxComponent, firstEditorComponent);
+        forwardFocusWhenTabKeyReleased(firstEditorComponent, writeComponent);
+        forwardFocusWhenTabKeyReleased(writeComponent, secondEditorComponent);
+        forwardFocusWhenTabKeyReleased(secondEditorComponent, this.tabbedPane);
 
         return preProcessingPanel;
     }
@@ -293,7 +304,7 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
         return paramsPanel;
     }
 
-    private JPanel createPreProcessingTab(){
+    private JPanel createPreProcessingTab() {
         JPanel preprocessAndPatternsPanel = new JPanel(new SpringLayout());
         preprocessAndPatternsPanel.add(createPreProcessingPanel());
         SpringUtilities.makeCompactGrid(preprocessAndPatternsPanel, 1, 1, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING);
@@ -329,5 +340,16 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
         content.setBorder(titledBorder);
         tabControl.addTab(null, content);
         tabControl.setTabComponentAt(tabControl.getTabCount() - 1, tabText);
+    }
+
+    private static void forwardFocusWhenTabKeyReleased(JComponent aSenderComponent, JComponent aReceiverComponent) {
+        ForwardFocusAction forwardFocusAction = new ForwardFocusAction("TabKeyAction", aReceiverComponent);
+        aSenderComponent.setFocusTraversalKeys(0, new HashSet());
+        int modifiers = 0; // '0' => no modifiers
+        int keyCode = KeyEvent.VK_TAB;
+        boolean onKeyRelease = true;
+        KeyStroke tabKeyReleased = KeyStroke.getKeyStroke(keyCode, modifiers, onKeyRelease);
+        aSenderComponent.getInputMap(1).put(tabKeyReleased, forwardFocusAction.getName());
+        aSenderComponent.getActionMap().put(forwardFocusAction.getName(), forwardFocusAction);
     }
 }
