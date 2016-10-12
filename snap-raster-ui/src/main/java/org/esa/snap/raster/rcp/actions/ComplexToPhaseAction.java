@@ -39,7 +39,7 @@ import java.awt.event.ActionEvent;
 
 @ActionID(category = "Raster", id = "org.esa.snap.raster.rcp.actions.ComplexToPhaseAction")
 @ActionRegistration(displayName = "#CTL_ComplexToPhaseAction_Text")
-@ActionReference(path = "Menu/Raster/Data Conversion", position = 200)
+@ActionReference(path = "Menu/Raster/Data Conversion", position = 400)
 @NbBundle.Messages({
         "CTL_ComplexToPhaseAction_Text=Complex i and q to Phase",
         "CTL_ComplexToPhaseAction_Description=Creates a virtual phase band from i and q complex bands."

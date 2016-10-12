@@ -22,6 +22,7 @@
             <folder name="Masks">
                 <file name="org-esa-snap-landcover-gpf-LandCoverMask-Action.shadow">
                     <attr name="originalFile" stringvalue="Actions/Operators/org-esa-snap-landcover-gpf-LandCoverMask-Action.instance"/>
+                    <attr name="position" intvalue="400"/>
                 </file>
             </folder>
         </folder>

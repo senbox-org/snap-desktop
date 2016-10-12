@@ -44,7 +44,7 @@ import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.EXPLORER;
 @ActionRegistration(displayName = "#CTL_OpenQuicklookViewAction_MenuText" )
 @ActionReferences({
         @ActionReference(path = "Context/Product/Quicklook", position = 100),
-        @ActionReference(path = "Menu/Window", position = 120)
+        @ActionReference(path = "Menu/Window", position = 130)
 })
 @NbBundle.Messages("CTL_OpenQuicklookViewAction_MenuText=Open Quicklook Window")
 public class OpenQuicklookViewAction extends AbstractAction implements ContextAwareAction, LookupListener {

@@ -37,7 +37,7 @@ import java.nio.file.Path;
  */
 @ActionID(category = "Help", id = "ShowLogFileInExplorerAction")
 @ActionRegistration(displayName = "#CTL_ShowLogFileInExplorerAction_MenuText")
-@ActionReference(path = "Menu/Help", position = 300)
+@ActionReference(path = "Menu/Help", position = 400)
 @NbBundle.Messages({"CTL_ShowLogFileInExplorerAction_MenuText=Show Log Directory"})
 public class ShowLogInExplorer extends AbstractAction {
 

@@ -49,6 +49,11 @@
     </folder>
 
     <folder name="Menu">
+        <folder name="Tools">
+            <folder name="Metadata">
+                <attr name="position" intvalue="110"/>
+            </folder>
+        </folder>
         <folder name="Raster">
             <folder name="Masks">
                 <file name="org-esa-snap-raster-gpf-createLandMaskOp-Action.shadow">

@@ -43,7 +43,7 @@ import java.awt.event.ActionEvent;
 )
 @ActionReferences({
         @ActionReference(path = "Context/Product/MetadataElement", position = 120),
-        @ActionReference(path = "Menu/Tools/Metadata", position = 60)
+        @ActionReference(path = "Menu/Tools/Metadata", position = 65)
 })
 @NbBundle.Messages({
         "CTL_SearchMetadataValueAction_MenuText=Search Metadata Value",
