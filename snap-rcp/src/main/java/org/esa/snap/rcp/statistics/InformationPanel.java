@@ -23,7 +23,9 @@ import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductData;
 import org.esa.snap.core.datamodel.TiePointGrid;
+import org.esa.snap.core.util.ModuleMetadata;
 import org.esa.snap.core.util.StringUtils;
+import org.esa.snap.core.util.SystemUtils;
 import org.openide.windows.TopComponent;
 
 import javax.swing.JScrollPane;
@@ -213,8 +215,12 @@ class InformationPanel extends TablePagePanel {
     private static String getProductReaderModule(final Product product) {
         final ProductReader productReader = product.getProductReader();
         if (productReader != null) {
-            // todo: Tonio, please use MANIFEST.MF here to obtain name/version info
+            ModuleMetadata moduleMetadata = SystemUtils.loadModuleMetadata(productReader.getClass());
+            if(moduleMetadata != null) {
+                return String.format("%s - v%s", moduleMetadata.getDisplayName(), moduleMetadata.getVersion());
+            }
             return "unknown";
+
         }
         return NO_PRODUCT_READER_MESSAGE;
     }
