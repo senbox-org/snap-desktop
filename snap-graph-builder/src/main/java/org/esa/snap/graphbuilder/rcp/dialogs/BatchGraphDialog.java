@@ -32,7 +32,7 @@ import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphDialog;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphExecuter;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphNode;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphsMenu;
-import org.esa.snap.graphbuilder.rcp.dialogs.support.ProgressBarProgressMonitor;
+import org.esa.snap.graphbuilder.rcp.progress.LabelBarProgressMonitor;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.FileChooserFactory;
@@ -64,7 +64,7 @@ import java.util.Map;
 /**
  * Provides the dialog for executing a graph on a list of products
  */
-public class BatchGraphDialog extends ModelessDialog implements GraphDialog {
+public class BatchGraphDialog extends ModelessDialog implements GraphDialog, LabelBarProgressMonitor.ProgressBarListener {
 
     protected final static Path defaultGraphPath = ResourceUtils.getGraphFolder("");
 
@@ -80,7 +80,7 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog {
     private JPanel progressPanel;
     private JProgressBar progressBar;
     private JLabel progressMsgLabel;
-    private ProgressBarProgressMonitor progBarMonitor;
+    private LabelBarProgressMonitor progBarMonitor;
 
     private Map<File, File[]> slaveFileMap;
     private final boolean closeOnDone;
@@ -136,6 +136,10 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog {
         progressPanel.add(progressBar, BorderLayout.CENTER);
         progressMsgLabel = new JLabel();
         progressPanel.add(progressMsgLabel, BorderLayout.NORTH);
+
+        progBarMonitor = new LabelBarProgressMonitor(progressBar, progressMsgLabel);
+        progBarMonitor.addListener(this);
+
         final JButton progressCancelBtn = new JButton("Cancel");
         progressCancelBtn.addActionListener(new ActionListener() {
             public void actionPerformed(final ActionEvent e) {
@@ -162,8 +166,9 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog {
 
     @Override
     public void hide() {
-        if (progBarMonitor != null)
+        if (progBarMonitor != null) {
             progBarMonitor.setCanceled(true);
+        }
         notifyMSG(BatchProcessListener.BatchMSG.CLOSE);
         super.hide();
     }
@@ -320,7 +325,6 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog {
             MemUtils.freeAllMemory();
 
             progressBar.setValue(0);
-            progBarMonitor = new ProgressBarProgressMonitor(progressBar, progressMsgLabel, progressPanel);
 
             final SwingWorker processThread = new ProcessThread(progBarMonitor);
             processThread.execute();
@@ -329,6 +333,14 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog {
             if (statusLabel.getText() != null && !statusLabel.getText().isEmpty())
                 showErrorDialog(statusLabel.getText());
         }
+    }
+
+    public void notifyProgressStart() {
+        progressPanel.setVisible(true);
+    }
+
+    public void notifyProgressDone() {
+        progressPanel.setVisible(false);
     }
 
     private void CancelProcessing() {

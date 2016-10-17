@@ -33,7 +33,7 @@ import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphExecuter;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphNode;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphPanel;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphsMenu;
-import org.esa.snap.graphbuilder.rcp.dialogs.support.ProgressBarProgressMonitor;
+import org.esa.snap.graphbuilder.rcp.progress.LabelBarProgressMonitor;
 import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
@@ -42,25 +42,10 @@ import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.ModelessDialog;
 import org.openide.util.HelpCtx;
 
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.SwingWorker;
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -77,7 +62,7 @@ import java.util.Observer;
 /**
  * Provides the User Interface for creating, loading and saving Graphs
  */
-public class GraphBuilderDialog extends ModelessDialog implements Observer, GraphDialog {
+public class GraphBuilderDialog extends ModelessDialog implements Observer, GraphDialog, LabelBarProgressMonitor.ProgressBarListener {
 
     private static final ImageIcon processIcon = TangoIcons.actions_media_playback_start(TangoIcons.Res.R22);
     private static final ImageIcon saveIcon = TangoIcons.actions_document_save_as(TangoIcons.Res.R22);
@@ -93,7 +78,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
 
     private JPanel progressPanel = null;
     private JProgressBar progressBar = null;
-    private ProgressBarProgressMonitor progBarMonitor = null;
+    private LabelBarProgressMonitor progBarMonitor = null;
     private JLabel progressMsgLabel = null;
     private boolean initGraphEnabled = true;
 
@@ -188,6 +173,10 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         progressMsgLabel = new JLabel();
         progressPanel.add(progressMsgLabel, BorderLayout.NORTH);
         progressPanel.add(progressBar, BorderLayout.CENTER);
+
+        progBarMonitor = new LabelBarProgressMonitor(progressBar, progressMsgLabel);
+        progBarMonitor.addListener(this);
+
         final JButton progressCancelBtn = new JButton("Cancel");
         progressCancelBtn.addActionListener(new ActionListener() {
 
@@ -290,13 +279,21 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
             MemUtils.freeAllMemory();
 
             progressBar.setValue(0);
-            progBarMonitor = new ProgressBarProgressMonitor(progressBar, progressMsgLabel, progressPanel);
+
             final SwingWorker processThread = new ProcessThread(progBarMonitor);
             processThread.execute();
 
         } else {
             showErrorDialog(statusLabel.getText());
         }
+    }
+
+    public void notifyProgressStart() {
+        progressPanel.setVisible(true);
+    }
+
+    public void notifyProgressDone() {
+        progressPanel.setVisible(false);
     }
 
     private boolean checkIfOutputExists() {

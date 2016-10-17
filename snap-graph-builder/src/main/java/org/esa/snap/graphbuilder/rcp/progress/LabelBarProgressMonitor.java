@@ -13,22 +13,28 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, see http://www.gnu.org/licenses/
  */
-package org.esa.snap.graphbuilder.rcp.dialogs.support;
+package org.esa.snap.graphbuilder.rcp.progress;
 
 import com.bc.ceres.core.Assert;
 import com.bc.ceres.core.ProgressMonitor;
 
-import javax.swing.*;
+import javax.swing.JLabel;
+import javax.swing.JProgressBar;
+import javax.swing.SwingUtilities;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A {@link com.bc.ceres.core.ProgressMonitor} which uses a
  * Swing's {@link javax.swing.ProgressMonitor} to display progress.
  */
-public class ProgressBarProgressMonitor implements ProgressMonitor {
+public class LabelBarProgressMonitor implements ProgressMonitor {
+
+    public static final String stopCommand = "stop";
+    public static final String updateCommand = "update";
 
     private final JProgressBar progressBar;
     private final JLabel messageLabel;
-    private final JPanel progressPanel;
 
     private double currentWork;
     private double totalWork;
@@ -38,11 +44,15 @@ public class ProgressBarProgressMonitor implements ProgressMonitor {
     private int lastWorkUI;
     private boolean cancelRequested;
 
-    public ProgressBarProgressMonitor(final JProgressBar progressBar, final JLabel messageLabel,
-                                      final JPanel progressPanel) {
+    private final List<ProgressBarListener> listenerList = new ArrayList<>(1);
+
+    public LabelBarProgressMonitor(JProgressBar progressBar) {
+        this(progressBar, null);
+    }
+
+    public LabelBarProgressMonitor(JProgressBar progressBar, JLabel messageLabel) {
         this.progressBar = progressBar;
         this.messageLabel = messageLabel;
-        this.progressPanel = progressPanel;
     }
 
     /**
@@ -67,9 +77,7 @@ public class ProgressBarProgressMonitor implements ProgressMonitor {
         }
         cancelRequested = false;
         setDescription(name);
-        setVisibility(true);
         progressBar.setMaximum(totalWork);
-        //toggleUpdateButton(stopCommand);
     }
 
     /**
@@ -82,8 +90,13 @@ public class ProgressBarProgressMonitor implements ProgressMonitor {
             public void run() {
                 if (progressBar != null) {
                     progressBar.setValue(progressBar.getMaximum());
-                    setVisibility(false);
-                    //toggleUpdateButton(updateCommand);
+
+                    for (final ProgressBarListener listener : listenerList) {
+                        listener.notifyProgressDone();
+                    }
+                }
+                if (messageLabel != null) {
+                    messageLabel.setText("");
                 }
             }
         });
@@ -92,21 +105,23 @@ public class ProgressBarProgressMonitor implements ProgressMonitor {
     /**
      * Internal method to handle scaling correctly. This method
      * must not be called by a client. Clients should
-     * always use the method <code>worked(int)</code>.
+     * always use the method </code>worked(int)</code>.
      *
      * @param work the amount of work done
      */
-    public void internalWorked(final double work) {
+    public void internalWorked(double work) {
         currentWork += work;
         currentWorkUI = (int) (totalWorkUI * currentWork / totalWork);
         if (currentWorkUI > lastWorkUI) {
             runInUI(new Runnable() {
                 public void run() {
                     if (progressBar != null) {
-                        final int progress = progressBar.getMinimum() + currentWorkUI;
+                        int progress = progressBar.getMinimum() + currentWorkUI;
                         progressBar.setValue(progress);
-                        setVisibility(true);
-                        //toggleUpdateButton(stopCommand);
+
+                        for (final ProgressBarListener listener : listenerList) {
+                            listener.notifyProgressStart();
+                        }
                     }
                     lastWorkUI = currentWorkUI;
                 }
@@ -167,9 +182,9 @@ public class ProgressBarProgressMonitor implements ProgressMonitor {
      * @param name the name (or description) of the subtask
      */
     public void setSubTaskName(final String name) {
-        setVisibility(true);
-        messageLabel.setText(name);
-        //toggleUpdateButton(stopCommand);
+        if (messageLabel != null) {
+            messageLabel.setText(name);
+        }
     }
 
     /**
@@ -187,7 +202,7 @@ public class ProgressBarProgressMonitor implements ProgressMonitor {
     ////////////////////////////////////////////////////////////////////////
     // Stuff to be performed in Swing's event-dispatching thread
 
-    private void runInUI(Runnable task) {
+    private static void runInUI(Runnable task) {
         if (SwingUtilities.isEventDispatchThread()) {
             task.run();
         } else {
@@ -196,9 +211,25 @@ public class ProgressBarProgressMonitor implements ProgressMonitor {
     }
 
     private void setDescription(final String description) {
+        if (messageLabel != null) {
+            messageLabel.setText(description);
+        }
     }
 
-    private void setVisibility(final boolean visible) {
-        progressPanel.setVisible(visible);
+    public void addListener(final ProgressBarListener listener) {
+        if (!listenerList.contains(listener)) {
+            listenerList.add(listener);
+        }
+    }
+
+    public void removeListener(final ProgressBarListener listener) {
+        listenerList.remove(listener);
+    }
+
+    public interface ProgressBarListener {
+
+        void notifyProgressStart();
+
+        void notifyProgressDone();
     }
 }

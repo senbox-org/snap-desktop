@@ -17,6 +17,7 @@ package org.esa.snap.productlibrary.rcp.toolviews;
 
 import org.esa.snap.engine_utilities.db.DBQuery;
 import org.esa.snap.engine_utilities.db.ProductEntry;
+import org.esa.snap.graphbuilder.rcp.progress.LabelBarProgressMonitor;
 import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
 import org.esa.snap.graphbuilder.rcp.utils.FileFolderUtils;
 import org.esa.snap.productlibrary.rcp.dialogs.CheckListDialog;
@@ -398,8 +399,10 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
     }
 
     LabelBarProgressMonitor createLabelBarProgressMonitor() {
-        progMon = new LabelBarProgressMonitor(progressBar, statusLabel);
-        progMon.addListener(this);
+        if(progMon == null) {
+            progMon = new LabelBarProgressMonitor(progressBar, statusLabel);
+            progMon.addListener(this);
+        }
         return progMon;
     }
 
@@ -599,12 +602,12 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         }
     }
 
-    public void notifyStart() {
+    public void notifyProgressStart() {
         progressPanel.setVisible(true);
         toggleUpdateButton(LabelBarProgressMonitor.stopCommand);
     }
 
-    public void notifyDone() {
+    public void notifyProgressDone() {
         progressPanel.setVisible(false);
         toggleUpdateButton(LabelBarProgressMonitor.updateCommand);
         updateButton.setEnabled(true);

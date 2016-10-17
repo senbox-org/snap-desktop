@@ -18,6 +18,7 @@ package org.esa.snap.productlibrary.rcp.toolviews;
 import org.esa.snap.engine_utilities.db.ProductEntry;
 import org.esa.snap.engine_utilities.util.ResourceUtils;
 import org.esa.snap.graphbuilder.rcp.dialogs.BatchGraphDialog;
+import org.esa.snap.graphbuilder.rcp.progress.LabelBarProgressMonitor;
 import org.esa.snap.graphbuilder.rcp.utils.ClipboardUtils;
 import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
 import org.esa.snap.productlibrary.rcp.toolviews.extensions.ProductLibraryActionExt;

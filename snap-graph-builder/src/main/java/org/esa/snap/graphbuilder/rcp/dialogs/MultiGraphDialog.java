@@ -24,7 +24,7 @@ import org.esa.snap.core.gpf.graph.GraphException;
 import org.esa.snap.engine_utilities.db.CommonReaders;
 import org.esa.snap.engine_utilities.util.MemUtils;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphExecuter;
-import org.esa.snap.graphbuilder.rcp.dialogs.support.ProgressBarProgressMonitor;
+import org.esa.snap.graphbuilder.rcp.progress.LabelBarProgressMonitor;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.ModelessDialog;
@@ -52,7 +52,7 @@ import java.util.List;
 /**
  * Provides the dialog for excuting multiple graph from one user interface
  */
-public abstract class MultiGraphDialog extends ModelessDialog {
+public abstract class MultiGraphDialog extends ModelessDialog implements LabelBarProgressMonitor.ProgressBarListener {
 
     protected final AppContext appContext;
     protected final IOPanel ioPanel;
@@ -63,7 +63,7 @@ public abstract class MultiGraphDialog extends ModelessDialog {
     private final JLabel statusLabel;
     private final JPanel progressPanel;
     private final JProgressBar progressBar;
-    private ProgressBarProgressMonitor progBarMonitor = null;
+    private LabelBarProgressMonitor progBarMonitor = null;
 
     private boolean isProcessing = false;
 
@@ -99,6 +99,10 @@ public abstract class MultiGraphDialog extends ModelessDialog {
         progressPanel = new JPanel();
         progressPanel.setLayout(new BorderLayout(2, 2));
         progressPanel.add(progressBar, BorderLayout.CENTER);
+
+        progBarMonitor = new LabelBarProgressMonitor(progressBar);
+        progBarMonitor.addListener(this);
+
         final JButton progressCancelBtn = new JButton("Cancel");
         progressCancelBtn.addActionListener(new ActionListener() {
 
@@ -171,7 +175,6 @@ public abstract class MultiGraphDialog extends ModelessDialog {
             MemUtils.freeAllMemory();
 
             progressBar.setValue(0);
-            progBarMonitor = new ProgressBarProgressMonitor(progressBar, null, progressPanel);
 
             final SwingWorker processThread = new ProcessThread(progBarMonitor);
             processThread.execute();
@@ -179,6 +182,14 @@ public abstract class MultiGraphDialog extends ModelessDialog {
         } else {
             showErrorDialog(statusLabel.getText());
         }
+    }
+
+    public void notifyProgressStart() {
+        progressPanel.setVisible(true);
+    }
+
+    public void notifyProgressDone() {
+        progressPanel.setVisible(false);
     }
 
     private void CancelProcessing() {
