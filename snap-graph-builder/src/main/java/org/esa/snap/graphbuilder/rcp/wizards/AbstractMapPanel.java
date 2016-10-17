@@ -15,6 +15,7 @@
  */
 package org.esa.snap.graphbuilder.rcp.wizards;
 
+import org.esa.snap.core.datamodel.GeoPos;
 import org.esa.snap.engine_utilities.db.ProductEntry;
 import org.esa.snap.graphbuilder.gpf.ui.worldmap.WorldMapUI;
 
@@ -72,6 +73,13 @@ public abstract class AbstractMapPanel extends WizardPanel {
         final WorldMapUI worldMapUI = new WorldMapUI();
         this.add(worldMapUI.getWorlMapPane(), BorderLayout.CENTER);
 
-        worldMapUI.setProductEntryList(ProductEntry.createProductEntryList(productFileList));
+        final ProductEntry[] productEntryList =ProductEntry.createProductEntryList(productFileList);
+        final GeoPos[][] geoBoundaries = new GeoPos[productEntryList.length][4];
+        int i = 0;
+        for (ProductEntry entry : productEntryList) {
+            geoBoundaries[i++] = entry.getGeoBoundary();
+        }
+
+        worldMapUI.setAdditionalGeoBoundaries(geoBoundaries);
     }
 }

@@ -16,7 +16,7 @@ import java.util.TreeSet;
 /**
  * Calculates statistic on a product entry list
  */
-public class DatabaseStatistics implements DatabaseQueryListener {
+public class DatabaseStatistics implements DatabasePane.DatabaseQueryListener {
 
     private final DatabasePane dbPane;
     private final Map<Integer, YearData> yearDataMap = new HashMap<>(30);
@@ -33,9 +33,6 @@ public class DatabaseStatistics implements DatabaseQueryListener {
 
     public void notifyNewEntryListAvailable() {
         updateStats(dbPane.getProductEntryList());
-    }
-
-    public void notifyNewMapSelectionAvailable() {
     }
 
     private void updateStats(final ProductEntry[] entryList) {

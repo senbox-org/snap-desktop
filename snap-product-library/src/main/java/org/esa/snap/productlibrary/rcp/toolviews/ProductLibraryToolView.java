@@ -15,8 +15,10 @@
  */
 package org.esa.snap.productlibrary.rcp.toolviews;
 
+import org.esa.snap.core.datamodel.GeoPos;
 import org.esa.snap.engine_utilities.db.DBQuery;
 import org.esa.snap.engine_utilities.db.ProductEntry;
+import org.esa.snap.graphbuilder.gpf.ui.worldmap.WorldMapUI;
 import org.esa.snap.graphbuilder.rcp.progress.LabelBarProgressMonitor;
 import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
 import org.esa.snap.graphbuilder.rcp.utils.FileFolderUtils;
@@ -25,7 +27,6 @@ import org.esa.snap.productlibrary.rcp.toolviews.listviews.ListView;
 import org.esa.snap.productlibrary.rcp.toolviews.listviews.ProductEntryList;
 import org.esa.snap.productlibrary.rcp.toolviews.listviews.ProductEntryTable;
 import org.esa.snap.productlibrary.rcp.toolviews.listviews.ThumbnailView;
-import org.esa.snap.productlibrary.rcp.toolviews.model.DatabaseQueryListener;
 import org.esa.snap.productlibrary.rcp.toolviews.model.DatabaseStatistics;
 import org.esa.snap.productlibrary.rcp.toolviews.model.ProductLibraryConfig;
 import org.esa.snap.productlibrary.rcp.toolviews.model.SortingDecorator;
@@ -80,7 +81,7 @@ import java.util.Map;
         "CTL_ProductLibraryTopComponentDescription=Product Library",
 })
 public class ProductLibraryToolView extends ToolTopComponent implements LabelBarProgressMonitor.ProgressBarListener,
-        DatabaseQueryListener, ListView.ListViewListener, ProductLibraryActions.ProductLibraryActionListener {
+        DatabasePane.DatabaseQueryListener, WorldMapUI.WorldMapUIListener, ListView.ListViewListener, ProductLibraryActions.ProductLibraryActionListener {
 
     private static final ImageIcon updateIcon = UIUtils.loadImageIcon("/org/esa/snap/productlibrary/icons/refresh24.png", ProductLibraryToolView.class);
     private static final ImageIcon updateRolloverIcon = ToolButtonFactory.createRolloverIcon(updateIcon);
@@ -537,8 +538,14 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
     public void ShowRepository(final ProductEntry[] productEntryList) {
         currentListView.setProductEntryList(productEntryList);
         notifySelectionChanged();
-        worldMapUI.setProductEntryList(productEntryList);
-        worldMapUI.setSelectedProductEntryList(null);
+
+        final GeoPos[][] geoBoundaries = new GeoPos[productEntryList.length][4];
+        int i = 0;
+        for (ProductEntry entry : productEntryList) {
+            geoBoundaries[i++] = entry.getGeoBoundary();
+        }
+        worldMapUI.setAdditionalGeoBoundaries(geoBoundaries);
+        worldMapUI.setSelectedGeoBoundaries(null);
     }
 
     public static void handleErrorList(final java.util.List<DBScanner.ErrorFile> errorList) {
@@ -634,7 +641,17 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
 
         productLibraryActions.updateContextMenu(selections);
         dbPane.updateProductSelectionText(selections);
-        worldMapUI.setSelectedProductEntryList(selections);
+
+        if(selections != null) {
+            final GeoPos[][] geoBoundaries = new GeoPos[selections.length][4];
+            int i = 0;
+            for (ProductEntry entry : selections) {
+                geoBoundaries[i++] = entry.getGeoBoundary();
+            }
+            worldMapUI.setSelectedGeoBoundaries(geoBoundaries);
+        } else {
+            worldMapUI.setSelectedGeoBoundaries(null);
+        }
     }
 
     public void notifyOpenAction() {

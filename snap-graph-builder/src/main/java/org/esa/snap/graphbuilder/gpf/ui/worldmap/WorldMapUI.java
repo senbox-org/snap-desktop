@@ -16,7 +16,11 @@
 package org.esa.snap.graphbuilder.gpf.ui.worldmap;
 
 import org.esa.snap.core.datamodel.GeoPos;
-import org.esa.snap.engine_utilities.db.ProductEntry;
+
+import javax.swing.event.MouseInputAdapter;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
 
@@ -26,9 +30,13 @@ public class WorldMapUI {
     private final NestWorldMapPaneDataModel worldMapDataModel;
     private final NestWorldMapPane worlMapPane;
 
+    private final List<WorldMapUIListener> listenerList = new ArrayList<>(1);
+
     public WorldMapUI() {
+
         worldMapDataModel = new NestWorldMapPaneDataModel();
         worlMapPane = new NestWorldMapPane(worldMapDataModel);
+        worlMapPane.getLayerCanvas().addMouseListener(new MouseHandler());
     }
 
     public GeoPos[] getSelectionBox() {
@@ -43,22 +51,49 @@ public class WorldMapUI {
         worldMapDataModel.setSelectionBoxEnd(lat, lon);
     }
 
+    public void setAdditionalGeoBoundaries(final GeoPos[][] geoBoundaries) {
+        worldMapDataModel.setAdditionalGeoBoundaries(geoBoundaries);
+    }
+
+    public void setSelectedGeoBoundaries(final GeoPos[][] geoBoundaries) {
+        worldMapDataModel.setSelectedGeoBoundaries(geoBoundaries);
+    }
+
     public NestWorldMapPane getWorlMapPane() {
         return worlMapPane;
     }
 
-    public void setProductEntryList(final ProductEntry[] productEntryList) {
-        if (productEntryList == null) return;
-        final GeoPos[][] geoBoundaries = new GeoPos[productEntryList.length][4];
-        int i = 0;
-        for (ProductEntry entry : productEntryList) {
-            geoBoundaries[i++] = entry.getGeoBoundary();
-        }
-
-        worldMapDataModel.setAdditionalGeoBoundaries(geoBoundaries);
-    }
-
     public NestWorldMapPaneDataModel getModel() {
         return worldMapDataModel;
+    }
+
+    public void addListener(final WorldMapUIListener listener) {
+        if (!listenerList.contains(listener)) {
+            listenerList.add(listener);
+        }
+    }
+
+    public void removeListener(final WorldMapUIListener listener) {
+        listenerList.remove(listener);
+    }
+
+    private void notifyQuery() {
+        for (final WorldMapUIListener listener : listenerList) {
+            listener.notifyNewMapSelectionAvailable();
+        }
+    }
+
+    public interface WorldMapUIListener {
+        void notifyNewMapSelectionAvailable();
+    }
+
+    private class MouseHandler extends MouseInputAdapter {
+
+        @Override
+        public void mouseReleased(MouseEvent e) {
+            if (e.getButton() == MouseEvent.BUTTON1) {
+                notifyQuery();
+            }
+        }
     }
 }

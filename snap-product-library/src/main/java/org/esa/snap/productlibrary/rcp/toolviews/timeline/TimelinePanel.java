@@ -1,8 +1,8 @@
 package org.esa.snap.productlibrary.rcp.toolviews.timeline;
 
-import org.esa.snap.productlibrary.rcp.toolviews.model.DatabaseQueryListener;
-import org.esa.snap.productlibrary.rcp.toolviews.model.DatabaseStatistics;
 import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
+import org.esa.snap.productlibrary.rcp.toolviews.DatabasePane;
+import org.esa.snap.productlibrary.rcp.toolviews.model.DatabaseStatistics;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,7 +12,7 @@ import java.awt.event.ActionListener;
 /**
  * shows products on a time line
  */
-public class TimelinePanel extends JPanel implements DatabaseQueryListener {
+public class TimelinePanel extends JPanel implements DatabasePane.DatabaseQueryListener {
 
     private final DatabaseStatistics stats;
     private JPanel currentPanel = null;
@@ -95,9 +95,5 @@ public class TimelinePanel extends JPanel implements DatabaseQueryListener {
 
     public void notifyNewEntryListAvailable() {
         currentPanel.updateUI();
-    }
-
-    public void notifyNewMapSelectionAvailable() {
-
     }
 }
