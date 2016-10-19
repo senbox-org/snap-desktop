@@ -23,7 +23,9 @@ import com.bc.ceres.binding.validators.NotEmptyValidator;
 import com.bc.ceres.swing.binding.PropertyEditor;
 import com.bc.ceres.swing.binding.PropertyEditorRegistry;
 import com.bc.ceres.swing.binding.internal.TextFieldEditor;
-import org.esa.snap.core.gpf.descriptor.*;
+import org.esa.snap.core.gpf.descriptor.SystemDependentVariable;
+import org.esa.snap.core.gpf.descriptor.SystemVariable;
+import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterConstants;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.UIUtils;
@@ -36,8 +38,6 @@ import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.text.MessageFormat;
 import java.util.HashSet;
 
@@ -170,17 +170,17 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
         firstEditorComponent.setMaximumSize(new Dimension(firstEditorComponent.getMaximumSize().width, controlHeight));
         firstEditorComponent.setPreferredSize(new Dimension(firstEditorComponent.getPreferredSize().width, controlHeight));
 
-        JCheckBox checkBoxComponent = (JCheckBox)createCheckboxComponent("preprocessTool", firstEditorComponent, newOperatorDescriptor.getPreprocessTool());
-        checkBoxComponent.setText(Bundle.CTL_Label_PreprocessingTool_Text());
-
-        JCheckBox writeComponent = (JCheckBox)createCheckboxComponent("writeForProcessing", firstEditorComponent, newOperatorDescriptor.shouldWriteBeforeProcessing());
-        writeComponent.setText(Bundle.CTL_Label_WriteBefore_Text());
-
         propertyDescriptor = propertyContainer.getDescriptor("processingWriter");
         editor = PropertyEditorRegistry.getInstance().findPropertyEditor(propertyDescriptor);
         JComponent secondEditorComponent = editor.createEditorComponent(propertyDescriptor, bindingContext);
         secondEditorComponent.setMaximumSize(new Dimension(secondEditorComponent.getMaximumSize().width, controlHeight));
         secondEditorComponent.setPreferredSize(new Dimension(secondEditorComponent.getPreferredSize().width, controlHeight));
+
+        JCheckBox checkBoxComponent = (JCheckBox)createCheckboxComponent("preprocessTool", firstEditorComponent, newOperatorDescriptor.getPreprocessTool());
+        checkBoxComponent.setText(Bundle.CTL_Label_PreprocessingTool_Text());
+
+        JCheckBox writeComponent = (JCheckBox)createCheckboxComponent("writeForProcessing", secondEditorComponent, newOperatorDescriptor.shouldWriteBeforeProcessing());
+        writeComponent.setText(Bundle.CTL_Label_WriteBefore_Text());
 
         JPanel preProcessingPanel = new JPanel(new SpringLayout());
         preProcessingPanel.add(checkBoxComponent);

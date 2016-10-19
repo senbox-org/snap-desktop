@@ -27,6 +27,14 @@
             <attr name="operatorName" stringvalue="BandMaths"/>
             <!--attr name="disableFromGraphBuilder" stringvalue="true"/-->
         </file>
+        <file name="org.esa.snap.graphbuilder.gpf.ui.ResamplingUI">
+            <attr name="operatorUIClass" stringvalue="org.esa.snap.graphbuilder.gpf.ui.ResamplingUI"/>
+            <attr name="operatorName" stringvalue="Resample"/>
+        </file>
+        <file name="org.esa.snap.graphbuilder.gpf.ui.ReprojectionUI">
+            <attr name="operatorUIClass" stringvalue="org.esa.snap.graphbuilder.gpf.ui.ReprojectionUI"/>
+            <attr name="operatorName" stringvalue="Reproject"/>
+        </file>
     </folder>
 
 </filesystem>
