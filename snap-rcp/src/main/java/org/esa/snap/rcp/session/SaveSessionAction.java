@@ -114,7 +114,7 @@ public class SaveSessionAction extends AbstractAction implements ContextAwareAct
 
         app.setSessionFile(sessionFile);
         try {
-            final Session session = createSession(app);
+            final Session session = createSession(sessionFile);
             SessionIO.getInstance().writeSession(session, sessionFile);
             Dialogs.showInformation(TITLE, "Session saved.", null);
         } catch (Exception e) {
@@ -122,6 +122,20 @@ public class SaveSessionAction extends AbstractAction implements ContextAwareAct
             Dialogs.showError(TITLE, e.getMessage());
         } finally {
 //            app.updateState(); // to update menu entries e.g. 'Close Session'
+        }
+    }
+
+    public void saveSessionAsQuitely(final File newSessionFile) {
+        if (!saveProductsOrLetItBe(newSessionFile)) {
+            return;
+        }
+
+        try {
+            final Session session = createSession(newSessionFile);
+            SessionIO.getInstance().writeSession(session, newSessionFile);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Dialogs.showError(TITLE, e.getMessage());
         }
     }
 
@@ -172,7 +186,7 @@ public class SaveSessionAction extends AbstractAction implements ContextAwareAct
         return true;
     }
 
-    private Session createSession(SessionManager app) {
+    private static Session createSession(File sessionFile) {
         ArrayList<ProductNodeView> nodeViews = new ArrayList<ProductNodeView>();
 
 //        ######### 06.07.2015 ########
@@ -185,7 +199,7 @@ public class SaveSessionAction extends AbstractAction implements ContextAwareAct
 //                nodeViews.add((ProductNodeView) contentPane);
 //            }
 //        }
-        return new Session(app.getSessionFile().getParentFile().toURI(),
+        return new Session(sessionFile.getParentFile().toURI(),
                 SnapApp.getDefault().getProductManager().getProducts(),
                 nodeViews.toArray(new ProductNodeView[nodeViews.size()]));
     }
