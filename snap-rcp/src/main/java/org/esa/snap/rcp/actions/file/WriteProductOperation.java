@@ -24,7 +24,7 @@ import static org.esa.snap.rcp.preferences.general.WriteOptionsController.*;
  * @author Marco Peters
  */
 @NbBundle.Messages({"CTL_WriteProductOperationName=Write Product"})
-class WriteProductOperation implements Runnable, Cancellable {
+public class WriteProductOperation implements Runnable, Cancellable {
 
     private final Product product;
     private final Boolean incremental;
