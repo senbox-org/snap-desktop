@@ -83,16 +83,11 @@ import java.util.Map;
 public class ProductLibraryToolView extends ToolTopComponent implements LabelBarProgressMonitor.ProgressBarListener,
         DatabasePane.DatabaseQueryListener, WorldMapUI.WorldMapUIListener, ListView.ListViewListener, ProductLibraryActions.ProductLibraryActionListener {
 
-    private static final ImageIcon updateIcon = UIUtils.loadImageIcon("/org/esa/snap/productlibrary/icons/refresh24.png", ProductLibraryToolView.class);
-    private static final ImageIcon updateRolloverIcon = ToolButtonFactory.createRolloverIcon(updateIcon);
-    private static final ImageIcon stopIcon = UIUtils.loadImageIcon("icons/Stop24.gif");
-    private static final ImageIcon stopRolloverIcon = ToolButtonFactory.createRolloverIcon(stopIcon);
-    private static final ImageIcon addButtonIcon = UIUtils.loadImageIcon("icons/Plus24.gif");
-    private static final ImageIcon removeButtonIcon = UIUtils.loadImageIcon("icons/Minus24.gif");
-    private static final ImageIcon listViewButtonIcon = UIUtils.loadImageIcon("/org/esa/snap/rcp/icons/view_list24.png", ThumbnailPanel.class);
-    private static final ImageIcon tableViewButtonIcon = UIUtils.loadImageIcon("/org/esa/snap/rcp/icons/view_table24.png", ThumbnailPanel.class);
-    private static final ImageIcon thumbnailViewButtonIcon = UIUtils.loadImageIcon("/org/esa/snap/rcp/icons/view_thumbnails24.png", ThumbnailPanel.class);
-    private static final ImageIcon helpButtonIcon = UIUtils.loadImageIcon("icons/Help24.gif");
+    private static ImageIcon updateIcon, updateRolloverIcon;
+    private static ImageIcon stopIcon, stopRolloverIcon;
+    private static ImageIcon addButtonIcon, removeButtonIcon;
+    private static ImageIcon listViewButtonIcon, tableViewButtonIcon, thumbnailViewButtonIcon;
+    private static ImageIcon helpButtonIcon;
 
     private JPanel mainPanel;
     private JComboBox repositoryListCombo;
@@ -163,7 +158,22 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         currentListView = productEntryTable;
     }
 
+    private static void loadIcons() {
+        updateIcon = UIUtils.loadImageIcon("/org/esa/snap/productlibrary/icons/refresh24.png", ProductLibraryToolView.class);
+        updateRolloverIcon = ToolButtonFactory.createRolloverIcon(updateIcon);
+        stopIcon = UIUtils.loadImageIcon("icons/Stop24.gif");
+        stopRolloverIcon = ToolButtonFactory.createRolloverIcon(stopIcon);
+        addButtonIcon = UIUtils.loadImageIcon("icons/Plus24.gif");
+        removeButtonIcon = UIUtils.loadImageIcon("icons/Minus24.gif");
+        listViewButtonIcon = UIUtils.loadImageIcon("/org/esa/snap/rcp/icons/view_list24.png", ThumbnailPanel.class);
+        tableViewButtonIcon = UIUtils.loadImageIcon("/org/esa/snap/rcp/icons/view_table24.png", ThumbnailPanel.class);
+        thumbnailViewButtonIcon = UIUtils.loadImageIcon("/org/esa/snap/rcp/icons/view_thumbnails24.png", ThumbnailPanel.class);
+        helpButtonIcon = UIUtils.loadImageIcon("icons/Help24.gif");
+    }
+
     public void initUI() {
+
+        loadIcons();
 
         final JPanel northPanel = createHeaderPanel();
         final JPanel centrePanel = createCentrePanel();
@@ -681,7 +691,7 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         }
     }
 
-    private class RescanOptions extends CheckListDialog {
+    private static class RescanOptions extends CheckListDialog {
         private final static String TITLE = "Scan Folder Options";
         private final static String SEARCH_RECURSIVELY = "Search folder recursively?";
         private final static String VERIFY_ZIP_FILES = "Test zip files for errors?";
