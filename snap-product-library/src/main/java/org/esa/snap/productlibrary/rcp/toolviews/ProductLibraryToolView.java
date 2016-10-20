@@ -16,12 +16,13 @@
 package org.esa.snap.productlibrary.rcp.toolviews;
 
 import org.esa.snap.core.datamodel.GeoPos;
+import org.esa.snap.core.util.SystemUtils;
+import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.engine_utilities.db.DBQuery;
 import org.esa.snap.engine_utilities.db.ProductEntry;
 import org.esa.snap.graphbuilder.gpf.ui.worldmap.WorldMapUI;
 import org.esa.snap.graphbuilder.rcp.progress.LabelBarProgressMonitor;
 import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
-import org.esa.snap.graphbuilder.rcp.utils.FileFolderUtils;
 import org.esa.snap.productlibrary.rcp.dialogs.CheckListDialog;
 import org.esa.snap.productlibrary.rcp.toolviews.listviews.ListView;
 import org.esa.snap.productlibrary.rcp.toolviews.listviews.ProductEntryList;
@@ -88,6 +89,8 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
     private static ImageIcon addButtonIcon, removeButtonIcon;
     private static ImageIcon listViewButtonIcon, tableViewButtonIcon, thumbnailViewButtonIcon;
     private static ImageIcon helpButtonIcon;
+
+    private final static String LAST_ERROR_OUTPUT_DIR_KEY = "snap.lastErrorOutputDir";
 
     private JPanel mainPanel;
     private JComboBox repositoryListCombo;
@@ -577,25 +580,19 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
                                          "The follow files have errors:\n" + str.toString() + question,
                                     false, null) == Dialogs.Answer.YES) {
 
-            File file = FileFolderUtils.GetSaveFilePath("Save as...", "Text", "txt",
-                                                        "ProductErrorList", "Products with errors");
+            File file = Dialogs.requestFileForSave("Save as...", false,
+                                                   new SnapFileFilter("Text File", new String[]{".txt"}, "Text File"),
+                                                   ".txt", "ProductErrorList", null, LAST_ERROR_OUTPUT_DIR_KEY);
             try {
                 writeErrors(errorList, file);
             } catch (Exception e) {
                 Dialogs.showError("Unable to save to " + file.getAbsolutePath());
-                file = FileFolderUtils.GetSaveFilePath("Save as...", "Text", "txt",
-                        "ProductErrorList", "Products with errors");
-                try {
-                    writeErrors(errorList, file);
-                } catch (Exception ignore) {
-                    //
-                }
             }
             if (Desktop.isDesktopSupported() && file.exists()) {
                 try {
                     Desktop.getDesktop().open(file);
                 } catch (Exception e) {
-                    // do nothing
+                    SystemUtils.LOG.warning("Unable to open error file: " + e.getMessage());
                 }
             }
         }
