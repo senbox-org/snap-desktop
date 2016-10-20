@@ -87,7 +87,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
     private boolean allowGraphBuilding = true;
     private final List<ProcessingListener> listenerList = new ArrayList<>(1);
 
-    private final static String LAST_GRAPH_PATH = "graphbuilder.last_graph_path";
+    public final static String LAST_GRAPH_PATH = "graphbuilder.last_graph_path";
 
     private JTabbedPane tabbedPanel = null;
 
