@@ -27,6 +27,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class NestWorldMapPaneDataModel {
 
@@ -42,17 +43,14 @@ public class NestWorldMapPaneDataModel {
     private Layer worldMapLayer;
     private Product selectedProduct;
     private boolean autoZoomEnabled;
-    private ArrayList<Product> productList;
-    private final ArrayList<GeoPos[]> additionalGeoBoundaryList;
-    private final ArrayList<GeoPos[]> selectedGeoBoundaryList;
+    private final List<Product> productList = new ArrayList<>();
+    private final List<GeoPos[]> additionalGeoBoundaryList = new ArrayList<>();
+    private final List<GeoPos[]> selectedGeoBoundaryList = new ArrayList<>();
 
     private final GeoPos selectionBoxStart = new GeoPos();
     private final GeoPos selectionBoxEnd = new GeoPos();
 
     public NestWorldMapPaneDataModel() {
-        productList = new ArrayList<>();
-        additionalGeoBoundaryList = new ArrayList<>();
-        selectedGeoBoundaryList = new ArrayList<>();
         autoZoomEnabled = false;
     }
 
@@ -75,11 +73,11 @@ public class NestWorldMapPaneDataModel {
         }
     }
 
-    public void setSelectionBoxStart(final float lat, final float lon) {
+    public void setSelectionBoxStart(final double lat, final double lon) {
         selectionBoxStart.setLocation(lat, lon);
     }
 
-    public void setSelectionBoxEnd(final float lat, final float lon) {
+    public void setSelectionBoxEnd(final double lat, final double lon) {
         selectionBoxEnd.setLocation(lat, lon);
     }
 

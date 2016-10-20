@@ -43,11 +43,11 @@ public class WorldMapUI {
         return worldMapDataModel.getSelectionBox();
     }
 
-    public void setSelectionStart(final float lat, final float lon) {
+    public void setSelectionStart(final double lat, final double lon) {
         worldMapDataModel.setSelectionBoxStart(lat, lon);
     }
 
-    public void setSelectionEnd(final float lat, final float lon) {
+    public void setSelectionEnd(final double lat, final double lon) {
         worldMapDataModel.setSelectionBoxEnd(lat, lon);
     }
 
