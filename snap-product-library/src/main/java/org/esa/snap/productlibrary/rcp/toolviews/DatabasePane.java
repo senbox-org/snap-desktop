@@ -456,9 +456,12 @@ public final class DatabasePane extends JPanel {
             productTypeJList.setSelectedIndices(findIndices(productTypeJList, dbQuery.getSelectedProductTypes()));
             acquisitionModeCombo.setSelectedItem(dbQuery.getSelectedAcquisitionMode());
             passCombo.setSelectedItem(dbQuery.getSelectedPass());
-            startDateBox.setDate(dbQuery.getStartDate().getTime());
-            endDateBox.setDate(dbQuery.getEndDate().getTime());
-
+            if(dbQuery.getStartDate() != null) {
+                startDateBox.setDate(dbQuery.getStartDate().getTime());
+            }
+            if(dbQuery.getEndDate() != null) {
+                endDateBox.setDate(dbQuery.getEndDate().getTime());
+            }
             polarizationCombo.setSelectedItem(dbQuery.getSelectedPolarization());
             calibrationCombo.setSelectedItem(dbQuery.getSelectedCalibration());
             orbitCorrectionCombo.setSelectedItem(dbQuery.getSelectedOrbitCorrection());
