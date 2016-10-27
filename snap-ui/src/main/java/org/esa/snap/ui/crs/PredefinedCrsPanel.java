@@ -79,7 +79,6 @@ class PredefinedCrsPanel extends JPanel {
         crsList = new JList<>(filteredListModel);
         crsList.setVisibleRowCount(15);
         crsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        crsList.setSelectedValue(crsListModel.getElementAt(0), true);
 
         final JLabel filterLabel = new JLabel("Filter:");
         final JLabel infoLabel = new JLabel("Well-Known Text (WKT):");
@@ -88,6 +87,8 @@ class PredefinedCrsPanel extends JPanel {
         infoArea = new JTextArea(15, 30);
         infoArea.setEditable(false);
         crsList.addListSelectionListener(new CrsListSelectionListener());
+        crsList.setSelectedIndex(0);
+
         final JScrollPane infoAreaScrollPane = new JScrollPane(infoArea);
 
         TableLayout tableLayout = new TableLayout(3);
@@ -118,7 +119,7 @@ class PredefinedCrsPanel extends JPanel {
             infoArea.setEnabled((Boolean) evt.getNewValue());
             infoAreaScrollPane.setEnabled((Boolean) evt.getNewValue());
         });
-        crsList.getSelectionModel().setSelectionInterval(0,0);
+        crsList.getSelectionModel().setSelectionInterval(0, 0);
     }
 
     private class FilterDocumentListener implements DocumentListener {
@@ -126,11 +127,18 @@ class PredefinedCrsPanel extends JPanel {
         @Override
         public void insertUpdate(DocumentEvent e) {
             updateFilter(getFilterText(e));
+            clearListSelection();
         }
 
         @Override
         public void removeUpdate(DocumentEvent e) {
             updateFilter(getFilterText(e));
+            clearListSelection();
+        }
+
+        private void clearListSelection() {
+            crsList.clearSelection();
+            setInfoText("");
         }
 
         @Override

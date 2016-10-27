@@ -71,10 +71,12 @@ public class FilteredListModel<T> extends AbstractListModel {
         }
     }
 
+    @Override
     public int getSize() {
         return (filter != null) ? indices.size() : sourceModel.getSize();
     }
 
+    @Override
     public T getElementAt(int index) {
         return (filter != null) ? sourceModel.getElementAt(indices.get(index)) : sourceModel.getElementAt(index);
     }
