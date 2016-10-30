@@ -44,6 +44,7 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -212,7 +213,7 @@ public abstract class MultiGraphDialog extends ModelessDialog implements LabelBa
      */
     public void LoadGraph(final GraphExecuter executer, final File file) {
         try {
-            executer.loadGraph(file, true);
+            executer.loadGraph(new FileInputStream(file), file, true);
 
         } catch (Exception e) {
             showErrorDialog(e.getMessage());

@@ -55,6 +55,7 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -362,11 +363,11 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
      * @param graphFile the graph file to load
      * @param addUI     add a user interface
      */
-    protected void LoadGraph(final GraphExecuter executer, final File graphFile, final boolean addUI) {
+    protected void LoadGraph(final GraphExecuter executer, final File file, final boolean addUI) {
         try {
-            executer.loadGraph(graphFile, addUI);
+            executer.loadGraph(new FileInputStream(file), file, addUI);
 
-        } catch (GraphException e) {
+        } catch (Exception e) {
             showErrorDialog(e.getMessage());
         }
     }

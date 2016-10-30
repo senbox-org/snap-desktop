@@ -280,7 +280,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
 
             progressBar.setValue(0);
 
-            final SwingWorker processThread = new ProcessThread(progBarMonitor);
+            final ProcessThread processThread = new ProcessThread(progBarMonitor);
             processThread.execute();
 
         } else {
@@ -568,21 +568,27 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         try {
             final GraphExecuter.GraphEvent event = (GraphExecuter.GraphEvent) data;
             final GraphNode node = (GraphNode) event.getData();
-            final String opID = node.getID();
-            if (event.getEventType() == GraphExecuter.events.ADD_EVENT) {
-
-                tabbedPanel.addTab(opID, null, CreateOperatorTab(node), opID + " Operator");
-            } else if (event.getEventType() == GraphExecuter.events.REMOVE_EVENT) {
-
-                int index = tabbedPanel.indexOfTab(opID);
-                tabbedPanel.remove(index);
-            } else if (event.getEventType() == GraphExecuter.events.SELECT_EVENT) {
-
-                int index = tabbedPanel.indexOfTab(opID);
-                tabbedPanel.setSelectedIndex(index);
-            } else if (event.getEventType() == GraphExecuter.events.CONNECT_EVENT) {
-
-                ValidateAllNodes();
+            final GraphExecuter.events eventType = event.getEventType();
+            switch(eventType) {
+                case ADD_EVENT:
+                    tabbedPanel.addTab(node.getID(), null, CreateOperatorTab(node), node.getID() + " Operator");
+                    graphPanel.repaint();
+                    break;
+                case REMOVE_EVENT:
+                    tabbedPanel.remove(tabbedPanel.indexOfTab(node.getID()));
+                    graphPanel.repaint();
+                    break;
+                case SELECT_EVENT:
+                    tabbedPanel.setSelectedIndex(tabbedPanel.indexOfTab(node.getID()));
+                    break;
+                case CONNECT_EVENT:
+                    ValidateAllNodes();
+                    break;
+                case REFRESH_EVENT:
+                    graphPanel.repaint();
+                    break;
+                default:
+                    throw new Exception("Unhandled GraphExecuter event " + eventType.name());
             }
         } catch (Exception e) {
             String msg = e.getMessage();

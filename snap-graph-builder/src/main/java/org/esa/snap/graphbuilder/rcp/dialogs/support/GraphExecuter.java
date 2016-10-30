@@ -38,8 +38,8 @@ import org.esa.snap.graphbuilder.gpf.ui.OperatorUI;
 import org.esa.snap.graphbuilder.gpf.ui.OperatorUIRegistry;
 import org.esa.snap.rcp.util.Dialogs;
 
+import javax.swing.*;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -64,7 +64,7 @@ public class GraphExecuter extends Observable {
     private final GraphNodeList graphNodeList = new GraphNodeList();
     private final static String LAST_GRAPH_PATH = "graphbuilder.last_graph_path";
 
-    public enum events {ADD_EVENT, REMOVE_EVENT, SELECT_EVENT, CONNECT_EVENT}
+    public enum events {ADD_EVENT, REMOVE_EVENT, SELECT_EVENT, CONNECT_EVENT, REFRESH_EVENT}
 
     public GraphExecuter() {
 
@@ -90,9 +90,8 @@ public class GraphExecuter extends Observable {
 
     public void setSelectedNode(GraphNode node) {
         if (node == null) return;
-        setChanged();
-        notifyObservers(new GraphEvent(events.SELECT_EVENT, node));
-        clearChanged();
+
+        notifyGraphEvent(new GraphEvent(events.SELECT_EVENT, node));
     }
 
     /**
@@ -130,9 +129,7 @@ public class GraphExecuter extends Observable {
         }
         final GraphNode newGraphNode = createNewGraphNode(graph, opName, id);
 
-        setChanged();
-        notifyObservers(new GraphEvent(events.ADD_EVENT, newGraphNode));
-        clearChanged();
+        notifyGraphEvent(new GraphEvent(events.ADD_EVENT, newGraphNode));
 
         return newGraphNode;
     }
@@ -185,9 +182,7 @@ public class GraphExecuter extends Observable {
 
     public void removeOperator(final GraphNode node) {
 
-        setChanged();
-        notifyObservers(new GraphEvent(events.REMOVE_EVENT, node));
-        clearChanged();
+        notifyGraphEvent(new GraphEvent(events.REMOVE_EVENT, node));
 
         removeNode(node);
     }
@@ -210,8 +205,12 @@ public class GraphExecuter extends Observable {
     }
 
     public void notifyConnection() {
+        notifyGraphEvent(new GraphEvent(events.CONNECT_EVENT, graphNodeList.getGraphNodes().get(0)));
+    }
+
+    private void notifyGraphEvent(final GraphEvent event) {
         setChanged();
-        notifyObservers(new GraphEvent(events.CONNECT_EVENT, graphNodeList.getGraphNodes().get(0)));
+        notifyObservers(event);
         clearChanged();
     }
 
@@ -316,15 +315,9 @@ public class GraphExecuter extends Observable {
 
     private void writeGraph(final String filePath) throws GraphException {
 
-        try {
-            final FileWriter fileWriter = new FileWriter(filePath);
-
-            try {
-                AssignAllParameters();
-                GraphIO.write(graph, fileWriter);
-            } finally {
-                fileWriter.close();
-            }
+        try (FileWriter fileWriter = new FileWriter(filePath)) {
+            AssignAllParameters();
+            GraphIO.write(graph, fileWriter);
         } catch (Exception e) {
             throw new GraphException("Unable to write graph to " + filePath + '\n' + e.getMessage());
         }
@@ -343,29 +336,37 @@ public class GraphExecuter extends Observable {
         return stringWriter.toString();
     }
 
-    public void loadGraph(final File filePath, final boolean addUI) throws GraphException {
-
-        try {
-            if (filePath == null) return;
-            final Graph graphFromFile = GPFProcessor.readGraph(new FileReader(filePath), null);
-
-            setGraph(graphFromFile, addUI);
-            lastLoadedGraphFile = filePath;
-        } catch (Throwable e) {
-            throw new GraphException("Unable to load graph " + filePath + '\n' + e.getMessage());
-        }
-    }
-
     public void loadGraph(final InputStream fileStream, final File file, final boolean addUI) throws GraphException {
 
         try {
             if (fileStream == null) return;
-            final Graph graphFromFile = GPFProcessor.readGraph(new InputStreamReader(fileStream), null);
+
+            final LoadGraphThread loadGraphThread = new LoadGraphThread(fileStream, addUI);
+            loadGraphThread.execute();
+
             lastLoadedGraphFile = file;
 
-            setGraph(graphFromFile, addUI);
         } catch (Throwable e) {
             throw new GraphException("Unable to load graph " + fileStream.toString() + '\n' + e.getMessage());
+        }
+    }
+
+    private class LoadGraphThread extends SwingWorker<Graph, Object> {
+        private final InputStream fileStream;
+        private final boolean addUI;
+
+        public LoadGraphThread(final InputStream fileStream, final boolean addUI) {
+            this.fileStream = fileStream;
+            this.addUI = addUI;
+        }
+
+        @Override
+        protected Graph doInBackground() throws Exception {
+            final Graph graphFromFile = GPFProcessor.readGraph(new InputStreamReader(fileStream), null);
+
+            setGraph(graphFromFile, addUI);
+            notifyGraphEvent(new GraphEvent(events.REFRESH_EVENT, null));
+            return graphFromFile;
         }
     }
 
@@ -397,9 +398,8 @@ public class GraphExecuter extends Observable {
                     }
                     newGraphNode.setOperatorUI(ui);
                 }
-                setChanged();
-                notifyObservers(new GraphEvent(events.ADD_EVENT, newGraphNode));
-                clearChanged();
+
+                notifyGraphEvent(new GraphEvent(events.ADD_EVENT, newGraphNode));
             }
         }
     }

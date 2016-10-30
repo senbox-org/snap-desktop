@@ -19,21 +19,11 @@ import org.esa.snap.core.gpf.graph.NodeSource;
 import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.graphbuilder.gpf.ui.OperatorUIRegistry;
 
-import javax.swing.ImageIcon;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
+import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.RenderingHints;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -92,30 +82,48 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
      */
     private void CreateAddOpMenu() {
         addMenu = new JMenu("Add");
+        final SwingWorker<Boolean, Object> menuThread = new MenuThread(addMenu, addListener, graphEx);
+        menuThread.execute();
+    }
 
-        // get operator list from graph executor
-        final Set<String> gpfOperatorSet = graphEx.GetOperatorList();
-        final String[] gpfOperatorList = new String[gpfOperatorSet.size()];
-        gpfOperatorSet.toArray(gpfOperatorList);
-        Arrays.sort(gpfOperatorList);
+    private static class MenuThread extends SwingWorker<Boolean, Object> {
+        private final JMenu addMenu;
+        private final AddMenuListener addListener;
+        private final GraphExecuter graphEx;
 
-        // add operators
-        for (String anAlias : gpfOperatorList) {
-            if (!graphEx.isOperatorInternal(anAlias) && OperatorUIRegistry.showInGraphBuilder(anAlias)) {
-                final String category = graphEx.getOperatorCategory(anAlias);
-                JMenu menu = addMenu;
-                if (!category.isEmpty()) {
-                    final String[] categoryPath = StringUtils.split(category, folderDelim, true);
-                    for (String folder : categoryPath) {
-                        menu = getMenuFolder(folder, menu);
+        public MenuThread(final JMenu addMenu, final AddMenuListener addListener, final GraphExecuter graphEx) {
+            this.addMenu = addMenu;
+            this.addListener = addListener;
+            this.graphEx = graphEx;
+        }
+
+        @Override
+        protected Boolean doInBackground() throws Exception {
+            // get operator list from graph executor
+            final Set<String> gpfOperatorSet = graphEx.GetOperatorList();
+            final String[] gpfOperatorList = new String[gpfOperatorSet.size()];
+            gpfOperatorSet.toArray(gpfOperatorList);
+            Arrays.sort(gpfOperatorList);
+
+            // add operators
+            for (String anAlias : gpfOperatorList) {
+                if (!graphEx.isOperatorInternal(anAlias) && OperatorUIRegistry.showInGraphBuilder(anAlias)) {
+                    final String category = graphEx.getOperatorCategory(anAlias);
+                    JMenu menu = addMenu;
+                    if (!category.isEmpty()) {
+                        final String[] categoryPath = StringUtils.split(category, folderDelim, true);
+                        for (String folder : categoryPath) {
+                            menu = getMenuFolder(folder, menu);
+                        }
                     }
-                }
 
-                final JMenuItem item = new JMenuItem(anAlias, opIcon);
-                item.setHorizontalTextPosition(JMenuItem.RIGHT);
-                item.addActionListener(addListener);
-                menu.add(item);
+                    final JMenuItem item = new JMenuItem(anAlias, opIcon);
+                    item.setHorizontalTextPosition(JMenuItem.RIGHT);
+                    item.addActionListener(addListener);
+                    menu.add(item);
+                }
             }
+            return true;
         }
     }
 
@@ -248,6 +256,9 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
      * @param nodeList the list of graphNodes
      */
     private void DrawGraph(Graphics2D g, List<GraphNode> nodeList) {
+
+        if(nodeList.isEmpty()) 
+            return;
 
         g.setFont(font);
         if (showRightClickHelp) {
