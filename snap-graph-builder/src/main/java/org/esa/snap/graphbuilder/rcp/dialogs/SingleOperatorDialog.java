@@ -15,6 +15,7 @@
  */
 package org.esa.snap.graphbuilder.rcp.dialogs;
 
+import com.bc.ceres.binding.ConversionException;
 import com.bc.ceres.binding.Property;
 import com.bc.ceres.binding.PropertyDescriptor;
 import com.bc.ceres.binding.PropertySet;
@@ -41,6 +42,7 @@ import org.esa.snap.core.gpf.internal.RasterDataNodeValues;
 import org.esa.snap.core.gpf.ui.DefaultIOParametersPanel;
 import org.esa.snap.core.gpf.ui.OperatorMenu;
 import org.esa.snap.core.gpf.ui.OperatorParameterSupport;
+import org.esa.snap.core.gpf.ui.ParameterUpdater;
 import org.esa.snap.core.gpf.ui.SingleTargetProductDialog;
 import org.esa.snap.core.gpf.ui.SourceProductSelector;
 import org.esa.snap.core.gpf.ui.TargetProductSelectorModel;
@@ -71,6 +73,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -105,7 +108,7 @@ public class SingleOperatorDialog extends SingleTargetProductDialog {
         operatorDescriptor = operatorSpi.getOperatorDescriptor();
         ioParametersPanel = new DefaultIOParametersPanel(getAppContext(), operatorDescriptor, getTargetProductSelector());
 
-        parameterSupport = new OperatorParameterSupport(operatorDescriptor);
+        parameterSupport = new OperatorParameterSupport(operatorDescriptor, null, null, new GraphBuilderParameterUpdater());
         final ArrayList<SourceProductSelector> sourceProductSelectorList = ioParametersPanel.getSourceProductSelectorList();
         final PropertySet propertySet = parameterSupport.getPropertySet();
         bindingContext = new BindingContext(propertySet);
@@ -489,5 +492,18 @@ public class SingleOperatorDialog extends SingleTargetProductDialog {
             }
         }
         propertyDescriptor.setValueSet(new ValueSet(values));
+    }
+
+    private class GraphBuilderParameterUpdater implements ParameterUpdater {
+
+        @Override
+        public void handleParameterSaveRequest(Map<String, Object> parameterMap) {
+            opUI.updateParameters();
+        }
+
+        @Override
+        public void handleParameterLoadRequest(Map<String, Object> parameterMap) throws ValidationException, ConversionException {
+            opUI.initParameters();
+        }
     }
 }
