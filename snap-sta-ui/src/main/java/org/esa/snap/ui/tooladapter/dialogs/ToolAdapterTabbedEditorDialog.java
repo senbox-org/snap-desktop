@@ -26,6 +26,7 @@ import com.bc.ceres.swing.binding.internal.TextFieldEditor;
 import org.esa.snap.core.gpf.descriptor.SystemDependentVariable;
 import org.esa.snap.core.gpf.descriptor.SystemVariable;
 import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
+import org.esa.snap.core.gpf.descriptor.dependency.BundleType;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterConstants;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.UIUtils;
@@ -80,6 +81,7 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
         addTab(tabbedPane, Bundle.CTL_Panel_PreProcessing_Border_TitleText(), createPreProcessingTab());
         addTab(tabbedPane, Bundle.CTL_Panel_OpParams_Border_TitleText(), createParametersTab(formWidth));
         addTab(tabbedPane, Bundle.CTL_Panel_SysVar_Border_TitleText(), createVariablesPanel());
+        addTab(tabbedPane, "Bundled Binaries", createBundlePanel());
 
         formWidth = tabbedPane.getTabComponentAt(0).getWidth();
 
@@ -302,6 +304,17 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
             paramsTable.addParameterToTable();
         });
         return paramsPanel;
+    }
+
+    @Override
+    protected JPanel createBundlePanel() {
+        org.esa.snap.core.gpf.descriptor.dependency.Bundle bundle = this.newOperatorDescriptor.getBundle();
+        if (bundle == null) {
+            bundle = new org.esa.snap.core.gpf.descriptor.dependency.Bundle(BundleType.NONE, null, null);
+            this.newOperatorDescriptor.setBundle(bundle);
+        }
+        bundleForm = new EntityForm<>(bundle);
+        return bundleForm.getPanel();
     }
 
     private JPanel createPreProcessingTab() {

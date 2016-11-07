@@ -16,11 +16,13 @@
 package org.esa.snap.modules;
 
 import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
+import org.esa.snap.core.gpf.descriptor.dependency.Bundle;
+import org.esa.snap.core.gpf.descriptor.dependency.BundleType;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterIO;
 
 import java.io.*;
 import java.net.URL;
-import java.text.SimpleDateFormat;
+import java.nio.file.Files;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.jar.*;
@@ -39,7 +41,8 @@ public final class ModulePackager {
     private static final Attributes.Name ATTR_DESCRIPTION_NAME;
     private static final Attributes.Name ATTR_MODULE_NAME;
     private static final Attributes.Name ATTR_MODULE_TYPE;
-    private static final Attributes.Name ATTR_MODULE_VERSION;
+    private static final Attributes.Name ATTR_MODULE_IMPLEMENTATION;
+    private static final Attributes.Name ATTR_MODULE_SPECIFICATION;
     private static final Attributes.Name ATTR_MODULE_ALIAS;
     private static final File modulesPath;
     private static final String layerXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
@@ -64,6 +67,11 @@ public final class ModulePackager {
             "    </folder>\n" +
             "</filesystem>";
     private static final String LAYER_XML_PATH = "org/esa/snap/ui/tooladapter/layer.xml";
+    private static final String VERSION = "5.0.0";
+    private static final String STA_MODULE = "org.esa.snap.snap.sta";
+    private static final String STA_UI_MODULE = "org.esa.snap.snap.sta.ui";
+    private static final String SNAP_RCP_MODULE = "org.esa.snap.snap.rcp";
+    private static final String SNAP_CORE_MODULE = "org.esa.snap.snap.core";
 
     static {
         _manifest = new Manifest();
@@ -71,7 +79,8 @@ public final class ModulePackager {
         ATTR_DESCRIPTION_NAME = new Attributes.Name("OpenIDE-Module-Short-Description");
         ATTR_MODULE_NAME = new Attributes.Name("OpenIDE-Module");
         ATTR_MODULE_TYPE = new Attributes.Name("OpenIDE-Module-Type");
-        ATTR_MODULE_VERSION = new Attributes.Name("OpenIDE-Module-Implementation-Version");
+        ATTR_MODULE_IMPLEMENTATION = new Attributes.Name("OpenIDE-Module-Implementation-Version");
+        ATTR_MODULE_SPECIFICATION = new Attributes.Name("OpenIDE-Module-Specification-Version");
         ATTR_MODULE_ALIAS = new Attributes.Name("OpenIDE-Module-Alias");
         attributes.put(Attributes.Name.MANIFEST_VERSION, "1.0");
         attributes.put(new Attributes.Name("OpenIDE-Module-Java-Dependencies"), "Java > 1.8");
@@ -93,64 +102,61 @@ public final class ModulePackager {
      * @throws IOException
      */
     public static void packModule(ToolAdapterOperatorDescriptor descriptor, File nbmFile) throws IOException {
-        StringBuilder xmlBuilder = new StringBuilder();
-        byte[] byteBuffer = null;
+        byte[] byteBuffer;
         try (final ZipOutputStream zipStream = new ZipOutputStream(new FileOutputStream(nbmFile))) {
             // create Info section
             ZipEntry entry = new ZipEntry("Info/info.xml");
             zipStream.putNextEntry(entry);
-            xmlBuilder.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
-                      .append("<!DOCTYPE module PUBLIC \"-//NetBeans//DTD Autoupdate Module Info 2.5//EN\" \"http://www.netbeans.org/dtds/autoupdate-info-2_5.dtd\">");
-            xmlBuilder.append("<module codenamebase=\"")
-                      .append(descriptor.getName().toLowerCase())
-                      .append("\" distribution=\"")
-                      .append(nbmFile.getName())
-                      .append("\" downloadsize=\"0\" homepage=\"https://github.com/senbox-org/s2tbx\" needsrestart=\"true\" releasedate=\"")
-                      .append(new SimpleDateFormat("yyyy/MM/dd").format(new Date()))
-                      .append("\">\n")
-                      .append("<manifest AutoUpdate-Essential-Module=\"true\" AutoUpdate-Show-In-Client=\"false\" OpenIDE-Module=\"")
-                      .append(descriptor.getName())
-                      .append("\" OpenIDE-Module-Display-Category=\"SNAP\" OpenIDE-Module-Implementation-Version=\"2.0.0-")
-                      .append(new SimpleDateFormat("yyyyMMdd").format(new Date()))
-                      .append("\" OpenIDE-Module-Java-Dependencies=\"Java &gt; 1.8\" OpenIDE-Module-Long-Description=\"&lt;p&gt;")
-                      .append(descriptor.getDescription())
-                      .append("&lt;/p&gt;\" OpenIDE-Module-Module-Dependencies=\"org.esa.snap.snap.sta &gt; 2.0.0, org.esa.snap.snap.sta.ui &gt; 2.0.0, org.esa.snap.snap.rcp &gt; 2.0.0, org.esa.snap.snap.core &gt; 2.0.0\" OpenIDE-Module-Name=\"")
-                      .append(descriptor.getName())
-                      .append("\" OpenIDE-Module-Requires=\"org.openide.modules.ModuleFormat1\" OpenIDE-Module-Short-Description=\"")
-                      .append(descriptor.getDescription())
-                      .append("\" OpenIDE-Module-Specification-Version=\"2.0.0\"/>\n</module>");
-            byteBuffer = xmlBuilder.toString().getBytes();
+            InfoBuilder infoBuilder = new InfoBuilder();
+            String javaVersion = System.getProperty("java.version");
+            javaVersion = javaVersion.substring(0, javaVersion.indexOf("_"));
+            byteBuffer = infoBuilder.moduleName(descriptor.getName())
+                                    .shortDescription(descriptor.getDescription())
+                                    .longDescription(descriptor.getDescription())
+                                    .displayCategory("SNAP")
+                                    .specificationVersion(VERSION)
+                                    .implementationVersion(descriptor.getVersion())
+                                    .codebase(descriptor.getName().toLowerCase())
+                                    .distribution(nbmFile.getName())
+                                    .downloadSize(0)
+                                    .homePage("https://github.com/senbox-org/s2tbx")
+                                    .needsRestart(true)
+                                    .releaseDate(new Date())
+                                    .isEssentialModule(false)
+                                    .showInClient(true)
+                                    .javaVersion(javaVersion)
+                                    .dependency(STA_MODULE, VERSION)
+                                    .dependency(STA_UI_MODULE, VERSION)
+                                    .dependency(SNAP_RCP_MODULE, VERSION)
+                                    .dependency(SNAP_CORE_MODULE, VERSION)
+                        .build().getBytes();
             zipStream.write(byteBuffer, 0, byteBuffer.length);
             zipStream.closeEntry();
 
             // create META-INF section
-            xmlBuilder.setLength(0);
             entry = new ZipEntry("META-INF/MANIFEST.MF");
             zipStream.putNextEntry(entry);
-            xmlBuilder.append("Manifest-Version: 1.0\nCreated-By: 1.8.0_31-b13 (Oracle Corporation)\n");
-            byteBuffer = xmlBuilder.toString().getBytes();
+            ManifestBuilder manifestBuilder = new ManifestBuilder();
+            byteBuffer = manifestBuilder.javaVersion(javaVersion).build().getBytes();
             zipStream.write(byteBuffer, 0, byteBuffer.length);
             zipStream.closeEntry();
 
             String jarName = descriptor.getName().replace(".", "-") + ".jar";
 
             // create config section
-            xmlBuilder.setLength(0);
             entry = new ZipEntry("netbeans/config/Modules/" + descriptor.getName().replace(".", "-") + ".xml");
             zipStream.putNextEntry(entry);
-            xmlBuilder.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
-                    .append("<!DOCTYPE module PUBLIC \"-//NetBeans//DTD Module Status 1.0//EN\"\n\"http://www.netbeans.org/dtds/module-status-1_0.dtd\">\n")
-                    .append("<module name=\"")
-                    .append(descriptor.getName())
-                    .append("\">\n<param name=\"autoload\">false</param><param name=\"eager\">false</param><param name=\"enabled\">true</param>\n")
-                    .append("<param name=\"jar\">modules/")
-                    .append(jarName)
-                    .append("</param><param name=\"reloadable\">false</param>\n</module>");
-            byteBuffer = xmlBuilder.toString().getBytes();
+            ModuleConfigBuilder mcb = new ModuleConfigBuilder();
+            byteBuffer = mcb.name(descriptor.getName())
+                            .autoLoad(false)
+                            .eager(false)
+                            .enabled(true)
+                            .jarName(jarName)
+                            .reloadable(false)
+                        .build().getBytes();
             zipStream.write(byteBuffer, 0, byteBuffer.length);
             zipStream.closeEntry();
             // create modules section
-            xmlBuilder.setLength(0);
             entry = new ZipEntry("netbeans/modules/ext/");
             zipStream.putNextEntry(entry);
             zipStream.closeEntry();
@@ -158,6 +164,24 @@ public final class ModulePackager {
             zipStream.putNextEntry(entry);
             zipStream.write(packAdapterJar(descriptor));
             zipStream.closeEntry();
+            Bundle bundle = descriptor.getBundle();
+            if (bundle != null && bundle.getBundleType() != BundleType.NONE &&
+                    bundle.getTargetLocation() != null &&
+                    bundle.getEntryPoint() != null) {
+                // lib folder
+                entry = new ZipEntry("netbeans/modules/lib/");
+                zipStream.putNextEntry(entry);
+                zipStream.closeEntry();
+                // bundle
+                String entryPoint = bundle.getEntryPoint();
+                File entryPointPath = bundle.getSource();
+                if (entryPointPath.exists()) {
+                    entry = new ZipEntry("netbeans/modules/lib/" + entryPoint);
+                    zipStream.putNextEntry(entry);
+                    zipStream.write(Files.readAllBytes(entryPointPath.toPath()));
+                    zipStream.closeEntry();
+                }
+            }
             // create update_tracking section
             entry = new ZipEntry("netbeans/update_tracking/");
             zipStream.putNextEntry(entry);
@@ -181,8 +205,8 @@ public final class ModulePackager {
         if (!unpackFolder.exists())
             unpackFolder.mkdir();
         Attributes attributes = jar.getManifest().getMainAttributes();
-        if (attributes.containsKey(ATTR_MODULE_VERSION)) {
-            String version = attributes.getValue(ATTR_MODULE_VERSION);
+        if (attributes.containsKey(ATTR_MODULE_IMPLEMENTATION)) {
+            String version = attributes.getValue(ATTR_MODULE_IMPLEMENTATION);
             File versionFile = new File(unpackFolder, "version.txt");
             try (FileOutputStream fos = new FileOutputStream(versionFile)) {
                 fos.write(version.getBytes());
@@ -214,8 +238,8 @@ public final class ModulePackager {
         String version = null;
         JarFile jar = new JarFile(jarFile);
         Attributes attributes = jar.getManifest().getMainAttributes();
-        if (attributes.containsKey(ATTR_MODULE_VERSION)) {
-            version = attributes.getValue(ATTR_MODULE_VERSION);
+        if (attributes.containsKey(ATTR_MODULE_IMPLEMENTATION)) {
+            version = attributes.getValue(ATTR_MODULE_IMPLEMENTATION);
         }
         jar.close();
         return version;
@@ -235,7 +259,8 @@ public final class ModulePackager {
     private static byte[] packAdapterJar(ToolAdapterOperatorDescriptor descriptor) throws IOException {
         _manifest.getMainAttributes().put(ATTR_DESCRIPTION_NAME, descriptor.getAlias());
         _manifest.getMainAttributes().put(ATTR_MODULE_NAME, descriptor.getName());
-        _manifest.getMainAttributes().put(ATTR_MODULE_VERSION, descriptor.getVersion());
+        _manifest.getMainAttributes().put(ATTR_MODULE_IMPLEMENTATION, descriptor.getVersion());
+        _manifest.getMainAttributes().put(ATTR_MODULE_SPECIFICATION, VERSION);
         _manifest.getMainAttributes().put(ATTR_MODULE_ALIAS, descriptor.getAlias());
         File moduleFolder = new File(modulesPath, descriptor.getAlias());
         ByteArrayOutputStream fOut = new ByteArrayOutputStream();

@@ -27,6 +27,7 @@ import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.PropertyEditor;
 import com.bc.ceres.swing.binding.PropertyEditorRegistry;
 import com.bc.ceres.swing.binding.internal.TextFieldEditor;
+import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
 import org.esa.snap.core.dataio.ProductIOPlugInManager;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.GPF;
@@ -41,6 +42,7 @@ import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterConstants;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterIO;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterOpSpi;
 import org.esa.snap.modules.ModulePackager;
+import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.ModalDialog;
@@ -130,13 +132,13 @@ import static org.esa.snap.utils.SpringUtilities.makeCompactGrid;
 })
 public abstract class AbstractAdapterEditor extends ModalDialog {
 
-    protected static final String MESSAGE_REQUIRED = "This field is required";
-    protected static final int MIN_WIDTH = 720;
-    protected static final int MIN_HEIGHT = 580;
-    protected static final int MIN_TABBED_WIDTH = 640;
-    protected static final int MIN_TABBED_HEIGHT = 512;
-    protected static int MAX_4K_WIDTH = 4096;
-    protected static int MAX_4K_HEIGHT = 2160;
+    static final String MESSAGE_REQUIRED = "This field is required";
+    static final int MIN_WIDTH = 720;
+    static final int MIN_HEIGHT = 580;
+    static final int MIN_TABBED_WIDTH = 640;
+    static final int MIN_TABBED_HEIGHT = 512;
+    static int MAX_4K_WIDTH = 4096;
+    static int MAX_4K_HEIGHT = 2160;
     protected ToolAdapterOperatorDescriptor oldOperatorDescriptor;
     protected ToolAdapterOperatorDescriptor newOperatorDescriptor;
     protected int newNameIndex = -1;
@@ -156,6 +158,8 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
     protected OperationType currentOperation;
 
     protected VariablesTable varTable;
+
+    protected EntityForm<org.esa.snap.core.gpf.descriptor.dependency.Bundle> bundleForm;
 
     public static AbstractAdapterEditor createEditorDialog(AppContext appContext, JDialog parent, ToolAdapterOperatorDescriptor operatorDescriptor, OperationType operation) {
         AbstractAdapterEditor dialog;
@@ -289,6 +293,8 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
     protected abstract JPanel createPatternsPanel();
 
     protected abstract JPanel createParametersPanel();
+
+    protected abstract JPanel createBundlePanel();
 
     protected boolean shouldValidate() {
         String value = NbPreferences.forModule(Dialogs.class).get(ToolAdapterOptionsController.PREFERENCE_KEY_VALIDATE_PATHS, null);
@@ -438,6 +444,9 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
                     if (menuLocation != null && !menuLocation.startsWith("Menu/")) {
                         newOperatorDescriptor.setMenuLocation("Menu/" + menuLocation);
                     }
+                    if (bundleForm != null) {
+                        newOperatorDescriptor.setBundle(bundleForm.applyChanges());
+                    }
                     AdapterWatcher.INSTANCE.suspend();
                     ToolAdapterIO.saveAndRegisterOperator(newOperatorDescriptor);
                     AdapterWatcher.INSTANCE.resume();
@@ -476,20 +485,25 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
 
     @Override
     protected void onOther() {
-        try {
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             if (fileChooser.showOpenDialog(getButton(ID_OTHER)) == JFileChooser.APPROVE_OPTION) {
                 File targetFolder = fileChooser.getSelectedFile();
                 newOperatorDescriptor.setSource(ToolAdapterOperatorDescriptor.SOURCE_PACKAGE);
                 onOK();
-                ModulePackager.packModule(newOperatorDescriptor, new File(targetFolder, newOperatorDescriptor.getAlias() + ".nbm"));
-                Dialogs.showInformation(String.format(Bundle.MSG_Export_Complete_Text(), targetFolder.getAbsolutePath()), null);
+                final String nbmName = newOperatorDescriptor.getAlias() + ".nbm";
+                ProgressWorker worker = new ProgressWorker("Export Module", "Creating NetBeans module " + nbmName,
+                        () -> {
+                            try {
+                                ModulePackager.packModule(newOperatorDescriptor, new File(targetFolder, nbmName));
+                                Dialogs.showInformation(String.format(Bundle.MSG_Export_Complete_Text(), targetFolder.getAbsolutePath()), null);
+                            } catch (IOException e) {
+                                logger.warning(e.getMessage());
+                                Dialogs.showError(e.getMessage());
+                            }
+                        });
+                worker.executeWithBlocking();
             }
-        } catch (IOException e) {
-            logger.warning(e.getMessage());
-            Dialogs.showError(e.getMessage());
-        }
     }
 
     protected JComponent createCheckboxComponent(String memberName, JComponent toogleComponentEnabled, Boolean value) {
@@ -530,6 +544,25 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
         editorComponent.setPreferredSize(new Dimension(editorComponent.getPreferredSize().width, controlHeight));
         editorComponent.setMaximumSize(new Dimension(editorComponent.getMaximumSize().width, controlHeight));
         parent.add(editorComponent);
+    }
+
+    protected void addChoiceField(JPanel parent, String label, Map<String, String> valuesAndLabels, String propertyName, Class enumClass) {
+        parent.add(new JLabel(label));
+        PropertyDescriptor propertyDescriptor = propertyContainer.getDescriptor(propertyName);
+        ButtonGroup rbGroup = new ButtonGroup();
+        Dimension dimension = new Dimension(100, controlHeight);
+        for (Map.Entry<String, String> choice : valuesAndLabels.entrySet()) {
+            JRadioButton button = new JRadioButton(choice.getValue());
+            button.addItemListener(e -> {
+                if (e.getStateChange() == ItemEvent.SELECTED) {
+                    propertyDescriptor.setDefaultValue(Enum.valueOf(enumClass, choice.getKey()));
+                }
+            });
+            button.setMaximumSize(dimension);
+            button.setPreferredSize(dimension);
+            rbGroup.add(button);
+            parent.add(button);
+        }
     }
 
     protected void addComboField(JPanel parent, String labelText, String propertyName, boolean isRequired, boolean isEditable) {
@@ -696,4 +729,37 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
         return entries;
     }
 
+    private static class ProgressWorker extends ProgressMonitorSwingWorker {
+        final static SnapApp snapApp = SnapApp.getDefault();
+        private String message;
+        private Runnable task;
+        ProgressWorker(String title, String message, Runnable task) {
+            super(snapApp.getMainFrame(), title);
+            this.message = message;
+            this.task = task;
+        }
+
+        @Override
+        protected Object doInBackground(com.bc.ceres.core.ProgressMonitor pm) throws Exception {
+            try {
+                pm.beginTask(message, 1);
+                SwingUtilities.invokeLater(() -> {
+                    snapApp.setStatusBarMessage(message);
+                    snapApp.getMainFrame().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+                });
+                if (task != null) {
+                    task.run();
+                }
+            } catch (Throwable e) {
+                snapApp.handleError("The operation failed.", e); //handleUnknownException(e);
+            } finally {
+                SwingUtilities.invokeLater(() -> {
+                    snapApp.getMainFrame().setCursor(Cursor.getDefaultCursor());
+                });
+                snapApp.setStatusBarMessage("");
+                pm.done();
+            }
+            return null;
+        }
+    }
 }
