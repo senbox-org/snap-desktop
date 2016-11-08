@@ -323,13 +323,15 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
             if (initGraphEnabled) {
                 result = graphEx.InitGraph();
             }
-            if (!result)
+            if (!result && allowGraphBuilding) {
                 statusLabel.setText("Graph is incomplete");
+            }
         } catch (Exception e) {
-            if (e.getMessage() != null)
-                statusLabel.setText("Error in graph: " + e.getMessage());
-            else
-                statusLabel.setText("Error in graph: " + e.toString());
+            if (e.getMessage() != null) {
+                statusLabel.setText("Error: " + e.getMessage());
+            } else {
+                statusLabel.setText("Error: " + e.toString());
+            }
             result = false;
         }
         return result;
@@ -402,11 +404,17 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
             graphEx.loadGraph(fileStream, file, true);
             if (allowGraphBuilding) {
                 graphPanel.showRightClickHelp(false);
-                graphPanel.repaint();
+                refreshGraph();
             }
             initGraphEnabled = true;
         } catch (GraphException e) {
             showErrorDialog(e.getMessage());
+        }
+    }
+
+    private void refreshGraph() {
+        if(graphPanel != null) {
+            graphPanel.repaint();
         }
     }
 
@@ -428,7 +436,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         initGraphEnabled = false;
         tabbedPanel.removeAll();
         graphEx.ClearGraph();
-        graphPanel.repaint();
+        refreshGraph();
         initGraphEnabled = true;
         statusLabel.setText("");
     }
@@ -490,7 +498,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
      *
      * @return true if validation passes
      */
-    boolean ValidateAllNodes() {
+    private boolean ValidateAllNodes() {
 
         if (isProcessing) return false;
 
@@ -572,11 +580,11 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
             switch(eventType) {
                 case ADD_EVENT:
                     tabbedPanel.addTab(node.getID(), null, CreateOperatorTab(node), node.getID() + " Operator");
-                    graphPanel.repaint();
+                    refreshGraph();
                     break;
                 case REMOVE_EVENT:
                     tabbedPanel.remove(tabbedPanel.indexOfTab(node.getID()));
-                    graphPanel.repaint();
+                    refreshGraph();
                     break;
                 case SELECT_EVENT:
                     tabbedPanel.setSelectedIndex(tabbedPanel.indexOfTab(node.getID()));
@@ -585,7 +593,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
                     ValidateAllNodes();
                     break;
                 case REFRESH_EVENT:
-                    graphPanel.repaint();
+                    refreshGraph();
                     break;
                 default:
                     throw new Exception("Unhandled GraphExecuter event " + eventType.name());
