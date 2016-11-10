@@ -68,7 +68,7 @@ public abstract class BaseFileModel extends AbstractTableModel implements FileTa
         clearBlankFile();
 
         // check if already exists in db
-        final ProductEntry existingEntry = getProductEntry(file);
+        final ProductEntry existingEntry = file.getName().isEmpty() ? null : getProductEntry(file);
         if (existingEntry != null) {
             dataList.add(createFileStats(existingEntry));
         } else {
