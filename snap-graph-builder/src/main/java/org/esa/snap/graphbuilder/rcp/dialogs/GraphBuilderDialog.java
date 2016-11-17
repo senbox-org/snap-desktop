@@ -401,7 +401,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         try {
             initGraphEnabled = false;
             tabbedPanel.removeAll();
-            graphEx.loadGraph(fileStream, file, true);
+            graphEx.loadGraph(fileStream, file, true, false);
             if (allowGraphBuilding) {
                 graphPanel.showRightClickHelp(false);
                 refreshGraph();

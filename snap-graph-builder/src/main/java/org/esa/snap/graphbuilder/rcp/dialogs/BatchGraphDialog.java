@@ -365,7 +365,7 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
      */
     protected void LoadGraph(final GraphExecuter executer, final File file, final boolean addUI) {
         try {
-            executer.loadGraph(new FileInputStream(file), file, addUI);
+            executer.loadGraph(new FileInputStream(file), file, addUI, true);
 
         } catch (Exception e) {
             showErrorDialog(e.getMessage());
