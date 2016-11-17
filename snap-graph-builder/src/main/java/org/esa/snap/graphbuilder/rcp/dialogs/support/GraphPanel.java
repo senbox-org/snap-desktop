@@ -353,7 +353,7 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
         checkPopup(e);
         showRightClickHelp = false;
 
-        if (selectedNode != null) {
+        if (e.getButton() == 1 && selectedNode != null) {
             graphEx.setSelectedNode(selectedNode);
         }
     }

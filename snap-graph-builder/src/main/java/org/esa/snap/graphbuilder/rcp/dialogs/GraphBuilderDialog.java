@@ -587,7 +587,10 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
                     refreshGraph();
                     break;
                 case SELECT_EVENT:
-                    tabbedPanel.setSelectedIndex(tabbedPanel.indexOfTab(node.getID()));
+                    int newTabIndex = tabbedPanel.indexOfTab(node.getID());
+                    if(tabbedPanel.getSelectedIndex() != newTabIndex) {
+                        tabbedPanel.setSelectedIndex(newTabIndex);
+                    }
                     break;
                 case CONNECT_EVENT:
                     ValidateAllNodes();
