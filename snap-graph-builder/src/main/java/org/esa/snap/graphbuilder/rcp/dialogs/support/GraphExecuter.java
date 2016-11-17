@@ -336,13 +336,16 @@ public class GraphExecuter extends Observable {
         return stringWriter.toString();
     }
 
-    public void loadGraph(final InputStream fileStream, final File file, final boolean addUI) throws GraphException {
+    public void loadGraph(final InputStream fileStream, final File file, final boolean addUI, final boolean wait) throws GraphException {
 
         try {
             if (fileStream == null) return;
 
             final LoadGraphThread loadGraphThread = new LoadGraphThread(fileStream, addUI);
             loadGraphThread.execute();
+            if(wait) {
+                loadGraphThread.get();
+            }
 
             lastLoadedGraphFile = file;
 

@@ -213,7 +213,7 @@ public abstract class MultiGraphDialog extends ModelessDialog implements LabelBa
      */
     public void LoadGraph(final GraphExecuter executer, final File file) {
         try {
-            executer.loadGraph(new FileInputStream(file), file, true);
+            executer.loadGraph(new FileInputStream(file), file, true, true);
 
         } catch (Exception e) {
             showErrorDialog(e.getMessage());
