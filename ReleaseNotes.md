@@ -2,9 +2,9 @@ SNAP Release Notes
 ==================
 
 #New in SNAP v5.0
-The SNAP release doesn't provide big new features except those implemented in the Toolboxes. Below is a list of bug fixes 
-and smaller small improvements.
-
+The SNAP release concentrates on bug fixes and improvements. New features are implemented in the Toolboxes. 
+Below is a list of bug fixes and smaller small improvements. A comprehensive list of all issues resolved in this version of SNAP can be found in our 
+[issue tracking system](https://senbox.atlassian.net/secure/ReleaseNote.jspa?projectId=10100&version=11503)
 
 ### Solved issues
 ####Bug
