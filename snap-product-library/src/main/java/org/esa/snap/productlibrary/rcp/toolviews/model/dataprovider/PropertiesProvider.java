@@ -45,8 +45,8 @@ import java.util.Comparator;
  */
 public class PropertiesProvider implements DataProvider {
 
-    private static final DecimalFormat df = new DecimalFormat("#.##");
-    private static final DateFormat dateFormat = ProductData.UTC.createDateFormat("dd-MMM-yyyy");
+    private final DecimalFormat df = new DecimalFormat("#.##");
+    private final DateFormat dateFormat = ProductData.UTC.createDateFormat("dd-MMM-yyyy");
 
     private static final String[] propertyLabels = new String[]{
             "Name:",
