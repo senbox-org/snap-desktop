@@ -62,6 +62,7 @@ import static org.esa.snap.utils.SpringUtilities.makeCompactGrid;
         "ToolTipNewOperator_Text=Define new operator",
         "ToolTipCopyOperator_Text=Duplicate the selected operator",
         "ToolTipEditOperator_Text=Edit the selected operator",
+        "ToolTipExport_Text=Create an installable module",
         "ToolTipExecuteOperator_Text=Execute the selected operator",
         "ToolTipDeleteOperator_Text=Delete the selected operator",
         "PathLabel_Text=Adapters location",
@@ -82,6 +83,7 @@ public class ToolAdaptersManagementDialog extends ModelessDialog {
     final Dimension buttonDimension = new Dimension((CHECK_COLUMN_WIDTH + LABEL_COLUMN_WIDTH + COLUMN_WIDTH) / 5, BUTTON_HEIGHT);
     private AppContext appContext;
     private JTable operatorsTable = null;
+    private AbstractButton exportButton;
 
     private static ToolAdaptersManagementDialog instance;
 
@@ -195,6 +197,25 @@ public class ToolAdaptersManagementDialog extends ModelessDialog {
                         refreshContent();
                     }
                 }));
+        /**
+         * Create suite button
+         */
+        this.exportButton = createButton("Export",
+                TangoIcons.apps_system_installer(TangoIcons.Res.R22),
+                Bundle.ToolTipExport_Text(),
+                e -> {
+                    ModuleSuiteDialog dialog = new ModuleSuiteDialog(appContext, "Create Adapter Suite", null);
+                    dialog.show();
+                    refreshContent();
+                    /*ToolAdapterOperatorDescriptor operatorDesc = requestSelection();
+                    if (operatorDesc != null) {
+                        AbstractAdapterEditor dialog = AbstractAdapterEditor.createEditorDialog(appContext, getJDialog(), operatorDesc, OperationType.EDIT);
+                        dialog.show();
+                        refreshContent();
+                    }*/
+                });
+        this.exportButton.setEnabled(false);
+        panel.add(exportButton);
         /**
          * Delete adapter button
          */
@@ -343,7 +364,10 @@ public class ToolAdaptersManagementDialog extends ModelessDialog {
         operatorsTable.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() >= 2) {
+                int clicks = e.getClickCount();
+                if (clicks == 1) {
+                    exportButton.setEnabled(operatorsTable.getSelectedRowCount() > 0);
+                } else if (clicks >= 2) {
                     int selectedRow = operatorsTable.getSelectedRow();
                     operatorsTable.repaint();
                     ToolAdapterOperatorDescriptor operatorDesc = ((OperatorsTableModel) operatorsTable.getModel()).getObjectAt(selectedRow);

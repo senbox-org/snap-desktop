@@ -27,7 +27,6 @@ import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.PropertyEditor;
 import com.bc.ceres.swing.binding.PropertyEditorRegistry;
 import com.bc.ceres.swing.binding.internal.TextFieldEditor;
-import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
 import org.esa.snap.core.dataio.ProductIOPlugInManager;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.GPF;
@@ -42,15 +41,11 @@ import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterConstants;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterIO;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterOpSpi;
 import org.esa.snap.modules.ModulePackager;
-import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.ui.tooladapter.actions.EscapeAction;
-import org.esa.snap.ui.tooladapter.model.AutoCompleteTextArea;
-import org.esa.snap.ui.tooladapter.model.OperationType;
-import org.esa.snap.ui.tooladapter.model.OperatorParametersTable;
-import org.esa.snap.ui.tooladapter.model.VariablesTable;
+import org.esa.snap.ui.tooladapter.model.*;
 import org.esa.snap.ui.tooladapter.preferences.ToolAdapterOptionsController;
 import org.esa.snap.ui.tooladapter.validators.RequiredFieldValidator;
 import org.esa.snap.utils.AdapterWatcher;
@@ -729,37 +724,4 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
         return entries;
     }
 
-    private static class ProgressWorker extends ProgressMonitorSwingWorker {
-        final static SnapApp snapApp = SnapApp.getDefault();
-        private String message;
-        private Runnable task;
-        ProgressWorker(String title, String message, Runnable task) {
-            super(snapApp.getMainFrame(), title);
-            this.message = message;
-            this.task = task;
-        }
-
-        @Override
-        protected Object doInBackground(com.bc.ceres.core.ProgressMonitor pm) throws Exception {
-            try {
-                pm.beginTask(message, 1);
-                SwingUtilities.invokeLater(() -> {
-                    snapApp.setStatusBarMessage(message);
-                    snapApp.getMainFrame().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-                });
-                if (task != null) {
-                    task.run();
-                }
-            } catch (Throwable e) {
-                snapApp.handleError("The operation failed.", e); //handleUnknownException(e);
-            } finally {
-                SwingUtilities.invokeLater(() -> {
-                    snapApp.getMainFrame().setCursor(Cursor.getDefaultCursor());
-                });
-                snapApp.setStatusBarMessage("");
-                pm.done();
-            }
-            return null;
-        }
-    }
 }
