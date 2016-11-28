@@ -16,10 +16,14 @@
 
 package org.esa.snap.ui.product;
 
+import com.bc.ceres.binding.Property;
+import com.bc.ceres.binding.PropertyContainer;
 import com.bc.ceres.core.Assert;
 import com.bc.ceres.glayer.Layer;
 import com.bc.ceres.glayer.LayerContext;
 import com.bc.ceres.glayer.LayerFilter;
+import com.bc.ceres.glayer.LayerType;
+import com.bc.ceres.glayer.LayerTypeRegistry;
 import com.bc.ceres.glayer.support.AbstractLayerListener;
 import com.bc.ceres.glayer.support.ImageLayer;
 import com.bc.ceres.glayer.support.LayerUtils;
@@ -106,6 +110,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 /**
@@ -267,6 +272,23 @@ public class ProductSceneView extends BasicView
 
         appyLayerProperties(sceneImage.getConfiguration());
         sceneImage.getConfiguration().addPropertyChangeListener(this);
+
+        addDefaultLayers(sceneImage);
+    }
+
+    private void addDefaultLayers(final ProductSceneImage sceneImage) {
+        final Layer rootLayer = sceneImage.getRootLayer();
+
+        final Set<LayerType> layerTypes = LayerTypeRegistry.getLayerTypes();
+        for(LayerType layerType : layerTypes) {
+            if(layerType.isValidFor(sceneImage) && layerType.createWithSceneView(sceneImage)) {
+                PropertyContainer config = new PropertyContainer();
+                config.addProperty(Property.create("raster", getRaster()));
+                Layer layer = layerType.createLayer(sceneImage, config);
+                rootLayer.getChildren().add(0, layer);
+                layer.setVisible(true);
+            }
+        }
     }
 
     /**
