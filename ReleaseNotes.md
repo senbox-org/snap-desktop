@@ -39,6 +39,7 @@ Below is a list of bug fixes and smaller small improvements. A comprehensive lis
     [SNAP-603] - Resampling a product without GeoCoding causes a NPE
     [SNAP-618] - SRTM 1 src DEM offset
     [SNAP-629] - GeoTiff reader fails to read Kompsat-5 Geotiff geocoding
+	[SNAP-636] - Graph Builder: Output name does not change when changing input/read image
 
 ####Improvements & new Features
     [SNAP-50] - Task Queue: Sound at end of processing
