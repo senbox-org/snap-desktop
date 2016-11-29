@@ -80,6 +80,7 @@ Below is a list of bug fixes and smaller small improvements. A comprehensive lis
     [SNAP-625] - Convert computed band to "real" band
     [SNAP-630] - CollocateOp does not properly handle flag codings
     [SNAP-631] - NetCDF readers read global attributes, but writers do not write them
+    [SNAP-634] - Scene View should create default layers automatically
 
 #New in SNAP v4.0
 
