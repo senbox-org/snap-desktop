@@ -35,6 +35,7 @@ public class TargetUI extends BaseOperatorUI {
     private static final String FILE_PARAMETER = "file";
     private static final String FORMAT_PARAMETER = "formatName";
     private static final String deafultFileName = "target";
+    private String sourceProductName;
     private AppContext appContext;
 
     @Override
@@ -67,16 +68,9 @@ public class TargetUI extends BaseOperatorUI {
     @Override
     public void initParameters() {
         assert (paramMap != null);
-        String fileName = deafultFileName;
+        String fileName = getDefaultFileName();
         String format = "BEAM-DIMAP";
-        final Object fileValue = paramMap.get(FILE_PARAMETER);
-        if (fileValue != null) {
-            final File file = (File) fileValue;
-            fileName = FileUtils.getFilenameWithoutExtension(file);
-        }
-        if (sourceProducts != null && sourceProducts.length > 0 && fileName.equals(deafultFileName)) {
-            fileName = sourceProducts[0].getName();
-        }
+
         final Object formatValue = paramMap.get(FORMAT_PARAMETER);
         if (formatValue != null) {
             format = (String) formatValue;
@@ -86,6 +80,28 @@ public class TargetUI extends BaseOperatorUI {
             targetProductSelector.getModel().setProductName(fileName);
             targetProductSelector.getModel().setFormatName(format);
         }
+    }
+
+    private String getDefaultFileName() {
+        String fileName = deafultFileName;
+        final Object fileValue = paramMap.get(FILE_PARAMETER);
+        if (fileValue != null) {
+            final File file = (File) fileValue;
+            fileName = FileUtils.getFilenameWithoutExtension(file);
+        }
+        if (sourceProducts != null && sourceProducts.length > 0) {
+            boolean sourceProductsChange = false;
+            if(!sourceProducts[0].getName().equals(sourceProductName)) {
+                if(sourceProductName != null) {
+                    sourceProductsChange = true;
+                }
+                sourceProductName = sourceProducts[0].getName();
+            }
+            if(fileName.equals(deafultFileName) || sourceProductsChange) {
+                fileName = sourceProducts[0].getName();
+            }
+        }
+        return fileName;
     }
 
     @Override
