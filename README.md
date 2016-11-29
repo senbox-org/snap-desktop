@@ -1,5 +1,7 @@
 snap-desktop
 ============
+[![Build Status](https://travis-ci.org/senbox-org/snap-desktop.svg?branch=master)](https://travis-ci.org/senbox-org/snap-desktop)
+[![Coverity Scan Status](https://scan.coverity.com/projects/7220/badge.svg)](https://scan.coverity.com/projects/senbox-org-snap-desktop)
 
 SNAP is the common software platform for the three Sentinel Toolboxes which are developed by the European Space Agency (ESA) for the scientific exploitation of the Sentinel-1, Sentinel-2 and Sentinel-3 missions.
 
