@@ -3,85 +3,20 @@ SNAP Release Notes
 
 #New in SNAP v5.0
 The SNAP release concentrates on bug fixes and improvements. New features are implemented in the Toolboxes. 
-Below is a list of bug fixes and smaller small improvements. A comprehensive list of all issues resolved in this version of SNAP can be found in our 
-[issue tracking system](https://senbox.atlassian.net/secure/ReleaseNote.jspa?projectId=10100&version=11503)
-
-### Solved issues
-####Bug
-    [SNAP-80] - Variables are not automatically quoted if needed
-    [SNAP-182] - Importing options cause exception
-    [SNAP-190] - STA adapters don't uninstall
-    [SNAP-260] - Multiple product selection allowed but not working
-    [SNAP-279] - When multiple products are selected for closing, only one is closed
-    [SNAP-345] - Cloud probability processing leads to a NullPointerException if the source data file is a reprojected product.
-    [SNAP-349] - Title of SNAP does not reflect the product currently in focus
-    [SNAP-368] - SNAP main window title not correctly updated
-    [SNAP-371] - Smart installer does not allow execution of user-defined graphs. 
+ 
+#####Some of the noteworthy improvements are:
     [SNAP-373] - Export Sentinel-1 data to HDF5 is not working
     [SNAP-396] - Cannot open multiple products if progress dialog is shown
-    [SNAP-416] - Time stamp not displayed properly for OLCI L1B products
-    [SNAP-421] - Uninstalling STA plugins doesn't work
-    [SNAP-496] - Processing time shown by L3 Binning is not correct
-    [SNAP-497] - No progress indicator is shown when selecting in processor UI a source product
-    [SNAP-498] - Pixel Info View does not always consider the selected view
-    [SNAP-507] - Fractional water mask processor fails with NPE for certain regions
-    [SNAP-529] - STA: update leads to a NullPointerException
-    [SNAP-532] - STA: adapters are not in Graph Builder anymore
-    [SNAP-543] - Allow to invert the mouse zooming
+    [SNAP-398] - Names of operators shall be handeled case insensitive by gpt
     [SNAP-549] - Resampling operator does not preserve time information of the source product
     [SNAP-551] - Geo-locations are sometimes not correclty shown in status bar
-    [SNAP-556] - LandCover mask UI does not update class list with single landcover band
-    [SNAP-559] - Can not open multiple products at once
-    [SNAP-584] - Subset can duplicate flag codings
-    [SNAP-588] - AbstractedMetadataIO not handling file without extension
-    [SNAP-591] - Resample and Reprojection are not user friendly in GraphBuilder
-    [SNAP-595] - Statistics operator not usable via API
-    [SNAP-603] - Resampling a product without GeoCoding causes a NPE
-    [SNAP-618] - SRTM 1 src DEM offset
-    [SNAP-629] - GeoTiff reader fails to read Kompsat-5 Geotiff geocoding
-	[SNAP-636] - Graph Builder: Output name does not change when changing input/read image
-
-####Improvements & new Features
-    [SNAP-50] - Task Queue: Sound at end of processing
-    [SNAP-63] - gpt states that it can't find a product reader for a file which does not exist
-    [SNAP-168] - Dialog window sizes nor attributes do not stick
-    [SNAP-339] - Sound-effect at the end of a processing-task
-    [SNAP-377] - Sound-alert for end-of-processing
-    [SNAP-392] - Smart Configurator: results can't be sorted
-    [SNAP-398] - Names of operators shall be handeled case insensitive by gpt
-    [SNAP-435] - Closing multiple products
-    [SNAP-458] - Help button in Plugin window is not working
-    [SNAP-518] - Merge project-functionality with session functionality?
-    [SNAP-526] - STA Operators have a wrong alias in the Graph Builder
-    [SNAP-528] - Help for removed Product Grabber shall be removed too
-    [SNAP-533] - Date pattern should support also MMM
-    [SNAP-534] - Help for tools which do not exist any more should be removed
-    [SNAP-536] - Help page for layer menu is not correctly referenced
-    [SNAP-537] - An exception is thrown in the background when opening a Landsat 8 product
-    [SNAP-540] - Add script for retrieving format names from reader and writer
-    [SNAP-548] - LineTimeCoding constructor should not throw IOException
-    [SNAP-552] - Extend ProductData for data type long
     [SNAP-555] - GPF should load operator SPIs automatically
-    [SNAP-567] - Update bundeled Java JRE
-    [SNAP-569] - Allow equal minimum and maximum value when creating a mask based on value range
-    [SNAP-570] - Make message boxes copy their text to clipboard when pressing CTRL+C
-    [SNAP-573] - Reconsider icon sizes for menu items
-    [SNAP-575] - Give access to the logging of SNAP
-    [SNAP-576] - Make cancelling operators less scary
-    [SNAP-577] - Select bands by default in mask creation dialog
-    [SNAP-583] - Let user open multiple bands at once
-    [SNAP-585] - Update NetBeans dependencies
-    [SNAP-589] - Projects and Session Functionalities
-    [SNAP-592] - Allow lazy loading of tie-point grids
-    [SNAP-597] - Extent list of known dimension names for NetCDF
-    [SNAP-604] - Information dialog should show module name of product reader
-    [SNAP-610] - Allow saving session to another file
-    [SNAP-612] - Selection doesn't work properly when chosing a predefined CRS
-    [SNAP-619] - Usability: Graph Builder slow to open
-    [SNAP-625] - Convert computed band to "real" band
-    [SNAP-630] - CollocateOp does not properly handle flag codings
-    [SNAP-631] - NetCDF readers read global attributes, but writers do not write them
+    [SNAP-559] - Can not open multiple products at once
+    [SNAP-591] - Resample and Reprojection are not user friendly in GraphBuilder
     [SNAP-634] - Scene View should create default layers automatically
+ 
+A comprehensive list of all issues resolved in this version of SNAP can be found in our 
+[issue tracking system](https://senbox.atlassian.net/secure/ReleaseNote.jspa?projectId=10100&version=11503)
 
 #New in SNAP v4.0
 
