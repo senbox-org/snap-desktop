@@ -2,7 +2,7 @@ SNAP Release Notes
 ==================
 
 #New in SNAP v5.0
-The SNAP release concentrates on bug fixes and improvements. New features are implemented in the Toolboxes. 
+The SNAP release concentrates on bug fixes and improvements. New features are mainly implemented in the Toolboxes. 
  
 #####Some of the noteworthy improvements are:
     [SNAP-373] - Export Sentinel-1 data to HDF5 is not working
