@@ -135,7 +135,7 @@ public class ExportProductAction extends AbstractAction implements HelpCtx.Provi
 
     }
 
-    private Boolean exportProduct(Product product, String formatName) {
+    protected ProductWriter findProductWriter(Product product, String formatName) {
         final ProductWriter productWriter = ProductIO.getProductWriter(formatName);
         if (productWriter == null) {
             Dialogs.showError(getDisplayName(), MessageFormat.format("No writer found for format {0}.", formatName));
@@ -144,17 +144,55 @@ public class ExportProductAction extends AbstractAction implements HelpCtx.Provi
         final EncodeQualification encodeQualification = productWriter.getWriterPlugIn().getEncodeQualification(product);
         if (encodeQualification.getPreservation() == EncodeQualification.Preservation.UNABLE) {
             Dialogs.showError(getDisplayName(), MessageFormat.format("Writing this product as {0} is not possible:\n"
-                                                                             + encodeQualification.getInfoString(),
-                                                                     formatName
+                            + encodeQualification.getInfoString(),
+                    formatName
             ));
             return null;
         }
+        return productWriter;
+    }
+
+    protected ProductFileChooser buildFileChooserDialog(Product product, String formatName, boolean useSubset, FileFilter filter) {
         Preferences preferences = SnapApp.getDefault().getPreferences();
         ProductFileChooser fc = new ProductFileChooser(new File(preferences.get(ProductOpener.PREFERENCES_KEY_LAST_PRODUCT_DIR, ".")));
         fc.setDialogType(JFileChooser.SAVE_DIALOG);
-        fc.setSubsetEnabled(true);
-        fc.addChoosableFileFilter(getFileFilter(formatName));
+        fc.setSubsetEnabled(useSubset);
+        if (filter != null) {
+            fc.addChoosableFileFilter(filter);
+        }
         fc.setProductToExport(product);
+        return fc;
+    }
+
+    private Boolean exportProduct(Product product, String formatName) {
+        ProductWriter productWriter = findProductWriter(product, formatName);
+        if (productWriter == null) {
+            return null;
+        }
+
+//        final ProductWriter productWriter = ProductIO.getProductWriter(formatName);
+//        if (productWriter == null) {
+//            Dialogs.showError(getDisplayName(), MessageFormat.format("No writer found for format {0}.", formatName));
+//            return null;
+//        }
+//        final EncodeQualification encodeQualification = productWriter.getWriterPlugIn().getEncodeQualification(product);
+//        if (encodeQualification.getPreservation() == EncodeQualification.Preservation.UNABLE) {
+//            Dialogs.showError(getDisplayName(), MessageFormat.format("Writing this product as {0} is not possible:\n"
+//                                                                             + encodeQualification.getInfoString(),
+//                                                                     formatName
+//            ));
+//            return null;
+//        }
+        boolean useSubset = true;
+        FileFilter filter = getFileFilter(formatName);
+        ProductFileChooser fc = buildFileChooserDialog(product, formatName, useSubset, filter);
+
+//        Preferences preferences = SnapApp.getDefault().getPreferences();
+//        ProductFileChooser fc = new ProductFileChooser(new File(preferences.get(ProductOpener.PREFERENCES_KEY_LAST_PRODUCT_DIR, ".")));
+//        fc.setDialogType(JFileChooser.SAVE_DIALOG);
+//        fc.setSubsetEnabled(true);
+//        fc.addChoosableFileFilter(getFileFilter(formatName));
+//        fc.setProductToExport(product);
         int returnVal = fc.showSaveDialog(SnapApp.getDefault().getMainFrame());
         if (returnVal != JFileChooser.APPROVE_OPTION) {
             // cancelled
@@ -167,35 +205,66 @@ public class ExportProductAction extends AbstractAction implements HelpCtx.Provi
             return null;
         }
 
-        if (newFile.isFile() && !newFile.canWrite()) {
-            Dialogs.showWarning(getDisplayName(),
-                                MessageFormat.format("The product\n" +
-                                                         "''{0}''\n" +
-                                                         "exists and cannot be overwritten, because it is read only.\n" +
-                                                         "Please choose another file or remove the write protection.",
-                                                         newFile.getPath()),
-                                null);
+        if (!canWriteSelectedFile(newFile)) {
             return false;
         }
+//        if (newFile.isFile() && !newFile.canWrite()) {
+//            Dialogs.showWarning(getDisplayName(),
+//                                MessageFormat.format("The product\n" +
+//                                                         "''{0}''\n" +
+//                                                         "exists and cannot be overwritten, because it is read only.\n" +
+//                                                         "Please choose another file or remove the write protection.",
+//                                                         newFile.getPath()),
+//                                null);
+//            return false;
+//        }
 
         Product exportProduct = fc.getSubsetProduct() != null ? fc.getSubsetProduct() : product;
 
+        return exportProduct(exportProduct, newFile, formatName);
+//        SnapApp.getDefault().setStatusBarMessage(MessageFormat.format("Exporting product ''{0}'' to {1}...", exportProduct.getDisplayName(), newFile));
+//
+//        WriteProductOperation operation = new WriteProductOperation(exportProduct, newFile, formatName, false);
+//        ProgressUtils.runOffEventThreadWithProgressDialog(operation,
+//                                                          getDisplayName(),
+//                                                          operation.getProgressHandle(),
+//                                                          true,
+//                                                          50,
+//                                                          1000);
+//
+//        SnapApp.getDefault().setStatusBarMessage("");
+//
+//        return operation.getStatus();
+    }
 
+    protected boolean canWriteSelectedFile(File newFile) {
+        if (newFile.isFile() && !newFile.canWrite()) {
+            Dialogs.showWarning(getDisplayName(),
+                    MessageFormat.format("The product\n" +
+                                    "''{0}''\n" +
+                                    "exists and cannot be overwritten, because it is read only.\n" +
+                                    "Please choose another file or remove the write protection.",
+                            newFile.getPath()),
+                    null);
+            return false;
+        }
+        return true;
+    }
+
+    protected Boolean exportProduct(Product exportProduct, File newFile, String formatName) {
         SnapApp.getDefault().setStatusBarMessage(MessageFormat.format("Exporting product ''{0}'' to {1}...", exportProduct.getDisplayName(), newFile));
 
         WriteProductOperation operation = new WriteProductOperation(exportProduct, newFile, formatName, false);
         ProgressUtils.runOffEventThreadWithProgressDialog(operation,
-                                                          getDisplayName(),
-                                                          operation.getProgressHandle(),
-                                                          true,
-                                                          50,
-                                                          1000);
+                getDisplayName(),
+                operation.getProgressHandle(),
+                true,
+                50,
+                1000);
 
         SnapApp.getDefault().setStatusBarMessage("");
 
         return operation.getStatus();
-
-
     }
 
     private FileFilter getFileFilter(String formatName) {
@@ -206,16 +275,15 @@ public class ExportProductAction extends AbstractAction implements HelpCtx.Provi
         return null;
     }
 
-    private String getFileExtension(String formatName) {
-        Iterator<ProductWriterPlugIn> writerPlugIns = ProductIOPlugInManager.getInstance().getWriterPlugIns(formatName);
-        String fileExtension = null;
-        if (writerPlugIns.hasNext()) {
-            SnapFileFilter fileFilter = writerPlugIns.next().getProductFileFilter();
-            if (fileFilter != null) {
-                fileExtension = fileFilter.getDefaultExtension();
-            }
-        }
-        return fileExtension;
-    }
-
+//    private String getFileExtension(String formatName) {
+//        Iterator<ProductWriterPlugIn> writerPlugIns = ProductIOPlugInManager.getInstance().getWriterPlugIns(formatName);
+//        String fileExtension = null;
+//        if (writerPlugIns.hasNext()) {
+//            SnapFileFilter fileFilter = writerPlugIns.next().getProductFileFilter();
+//            if (fileFilter != null) {
+//                fileExtension = fileFilter.getDefaultExtension();
+//            }
+//        }
+//        return fileExtension;
+//    }
 }
