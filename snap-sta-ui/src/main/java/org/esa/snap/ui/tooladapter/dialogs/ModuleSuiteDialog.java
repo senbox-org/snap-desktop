@@ -25,7 +25,7 @@ import org.esa.snap.modules.ModulePackager;
 import org.esa.snap.modules.ModuleSuiteDescriptor;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.AppContext;
-import org.esa.snap.ui.ModelessDialog;
+import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.ui.tooladapter.actions.EscapeAction;
 import org.esa.snap.ui.tooladapter.model.ProgressWorker;
 
@@ -35,29 +35,42 @@ import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static org.esa.snap.utils.SpringUtilities.DEFAULT_PADDING;
-import static org.esa.snap.utils.SpringUtilities.makeCompactGrid;
 
 /**
  * Dialog for creating a module suite nbm package
  *
  * @author  Cosmin Cara
  */
-public class ModuleSuiteDialog extends ModelessDialog {
+public class ModuleSuiteDialog extends ModalDialog {
 
-    private final int CHECK_COLUMN_WIDTH = 80;
+    private static final int YEAR;
     private JTable operatorsTable;
     private ModuleSuiteDescriptor descriptor;
-    private EntityForm<ModuleSuiteDescriptor> form;
+    private org.esa.snap.core.gpf.descriptor.dependency.Bundle bundle;
+    private EntityForm<ModuleSuiteDescriptor> descriptorForm;
+    private EntityForm<org.esa.snap.core.gpf.descriptor.dependency.Bundle> bundleForm;
+    private Set<ToolAdapterOperatorDescriptor> initialSelection;
 
-    ModuleSuiteDialog(AppContext appContext, String title, String helpID) {
+    static {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        YEAR = calendar.get(Calendar.YEAR);
+    }
+
+    ModuleSuiteDialog(AppContext appContext, String title, String helpID, Set<ToolAdapterOperatorDescriptor> selection) {
         super(appContext.getApplicationWindow(), title, ID_OK | ID_CANCEL, helpID);
         this.descriptor = new ModuleSuiteDescriptor();
+        this.descriptor.setAuthors(System.getProperty("user.name"));
+        this.descriptor.setVersion("1");
+        this.descriptor.setCopyright("(C)" + String.valueOf(YEAR) + " " + this.descriptor.getAuthors());
+        this.bundle = new org.esa.snap.core.gpf.descriptor.dependency.Bundle();
+        this.initialSelection = new HashSet<>();
+        if (selection != null) {
+            this.initialSelection.addAll(selection);
+        }
         JPanel contentPanel = createContentPanel();
         setContent(contentPanel);
         super.getJDialog().setMinimumSize(contentPanel.getPreferredSize());
@@ -65,27 +78,50 @@ public class ModuleSuiteDialog extends ModelessDialog {
     }
 
     private JPanel createContentPanel() {
-        SpringLayout springLayout = new SpringLayout();
-        JPanel panel = new JPanel(springLayout);
-        panel.add(new JLabel("Suite description:"));
+        GridBagLayout layout = new GridBagLayout();
+        GridBagConstraints constraints = new GridBagConstraints();
+        JPanel panel = new JPanel(layout);
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.weightx = 1;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        panel.add(new JLabel("Suite description:"), constraints);
+        constraints.gridx = 1;
+        constraints.gridy = 0;
+        constraints.weightx = 1;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        panel.add(new JLabel("Adapters to include:"), constraints);
+
         JPanel descriptorPanel = createDescriptorPanel();
-        panel.add(descriptorPanel);
-        panel.add(Box.createVerticalStrut(5));
-        panel.add(new JLabel("Adapters to include:"));
-        panel.add(Box.createVerticalStrut(5));
-        JScrollPane scrollPane = new JScrollPane(createAdaptersPanel());
-        int preferredHeight = 250;
-        scrollPane.setPreferredSize(new Dimension(scrollPane.getWidth(), preferredHeight));
-        panel.add(scrollPane);
-        springLayout.putConstraint(SpringLayout.NORTH, panel, DEFAULT_PADDING, SpringLayout.NORTH, scrollPane);
-        springLayout.putConstraint(SpringLayout.WEST, panel, DEFAULT_PADDING, SpringLayout.WEST, scrollPane);
-        springLayout.putConstraint(SpringLayout.EAST, panel, DEFAULT_PADDING, SpringLayout.EAST, scrollPane);
-        makeCompactGrid(panel, 6, 1, 0, 0, 0, 0);
-        panel.setPreferredSize(new Dimension(CHECK_COLUMN_WIDTH + preferredHeight - 32, 450));
+        descriptorPanel.setPreferredSize(new Dimension(300, 250));
+        constraints.gridx = 0;
+        constraints.gridy = 1;
+        constraints.weightx = 1;
+        constraints.weighty = 1;
+        constraints.fill = GridBagConstraints.BOTH;
+        panel.add(descriptorPanel, constraints);
+        JTable adaptersTable = createAdaptersTable();
+        JScrollPane scrollPane = new JScrollPane(adaptersTable);
+        constraints.gridx = 1;
+        constraints.gridy = 1;
+        constraints.weighty = 1;
+        constraints.fill = GridBagConstraints.BOTH;
+        panel.add(scrollPane, constraints);
+
+        JPanel bundlePanel = createBundlePanel();
+        constraints.gridx = 0;
+        constraints.gridy = 2;
+        constraints.gridwidth = 2;
+        constraints.weightx = 1;
+        constraints.weighty = 1;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        panel.add(bundlePanel, constraints);
+
+        panel.setPreferredSize(new Dimension(550, 350));
         return panel;
     }
 
-    private JTable createAdaptersPanel() {
+    private JTable createAdaptersTable() {
         java.util.List<ToolAdapterOperatorDescriptor> toolboxSpis = new ArrayList<>();
         toolboxSpis.addAll(ToolAdapterRegistry.INSTANCE.getOperatorMap().values()
                 .stream()
@@ -100,15 +136,25 @@ public class ModuleSuiteDialog extends ModelessDialog {
         AdapterListModel model = new AdapterListModel(toolboxSpis);
         operatorsTable = new JTable(model);
         TableColumn checkColumn = operatorsTable.getColumnModel().getColumn(0);
-        checkColumn.setMaxWidth(CHECK_COLUMN_WIDTH);
-        checkColumn.setPreferredWidth(CHECK_COLUMN_WIDTH);
+        int checkColumnWidth = 24;
+        checkColumn.setMaxWidth(checkColumnWidth);
+        checkColumn.setPreferredWidth(checkColumnWidth);
         checkColumn.setResizable(false);
+        TableColumn aliasColumn = operatorsTable.getColumnModel().getColumn(1);
+        aliasColumn.setPreferredWidth(10 * checkColumnWidth);
         return operatorsTable;
     }
 
     private JPanel createDescriptorPanel() {
-        this.form = new EntityForm<>(this.descriptor);
-        JPanel panel = form.getPanel();
+        this.descriptorForm = new EntityForm<>(this.descriptor);
+        JPanel panel = descriptorForm.getPanel();
+        panel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+        return panel;
+    }
+
+    private JPanel createBundlePanel() {
+        this.bundleForm = new EntityForm<>(this.bundle);
+        JPanel panel = this.bundleForm.getPanel();
         panel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
         return panel;
     }
@@ -117,7 +163,8 @@ public class ModuleSuiteDialog extends ModelessDialog {
     protected void onOK() {
         ToolAdapterOperatorDescriptor[] selection = ((AdapterListModel) this.operatorsTable.getModel()).getSelectedItems();
         if (selection.length > 0) {
-            this.descriptor = this.form.applyChanges();
+            this.descriptor = this.descriptorForm.applyChanges();
+            this.bundle = this.bundleForm.applyChanges();
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             if (fileChooser.showOpenDialog(getButton(ID_OTHER)) == JFileChooser.APPROVE_OPTION) {
@@ -126,7 +173,7 @@ public class ModuleSuiteDialog extends ModelessDialog {
                 ProgressWorker worker = new ProgressWorker("Export Module Suite", "Creating NetBeans module suite " + nbmName,
                         () -> {
                             try {
-                                ModulePackager.packModules(this.descriptor, new File(targetFolder, nbmName), null, selection);
+                                ModulePackager.packModules(this.descriptor, new File(targetFolder, nbmName), this.bundle, selection);
                                 Dialogs.showInformation(String.format(Bundle.MSG_Export_Complete_Text(), targetFolder.getAbsolutePath()), null);
                             } catch (IOException e) {
                                 SystemUtils.LOG.warning(e.getMessage());
@@ -149,10 +196,11 @@ public class ModuleSuiteDialog extends ModelessDialog {
             super();
             this.checkedList = new Object[descriptors.size()][2];
             for (int i = 0; i < descriptors.size(); i++) {
-                this.checkedList[i][0] = false;
-                this.checkedList[i][1] = descriptors.get(i);
+                ToolAdapterOperatorDescriptor descriptor = descriptors.get(i);
+                this.checkedList[i][0] = ModuleSuiteDialog.this.initialSelection.contains(descriptor);
+                this.checkedList[i][1] = descriptor;
             }
-            this.columnNames = new String[] { "Included", "Adapter" };
+            this.columnNames = new String[] { "", "Adapter Alias" };
         }
 
         @Override

@@ -49,6 +49,7 @@ import org.esa.snap.ui.tooladapter.model.*;
 import org.esa.snap.ui.tooladapter.preferences.ToolAdapterOptionsController;
 import org.esa.snap.ui.tooladapter.validators.RequiredFieldValidator;
 import org.esa.snap.utils.AdapterWatcher;
+import org.esa.snap.utils.UIUtils;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 import org.openide.util.NbBundle;
@@ -523,6 +524,7 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
             PropertyDescriptor propertyDescriptor = propertyContainer.getDescriptor(propertyName);
             propertyDescriptor.setValidator(new PatternValidator(Pattern.compile(validatorRegex)));
             JComponent editorComponent = textEditor.createEditorComponent(propertyDescriptor, bindingContext);
+            UIUtils.addPromptSupport(editorComponent, "enter " + labelText.toLowerCase().replace(":", "") + " here");
             editorComponent.setPreferredSize(new Dimension(editorComponent.getPreferredSize().width, controlHeight));
             editorComponent.setMaximumSize(new Dimension(editorComponent.getMaximumSize().width, controlHeight));
             parent.add(editorComponent);
@@ -536,6 +538,7 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
             propertyDescriptor.setValidator(new NotEmptyValidator());
         }
         JComponent editorComponent = textEditor.createEditorComponent(propertyDescriptor, bindingContext);
+        UIUtils.addPromptSupport(editorComponent, "enter " + labelText.toLowerCase().replace(":", "") + " here");
         editorComponent.setPreferredSize(new Dimension(editorComponent.getPreferredSize().width, controlHeight));
         editorComponent.setMaximumSize(new Dimension(editorComponent.getMaximumSize().width, controlHeight));
         parent.add(editorComponent);

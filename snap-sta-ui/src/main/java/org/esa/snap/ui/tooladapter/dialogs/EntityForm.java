@@ -6,6 +6,7 @@ import com.bc.ceres.swing.binding.PropertyPane;
 import org.esa.snap.core.gpf.descriptor.annotations.Folder;
 import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.utils.PrivilegedAccessor;
+import org.esa.snap.utils.UIUtils;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -116,6 +117,13 @@ public class EntityForm<T> {
         });
         PropertyPane parametersPane = new PropertyPane(propertyContainer);
         this.panel = parametersPane.createPanel();
+        Arrays.stream(propertyContainer.getProperties())
+                .forEach(p -> {
+                    Arrays.stream(parametersPane.getBindingContext().getBinding(p.getName()).getComponents())
+                            .forEach(c -> {
+                                UIUtils.addPromptSupport(c, p);
+                            });
+                });
         this.panel.addPropertyChangeListener(evt -> {
             if (!(evt.getNewValue() instanceof JTextField)) return;
             JTextField field = (JTextField) evt.getNewValue();

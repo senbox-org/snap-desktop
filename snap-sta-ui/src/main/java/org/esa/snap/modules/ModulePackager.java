@@ -77,10 +77,13 @@ public final class ModulePackager {
     private static final String SNAP_CORE_MODULE = "org.esa.snap.snap.core";
 
     static {
-        IMPLEMENTATION_VERSION = Modules.getDefault().ownerOf(ModulePackager.class).getImplementationVersion();
-        SPECIFICATION_VERSION = IMPLEMENTATION_VERSION.indexOf("-") > 0 ?
-                IMPLEMENTATION_VERSION.substring(0, IMPLEMENTATION_VERSION.indexOf("-")) :
-                IMPLEMENTATION_VERSION;
+        String implementationVersion = Modules.getDefault().ownerOf(ModulePackager.class).getImplementationVersion();
+        IMPLEMENTATION_VERSION = implementationVersion.indexOf("-") > 0 ?
+                implementationVersion.substring(implementationVersion.indexOf("-") + 1) :
+                implementationVersion;
+        SPECIFICATION_VERSION = implementationVersion.indexOf("-") > 0 ?
+                implementationVersion.substring(0, implementationVersion.indexOf("-")) :
+                implementationVersion;
         _manifest = new Manifest();
         Attributes attributes = _manifest.getMainAttributes();
         ATTR_DESCRIPTION_NAME = new Attributes.Name("OpenIDE-Module-Short-Description");
@@ -161,10 +164,10 @@ public final class ModulePackager {
                                     .isEssentialModule(false)
                                     .showInClient(!isPartOfSuite)
                                     .javaVersion(javaVersion)
-                                    .dependency(STA_MODULE, IMPLEMENTATION_VERSION)
-                                    .dependency(STA_UI_MODULE, IMPLEMENTATION_VERSION)
-                                    .dependency(SNAP_RCP_MODULE, IMPLEMENTATION_VERSION)
-                                    .dependency(SNAP_CORE_MODULE, IMPLEMENTATION_VERSION);
+                                    .dependency(STA_MODULE, SPECIFICATION_VERSION)
+                                    .dependency(STA_UI_MODULE, SPECIFICATION_VERSION)
+                                    .dependency(SNAP_RCP_MODULE, SPECIFICATION_VERSION)
+                                    .dependency(SNAP_CORE_MODULE, SPECIFICATION_VERSION);
             byteBuffer = infoBuilder.build().getBytes();
             zipStream.write(byteBuffer, 0, byteBuffer.length);
             zipStream.closeEntry();
@@ -323,10 +326,10 @@ public final class ModulePackager {
                     .isEssentialModule(false)
                     .showInClient(true)
                     .javaVersion(javaVersion)
-                    .dependency(STA_MODULE, IMPLEMENTATION_VERSION)
-                    .dependency(STA_UI_MODULE, IMPLEMENTATION_VERSION)
-                    .dependency(SNAP_RCP_MODULE, IMPLEMENTATION_VERSION)
-                    .dependency(SNAP_CORE_MODULE, IMPLEMENTATION_VERSION);
+                    .dependency(STA_MODULE, SPECIFICATION_VERSION)
+                    .dependency(STA_UI_MODULE, SPECIFICATION_VERSION)
+                    .dependency(SNAP_RCP_MODULE, SPECIFICATION_VERSION)
+                    .dependency(SNAP_CORE_MODULE, SPECIFICATION_VERSION);
             if (dependencies != null) {
                 for (Map.Entry<String, String> mapEntry : dependencies.entrySet()) {
                     infoBuilder.dependency(mapEntry.getKey(), mapEntry.getValue());
