@@ -21,14 +21,7 @@ import org.esa.snap.graphbuilder.gpf.ui.UIValidation;
 import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
 import org.esa.snap.ui.AppContext;
 
-import javax.swing.ButtonGroup;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
+import javax.swing.*;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -43,15 +36,14 @@ import java.util.Map;
 public class CreateLandMaskOpUI extends BaseOperatorUI {
 
     private final JList bandList = new JList();
-    private final JComboBox geometries = new JComboBox();
+    private final JComboBox<String> geometries = new JComboBox();
 
     private final JRadioButton landMask = new JRadioButton("Mask out the Land");
     private final JRadioButton seaMask = new JRadioButton("Mask out the Sea");
     private final JCheckBox useSRTMCheckBox = new JCheckBox("Use SRTM 3sec");
     private final JRadioButton geometryMask = new JRadioButton("Use Vector as Mask");
     private final JCheckBox invertGeometryCheckBox = new JCheckBox("Invert Vector");
-    private final JCheckBox byPassCheckBox = new JCheckBox("Bypass");
-    private boolean byPass = false;
+    private final JTextField shorelineExtensionTextField = new JTextField();
     private boolean invertGeometry = false;
     private boolean useSRTM = true;
 
@@ -64,11 +56,6 @@ public class CreateLandMaskOpUI extends BaseOperatorUI {
         useSRTMCheckBox.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 useSRTM = (e.getStateChange() == ItemEvent.SELECTED);
-            }
-        });
-        byPassCheckBox.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent e) {
-                byPass = (e.getStateChange() == ItemEvent.SELECTED);
             }
         });
         invertGeometryCheckBox.addItemListener(new ItemListener() {
@@ -109,7 +96,9 @@ public class CreateLandMaskOpUI extends BaseOperatorUI {
 
         useSRTM = (Boolean) paramMap.get("useSRTM");
         useSRTMCheckBox.setSelected(useSRTM);
-        byPassCheckBox.setSelected((Boolean) paramMap.get("byPass"));
+
+        Integer shorelineExtension = (Integer) paramMap.get("shorelineExtension");
+        shorelineExtensionTextField.setText(shorelineExtension == null ? "0" : shorelineExtension.toString());
     }
 
     @Override
@@ -128,7 +117,14 @@ public class CreateLandMaskOpUI extends BaseOperatorUI {
             paramMap.put("geometry", geometries.getSelectedItem());
             paramMap.put("invertGeometry", invertGeometry);
         }
-        paramMap.put("byPass", byPass);
+
+        Integer shorelineExtension = 0;
+        try {
+            shorelineExtension = Integer.parseInt(shorelineExtensionTextField.getText());
+        }catch (Exception e) {
+            shorelineExtension = 0;
+        }
+        paramMap.put("shorelineExtension", shorelineExtension);
         paramMap.put("useSRTM", useSRTM);
     }
 
@@ -139,7 +135,7 @@ public class CreateLandMaskOpUI extends BaseOperatorUI {
 
         DialogUtils.addComponent(contentPane, gbc, "Source Bands:", new JScrollPane(bandList));
 
-        gbc.fill = GridBagConstraints.BOTH;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.gridx = 0;
         gbc.gridy++;
         contentPane.add(landMask, gbc);
@@ -154,6 +150,9 @@ public class CreateLandMaskOpUI extends BaseOperatorUI {
         contentPane.add(geometries, gbc);
         gbc.gridy++;
         contentPane.add(invertGeometryCheckBox, gbc);
+        gbc.gridx = 0;
+        gbc.gridy++;
+        DialogUtils.addComponent(contentPane, gbc, "Extend shoreline by [pixels]:", shorelineExtensionTextField);
 
         final ButtonGroup group = new ButtonGroup();
         group.add(landMask);
@@ -162,10 +161,6 @@ public class CreateLandMaskOpUI extends BaseOperatorUI {
 
         geometries.setEnabled(false);
         invertGeometryCheckBox.setEnabled(false);
-
-        gbc.gridx = 0;
-        gbc.gridy++;
-        contentPane.add(byPassCheckBox, gbc);
 
         DialogUtils.fillPanel(contentPane, gbc);
 
