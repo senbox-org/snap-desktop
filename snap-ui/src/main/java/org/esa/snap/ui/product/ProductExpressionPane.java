@@ -190,6 +190,7 @@ public class ProductExpressionPane extends ExpressionPane {
             boolean inclGrids = inclGridsCheck.isSelected();
             boolean inclFlags = inclFlagsCheck.isSelected();
             inclBandsCheck.setEnabled(hasBands);
+            inclMasksCheck.setEnabled(hasMasks);
             inclGridsCheck.setEnabled(hasGrids);
             inclFlagsCheck.setEnabled(hasFlags);
             if (!hasBands && inclBands) {
