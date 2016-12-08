@@ -171,6 +171,7 @@ public class ProductExpressionPane extends ExpressionPane {
         productBox = null;
         nodeList = null;
         inclBandsCheck = null;
+        inclMasksCheck = null;
         inclGridsCheck = null;
         inclFlagsCheck = null;
         super.dispose();
