@@ -21,7 +21,6 @@ import org.esa.snap.core.gpf.OperatorException;
 import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterIO;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterRegistry;
-import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.modules.ModulePackager;
 import org.openide.modules.Places;
 
@@ -31,7 +30,6 @@ import java.nio.file.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -75,7 +73,7 @@ public enum AdapterWatcher {
                     } catch (InterruptedException ex) {
                         return;
                     }
-                    key.pollEvents().stream().forEach(event -> {
+                    key.pollEvents().forEach(event -> {
                         WatchEvent.Kind<?> kind = event.kind();
                         @SuppressWarnings("unchecked")
                         WatchEvent<Path> ev = (WatchEvent<Path>) event;
@@ -144,21 +142,9 @@ public enum AdapterWatcher {
      */
     public void monitorPath(Path path) throws IOException {
         if (path != null && Files.isDirectory(path)) {
-            /*try {
-                File[] files = path.toFile().listFiles();
-                if (files != null) {
-                    for (File jar : files) {
-                        if (jar.getName().endsWith(".jar")) {
-                            jarAdded(jar.toPath());
-                        }
-                    }
-                }
-            } catch (Exception ex) {
-                SystemUtils.LOG.warning(String.format("Exception occured while inspecting %s for adapter jars", path.toString()));
-            }*/
             WatchKey key = path.register(watcher, eventTypes);
             monitoredPaths.put(path, key);
-            SystemUtils.LOG.info(String.format("Registered %s for watching", path.toString()));
+            logger.fine(String.format("Registered %s for watching", path.toString()));
         }
     }
 
@@ -172,7 +158,7 @@ public enum AdapterWatcher {
             WatchKey key = monitoredPaths.remove(path);
             if (key != null) {
                 key.cancel();
-                SystemUtils.LOG.info(String.format("Unregistered %s for watching", path.toString()));
+                logger.fine(String.format("Unregistered %s for watching", path.toString()));
             }
         }
     }
@@ -192,7 +178,7 @@ public enum AdapterWatcher {
             Thread.sleep(500);
             ToolAdapterIO.registerAdapter(folder);
         }catch (InterruptedException | OperatorException ex){
-            logger.log(Level.INFO, "Could not load adapter for folder added in repository: " + folder.toString() + " (error:" + ex.getMessage());
+            logger.warning("Could not load adapter for folder added in repository: " + folder.toString() + " (error:" + ex.getMessage());
         }
     }
 
@@ -261,9 +247,9 @@ public enum AdapterWatcher {
                         String jarVersion = ModulePackager.getAdapterVersion(jarFile.toFile());
                         if (jarVersion != null && !versionText.equals(jarVersion)) {
                             ModulePackager.unpackAdapterJar(jarFile.toFile(), destination.toFile());
-                            logger.info(String.format("The adapter with the name %s and version %s was replaced by version %s", aliasOrName, versionText, jarVersion));
+                            logger.fine(String.format("The adapter with the name %s and version %s was replaced by version %s", aliasOrName, versionText, jarVersion));
                         } else {
-                            logger.info(String.format("An adapter with the name %s and version %s already exists", aliasOrName, versionText));
+                            logger.fine(String.format("An adapter with the name %s and version %s already exists", aliasOrName, versionText));
                         }
                     } else {
                         ModulePackager.unpackAdapterJar(jarFile.toFile(), destination.toFile());
@@ -288,7 +274,7 @@ public enum AdapterWatcher {
         try {
             Files.write(path, builder.toString().getBytes());
         } catch (IOException e) {
-            SystemUtils.LOG.severe(String.format("ToolAdapterIO: %s", e.getMessage()));
+            logger.severe(e.getMessage());
         }
     }
 
@@ -304,7 +290,7 @@ public enum AdapterWatcher {
                 }
             }
         } catch (IOException e) {
-            SystemUtils.LOG.severe(String.format("ToolAdapterIO: %s", e.getMessage()));
+            logger.severe(e.getMessage());
         }
     }
 }

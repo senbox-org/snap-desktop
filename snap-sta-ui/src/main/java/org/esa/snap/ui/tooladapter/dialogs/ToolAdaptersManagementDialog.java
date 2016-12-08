@@ -20,7 +20,6 @@ package org.esa.snap.ui.tooladapter.dialogs;
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
 import org.esa.snap.core.gpf.operators.tooladapter.*;
-import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.tango.TangoIcons;
 import org.esa.snap.ui.AppContext;
@@ -45,6 +44,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static org.esa.snap.utils.SpringUtilities.DEFAULT_PADDING;
@@ -82,6 +82,7 @@ public class ToolAdaptersManagementDialog extends ModelessDialog {
     final Dimension buttonDimension = new Dimension((CHECK_COLUMN_WIDTH + LABEL_COLUMN_WIDTH + COLUMN_WIDTH) / 5, BUTTON_HEIGHT);
     private AppContext appContext;
     private JTable operatorsTable = null;
+    private Logger logger = Logger.getLogger(ToolAdaptersManagementDialog.class.getName());
 
     private static ToolAdaptersManagementDialog instance;
 
@@ -296,7 +297,7 @@ public class ToolAdaptersManagementDialog extends ModelessDialog {
                 try {
                     AdapterWatcher.INSTANCE.monitorPath(path);
                 } catch (IOException e) {
-                    SystemUtils.LOG.warning(String.format("Could not watch for the new adapter path %s [%s]", path.toString(), e.getMessage()));
+                    logger.warning(String.format("Could not watch for the new adapter path %s [%s]", path.toString(), e.getMessage()));
                 }
             }
         });
