@@ -31,6 +31,11 @@
                     <groupId>org.netbeans.api</groupId>
                     <artifactId>org-netbeans-libs-testng</artifactId>
                 </exclusion>
+                <exclusion>
+                    <!-- excluded this dependency, otherwise it is shown in the auto update center in SNAP and would create a cluster named 'java' -->
+                    <groupId>org.netbeans.modules</groupId>
+                    <artifactId>org-netbeans-modules-junitlib</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
