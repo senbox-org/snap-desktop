@@ -35,19 +35,11 @@
         <dependency>
             <groupId>org.esa.snap</groupId>
             <artifactId>snap-sta</artifactId>
-            <version>${snap.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>commons-collections</groupId>
-            <artifactId>commons-collections</artifactId>
-            <version>3.2.2</version>
         </dependency>
 
         <dependency>
             <groupId>org.esa.snap</groupId>
             <artifactId>ceres-binding</artifactId>
-            <version>${snap.version}</version>
         </dependency>
 
         <dependency>
@@ -68,59 +60,54 @@
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-netbeans-api-progress</artifactId>
-            <version>${netbeans.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-util</artifactId>
-            <version>${netbeans.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-netbeans-api-progress-nb</artifactId>
-            <version>${netbeans.version}</version>
         </dependency>
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-util-ui</artifactId>
-            <version>${netbeans.version}</version>
         </dependency>
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-filesystems</artifactId>
-            <version>${netbeans.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-netbeans-api-annotations-common</artifactId>
-            <version>${netbeans.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-modules</artifactId>
         </dependency>
 
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-netbeans-modules-javahelp</artifactId>
-            <version>${netbeans.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.esa.snap</groupId>
             <artifactId>ceres-core</artifactId>
-            <version>${snap.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.esa.snap</groupId>
             <artifactId>snap-core</artifactId>
-            <version>${snap.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.esa.snap</groupId>
             <artifactId>snap-gpf</artifactId>
-            <version>${snap.version}</version>
         </dependency>
 
         <dependency>
@@ -131,6 +118,12 @@
         <dependency>
             <groupId>org.esa.snap</groupId>
             <artifactId>ceres-ui</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+            <version>3.2.2</version>
         </dependency>
 
     </dependencies>
