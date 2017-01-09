@@ -49,6 +49,7 @@ public class PropertiesProvider implements DataProvider {
     private final DateFormat dateFormat = ProductData.UTC.createDateFormat("dd-MMM-yyyy");
 
     private static final String[] propertyLabels = new String[]{
+            "File:",
             "Name:",
             "Type:",
             "Acquired:",
@@ -150,18 +151,30 @@ public class PropertiesProvider implements DataProvider {
                                 +"   " + dateString + "   " + pixelSpacing,
                         };
                     } else {
-                        values = new String[]{
-                                entry.getName(),
-                                entry.getMission() + "   " + entry.getProductType() + "   " + entry.getPass() + "  " + polStr,
-                                dateString + "   " + pixelSpacing,
-                                entry.getFileFormat() + "   " + fileSize
-                        };
+                        if(file != null) {
+                            values = new String[]{
+                                    file.getName(),
+                                    entry.getName(),
+                                    entry.getMission() + "   " + entry.getProductType() + "   " + entry.getPass() + "  " + polStr,
+                                    dateString + "   " + pixelSpacing,
+                                    entry.getFileFormat() + "   " + fileSize
+                            };
+                        } else {
+                            values = new String[]{
+                                    entry.getName(),
+                                    entry.getMission() + "   " + entry.getProductType() + "   " + entry.getPass() + "  " + polStr,
+                                    dateString + "   " + pixelSpacing,
+                                    entry.getFileFormat() + "   " + fileSize
+                            };
+                        }
                     }
 
                     for (int i = 0; i < values.length; i++) {
                         setValueAt(values[i], i, 0);
                     }
-                    toolTip = file.getAbsolutePath();
+                    if(file != null) {
+                        toolTip = file.getAbsolutePath();
+                    }
                 } else if (value == null) {
                     for (int i = 0; i < propertyLabels.length; i++) {
                         setValueAt(null, i, 0);
