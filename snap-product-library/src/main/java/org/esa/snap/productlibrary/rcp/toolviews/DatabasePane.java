@@ -53,23 +53,23 @@ import java.util.List;
 public final class DatabasePane extends JPanel {
 
     private final JTextField nameField = new JTextField();
-    private final JList missionJList = new JList();
-    private final JList productTypeJList = new JList();
-    private final JComboBox acquisitionModeCombo = new JComboBox(new String[]{DBQuery.ALL_MODES});
-    private final JComboBox passCombo = new JComboBox(new String[]{
+    private final JList<String> missionJList = new JList();
+    private final JList<String> productTypeJList = new JList();
+    private final JComboBox<String> acquisitionModeCombo = new JComboBox(new String[]{DBQuery.ALL_MODES});
+    private final JComboBox<String> passCombo = new JComboBox(new String[]{
             DBQuery.ALL_PASSES, DBQuery.ASCENDING_PASS, DBQuery.DESCENDING_PASS});
     private final JTextField trackField = new JTextField();
 
     private final JXDatePicker startDateBox = new JXDatePicker();
     private final JXDatePicker endDateBox = new JXDatePicker();
-    private final JComboBox polarizationCombo = new JComboBox(new String[]{
+    private final JComboBox<String> polarizationCombo = new JComboBox(new String[]{
             DBQuery.ANY, DBQuery.QUADPOL, DBQuery.DUALPOL, DBQuery.HHVV, DBQuery.HHHV, DBQuery.VVVH, "HH", "VV", "HV", "VH"});
-    private final JComboBox calibrationCombo = new JComboBox(new String[]{
+    private final JComboBox<String> calibrationCombo = new JComboBox(new String[]{
             DBQuery.ANY, DBQuery.CALIBRATED, DBQuery.NOT_CALIBRATED});
-    private final JComboBox orbitCorrectionCombo = new JComboBox(new String[]{
+    private final JComboBox<String> orbitCorrectionCombo = new JComboBox(new String[]{
             DBQuery.ANY, DBQuery.ORBIT_PRELIMINARY, DBQuery.ORBIT_PRECISE, DBQuery.ORBIT_VERIFIED});
 
-    private final JComboBox metadataNameCombo = new JComboBox();
+    private final JComboBox<String> metadataNameCombo = new JComboBox();
     private final JTextField metdataValueField = new JTextField();
     private final JTextArea metadataArea = new JTextArea();
     private final JButton addMetadataButton = new JButton("+");
@@ -107,7 +107,7 @@ public final class DatabasePane extends JPanel {
             addComboListener(polarizationCombo);
             addComboListener(calibrationCombo);
             addComboListener(orbitCorrectionCombo);
-            
+
             addMetadataButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     addMetadataText();
@@ -123,7 +123,7 @@ public final class DatabasePane extends JPanel {
         }
     }
 
-    private void addComboListener(final JComboBox combo) {
+    private void addComboListener(final JComboBox<String> combo) {
         combo.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent event) {
                 if (modifyingCombos || event.getStateChange() == ItemEvent.DESELECTED) return;
@@ -276,7 +276,7 @@ public final class DatabasePane extends JPanel {
 
     public void refresh() {
         try {
-            if(!db.isReady())
+            if (!db.isReady())
                 return;
 
             boolean origState = lockCombos(true);
@@ -357,8 +357,8 @@ public final class DatabasePane extends JPanel {
             if (metadataArea.getText().length() > 0) {
                 metadataArea.append(" AND ");
             }
-            if(value.matches("-?\\d+(\\.\\d+)?")) {     // isNumeric
-                metadataArea.append(name + "=" + value + " ");
+            if (value.matches("-?\\d+(\\.\\d+)?")) {     // isNumeric
+                metadataArea.append(name + '=' + value + ' ');
             } else {
                 metadataArea.append(name + "='" + value + "' ");
             }
@@ -367,7 +367,7 @@ public final class DatabasePane extends JPanel {
 
     private static Calendar getDate(final JXDatePicker dateField) {
         final Date date = dateField.getDate();
-        if(date == null)
+        if (date == null)
             return null;
         final Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
@@ -400,7 +400,7 @@ public final class DatabasePane extends JPanel {
                 handleException(t);
             }
         }
-        if(metadataNameCombo.getItemCount() == 0) {
+        if (metadataNameCombo.getItemCount() == 0) {
             refresh();
         }
 
@@ -410,7 +410,7 @@ public final class DatabasePane extends JPanel {
             ProductEntry.dispose(productEntryList);
         }
         try {
-            if(db.isReady()) {
+            if (db.isReady()) {
                 productEntryList = dbQuery.queryDatabase(db);
                 notifyQuery();
             }
@@ -435,7 +435,7 @@ public final class DatabasePane extends JPanel {
     }
 
     public void findSlices(final int dataTakeId) {
-        metadataArea.setText(AbstractMetadata.data_take_id+"="+dataTakeId);
+        metadataArea.setText(AbstractMetadata.data_take_id + '=' + dataTakeId);
 
         dbQuery.setSelectionRect(null);
         queryDatabase();
@@ -456,10 +456,10 @@ public final class DatabasePane extends JPanel {
             productTypeJList.setSelectedIndices(findIndices(productTypeJList, dbQuery.getSelectedProductTypes()));
             acquisitionModeCombo.setSelectedItem(dbQuery.getSelectedAcquisitionMode());
             passCombo.setSelectedItem(dbQuery.getSelectedPass());
-            if(dbQuery.getStartDate() != null) {
+            if (dbQuery.getStartDate() != null) {
                 startDateBox.setDate(dbQuery.getStartDate().getTime());
             }
-            if(dbQuery.getEndDate() != null) {
+            if (dbQuery.getEndDate() != null) {
                 endDateBox.setDate(dbQuery.getEndDate().getTime());
             }
             polarizationCombo.setSelectedItem(dbQuery.getSelectedPolarization());
@@ -472,7 +472,7 @@ public final class DatabasePane extends JPanel {
         }
     }
 
-    private static int[] findIndices(final JList list, final String[] values) {
+    private static int[] findIndices(final JList<String> list, final String[] values) {
         final int size = list.getModel().getSize();
         final List<Integer> indices = new ArrayList<>(size);
         for (int i = 0; i < size; ++i) {
@@ -494,75 +494,81 @@ public final class DatabasePane extends JPanel {
             final StringBuilder text = new StringBuilder(255);
 
             final MetadataElement absRoot = entry.getMetadata();
+            final File file = entry.getFile();
             final String sampleType = absRoot.getAttributeString(AbstractMetadata.SAMPLE_TYPE, AbstractMetadata.NO_METADATA_STRING);
             final ProductData.UTC acqTime = absRoot.getAttributeUTC(AbstractMetadata.first_line_time, AbstractMetadata.NO_METADATA_UTC);
+            final String pass = absRoot.getAttributeString(AbstractMetadata.PASS, AbstractMetadata.NO_METADATA_STRING);
             final int absOrbit = absRoot.getAttributeInt(AbstractMetadata.ABS_ORBIT, AbstractMetadata.NO_METADATA);
             final int relOrbit = absRoot.getAttributeInt(AbstractMetadata.REL_ORBIT, AbstractMetadata.NO_METADATA);
             final String map = absRoot.getAttributeString(AbstractMetadata.map_projection, AbstractMetadata.NO_METADATA_STRING).trim();
             final int cal = absRoot.getAttributeInt(AbstractMetadata.abs_calibration_flag, AbstractMetadata.NO_METADATA);
             final int tc = absRoot.getAttributeInt(AbstractMetadata.is_terrain_corrected, AbstractMetadata.NO_METADATA);
+            final int ml = absRoot.getAttributeInt(AbstractMetadata.multilook_flag, AbstractMetadata.NO_METADATA);
             final int coreg = absRoot.getAttributeInt(AbstractMetadata.coregistered_stack, AbstractMetadata.NO_METADATA);
 
-            text.append(entry.getName());
-            text.append("\n\n");
-            text.append(entry.getMission());
-            text.append("\n");
-            text.append(entry.getAcquisitionMode() + "   " + entry.getProductType() +" "+ sampleType + '\n');
-            text.append(acqTime.format());
+            if (file != null) {
+                text.append("File: " + file.getName() + '\n');
+            }
+            text.append("Product: " + entry.getName() + '\n');
+            text.append(acqTime.format() + '\n');
             text.append('\n');
 
+            text.append("Mission: " + entry.getMission() + '\n');
+            text.append("Mode: " + entry.getAcquisitionMode() + '\n');
+            text.append("Type: " +  entry.getProductType() + '\n');
+            text.append("Sample: " +  sampleType + '\n');
+
+            text.append("Pass: " + pass + '\n');
             text.append("Orbit: " + absOrbit);
             if (relOrbit != AbstractMetadata.NO_METADATA)
                 text.append("  Track: " + relOrbit);
             text.append('\n');
-            text.append("Size: "+getSizeString(entry.getFileSize()));
-            text.append('\n');
+            text.append("Size: " + getSizeString(entry.getFileSize()) + '\n');
             if (!map.isEmpty()) {
-                text.append(map);
-                text.append('\n');
+                text.append(map + '\n');
             }
             if (cal == 1)
                 text.append("Calibrated ");
+            if (ml == 1)
+                text.append("Multilooked ");
             if (coreg == 1)
                 text.append("Coregistered ");
             if (tc == 1)
                 text.append("Terrain Corrected ");
 
             productText.setText(text.toString());
-        } else if(selections != null && selections.length > 1) {
+        } else if (selections != null && selections.length > 1) {
             long totalSize = 0;
-            for(ProductEntry entry : selections) {
+            for (ProductEntry entry : selections) {
                 totalSize += entry.getFileSize();
             }
 
-            final StringBuilder text = new StringBuilder(255);
-            text.append(selections.length + " products");
-            text.append("\n");
-            text.append("Total: "+getSizeString(totalSize));
+            String text = (selections.length + " products\n") +
+                    "Total: " + getSizeString(totalSize);
 
-            productText.setText(text.toString());
+            productText.setText(text);
         } else {
             productText.setText("");
         }
     }
 
-    private final static double MB = 1024*1024, GB = 1024, TB = 1024*1024;
+    private final static double MB = 1024 * 1024, GB = 1024, TB = 1024 * 1024;
     private final static DecimalFormat df = new DecimalFormat("#.00");
 
     private static String getSizeString(long bytes) {
-        double mb = bytes/MB;
+        double mb = bytes / MB;
         String unit;
         double value;
-        if(mb > TB) {
-            value = mb/TB;
+        if (mb > TB) {
+            value = mb / TB;
             unit = "TB";
-        } else if(mb > GB) {
-            value = mb/GB;
+        } else if (mb > GB) {
+            value = mb / GB;
             unit = "GB";
         } else {
             value = mb;
             unit = "MB";
         }
-        return df.format(value) + " " + unit;
+        return df.format(value) + ' ' + unit;
     }
 }
