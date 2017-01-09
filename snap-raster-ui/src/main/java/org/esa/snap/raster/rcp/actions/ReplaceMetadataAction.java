@@ -122,12 +122,12 @@ public class ReplaceMetadataAction extends AbstractSnapAction implements Context
                         srcProduct.getName() + "_metadata.xml");
                 AbstractMetadataIO.Save(srcProduct, srcAbsRoot, tmpMetadataFile);
 
+                String origName = product.getName();
                 clearProductMetadata(product);
-                SnapApp.getDefault().getProductManager().removeProduct(product);
 
                 final MetadataElement destAbsRoot = AbstractMetadata.getAbstractedMetadata(product);
                 AbstractMetadataIO.Load(product, destAbsRoot, tmpMetadataFile);
-                SnapApp.getDefault().getProductManager().addProduct(product);
+                product.setName(origName);
 
                 ReplaceMetadataOp.resetPolarizations(AbstractMetadata.getAbstractedMetadata(product),
                         isPolsar, isCalibrated);
