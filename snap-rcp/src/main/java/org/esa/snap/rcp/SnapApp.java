@@ -63,6 +63,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -380,6 +381,7 @@ public class SnapApp {
      */
     public void onStop() {
         engine.stop();
+        disposeProducts();
         try {
             getPreferences().flush();
         } catch (BackingStoreException e) {
@@ -417,7 +419,7 @@ public class SnapApp {
         List<Path> fileList = SnapArgs.getDefault().getFileList();
         if (!fileList.isEmpty()) {
             OpenProductAction productAction = new OpenProductAction();
-            File[] files = fileList.stream().map(Path::toFile).filter(file -> file != null).toArray(File[]::new);
+            File[] files = fileList.stream().map(Path::toFile).filter(Objects::nonNull).toArray(File[]::new);
             productAction.setFiles(files);
             productAction.execute();
         }
@@ -634,6 +636,14 @@ public class SnapApp {
             return "not saved";
         }
     }
+    private void disposeProducts() {
+        Product[] products = getProductManager().getProducts();
+        getProductManager().removeAllProducts();
+        for (Product product : products) {
+            product.dispose();
+        }
+    }
+
 
     private String appendTitleSuffix(String title) {
         String appendix = !Utilities.isMac() ? String.format(" - %s", getInstanceName()) : "";
