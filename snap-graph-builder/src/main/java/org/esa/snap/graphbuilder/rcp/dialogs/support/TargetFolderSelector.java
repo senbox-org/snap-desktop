@@ -25,6 +25,8 @@ import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * Target folder selector
@@ -32,8 +34,16 @@ import java.awt.Insets;
 public class TargetFolderSelector extends TargetProductSelector {
 
     private JCheckBox skipExistingCBox = new JCheckBox("Skip existing target files");
+    private JCheckBox replaceWritersWithUniqueTargetProductCBox = new JCheckBox("Replace writers with unique target product");
 
     public JPanel createPanel() {
+
+        replaceWritersWithUniqueTargetProductCBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                getProductDirTextField().setEnabled(replaceWritersWithUniqueTargetProductCBox.isSelected());
+            }
+        });
 
         final JPanel subPanel2 = new JPanel(new FlowLayout(FlowLayout.LEADING, 0, 0));
         subPanel2.add(new JLabel("Save as:  "));
@@ -46,6 +56,8 @@ public class TargetFolderSelector extends TargetProductSelector {
 
         final JPanel subPanel4 = new JPanel(new FlowLayout(FlowLayout.LEADING, 0, 0));
         subPanel4.add(skipExistingCBox);
+        subPanel4.add(replaceWritersWithUniqueTargetProductCBox);
+        replaceWritersWithUniqueTargetProductCBox.setSelected(true);
 
         final TableLayout tableLayout = new TableLayout(1);
         tableLayout.setTableAnchor(TableLayout.Anchor.WEST);
@@ -70,5 +82,9 @@ public class TargetFolderSelector extends TargetProductSelector {
 
     public boolean isSkippingExistingTargetFiles() {
         return skipExistingCBox.isSelected();
+    }
+
+    public boolean isReplacingWritersWithUniqueTargetProduct() {
+        return replaceWritersWithUniqueTargetProductCBox.isSelected();
     }
 }

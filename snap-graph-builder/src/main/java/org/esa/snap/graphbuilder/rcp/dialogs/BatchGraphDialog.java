@@ -76,6 +76,7 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
     private Map<File, File[]> slaveFileMap;
     private final boolean closeOnDone;
     private boolean skipExistingTargetFiles;
+    private boolean replaceWritersWithUniqueTargetProduct;
 
     private boolean isProcessing;
     protected File graphFile;
@@ -269,24 +270,16 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
 
     private static File getFilePath(Component component, String title) {
 
-        final File graphPath = new File(getPref("batch.last_graph_path", defaultGraphPath.toFile().getAbsolutePath()));
+        final File graphPath = new File(SnapApp.getDefault().getPreferences().get("batch.last_graph_path", defaultGraphPath.toFile().getAbsolutePath()));
         final JFileChooser chooser = FileChooserFactory.getInstance().createFileChooser(graphPath);
         chooser.setMultiSelectionEnabled(false);
         chooser.setDialogTitle(title);
         if (chooser.showDialog(component, "ok") == JFileChooser.APPROVE_OPTION) {
             final File file = chooser.getSelectedFile();
-            setPref("batch.last_graph_path", file.getAbsolutePath());
+            SnapApp.getDefault().getPreferences().put("batch.last_graph_path", file.getAbsolutePath());
             return file;
         }
         return null;
-    }
-
-    private static String getPref(final String id, final String defaultStr) {
-        return SnapApp.getDefault().getPreferences().get(id, defaultStr);
-    }
-
-    private static void setPref(final String id, final String value) {
-        SnapApp.getDefault().getPreferences().put(id, value);
     }
 
     @Override
@@ -298,6 +291,8 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
 
     void initGraphs() {
         try {
+            replaceWritersWithUniqueTargetProduct = productSetPanel.isReplacingWritersWithUniqueTargetProduct();
+
             deleteGraphs();
             createGraphs();
         } catch (Exception e) {
@@ -317,7 +312,7 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
 
             progressBar.setValue(0);
 
-            final SwingWorker processThread = new ProcessThread(progBarMonitor);
+            final SwingWorker<Boolean, Object> processThread = new ProcessThread(progBarMonitor);
             processThread.execute();
 
         } else {
@@ -437,7 +432,8 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
         for (GraphNode n : graphEx.GetGraphNodes()) {
             if (n.GetOperatorUI() == null)
                 continue;
-            if (n.getNode().getOperatorName().equals("Read") || n.getNode().getOperatorName().equals("Write")
+            if (n.getNode().getOperatorName().equals("Read")
+                    || (replaceWritersWithUniqueTargetProduct && n.getNode().getOperatorName().equals("Write"))
                     || n.getNode().getOperatorName().equals("ProductSet-Reader")) {
                 n.setOperatorUI(null);
                 continue;
@@ -462,12 +458,7 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
         final File[] fileList = productSetPanel.getFileList();
         int graphIndex = 0;
         for (File f : fileList) {
-            String name;
-            final Object o = productSetPanel.getValueAt(graphIndex, 0);
-            if (o instanceof String)
-                name = (String) o;
-            else
-                name = FileUtils.getFilenameWithoutExtension(f);
+            final String name = FileUtils.getFilenameWithoutExtension(f);
 
             final File targetFolder = productSetPanel.getTargetFolder();
             if (!targetFolder.exists()) {
@@ -492,7 +483,7 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
         }
     }
 
-    protected static void setIO(final GraphExecuter graphEx,
+    protected void setIO(final GraphExecuter graphEx,
                                 final String readID, final File readPath,
                                 final String writeID, final File writePath,
                                 final String format) {
@@ -501,7 +492,7 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
             graphEx.setOperatorParam(readNode.getID(), "file", readPath.getAbsolutePath());
         }
 
-        if (writeID != null) {
+        if (replaceWritersWithUniqueTargetProduct && writeID != null) {
             final GraphNode writeNode = graphEx.getGraphNodeList().findGraphNodeByOperator(writeID);
             if (writeNode != null) {
                 if (format != null)
