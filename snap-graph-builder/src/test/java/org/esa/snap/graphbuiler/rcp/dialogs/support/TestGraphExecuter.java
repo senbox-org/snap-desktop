@@ -71,7 +71,7 @@ public class TestGraphExecuter implements Observer {
         assertEquals(1, nodeList.length);
 
         graphEx.ClearGraph();
-        assertEquals(0, nodeList.length);
+        assertEquals(0, graphEx.GetGraphNodes().length);
     }
 
     @Test
@@ -83,7 +83,7 @@ public class TestGraphExecuter implements Observer {
 
         updateValue = "";
         graphEx.removeOperator(node);
-        assertEquals(0, nodeList.length);
+        assertEquals(0, graphEx.GetGraphNodes().length);
         assertEquals(updateValue, "Remove");
     }
 
