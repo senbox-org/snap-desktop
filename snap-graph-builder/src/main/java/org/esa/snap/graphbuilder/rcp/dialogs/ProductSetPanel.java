@@ -391,6 +391,10 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
         return targetProductSelector.isSkippingExistingTargetFiles();
     }
 
+    public boolean isReplacingWritersWithUniqueTargetProduct() {
+        return targetProductSelector.isReplacingWritersWithUniqueTargetProduct();
+    }
+
     private enum MOVE { UP, DOWN, TOP, BOTTOM }
 
     private static class MoveButtonActionListener implements ActionListener {
