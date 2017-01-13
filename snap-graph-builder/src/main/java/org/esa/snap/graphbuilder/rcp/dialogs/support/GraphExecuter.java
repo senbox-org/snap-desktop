@@ -46,6 +46,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -73,7 +74,7 @@ public class GraphExecuter extends Observable {
         graph = new Graph("Graph");
     }
 
-    public List<GraphNode> GetGraphNodes() {
+    public GraphNode[] GetGraphNodes() {
         return graphNodeList.getGraphNodes();
     }
 
@@ -193,19 +194,22 @@ public class GraphExecuter extends Observable {
     }
 
     public void autoConnectGraph() {
-        final List<GraphNode> nodes = GetGraphNodes();
-        Collections.sort(nodes, new GraphNodePosComparator());
+        final List<GraphNode> nodeList = Arrays.asList(GetGraphNodes());
+        Collections.sort(nodeList, new GraphNodePosComparator());
+        final GraphNode[] nodes = nodeList.toArray(new GraphNode[nodeList.size()]);
 
-        for (int i = 0; i < nodes.size() - 1; ++i) {
-            if (!nodes.get(i).HasSources()) {
-                nodes.get(i).connectOperatorSource(nodes.get(i + 1).getID());
+        for (int i = 0; i < nodes.length - 1; ++i) {
+            if (!nodes[i].HasSources()) {
+                nodes[i].connectOperatorSource(nodes[i + 1].getID());
             }
         }
         notifyConnection();
     }
 
     public void notifyConnection() {
-        notifyGraphEvent(new GraphEvent(events.CONNECT_EVENT, graphNodeList.getGraphNodes().get(0)));
+        if(graphNodeList.getGraphNodes().length > 0) {
+            notifyGraphEvent(new GraphEvent(events.CONNECT_EVENT, graphNodeList.getGraphNodes()[0]));
+        }
     }
 
     private void notifyGraphEvent(final GraphEvent event) {

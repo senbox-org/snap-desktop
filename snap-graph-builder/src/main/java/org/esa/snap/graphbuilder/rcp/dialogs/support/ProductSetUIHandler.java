@@ -96,8 +96,7 @@ public class ProductSetUIHandler {
         for (GraphNode multiSrcNode : savedProductSetList) {
 
             final List<GraphNode> nodesToRemove = new ArrayList<>();
-            final List<GraphNode> nodeList = graphNodeList.getGraphNodes();
-            for (GraphNode n : nodeList) {
+            for (GraphNode n : graphNodeList.getGraphNodes()) {
                 final String id = n.getID();
                 if (id.startsWith("inserted--" + multiSrcNode.getID()) && id.contains(multiSrcNode.getID())) {
 

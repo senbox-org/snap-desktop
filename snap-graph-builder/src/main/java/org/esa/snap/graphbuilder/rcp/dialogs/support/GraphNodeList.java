@@ -30,8 +30,8 @@ public class GraphNodeList {
 
     private final List<GraphNode> nodeList = new ArrayList<>(10);
 
-    List<GraphNode> getGraphNodes() {
-        return nodeList;
+    GraphNode[] getGraphNodes() {
+        return nodeList.toArray(new GraphNode[nodeList.size()]);
     }
 
     void clear() {
