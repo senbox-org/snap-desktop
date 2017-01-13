@@ -31,7 +31,6 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.Rectangle2D;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -255,9 +254,9 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
      * @param g        the Graphics
      * @param nodeList the list of graphNodes
      */
-    private void DrawGraph(Graphics2D g, List<GraphNode> nodeList) {
+    private void DrawGraph(Graphics2D g, GraphNode[] nodeList) {
 
-        if(nodeList.isEmpty()) 
+        if(nodeList.length == 0)
             return;
 
         g.setFont(font);

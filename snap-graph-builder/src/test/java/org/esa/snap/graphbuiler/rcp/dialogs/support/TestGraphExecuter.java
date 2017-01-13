@@ -21,11 +21,11 @@ import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphNode;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.List;
 import java.util.Observer;
 import java.util.Set;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * GraphExecuter Tester.
@@ -58,8 +58,8 @@ public class TestGraphExecuter implements Observer {
         updateValue = "";
         graphEx.addOperator("testOp");
 
-        List<GraphNode> nodeList = graphEx.GetGraphNodes();
-        assertEquals(1, nodeList.size());
+        GraphNode[] nodeList = graphEx.GetGraphNodes();
+        assertEquals(1, nodeList.length);
         assertEquals(updateValue, "Add");
     }
 
@@ -67,23 +67,23 @@ public class TestGraphExecuter implements Observer {
     public void testClear() {
         graphEx.addOperator("testOp");
 
-        List<GraphNode> nodeList = graphEx.GetGraphNodes();
-        assertEquals(1, nodeList.size());
+        GraphNode[] nodeList = graphEx.GetGraphNodes();
+        assertEquals(1, nodeList.length);
 
         graphEx.ClearGraph();
-        assertEquals(0, nodeList.size());
+        assertEquals(0, nodeList.length);
     }
 
     @Test
     public void testRemoveOperator() {
         GraphNode node = graphEx.addOperator("testOp");
 
-        List<GraphNode> nodeList = graphEx.GetGraphNodes();
-        assertEquals(1, nodeList.size());
+        GraphNode[] nodeList = graphEx.GetGraphNodes();
+        assertEquals(1, nodeList.length);
 
         updateValue = "";
         graphEx.removeOperator(node);
-        assertEquals(0, nodeList.size());
+        assertEquals(0, nodeList.length);
         assertEquals(updateValue, "Remove");
     }
 
