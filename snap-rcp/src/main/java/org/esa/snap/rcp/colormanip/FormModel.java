@@ -82,11 +82,11 @@ class FormModel {
     }
 
     public boolean isContinuous1BandImage() {
-        return isValid() && getRaster() instanceof Band && ((Band) getRaster()).getIndexCoding() == null;
+        return isValid() && !getProductSceneView().isRGB() && getRaster() instanceof Band && !((Band) getRaster()).isIndexBand();
     }
 
     public boolean isDiscrete1BandImage() {
-        return isValid() && getRaster() instanceof Band && ((Band) getRaster()).getIndexCoding() != null;
+        return isValid() && !getProductSceneView().isRGB() && getRaster() instanceof Band && ((Band) getRaster()).isIndexBand();
     }
 
     public boolean canUseHistogramMatching() {
