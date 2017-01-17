@@ -530,7 +530,9 @@ public class ProductSceneView extends BasicView
     /**
      * Gets the product raster of a single banded view.
      *
-     * @return the product raster, or {@code null} if this is a 3-banded RGB view
+     * @return the product raster, in case of a 3-banded RGB view it returns the first raster.
+     *
+     * @see #isRGB()
      */
     public RasterDataNode getRaster() {
         return getSceneImage().getRasters()[0];

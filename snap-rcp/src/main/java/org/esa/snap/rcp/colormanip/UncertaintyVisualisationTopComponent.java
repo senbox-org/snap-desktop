@@ -83,7 +83,7 @@ public class UncertaintyVisualisationTopComponent extends TopComponent {
 
         @Override
         public boolean isValid() {
-            return super.isValid() && getRaster() != null;
+            return super.isValid() && !getProductSceneView().isRGB() && getRaster() != null;
         }
 
         @Override
