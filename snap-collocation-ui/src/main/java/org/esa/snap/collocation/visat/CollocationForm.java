@@ -45,6 +45,8 @@ import java.awt.Insets;
  */
 class CollocationForm extends JPanel {
 
+    private static final String DEFAULT_TARGET_PRODUCT_NAME = "collocate";
+
     private SourceProductSelector masterProductSelector;
     private SourceProductSelector slaveProductSelector;
 
@@ -150,6 +152,7 @@ class CollocationForm extends JPanel {
     }
 
     private JPanel createTargetProductPanel() {
+        targetProductSelector.getModel().setProductName(DEFAULT_TARGET_PRODUCT_NAME);
         return targetProductSelector.createDefaultPanel();
     }
 
