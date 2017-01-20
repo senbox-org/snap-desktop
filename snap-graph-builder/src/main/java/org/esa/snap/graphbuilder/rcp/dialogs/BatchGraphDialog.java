@@ -38,20 +38,10 @@ import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.FileChooserFactory;
 import org.esa.snap.ui.ModelessDialog;
 
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-import javax.swing.JTabbedPane;
-import javax.swing.SwingWorker;
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -600,23 +590,28 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
                     if (pm.isCanceled()) break;
 
                     final String nOfm = String.valueOf(graphIndex + 1) + " of " + graphExecutorList.size() + ' ';
-                    final String statusText = "Processing " + nOfm + fileList[graphIndex].getName();
-                    statusLabel.setText(statusText);
-                    notifyMSG(BatchProcessListener.BatchMSG.UPDATE, statusText);
-
-                    if (shouldSkip(graphEx, existingFiles)) {
-                        pm.worked(1);
-                        continue;
-                    }
+                    final String statusText = nOfm + fileList[graphIndex].getName();
 
                     try {
-                        MemUtils.freeAllMemory();
-
                         graphEx.InitGraph();
 
-                        graphEx.executeGraph(SubProgressMonitor.create(pm, 1));
+                        if (shouldSkip(graphEx, existingFiles)) {
+                            statusLabel.setText("Skipping " +statusText);
+                            notifyMSG(BatchProcessListener.BatchMSG.UPDATE, statusText);
 
-                        graphEx.disposeGraphContext();
+                            pm.worked(1);
+                            graphEx = null;
+                            ++graphIndex;
+                            continue;
+                        } else {
+                            statusLabel.setText("Processing " + statusText);
+                            notifyMSG(BatchProcessListener.BatchMSG.UPDATE, statusText);
+
+                            graphEx.executeGraph(SubProgressMonitor.create(pm, 1));
+
+                            graphEx.disposeGraphContext();
+                            MemUtils.freeAllMemory();
+                        }
 
                     } catch (Exception e) {
                         SystemUtils.LOG.severe(e.getMessage());
@@ -638,8 +633,6 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
                         bottomStatusLabel.setText(remainingStr);
                     }
                 }
-
-                MemUtils.freeAllMemory();
 
             } catch (Exception e) {
                 SystemUtils.LOG.severe(e.getMessage());
@@ -687,14 +680,14 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
 
         private boolean shouldSkip(final GraphExecuter graphEx, final File[] existingFiles) {
             if (skipExistingTargetFiles) {
-                final File[] targetFiles = graphEx.getPotentialOutputFiles();
-
                 if (existingFiles != null) {
+                    final File[] targetFiles = graphEx.getPotentialOutputFiles();
+
                     boolean allTargetsExist = true;
                     for (File targetFile : targetFiles) {
                         boolean fileExists = false;
                         for (File existingFile : existingFiles) {
-                            if (existingFile.getAbsolutePath().startsWith(targetFile.getAbsolutePath())) {
+                            if (existingFile.getAbsolutePath().equalsIgnoreCase(targetFile.getAbsolutePath())) {
                                 fileExists = true;
                                 break;
                             }
