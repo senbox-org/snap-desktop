@@ -285,7 +285,7 @@ public class GraphExecuter extends Observable {
         final List<File> fileList = new ArrayList<>();
         final Node[] nodes = graph.getNodes();
         for (Node n : nodes) {
-            if (n.getOperatorName().equalsIgnoreCase(OperatorSpi.getOperatorAlias(WriteOp.class))) {
+            if (n.getOperatorName().startsWith(OperatorSpi.getOperatorAlias(WriteOp.class))) {
                 final DomElement config = n.getConfiguration();
                 final DomElement fileParam = config.getChild("file");
                 if (fileParam != null) {
