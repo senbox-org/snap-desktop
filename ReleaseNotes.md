@@ -1,6 +1,9 @@
 SNAP Release Notes
 ==================
 
+Update v5.0.1
+https://senbox.atlassian.net/secure/ReleaseNote.jspa?projectId=10100&version=12201
+
 #New in SNAP v5.0
 The SNAP release concentrates on bug fixes and improvements. New features are mainly implemented in the Toolboxes. 
  
