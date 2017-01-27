@@ -643,9 +643,14 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
                     statusLabel.setText(e.toString());
                 errorOccured = true;
             } finally {
-                statusLabel.setText("Batch processing complete");
+                final long duration = timeMonitor.stop();
+                statusLabel.setText("Processing completed in " + ProcessTimeMonitor.formatDuration(duration));
                 isProcessing = false;
                 pm.done();
+
+                if (openProcessedProducts) {
+                    bottomStatusLabel.setText("Opening resulting products...");
+                }
             }
             return true;
         }
@@ -653,13 +658,10 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
         @Override
         public void done() {
             if (!errorOccured) {
-                final long duration = timeMonitor.stop();
-                statusLabel.setText("Processing completed in " + ProcessTimeMonitor.formatDuration(duration));
-                bottomStatusLabel.setText("");
-
                 if (openProcessedProducts) {
                     openTargetProducts();
                 }
+                bottomStatusLabel.setText("");
             }
             if (!errMsgs.isEmpty()) {
                 final StringBuilder msg = new StringBuilder("The following errors occurred:\n");
@@ -671,8 +673,9 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
             }
             cleanUpTempFiles();
             notifyMSG(BatchProcessListener.BatchMSG.DONE);
-            if (closeOnDone)
+            if (closeOnDone) {
                 close();
+            }
 
             if (SnapApp.getDefault().getPreferences().getBoolean(GPF.BEEP_AFTER_PROCESSING_PROPERTY, false)) {
                 Toolkit.getDefaultToolkit().beep();
