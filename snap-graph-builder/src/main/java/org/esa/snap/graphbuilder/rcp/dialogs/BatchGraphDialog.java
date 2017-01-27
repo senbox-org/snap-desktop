@@ -594,6 +594,7 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
 
                     try {
                         graphEx.InitGraph();
+                        graphEx.InitGraph();
 
                         if (shouldSkip(graphEx, existingFiles)) {
                             statusLabel.setText("Skipping " +statusText);
