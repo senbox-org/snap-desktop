@@ -338,7 +338,8 @@ public class GraphNode {
 
     public boolean isNodeSource(final GraphNode source) {
 
-        for (NodeSource ns : node.getSources()) {
+        final NodeSource[] sources = node.getSources();
+        for (NodeSource ns : sources) {
             if (ns.getSourceNodeId().equals(source.getID())) {
                 return true;
             }
