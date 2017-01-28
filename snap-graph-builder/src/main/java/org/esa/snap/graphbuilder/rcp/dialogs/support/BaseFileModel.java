@@ -15,16 +15,17 @@
  */
 package org.esa.snap.graphbuilder.rcp.dialogs.support;
 
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.engine_utilities.db.CommonReaders;
 import org.esa.snap.engine_utilities.db.ProductDB;
 import org.esa.snap.engine_utilities.db.ProductEntry;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
 
-import javax.swing.SwingWorker;
+import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumnModel;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -133,6 +134,12 @@ public abstract class BaseFileModel extends AbstractTableModel implements FileTa
         }
     }
 
+    public void refresh() {
+        for(TableData data : dataList) {
+            data.refresh();
+        }
+    }
+
     public void clear() {
         fileList.clear();
         dataList.clear();
@@ -188,32 +195,41 @@ public abstract class BaseFileModel extends AbstractTableModel implements FileTa
 
     public class TableData {
         protected final String data[] = new String[titles.length];
-
-        public TableData() {
-
-        }
+        protected final File file;
+        protected final ProductEntry entry;
 
         public TableData(final File file) {
-            readProduct(file);
+            this.file = file;
+            this.entry = null;
+            updateData();
         }
 
         public TableData(final ProductEntry entry) {
-            updateData(entry);
+            this.file = null;
+            this.entry = entry;
+            updateData();
         }
 
         public TableData(final String[] values) {
             System.arraycopy(values, 0, data, 0, data.length);
+            this.entry = null;
+            this.file = null;
         }
 
-        protected void updateData(final File file) throws IOException {
-
+        public void refresh() {
+            readProduct(file);
         }
 
-        protected void updateData(final ProductEntry entry) {
+        protected void updateData() {
+        }
 
+        protected void updateData(final Product product) {
         }
 
         private void readProduct(final File file) {
+
+            if(file == null)
+                return;
 
             final SwingWorker worker = new SwingWorker() {
                 @Override
@@ -221,12 +237,13 @@ public abstract class BaseFileModel extends AbstractTableModel implements FileTa
                     try {
                         if (!file.getName().isEmpty()) {
                             try {
-                                updateData(file);
-                            } catch (Exception ex) {
-                                data[0] = file.getName();
-                                for (int i = 1; i < data.length; ++i) {
-                                    data[i] = "";
+                                Product product = getProductFromProductManager(file);
+                                if (product == null) {
+                                    product = CommonReaders.readProduct(file);
                                 }
+                                updateData(product);
+                            } catch (Exception ex) {
+                                updateData();
                             }
                         }
                     } finally {
@@ -236,6 +253,19 @@ public abstract class BaseFileModel extends AbstractTableModel implements FileTa
                 }
             };
             worker.execute();
+        }
+
+        protected Product getProductFromProductManager(final File file) {
+            final SnapApp app = SnapApp.getDefault();
+            if(app != null) {
+                final Product[] products = app.getProductManager().getProducts();
+                for(Product p : products) {
+                    if(file.equals(p.getFileLocation())) {
+                        return p;
+                    }
+                }
+            }
+            return null;
         }
     }
 
