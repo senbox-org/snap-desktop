@@ -59,7 +59,7 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
 
     private JButton addButton = null, addAllOpenButton = null, dbQueryButton = null, removeButton = null;
     private JButton moveTopButton = null, moveUpButton = null, moveDownButton = null, moveBottomButton = null;
-    private JButton clearButton = null;
+    private JButton refreshButton = null, clearButton = null;
 
     final JLabel countLabel = new JLabel();
 
@@ -72,6 +72,7 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
     private static final ImageIcon moveUpIcon = TangoIcons.actions_go_up(TangoIcons.Res.R22);
     private static final ImageIcon moveDownIcon = TangoIcons.actions_go_down(TangoIcons.Res.R22);
     private static final ImageIcon moveBottomIcon = TangoIcons.actions_go_bottom(TangoIcons.Res.R22);
+    private static final ImageIcon refreshIcon = TangoIcons.actions_view_refresh(TangoIcons.Res.R22);
     private static final ImageIcon clearIcon = TangoIcons.actions_edit_clear(TangoIcons.Res.R22);
 
     public ProductSetPanel(final AppContext theAppContext, final String title) {
@@ -149,6 +150,8 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
             moveDownButton.setEnabled(rowCount > 1);
         if (moveBottomButton != null)
             moveBottomButton.setEnabled(rowCount > 1);
+        if (refreshButton != null)
+            refreshButton.setEnabled(rowCount > 1);
         if (clearButton != null)
             clearButton.setEnabled(enableButtons);
 
@@ -241,6 +244,14 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
         moveBottomButton = DialogUtils.createButton("moveBottomButton", "Move Bottom", moveBottomIcon, panel, DialogUtils.ButtonStyle.Icon);
         moveBottomButton.addActionListener(new MoveButtonActionListener(table, tableModel, MOVE.BOTTOM));
 
+        refreshButton = DialogUtils.createButton("refreshButton", "Refresh", refreshIcon, panel, DialogUtils.ButtonStyle.Icon);
+        refreshButton.addActionListener(new ActionListener() {
+
+            public void actionPerformed(final ActionEvent e) {
+                tableModel.refresh();
+            }
+        });
+
         clearButton = DialogUtils.createButton("clearButton", "Clear", clearIcon, panel, DialogUtils.ButtonStyle.Icon);
         clearButton.addActionListener(new ActionListener() {
 
@@ -257,6 +268,7 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
         panel.add(moveUpButton);
         panel.add(moveDownButton);
         panel.add(moveBottomButton);
+        panel.add(refreshButton);
         panel.add(clearButton);
         panel.add(countLabel);
 

@@ -34,6 +34,8 @@ public interface FileTableModel extends TableModel {
 
     public File[] getFileList();
 
+    public void refresh();
+
     public void clear();
 
     public void setColumnWidths(final TableColumnModel columnModel);
