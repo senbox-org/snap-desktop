@@ -16,6 +16,8 @@
 package org.esa.snap.classification.gpf.ui;
 
 import org.esa.snap.classification.gpf.BaseClassifier;
+import org.esa.snap.core.datamodel.ProductNodeGroup;
+import org.esa.snap.core.datamodel.VectorDataNode;
 import org.esa.snap.engine_utilities.util.VectorUtils;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.util.SystemUtils;
@@ -563,11 +565,21 @@ public abstract class BaseClassifierOpUI extends BaseOperatorUI {
         final ArrayList<String> geometryNames = new ArrayList<>(5);
         if (sourceProducts != null) {
             if (sourceProducts.length > 1) {
-                for (String name : sourceProducts[0].getMaskGroup().getNodeNames()) {
-                    geometryNames.add(name + "::" + sourceProducts[0].getName());
+                final ProductNodeGroup<VectorDataNode> vectorDataNodes = sourceProducts[0].getVectorDataGroup();
+                for(int i=0; i< vectorDataNodes.getNodeCount(); ++i) {
+                    VectorDataNode node = vectorDataNodes.get(i);
+                    if(!node.getFeatureCollection().isEmpty()) {
+                        geometryNames.add(node.getName() + "::" + sourceProducts[0].getName());
+                    }
                 }
             } else {
-                geometryNames.addAll(Arrays.asList(sourceProducts[0].getMaskGroup().getNodeNames()));
+                final ProductNodeGroup<VectorDataNode> vectorDataNodes = sourceProducts[0].getVectorDataGroup();
+                for(int i=0; i< vectorDataNodes.getNodeCount(); ++i) {
+                    VectorDataNode node = vectorDataNodes.get(i);
+                    if(!node.getFeatureCollection().isEmpty()) {
+                        geometryNames.add(node.getName());
+                    }
+                }
             }
         }
         return geometryNames.toArray(new String[geometryNames.size()]);
