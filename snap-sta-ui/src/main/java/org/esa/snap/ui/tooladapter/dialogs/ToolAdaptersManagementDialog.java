@@ -20,6 +20,8 @@ package org.esa.snap.ui.tooladapter.dialogs;
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
 import org.esa.snap.core.gpf.operators.tooladapter.*;
+import org.esa.snap.core.util.StringUtils;
+import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.tango.TangoIcons;
 import org.esa.snap.ui.AppContext;
@@ -45,6 +47,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.logging.Logger;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.esa.snap.utils.SpringUtilities.DEFAULT_PADDING;
@@ -62,6 +66,7 @@ import static org.esa.snap.utils.SpringUtilities.makeCompactGrid;
         "ToolTipNewOperator_Text=Define new operator",
         "ToolTipCopyOperator_Text=Duplicate the selected operator",
         "ToolTipEditOperator_Text=Edit the selected operator",
+        "ToolTipExport_Text=Create an installable module",
         "ToolTipExecuteOperator_Text=Execute the selected operator",
         "ToolTipDeleteOperator_Text=Delete the selected operator",
         "PathLabel_Text=Adapters location",
@@ -93,7 +98,7 @@ public class ToolAdaptersManagementDialog extends ModelessDialog {
         instance.show();
     }
 
-    ToolAdaptersManagementDialog(AppContext appContext, String title, String helpID) {
+    private ToolAdaptersManagementDialog(AppContext appContext, String title, String helpID) {
         super(appContext.getApplicationWindow(), title, 0, helpID);
         this.appContext = appContext;
         JPanel contentPanel = createContentPanel();
@@ -114,78 +119,79 @@ public class ToolAdaptersManagementDialog extends ModelessDialog {
     }
 
     private JPanel createContentPanel() {
-        //compute content and other buttons
-        SpringLayout springLayout = new SpringLayout();
-        JPanel panel = new JPanel(springLayout);
+        JPanel panel = new JPanel(new BorderLayout(DEFAULT_PADDING, DEFAULT_PADDING));
         int panelHeight = 0;
         JTable propertiesPanel = createPropertiesPanel();
         panelHeight += propertiesPanel.getPreferredSize().getHeight();
-        panel.add(propertiesPanel);
+        panel.add(propertiesPanel, BorderLayout.PAGE_START);
         panelHeight += 10;
-        panel.add(Box.createVerticalStrut(10));
+
+        SpringLayout springLayout = new SpringLayout();
+        JPanel adaptersAndButtonsPanel = new JPanel(springLayout);
         JScrollPane scrollPane = new JScrollPane(createAdaptersPanel());
         panelHeight += scrollPane.getPreferredSize().getHeight();
-        panel.add(scrollPane);
+        adaptersAndButtonsPanel.add(scrollPane);
         panelHeight += 10;
-        panel.add(Box.createVerticalStrut(10));
         JPanel buttonsPanel = createButtonsPanel();
         panelHeight += buttonsPanel.getPreferredSize().getHeight();
-        panel.add(buttonsPanel);
+        adaptersAndButtonsPanel.add(buttonsPanel);
+        springLayout.putConstraint(SpringLayout.NORTH, adaptersAndButtonsPanel, DEFAULT_PADDING, SpringLayout.NORTH, scrollPane);
+        springLayout.putConstraint(SpringLayout.WEST, adaptersAndButtonsPanel, DEFAULT_PADDING, SpringLayout.WEST, scrollPane);
+        springLayout.putConstraint(SpringLayout.EAST, adaptersAndButtonsPanel, DEFAULT_PADDING, SpringLayout.EAST, scrollPane);
+        springLayout.putConstraint(SpringLayout.SOUTH, scrollPane, DEFAULT_PADDING, SpringLayout.NORTH, buttonsPanel);
+        springLayout.putConstraint(SpringLayout.EAST, adaptersAndButtonsPanel, DEFAULT_PADDING, SpringLayout.EAST, buttonsPanel);
+        springLayout.putConstraint(SpringLayout.WEST, adaptersAndButtonsPanel, DEFAULT_PADDING, SpringLayout.WEST, buttonsPanel);
+        springLayout.putConstraint(SpringLayout.SOUTH, adaptersAndButtonsPanel, DEFAULT_PADDING, SpringLayout.SOUTH, buttonsPanel);
+        makeCompactGrid(adaptersAndButtonsPanel, 2, 1, 0, 0, DEFAULT_PADDING, DEFAULT_PADDING);
 
-        springLayout.putConstraint(SpringLayout.NORTH, panel, DEFAULT_PADDING, SpringLayout.NORTH, propertiesPanel);
-        springLayout.putConstraint(SpringLayout.WEST, panel, DEFAULT_PADDING, SpringLayout.WEST, propertiesPanel);
-        springLayout.putConstraint(SpringLayout.EAST, panel, DEFAULT_PADDING, SpringLayout.EAST, propertiesPanel);
-        springLayout.putConstraint(SpringLayout.NORTH, scrollPane, DEFAULT_PADDING, SpringLayout.SOUTH, propertiesPanel);
-        springLayout.putConstraint(SpringLayout.WEST, panel, DEFAULT_PADDING, SpringLayout.WEST, scrollPane );
-        springLayout.putConstraint(SpringLayout.EAST, panel, DEFAULT_PADDING, SpringLayout.EAST, scrollPane);
-        springLayout.putConstraint(SpringLayout.NORTH, scrollPane, DEFAULT_PADDING, SpringLayout.SOUTH, buttonsPanel);
-        springLayout.putConstraint(SpringLayout.WEST, panel, DEFAULT_PADDING, SpringLayout.WEST, buttonsPanel);
-        springLayout.putConstraint(SpringLayout.EAST, panel, DEFAULT_PADDING, SpringLayout.EAST, buttonsPanel);
+        panel.add(adaptersAndButtonsPanel, BorderLayout.CENTER);
+
+        JPanel sideButtonsPanel = createSideButtonsPanel();
+        panel.add(sideButtonsPanel, BorderLayout.LINE_END);
 
         panel.setPreferredSize(new Dimension(CHECK_COLUMN_WIDTH + LABEL_COLUMN_WIDTH + COLUMN_WIDTH - 32, panelHeight + DEFAULT_PADDING));
-        makeCompactGrid(panel, 5, 1, 0, 0, 0, 0);
+
         return panel;
     }
 
-    private JPanel createButtonsPanel() {
+    private JPanel createSideButtonsPanel() {
         JPanel panel = new JPanel(new SpringLayout());
-
         /**
          * New adapter button
          */
-        panel.add(createButton("New",
-                    TangoIcons.actions_document_new(TangoIcons.Res.R22),
-                    Bundle.ToolTipNewOperator_Text(),
-                    e -> {
-                        ToolAdapterOperatorDescriptor newOperatorSpi = new ToolAdapterOperatorDescriptor(ToolAdapterConstants.OPERATOR_NAMESPACE + "NewOperator", ToolAdapterOp.class, "NewOperator", null, null, null, null, null, null);
-                        AbstractAdapterEditor dialog = AbstractAdapterEditor.createEditorDialog(appContext, getJDialog(), newOperatorSpi, OperationType.NEW);
-                        dialog.show();
-                        refreshContent();
-                    }));
+        panel.add(createButton(null, //"New",
+                TangoIcons.actions_list_add(TangoIcons.Res.R22),
+                Bundle.ToolTipNewOperator_Text(),
+                e -> {
+                    ToolAdapterOperatorDescriptor newOperatorSpi = new ToolAdapterOperatorDescriptor(ToolAdapterConstants.OPERATOR_NAMESPACE + "NewOperator", ToolAdapterOp.class, "NewOperator", null, null, null, null, null, null);
+                    AbstractAdapterEditor dialog = AbstractAdapterEditor.createEditorDialog(appContext, getJDialog(), newOperatorSpi, OperationType.NEW);
+                    dialog.show();
+                    refreshContent();
+                }));
         /**
          * Duplicate adapter button
          */
-        panel.add(createButton("Copy",
-                    TangoIcons.actions_edit_copy(TangoIcons.Res.R22),
-                    Bundle.ToolTipCopyOperator_Text(),
-                    e -> {
-                        ToolAdapterOperatorDescriptor operatorDesc = requestSelection();
-                        if (operatorDesc != null) {
-                            String opName = operatorDesc.getName();
-                            int newNameIndex = 0;
-                            while (GPF.getDefaultInstance().getOperatorSpiRegistry().getOperatorSpi(opName) != null) {
-                                newNameIndex++;
-                                opName = operatorDesc.getName() + ToolAdapterConstants.OPERATOR_GENERATED_NAME_SEPARATOR + newNameIndex;
-                            }
-                            AbstractAdapterEditor dialog = AbstractAdapterEditor.createEditorDialog(appContext, getJDialog(), operatorDesc, newNameIndex, OperationType.COPY);
-                            dialog.show();
-                            refreshContent();
+        panel.add(createButton(null, //"Copy",
+                TangoIcons.actions_edit_copy(TangoIcons.Res.R22),
+                Bundle.ToolTipCopyOperator_Text(),
+                e -> {
+                    ToolAdapterOperatorDescriptor operatorDesc = requestSelection();
+                    if (operatorDesc != null) {
+                        String opName = operatorDesc.getName();
+                        int newNameIndex = 0;
+                        while (GPF.getDefaultInstance().getOperatorSpiRegistry().getOperatorSpi(opName) != null) {
+                            newNameIndex++;
+                            opName = operatorDesc.getName() + ToolAdapterConstants.OPERATOR_GENERATED_NAME_SEPARATOR + newNameIndex;
                         }
-                    }));
+                        AbstractAdapterEditor dialog = AbstractAdapterEditor.createEditorDialog(appContext, getJDialog(), operatorDesc, newNameIndex, OperationType.COPY);
+                        dialog.show();
+                        refreshContent();
+                    }
+                }));
         /**
          * Edit adapter button
          */
-        panel.add(createButton("Edit",
+        panel.add(createButton(null, //"Edit",
                 TangoIcons.apps_accessories_text_editor(TangoIcons.Res.R22),
                 Bundle.ToolTipEditOperator_Text(),
                 e -> {
@@ -199,29 +205,36 @@ public class ToolAdaptersManagementDialog extends ModelessDialog {
         /**
          * Delete adapter button
          */
-        panel.add(createButton("Delete",
-                TangoIcons.actions_edit_clear(TangoIcons.Res.R22),
+        panel.add(createButton(null, //"Delete",
+                TangoIcons.actions_list_remove(TangoIcons.Res.R22),
                 Bundle.ToolTipDeleteOperator_Text(),
                 e -> {
                     ToolAdapterOperatorDescriptor operatorDescriptor = requestSelection();
                     if (operatorDescriptor != null) {
                         if (Dialogs.Answer.YES == Dialogs.requestDecision(Bundle.MessageConfirmRemoval_TitleText(),
-                                                                          Bundle.MessageConfirmRemoval_Text(), true,
-                                                                          Bundle.MessageConfirmRemovalDontAsk_Text())) {
+                                Bundle.MessageConfirmRemoval_Text(), true,
+                                Bundle.MessageConfirmRemovalDontAsk_Text())) {
                             if (operatorDescriptor.isFromPackage()) {
                                 Dialogs.showWarning(String.format(Bundle.MessagePackageModules_Text(), operatorDescriptor.getName()));
                             } else {
-                                //ToolAdapterActionRegistrar.removeOperatorMenu(operatorDescriptor);
                                 ToolAdapterIO.removeOperator(operatorDescriptor);
                             }
                             refreshContent();
                         }
                     }
                 }));
+        makeCompactGrid(panel, 4, 1, 0, 0, DEFAULT_PADDING, DEFAULT_PADDING);
+        return panel;
+    }
+
+    private JPanel createButtonsPanel() {
+        FlowLayout layout = new FlowLayout(FlowLayout.TRAILING);
+        JPanel panel = new JPanel();
+
         /**
          * Execute adapter button
          */
-        panel.add(createButton("Run",
+        AbstractButton runButton = createButton("Run",
                 TangoIcons.actions_media_playback_start(TangoIcons.Res.R22),
                 Bundle.ToolTipExecuteOperator_Text(),
                 e -> {
@@ -235,17 +248,39 @@ public class ToolAdaptersManagementDialog extends ModelessDialog {
                         operatorDialog.getJDialog().setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
                         operatorDialog.show();
                     }
-                }));
-
-        makeCompactGrid(panel, 1, 5, 0, 0, DEFAULT_PADDING, DEFAULT_PADDING);
+                });
+        panel.add(runButton);
+        /**
+         * Create suite button
+         */
+        AbstractButton packButton = createButton("Pack",
+                TangoIcons.apps_system_installer(TangoIcons.Res.R22),
+                Bundle.ToolTipExport_Text(),
+                e -> {
+                    ModuleSuiteDialog dialog = new ModuleSuiteDialog(appContext, "Create Adapter Suite", null, getSelection());
+                    dialog.show();
+                    refreshContent();
+                });
+        panel.add(packButton);
+        AbstractButton closeButton = createButton("Close",
+                TangoIcons.actions_system_log_out(TangoIcons.Res.R22),
+                null,
+                e -> {
+                    ToolAdaptersManagementDialog.this.onClose();
+                });
+        panel.add(closeButton);
 
         return panel;
     }
 
     private AbstractButton createButton(String text, ImageIcon icon, String toolTip, ActionListener actionListener) {
-        AbstractButton button = new JButton(text, icon);
-        button.setMaximumSize(buttonDimension);
-        button.setPreferredSize(buttonDimension);
+        AbstractButton button = StringUtils.isNullOrEmpty(text) ? new JButton(icon) : new JButton(text, icon);
+        Dimension dimension = StringUtils.isNullOrEmpty(text) ?
+                new Dimension(24, 24) :
+                buttonDimension;
+        button.setMinimumSize(dimension);
+        button.setMaximumSize(dimension);
+        button.setPreferredSize(dimension);
         if (toolTip != null) {
             button.setToolTipText(toolTip);
         }
@@ -371,6 +406,15 @@ public class ToolAdaptersManagementDialog extends ModelessDialog {
             }
         });
         return operatorsTable;
+    }
+
+    private Set<ToolAdapterOperatorDescriptor> getSelection() {
+        Set<ToolAdapterOperatorDescriptor> selection = new HashSet<>();
+        int[] selectedRows = operatorsTable.getSelectedRows();
+        for (int idx : selectedRows) {
+            selection.add(((OperatorsTableModel) operatorsTable.getModel()).getObjectAt(idx));
+        }
+        return selection;
     }
 
     private ToolAdapterOperatorDescriptor requestSelection() {
