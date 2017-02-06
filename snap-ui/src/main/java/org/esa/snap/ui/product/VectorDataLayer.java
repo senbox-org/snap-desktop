@@ -119,7 +119,8 @@ public class VectorDataLayer extends Layer {
             SimpleFeatureFigure featureFigure = figureMap.get(simpleFeature);
             if (featureFigure != null) {
                 figureMap.remove(simpleFeature);
-                final String css = SimpleFeatureFigureFactory.getStyleCss(simpleFeature, vectorDataNode.getDefaultStyleCss());
+                Placemark placemark = vectorDataNode.getPlacemarkGroup().getPlacemark(simpleFeature);
+                String css = placemark.getStyleCss();
                 final FigureStyle normalStyle = DefaultFigureStyle.createFromCss(css);
                 final FigureStyle selectedStyle = getFigureFactory().deriveSelectedStyle(normalStyle);
                 featureFigure.setNormalStyle(normalStyle);
