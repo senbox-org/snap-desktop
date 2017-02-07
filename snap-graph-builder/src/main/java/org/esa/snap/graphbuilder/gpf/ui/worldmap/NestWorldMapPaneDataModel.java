@@ -207,7 +207,7 @@ public class NestWorldMapPaneDataModel {
         }
 
         private static boolean isClosedPath(final GeoPos[] geoBoundary) {
-            return geoBoundary[0].equals(geoBoundary[geoBoundary.length - 1]);
+            return geoBoundary.length > 0 && geoBoundary[0].equals(geoBoundary[geoBoundary.length - 1]);
         }
     }
 }
