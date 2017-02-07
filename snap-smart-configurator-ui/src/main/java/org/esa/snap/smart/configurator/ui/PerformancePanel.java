@@ -616,12 +616,13 @@ final class PerformancePanel extends javax.swing.JPanel {
             cachePathTextField.setForeground(CURRENT_VALUES_COLOR);
         }
 
-        if(PerformanceParameters.isValidDimension(this.tileDimensionTextField.getText())) {
-            this.tileDimensionTextField.setForeground(CURRENT_VALUES_COLOR);
-        } else {
-            this.tileDimensionTextField.setForeground(ERROR_VALUES_COLOR);
-            isValid = false;
-        }
+        //Commented because tiledimension has been removed temporary from the panel
+        //if(PerformanceParameters.isValidDimension(this.tileDimensionTextField.getText())) {
+        //    this.tileDimensionTextField.setForeground(CURRENT_VALUES_COLOR);
+        //} else {
+        //    this.tileDimensionTextField.setForeground(ERROR_VALUES_COLOR);
+        //    isValid = false;
+        //}
         
         String readerCacheSize = this.cacheSizeTextField.getText();
         try{
