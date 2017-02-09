@@ -11,15 +11,15 @@ import org.esa.snap.rcp.util.BrowserUtils;
 import org.openide.modules.ModuleInfo;
 import org.openide.modules.Modules;
 
-import javax.swing.*;
-import java.awt.*;
-import java.io.IOException;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import java.awt.BorderLayout;
+import java.awt.Cursor;
+import java.awt.Font;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.List;
-import java.util.logging.Level;
 
 /**
  * @author Norman
@@ -35,7 +35,7 @@ public class SnapAboutBox extends JPanel {
         ModuleInfo engineModuleInfo = Modules.getDefault().ownerOf(Product.class);
         ImageIcon image = new ImageIcon(SnapAboutBox.class.getResource("SNAP_Banner.png"));
         JLabel banner = new JLabel(image);
-        versionText = new JLabel("<html><b>SNAP " + getReleaseVersion() + "</b>");
+        versionText = new JLabel("<html><b>SNAP " + SystemUtils.getReleaseVersion() + "</b>");
 
         JLabel infoText = new JLabel("<html>"
                                              + "This program is free software: you can redistribute it and/or modify it<br>"
@@ -72,25 +72,6 @@ public class SnapAboutBox extends JPanel {
             System.out.println(name + " = " + properties.getProperty(name));
         }
 */
-    }
-
-    private String getReleaseVersion() {
-        String version = null;
-        Path versionFile = SystemUtils.getApplicationHomeDir().toPath().resolve("VERSION.txt");
-        if (Files.exists(versionFile)) {
-            try {
-                List<String> versionInfo = Files.readAllLines(versionFile);
-                if (!versionInfo.isEmpty()) {
-                    version = versionInfo.get(0);
-                }
-            } catch (IOException e) {
-                SystemUtils.LOG.log(Level.WARNING, e.getMessage(), e);
-            }
-        }
-        if (version != null) {
-            return version;
-        }
-        return "[no version info, missing ${SNAP_HOME}/VERSION.txt]";
     }
 
     private JPanel createVersionPanel() {
