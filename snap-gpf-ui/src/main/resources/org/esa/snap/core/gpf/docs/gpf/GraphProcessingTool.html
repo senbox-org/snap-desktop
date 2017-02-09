@@ -98,22 +98,59 @@
                          used operator or graph. In an XML graph, all occurrences of
                          ${&lt;name&gt;} will be replaced with &lt;value&gt;. Overwrites
                          parameter values specified by the '-p' option.
+      -D&lt;name&gt;=&lt;value&gt;   Defines a system property for this invocation.
+      -v &lt;dir&gt;           A directory containing any number of Velocity templates.
+                         Each template generates a text output file along with the
+                         target product. This feature has been added to support a
+                         flexible generation of metadata files.
+                         See http://velocity.apache.org/ and option -m.
+      -m &lt;file&gt;          A (Java Properties) file containing (constant) metadata
+                         in the form &lt;name&gt;=&lt;value&gt; or any XML file. Its primary
+                         usage is to provide an additional context to be used
+                         from within the Velocity templates. See option -v.
+      --diag             Displays version and diagnostic information.
+
 
     Operators:
-      BandMaths                  Create a product with one or more bands using mathematical expressions.
-      Collocate                  Collocates two products based on their geo-codings.
-      EMClusterAnalysis          Performs an expectation-maximization (EM) cluster analysis.
-      KMeansClusterAnalysis      Performs a K-Means cluster analysis.
-      Meris.CorrectRadiometry    Performs radiometric corrections on MERIS L1b data products.
-      Mosaic                     Creates a mosaic out of a set of source products.
-      N1Patcher                  No description available.
-      PixEx                      Generates a CSV file from a given pixel location and source products.
-      Read                       Reads a product from disk.
-      Reproject                  Reprojection of a source product to a target Coordinate Reference System.
-      Subset                     Create a spatial and/or spectral subset of data product.
-      Unmix                      Performs a linear spectral unmixing.
-      Write                      Writes a data product to a file.
-</pre>
+      AddElevation                     Creates a DEM band
+      AddLandCover                     Creates a land cover band
+      BandMaths                        Create a product with one or more bands using mathematical expressions.
+      Binning                          Performs spatial and temporal aggregation of pixel values into cells ('bins') of a planetary grid
+      Collocate                        Collocates two products based on their geo-codings.
+      Convert-Datatype                 Convert product data type
+      EMClusterAnalysis                Performs an expectation-maximization (EM) cluster analysis.
+      Fill-DEM-Hole                    Fill holes in given DEM product file.
+      Flip                             flips a product horizontal/vertical
+      GLCM                             Extract Texture Features
+      Image-Filter                     Common Image Processing Filters
+      Import-Vector                    Imports a shape file into a product
+      KDTree-KNN-Classifier            KDTree KNN classifier
+      KMeansClusterAnalysis            Performs a K-Means cluster analysis.
+      KNN-Classifier                   K-Nearest Neighbour classifier
+      Land-Cover-Mask                  Perform decision tree classification
+      Land-Sea-Mask                    Creates a bitmask defining land vs ocean.
+      LandWaterMask                    Operator creating a target product with a single band containing a land/water-mask.
+      LinearToFromdB                   Converts bands to/from dB
+      Maximum-Likelihood-Classifier    Maximum Likelihood classifier
+      Merge                            Allows copying raster data from any number of source products to a specified 'master' product.
+      Minimum-Distance-Classifier      Minimum Distance classifier
+      Mosaic                           Creates a mosaic out of a set of source products.
+      NdviOp                           The retrieves the Normalized Difference Vegetation Index (NDVI).
+      PCA                              Performs a Principal Component Analysis.
+      PixEx                            Extracts pixels from given locations and source products.
+      ProductSet-Reader                Adds a list of sources
+      Random-Forest-Classifier         Random Forest based classifier
+      Read                             Reads a data product from a given file location.
+      ReplaceMetadata                  Replace the metadata of the first product with that of the second
+      Reproject                        Reprojection of a source product to a target Coordinate Reference System.
+      Resample                         Resampling of a multi-size source product to a single-size target product.
+      StatisticsOp                     Computes statistics for an arbitrary number of source products.
+      Subset                           Create a spatial and/or spectral subset of a data product.
+      TemporalPercentile               Computes percentiles over a given time period.
+      Terrain-Mask                     Terrain Mask Generation
+      ToolAdapterOp                    Tool Adapter Operator
+      Unmix                            Performs a linear spectral unmixing.
+      Write                            Writes a data product to a file.</pre>
 
 <hr/>
 </body>
