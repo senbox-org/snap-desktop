@@ -34,6 +34,7 @@ import org.geotools.data.DataStoreFinder;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.shapefile.ShapefileDataStoreFactory;
 import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.opengis.feature.simple.SimpleFeature;
@@ -44,7 +45,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -54,7 +54,7 @@ public class FeatureFigureEditorApp extends FigureEditorApp {
     private final SimpleFeatureType featureType;
     private final SceneTransformProvider sceneTransformProvider;
 
-    public FeatureFigureEditorApp() {
+    private FeatureFigureEditorApp() {
         featureType = createSimpleFeatureType("X", Geometry.class, null);
         sceneTransformProvider = new SceneTransformProvider() {
             @Override
@@ -72,7 +72,7 @@ public class FeatureFigureEditorApp extends FigureEditorApp {
     static class XYZ {
         Class<?> geometryType;
         SimpleFeatureType defaults;
-        ArrayList<SimpleFeature> features = new ArrayList<SimpleFeature>();
+        ArrayList<SimpleFeature> features = new ArrayList<>();
     }
 
     private SimpleFeatureType createSimpleFeatureType(String typeName, Class<?> geometryType, SimpleFeatureType defaults) {
@@ -104,15 +104,16 @@ public class FeatureFigureEditorApp extends FigureEditorApp {
         FeatureCollection<SimpleFeatureType, SimpleFeature> featureTypeSimpleFeatureFeatureCollection;
         featureFeatureSource = getFeatureSource(file);
         featureTypeSimpleFeatureFeatureCollection = featureFeatureSource.getFeatures();
-        Iterator<SimpleFeature> featureIterator = featureTypeSimpleFeatureFeatureCollection.iterator();
-        while (featureIterator.hasNext()) {
-            SimpleFeature simpleFeature = featureIterator.next();
-            DefaultFigureStyle figureStyle = createDefaultFigureStyle();
-            Object o = simpleFeature.getDefaultGeometry();
-            if (o instanceof Point) {
-                figureCollection.addFigure(new SimpleFeaturePointFigure(simpleFeature, sceneTransformProvider, figureStyle));
-            } else {
-                figureCollection.addFigure(new SimpleFeatureShapeFigure(simpleFeature, sceneTransformProvider, figureStyle));
+        try(FeatureIterator<SimpleFeature> featureIterator = featureTypeSimpleFeatureFeatureCollection.features();) {
+            while (featureIterator.hasNext()) {
+                SimpleFeature simpleFeature = featureIterator.next();
+                DefaultFigureStyle figureStyle = createDefaultFigureStyle();
+                Object o = simpleFeature.getDefaultGeometry();
+                if (o instanceof Point) {
+                    figureCollection.addFigure(new SimpleFeaturePointFigure(simpleFeature, sceneTransformProvider, figureStyle));
+                } else {
+                    figureCollection.addFigure(new SimpleFeatureShapeFigure(simpleFeature, sceneTransformProvider, figureStyle));
+                }
             }
         }
     }
@@ -121,16 +122,12 @@ public class FeatureFigureEditorApp extends FigureEditorApp {
     protected void storeFigureCollection(FigureCollection figureCollection, File file) throws IOException {
 
         Figure[] figures = figureCollection.getFigures();
-        Map<Class<?>, List<SimpleFeature>> featureListMap = new HashMap<Class<?>, List<SimpleFeature>>();
+        Map<Class<?>, List<SimpleFeature>> featureListMap = new HashMap<>();
         for (Figure figure : figures) {
             SimpleFeatureFigure simpleFeatureFigure = (SimpleFeatureFigure) figure;
             SimpleFeature simpleFeature = simpleFeatureFigure.getSimpleFeature();
             Class<?> geometryType = simpleFeature.getDefaultGeometry().getClass();
-            List<SimpleFeature> featureList = featureListMap.get(geometryType);
-            if (featureList == null) {
-                featureList = new ArrayList<SimpleFeature>();
-                featureListMap.put(geometryType, featureList);
-            }
+            List<SimpleFeature> featureList = featureListMap.computeIfAbsent(geometryType, k -> new ArrayList<SimpleFeature>());
             featureList.add(simpleFeature);
         }
         Set<Map.Entry<Class<?>, List<SimpleFeature>>> entries = featureListMap.entrySet();
@@ -141,7 +138,7 @@ public class FeatureFigureEditorApp extends FigureEditorApp {
         }
     }
 
-    public static FeatureSource<SimpleFeatureType, SimpleFeature> getFeatureSource(File file) throws IOException {
+    private static FeatureSource<SimpleFeatureType, SimpleFeature> getFeatureSource(File file) throws IOException {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put(ShapefileDataStoreFactory.URLP.key, file.toURI().toURL());
         map.put(ShapefileDataStoreFactory.CREATE_SPATIAL_INDEX.key, Boolean.TRUE);
@@ -152,7 +149,7 @@ public class FeatureFigureEditorApp extends FigureEditorApp {
         return featureSource;
     }
 
-    public static DefaultFigureStyle createDefaultFigureStyle() {
+    private static DefaultFigureStyle createDefaultFigureStyle() {
         DefaultFigureStyle figureStyle = new DefaultFigureStyle();
         figureStyle.setStrokeColor(Color.BLACK);
         figureStyle.setStrokeWidth(1.0);

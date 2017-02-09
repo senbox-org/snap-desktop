@@ -4,7 +4,8 @@ import com.bc.ceres.swing.figure.FigureStyle;
 import com.bc.ceres.swing.figure.support.DefaultFigureStyle;
 import org.esa.snap.core.datamodel.PlainFeatureFactory;
 import org.geotools.factory.CommonFactoryFinder;
-import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.DefaultFeatureCollection;
+import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.FeatureTypes;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
@@ -75,23 +76,24 @@ public class SLDUtils {
      * @param styledCollection  the collection that will contain the styled features.
      */
     public static void applyStyle(Style style, String defaultCss,
-                                  FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection,
-                                  FeatureCollection<SimpleFeatureType, SimpleFeature> styledCollection) {
+                                  DefaultFeatureCollection featureCollection,
+                                  DefaultFeatureCollection styledCollection) {
 
         List<FeatureTypeStyle> featureTypeStyles = style.featureTypeStyles();
         SimpleFeatureType featureType = featureCollection.getSchema();
         SimpleFeatureType styledFeatureType = styledCollection.getSchema();
 
-        List<SimpleFeature> featuresToStyle = new ArrayList<SimpleFeature>(featureCollection.size());
-        Iterator<SimpleFeature> iterator = featureCollection.iterator();
-        while (iterator.hasNext()) {
-            featuresToStyle.add(iterator.next());
+        List<SimpleFeature> featuresToStyle = new ArrayList<>(featureCollection.size());
+        try (FeatureIterator<SimpleFeature> iterator = featureCollection.features()) {
+            while (iterator.hasNext()) {
+                featuresToStyle.add(iterator.next());
+            }
         }
 
         for (FeatureTypeStyle fts : featureTypeStyles) {
             if (isFeatureTypeStyleActive(featureType, fts)) {
-                List<Rule> ruleList = new ArrayList<Rule>();
-                List<Rule> elseRuleList = new ArrayList<Rule>();
+                List<Rule> ruleList = new ArrayList<>();
+                List<Rule> elseRuleList = new ArrayList<>();
                 for (Rule rule : fts.rules()) {
                     if (rule.isElseFilter()) {
                         elseRuleList.add(rule);

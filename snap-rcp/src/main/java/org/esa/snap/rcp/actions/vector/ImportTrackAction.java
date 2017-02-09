@@ -65,7 +65,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 
-import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
+import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.AUTO;
 
 //import org.esa.snap.visat.VisatApp;
 
@@ -179,18 +179,15 @@ public class ImportTrackAction extends AbstractSnapAction implements ContextAwar
     }
 
     private static FeatureCollection<SimpleFeatureType, SimpleFeature> readTrack(File file, GeoCoding geoCoding) throws IOException {
-        Reader reader = new FileReader(file);
-        try {
+        try (Reader reader = new FileReader(file)) {
             return readTrack(reader, geoCoding);
-        } finally {
-            reader.close();
         }
     }
 
     static FeatureCollection<SimpleFeatureType, SimpleFeature> readTrack(Reader reader, GeoCoding geoCoding) throws IOException {
         CsvReader csvReader = new CsvReader(reader, new char[]{'\t', ' '}, true, "#");
         SimpleFeatureType trackFeatureType = createTrackFeatureType(geoCoding);
-        FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection = new ListFeatureCollection(trackFeatureType);
+        ListFeatureCollection featureCollection = new ListFeatureCollection(trackFeatureType);
         double[] record;
         int pointIndex = 0;
         while ((record = csvReader.readDoubleRecord()) != null) {
