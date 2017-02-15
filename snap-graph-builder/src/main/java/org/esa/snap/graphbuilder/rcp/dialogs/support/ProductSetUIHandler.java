@@ -22,7 +22,9 @@ import org.esa.snap.core.gpf.common.ReadOp;
 import org.esa.snap.core.gpf.graph.Graph;
 import org.esa.snap.core.gpf.graph.Node;
 import org.esa.snap.core.gpf.internal.ProductSetHandler;
+import org.esa.snap.engine_utilities.db.CommonReaders;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -121,6 +123,13 @@ public class ProductSetUIHandler {
         final DomElement fileParam = new XppDomElement("file");
         fileParam.setValue(value);
         config.addChild(fileParam);
+
+        final String format = CommonReaders.findCommonProductFormat(new File(value));
+        if(format != null) {
+            final DomElement formatParam = new XppDomElement("formatName");
+            formatParam.setValue(format);
+            config.addChild(formatParam);
+        }
 
         graphNodeList.switchConnections(sourceNode, newReaderNode.getID());
     }
