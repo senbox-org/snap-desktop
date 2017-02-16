@@ -303,13 +303,13 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
             final double lon = geoElem.getAttributeDouble("center_long", 0.0) / Constants.oneMillion;
             final double heading = geoElem.getAttributeDouble("heading", 0.0);
 
-            final GeoUtils.LatLonHeading r1 = GeoUtils.vincenty_direct(lon, lat, 5000, heading);
-            final GeoUtils.LatLonHeading corner1 = GeoUtils.vincenty_direct(r1.lon, r1.lat, 2500, heading - 90.0);
-            final GeoUtils.LatLonHeading corner2 = GeoUtils.vincenty_direct(r1.lon, r1.lat, 2500, heading + 90.0);
+            final GeoUtils.LatLonHeading r1 = GeoUtils.vincenty_direct(new GeoPos(lat, lon), 5000, heading);
+            final GeoUtils.LatLonHeading corner1 = GeoUtils.vincenty_direct(new GeoPos(r1.lat, r1.lon), 2500, heading - 90.0);
+            final GeoUtils.LatLonHeading corner2 = GeoUtils.vincenty_direct(new GeoPos(r1.lat, r1.lon), 2500, heading + 90.0);
 
-            final GeoUtils.LatLonHeading r2 = GeoUtils.vincenty_direct(lon, lat, 5000, heading + 180.0);
-            final GeoUtils.LatLonHeading corner3 = GeoUtils.vincenty_direct(r2.lon, r2.lat, 2500, heading - 90.0);
-            final GeoUtils.LatLonHeading corner4 = GeoUtils.vincenty_direct(r2.lon, r2.lat, 2500, heading + 90.0);
+            final GeoUtils.LatLonHeading r2 = GeoUtils.vincenty_direct(new GeoPos(lat, lon), 5000, heading + 180.0);
+            final GeoUtils.LatLonHeading corner3 = GeoUtils.vincenty_direct(new GeoPos(r2.lat, r2.lon), 2500, heading - 90.0);
+            final GeoUtils.LatLonHeading corner4 = GeoUtils.vincenty_direct(new GeoPos(r2.lat, r2.lon), 2500, heading + 90.0);
 
             final List<Position> positions = new ArrayList<>(4);
             positions.add(new Position(Angle.fromDegreesLatitude(corner1.lat), Angle.fromDegreesLongitude(corner1.lon), 0.0));

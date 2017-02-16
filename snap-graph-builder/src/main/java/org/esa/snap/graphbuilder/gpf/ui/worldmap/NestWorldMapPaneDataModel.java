@@ -22,6 +22,7 @@ import com.bc.ceres.glayer.LayerType;
 import com.bc.ceres.glayer.LayerTypeRegistry;
 import org.esa.snap.core.datamodel.GeoPos;
 import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.util.ProductUtils;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -44,8 +45,8 @@ public class NestWorldMapPaneDataModel {
     private Product selectedProduct;
     private boolean autoZoomEnabled;
     private final List<Product> productList = new ArrayList<>();
-    private final List<GeoPos[]> additionalGeoBoundaryList = new ArrayList<>();
-    private final List<GeoPos[]> selectedGeoBoundaryList = new ArrayList<>();
+    private Boundary[] additionalGeoBoundaryList;
+    private Boundary[] selectedGeoBoundaryList;
 
     private final GeoPos selectionBoxStart = new GeoPos();
     private final GeoPos selectionBoxEnd = new GeoPos();
@@ -82,12 +83,17 @@ public class NestWorldMapPaneDataModel {
     }
 
     public GeoPos[] getSelectionBox() {
-        final GeoPos[] selectionBox = new GeoPos[4];
+        final GeoPos[] selectionBox = new GeoPos[5];
         selectionBox[0] = selectionBoxStart;
         selectionBox[1] = new GeoPos(selectionBoxStart.getLat(), selectionBoxEnd.getLon());
         selectionBox[2] = selectionBoxEnd;
         selectionBox[3] = new GeoPos(selectionBoxEnd.getLat(), selectionBoxStart.getLon());
+        selectionBox[4] = selectionBoxStart;
         return selectionBox;
+    }
+
+    public Boundary getSelectionBoundary() {
+        return new Boundary(getSelectionBox());
     }
 
     public Product[] getProducts() {
@@ -103,28 +109,40 @@ public class NestWorldMapPaneDataModel {
         firePropertyChange(PROPERTY_PRODUCTS, oldProducts, getProducts());
     }
 
-    public GeoPos[][] getAdditionalGeoBoundaries() {
-        return additionalGeoBoundaryList.toArray(new GeoPos[additionalGeoBoundaryList.size()][]);
+    public Boundary[] getAdditionalGeoBoundaries() {
+        if (additionalGeoBoundaryList == null) {
+            additionalGeoBoundaryList = new Boundary[0];
+        }
+        return additionalGeoBoundaryList;
     }
 
-    public void setAdditionalGeoBoundaries(GeoPos[][] geoBoundarys) {
-        final GeoPos[][] oldGeoBoundarys = getAdditionalGeoBoundaries();
-        additionalGeoBoundaryList.clear();
+    public void setAdditionalGeoBoundaries(final GeoPos[][] geoBoundarys) {
+        final Boundary[] oldGeoBoundarys = getAdditionalGeoBoundaries();
         if (geoBoundarys != null) {
-            additionalGeoBoundaryList.addAll(Arrays.asList(geoBoundarys));
+            final List<Boundary> boundaryList = new ArrayList<>();
+            for (GeoPos[] geoBoundary : geoBoundarys) {
+                boundaryList.add(new Boundary(geoBoundary));
+            }
+            additionalGeoBoundaryList = boundaryList.toArray(new Boundary[boundaryList.size()]);
         }
         firePropertyChange(PROPERTY_ADDITIONAL_GEO_BOUNDARIES, oldGeoBoundarys, additionalGeoBoundaryList);
     }
 
-    public GeoPos[][] getSelectedGeoBoundaries() {
-        return selectedGeoBoundaryList.toArray(new GeoPos[selectedGeoBoundaryList.size()][]);
+    public Boundary[] getSelectedGeoBoundaries() {
+        if (selectedGeoBoundaryList == null) {
+            selectedGeoBoundaryList = new Boundary[0];
+        }
+        return selectedGeoBoundaryList;
     }
 
-    public void setSelectedGeoBoundaries(GeoPos[][] geoBoundarys) {
-        final GeoPos[][] oldGeoBoundarys = getSelectedGeoBoundaries();
-        selectedGeoBoundaryList.clear();
+    public void setSelectedGeoBoundaries(final GeoPos[][] geoBoundarys) {
+        final Boundary[] oldGeoBoundarys = getSelectedGeoBoundaries();
         if (geoBoundarys != null) {
-            selectedGeoBoundaryList.addAll(Arrays.asList(geoBoundarys));
+            final List<Boundary> boundaryList = new ArrayList<>();
+            for (GeoPos[] geoBoundary : geoBoundarys) {
+                boundaryList.add(new Boundary(geoBoundary));
+            }
+            selectedGeoBoundaryList = boundaryList.toArray(new Boundary[boundaryList.size()]);
         }
         firePropertyChange(PROPERTY_SELECTED_GEO_BOUNDARIES, oldGeoBoundarys, selectedGeoBoundaryList);
     }
@@ -175,6 +193,21 @@ public class NestWorldMapPaneDataModel {
     private void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
         if (changeSupport != null) {
             changeSupport.firePropertyChange(propertyName, oldValue, newValue);
+        }
+    }
+
+    public static class Boundary {
+        public final boolean isClosed;
+        public final GeoPos[] geoBoundary;
+
+        public Boundary(final GeoPos[] geoBoundary) {
+            ProductUtils.normalizeGeoPolygon(geoBoundary);
+            this.geoBoundary = geoBoundary;
+            this.isClosed = isClosedPath(geoBoundary);
+        }
+
+        private static boolean isClosedPath(final GeoPos[] geoBoundary) {
+            return geoBoundary.length > 0 && geoBoundary[0].equals(geoBoundary[geoBoundary.length - 1]);
         }
     }
 }
