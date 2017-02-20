@@ -5,7 +5,6 @@ import com.bc.ceres.core.Assert;
 import com.bc.ceres.swing.binding.PropertyPane;
 import org.esa.snap.core.gpf.descriptor.annotations.Folder;
 import org.esa.snap.core.util.StringUtils;
-import org.esa.snap.utils.PrivilegedAccessor;
 import org.esa.snap.utils.UIUtils;
 
 import javax.swing.*;
@@ -14,6 +13,8 @@ import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.*;
 
 /**
@@ -68,16 +69,16 @@ public class EntityForm<T> {
             target = constructor.newInstance();
         }
         for (String fieldName : this.fieldNames) {
-            Object sourceValue = PrivilegedAccessor.getValue(source, fieldName);
+            Object sourceValue = getValue(source, fieldName);
             if (useSetters) {
                 try {
-                    PrivilegedAccessor.invokeMethod(target, "set" + StringUtils.firstLetterUp(fieldName), sourceValue);
+                    invokeMethod(target, "set" + StringUtils.firstLetterUp(fieldName), sourceValue);
                 } catch (Exception ignored) {
                     // if no setter, then set the field directly
-                    PrivilegedAccessor.setValue(target, fieldName, sourceValue);
+                    setValue(target, fieldName, sourceValue);
                 }
             } else {
-                PrivilegedAccessor.setValue(target, fieldName, sourceValue);
+                setValue(target, fieldName, sourceValue);
             }
 
         }
@@ -106,10 +107,10 @@ public class EntityForm<T> {
 
         propertyContainer.addPropertyChangeListener(evt -> {
             try {
-                PrivilegedAccessor.invokeMethod(modified, "set" + StringUtils.firstLetterUp(evt.getPropertyName()), evt.getNewValue());
+                invokeMethod(modified, "set" + StringUtils.firstLetterUp(evt.getPropertyName()), evt.getNewValue());
             } catch (Exception e) {
                 try {
-                    PrivilegedAccessor.setValue(modified, evt.getPropertyName(), evt.getNewValue());
+                    setValue(modified, evt.getPropertyName(), evt.getNewValue());
                 } catch (Exception e1) {
                     e1.printStackTrace();
                 }
@@ -133,5 +134,79 @@ public class EntityForm<T> {
             }
         });
         this.panel.setBorder(new EmptyBorder(4, 4, 4, 4));
+    }
+
+    private static Object invokeMethod(Object instance, String methodName, Object... args)
+            throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        if (args == null)
+            args = new Object[] {};
+        Class[] classTypes = getClassArray(args);
+        Method[] methods = instance.getClass().getMethods();
+        for (int i = 0; i < methods.length; i++) {
+            Method method = methods[i];
+            Class[] paramTypes = method.getParameterTypes();
+            if (method.getName().equals(methodName) && compare(paramTypes, args)) {
+                return method.invoke(instance, args);
+            }
+        }
+        StringBuffer sb = new StringBuffer();
+        sb.append("No method named ").append(methodName).append(" found in ")
+                .append(instance.getClass().getName()).append(" with parameters (");
+        for (int x = 0; x < classTypes.length; x++) {
+            sb.append(classTypes[x].getName());
+            if (x < classTypes.length - 1) {
+                sb.append(", ");
+            }
+        }
+        sb.append(")");
+        throw new NoSuchMethodException(sb.toString());
+    }
+
+    private static Class[] getClassArray(Object[] args) {
+        Class[] classTypes = null;
+        if (args != null) {
+            classTypes = new Class[args.length];
+            for (int i = 0; i < args.length; i++) {
+                if (args[i] != null)
+                    classTypes[i] = args[i].getClass();
+            }
+        }
+        return classTypes;
+    }
+
+    private static boolean compare(Class[] c, Object[] args) {
+        if (c.length != args.length) {
+            return false;
+        }
+        for (int i = 0; i < c.length; i++) {
+            if (!c[i].isInstance(args[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    static Object getValue(Object instance, String fieldName)
+            throws IllegalAccessException, NoSuchFieldException {
+        Field field = getField(instance.getClass(), fieldName);
+        field.setAccessible(true);
+        return field.get(instance);
+    }
+
+    static void setValue(Object instance, String fieldName, Object value)
+            throws IllegalAccessException, NoSuchFieldException {
+        Field field = getField(instance.getClass(), fieldName);
+        field.setAccessible(true);
+        field.set(instance, value);
+    }
+
+    static Field getField(Class thisClass, String fieldName) throws NoSuchFieldException {
+        if (thisClass == null)
+            throw new NoSuchFieldException("Invalid field : " + fieldName);
+        try {
+            return thisClass.getDeclaredField(fieldName);
+        } catch (NoSuchFieldException e) {
+            return getField(thisClass.getSuperclass(), fieldName);
+        }
     }
 }
