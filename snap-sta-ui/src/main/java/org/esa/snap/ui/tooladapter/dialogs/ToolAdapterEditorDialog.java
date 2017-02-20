@@ -323,6 +323,11 @@ public class ToolAdapterEditorDialog extends AbstractAdapterEditor {
         return paramsPanel;
     }
 
+    @Override
+    protected JPanel createBundlePanel() {
+        return null;
+    }
+
     private JPanel createDescriptorAndVariablesAndPreprocessingPanel() {
         JPanel descriptorAndVariablesPanel = new JPanel(new SpringLayout());
 

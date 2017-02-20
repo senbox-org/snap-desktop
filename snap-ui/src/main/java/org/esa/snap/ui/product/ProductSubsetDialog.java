@@ -949,10 +949,14 @@ public class ProductSubsetDialog extends ModalDialog {
             final GeoCoding geoCoding = product.getSceneGeoCoding();
             final GeoPos geoPos1 = geoCoding.getGeoPos(pixelPos1, null);
             final GeoPos geoPos2 = geoCoding.getGeoPos(pixelPos2, null);
-            paramNorthLat1.setValue(geoPos1.getLat(), null);
-            paramWestLon1.setValue(geoPos1.getLon(), null);
-            paramSouthLat2.setValue(geoPos2.getLat(), null);
-            paramEastLon2.setValue(geoPos2.getLon(), null);
+            if(geoPos1.isValid()) {
+                paramNorthLat1.setValue(geoPos1.getLat(), null);
+                paramWestLon1.setValue(geoPos1.getLon(), null);
+            }
+            if (geoPos2.isValid()) {
+                paramSouthLat2.setValue(geoPos2.getLat(), null);
+                paramEastLon2.setValue(geoPos2.getLon(), null);
+            }
         }
 
         private void updateXYParams(GeoPos geoPos1, GeoPos geoPos2) {
