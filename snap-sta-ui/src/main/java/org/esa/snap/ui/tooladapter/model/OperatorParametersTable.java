@@ -197,19 +197,36 @@ public class OperatorParametersTable extends JTable {
                     selectionMode = JFileChooser.DIRECTORIES_ONLY;
                 }
                 FileFilter filter = null;
-                if (ToolAdapterConstants.TEMPLATE_PARAM_MASK.equals(parameterType) || ToolAdapterConstants.TEMPLATE_BEFORE_MASK.equals(parameterType)
-                        || ToolAdapterConstants.TEMPLATE_AFTER_MASK.equals(parameterType)) {
-                    filter = new FileFilter() {
-                        @Override
-                        public boolean accept(File file) {
-                            return file.isDirectory() || file.getName().toLowerCase().endsWith(".vm");
-                        }
+                switch (parameterType) {
+                    case ToolAdapterConstants.TEMPLATE_BEFORE_MASK:
+                    case ToolAdapterConstants.TEMPLATE_AFTER_MASK:
+                        filter = new FileFilter() {
+                            @Override
+                            public boolean accept(File file) {
+                                return file.isDirectory() || file.getName().toLowerCase().endsWith(".vm");
+                            }
 
-                        @Override
-                        public String getDescription() {
-                            return "*.vm files";
-                        }
-                    };
+                            @Override
+                            public String getDescription() {
+                                return "*.vm files";
+                            }
+                        };
+                        break;
+                    case ToolAdapterConstants.TEMPLATE_PARAM_MASK:
+                        filter = new FileFilter() {
+                            @Override
+                            public boolean accept(File file) {
+                                return file.isDirectory() ||
+                                        file.getName().toLowerCase().endsWith(".vm") ||
+                                        file.getName().toLowerCase().endsWith(".xml");
+                            }
+
+                            @Override
+                            public String getDescription() {
+                                return "*.vm files; *.xml files";
+                            }
+                        };
+                        break;
                 }
 
                 File selectedFile = cellDefaultValueFile.showFileChooserDialog(selectionMode, filter);

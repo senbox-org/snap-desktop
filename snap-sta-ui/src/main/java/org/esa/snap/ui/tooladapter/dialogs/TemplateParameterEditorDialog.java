@@ -68,12 +68,12 @@ public class TemplateParameterEditorDialog extends ModalDialog {
             logger.warning(e.getMessage());
         }
 
-        try {
+        /*try {
             parameter.setTemplateEngine(parentDescriptor.getTemplateEngine());
         } catch (TemplateException e) {
             e.printStackTrace();
             logger.warning(e.getMessage());
-        }
+        }*/
 
         this.fakeOperatorDescriptor = new ToolAdapterOperatorDescriptor("OperatorForParameters", ToolAdapterOp.class);
         for (ToolParameterDescriptor param : parameter.getParameterDescriptors()) {
