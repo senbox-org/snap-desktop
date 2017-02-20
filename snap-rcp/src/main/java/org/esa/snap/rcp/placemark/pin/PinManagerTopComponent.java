@@ -1,12 +1,7 @@
 package org.esa.snap.rcp.placemark.pin;
 
-import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.PinDescriptor;
-import org.esa.snap.core.datamodel.PlacemarkDescriptor;
-import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.datamodel.TiePointGrid;
 import org.esa.snap.rcp.placemark.PlacemarkManagerTopComponent;
-import org.esa.snap.rcp.placemark.TableModelFactory;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -26,30 +21,21 @@ import org.openide.windows.TopComponent;
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.placemark.pin.PinManagerTopComponent")
 @ActionReferences({
-                          @ActionReference(path = "Menu/View/Tool Windows"),
-                          @ActionReference(path = "Toolbars/Tool Windows")
-                  })
+        @ActionReference(path = "Menu/View/Tool Windows"),
+        @ActionReference(path = "Toolbars/Tool Windows")
+})
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_PinManagerTopComponent_Name",
         preferredID = "PinManagerTopComponent"
 )
 @NbBundle.Messages({
-                           "CTL_PinManagerTopComponent_Name=Pin Manager",
-                           "CTL_PinManagerTopComponent_HelpId=showPinManagerWnd"
-                   })
-/**
- * @author Tonio Fincke
- */
+        "CTL_PinManagerTopComponent_Name=Pin Manager",
+        "CTL_PinManagerTopComponent_HelpId=showPinManagerWnd"
+})
 public class PinManagerTopComponent extends PlacemarkManagerTopComponent {
 
     public PinManagerTopComponent() {
-        super(PinDescriptor.getInstance(), new TableModelFactory() {
-            @Override
-            public PinTableModel createTableModel(PlacemarkDescriptor placemarkDescriptor, Product product,
-                                                  Band[] selectedBands, TiePointGrid[] selectedGrids) {
-                return new PinTableModel(placemarkDescriptor, product, selectedBands, selectedGrids);
-            }
-        });
+        super(PinDescriptor.getInstance(), PinTableModel::new);
     }
 
     @Override
