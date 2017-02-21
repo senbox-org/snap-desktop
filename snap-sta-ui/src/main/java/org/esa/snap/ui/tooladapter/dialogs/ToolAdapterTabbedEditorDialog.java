@@ -39,8 +39,11 @@ import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.io.File;
 import java.text.MessageFormat;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 import static org.esa.snap.utils.SpringUtilities.DEFAULT_PADDING;
 
@@ -313,7 +316,12 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
             bundle = new org.esa.snap.core.gpf.descriptor.dependency.Bundle(BundleType.NONE, null, null);
             this.newOperatorDescriptor.setBundle(bundle);
         }
-        bundleForm = new EntityForm<>(bundle);
+        Map<String, EntityForm.FieldDependency> dependencyMap = new HashMap<String, EntityForm.FieldDependency>() {{
+            put("source", new EntityForm.FieldDependency("entryPoint",
+                    o -> o != null && o instanceof File ? ((File) o).getName() : null
+            ));
+        }};
+        bundleForm = new EntityForm<>(bundle, dependencyMap);
         return bundleForm.getPanel();
     }
 

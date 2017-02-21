@@ -110,7 +110,7 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
      * @param title         The dialog title
      */
     public ToolAdapterExecutionDialog(ToolAdapterOperatorDescriptor descriptor, AppContext appContext, String title) {
-        super(appContext, title, helpID);
+        super(appContext, title, descriptor.getHelpID() != null ? descriptor.getHelpID() : helpID);
         logger = Logger.getLogger(ToolAdapterExecutionDialog.class.getName());
         initialize(descriptor);
         warnings = new ArrayList<>();
@@ -134,7 +134,7 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
                 this.operatorDescriptor,
                 parameterSupport,
                 appContext,
-                helpID);
+                descriptor.getHelpID() != null ? descriptor.getHelpID() : helpID);
         getJDialog().setJMenuBar(operatorMenu.createDefaultMenu());
         EscapeAction.register(getJDialog());
 
@@ -164,7 +164,7 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
             showErrorDialog(String.format("Cannot read operator template [%s]", ex.getMessage()));
             return;
         }
-        if (Arrays.stream(sourceProducts).anyMatch(p -> p == null)) {
+        if (Arrays.stream(sourceProducts).anyMatch(Objects::isNull)) {
             Dialogs.Answer decision = Dialogs.requestDecision("No Product Selected", Bundle.NoSourceProductWarning_Text(), false,
                     ToolAdapterOptionsController.PREFERENCE_KEY_SHOW_EMPTY_PRODUCT_WARNING);
             if (decision.equals(Dialogs.Answer.NO)) {

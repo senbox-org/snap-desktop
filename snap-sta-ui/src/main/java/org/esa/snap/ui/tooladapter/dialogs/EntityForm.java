@@ -2,6 +2,7 @@ package org.esa.snap.ui.tooladapter.dialogs;
 
 import com.bc.ceres.binding.PropertyContainer;
 import com.bc.ceres.core.Assert;
+import com.bc.ceres.swing.binding.Binding;
 import com.bc.ceres.swing.binding.PropertyPane;
 import org.esa.snap.core.gpf.descriptor.annotations.Folder;
 import org.esa.snap.core.util.StringUtils;
@@ -15,31 +16,57 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
 
 /**
  * Created by kraftek on 11/2/2016.
  */
-public class EntityForm<T> {
+class EntityForm<T> {
+
+    static class FieldDependency {
+        private String targetFieldName;
+        Function<Object, Object> action;
+
+        FieldDependency(String targetFieldName, Function<Object, Object> action) {
+            this.targetFieldName = targetFieldName;
+            this.action = action;
+        }
+
+        String getTargetFieldName() {
+            return targetFieldName;
+        }
+
+        Function<Object, Object> getAction() {
+            return action;
+        }
+    }
+
     private Class<T> entityType;
-    private Set<String> fieldNames;
+    private Map<String, FieldDependency> fieldMap;
     private Map<String, Annotation[]> annotatedFields;
     private T original;
     private T modified;
     private JPanel panel;
 
-    public EntityForm(T object) {
+    EntityForm(T object, Map<String, FieldDependency> dependentFieldsActions) {
         Assert.notNull(object);
         this.original = object;
         this.entityType = (Class<T>) this.original.getClass();
         Field[] fields = this.entityType.getDeclaredFields();
-        this.fieldNames = new HashSet<>();
+        this.fieldMap = new HashMap<>();
         this.annotatedFields = new HashMap<>();
         for (Field field : fields) {
-            this.fieldNames.add(field.getName());
+            String fieldName = field.getName();
+            FieldDependency dependency = dependentFieldsActions != null ?
+                    dependentFieldsActions.get(fieldName) : null;
+            this.fieldMap.put(fieldName, dependency);
             Annotation[] annotations = field.getAnnotations();
             if (annotations != null) {
-                this.annotatedFields.put(field.getName(), annotations);
+                this.annotatedFields.put(fieldName, annotations);
             }
         }
         try {
@@ -50,11 +77,11 @@ public class EntityForm<T> {
         buildUI();
     }
 
-    public JPanel getPanel() {
+    JPanel getPanel() {
         return this.panel;
     }
 
-    public T applyChanges() {
+    T applyChanges() {
         try {
             this.original = duplicate(this.modified, this.original, true);
         } catch (Exception ex) {
@@ -68,7 +95,7 @@ public class EntityForm<T> {
             Constructor<T> constructor = this.entityType.getConstructor();
             target = constructor.newInstance();
         }
-        for (String fieldName : this.fieldNames) {
+        for (String fieldName : this.fieldMap.keySet()) {
             Object sourceValue = getValue(source, fieldName);
             if (useSetters) {
                 try {
@@ -87,7 +114,7 @@ public class EntityForm<T> {
 
     private void buildUI() {
         PropertyContainer propertyContainer = PropertyContainer.createObjectBacked(this.modified);
-        for (String field : this.fieldNames) {
+        for (String field : this.fieldMap.keySet()) {
             if (this.annotatedFields.containsKey(field)) {
                 Annotation[] annotations = this.annotatedFields.get(field);
                 Optional<Annotation> annotation = Arrays.stream(annotations)
@@ -104,18 +131,6 @@ public class EntityForm<T> {
                 }
             }
         }
-
-        propertyContainer.addPropertyChangeListener(evt -> {
-            try {
-                invokeMethod(modified, "set" + StringUtils.firstLetterUp(evt.getPropertyName()), evt.getNewValue());
-            } catch (Exception e) {
-                try {
-                    setValue(modified, evt.getPropertyName(), evt.getNewValue());
-                } catch (Exception e1) {
-                    e1.printStackTrace();
-                }
-            }
-        });
         PropertyPane parametersPane = new PropertyPane(propertyContainer);
         this.panel = parametersPane.createPanel();
         Arrays.stream(propertyContainer.getProperties())
@@ -125,6 +140,30 @@ public class EntityForm<T> {
                                 UIUtils.addPromptSupport(c, p);
                             });
                 });
+        propertyContainer.addPropertyChangeListener(evt -> {
+            String propertyName = evt.getPropertyName();
+            Object newValue = evt.getNewValue();
+            try {
+                invokeMethod(modified, "set" + StringUtils.firstLetterUp(propertyName), newValue);
+            } catch (Exception e) {
+                try {
+                    setValue(modified, propertyName, newValue);
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
+            }
+            FieldDependency dependency = fieldMap.get(propertyName);
+            if (dependency != null) {
+                try {
+                    Object newTargetValue = dependency.getAction().apply(newValue);
+                    Binding binding = parametersPane.getBindingContext().getBinding(dependency.getTargetFieldName());
+                    binding.setPropertyValue(newTargetValue);
+                    binding.adjustComponents();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
         this.panel.addPropertyChangeListener(evt -> {
             if (!(evt.getNewValue() instanceof JTextField)) return;
             JTextField field = (JTextField) evt.getNewValue();
@@ -142,14 +181,13 @@ public class EntityForm<T> {
             args = new Object[] {};
         Class[] classTypes = getClassArray(args);
         Method[] methods = instance.getClass().getMethods();
-        for (int i = 0; i < methods.length; i++) {
-            Method method = methods[i];
+        for (Method method : methods) {
             Class[] paramTypes = method.getParameterTypes();
             if (method.getName().equals(methodName) && compare(paramTypes, args)) {
                 return method.invoke(instance, args);
             }
         }
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append("No method named ").append(methodName).append(" found in ")
                 .append(instance.getClass().getName()).append(" with parameters (");
         for (int x = 0; x < classTypes.length; x++) {
@@ -186,21 +224,21 @@ public class EntityForm<T> {
         return true;
     }
 
-    static Object getValue(Object instance, String fieldName)
+    private static Object getValue(Object instance, String fieldName)
             throws IllegalAccessException, NoSuchFieldException {
         Field field = getField(instance.getClass(), fieldName);
         field.setAccessible(true);
         return field.get(instance);
     }
 
-    static void setValue(Object instance, String fieldName, Object value)
+    private static void setValue(Object instance, String fieldName, Object value)
             throws IllegalAccessException, NoSuchFieldException {
         Field field = getField(instance.getClass(), fieldName);
         field.setAccessible(true);
         field.set(instance, value);
     }
 
-    static Field getField(Class thisClass, String fieldName) throws NoSuchFieldException {
+    private static Field getField(Class thisClass, String fieldName) throws NoSuchFieldException {
         if (thisClass == null)
             throw new NoSuchFieldException("Invalid field : " + fieldName);
         try {
