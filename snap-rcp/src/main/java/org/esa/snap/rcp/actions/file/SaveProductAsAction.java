@@ -14,6 +14,7 @@ import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.core.image.BandOpImage;
+import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
 import org.openide.awt.ActionID;
@@ -92,11 +93,10 @@ public final class SaveProductAsAction extends AbstractAction {
             }
         }
 
-        String fileName;
-        if (product.getFileLocation() != null) {
+        String fileName = product.getName();
+        if (StringUtils.isNullOrEmpty(fileName) && product.getFileLocation() != null) {
+            // fallback
             fileName = product.getFileLocation().getName();
-        } else {
-            fileName = product.getName();
         }
         File newFile = Dialogs.requestFileForSave("Save Product As",
                                                   false,
