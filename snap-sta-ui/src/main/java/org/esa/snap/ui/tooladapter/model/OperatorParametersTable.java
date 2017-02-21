@@ -193,11 +193,11 @@ public class OperatorParametersTable extends JTable {
                 ToolParameterDescriptor descriptor = operator.getToolParameterDescriptors().get(cellComponentRowIndex);
                 String parameterType = descriptor.getParameterType();
                 int selectionMode = JFileChooser.FILES_ONLY;
-                if (ToolAdapterConstants.FOLDER_PARAM_MASK.equals(parameterType)) {
-                    selectionMode = JFileChooser.DIRECTORIES_ONLY;
-                }
                 FileFilter filter = null;
                 switch (parameterType) {
+                    case ToolAdapterConstants.FOLDER_PARAM_MASK:
+                        selectionMode = JFileChooser.DIRECTORIES_ONLY;
+                        break;
                     case ToolAdapterConstants.TEMPLATE_BEFORE_MASK:
                     case ToolAdapterConstants.TEMPLATE_AFTER_MASK:
                         filter = new FileFilter() {
@@ -854,17 +854,24 @@ public class OperatorParametersTable extends JTable {
                     return false;
                 case 4:
                     String cellValue = null;
-                    if (descriptor.getName().equals(ToolAdapterConstants.TOOL_SOURCE_PRODUCT_ID)) {
-                        cellValue = Bundle.Type_ProductList_Text();
-                    } else if (descriptor.getName().equals(ToolAdapterConstants.TOOL_SOURCE_PRODUCT_FILE)) {
-                        cellValue = Bundle.Type_FileListClass_Text();
-                    } else if (descriptor.getName().equals(ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE)) {
-                        cellValue = Bundle.Type_RegularFileClass_Text();
-                    } else if (CustomParameterClass.getObject(descriptor.getDataType(), descriptor.getParameterType()).equals(CustomParameterClass.FolderClass)) {
-                        cellValue = Bundle.Type_FolderClass_Text();
-                    } else {
-                        CustomParameterClass item = CustomParameterClass.getObject(descriptor.getDataType(), descriptor.getParameterType());
-                        cellValue = (String)typesMap.getKey(item);
+                    switch (descriptor.getName()) {
+                        case ToolAdapterConstants.TOOL_SOURCE_PRODUCT_ID:
+                            cellValue = Bundle.Type_ProductList_Text();
+                            break;
+                        case ToolAdapterConstants.TOOL_SOURCE_PRODUCT_FILE:
+                            cellValue = Bundle.Type_FileListClass_Text();
+                            break;
+                        case ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE:
+                            cellValue = Bundle.Type_RegularFileClass_Text();
+                            break;
+                        default:
+                            if (CustomParameterClass.FolderClass.equals(CustomParameterClass.getObject(descriptor.getDataType(), descriptor.getParameterType()))) {
+                                cellValue = Bundle.Type_FolderClass_Text();
+                            } else {
+                                CustomParameterClass item = CustomParameterClass.getObject(descriptor.getDataType(), descriptor.getParameterType());
+                                cellValue = (String) typesMap.getKey(item);
+                            }
+                            break;
                     }
                     return cellValue;
                 case 5:
