@@ -52,6 +52,10 @@ class EntityForm<T> {
     private T modified;
     private JPanel panel;
 
+    EntityForm(T object) {
+        this(object, null);
+    }
+
     EntityForm(T object, Map<String, FieldDependency> dependentFieldsActions) {
         Assert.notNull(object);
         this.original = object;
