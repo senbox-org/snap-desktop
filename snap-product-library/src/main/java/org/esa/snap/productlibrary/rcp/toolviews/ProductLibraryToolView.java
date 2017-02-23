@@ -41,6 +41,7 @@ import org.esa.snap.ui.tool.ToolButtonFactory;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
+import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
@@ -319,9 +320,10 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         });
         headerBar.add(viewButton, gbc);
 
-        //final JButton helpButton = DialogUtils.createButton("helpButton", "Help", helpButtonIcon, headerBar, DialogUtils.ButtonStyle.Icon);
-        //HelpSys.enableHelpOnButton(helpButton, helpId);
-        //headerBar.add(helpButton, gbc);
+        final JButton helpButton = DialogUtils.createButton("helpButton", "Help", helpButtonIcon, headerBar, DialogUtils.ButtonStyle.Icon);
+        HelpCtx.setHelpIDString(helpButton, helpId);
+        helpButton.addActionListener(e -> { new HelpCtx(helpId).display();});
+        headerBar.add(helpButton, gbc);
 
         return headerBar;
     }
