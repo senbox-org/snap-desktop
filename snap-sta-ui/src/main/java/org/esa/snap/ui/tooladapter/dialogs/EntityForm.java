@@ -10,6 +10,7 @@ import org.esa.snap.utils.UIUtils;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import java.awt.*;
 import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -23,40 +24,27 @@ import java.util.Optional;
 import java.util.function.Function;
 
 /**
- * Created by kraftek on 11/2/2016.
+ * Generic form for simplified binding of an object instance.
+ * Allows for property dependencies (i.e. if one property changes, a dependent one will change based on a function of the first one).
+ * Allows for additional actions to be performed.
+ *
+ * @author Cosmin Cara
  */
 class EntityForm<T> {
 
-    static class FieldDependency {
-        private String targetFieldName;
-        Function<Object, Object> action;
-
-        FieldDependency(String targetFieldName, Function<Object, Object> action) {
-            this.targetFieldName = targetFieldName;
-            this.action = action;
-        }
-
-        String getTargetFieldName() {
-            return targetFieldName;
-        }
-
-        Function<Object, Object> getAction() {
-            return action;
-        }
-    }
-
     private Class<T> entityType;
-    private Map<String, FieldDependency> fieldMap;
+    private Map<String, FieldChangeTrigger[]> fieldMap;
     private Map<String, Annotation[]> annotatedFields;
     private T original;
     private T modified;
     private JPanel panel;
+    private Map<String, Function<T, Void>> actions;
 
     EntityForm(T object) {
-        this(object, null);
+        this(object, null, null);
     }
 
-    EntityForm(T object, Map<String, FieldDependency> dependentFieldsActions) {
+    EntityForm(T object, Map<String, FieldChangeTrigger[]> dependentFieldsActions, Map<String, Function<T, Void>> additionalActions) {
         Assert.notNull(object);
         this.original = object;
         this.entityType = (Class<T>) this.original.getClass();
@@ -65,9 +53,9 @@ class EntityForm<T> {
         this.annotatedFields = new HashMap<>();
         for (Field field : fields) {
             String fieldName = field.getName();
-            FieldDependency dependency = dependentFieldsActions != null ?
+            FieldChangeTrigger[] dependencies = dependentFieldsActions != null ?
                     dependentFieldsActions.get(fieldName) : null;
-            this.fieldMap.put(fieldName, dependency);
+            this.fieldMap.put(fieldName, dependencies);
             Annotation[] annotations = field.getAnnotations();
             if (annotations != null) {
                 this.annotatedFields.put(fieldName, annotations);
@@ -77,6 +65,10 @@ class EntityForm<T> {
             this.modified = duplicate(this.original, this.modified, false);
         } catch (Exception ex) {
             ex.printStackTrace();
+        }
+        actions = new HashMap<>();
+        if (additionalActions != null) {
+            actions.putAll(additionalActions);
         }
         buildUI();
     }
@@ -138,12 +130,8 @@ class EntityForm<T> {
         PropertyPane parametersPane = new PropertyPane(propertyContainer);
         this.panel = parametersPane.createPanel();
         Arrays.stream(propertyContainer.getProperties())
-                .forEach(p -> {
-                    Arrays.stream(parametersPane.getBindingContext().getBinding(p.getName()).getComponents())
-                            .forEach(c -> {
-                                UIUtils.addPromptSupport(c, p);
-                            });
-                });
+                .forEach(p -> Arrays.stream(parametersPane.getBindingContext().getBinding(p.getName()).getComponents())
+                        .forEach(c -> UIUtils.addPromptSupport(c, p)));
         propertyContainer.addPropertyChangeListener(evt -> {
             String propertyName = evt.getPropertyName();
             Object newValue = evt.getNewValue();
@@ -156,15 +144,19 @@ class EntityForm<T> {
                     e1.printStackTrace();
                 }
             }
-            FieldDependency dependency = fieldMap.get(propertyName);
-            if (dependency != null) {
-                try {
-                    Object newTargetValue = dependency.getAction().apply(newValue);
-                    Binding binding = parametersPane.getBindingContext().getBinding(dependency.getTargetFieldName());
-                    binding.setPropertyValue(newTargetValue);
-                    binding.adjustComponents();
-                } catch (Exception e) {
-                    e.printStackTrace();
+            FieldChangeTrigger[] dependencies = fieldMap.get(propertyName);
+            if (dependencies != null && dependencies.length > 0) {
+                for (FieldChangeTrigger dependency : dependencies) {
+                    try {
+                        if (dependency.canApply(newValue)) {
+                            Object newTargetValue = dependency.apply(newValue);
+                            Binding binding = parametersPane.getBindingContext().getBinding(dependency.getTargetFieldName());
+                            binding.setPropertyValue(newTargetValue);
+                            binding.adjustComponents();
+                        }
+                    } catch(Exception e){
+                        e.printStackTrace();
+                    }
                 }
             }
         });
@@ -176,6 +168,18 @@ class EntityForm<T> {
                 field.setCaretPosition(text.length());
             }
         });
+        if (this.actions.size() > 0) {
+            JPanel actionsPanel = new JPanel(new BorderLayout());
+            for (Map.Entry<String, Function<T, Void>> action : this.actions.entrySet()) {
+                AbstractButton button = new JButton(action.getKey());
+                button.addActionListener(e -> {
+                    parametersPane.getBindingContext().adjustComponents();
+                    action.getValue().apply(EntityForm.this.modified);
+                });
+                actionsPanel.add(button, BorderLayout.EAST);
+            }
+            this.panel.add(actionsPanel);
+        }
         this.panel.setBorder(new EmptyBorder(4, 4, 4, 4));
     }
 

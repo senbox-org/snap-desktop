@@ -27,7 +27,10 @@ import org.esa.snap.core.gpf.descriptor.SystemDependentVariable;
 import org.esa.snap.core.gpf.descriptor.SystemVariable;
 import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
 import org.esa.snap.core.gpf.descriptor.dependency.BundleType;
+import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterActivator;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterConstants;
+import org.esa.snap.core.util.SystemUtils;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.tool.ToolButtonFactory;
@@ -40,10 +43,14 @@ import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.function.Function;
 
 import static org.esa.snap.utils.SpringUtilities.DEFAULT_PADDING;
 
@@ -303,9 +310,7 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
         JScrollPane tableScrollPane = new JScrollPane(paramsTable);
         tableScrollPane.setAlignmentX(Component.LEFT_ALIGNMENT);
         paramsPanel.add(tableScrollPane);
-        addParamBut.addActionListener(e -> {
-            paramsTable.addParameterToTable();
-        });
+        addParamBut.addActionListener(e -> paramsTable.addParameterToTable());
         return paramsPanel;
     }
 
@@ -316,12 +321,71 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
             bundle = new org.esa.snap.core.gpf.descriptor.dependency.Bundle(BundleType.NONE, null, null);
             this.newOperatorDescriptor.setBundle(bundle);
         }
-        Map<String, EntityForm.FieldDependency> dependencyMap = new HashMap<String, EntityForm.FieldDependency>() {{
-            put("source", new EntityForm.FieldDependency("entryPoint",
-                    o -> o != null && o instanceof File ? ((File) o).getName() : null
-            ));
+        Map<String, FieldChangeTrigger[]> dependencyMap = new HashMap<String, FieldChangeTrigger[]>() {{
+            put("source", new FieldChangeTrigger[]
+                    {
+                            FieldChangeTrigger.<File, String>create("entryPoint",
+                                file -> {
+                                    if (file != null) {
+                                        try {
+                                            Path path = SystemUtils.getApplicationDataDir().toPath()
+                                                    .resolve("modules")
+                                                    .resolve("lib");
+                                            Files.createDirectories(path);
+                                            Files.list(path).forEach(p -> {
+                                                try {
+                                                    Files.delete(p);
+                                                } catch (IOException ignored) {
+                                                }
+                                            });
+                                            path = path.resolve(file.getName());
+                                            Files.copy(file.toPath(), path);
+                                        } catch (Exception e) {
+                                            logger.severe(e.getMessage());
+                                        }
+                                        return file.getName();
+                                    }
+                                    return null;
+                                })
+                    }
+            );
+            put("bundleType", new FieldChangeTrigger[]
+                    {
+                            FieldChangeTrigger.<BundleType, File>create("source",
+                                    bundleType -> null,
+                                    BundleType.NONE::equals),
+                            FieldChangeTrigger.<BundleType, File>create("targetLocation",
+                                    bundleType -> null,
+                                    BundleType.NONE::equals),
+                            FieldChangeTrigger.<BundleType, String>create("entryPoint",
+                                    bundleType -> null,
+                                    BundleType.NONE::equals),
+                            FieldChangeTrigger.<BundleType, String>create("arguments",
+                                    bundleType -> null,
+                                    BundleType.NONE::equals)
+                    });
         }};
-        bundleForm = new EntityForm<>(bundle, dependencyMap);
+        Map<String, Function<org.esa.snap.core.gpf.descriptor.dependency.Bundle, Void>> actionMap =
+                new HashMap<String, Function<org.esa.snap.core.gpf.descriptor.dependency.Bundle, Void>>() {{
+            put("Install Now", changedBundle -> {
+                if (changedBundle != null && !changedBundle.isInstalled()) {
+                    newOperatorDescriptor.setBundle(changedBundle);
+                    try {
+                        ToolAdapterTabbedEditorDialog.this.getContent().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+                        ToolAdapterActivator.installBundle(newOperatorDescriptor, false);
+                        if (changedBundle.isInstalled()) {
+                            Dialogs.showInformation("Installation completed");
+                        } else {
+                            Dialogs.showWarning("Installation failed");
+                        }
+                    } finally {
+                        ToolAdapterTabbedEditorDialog.this.getContent().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                    }
+                }
+                return null;
+            });
+        }};
+        bundleForm = new EntityForm<>(bundle, dependencyMap, actionMap);
         return bundleForm.getPanel();
     }
 

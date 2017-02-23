@@ -10,7 +10,7 @@ import java.util.List;
  */
 public class OperatorsTableModel extends AbstractTableModel {
 
-    private String[] columnNames = {"Alias", "Description"};
+    private String[] columnNames = {"Bundle", "Alias", "Description"};
     //private boolean[] toolsChecked = null;
     private List<ToolAdapterOperatorDescriptor> data = null;
 
@@ -33,9 +33,12 @@ public class OperatorsTableModel extends AbstractTableModel {
     public Object getValueAt(int rowIndex, int columnIndex) {
         switch (columnIndex) {
             case 0:
+                org.esa.snap.core.gpf.descriptor.dependency.Bundle bundle = data.get(rowIndex).getBundle();
+                return bundle != null && bundle.isInstalled();
+            case 1:
                 //return toolsChecked[rowIndex];
                 return data.get(rowIndex).getAlias();
-            case 1:
+            case 2:
                 //return data.get(rowIndex).getAlias();
                 return data.get(rowIndex).getDescription();
             /*case 2:
@@ -51,11 +54,11 @@ public class OperatorsTableModel extends AbstractTableModel {
 
     @Override
     public Class getColumnClass(int c) {
-//        if (c == 0) {
-//            return Boolean.class;
-//        } else {
+        if (c == 0) {
+            return Boolean.class;
+        } else {
             return String.class;
-//        }
+        }
     }
 
     @Override
