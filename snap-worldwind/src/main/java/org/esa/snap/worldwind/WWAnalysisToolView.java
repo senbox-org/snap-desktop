@@ -42,24 +42,16 @@ import org.openide.awt.ActionReferences;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
-import javax.swing.JComponent;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
-import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.GridLayout;
-import java.awt.Window;
+import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.net.URISyntaxException;
 
-import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
+import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.VIEW;
 
 @TopComponent.Description(
         preferredID = "WWAnalysisToolView",
@@ -108,8 +100,7 @@ public class WWAnalysisToolView extends WWBaseToolView implements WWView {
             {
                     "http://neowms.sci.gsfc.nasa.gov/wms/wms",
                     //"http://mapserver.flightgear.org/cgi-bin/landcover",
-                    "http://wms.jpl.nasa.gov/wms.cgi",
-                    "http://worldwind46.arc.nasa.gov:8087/wms"
+                    "http://wms.jpl.nasa.gov/wms.cgi"
             };
 
     public WWAnalysisToolView() {
@@ -148,7 +139,7 @@ public class WWAnalysisToolView extends WWBaseToolView implements WWView {
 
     private void initialize(final JPanel mainPane) {
         SystemUtils.LOG.info("INITIALIZE IN WWAnalysisToolView CALLED" + " includeLayerPanel " + includeLayerPanel +
-                                     " includeProductPanel " + includeProductPanel);
+                " includeProductPanel " + includeProductPanel);
 
         final WWView toolView = this;
         final SwingWorker worker = new SwingWorker() {
@@ -198,22 +189,6 @@ public class WWAnalysisToolView extends WWBaseToolView implements WWView {
                             }
                         }
                     }
-
-                    // update world map window with the information of the currently activated  product scene view.
-                    final SnapApp snapApp = SnapApp.getDefault();
-                    snapApp.getProductManager().addListener(new WWProductManagerListener(toolView));
-                    snapApp.getSelectionSupport(ProductNode.class).addHandler(new SelectionSupport.Handler<ProductNode>() {
-                        @Override
-                        public void selectionChange(@NullAllowed ProductNode oldValue, @NullAllowed ProductNode newValue) {
-                            if (newValue != null) {
-                                setSelectedProduct(newValue.getProduct());
-                            } else {
-                                setSelectedProduct(null);
-                            }
-                        }
-                    });
-                    setProducts(snapApp.getProductManager().getProducts());
-                    setSelectedProduct(snapApp.getSelectedProduct(VIEW));
 
                     // Put the pieces together.
                     mainPane.add(wwjPanel, BorderLayout.CENTER);
@@ -296,6 +271,21 @@ public class WWAnalysisToolView extends WWBaseToolView implements WWView {
                         }
                     });
 
+                    // update world map window with the information of the currently activated  product scene view.
+                    final SnapApp snapApp = SnapApp.getDefault();
+                    snapApp.getProductManager().addListener(new WWProductManagerListener(toolView));
+                    snapApp.getSelectionSupport(ProductNode.class).addHandler(new SelectionSupport.Handler<ProductNode>() {
+                        @Override
+                        public void selectionChange(@NullAllowed ProductNode oldValue, @NullAllowed ProductNode newValue) {
+                            if (newValue != null) {
+                                setSelectedProduct(newValue.getProduct());
+                            } else {
+                                setSelectedProduct(null);
+                            }
+                        }
+                    });
+                    setProducts(snapApp.getProductManager().getProducts());
+                    setSelectedProduct(snapApp.getSelectedProduct(VIEW));
 
                 } catch (Throwable e) {
                     SnapApp.getDefault().handleError("Unable to initialize WWAnalysisToolView: " + e.getMessage(), e);
