@@ -47,17 +47,10 @@ import org.openide.windows.TopComponent;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+import java.awt.event.*;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
-import java.util.HashMap;
-import java.util.Map;
 
 @TopComponent.Description(
         preferredID = "ProductLibraryTopComponent",
@@ -122,17 +115,17 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
     }
 
     protected void componentShowing() {
-        if(!initialized) {
+        if (!initialized) {
             initialize();
         }
     }
 
     protected void componentHidden() {
-        currentListView.setProductEntryList(new ProductEntry[] {});
+        currentListView.setProductEntryList(new ProductEntry[]{});
     }
 
     protected void componentDeactivated() {
-        currentListView.setProductEntryList(new ProductEntry[] {});
+        currentListView.setProductEntryList(new ProductEntry[]{});
     }
 
     private synchronized void initialize() {
@@ -156,7 +149,7 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         productEntryTable.addListener(this);
         productEntryList = new ProductEntryList(productLibraryActions);
         productEntryList.addListener(this);
-        thumbnailView  = new ThumbnailView(productLibraryActions);
+        thumbnailView = new ThumbnailView(productLibraryActions);
         thumbnailView.addListener(this);
 
         currentListView = productEntryTable;
@@ -175,7 +168,7 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         helpButtonIcon = UIUtils.loadImageIcon("icons/Help24.gif");
     }
 
-    public void initUI() {
+    private void initUI() {
 
         loadIcons();
 
@@ -187,7 +180,7 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         final TimelinePanel timeLinePanel = new TimelinePanel(stats);
         dbPane.addListener(timeLinePanel);
         final JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
-                                                    centrePanel, timeLinePanel);
+                centrePanel, timeLinePanel);
         splitPane.setOneTouchExpandable(true);
         splitPane.setResizeWeight(0.99);
 
@@ -240,13 +233,13 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
                 if (e.getActionCommand().equals("stop")) {
                     updateButton.setEnabled(false);
                     mainPanel.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-                    if(progMon != null) {
+                    if (progMon != null) {
                         progMon.setCanceled(true);
                     }
                 } else {
                     final RescanOptions dlg = new RescanOptions();
                     dlg.show();
-                    if(dlg.IsOK()) {
+                    if (dlg.IsOK()) {
                         DBScanner.Options options = new DBScanner.Options(dlg.shouldDoRecusive(),
                                 dlg.shouldValidateZips(),
                                 dlg.shouldDoQuicklooks());
@@ -297,19 +290,19 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         viewButton = DialogUtils.createButton("viewButton", "Change View", thumbnailViewButtonIcon, headerBar, DialogUtils.ButtonStyle.Icon);
         viewButton.addActionListener(new ActionListener() {
             public synchronized void actionPerformed(final ActionEvent e) {
-                currentListView.setProductEntryList(new ProductEntry[] {}); // force to empty
+                currentListView.setProductEntryList(new ProductEntry[]{}); // force to empty
 
-                if(currentListView instanceof ProductEntryList) {
+                if (currentListView instanceof ProductEntryList) {
                     currentListView = productEntryTable;
                     viewButton.setIcon(thumbnailViewButtonIcon);
                     viewButton.setRolloverIcon(thumbnailViewButtonIcon);
                     splitPaneV.setLeftComponent(tableViewPane);
-                } else if(currentListView instanceof ProductEntryTable) {
+                } else if (currentListView instanceof ProductEntryTable) {
                     currentListView = thumbnailView;
                     viewButton.setIcon(listViewButtonIcon);
                     viewButton.setRolloverIcon(listViewButtonIcon);
                     splitPaneV.setLeftComponent(thumbnailPane);
-                } else if(currentListView instanceof ThumbnailView) {
+                } else if (currentListView instanceof ThumbnailView) {
                     currentListView = productEntryList;
                     viewButton.setIcon(tableViewButtonIcon);
                     viewButton.setRolloverIcon(tableViewButtonIcon);
@@ -322,7 +315,7 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
 
         final JButton helpButton = DialogUtils.createButton("helpButton", "Help", helpButtonIcon, headerBar, DialogUtils.ButtonStyle.Icon);
         HelpCtx.setHelpIDString(helpButton, helpId);
-        helpButton.addActionListener(e -> { new HelpCtx(helpId).display();});
+        helpButton.addActionListener(e -> new HelpCtx(helpId).display());
         headerBar.add(helpButton, gbc);
 
         return headerBar;
@@ -384,8 +377,9 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         for (File f : baseDirList) {
             repositoryListCombo.insertItemAt(f, repositoryListCombo.getItemCount());
         }
-        if (baseDirList.length > 0)
+        if (baseDirList.length > 0) {
             repositoryListCombo.setSelectedIndex(0);
+        }
     }
 
     private void addRepository() {
@@ -394,14 +388,10 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
             return;
         }
 
-        final Map<String, Boolean> checkBoxMap = new HashMap<>(3);
-        checkBoxMap.put("Generate quicklooks?", false);
-        checkBoxMap.put("Search folder recursively?", true);
-
         final RescanOptions dlg = new RescanOptions();
         dlg.show();
 
-        if(dlg.IsOK()) {
+        if (dlg.IsOK()) {
             libConfig.addBaseDir(baseDir);
             final int index = repositoryListCombo.getItemCount();
             repositoryListCombo.insertItemAt(baseDir, index);
@@ -415,22 +405,22 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
     }
 
     LabelBarProgressMonitor createLabelBarProgressMonitor() {
-        if(progMon == null) {
+        if (progMon == null) {
             progMon = new LabelBarProgressMonitor(progressBar, statusLabel);
             progMon.addListener(this);
         }
         return progMon;
     }
 
-    public File[] getSelectedFiles() {
+    File[] getSelectedFiles() {
         return currentListView.getSelectedFiles();
     }
 
-    public ProductEntry[] getSelectedProductEntries() {
+    ProductEntry[] getSelectedProductEntries() {
         return currentListView.getSelectedProductEntries();
     }
 
-    public ProductEntry getEntryOverMouse() {
+    ProductEntry getEntryOverMouse() {
         return currentListView.getEntryOverMouse();
     }
 
@@ -438,12 +428,12 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         currentListView.sort(sortBy);
     }
 
-    public void selectAll() {
+    void selectAll() {
         currentListView.selectAll();
         notifySelectionChanged();
     }
 
-    public void selectNone() {
+    void selectNone() {
         currentListView.clearSelection();
         notifySelectionChanged();
     }
@@ -469,8 +459,8 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         final int index = repositoryListCombo.getSelectedIndex();
         if (index == 0) {
             final Dialogs.Answer status = Dialogs.requestDecision("Remove folders",
-                                                              "This will remove all folders and products from the database.\n" +
-                                                                      "Are you sure you wish to continue?", true, null);
+                    "This will remove all folders and products from the database.\n" +
+                            "Are you sure you wish to continue?", true, null);
             if (status == Dialogs.Answer.YES) {
 
                 while (repositoryListCombo.getItemCount() > 1) {
@@ -484,9 +474,9 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         } else if (selectedItem instanceof File) {
             final File baseDir = (File) selectedItem;
             final Dialogs.Answer status = Dialogs.requestDecision("Remove products",
-                                                           "This will remove all products within " +
-                                                                   baseDir.getAbsolutePath() + " from the database\n" +
-                                                                   "Are you sure you wish to continue?", true, null);
+                    "This will remove all products within " +
+                            baseDir.getAbsolutePath() + " from the database\n" +
+                            "Are you sure you wish to continue?", true, null);
             if (status == Dialogs.Answer.YES) {
                 libConfig.removeBaseDir(baseDir);
                 repositoryListCombo.removeItemAt(index);
@@ -518,12 +508,12 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         }
     }
 
-    public void UpdateUI() {
+    void UpdateUI() {
         dbPane.refresh();
         currentListView.updateUI();
     }
 
-    public void findSlices(int dataTakeId) {
+    void findSlices(int dataTakeId) {
         dbPane.findSlices(dataTakeId);
     }
 
@@ -550,7 +540,7 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         statusLabel.setText(currentListView.getTotalCount() + " Products" + selectedText);
     }
 
-    public void ShowRepository(final ProductEntry[] productEntryList) {
+    private void showRepository(final ProductEntry[] productEntryList) {
         currentListView.setProductEntryList(productEntryList);
         notifySelectionChanged();
 
@@ -563,7 +553,7 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         worldMapUI.setSelectedGeoBoundaries(null);
     }
 
-    public static void handleErrorList(final java.util.List<DBScanner.ErrorFile> errorList) {
+    static void handleErrorList(final java.util.List<DBScanner.ErrorFile> errorList) {
         final StringBuilder str = new StringBuilder();
         int cnt = 1;
         for (DBScanner.ErrorFile err : errorList) {
@@ -579,22 +569,24 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         }
         final String question = "\nWould you like to save the list to a text file?";
         if (Dialogs.requestDecision("Product Errors",
-                                         "The follow files have errors:\n" + str.toString() + question,
-                                    false, null) == Dialogs.Answer.YES) {
+                "The follow files have errors:\n" + str.toString() + question,
+                false, null) == Dialogs.Answer.YES) {
 
-            File file = Dialogs.requestFileForSave("Save as...", false,
-                                                   new SnapFileFilter("Text File", new String[]{".txt"}, "Text File"),
-                                                   ".txt", "ProductErrorList", null, LAST_ERROR_OUTPUT_DIR_KEY);
-            try {
-                writeErrors(errorList, file);
-            } catch (Exception e) {
-                Dialogs.showError("Unable to save to " + file.getAbsolutePath());
-            }
-            if (Desktop.isDesktopSupported() && file.exists()) {
+            final File file = Dialogs.requestFileForSave("Save as...", false,
+                    new SnapFileFilter("Text File", new String[]{".txt"}, "Text File"),
+                    ".txt", "ProductErrorList", null, LAST_ERROR_OUTPUT_DIR_KEY);
+            if (file != null) {
                 try {
-                    Desktop.getDesktop().open(file);
+                    writeErrors(errorList, file);
                 } catch (Exception e) {
-                    SystemUtils.LOG.warning("Unable to open error file: " + e.getMessage());
+                    Dialogs.showError("Unable to save to " + file.getAbsolutePath());
+                }
+                if (Desktop.isDesktopSupported() && file.exists()) {
+                    try {
+                        Desktop.getDesktop().open(file);
+                    } catch (Exception e) {
+                        SystemUtils.LOG.warning("Unable to open error file: " + e.getMessage());
+                    }
                 }
             }
         }
@@ -631,7 +623,7 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
     }
 
     public void notifyNewEntryListAvailable() {
-        ShowRepository(dbPane.getProductEntryList());
+        showRepository(dbPane.getProductEntryList());
     }
 
     public void notifyNewMapSelectionAvailable() {
@@ -651,7 +643,7 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         productLibraryActions.updateContextMenu(selections);
         dbPane.updateProductSelectionText(selections);
 
-        if(selections != null) {
+        if (selections != null) {
             final GeoPos[][] geoBoundaries = new GeoPos[selections.length][4];
             int i = 0;
             for (ProductEntry entry : selections) {
@@ -709,15 +701,15 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
             super.initContent();
         }
 
-        public boolean shouldDoRecusive() {
+        boolean shouldDoRecusive() {
             return items.get(SEARCH_RECURSIVELY);
         }
 
-        public boolean shouldValidateZips() {
+        boolean shouldValidateZips() {
             return items.get(VERIFY_ZIP_FILES);
         }
 
-        public boolean shouldDoQuicklooks() {
+        boolean shouldDoQuicklooks() {
             return items.get(GENERATE_QUICKLOOKS);
         }
     }

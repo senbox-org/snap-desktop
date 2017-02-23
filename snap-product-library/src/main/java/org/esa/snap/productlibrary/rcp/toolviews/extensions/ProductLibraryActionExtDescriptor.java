@@ -47,7 +47,7 @@ public class ProductLibraryActionExtDescriptor {
         Object object;
         try {
             object = actionExtClass.newInstance();
-            ((ProductLibraryActionExt)object).setActionHandler(actionHandler);
+            ((ProductLibraryActionExt) object).setActionHandler(actionHandler);
         } catch (Throwable e) {
             throw new IllegalStateException("actionExtClass.newInstance()", e);
         }

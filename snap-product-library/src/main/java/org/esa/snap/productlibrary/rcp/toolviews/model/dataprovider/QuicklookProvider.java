@@ -66,13 +66,13 @@ public class QuicklookProvider implements DataProvider {
     }
 
     private static BufferedImage getImage(final ProductEntry productEntry) {
-        if(productEntry.quickLookExists()) {
+        if (productEntry.quickLookExists()) {
             final Quicklook quicklook = productEntry.getQuickLook();
-            if(!quicklook.hasProduct() && !quicklook.hasCachedImage() && quicklook.getProductFile() != null) {
+            if (!quicklook.hasProduct() && !quicklook.hasCachedImage() && quicklook.getProductFile() != null) {
                 try {
                     quicklook.setProduct(ProductIO.readProduct(quicklook.getProductFile()));
                 } catch (IOException e) {
-                    SystemUtils.LOG.warning("Quicklook unable to load product "+quicklook.getProductFile());
+                    SystemUtils.LOG.warning("Quicklook unable to load product " + quicklook.getProductFile());
                 }
             }
             return quicklook.getImage(ProgressMonitor.NULL);

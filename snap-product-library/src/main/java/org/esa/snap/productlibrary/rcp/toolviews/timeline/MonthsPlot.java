@@ -2,7 +2,7 @@ package org.esa.snap.productlibrary.rcp.toolviews.timeline;
 
 import org.esa.snap.productlibrary.rcp.toolviews.model.DatabaseStatistics;
 
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.Set;
 
@@ -11,8 +11,8 @@ import java.util.Set;
  */
 class MonthsPlot extends TimelinePlot {
 
-    private final String[] monthNames = new String[] {
-            "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+    private final String[] monthNames = new String[]{
+            "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
 
     MonthsPlot(final DatabaseStatistics stats) {
         super(stats);
@@ -32,19 +32,19 @@ class MonthsPlot extends TimelinePlot {
         final int maxMonthCnt = monthData.getMaxMonthCnt();
 
         final int w = getWidth();
-        final int h = getHeight()-15;
-        interval = w / (float)numMonths;
-        final float halfInterval = interval/2;
-        final float barWidth = halfInterval/2;
+        final int h = getHeight() - 15;
+        interval = w / (float) numMonths;
+        final float halfInterval = interval / 2;
+        final float barWidth = halfInterval / 2;
 
         final int y = getHeight() - 2;
 
         float x = halfInterval;
         for (Integer month : months) {
-            drawButton(g2d, monthNames[month], (int)x-10, y, monthData.isSelected(month));
+            drawButton(g2d, monthNames[month], (int) x - 10, y, monthData.isSelected(month));
 
-            final float newH = (monthData.get(month)/(float)maxMonthCnt) * h;
-            drawBar(g2d, (int)(x-barWidth), h-(int)newH, (int)halfInterval, (int)newH, h);
+            final float newH = (monthData.get(month) / (float) maxMonthCnt) * h;
+            drawBar(g2d, (int) (x - barWidth), h - (int) newH, (int) halfInterval, (int) newH, h);
 
             x += interval;
         }
@@ -52,7 +52,7 @@ class MonthsPlot extends TimelinePlot {
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        int x = (int)(e.getX() / interval);
+        int x = (int) (e.getX() / interval);
 
         final DatabaseStatistics.MonthData monthData = stats.getMonthData();
         monthData.setSelected(x, !monthData.isSelected(x));
@@ -62,14 +62,14 @@ class MonthsPlot extends TimelinePlot {
 
     @Override
     public String getToolTipText(MouseEvent event) {
-        int x = (int)(event.getX() / interval);
+        int x = (int) (event.getX() / interval);
 
         final Set<Integer> monthSet = stats.getMonthData().getMonthSet();
         final Integer[] months = monthSet.toArray(new Integer[monthSet.size()]);
 
         int value = stats.getMonthData().get(x);
-        if(value == 0)
+        if (value == 0)
             return "";
-        return monthNames[months[x]]+": "+value;
+        return monthNames[months[x]] + ": " + value;
     }
 }

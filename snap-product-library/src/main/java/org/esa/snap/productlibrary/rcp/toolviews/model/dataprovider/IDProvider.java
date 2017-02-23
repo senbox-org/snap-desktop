@@ -18,11 +18,10 @@ package org.esa.snap.productlibrary.rcp.toolviews.model.dataprovider;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.engine_utilities.db.ProductEntry;
 
-import javax.swing.JLabel;
-import javax.swing.JTable;
+import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
-import java.awt.Component;
+import java.awt.*;
 import java.util.Comparator;
 
 public class IDProvider implements DataProvider {

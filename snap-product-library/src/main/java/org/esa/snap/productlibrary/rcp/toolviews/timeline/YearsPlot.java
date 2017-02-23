@@ -2,7 +2,7 @@ package org.esa.snap.productlibrary.rcp.toolviews.timeline;
 
 import org.esa.snap.productlibrary.rcp.toolviews.model.DatabaseStatistics;
 
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.Map;
 import java.util.SortedSet;
@@ -31,19 +31,19 @@ class YearsPlot extends TimelinePlot {
         final int maxYearCnt = stats.getOverallMaxYearCnt();
 
         final int w = getWidth();
-        final int h = getHeight()-15;
-        interval = w / (float)numYears;
-        final float halfInterval = interval/2f;
-        final float barWidth = halfInterval/2f;
+        final int h = getHeight() - 15;
+        interval = w / (float) numYears;
+        final float halfInterval = interval / 2f;
+        final float barWidth = halfInterval / 2f;
 
         final int y = getHeight() - 2;
         float x = halfInterval;
 
         for (Integer year : years) {
-            drawButton(g2d, String.valueOf(year), (int)x-20, y, yearDataMap.get(year).isSelected());
+            drawButton(g2d, String.valueOf(year), (int) x - 20, y, yearDataMap.get(year).isSelected());
 
-            final float newH = (yearDataMap.get(year).yearCnt/(float)maxYearCnt) * h;
-            drawBar(g2d, (int)(x-barWidth), h-(int)newH, (int)halfInterval, Math.max(1, (int)newH), h);
+            final float newH = (yearDataMap.get(year).yearCnt / (float) maxYearCnt) * h;
+            drawBar(g2d, (int) (x - barWidth), h - (int) newH, (int) halfInterval, Math.max(1, (int) newH), h);
 
             x += interval;
         }
@@ -51,7 +51,7 @@ class YearsPlot extends TimelinePlot {
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        int x = (int)(e.getX() / interval);
+        int x = (int) (e.getX() / interval);
 
         final Map<Integer, DatabaseStatistics.YearData> yearDataMap = stats.getYearDataMap();
         final SortedSet<Integer> sortedYears = new TreeSet<>(yearDataMap.keySet());
@@ -65,15 +65,15 @@ class YearsPlot extends TimelinePlot {
 
     @Override
     public String getToolTipText(MouseEvent event) {
-        int x = (int)(event.getX() / interval);
+        int x = (int) (event.getX() / interval);
 
         final Map<Integer, DatabaseStatistics.YearData> yearDataMap = stats.getYearDataMap();
         final SortedSet<Integer> sortedYears = new TreeSet<>(yearDataMap.keySet());
         final Integer[] years = sortedYears.toArray(new Integer[sortedYears.size()]);
 
         Integer value = yearDataMap.get(years[x]).yearCnt;
-        if(value == 0)
+        if (value == 0)
             return "";
-        return String.valueOf(years[x])+": "+value;
+        return String.valueOf(years[x]) + ": " + value;
     }
 }

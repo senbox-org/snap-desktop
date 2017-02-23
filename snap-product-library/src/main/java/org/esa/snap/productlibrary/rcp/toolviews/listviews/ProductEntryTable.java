@@ -86,12 +86,12 @@ public class ProductEntryTable extends JTable implements ListView {
         int row = 0;
         if (pos != null)
             row = rowAtPoint(pos);
-        return (ProductEntry)getValueAt(row, 0);
+        return (ProductEntry) getValueAt(row, 0);
     }
 
     public void sort(final SortingDecorator.SORT_BY sortBy) {
         final TableModel model = getModel();
-        if(model instanceof SortingDecorator) {
+        if (model instanceof SortingDecorator) {
             SortingDecorator sortedModel = (SortingDecorator) model;
             sortedModel.sortBy(sortBy);
         }

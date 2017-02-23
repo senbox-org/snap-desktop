@@ -18,13 +18,8 @@ package org.esa.snap.productlibrary.rcp.dialogs;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.ui.ModalDialog;
 
-import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
-import javax.swing.JCheckBox;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JToggleButton;
-import java.awt.Dimension;
+import javax.swing.*;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -59,7 +54,7 @@ public class CheckListDialog extends ModalDialog {
 
         for (String name : items.keySet()) {
             final JToggleButton btn;
-            if(singleSelection) {
+            if (singleSelection) {
                 btn = new JRadioButton(name);
                 group.add(btn);
             } else {
