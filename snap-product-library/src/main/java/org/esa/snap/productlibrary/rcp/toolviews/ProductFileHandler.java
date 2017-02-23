@@ -20,13 +20,14 @@ import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.engine_utilities.db.ProductEntry;
 import org.esa.snap.engine_utilities.util.FileIOUtils;
 
-import javax.swing.SwingWorker;
+import javax.swing.*;
 import java.io.File;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.nio.file.StandardCopyOption.*;
+import static java.nio.file.StandardCopyOption.ATOMIC_MOVE;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 /**
  * Handle product files
@@ -38,7 +39,7 @@ public class ProductFileHandler extends SwingWorker {
     private static final String[] folderMissions = {"RS2", "TSX", "TDX", "CSKS1", "CSKS2", "CSKS3", "CSKS4",
             "ALOS", "JERS1", "RS1"};
 
-    public enum TYPE { COPY_TO, MOVE_TO, DELETE }
+    public enum TYPE {COPY_TO, MOVE_TO, DELETE}
 
     private final ProductEntry[] entries;
     private final TYPE operationType;
@@ -72,11 +73,11 @@ public class ProductFileHandler extends SwingWorker {
     }
 
     private String getOperationStr() {
-        if(operationType.equals(TYPE.COPY_TO)) {
+        if (operationType.equals(TYPE.COPY_TO)) {
             return "Copying";
-        } else if(operationType.equals(TYPE.MOVE_TO)) {
+        } else if (operationType.equals(TYPE.MOVE_TO)) {
             return "Moving";
-        } else if(operationType.equals(TYPE.DELETE)) {
+        } else if (operationType.equals(TYPE.DELETE)) {
             return "Deleting";
         }
         return "";
@@ -87,21 +88,21 @@ public class ProductFileHandler extends SwingWorker {
         errorList.clear();
 
         try {
-            pm.beginTask(getOperationStr()+" products...", entries.length);
+            pm.beginTask(getOperationStr() + " products...", entries.length);
             for (ProductEntry entry : entries) {
                 if (pm.isCanceled())
                     break;
                 try {
-                    if(operationType.equals(TYPE.COPY_TO)) {
+                    if (operationType.equals(TYPE.COPY_TO)) {
                         ProductFileHandler.copyTo(entry, targetFolder);
-                    } else if(operationType.equals(TYPE.MOVE_TO)) {
+                    } else if (operationType.equals(TYPE.MOVE_TO)) {
                         ProductFileHandler.moveTo(entry, targetFolder);
-                    } else if(operationType.equals(TYPE.DELETE)) {
+                    } else if (operationType.equals(TYPE.DELETE)) {
                         ProductFileHandler.delete(entry);
                     }
                     pm.worked(1);
                 } catch (Exception e) {
-                    errorList.add(new DBScanner.ErrorFile(entry.getFile(), getOperationStr()+" file failed: " + e.getMessage()));
+                    errorList.add(new DBScanner.ErrorFile(entry.getFile(), getOperationStr() + " file failed: " + e.getMessage()));
                 }
             }
 
@@ -124,9 +125,9 @@ public class ProductFileHandler extends SwingWorker {
 
     public interface ProductFileHandlerListener {
 
-        public enum MSG {DONE}
+        enum MSG {DONE}
 
-        public void notifyMSG(final ProductFileHandler fileHandler, final MSG msg);
+        void notifyMSG(final ProductFileHandler fileHandler, final MSG msg);
     }
 
     public static boolean canMove(final ProductEntry entry) {

@@ -52,7 +52,7 @@ public class ProductOpener {
                 //SnapApp.getDefault().getProductManager().addProduct(product);
 
                 final org.esa.snap.rcp.actions.file.ProductOpener opener = new org.esa.snap.rcp.actions.file.ProductOpener();
-                opener.setFiles(new File[] {productFile});
+                opener.setFiles(productFile);
                 opener.setMultiSelectionEnabled(true);
                 opener.openProduct();
             } catch (Exception e) {

@@ -17,7 +17,7 @@ package org.esa.snap.productlibrary.rcp.toolviews;
 
 import org.esa.snap.engine_utilities.db.ProductDB;
 
-import javax.swing.SwingWorker;
+import javax.swing.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,10 +33,9 @@ public final class DBRemover extends SwingWorker {
     private final List<DBRemoverListener> listenerList = new ArrayList<>(1);
 
     /**
-     *
      * @param database the database
-     * @param baseDir the basedir to remove. If null, all entries will be removed
-     * @param pm the progress monitor
+     * @param baseDir  the basedir to remove. If null, all entries will be removed
+     * @param pm       the progress monitor
      */
     public DBRemover(final ProductDB database, final File baseDir, final com.bc.ceres.core.ProgressMonitor pm) {
         this.db = database;
@@ -60,7 +59,7 @@ public final class DBRemover extends SwingWorker {
     protected Boolean doInBackground() throws Exception {
 
         try {
-            if(baseDir == null) {
+            if (baseDir == null) {
                 db.removeAllProducts(pm);
             } else {
                 db.removeProducts(baseDir, pm);
@@ -80,8 +79,8 @@ public final class DBRemover extends SwingWorker {
 
     public interface DBRemoverListener {
 
-        public enum MSG {DONE}
+        enum MSG {DONE}
 
-        public void notifyMSG(final MSG msg);
+        void notifyMSG(final MSG msg);
     }
 }

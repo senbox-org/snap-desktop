@@ -21,12 +21,7 @@ import org.esa.snap.graphbuilder.gpf.ui.OperatorUIRegistry;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * A <code>ProductLibraryActionExtRegistry</code> provides access to action extensions as described by the ProductLibraryActionExtDescriptor.
@@ -44,7 +39,7 @@ public class ProductLibraryActionExtRegistry {
     }
 
     public static ProductLibraryActionExtRegistry getInstance() {
-        if(instance == null) {
+        if (instance == null) {
             instance = new ProductLibraryActionExtRegistry();
         }
         return instance;
@@ -58,7 +53,7 @@ public class ProductLibraryActionExtRegistry {
 
     private void registerActions() {
         FileObject fileObj = FileUtil.getConfigFile("ProductLibraryActions");
-        if(fileObj == null) {
+        if (fileObj == null) {
             SystemUtils.LOG.warning("No ProductLibrary Action found.");
             return;
         }
@@ -75,12 +70,12 @@ public class ProductLibraryActionExtRegistry {
                 final ProductLibraryActionExtDescriptor existingDescriptor = actionExtDescriptors.get(actionExtDescriptor.getId());
                 if (existingDescriptor != null) {
                     SystemUtils.LOG.warning(String.format("ProductLibrary action [%s] has been redeclared!\n",
-                                                          actionExtDescriptor.getId()));
+                            actionExtDescriptor.getId()));
                 }
 
                 actionExtDescriptors.put(actionExtDescriptor.getId(), actionExtDescriptor);
                 SystemUtils.LOG.fine(String.format("New ProductLibrary action added from layer.xml path '%s': %s",
-                                                   file.getPath(), actionExtDescriptor.getId()));
+                        file.getPath(), actionExtDescriptor.getId()));
             }
         }
     }

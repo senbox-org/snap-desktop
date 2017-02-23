@@ -53,23 +53,23 @@ import java.util.List;
 public final class DatabasePane extends JPanel {
 
     private final JTextField nameField = new JTextField();
-    private final JList<String> missionJList = new JList();
-    private final JList<String> productTypeJList = new JList();
-    private final JComboBox<String> acquisitionModeCombo = new JComboBox(new String[]{DBQuery.ALL_MODES});
-    private final JComboBox<String> passCombo = new JComboBox(new String[]{
+    private final JList<String> missionJList = new JList<>();
+    private final JList<String> productTypeJList = new JList<>();
+    private final JComboBox<String> acquisitionModeCombo = new JComboBox<>(new String[]{DBQuery.ALL_MODES});
+    private final JComboBox<String> passCombo = new JComboBox<>(new String[]{
             DBQuery.ALL_PASSES, DBQuery.ASCENDING_PASS, DBQuery.DESCENDING_PASS});
     private final JTextField trackField = new JTextField();
 
     private final JXDatePicker startDateBox = new JXDatePicker();
     private final JXDatePicker endDateBox = new JXDatePicker();
-    private final JComboBox<String> polarizationCombo = new JComboBox(new String[]{
+    private final JComboBox<String> polarizationCombo = new JComboBox<>(new String[]{
             DBQuery.ANY, DBQuery.QUADPOL, DBQuery.DUALPOL, DBQuery.HHVV, DBQuery.HHHV, DBQuery.VVVH, "HH", "VV", "HV", "VH"});
-    private final JComboBox<String> calibrationCombo = new JComboBox(new String[]{
+    private final JComboBox<String> calibrationCombo = new JComboBox<>(new String[]{
             DBQuery.ANY, DBQuery.CALIBRATED, DBQuery.NOT_CALIBRATED});
-    private final JComboBox<String> orbitCorrectionCombo = new JComboBox(new String[]{
+    private final JComboBox<String> orbitCorrectionCombo = new JComboBox<>(new String[]{
             DBQuery.ANY, DBQuery.ORBIT_PRELIMINARY, DBQuery.ORBIT_PRECISE, DBQuery.ORBIT_VERIFIED});
 
-    private final JComboBox<String> metadataNameCombo = new JComboBox();
+    private final JComboBox<String> metadataNameCombo = new JComboBox<>();
     private final JTextField metdataValueField = new JTextField();
     private final JTextArea metadataArea = new JTextArea();
     private final JButton addMetadataButton = new JButton("+");
@@ -476,7 +476,7 @@ public final class DatabasePane extends JPanel {
         final int size = list.getModel().getSize();
         final List<Integer> indices = new ArrayList<>(size);
         for (int i = 0; i < size; ++i) {
-            final String str = (String) list.getModel().getElementAt(i);
+            final String str = list.getModel().getElementAt(i);
             if (StringUtils.contains(values, str)) {
                 indices.add(i);
             }
@@ -515,8 +515,8 @@ public final class DatabasePane extends JPanel {
 
             text.append("Mission: " + entry.getMission() + '\n');
             text.append("Mode: " + entry.getAcquisitionMode() + '\n');
-            text.append("Type: " +  entry.getProductType() + '\n');
-            text.append("Sample: " +  sampleType + '\n');
+            text.append("Type: " + entry.getProductType() + '\n');
+            text.append("Sample: " + sampleType + '\n');
 
             text.append("Pass: " + pass + '\n');
             text.append("Orbit: " + absOrbit);

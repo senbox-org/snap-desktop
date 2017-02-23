@@ -104,9 +104,9 @@ public class ProductLibraryActions {
         panel.add(openAllSelectedButton);
         panel.add(copySelectedButton);
         panel.add(batchProcessButton);
-        panel.add(Box.createRigidArea(new Dimension(24,24))); // separator
+        panel.add(Box.createRigidArea(new Dimension(24, 24))); // separator
 
-        for(ProductLibraryActionExtDescriptor desc : ProductLibraryActionExtRegistry.getInstance().getDescriptors()) {
+        for (ProductLibraryActionExtDescriptor desc : ProductLibraryActionExtRegistry.getInstance().getDescriptors()) {
             final ProductLibraryActionExt action = desc.createActionExt(this);
             actionExtList.add(action);
 
@@ -139,7 +139,7 @@ public class ProductLibraryActions {
         copySelectedButton.setEnabled(enable);
         batchProcessButton.setEnabled(enable);
 
-        for(ProductLibraryActionExt action : actionExtList) {
+        for (ProductLibraryActionExt action : actionExtList) {
             action.selectionChanged(selections);
         }
     }
@@ -155,7 +155,7 @@ public class ProductLibraryActions {
 
     private void performFileAction(final ProductFileHandler.TYPE operationType) {
         final File targetFolder;
-        if(operationType.equals(ProductFileHandler.TYPE.DELETE)) {
+        if (operationType.equals(ProductFileHandler.TYPE.DELETE)) {
             targetFolder = null;
         } else {
             targetFolder = promptForRepositoryBaseDir();
@@ -281,8 +281,8 @@ public class ProductLibraryActions {
         deleteItem.addActionListener(new ActionListener() {
             public void actionPerformed(final ActionEvent e) {
                 final Dialogs.Answer status = Dialogs.requestDecision("Deleting selected files",
-                                                                      "Are you sure you want to delete these products",
-                                                                      true, null);
+                        "Are you sure you want to delete these products",
+                        true, null);
                 if (status == Dialogs.Answer.YES)
                     performFileAction(ProductFileHandler.TYPE.DELETE);
             }
@@ -294,7 +294,7 @@ public class ProductLibraryActions {
             public void actionPerformed(final ActionEvent e) {
                 final ProductEntry entry = toolView.getEntryOverMouse();
                 if (entry != null && entry instanceof ProductEntry) {
-                    final ProductEntry prodEntry = (ProductEntry) entry;
+                    final ProductEntry prodEntry = entry;
                     try {
                         Desktop.getDesktop().open(prodEntry.getFile().getParentFile());
                     } catch (Exception ex) {
@@ -409,13 +409,13 @@ public class ProductLibraryActions {
     }
 
     private void notifyDirectoryChanged() {
-        for(ProductLibraryActionListener listener : listenerList) {
+        for (ProductLibraryActionListener listener : listenerList) {
             listener.notifyDirectoryChanged();
         }
     }
 
     private void notifySelectionChanged() {
-        for(ProductLibraryActionListener listener : listenerList) {
+        for (ProductLibraryActionListener listener : listenerList) {
             listener.notifySelectionChanged();
         }
     }
@@ -423,6 +423,7 @@ public class ProductLibraryActions {
     public interface ProductLibraryActionListener {
 
         void notifyDirectoryChanged();
+
         void notifySelectionChanged();
     }
 
@@ -434,7 +435,7 @@ public class ProductLibraryActions {
                 if (!errorList.isEmpty()) {
                     toolView.handleErrorList(errorList);
                 }
-                if(fileHandler.getOperationType().equals(ProductFileHandler.TYPE.MOVE_TO) ||
+                if (fileHandler.getOperationType().equals(ProductFileHandler.TYPE.MOVE_TO) ||
                         fileHandler.getOperationType().equals(ProductFileHandler.TYPE.DELETE)) {
                     notifyDirectoryChanged();
                 }

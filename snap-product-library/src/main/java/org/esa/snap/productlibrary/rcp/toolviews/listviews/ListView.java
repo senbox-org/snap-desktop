@@ -27,7 +27,7 @@ import java.util.List;
  */
 public interface ListView {
 
-    final List<ListViewListener> listenerList = new ArrayList<>();
+    List<ListViewListener> listenerList = new ArrayList<>();
 
     File[] getSelectedFiles();
 
@@ -69,6 +69,7 @@ public interface ListView {
 
     interface ListViewListener {
         void notifySelectionChanged();
+
         void notifyOpenAction();
     }
 }
