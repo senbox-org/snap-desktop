@@ -20,6 +20,7 @@ import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterIO;
 
 import java.io.*;
 import java.net.URL;
+import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
