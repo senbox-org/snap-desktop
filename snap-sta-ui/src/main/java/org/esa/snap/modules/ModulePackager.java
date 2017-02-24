@@ -178,8 +178,9 @@ public final class ModulePackager {
         if (unpackFolder == null) {
             unpackFolder = new File(modulesPath, jarFile.getName().replace(".jar", ""));
         }
-        if (!unpackFolder.exists())
-            unpackFolder.mkdir();
+        if (!unpackFolder.exists()) {
+            Files.createDirectories(unpackFolder.toPath());
+        }
         Attributes attributes = jar.getManifest().getMainAttributes();
         if (attributes.containsKey(ATTR_MODULE_VERSION)) {
             String version = attributes.getValue(ATTR_MODULE_VERSION);
@@ -193,10 +194,10 @@ public final class ModulePackager {
             JarEntry file = (JarEntry) enumEntries.nextElement();
             File f = new File(unpackFolder, file.getName());
             if (file.isDirectory()) {
-                f.mkdir();
+                Files.createDirectories(f.toPath());
                 continue;
             } else {
-                f.getParentFile().mkdirs();
+                Files.createDirectories(f.getParentFile().toPath());
             }
             try (InputStream is = jar.getInputStream(file)) {
                 try (FileOutputStream fos = new FileOutputStream(f)) {
