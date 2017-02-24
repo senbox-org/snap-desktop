@@ -240,8 +240,7 @@ public final class ModulePackager {
             unpackFolder = new File(modulesPath, jarFile.getName().replace(".jar", ""));
         }
         if (!unpackFolder.exists()) {
-            if (!unpackFolder.mkdir())
-                throw new IOException("Cannot create jar folder: " + unpackFolder.toString());
+            Files.createDirectories(unpackFolder.toPath());
         }
         Attributes attributes = jar.getManifest().getMainAttributes();
         if (attributes.containsKey(ATTR_MODULE_IMPLEMENTATION)) {
@@ -256,14 +255,10 @@ public final class ModulePackager {
             JarEntry file = (JarEntry) enumEntries.nextElement();
             File f = new File(unpackFolder, file.getName());
             if (file.isDirectory()) {
-                if (!f.mkdir()) {
-                    throw new IOException("Cannot create folder: " + f.toString());
-                }
+                Files.createDirectories(f.toPath());
                 continue;
             } else {
-                if (!f.getParentFile().mkdirs()) {
-                    throw new IOException("Cannot create folders: " + f.getParentFile().toString());
-                }
+                Files.createDirectories(f.getParentFile().toPath());
             }
             try (InputStream is = jar.getInputStream(file)) {
                 try (FileOutputStream fos = new FileOutputStream(f)) {
