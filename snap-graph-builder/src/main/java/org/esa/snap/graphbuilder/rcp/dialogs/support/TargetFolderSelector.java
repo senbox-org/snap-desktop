@@ -34,7 +34,7 @@ import java.awt.event.ActionListener;
 public class TargetFolderSelector extends TargetProductSelector {
 
     private JCheckBox skipExistingCBox = new JCheckBox("Skip existing target files");
-    private JCheckBox replaceWritersWithUniqueTargetProductCBox = new JCheckBox("Replace writers with unique target product");
+    private JCheckBox replaceWritersWithUniqueTargetProductCBox = new JCheckBox("Keep source product name");
 
     public JPanel createPanel() {
 
