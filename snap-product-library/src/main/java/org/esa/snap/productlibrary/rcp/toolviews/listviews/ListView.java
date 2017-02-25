@@ -16,7 +16,7 @@
 package org.esa.snap.productlibrary.rcp.toolviews.listviews;
 
 import org.esa.snap.engine_utilities.db.ProductEntry;
-import org.esa.snap.productlibrary.rcp.toolviews.model.SortingDecorator;
+import org.esa.snap.productlibrary.rcp.toolviews.support.SortingDecorator;
 
 import java.io.File;
 import java.util.ArrayList;

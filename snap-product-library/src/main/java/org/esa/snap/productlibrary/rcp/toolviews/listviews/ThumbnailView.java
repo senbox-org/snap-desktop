@@ -19,7 +19,7 @@ import org.esa.snap.core.datamodel.quicklooks.Quicklook;
 import org.esa.snap.core.datamodel.quicklooks.Thumbnail;
 import org.esa.snap.engine_utilities.db.ProductEntry;
 import org.esa.snap.productlibrary.rcp.toolviews.ProductLibraryActions;
-import org.esa.snap.productlibrary.rcp.toolviews.model.SortingDecorator;
+import org.esa.snap.productlibrary.rcp.toolviews.support.SortingDecorator;
 import org.esa.snap.rcp.quicklooks.ThumbnailPanel;
 
 import java.io.File;

@@ -30,7 +30,11 @@ import org.esa.snap.productlibrary.rcp.toolviews.listviews.ProductEntryTable;
 import org.esa.snap.productlibrary.rcp.toolviews.listviews.ThumbnailView;
 import org.esa.snap.productlibrary.rcp.toolviews.model.DatabaseStatistics;
 import org.esa.snap.productlibrary.rcp.toolviews.model.ProductLibraryConfig;
-import org.esa.snap.productlibrary.rcp.toolviews.model.SortingDecorator;
+import org.esa.snap.productlibrary.rcp.toolviews.model.repositories.FolderRepository;
+import org.esa.snap.productlibrary.rcp.toolviews.model.repositories.RepositoryInterface;
+import org.esa.snap.productlibrary.rcp.toolviews.model.repositories.ScihubRepository;
+import org.esa.snap.productlibrary.rcp.toolviews.support.ComboCellRenderer;
+import org.esa.snap.productlibrary.rcp.toolviews.support.SortingDecorator;
 import org.esa.snap.productlibrary.rcp.toolviews.timeline.TimelinePanel;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.quicklooks.ThumbnailPanel;
@@ -47,7 +51,12 @@ import org.openide.windows.TopComponent;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
@@ -87,7 +96,7 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
     private final static String LAST_ERROR_OUTPUT_DIR_KEY = "snap.lastErrorOutputDir";
 
     private JPanel mainPanel;
-    private JComboBox repositoryListCombo;
+    private JComboBox<RepositoryInterface> repositoryListCombo;
     private ProductEntryTable productEntryTable;
     private ProductEntryList productEntryList;
     private ThumbnailView thumbnailView;
@@ -199,7 +208,9 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
                 }
             }
         });
-        applyConfig(libConfig);
+
+        populateRepositoryListCombo(libConfig);
+
         mainPanel.addComponentListener(new ComponentAdapter() {
 
             @Override
@@ -212,7 +223,7 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
                 libConfig.setWindowBounds(e.getComponent().getBounds());
             }
         });
-        setUIComponentsEnabled(repositoryListCombo.getItemCount() > 1);
+        setUIComponentsEnabled(doRepositoriesExist());
 
         setLayout(new BorderLayout());
         add(mainPanel, BorderLayout.CENTER);
@@ -252,14 +263,16 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
 
         headerBar.add(new JLabel("Folder:")); /* I18N */
         gbc.weightx = 99;
-        repositoryListCombo = new JComboBox();
-        repositoryListCombo.setName(getClass().getName() + "repositoryListCombo");
+
+        repositoryListCombo = new JComboBox<>();
+        repositoryListCombo.setRenderer(new ComboCellRenderer());
+
         repositoryListCombo.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent event) {
                 if (event.getStateChange() == ItemEvent.SELECTED) {
-                    final Object selectedItem = repositoryListCombo.getSelectedItem();
-                    if (selectedItem instanceof File) {
-                        dbPane.setBaseDir((File) selectedItem);
+                    final RepositoryInterface selectedItem = (RepositoryInterface)repositoryListCombo.getSelectedItem();
+                    if (selectedItem instanceof FolderRepository) {
+                        dbPane.setBaseDir(((FolderRepository) selectedItem).getBaseDir());
                     } else {
                         dbPane.setBaseDir(null);
                     }
@@ -371,11 +384,15 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         return centrePanel;
     }
 
-    private void applyConfig(final ProductLibraryConfig config) {
+    private void populateRepositoryListCombo(final ProductLibraryConfig config) {
+        // add default repositories
+        repositoryListCombo.insertItemAt(new FolderRepository(DBQuery.ALL_FOLDERS, null), 0);
+        repositoryListCombo.insertItemAt(new ScihubRepository(), 1);
+
+        // add previously added folder repositories
         final File[] baseDirList = config.getBaseDirs();
-        repositoryListCombo.insertItemAt(DBQuery.ALL_FOLDERS, 0);
         for (File f : baseDirList) {
-            repositoryListCombo.insertItemAt(f, repositoryListCombo.getItemCount());
+            repositoryListCombo.insertItemAt(new FolderRepository(f.getAbsolutePath(), f), repositoryListCombo.getItemCount());
         }
         if (baseDirList.length > 0) {
             repositoryListCombo.setSelectedIndex(0);
@@ -394,8 +411,8 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         if (dlg.IsOK()) {
             libConfig.addBaseDir(baseDir);
             final int index = repositoryListCombo.getItemCount();
-            repositoryListCombo.insertItemAt(baseDir, index);
-            setUIComponentsEnabled(repositoryListCombo.getItemCount() > 1);
+            repositoryListCombo.insertItemAt(new FolderRepository(baseDir.getAbsolutePath(), baseDir), index);
+            setUIComponentsEnabled(doRepositoriesExist());
 
             DBScanner.Options options = new DBScanner.Options(dlg.shouldDoRecusive(),
                     dlg.shouldValidateZips(),
@@ -484,6 +501,10 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
                 UpdateUI();
             }
         }
+    }
+
+    private boolean doRepositoriesExist() {
+        return repositoryListCombo.getItemCount() > 1;
     }
 
     private void setUIComponentsEnabled(final boolean enable) {
@@ -676,7 +697,7 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
 
         public void notifyMSG(final MSG msg) {
             if (msg.equals(DBRemover.DBRemoverListener.MSG.DONE)) {
-                setUIComponentsEnabled(repositoryListCombo.getItemCount() > 1);
+                setUIComponentsEnabled(doRepositoriesExist());
                 UpdateUI();
             }
         }

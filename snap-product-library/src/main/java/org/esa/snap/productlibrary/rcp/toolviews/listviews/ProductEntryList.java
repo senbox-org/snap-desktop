@@ -18,7 +18,7 @@ package org.esa.snap.productlibrary.rcp.toolviews.listviews;
 import org.esa.snap.engine_utilities.db.ProductEntry;
 import org.esa.snap.productlibrary.rcp.toolviews.ProductLibraryActions;
 import org.esa.snap.productlibrary.rcp.toolviews.model.ProductEntryTableModel;
-import org.esa.snap.productlibrary.rcp.toolviews.model.SortingDecorator;
+import org.esa.snap.productlibrary.rcp.toolviews.support.SortingDecorator;
 
 /**
  * Created by luis on 30/01/2016.
