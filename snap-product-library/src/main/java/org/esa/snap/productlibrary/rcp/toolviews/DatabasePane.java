@@ -27,7 +27,6 @@ import org.esa.snap.engine_utilities.db.SQLUtils;
 import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
-import org.esa.snap.ui.UIUtils;
 import org.jdesktop.swingx.JXDatePicker;
 
 import javax.swing.*;
@@ -73,7 +72,6 @@ public final class DatabasePane extends JPanel {
     private final JTextField metdataValueField = new JTextField();
     private final JTextArea metadataArea = new JTextArea();
     private final JButton addMetadataButton = new JButton("+");
-    private final JButton updateButton = new JButton(UIUtils.loadImageIcon("icons/ViewRefresh16.png"));
     private final JTextArea productText = new JTextArea();
 
     private ProductDB db;
@@ -113,11 +111,7 @@ public final class DatabasePane extends JPanel {
                     addMetadataText();
                 }
             });
-            updateButton.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    queryDatabase();
-                }
-            });
+
         } catch (Throwable t) {
             handleException(t);
         }
@@ -255,7 +249,6 @@ public final class DatabasePane extends JPanel {
         gbc.gridx = 2;
         gbc.gridwidth = 1;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        freeSearchPanel.add(updateButton, gbc);
 
         DialogUtils.fillPanel(freeSearchPanel, gbc);
         return freeSearchPanel;

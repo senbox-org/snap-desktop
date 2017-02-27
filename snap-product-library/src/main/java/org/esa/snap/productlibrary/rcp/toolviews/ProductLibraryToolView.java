@@ -41,7 +41,6 @@ import org.esa.snap.rcp.quicklooks.ThumbnailPanel;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.rcp.windows.ToolTopComponent;
 import org.esa.snap.ui.UIUtils;
-import org.esa.snap.ui.tool.ToolButtonFactory;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -87,11 +86,9 @@ import java.io.PrintStream;
 public class ProductLibraryToolView extends ToolTopComponent implements LabelBarProgressMonitor.ProgressBarListener,
         DatabasePane.DatabaseQueryListener, WorldMapUI.WorldMapUIListener, ListView.ListViewListener, ProductLibraryActions.ProductLibraryActionListener {
 
-    private static ImageIcon updateIcon, updateRolloverIcon;
-    private static ImageIcon stopIcon, stopRolloverIcon;
+    private static ImageIcon updateIcon, searchIcon, stopIcon, helpIcon;
     private static ImageIcon addButtonIcon, removeButtonIcon;
     private static ImageIcon listViewButtonIcon, tableViewButtonIcon, thumbnailViewButtonIcon;
-    private static ImageIcon helpButtonIcon;
 
     private final static String LAST_ERROR_OUTPUT_DIR_KEY = "snap.lastErrorOutputDir";
 
@@ -106,11 +103,12 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
     private JPanel progressPanel;
     private JScrollPane listViewPane, tableViewPane, thumbnailPane;
     private JSplitPane splitPaneV;
-    private JButton addButton, removeButton, viewButton, updateButton;
+    private JButton addButton, removeButton, viewButton, updateButton, searchButton;
 
     private LabelBarProgressMonitor progMon;
     private JProgressBar progressBar;
     private ProductLibraryConfig libConfig;
+
     private static final String helpId = "productLibrary";
 
     private WorldMapUI worldMapUI = null;
@@ -166,15 +164,14 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
 
     private static void loadIcons() {
         updateIcon = UIUtils.loadImageIcon("/org/esa/snap/productlibrary/icons/refresh24.png", ProductLibraryToolView.class);
-        updateRolloverIcon = ToolButtonFactory.createRolloverIcon(updateIcon);
+        searchIcon = UIUtils.loadImageIcon("/org/esa/snap/productlibrary/icons/search24.png", ProductLibraryToolView.class);
         stopIcon = UIUtils.loadImageIcon("icons/Stop24.gif");
-        stopRolloverIcon = ToolButtonFactory.createRolloverIcon(stopIcon);
         addButtonIcon = UIUtils.loadImageIcon("icons/Plus24.gif");
         removeButtonIcon = UIUtils.loadImageIcon("icons/Minus24.gif");
         listViewButtonIcon = UIUtils.loadImageIcon("/org/esa/snap/rcp/icons/view_list24.png", ThumbnailPanel.class);
         tableViewButtonIcon = UIUtils.loadImageIcon("/org/esa/snap/rcp/icons/view_table24.png", ThumbnailPanel.class);
         thumbnailViewButtonIcon = UIUtils.loadImageIcon("/org/esa/snap/rcp/icons/view_thumbnails24.png", ThumbnailPanel.class);
-        helpButtonIcon = UIUtils.loadImageIcon("icons/Help24.gif");
+        helpIcon = UIUtils.loadImageIcon("icons/Help24.gif");
     }
 
     private void initUI() {
@@ -282,6 +279,14 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         headerBar.add(repositoryListCombo, gbc);
         gbc.weightx = 0;
 
+        searchButton = DialogUtils.createButton("searchButton", "Apply Search Query", searchIcon, headerBar, DialogUtils.ButtonStyle.Icon);
+        searchButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                dbPane.queryDatabase();
+            }
+        });
+        headerBar.add(searchButton, gbc);
+
         addButton = DialogUtils.createButton("addButton", "Add folder", addButtonIcon, headerBar, DialogUtils.ButtonStyle.Icon);
         addButton.addActionListener(new ActionListener() {
 
@@ -326,7 +331,7 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         });
         headerBar.add(viewButton, gbc);
 
-        final JButton helpButton = DialogUtils.createButton("helpButton", "Help", helpButtonIcon, headerBar, DialogUtils.ButtonStyle.Icon);
+        final JButton helpButton = DialogUtils.createButton("helpButton", "Help", helpIcon, headerBar, DialogUtils.ButtonStyle.Icon);
         HelpCtx.setHelpIDString(helpButton, helpId);
         helpButton.addActionListener(e -> new HelpCtx(helpId).display());
         headerBar.add(helpButton, gbc);
@@ -516,13 +521,11 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
     private void toggleUpdateButton(final String command) {
         if (command.equals(LabelBarProgressMonitor.stopCommand)) {
             updateButton.setIcon(stopIcon);
-            updateButton.setRolloverIcon(stopRolloverIcon);
             updateButton.setActionCommand(LabelBarProgressMonitor.stopCommand);
             addButton.setEnabled(false);
             removeButton.setEnabled(false);
         } else {
             updateButton.setIcon(updateIcon);
-            updateButton.setRolloverIcon(updateRolloverIcon);
             updateButton.setActionCommand(LabelBarProgressMonitor.updateCommand);
             addButton.setEnabled(true);
             removeButton.setEnabled(true);
