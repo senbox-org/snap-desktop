@@ -18,11 +18,7 @@ package org.esa.snap.rcp.actions.window;
 import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.core.SubProgressMonitor;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
-import org.esa.snap.core.datamodel.Band;
-import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.datamodel.ProductNode;
-import org.esa.snap.core.datamodel.RGBImageProfile;
-import org.esa.snap.core.datamodel.RasterDataNode;
+import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.dataop.barithm.BandArithmetic;
 import org.esa.snap.core.jexp.ParseException;
 import org.esa.snap.core.util.ArrayUtils;
@@ -34,19 +30,14 @@ import org.esa.snap.ui.RGBImageProfilePane;
 import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.product.ProductSceneImage;
 import org.esa.snap.ui.product.ProductSceneView;
-import org.openide.awt.ActionID;
-import org.openide.awt.ActionReference;
-import org.openide.awt.ActionReferences;
-import org.openide.awt.ActionRegistration;
-import org.openide.awt.UndoRedo;
+import org.openide.awt.*;
 import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.SwingWorker;
-import java.awt.Cursor;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.util.Arrays;
 
 /**
  * This action opens an RGB image view on the currently selected Product.
@@ -224,15 +215,19 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
         final Product[] products = SnapApp.getDefault().getProductManager().getProducts();
         final int elementIndex = ArrayUtils.getElementIndex(product, products);
         try {
-            if (!BandArithmetic.areRastersEqualInSize(product, rgbaExpressions)) {
+            //if (!BandArithmetic.areRastersEqualInSize(product, rgbaExpressions)) {
+            // If there are multiple product references, the call should consider all the products
+            if (!BandArithmetic.areRastersEqualInSize(products, elementIndex, rgbaExpressions)) {
                 throw new IllegalArgumentException("Referenced rasters are not of the same size");
             }
         } catch (ParseException e) {
             throw new IllegalArgumentException("Expressions are invalid");
         }
+        // if more than 1 products referenced, then don't get the band of the context product
+        boolean moreProductsReferences = Arrays.stream(rgbaExpressions).anyMatch(e -> e.contains("$"));
         for (int i = 0; i < rgbBands.length; i++) {
             String expression = rgbaExpressions[i].isEmpty() ? "0" : rgbaExpressions[i];
-            Band rgbBand = product.getBand(expression);
+            Band rgbBand = moreProductsReferences ? null : product.getBand(expression);
             if (rgbBand == null) {
                 rgbBand = new ProductSceneView.RGBChannel(product,
                                                           determineWidth(expression, products, elementIndex),
