@@ -37,18 +37,20 @@ public class ComboCellRenderer extends JLabel implements ListCellRenderer {
      */
     public Component getListCellRendererComponent(JList list, Object value, int index,
                                                   boolean isSelected, boolean cellHasFocus) {
-        if (isSelected) {
-            setBackground(list.getSelectionBackground());
-            setForeground(list.getSelectionForeground());
-        } else {
-            setBackground(list.getBackground());
-            setForeground(list.getForeground());
-        }
+        if(value != null) {
+            if (isSelected) {
+                setBackground(list.getSelectionBackground());
+                setForeground(list.getSelectionForeground());
+            } else {
+                setBackground(list.getBackground());
+                setForeground(list.getForeground());
+            }
 
-        setText(value.toString());
-        if (value instanceof RepositoryInterface) {
-            RepositoryInterface repo = (RepositoryInterface) value;
-            setIcon(repo.getIconImage());
+            setText(value.toString());
+            if (value instanceof RepositoryInterface) {
+                RepositoryInterface repo = (RepositoryInterface) value;
+                setIcon(repo.getIconImage());
+            }
         }
         return this;
     }
