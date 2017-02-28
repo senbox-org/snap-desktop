@@ -114,6 +114,7 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
     private ProductLibraryActions productLibraryActions;
 
     private boolean initialized = false;
+    private int repositoryFolderStartIndex;
 
     public ProductLibraryToolView() {
         setDisplayName("Product Library");
@@ -360,8 +361,9 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
 
     private void populateRepositoryListCombo(final ProductLibraryConfig config) {
         // add default repositories
-        repositoryListCombo.insertItemAt(new FolderRepository(DBQuery.ALL_FOLDERS, null), 0);
-        repositoryListCombo.insertItemAt(new ScihubRepository(), 1);
+        repositoryFolderStartIndex = 0;
+        repositoryListCombo.insertItemAt(new FolderRepository(DBQuery.ALL_FOLDERS, null), repositoryFolderStartIndex++);
+        repositoryListCombo.insertItemAt(new ScihubRepository(), repositoryFolderStartIndex++);
 
         // add previously added folder repositories
         final File[] baseDirList = config.getBaseDirs();
@@ -384,8 +386,7 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
 
         if (dlg.IsOK()) {
             libConfig.addBaseDir(baseDir);
-            final int index = repositoryListCombo.getItemCount();
-            repositoryListCombo.insertItemAt(new FolderRepository(baseDir.getAbsolutePath(), baseDir), index);
+            repositoryListCombo.insertItemAt(new FolderRepository(baseDir.getAbsolutePath(), baseDir), repositoryListCombo.getItemCount());
             setUIComponentsEnabled(doRepositoriesExist());
 
             DBScanner.Options options = new DBScanner.Options(dlg.shouldDoRecusive(),
@@ -393,6 +394,43 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
                     dlg.shouldDoQuicklooks());
             updateRepostitory(baseDir, options);
         }
+    }
+
+    private void removeRepository() {
+
+        final Object selectedItem = repositoryListCombo.getSelectedItem();
+        final int index = repositoryListCombo.getSelectedIndex();
+        if (index == 0) {
+            final Dialogs.Answer status = Dialogs.requestDecision("Remove folders",
+                                                                  "This will remove all folders and products from the database.\n" +
+                                                                          "Are you sure you wish to continue?", true, null);
+            if (status == Dialogs.Answer.YES) {
+
+                while (repositoryListCombo.getItemCount() > repositoryFolderStartIndex) {
+                    final FolderRepository repo = (FolderRepository) repositoryListCombo.getItemAt(repositoryFolderStartIndex);
+                    libConfig.removeBaseDir(repo.getBaseDir());
+                    repositoryListCombo.removeItemAt(repositoryFolderStartIndex);
+                }
+                removeProducts(null); // remove all
+                UpdateUI();
+            }
+        } else if (selectedItem instanceof FolderRepository) {
+            final FolderRepository repo = (FolderRepository) selectedItem;
+            final Dialogs.Answer status = Dialogs.requestDecision("Remove products",
+                                                                  "This will remove all products within " +
+                                                                          repo.getBaseDir().getAbsolutePath() + " from the database\n" +
+                                                                          "Are you sure you wish to continue?", true, null);
+            if (status == Dialogs.Answer.YES) {
+                libConfig.removeBaseDir(repo.getBaseDir());
+                repositoryListCombo.removeItemAt(index);
+                removeProducts(repo.getBaseDir());
+                UpdateUI();
+            }
+        }
+    }
+
+    private boolean doRepositoriesExist() {
+        return repositoryListCombo.getItemCount() > repositoryFolderStartIndex;
     }
 
     LabelBarProgressMonitor createLabelBarProgressMonitor() {
@@ -442,43 +480,6 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         final DBRemover remover = new DBRemover(dbPane.getDB(), baseDir, progMon);
         remover.addListener(new MyDatabaseRemoverListener());
         remover.execute();
-    }
-
-    private void removeRepository() {
-
-        final Object selectedItem = repositoryListCombo.getSelectedItem();
-        final int index = repositoryListCombo.getSelectedIndex();
-        if (index == 0) {
-            final Dialogs.Answer status = Dialogs.requestDecision("Remove folders",
-                    "This will remove all folders and products from the database.\n" +
-                            "Are you sure you wish to continue?", true, null);
-            if (status == Dialogs.Answer.YES) {
-
-                while (repositoryListCombo.getItemCount() > 1) {
-                    final File baseDir = (File) repositoryListCombo.getItemAt(1);
-                    libConfig.removeBaseDir(baseDir);
-                    repositoryListCombo.removeItemAt(1);
-                }
-                removeProducts(null); // remove all
-                UpdateUI();
-            }
-        } else if (selectedItem instanceof File) {
-            final File baseDir = (File) selectedItem;
-            final Dialogs.Answer status = Dialogs.requestDecision("Remove products",
-                    "This will remove all products within " +
-                            baseDir.getAbsolutePath() + " from the database\n" +
-                            "Are you sure you wish to continue?", true, null);
-            if (status == Dialogs.Answer.YES) {
-                libConfig.removeBaseDir(baseDir);
-                repositoryListCombo.removeItemAt(index);
-                removeProducts(baseDir);
-                UpdateUI();
-            }
-        }
-    }
-
-    private boolean doRepositoriesExist() {
-        return repositoryListCombo.getItemCount() > 1;
     }
 
     private void setUIComponentsEnabled(final boolean enable) {
