@@ -16,7 +16,7 @@
 package org.esa.snap.graphbuilder.gpf.ui;
 
 import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.engine_utilities.db.CommonReaders;
+import org.esa.snap.engine_utilities.gpf.CommonReaders;
 
 import javax.swing.JList;
 import java.awt.Dimension;
