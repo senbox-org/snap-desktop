@@ -27,6 +27,7 @@ import org.esa.snap.productlibrary.rcp.toolviews.extensions.ProductLibraryAction
 import org.esa.snap.productlibrary.rcp.toolviews.support.SortingDecorator;
 import org.esa.snap.productlibrary.rcp.utils.ProductOpener;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.rcp.quicklooks.ThumbnailPanel;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.SnapFileChooser;
 import org.esa.snap.ui.UIUtils;
@@ -52,8 +53,12 @@ public class ProductLibraryActions {
     private static final ImageIcon copyIcon = UIUtils.loadImageIcon("/org/esa/snap/productlibrary/icons/copy24.png", ProductLibraryToolView.class);
     private static final ImageIcon batchIcon = UIUtils.loadImageIcon("/org/esa/snap/productlibrary/icons/batch24.png", ProductLibraryToolView.class);
 
+    public static final ImageIcon listViewButtonIcon = UIUtils.loadImageIcon("/org/esa/snap/rcp/icons/view_list24.png", ThumbnailPanel.class);
+    public static final ImageIcon tableViewButtonIcon = UIUtils.loadImageIcon("/org/esa/snap/rcp/icons/view_table24.png", ThumbnailPanel.class);
+    public static final ImageIcon thumbnailViewButtonIcon = UIUtils.loadImageIcon("/org/esa/snap/rcp/icons/view_thumbnails24.png", ThumbnailPanel.class);
+
     private final ProductLibraryToolView toolView;
-    private JButton selectAllButton, openAllSelectedButton, copySelectedButton, batchProcessButton;
+    private JButton viewButton, selectAllButton, openAllSelectedButton, copySelectedButton, batchProcessButton;
 
     private List<ProductLibraryActionExt> actionExtList = new ArrayList<>();
 
@@ -69,6 +74,13 @@ public class ProductLibraryActions {
     public JPanel createCommandPanel() {
         final JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+        viewButton = DialogUtils.createButton("viewButton", "Change View", thumbnailViewButtonIcon, panel, DialogUtils.ButtonStyle.Icon);
+        viewButton.addActionListener(new ActionListener() {
+            public synchronized void actionPerformed(final ActionEvent e) {
+                toolView.changeView();
+            }
+        });
 
         selectAllButton = DialogUtils.createButton("selectAllButton", "Select all", selectAllIcon, panel, DialogUtils.ButtonStyle.Icon);
         selectAllButton.addActionListener(new ActionListener() {
@@ -100,6 +112,7 @@ public class ProductLibraryActions {
             }
         });
 
+        panel.add(viewButton);
         panel.add(selectAllButton);
         panel.add(openAllSelectedButton);
         panel.add(copySelectedButton);
@@ -355,8 +368,9 @@ public class ProductLibraryActions {
 
                     public void actionPerformed(final ActionEvent e) {
                         //todo
-                        if (batchProcessButton.isEnabled())
+                        if (batchProcessButton.isEnabled()) {
                             batchProcess(toolView.getSelectedProductEntries(), file);
+                        }
                     }
                 });
                 menu.add(item);
@@ -380,8 +394,9 @@ public class ProductLibraryActions {
 
                     public void actionPerformed(final ActionEvent e) {
                         //todo
-                        if (batchProcessButton.isEnabled())
+                        if (batchProcessButton.isEnabled()) {
                             batchProcess(toolView.getSelectedProductEntries(), file);
+                        }
                     }
                 });
                 menu.add(item);
@@ -400,6 +415,11 @@ public class ProductLibraryActions {
         copyToItem.setEnabled(allValid);
         moveToItem.setEnabled(allValid);
         deleteItem.setEnabled(allValid);
+    }
+
+    public void updateViewButton(final ImageIcon icon) {
+        viewButton.setIcon(icon);
+        viewButton.setRolloverIcon(icon);
     }
 
     public void addListener(final ProductLibraryActionListener listener) {

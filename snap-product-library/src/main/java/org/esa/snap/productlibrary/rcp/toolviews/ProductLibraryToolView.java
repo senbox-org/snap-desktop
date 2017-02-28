@@ -37,7 +37,6 @@ import org.esa.snap.productlibrary.rcp.toolviews.support.ComboCellRenderer;
 import org.esa.snap.productlibrary.rcp.toolviews.support.SortingDecorator;
 import org.esa.snap.productlibrary.rcp.toolviews.timeline.TimelinePanel;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.quicklooks.ThumbnailPanel;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.rcp.windows.ToolTopComponent;
 import org.esa.snap.ui.UIUtils;
@@ -88,7 +87,6 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
 
     private static ImageIcon updateIcon, searchIcon, stopIcon, helpIcon;
     private static ImageIcon addButtonIcon, removeButtonIcon;
-    private static ImageIcon listViewButtonIcon, tableViewButtonIcon, thumbnailViewButtonIcon;
 
     private final static String LAST_ERROR_OUTPUT_DIR_KEY = "snap.lastErrorOutputDir";
 
@@ -103,7 +101,7 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
     private JPanel progressPanel;
     private JScrollPane listViewPane, tableViewPane, thumbnailPane;
     private JSplitPane splitPaneV;
-    private JButton addButton, removeButton, viewButton, updateButton, searchButton;
+    private JButton addButton, removeButton, updateButton, searchButton;
 
     private LabelBarProgressMonitor progMon;
     private JProgressBar progressBar;
@@ -168,9 +166,6 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         stopIcon = UIUtils.loadImageIcon("icons/Stop24.gif");
         addButtonIcon = UIUtils.loadImageIcon("icons/Plus24.gif");
         removeButtonIcon = UIUtils.loadImageIcon("icons/Minus24.gif");
-        listViewButtonIcon = UIUtils.loadImageIcon("/org/esa/snap/rcp/icons/view_list24.png", ThumbnailPanel.class);
-        tableViewButtonIcon = UIUtils.loadImageIcon("/org/esa/snap/rcp/icons/view_table24.png", ThumbnailPanel.class);
-        thumbnailViewButtonIcon = UIUtils.loadImageIcon("/org/esa/snap/rcp/icons/view_thumbnails24.png", ThumbnailPanel.class);
         helpIcon = UIUtils.loadImageIcon("icons/Help24.gif");
     }
 
@@ -304,32 +299,6 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
             }
         });
         headerBar.add(removeButton, gbc);
-
-        viewButton = DialogUtils.createButton("viewButton", "Change View", thumbnailViewButtonIcon, headerBar, DialogUtils.ButtonStyle.Icon);
-        viewButton.addActionListener(new ActionListener() {
-            public synchronized void actionPerformed(final ActionEvent e) {
-                currentListView.setProductEntryList(new ProductEntry[]{}); // force to empty
-
-                if (currentListView instanceof ProductEntryList) {
-                    currentListView = productEntryTable;
-                    viewButton.setIcon(thumbnailViewButtonIcon);
-                    viewButton.setRolloverIcon(thumbnailViewButtonIcon);
-                    splitPaneV.setLeftComponent(tableViewPane);
-                } else if (currentListView instanceof ProductEntryTable) {
-                    currentListView = thumbnailView;
-                    viewButton.setIcon(listViewButtonIcon);
-                    viewButton.setRolloverIcon(listViewButtonIcon);
-                    splitPaneV.setLeftComponent(thumbnailPane);
-                } else if (currentListView instanceof ThumbnailView) {
-                    currentListView = productEntryList;
-                    viewButton.setIcon(tableViewButtonIcon);
-                    viewButton.setRolloverIcon(tableViewButtonIcon);
-                    splitPaneV.setLeftComponent(listViewPane);
-                }
-                notifyNewEntryListAvailable();
-            }
-        });
-        headerBar.add(viewButton, gbc);
 
         final JButton helpButton = DialogUtils.createButton("helpButton", "Help", helpIcon, headerBar, DialogUtils.ButtonStyle.Icon);
         HelpCtx.setHelpIDString(helpButton, helpId);
@@ -535,6 +504,25 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
     void UpdateUI() {
         dbPane.refresh();
         currentListView.updateUI();
+    }
+
+    void changeView() {
+        currentListView.setProductEntryList(new ProductEntry[]{}); // force to empty
+
+        if (currentListView instanceof ProductEntryList) {
+            currentListView = productEntryTable;
+            productLibraryActions.updateViewButton(ProductLibraryActions.thumbnailViewButtonIcon);
+            splitPaneV.setLeftComponent(tableViewPane);
+        } else if (currentListView instanceof ProductEntryTable) {
+            currentListView = thumbnailView;
+            productLibraryActions.updateViewButton(ProductLibraryActions.listViewButtonIcon);
+            splitPaneV.setLeftComponent(thumbnailPane);
+        } else if (currentListView instanceof ThumbnailView) {
+            currentListView = productEntryList;
+            productLibraryActions.updateViewButton(ProductLibraryActions.tableViewButtonIcon);
+            splitPaneV.setLeftComponent(listViewPane);
+        }
+        notifyNewEntryListAvailable();
     }
 
     void findSlices(int dataTakeId) {
