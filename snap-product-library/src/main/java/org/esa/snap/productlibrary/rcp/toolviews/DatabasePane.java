@@ -25,6 +25,8 @@ import org.esa.snap.engine_utilities.db.ProductDB;
 import org.esa.snap.engine_utilities.db.ProductEntry;
 import org.esa.snap.engine_utilities.db.SQLUtils;
 import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
+import org.esa.snap.productlibrary.rcp.toolviews.model.repositories.FolderRepository;
+import org.esa.snap.productlibrary.rcp.toolviews.model.repositories.RepositoryInterface;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
 import org.jdesktop.swingx.JXDatePicker;
@@ -74,6 +76,7 @@ public final class DatabasePane extends JPanel {
     private final JButton addMetadataButton = new JButton("+");
     private final JTextArea productText = new JTextArea();
 
+    private RepositoryInterface repository;
     private ProductDB db;
     private DBQuery dbQuery = new DBQuery();
     private ProductEntry[] productEntryList = null;
@@ -337,7 +340,15 @@ public final class DatabasePane extends JPanel {
         return list.toArray(new String[list.size()]);
     }
 
-    public void setBaseDir(final File dir) {
+    public void setRepository(final RepositoryInterface repo) {
+        this.repository = repo;
+
+        if (repository instanceof FolderRepository) {
+            setBaseDir(((FolderRepository) repo).getBaseDir());
+        }
+    }
+
+    private void setBaseDir(final File dir) {
         dbQuery.setBaseDir(dir);
         if (db != null)
             queryDatabase();

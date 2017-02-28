@@ -263,12 +263,8 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         repositoryListCombo.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent event) {
                 if (event.getStateChange() == ItemEvent.SELECTED) {
-                    final RepositoryInterface selectedItem = (RepositoryInterface)repositoryListCombo.getSelectedItem();
-                    if (selectedItem instanceof FolderRepository) {
-                        dbPane.setBaseDir(((FolderRepository) selectedItem).getBaseDir());
-                    } else {
-                        dbPane.setBaseDir(null);
-                    }
+                    final RepositoryInterface repo = (RepositoryInterface)repositoryListCombo.getSelectedItem();
+                    dbPane.setRepository(repo);
                 }
             }
         });
