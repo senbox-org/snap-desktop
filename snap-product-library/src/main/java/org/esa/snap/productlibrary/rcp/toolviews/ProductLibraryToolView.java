@@ -18,6 +18,7 @@ package org.esa.snap.productlibrary.rcp.toolviews;
 import org.esa.snap.core.datamodel.GeoPos;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
+import org.esa.snap.engine_utilities.db.DBProductQuery;
 import org.esa.snap.engine_utilities.db.DBQuery;
 import org.esa.snap.engine_utilities.db.ProductEntry;
 import org.esa.snap.graphbuilder.gpf.ui.worldmap.WorldMapUI;
@@ -137,7 +138,6 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
     private synchronized void initialize() {
         initDatabase();
         initUI();
-        dbPane.getDB();
 
         initialized = true;
     }
@@ -147,18 +147,6 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
 
         dbPane = new DatabasePane();
         dbPane.addListener(this);
-
-        productLibraryActions = new ProductLibraryActions(this);
-        productLibraryActions.addListener(this);
-
-        productEntryTable = new ProductEntryTable(productLibraryActions);
-        productEntryTable.addListener(this);
-        productEntryList = new ProductEntryList(productLibraryActions);
-        productEntryList.addListener(this);
-        thumbnailView = new ThumbnailView(productLibraryActions);
-        thumbnailView.addListener(this);
-
-        currentListView = productEntryTable;
     }
 
     private static void loadIcons() {
@@ -330,6 +318,18 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         leftPanel.setMinimumSize(new Dimension(200, 577));
         leftPanel.add(dbPane, BorderLayout.NORTH);
 
+        productLibraryActions = new ProductLibraryActions(this);
+        productLibraryActions.addListener(this);
+
+        productEntryTable = new ProductEntryTable(productLibraryActions);
+        productEntryTable.addListener(this);
+        productEntryList = new ProductEntryList(productLibraryActions);
+        productEntryList.addListener(this);
+        thumbnailView = new ThumbnailView(productLibraryActions);
+        thumbnailView.addListener(this);
+
+        currentListView = productEntryTable;
+
         final JPanel commandPanel = productLibraryActions.createCommandPanel();
 
         listViewPane = new JScrollPane(productEntryList);
@@ -382,13 +382,14 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
 
         if (dlg.IsOK()) {
             libConfig.addBaseDir(baseDir);
-            repositoryListCombo.insertItemAt(new FolderRepository(baseDir.getAbsolutePath(), baseDir), repositoryListCombo.getItemCount());
+            RepositoryInterface repo = new FolderRepository(baseDir.getAbsolutePath(), baseDir);
+            repositoryListCombo.insertItemAt(repo, repositoryListCombo.getItemCount());
             setUIComponentsEnabled(doRepositoriesExist());
 
             DBScanner.Options options = new DBScanner.Options(dlg.shouldDoRecusive(),
                     dlg.shouldValidateZips(),
                     dlg.shouldDoQuicklooks());
-            updateRepostitory(baseDir, options);
+            updateRepostitory(repo, options);
         }
     }
 
@@ -419,7 +420,7 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
             if (status == Dialogs.Answer.YES) {
                 libConfig.removeBaseDir(repo.getBaseDir());
                 repositoryListCombo.removeItemAt(index);
-                removeProducts(repo.getBaseDir());
+                removeProducts(repo);
                 UpdateUI();
             }
         }
@@ -463,19 +464,30 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         notifySelectionChanged();
     }
 
-    private synchronized void updateRepostitory(final File baseDir, final DBScanner.Options options) {
-        if (baseDir == null) return;
-        progMon = createLabelBarProgressMonitor();
-        final DBScanner scanner = new DBScanner(dbPane.getDB(), baseDir, options, progMon);
-        scanner.addListener(new MyDatabaseScannerListener());
-        scanner.execute();
+    private synchronized void updateRepostitory(final RepositoryInterface repo, final DBScanner.Options options) {
+        if(repo instanceof FolderRepository) {
+            final FolderRepository folderRepo = (FolderRepository) repo;
+            if(folderRepo.getBaseDir() == null) {
+                return;
+            }
+
+            progMon = createLabelBarProgressMonitor();
+            final DBScanner scanner = new DBScanner(((DBProductQuery)folderRepo.getProductQueryInterface()).getDB(),
+                                                    folderRepo.getBaseDir(), options, progMon);
+            scanner.addListener(new MyDatabaseScannerListener());
+            scanner.execute();
+        }
     }
 
-    private synchronized void removeProducts(final File baseDir) {
-        progMon = createLabelBarProgressMonitor();
-        final DBRemover remover = new DBRemover(dbPane.getDB(), baseDir, progMon);
-        remover.addListener(new MyDatabaseRemoverListener());
-        remover.execute();
+    private synchronized void removeProducts(final RepositoryInterface repo) {
+        if(repo instanceof FolderRepository) {
+            final FolderRepository folderRepo = (FolderRepository) repo;
+            progMon = createLabelBarProgressMonitor();
+            final DBRemover remover = new DBRemover(((DBProductQuery)folderRepo.getProductQueryInterface()).getDB(),
+                                                    folderRepo.getBaseDir(), progMon);
+            remover.addListener(new MyDatabaseRemoverListener());
+            remover.execute();
+        }
     }
 
     private void setUIComponentsEnabled(final boolean enable) {
@@ -527,13 +539,12 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
     }
 
     private void rescanFolder(final DBScanner.Options options) {
-        if (repositoryListCombo.getSelectedIndex() != 0) {
-            updateRepostitory((File) repositoryListCombo.getSelectedItem(), options);
-        } else {
-            final File[] baseDirList = libConfig.getBaseDirs();
-            for (File f : baseDirList) {
-                updateRepostitory(f, options);
+        if (repositoryListCombo.getSelectedIndex() == 0) {
+            for (int i = repositoryFolderStartIndex; i < repositoryListCombo.getItemCount(); ++i) {
+                updateRepostitory(repositoryListCombo.getItemAt(i), options);
             }
+        } else {
+            updateRepostitory((RepositoryInterface)repositoryListCombo.getSelectedItem(), options);
         }
     }
 
@@ -614,8 +625,9 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
                 p.println(err.message + "   " + err.file.getAbsolutePath());
             }
         } finally {
-            if (p != null)
+            if (p != null) {
                 p.close();
+            }
         }
     }
 

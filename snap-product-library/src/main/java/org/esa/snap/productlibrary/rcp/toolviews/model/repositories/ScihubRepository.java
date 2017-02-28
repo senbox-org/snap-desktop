@@ -15,6 +15,8 @@
  */
 package org.esa.snap.productlibrary.rcp.toolviews.model.repositories;
 
+import org.esa.snap.engine_utilities.db.ProductQueryInterface;
+import org.esa.snap.engine_utilities.download.opensearch.OpenSearchProductQuery;
 import org.esa.snap.productlibrary.rcp.toolviews.ProductLibraryToolView;
 import org.esa.snap.ui.UIUtils;
 
@@ -40,5 +42,9 @@ public class ScihubRepository implements RepositoryInterface {
 
     public ImageIcon getIconImage() {
         return icon;
+    }
+
+    public ProductQueryInterface getProductQueryInterface() {
+        return OpenSearchProductQuery.instance();
     }
 }

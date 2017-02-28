@@ -21,13 +21,13 @@ import org.esa.snap.core.datamodel.ProductData;
 import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.engine_utilities.datamodel.AbstractMetadata;
 import org.esa.snap.engine_utilities.db.DBQuery;
-import org.esa.snap.engine_utilities.db.ProductDB;
+import org.esa.snap.engine_utilities.db.MetadataTable;
 import org.esa.snap.engine_utilities.db.ProductEntry;
+import org.esa.snap.engine_utilities.db.ProductQueryInterface;
 import org.esa.snap.engine_utilities.db.SQLUtils;
 import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
 import org.esa.snap.productlibrary.rcp.toolviews.model.repositories.FolderRepository;
 import org.esa.snap.productlibrary.rcp.toolviews.model.repositories.RepositoryInterface;
-import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
 import org.jdesktop.swingx.JXDatePicker;
 
@@ -49,7 +49,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
-
+    UI for database query
  */
 public final class DatabasePane extends JPanel {
 
@@ -77,9 +77,9 @@ public final class DatabasePane extends JPanel {
     private final JTextArea productText = new JTextArea();
 
     private RepositoryInterface repository;
-    private ProductDB db;
+    private ProductQueryInterface productQueryInterface;
+
     private DBQuery dbQuery = new DBQuery();
-    private ProductEntry[] productEntryList = null;
     boolean modifyingCombos = false;
 
     private final List<DatabaseQueryListener> listenerList = new ArrayList<>(1);
@@ -160,11 +160,7 @@ public final class DatabasePane extends JPanel {
     }
 
     private static void handleException(Throwable t) {
-        t.printStackTrace();
-        final SnapApp app = SnapApp.getDefault();
-        if (app != null) {
-            Dialogs.showError(t.getMessage());
-        }
+        Dialogs.showError(t.getMessage());
     }
 
     private void createPanel() {
@@ -257,37 +253,44 @@ public final class DatabasePane extends JPanel {
         return freeSearchPanel;
     }
 
-    private void connectToDatabase() throws Exception {
-        db = ProductDB.instance();
+    public void queryDatabase() {
 
-        refresh();
+        if (metadataNameCombo.getItemCount() == 0) {
+            refresh();
+        }
+
+        setData();
+
+        try {
+            productQueryInterface.query(dbQuery);
+
+            notifyQuery();
+        } catch (Exception e) {
+            handleException(e);
+        }
     }
 
-    public ProductDB getDB() {
-        if (db == null) {
-            queryDatabase();
-        }
-        return db;
+    public ProductEntry[] getProductEntryList() {
+        return productQueryInterface.getProductEntryList();
     }
 
     public void refresh() {
+        boolean origState = lockCombos(true);
         try {
-            if (!db.isReady())
-                return;
-
-            boolean origState = lockCombos(true);
-
             if (metadataNameCombo.getItemCount() == 0) {
-                final String[] metadataNames = db.getMetadataNames();
+                final String[] metadataNames = MetadataTable.getAllMetadataNames();
                 for (String name : metadataNames) {
                     metadataNameCombo.insertItemAt(name, metadataNameCombo.getItemCount());
                 }
             }
 
             updateMissionCombo();
-            lockCombos(origState);
+            updateProductTypeCombo();
+
         } catch (Throwable t) {
             handleException(t);
+        } finally {
+            lockCombos(origState);
         }
     }
 
@@ -298,13 +301,8 @@ public final class DatabasePane extends JPanel {
     }
 
     private void updateMissionCombo() throws SQLException {
-        boolean origState = lockCombos(true);
-        try {
-            missionJList.removeAll();
-            missionJList.setListData(SQLUtils.prependString(DBQuery.ALL_MISSIONS, db.getAllMissions()));
-        } finally {
-            lockCombos(origState);
-        }
+        missionJList.removeAll();
+        missionJList.setListData(SQLUtils.prependString(DBQuery.ALL_MISSIONS, productQueryInterface.getAllMissions()));
     }
 
     private void updateProductTypeCombo() {
@@ -313,18 +311,11 @@ public final class DatabasePane extends JPanel {
             productTypeJList.removeAll();
             acquisitionModeCombo.removeAllItems();
 
-            final String selectedMissions[] = toStringArray(missionJList.getSelectedValuesList());
-            String[] productTypeList;
-            String[] acquisitionModeList;
-            if (StringUtils.contains(selectedMissions, DBQuery.ALL_MISSIONS)) {
-                productTypeList = db.getAllProductTypes();
-                acquisitionModeList = db.getAllAcquisitionModes();
-            } else {
-                productTypeList = db.getProductTypes(selectedMissions);
-                acquisitionModeList = db.getAcquisitionModes(selectedMissions);
-            }
-            productTypeJList.setListData(SQLUtils.prependString(DBQuery.ALL_PRODUCT_TYPES, productTypeList));
-            final String[] modeItems = SQLUtils.prependString(DBQuery.ALL_MODES, acquisitionModeList);
+            final String[] selectedMissions = toStringArray(missionJList.getSelectedValuesList());
+            final String[] missions = StringUtils.contains(selectedMissions, DBQuery.ALL_MISSIONS) ? null : selectedMissions;
+
+            productTypeJList.setListData(SQLUtils.prependString(DBQuery.ALL_PRODUCT_TYPES, productQueryInterface.getAllProductTypes(missions)));
+            final String[] modeItems = SQLUtils.prependString(DBQuery.ALL_MODES, productQueryInterface.getAllAcquisitionModes(missions));
             for (String item : modeItems) {
                 acquisitionModeCombo.addItem(item);
             }
@@ -342,23 +333,26 @@ public final class DatabasePane extends JPanel {
 
     public void setRepository(final RepositoryInterface repo) {
         this.repository = repo;
+        this.productQueryInterface = repository.getProductQueryInterface();
 
         if (repository instanceof FolderRepository) {
             setBaseDir(((FolderRepository) repo).getBaseDir());
+        } else {
+            setBaseDir(null);
         }
+        refresh();
     }
 
     private void setBaseDir(final File dir) {
         dbQuery.setBaseDir(dir);
-        if (db != null)
-            queryDatabase();
+        queryDatabase();
     }
 
     private void addMetadataText() {
         final String name = (String) metadataNameCombo.getSelectedItem();
         final String value = metdataValueField.getText();
         if (!name.isEmpty() && !value.isEmpty()) {
-            if (metadataArea.getText().length() > 0) {
+            if (!metadataArea.getText().isEmpty()) {
                 metadataArea.append(" AND ");
             }
             if (value.matches("-?\\d+(\\.\\d+)?")) {     // isNumeric
@@ -396,41 +390,10 @@ public final class DatabasePane extends JPanel {
         dbQuery.setFreeQuery(metadataArea.getText());
     }
 
-    public void queryDatabase() {
-        if (db == null) {
-            try {
-                connectToDatabase();
-            } catch (Throwable t) {
-                handleException(t);
-            }
-        }
-        if (metadataNameCombo.getItemCount() == 0) {
-            refresh();
-        }
-
-        setData();
-
-        if (productEntryList != null) {
-            ProductEntry.dispose(productEntryList);
-        }
-        try {
-            if (db.isReady()) {
-                productEntryList = dbQuery.queryDatabase(db);
-                notifyQuery();
-            }
-        } catch (Throwable t) {
-            handleException(t);
-        }
-    }
-
     public void setSelectionRect(final GeoPos[] selectionBox) {
         dbQuery.setSelectionRect(selectionBox);
         dbQuery.setReturnAllIfNoIntersection(true);
         queryDatabase();
-    }
-
-    public ProductEntry[] getProductEntryList() {
-        return productEntryList;
     }
 
     public DBQuery getDBQuery() {
@@ -450,9 +413,7 @@ public final class DatabasePane extends JPanel {
     public void setDBQuery(final DBQuery query) throws Exception {
         if (query == null) return;
         dbQuery = query;
-        if (db == null) {
-            connectToDatabase();
-        }
+
         boolean origState = lockCombos(true);
         try {
             missionJList.setSelectedIndices(findIndices(missionJList, dbQuery.getSelectedMissions()));
