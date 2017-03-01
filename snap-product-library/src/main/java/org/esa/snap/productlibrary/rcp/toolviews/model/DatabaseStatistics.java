@@ -51,6 +51,9 @@ public class DatabaseStatistics implements DatabasePane.DatabaseQueryListener {
 
         for (ProductEntry entry : entryList) {
             final ProductData.UTC utc = entry.getFirstLineTime();
+            if(utc == null) {
+                continue;
+            }
             final Calendar cal = getAsCalendar(utc);
             final int year = cal.get(Calendar.YEAR);
             YearData yData = yearDataMap.get(year);
