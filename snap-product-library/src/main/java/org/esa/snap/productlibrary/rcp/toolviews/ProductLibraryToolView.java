@@ -262,7 +262,7 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         searchButton = DialogUtils.createButton("searchButton", "Apply Search Query", searchIcon, headerBar, DialogUtils.ButtonStyle.Icon);
         searchButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                dbPane.fullQuery();
+                search();
             }
         });
         headerBar.add(searchButton, gbc);
@@ -464,6 +464,13 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         notifySelectionChanged();
     }
 
+    private synchronized void search() {
+        progMon = createLabelBarProgressMonitor();
+        final DBWorker dbWorker = new DBWorker(progMon);
+        dbWorker.addListener(new MyDatabaseWorkerListener());
+        dbWorker.queryProducts(dbPane);
+    }
+
     private synchronized void updateRepostitory(final RepositoryInterface repo, final DBScanner.Options options) {
         if(repo instanceof FolderRepository) {
             final FolderRepository folderRepo = (FolderRepository) repo;
@@ -483,10 +490,10 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         if(repo instanceof FolderRepository) {
             final FolderRepository folderRepo = (FolderRepository) repo;
             progMon = createLabelBarProgressMonitor();
-            final DBRemover remover = new DBRemover(((DBProductQuery)folderRepo.getProductQueryInterface()).getDB(),
-                                                    folderRepo.getBaseDir(), progMon);
-            remover.addListener(new MyDatabaseRemoverListener());
-            remover.execute();
+            final DBWorker remover = new DBWorker(progMon);
+            remover.addListener(new MyDatabaseWorkerListener());
+            remover.removeProducts(((DBProductQuery)folderRepo.getProductQueryInterface()).getDB(),
+                                   folderRepo.getBaseDir());
         }
     }
 
@@ -693,10 +700,10 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         }
     }
 
-    private class MyDatabaseRemoverListener implements DBRemover.DBRemoverListener {
+    private class MyDatabaseWorkerListener implements DBWorker.DBWorkerListener {
 
         public void notifyMSG(final MSG msg) {
-            if (msg.equals(DBRemover.DBRemoverListener.MSG.DONE)) {
+            if (msg.equals(DBWorker.DBWorkerListener.MSG.DONE)) {
                 setUIComponentsEnabled(doRepositoriesExist());
                 UpdateUI();
             }

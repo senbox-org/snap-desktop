@@ -15,6 +15,7 @@
  */
 package org.esa.snap.productlibrary.rcp.toolviews;
 
+import com.bc.ceres.core.ProgressMonitor;
 import org.esa.snap.core.datamodel.GeoPos;
 import org.esa.snap.core.datamodel.MetadataElement;
 import org.esa.snap.core.datamodel.ProductData;
@@ -275,12 +276,12 @@ public final class DatabasePane extends JPanel {
         }
     }
 
-    public void fullQuery() {
+    public void fullQuery(final ProgressMonitor pm) {
 
         setData();
 
         try {
-            if(productQueryInterface.fullQuery(dbQuery)) {
+            if(productQueryInterface.fullQuery(dbQuery, pm)) {
                 notifyQuery();
             }
         } catch (Exception e) {
