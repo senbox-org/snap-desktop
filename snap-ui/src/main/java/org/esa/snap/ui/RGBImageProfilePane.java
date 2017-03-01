@@ -29,31 +29,10 @@ import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.ui.product.ProductExpressionPane;
 import org.esa.snap.ui.tool.ToolButtonFactory;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.ComboBoxEditor;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.Insets;
-import java.awt.Window;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -148,6 +127,13 @@ public class RGBImageProfilePane extends JPanel {
         final String[] bandNames;
         if (this.product != null) {
             bandNames = this.product.getBandNames();
+            // if multiple compatible products, the band names should be prefixed by the index of the product
+            // in order to avoid ambiguity
+            if (this.openedProducts.length > 1) {
+                for (int i = 0; i < bandNames.length; i++) {
+                    bandNames[i] = BandArithmetic.getProductNodeNamePrefix(this.product) + bandNames[i];
+                }
+            }
         } else {
             bandNames = new String[0];
         }
