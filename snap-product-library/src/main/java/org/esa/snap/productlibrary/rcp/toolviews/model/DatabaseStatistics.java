@@ -224,7 +224,7 @@ public class DatabaseStatistics implements DatabasePane.DatabaseQueryListener {
 
         public void setSelected(final int m, final boolean selected) {
             dbPane.getDBQuery().setMonthSelected(m, selected);
-            dbPane.queryDatabase();
+            dbPane.partialQuery();
         }
 
         public boolean isSelected(final int m) {

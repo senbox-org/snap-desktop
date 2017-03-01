@@ -262,7 +262,7 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         searchButton = DialogUtils.createButton("searchButton", "Apply Search Query", searchIcon, headerBar, DialogUtils.ButtonStyle.Icon);
         searchButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                dbPane.queryDatabase();
+                dbPane.fullQuery();
             }
         });
         headerBar.add(searchButton, gbc);

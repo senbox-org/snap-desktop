@@ -82,6 +82,9 @@ public final class DatabasePane extends JPanel {
     private DBQuery dbQuery = new DBQuery();
     boolean modifyingCombos = false;
 
+    private final static double MB = 1024 * 1024, GB = 1024, TB = 1024 * 1024;
+    private final DecimalFormat df = new DecimalFormat("#.00");
+
     private final List<DatabaseQueryListener> listenerList = new ArrayList<>(1);
 
     public DatabasePane() {
@@ -93,14 +96,14 @@ public final class DatabasePane extends JPanel {
                 public void valueChanged(ListSelectionEvent event) {
                     if (modifyingCombos || event.getValueIsAdjusting()) return;
                     updateProductTypeCombo();
-                    queryDatabase();
+                    partialQuery();
                 }
             });
             productTypeJList.setFixedCellWidth(100);
             productTypeJList.addListSelectionListener(new ListSelectionListener() {
                 public void valueChanged(ListSelectionEvent event) {
                     if (modifyingCombos || event.getValueIsAdjusting()) return;
-                    queryDatabase();
+                    partialQuery();
                 }
             });
             addComboListener(acquisitionModeCombo);
@@ -124,7 +127,7 @@ public final class DatabasePane extends JPanel {
         combo.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent event) {
                 if (modifyingCombos || event.getStateChange() == ItemEvent.DESELECTED) return;
-                queryDatabase();
+                partialQuery();
             }
         });
     }
@@ -231,6 +234,12 @@ public final class DatabasePane extends JPanel {
 
         freeSearchPanel.add(metadataNameCombo, gbc);
         metadataNameCombo.setPrototypeDisplayValue("123456789012");
+
+        final String[] metadataNames = MetadataTable.getAllMetadataNames();
+        for (String name : metadataNames) {
+            metadataNameCombo.insertItemAt(name, metadataNameCombo.getItemCount());
+        }
+
         gbc.gridx = 1;
         freeSearchPanel.add(metdataValueField, gbc);
         metdataValueField.setColumns(10);
@@ -253,18 +262,27 @@ public final class DatabasePane extends JPanel {
         return freeSearchPanel;
     }
 
-    public void queryDatabase() {
-
-        if (metadataNameCombo.getItemCount() == 0) {
-            refresh();
-        }
+    public void partialQuery() {
 
         setData();
 
         try {
-            productQueryInterface.query(dbQuery);
+            if(productQueryInterface.partialQuery(dbQuery)) {
+                notifyQuery();
+            }
+        } catch (Exception e) {
+            handleException(e);
+        }
+    }
 
-            notifyQuery();
+    public void fullQuery() {
+
+        setData();
+
+        try {
+            if(productQueryInterface.fullQuery(dbQuery)) {
+                notifyQuery();
+            }
         } catch (Exception e) {
             handleException(e);
         }
@@ -277,13 +295,6 @@ public final class DatabasePane extends JPanel {
     public void refresh() {
         boolean origState = lockCombos(true);
         try {
-            if (metadataNameCombo.getItemCount() == 0) {
-                final String[] metadataNames = MetadataTable.getAllMetadataNames();
-                for (String name : metadataNames) {
-                    metadataNameCombo.insertItemAt(name, metadataNameCombo.getItemCount());
-                }
-            }
-
             updateMissionCombo();
             updateProductTypeCombo();
 
@@ -340,12 +351,13 @@ public final class DatabasePane extends JPanel {
         } else {
             setBaseDir(null);
         }
+        missionJList.setSelectedIndex(0);
         refresh();
     }
 
     private void setBaseDir(final File dir) {
         dbQuery.setBaseDir(dir);
-        queryDatabase();
+        partialQuery();
     }
 
     private void addMetadataText() {
@@ -393,7 +405,7 @@ public final class DatabasePane extends JPanel {
     public void setSelectionRect(final GeoPos[] selectionBox) {
         dbQuery.setSelectionRect(selectionBox);
         dbQuery.setReturnAllIfNoIntersection(true);
-        queryDatabase();
+        partialQuery();
     }
 
     public DBQuery getDBQuery() {
@@ -405,7 +417,7 @@ public final class DatabasePane extends JPanel {
         metadataArea.setText(AbstractMetadata.data_take_id + '=' + dataTakeId);
 
         dbQuery.setSelectionRect(null);
-        queryDatabase();
+        partialQuery();
 
         metadataArea.setText("");
     }
@@ -492,14 +504,18 @@ public final class DatabasePane extends JPanel {
             if (!map.isEmpty()) {
                 text.append(map + '\n');
             }
-            if (cal == 1)
+            if (cal == 1) {
                 text.append("Calibrated ");
-            if (ml == 1)
+            }
+            if (ml == 1) {
                 text.append("Multilooked ");
-            if (coreg == 1)
+            }
+            if (coreg == 1) {
                 text.append("Coregistered ");
-            if (tc == 1)
+            }
+            if (tc == 1) {
                 text.append("Terrain Corrected ");
+            }
 
             productText.setText(text.toString());
         } else if (selections != null && selections.length > 1) {
@@ -508,8 +524,7 @@ public final class DatabasePane extends JPanel {
                 totalSize += entry.getFileSize();
             }
 
-            String text = (selections.length + " products\n") +
-                    "Total: " + getSizeString(totalSize);
+            String text = (selections.length + " products\n") + "Total: " + getSizeString(totalSize);
 
             productText.setText(text);
         } else {
@@ -517,10 +532,7 @@ public final class DatabasePane extends JPanel {
         }
     }
 
-    private final static double MB = 1024 * 1024, GB = 1024, TB = 1024 * 1024;
-    private final static DecimalFormat df = new DecimalFormat("#.00");
-
-    private static String getSizeString(long bytes) {
+    private String getSizeString(long bytes) {
         double mb = bytes / MB;
         String unit;
         double value;
