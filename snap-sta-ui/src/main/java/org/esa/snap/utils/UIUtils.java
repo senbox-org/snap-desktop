@@ -24,6 +24,11 @@ import org.jdesktop.swingx.prompt.PromptSupport;
 
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
+import javax.swing.undo.CannotUndoException;
+import javax.swing.undo.UndoManager;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.io.File;
 
 /**
@@ -34,6 +39,36 @@ public class UIUtils {
     private static final String FILE_FIELD_PROMPT = "browse for %s";
     private static final String TEXT_FIELD_PROMPT = "enter %s here";
     private static final String CAMEL_CASE_SPLIT = "(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])";
+
+    private static class UndoAction extends AbstractAction {
+        private UndoManager undoManager;
+        UndoAction(UndoManager manager) {
+            this.undoManager = manager;
+        }
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            try {
+                if (undoManager != null && undoManager.canUndo()) {
+                    undoManager.undo();
+                }
+            } catch (CannotUndoException ignored) {}
+        }
+    };
+
+    private static class RedoAction extends AbstractAction {
+        private UndoManager undoManager;
+        RedoAction(UndoManager manager) {
+            this.undoManager = manager;
+        }
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            try {
+                if (undoManager != null && undoManager.canRedo()) {
+                    undoManager.redo();
+                }
+            } catch (CannotUndoException ignored) {}
+        }
+    };
 
     public static void addPromptSupport(JComponent component, String text) {
         if (JTextComponent.class.isAssignableFrom(component.getClass())) {
@@ -57,6 +92,19 @@ public class UIUtils {
             }
             PromptSupport.setPrompt(text, castedComponent);
             PromptSupport.setFocusBehavior(PromptSupport.FocusBehavior.HIDE_PROMPT, castedComponent);
+        }
+    }
+
+    public static void enableUndoRedo(JComponent component) {
+        if (component != null && JTextComponent.class.isAssignableFrom(component.getClass())) {
+            UndoManager undoManager = new UndoManager();
+            ((JTextComponent) component).getDocument().addUndoableEditListener(e -> undoManager.addEdit(e.getEdit()));
+            InputMap inputMap = component.getInputMap(JComponent.WHEN_FOCUSED);
+            ActionMap actionMap = component.getActionMap();
+            inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "Undo");
+            inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_Y, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "Redo");
+            actionMap.put("Undo", new UndoAction(undoManager));
+            actionMap.put("Redo", new RedoAction(undoManager));
         }
     }
 

@@ -32,7 +32,12 @@ import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.OperatorException;
 import org.esa.snap.core.gpf.OperatorSpi;
-import org.esa.snap.core.gpf.descriptor.*;
+import org.esa.snap.core.gpf.descriptor.AnnotationOperatorDescriptor;
+import org.esa.snap.core.gpf.descriptor.ParameterDescriptor;
+import org.esa.snap.core.gpf.descriptor.SystemVariable;
+import org.esa.snap.core.gpf.descriptor.TemplateParameterDescriptor;
+import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
+import org.esa.snap.core.gpf.descriptor.ToolParameterDescriptor;
 import org.esa.snap.core.gpf.descriptor.template.TemplateEngine;
 import org.esa.snap.core.gpf.descriptor.template.TemplateException;
 import org.esa.snap.core.gpf.descriptor.template.TemplateFile;
@@ -45,7 +50,11 @@ import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.ui.tooladapter.actions.EscapeAction;
-import org.esa.snap.ui.tooladapter.model.*;
+import org.esa.snap.ui.tooladapter.model.AutoCompleteTextArea;
+import org.esa.snap.ui.tooladapter.model.OperationType;
+import org.esa.snap.ui.tooladapter.model.OperatorParametersTable;
+import org.esa.snap.ui.tooladapter.model.ProgressWorker;
+import org.esa.snap.ui.tooladapter.model.VariablesTable;
 import org.esa.snap.ui.tooladapter.preferences.ToolAdapterOptionsController;
 import org.esa.snap.ui.tooladapter.validators.RequiredFieldValidator;
 import org.esa.snap.utils.AdapterWatcher;
@@ -63,7 +72,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -539,6 +553,7 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
         }
         JComponent editorComponent = textEditor.createEditorComponent(propertyDescriptor, bindingContext);
         UIUtils.addPromptSupport(editorComponent, "enter " + labelText.toLowerCase().replace(":", "") + " here");
+        UIUtils.enableUndoRedo(editorComponent);
         editorComponent.setPreferredSize(new Dimension(editorComponent.getPreferredSize().width, controlHeight));
         editorComponent.setMaximumSize(new Dimension(editorComponent.getMaximumSize().width, controlHeight));
         parent.add(editorComponent);
@@ -686,11 +701,14 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
 
     protected JTextArea createTemplateEditorField() {
         boolean useAutocomplete = Boolean.parseBoolean(NbPreferences.forModule(Dialogs.class).get(ToolAdapterOptionsController.PREFERENCE_KEY_AUTOCOMPLETE, "false"));
+
         if (useAutocomplete) {
             templateContent = new AutoCompleteTextArea("", 15, 9);
         } else {
             templateContent = new JTextArea("", 15, 9);
         }
+        UIUtils.enableUndoRedo(templateContent);
+
         try {
             TemplateFile template;
             if ( (currentOperation == OperationType.NEW) || (currentOperation == OperationType.COPY) ) {
@@ -726,5 +744,4 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
         entries.sort(Comparator.<String>naturalOrder());
         return entries;
     }
-
 }
