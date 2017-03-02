@@ -26,6 +26,7 @@ import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.dataop.barithm.BandArithmetic;
 import org.esa.snap.core.jexp.ParseException;
 import org.esa.snap.core.util.ArrayUtils;
+import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.netbeans.docwin.DocumentWindowManager;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
@@ -42,11 +43,13 @@ import org.openide.awt.UndoRedo;
 import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.SwingWorker;
-import java.awt.Cursor;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * This action opens an RGB image view on the currently selected Product.
@@ -224,15 +227,31 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
         final Product[] products = SnapApp.getDefault().getProductManager().getProducts();
         final int elementIndex = ArrayUtils.getElementIndex(product, products);
         try {
-            if (!BandArithmetic.areRastersEqualInSize(product, rgbaExpressions)) {
+            //if (!BandArithmetic.areRastersEqualInSize(product, rgbaExpressions)) {
+            // If there are multiple product references, the call should consider all the products
+            if (!BandArithmetic.areRastersEqualInSize(products, elementIndex, rgbaExpressions)) {
                 throw new IllegalArgumentException("Referenced rasters are not of the same size");
             }
         } catch (ParseException e) {
             throw new IllegalArgumentException("Expressions are invalid");
         }
+        // if more than 1 products referenced, then don't get the band of the context product
+        final Set<Product> referencedProducts = new HashSet<>();
+        Arrays.stream(rgbaExpressions).forEach(e -> {
+            try {
+                referencedProducts.addAll(
+                        Arrays.stream(BandArithmetic.getRefRasters(e, products))
+                                .map(ProductNode::getProduct)
+                                .collect(Collectors.toList())
+                );
+            } catch (ParseException pex) {
+                SystemUtils.LOG.warning(pex.getMessage());
+            }
+        });
+        boolean moreProductsReferences = referencedProducts.size() > 1;
         for (int i = 0; i < rgbBands.length; i++) {
             String expression = rgbaExpressions[i].isEmpty() ? "0" : rgbaExpressions[i];
-            Band rgbBand = product.getBand(expression);
+            Band rgbBand = moreProductsReferences ? null : product.getBand(expression);
             if (rgbBand == null) {
                 rgbBand = new ProductSceneView.RGBChannel(product,
                                                           determineWidth(expression, products, elementIndex),
