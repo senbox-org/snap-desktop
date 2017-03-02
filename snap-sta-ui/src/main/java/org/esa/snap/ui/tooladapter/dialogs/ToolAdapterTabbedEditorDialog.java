@@ -224,7 +224,7 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
         JComponent editorComponent = editor.createEditorComponent(propertyDescriptor, bindingContext);
         editorComponent.setMaximumSize(new Dimension(editorComponent.getMaximumSize().width, controlHeight));
         editorComponent.setPreferredSize(new Dimension(editorComponent.getPreferredSize().width, controlHeight));
-
+        org.esa.snap.utils.UIUtils.enableUndoRedo(editorComponent);
         panelToolFiles.add(new JLabel(Bundle.CTL_Label_ToolLocation_Text()));
         panelToolFiles.add(editorComponent);
 
@@ -240,7 +240,7 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
         editorComponent = editor.createEditorComponent(propertyDescriptor, bindingContext);
         editorComponent.setMaximumSize(new Dimension(editorComponent.getMaximumSize().width, controlHeight));
         editorComponent.setPreferredSize(new Dimension(editorComponent.getPreferredSize().width, controlHeight));
-
+        org.esa.snap.utils.UIUtils.enableUndoRedo(editorComponent);
         panelToolFiles.add(new JLabel(Bundle.CTL_Label_WorkDir_Text()));
         panelToolFiles.add(editorComponent);
 

@@ -30,6 +30,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.util.Arrays;
 
 /**
  * Created by kraftek on 12/5/2016.
@@ -96,15 +97,22 @@ public class UIUtils {
     }
 
     public static void enableUndoRedo(JComponent component) {
-        if (component != null && JTextComponent.class.isAssignableFrom(component.getClass())) {
-            UndoManager undoManager = new UndoManager();
-            ((JTextComponent) component).getDocument().addUndoableEditListener(e -> undoManager.addEdit(e.getEdit()));
-            InputMap inputMap = component.getInputMap(JComponent.WHEN_FOCUSED);
-            ActionMap actionMap = component.getActionMap();
-            inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "Undo");
-            inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_Y, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "Redo");
-            actionMap.put("Undo", new UndoAction(undoManager));
-            actionMap.put("Redo", new RedoAction(undoManager));
+        if (component != null) {
+            if (JTextComponent.class.isAssignableFrom(component.getClass())) {
+                UndoManager undoManager = new UndoManager();
+                ((JTextComponent) component).getDocument().addUndoableEditListener(e -> undoManager.addEdit(e.getEdit()));
+                InputMap inputMap = component.getInputMap(JComponent.WHEN_FOCUSED);
+                ActionMap actionMap = component.getActionMap();
+                inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "Undo");
+                inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_Y, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "Redo");
+                actionMap.put("Undo", new UndoAction(undoManager));
+                actionMap.put("Redo", new RedoAction(undoManager));
+            } else if (JPanel.class.equals(component.getClass())) {
+                Arrays.stream(component.getComponents())
+                        .filter(c -> JTextComponent.class.isAssignableFrom(c.getClass()))
+                        .map(c -> (JTextComponent) c)
+                        .forEach(UIUtils::enableUndoRedo);
+            }
         }
     }
 
