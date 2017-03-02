@@ -18,7 +18,9 @@ package org.esa.snap.productlibrary.rcp.toolviews.model.repositories;
 import org.esa.snap.engine_utilities.datamodel.Credentials;
 import org.esa.snap.engine_utilities.db.ProductQueryInterface;
 import org.esa.snap.engine_utilities.download.opensearch.CopernicusProductQuery;
+import org.esa.snap.graphbuilder.rcp.dialogs.PromptDialog;
 import org.esa.snap.productlibrary.rcp.toolviews.ProductLibraryToolView;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.UIUtils;
 
 import javax.swing.*;
@@ -54,14 +56,21 @@ public class ScihubRepository implements RepositoryInterface {
         if (credentialInfo == null) {
             // prompt for user name and password
 
-//            final PromptDialog dlg = new PromptDialog("Search Metadata", "Value", "", false);
-//            dlg.show();
-//            if (dlg.IsOK()) {
-//                final String value = dlg.getValue().toUpperCase();
-//                final MetadataElement resultElem = new MetadataElement("Search result (" + dlg.getValue() + ')');
-//
-//
-//            }
+            final PromptDialog dlg = new PromptDialog(CopernicusProductQuery.COPERNICUS_HOST, new PromptDialog.Descriptor[] {
+                    new PromptDialog.Descriptor("User name:", "", PromptDialog.TYPE.TEXTFIELD),
+                    new PromptDialog.Descriptor("Password:", "", PromptDialog.TYPE.TEXTFIELD)
+            });
+            dlg.show();
+            if (dlg.IsOK()) {
+                try {
+                    final String user = dlg.getValue("User name:");
+                    final String password = dlg.getValue("Password:");
+
+                    Credentials.instance().put(CopernicusProductQuery.COPERNICUS_HOST, user, password);
+                } catch (Exception ex) {
+                    Dialogs.showError(ex.getMessage());
+                }
+            }
         }
     }
 }

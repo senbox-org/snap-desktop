@@ -77,12 +77,16 @@ public class PromptDialog extends ModalDialog {
             textArea.setRows(7);
             textComp = textArea;
         } else {
+            gbc.gridx = 0;
             content.add(new JLabel(label), gbc);
-            gbc.weightx = 1;
+            gbc.weightx = 2;
+            gbc.gridx = 1;
             textComp = new JTextField(defaultValue);
+            gbc.weightx = 1;
         }
         textComp.setEditable(true);
         content.add(textComp, gbc);
+        gbc.gridx = 0;
         return textComp;
     }
 
