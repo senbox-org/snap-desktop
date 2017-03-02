@@ -15,6 +15,7 @@
  */
 package org.esa.snap.productlibrary.rcp.toolviews.model.repositories;
 
+import org.esa.snap.engine_utilities.datamodel.Credentials;
 import org.esa.snap.engine_utilities.db.ProductQueryInterface;
 import org.esa.snap.engine_utilities.download.opensearch.CopernicusProductQuery;
 import org.esa.snap.productlibrary.rcp.toolviews.ProductLibraryToolView;
@@ -27,12 +28,10 @@ import javax.swing.*;
  */
 public class ScihubRepository implements RepositoryInterface {
 
-    public static final String NAME = "ESA SciHub";
-
     private static final ImageIcon icon = UIUtils.loadImageIcon("/org/esa/snap/productlibrary/icons/copernicus.png", ProductLibraryToolView.class);
 
     public String getName() {
-        return NAME;
+        return CopernicusProductQuery.NAME;
     }
 
     @Override
@@ -45,6 +44,24 @@ public class ScihubRepository implements RepositoryInterface {
     }
 
     public ProductQueryInterface getProductQueryInterface() {
+        checkCredentials();
+
         return CopernicusProductQuery.instance();
+    }
+
+    private static void checkCredentials() {
+        Credentials.CredentialInfo credentialInfo = Credentials.instance().get(CopernicusProductQuery.COPERNICUS_HOST);
+        if (credentialInfo == null) {
+            // prompt for user name and password
+
+//            final PromptDialog dlg = new PromptDialog("Search Metadata", "Value", "", false);
+//            dlg.show();
+//            if (dlg.IsOK()) {
+//                final String value = dlg.getValue().toUpperCase();
+//                final MetadataElement resultElem = new MetadataElement("Search result (" + dlg.getValue() + ')');
+//
+//
+//            }
+        }
     }
 }
