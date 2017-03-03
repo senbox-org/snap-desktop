@@ -20,6 +20,7 @@ import org.esa.snap.core.datamodel.GeoPos;
 import org.esa.snap.core.datamodel.MetadataElement;
 import org.esa.snap.core.datamodel.ProductData;
 import org.esa.snap.core.util.StringUtils;
+import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.engine_utilities.datamodel.AbstractMetadata;
 import org.esa.snap.engine_utilities.db.DBQuery;
 import org.esa.snap.engine_utilities.db.MetadataTable;
@@ -164,6 +165,7 @@ public final class DatabasePane extends JPanel {
     }
 
     private static void handleException(Throwable t) {
+        SystemUtils.LOG.severe(t.getMessage());
         Dialogs.showError(t.getMessage());
     }
 
