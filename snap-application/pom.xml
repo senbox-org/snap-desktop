@@ -153,9 +153,9 @@
             <version>${project.version}</version>
         </dependency>
         <!--<dependency>-->
-            <!--<groupId>${project.groupId}</groupId>-->
-            <!--<artifactId>snap-scripting</artifactId>-->
-            <!--<version>${project.version}</version>-->
+        <!--<groupId>${project.groupId}</groupId>-->
+        <!--<artifactId>snap-scripting</artifactId>-->
+        <!--<version>${project.version}</version>-->
         <!--</dependency>-->
         <dependency>
             <groupId>org.esa.snap</groupId>
@@ -175,14 +175,14 @@
 
         <!-- disabled: these modules don't have the required maturity right now. -->
         <!--<dependency>-->
-            <!--<groupId>${project.groupId}</groupId>-->
-            <!--<artifactId>snap-opendap-ui</artifactId>-->
-            <!--<version>${project.version}</version>-->
+        <!--<groupId>${project.groupId}</groupId>-->
+        <!--<artifactId>snap-opendap-ui</artifactId>-->
+        <!--<version>${project.version}</version>-->
         <!--</dependency>-->
         <!--<dependency>-->
-            <!--<groupId>${project.groupId}</groupId>-->
-            <!--<artifactId>snap-timeseries-ui</artifactId>-->
-            <!--<version>${project.version}</version>-->
+        <!--<groupId>${project.groupId}</groupId>-->
+        <!--<artifactId>snap-timeseries-ui</artifactId>-->
+        <!--<version>${project.version}</version>-->
         <!--</dependency>-->
 
         <dependency>
@@ -217,7 +217,7 @@
             </plugin>
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>2.7</version>
+                <version>3.0.2</version>
                 <executions>
                     <execution>
                         <id>copy-conf-files</id>
@@ -235,6 +235,25 @@
                                 <resource>
                                     <directory>../../snap-engine/etc</directory>
                                     <filtering>false</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution> <!-- actuallly not nice to copy the resources from the engine here -->
+                        <id>copy-version-file</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${application.dir}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>../../snap-engine</directory>
+                                    <includes>
+                                        <include>VERSION.txt</include>
+                                    </includes>
+                                    <filtering>true</filtering>
                                 </resource>
                             </resources>
                         </configuration>
