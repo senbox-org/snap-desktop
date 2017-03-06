@@ -1,10 +1,12 @@
 package org.esa.snap.ui.tooladapter.dialogs;
 
+import com.bc.ceres.binding.Property;
 import com.bc.ceres.binding.PropertyContainer;
 import com.bc.ceres.core.Assert;
 import com.bc.ceres.swing.binding.Binding;
 import com.bc.ceres.swing.binding.PropertyPane;
 import org.esa.snap.core.gpf.descriptor.annotations.Folder;
+import org.esa.snap.core.gpf.descriptor.annotations.ReadOnly;
 import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.utils.UIUtils;
 
@@ -129,9 +131,17 @@ class EntityForm<T> {
         }
         PropertyPane parametersPane = new PropertyPane(propertyContainer);
         this.panel = parametersPane.createPanel();
-        Arrays.stream(propertyContainer.getProperties())
-                .forEach(p -> Arrays.stream(parametersPane.getBindingContext().getBinding(p.getName()).getComponents())
-                        .forEach(c -> UIUtils.addPromptSupport(c, p)));
+        for (Property property : propertyContainer.getProperties()) {
+            Arrays.stream(parametersPane.getBindingContext().getBinding(property.getName()).getComponents())
+                    .forEach(c -> UIUtils.addPromptSupport(c, property));
+            if (this.annotatedFields.containsKey(property.getName())) {
+                Optional<Annotation> annotation = Arrays.stream(this.annotatedFields.get(property.getName()))
+                        .filter(a -> a.annotationType().equals(ReadOnly.class))
+                        .findFirst();
+                annotation.ifPresent(annotation1 -> Arrays.stream(parametersPane.getBindingContext().getBinding(property.getName()).getComponents())
+                        .forEach(c -> c.setEnabled(false)));
+            }
+        }
         propertyContainer.addPropertyChangeListener(evt -> {
             String propertyName = evt.getPropertyName();
             Object newValue = evt.getNewValue();

@@ -30,6 +30,7 @@ import org.esa.snap.core.gpf.descriptor.dependency.BundleType;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterActivator;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterConstants;
 import org.esa.snap.core.util.SystemUtils;
+import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.UIUtils;
@@ -40,6 +41,7 @@ import org.esa.snap.utils.SpringUtilities;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
+import javax.swing.plaf.basic.BasicTabbedPaneUI;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.File;
@@ -92,6 +94,8 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
         addTab(tabbedPane, Bundle.CTL_Panel_OpParams_Border_TitleText(), createParametersTab(formWidth));
         addTab(tabbedPane, Bundle.CTL_Panel_SysVar_Border_TitleText(), createVariablesPanel());
         addTab(tabbedPane, "Bundled Binaries", createBundlePanel());
+
+        tabbedPane.setUI(new BasicTabbedPaneUI());
 
         formWidth = tabbedPane.getTabComponentAt(0).getWidth();
 
@@ -319,6 +323,7 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
         org.esa.snap.core.gpf.descriptor.dependency.Bundle bundle = this.newOperatorDescriptor.getBundle();
         if (bundle == null) {
             bundle = new org.esa.snap.core.gpf.descriptor.dependency.Bundle(BundleType.NONE, null, null);
+            bundle.setTargetLocation(SystemUtils.getAuxDataPath().toFile());
             this.newOperatorDescriptor.setBundle(bundle);
         }
         Map<String, FieldChangeTrigger[]> dependencyMap = new HashMap<String, FieldChangeTrigger[]>() {{
@@ -344,6 +349,13 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
                                             logger.severe(e.getMessage());
                                         }
                                         return file.getName();
+                                    }
+                                    return null;
+                                }),
+                            FieldChangeTrigger.<File, File>create("targetLocation",
+                                file -> {
+                                    if (file != null) {
+                                        return SystemUtils.getAuxDataPath().resolve(FileUtils.getFilenameWithoutExtension(file)).toFile();
                                     }
                                     return null;
                                 })
