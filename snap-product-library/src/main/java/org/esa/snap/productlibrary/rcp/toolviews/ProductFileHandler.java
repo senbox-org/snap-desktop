@@ -207,11 +207,11 @@ public class ProductFileHandler extends SwingWorker {
     }
 
     private static boolean isDimap(final ProductEntry entry) {
-        return entry.getFile().getName().endsWith(DimapProductConstants.DIMAP_HEADER_FILE_EXTENSION);
+        return entry.getFile() != null && entry.getFile().getName().endsWith(DimapProductConstants.DIMAP_HEADER_FILE_EXTENSION);
     }
 
     private static boolean isSMOS(final ProductEntry entry) {
-        return entry.getFile().getName().toUpperCase().endsWith("DBL");
+        return entry.getFile() != null && entry.getFile().getName().toUpperCase().endsWith("DBL");
     }
 
     private static boolean isSingleFile(final ProductEntry entry) {
@@ -228,6 +228,9 @@ public class ProductFileHandler extends SwingWorker {
         for (String folderMission : folderMissions) {
             if (mission.equals(folderMission))
                 return true;
+        }
+        if(entry.getFile() == null) {
+            return false;
         }
         final String fileName = entry.getFile().getName().toLowerCase();
         for (String ext : folderExt) {

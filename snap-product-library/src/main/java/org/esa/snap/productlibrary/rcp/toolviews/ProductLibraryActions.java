@@ -15,6 +15,7 @@
  */
 package org.esa.snap.productlibrary.rcp.toolviews;
 
+import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.engine_utilities.db.ProductEntry;
 import org.esa.snap.engine_utilities.util.ResourceUtils;
 import org.esa.snap.graphbuilder.rcp.dialogs.BatchGraphDialog;
@@ -308,10 +309,12 @@ public class ProductLibraryActions {
                 final ProductEntry entry = toolView.getEntryOverMouse();
                 if (entry != null && entry instanceof ProductEntry) {
                     final ProductEntry prodEntry = entry;
-                    try {
-                        Desktop.getDesktop().open(prodEntry.getFile().getParentFile());
-                    } catch (Exception ex) {
-                        System.out.println(ex.getMessage());
+                    if(prodEntry.getFile() != null) {
+                        try {
+                            Desktop.getDesktop().open(prodEntry.getFile().getParentFile());
+                        } catch (Exception ex) {
+                            SystemUtils.LOG.severe(ex.getMessage());
+                        }
                     }
                 }
             }

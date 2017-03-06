@@ -54,7 +54,7 @@ public class ThumbnailView extends ThumbnailPanel implements ListView {
         for (ThumbnailDrawing item : getSelection()) {
             Quicklook ql = (Quicklook) item.getThumbnail();
             for (ProductEntry entry : productEntryList) {
-                if (entry.getQuickLook().equals(ql)) {
+                if (entry.getQuickLook().equals(ql) && entry.getFile() != null) {
                     list.add(entry.getFile());
                 }
             }

@@ -63,7 +63,10 @@ public class ProductEntryTable extends JTable implements ListView {
         for (int i = 0; i < selectedRows.length; i++) {
             final Object entry = getValueAt(selectedRows[i], 0);
             if (entry instanceof ProductEntry) {
-                selectedFiles[i] = ((ProductEntry) entry).getFile();
+                File file = ((ProductEntry) entry).getFile();
+                if(file != null) {
+                    selectedFiles[i] = file;
+                }
             }
         }
         return selectedFiles;

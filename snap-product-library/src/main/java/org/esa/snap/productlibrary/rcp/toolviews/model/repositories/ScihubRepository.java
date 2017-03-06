@@ -30,7 +30,7 @@ import javax.swing.*;
  */
 public class ScihubRepository implements RepositoryInterface {
 
-    private static final ImageIcon icon = UIUtils.loadImageIcon("/org/esa/snap/productlibrary/icons/copernicus.png", ProductLibraryToolView.class);
+    private static final ImageIcon icon = UIUtils.loadImageIcon("/org/esa/snap/productlibrary/icons/scihub24.png", ProductLibraryToolView.class);
 
     public String getName() {
         return CopernicusProductQuery.NAME;
