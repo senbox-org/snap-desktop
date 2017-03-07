@@ -5,10 +5,14 @@ import org.esa.snap.core.util.VersionChecker;
 import org.openide.modules.OnStop;
 import org.openide.windows.OnShowing;
 
+import javax.swing.BoxLayout;
 import javax.swing.JEditorPane;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.event.HyperlinkEvent;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -19,7 +23,8 @@ import java.net.URISyntaxException;
 public class DesktopVersionCheck {
 
     private static final String STEP_WEB_PAGE = SystemUtils.getApplicationHomepageUrl();
-    private static final String MSG_UPDATE_INFO = "A new SNAP version is available for download.<br>Currently installed %s, available is %s.<br>Please visit %s";
+    private static final String MSG_UPDATE_INFO = "<html>A new SNAP version is available for download!<br>Currently installed %s, available is %s.<br>" +
+                                                  "Please visit the SNAP home page at";
     private static final VersionChecker VERSION_CHECKER = VersionChecker.getInstance();
 
     private static boolean hasChecked = false;
@@ -35,12 +40,19 @@ public class DesktopVersionCheck {
             if (VERSION_CHECKER.mustCheck()) {
                 hasChecked = true;
                 if (VERSION_CHECKER.checkForNewRelease()) {
+                    final JPanel panel = new JPanel();
+                    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
                     String localVersion = String.valueOf(VERSION_CHECKER.getLocalVersion());
                     String remoteVersion = String.valueOf(VERSION_CHECKER.getRemoteVersion());
-                    String linkText = "<a href=\"" + STEP_WEB_PAGE + "\">" + STEP_WEB_PAGE + "</a>";
-                    String msg = String.format("<html>" + MSG_UPDATE_INFO+"</html>", localVersion, remoteVersion, linkText);
-                    JEditorPane editorPane = createHtmlDialogPane(msg);
-                    JOptionPane.showMessageDialog(null, editorPane);
+                    panel.add(new JLabel(String.format(MSG_UPDATE_INFO + "", localVersion, remoteVersion)));
+
+                    final JLabel LinkLabel = new JLabel("<html><a href=\"" + STEP_WEB_PAGE + "\">" + STEP_WEB_PAGE + "</a>");
+                    LinkLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+                    LinkLabel.addMouseListener(new BrowserUtils.URLClickAdaptor(STEP_WEB_PAGE));
+                    panel.add(LinkLabel);
+
+                    JOptionPane.showMessageDialog(null, panel);
                 }
             }
         }
