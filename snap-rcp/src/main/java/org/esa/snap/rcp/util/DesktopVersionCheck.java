@@ -23,7 +23,8 @@ import java.net.URISyntaxException;
 public class DesktopVersionCheck {
 
     private static final String STEP_WEB_PAGE = SystemUtils.getApplicationHomepageUrl();
-    private static final String MSG_UPDATE_INFO = "<html>A new SNAP version is available for download!<br>Currently installed %s, available is %s.<br>" +
+    private static final String MSG_UPDATE_INFO = "<html>A new SNAP version is available for download!<br>" +
+                                                  "Currently installed %s, available is %s.<br>" +
                                                   "Please visit the SNAP home page at";
     private static final VersionChecker VERSION_CHECKER = VersionChecker.getInstance();
 
