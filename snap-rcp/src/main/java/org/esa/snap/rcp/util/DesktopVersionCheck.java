@@ -6,15 +6,10 @@ import org.openide.modules.OnStop;
 import org.openide.windows.OnShowing;
 
 import javax.swing.BoxLayout;
-import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.event.HyperlinkEvent;
-import java.awt.Color;
 import java.awt.Cursor;
-import java.net.URI;
-import java.net.URISyntaxException;
 
 /**
  * @author Marco Peters
@@ -57,23 +52,6 @@ public class DesktopVersionCheck {
                 }
             }
         }
-    }
-
-    private static JEditorPane createHtmlDialogPane(String msg) {
-        JEditorPane editorPane = new JEditorPane("text/html", msg);
-        editorPane.setEditable(false);
-        editorPane.setBorder(null);
-        editorPane.setBackground(new Color(0, 0, 0, 0));
-        editorPane.addHyperlinkListener(e -> {
-            if (e.getEventType().equals(HyperlinkEvent.EventType.ACTIVATED)) {
-                try {
-                    BrowserUtils.openInBrowser(new URI(STEP_WEB_PAGE));
-                } catch (URISyntaxException e1) {
-                    Dialogs.showError("Could not open SNAP home page.");
-                }
-            }
-        });
-        return editorPane;
     }
 
     @OnStop
