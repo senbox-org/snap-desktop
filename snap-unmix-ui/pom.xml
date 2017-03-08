@@ -20,7 +20,7 @@
     <parent>
         <artifactId>snap-desktop</artifactId>
         <groupId>org.esa.snap</groupId>
-        <version>3.0.5</version>
+        <version>3.0.6-SNAPSHOT</version>
     </parent>
 
     <artifactId>snap-unmix-ui</artifactId>
