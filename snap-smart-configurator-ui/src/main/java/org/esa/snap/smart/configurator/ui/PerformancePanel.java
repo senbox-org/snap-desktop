@@ -18,8 +18,8 @@ package org.esa.snap.smart.configurator.ui;
 import com.bc.ceres.core.ServiceRegistry;
 import com.bc.ceres.core.ServiceRegistryManager;
 import org.apache.commons.lang.StringUtils;
-import org.esa.snap.SnapCoreActivator;
 import org.esa.snap.core.gpf.OperatorSpi;
+import org.esa.snap.core.util.ServiceLoader;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.rcp.SnapApp;
@@ -31,7 +31,6 @@ import org.esa.snap.smart.configurator.JavaSystemInfos;
 import org.esa.snap.smart.configurator.PerformanceParameters;
 import org.esa.snap.smart.configurator.VMParameters;
 import org.esa.snap.ui.AppContext;
-import sun.misc.Perf;
 
 import javax.media.jai.JAI;
 import javax.swing.Box;
@@ -476,7 +475,7 @@ final class PerformancePanel extends javax.swing.JPanel {
     private Object[] getBenchmarkOperators() {
         ServiceRegistry<BenchmarkOperatorProvider> benchemarkOperatorServiceRegistry =
                 ServiceRegistryManager.getInstance().getServiceRegistry(BenchmarkOperatorProvider.class);
-        SnapCoreActivator.loadServices(benchemarkOperatorServiceRegistry);
+        ServiceLoader.loadServices(benchemarkOperatorServiceRegistry);
         Set<BenchmarkOperatorProvider> providers = benchemarkOperatorServiceRegistry.getServices();
 
         TreeSet<String> externalOperatorsAliases = new TreeSet<>();

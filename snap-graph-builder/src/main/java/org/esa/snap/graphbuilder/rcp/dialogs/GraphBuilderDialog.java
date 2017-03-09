@@ -481,10 +481,15 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
      * Call description dialog
      */
     private void OnInfo() {
-        final PromptDialog dlg = new PromptDialog("Graph Description", "Description", graphEx.getGraphDescription(), true);
+        final PromptDialog dlg = new PromptDialog("Graph Description", "Description",
+                                                  graphEx.getGraphDescription(), PromptDialog.TYPE.TEXTAREA);
         dlg.show();
         if (dlg.IsOK()) {
-            graphEx.setGraphDescription(dlg.getValue());
+            try {
+                graphEx.setGraphDescription(dlg.getValue("Description"));
+            } catch (Exception ex) {
+                Dialogs.showError(ex.getMessage());
+            }
         }
     }
 
