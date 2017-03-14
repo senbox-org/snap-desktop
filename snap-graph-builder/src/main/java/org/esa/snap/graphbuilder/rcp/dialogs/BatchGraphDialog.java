@@ -45,6 +45,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -582,7 +583,12 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
                 timeMonitor.start();
                 isProcessing = true;
 
-                final File[] existingFiles = productSetPanel.getTargetFolder().listFiles();
+                final File[] existingFiles = productSetPanel.getTargetFolder().listFiles(new FileFilter() {
+                    @Override
+                    public boolean accept(File file) {
+                        return file.isFile();
+                    }
+                });
 
                 final File[] fileList = productSetPanel.getFileList();
                 int graphIndex = 0;
@@ -689,9 +695,10 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
 
                     boolean allTargetsExist = true;
                     for (File targetFile : targetFiles) {
+                        final String targetPath = targetFile.getAbsolutePath();
                         boolean fileExists = false;
                         for (File existingFile : existingFiles) {
-                            if (existingFile.getAbsolutePath().equalsIgnoreCase(targetFile.getAbsolutePath())) {
+                            if (existingFile.getAbsolutePath().equalsIgnoreCase(targetPath)) {
                                 fileExists = true;
                                 break;
                             }
