@@ -53,7 +53,6 @@ import org.esa.snap.ui.tooladapter.actions.EscapeAction;
 import org.esa.snap.ui.tooladapter.model.AutoCompleteTextArea;
 import org.esa.snap.ui.tooladapter.model.OperationType;
 import org.esa.snap.ui.tooladapter.model.OperatorParametersTable;
-import org.esa.snap.ui.tooladapter.model.ProgressWorker;
 import org.esa.snap.ui.tooladapter.model.VariablesTable;
 import org.esa.snap.ui.tooladapter.preferences.ToolAdapterOptionsController;
 import org.esa.snap.ui.tooladapter.validators.RequiredFieldValidator;
@@ -75,7 +74,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -123,6 +121,7 @@ import static org.esa.snap.utils.SpringUtilities.makeCompactGrid;
         "CTL_Button_Export_Text=Export as Module",
         "CTL_Button_Add_Variable_Text=Add Variable",
         "CTL_Button_Add_PDVariable_Text=Add Platform-Dependent Variable",
+        "CTL_Panel_Bundle_TitleText=Bundled Binaries",
         "MSG_Export_Complete_Text=The adapter was exported as a NetBeans module in %s",
         "MSG_Inexistent_Tool_Path_Text=The tool executable does not exist.\n" +
                 "Please specify the location of an existing executable.",
@@ -142,13 +141,13 @@ import static org.esa.snap.utils.SpringUtilities.makeCompactGrid;
 })
 public abstract class AbstractAdapterEditor extends ModalDialog {
 
-    static final String MESSAGE_REQUIRED = "This field is required";
-    static final int MIN_WIDTH = 720;
-    static final int MIN_HEIGHT = 580;
-    static final int MIN_TABBED_WIDTH = 640;
-    static final int MIN_TABBED_HEIGHT = 512;
-    static int MAX_4K_WIDTH = 4096;
-    static int MAX_4K_HEIGHT = 2160;
+    protected static final String MESSAGE_REQUIRED = "This field is required";
+    protected static final int MIN_WIDTH = 720;
+    protected static final int MIN_HEIGHT = 580;
+    protected static final int MIN_TABBED_WIDTH = 640;
+    protected static final int MIN_TABBED_HEIGHT = 512;
+    protected static int MAX_4K_WIDTH = 4096;
+    protected static int MAX_4K_HEIGHT = 2160;
     protected ToolAdapterOperatorDescriptor oldOperatorDescriptor;
     protected ToolAdapterOperatorDescriptor newOperatorDescriptor;
     protected int newNameIndex = -1;
@@ -169,7 +168,7 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
 
     protected VariablesTable varTable;
 
-    protected EntityForm<org.esa.snap.core.gpf.descriptor.dependency.Bundle> bundleForm;
+    protected BundleForm bundleForm;
 
     public static AbstractAdapterEditor createEditorDialog(AppContext appContext, JDialog parent, ToolAdapterOperatorDescriptor operatorDescriptor, OperationType operation) {
         AbstractAdapterEditor dialog;
@@ -454,11 +453,10 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
                     if (menuLocation != null && !menuLocation.startsWith("Menu/")) {
                         newOperatorDescriptor.setMenuLocation("Menu/" + menuLocation);
                     }
-                    if (bundleForm != null) {
-                        newOperatorDescriptor.setBundle(bundleForm.applyChanges());
-                    }
+                    newOperatorDescriptor.setBundle(bundleForm.applyChanges());
                     AdapterWatcher.INSTANCE.suspend();
                     ToolAdapterIO.saveAndRegisterOperator(newOperatorDescriptor);
+                    oldOperatorDescriptor = newOperatorDescriptor;
                     AdapterWatcher.INSTANCE.resume();
                     ToolAdapterIO.deleteFolder(backupCopy);
                     super.setButtonID(ID_OK);
@@ -495,25 +493,20 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
 
     @Override
     protected void onOther() {
+        try {
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             if (fileChooser.showOpenDialog(getButton(ID_OTHER)) == JFileChooser.APPROVE_OPTION) {
                 File targetFolder = fileChooser.getSelectedFile();
                 newOperatorDescriptor.setSource(ToolAdapterOperatorDescriptor.SOURCE_PACKAGE);
                 onOK();
-                final String nbmName = newOperatorDescriptor.getAlias() + ".nbm";
-                ProgressWorker worker = new ProgressWorker("Export Module", "Creating NetBeans module " + nbmName,
-                        () -> {
-                            try {
-                                ModulePackager.packModule(newOperatorDescriptor, new File(targetFolder, nbmName));
-                                Dialogs.showInformation(String.format(Bundle.MSG_Export_Complete_Text(), targetFolder.getAbsolutePath()), null);
-                            } catch (IOException e) {
-                                logger.warning(e.getMessage());
-                                Dialogs.showError(e.getMessage());
-                            }
-                        });
-                worker.executeWithBlocking();
+                ModulePackager.packModule(newOperatorDescriptor, new File(targetFolder, newOperatorDescriptor.getAlias() + ".nbm"));
+                Dialogs.showInformation(String.format(Bundle.MSG_Export_Complete_Text(), targetFolder.getAbsolutePath()), null);
             }
+        } catch (IOException e) {
+            logger.warning(e.getMessage());
+            Dialogs.showError(e.getMessage());
+        }
     }
 
     protected JComponent createCheckboxComponent(String memberName, JComponent toogleComponentEnabled, Boolean value) {
@@ -557,25 +550,6 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
         editorComponent.setPreferredSize(new Dimension(editorComponent.getPreferredSize().width, controlHeight));
         editorComponent.setMaximumSize(new Dimension(editorComponent.getMaximumSize().width, controlHeight));
         parent.add(editorComponent);
-    }
-
-    protected void addChoiceField(JPanel parent, String label, Map<String, String> valuesAndLabels, String propertyName, Class enumClass) {
-        parent.add(new JLabel(label));
-        PropertyDescriptor propertyDescriptor = propertyContainer.getDescriptor(propertyName);
-        ButtonGroup rbGroup = new ButtonGroup();
-        Dimension dimension = new Dimension(100, controlHeight);
-        for (Map.Entry<String, String> choice : valuesAndLabels.entrySet()) {
-            JRadioButton button = new JRadioButton(choice.getValue());
-            button.addItemListener(e -> {
-                if (e.getStateChange() == ItemEvent.SELECTED) {
-                    propertyDescriptor.setDefaultValue(Enum.valueOf(enumClass, choice.getKey()));
-                }
-            });
-            button.setMaximumSize(dimension);
-            button.setPreferredSize(dimension);
-            rbGroup.add(button);
-            parent.add(button);
-        }
     }
 
     protected void addComboField(JPanel parent, String labelText, String propertyName, boolean isRequired, boolean isEditable) {
@@ -701,7 +675,6 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
 
     protected JTextArea createTemplateEditorField() {
         boolean useAutocomplete = Boolean.parseBoolean(NbPreferences.forModule(Dialogs.class).get(ToolAdapterOptionsController.PREFERENCE_KEY_AUTOCOMPLETE, "false"));
-
         if (useAutocomplete) {
             templateContent = new AutoCompleteTextArea("", 15, 9);
         } else {

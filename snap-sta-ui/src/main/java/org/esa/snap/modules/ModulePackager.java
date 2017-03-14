@@ -17,16 +17,30 @@ package org.esa.snap.modules;
 
 import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
 import org.esa.snap.core.gpf.descriptor.dependency.Bundle;
-import org.esa.snap.core.gpf.descriptor.dependency.BundleType;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterIO;
 import org.openide.modules.Modules;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
-import java.util.jar.*;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.jar.Attributes;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.util.jar.JarOutputStream;
+import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -203,7 +217,7 @@ public final class ModulePackager {
             zipStream.write(packAdapterJar(descriptor));
             zipStream.closeEntry();
             Bundle bundle = descriptor.getBundle();
-            if (bundle != null && bundle.getBundleType() != BundleType.NONE &&
+            if (bundle != null && bundle.isLocal() &&
                     bundle.getTargetLocation() != null &&
                     bundle.getEntryPoint() != null) {
                 // lib folder
@@ -360,7 +374,7 @@ public final class ModulePackager {
             zipStream.putNextEntry(entry);
             zipStream.write(packSuiteJar(descriptor, dependencies));
             zipStream.closeEntry();
-            if (bundle != null && bundle.getBundleType() != BundleType.NONE &&
+            if (bundle != null && bundle.isLocal() &&
                     bundle.getTargetLocation() != null &&
                     bundle.getEntryPoint() != null) {
                 // lib folder
