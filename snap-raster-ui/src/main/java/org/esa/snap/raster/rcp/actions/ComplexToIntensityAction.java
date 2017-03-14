@@ -37,37 +37,37 @@ import org.openide.util.WeakListeners;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 
-@ActionID(category = "Raster", id = "org.esa.snap.raster.rcp.actions.ComplexToPhaseAction")
-@ActionRegistration(displayName = "#CTL_ComplexToPhaseAction_Text")
-@ActionReference(path = "Menu/Raster/Data Conversion", position = 410)
+@ActionID(category = "Raster", id = "org.esa.snap.raster.rcp.actions.ComplexToIntensityAction")
+@ActionRegistration(displayName = "#CTL_ComplexToIntensityAction_Text")
+@ActionReference(path = "Menu/Raster/Data Conversion", position = 400)
 @NbBundle.Messages({
-        "CTL_ComplexToPhaseAction_Text=Complex i and q to Phase",
-        "CTL_ComplexToPhaseAction_Description=Creates a virtual phase band from i and q complex bands."
+        "CTL_ComplexToIntensityAction_Text=Complex i and q to Intensity",
+        "CTL_ComplexToIntensityAction_Description=Creates a virtual intensity band from i and q complex bands."
 })
 /**
- * ComplexToPhase action.
+ * ComplexToIntensity action.
  */
-public class ComplexToPhaseAction extends AbstractSnapAction implements ContextAwareAction, LookupListener {
+public class ComplexToIntensityAction extends AbstractSnapAction implements ContextAwareAction, LookupListener {
 
     private final Lookup lkp;
 
-    public ComplexToPhaseAction() {
+    public ComplexToIntensityAction() {
         this(Utilities.actionsGlobalContext());
     }
 
-    public ComplexToPhaseAction(Lookup lkp) {
+    public ComplexToIntensityAction(Lookup lkp) {
         this.lkp = lkp;
         Lookup.Result<ProductNode> lkpContext = lkp.lookupResult(ProductNode.class);
         lkpContext.addLookupListener(WeakListeners.create(LookupListener.class, this, lkpContext));
         setEnableState();
 
-        putValue(NAME, Bundle.CTL_ComplexToPhaseAction_Text());
-        putValue(SHORT_DESCRIPTION, Bundle.CTL_ComplexToPhaseAction_Description());
+        putValue(NAME, Bundle.CTL_ComplexToIntensityAction_Text());
+        putValue(SHORT_DESCRIPTION, Bundle.CTL_ComplexToIntensityAction_Description());
     }
 
     @Override
     public Action createContextAwareInstance(Lookup actionContext) {
-        return new ComplexToPhaseAction(actionContext);
+        return new ComplexToIntensityAction(actionContext);
     }
 
     @Override
@@ -84,18 +84,18 @@ public class ComplexToPhaseAction extends AbstractSnapAction implements ContextA
             final Product product = band.getProduct();
             String bandName = band.getName();
             final String unit = band.getUnit();
-            String iBandName, qBandName, phaseBandName;
+            String iBandName, qBandName, intensityBandName;
 
             if (unit != null && unit.contains(Unit.REAL)) {
 
                 iBandName = bandName;
                 qBandName = bandName.replaceFirst("i_", "q_");
-                phaseBandName = bandName.replaceFirst("i_", "Phase_");
+                intensityBandName = bandName.replaceFirst("i_", "Intensity_");
             } else if (unit != null && unit.contains(Unit.IMAGINARY)) {
 
                 iBandName = bandName.replaceFirst("q_", "i_");
                 qBandName = bandName;
-                phaseBandName = bandName.replaceFirst("q_", "Phase_");
+                intensityBandName = bandName.replaceFirst("q_", "Intensity_");
             } else {
                 return;
             }
@@ -109,14 +109,14 @@ public class ComplexToPhaseAction extends AbstractSnapAction implements ContextA
                 return;
             }
 
-            if (product.getBand(phaseBandName) != null) {
-                Dialogs.showWarning(product.getName() + " already contains a " + phaseBandName + " band");
+            if (product.getBand(intensityBandName) != null) {
+                Dialogs.showWarning(product.getName() + " already contains a " + intensityBandName + " band");
                 return;
             }
 
-            if (Dialogs.requestDecision("Convert to Phase", "Would you like to convert i and q bands " +
-                    " to Phase in a new virtual band?", true, null) == Dialogs.Answer.YES) {
-                convert(product, iBandName, qBandName, phaseBandName);
+            if (Dialogs.requestDecision("Convert to Intensity", "Would you like to convert i and q bands " +
+                    " to Intensity in a new virtual band?", true, null) == Dialogs.Answer.YES) {
+                convert(product, iBandName, qBandName, intensityBandName);
             }
         }
     }
@@ -135,18 +135,18 @@ public class ComplexToPhaseAction extends AbstractSnapAction implements ContextA
     }
 
     public static void convert(final Product product,
-                               final String iBandName, final String qBandName, final String phaseBandName) {
+                               final String iBandName, final String qBandName, final String targetBandName) {
 
         final Band iBand = product.getBand(iBandName);
-        final String expression = "atan2(" + qBandName + ',' + iBandName + ')';
+        final String expression = iBandName + " * " + iBandName + " + " + qBandName + " * " + qBandName;
 
-        final VirtualBand virtBand = new VirtualBand(phaseBandName,
+        final VirtualBand virtBand = new VirtualBand(targetBandName,
                                                      ProductData.TYPE_FLOAT32,
                                                      iBand.getRasterWidth(),
                                                      iBand.getRasterHeight(),
                                                      expression);
-        virtBand.setUnit(Unit.PHASE);
-        virtBand.setDescription("Phase from complex data");
+        virtBand.setUnit(Unit.INTENSITY);
+        virtBand.setDescription("Intensity from complex data");
         virtBand.setNoDataValueUsed(true);
         virtBand.setOwner(product);
         product.addBand(virtBand);
