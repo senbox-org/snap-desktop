@@ -32,6 +32,7 @@ import org.esa.snap.core.gpf.descriptor.dependency.BundleType;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterConstants;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.io.FileUtils;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.tool.ToolButtonFactory;
@@ -48,6 +49,7 @@ import javax.swing.plaf.basic.BasicTabbedPaneUI;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.Optional;
@@ -353,13 +355,18 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
                     ProgressHandle progressHandle = ProgressHandleFactory.createSystemHandle("Installing bundle");
                     installer.setProgressMonitor(new ProgressHandler(progressHandle, false));
                     installer.setCallback(() -> {
-                        SwingUtilities.invokeLater(progressHandle::finish);
+                        Path path = modifiedBundle.getTargetLocation().toPath().resolve(
+                                        FileUtils.getFilenameWithoutExtension(modifiedBundle.getEntryPoint()));
+                        SwingUtilities.invokeLater(() -> {
+                            progressHandle.finish();
+                            Dialogs.showInformation(String.format("Bundle was installed in location:\n%s", path));
+                            installButton.setVisible(false);
+                            bundlePanel.revalidate();
+                        });
                         String updateVariable = modifiedBundle.getUpdateVariable();
                         if (updateVariable != null) {
                             Optional<SystemVariable> variable = newOperatorDescriptor.getVariables().stream().filter(v -> v.getKey().equals(updateVariable)).findFirst();
-                            variable.ifPresent(systemVariable ->
-                                                       systemVariable.setValue(modifiedBundle.getTargetLocation().toPath().resolve(
-                                                               FileUtils.getFilenameWithoutExtension(modifiedBundle.getEntryPoint())).toString()));
+                            variable.ifPresent(systemVariable -> systemVariable.setValue(path.toString()));
                             varTable.revalidate();
                         }
                         return null;
