@@ -7,5 +7,6 @@ public enum OperationType {
 
     NEW,
     COPY,
-    EDIT
+    EDIT,
+    FORCED_EDIT
 }

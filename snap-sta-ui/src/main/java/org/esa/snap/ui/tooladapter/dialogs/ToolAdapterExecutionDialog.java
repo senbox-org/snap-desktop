@@ -47,7 +47,7 @@ import org.netbeans.api.progress.ProgressUtils;
 import org.openide.util.Cancellable;
 import org.openide.util.NbBundle;
 
-import java.awt.*;
+import java.awt.Dimension;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
@@ -184,7 +184,7 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
         } else {
             if (!canApply()) {
                 displayWarnings();
-                AbstractAdapterEditor dialog = AbstractAdapterEditor.createEditorDialog(appContext, getJDialog(), operatorDescriptor, OperationType.EDIT);
+                AbstractAdapterEditor dialog = AbstractAdapterEditor.createEditorDialog(appContext, getJDialog(), operatorDescriptor, OperationType.FORCED_EDIT);
                 final int code = dialog.show();
                 if (code == AbstractDialog.ID_OK) {
                     onOperatorDescriptorChanged(dialog.getUpdatedOperatorDescriptor());

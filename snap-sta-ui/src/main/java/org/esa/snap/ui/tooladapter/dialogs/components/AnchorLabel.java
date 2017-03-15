@@ -18,14 +18,19 @@
 
 package org.esa.snap.ui.tooladapter.dialogs.components;
 
+import org.esa.snap.tango.TangoIcons;
+
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.event.MouseEvent;
+import java.util.Arrays;
+import java.util.Optional;
 
 /**
  * Simple hyperlink-like label that navigates to the given tab index and component.
@@ -51,6 +56,20 @@ public class AnchorLabel extends JLabel {
         super.setText("<html><font color=\"#FF0000\">" + text + "</font></html>");
     }
 
+    public void markError() {
+        JLabel label = findLabelFor(component);
+        if (label != null) {
+            label.setIcon(TangoIcons.status_dialog_error(TangoIcons.Res.R16));
+        }
+    }
+
+    public void clearError() {
+        JLabel label = findLabelFor(component);
+        if (label != null) {
+            label.setIcon(null);
+        }
+    }
+
     @Override
     protected void processMouseEvent(MouseEvent e) {
         super.processMouseEvent(e);
@@ -58,7 +77,8 @@ public class AnchorLabel extends JLabel {
             parentTabControl.setSelectedIndex(tabIndex);
             if (component instanceof JPanel &&
                     component.getComponents() != null && component.getComponents().length > 0) {
-                component.getComponent(0).requestFocusInWindow();
+                Component comp = component.getComponent(0);
+                comp.requestFocusInWindow();
             } else {
                 component.requestFocusInWindow();
             }
@@ -67,5 +87,12 @@ public class AnchorLabel extends JLabel {
                     ((JTextField) component).setCaretPosition(((JTextField) component).getDocument().getLength());
                 });
         }
+    }
+
+    private JLabel findLabelFor(JComponent component) {
+        Optional<Component> label = Arrays.stream(component.getParent().getComponents())
+                .filter(c -> c instanceof JLabel && component.equals(((JLabel) c).getLabelFor()))
+                .findFirst();
+        return label.map(component1 -> (JLabel) component1).orElse(null);
     }
 }

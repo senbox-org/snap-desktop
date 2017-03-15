@@ -258,7 +258,9 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
         editorComponent.setMaximumSize(new Dimension(editorComponent.getMaximumSize().width, controlHeight));
         editorComponent.setPreferredSize(new Dimension(editorComponent.getPreferredSize().width, controlHeight));
         org.esa.snap.utils.UIUtils.enableUndoRedo(editorComponent);
-        panelToolFiles.add(new JLabel(Bundle.CTL_Label_ToolLocation_Text()));
+        JLabel jLabel = new JLabel(Bundle.CTL_Label_ToolLocation_Text());
+        panelToolFiles.add(jLabel);
+        jLabel.setLabelFor(editorComponent);
         panelToolFiles.add(editorComponent);
 
         anchorLabels.put(ToolAdapterConstants.MAIN_TOOL_FILE_LOCATION,
@@ -277,7 +279,9 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
         editorComponent.setMaximumSize(new Dimension(editorComponent.getMaximumSize().width, controlHeight));
         editorComponent.setPreferredSize(new Dimension(editorComponent.getPreferredSize().width, controlHeight));
         org.esa.snap.utils.UIUtils.enableUndoRedo(editorComponent);
-        panelToolFiles.add(new JLabel(Bundle.CTL_Label_WorkDir_Text()));
+        jLabel = new JLabel(Bundle.CTL_Label_WorkDir_Text());
+        panelToolFiles.add(jLabel);
+        jLabel.setLabelFor(editorComponent);
 
         anchorLabels.put(ToolAdapterConstants.WORKING_DIR,
                          new AnchorLabel(Bundle.MSG_Inexistent_WorkDir_Text(), this.tabbedPane, this.currentIndex, editorComponent));
@@ -409,6 +413,12 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
                     logger.warning(ex.getMessage());
                 }
             });
+            this.downloadAction = () -> {
+                tabbedPane.setSelectedIndex(tabbedPane.getTabCount() - 1);
+                installButton.requestFocusInWindow();
+                installButton.doClick();
+                return null;
+            };
             rows++;
         }
         SpringUtilities.makeCompactGrid(bundlePanel, rows, 1, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING);

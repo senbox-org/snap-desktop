@@ -21,7 +21,6 @@ import com.bc.ceres.binding.PropertyContainer;
 import com.bc.ceres.binding.PropertyDescriptor;
 import com.bc.ceres.binding.ValueSet;
 import com.bc.ceres.binding.converters.ArrayConverter;
-import com.bc.ceres.binding.validators.NotEmptyValidator;
 import com.bc.ceres.binding.validators.PatternValidator;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.PropertyEditor;
@@ -38,6 +37,7 @@ import org.esa.snap.core.gpf.descriptor.SystemVariable;
 import org.esa.snap.core.gpf.descriptor.TemplateParameterDescriptor;
 import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
 import org.esa.snap.core.gpf.descriptor.ToolParameterDescriptor;
+import org.esa.snap.core.gpf.descriptor.dependency.BundleInstaller;
 import org.esa.snap.core.gpf.descriptor.template.TemplateEngine;
 import org.esa.snap.core.gpf.descriptor.template.TemplateException;
 import org.esa.snap.core.gpf.descriptor.template.TemplateFile;
@@ -56,6 +56,7 @@ import org.esa.snap.ui.tooladapter.model.OperationType;
 import org.esa.snap.ui.tooladapter.model.OperatorParametersTable;
 import org.esa.snap.ui.tooladapter.model.VariablesTable;
 import org.esa.snap.ui.tooladapter.preferences.ToolAdapterOptionsController;
+import org.esa.snap.ui.tooladapter.validators.DecoratedNotEmptyValidator;
 import org.esa.snap.ui.tooladapter.validators.RequiredFieldValidator;
 import org.esa.snap.utils.AdapterWatcher;
 import org.esa.snap.utils.UIUtils;
@@ -79,6 +80,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
+import javax.swing.SwingUtilities;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
@@ -97,6 +99,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -186,14 +189,11 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
     int controlHeight = 24;
 
     private OperationType currentOperation;
-
     VariablesTable varTable;
-
     BundleForm bundleForm;
-
     Map<String, AnchorLabel> anchorLabels = new HashMap<>();
-
     private JPanel errorPanel;
+    Callable<Void> downloadAction;
 
     static AbstractAdapterEditor createEditorDialog(AppContext appContext, JDialog parent, ToolAdapterOperatorDescriptor operatorDescriptor, OperationType operation) {
         return new ToolAdapterTabbedEditorDialog(appContext, parent, operatorDescriptor, operation);
@@ -348,11 +348,13 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
             if (problemFound) {
                 if (Arrays.stream(errorPanel.getComponents()).noneMatch(anchorLabel::equals)) {
                     errorPanel.add(anchorLabel);
+                    anchorLabel.markError();
                     errorPanel.revalidate();
                 }
             } else {
                 if (Arrays.stream(errorPanel.getComponents()).anyMatch(anchorLabel::equals)) {
                     errorPanel.remove(anchorLabel);
+                    anchorLabel.clearError();
                     errorPanel.revalidate();
                 }
             }
@@ -362,12 +364,14 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
             if (!(workingDir != null && workingDir.exists() && workingDir.isDirectory())) {
                 if (Arrays.stream(errorPanel.getComponents()).noneMatch(anchorLabel::equals)) {
                     errorPanel.add(anchorLabel);
+                    anchorLabel.markError();
                     errorPanel.revalidate();
                 }
                 problemFound = true;
             } else {
                 if (Arrays.stream(errorPanel.getComponents()).anyMatch(anchorLabel::equals)) {
                     errorPanel.remove(anchorLabel);
+                    anchorLabel.clearError();
                     errorPanel.revalidate();
                 }
             }
@@ -524,6 +528,28 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
     @Override
     public int show() {
         getJDialog().revalidate();
+        if (this.currentOperation == OperationType.FORCED_EDIT) {
+            org.esa.snap.core.gpf.descriptor.dependency.Bundle bundle = this.oldOperatorDescriptor.getBundle();
+            if (BundleInstaller.isBundleFileAvailable(bundle)) {
+                SwingUtilities.invokeLater(() -> {
+                    Dialogs.Answer answer = Dialogs.requestDecision("Bundle Available", "A bundle has been configured for this adapter.\n" +
+                            "Do you want to proceed with bundle download/installation?", false, null);
+                    if (answer == Dialogs.Answer.YES) {
+                        if (downloadAction != null) {
+                            try {
+                                downloadAction.call();
+                            } catch (Exception e) {
+                                logger.warning(e.getMessage());
+                            }
+                        }
+                    } else {
+                        onOK();
+                    }
+                });
+            } else {
+                SwingUtilities.invokeLater(this::onOK);
+            }
+        }
         return super.show();
     }
 
@@ -583,13 +609,8 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
         parent.add(jLabel);
         PropertyDescriptor propertyDescriptor = propertyContainer.getDescriptor(propertyName);
         if (isRequired) {
-            propertyDescriptor.setValidator(new NotEmptyValidator());
-            jLabel.setText("<html><font color=\"#"
-                                   + Integer.toHexString(jLabel.getForeground().getRGB()).substring(2, 8)
-                                   + "\">"
-                                   + jLabel.getText()
-                                   + "</font><font color=\"RED\">*</font></html>");
-            jLabel.setMaximumSize(size);
+            propertyDescriptor.setValidator(new DecoratedNotEmptyValidator(jLabel));
+            jLabel.setMaximumSize(new Dimension(size.width + 20, size.height));
         }
         JComponent editorComponent = textEditor.createEditorComponent(propertyDescriptor, bindingContext);
         UIUtils.addPromptSupport(editorComponent, "enter " + labelText.toLowerCase().replace(":", "") + " here");
