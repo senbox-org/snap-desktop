@@ -36,6 +36,7 @@ import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.tool.ToolButtonFactory;
+import org.esa.snap.ui.tooladapter.dialogs.components.AnchorLabel;
 import org.esa.snap.ui.tooladapter.dialogs.progress.ProgressHandler;
 import org.esa.snap.ui.tooladapter.model.OperationType;
 import org.esa.snap.ui.tooladapter.validators.RegexFieldValidator;
@@ -43,15 +44,33 @@ import org.esa.snap.utils.SpringUtilities;
 import org.netbeans.api.progress.ProgressHandle;
 import org.netbeans.api.progress.ProgressHandleFactory;
 
-import javax.swing.*;
+import javax.swing.AbstractButton;
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTable;
+import javax.swing.KeyStroke;
+import javax.swing.SpringLayout;
+import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
 import javax.swing.plaf.basic.BasicTabbedPaneUI;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 
 import static org.esa.snap.utils.SpringUtilities.DEFAULT_PADDING;
@@ -67,12 +86,13 @@ import static org.esa.snap.utils.SpringUtilities.DEFAULT_PADDING;
  */
 public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
     private JTabbedPane tabbedPane;
+    private int currentIndex;
 
-    public ToolAdapterTabbedEditorDialog(AppContext appContext, JDialog parent, ToolAdapterOperatorDescriptor operatorDescriptor, OperationType operation) {
+    ToolAdapterTabbedEditorDialog(AppContext appContext, JDialog parent, ToolAdapterOperatorDescriptor operatorDescriptor, OperationType operation) {
         super(appContext, parent, operatorDescriptor, operation);
     }
 
-    public ToolAdapterTabbedEditorDialog(AppContext appContext, JDialog parent, ToolAdapterOperatorDescriptor operatorDescriptor, int newNameIndex, OperationType operation) {
+    ToolAdapterTabbedEditorDialog(AppContext appContext, JDialog parent, ToolAdapterOperatorDescriptor operatorDescriptor, int newNameIndex, OperationType operation) {
         super(appContext, parent, operatorDescriptor, newNameIndex, operation);
     }
 
@@ -89,11 +109,17 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
         getJDialog().setMinimumSize(new Dimension(formWidth + 16, formHeight + 72));
 
         addTab(tabbedPane, Bundle.CTL_Panel_OperatorDescriptor_Text(), createDescriptorTab());
+        currentIndex++;
         addTab(tabbedPane, Bundle.CTL_Panel_ConfigParams_Text(), createToolInfoPanel());
+        currentIndex++;
         addTab(tabbedPane, Bundle.CTL_Panel_PreProcessing_Border_TitleText(), createPreProcessingTab());
+        currentIndex++;
         addTab(tabbedPane, Bundle.CTL_Panel_OpParams_Border_TitleText(), createParametersTab(formWidth));
+        currentIndex++;
         addTab(tabbedPane, Bundle.CTL_Panel_SysVar_Border_TitleText(), createVariablesPanel());
+        currentIndex++;
         addTab(tabbedPane, Bundle.CTL_Panel_Bundle_TitleText(), createBundlePanel());
+        currentIndex++;
 
         tabbedPane.setUI(new BasicTabbedPaneUI());
 
@@ -108,17 +134,20 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
         TextFieldEditor textEditor = new TextFieldEditor();
 
         addValidatedTextField(descriptorPanel, textEditor, Bundle.CTL_Label_Alias_Text(), ToolAdapterConstants.ALIAS, "[^\\\\\\?%\\*:\\|\"<>\\./]*");
-        addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_UniqueName_Text(), ToolAdapterConstants.NAME, true);
+        JComponent component = addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_UniqueName_Text(), ToolAdapterConstants.NAME, true);
+        anchorLabels.put(ToolAdapterConstants.NAME, new AnchorLabel("Name is not unique", tabbedPane, currentIndex, component));
         addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_Label_Text(), ToolAdapterConstants.LABEL, true);
         addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_Version_Text(), ToolAdapterConstants.VERSION, true);
         addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_Copyright_Text(), ToolAdapterConstants.COPYRIGHT, false);
         addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_Authors_Text(), ToolAdapterConstants.AUTHORS, false);
         addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_Description_Text(), ToolAdapterConstants.DESCRIPTION, false);
 
-        propertyContainer.addPropertyChangeListener(ToolAdapterConstants.ALIAS, evt -> propertyContainer.setValue(ToolAdapterConstants.NAME, ToolAdapterConstants.OPERATOR_NAMESPACE + evt.getNewValue().toString()));
+        propertyContainer.addPropertyChangeListener(ToolAdapterConstants.ALIAS,
+                                                    evt -> propertyContainer.setValue(ToolAdapterConstants.NAME,
+                                                                                      ToolAdapterConstants.OPERATOR_NAMESPACE + evt.getNewValue().toString()));
 
-        java.util.List<String> menus = getAvailableMenuOptions(null);
-        addComboField(descriptorPanel, Bundle.CTL_Label_MenuLocation_Text(), ToolAdapterConstants.MENU_LOCATION, menus, true, true);
+        List<String> menus = getAvailableMenuOptions(null);
+        addComboField(descriptorPanel, Bundle.CTL_Label_MenuLocation_Text(), ToolAdapterConstants.MENU_LOCATION, menus);
 
         addComboField(descriptorPanel, Bundle.CTL_Label_TemplateType_Text(), ToolAdapterConstants.TEMPLATE_TYPE, true, false);
 
@@ -232,6 +261,9 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
         panelToolFiles.add(new JLabel(Bundle.CTL_Label_ToolLocation_Text()));
         panelToolFiles.add(editorComponent);
 
+        anchorLabels.put(ToolAdapterConstants.MAIN_TOOL_FILE_LOCATION,
+                         new AnchorLabel(Bundle.MSG_Inexistent_Tool_Path_Text(), this.tabbedPane, this.currentIndex, editorComponent));
+
         propertyDescriptor = propertyContainer.getDescriptor(ToolAdapterConstants.WORKING_DIR);
         propertyDescriptor.setAttribute("directory", true);
         propertyDescriptor.setValidator((property, value) -> {
@@ -246,6 +278,10 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
         editorComponent.setPreferredSize(new Dimension(editorComponent.getPreferredSize().width, controlHeight));
         org.esa.snap.utils.UIUtils.enableUndoRedo(editorComponent);
         panelToolFiles.add(new JLabel(Bundle.CTL_Label_WorkDir_Text()));
+
+        anchorLabels.put(ToolAdapterConstants.WORKING_DIR,
+                         new AnchorLabel(Bundle.MSG_Inexistent_WorkDir_Text(), this.tabbedPane, this.currentIndex, editorComponent));
+
         panelToolFiles.add(editorComponent);
 
         SpringUtilities.makeCompactGrid(panelToolFiles, 2, 2, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING);
@@ -336,10 +372,7 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
                 @Override
                 public void setText(String text) {
                     super.setText(text);
-                    FontMetrics metrics = getFontMetrics(getFont());
-                    int width = metrics.stringWidth(text);
-                    setPreferredSize(new Dimension(width + 40, controlHeight));
-                    setBounds(new Rectangle(getLocation(), getPreferredSize()));
+                    adjustDimension(this);
                 }
             };
             installButton.setText((bundle.getLocation() == BundleLocation.REMOTE ? "Download and " : "") + "Install Now");
@@ -425,8 +458,7 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
         aSenderComponent.setFocusTraversalKeys(0, new HashSet());
         int modifiers = 0; // '0' => no modifiers
         int keyCode = KeyEvent.VK_TAB;
-        boolean onKeyRelease = true;
-        KeyStroke tabKeyReleased = KeyStroke.getKeyStroke(keyCode, modifiers, onKeyRelease);
+        KeyStroke tabKeyReleased = KeyStroke.getKeyStroke(keyCode, modifiers, true);
         aSenderComponent.getInputMap(1).put(tabKeyReleased, forwardFocusAction.getName());
         aSenderComponent.getActionMap().put(forwardFocusAction.getName(), forwardFocusAction);
     }

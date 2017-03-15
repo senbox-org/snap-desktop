@@ -50,6 +50,7 @@ import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.ui.tooladapter.actions.EscapeAction;
+import org.esa.snap.ui.tooladapter.dialogs.components.AnchorLabel;
 import org.esa.snap.ui.tooladapter.model.AutoCompleteTextArea;
 import org.esa.snap.ui.tooladapter.model.OperationType;
 import org.esa.snap.ui.tooladapter.model.OperatorParametersTable;
@@ -63,8 +64,25 @@ import org.openide.filesystems.FileUtil;
 import org.openide.util.NbBundle;
 import org.openide.util.NbPreferences;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.SpringLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FontMetrics;
+import java.awt.Rectangle;
 import java.awt.event.ItemEvent;
 import java.io.File;
 import java.io.IOException;
@@ -74,6 +92,9 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -141,58 +162,45 @@ import static org.esa.snap.utils.SpringUtilities.makeCompactGrid;
 })
 public abstract class AbstractAdapterEditor extends ModalDialog {
 
-    protected static final String MESSAGE_REQUIRED = "This field is required";
-    protected static final int MIN_WIDTH = 720;
-    protected static final int MIN_HEIGHT = 580;
-    protected static final int MIN_TABBED_WIDTH = 640;
-    protected static final int MIN_TABBED_HEIGHT = 512;
-    protected static int MAX_4K_WIDTH = 4096;
-    protected static int MAX_4K_HEIGHT = 2160;
-    protected ToolAdapterOperatorDescriptor oldOperatorDescriptor;
-    protected ToolAdapterOperatorDescriptor newOperatorDescriptor;
-    protected int newNameIndex = -1;
-    protected PropertyContainer propertyContainer;
-    protected BindingContext bindingContext;
-    protected JTextArea templateContent;
-    protected OperatorParametersTable paramsTable;
+    private static final String MESSAGE_REQUIRED = "This field is required";
+    static final int MIN_WIDTH = 720;
+    static final int MIN_HEIGHT = 580;
+    static final int MIN_TABBED_WIDTH = 640;
+    static final int MIN_TABBED_HEIGHT = 512;
+    static int MAX_4K_WIDTH = 4096;
+    static int MAX_4K_HEIGHT = 2160;
+    private ToolAdapterOperatorDescriptor oldOperatorDescriptor;
+    ToolAdapterOperatorDescriptor newOperatorDescriptor;
+    private int newNameIndex = -1;
+    PropertyContainer propertyContainer;
+    BindingContext bindingContext;
+    private JTextArea templateContent;
+    OperatorParametersTable paramsTable;
     protected AppContext context;
     protected Logger logger;
-    protected JTextField customMenuLocation;
-    protected JRadioButton rbMenuNew;
-    public static final String helpID = "sta_editor";
+    private JTextField customMenuLocation;
+    private JRadioButton rbMenuNew;
+    private static final String helpID = "sta_editor";
 
-    protected int formWidth;
-    protected int controlHeight = 24;
+    int formWidth;
+    int controlHeight = 24;
 
-    protected OperationType currentOperation;
+    private OperationType currentOperation;
 
-    protected VariablesTable varTable;
+    VariablesTable varTable;
 
-    protected BundleForm bundleForm;
+    BundleForm bundleForm;
 
-    public static AbstractAdapterEditor createEditorDialog(AppContext appContext, JDialog parent, ToolAdapterOperatorDescriptor operatorDescriptor, OperationType operation) {
-        AbstractAdapterEditor dialog;
-        if (useTabsForEditorDialog()) {
-            dialog = new ToolAdapterTabbedEditorDialog(appContext, parent, operatorDescriptor, operation);
-        } else {
-            dialog = new ToolAdapterEditorDialog(appContext, parent, operatorDescriptor, operation);
-        }
-        return dialog;
+    Map<String, AnchorLabel> anchorLabels = new HashMap<>();
+
+    private JPanel errorPanel;
+
+    static AbstractAdapterEditor createEditorDialog(AppContext appContext, JDialog parent, ToolAdapterOperatorDescriptor operatorDescriptor, OperationType operation) {
+        return new ToolAdapterTabbedEditorDialog(appContext, parent, operatorDescriptor, operation);
     }
 
-    public static AbstractAdapterEditor createEditorDialog(AppContext appContext, JDialog parent, ToolAdapterOperatorDescriptor operatorDescriptor, int newNameIndex, OperationType operation) {
-        AbstractAdapterEditor dialog;
-        if (useTabsForEditorDialog()) {
-            dialog = new ToolAdapterTabbedEditorDialog(appContext, parent, operatorDescriptor, newNameIndex, operation);
-        } else {
-            dialog = new ToolAdapterEditorDialog(appContext, parent, operatorDescriptor, newNameIndex, operation);
-        }
-        return dialog;
-    }
-
-    private static boolean useTabsForEditorDialog() {
-        //return Boolean.parseBoolean(NbPreferences.forModule(Dialogs.class).get(ToolAdapterOptionsController.PREFERENCE_KEY_TABBED_WINDOW, "false"));
-        return true;
+    static AbstractAdapterEditor createEditorDialog(AppContext appContext, JDialog parent, ToolAdapterOperatorDescriptor operatorDescriptor, int newNameIndex, OperationType operation) {
+        return new ToolAdapterTabbedEditorDialog(appContext, parent, operatorDescriptor, newNameIndex, operation);
     }
 
     private AbstractAdapterEditor(AppContext appContext, JDialog parent, String title) {
@@ -200,7 +208,10 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
         this.context = appContext;
         this.logger = Logger.getLogger(ToolAdapterEditorDialog.class.getName());
         this.registerButton(ID_OTHER, new JButton(Bundle.CTL_Button_Export_Text()));
-        controlHeight = (int)((getJDialog().getFont().getSize() + 1) * 2);
+        controlHeight = (getJDialog().getFont().getSize() + 1) * 2;
+        errorPanel = new JPanel();
+        errorPanel.setLayout(new BoxLayout(errorPanel, BoxLayout.Y_AXIS));
+        getButtonPanel().add(errorPanel, 0);
     }
 
     private AbstractAdapterEditor(AppContext appContext, JDialog parent, ToolAdapterOperatorDescriptor operatorDescriptor) {
@@ -228,9 +239,7 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
             Optional<ToolParameterDescriptor> result = newOperatorDescriptor.getToolParameterDescriptors()
                     .stream()
                     .filter(p -> p.getName().equals(ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE)).findFirst();
-            if (result.isPresent()) {
-                result.get().setDescription("Output file");
-            }
+            result.ifPresent(toolParameterDescriptor -> toolParameterDescriptor.setDescription("Output file"));
         }
 
         propertyContainer = PropertyContainer.createObjectBacked(newOperatorDescriptor);
@@ -244,7 +253,7 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
                 && (p.getOperatorDescriptor().getClass() != AnnotationOperatorDescriptor.class)
                 && !p.getOperatorAlias().equals(oldOperatorDescriptor.getAlias()))
                 .forEach(operator -> toolboxSpis.add(operator.getOperatorDescriptor().getAlias()));
-        toolboxSpis.sort(Comparator.<String>naturalOrder());
+        toolboxSpis.sort(Comparator.naturalOrder());
         propertyContainer.getDescriptor(ToolAdapterConstants.PREPROCESSOR_EXTERNAL_TOOL).setValueSet(new ValueSet(toolboxSpis.toArray(new String[toolboxSpis.size()])));
 
         bindingContext = new BindingContext(propertyContainer);
@@ -260,7 +269,7 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
      * @param operatorDescriptor the descriptor of the operator to be edited
      * @param operation is the type of desired operation: NEW/COPY if the operator was not previously registered (so it is a new operator) and EDIT if the operator was registered and the editing operation is requested
      */
-    public AbstractAdapterEditor(AppContext appContext, JDialog parent, ToolAdapterOperatorDescriptor operatorDescriptor, OperationType operation) {
+    AbstractAdapterEditor(AppContext appContext, JDialog parent, ToolAdapterOperatorDescriptor operatorDescriptor, OperationType operation) {
         this(appContext, parent, operatorDescriptor);
         this.currentOperation = operation;
         this.newNameIndex = -1;
@@ -275,7 +284,7 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
      * @param newNameIndex an integer value representing the suffix for the new operator name; if this value is less than 1, the editing operation of the current operator is executed; if the value is equal to or greater than 1, the operator is duplicated and the index value is used to compute the name of the new operator
      * @param operation is the type of desired operation: NEW/COPY if the operator was not previously registered (so it is a new operator) and EDIT if the operator was registered and the editing operation is requested
      */
-    public AbstractAdapterEditor(AppContext appContext, JDialog parent, ToolAdapterOperatorDescriptor operatorDescriptor, int newNameIndex, OperationType operation) {
+    AbstractAdapterEditor(AppContext appContext, JDialog parent, ToolAdapterOperatorDescriptor operatorDescriptor, int newNameIndex, OperationType operation) {
         this(appContext, parent, operatorDescriptor);
         this.newNameIndex = newNameIndex;
         this.currentOperation = operation;
@@ -305,7 +314,7 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
 
     protected abstract JPanel createBundlePanel();
 
-    protected boolean shouldValidate() {
+    private boolean shouldValidate() {
         String value = NbPreferences.forModule(Dialogs.class).get(ToolAdapterOptionsController.PREFERENCE_KEY_VALIDATE_PATHS, null);
         return value == null || Boolean.parseBoolean(value);
     }
@@ -317,9 +326,8 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
         varTable.stopVariablesTableEditing();
         paramsTable.stopVariablesTableEditing();
 
-        /**
-         * Verify the existence of the tool executable
-         */
+
+        /* Verify the existence of the tool executable */
         if (shouldValidate()) {
             File file = newOperatorDescriptor.getMainToolFileLocation();
             if (file == null) {
@@ -329,34 +337,51 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
                     file = value instanceof File ? (File) value : new File(value.toString());
                 }
             }
-            if (file == null) {
-                Dialogs.showWarning(Bundle.MSG_Inexistent_Tool_Path_Text());
-                return false;
+            boolean problemFound = file == null;
+            if (!problemFound) {
+                Path toolLocation = newOperatorDescriptor.resolveVariables(newOperatorDescriptor.getMainToolFileLocation()).toPath();
+                if (!(Files.exists(toolLocation) && Files.isExecutable(toolLocation))) {
+                    problemFound = true;
+                }
             }
-
-            Path toolLocation = newOperatorDescriptor.resolveVariables(newOperatorDescriptor.getMainToolFileLocation()).toPath();
-            if (!(Files.exists(toolLocation) && Files.isExecutable(toolLocation))) {
-                Dialogs.showWarning(Bundle.MSG_Inexistent_Tool_Path_Text());
-                return false;
+            AnchorLabel anchorLabel = anchorLabels.get(ToolAdapterConstants.MAIN_TOOL_FILE_LOCATION);
+            if (problemFound) {
+                if (Arrays.stream(errorPanel.getComponents()).noneMatch(anchorLabel::equals)) {
+                    errorPanel.add(anchorLabel);
+                    errorPanel.revalidate();
+                }
+            } else {
+                if (Arrays.stream(errorPanel.getComponents()).anyMatch(anchorLabel::equals)) {
+                    errorPanel.remove(anchorLabel);
+                    errorPanel.revalidate();
+                }
             }
-            /**
-             * Verify the existence of the working directory
-             */
+            /* Verify the existence of the working directory */
             File workingDir = newOperatorDescriptor.resolveVariables(newOperatorDescriptor.getWorkingDir());
+            anchorLabel = anchorLabels.get(ToolAdapterConstants.WORKING_DIR);
             if (!(workingDir != null && workingDir.exists() && workingDir.isDirectory())) {
-                Dialogs.showWarning(Bundle.MSG_Inexistent_WorkDir_Text());
+                if (Arrays.stream(errorPanel.getComponents()).noneMatch(anchorLabel::equals)) {
+                    errorPanel.add(anchorLabel);
+                    errorPanel.revalidate();
+                }
+                problemFound = true;
+            } else {
+                if (Arrays.stream(errorPanel.getComponents()).anyMatch(anchorLabel::equals)) {
+                    errorPanel.remove(anchorLabel);
+                    errorPanel.revalidate();
+                }
+            }
+            if (problemFound) {
                 return false;
             }
         }
-        /**
-         * Verify that there is no System Variable without value
-         */
-        java.util.List<SystemVariable> variables = newOperatorDescriptor.getVariables();
+        /* Verify that there is no System Variable without value */
+        List<SystemVariable> variables = newOperatorDescriptor.getVariables();
         if (variables != null) {
             for (SystemVariable variable : variables) {
                 String key = variable.getKey();
                 if (key == null || key.isEmpty()) {
-                    Dialogs.showWarning(String.format(Bundle.MSG_Empty_Variable_Key_Text()));
+                    Dialogs.showWarning(Bundle.MSG_Empty_Variable_Key_Text());
                     return false;
                 }
                 String value = variable.getValue();
@@ -367,9 +392,7 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
             }
         }
         if (shouldValidate()) {
-            /**
-             * Verify the existence of files for File parameter values that are marked as Not Null or Not Empty
-             */
+            /* Verify the existence of files for File parameter values that are marked as Not Null or Not Empty */
             ParameterDescriptor[] parameterDescriptors = newOperatorDescriptor.getParameterDescriptors();
             if (parameterDescriptors != null && parameterDescriptors.length > 0) {
                 for (ParameterDescriptor parameterDescriptor : parameterDescriptors) {
@@ -388,9 +411,20 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
         //verify the adapter unique name really is unique
         if (currentOperation.equals(OperationType.COPY) || currentOperation.equals(OperationType.NEW) ||
                 (currentOperation.equals(OperationType.COPY) && !newOperatorDescriptor.getName().equals(oldOperatorDescriptor.getName()))) {
+            AnchorLabel anchorLabel = anchorLabels.get(ToolAdapterConstants.NAME);
+            JPanel buttonPanel = getButtonPanel();
             if (GPF.getDefaultInstance().getOperatorSpiRegistry().getOperatorSpi(newOperatorDescriptor.getName()) != null) {
-                Dialogs.showWarning(String.format(Bundle.MSG_Existing_UniqueName_Text()));
+                //Dialogs.showWarning(String.format(Bundle.MSG_Existing_UniqueName_Text()));
+                if (Arrays.stream(buttonPanel.getComponents()).noneMatch(anchorLabel::equals)) {
+                    buttonPanel.add(anchorLabel, 0);
+                    buttonPanel.revalidate();
+                }
                 return false;
+            } else {
+                if (Arrays.stream(buttonPanel.getComponents()).anyMatch(anchorLabel::equals)) {
+                    buttonPanel.remove(anchorLabel);
+                    buttonPanel.revalidate();
+                }
             }
         }
         return true;
@@ -428,10 +462,12 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
                             .forEach(param -> {
                                 Object propertyValue = paramsTable.getBindingContext().getBinding(param.getName()).getPropertyValue();
                                 if (param.isParameter()) {
-                                    String defaultValueString = "";
+                                    String defaultValueString;
                                     if (propertyValue.getClass().isArray()) {
                                         defaultValueString = String.join(ArrayConverter.SEPARATOR,
-                                                Arrays.asList((Object[]) propertyValue).stream().map(Object::toString).collect(Collectors.toList()));
+                                                                         Arrays.stream((Object[]) propertyValue)
+                                                                                 .map(Object::toString)
+                                                                                 .collect(Collectors.toList()));
                                     } else {
                                         defaultValueString = propertyValue.toString();
                                     }
@@ -509,7 +545,7 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
         }
     }
 
-    protected JComponent createCheckboxComponent(String memberName, JComponent toogleComponentEnabled, Boolean value) {
+    JComponent createCheckboxComponent(String memberName, JComponent toogleComponentEnabled, Boolean value) {
         PropertyDescriptor propertyDescriptor = propertyContainer.getDescriptor(memberName);
         PropertyEditor editor = PropertyEditorRegistry.getInstance().findPropertyEditor(propertyDescriptor);
         JComponent editorComponent = editor.createEditorComponent(propertyDescriptor, bindingContext);
@@ -523,36 +559,49 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
         return editorComponent;
     }
 
-    protected void addValidatedTextField(JPanel parent, TextFieldEditor textEditor, String labelText, String propertyName, String validatorRegex) {
+    JComponent addValidatedTextField(JPanel parent, TextFieldEditor textEditor, String labelText, String propertyName, String validatorRegex) {
         if(validatorRegex == null || validatorRegex.isEmpty()){
-            addTextField(parent, textEditor, labelText, propertyName, false);
+            return addTextField(parent, textEditor, labelText, propertyName, false);
         } else {
-            parent.add(new JLabel(labelText));
+            JLabel jLabel = new JLabel(labelText);
+            parent.add(jLabel);
             PropertyDescriptor propertyDescriptor = propertyContainer.getDescriptor(propertyName);
             propertyDescriptor.setValidator(new PatternValidator(Pattern.compile(validatorRegex)));
             JComponent editorComponent = textEditor.createEditorComponent(propertyDescriptor, bindingContext);
             UIUtils.addPromptSupport(editorComponent, "enter " + labelText.toLowerCase().replace(":", "") + " here");
             editorComponent.setPreferredSize(new Dimension(editorComponent.getPreferredSize().width, controlHeight));
             editorComponent.setMaximumSize(new Dimension(editorComponent.getMaximumSize().width, controlHeight));
+            jLabel.setLabelFor(editorComponent);
             parent.add(editorComponent);
+            return editorComponent;
         }
     }
 
-    protected void addTextField(JPanel parent, TextFieldEditor textEditor, String labelText, String propertyName, boolean isRequired) {
-        parent.add(new JLabel(labelText));
+    JComponent addTextField(JPanel parent, TextFieldEditor textEditor, String labelText, String propertyName, boolean isRequired) {
+        JLabel jLabel = new JLabel(labelText);
+        Dimension size = jLabel.getPreferredSize();
+        parent.add(jLabel);
         PropertyDescriptor propertyDescriptor = propertyContainer.getDescriptor(propertyName);
         if (isRequired) {
             propertyDescriptor.setValidator(new NotEmptyValidator());
+            jLabel.setText("<html><font color=\"#"
+                                   + Integer.toHexString(jLabel.getForeground().getRGB()).substring(2, 8)
+                                   + "\">"
+                                   + jLabel.getText()
+                                   + "</font><font color=\"RED\">*</font></html>");
+            jLabel.setMaximumSize(size);
         }
         JComponent editorComponent = textEditor.createEditorComponent(propertyDescriptor, bindingContext);
         UIUtils.addPromptSupport(editorComponent, "enter " + labelText.toLowerCase().replace(":", "") + " here");
         UIUtils.enableUndoRedo(editorComponent);
         editorComponent.setPreferredSize(new Dimension(editorComponent.getPreferredSize().width, controlHeight));
         editorComponent.setMaximumSize(new Dimension(editorComponent.getMaximumSize().width, controlHeight));
+        jLabel.setLabelFor(editorComponent);
         parent.add(editorComponent);
+        return editorComponent;
     }
 
-    protected void addComboField(JPanel parent, String labelText, String propertyName, boolean isRequired, boolean isEditable) {
+    JComponent addComboField(JPanel parent, String labelText, String propertyName, boolean isRequired, boolean isEditable) {
         PropertyDescriptor propertyDescriptor = propertyContainer.getDescriptor(propertyName);
         propertyDescriptor.setNotEmpty(isRequired);
         PropertyEditor editor = PropertyEditorRegistry.getInstance().findPropertyEditor(propertyDescriptor);
@@ -564,19 +613,22 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
             comboBox.setEditable(isEditable);
             comboBox.setEnabled(isEditable);
         }
-        parent.add(new JLabel(labelText));
+        JLabel jLabel = new JLabel(labelText);
+        parent.add(jLabel);
+        jLabel.setLabelFor(editorComponent);
         parent.add(editorComponent);
+        return editorComponent;
     }
 
-    protected void addComboField(JPanel parent, String labelText, String propertyName, java.util.List<String> values, boolean sortValues, boolean isRequired) {
-        parent.add(new JLabel(labelText));
+    void addComboField(JPanel parent, String labelText, String propertyName, List<String> values) {
+        JLabel jLabel = new JLabel(labelText);
+        parent.add(jLabel);
 
         PropertyDescriptor propertyDescriptor = propertyContainer.getDescriptor(propertyName);
-        propertyDescriptor.setNotEmpty(isRequired);
+        propertyDescriptor.setNotEmpty(true);
 
-        if (sortValues) {
-            values.sort(Comparator.<String>naturalOrder());
-        }
+        values.sort(Comparator.naturalOrder());
+
         propertyDescriptor.setValueSet(new ValueSet(values.toArray()));
         PropertyEditor editor = PropertyEditorRegistry.getInstance().findPropertyEditor(propertyDescriptor);
         JComponent editorComp = editor.createEditorComponent(propertyDescriptor, bindingContext);
@@ -588,7 +640,6 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
 
         customMenuLocation = new JTextField();
         customMenuLocation.setInputVerifier(new RequiredFieldValidator(Bundle.MSG_Empty_MenuLocation_Text()));
-        //customMenuLocation.setPreferredSize(new Dimension(250, controlHeight));
         customMenuLocation.setEnabled(false);
 
         JPanel subPanel = new JPanel(new SpringLayout());
@@ -598,8 +649,7 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
         ButtonGroup rbGroup = new ButtonGroup();
         rbGroup.add(rbExistingMenu);
         rbGroup.add(rbMenuNew);
-        // this radio button should be able to capture focus even when the validator
-        // of the rbMenuNew says otherwise
+        // this radio button should be able to capture focus even when the validator of the rbMenuNew says otherwise
         rbExistingMenu.setVerifyInputWhenFocusTarget(false);
         rbExistingMenu.addItemListener(e -> {
             editorComp.setEnabled(e.getStateChange() == ItemEvent.SELECTED);
@@ -607,6 +657,7 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
         });
         subPanel.add(rbExistingMenu);
         subPanel.add(rbMenuNew);
+        jLabel.setLabelFor(editorComp);
         subPanel.add(editorComp);
         subPanel.add(customMenuLocation);
 
@@ -622,8 +673,8 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
         parent.add(subPanel);
     }
 
-    protected java.util.List<String> getAvailableMenuOptions(FileObject current) {
-        java.util.List<String> resultList = new ArrayList<>();
+    List<String> getAvailableMenuOptions(FileObject current) {
+        List<String> resultList = new ArrayList<>();
         if (current == null) {
             current = FileUtil.getConfigRoot().getFileObject("Menu");
         }
@@ -640,7 +691,7 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
         return resultList;
     }
 
-    protected boolean resolveTemplateProductCount(String templateContent) {
+    private boolean resolveTemplateProductCount(String templateContent) {
         boolean success = true;
         if (templateContent.contains(ToolAdapterConstants.TOOL_SOURCE_PRODUCT_ID) ||
                 templateContent.contains(ToolAdapterConstants.TOOL_SOURCE_PRODUCT_FILE)) {
@@ -673,7 +724,7 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
         return success;
     }
 
-    protected JTextArea createTemplateEditorField() {
+    JTextArea createTemplateEditorField() {
         boolean useAutocomplete = Boolean.parseBoolean(NbPreferences.forModule(Dialogs.class).get(ToolAdapterOptionsController.PREFERENCE_KEY_AUTOCOMPLETE, "false"));
         if (useAutocomplete) {
             templateContent = new AutoCompleteTextArea("", 15, 9);
@@ -708,13 +759,21 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
         return templateContent;
     }
 
-    protected java.util.List<String> getAutocompleteEntries() {
-        java.util.List<String> entries = new ArrayList<>();
+    void adjustDimension(JButton component) {
+        FontMetrics metrics = component.getFontMetrics(component.getFont());
+        int width = metrics.stringWidth(component.getText());
+        component.setPreferredSize(new Dimension(width + 20, controlHeight));
+        component.setBounds(new Rectangle(component.getLocation(), component.getPreferredSize()));
+    }
+
+    private List<String> getAutocompleteEntries() {
+        List<String> entries = new ArrayList<>();
         entries.addAll(newOperatorDescriptor.getVariables().stream().map(SystemVariable::getKey).collect(Collectors.toList()));
         for (ParameterDescriptor parameterDescriptor : newOperatorDescriptor.getParameterDescriptors()) {
             entries.add(parameterDescriptor.getName());
         }
-        entries.sort(Comparator.<String>naturalOrder());
+        entries.sort(Comparator.naturalOrder());
         return entries;
     }
+
 }
