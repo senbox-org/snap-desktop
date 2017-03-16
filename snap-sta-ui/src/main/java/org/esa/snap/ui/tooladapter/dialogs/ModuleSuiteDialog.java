@@ -18,7 +18,9 @@
 
 package org.esa.snap.ui.tooladapter.dialogs;
 
+import org.esa.snap.core.gpf.descriptor.SystemVariable;
 import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
+import org.esa.snap.core.gpf.descriptor.dependency.BundleType;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterRegistry;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.modules.ModulePackager;
@@ -29,14 +31,29 @@ import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.ui.tooladapter.actions.EscapeAction;
 import org.esa.snap.ui.tooladapter.model.ProgressWorker;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumn;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -51,8 +68,10 @@ public class ModuleSuiteDialog extends ModalDialog {
     private ModuleSuiteDescriptor descriptor;
     private org.esa.snap.core.gpf.descriptor.dependency.Bundle bundle;
     private EntityForm<ModuleSuiteDescriptor> descriptorForm;
-    private EntityForm<org.esa.snap.core.gpf.descriptor.dependency.Bundle> bundleForm;
+    //private EntityForm<org.esa.snap.core.gpf.descriptor.dependency.Bundle> bundleForm;
+    private BundleForm bundleForm;
     private Set<ToolAdapterOperatorDescriptor> initialSelection;
+    private Map<String, SystemVariable> commonVariables;
 
     static {
         Calendar calendar = Calendar.getInstance();
@@ -64,12 +83,19 @@ public class ModuleSuiteDialog extends ModalDialog {
         super(appContext.getApplicationWindow(), title, ID_OK | ID_CANCEL, helpID);
         this.descriptor = new ModuleSuiteDescriptor();
         this.descriptor.setAuthors(System.getProperty("user.name"));
+        this.descriptor.setName("NewBundle");
         this.descriptor.setVersion("1");
         this.descriptor.setCopyright("(C)" + String.valueOf(YEAR) + " " + this.descriptor.getAuthors());
-        this.bundle = new org.esa.snap.core.gpf.descriptor.dependency.Bundle();
+        this.bundle = new org.esa.snap.core.gpf.descriptor.dependency.Bundle(BundleType.ZIP, SystemUtils.getAuxDataPath().toFile());
         this.initialSelection = new HashSet<>();
+        this.commonVariables = new HashMap<>();
         if (selection != null) {
             this.initialSelection.addAll(selection);
+            this.initialSelection.forEach(d -> {
+                for (SystemVariable variable : d.getVariables()) {
+                    this.commonVariables.put(variable.getKey(), variable);
+                }
+            });
         }
         JPanel contentPanel = createContentPanel();
         setContent(contentPanel);
@@ -93,7 +119,7 @@ public class ModuleSuiteDialog extends ModalDialog {
         panel.add(new JLabel("Adapters to include:"), constraints);
 
         JPanel descriptorPanel = createDescriptorPanel();
-        descriptorPanel.setPreferredSize(new Dimension(300, 250));
+        descriptorPanel.setPreferredSize(new Dimension(350, 250));
         constraints.gridx = 0;
         constraints.gridy = 1;
         constraints.weightx = 1;
@@ -117,7 +143,7 @@ public class ModuleSuiteDialog extends ModalDialog {
         constraints.fill = GridBagConstraints.HORIZONTAL;
         panel.add(bundlePanel, constraints);
 
-        panel.setPreferredSize(new Dimension(550, 350));
+        panel.setPreferredSize(new Dimension(680, 350));
         return panel;
     }
 
@@ -128,13 +154,9 @@ public class ModuleSuiteDialog extends ModalDialog {
                 .map(e -> (ToolAdapterOperatorDescriptor) e.getOperatorDescriptor())
                 .collect(Collectors.toList()));
         toolboxSpis.sort(Comparator.comparing(ToolAdapterOperatorDescriptor::getAlias));
-        Object[][] records = new Object[toolboxSpis.size()][2];
-        for (int i = 0; i < toolboxSpis.size(); i++) {
-            records[i][0] = false;
-            records[i][1] = toolboxSpis.get(i);
-        }
         AdapterListModel model = new AdapterListModel(toolboxSpis);
         operatorsTable = new JTable(model);
+        operatorsTable.getSelectionModel().addListSelectionListener(e -> onSelectionChanged());
         TableColumn checkColumn = operatorsTable.getColumnModel().getColumn(0);
         int checkColumnWidth = 24;
         checkColumn.setMaxWidth(checkColumnWidth);
@@ -153,10 +175,25 @@ public class ModuleSuiteDialog extends ModalDialog {
     }
 
     private JPanel createBundlePanel() {
-        this.bundleForm = new EntityForm<>(this.bundle);
-        JPanel panel = this.bundleForm.getPanel();
-        panel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
-        return panel;
+        this.bundleForm = new BundleForm(this.bundle, new ArrayList<>(this.commonVariables.values()));
+        this.bundleForm.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+        return this.bundleForm;
+    }
+
+    private void onSelectionChanged() {
+        ToolAdapterOperatorDescriptor[] selection = ((AdapterListModel) this.operatorsTable.getModel()).getSelectedItems();
+        for (ToolAdapterOperatorDescriptor descriptor : selection) {
+            List<SystemVariable> variables = descriptor.getVariables();
+            if (this.commonVariables.size() == 0) {
+                for (SystemVariable variable : variables) {
+                    this.commonVariables.put(variable.getKey(), variable);
+                }
+            }
+            this.commonVariables.entrySet()
+                    .removeIf(variableEntry ->
+                                      variables.stream().noneMatch(v -> variableEntry.getKey().equals(v.getKey())));
+        }
+        this.bundleForm.setVariables(new ArrayList<>(this.commonVariables.values()));
     }
 
     @Override

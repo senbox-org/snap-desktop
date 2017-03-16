@@ -31,6 +31,7 @@ import javax.swing.JLabel;
  * @date 3/15/2017
  */
 public class DecoratedNotEmptyValidator implements Validator {
+    private static final String[] excludedChars = { ".", "-", "+", " " };
     private JLabel label;
     private NotEmptyValidator validator;
 
@@ -46,6 +47,14 @@ public class DecoratedNotEmptyValidator implements Validator {
     @Override
     public void validateValue(Property property, Object value) throws ValidationException {
         try {
+            if (value != null) {
+                String stringValue = value.toString();
+                for (String exclChar : excludedChars) {
+                    if (stringValue.contains(exclChar)) {
+                        throw new ValidationException(String.format("Character '%s' not allowed", exclChar));
+                    }
+                }
+            }
             this.validator.validateValue(property, value);
             this.label.setIcon(null);
             this.label.setToolTipText(null);

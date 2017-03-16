@@ -31,8 +31,16 @@ import org.esa.snap.core.gpf.descriptor.dependency.BundleLocation;
 import org.esa.snap.core.gpf.descriptor.dependency.BundleType;
 import org.esa.snap.ui.GridBagUtils;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.ButtonGroup;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JTextField;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.ItemEvent;
@@ -215,6 +223,15 @@ public class BundleForm extends JPanel {
         GridBagUtils.addToPanel(this, new JLabel(" "), c, "gridx=0, gridy=8, gridwidth=1, weightx=0, weighty=1");
     }
 
+    public void setVariables(List<SystemVariable> variables) {
+        this.variables = variables;
+        PropertyDescriptor propertyDescriptor = propertyContainer.getDescriptor("updateVariable");
+        propertyDescriptor.setValueSet(new ValueSet(this.variables.stream().map(SystemVariable::getKey).toArray()));
+        PropertyEditor propertyEditor = PropertyEditorRegistry.getInstance().findPropertyEditor(propertyDescriptor);
+        variable = (JComboBox) propertyEditor.createEditorComponent(propertyDescriptor, bindingContext);
+        repaint();
+    }
+
     private void addChangeListeners() {
         final Property bundleTypeProperty = propertyContainer.getProperty("bundleType");
         bundleTypeProperty.addPropertyChangeListener(evt -> {
@@ -266,6 +283,7 @@ public class BundleForm extends JPanel {
         }
         arguments.setEnabled(canSelect);
         variable.setEnabled(canSelect);
+        repaint();
     }
 
     private Bundle copy(Bundle source) throws Exception {

@@ -315,7 +315,7 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
     protected abstract JPanel createBundlePanel();
 
     private boolean shouldValidate() {
-        String value = NbPreferences.forModule(Dialogs.class).get(ToolAdapterOptionsController.PREFERENCE_KEY_VALIDATE_PATHS, null);
+        String value = NbPreferences.forModule(Dialogs.class).get(ToolAdapterOptionsController.PREFERENCE_KEY_VALIDATE_ON_SAVE, null);
         return value == null || Boolean.parseBoolean(value);
     }
 
@@ -378,24 +378,24 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
             if (problemFound) {
                 return false;
             }
-        }
-        /* Verify that there is no System Variable without value */
-        List<SystemVariable> variables = newOperatorDescriptor.getVariables();
-        if (variables != null) {
-            for (SystemVariable variable : variables) {
-                String key = variable.getKey();
-                if (key == null || key.isEmpty()) {
-                    Dialogs.showWarning(Bundle.MSG_Empty_Variable_Key_Text());
-                    return false;
-                }
-                String value = variable.getValue();
-                if (value == null || value.isEmpty()) {
-                    Dialogs.showWarning(String.format(Bundle.MSG_Empty_Variable_Text(), key));
-                    return false;
+
+            /* Verify that there is no System Variable without value */
+            List<SystemVariable> variables = newOperatorDescriptor.getVariables();
+            if (variables != null) {
+                for (SystemVariable variable : variables) {
+                    String key = variable.getKey();
+                    if (key == null || key.isEmpty()) {
+                        Dialogs.showWarning(Bundle.MSG_Empty_Variable_Key_Text());
+                        return false;
+                    }
+                    String value = variable.getValue();
+                    if (value == null || value.isEmpty()) {
+                        Dialogs.showWarning(String.format(Bundle.MSG_Empty_Variable_Text(), key));
+                        return false;
+                    }
                 }
             }
-        }
-        if (shouldValidate()) {
+
             /* Verify the existence of files for File parameter values that are marked as Not Null or Not Empty */
             ParameterDescriptor[] parameterDescriptors = newOperatorDescriptor.getParameterDescriptors();
             if (parameterDescriptors != null && parameterDescriptors.length > 0) {

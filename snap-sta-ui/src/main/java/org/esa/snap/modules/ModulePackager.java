@@ -35,7 +35,6 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -128,13 +127,10 @@ public final class ModulePackager {
                 Map<String, String> dependentModules = new HashMap<>();
                 for (ToolAdapterOperatorDescriptor descriptor : descriptors) {
                     packModule(descriptor, suiteFilePath.resolve(descriptor.getAlias() + ".nbm").toFile(), true);
-                    dependentModules.put(descriptor.getName(), descriptor.getVersion());
+                    dependentModules.put(descriptor.getName(), SPECIFICATION_VERSION);//descriptor.getVersion());
                 }
-                if (bundle == null) {
-                    Optional<ToolAdapterOperatorDescriptor> descriptorWithBundle = Arrays.stream(descriptors).filter(d -> d.getBundle() != null).findFirst();
-                    if (descriptorWithBundle.isPresent()) {
-                        bundle = descriptorWithBundle.get().getBundle();
-                    }
+                if (bundle != null) {
+                    Arrays.stream(descriptors).forEach(d -> d.setBundle(bundle));
                 }
                 packSuite(suiteDescriptor, suiteFile, dependentModules, bundle);
             }
@@ -217,7 +213,7 @@ public final class ModulePackager {
             zipStream.write(packAdapterJar(descriptor));
             zipStream.closeEntry();
             Bundle bundle = descriptor.getBundle();
-            if (bundle != null && bundle.isLocal() &&
+            if (!isPartOfSuite && bundle != null && bundle.isLocal() &&
                     bundle.getTargetLocation() != null &&
                     bundle.getEntryPoint() != null) {
                 // lib folder
