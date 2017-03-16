@@ -45,6 +45,7 @@ import org.openide.util.HelpCtx;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.plaf.basic.BasicBorders;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -124,20 +125,6 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
 
         final JPanel mainPanel = new JPanel(new BorderLayout(4, 4));
 
-        // north panel
-        final JPanel northPanel = new JPanel(new BorderLayout(4, 4));
-
-        if (allowGraphBuilding) {
-            graphPanel = new GraphPanel(graphEx);
-            graphPanel.setBackground(Color.WHITE);
-            graphPanel.setPreferredSize(new Dimension(1500, 1000));
-            final JScrollPane scrollPane = new JScrollPane(graphPanel);
-            scrollPane.setPreferredSize(new Dimension(300, 300));
-            northPanel.add(scrollPane, BorderLayout.CENTER);
-
-            mainPanel.add(northPanel, BorderLayout.NORTH);
-        }
-
         // mid panel
         final JPanel midPanel = new JPanel(new BorderLayout(4, 4));
         tabbedPanel = new JTabbedPane();
@@ -156,7 +143,23 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         midPanel.add(tabbedPanel, BorderLayout.CENTER);
         midPanel.add(statusLabel, BorderLayout.SOUTH);
 
-        mainPanel.add(midPanel, BorderLayout.CENTER);
+        if (allowGraphBuilding) {
+            graphPanel = new GraphPanel(graphEx);
+            graphPanel.setBackground(Color.WHITE);
+            graphPanel.setPreferredSize(new Dimension(1500, 1000));
+            final JScrollPane scrollPane = new JScrollPane(graphPanel);
+            scrollPane.setPreferredSize(new Dimension(300, 300));
+
+            final JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
+                                                        scrollPane, midPanel);
+            splitPane.setOneTouchExpandable(true);
+            splitPane.setBorder(new BasicBorders.MarginBorder());
+
+            mainPanel.add(splitPane, BorderLayout.CENTER);
+
+        } else {
+            mainPanel.add(midPanel, BorderLayout.CENTER);
+        }
 
         // south panel
         final JPanel southPanel = new JPanel(new BorderLayout(4, 4));
@@ -190,7 +193,6 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         southPanel.add(progressPanel, BorderLayout.SOUTH);
 
         mainPanel.add(southPanel, BorderLayout.SOUTH);
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
 
         if (getJDialog().getJMenuBar() == null && allowGraphBuilding) {
             final GraphsMenu operatorMenu = new GraphsMenu(getJDialog(), this);
@@ -401,7 +403,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         try {
             initGraphEnabled = false;
             tabbedPanel.removeAll();
-            graphEx.loadGraph(fileStream, file, true, false);
+            graphEx.loadGraph(fileStream, file, true, true);
             if (allowGraphBuilding) {
                 graphPanel.showRightClickHelp(false);
                 refreshGraph();
