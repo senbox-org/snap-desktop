@@ -92,7 +92,7 @@ class BinningConfigurationPanel extends JPanel {
     private JPanel createParametersPanel() {
         BindingContext bindingContext = binningFormModel.getBindingContext();
 
-        JLabel validPixelExpressionLabel = new JLabel("Valid pixel expression:");
+        JLabel validPixelExpressionLabel = new JLabel("Valid-pixel expression:");
         final JButton validPixelExpressionButton = new JButton("...");
         final Dimension preferredSize = validPixelExpressionButton.getPreferredSize();
         preferredSize.setSize(25, preferredSize.getHeight());
@@ -281,7 +281,7 @@ class BinningConfigurationPanel extends JPanel {
     }
 
     private JPanel createVariablesPanel() {
-        final Grid grid = new Grid(4, false);
+        final Grid grid = new Grid(5, false);
         TableLayout gridLayout = grid.getLayout();
         gridLayout.setTablePadding(4, 3);
         gridLayout.setTableAnchor(TableLayout.Anchor.NORTHWEST);
@@ -291,6 +291,7 @@ class BinningConfigurationPanel extends JPanel {
                 /*0*/ //selection column
                 /*1*/ new JLabel("<html><b>Name</b>"),
                 /*2*/ new JLabel("<html><b>Expression</b>"),
+                /*3*/ new JLabel("<html><b>Valid-Pixel Expression</b>"),
                 /*5*/ null // column for edit button
         );
 

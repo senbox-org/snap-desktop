@@ -99,6 +99,9 @@ class VariableTableController extends ListControlBar.AbstractListController {
         JLabel exprLabel = new JLabel(vi.variableConfig.getExpr());
         exprLabel.setBorder(emptyBorder);
 
+        JLabel validExprLabel = new JLabel(vi.variableConfig.getValidExpr());
+        validExprLabel.setBorder(emptyBorder);
+
 
         final AbstractButton editButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon("/org/esa/snap/resources/images/icons/Edit16.gif"),
                                                                          false);
@@ -114,7 +117,8 @@ class VariableTableController extends ListControlBar.AbstractListController {
         grid.addDataRow(
             /*1*/ nameLabel,
             /*2*/ exprLabel,
-            /*3*/ editButton);
+            /*3*/ validExprLabel,
+            /*4*/ editButton);
 
         variableItems.add(vi);
 
@@ -193,6 +197,7 @@ class VariableTableController extends ListControlBar.AbstractListController {
         JComponent[] components = grid.getDataRow(rowIndex);
         ((JLabel) components[0]).setText(variableItem.variableConfig.getName());
         ((JLabel) components[1]).setText(variableItem.variableConfig.getExpr());
+        ((JLabel) components[2]).setText(variableItem.variableConfig.getValidExpr());
     }
 
     private void addVariableConfigs(VariableConfig[] variableConfigs) {
