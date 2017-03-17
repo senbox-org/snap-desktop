@@ -67,7 +67,7 @@ class MetadataElementLeafNode extends AbstractNode {
                     attributePropertyList.add(new StringProperty("Value"));
                     break;
                 }
-                attributePropertyList.add(new IntegerProperty("Value"));
+                attributePropertyList.add(new UIntegerProperty("Value"));
                 break;
             case ProductData.TYPE_FLOAT64:
                 attributePropertyList.add(new DoubleProperty("Value"));
@@ -117,6 +117,17 @@ class MetadataElementLeafNode extends AbstractNode {
         @Override
         public Integer getValue() throws IllegalAccessException, InvocationTargetException {
             return leaf.getData().getElemInt();
+        }
+    }
+    public class UIntegerProperty extends PropertySupport.ReadOnly<Long> {
+
+        public UIntegerProperty(String name) {
+            super(name, Long.class, name, null);
+        }
+
+        @Override
+        public Long getValue() throws IllegalAccessException, InvocationTargetException {
+            return leaf.getData().getElemUInt();
         }
     }
 

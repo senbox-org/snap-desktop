@@ -91,11 +91,11 @@ public class MetadataTableInnerElement implements MetadataTableElement {
             case TYPE_INT32:
                 return new int[]{data.getElemIntAt(index)};
             case TYPE_UINT8:
-                return new short[]{(short)data.getElemIntAt(index)};
+                return new byte[]{(byte)data.getElemUIntAt(index)};
             case TYPE_UINT16:
-                return new int[]{data.getElemIntAt(index)};
+                return new short[]{(short)data.getElemUIntAt(index)};
             case TYPE_UINT32:
-                return new long[]{data.getElemUIntAt(index)};
+                return new int[]{(int)data.getElemUIntAt(index)};
             case TYPE_INT64:
                 return new long[]{data.getElemLongAt(index)};
             case TYPE_FLOAT32:
