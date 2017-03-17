@@ -131,18 +131,6 @@ class MetadataElementLeafNode extends AbstractNode {
         }
     }
 
-    public class UIntegerProperty extends PropertySupport.ReadOnly<Long> {
-
-        public UIntegerProperty(String name) {
-            super(name, long.class, name, null);
-        }
-
-        @Override
-        public Long getValue() throws IllegalAccessException, InvocationTargetException {
-            return leaf.getData().getElemUInt();
-        }
-    }
-
     public class DoubleProperty extends PropertySupport.ReadOnly<Double> {
 
         public DoubleProperty(String name) {
