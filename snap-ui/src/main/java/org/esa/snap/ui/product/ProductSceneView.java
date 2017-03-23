@@ -63,7 +63,9 @@ import org.esa.snap.core.datamodel.ProductNodeListener;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.datamodel.VectorDataNode;
 import org.esa.snap.core.datamodel.VirtualBand;
+import org.esa.snap.core.dataop.barithm.BandArithmetic;
 import org.esa.snap.core.image.ColoredMaskImageMultiLevelSource;
+import org.esa.snap.core.jexp.ParseException;
 import org.esa.snap.core.layer.GraticuleLayer;
 import org.esa.snap.core.layer.MaskCollectionLayer;
 import org.esa.snap.core.layer.NoDataLayerType;
@@ -1136,6 +1138,7 @@ public class ProductSceneView extends BasicView
                     width,
                     height,
                     expression);
+            deriveRasterPropertiesFromExpression(expression, product);
             setOwner(product);
             setModified(false);
         }
@@ -1150,6 +1153,23 @@ public class ProductSceneView extends BasicView
         public RGBChannel(final Product product, final String name, final String expression) {
             this(product, product.getSceneRasterWidth(), product.getSceneRasterHeight(), name, expression);
         }
+
+        private void deriveRasterPropertiesFromExpression(String expression, Product product) {
+            if (product != null) {
+                try {
+                    final RasterDataNode[] refRasters = BandArithmetic.getRefRasters(expression, product);
+                    if (refRasters.length > 0) {
+                        setGeoCoding(refRasters[0].getGeoCoding());
+                        setImageToModelTransform(refRasters[0].getImageToModelTransform());
+                        setSceneToModelTransform(refRasters[0].getSceneToModelTransform());
+                        setModelToSceneTransform(refRasters[0].getModelToSceneTransform());
+                    }
+                } catch (ParseException e) {
+                    // do not set geocoding then
+                }
+            }
+        }
+
     }
 
     private final class RasterChangeHandler implements ProductNodeListener {
