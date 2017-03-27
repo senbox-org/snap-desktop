@@ -15,13 +15,18 @@
  */
 package org.esa.snap.landcover.gpf.ui;
 
-import org.esa.snap.landcover.dataio.LandCoverFactory;
+import org.esa.snap.core.dataio.ProductIOPlugInManager;
+import org.esa.snap.core.dataio.ProductReaderPlugIn;
 import org.esa.snap.core.dataop.resamp.ResamplingFactory;
+import org.esa.snap.core.util.SystemUtils;
+import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.graphbuilder.gpf.ui.BaseOperatorUI;
 import org.esa.snap.graphbuilder.gpf.ui.UIValidation;
 import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
-import org.esa.snap.rcp.util.Dialogs;
+import org.esa.snap.landcover.dataio.LandCoverFactory;
+import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.ui.AppContext;
+import org.esa.snap.ui.SnapFileChooser;
 
 import javax.swing.*;
 import java.awt.*;
@@ -30,6 +35,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -39,10 +45,12 @@ public class AddLandCoverOpUI extends BaseOperatorUI {
 
     private final JList<String> landCoverNamesList = new JList<>();
 
-    private final JTextField externalFile = new JTextField("");
+    private final JList<File> externalFileList = new JList();
     private final JButton externalFileBrowseButton = new JButton("...");
 
-    private final JComboBox resamplingMethodCombo = new JComboBox<>(ResamplingFactory.resamplingNames);
+    private final JComboBox<String> resamplingMethodCombo = new JComboBox<>(ResamplingFactory.resamplingNames);
+
+    private static final String lastLandcoverPathKey = "snap.external.landcoverDir";
 
     @Override
     public JComponent CreateOpTab(String operatorName, Map<String, Object> parameterMap, AppContext appContext) {
@@ -61,12 +69,45 @@ public class AddLandCoverOpUI extends BaseOperatorUI {
 
         externalFileBrowseButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                final File file = Dialogs.requestFileForOpen("External File", false, null, "snap.external.landcoverDir");
-                externalFile.setText(file.getAbsolutePath());
-                landCoverNamesList.clearSelection();
+
+                final File[] files = getSelectedFiles();
+                if(files != null) {
+                    externalFileList.removeAll();
+                    externalFileList.setListData(files);
+                    externalFileList.setSelectionInterval(0, externalFileList.getModel().getSize()-1);
+                    landCoverNamesList.clearSelection();
+                }
             }
         });
         return new JScrollPane(panel);
+    }
+
+    private static File[] getSelectedFiles() {
+        final JFileChooser fileChooser = createFileChooserDialog(lastLandcoverPathKey);
+        int result = fileChooser.showOpenDialog(SnapApp.getDefault().getMainFrame());
+        if (fileChooser.getCurrentDirectory() != null) {
+            SnapApp.getDefault().getPreferences().put(lastLandcoverPathKey, fileChooser.getCurrentDirectory().getPath());
+        }
+        if (result == JFileChooser.APPROVE_OPTION) {
+            return fileChooser.getSelectedFiles();
+        }
+        return null;
+    }
+
+    private static JFileChooser createFileChooserDialog(final String preferencesKey) {
+        final JFileChooser chooser = new SnapFileChooser();
+        chooser.setAcceptAllFileFilterUsed(true);
+        chooser.setMultiSelectionEnabled(true);
+
+        final String lastDir = SnapApp.getDefault().getPreferences().get(preferencesKey, SystemUtils.getUserHomeDir().getPath());
+        chooser.setCurrentDirectory(new File(lastDir));
+
+        final Iterator<ProductReaderPlugIn> iterator = ProductIOPlugInManager.getInstance().getAllReaderPlugIns();
+        java.util.List<SnapFileFilter> sortedFileFilters = SnapFileFilter.getSortedFileFilters(iterator);
+        sortedFileFilters.forEach(chooser::addChoosableFileFilter);
+        chooser.setFileFilter(chooser.getAcceptAllFileFilter());
+
+        return chooser;
     }
 
     @Override
@@ -80,9 +121,18 @@ public class AddLandCoverOpUI extends BaseOperatorUI {
         }
         resamplingMethodCombo.setSelectedItem(paramMap.get("resamplingMethod"));
 
-        final File file = (File) paramMap.get("externalFile");
-        if (file != null) {
-            externalFile.setText(file.getAbsolutePath());
+        final File[] files = (File[]) paramMap.get("externalFiles");
+        if (files != null) {
+            externalFileList.setListData(files);
+        } else {
+            // backward compatibility
+            final File file = (File) paramMap.get("externalFile");
+            if(file != null) {
+                externalFileList.setListData(new File[] {file});
+            }
+        }
+        if(externalFileList.getModel().getSize() > 0) {
+            externalFileList.setSelectionInterval(0, externalFileList.getModel().getSize() - 1);
         }
     }
 
@@ -121,10 +171,13 @@ public class AddLandCoverOpUI extends BaseOperatorUI {
         final String[] names = getListStrings(landCoverNamesList.getSelectedIndices(), LandCoverFactory.getNameList());
         if (names.length > 0) {
             paramMap.put("landCoverNames", names);
+        } else {
+            paramMap.put("landCoverNames", new String[] {});
         }
         paramMap.put("resamplingMethod", resamplingMethodCombo.getSelectedItem());
-        if (!externalFile.getText().isEmpty()) {
-            paramMap.put("externalFile", new File(externalFile.getText()));
+        if (!externalFileList.getSelectedValuesList().isEmpty()) {
+            final File[] files = externalFileList.getSelectedValuesList().toArray(new File[externalFileList.getSelectedValuesList().size()]);
+            paramMap.put("externalFiles", files);
         }
     }
 
@@ -136,8 +189,8 @@ public class AddLandCoverOpUI extends BaseOperatorUI {
         gbc.gridy++;
         DialogUtils.addComponent(contentPane, gbc, "Land Cover Model:", landCoverNamesList);
         gbc.gridy++;
-        externalFile.setColumns(50);
-        DialogUtils.addInnerPanel(contentPane, gbc, new JLabel("External File"), externalFile, externalFileBrowseButton);
+        externalFileList.setFixedCellWidth(500);
+        DialogUtils.addInnerPanel(contentPane, gbc, new JLabel("External Files"), externalFileList, externalFileBrowseButton);
         gbc.gridy++;
         DialogUtils.addComponent(contentPane, gbc, "Resampling Method:", resamplingMethodCombo);
         gbc.gridy++;
