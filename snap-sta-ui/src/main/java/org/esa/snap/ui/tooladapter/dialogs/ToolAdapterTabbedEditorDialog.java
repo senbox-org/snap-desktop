@@ -26,31 +26,52 @@ import com.bc.ceres.swing.binding.internal.TextFieldEditor;
 import org.esa.snap.core.gpf.descriptor.SystemDependentVariable;
 import org.esa.snap.core.gpf.descriptor.SystemVariable;
 import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
+import org.esa.snap.core.gpf.descriptor.dependency.BundleInstaller;
+import org.esa.snap.core.gpf.descriptor.dependency.BundleLocation;
 import org.esa.snap.core.gpf.descriptor.dependency.BundleType;
-import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterActivator;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterConstants;
 import org.esa.snap.core.util.SystemUtils;
+import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.tool.ToolButtonFactory;
+import org.esa.snap.ui.tooladapter.dialogs.components.AnchorLabel;
+import org.esa.snap.ui.tooladapter.dialogs.progress.ProgressHandler;
 import org.esa.snap.ui.tooladapter.model.OperationType;
 import org.esa.snap.ui.tooladapter.validators.RegexFieldValidator;
 import org.esa.snap.utils.SpringUtilities;
+import org.netbeans.api.progress.ProgressHandle;
+import org.netbeans.api.progress.ProgressHandleFactory;
 
-import javax.swing.*;
+import javax.swing.AbstractButton;
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTable;
+import javax.swing.KeyStroke;
+import javax.swing.SpringLayout;
+import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
-import java.awt.*;
+import javax.swing.plaf.basic.BasicTabbedPaneUI;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.MessageFormat;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
-import java.util.function.Function;
+import java.util.List;
+import java.util.Optional;
 
 import static org.esa.snap.utils.SpringUtilities.DEFAULT_PADDING;
 
@@ -65,12 +86,13 @@ import static org.esa.snap.utils.SpringUtilities.DEFAULT_PADDING;
  */
 public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
     private JTabbedPane tabbedPane;
+    private int currentIndex;
 
-    public ToolAdapterTabbedEditorDialog(AppContext appContext, JDialog parent, ToolAdapterOperatorDescriptor operatorDescriptor, OperationType operation) {
+    ToolAdapterTabbedEditorDialog(AppContext appContext, JDialog parent, ToolAdapterOperatorDescriptor operatorDescriptor, OperationType operation) {
         super(appContext, parent, operatorDescriptor, operation);
     }
 
-    public ToolAdapterTabbedEditorDialog(AppContext appContext, JDialog parent, ToolAdapterOperatorDescriptor operatorDescriptor, int newNameIndex, OperationType operation) {
+    ToolAdapterTabbedEditorDialog(AppContext appContext, JDialog parent, ToolAdapterOperatorDescriptor operatorDescriptor, int newNameIndex, OperationType operation) {
         super(appContext, parent, operatorDescriptor, newNameIndex, operation);
     }
 
@@ -87,11 +109,19 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
         getJDialog().setMinimumSize(new Dimension(formWidth + 16, formHeight + 72));
 
         addTab(tabbedPane, Bundle.CTL_Panel_OperatorDescriptor_Text(), createDescriptorTab());
+        currentIndex++;
         addTab(tabbedPane, Bundle.CTL_Panel_ConfigParams_Text(), createToolInfoPanel());
+        currentIndex++;
         addTab(tabbedPane, Bundle.CTL_Panel_PreProcessing_Border_TitleText(), createPreProcessingTab());
+        currentIndex++;
         addTab(tabbedPane, Bundle.CTL_Panel_OpParams_Border_TitleText(), createParametersTab(formWidth));
+        currentIndex++;
         addTab(tabbedPane, Bundle.CTL_Panel_SysVar_Border_TitleText(), createVariablesPanel());
-        addTab(tabbedPane, "Bundled Binaries", createBundlePanel());
+        currentIndex++;
+        addTab(tabbedPane, Bundle.CTL_Panel_Bundle_TitleText(), createBundlePanel());
+        currentIndex++;
+
+        tabbedPane.setUI(new BasicTabbedPaneUI());
 
         formWidth = tabbedPane.getTabComponentAt(0).getWidth();
 
@@ -104,17 +134,20 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
         TextFieldEditor textEditor = new TextFieldEditor();
 
         addValidatedTextField(descriptorPanel, textEditor, Bundle.CTL_Label_Alias_Text(), ToolAdapterConstants.ALIAS, "[^\\\\\\?%\\*:\\|\"<>\\./]*");
-        addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_UniqueName_Text(), ToolAdapterConstants.NAME, true);
+        JComponent component = addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_UniqueName_Text(), ToolAdapterConstants.NAME, true);
+        anchorLabels.put(ToolAdapterConstants.NAME, new AnchorLabel("Name is not unique", tabbedPane, currentIndex, component));
         addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_Label_Text(), ToolAdapterConstants.LABEL, true);
         addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_Version_Text(), ToolAdapterConstants.VERSION, true);
         addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_Copyright_Text(), ToolAdapterConstants.COPYRIGHT, false);
         addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_Authors_Text(), ToolAdapterConstants.AUTHORS, false);
         addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_Description_Text(), ToolAdapterConstants.DESCRIPTION, false);
 
-        propertyContainer.addPropertyChangeListener(ToolAdapterConstants.ALIAS, evt -> propertyContainer.setValue(ToolAdapterConstants.NAME, ToolAdapterConstants.OPERATOR_NAMESPACE + evt.getNewValue().toString()));
+        propertyContainer.addPropertyChangeListener(ToolAdapterConstants.ALIAS,
+                                                    evt -> propertyContainer.setValue(ToolAdapterConstants.NAME,
+                                                                                      ToolAdapterConstants.OPERATOR_NAMESPACE + evt.getNewValue().toString()));
 
-        java.util.List<String> menus = getAvailableMenuOptions(null);
-        addComboField(descriptorPanel, Bundle.CTL_Label_MenuLocation_Text(), ToolAdapterConstants.MENU_LOCATION, menus, true, true);
+        List<String> menus = getAvailableMenuOptions(null);
+        addComboField(descriptorPanel, Bundle.CTL_Label_MenuLocation_Text(), ToolAdapterConstants.MENU_LOCATION, menus);
 
         addComboField(descriptorPanel, Bundle.CTL_Label_TemplateType_Text(), ToolAdapterConstants.TEMPLATE_TYPE, true, false);
 
@@ -224,9 +257,14 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
         JComponent editorComponent = editor.createEditorComponent(propertyDescriptor, bindingContext);
         editorComponent.setMaximumSize(new Dimension(editorComponent.getMaximumSize().width, controlHeight));
         editorComponent.setPreferredSize(new Dimension(editorComponent.getPreferredSize().width, controlHeight));
-
-        panelToolFiles.add(new JLabel(Bundle.CTL_Label_ToolLocation_Text()));
+        org.esa.snap.utils.UIUtils.enableUndoRedo(editorComponent);
+        JLabel jLabel = new JLabel(Bundle.CTL_Label_ToolLocation_Text());
+        panelToolFiles.add(jLabel);
+        jLabel.setLabelFor(editorComponent);
         panelToolFiles.add(editorComponent);
+
+        anchorLabels.put(ToolAdapterConstants.MAIN_TOOL_FILE_LOCATION,
+                         new AnchorLabel(Bundle.MSG_Inexistent_Tool_Path_Text(), this.tabbedPane, this.currentIndex, editorComponent));
 
         propertyDescriptor = propertyContainer.getDescriptor(ToolAdapterConstants.WORKING_DIR);
         propertyDescriptor.setAttribute("directory", true);
@@ -240,8 +278,14 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
         editorComponent = editor.createEditorComponent(propertyDescriptor, bindingContext);
         editorComponent.setMaximumSize(new Dimension(editorComponent.getMaximumSize().width, controlHeight));
         editorComponent.setPreferredSize(new Dimension(editorComponent.getPreferredSize().width, controlHeight));
+        org.esa.snap.utils.UIUtils.enableUndoRedo(editorComponent);
+        jLabel = new JLabel(Bundle.CTL_Label_WorkDir_Text());
+        panelToolFiles.add(jLabel);
+        jLabel.setLabelFor(editorComponent);
 
-        panelToolFiles.add(new JLabel(Bundle.CTL_Label_WorkDir_Text()));
+        anchorLabels.put(ToolAdapterConstants.WORKING_DIR,
+                         new AnchorLabel(Bundle.MSG_Inexistent_WorkDir_Text(), this.tabbedPane, this.currentIndex, editorComponent));
+
         panelToolFiles.add(editorComponent);
 
         SpringUtilities.makeCompactGrid(panelToolFiles, 2, 2, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING);
@@ -316,77 +360,69 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
 
     @Override
     protected JPanel createBundlePanel() {
+        JPanel bundlePanel = new JPanel(new SpringLayout());
+        int rows = 0;
         org.esa.snap.core.gpf.descriptor.dependency.Bundle bundle = this.newOperatorDescriptor.getBundle();
         if (bundle == null) {
-            bundle = new org.esa.snap.core.gpf.descriptor.dependency.Bundle(BundleType.NONE, null, null);
+            bundle = new org.esa.snap.core.gpf.descriptor.dependency.Bundle(BundleType.NONE, null);
+            bundle.setTargetLocation(SystemUtils.getAuxDataPath().toFile());
             this.newOperatorDescriptor.setBundle(bundle);
         }
-        Map<String, FieldChangeTrigger[]> dependencyMap = new HashMap<String, FieldChangeTrigger[]>() {{
-            put("source", new FieldChangeTrigger[]
-                    {
-                            FieldChangeTrigger.<File, String>create("entryPoint",
-                                file -> {
-                                    if (file != null) {
-                                        try {
-                                            Path path = SystemUtils.getApplicationDataDir().toPath()
-                                                    .resolve("modules")
-                                                    .resolve("lib");
-                                            Files.createDirectories(path);
-                                            Files.list(path).forEach(p -> {
-                                                try {
-                                                    Files.delete(p);
-                                                } catch (IOException ignored) {
-                                                }
-                                            });
-                                            path = path.resolve(file.getName());
-                                            Files.copy(file.toPath(), path);
-                                        } catch (Exception e) {
-                                            logger.severe(e.getMessage());
-                                        }
-                                        return file.getName();
-                                    }
-                                    return null;
-                                })
-                    }
-            );
-            put("bundleType", new FieldChangeTrigger[]
-                    {
-                            FieldChangeTrigger.<BundleType, File>create("source",
-                                    bundleType -> null,
-                                    BundleType.NONE::equals),
-                            FieldChangeTrigger.<BundleType, File>create("targetLocation",
-                                    bundleType -> null,
-                                    BundleType.NONE::equals),
-                            FieldChangeTrigger.<BundleType, String>create("entryPoint",
-                                    bundleType -> null,
-                                    BundleType.NONE::equals),
-                            FieldChangeTrigger.<BundleType, String>create("arguments",
-                                    bundleType -> null,
-                                    BundleType.NONE::equals)
-                    });
-        }};
-        Map<String, Function<org.esa.snap.core.gpf.descriptor.dependency.Bundle, Void>> actionMap =
-                new HashMap<String, Function<org.esa.snap.core.gpf.descriptor.dependency.Bundle, Void>>() {{
-            put("Install Now", changedBundle -> {
-                if (changedBundle != null && !changedBundle.isInstalled()) {
-                    newOperatorDescriptor.setBundle(changedBundle);
-                    try {
-                        ToolAdapterTabbedEditorDialog.this.getContent().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-                        ToolAdapterActivator.installBundle(newOperatorDescriptor, false);
-                        if (changedBundle.isInstalled()) {
-                            Dialogs.showInformation("Installation completed");
-                        } else {
-                            Dialogs.showWarning("Installation failed");
-                        }
-                    } finally {
-                        ToolAdapterTabbedEditorDialog.this.getContent().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-                    }
+        bundleForm = new BundleForm(bundle, newOperatorDescriptor.getVariables());
+        bundlePanel.add(bundleForm);
+        rows++;
+        if (!bundle.isInstalled() && BundleInstaller.isBundleFileAvailable(bundle)) {
+            JButton installButton = new JButton() {
+                @Override
+                public void setText(String text) {
+                    super.setText(text);
+                    adjustDimension(this);
                 }
-                return null;
+            };
+            installButton.setText((bundle.getLocation() == BundleLocation.REMOTE ? "Download and " : "") + "Install Now");
+            installButton.setMaximumSize(installButton.getPreferredSize());
+            JPanel buttonPanel = new JPanel(new BorderLayout());
+            buttonPanel.setMaximumSize(new Dimension(buttonPanel.getWidth(), controlHeight));
+            buttonPanel.add(installButton, BorderLayout.EAST);
+            bundlePanel.add(buttonPanel);
+            installButton.addActionListener((ActionEvent e) -> {
+                org.esa.snap.core.gpf.descriptor.dependency.Bundle modifiedBundle = bundleForm.applyChanges();
+                newOperatorDescriptor.setBundle(modifiedBundle);
+                try (BundleInstaller installer = new BundleInstaller(newOperatorDescriptor)) {
+                    ProgressHandle progressHandle = ProgressHandleFactory.createSystemHandle("Installing bundle");
+                    installer.setProgressMonitor(new ProgressHandler(progressHandle, false));
+                    installer.setCallback(() -> {
+                        Path path = modifiedBundle.getTargetLocation().toPath().resolve(
+                                        FileUtils.getFilenameWithoutExtension(modifiedBundle.getEntryPoint()));
+                        SwingUtilities.invokeLater(() -> {
+                            progressHandle.finish();
+                            Dialogs.showInformation(String.format("Bundle was installed in location:\n%s", path));
+                            installButton.setVisible(false);
+                            bundlePanel.revalidate();
+                        });
+                        String updateVariable = modifiedBundle.getUpdateVariable();
+                        if (updateVariable != null) {
+                            Optional<SystemVariable> variable = newOperatorDescriptor.getVariables().stream().filter(v -> v.getKey().equals(updateVariable)).findFirst();
+                            variable.ifPresent(systemVariable -> systemVariable.setValue(path.toString()));
+                            varTable.revalidate();
+                        }
+                        return null;
+                    });
+                    installer.install(true);
+                } catch (Exception ex) {
+                    logger.warning(ex.getMessage());
+                }
             });
-        }};
-        bundleForm = new EntityForm<>(bundle, dependencyMap, actionMap);
-        return bundleForm.getPanel();
+            this.downloadAction = () -> {
+                tabbedPane.setSelectedIndex(tabbedPane.getTabCount() - 1);
+                installButton.requestFocusInWindow();
+                installButton.doClick();
+                return null;
+            };
+            rows++;
+        }
+        SpringUtilities.makeCompactGrid(bundlePanel, rows, 1, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING);
+        return bundlePanel;
     }
 
     private JPanel createPreProcessingTab() {
@@ -432,8 +468,7 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
         aSenderComponent.setFocusTraversalKeys(0, new HashSet());
         int modifiers = 0; // '0' => no modifiers
         int keyCode = KeyEvent.VK_TAB;
-        boolean onKeyRelease = true;
-        KeyStroke tabKeyReleased = KeyStroke.getKeyStroke(keyCode, modifiers, onKeyRelease);
+        KeyStroke tabKeyReleased = KeyStroke.getKeyStroke(keyCode, modifiers, true);
         aSenderComponent.getInputMap(1).put(tabKeyReleased, forwardFocusAction.getName());
         aSenderComponent.getActionMap().put(forwardFocusAction.getName(), forwardFocusAction);
     }

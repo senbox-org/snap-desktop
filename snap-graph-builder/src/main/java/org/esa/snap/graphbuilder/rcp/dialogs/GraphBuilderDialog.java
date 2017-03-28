@@ -153,6 +153,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
             final JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
                                                         scrollPane, midPanel);
             splitPane.setOneTouchExpandable(true);
+            splitPane.setResizeWeight(0.6);
             splitPane.setBorder(new BasicBorders.MarginBorder());
 
             mainPanel.add(splitPane, BorderLayout.CENTER);

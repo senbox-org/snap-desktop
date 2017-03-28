@@ -25,13 +25,7 @@ import org.esa.snap.graphbuilder.gpf.ui.UIValidation;
 import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
 import org.esa.snap.ui.AppContext;
 
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
+import javax.swing.*;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ItemEvent;
@@ -49,7 +43,11 @@ public class LandCoverMaskOpUI extends BaseOperatorUI {
     private final JList<String> bandList = new JList();
 
     private final JComboBox<String> landCoverBandCombo = new JComboBox();
+    private final JLabel validLandCoverClassesLabel = new JLabel("Valid land cover classes:");
     private final JList<String> validLandCoverClassesList = new JList();
+    private final JScrollPane validLandCoverClassesScroll = new JScrollPane(validLandCoverClassesList);
+    private final JLabel validPixelExpressionLabel = new JLabel("Valid pixel expression:");
+    private final JTextArea validPixelExpressionText = new JTextArea();
 
     private final JCheckBox includeOtherBandsCheckBox = new JCheckBox("Include all other bands");
     private final Map<Integer, Integer> classMap = new HashMap<>();
@@ -64,17 +62,32 @@ public class LandCoverMaskOpUI extends BaseOperatorUI {
         landCoverBandCombo.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 validLandCoverClassesList.removeAll();
-                validLandCoverClassesList.setListData(getLandCoverClasses((String) landCoverBandCombo.getSelectedItem()));
+                String[] classes = getLandCoverClasses((String) landCoverBandCombo.getSelectedItem());
+                if(classes.length > 0) {
+                    validLandCoverClassesList.setListData(classes);
 
-                final int[] selClasses = (int[]) paramMap.get("validLandCoverClasses");
-                if(selClasses != null) {
-                    validLandCoverClassesList.setSelectedIndices(getClassIndexes(selClasses));
+                    final int[] selClasses = (int[]) paramMap.get("validLandCoverClasses");
+                    if (selClasses != null) {
+                        validLandCoverClassesList.setSelectedIndices(getClassIndexes(selClasses));
+                    }
+                    showLandCoverClasses(true);
+                } else {
+
+                    showLandCoverClasses(false);
                 }
             }
         });
 
         initParameters();
         return new JScrollPane(panel);
+    }
+
+    private void showLandCoverClasses(final boolean flag) {
+        validLandCoverClassesScroll.setVisible(flag);
+        validLandCoverClassesLabel.setVisible(flag);
+        validLandCoverClassesList.setVisible(flag);
+        validPixelExpressionLabel.setVisible(!flag);
+        validPixelExpressionText.setVisible(!flag);
     }
 
     @Override
@@ -91,6 +104,11 @@ public class LandCoverMaskOpUI extends BaseOperatorUI {
         final String landCoverBand = (String) paramMap.get("landCoverBand");
         if (landCoverBand != null && StringUtils.contains(landCoverBandNames, landCoverBand)) {
             landCoverBandCombo.setSelectedItem(landCoverBand);
+        }
+
+        final String validPixelExpression = (String) paramMap.get("validPixelExpression");
+        if (validPixelExpression != null && !validPixelExpression.isEmpty()) {
+            validPixelExpressionText.setText(validPixelExpression);
         }
 
         final Boolean includeOtherBands = (Boolean) paramMap.get("includeOtherBands");
@@ -169,6 +187,7 @@ public class LandCoverMaskOpUI extends BaseOperatorUI {
 
         paramMap.put("landCoverBand", landCoverBandCombo.getSelectedItem());
         paramMap.put("validLandCoverClasses", getSelectedClasses());
+        paramMap.put("validPixelExpression", validPixelExpressionText.getText());
         paramMap.put("includeOtherBands", includeOtherBandsCheckBox.isSelected());
     }
 
@@ -197,15 +216,21 @@ public class LandCoverMaskOpUI extends BaseOperatorUI {
         gbc.gridy++;
         DialogUtils.addComponent(contentPane, gbc, "Land Cover Band:", landCoverBandCombo);
         gbc.gridy++;
-        contentPane.add(new JLabel("Valid land cover classes:"), gbc);
+        contentPane.add(validLandCoverClassesLabel, gbc);
         gbc.gridx = 1;
-        contentPane.add(new JScrollPane(validLandCoverClassesList), gbc);
+        contentPane.add(validLandCoverClassesScroll, gbc);
+        gbc.gridx = 0;
+        contentPane.add(validPixelExpressionLabel, gbc);
+        gbc.gridx = 1;
+        contentPane.add(validPixelExpressionText, gbc);
 
         gbc.gridy++;
         gbc.gridx = 1;
         contentPane.add(includeOtherBandsCheckBox, gbc);
 
         DialogUtils.fillPanel(contentPane, gbc);
+
+        showLandCoverClasses(true);
 
         return contentPane;
     }

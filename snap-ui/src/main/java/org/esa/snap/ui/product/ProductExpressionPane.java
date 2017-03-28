@@ -25,14 +25,8 @@ import org.esa.snap.core.jexp.impl.ParserImpl;
 import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.ui.ExpressionPane;
 
-import javax.swing.Box;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import java.awt.BorderLayout;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -247,7 +241,9 @@ public class ProductExpressionPane extends ExpressionPane {
 
     private String getNodeNamePrefix() {
         final String namePrefix;
-        if (currentProduct != targetProduct) {
+        // if multiple compatible products, the product name prefix should be the index of the product
+        // in order to avoid ambiguity
+        if (products.length > 1 || currentProduct != targetProduct) {
             namePrefix = BandArithmetic.getProductNodeNamePrefix(currentProduct);
         } else {
             namePrefix = "";

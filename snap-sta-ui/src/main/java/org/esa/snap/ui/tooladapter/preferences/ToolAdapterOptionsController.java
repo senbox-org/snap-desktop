@@ -30,8 +30,9 @@ import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.HelpCtx;
 import org.openide.util.NbPreferences;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+import java.awt.Insets;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
@@ -52,12 +53,10 @@ import java.util.prefs.Preferences;
 })
 public class ToolAdapterOptionsController extends DefaultConfigController {
 
-    /*public static final String PREFERENCE_KEY_TABBED_WINDOW = "sta.use.tabs";*/
-    public static final String PREFERENCE_KEY_VALIDATE_PATHS = "sta.validate.paths";
+    public static final String PREFERENCE_KEY_VALIDATE_ON_SAVE = "sta.validate.save";
     public static final String PREFERENCE_KEY_SHOW_EMPTY_PRODUCT_WARNING = "sta.warn.no.product";
     public static final String PREFERENCE_KEY_AUTOCOMPLETE = "sta.autocomplete";
     public static final String PREFERENCE_KEY_SHOW_EXECUTION_OUTPUT = "sta.display.output";
-    /*public static final boolean DEFAULT_VALUE_TABBED_WINDOW = true;*/
     public static final boolean DEFAULT_VALUE_VALIDATE_PATHS = false;
     public static final boolean DEFAULT_VALUE_SHOW_EMPTY_PRODUCT_WARINING = true;
     public static final boolean DEFAULT_VALUE_SHOW_EXECUTION_OUTPUT = true;
@@ -86,10 +85,8 @@ public class ToolAdapterOptionsController extends DefaultConfigController {
         JPanel pageUI = new JPanel(tableLayout);
 
         PropertyEditorRegistry registry = PropertyEditorRegistry.getInstance();
-        /*Property useTabsControl = context.getPropertySet().getProperty(PREFERENCE_KEY_TABBED_WINDOW);
-        setPropertyValue(useTabsControl, DEFAULT_VALUE_TABBED_WINDOW);*/
 
-        Property pathValidationControl = context.getPropertySet().getProperty(PREFERENCE_KEY_VALIDATE_PATHS);
+        Property pathValidationControl = context.getPropertySet().getProperty(PREFERENCE_KEY_VALIDATE_ON_SAVE);
         setPropertyValue(pathValidationControl, DEFAULT_VALUE_VALIDATE_PATHS);
 
         Property noProductWarningControl = context.getPropertySet().getProperty(PREFERENCE_KEY_SHOW_EMPTY_PRODUCT_WARNING);
@@ -101,14 +98,12 @@ public class ToolAdapterOptionsController extends DefaultConfigController {
         Property autocompleteControl = context.getPropertySet().getProperty(PREFERENCE_KEY_AUTOCOMPLETE);
         setPropertyValue(autocompleteControl, DEFAULT_VALUE_AUTOCOMPLETE);
 
-        /*JComponent[] useTabsComponents = registry.findPropertyEditor(useTabsControl.getDescriptor()).createComponents(useTabsControl.getDescriptor(), context);*/
         JComponent[] pathValidationComponents = registry.findPropertyEditor(pathValidationControl.getDescriptor()).createComponents(pathValidationControl.getDescriptor(), context);
         JComponent[] noProductWarningComponents = registry.findPropertyEditor(noProductWarningControl.getDescriptor()).createComponents(noProductWarningControl.getDescriptor(), context);
         JComponent[] displayOutputComponents = registry.findPropertyEditor(displayOutputControl.getDescriptor()).createComponents(displayOutputControl.getDescriptor(), context);
         JComponent[] autocompleteComponents = registry.findPropertyEditor(autocompleteControl.getDescriptor()).createComponents(autocompleteControl.getDescriptor(), context);
 
         tableLayout.setRowPadding(0, new Insets(10, 80, 10, 4));
-        /*pageUI.add(useTabsComponents[0]);*/
         pageUI.add(pathValidationComponents[0]);
         pageUI.add(noProductWarningComponents[0]);
         pageUI.add(displayOutputComponents[0]);
@@ -120,13 +115,9 @@ public class ToolAdapterOptionsController extends DefaultConfigController {
 
     @Override
     public void update() {
-        /*Property property = context.getPropertySet().getProperty(PREFERENCE_KEY_TABBED_WINDOW);
+        Property property = context.getPropertySet().getProperty(PREFERENCE_KEY_VALIDATE_ON_SAVE);
         if (property != null) {
-            preferences.put(PREFERENCE_KEY_TABBED_WINDOW, property.getValueAsText());
-        }*/
-        Property property = context.getPropertySet().getProperty(PREFERENCE_KEY_VALIDATE_PATHS);
-        if (property != null) {
-            preferences.put(PREFERENCE_KEY_VALIDATE_PATHS, property.getValueAsText());
+            preferences.put(PREFERENCE_KEY_VALIDATE_ON_SAVE, property.getValueAsText());
         }
         property = context.getPropertySet().getProperty(PREFERENCE_KEY_SHOW_EXECUTION_OUTPUT);
         if (property != null) {
@@ -172,9 +163,7 @@ public class ToolAdapterOptionsController extends DefaultConfigController {
     }
 
     static class STAOptionsBean {
-        /*@Preference(label = "Use tabs to display tool adapter details", key = PREFERENCE_KEY_TABBED_WINDOW)
-        boolean useTabs = DEFAULT_VALUE_TABBED_WINDOW;*/
-        @Preference(label = "Validate tool paths and variables on save", key = PREFERENCE_KEY_VALIDATE_PATHS)
+        @Preference(label = "Validate tool paths and variables on save", key = PREFERENCE_KEY_VALIDATE_ON_SAVE)
         boolean validatePaths = DEFAULT_VALUE_VALIDATE_PATHS;
         @Preference(label = "Display warning when source products are missing", key = PREFERENCE_KEY_SHOW_EMPTY_PRODUCT_WARNING)
         boolean warnNoProduct = DEFAULT_VALUE_SHOW_EMPTY_PRODUCT_WARINING;

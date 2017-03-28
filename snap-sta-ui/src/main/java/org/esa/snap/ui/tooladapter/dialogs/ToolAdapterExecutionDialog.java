@@ -18,13 +18,15 @@
 package org.esa.snap.ui.tooladapter.dialogs;
 
 import com.bc.ceres.binding.Property;
-import com.bc.ceres.core.ProgressMonitor;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.Operator;
-import org.esa.snap.core.gpf.descriptor.*;
+import org.esa.snap.core.gpf.descriptor.ParameterDescriptor;
+import org.esa.snap.core.gpf.descriptor.SystemVariable;
+import org.esa.snap.core.gpf.descriptor.TemplateParameterDescriptor;
+import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
+import org.esa.snap.core.gpf.descriptor.ToolParameterDescriptor;
 import org.esa.snap.core.gpf.descriptor.template.TemplateFile;
-import org.esa.snap.core.gpf.operators.tooladapter.DefaultOutputConsumer;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterConstants;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterOp;
 import org.esa.snap.core.gpf.ui.OperatorMenu;
@@ -35,6 +37,8 @@ import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.AbstractDialog;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.tooladapter.actions.EscapeAction;
+import org.esa.snap.ui.tooladapter.dialogs.progress.ConsoleConsumer;
+import org.esa.snap.ui.tooladapter.dialogs.progress.ProgressHandler;
 import org.esa.snap.ui.tooladapter.model.OperationType;
 import org.esa.snap.ui.tooladapter.preferences.ToolAdapterOptionsController;
 import org.netbeans.api.progress.ProgressHandle;
@@ -43,8 +47,7 @@ import org.netbeans.api.progress.ProgressUtils;
 import org.openide.util.Cancellable;
 import org.openide.util.NbBundle;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Dimension;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
@@ -53,8 +56,12 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -177,7 +184,7 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
         } else {
             if (!canApply()) {
                 displayWarnings();
-                AbstractAdapterEditor dialog = AbstractAdapterEditor.createEditorDialog(appContext, getJDialog(), operatorDescriptor, OperationType.EDIT);
+                AbstractAdapterEditor dialog = AbstractAdapterEditor.createEditorDialog(appContext, getJDialog(), operatorDescriptor, OperationType.FORCED_EDIT);
                 final int code = dialog.show();
                 if (code == AbstractDialog.ID_OK) {
                     onOperatorDescriptorChanged(dialog.getUpdatedOperatorDescriptor());
@@ -198,7 +205,7 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
                     ProgressHandle progressHandle = ProgressHandleFactory.createHandle(this.getTitle());
                     String progressPattern = operatorDescriptor.getProgressPattern();
                     ConsoleConsumer consumer;
-                    ProgressWrapper progressWrapper = new ProgressWrapper(progressHandle, progressPattern == null || progressPattern.isEmpty());
+                    ProgressHandler progressWrapper = new ProgressHandler(progressHandle, progressPattern == null || progressPattern.isEmpty());
                     consumer = new ConsoleConsumer(operatorDescriptor.getProgressPattern(),
                             operatorDescriptor.getErrorPattern(),
                             operatorDescriptor.getStepPattern(),
@@ -470,102 +477,4 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
         }
     }
 
-    private class ConsoleConsumer extends DefaultOutputConsumer {
-        private ConsolePane consolePane;
-
-        ConsoleConsumer(String progressPattern, String errorPattern, String stepPattern, ProgressMonitor pm, ConsolePane consolePane) {
-            super(progressPattern, errorPattern, stepPattern, pm);
-            this.consolePane = consolePane;
-        }
-
-        @Override
-        public void consumeOutput(String line) {
-            super.consumeOutput(line);
-            if (consolePane != null) {
-                if (SwingUtilities.isEventDispatchThread()) {
-                    consume(line);
-                } else {
-                    SwingUtilities.invokeLater(() -> consume(line));
-                }
-            }
-        }
-
-        void setVisible(boolean value) {
-            if (this.consolePane != null) {
-                this.consolePane.setVisible(value);
-            }
-        }
-
-        private void consume(String line) {
-            if (this.error == null || !this.error.matcher(line).matches()) {
-                consolePane.appendInfo(line);
-            } else {
-                consolePane.appendError(line);
-            }
-        }
-    }
-
-    private class ProgressWrapper implements ProgressMonitor {
-
-        private ProgressHandle progressHandle;
-        private boolean isIndeterminate;
-        private ConsoleConsumer console;
-
-        ProgressWrapper(ProgressHandle handle, boolean indeterminate) {
-            this.progressHandle = handle;
-            this.isIndeterminate = indeterminate;
-        }
-
-        void setConsumer(ConsoleConsumer consumer) {
-            console = consumer;
-        }
-
-        @Override
-        public void beginTask(String taskName, int totalWork) {
-            this.progressHandle.setDisplayName(taskName);
-            this.progressHandle.start(totalWork, -1);
-            if (this.isIndeterminate) {
-                this.progressHandle.switchToIndeterminate();
-            }
-            if (this.console != null) {
-                this.console.setVisible(true);
-            }
-        }
-
-        @Override
-        public void done() {
-            this.progressHandle.finish();
-        }
-
-        @Override
-        public void internalWorked(double work) {
-            this.progressHandle.progress((int)work);
-        }
-
-        @Override
-        public boolean isCanceled() {
-            return false;
-        }
-
-        @Override
-        public void setCanceled(boolean canceled) {
-            this.progressHandle.suspend("Cancelled");
-        }
-
-        @Override
-        public void setTaskName(String taskName) {
-            this.progressHandle.setDisplayName(taskName);
-        }
-
-        @Override
-        public void setSubTaskName(String subTaskName) {
-            this.progressHandle.progress(subTaskName);
-        }
-
-        @Override
-        public void worked(int work) {
-            internalWorked(work);
-        }
-
-    }
 }

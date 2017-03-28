@@ -35,7 +35,7 @@ public class ManifestBuilder extends AbstractBuilder {
     }
 
     @Override
-    public String build() {
+    public String build(boolean standalone) {
         StringBuilder builder = new StringBuilder();
         builder.append("Manifest-Version: ").append(safeValue(version)).append("\n")
                 .append("Created-By: ").append(safeValue(javaVersion)).append("\n");

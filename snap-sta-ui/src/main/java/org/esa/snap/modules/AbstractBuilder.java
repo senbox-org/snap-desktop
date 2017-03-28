@@ -5,7 +5,7 @@ package org.esa.snap.modules;
  */
 public abstract class AbstractBuilder {
 
-    public abstract String build();
+    public abstract String build(boolean standalone);
 
     protected String safeValue(Object value) {
         return value != null ? value.toString() : "";

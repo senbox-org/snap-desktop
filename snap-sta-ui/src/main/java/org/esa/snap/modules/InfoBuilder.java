@@ -112,10 +112,12 @@ public class InfoBuilder extends AbstractBuilder {
     }
 
     @Override
-    public String build() {
+    public String build(boolean standalone) {
         StringBuilder xmlBuilder = new StringBuilder();
-        xmlBuilder.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
-                .append("<!DOCTYPE module PUBLIC \"-//NetBeans//DTD Autoupdate Module Info 2.5//EN\" \"http://www.netbeans.org/dtds/autoupdate-info-2_5.dtd\">");
+        if (standalone) {
+            xmlBuilder.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
+                    .append("<!DOCTYPE module PUBLIC \"-//NetBeans//DTD Autoupdate Module Info 2.5//EN\" \"http://www.netbeans.org/dtds/autoupdate-info-2_5.dtd\">");
+        }
         xmlBuilder.append("<module codenamebase=\"").append(safeValue(codebaseName).toLowerCase()).append("\" ")
                 .append("distribution=\"").append(safeValue(distribution)).append("\" ")
                 .append("downloadsize=\"").append(downloadSize).append("\" ")

@@ -11,6 +11,7 @@ import com.bc.ceres.swing.binding.PropertyEditor;
 import com.bc.ceres.swing.binding.PropertyEditorRegistry;
 import com.bc.ceres.swing.binding.internal.TextComponentAdapter;
 import com.bc.ceres.swing.binding.internal.TextFieldEditor;
+import org.esa.snap.binning.operator.VariableConfig;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.dataop.barithm.BandArithmetic;
 import org.esa.snap.core.gpf.annotations.ParameterDescriptorFactory;
@@ -20,11 +21,7 @@ import org.esa.snap.ui.AbstractDialog;
 import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.ui.product.ProductExpressionPane;
 
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
+import javax.swing.*;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -33,6 +30,7 @@ class VariableItemDialog extends ModalDialog {
 
     private static final String PROPERTY_VARIABLE_NAME = "name";
     private static final String PROPERTY_EXPRESSION = "expr";
+    private static final String PROPERTY_VALID_EXPRESSION = "validExpr";
 
     private final VariableItem variableItem;
     private final boolean newVariable;
@@ -73,13 +71,25 @@ class VariableItemDialog extends ModalDialog {
             AbstractDialog.showErrorDialog(getParent(), errorMessage, "Error");
             return false;
         }
+        String validExpression = variableItem.variableConfig.getValidExpr() != null ? variableItem.variableConfig.getValidExpr().trim() : "";
+        if (!validExpression.isEmpty()) {
+            try {
+                BandArithmetic.parseExpression(validExpression, new Product[]{contextProduct}, 0);
+            } catch (ParseException e) {
+                String errorMessage = "The valid pixel expression could not be parsed:\n" + e.getMessage(); /*I18N*/
+                JOptionPane.showMessageDialog(getParent(), errorMessage);
+                return false;
+            }
+        }
         return true;
     }
 
     @Override
     protected void onOK() {
-        variableItem.variableConfig.setName(variableItem.variableConfig.getName().trim());
-        variableItem.variableConfig.setExpr(variableItem.variableConfig.getExpr().trim());
+        VariableConfig vc = variableItem.variableConfig;
+        vc.setName(vc.getName().trim());
+        vc.setExpr(vc.getExpr().trim());
+        vc.setValidExpr(vc.getValidExpr() != null ? vc.getValidExpr().trim() : "");
         super.onOK();
     }
 
@@ -102,33 +112,71 @@ class VariableItemDialog extends ModalDialog {
     private void makeUI() {
         JComponent[] variableComponents = createComponents(PROPERTY_VARIABLE_NAME, TextFieldEditor.class);
 
-        final TableLayout layout = new TableLayout(2);
+        final TableLayout layout = new TableLayout(3);
+        layout.setTableFill(TableLayout.Fill.HORIZONTAL);
         layout.setTablePadding(4, 3);
+        layout.setTableAnchor(TableLayout.Anchor.WEST);
+        layout.setTableWeightX(0.0);
+
         layout.setCellWeightX(0, 1, 1.0);
         layout.setCellWeightX(1, 1, 1.0);
-        layout.setCellWeightX(2, 0, 1.0);
-        layout.setCellColspan(2, 0, 2);
-        layout.setTableFill(TableLayout.Fill.HORIZONTAL);
+        layout.setCellWeightX(3, 2, 1.0);
+        layout.setCellWeightX(4, 1, 1.0);
+        layout.setCellWeightX(6, 2, 1.0);
+
+        layout.setCellColspan(0, 1, 2);
+        layout.setCellColspan(1, 1, 2);
+        layout.setCellColspan(2, 0, 3);
+        layout.setCellColspan(3, 0, 2);
+        layout.setCellColspan(4, 1, 2);
+        layout.setCellColspan(5, 0, 3);
+        layout.setCellColspan(6, 0, 2);
         final JPanel panel = new JPanel(layout);
 
+        // row 0
         panel.add(variableComponents[1]);
+//        panel.add(layout.createHorizontalSpacer());
         panel.add(variableComponents[0]);
 
         JLabel expressionLabel = new JLabel("Variable expression:");
         JTextArea expressionArea = new JTextArea();
         expressionArea.setRows(3);
-        TextComponentAdapter textComponentAdapter = new TextComponentAdapter(expressionArea);
-        bindingContext.bind(PROPERTY_EXPRESSION, textComponentAdapter);
+        expressionArea.setColumns(80);
+        expressionArea.setLineWrap(true);
+        expressionArea.setWrapStyleWord(true);
+        bindingContext.bind(PROPERTY_EXPRESSION, new TextComponentAdapter(expressionArea));
+        // row 1
         panel.add(expressionLabel);
         panel.add(layout.createHorizontalSpacer());
+        // row 2
         panel.add(expressionArea);
 
-        JButton editExpressionButton = new JButton("Edit Expression...");
+        JButton editExpressionButton = new JButton("Edit...");
         editExpressionButton.setName("editExpressionButton");
         editExpressionButton.addActionListener(createEditExpressionButtonListener());
+        // row 3
         panel.add(layout.createHorizontalSpacer());
         panel.add(editExpressionButton);
 
+        JLabel validExpressionLabel = new JLabel("Valid-pixel expression:");
+        JTextArea validExpressionArea = new JTextArea();
+        validExpressionArea.setRows(3);
+        validExpressionArea.setColumns(80);
+        validExpressionArea.setLineWrap(true);
+        validExpressionArea.setWrapStyleWord(true);
+        bindingContext.bind(PROPERTY_VALID_EXPRESSION, new TextComponentAdapter(validExpressionArea));
+        // row 4
+        panel.add(validExpressionLabel);
+        panel.add(layout.createHorizontalSpacer());
+        // row 5
+        panel.add(validExpressionArea);
+
+        JButton editValidExpressionButton = new JButton("Edit...");
+        editValidExpressionButton.setName("editValidExpressionButton");
+        editValidExpressionButton.addActionListener(createEditValidExpressionButtonListener());
+        // row 6
+        panel.add(layout.createHorizontalSpacer());
+        panel.add(editValidExpressionButton);
         setContent(panel);
     }
 
@@ -151,6 +199,25 @@ class VariableItemDialog extends ModalDialog {
                 int status = expressionPane.showModalDialog(getJDialog(), "Expression Editor");
                 if (status == ModalDialog.ID_OK) {
                     bindingContext.getBinding(PROPERTY_EXPRESSION).setPropertyValue(expressionPane.getCode());
+                }
+                expressionPane.dispose();
+            }
+        };
+    }
+
+    private ActionListener createEditValidExpressionButtonListener() {
+        return new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ProductExpressionPane expressionPane =
+                        ProductExpressionPane.createBooleanExpressionPane(new Product[]{contextProduct},
+                                                                          contextProduct,
+                                                                          null);
+                expressionPane.setCode(variableItem.variableConfig.getValidExpr());
+                int status = expressionPane.showModalDialog(getJDialog(), "Valid Expression Editor");
+                if (status == ModalDialog.ID_OK) {
+                    bindingContext.getBinding(PROPERTY_VALID_EXPRESSION).setPropertyValue(expressionPane.getCode());
                 }
                 expressionPane.dispose();
             }
