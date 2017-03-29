@@ -16,7 +16,7 @@
  *
  */
 
-package org.esa.snap.ui.tooladapter.dialogs;
+package org.esa.snap.ui.tooladapter.dialogs.components;
 
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -43,7 +43,7 @@ public class FieldChangeTrigger<S, T> implements Function<S, T> {
      * @param <K>               The source field type
      * @param <V>               The target field type
      */
-    static <K,V> FieldChangeTrigger<K, V> create(String fieldName, Function<K, V> action) {
+    public static <K,V> FieldChangeTrigger<K, V> create(String fieldName, Function<K, V> action) {
         return create(fieldName, action, null);
     }
     /**
@@ -55,7 +55,7 @@ public class FieldChangeTrigger<S, T> implements Function<S, T> {
      * @param <K>               The source field type
      * @param <V>               The target field type
      */
-    static <K,V> FieldChangeTrigger<K, V> create(String fieldName, Function<K, V> action, Predicate<K> condition) {
+    public static <K,V> FieldChangeTrigger<K, V> create(String fieldName, Function<K, V> action, Predicate<K> condition) {
         return new FieldChangeTrigger<K, V>(fieldName, action, condition);
     }
 

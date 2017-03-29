@@ -39,12 +39,17 @@ import org.esa.snap.ui.tooladapter.preferences.ToolAdapterOptionsController;
 import org.esa.snap.utils.SpringUtilities;
 import org.openide.util.NbPreferences;
 
-import javax.swing.*;
+import javax.swing.JCheckBox;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextField;
+import javax.swing.SpringLayout;
 import javax.swing.border.EmptyBorder;
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -218,32 +223,30 @@ class ToolExecutionForm extends JTabbedPane {
             }
         });
 
-        Arrays.stream(operatorDescriptor.getToolParameterDescriptors().toArray()).filter(p -> ((ToolParameterDescriptor)p).isTemplateParameter()).forEach(p ->
-        {
-            TemplateParameterDescriptor param = (TemplateParameterDescriptor)p;
-            propertySet.getProperty(param.getName()).getDescriptor().setAttribute("visible", false);
-            Arrays.stream(param.getParameterDescriptors().toArray()).forEach(pp ->
-            {
-                ToolParameterDescriptor paramm = (ToolParameterDescriptor)pp;
-                String label = paramm.getAlias();
-                String propName = paramm.getName();
-                if (label != null && !label.isEmpty() && propertySet.isPropertyDefined(propName)) {
-                    Property property = propertySet.getProperty(propName);
-                    property.getDescriptor().setDisplayName(label);
-                }
-            });
-        });
+        Arrays.stream(operatorDescriptor.getToolParameterDescriptors().toArray())
+                .filter(p -> ((ToolParameterDescriptor)p).isTemplateParameter())
+                .forEach(tp -> {
+                    TemplateParameterDescriptor tParam = (TemplateParameterDescriptor) tp;
+                    propertySet.getProperty(tParam.getName()).getDescriptor().setAttribute("visible", false);
+                    Arrays.stream(tParam.getParameterDescriptors().toArray())
+                            .forEach(p -> {
+                                ToolParameterDescriptor param = (ToolParameterDescriptor) p;
+                                String label = param.getAlias();
+                                String propName = param.getName();
+                                if (label != null && !label.isEmpty() && propertySet.isPropertyDefined(propName)) {
+                                    Property property = propertySet.getProperty(propName);
+                                    property.getDescriptor().setDisplayName(label);
+                                }
+                            });
+                });
         PropertyPane parametersPane = new PropertyPane(propertySet);
         final JPanel parametersPanel = parametersPane.createPanel();
-        parametersPanel.addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                if (!(evt.getNewValue() instanceof JTextField)) return;
-                JTextField field = (JTextField) evt.getNewValue();
-                String text = field.getText();
-                if (text != null && text.isEmpty()) {
-                    field.setCaretPosition(text.length());
-                }
+        parametersPanel.addPropertyChangeListener(evt -> {
+            if (!(evt.getNewValue() instanceof JTextField)) return;
+            JTextField field = (JTextField) evt.getNewValue();
+            String text = field.getText();
+            if (text != null && text.isEmpty()) {
+                field.setCaretPosition(text.length());
             }
         });
         parametersPanel.setBorder(new EmptyBorder(4, 4, 4, 4));

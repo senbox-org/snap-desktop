@@ -85,6 +85,7 @@ import static org.esa.snap.utils.SpringUtilities.DEFAULT_PADDING;
  * @author Cosmin Cara
  */
 public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
+    private static final String ALIAS_PATTERN = "[^\\\\\\?%\\*:\\|\"<>\\./]*";
     private JTabbedPane tabbedPane;
     private int currentIndex;
 
@@ -133,18 +134,28 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
         JPanel descriptorPanel = new JPanel(new SpringLayout());
         TextFieldEditor textEditor = new TextFieldEditor();
 
-        addValidatedTextField(descriptorPanel, textEditor, Bundle.CTL_Label_Alias_Text(), ToolAdapterConstants.ALIAS, "[^\\\\\\?%\\*:\\|\"<>\\./]*");
-        JComponent component = addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_UniqueName_Text(), ToolAdapterConstants.NAME, true);
-        anchorLabels.put(ToolAdapterConstants.NAME, new AnchorLabel("Name is not unique", tabbedPane, currentIndex, component));
-        addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_Label_Text(), ToolAdapterConstants.LABEL, true);
-        addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_Version_Text(), ToolAdapterConstants.VERSION, true);
-        addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_Copyright_Text(), ToolAdapterConstants.COPYRIGHT, false);
-        addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_Authors_Text(), ToolAdapterConstants.AUTHORS, false);
-        addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_Description_Text(), ToolAdapterConstants.DESCRIPTION, false);
+        addValidatedTextField(descriptorPanel, textEditor, Bundle.CTL_Label_Alias_Text(),
+                              ToolAdapterConstants.ALIAS, ALIAS_PATTERN);
+        JComponent component = addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_UniqueName_Text(),
+                                            ToolAdapterConstants.NAME, true);
+        anchorLabels.put(ToolAdapterConstants.NAME, new AnchorLabel("Name is not unique",
+                                                                    tabbedPane, currentIndex, component));
+        addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_Label_Text(),
+                     ToolAdapterConstants.LABEL, true);
+        addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_Version_Text(),
+                     ToolAdapterConstants.VERSION, true);
+        addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_Copyright_Text(),
+                     ToolAdapterConstants.COPYRIGHT, false);
+        addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_Authors_Text(),
+                     ToolAdapterConstants.AUTHORS, false);
+        addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_Description_Text(),
+                     ToolAdapterConstants.DESCRIPTION, false);
 
-        propertyContainer.addPropertyChangeListener(ToolAdapterConstants.ALIAS,
-                                                    evt -> propertyContainer.setValue(ToolAdapterConstants.NAME,
-                                                                                      ToolAdapterConstants.OPERATOR_NAMESPACE + evt.getNewValue().toString()));
+        propertyContainer
+                .addPropertyChangeListener(ToolAdapterConstants.ALIAS,
+                                           evt -> propertyContainer.setValue(ToolAdapterConstants.NAME,
+                                                                             ToolAdapterConstants.OPERATOR_NAMESPACE +
+                                                                                     evt.getNewValue().toString()));
 
         List<String> menus = getAvailableMenuOptions(null);
         addComboField(descriptorPanel, Bundle.CTL_Label_MenuLocation_Text(), ToolAdapterConstants.MENU_LOCATION, menus);
@@ -161,12 +172,14 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
         BoxLayout layout = new BoxLayout(variablesBorderPanel, BoxLayout.PAGE_AXIS);
         variablesBorderPanel.setLayout(layout);
 
-        AbstractButton addVariableButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon(Bundle.Icon_Add()), false);
+        AbstractButton addVariableButton =
+                ToolButtonFactory.createButton(UIUtils.loadImageIcon(Bundle.Icon_Add()), false);
         addVariableButton.setText(Bundle.CTL_Button_Add_Variable_Text());
         addVariableButton.setMaximumSize(new Dimension(150, controlHeight));
         addVariableButton.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        AbstractButton addDependentVariableButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon(Bundle.Icon_Add()), false);
+        AbstractButton addDependentVariableButton =
+                ToolButtonFactory.createButton(UIUtils.loadImageIcon(Bundle.Icon_Add()), false);
         addDependentVariableButton.setText(Bundle.CTL_Button_Add_PDVariable_Text());
         addDependentVariableButton.setMaximumSize(new Dimension(250, controlHeight));
         addDependentVariableButton.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -189,7 +202,8 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
         scrollPane.setAlignmentX(Component.LEFT_ALIGNMENT);
         variablesBorderPanel.add(scrollPane);
         variablesBorderPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        Dimension variablesPanelDimension = new Dimension((formWidth - 3 * DEFAULT_PADDING) / 2 - 2 * DEFAULT_PADDING, 130);
+        Dimension variablesPanelDimension =
+                new Dimension((formWidth - 3 * DEFAULT_PADDING) / 2 - 2 * DEFAULT_PADDING, 130);
         variablesBorderPanel.setMinimumSize(variablesPanelDimension);
         variablesBorderPanel.setMaximumSize(variablesPanelDimension);
         variablesBorderPanel.setPreferredSize(variablesPanelDimension);
@@ -212,19 +226,27 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
         PropertyDescriptor propertyDescriptor = propertyContainer.getDescriptor("preprocessorExternalTool");
         PropertyEditor editor = PropertyEditorRegistry.getInstance().findPropertyEditor(propertyDescriptor);
         JComponent firstEditorComponent = editor.createEditorComponent(propertyDescriptor, bindingContext);
-        firstEditorComponent.setMaximumSize(new Dimension(firstEditorComponent.getMaximumSize().width, controlHeight));
-        firstEditorComponent.setPreferredSize(new Dimension(firstEditorComponent.getPreferredSize().width, controlHeight));
+        firstEditorComponent.setMaximumSize(new Dimension(firstEditorComponent.getMaximumSize().width,
+                                                          controlHeight));
+        firstEditorComponent.setPreferredSize(new Dimension(firstEditorComponent.getPreferredSize().width,
+                                                            controlHeight));
 
         propertyDescriptor = propertyContainer.getDescriptor("processingWriter");
         editor = PropertyEditorRegistry.getInstance().findPropertyEditor(propertyDescriptor);
         JComponent secondEditorComponent = editor.createEditorComponent(propertyDescriptor, bindingContext);
-        secondEditorComponent.setMaximumSize(new Dimension(secondEditorComponent.getMaximumSize().width, controlHeight));
-        secondEditorComponent.setPreferredSize(new Dimension(secondEditorComponent.getPreferredSize().width, controlHeight));
+        secondEditorComponent.setMaximumSize(new Dimension(secondEditorComponent.getMaximumSize().width,
+                                                           controlHeight));
+        secondEditorComponent.setPreferredSize(new Dimension(secondEditorComponent.getPreferredSize().width,
+                                                             controlHeight));
 
-        JCheckBox checkBoxComponent = (JCheckBox)createCheckboxComponent("preprocessTool", firstEditorComponent, newOperatorDescriptor.getPreprocessTool());
+        JCheckBox checkBoxComponent =
+                (JCheckBox)createCheckboxComponent("preprocessTool", firstEditorComponent,
+                                                   newOperatorDescriptor.getPreprocessTool());
         checkBoxComponent.setText(Bundle.CTL_Label_PreprocessingTool_Text());
 
-        JCheckBox writeComponent = (JCheckBox)createCheckboxComponent("writeForProcessing", secondEditorComponent, newOperatorDescriptor.shouldWriteBeforeProcessing());
+        JCheckBox writeComponent =
+                (JCheckBox)createCheckboxComponent("writeForProcessing", secondEditorComponent,
+                                                   newOperatorDescriptor.shouldWriteBeforeProcessing());
         writeComponent.setText(Bundle.CTL_Label_WriteBefore_Text());
 
         JPanel preProcessingPanel = new JPanel(new SpringLayout());
@@ -235,7 +257,8 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
         preProcessingPanel.add(writeComponent);
         preProcessingPanel.add(secondEditorComponent);
 
-        SpringUtilities.makeCompactGrid(preProcessingPanel, 2, 2, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING);
+        SpringUtilities.makeCompactGrid(preProcessingPanel, 2, 2,
+                                        DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING);
 
         forwardFocusWhenTabKeyReleased(checkBoxComponent, firstEditorComponent);
         forwardFocusWhenTabKeyReleased(firstEditorComponent, writeComponent);
@@ -251,7 +274,8 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
         JPanel panelToolFiles = new JPanel(new SpringLayout());
         PropertyEditorRegistry editorRegistry = PropertyEditorRegistry.getInstance();
 
-        PropertyDescriptor propertyDescriptor = propertyContainer.getDescriptor(ToolAdapterConstants.MAIN_TOOL_FILE_LOCATION);
+        PropertyDescriptor propertyDescriptor =
+                propertyContainer.getDescriptor(ToolAdapterConstants.MAIN_TOOL_FILE_LOCATION);
         propertyDescriptor.setValidator(new NotEmptyValidator());
         PropertyEditor editor = editorRegistry.findPropertyEditor(propertyDescriptor);
         JComponent editorComponent = editor.createEditorComponent(propertyDescriptor, bindingContext);
@@ -264,7 +288,8 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
         panelToolFiles.add(editorComponent);
 
         anchorLabels.put(ToolAdapterConstants.MAIN_TOOL_FILE_LOCATION,
-                         new AnchorLabel(Bundle.MSG_Inexistent_Tool_Path_Text(), this.tabbedPane, this.currentIndex, editorComponent));
+                         new AnchorLabel(Bundle.MSG_Inexistent_Tool_Path_Text(),
+                                         this.tabbedPane, this.currentIndex, editorComponent));
 
         propertyDescriptor = propertyContainer.getDescriptor(ToolAdapterConstants.WORKING_DIR);
         propertyDescriptor.setAttribute("directory", true);
@@ -284,11 +309,13 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
         jLabel.setLabelFor(editorComponent);
 
         anchorLabels.put(ToolAdapterConstants.WORKING_DIR,
-                         new AnchorLabel(Bundle.MSG_Inexistent_WorkDir_Text(), this.tabbedPane, this.currentIndex, editorComponent));
+                         new AnchorLabel(Bundle.MSG_Inexistent_WorkDir_Text(),
+                                         this.tabbedPane, this.currentIndex, editorComponent));
 
         panelToolFiles.add(editorComponent);
 
-        SpringUtilities.makeCompactGrid(panelToolFiles, 2, 2, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING);
+        SpringUtilities.makeCompactGrid(panelToolFiles, 2, 2,
+                                        DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING);
 
         configPanel.add(panelToolFiles);
 
@@ -303,7 +330,8 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
         checkPanel.add(editorComponent);
         checkPanel.add(new JLabel("Tool produces the name of the output product"));
 
-        SpringUtilities.makeCompactGrid(checkPanel, 1, 2, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING);
+        SpringUtilities.makeCompactGrid(checkPanel, 1, 2,
+                                        DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING);
 
         configPanel.add(checkPanel);
 
@@ -315,7 +343,8 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
 
         configPanel.add(createPatternsPanel());
 
-        SpringUtilities.makeCompactGrid(configPanel, 5, 1, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING);
+        SpringUtilities.makeCompactGrid(configPanel, 5, 1,
+                                        DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING);
 
         return configPanel;
     }
@@ -328,14 +357,21 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
         patternsPanel.setBorder(titledBorder);
 
         TextFieldEditor textEditor = new TextFieldEditor();
-        addTextField(patternsPanel, textEditor, Bundle.CTL_Label_ProgressPattern(), ToolAdapterConstants.PROGRESS_PATTERN, false);
-        propertyContainer.getDescriptor(ToolAdapterConstants.PROGRESS_PATTERN).setValidator(new RegexFieldValidator());
-        addTextField(patternsPanel, textEditor, Bundle.CTL_Label_StepPattern(), ToolAdapterConstants.STEP_PATTERN, false);
-        propertyContainer.getDescriptor(ToolAdapterConstants.STEP_PATTERN).setValidator(new RegexFieldValidator());
-        addTextField(patternsPanel, textEditor, Bundle.CTL_Label_ErrorPattern(), ToolAdapterConstants.ERROR_PATTERN, false);
-        propertyContainer.getDescriptor(ToolAdapterConstants.ERROR_PATTERN).setValidator(new RegexFieldValidator());
+        addTextField(patternsPanel, textEditor, Bundle.CTL_Label_ProgressPattern(),
+                     ToolAdapterConstants.PROGRESS_PATTERN, false);
+        propertyContainer.getDescriptor(ToolAdapterConstants.PROGRESS_PATTERN)
+                .setValidator(new RegexFieldValidator());
+        addTextField(patternsPanel, textEditor, Bundle.CTL_Label_StepPattern(),
+                     ToolAdapterConstants.STEP_PATTERN, false);
+        propertyContainer.getDescriptor(ToolAdapterConstants.STEP_PATTERN)
+                .setValidator(new RegexFieldValidator());
+        addTextField(patternsPanel, textEditor, Bundle.CTL_Label_ErrorPattern(),
+                     ToolAdapterConstants.ERROR_PATTERN, false);
+        propertyContainer.getDescriptor(ToolAdapterConstants.ERROR_PATTERN)
+                .setValidator(new RegexFieldValidator());
 
-        SpringUtilities.makeCompactGrid(patternsPanel, 3, 2, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING);
+        SpringUtilities.makeCompactGrid(patternsPanel, 3, 2,
+                                        DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING);
 
         return patternsPanel;
     }
@@ -379,7 +415,9 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
                     adjustDimension(this);
                 }
             };
-            installButton.setText((bundle.getLocation() == BundleLocation.REMOTE ? "Download and " : "") + "Install Now");
+            installButton.setText((bundle.getLocation() == BundleLocation.REMOTE ?
+                    "Download and " :
+                    "") + "Install Now");
             installButton.setMaximumSize(installButton.getPreferredSize());
             JPanel buttonPanel = new JPanel(new BorderLayout());
             buttonPanel.setMaximumSize(new Dimension(buttonPanel.getWidth(), controlHeight));
@@ -392,19 +430,34 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
                     ProgressHandle progressHandle = ProgressHandleFactory.createSystemHandle("Installing bundle");
                     installer.setProgressMonitor(new ProgressHandler(progressHandle, false));
                     installer.setCallback(() -> {
-                        Path path = modifiedBundle.getTargetLocation().toPath().resolve(
-                                        FileUtils.getFilenameWithoutExtension(modifiedBundle.getEntryPoint()));
-                        SwingUtilities.invokeLater(() -> {
-                            progressHandle.finish();
-                            Dialogs.showInformation(String.format("Bundle was installed in location:\n%s", path));
-                            installButton.setVisible(false);
-                            bundlePanel.revalidate();
-                        });
-                        String updateVariable = modifiedBundle.getUpdateVariable();
-                        if (updateVariable != null) {
-                            Optional<SystemVariable> variable = newOperatorDescriptor.getVariables().stream().filter(v -> v.getKey().equals(updateVariable)).findFirst();
-                            variable.ifPresent(systemVariable -> systemVariable.setValue(path.toString()));
-                            varTable.revalidate();
+                        if (modifiedBundle.isInstalled()) {
+                            Path path = modifiedBundle.getTargetLocation().toPath().resolve(
+                                    FileUtils.getFilenameWithoutExtension(modifiedBundle.getEntryPoint()));
+                            SwingUtilities.invokeLater(() -> {
+                                progressHandle.finish();
+                                Dialogs.showInformation(String.format("Bundle was installed in location:\n%s", path));
+                                installButton.setVisible(false);
+                                bundlePanel.revalidate();
+                            });
+                            String updateVariable = modifiedBundle.getUpdateVariable();
+                            if (updateVariable != null) {
+                                Optional<SystemVariable> variable = newOperatorDescriptor.getVariables()
+                                        .stream()
+                                        .filter(v -> v.getKey().equals(updateVariable))
+                                        .findFirst();
+                                variable.ifPresent(systemVariable -> {
+                                    systemVariable.setShared(true);
+                                    systemVariable.setValue(path.toString());
+                                });
+                                varTable.revalidate();
+                            }
+                        } else {
+                            SwingUtilities.invokeLater(() -> {
+                                progressHandle.finish();
+                                Dialogs.showInformation("Bundle installation failed. \n" +
+                                                                "Please see the application log for details.");
+                                bundlePanel.revalidate();
+                            });
                         }
                         return null;
                     });
@@ -421,14 +474,16 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
             };
             rows++;
         }
-        SpringUtilities.makeCompactGrid(bundlePanel, rows, 1, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING);
+        SpringUtilities.makeCompactGrid(bundlePanel, rows, 1,
+                                        DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING);
         return bundlePanel;
     }
 
     private JPanel createPreProcessingTab() {
         JPanel preprocessAndPatternsPanel = new JPanel(new SpringLayout());
         preprocessAndPatternsPanel.add(createPreProcessingPanel());
-        SpringUtilities.makeCompactGrid(preprocessAndPatternsPanel, 1, 1, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING);
+        SpringUtilities.makeCompactGrid(preprocessAndPatternsPanel, 1, 1,
+                                        DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING);
         preprocessAndPatternsPanel.setMaximumSize(preprocessAndPatternsPanel.getSize());
         return preprocessAndPatternsPanel;
     }
@@ -436,7 +491,8 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
     private JPanel createDescriptorTab() {
         JPanel jPanel = new JPanel(new SpringLayout());
         jPanel.add(createDescriptorPanel());
-        SpringUtilities.makeCompactGrid(jPanel, 1, 1, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING);
+        SpringUtilities.makeCompactGrid(jPanel, 1, 1,
+                                        DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING);
         jPanel.setMaximumSize(jPanel.getSize());
         return jPanel;
     }
@@ -444,7 +500,8 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
     private JPanel createParametersTab(int width) {
         JPanel paramsPanel = createParametersPanel();
         int tableWidth = width - 2 * DEFAULT_PADDING;
-        int widths[] = {controlHeight, 5 * controlHeight, 5 * controlHeight, 3 * controlHeight, 3 * controlHeight, (int)(tableWidth * 0.3), 30};
+        int widths[] = {controlHeight, 5 * controlHeight, 5 * controlHeight,
+                3 * controlHeight, 3 * controlHeight, (int)(tableWidth * 0.3), 30};
         for(int i=0; i < widths.length; i++) {
             paramsTable.getColumnModel().getColumn(i).setPreferredWidth(widths[i]);
 
