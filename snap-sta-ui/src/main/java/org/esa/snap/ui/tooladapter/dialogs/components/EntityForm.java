@@ -1,4 +1,22 @@
-package org.esa.snap.ui.tooladapter.dialogs;
+/*
+ *
+ *  * Copyright (C) 2016 CS ROMANIA
+ *  *
+ *  * This program is free software; you can redistribute it and/or modify it
+ *  * under the terms of the GNU General Public License as published by the Free
+ *  * Software Foundation; either version 3 of the License, or (at your option)
+ *  * any later version.
+ *  * This program is distributed in the hope that it will be useful, but WITHOUT
+ *  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ *  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ *  * more details.
+ *  *
+ *  * You should have received a copy of the GNU General Public License along
+ *  *  with this program; if not, see http://www.gnu.org/licenses/
+ *
+ */
+
+package org.esa.snap.ui.tooladapter.dialogs.components;
 
 import com.bc.ceres.binding.Property;
 import com.bc.ceres.binding.PropertyContainer;
@@ -10,9 +28,12 @@ import org.esa.snap.core.gpf.descriptor.annotations.ReadOnly;
 import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.utils.UIUtils;
 
-import javax.swing.*;
+import javax.swing.AbstractButton;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -32,7 +53,7 @@ import java.util.function.Function;
  *
  * @author Cosmin Cara
  */
-class EntityForm<T> {
+public class EntityForm<T> {
 
     private Class<T> entityType;
     private Map<String, FieldChangeTrigger[]> fieldMap;
@@ -42,11 +63,11 @@ class EntityForm<T> {
     private JPanel panel;
     private Map<String, Function<T, Void>> actions;
 
-    EntityForm(T object) {
+    public EntityForm(T object) {
         this(object, null, null);
     }
 
-    EntityForm(T object, Map<String, FieldChangeTrigger[]> dependentFieldsActions, Map<String, Function<T, Void>> additionalActions) {
+    public EntityForm(T object, Map<String, FieldChangeTrigger[]> dependentFieldsActions, Map<String, Function<T, Void>> additionalActions) {
         Assert.notNull(object);
         this.original = object;
         this.entityType = (Class<T>) this.original.getClass();
@@ -75,11 +96,11 @@ class EntityForm<T> {
         buildUI();
     }
 
-    JPanel getPanel() {
+    public JPanel getPanel() {
         return this.panel;
     }
 
-    T applyChanges() {
+    public T applyChanges() {
         try {
             this.original = duplicate(this.modified, this.original, true);
         } catch (Exception ex) {

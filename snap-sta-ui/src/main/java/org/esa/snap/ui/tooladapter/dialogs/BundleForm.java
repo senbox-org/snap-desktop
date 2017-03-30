@@ -44,6 +44,7 @@ import java.awt.Insets;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.ItemEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.net.URL;
@@ -69,6 +70,7 @@ public class BundleForm extends JPanel {
     private JComponent arguments;
     private JComboBox variable;
     private List<SystemVariable> variables;
+    private PropertyChangeListener listener;
 
     public BundleForm(Bundle bundle, List<SystemVariable> variables) {
         this.original = bundle;
@@ -98,6 +100,10 @@ public class BundleForm extends JPanel {
             e.printStackTrace();
         }
         return this.original;
+    }
+
+    public void setPropertyChangeListener(PropertyChangeListener listener) {
+        this.listener = listener;
     }
 
     private void buildUI() {
@@ -254,7 +260,12 @@ public class BundleForm extends JPanel {
         });
 
         property = propertyContainer.getProperty("source");
-        property.addPropertyChangeListener(evt -> modified.setSource((File) evt.getNewValue()));
+        property.addPropertyChangeListener(evt -> {
+            modified.setSource((File) evt.getNewValue());
+            if (this.listener != null) {
+                this.listener.propertyChange(evt);
+            }
+        });
 
         property = propertyContainer.getProperty("targetLocation");
         property.addPropertyChangeListener(evt -> modified.setTargetLocation((File) evt.getNewValue()));

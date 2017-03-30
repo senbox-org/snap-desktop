@@ -29,6 +29,7 @@ import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.ui.tooladapter.actions.EscapeAction;
+import org.esa.snap.ui.tooladapter.dialogs.components.EntityForm;
 import org.esa.snap.ui.tooladapter.model.ProgressWorker;
 
 import javax.swing.BorderFactory;
@@ -68,7 +69,6 @@ public class ModuleSuiteDialog extends ModalDialog {
     private ModuleSuiteDescriptor descriptor;
     private org.esa.snap.core.gpf.descriptor.dependency.Bundle bundle;
     private EntityForm<ModuleSuiteDescriptor> descriptorForm;
-    //private EntityForm<org.esa.snap.core.gpf.descriptor.dependency.Bundle> bundleForm;
     private BundleForm bundleForm;
     private Set<ToolAdapterOperatorDescriptor> initialSelection;
     private Map<String, SystemVariable> commonVariables;
