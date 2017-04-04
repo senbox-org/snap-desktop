@@ -18,13 +18,16 @@
 
 package org.esa.snap.ui.tooladapter.dialogs;
 
+import org.esa.snap.core.gpf.descriptor.OSFamily;
 import org.esa.snap.core.gpf.descriptor.SystemVariable;
 import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
 import org.esa.snap.core.gpf.descriptor.dependency.BundleType;
+import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterOp;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterRegistry;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.modules.ModulePackager;
 import org.esa.snap.modules.ModuleSuiteDescriptor;
+import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.ModalDialog;
@@ -67,7 +70,7 @@ public class ModuleSuiteDialog extends ModalDialog {
     private static final int YEAR;
     private JTable operatorsTable;
     private ModuleSuiteDescriptor descriptor;
-    private org.esa.snap.core.gpf.descriptor.dependency.Bundle bundle;
+    private Map<OSFamily, org.esa.snap.core.gpf.descriptor.dependency.Bundle> bundles;
     private EntityForm<ModuleSuiteDescriptor> descriptorForm;
     private BundleForm bundleForm;
     private Set<ToolAdapterOperatorDescriptor> initialSelection;
@@ -86,7 +89,28 @@ public class ModuleSuiteDialog extends ModalDialog {
         this.descriptor.setName("NewBundle");
         this.descriptor.setVersion("1");
         this.descriptor.setCopyright("(C)" + String.valueOf(YEAR) + " " + this.descriptor.getAuthors());
-        this.bundle = new org.esa.snap.core.gpf.descriptor.dependency.Bundle(BundleType.ZIP, SystemUtils.getAuxDataPath().toFile());
+        this.bundles = new HashMap<>();
+        this.bundles.put(OSFamily.windows,
+                new org.esa.snap.core.gpf.descriptor.dependency.Bundle(
+                    new ToolAdapterOperatorDescriptor("bundle", ToolAdapterOp.class),
+                    BundleType.ZIP,
+                    SystemUtils.getAuxDataPath().toString()) {{
+                        setOS(OSFamily.windows);
+                }});
+        this.bundles.put(OSFamily.linux,
+                new org.esa.snap.core.gpf.descriptor.dependency.Bundle(
+                        new ToolAdapterOperatorDescriptor("bundle", ToolAdapterOp.class),
+                        BundleType.ZIP,
+                        SystemUtils.getAuxDataPath().toString()) {{
+                    setOS(OSFamily.linux);
+                }});
+        this.bundles.put(OSFamily.macosx,
+                new org.esa.snap.core.gpf.descriptor.dependency.Bundle(
+                        new ToolAdapterOperatorDescriptor("bundle", ToolAdapterOp.class),
+                        BundleType.ZIP,
+                        SystemUtils.getAuxDataPath().toString()) {{
+                    setOS(OSFamily.macosx);
+                }});
         this.initialSelection = new HashSet<>();
         this.commonVariables = new HashMap<>();
         if (selection != null) {
@@ -175,23 +199,23 @@ public class ModuleSuiteDialog extends ModalDialog {
     }
 
     private JPanel createBundlePanel() {
-        this.bundleForm = new BundleForm(this.bundle, new ArrayList<>(this.commonVariables.values()));
+        this.bundleForm = new BundleForm(SnapApp.getDefault().getAppContext(),
+                                         this.bundles.get(OSFamily.windows),
+                                         this.bundles.get(OSFamily.linux),
+                                         this.bundles.get(OSFamily.macosx),
+                                         new ArrayList<>(this.commonVariables.values()));
         this.bundleForm.setBorder(BorderFactory.createLineBorder(Color.GRAY));
         return this.bundleForm;
     }
 
     private void onSelectionChanged() {
         ToolAdapterOperatorDescriptor[] selection = ((AdapterListModel) this.operatorsTable.getModel()).getSelectedItems();
+        this.commonVariables.clear();
         for (ToolAdapterOperatorDescriptor descriptor : selection) {
             List<SystemVariable> variables = descriptor.getVariables();
-            if (this.commonVariables.size() == 0) {
-                for (SystemVariable variable : variables) {
-                    this.commonVariables.put(variable.getKey(), variable);
-                }
+            for (SystemVariable variable : variables) {
+                this.commonVariables.put(variable.getKey(), variable);
             }
-            this.commonVariables.entrySet()
-                    .removeIf(variableEntry ->
-                                      variables.stream().noneMatch(v -> variableEntry.getKey().equals(v.getKey())));
         }
         this.bundleForm.setVariables(new ArrayList<>(this.commonVariables.values()));
     }
@@ -201,7 +225,7 @@ public class ModuleSuiteDialog extends ModalDialog {
         ToolAdapterOperatorDescriptor[] selection = ((AdapterListModel) this.operatorsTable.getModel()).getSelectedItems();
         if (selection.length > 0) {
             this.descriptor = this.descriptorForm.applyChanges();
-            this.bundle = this.bundleForm.applyChanges();
+            final Map<OSFamily, org.esa.snap.core.gpf.descriptor.dependency.Bundle> bundles = this.bundleForm.applyChanges();
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             if (fileChooser.showOpenDialog(getButton(ID_OTHER)) == JFileChooser.APPROVE_OPTION) {
@@ -210,7 +234,7 @@ public class ModuleSuiteDialog extends ModalDialog {
                 ProgressWorker worker = new ProgressWorker("Export Module Suite", "Creating NetBeans module suite " + nbmName,
                         () -> {
                             try {
-                                ModulePackager.packModules(this.descriptor, new File(targetFolder, nbmName), this.bundle, selection);
+                                ModulePackager.packModules(this.descriptor, new File(targetFolder, nbmName), bundles, selection);
                                 Dialogs.showInformation(String.format(Bundle.MSG_Export_Complete_Text(), targetFolder.getAbsolutePath()), null);
                             } catch (IOException e) {
                                 SystemUtils.LOG.warning(e.getMessage());

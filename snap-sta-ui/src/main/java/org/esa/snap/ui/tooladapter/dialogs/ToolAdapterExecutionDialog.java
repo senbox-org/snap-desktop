@@ -26,7 +26,7 @@ import org.esa.snap.core.gpf.descriptor.SystemVariable;
 import org.esa.snap.core.gpf.descriptor.TemplateParameterDescriptor;
 import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
 import org.esa.snap.core.gpf.descriptor.ToolParameterDescriptor;
-import org.esa.snap.core.gpf.descriptor.template.TemplateFile;
+import org.esa.snap.core.gpf.descriptor.template.FileTemplate;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterConstants;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterOp;
 import org.esa.snap.core.gpf.ui.OperatorMenu;
@@ -165,7 +165,7 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
         String templateContents;
         try {
             //templateContents = ToolAdapterIO.readOperatorTemplate(operatorDescriptor.getName());
-            TemplateFile template = operatorDescriptor.getTemplate();
+            FileTemplate template = operatorDescriptor.getTemplate();
             templateContents = template.getContents();
         } catch (Exception ex) {
             showErrorDialog(String.format("Cannot read operator template [%s]", ex.getMessage()));
