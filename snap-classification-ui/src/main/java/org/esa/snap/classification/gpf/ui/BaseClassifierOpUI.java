@@ -63,6 +63,8 @@ public abstract class BaseClassifierOpUI extends BaseOperatorUI {
 
     private final JCheckBox evaluateClassifier = new JCheckBox("");
     private final JCheckBox evaluateFeaturePowerSet = new JCheckBox("");
+    private final JTextField minPowerSetSize = new JTextField("");
+    private final JTextField maxPowerSetSize = new JTextField("");
     private final JCheckBox doClassValQuantization = new JCheckBox();
 
     private final JTextField minClassValue = new JTextField("");
@@ -123,7 +125,14 @@ public abstract class BaseClassifierOpUI extends BaseOperatorUI {
         evaluateClassifier.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                evaluateFeaturePowerSet.setEnabled(evaluateClassifier.isSelected());
+                enablePowerSet();
+            }
+        });
+
+        evaluateFeaturePowerSet.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                enablePowerSet();
             }
         });
 
@@ -243,6 +252,14 @@ public abstract class BaseClassifierOpUI extends BaseOperatorUI {
 
     protected abstract void setEnabled(final boolean enabled);
 
+    private void enablePowerSet() {
+        final boolean evalEnabled = evaluateClassifier.isSelected();
+        evaluateFeaturePowerSet.setEnabled(evalEnabled);
+        final boolean psEnabled = evaluateFeaturePowerSet.isSelected();
+        minPowerSetSize.setEnabled(evalEnabled && psEnabled);
+        maxPowerSetSize.setEnabled(evalEnabled && psEnabled);
+    }
+
     private void enableTrainOnRaster(final boolean doTraining, final boolean trainOnRaster) {
         if (doTraining) {
             if (trainOnRaster) {
@@ -326,6 +343,15 @@ public abstract class BaseClassifierOpUI extends BaseOperatorUI {
         if (evalPS != null) {
             evaluateFeaturePowerSet.setSelected(evalPS);
         }
+        Integer minPS = (Integer) (paramMap.get("minPowerSetSize"));
+        if (minPS != null) {
+            minPowerSetSize.setText(String.valueOf(minPS));
+        }
+        Integer maxPS = (Integer) (paramMap.get("maxPowerSetSize"));
+        if (maxPS != null) {
+            maxPowerSetSize.setText(String.valueOf(maxPS));
+        }
+
         Boolean doQuant = (Boolean) (paramMap.get("doClassValQuantization"));
         if (doQuant != null) {
             doClassValQuantization.setSelected(doQuant);
@@ -355,6 +381,7 @@ public abstract class BaseClassifierOpUI extends BaseOperatorUI {
         boolean doTraining = true;
         enableTraining(doTraining);
         enableTrainOnRaster(doTraining, trainOnRasters);
+        enablePowerSet();
 
         paramMap.put("bandsOrVectors", null);
 
@@ -379,6 +406,16 @@ public abstract class BaseClassifierOpUI extends BaseOperatorUI {
         paramMap.put("numTrainSamples", Integer.parseInt(numTrainSamples.getText()));
         paramMap.put("evaluateClassifier", evaluateClassifier.isSelected());
         paramMap.put("evaluateFeaturePowerSet", evaluateFeaturePowerSet.isSelected());
+
+        if(evaluateClassifier.isSelected() && evaluateFeaturePowerSet.isSelected()) {
+            if(!minPowerSetSize.getText().isEmpty()) {
+                paramMap.put("minPowerSetSize", Integer.parseInt(minPowerSetSize.getText()));
+            }
+            if(!maxPowerSetSize.getText().isEmpty()) {
+                paramMap.put("maxPowerSetSize", Integer.parseInt(maxPowerSetSize.getText()));
+            }
+        }
+
         paramMap.put("doClassValQuantization", doClassValQuantization.isSelected());
         paramMap.put("minClassValue", Double.parseDouble(minClassValue.getText()));
         paramMap.put("classValStepSize", Double.parseDouble(classValStepSize.getText()));
@@ -438,6 +475,8 @@ public abstract class BaseClassifierOpUI extends BaseOperatorUI {
 
         DialogUtils.fillPanel(contentPane, gbc);
 
+        enablePowerSet();
+
         return contentPane;
     }
 
@@ -468,7 +507,7 @@ public abstract class BaseClassifierOpUI extends BaseOperatorUI {
         group2.add(trainOnRasterBtn);
         group2.add(trainOnVectorsBtn);
 
-        JPanel radioPanel = new JPanel(new FlowLayout());
+        final JPanel radioPanel = new JPanel(new FlowLayout());
         radioPanel.add(trainOnRasterBtn);
         radioPanel.add(trainOnVectorsBtn);
 
@@ -481,6 +520,20 @@ public abstract class BaseClassifierOpUI extends BaseOperatorUI {
         DialogUtils.addComponent(classifierPanel, classifiergbc, "Evaluate classifier", evaluateClassifier);
         classifiergbc.gridy++;
         DialogUtils.addComponent(classifierPanel, classifiergbc, "Evaluate Feature Power Set", evaluateFeaturePowerSet);
+        classifiergbc.gridy++;
+
+        final JPanel powerSetPanel = new JPanel(new FlowLayout());
+        minPowerSetSize.setColumns(4);
+        maxPowerSetSize.setColumns(4);
+        powerSetPanel.add(new JLabel("Min Power Set Size:"));
+        powerSetPanel.add(minPowerSetSize);
+        powerSetPanel.add(new JLabel("Max Power Set Size:"));
+        powerSetPanel.add(maxPowerSetSize);
+
+        classifiergbc.gridy++;
+        classifiergbc.gridx = 1;
+        classifierPanel.add(powerSetPanel, classifiergbc);
+        classifiergbc.gridx = 0;
 
         classifiergbc.gridy++;
         DialogUtils.addComponent(classifierPanel, classifiergbc, "Number of training samples", numTrainSamples);
