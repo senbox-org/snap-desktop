@@ -59,6 +59,7 @@ import javax.swing.SpringLayout;
 import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
 import javax.swing.plaf.basic.BasicTabbedPaneUI;
+import javax.swing.table.TableColumn;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -191,9 +192,11 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
 
         varTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
         varTable.setRowHeight(controlHeight);
-        int widths[] = {controlHeight, (int) (formWidth * 0.3), (int) (formWidth * 0.7) - controlHeight};
+        int widths[] = {controlHeight, 3 * controlHeight, 10 * controlHeight};
         for (int i = 0; i < widths.length; i++) {
-            varTable.getColumnModel().getColumn(i).setPreferredWidth(widths[i]);
+            TableColumn column = varTable.getColumnModel().getColumn(i);
+            column.setPreferredWidth(widths[i]);
+            column.setWidth(widths[i]);
 
         }
         JScrollPane scrollPane = new JScrollPane(varTable);
