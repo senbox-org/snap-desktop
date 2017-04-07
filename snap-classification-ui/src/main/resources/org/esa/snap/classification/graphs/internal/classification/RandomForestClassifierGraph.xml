@@ -23,6 +23,8 @@
       <labelSource>VectorNodeName</labelSource>
       <evaluateClassifier>true</evaluateClassifier>
       <evaluateFeaturePowerSet>false</evaluateFeaturePowerSet>
+      <minPowerSetSize>2</minPowerSetSize>
+      <maxPowerSetSize>7</maxPowerSetSize>
     </parameters>
   </node>
   <node id="Write">

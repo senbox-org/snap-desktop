@@ -177,9 +177,8 @@ public class ToolAdapterActionRegistrar {
     private static FileObject getDefaultLocation() throws IOException {
         if (defaultMenu == null) {
             defaultMenu = FileUtil.getConfigFile(DEFAULT_MENU_PATH);
-            defaultMenu = FileUtil.getConfigFile("Menu").getFileObject("Tools");
-            defaultMenu = defaultMenu.getFileObject(DEFAULT_MENU_PATH.replace("Menu/Tools/", ""));
             if (defaultMenu == null) {
+                defaultMenu = FileUtil.getConfigFile("Menu").getFileObject("Tools");
                 defaultMenu = defaultMenu.createFolder(DEFAULT_MENU_PATH.replace("Menu/Tools/", ""));
             }
             FileObject[] objects = defaultMenu.getParent().getChildren();

@@ -303,12 +303,12 @@ class ToolExecutionForm extends JTabbedPane {
                 final TargetProductSelectorModel targetProductSelectorModel = targetProductSelector.getModel();
                 productName += TARGET_PRODUCT_NAME_SUFFIX;
                 targetProductSelectorModel.setProductName(productName);
+                String workingDir = operatorDescriptor.getWorkingDir();
                 if (value != null) {
                     File oldValue = operatorDescriptor.resolveVariables(value instanceof File ? (File) value : new File((String) value));
                     if (fileExtension == null)
                         fileExtension = TIF_EXTENSION;
                     File current;
-                    File workingDir = operatorDescriptor.getWorkingDir();
                     File parent;
                     if (oldValue != null && (parent = oldValue.getParentFile()) != null) {
                         current = new File(parent.getAbsolutePath(), productName + fileExtension);
@@ -317,7 +317,6 @@ class ToolExecutionForm extends JTabbedPane {
                     }
                     propertySet.setValue(ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE, current);
                 } else {
-                    File workingDir = operatorDescriptor.resolveVariables(operatorDescriptor.getWorkingDir());
                     try {
                         targetProperty.setValue(new File(workingDir, productName + TIF_EXTENSION));
                     } catch (ValidationException ignored) {

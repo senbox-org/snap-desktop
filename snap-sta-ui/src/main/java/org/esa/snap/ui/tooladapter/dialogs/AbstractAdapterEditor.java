@@ -38,9 +38,9 @@ import org.esa.snap.core.gpf.descriptor.TemplateParameterDescriptor;
 import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
 import org.esa.snap.core.gpf.descriptor.ToolParameterDescriptor;
 import org.esa.snap.core.gpf.descriptor.dependency.BundleInstaller;
+import org.esa.snap.core.gpf.descriptor.template.FileTemplate;
 import org.esa.snap.core.gpf.descriptor.template.TemplateEngine;
 import org.esa.snap.core.gpf.descriptor.template.TemplateException;
-import org.esa.snap.core.gpf.descriptor.template.TemplateFile;
 import org.esa.snap.core.gpf.descriptor.template.TemplateType;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterConstants;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterIO;
@@ -316,7 +316,7 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
 
     private boolean shouldValidate() {
         String value = NbPreferences.forModule(Dialogs.class).get(ToolAdapterOptionsController.PREFERENCE_KEY_VALIDATE_ON_SAVE, null);
-        return value == null || Boolean.parseBoolean(value);
+        return value != null && Boolean.parseBoolean(value);
     }
 
     @Override
@@ -329,8 +329,10 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
 
         /* Verify the existence of the tool executable */
         if (shouldValidate()) {
-            File file = newOperatorDescriptor.getMainToolFileLocation();
-            if (file == null) {
+            String fileLocation = newOperatorDescriptor.getMainToolFileLocation();
+            File file = null;
+            if (fileLocation != null) {
+                file = new File(fileLocation);
                 // should not come here unless, somehow, the property value was not set by binding
                 Object value = bindingContext.getBinding(ToolAdapterConstants.MAIN_TOOL_FILE_LOCATION).getPropertyValue();
                 if (value != null) {
@@ -456,7 +458,7 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
                     if (!newOperatorDescriptor.isFromPackage()) {
                         newOperatorDescriptor.setSource(ToolAdapterOperatorDescriptor.SOURCE_USER);
                     }
-                    TemplateFile template = new TemplateFile(TemplateEngine.createInstance(newOperatorDescriptor, TemplateType.VELOCITY),
+                    FileTemplate template = new FileTemplate(TemplateEngine.createInstance(newOperatorDescriptor, TemplateType.VELOCITY),
                                                              newOperatorDescriptor.getAlias() + ToolAdapterConstants.TOOL_VELO_TEMPLATE_SUFIX);
                     template.setContents(templateContent, true);
                     newOperatorDescriptor.setTemplate(template);
@@ -493,7 +495,7 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
                     if (menuLocation != null && !menuLocation.startsWith("Menu/")) {
                         newOperatorDescriptor.setMenuLocation("Menu/" + menuLocation);
                     }
-                    newOperatorDescriptor.setBundle(bundleForm.applyChanges());
+                    newOperatorDescriptor.setBundles(bundleForm.applyChanges());
                     AdapterWatcher.INSTANCE.suspend();
                     ToolAdapterIO.saveAndRegisterOperator(newOperatorDescriptor);
                     oldOperatorDescriptor = newOperatorDescriptor;
@@ -529,8 +531,7 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
     public int show() {
         getJDialog().revalidate();
         if (this.currentOperation == OperationType.FORCED_EDIT) {
-            org.esa.snap.core.gpf.descriptor.dependency.Bundle bundle = this.oldOperatorDescriptor.getBundle();
-            if (BundleInstaller.isBundleFileAvailable(bundle)) {
+            if (BundleInstaller.isBundleFileAvailable(this.oldOperatorDescriptor.getBundle())) {
                 SwingUtilities.invokeLater(() -> {
                     Dialogs.Answer answer = Dialogs.requestDecision("Bundle Available", "A bundle has been configured for this adapter.\n" +
                             "Do you want to proceed with bundle download/installation?", false, null);
@@ -755,7 +756,7 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
         UIUtils.enableUndoRedo(templateContent);
 
         try {
-            TemplateFile template;
+            FileTemplate template;
             if ( (currentOperation == OperationType.NEW) || (currentOperation == OperationType.COPY) ) {
                 template = oldOperatorDescriptor.getTemplate();
                 if (template != null) {
@@ -783,7 +784,7 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
     void adjustDimension(JButton component) {
         FontMetrics metrics = component.getFontMetrics(component.getFont());
         int width = metrics.stringWidth(component.getText());
-        component.setPreferredSize(new Dimension(width + 20, controlHeight));
+        component.setPreferredSize(new Dimension(width + 32, controlHeight));
         component.setBounds(new Rectangle(component.getLocation(), component.getPreferredSize()));
     }
 

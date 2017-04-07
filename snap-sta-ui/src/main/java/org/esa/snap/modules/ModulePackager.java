@@ -15,6 +15,7 @@
  */
 package org.esa.snap.modules;
 
+import org.esa.snap.core.gpf.descriptor.OSFamily;
 import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
 import org.esa.snap.core.gpf.descriptor.dependency.Bundle;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterIO;
@@ -115,7 +116,7 @@ public final class ModulePackager {
 
         modulesPath = ToolAdapterIO.getAdaptersPath().toFile();
     }
-    public static void packModules(ModuleSuiteDescriptor suiteDescriptor, File suiteFile, Bundle bundle, ToolAdapterOperatorDescriptor... descriptors) throws IOException {
+    public static void packModules(ModuleSuiteDescriptor suiteDescriptor, File suiteFile, Map<OSFamily, Bundle> bundles, ToolAdapterOperatorDescriptor... descriptors) throws IOException {
         if (suiteFile != null && descriptors != null && descriptors.length > 0) {
             if (descriptors.length == 1) {
                 packModule(descriptors[0], suiteFile);
@@ -131,10 +132,10 @@ public final class ModulePackager {
                             packModule(descriptor, suiteFilePath.resolve(descriptor.getAlias() + ".nbm").toFile(), true));
                     dependentModules.put(normalize(descriptor.getName()), SPECIFICATION_VERSION);// descriptor.getVersion());
                 }
-                if (bundle != null) {
-                    Arrays.stream(descriptors).forEach(d -> d.setBundle(bundle));
+                if (bundles != null) {
+                    Arrays.stream(descriptors).forEach(d -> d.setBundles(bundles));
                 }
-                packSuite(suiteDescriptor, suiteFile, dependentModules, bundle);
+                packSuite(suiteDescriptor, suiteFile, dependentModules, bundles);
                 Files.write(suiteFilePath.resolve("updates.xml"), updateBuilder.build(true).getBytes());
             }
         }
@@ -217,22 +218,24 @@ public final class ModulePackager {
             zipStream.putNextEntry(entry);
             zipStream.write(packAdapterJar(descriptor));
             zipStream.closeEntry();
-            Bundle bundle = descriptor.getBundle();
-            if (!isPartOfSuite && bundle != null && bundle.isLocal() &&
-                    bundle.getTargetLocation() != null &&
-                    bundle.getEntryPoint() != null) {
-                // lib folder
-                entry = new ZipEntry("netbeans/modules/lib/");
-                zipStream.putNextEntry(entry);
-                zipStream.closeEntry();
-                // bundle
-                String entryPoint = bundle.getEntryPoint();
-                File entryPointPath = bundle.getSource();
-                if (entryPointPath.exists()) {
-                    entry = new ZipEntry("netbeans/modules/lib/" + entryPoint);
-                    zipStream.putNextEntry(entry);
-                    zipStream.write(Files.readAllBytes(entryPointPath.toPath()));
-                    zipStream.closeEntry();
+            Map<OSFamily, Bundle> bundles = descriptor.getBundles();
+            if (!isPartOfSuite && bundles != null) {
+                for (Bundle bundle : bundles.values()) {
+                    if (bundle.isLocal() && bundle.getTargetLocation() != null && bundle.getEntryPoint() != null) {
+                        // lib folder
+                        entry = new ZipEntry("netbeans/modules/lib/");
+                        zipStream.putNextEntry(entry);
+                        zipStream.closeEntry();
+                        // bundle
+                        String entryPoint = bundle.getEntryPoint();
+                        File entryPointPath = bundle.getSource();
+                        if (entryPointPath.exists()) {
+                            entry = new ZipEntry("netbeans/modules/lib/" + entryPoint);
+                            zipStream.putNextEntry(entry);
+                            zipStream.write(Files.readAllBytes(entryPointPath.toPath()));
+                            zipStream.closeEntry();
+                        }
+                    }
                 }
             }
             // create update_tracking section
@@ -310,7 +313,7 @@ public final class ModulePackager {
         return version;
     }
 
-    private static void packSuite(ModuleSuiteDescriptor descriptor, File nbmFile, Map<String, String> dependencies, Bundle bundle) throws IOException {
+    private static void packSuite(ModuleSuiteDescriptor descriptor, File nbmFile, Map<String, String> dependencies, Map<OSFamily, Bundle> bundles) throws IOException {
         byte[] byteBuffer;
         try (final ZipOutputStream zipStream = new ZipOutputStream(new FileOutputStream(nbmFile))) {
             // create Info section
@@ -376,21 +379,23 @@ public final class ModulePackager {
             zipStream.putNextEntry(entry);
             zipStream.write(packSuiteJar(descriptor, dependencies));
             zipStream.closeEntry();
-            if (bundle != null && bundle.isLocal() &&
-                    bundle.getTargetLocation() != null &&
-                    bundle.getEntryPoint() != null) {
-                // lib folder
-                entry = new ZipEntry("netbeans/modules/lib/");
-                zipStream.putNextEntry(entry);
-                zipStream.closeEntry();
-                // bundle
-                String entryPoint = bundle.getEntryPoint();
-                File entryPointPath = bundle.getSource();
-                if (entryPointPath.exists()) {
-                    entry = new ZipEntry("netbeans/modules/lib/" + entryPoint);
-                    zipStream.putNextEntry(entry);
-                    zipStream.write(Files.readAllBytes(entryPointPath.toPath()));
-                    zipStream.closeEntry();
+            if (bundles != null) {
+                for (Bundle bundle : bundles.values()) {
+                    if (bundle.isLocal() && bundle.getTargetLocation() != null && bundle.getEntryPoint() != null) {
+                        // lib folder
+                        entry = new ZipEntry("netbeans/modules/lib/");
+                        zipStream.putNextEntry(entry);
+                        zipStream.closeEntry();
+                        // bundle
+                        String entryPoint = bundle.getEntryPoint();
+                        File entryPointPath = bundle.getSource();
+                        if (entryPointPath.exists()) {
+                            entry = new ZipEntry("netbeans/modules/lib/" + entryPoint);
+                            zipStream.putNextEntry(entry);
+                            zipStream.write(Files.readAllBytes(entryPointPath.toPath()));
+                            zipStream.closeEntry();
+                        }
+                    }
                 }
             }
             // create update_tracking section

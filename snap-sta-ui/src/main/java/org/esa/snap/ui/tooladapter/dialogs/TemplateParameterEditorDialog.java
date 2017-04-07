@@ -1,13 +1,23 @@
 package org.esa.snap.ui.tooladapter.dialogs;
 
-import com.bc.ceres.binding.*;
+import com.bc.ceres.binding.ConversionException;
+import com.bc.ceres.binding.DefaultPropertySetDescriptor;
+import com.bc.ceres.binding.Property;
+import com.bc.ceres.binding.PropertyContainer;
+import com.bc.ceres.binding.PropertyDescriptor;
+import com.bc.ceres.binding.ValidationException;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.internal.FileEditor;
 import org.esa.snap.core.gpf.annotations.ParameterDescriptorFactory;
-import org.esa.snap.core.gpf.descriptor.*;
+import org.esa.snap.core.gpf.descriptor.ParameterDescriptor;
+import org.esa.snap.core.gpf.descriptor.SystemVariable;
+import org.esa.snap.core.gpf.descriptor.TemplateParameterDescriptor;
+import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
+import org.esa.snap.core.gpf.descriptor.ToolParameterDescriptor;
+import org.esa.snap.core.gpf.descriptor.template.Template;
 import org.esa.snap.core.gpf.descriptor.template.TemplateException;
-import org.esa.snap.core.gpf.descriptor.template.TemplateFile;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterOp;
+import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.ui.UIUtils;
@@ -16,9 +26,18 @@ import org.esa.snap.ui.tooladapter.actions.EscapeAction;
 import org.esa.snap.ui.tooladapter.model.AutoCompleteTextArea;
 import org.esa.snap.ui.tooladapter.model.OperatorParametersTable;
 
-import javax.swing.*;
+import javax.swing.AbstractButton;
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -44,6 +63,7 @@ public class TemplateParameterEditorDialog extends ModalDialog {
     private ToolAdapterOperatorDescriptor fakeOperatorDescriptor;
     private ToolAdapterOperatorDescriptor parentDescriptor;
     private AppContext appContext;
+    private JTextField outFileName;
     private AutoCompleteTextArea fileContentArea;
     private OperatorParametersTable paramsTable;
     private BindingContext paramContext;
@@ -112,7 +132,8 @@ public class TemplateParameterEditorDialog extends ModalDialog {
     private void addComponents() {
         Property property = getProperty();
         try {
-            property.setValue(this.parameter.getTemplate().getTemplatePath());
+            Template template = this.parameter.getTemplate();
+            property.setValue(template.getPath());
         } catch (ValidationException e) {
             logger.warning(e.getMessage());
         }
@@ -121,13 +142,27 @@ public class TemplateParameterEditorDialog extends ModalDialog {
         JComponent filePathComponent = fileEditor.createEditorComponent(property.getDescriptor(), this.paramContext);
         filePathComponent.setPreferredSize(new Dimension(770, 25));
 
+        JPanel topPanel = new JPanel(new BorderLayout());
         JPanel filePanel = new JPanel();
-        filePanel.add(new JLabel("File:"));
+        final JLabel label = new JLabel("File:");
+        filePanel.add(label);
         filePanel.add(filePathComponent);
+        topPanel.add(filePanel, BorderLayout.NORTH);
+
+        JPanel outFilePanel = new JPanel();
+        final JLabel jLabel = new JLabel("Output File:");
+        outFilePanel.add(jLabel);
+        File outputFile = this.parameter.getOutputFile();
+        outFileName = new JTextField(outputFile != null ? outputFile.toString() : "");
+        outFileName.setPreferredSize(
+                new Dimension(filePathComponent.getPreferredSize().width + label.getPreferredSize().width - jLabel.getPreferredSize().width, 25));
+        org.esa.snap.utils.UIUtils.addPromptSupport(outFileName, "Enter the name of transformed file here");
+        outFilePanel.add(outFileName);
+        topPanel.add(outFilePanel, BorderLayout.WEST);
 
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setPreferredSize(new Dimension(800, 550));
-        mainPanel.add(filePanel, BorderLayout.PAGE_START);
+        mainPanel.add(topPanel, BorderLayout.PAGE_START);
 
         //to create UI component for outputFile
         fileContentArea.setAutoCompleteEntries(getAutocompleteEntries());
@@ -145,12 +180,19 @@ public class TemplateParameterEditorDialog extends ModalDialog {
         String result = null;
         try {
             File file = getProperty().getValue();
-            this.parameter.getTemplate().setFileName(file.getName());
-            if (!file.isAbsolute()) {
-                file = this.parameter.getTemplate().getTemplatePath();
+            Template template = this.parameter.getTemplate();
+            if (file != null) {
+                template.setName(file.getName());
             }
-            if (file.exists()) {
-                result = new String(Files.readAllBytes(file.toPath()));
+            if (!template.isInMemory()) {
+                if (file != null && !file.isAbsolute()) {
+                    file = template.getPath();
+                }
+                if (file != null && file.exists()) {
+                    result = new String(Files.readAllBytes(file.toPath()));
+                }
+            } else {
+                result = template.getContents();
             }
         } catch (Exception e) {
             logger.warning(e.getMessage());
@@ -168,8 +210,11 @@ public class TemplateParameterEditorDialog extends ModalDialog {
     protected void onOK() {
         super.onOK();
 
-        TemplateFile template = this.parameter.getTemplate();
-        this.parameter.setDefaultValue(template.getFileName());
+        Template template = this.parameter.getTemplate();
+        this.parameter.setDefaultValue(template.getName());
+        if (!StringUtils.isNullOrEmpty(outFileName.getText())) {
+            this.parameter.setOutputFile(new File(outFileName.getText()));
+        }
 
         //save parameters
         parameter.getParameterDescriptors().clear();

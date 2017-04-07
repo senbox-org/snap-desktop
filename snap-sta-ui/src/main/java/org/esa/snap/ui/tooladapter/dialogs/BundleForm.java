@@ -25,19 +25,28 @@ import com.bc.ceres.binding.ValueSet;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.PropertyEditor;
 import com.bc.ceres.swing.binding.PropertyEditorRegistry;
+import org.esa.snap.core.gpf.descriptor.OSFamily;
 import org.esa.snap.core.gpf.descriptor.SystemVariable;
+import org.esa.snap.core.gpf.descriptor.TemplateParameterDescriptor;
 import org.esa.snap.core.gpf.descriptor.dependency.Bundle;
 import org.esa.snap.core.gpf.descriptor.dependency.BundleLocation;
 import org.esa.snap.core.gpf.descriptor.dependency.BundleType;
+import org.esa.snap.ui.AbstractDialog;
+import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.GridBagUtils;
 
+import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
-import javax.swing.JComboBox;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
+import javax.swing.border.Border;
+import javax.swing.plaf.basic.BasicTabbedPaneUI;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -46,9 +55,11 @@ import java.awt.event.FocusEvent;
 import java.awt.event.ItemEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
-import java.lang.reflect.Field;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.esa.snap.utils.SpringUtilities.DEFAULT_PADDING;
 
@@ -58,42 +69,66 @@ import static org.esa.snap.utils.SpringUtilities.DEFAULT_PADDING;
  * @author Cosmin Cara
  */
 public class BundleForm extends JPanel {
-    private Bundle original;
-    private Bundle modified;
-    private final PropertyContainer propertyContainer;
-    private final BindingContext bindingContext;
-    private JRadioButton rbLocal;
-    private JRadioButton rbRemote;
-    private JComponent winUrl;
-    private JComponent linUrl;
-    private JComponent macUrl;
-    private JComponent arguments;
-    private JComboBox variable;
+    private Map<OSFamily, Bundle> original;
+    private Map<OSFamily, Bundle> modified;
+    private final Map<OSFamily, PropertyContainer> propertyContainers;
+    private final Map<OSFamily, BindingContext> bindingContexts;
+    private final Map<OSFamily, List<JComponent>> controls;
     private List<SystemVariable> variables;
     private PropertyChangeListener listener;
+    private AppContext appContext;
+    private JTabbedPane bundleTabPane;
+    private JComponent variablesCombo;
 
-    public BundleForm(Bundle bundle, List<SystemVariable> variables) {
-        this.original = bundle;
+    public BundleForm(AppContext appContext, Bundle windowsBundle, Bundle linuxBundle, Bundle macosxBundle, List<SystemVariable> variables) {
+        this.original = new HashMap<OSFamily, Bundle>() {{
+            put(OSFamily.windows, windowsBundle);
+            put(OSFamily.linux, linuxBundle);
+            put(OSFamily.macosx, macosxBundle); }};
+        this.appContext = appContext;
         try {
-            this.modified = copy(bundle);
-            if (this.modified.getLocation() == null) {
-                this.modified.setLocation(BundleLocation.REMOTE);
-            }
+            this.modified = copy(this.original);
         } catch (Exception e) {
             e.printStackTrace();
         }
         this.variables = variables;
-        propertyContainer = PropertyContainer.createObjectBacked(this.modified);
-        bindingContext = new BindingContext(propertyContainer);
+        propertyContainers = new HashMap<>();
+        bindingContexts = new HashMap<>();
+
+        this.bundleTabPane = new JTabbedPane(JTabbedPane.TOP);
+        this.bundleTabPane.setBorder(BorderFactory.createEmptyBorder());
+
+        this.controls = new HashMap<>();
+
+        Bundle bundle = modified.get(OSFamily.windows);
+        PropertyContainer propertyContainer = PropertyContainer.createObjectBacked(bundle);
+        propertyContainers.put(OSFamily.windows, propertyContainer);
+        bindingContexts.put(OSFamily.windows, new BindingContext(propertyContainer));
+        controls.put(OSFamily.windows, new ArrayList<>());
+
+        bundle = modified.get(OSFamily.linux);
+        propertyContainer = PropertyContainer.createObjectBacked(bundle);
+        propertyContainers.put(OSFamily.linux, propertyContainer);
+        bindingContexts.put(OSFamily.linux, new BindingContext(propertyContainer));
+        controls.put(OSFamily.linux, new ArrayList<>());
+
+        bundle = modified.get(OSFamily.macosx);
+        propertyContainer = PropertyContainer.createObjectBacked(bundle);
+        propertyContainers.put(OSFamily.macosx, propertyContainer);
+        bindingContexts.put(OSFamily.macosx, new BindingContext(propertyContainer));
+        controls.put(OSFamily.macosx, new ArrayList<>());
+
         buildUI();
         addChangeListeners();
-        toggleControls();
+        toggleControls(OSFamily.windows);
+        toggleControls(OSFamily.linux);
+        toggleControls(OSFamily.macosx);
     }
 
     /**
      * Updates the source bundle object and returns the modified bundle object.
      */
-    public Bundle applyChanges() {
+    public Map<OSFamily, Bundle> applyChanges() {
         try {
             this.original = copy(this.modified);
         } catch (Exception e) {
@@ -107,205 +142,247 @@ public class BundleForm extends JPanel {
     }
 
     private void buildUI() {
-
         setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.NORTHWEST;
+        gbc.insets = new Insets(DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING);
+        gbc.weighty = 0.01;
+        addTab("Windows Bundle", createTab(OSFamily.windows));
+        addTab("Linux Bundle", createTab(OSFamily.linux));
+        addTab("MacOSX Bundle", createTab(OSFamily.macosx));
+        GridBagUtils.addToPanel(this, this.bundleTabPane, gbc, "gridx=0, gridy=0, gridwidth=11, weightx=1");
+        GridBagUtils.addToPanel(this, new JLabel("Reflect in Variable:"), gbc, "gridx=0, gridy=1, gridwidth=1, weightx=0");
+        variablesCombo = getEditorComponent(OSFamily.all, "updateVariable", this.variables.stream().map(SystemVariable::getKey).toArray());
+        GridBagUtils.addToPanel(this, variablesCombo, gbc, "gridx=1, gridy=1, gridwidth=10, weightx=0");
+        GridBagUtils.addToPanel(this, new JLabel(" "), gbc, "gridx=0, gridy=2, gridwidth=11, weighty=1");
+        this.bundleTabPane.setUI(new BasicTabbedPaneUI());
+    }
+
+    public void setVariables(List<SystemVariable> variables) {
+        this.variables = variables;
+        PropertyContainer propertyContainer = propertyContainers.get(OSFamily.windows);
+        BindingContext bindingContext = bindingContexts.get(OSFamily.windows);
+        PropertyDescriptor propertyDescriptor = propertyContainer.getDescriptor("updateVariable");
+        propertyDescriptor.setValueSet(new ValueSet(this.variables.stream().map(SystemVariable::getKey).toArray()));
+        PropertyEditor propertyEditor = PropertyEditorRegistry.getInstance().findPropertyEditor(propertyDescriptor);
+        variablesCombo = propertyEditor.createEditorComponent(propertyDescriptor, bindingContext);
+        repaint();
+    }
+
+    private JPanel createTab(OSFamily osFamily) {
+        JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
         c.fill = GridBagConstraints.HORIZONTAL;
         c.anchor = GridBagConstraints.NORTHWEST;
         c.insets = new Insets(DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING);
         c.weighty = 0.01;
-        GridBagUtils.addToPanel(this, new JLabel("Bundle Type:"), c, "gridx=0, gridy=0, gridwidth=1, weightx=0");
-        c.weighty = 0;
-        PropertyDescriptor propertyDescriptor = propertyContainer.getDescriptor("bundleType");
-        PropertyEditor editor = PropertyEditorRegistry.getInstance().findPropertyEditor(propertyDescriptor);
-        JComboBox bundleCombo = (JComboBox) editor.createEditorComponent(propertyDescriptor, bindingContext);
-        GridBagUtils.addToPanel(this, bundleCombo, c, "gridx=1, gridy=0, gridwidth=6, weightx=1");
+        List<JComponent> controlGroup = controls.get(osFamily);
+        final Bundle bundle = modified.get(osFamily);
+        GridBagUtils.addToPanel(panel, new JLabel("Type:"), c, "gridx=0, gridy=0, gridwidth=1, weightx=0");
+        JComponent type = getEditorComponent(osFamily, "bundleType");
+        GridBagUtils.addToPanel(panel, type, c, "gridx=1, gridy=0, gridwidth=10, weightx=1");
 
-        GridBagUtils.addToPanel(this, new JLabel("Bundle Location:"), c, "gridx=0, gridy=1, gridwidth=1, weightx=0");
+        GridBagUtils.addToPanel(panel, new JLabel("Location:"), c, "gridx=0, gridy=1, gridwidth=1, weightx=0");
         ButtonGroup rbGroup = new ButtonGroup();
-        rbLocal = new JRadioButton(BundleLocation.LOCAL.toString());
+        JRadioButton rbLocal = new JRadioButton(BundleLocation.LOCAL.toString());
         rbGroup.add(rbLocal);
-        rbRemote = new JRadioButton(BundleLocation.REMOTE.toString());
+        JRadioButton rbRemote = new JRadioButton(BundleLocation.REMOTE.toString());
         rbGroup.add(rbRemote);
         rbRemote.setSelected(true);
         rbLocal.addItemListener(e -> {
             if (e.getStateChange() == ItemEvent.SELECTED) {
-                modified.setLocation(BundleLocation.LOCAL);
-                toggleControls();
+                bundle.setLocation(BundleLocation.LOCAL);
+                toggleControls(osFamily);
             }
         });
         rbRemote.addItemListener(e -> {
             if (e.getStateChange() == ItemEvent.SELECTED) {
-                modified.setLocation(BundleLocation.REMOTE);
-                toggleControls();
+                bundle.setLocation(BundleLocation.REMOTE);
+                toggleControls(osFamily);
             }
         });
-        GridBagUtils.addToPanel(this, rbLocal, c, "gridx=1, gridy=1, gridwidth=3, weightx=1");
-        GridBagUtils.addToPanel(this, rbRemote, c, "gridx=4, gridy=1, gridwidth=3, weightx=1");
+        GridBagUtils.addToPanel(panel, rbLocal, c, "gridx=1, gridy=1, gridwidth=4, weightx=1");
+        GridBagUtils.addToPanel(panel, rbRemote, c, "gridx=5, gridy=1, gridwidth=5, weightx=1");
+        controlGroup.add(rbLocal);
+        controlGroup.add(rbRemote);
 
-        GridBagUtils.addToPanel(this, new JLabel("Source File:"), c, "gridx=1, gridy=2, gridwidth=1, weightx=0");
-        propertyDescriptor = propertyContainer.getDescriptor("source");
-        PropertyEditor propertyEditor = PropertyEditorRegistry.getInstance().findPropertyEditor(propertyDescriptor);
-        JComponent localFilePanel = propertyEditor.createEditorComponent(propertyDescriptor, bindingContext);
-        GridBagUtils.addToPanel(this, localFilePanel, c, "gridx=2, gridy=2, gridwidth=2, weightx=1");
+        GridBagUtils.addToPanel(panel, new JLabel("Source File:"), c, "gridx=0, gridy=2, gridwidth=1, weightx=0");
+        JComponent component = getEditorComponent(osFamily, "source");
+        GridBagUtils.addToPanel(panel, component, c, "gridx=1, gridy=2, gridwidth=10, weightx=1");
+        controlGroup.add(component);
 
-        GridBagUtils.addToPanel(this, new JLabel("URL for Windows:"), c, "gridx=4, gridy=2, gridwidth=1, weightx=0");
-        propertyDescriptor = propertyContainer.getDescriptor("windowsURL");
-        propertyEditor = PropertyEditorRegistry.getInstance().findPropertyEditor(propertyDescriptor);
-        winUrl = propertyEditor.createEditorComponent(propertyDescriptor, bindingContext);
-        winUrl.addFocusListener(new FocusAdapter() {
+        GridBagUtils.addToPanel(panel, new JLabel("URL:"), c, "gridx=0, gridy=3, gridwidth=1, weightx=0");
+        final JComponent downloadURL = getEditorComponent(osFamily, "downloadURL", "url");
+        component.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
                 try {
-                    String url = ((JTextField) winUrl).getText();
+                    String url = ((JTextField) downloadURL).getText();
                     URL checkedURL = new URL(url);
-                    modified.setWindowsURL(checkedURL.toString());
+                    bundle.setDownloadURL(checkedURL.toString());
                     super.focusLost(e);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
             }
         });
-        GridBagUtils.addToPanel(this, winUrl, c, "gridx=5, gridy=2, gridwidth=2, weightx=1");
+        GridBagUtils.addToPanel(panel, downloadURL, c, "gridx=1, gridy=3, gridwidth=10, weightx=1");
+        controlGroup.add(downloadURL);
 
-        GridBagUtils.addToPanel(this, new JLabel("URL for Linux:"), c, "gridx=4, gridy=3, gridwidth=1, weightx=0");
-        propertyDescriptor = propertyContainer.getDescriptor("linuxURL");
-        propertyEditor = PropertyEditorRegistry.getInstance().findPropertyEditor(propertyDescriptor);
-        linUrl = propertyEditor.createEditorComponent(propertyDescriptor, bindingContext);
-        linUrl.addFocusListener(new FocusAdapter() {
-            @Override
-            public void focusLost(FocusEvent e) {
-                try {
-                    String url = ((JTextField) winUrl).getText();
-                    URL checkedURL = new URL(url);
-                    modified.setLinuxURL(checkedURL.toString());
-                    super.focusLost(e);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
+        GridBagUtils.addToPanel(panel, new JLabel("Arguments:"), c, "gridx=0, gridy=4, gridwidth=1, weightx=0");
+        final JTextField argumentsParam = new JTextField(bundle.getCommandLine());
+        GridBagUtils.addToPanel(panel, argumentsParam, c, "gridx=1, gridy=4, gridwidth=9, weightx=0");
+        controlGroup.add(argumentsParam);
+        argumentsParam.setEditable(false);
+        JButton argumentDetailsButton = new JButton("...");
+        argumentDetailsButton.setMaximumSize(new Dimension(32, argumentDetailsButton.getHeight()));
+        argumentDetailsButton.addActionListener(e -> {
+            TemplateParameterEditorDialog parameterEditorDialog =
+                    new TemplateParameterEditorDialog(appContext,
+                                                      bundle.getArgumentsParameter(),
+                                                      bundle.getParent());
+            int returnCode = parameterEditorDialog.show();
+            if (returnCode == AbstractDialog.ID_OK) {
+                argumentsParam.setText(bundle.getCommandLine());
             }
         });
-        GridBagUtils.addToPanel(this, linUrl, c, "gridx=5, gridy=3, gridwidth=2, weightx=1");
+        GridBagUtils.addToPanel(panel, argumentDetailsButton, c, "gridx=10, gridy=4, gridwidth=1, weightx=0");
+        controlGroup.add(argumentDetailsButton);
 
-        GridBagUtils.addToPanel(this, new JLabel("URL for MacOSX:"), c, "gridx=4, gridy=4, gridwidth=1, weightx=0");
-        propertyDescriptor = propertyContainer.getDescriptor("macosxURL");
-        propertyEditor = PropertyEditorRegistry.getInstance().findPropertyEditor(propertyDescriptor);
-        macUrl = propertyEditor.createEditorComponent(propertyDescriptor, bindingContext);
-        macUrl.addFocusListener(new FocusAdapter() {
-            @Override
-            public void focusLost(FocusEvent e) {
-                try {
-                    String url = ((JTextField) winUrl).getText();
-                    URL checkedURL = new URL(url);
-                    modified.setMacosxURL(checkedURL.toString());
-                    super.focusLost(e);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-            }
-        });
-        GridBagUtils.addToPanel(this, macUrl, c, "gridx=5, gridy=4, gridwidth=2, weightx=1");
-
-        GridBagUtils.addToPanel(this, new JLabel("Installation Folder:"), c, "gridx=0, gridy=5, gridwidth=1, weightx=0");
-        propertyDescriptor = propertyContainer.getDescriptor("targetLocation");
-        propertyDescriptor.setAttribute("directory", true);
-        propertyEditor = PropertyEditorRegistry.getInstance().findPropertyEditor(propertyDescriptor);
-        JComponent targetLocationPanel = propertyEditor.createEditorComponent(propertyDescriptor, bindingContext);
-        GridBagUtils.addToPanel(this, targetLocationPanel, c, "gridx=1, gridy=5, gridwidth=6, weightx=1");
-
-        GridBagUtils.addToPanel(this, new JLabel("Installer Arguments:"), c, "gridx=0, gridy=6, gridwidth=1, weightx=0");
-        propertyDescriptor = propertyContainer.getDescriptor("arguments");
-        propertyEditor = PropertyEditorRegistry.getInstance().findPropertyEditor(propertyDescriptor);
-        arguments = propertyEditor.createEditorComponent(propertyDescriptor, bindingContext);
-        GridBagUtils.addToPanel(this, arguments, c, "gridx=1, gridy=6, gridwidth=6, weightx=0");
-
-        GridBagUtils.addToPanel(this, new JLabel("Reflect in Variable:"), c, "gridx=0, gridy=7, gridwidth=1, weightx=0");
-        propertyDescriptor = propertyContainer.getDescriptor("updateVariable");
-        propertyDescriptor.setValueSet(new ValueSet(this.variables.stream().map(SystemVariable::getKey).toArray()));
-        propertyEditor = PropertyEditorRegistry.getInstance().findPropertyEditor(propertyDescriptor);
-        variable = (JComboBox) propertyEditor.createEditorComponent(propertyDescriptor, bindingContext);
-        GridBagUtils.addToPanel(this, variable, c, "gridx=1, gridy=7, gridwidth=6, weightx=0");
-
-        GridBagUtils.addToPanel(this, new JLabel(" "), c, "gridx=0, gridy=8, gridwidth=1, weightx=0, weighty=1");
+        GridBagUtils.addToPanel(panel, new JLabel("Target Folder:"), c, "gridx=0, gridy=5, gridwidth=1, weightx=0");
+        component = getEditorComponent(osFamily, "targetLocation", true);
+        GridBagUtils.addToPanel(panel, component, c, "gridx=1, gridy=5, gridwidth=10, weightx=1");
+        controlGroup.add(component);
+        toggleControls(osFamily);
+        return panel;
     }
 
-    public void setVariables(List<SystemVariable> variables) {
-        this.variables = variables;
-        PropertyDescriptor propertyDescriptor = propertyContainer.getDescriptor("updateVariable");
-        propertyDescriptor.setValueSet(new ValueSet(this.variables.stream().map(SystemVariable::getKey).toArray()));
-        PropertyEditor propertyEditor = PropertyEditorRegistry.getInstance().findPropertyEditor(propertyDescriptor);
-        variable = (JComboBox) propertyEditor.createEditorComponent(propertyDescriptor, bindingContext);
-        repaint();
+    private void addTab(String text, JPanel contents) {
+        JLabel tabText = new JLabel(text, JLabel.LEFT);
+        Border titledBorder = BorderFactory.createEmptyBorder();
+        contents.setBorder(titledBorder);
+        this.bundleTabPane.addTab(null, contents);
+        this.bundleTabPane.setTabComponentAt(this.bundleTabPane.getTabCount() - 1, tabText);
     }
 
     private void addChangeListeners() {
-        final Property bundleTypeProperty = propertyContainer.getProperty("bundleType");
-        bundleTypeProperty.addPropertyChangeListener(evt -> {
-            modified.setBundleType((BundleType) evt.getNewValue());
-            toggleControls();
+        propertyContainers.entrySet().forEach(entry -> {
+            OSFamily osFamily = entry.getKey();
+            Bundle bundle = modified.get(osFamily);
+            PropertyContainer propertyContainer = entry.getValue();
+            Property property = propertyContainer.getProperty("bundleType");
+            property.addPropertyChangeListener(evt -> {
+                bundle.setBundleType((BundleType) evt.getNewValue());
+                toggleControls(osFamily);
+            });
+            property = propertyContainer.getProperty("updateVariable");
+            property.addPropertyChangeListener(evt -> {
+                Object value = evt.getNewValue();
+                if (value != null) {
+                    modified.values().forEach(b -> b.setUpdateVariable(value.toString()));
+                }
+            });
+            property = propertyContainer.getProperty("bundleLocation");
+            property.addPropertyChangeListener(evt -> {
+                bundle.setLocation(Enum.valueOf(BundleLocation.class, (String) evt.getNewValue()));
+                toggleControls(osFamily);
+            });
+            property = propertyContainer.getProperty("source");
+            property.addPropertyChangeListener(evt -> {
+                bundle.setSource((File) evt.getNewValue());
+                if (this.listener != null) {
+                    this.listener.propertyChange(evt);
+                }
+            });
+            property = propertyContainer.getProperty("targetLocation");
+            property.addPropertyChangeListener(evt -> bundle.setTargetLocation(String.valueOf(evt.getNewValue())));
+
+            property = propertyContainer.getProperty("templateparameter");
+            property.addPropertyChangeListener(evt -> bundle.setArgumentsParameter((TemplateParameterDescriptor) evt.getNewValue()));
         });
-
-        final Property variableProperty = propertyContainer.getProperty("updateVariable");
-        variableProperty.addPropertyChangeListener(evt -> {
-            Object value = evt.getNewValue();
-            if (value != null) {
-                modified.setUpdateVariable(value.toString());
-            }
-        });
-
-        Property property = propertyContainer.getProperty("bundleLocation");
-        property.addPropertyChangeListener(evt -> {
-            modified.setLocation(Enum.valueOf(BundleLocation.class, (String) evt.getNewValue()));
-            toggleControls();
-        });
-
-        property = propertyContainer.getProperty("source");
-        property.addPropertyChangeListener(evt -> {
-            modified.setSource((File) evt.getNewValue());
-            if (this.listener != null) {
-                this.listener.propertyChange(evt);
-            }
-        });
-
-        property = propertyContainer.getProperty("targetLocation");
-        property.addPropertyChangeListener(evt -> modified.setTargetLocation((File) evt.getNewValue()));
-
-        property = propertyContainer.getProperty("arguments");
-        property.addPropertyChangeListener(evt -> modified.setArguments((String) evt.getNewValue()));
     }
 
-    private void toggleControls() {
-        boolean canSelect = modified.getBundleType() != BundleType.NONE;
-        BundleLocation location = modified.getLocation();
+    private void toggleControls(OSFamily osFamily) {
+        Bundle bundle = modified.get(osFamily);
+        boolean canSelect = bundle.getBundleType() != BundleType.NONE;
+        BundleLocation location = bundle.getLocation();
         boolean remoteCondition = canSelect && location == BundleLocation.REMOTE;
         boolean localCondition = canSelect && location == BundleLocation.LOCAL;
-        rbLocal.setEnabled(canSelect);
-        rbRemote.setEnabled(canSelect);
+        for (JComponent component : controls.get(osFamily)) {
+            if ("url".equals(component.getName())) {
+                component.setEnabled(remoteCondition);
+            } else {
+                component.setEnabled(canSelect);
+            }
+        }
+
+        BindingContext bindingContext = bindingContexts.get(osFamily);
         JComponent[] components = bindingContext.getBinding("source").getComponents();
         for (JComponent component : components) {
             component.setEnabled(localCondition);
         }
-        winUrl.setEnabled(remoteCondition);
-        linUrl.setEnabled(remoteCondition);
-        macUrl.setEnabled(remoteCondition);
         components = bindingContext.getBinding("targetLocation").getComponents();
         for (JComponent component : components) {
             component.setEnabled(canSelect);
         }
-        arguments.setEnabled(canSelect);
-        variable.setEnabled(canSelect);
         repaint();
     }
 
-    private Bundle copy(Bundle source) throws Exception {
-        if (source == null) {
+    private JComponent getEditorComponent(OSFamily osFamily, String propertyName) {
+        return getEditorComponent(osFamily, propertyName, null, false);
+    }
+
+    private JComponent getEditorComponent(OSFamily osFamily, String propertyName, boolean isFolder) {
+        return getEditorComponent(osFamily, propertyName, null, isFolder);
+    }
+
+    private JComponent getEditorComponent(OSFamily osFamily, String propertyName, String controlName) {
+        return getEditorComponent(osFamily, propertyName, controlName, false);
+    }
+
+    private JComponent getEditorComponent(OSFamily osFamily, String propertyName, Object[] items) {
+        if (osFamily == OSFamily.all) {
+            osFamily = OSFamily.windows;
+        }
+        PropertyContainer propertyContainer = propertyContainers.get(osFamily);
+        BindingContext bindingContext = bindingContexts.get(osFamily);
+        PropertyDescriptor propertyDescriptor = propertyContainer.getDescriptor(propertyName);
+        if (items != null) {
+            propertyDescriptor.setValueSet(new ValueSet(items));
+        }
+        PropertyEditor propertyEditor = PropertyEditorRegistry.getInstance().findPropertyEditor(propertyDescriptor);
+        return propertyEditor.createEditorComponent(propertyDescriptor, bindingContext);
+    }
+
+    private JComponent getEditorComponent(OSFamily osFamily, String propertyName,String controlName, boolean isFolder) {
+        if (osFamily == OSFamily.all) {
+            osFamily = OSFamily.windows;
+        }
+        PropertyContainer propertyContainer = propertyContainers.get(osFamily);
+        BindingContext bindingContext = bindingContexts.get(osFamily);
+        PropertyDescriptor propertyDescriptor = propertyContainer.getDescriptor(propertyName);
+        if (isFolder) {
+            propertyDescriptor.setAttribute("directory", true);
+        }
+        PropertyEditor propertyEditor = PropertyEditorRegistry.getInstance().findPropertyEditor(propertyDescriptor);
+        JComponent editorComponent = propertyEditor.createEditorComponent(propertyDescriptor, bindingContext);
+        if (controlName != null) {
+            editorComponent.setName(controlName);
+        }
+        return editorComponent;
+    }
+
+    private Map<OSFamily, Bundle> copy(Map<OSFamily, Bundle> sources) throws Exception {
+        if (sources == null) {
             throw new IllegalArgumentException("source cannot be null");
         }
-        Bundle target = new Bundle(source.getBundleType(), source.getTargetLocation());
-        for (Field field : Bundle.class.getDeclaredFields()) {
-            field.setAccessible(true);
-            field.set(target, field.get(source));
+        Map<OSFamily, Bundle> bundles = new HashMap<>();
+        for (Map.Entry<OSFamily, Bundle> entry : sources.entrySet()) {
+            Bundle source = entry.getValue();
+            Bundle target = new Bundle(source);
+            bundles.put(entry.getKey(), target);
         }
-        return target;
+        return bundles;
     }
 }

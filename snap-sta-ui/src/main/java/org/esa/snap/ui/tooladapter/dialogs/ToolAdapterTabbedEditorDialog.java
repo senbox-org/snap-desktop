@@ -28,9 +28,7 @@ import org.esa.snap.core.gpf.descriptor.SystemVariable;
 import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
 import org.esa.snap.core.gpf.descriptor.dependency.BundleInstaller;
 import org.esa.snap.core.gpf.descriptor.dependency.BundleLocation;
-import org.esa.snap.core.gpf.descriptor.dependency.BundleType;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterConstants;
-import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.AppContext;
@@ -61,6 +59,7 @@ import javax.swing.SpringLayout;
 import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
 import javax.swing.plaf.basic.BasicTabbedPaneUI;
+import javax.swing.table.TableColumn;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -193,9 +192,11 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
 
         varTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
         varTable.setRowHeight(controlHeight);
-        int widths[] = {controlHeight, (int) (formWidth * 0.3), (int) (formWidth * 0.7) - controlHeight};
+        int widths[] = {controlHeight, 3 * controlHeight, 10 * controlHeight};
         for (int i = 0; i < widths.length; i++) {
-            varTable.getColumnModel().getColumn(i).setPreferredWidth(widths[i]);
+            TableColumn column = varTable.getColumnModel().getColumn(i);
+            column.setPreferredWidth(widths[i]);
+            column.setWidth(widths[i]);
 
         }
         JScrollPane scrollPane = new JScrollPane(varTable);
@@ -398,16 +399,16 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
     protected JPanel createBundlePanel() {
         JPanel bundlePanel = new JPanel(new SpringLayout());
         int rows = 0;
-        org.esa.snap.core.gpf.descriptor.dependency.Bundle bundle = this.newOperatorDescriptor.getBundle();
-        if (bundle == null) {
-            bundle = new org.esa.snap.core.gpf.descriptor.dependency.Bundle(BundleType.NONE, null);
-            bundle.setTargetLocation(SystemUtils.getAuxDataPath().toFile());
-            this.newOperatorDescriptor.setBundle(bundle);
-        }
-        bundleForm = new BundleForm(bundle, newOperatorDescriptor.getVariables());
+        bundleForm = new BundleForm(this.context,
+                                    newOperatorDescriptor.getWindowsBundle(),
+                                    newOperatorDescriptor.getLinuxBundle(),
+                                    newOperatorDescriptor.getMacosxBundle(),
+                                    newOperatorDescriptor.getVariables());
         bundlePanel.add(bundleForm);
         rows++;
-        if (!bundle.isInstalled() && BundleInstaller.isBundleFileAvailable(bundle)) {
+        org.esa.snap.core.gpf.descriptor.dependency.Bundle currentBundle = newOperatorDescriptor.getBundle();
+        if (currentBundle != null &&
+                !currentBundle.isInstalled() && BundleInstaller.isBundleFileAvailable(currentBundle)) {
             JButton installButton = new JButton() {
                 @Override
                 public void setText(String text) {
@@ -415,24 +416,27 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
                     adjustDimension(this);
                 }
             };
-            installButton.setText((bundle.getLocation() == BundleLocation.REMOTE ?
+            installButton.setText((currentBundle.getLocation() == BundleLocation.REMOTE ?
                     "Download and " :
                     "") + "Install Now");
+            installButton.setToolTipText(currentBundle.getLocation() == BundleLocation.REMOTE ?
+                                                 currentBundle.getDownloadURL() : currentBundle.getSource().toString());
             installButton.setMaximumSize(installButton.getPreferredSize());
             JPanel buttonPanel = new JPanel(new BorderLayout());
             buttonPanel.setMaximumSize(new Dimension(buttonPanel.getWidth(), controlHeight));
             buttonPanel.add(installButton, BorderLayout.EAST);
             bundlePanel.add(buttonPanel);
             installButton.addActionListener((ActionEvent e) -> {
-                org.esa.snap.core.gpf.descriptor.dependency.Bundle modifiedBundle = bundleForm.applyChanges();
-                newOperatorDescriptor.setBundle(modifiedBundle);
+                newOperatorDescriptor.setBundles(bundleForm.applyChanges());
+                org.esa.snap.core.gpf.descriptor.dependency.Bundle modifiedBundle = newOperatorDescriptor.getBundle();
                 try (BundleInstaller installer = new BundleInstaller(newOperatorDescriptor)) {
                     ProgressHandle progressHandle = ProgressHandleFactory.createSystemHandle("Installing bundle");
                     installer.setProgressMonitor(new ProgressHandler(progressHandle, false));
                     installer.setCallback(() -> {
                         if (modifiedBundle.isInstalled()) {
-                            Path path = modifiedBundle.getTargetLocation().toPath().resolve(
-                                    FileUtils.getFilenameWithoutExtension(modifiedBundle.getEntryPoint()));
+                            Path path = newOperatorDescriptor.resolveVariables(modifiedBundle.getTargetLocation())
+                                    .toPath()
+                                    .resolve(FileUtils.getFilenameWithoutExtension(modifiedBundle.getEntryPoint()));
                             SwingUtilities.invokeLater(() -> {
                                 progressHandle.finish();
                                 Dialogs.showInformation(String.format("Bundle was installed in location:\n%s", path));
