@@ -16,6 +16,7 @@
 package org.esa.snap.productlibrary.rcp.toolviews.extensions;
 
 import com.bc.ceres.core.ProgressMonitor;
+import com.bc.ceres.core.SubProgressMonitor;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.engine_utilities.db.ProductEntry;
 import org.esa.snap.engine_utilities.download.opendata.OpenData;
@@ -75,8 +76,7 @@ public class DownloadActionExt implements ProductLibraryActionExt {
                 OpenData.Entry oData = openData.getEntryByID(entry.getRefID());
                 SystemUtils.LOG.info(oData.fileName);
 
-                openData.getProduct(entry.getRefID(), oData, outputFolder.getAbsolutePath());
-                pm.worked(1);
+                openData.getProduct(entry.getRefID(), oData, outputFolder, new SubProgressMonitor(pm, 1));
             }
         } catch (Exception e) {
             Dialogs.showError("unable to download " + e.getMessage());

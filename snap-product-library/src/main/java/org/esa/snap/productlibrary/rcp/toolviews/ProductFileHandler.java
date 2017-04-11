@@ -215,6 +215,9 @@ public class ProductFileHandler extends SwingWorker {
     }
 
     private static boolean isSingleFile(final ProductEntry entry) {
+        if(entry.getFile() == null) {
+            return false;
+        }
         final String fileName = entry.getFile().getName().toLowerCase();
         for (String ext : singleFileExt) {
             if (fileName.endsWith(ext))

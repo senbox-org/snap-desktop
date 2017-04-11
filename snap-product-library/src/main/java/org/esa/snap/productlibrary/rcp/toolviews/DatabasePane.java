@@ -473,51 +473,54 @@ public final class DatabasePane extends JPanel {
             final ProductEntry entry = selections[0];
             final StringBuilder text = new StringBuilder(255);
 
-            final MetadataElement absRoot = entry.getMetadata();
             final File file = entry.getFile();
-            final String sampleType = absRoot.getAttributeString(AbstractMetadata.SAMPLE_TYPE, AbstractMetadata.NO_METADATA_STRING);
-            final ProductData.UTC acqTime = absRoot.getAttributeUTC(AbstractMetadata.first_line_time, AbstractMetadata.NO_METADATA_UTC);
-            final String pass = absRoot.getAttributeString(AbstractMetadata.PASS, AbstractMetadata.NO_METADATA_STRING);
-            final int absOrbit = absRoot.getAttributeInt(AbstractMetadata.ABS_ORBIT, AbstractMetadata.NO_METADATA);
-            final int relOrbit = absRoot.getAttributeInt(AbstractMetadata.REL_ORBIT, AbstractMetadata.NO_METADATA);
-            final String map = absRoot.getAttributeString(AbstractMetadata.map_projection, AbstractMetadata.NO_METADATA_STRING).trim();
-            final int cal = absRoot.getAttributeInt(AbstractMetadata.abs_calibration_flag, AbstractMetadata.NO_METADATA);
-            final int tc = absRoot.getAttributeInt(AbstractMetadata.is_terrain_corrected, AbstractMetadata.NO_METADATA);
-            final int ml = absRoot.getAttributeInt(AbstractMetadata.multilook_flag, AbstractMetadata.NO_METADATA);
-            final int coreg = absRoot.getAttributeInt(AbstractMetadata.coregistered_stack, AbstractMetadata.NO_METADATA);
-
             if (file != null) {
                 text.append("File: " + file.getName() + '\n');
             }
             text.append("Product: " + entry.getName() + '\n');
-            text.append(acqTime.format() + '\n');
             text.append('\n');
 
             text.append("Mission: " + entry.getMission() + '\n');
             text.append("Mode: " + entry.getAcquisitionMode() + '\n');
             text.append("Type: " + entry.getProductType() + '\n');
-            text.append("Sample: " + sampleType + '\n');
 
-            text.append("Pass: " + pass + '\n');
-            text.append("Orbit: " + absOrbit);
-            if (relOrbit != AbstractMetadata.NO_METADATA)
-                text.append("  Track: " + relOrbit);
-            text.append('\n');
-            text.append("Size: " + getSizeString(entry.getFileSize()) + '\n');
-            if (!map.isEmpty()) {
-                text.append(map + '\n');
-            }
-            if (cal == 1) {
-                text.append("Calibrated ");
-            }
-            if (ml == 1) {
-                text.append("Multilooked ");
-            }
-            if (coreg == 1) {
-                text.append("Coregistered ");
-            }
-            if (tc == 1) {
-                text.append("Terrain Corrected ");
+            final MetadataElement absRoot = entry.getMetadata();
+            if(absRoot != null) {
+                final String sampleType = absRoot.getAttributeString(AbstractMetadata.SAMPLE_TYPE, AbstractMetadata.NO_METADATA_STRING);
+                final ProductData.UTC acqTime = absRoot.getAttributeUTC(AbstractMetadata.first_line_time, AbstractMetadata.NO_METADATA_UTC);
+                final String pass = absRoot.getAttributeString(AbstractMetadata.PASS, AbstractMetadata.NO_METADATA_STRING);
+                final int absOrbit = absRoot.getAttributeInt(AbstractMetadata.ABS_ORBIT, AbstractMetadata.NO_METADATA);
+                final int relOrbit = absRoot.getAttributeInt(AbstractMetadata.REL_ORBIT, AbstractMetadata.NO_METADATA);
+                final String map = absRoot.getAttributeString(AbstractMetadata.map_projection, AbstractMetadata.NO_METADATA_STRING).trim();
+                final int cal = absRoot.getAttributeInt(AbstractMetadata.abs_calibration_flag, AbstractMetadata.NO_METADATA);
+                final int tc = absRoot.getAttributeInt(AbstractMetadata.is_terrain_corrected, AbstractMetadata.NO_METADATA);
+                final int ml = absRoot.getAttributeInt(AbstractMetadata.multilook_flag, AbstractMetadata.NO_METADATA);
+                final int coreg = absRoot.getAttributeInt(AbstractMetadata.coregistered_stack, AbstractMetadata.NO_METADATA);
+
+                text.append(acqTime.format() + '\n');
+                text.append("Sample: " + sampleType + '\n');
+
+                text.append("Pass: " + pass + '\n');
+                text.append("Orbit: " + absOrbit);
+                if (relOrbit != AbstractMetadata.NO_METADATA)
+                    text.append("  Track: " + relOrbit);
+                text.append('\n');
+                text.append("Size: " + getSizeString(entry.getFileSize()) + '\n');
+                if (!map.isEmpty()) {
+                    text.append(map + '\n');
+                }
+                if (cal == 1) {
+                    text.append("Calibrated ");
+                }
+                if (ml == 1) {
+                    text.append("Multilooked ");
+                }
+                if (coreg == 1) {
+                    text.append("Coregistered ");
+                }
+                if (tc == 1) {
+                    text.append("Terrain Corrected ");
+                }
             }
 
             productText.setText(text.toString());
