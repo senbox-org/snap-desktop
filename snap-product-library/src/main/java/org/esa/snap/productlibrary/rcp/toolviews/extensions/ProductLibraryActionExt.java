@@ -31,5 +31,5 @@ public interface ProductLibraryActionExt {
 
     void selectionChanged(final ProductEntry[] selections);
 
-    void performAction();
+    void performAction(final com.bc.ceres.core.ProgressMonitor pm);
 }

@@ -430,7 +430,7 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         return repositoryListCombo.getItemCount() > repositoryFolderStartIndex;
     }
 
-    LabelBarProgressMonitor createLabelBarProgressMonitor() {
+    LabelBarProgressMonitor getLabelBarProgressMonitor() {
         if (progMon == null) {
             progMon = new LabelBarProgressMonitor(progressBar, statusLabel);
             progMon.addListener(this);
@@ -465,10 +465,10 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
     }
 
     private synchronized void search() {
-        progMon = createLabelBarProgressMonitor();
-        final DBWorker dbWorker = new DBWorker(progMon);
+        progMon = getLabelBarProgressMonitor();
+        final DBWorker dbWorker = new DBWorker(DBWorker.TYPE.QUERY, dbPane, progMon);
         dbWorker.addListener(new MyDatabaseWorkerListener());
-        dbWorker.queryProducts(dbPane);
+        dbWorker.execute();
     }
 
     private synchronized void updateRepostitory(final RepositoryInterface repo, final DBScanner.Options options) {
@@ -478,7 +478,7 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
                 return;
             }
 
-            progMon = createLabelBarProgressMonitor();
+            progMon = getLabelBarProgressMonitor();
             final DBScanner scanner = new DBScanner(((DBProductQuery)folderRepo.getProductQueryInterface()).getDB(),
                                                     folderRepo.getBaseDir(), options, progMon);
             scanner.addListener(new MyDatabaseScannerListener());
@@ -489,11 +489,12 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
     private synchronized void removeProducts(final RepositoryInterface repo) {
         if(repo instanceof FolderRepository) {
             final FolderRepository folderRepo = (FolderRepository) repo;
-            progMon = createLabelBarProgressMonitor();
-            final DBWorker remover = new DBWorker(progMon);
+            progMon = getLabelBarProgressMonitor();
+            final DBWorker remover = new DBWorker(DBWorker.TYPE.REMOVE,
+                                                  ((DBProductQuery)folderRepo.getProductQueryInterface()).getDB(),
+                                                  folderRepo.getBaseDir(), progMon);
             remover.addListener(new MyDatabaseWorkerListener());
-            remover.removeProducts(((DBProductQuery)folderRepo.getProductQueryInterface()).getDB(),
-                                   folderRepo.getBaseDir());
+            remover.execute();
         }
     }
 

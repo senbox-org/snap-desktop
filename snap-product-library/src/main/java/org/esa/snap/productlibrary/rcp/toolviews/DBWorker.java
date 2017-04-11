@@ -18,6 +18,7 @@ package org.esa.snap.productlibrary.rcp.toolviews;
 import com.bc.ceres.core.ProgressMonitor;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.engine_utilities.db.ProductDB;
+import org.esa.snap.productlibrary.rcp.toolviews.extensions.ProductLibraryActionExt;
 
 import javax.swing.*;
 import java.io.File;
@@ -34,16 +35,37 @@ public final class DBWorker extends SwingWorker<Boolean, Object> {
     private File baseDir;
     private ProductDB db;
     private DatabasePane dbPane;
+    private ProductLibraryActionExt action;
 
     private final ProgressMonitor pm;
     private final List<DBWorkerListener> listenerList = new ArrayList<>(1);
 
-    private enum TYPE {REMOVE, QUERY}
+    public enum TYPE {REMOVE, QUERY, EXECUTEACTION }
 
     /**
-     * @param pm       the progress monitor
+     * @param database the database
+     * @param baseDir  the basedir to remove. If null, all entries will be removed
      */
-    public DBWorker(final ProgressMonitor pm) {
+    public DBWorker(final TYPE type, final ProductDB database, final File baseDir, final ProgressMonitor pm) {
+        this.operationType = type;
+        this.db = database;
+        this.baseDir = baseDir;
+        this.pm = pm;
+    }
+
+    /**
+     * @param database the database
+     * @param baseDir  the basedir to remove. If null, all entries will be removed
+     */
+    public DBWorker(final TYPE type, final DatabasePane dbPane, final ProgressMonitor pm) {
+        this.operationType = type;
+        this.dbPane = dbPane;
+        this.pm = pm;
+    }
+
+    public DBWorker(final TYPE type, final ProductLibraryActionExt action, final ProgressMonitor pm) {
+        this.operationType = type;
+        this.action = action;
         this.pm = pm;
     }
 
@@ -59,29 +81,6 @@ public final class DBWorker extends SwingWorker<Boolean, Object> {
         }
     }
 
-    /**
-     * @param database the database
-     * @param baseDir  the basedir to remove. If null, all entries will be removed
-     */
-    public void removeProducts(final ProductDB database, final File baseDir) {
-        operationType = TYPE.REMOVE;
-        this.db = database;
-        this.baseDir = baseDir;
-
-        execute();
-    }
-
-    /**
-     * @param database the database
-     * @param baseDir  the basedir to remove. If null, all entries will be removed
-     */
-    public void queryProducts(final DatabasePane dbPane) {
-        operationType = TYPE.QUERY;
-        this.dbPane = dbPane;
-
-        execute();
-    }
-
     @Override
     protected Boolean doInBackground() throws Exception {
 
@@ -90,6 +89,8 @@ public final class DBWorker extends SwingWorker<Boolean, Object> {
                 removeProducts();
             } else if(operationType.equals(TYPE.QUERY)) {
                 dbPane.fullQuery(pm);
+            } else if(operationType.equals(TYPE.EXECUTEACTION)) {
+                action.performAction(pm);
             }
         } catch (Throwable e) {
             SystemUtils.LOG.severe("DB Worker Exception\n" + e.getMessage());

@@ -128,7 +128,11 @@ public class ProductLibraryActions {
             panel.add(button);
             button.addActionListener(new ActionListener() {
                 public void actionPerformed(final ActionEvent e) {
-                    action.performAction();
+
+                    final DBWorker worker = new DBWorker(DBWorker.TYPE.EXECUTEACTION, action,
+                                                          toolView.getLabelBarProgressMonitor());
+                    worker.addListener(new MyDBWorkerListener());
+                    worker.execute();
                 }
             });
         }
@@ -177,7 +181,7 @@ public class ProductLibraryActions {
         }
 
         final ProductEntry[] entries = toolView.getSelectedProductEntries();
-        final LabelBarProgressMonitor progMon = toolView.createLabelBarProgressMonitor();
+        final LabelBarProgressMonitor progMon = toolView.getLabelBarProgressMonitor();
 
         final ProductFileHandler fileHandler = new ProductFileHandler(entries, operationType, targetFolder, progMon);
         fileHandler.addListener(new MyFileHandlerListener());
@@ -464,6 +468,15 @@ public class ProductLibraryActions {
                 }
             }
             toolView.UpdateUI();
+        }
+    }
+
+    private class MyDBWorkerListener implements DBWorker.DBWorkerListener {
+
+        public void notifyMSG(final MSG msg) {
+            if (msg.equals(DBWorker.DBWorkerListener.MSG.DONE)) {
+                toolView.UpdateUI();
+            }
         }
     }
 }

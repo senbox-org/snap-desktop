@@ -57,7 +57,7 @@ public class ExportListActionExt implements ProductLibraryActionExt {
         button.setEnabled(selections.length > 0);
     }
 
-    public void performAction() {
+    public void performAction(final com.bc.ceres.core.ProgressMonitor pm) {
         final File file = getExportFile();
         if (file != null) {
             final File[] fileList = actionHandler.getSelectedFiles();
