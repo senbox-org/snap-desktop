@@ -45,6 +45,8 @@ import javax.swing.JRadioButton;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.plaf.basic.BasicTabbedPaneUI;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -214,6 +216,28 @@ public class BundleForm extends JPanel {
 
         GridBagUtils.addToPanel(panel, new JLabel("URL:"), c, "gridx=0, gridy=3, gridwidth=1, weightx=0");
         final JComponent downloadURL = getEditorComponent(osFamily, "downloadURL", "url");
+
+        ((JTextField) downloadURL).getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                try {
+                    String url = ((JTextField) downloadURL).getText();
+                    URL checkedURL = new URL(url);
+                    bundle.setDownloadURL(checkedURL.toString());
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+
         component.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
@@ -295,6 +319,17 @@ public class BundleForm extends JPanel {
                     this.listener.propertyChange(evt);
                 }
             });
+            property = propertyContainer.getProperty("downloadURL");
+            property.addPropertyChangeListener(evt -> {
+                try {
+                    String url = String.valueOf(evt.getNewValue());
+                    URL checkedURL = new URL(url);
+                    bundle.setDownloadURL(checkedURL.toString());
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            });
+
             property = propertyContainer.getProperty("targetLocation");
             property.addPropertyChangeListener(evt -> bundle.setTargetLocation(String.valueOf(evt.getNewValue())));
 
