@@ -569,6 +569,9 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
     }
 
     private void showRepository(final ProductEntry[] productEntryList) {
+        if(productEntryList == null)
+            return;
+
         currentListView.setProductEntryList(productEntryList);
         notifySelectionChanged();
 
