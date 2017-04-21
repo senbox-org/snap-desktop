@@ -35,23 +35,12 @@ import org.esa.snap.ui.AbstractDialog;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.GridBagUtils;
 
-import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextField;
+import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.plaf.basic.BasicTabbedPaneUI;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.ItemEvent;
@@ -158,6 +147,19 @@ public class BundleForm extends JPanel {
         variablesCombo = getEditorComponent(OSFamily.all, "updateVariable", this.variables.stream().map(SystemVariable::getKey).toArray());
         GridBagUtils.addToPanel(this, variablesCombo, gbc, "gridx=1, gridy=1, gridwidth=10, weightx=0");
         GridBagUtils.addToPanel(this, new JLabel(" "), gbc, "gridx=0, gridy=2, gridwidth=11, weighty=1");
+        int selected = 0;
+        switch (Bundle.getCurrentOS()) {
+            case windows:
+                selected = 0;
+                break;
+            case linux:
+                selected = 1;
+                break;
+            case macosx:
+                selected = 2;
+                break;
+        }
+        this.bundleTabPane.setSelectedIndex(selected);
         this.bundleTabPane.setUI(new BasicTabbedPaneUI());
     }
 
