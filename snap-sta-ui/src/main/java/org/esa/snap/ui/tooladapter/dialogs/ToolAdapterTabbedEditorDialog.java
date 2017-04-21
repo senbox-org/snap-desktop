@@ -136,19 +136,19 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
         addValidatedTextField(descriptorPanel, textEditor, Bundle.CTL_Label_Alias_Text(),
                               ToolAdapterConstants.ALIAS, ALIAS_PATTERN);
         JComponent component = addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_UniqueName_Text(),
-                                            ToolAdapterConstants.NAME, true);
+                                            ToolAdapterConstants.NAME, true, new String[] { " " });
         anchorLabels.put(ToolAdapterConstants.NAME, new AnchorLabel("Name is not unique",
                                                                     tabbedPane, currentIndex, component));
         addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_Label_Text(),
-                     ToolAdapterConstants.LABEL, true);
+                     ToolAdapterConstants.LABEL, true, null);
         addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_Version_Text(),
-                     ToolAdapterConstants.VERSION, true);
+                     ToolAdapterConstants.VERSION, true, new String[] { " ", "-", "+" });
         addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_Copyright_Text(),
-                     ToolAdapterConstants.COPYRIGHT, false);
+                     ToolAdapterConstants.COPYRIGHT, false, null);
         addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_Authors_Text(),
-                     ToolAdapterConstants.AUTHORS, false);
+                     ToolAdapterConstants.AUTHORS, false, null);
         addTextField(descriptorPanel, textEditor, Bundle.CTL_Label_Description_Text(),
-                     ToolAdapterConstants.DESCRIPTION, false);
+                     ToolAdapterConstants.DESCRIPTION, false, null);
 
         propertyContainer
                 .addPropertyChangeListener(ToolAdapterConstants.ALIAS,
@@ -359,15 +359,15 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
 
         TextFieldEditor textEditor = new TextFieldEditor();
         addTextField(patternsPanel, textEditor, Bundle.CTL_Label_ProgressPattern(),
-                     ToolAdapterConstants.PROGRESS_PATTERN, false);
+                     ToolAdapterConstants.PROGRESS_PATTERN, false, null);
         propertyContainer.getDescriptor(ToolAdapterConstants.PROGRESS_PATTERN)
                 .setValidator(new RegexFieldValidator());
         addTextField(patternsPanel, textEditor, Bundle.CTL_Label_StepPattern(),
-                     ToolAdapterConstants.STEP_PATTERN, false);
+                     ToolAdapterConstants.STEP_PATTERN, false, null);
         propertyContainer.getDescriptor(ToolAdapterConstants.STEP_PATTERN)
                 .setValidator(new RegexFieldValidator());
         addTextField(patternsPanel, textEditor, Bundle.CTL_Label_ErrorPattern(),
-                     ToolAdapterConstants.ERROR_PATTERN, false);
+                     ToolAdapterConstants.ERROR_PATTERN, false, null);
         propertyContainer.getDescriptor(ToolAdapterConstants.ERROR_PATTERN)
                 .setValidator(new RegexFieldValidator());
 

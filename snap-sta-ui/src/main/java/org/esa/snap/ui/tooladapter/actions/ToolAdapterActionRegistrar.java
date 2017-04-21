@@ -123,6 +123,9 @@ public class ToolAdapterActionRegistrar {
                 StringTokenizer tokenizer = new StringTokenizer(menuLocation, "/");
                 while (tokenizer.hasMoreTokens()) {
                     String token = tokenizer.nextToken();
+                    if ("Menu".equals(token)) {
+                        continue;
+                    }
                     FileObject subMenu = menuFolder.getFileObject(token);
                     if (subMenu == null) {
                         menuFolder = menuFolder.createFolder(token);
@@ -161,6 +164,10 @@ public class ToolAdapterActionRegistrar {
                 }
                 if (actionMap.containsKey(operatorAlias)) {
                     actionMap.remove(operatorAlias);
+                }
+                FileObject[] children = menuFolder.getChildren();
+                if (children == null || children.length == 0) {
+                    menuFolder.delete();
                 }
             }
             FileObject defaultLocation = getDefaultLocation();

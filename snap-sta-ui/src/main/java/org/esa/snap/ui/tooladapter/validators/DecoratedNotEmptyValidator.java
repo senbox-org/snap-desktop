@@ -31,13 +31,14 @@ import javax.swing.JLabel;
  * @date 3/15/2017
  */
 public class DecoratedNotEmptyValidator implements Validator {
-    private static final String[] excludedChars = { ".", "-", "+", " " };
+    private String[] excludedChars;
     private JLabel label;
     private NotEmptyValidator validator;
 
-    public DecoratedNotEmptyValidator(JLabel componentLabel) {
+    public DecoratedNotEmptyValidator(JLabel componentLabel, String[] excludedChars) {
         this.validator = new NotEmptyValidator();
         this.label = componentLabel;
+        this.excludedChars = excludedChars;
         this.label.setText("<html><font color=\"#"
                         + Integer.toHexString(this.label.getForeground().getRGB()).substring(2, 8)
                         + "\">"
@@ -49,9 +50,11 @@ public class DecoratedNotEmptyValidator implements Validator {
         try {
             if (value != null) {
                 String stringValue = value.toString();
-                for (String exclChar : excludedChars) {
-                    if (stringValue.contains(exclChar)) {
-                        throw new ValidationException(String.format("Character '%s' not allowed", exclChar));
+                if (this.excludedChars != null) {
+                    for (String exclChar : this.excludedChars) {
+                        if (stringValue.contains(exclChar)) {
+                            throw new ValidationException(String.format("Character '%s' not allowed", exclChar));
+                        }
                     }
                 }
             }
