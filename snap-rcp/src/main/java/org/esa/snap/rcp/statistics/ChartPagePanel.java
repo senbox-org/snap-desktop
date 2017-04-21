@@ -71,6 +71,11 @@ public abstract class ChartPagePanel extends PagePanel {
         this.refreshButtonEnabled = refreshButtonEnabled;
     }
 
+    /**
+     * Asks the chart panel to update its chart data. This involve a (re-)computation of all datasets.
+     */
+    protected abstract void updateChartData();
+
     @Override
     protected void updateComponents() {
         roiMaskSelector.updateMaskSource(getProduct(), getRaster());
@@ -108,11 +113,6 @@ public abstract class ChartPagePanel extends PagePanel {
 
         return buttonPanel;
     }
-
-    /**
-     * Asks the chart panel to update its chart data. This involve a (re-)computation of all datasets.
-     */
-    protected abstract void updateChartData();
 
     private JPanel createChartBottomPanel(final ChartPanel chartPanel) {
 

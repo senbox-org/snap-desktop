@@ -403,6 +403,7 @@
             <file name="Information.wsmode" url="modes/Information.wsmode"/>
             <file name="ProfilePlot.wsmode" url="modes/ProfilePlot.wsmode"/>
             <file name="ScatterPlot.wsmode" url="modes/ScatterPlot.wsmode"/>
+            <file name="MetadataPlot.wsmode" url="modes/MetadataPlot.wsmode"/>
             <file name="Statistics.wsmode" url="modes/Statistics.wsmode"/>
             <file name="Spectrum.wsmode" url="modes/Spectrum.wsmode"/>
             <file name="CorrelativePlot.wsmode" url="modes/CorrelativePlot.wsmode"/>
