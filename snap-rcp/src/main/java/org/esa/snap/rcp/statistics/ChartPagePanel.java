@@ -78,7 +78,9 @@ public abstract class ChartPagePanel extends PagePanel {
 
     @Override
     protected void updateComponents() {
-        roiMaskSelector.updateMaskSource(getProduct(), getRaster());
+        if (roiMaskSelector != null) {
+            roiMaskSelector.updateMaskSource(getProduct(), getRaster());
+        }
         refreshButton.setEnabled(refreshButtonEnabled && (getRaster() != null));
     }
 
@@ -169,14 +171,30 @@ public abstract class ChartPagePanel extends PagePanel {
         return buttonPanel;
     }
 
+    /**
+     * @deprecated since 5.0.5, use {@link #createUI(ChartPanel, JPanel, RoiMaskSelector)} instead.
+     */
+    @Deprecated
     protected void createUI(final ChartPanel chartPanel, final JPanel optionsPanel, BindingContext bindingContext) {
-        roiMaskSelector = new RoiMaskSelector(bindingContext);
+        createUI(chartPanel, optionsPanel, new RoiMaskSelector(bindingContext));
+    }
 
+    /**
+     * Responsible for creating the UI layout.
+     *
+     * @param chartPanel the panel of the chart
+     * @param optionsPanel the options panel for changing settings
+     * @param roiMaskSelector optional ROI mask selector, can be {@code null} if not wanted.
+     */
+    protected void createUI(ChartPanel chartPanel, JPanel optionsPanel, RoiMaskSelector roiMaskSelector) {
+        this.roiMaskSelector = roiMaskSelector;
         final JPanel extendedOptionsPanel = GridBagUtils.createPanel();
         GridBagConstraints extendedOptionsPanelConstraints = GridBagUtils.createConstraints("insets.left=4,insets.right=2,anchor=NORTHWEST,fill=HORIZONTAL,insets.top=2,weightx=1");
         GridBagUtils.addToPanel(extendedOptionsPanel, new JSeparator(), extendedOptionsPanelConstraints, "gridy=0");
-        GridBagUtils.addToPanel(extendedOptionsPanel, roiMaskSelector.createPanel(), extendedOptionsPanelConstraints, "gridy=1,insets.left=-4");
-        GridBagUtils.addToPanel(extendedOptionsPanel, new JPanel(), extendedOptionsPanelConstraints, "gridy=1,insets.left=-4");
+        if (this.roiMaskSelector != null) {
+            GridBagUtils.addToPanel(extendedOptionsPanel, this.roiMaskSelector.createPanel(), extendedOptionsPanelConstraints, "gridy=1,insets.left=-4");
+            GridBagUtils.addToPanel(extendedOptionsPanel, new JPanel(), extendedOptionsPanelConstraints, "gridy=1,insets.left=-4");
+        }
         GridBagUtils.addToPanel(extendedOptionsPanel, optionsPanel, extendedOptionsPanelConstraints, "insets.left=0,insets.right=0,gridy=2,fill=VERTICAL,fill=HORIZONTAL,weighty=1");
         GridBagUtils.addToPanel(extendedOptionsPanel, new JSeparator(), extendedOptionsPanelConstraints, "insets.left=4,insets.right=2,gridy=5,anchor=SOUTHWEST");
 
@@ -201,7 +219,7 @@ public abstract class ChartPagePanel extends PagePanel {
         hideAndShowButton.setName("switchToChartButton");
         hideAndShowButton.addActionListener(new ActionListener() {
 
-            public boolean rightPanelShown;
+            private boolean rightPanelShown;
 
             @Override
             public void actionPerformed(ActionEvent e) {
