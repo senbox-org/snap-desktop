@@ -521,7 +521,7 @@ public class RegionSelectableWorldMapPane {
         private Point point;
         private int rectangleLongitude;
         private int rectangleLatitude;
-        private boolean rectangleIsCurrentlyDrawn;
+        private volatile boolean rectangleIsCurrentlyDrawn;
 
         private RegionSelectionInteractor() {
             PropertySet propertySet = bindingContext.getPropertySet();
@@ -657,7 +657,9 @@ public class RegionSelectableWorldMapPane {
             if (modelRectangle.getWidth() != 0 && modelRectangle.getHeight() != 0 &&
                 !modelRectangle.equals(getFirstFigure().getBounds())) {
                 updateFigure(modelRectangle);
+                rectangleIsCurrentlyDrawn = true;
                 updateProperties(modelRectangle);
+                rectangleIsCurrentlyDrawn = false;
             }
         }
 

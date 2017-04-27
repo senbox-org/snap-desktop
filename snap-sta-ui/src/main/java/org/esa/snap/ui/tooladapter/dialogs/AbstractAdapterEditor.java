@@ -34,7 +34,6 @@ import org.esa.snap.core.gpf.OperatorSpi;
 import org.esa.snap.core.gpf.descriptor.AnnotationOperatorDescriptor;
 import org.esa.snap.core.gpf.descriptor.ParameterDescriptor;
 import org.esa.snap.core.gpf.descriptor.SystemVariable;
-import org.esa.snap.core.gpf.descriptor.TemplateParameterDescriptor;
 import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
 import org.esa.snap.core.gpf.descriptor.ToolParameterDescriptor;
 import org.esa.snap.core.gpf.descriptor.dependency.BundleInstaller;
@@ -50,6 +49,7 @@ import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.ui.tooladapter.actions.EscapeAction;
+import org.esa.snap.ui.tooladapter.actions.ToolAdapterActionRegistrar;
 import org.esa.snap.ui.tooladapter.dialogs.components.AnchorLabel;
 import org.esa.snap.ui.tooladapter.model.AutoCompleteTextArea;
 import org.esa.snap.ui.tooladapter.model.OperationType;
@@ -221,17 +221,17 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
 
         //see if all necessary parameters are present:
         if (newOperatorDescriptor.getToolParameterDescriptors().stream().filter(p -> p.getName().equals(ToolAdapterConstants.TOOL_SOURCE_PRODUCT_ID)).count() == 0){
-            TemplateParameterDescriptor parameterDescriptor = new TemplateParameterDescriptor(ToolAdapterConstants.TOOL_SOURCE_PRODUCT_ID, Product[].class);
+            ToolParameterDescriptor parameterDescriptor = new ToolParameterDescriptor(ToolAdapterConstants.TOOL_SOURCE_PRODUCT_ID, Product[].class);
             parameterDescriptor.setDescription("Input product");
             newOperatorDescriptor.getToolParameterDescriptors().add(parameterDescriptor);
         }
         if (newOperatorDescriptor.getToolParameterDescriptors().stream().filter(p -> p.getName().equals(ToolAdapterConstants.TOOL_SOURCE_PRODUCT_FILE)).count() == 0){
-            TemplateParameterDescriptor parameterDescriptor = new TemplateParameterDescriptor(ToolAdapterConstants.TOOL_SOURCE_PRODUCT_FILE, File[].class);
+            ToolParameterDescriptor parameterDescriptor = new ToolParameterDescriptor(ToolAdapterConstants.TOOL_SOURCE_PRODUCT_FILE, File[].class);
             parameterDescriptor.setDescription("Input file");
             newOperatorDescriptor.getToolParameterDescriptors().add(parameterDescriptor);
         }
         if (newOperatorDescriptor.getToolParameterDescriptors().stream().filter(p -> p.getName().equals(ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE)).count() == 0){
-            TemplateParameterDescriptor parameterDescriptor = new TemplateParameterDescriptor(ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE, File.class);
+            ToolParameterDescriptor parameterDescriptor = new ToolParameterDescriptor(ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE, File.class);
             parameterDescriptor.setDescription("Output file");
             parameterDescriptor.setNotNull(false);
             newOperatorDescriptor.getToolParameterDescriptors().add(parameterDescriptor);
@@ -497,6 +497,9 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
                     }
                     newOperatorDescriptor.setBundles(bundleForm.applyChanges());
                     AdapterWatcher.INSTANCE.suspend();
+                    if (currentOperation != OperationType.NEW) {
+                        ToolAdapterActionRegistrar.removeOperatorMenu(oldOperatorDescriptor);
+                    }
                     ToolAdapterIO.saveAndRegisterOperator(newOperatorDescriptor);
                     oldOperatorDescriptor = newOperatorDescriptor;
                     AdapterWatcher.INSTANCE.resume();
@@ -588,7 +591,7 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
 
     JComponent addValidatedTextField(JPanel parent, TextFieldEditor textEditor, String labelText, String propertyName, String validatorRegex) {
         if(validatorRegex == null || validatorRegex.isEmpty()){
-            return addTextField(parent, textEditor, labelText, propertyName, false);
+            return addTextField(parent, textEditor, labelText, propertyName, false, null);
         } else {
             JLabel jLabel = new JLabel(labelText);
             parent.add(jLabel);
@@ -604,13 +607,14 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
         }
     }
 
-    JComponent addTextField(JPanel parent, TextFieldEditor textEditor, String labelText, String propertyName, boolean isRequired) {
+    JComponent addTextField(JPanel parent, TextFieldEditor textEditor, String labelText,
+                            String propertyName, boolean isRequired, String[] excludedChars) {
         JLabel jLabel = new JLabel(labelText);
         Dimension size = jLabel.getPreferredSize();
         parent.add(jLabel);
         PropertyDescriptor propertyDescriptor = propertyContainer.getDescriptor(propertyName);
         if (isRequired) {
-            propertyDescriptor.setValidator(new DecoratedNotEmptyValidator(jLabel));
+            propertyDescriptor.setValidator(new DecoratedNotEmptyValidator(jLabel, excludedChars));
             jLabel.setMaximumSize(new Dimension(size.width + 20, size.height));
         }
         JComponent editorComponent = textEditor.createEditorComponent(propertyDescriptor, bindingContext);
