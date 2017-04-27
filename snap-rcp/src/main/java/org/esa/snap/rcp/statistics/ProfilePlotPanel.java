@@ -82,16 +82,16 @@ import java.util.Set;
  */
 class ProfilePlotPanel extends ChartPagePanel {
 
-    public static final String CHART_TITLE = "Profile Plot";
+    static final String CHART_TITLE = "Profile Plot";
     private static final String NO_DATA_MESSAGE = "No profile plot computed yet.\n" +
             "It will be computed if vector data (a polygon, an ellipse, or a line)\n" +
             "is selected within the image view.\n" +
             HELP_TIP_MESSAGE + "\n" +
             ZOOM_TIP_MESSAGE;
 
-    public static final String PROPERTY_NAME_MARK_SEGMENTS = "markSegments";
-    public static final String PROPERTY_NAME_LOG_SCALED = "logScaled";
-    public static final String DEFAULT_SAMPLE_DATASET_NAME = "Sample";
+    private static final String PROPERTY_NAME_MARK_SEGMENTS = "markSegments";
+    private static final String PROPERTY_NAME_LOG_SCALED = "logScaled";
+    private static final String DEFAULT_SAMPLE_DATASET_NAME = "Sample";
 
     private AxisRangeControl xAxisRangeControl;
     private AxisRangeControl yAxisRangeControl;
