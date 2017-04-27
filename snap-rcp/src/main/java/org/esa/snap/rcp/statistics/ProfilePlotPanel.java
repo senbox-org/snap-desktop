@@ -192,7 +192,9 @@ class ProfilePlotPanel extends ChartPagePanel {
 
     @Override
     protected void initComponents() {
-        getAlternativeView().initComponents();
+        if (hasAlternativeView()) {
+            getAlternativeView().initComponents();
+        }
         dataset = new XYIntervalSeriesCollection();
         this.chart = ChartFactory.createXYLineChart(
                 CHART_TITLE,
