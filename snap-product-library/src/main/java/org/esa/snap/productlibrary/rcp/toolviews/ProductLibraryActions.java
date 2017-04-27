@@ -151,7 +151,7 @@ public class ProductLibraryActions {
     }
 
     public void selectionChanged(final ProductEntry[] selections) {
-        final boolean enable = selections.length > 0;
+        final boolean enable = selections.length > 0 && allProductsExist(selections);
 
         openAllSelectedButton.setEnabled(enable);
         copySelectedButton.setEnabled(enable);
@@ -160,6 +160,17 @@ public class ProductLibraryActions {
         for (ProductLibraryActionExt action : actionExtList) {
             action.selectionChanged(selections);
         }
+    }
+
+    public static boolean allProductsExist(final ProductEntry[] selections) {
+        boolean allProductsExits = true;
+        for(ProductEntry entry : selections) {
+            if(entry.getFile() == null || !entry.getFile().exists()) {
+                allProductsExits = false;
+                break;
+            }
+        }
+        return allProductsExits;
     }
 
     /**

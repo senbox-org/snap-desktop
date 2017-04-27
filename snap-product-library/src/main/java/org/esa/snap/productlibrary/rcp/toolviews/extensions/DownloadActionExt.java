@@ -54,15 +54,7 @@ public class DownloadActionExt implements ProductLibraryActionExt {
     }
 
     public void selectionChanged(final ProductEntry[] selections) {
-        boolean allProductsExits = true;
-        for(ProductEntry entry : selections) {
-            if(entry.getFile() == null || !entry.getFile().exists()) {
-                allProductsExits = false;
-                break;
-            }
-        }
-
-        button.setEnabled(selections.length > 0 && !allProductsExits);
+        button.setEnabled(selections.length > 0 && !ProductLibraryActions.allProductsExist(selections));
     }
 
     public void performAction(final ProgressMonitor pm) {

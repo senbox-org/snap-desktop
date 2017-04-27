@@ -54,7 +54,7 @@ public class ExportListActionExt implements ProductLibraryActionExt {
     }
 
     public void selectionChanged(final ProductEntry[] selections) {
-        button.setEnabled(selections.length > 0);
+        button.setEnabled(selections.length > 0 && ProductLibraryActions.allProductsExist(selections));
     }
 
     public void performAction(final com.bc.ceres.core.ProgressMonitor pm) {
