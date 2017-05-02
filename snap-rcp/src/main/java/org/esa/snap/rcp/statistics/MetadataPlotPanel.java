@@ -18,44 +18,44 @@ package org.esa.snap.rcp.statistics;
 
 import com.bc.ceres.binding.Property;
 import com.bc.ceres.binding.PropertyContainer;
-import com.bc.ceres.binding.PropertyDescriptor;
+import com.bc.ceres.binding.ValidationException;
+import com.bc.ceres.binding.ValueRange;
 import com.bc.ceres.binding.ValueSet;
 import com.bc.ceres.swing.binding.BindingContext;
+import com.bc.ceres.swing.binding.internal.SliderAdapter;
 import org.esa.snap.core.datamodel.MetadataAttribute;
 import org.esa.snap.core.datamodel.MetadataElement;
+import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductNodeEvent;
 import org.esa.snap.ui.GridBagUtils;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.ValueAxis;
-import org.jfree.chart.event.AxisChangeListener;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.xy.XYIntervalSeriesCollection;
 import org.jfree.ui.RectangleInsets;
 import org.openide.windows.TopComponent;
 
-import javax.swing.JCheckBox;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
+import java.awt.Component;
 import java.awt.GridBagConstraints;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.Hashtable;
 
 
 /**
  * The metadata plot pane within the statistics window.
  */
 class MetadataPlotPanel extends ChartPagePanel {
-    private static final String PROPERTY_NAME_MARK_SEGMENTS = "markSegments";
-    private static final String PROPERTY_NAME_LOG_SCALED = "logScaled";
     private static final String DEFAULT_SAMPLE_DATASET_NAME = "Sample";
 
     private static final String NO_DATA_MESSAGE = "No metadata plot computed yet.\n" +
@@ -67,15 +67,12 @@ class MetadataPlotPanel extends ChartPagePanel {
 
     private JFreeChart chart;
     private XYIntervalSeriesCollection dataset;
-    private AxisRangeControl xAxisRangeControl;
-    private AxisRangeControl yAxisRangeControl;
     private MetadataPlotSettings plotSettings;
-    private AtomicBoolean axisAdjusting;
+    private boolean isInitialized;
 
 
     MetadataPlotPanel(TopComponent parentComponent, String helpId) {
         super(parentComponent, helpId, CHART_TITLE, true);
-        axisAdjusting = new AtomicBoolean(false);
     }
 
     @Override
@@ -99,16 +96,12 @@ class MetadataPlotPanel extends ChartPagePanel {
 
         plot.setNoDataMessage(NO_DATA_MESSAGE);
         plot.setAxisOffset(new RectangleInsets(5, 5, 5, 5));
-        final AxisChangeListener axisListener = event -> adjustAxisControlComponents();
 
         final ValueAxis domainAxis = plot.getDomainAxis();
         final ValueAxis rangeAxis = plot.getRangeAxis();
         // allow transfer from bounds into min/max fields, if auto min/maxis enabled
         domainAxis.setAutoRange(true);
         rangeAxis.setAutoRange(true);
-
-        domainAxis.addChangeListener(axisListener);
-        rangeAxis.addChangeListener(axisListener);
 
         ChartPanel profilePlotDisplay = new ChartPanel(chart);
 
@@ -120,50 +113,34 @@ class MetadataPlotPanel extends ChartPagePanel {
         profilePlotDisplay.getPopupMenu().add(createCopyDataToClipboardMenuItem());
 
 
-        xAxisRangeControl = new AxisRangeControl("X-Axis");
-        yAxisRangeControl = new AxisRangeControl("Y-Axis");
-
-        final PropertyChangeListener changeListener = evt -> {
-            if (evt.getPropertyName().equals(PROPERTY_NAME_MARK_SEGMENTS)) {
-                updateDataSet();
-            }
-            if (evt.getPropertyName().equals(PROPERTY_NAME_LOG_SCALED)) {
-                updateScalingOfYAxis();
-            }
-            updateUIState();
-        };
-        xAxisRangeControl.getBindingContext().addPropertyChangeListener(changeListener);
-        xAxisRangeControl.getBindingContext().getPropertySet().addProperty(Property.create(PROPERTY_NAME_MARK_SEGMENTS, false));
-        xAxisRangeControl.getBindingContext().getPropertySet().getDescriptor(PROPERTY_NAME_MARK_SEGMENTS).setDescription("Toggle whether to mark segments");
-
-        yAxisRangeControl.getBindingContext().addPropertyChangeListener(changeListener);
-        yAxisRangeControl.getBindingContext().getPropertySet().addProperty(Property.create(PROPERTY_NAME_LOG_SCALED, false));
-        yAxisRangeControl.getBindingContext().getPropertySet().getDescriptor(PROPERTY_NAME_LOG_SCALED).setDescription("Toggle whether to use a logarithmic axis");
-
         plotSettings = new MetadataPlotSettings();
-        final BindingContext bindingContext = new BindingContext(PropertyContainer.createObjectBacked(plotSettings));
+        final BindingContext bindingContext = plotSettings.getContext();
 
         JPanel settingsPanel = createSettingsPanel(bindingContext);
         createUI(profilePlotDisplay, settingsPanel, (RoiMaskSelector) null);
 
+        isInitialized = true;
+        
         updateComponents();
-
     }
 
     @Override
     public void nodeDataChanged(ProductNodeEvent event) {
+        // probably nothing needs to be done here
         super.nodeDataChanged(event);
     }
 
     @Override
     protected void updateComponents() {
         super.updateComponents();
+        updateSettings();
+        updateUiState();
     }
 
 
     @Override
     protected void updateChartData() {
-
+        // probably nothing needs to be done here
     }
 
     @Override
@@ -172,107 +149,129 @@ class MetadataPlotPanel extends ChartPagePanel {
     }
 
 
-    private void updatePlotSettings() {
+    private void updateUiState() {
+        if (!isInitialized) {
+            return;
+        }
+
+        dataset.removeAllSeries();
 
     }
 
-    private void updateUIState() {
+    private void updateSettings() {
+        Product product = getProduct();
+        if(product == null) {
+            return;
+        }
 
-    }
+        MetadataElement metadataRoot = product.getMetadataRoot();
+        MetadataElement[] elements = metadataRoot.getElements();
 
-    private void updateDataSet() {
+        plotSettings.setMetadataElements(elements);
 
     }
 
     private JPanel createSettingsPanel(BindingContext bindingContext) {
         final JLabel datasetLabel = new JLabel("Dataset: ");
-        final JComboBox datasetBox = new JComboBox();
+        final JComboBox<MetadataElement> datasetBox = new JComboBox<>();
+        datasetBox.setRenderer(new MetadataElementListCellRenderer());
         JLabel recordLabel = new JLabel("Record: ");
-        JSlider recordSlider = new JSlider(SwingConstants.HORIZONTAL,1,100,1);
+        JSlider recordSlider = new JSlider(SwingConstants.HORIZONTAL, 1, 100, 1);
+        recordSlider.setPaintTrack(true);
+        recordSlider.setPaintTicks(true);
+        recordSlider.setPaintLabels(true);
+        Hashtable standardLabels = recordSlider.createStandardLabels(recordSlider.getMaximum() - recordSlider.getMinimum(), recordSlider.getMinimum());
+        recordSlider.setLabelTable(standardLabels);
         JLabel numRecordsLabel = new JLabel("Records: ");
-        JSpinner numRecordsSpinner = new JSpinner(new SpinnerNumberModel(1,1,100,1));
-        final JLabel xfieldLabel = new JLabel("X Field: ");
+        JSpinner numRecordsSpinner = new JSpinner(new SpinnerNumberModel(1, 1, 100, 1));
+        final JLabel xFieldLabel = new JLabel("X Field: ");
         final JComboBox xFieldBox = new JComboBox();
-        final JLabel y1fieldLabel = new JLabel("Y Field: ");
+        final JLabel y1FieldLabel = new JLabel("Y Field: ");
         final JComboBox y1FieldBox = new JComboBox();
-        final JLabel y2fieldLabel = new JLabel("Y2 Field: ");
+        final JLabel y2FieldLabel = new JLabel("Y2 Field: ");
         final JComboBox y2FieldBox = new JComboBox();
 
+        bindingContext.bind("metadataElement", datasetBox);
+        bindingContext.bind("recordIndex", new SliderAdapter(recordSlider));
+        bindingContext.bind("numRecords", numRecordsSpinner);
+        bindingContext.bind("fieldX", xFieldBox);
+        bindingContext.bind("fieldY1", y1FieldBox);
+        bindingContext.bind("fieldY2", y2FieldBox);
+
         JPanel plotSettingsPanel = GridBagUtils.createPanel();
-        GridBagConstraints plotSettingsPanelConstraints = GridBagUtils.createConstraints("anchor=NORTHWEST,fill=HORIZONTAL,insets.top=2");
+        GridBagConstraints plotSettingsPanelConstraints = GridBagUtils.createConstraints("anchor=NORTHWEST,fill=HORIZONTAL,insets.top=4");
         GridBagUtils.addToPanel(plotSettingsPanel, datasetLabel, plotSettingsPanelConstraints, "gridwidth=1,gridy=0,gridx=0,weightx=0,insets.left=4");
         GridBagUtils.addToPanel(plotSettingsPanel, datasetBox, plotSettingsPanelConstraints, "gridwidth=1,gridy=0,gridx=1,weightx=1,insets.left=4");
         GridBagUtils.addToPanel(plotSettingsPanel, recordLabel, plotSettingsPanelConstraints, "gridwidth=1,gridy=1,gridx=0,weightx=0,insets.left=4");
         GridBagUtils.addToPanel(plotSettingsPanel, recordSlider, plotSettingsPanelConstraints, "gridwidth=1,gridy=1,gridx=1,weightx=1,insets.left=4");
         GridBagUtils.addToPanel(plotSettingsPanel, numRecordsLabel, plotSettingsPanelConstraints, "gridwidth=1,gridy=2,gridx=0,weightx=0,insets.left=4");
         GridBagUtils.addToPanel(plotSettingsPanel, numRecordsSpinner, plotSettingsPanelConstraints, "gridwidth=1,gridy=2,gridx=1,weightx=1,insets.left=4");
-        GridBagUtils.addToPanel(plotSettingsPanel, xfieldLabel, plotSettingsPanelConstraints, "gridwidth=1,gridy=3,gridx=0,weightx=0,insets.left=4");
+        GridBagUtils.addToPanel(plotSettingsPanel, xFieldLabel, plotSettingsPanelConstraints, "gridwidth=1,gridy=3,gridx=0,weightx=0,insets.left=4");
         GridBagUtils.addToPanel(plotSettingsPanel, xFieldBox, plotSettingsPanelConstraints, "gridwidth=1,gridy=3,gridx=1,weightx=1,insets.left=4");
-        GridBagUtils.addToPanel(plotSettingsPanel, y1fieldLabel, plotSettingsPanelConstraints, "gridwidth=1,gridy=3,gridx=0,weightx=0,insets.left=4");
-        GridBagUtils.addToPanel(plotSettingsPanel, y1FieldBox, plotSettingsPanelConstraints, "gridwidth=1,gridy=3,gridx=1,weightx=1,insets.left=4");
-        GridBagUtils.addToPanel(plotSettingsPanel, y2fieldLabel, plotSettingsPanelConstraints, "gridwidth=1,gridy=3,gridx=0,weightx=0,insets.left=4");
-        GridBagUtils.addToPanel(plotSettingsPanel, y2FieldBox, plotSettingsPanelConstraints, "gridwidth=1,gridy=3,gridx=1,weightx=1,insets.left=4");
-        
-        xAxisRangeControl.getBindingContext().bind(PROPERTY_NAME_MARK_SEGMENTS, new JCheckBox("Mark segments"));
-        yAxisRangeControl.getBindingContext().bind(PROPERTY_NAME_LOG_SCALED, new JCheckBox("Log10 scaled"));
+        GridBagUtils.addToPanel(plotSettingsPanel, y1FieldLabel, plotSettingsPanelConstraints, "gridwidth=1,gridy=4,gridx=0,weightx=0,insets.left=4");
+        GridBagUtils.addToPanel(plotSettingsPanel, y1FieldBox, plotSettingsPanelConstraints, "gridwidth=1,gridy=4,gridx=1,weightx=1,insets.left=4");
+        GridBagUtils.addToPanel(plotSettingsPanel, y2FieldLabel, plotSettingsPanelConstraints, "gridwidth=1,gridy=5,gridx=0,weightx=0,insets.left=4");
+        GridBagUtils.addToPanel(plotSettingsPanel, y2FieldBox, plotSettingsPanelConstraints, "gridwidth=1,gridy=5,gridx=1,weightx=1,insets.left=4");
 
-        JPanel displayOptionsPanel = GridBagUtils.createPanel();
-        GridBagConstraints displayOptionsConstraints = GridBagUtils.createConstraints("anchor=SOUTH,fill=HORIZONTAL,weightx=1");
-        GridBagUtils.addToPanel(displayOptionsPanel, xAxisRangeControl.getPanel(), displayOptionsConstraints, "gridy=0");
-        GridBagUtils.addToPanel(displayOptionsPanel, xAxisRangeControl.getBindingContext().getBinding(PROPERTY_NAME_MARK_SEGMENTS).getComponents()[0], displayOptionsConstraints, "gridy=1");
-        GridBagUtils.addToPanel(displayOptionsPanel, yAxisRangeControl.getPanel(), displayOptionsConstraints, "gridy=2");
-        GridBagUtils.addToPanel(displayOptionsPanel, yAxisRangeControl.getBindingContext().getBinding(PROPERTY_NAME_LOG_SCALED).getComponents()[0], displayOptionsConstraints, "gridy=3");
-
-        JPanel settingsPanel = GridBagUtils.createPanel();
-        GridBagConstraints settingsPanelConstraints = GridBagUtils.createConstraints("anchor=NORTHWEST,fill=HORIZONTAL,insets.top=2,weightx=1");
-        GridBagUtils.addToPanel(settingsPanel, plotSettingsPanel, settingsPanelConstraints, "gridy=0");
-        GridBagUtils.addToPanel(settingsPanel, new JPanel(), settingsPanelConstraints, "gridy=1,fill=VERTICAL,weighty=1");
-        GridBagUtils.addToPanel(settingsPanel, displayOptionsPanel, settingsPanelConstraints, "gridy=2,fill=HORIZONTAL,weighty=0");
-
-        final PropertyDescriptor datasetDescriptor = bindingContext.getPropertySet().getProperty("dataset").getDescriptor();
-        datasetDescriptor.setValueSet(new ValueSet(new Object[0])); // todo
-
+        updateSettings();
 
         bindingContext.addPropertyChangeListener(evt -> {
-            updatePlotSettings();
-            updateDataSet();
-            updateUIState();
+            updateUiState();
         });
-        return settingsPanel;
+        return plotSettingsPanel;
     }
 
-    private void adjustAxisControlComponents() {
-        if (!axisAdjusting.getAndSet(true)) {
+    private static class MetadataPlotSettings {
+
+        static final String PROP_NAME_METADATA_ELEMENT = "metadataElement";
+        static final String PROP_NAME_RECORD_INDEX = "recordIndex";
+
+        MetadataElement metadataElement;
+        MetadataAttribute fieldX;
+        MetadataAttribute fieldY1;
+        MetadataAttribute fieldY2;
+        int recordIndex;
+        int numRecords;
+        private BindingContext context;
+
+        public MetadataPlotSettings() {
+            context = new BindingContext(PropertyContainer.createObjectBacked(this));
+            Property propertyRecordIndex = context.getPropertySet().getProperty(PROP_NAME_RECORD_INDEX);
+            propertyRecordIndex.getDescriptor().setValueRange(new ValueRange(1,100));
+
+        }
+
+
+        public BindingContext getContext() {
+            return context;
+        }
+
+        void setMetadataElements(MetadataElement[] elements) {
+            Property property = context.getPropertySet().getProperty(PROP_NAME_METADATA_ELEMENT);
+            property.getDescriptor().setValueSet(new ValueSet(filterElements(elements)));
             try {
-                if (xAxisRangeControl.isAutoMinMax()) {
-                    xAxisRangeControl.adjustComponents(chart.getXYPlot().getDomainAxis(), 0);
-                }
-                if (yAxisRangeControl.isAutoMinMax()) {
-                    yAxisRangeControl.adjustComponents(chart.getXYPlot().getRangeAxis(), 2);
-                }
-            } finally {
-                axisAdjusting.set(false);
+                property.setValue(elements[0]);
+            } catch (ValidationException e) {
+                e.printStackTrace();
             }
         }
-    }
 
-    private void updateScalingOfYAxis() {
-        final boolean logScaled = (Boolean) yAxisRangeControl.getBindingContext().getBinding(PROPERTY_NAME_LOG_SCALED).getPropertyValue();
-        final XYPlot plot = chart.getXYPlot();
-        plot.setRangeAxis(StatisticChartStyling.updateScalingOfAxis(logScaled, plot.getRangeAxis(), true));
-    }
-
-
-    private class MetadataPlotSettings {
-
-        MetadataElement dataset;
-        MetadataAttribute fieldX;
-        MetadataAttribute fieldY;
-        MetadataAttribute fieldY2;
-        int currentRecordIndex;
-        int numRecords;
+        private MetadataElement[] filterElements(MetadataElement[] elements) {
+            return elements;
+        }
 
     }
 
+    private static class MetadataElementListCellRenderer extends DefaultListCellRenderer {
+        @Override
+        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+            JLabel rendererComponent = (JLabel)super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+            if (value instanceof MetadataElement) {
+                MetadataElement element = (MetadataElement) value;
+                rendererComponent.setText(element.getName());
+            }
+            return rendererComponent;
+        }
+    }
 }
 
