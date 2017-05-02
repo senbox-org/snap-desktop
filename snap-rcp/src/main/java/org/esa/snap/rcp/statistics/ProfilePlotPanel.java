@@ -279,7 +279,7 @@ class ProfilePlotPanel extends ChartPagePanel {
         final BindingContext bindingContext = new BindingContext(PropertyContainer.createObjectBacked(dataSourceConfig));
 
         JPanel middlePanel = createMiddlePanel(bindingContext);
-        createUI(createChartPanel(chart), middlePanel, bindingContext);
+        createUI(createChartPanel(chart), middlePanel, new RoiMaskSelector(bindingContext));
 
         isInitialized = true;
 
