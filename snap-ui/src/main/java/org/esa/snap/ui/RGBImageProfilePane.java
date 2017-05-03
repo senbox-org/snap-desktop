@@ -24,15 +24,37 @@ import org.esa.snap.core.jexp.ParseException;
 import org.esa.snap.core.util.ArrayUtils;
 import org.esa.snap.core.util.Debug;
 import org.esa.snap.core.util.PropertyMap;
+import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.ui.product.ProductExpressionPane;
 import org.esa.snap.ui.tool.ToolButtonFactory;
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.ComboBoxEditor;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -40,7 +62,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class RGBImageProfilePane extends JPanel {
 
@@ -326,6 +350,28 @@ public class RGBImageProfilePane extends JPanel {
         final RGBImageProfile profile;
         try {
             profile = RGBImageProfile.loadProfile(file);
+            String[] rgbaExpressions = profile.getRgbaExpressions();
+            // If profile was saved with a single product index reference, it may not match the current product index,
+            // so try to replace it. If it contains multiple indices, then keep them.
+            Set<Integer> productRefs = new HashSet<>();
+            for (String expression : rgbaExpressions) {
+                if (!StringUtils.isNullOrEmpty(expression)) {
+                    if (expression.startsWith("$")) {
+                        productRefs.add(Integer.parseInt(expression.substring(1, expression.indexOf('.'))));
+                    } else {
+                        productRefs.add(0);
+                    }
+                }
+            }
+            boolean shouldReplace = productRefs.size() == 1 && !productRefs.contains(0);
+            for (int i = 0; i < rgbaExpressions.length; i++) {
+                if (shouldReplace) {
+                    if (!StringUtils.isNullOrEmpty(rgbaExpressions[i])) {
+                        rgbaExpressions[i] = rgbaExpressions[i].substring(rgbaExpressions[i].indexOf('.') + 1);
+                    }
+                }
+            }
+            profile.setRgbaExpressions(rgbaExpressions);
         } catch (IOException e) {
             AbstractDialog.showErrorDialog(this,
                                            String.format("Failed to open RGB-profile '%s':\n%s", file.getName(), e.getMessage()),
@@ -355,8 +401,25 @@ public class RGBImageProfilePane extends JPanel {
         if (file == null) {
             return;
         }
+        String[] rgbaExpressions = getRgbaExpressions();
+        Set<Integer> productRefs = new HashSet<>();
+        for (String expression : rgbaExpressions) {
+            if (!StringUtils.isNullOrEmpty(expression)) {
+                if (expression.startsWith("$")) {
+                    productRefs.add(Integer.parseInt(expression.substring(1, expression.indexOf('.'))));
+                } else {
+                    productRefs.add(0);
+                }
+            }
+        }
+        boolean shouldReplace = productRefs.size() == 1 && !productRefs.contains(0);
+        for (int i = 0; i < rgbaExpressions.length; i++) {
+            if (shouldReplace) {
+                rgbaExpressions[i] = rgbaExpressions[i].replace(BandArithmetic.getProductNodeNamePrefix(this.product), "");
+            }
+        }
         RGBImageProfile profile = new RGBImageProfile(FileUtils.getFilenameWithoutExtension(file),
-                                                      getRgbaExpressions());
+                                                      rgbaExpressions);
         try {
             profile.store(file);
         } catch (IOException e) {
