@@ -18,6 +18,8 @@ package org.esa.snap.rcp.statistics;
 
 import com.bc.ceres.binding.Property;
 import com.bc.ceres.binding.PropertyContainer;
+import com.bc.ceres.binding.PropertyDescriptor;
+import com.bc.ceres.binding.PropertySet;
 import com.bc.ceres.binding.ValidationException;
 import com.bc.ceres.binding.ValueRange;
 import com.bc.ceres.binding.ValueSet;
@@ -26,6 +28,7 @@ import com.bc.ceres.swing.binding.internal.SliderAdapter;
 import org.esa.snap.core.datamodel.MetadataAttribute;
 import org.esa.snap.core.datamodel.MetadataElement;
 import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.core.datamodel.ProductNodeEvent;
 import org.esa.snap.ui.GridBagUtils;
 import org.jfree.chart.ChartFactory;
@@ -49,7 +52,13 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import java.awt.Component;
 import java.awt.GridBagConstraints;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
+
+import static org.esa.snap.rcp.statistics.MetadataPlotPanel.MetadataPlotSettings.*;
 
 
 /**
@@ -120,7 +129,7 @@ class MetadataPlotPanel extends ChartPagePanel {
         createUI(profilePlotDisplay, settingsPanel, (RoiMaskSelector) null);
 
         isInitialized = true;
-        
+
         updateComponents();
     }
 
@@ -160,7 +169,7 @@ class MetadataPlotPanel extends ChartPagePanel {
 
     private void updateSettings() {
         Product product = getProduct();
-        if(product == null) {
+        if (product == null) {
             return;
         }
 
@@ -174,7 +183,7 @@ class MetadataPlotPanel extends ChartPagePanel {
     private JPanel createSettingsPanel(BindingContext bindingContext) {
         final JLabel datasetLabel = new JLabel("Dataset: ");
         final JComboBox<MetadataElement> datasetBox = new JComboBox<>();
-        datasetBox.setRenderer(new MetadataElementListCellRenderer());
+        datasetBox.setRenderer(new ProductNodeListCellRenderer());
         JLabel recordLabel = new JLabel("Record: ");
         JSlider recordSlider = new JSlider(SwingConstants.HORIZONTAL, 1, 100, 1);
         recordSlider.setPaintTrack(true);
@@ -185,18 +194,21 @@ class MetadataPlotPanel extends ChartPagePanel {
         JLabel numRecordsLabel = new JLabel("Records: ");
         JSpinner numRecordsSpinner = new JSpinner(new SpinnerNumberModel(1, 1, 100, 1));
         final JLabel xFieldLabel = new JLabel("X Field: ");
-        final JComboBox xFieldBox = new JComboBox();
+        final JComboBox<MetadataAttribute> xFieldBox = new JComboBox<>();
+        xFieldBox.setRenderer(new ProductNodeListCellRenderer());
         final JLabel y1FieldLabel = new JLabel("Y Field: ");
-        final JComboBox y1FieldBox = new JComboBox();
+        final JComboBox<MetadataAttribute> y1FieldBox = new JComboBox<>();
+        y1FieldBox.setRenderer(new ProductNodeListCellRenderer());
         final JLabel y2FieldLabel = new JLabel("Y2 Field: ");
-        final JComboBox y2FieldBox = new JComboBox();
+        final JComboBox<MetadataAttribute> y2FieldBox = new JComboBox<>();
+        y2FieldBox.setRenderer(new ProductNodeListCellRenderer());
 
-        bindingContext.bind("metadataElement", datasetBox);
-        bindingContext.bind("recordIndex", new SliderAdapter(recordSlider));
-        bindingContext.bind("numRecords", numRecordsSpinner);
-        bindingContext.bind("fieldX", xFieldBox);
-        bindingContext.bind("fieldY1", y1FieldBox);
-        bindingContext.bind("fieldY2", y2FieldBox);
+        bindingContext.bind(PROP_NAME_METADATA_ELEMENT, datasetBox);
+        bindingContext.bind(PROP_NAME_RECORD_START_INDEX, new SliderAdapter(recordSlider));
+        bindingContext.bind(PROP_NAME_NUM_DISPLAY_RECORDS, numRecordsSpinner);
+        bindingContext.bind(PROP_NAME_FIELD_X, xFieldBox);
+        bindingContext.bind(PROP_NAME_FIELD_Y1, y1FieldBox);
+        bindingContext.bind(PROP_NAME_FIELD_Y2, y2FieldBox);
 
         JPanel plotSettingsPanel = GridBagUtils.createPanel();
         GridBagConstraints plotSettingsPanelConstraints = GridBagUtils.createConstraints("anchor=NORTHWEST,fill=HORIZONTAL,insets.top=4");
@@ -221,26 +233,59 @@ class MetadataPlotPanel extends ChartPagePanel {
         return plotSettingsPanel;
     }
 
-    private static class MetadataPlotSettings {
+    static class MetadataPlotSettings {
 
         static final String PROP_NAME_METADATA_ELEMENT = "metadataElement";
-        static final String PROP_NAME_RECORD_INDEX = "recordIndex";
+        static final String PROP_NAME_RECORD_START_INDEX = "recordIndex";
+        static final String PROP_NAME_NUM_DISPLAY_RECORDS = "numDisplayRecords";
+        static final String PROP_NAME_FIELD_X = "fieldX";
+        static final String PROP_NAME_FIELD_Y1 = "fieldY1";
+        static final String PROP_NAME_FIELD_Y2 = "fieldY2";
 
         MetadataElement metadataElement;
-        MetadataAttribute fieldX;
-        MetadataAttribute fieldY1;
-        MetadataAttribute fieldY2;
+        MetadataField fieldX;
+        MetadataField fieldY1;
+        MetadataField fieldY2;
         int recordIndex;
-        int numRecords;
+        int numDisplayRecords;
         private BindingContext context;
 
         public MetadataPlotSettings() {
             context = new BindingContext(PropertyContainer.createObjectBacked(this));
-            Property propertyRecordIndex = context.getPropertySet().getProperty(PROP_NAME_RECORD_INDEX);
-            propertyRecordIndex.getDescriptor().setValueRange(new ValueRange(1,100));
+            Property propertyMetaElement = context.getPropertySet().getProperty(PROP_NAME_METADATA_ELEMENT);
+            propertyMetaElement.addPropertyChangeListener(new PropertyChangeListener() {
+                @Override
+                public void propertyChange(PropertyChangeEvent evt) {
+                    try {
+                        // todo - swingworker?
+                        int numAvailableRecords = getNumRecords(metadataElement);
+
+                        PropertySet propertySet = context.getPropertySet();
+                        Property recordStartProperty = propertySet.getProperty(PROP_NAME_RECORD_START_INDEX);
+                        recordStartProperty.getDescriptor().setValueRange(new ValueRange(1, numAvailableRecords));
+                        recordStartProperty.setValue(1);
+                        Property numDispRecordProperty = propertySet.getProperty(PROP_NAME_NUM_DISPLAY_RECORDS);
+                        numDispRecordProperty.getDescriptor().setValueRange(new ValueRange(1, numAvailableRecords));
+                        numDispRecordProperty.setValue(1);
+
+
+                        MetadataField[] usableFields = retrieveUsableFields(metadataElement);
+                        PropertyDescriptor propertyFieldX = propertySet.getProperty(PROP_NAME_FIELD_X).getDescriptor();
+                        propertyFieldX.setValueSet(new ValueSet(usableFields));
+                        PropertyDescriptor propertyFieldY1 = propertySet.getProperty(PROP_NAME_FIELD_Y1).getDescriptor();
+                        propertyFieldY1.setValueSet(new ValueSet(usableFields));
+                        PropertyDescriptor propertyFieldY2 = propertySet.getProperty(PROP_NAME_FIELD_Y2).getDescriptor();
+                        propertyFieldY2.setValueSet(new ValueSet(usableFields));
+
+
+                    } catch (ValidationException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            });
 
         }
-
 
         public BindingContext getContext() {
             return context;
@@ -256,22 +301,66 @@ class MetadataPlotPanel extends ChartPagePanel {
             }
         }
 
+        private MetadataField[] retrieveUsableFields(MetadataElement element) {
+            List<MetadataField> list = new ArrayList<>();
+            if(getNumRecords(element) > 1) {
+                
+            }
+
+            return list.toArray(new MetadataField[0]);
+        }
+
         private MetadataElement[] filterElements(MetadataElement[] elements) {
             return elements;
         }
 
+        private int getNumRecords(MetadataElement metadataElement) {
+            int numSubElements = metadataElement.getNumElements();
+            if (numSubElements > 0) {
+                MetadataElement[] subElements = metadataElement.getElements();
+                int count = 0;
+                for (MetadataElement subElement : subElements) {
+                    if (subElement.getName().matches(metadataElement.getName() + "\\.\\d+")) {
+                        count++;
+                    }
+
+                }
+                if (count == numSubElements) {
+                    return count;
+                }
+            }
+            return 1;
+        }
+
     }
 
-    private static class MetadataElementListCellRenderer extends DefaultListCellRenderer {
+    private static class ProductNodeListCellRenderer extends DefaultListCellRenderer {
         @Override
         public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-            JLabel rendererComponent = (JLabel)super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-            if (value instanceof MetadataElement) {
-                MetadataElement element = (MetadataElement) value;
+            JLabel rendererComponent = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+            if (value instanceof ProductNode) {
+                ProductNode element = (ProductNode) value;
                 rendererComponent.setText(element.getName());
             }
             return rendererComponent;
         }
+    }
+
+    private interface MetadataField {
+
+
+        static MetadataField create(ProductNode node) {
+            if (!(node instanceof MetadataElement || node instanceof MetadataAttribute)) {
+                throw new IllegalArgumentException("Parameters 'node' must be either instance " +
+                                                           "of MetadataElement or MetadataAttribute.");
+            }
+            return null;
+        }
+
+        String getName();
+
+        Object getData();
+
     }
 }
 
