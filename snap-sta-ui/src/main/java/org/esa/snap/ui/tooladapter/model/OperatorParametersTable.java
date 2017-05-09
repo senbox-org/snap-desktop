@@ -545,6 +545,7 @@ public class OperatorParametersTable extends JTable {
             }
         }
         TemplateParameterDescriptor newParameter = new TemplateParameterDescriptor(defaultParameterName, String.class);
+        newParameter.setParameterType(ToolAdapterConstants.REGULAR_PARAM_MASK);
         addParameterToTable(newParameter);
         SwingUtilities.invokeLater(new Runnable() {
             @Override
@@ -557,15 +558,13 @@ public class OperatorParametersTable extends JTable {
 
     public void addParameterToTable(ToolParameterDescriptor param) {
         try {
-            operator.getToolParameterDescriptors().add(param);
-
+            operator.getToolParameterDescriptors().add(0, param);
             PropertyDescriptor propertyDescriptor = ParameterDescriptorFactory.convert(param, new ParameterDescriptorFactory().getSourceProductMap());
             propertyDescriptor.setDefaultValue(param.getDefaultValue());
             DefaultPropertySetDescriptor propertySetDescriptor = new DefaultPropertySetDescriptor();
             propertySetDescriptor.addPropertyDescriptor(propertyDescriptor);
             PropertyContainer container = PropertyContainer.createMapBacked(new HashMap<>(), propertySetDescriptor);
             context.getPropertySet().addProperties(container.getProperties());
-
             createDefaultComponent(param, propertyDescriptor);
             fireTableRowsChanged();
         } catch (Exception ex){
