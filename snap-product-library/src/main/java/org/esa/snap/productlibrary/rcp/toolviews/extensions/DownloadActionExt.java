@@ -15,6 +15,7 @@
  */
 package org.esa.snap.productlibrary.rcp.toolviews.extensions;
 
+import com.bc.ceres.core.Assert;
 import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.core.SubProgressMonitor;
 import org.esa.snap.core.util.SystemUtils;
@@ -22,7 +23,9 @@ import org.esa.snap.engine_utilities.db.ProductEntry;
 import org.esa.snap.engine_utilities.download.opendata.OpenData;
 import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
 import org.esa.snap.productlibrary.rcp.toolviews.ProductLibraryActions;
+import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
+import org.esa.snap.ui.SnapFileChooser;
 import org.esa.snap.ui.UIUtils;
 
 import javax.swing.*;
@@ -40,7 +43,7 @@ public class DownloadActionExt implements ProductLibraryActionExt {
     private static final String COPERNICUS_HOST = "https://scihub.copernicus.eu";
     private static final String COPERNICUS_ODATA_ROOT = "https://scihub.copernicus.eu/dhus/odata/v1/";
 
-    private static final File outputFolder = new File("e:\\tmp\\");
+    private File outputFolder = new File("e:\\tmp\\");
 
     public void setActionHandler(final ProductLibraryActions actionHandler) {
         this.actionHandler = actionHandler;
@@ -57,7 +60,55 @@ public class DownloadActionExt implements ProductLibraryActionExt {
         button.setEnabled(selections.length > 0 && !ProductLibraryActions.allProductsExist(selections));
     }
 
+    private static File requestFolderForSave(String title, String preferenceKey) {
+
+        File file;
+        do {
+            file = requestFolderForSave2(title, preferenceKey);
+            if (file == null) {
+                return null; // Cancelled
+            }
+        } while (file == null);
+        SystemUtils.LOG.info("Download to " + file.getAbsolutePath());
+        return file;
+    }
+
+    private static File requestFolderForSave2(String title, final String preferenceKey) {
+
+        Assert.notNull(preferenceKey, "preferenceKey");
+
+        String lastDir = SnapApp.getDefault().getPreferences().get(preferenceKey, SystemUtils.getUserHomeDir().getPath());
+        File currentDir = new File(lastDir);
+
+        SnapFileChooser fileChooser = new SnapFileChooser();
+        fileChooser.setCurrentDirectory(currentDir);
+
+        fileChooser.setDialogTitle(Dialogs.getDialogTitle(title));
+        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        fileChooser.setAcceptAllFileFilterUsed(false);
+
+        int result = fileChooser.showSaveDialog(SnapApp.getDefault().getMainFrame());
+        if (fileChooser.getCurrentDirectory() != null) {
+            SnapApp.getDefault().getPreferences().put(preferenceKey, fileChooser.getCurrentDirectory().getPath());
+        }
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File file = fileChooser.getSelectedFile();
+            if (file == null || file.getName().equals("")) {
+                return null;
+            }
+            String path = file.getPath();
+
+            return new File(path);
+        }
+        return null;
+    }
+
+
     public void performAction(final ProgressMonitor pm) {
+
+        outputFolder =  requestFolderForSave("Download product(s) to folder", "snap.download.folder");
+
+        if (outputFolder == null) return;
 
         final ProductEntry[] selections = actionHandler.getSelectedProductEntries();
         pm.beginTask("Downloading...", selections.length);
@@ -65,6 +116,10 @@ public class DownloadActionExt implements ProductLibraryActionExt {
             final OpenData openData = new OpenData(COPERNICUS_HOST, COPERNICUS_ODATA_ROOT);
 
             for(ProductEntry entry : selections) {
+                if (pm.isCanceled()) {
+                    SystemUtils.LOG.info("DownloadActionExt: Download is cancelled");
+                    break;
+                }
                 OpenData.Entry oData = openData.getEntryByID(entry.getRefID());
                 SystemUtils.LOG.info(oData.fileName);
 
