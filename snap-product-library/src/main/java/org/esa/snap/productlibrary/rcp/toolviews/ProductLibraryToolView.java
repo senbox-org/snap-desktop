@@ -50,12 +50,7 @@ import org.openide.windows.TopComponent;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+import java.awt.event.*;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
@@ -103,9 +98,12 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
     private JScrollPane listViewPane, tableViewPane, thumbnailPane;
     private JSplitPane splitPaneV;
     private JButton addButton, removeButton, updateButton, searchButton;
+    private final static String RESCAN = "Rescan folder";
+    private final static String STOP_RESCAN = "Stop rescan";
 
     private LabelBarProgressMonitor progMon;
     private JProgressBar progressBar;
+    private JButton stopButton;
     private ProductLibraryConfig libConfig;
 
     private static final String helpId = "productLibrary";
@@ -217,7 +215,7 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.NORTHWEST;
 
-        updateButton = DialogUtils.createButton("updateButton", "Rescan folder", updateIcon, headerBar, DialogUtils.ButtonStyle.Icon);
+        updateButton = DialogUtils.createButton("updateButton", RESCAN, updateIcon, headerBar, DialogUtils.ButtonStyle.Icon);
         updateButton.setActionCommand(LabelBarProgressMonitor.updateCommand);
         updateButton.addActionListener(new ActionListener() {
 
@@ -253,6 +251,7 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
                 if (event.getStateChange() == ItemEvent.SELECTED) {
                     final RepositoryInterface repo = (RepositoryInterface)repositoryListCombo.getSelectedItem();
                     dbPane.setRepository(repo);
+                    SystemUtils.LOG.info("ProductLibraryToolView: selected " + repo.getName());
                 }
             }
         });
@@ -260,6 +259,7 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         gbc.weightx = 0;
 
         searchButton = DialogUtils.createButton("searchButton", "Apply Search Query", searchIcon, headerBar, DialogUtils.ButtonStyle.Icon);
+        searchButton.setActionCommand(LabelBarProgressMonitor.updateCommand);
         searchButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 search();
@@ -306,6 +306,16 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         progressPanel = new JPanel();
         progressPanel.setLayout(new BorderLayout());
         progressPanel.add(progressBar, BorderLayout.CENTER);
+        stopButton = DialogUtils.createButton("stopButton", "Stop", stopIcon, progressPanel, DialogUtils.ButtonStyle.Icon);
+        stopButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                mainPanel.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+                if (progMon != null) {
+                    progMon.setCanceled(true);
+                }
+            }
+        });
+        progressPanel.add(stopButton, BorderLayout.EAST);
         progressPanel.setVisible(false);
         southPanel.add(progressPanel, BorderLayout.EAST);
 
@@ -508,11 +518,15 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         if (command.equals(LabelBarProgressMonitor.stopCommand)) {
             updateButton.setIcon(stopIcon);
             updateButton.setActionCommand(LabelBarProgressMonitor.stopCommand);
+            updateButton.setToolTipText(STOP_RESCAN);
+            updateButton.setRolloverIcon(stopIcon);
             addButton.setEnabled(false);
             removeButton.setEnabled(false);
         } else {
             updateButton.setIcon(updateIcon);
             updateButton.setActionCommand(LabelBarProgressMonitor.updateCommand);
+            updateButton.setToolTipText(RESCAN);
+            updateButton.setRolloverIcon(updateIcon);
             addButton.setEnabled(true);
             removeButton.setEnabled(true);
         }
@@ -643,13 +657,16 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
     }
 
     public void notifyProgressStart() {
+        if (progMon.isCanceled()) {
+            return;
+        }
         progressPanel.setVisible(true);
-        toggleUpdateButton(LabelBarProgressMonitor.stopCommand);
+        //toggleUpdateButton(LabelBarProgressMonitor.stopCommand);
     }
 
     public void notifyProgressDone() {
         progressPanel.setVisible(false);
-        toggleUpdateButton(LabelBarProgressMonitor.updateCommand);
+        //toggleUpdateButton(LabelBarProgressMonitor.updateCommand);
         updateButton.setEnabled(true);
         mainPanel.setCursor(Cursor.getDefaultCursor());
     }
