@@ -22,7 +22,7 @@ import org.esa.snap.core.gpf.common.ReadOp;
 import org.esa.snap.core.gpf.graph.Graph;
 import org.esa.snap.core.gpf.graph.Node;
 import org.esa.snap.core.gpf.internal.ProductSetHandler;
-import org.esa.snap.engine_utilities.db.CommonReaders;
+import org.esa.snap.engine_utilities.gpf.CommonReaders;
 
 import java.io.File;
 import java.util.ArrayList;

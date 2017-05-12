@@ -111,7 +111,7 @@ public class FileTable extends JTable {
         int cnt = fileModel.getRowCount();
         if (cnt == 1) {
             File file = fileModel.getFileAt(0);
-            if (file.getName().isEmpty())
+            if (file != null && file.getName().isEmpty())
                 return 0;
         }
         return cnt;

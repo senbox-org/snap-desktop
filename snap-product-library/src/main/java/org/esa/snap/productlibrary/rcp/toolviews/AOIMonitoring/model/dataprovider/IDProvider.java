@@ -62,7 +62,9 @@ public class IDProvider implements DataProvider {
                         .getTableCellRendererComponent(table, text, isSelected, hasFocus, row, column);
 
                 jlabel.setFont(jlabel.getFont().deriveFont(Font.BOLD));
-                jlabel.setToolTipText(entry.getFile().getAbsolutePath());
+                if(entry.getFile() != null) {
+                    jlabel.setToolTipText(entry.getFile().getAbsolutePath());
+                }
                 return jlabel;
             }
             return null;

@@ -20,10 +20,17 @@ import org.esa.snap.productlibrary.rcp.toolviews.AOIMonitoring.model.AOI;
 import org.esa.snap.productlibrary.rcp.toolviews.AOIMonitoring.model.AOIManager;
 import com.jidesoft.swing.FolderChooser;
 import org.esa.snap.core.datamodel.GeoPos;
+import org.esa.snap.engine_utilities.db.DBQuery;
 import org.esa.snap.graphbuilder.gpf.ui.worldmap.WorldMapUI;
 import org.esa.snap.graphbuilder.rcp.dialogs.GraphBuilderDialog;
 import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
 import org.esa.snap.productlibrary.rcp.toolviews.DatabasePane;
+import org.esa.snap.productlibrary.rcp.toolviews.model.ProductLibraryConfig;
+import org.esa.snap.productlibrary.rcp.toolviews.model.repositories.FolderRepository;
+import org.esa.snap.productlibrary.rcp.toolviews.model.repositories.RepositoryInterface;
+import org.esa.snap.productlibrary.rcp.toolviews.model.repositories.ScihubRepository;
+import org.esa.snap.productlibrary.rcp.toolviews.support.ComboCellRenderer;
+import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.GridBagUtils;
 import org.esa.snap.ui.ModalDialog;
@@ -52,13 +59,14 @@ public class AOIDialog extends ModalDialog {
 
     private final JCheckBox pairsCheckBox = new JCheckBox("Find CCD Slaves");
     private final JTextField maxSlavesField = new JTextField("1");
+    private JComboBox<RepositoryInterface> repositoryListCombo;
 
     private DatabasePane dbPane;
     private WorldMapUI worldMapUI;
 
     private final AOI aoi;
 
-    AOIDialog(Window parent, AOI theAOI) throws Exception {
+    public AOIDialog(Window parent, AOI theAOI) throws Exception {
         super(parent, "Area of Interest", ModalDialog.ID_OK_CANCEL, null);
         this.aoi = theAOI;
 
@@ -114,8 +122,9 @@ public class AOIDialog extends ModalDialog {
                 final boolean findPairs = e.getStateChange() == ItemEvent.SELECTED;
                 dbPane.setVisible(findPairs);
                 if (findPairs) {
-                    dbPane.getDB();
+                    //dbPane.getDB();
                 }
+                repositoryListCombo.setVisible(findPairs);
                 maxSlavesField.setEnabled(findPairs);
 
                 getJDialog().pack();
@@ -124,6 +133,7 @@ public class AOIDialog extends ModalDialog {
 
         initUI();
 
+        populateRepositoryListCombo(new ProductLibraryConfig(SnapApp.getDefault().getPreferences()));
         populateFields();
     }
 
@@ -158,6 +168,23 @@ public class AOIDialog extends ModalDialog {
         gbc.gridx = 2;
         northPane.add(maxSlavesField, gbc);
 
+        repositoryListCombo = new JComboBox<>();
+        repositoryListCombo.setRenderer(new ComboCellRenderer());
+        repositoryListCombo.setVisible(false);
+
+        repositoryListCombo.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent event) {
+                if (event.getStateChange() == ItemEvent.SELECTED) {
+                    final RepositoryInterface repo = (RepositoryInterface)repositoryListCombo.getSelectedItem();
+                    dbPane.setRepository(repo);
+                }
+            }
+        });
+        gbc.gridy++;
+        gbc.gridx = 0;
+        gbc.gridwidth = 1;
+        northPane.add(repositoryListCombo, gbc);
+
         contentPane.add(northPane, BorderLayout.NORTH);
 
         final MyDatabaseQueryListener dbQueryListener = new MyDatabaseQueryListener();
@@ -172,6 +199,21 @@ public class AOIDialog extends ModalDialog {
         contentPane.add(worldMapUI.getWorlMapPane(), BorderLayout.EAST);
 
         setContent(contentPane);
+    }
+
+    private void populateRepositoryListCombo(final ProductLibraryConfig config) {
+        // add default repositories
+        repositoryListCombo.insertItemAt(new FolderRepository(DBQuery.ALL_FOLDERS, null), 0);
+        repositoryListCombo.insertItemAt(new ScihubRepository(), 1);
+
+        // add previously added folder repositories
+        final File[] baseDirList = config.getBaseDirs();
+        for (File f : baseDirList) {
+            repositoryListCombo.insertItemAt(new FolderRepository(f.getAbsolutePath(), f), repositoryListCombo.getItemCount());
+        }
+        if (baseDirList.length > 0) {
+            repositoryListCombo.setSelectedIndex(0);
+        }
     }
 
     private void populateFields() {
@@ -200,7 +242,7 @@ public class AOIDialog extends ModalDialog {
         }
     }
 
-    private static boolean validateFolder(final File file) {
+    public static boolean validateFolder(final File file) {
         if (!file.exists()) {
             if (!file.mkdirs()) {
                 Dialogs.showError("Unable to create folder\n" + file.getAbsolutePath());

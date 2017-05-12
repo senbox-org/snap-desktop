@@ -51,6 +51,9 @@ public class DatabaseStatistics implements DatabasePane.DatabaseQueryListener {
 
         for (ProductEntry entry : entryList) {
             final ProductData.UTC utc = entry.getFirstLineTime();
+            if(utc == null) {
+                continue;
+            }
             final Calendar cal = getAsCalendar(utc);
             final int year = cal.get(Calendar.YEAR);
             YearData yData = yearDataMap.get(year);
@@ -221,7 +224,7 @@ public class DatabaseStatistics implements DatabasePane.DatabaseQueryListener {
 
         public void setSelected(final int m, final boolean selected) {
             dbPane.getDBQuery().setMonthSelected(m, selected);
-            dbPane.queryDatabase();
+            dbPane.partialQuery();
         }
 
         public boolean isSelected(final int m) {

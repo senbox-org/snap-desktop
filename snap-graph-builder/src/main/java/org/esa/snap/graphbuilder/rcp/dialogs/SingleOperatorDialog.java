@@ -46,7 +46,7 @@ import org.esa.snap.core.gpf.ui.ParameterUpdater;
 import org.esa.snap.core.gpf.ui.SingleTargetProductDialog;
 import org.esa.snap.core.gpf.ui.SourceProductSelector;
 import org.esa.snap.core.gpf.ui.TargetProductSelectorModel;
-import org.esa.snap.engine_utilities.db.CommonReaders;
+import org.esa.snap.engine_utilities.gpf.CommonReaders;
 import org.esa.snap.engine_utilities.util.MemUtils;
 import org.esa.snap.engine_utilities.util.ProductFunctions;
 import org.esa.snap.graphbuilder.gpf.ui.OperatorUI;
