@@ -25,6 +25,7 @@ import org.esa.snap.graphbuilder.gpf.ui.worldmap.WorldMapUI;
 import org.esa.snap.graphbuilder.rcp.progress.LabelBarProgressMonitor;
 import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
 import org.esa.snap.productlibrary.rcp.dialogs.CheckListDialog;
+import org.esa.snap.productlibrary.rcp.toolviews.extensions.ProductLibraryActionExt;
 import org.esa.snap.productlibrary.rcp.toolviews.listviews.ListView;
 import org.esa.snap.productlibrary.rcp.toolviews.listviews.ProductEntryList;
 import org.esa.snap.productlibrary.rcp.toolviews.listviews.ProductEntryTable;
@@ -164,6 +165,16 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         final JPanel centrePanel = createCentrePanel();
         final JPanel southPanel = createStatusPanel();
 
+        ProductLibraryActionExt.listenerList.add(new ProductLibraryActionExtListener());
+
+        /*
+        final java.util.List<ProductLibraryActionExt> actionExtList = productLibraryActions.getActionExtList();
+        System.out.println("ProductLibraryToolView: actionExtList.size = " + actionExtList.size());
+        for (ProductLibraryActionExt action: actionExtList) {
+            System.out.println("ProductLibraryToolView: action = " + action.getClass().getName());
+        }
+        */
+
         final DatabaseStatistics stats = new DatabaseStatistics(dbPane);
         final TimelinePanel timeLinePanel = new TimelinePanel(stats);
         dbPane.addListener(timeLinePanel);
@@ -206,6 +217,20 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
 
         setLayout(new BorderLayout());
         add(mainPanel, BorderLayout.CENTER);
+    }
+
+    public class ProductLibraryActionExtListener implements ProductLibraryActionExt.ActionExtListener {
+
+        public void notifyMSG(ProductLibraryActionExt action, MSG msg) {
+            SystemUtils.LOG.info("ProductLibraryTool: got notification MSG " + msg.name());
+            switch (msg) {
+                case NEW_REPO:
+                    addRepository1(action.getNewRepoFolder());
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 
     private JPanel createHeaderPanel() {
@@ -381,6 +406,41 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         }
     }
 
+    private RepositoryInterface getRepositoryFromListCombo(final File file) {
+
+        int total = repositoryListCombo.getItemCount();
+
+        for (int i = 0; i < total; i++) {
+            final RepositoryInterface repo = repositoryListCombo.getItemAt(i);
+            if (file.getAbsolutePath().equals(repo.getName())) {
+                return repo;
+            }
+        }
+
+        return null;
+    }
+
+    private RepositoryInterface addToRepositoryListCombo(final File baseDir) {
+        RepositoryInterface repo = getRepositoryFromListCombo(baseDir);
+        if (repo == null) {
+            repo = new FolderRepository(baseDir.getAbsolutePath(), baseDir);
+            repositoryListCombo.insertItemAt(repo, repositoryListCombo.getItemCount());
+        }
+        return repo;
+    }
+
+    private void addRepository1(final File baseDir) {
+
+            libConfig.addBaseDir(baseDir);  // verified that it won't be added again if already there
+            final RepositoryInterface repo = addToRepositoryListCombo(baseDir);
+
+            setUIComponentsEnabled(doRepositoriesExist());
+
+            DBScanner.Options options = new DBScanner.Options(false, false, false);
+            updateRepostitory(repo, options);
+
+    }
+
     private void addRepository() {
         final File baseDir = productLibraryActions.promptForRepositoryBaseDir();
         if (baseDir == null) {
@@ -392,8 +452,8 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
 
         if (dlg.IsOK()) {
             libConfig.addBaseDir(baseDir);
-            RepositoryInterface repo = new FolderRepository(baseDir.getAbsolutePath(), baseDir);
-            repositoryListCombo.insertItemAt(repo, repositoryListCombo.getItemCount());
+            final RepositoryInterface repo = addToRepositoryListCombo(baseDir);
+
             setUIComponentsEnabled(doRepositoriesExist());
 
             DBScanner.Options options = new DBScanner.Options(dlg.shouldDoRecusive(),
