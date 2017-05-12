@@ -125,10 +125,19 @@ public class DownloadActionExt implements ProductLibraryActionExt {
 
                 openData.getProduct(entry.getRefID(), oData, outputFolder, new SubProgressMonitor(pm, 1));
             }
+
+            for (ActionExtListener listener : listenerList) {
+                listener.notifyMSG(this, ActionExtListener.MSG.NEW_REPO);
+            }
+
         } catch (Exception e) {
             Dialogs.showError("unable to download " + e.getMessage());
         } finally {
             pm.done();
         }
+    }
+
+    public File getNewRepoFolder() {
+        return outputFolder;
     }
 }
