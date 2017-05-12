@@ -61,7 +61,7 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
     private JButton moveTopButton = null, moveUpButton = null, moveDownButton = null, moveBottomButton = null;
     private JButton refreshButton = null, clearButton = null;
 
-    final JLabel countLabel = new JLabel();
+    private final JLabel countLabel = new JLabel();
 
     private static final ImageIcon addIcon = TangoIcons.actions_list_add(TangoIcons.Res.R22);
     private static final ImageIcon addOpenedIcon = new ImageIcon(ProductSetPanel.class.getClassLoader().
@@ -114,7 +114,7 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
         updateComponents();
     }
 
-    public void setBorderTitle(final String title) {
+    protected void setBorderTitle(final String title) {
         if (title != null)
             setBorder(BorderFactory.createTitledBorder(title));
     }
@@ -168,7 +168,7 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
         countLabel.setText(cntMsg);
     }
 
-    public JPanel createButtonPanel(final FileTable table) {
+    private JPanel createButtonPanel(final FileTable table) {
         final FileTableModel tableModel = table.getModel();
 
         final JPanel panel = new JPanel(new GridLayout2(20, 1));
@@ -399,11 +399,11 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
         productSetTable.setProductEntries(productEntryList);
     }
 
-    public boolean isSkippingExistingTargetFiles() {
+    boolean isSkippingExistingTargetFiles() {
         return targetProductSelector.isSkippingExistingTargetFiles();
     }
 
-    public boolean isReplacingWritersWithUniqueTargetProduct() {
+    boolean isReplacingWritersWithUniqueTargetProduct() {
         return targetProductSelector.isReplacingWritersWithUniqueTargetProduct();
     }
 
@@ -415,7 +415,7 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
         private final FileTableModel tableModel;
         private final MOVE movement;
 
-        public MoveButtonActionListener(FileTable table, FileTableModel tableModel, MOVE movement) {
+        MoveButtonActionListener(FileTable table, FileTableModel tableModel, MOVE movement) {
             this.table = table;
             this.tableModel = tableModel;
             this.movement = movement;
