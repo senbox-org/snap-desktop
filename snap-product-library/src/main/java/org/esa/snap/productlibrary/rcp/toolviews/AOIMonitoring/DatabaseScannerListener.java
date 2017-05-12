@@ -75,7 +75,7 @@ public class DatabaseScannerListener implements DBScanner.DBScannerListener {
                 final ArrayList<ProductEntry> toProcessEntries = new ArrayList<>();
                 for (ProductEntry entry : productEntryList) {
                     final File[] slaveFiles = findCCDPairs(db, entry, processingAOI);
-                    if (slaveFiles != null && slaveFiles.length > 0) {
+                    if (slaveFiles != null && slaveFiles.length > 0 && entry.getFile() != null) {
                         slaveFileMap.put(entry.getFile(), slaveFiles);
                         toProcessEntries.add(entry);
                     }
