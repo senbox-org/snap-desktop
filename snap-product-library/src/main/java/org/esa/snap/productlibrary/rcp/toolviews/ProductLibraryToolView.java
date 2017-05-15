@@ -80,7 +80,7 @@ import java.io.PrintStream;
         "CTL_ProductLibraryTopComponentDescription=Product Library",
 })
 public class ProductLibraryToolView extends ToolTopComponent implements LabelBarProgressMonitor.ProgressBarListener,
-        DatabasePane.DatabaseQueryListener, WorldMapUI.WorldMapUIListener, ListView.ListViewListener, ProductLibraryActions.ProductLibraryActionListener {
+        DatabasePane.DatabaseQueryListener, WorldMapUI.WorldMapUIListener, ListView.ListViewListener {
 
     private static ImageIcon updateIcon, searchIcon, stopIcon, helpIcon;
     private static ImageIcon addButtonIcon, removeButtonIcon;
@@ -100,7 +100,6 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
     private JSplitPane splitPaneV;
     private JButton addButton, removeButton, updateButton, searchButton;
     private final static String RESCAN = "Rescan folder";
-    private final static String STOP_RESCAN = "Stop rescan";
 
     private LabelBarProgressMonitor progMon;
     private JProgressBar progressBar;
@@ -166,14 +165,6 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         final JPanel southPanel = createStatusPanel();
 
         ProductLibraryActionExt.listenerList.add(new ProductLibraryActionExtListener());
-
-        /*
-        final java.util.List<ProductLibraryActionExt> actionExtList = productLibraryActions.getActionExtList();
-        System.out.println("ProductLibraryToolView: actionExtList.size = " + actionExtList.size());
-        for (ProductLibraryActionExt action: actionExtList) {
-            System.out.println("ProductLibraryToolView: action = " + action.getClass().getName());
-        }
-        */
 
         final DatabaseStatistics stats = new DatabaseStatistics(dbPane);
         final TimelinePanel timeLinePanel = new TimelinePanel(stats);
@@ -354,7 +345,6 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         leftPanel.add(dbPane, BorderLayout.NORTH);
 
         productLibraryActions = new ProductLibraryActions(this);
-        productLibraryActions.addListener(this);
 
         productEntryTable = new ProductEntryTable(productLibraryActions);
         productEntryTable.addListener(this);
@@ -438,7 +428,6 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
 
             DBScanner.Options options = new DBScanner.Options(false, false, false);
             updateRepostitory(repo, options);
-
     }
 
     private void addRepository() {
@@ -508,11 +497,11 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         return progMon;
     }
 
-    File[] getSelectedFiles() {
+    public File[] getSelectedFiles() {
         return currentListView.getSelectedFiles();
     }
 
-    ProductEntry[] getSelectedProductEntries() {
+    public ProductEntry[] getSelectedProductEntries() {
         return currentListView.getSelectedProductEntries();
     }
 
@@ -524,7 +513,7 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         currentListView.sort(sortBy);
     }
 
-    void selectAll() {
+    public void selectAll() {
         currentListView.selectAll();
         notifySelectionChanged();
     }
@@ -537,7 +526,7 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
     private synchronized void search() {
         progMon = getLabelBarProgressMonitor();
         final DBWorker dbWorker = new DBWorker(DBWorker.TYPE.QUERY, dbPane, progMon);
-        dbWorker.addListener(new MyDatabaseWorkerListener());
+        dbWorker.addListener(new DBWorkerListener());
         dbWorker.execute();
     }
 
@@ -563,7 +552,7 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
             final DBWorker remover = new DBWorker(DBWorker.TYPE.REMOVE,
                                                   ((DBProductQuery)folderRepo.getProductQueryInterface()).getDB(),
                                                   folderRepo.getBaseDir(), progMon);
-            remover.addListener(new MyDatabaseWorkerListener());
+            remover.addListener(new DBWorkerListener());
             remover.execute();
         }
     }
@@ -574,49 +563,32 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         repositoryListCombo.setEnabled(enable);
     }
 
-    private void toggleUpdateButton(final String command) {
-        if (command.equals(LabelBarProgressMonitor.stopCommand)) {
-            updateButton.setIcon(stopIcon);
-            updateButton.setActionCommand(LabelBarProgressMonitor.stopCommand);
-            updateButton.setToolTipText(STOP_RESCAN);
-            updateButton.setRolloverIcon(stopIcon);
-            addButton.setEnabled(false);
-            removeButton.setEnabled(false);
-        } else {
-            updateButton.setIcon(updateIcon);
-            updateButton.setActionCommand(LabelBarProgressMonitor.updateCommand);
-            updateButton.setToolTipText(RESCAN);
-            updateButton.setRolloverIcon(updateIcon);
-            addButton.setEnabled(true);
-            removeButton.setEnabled(true);
-        }
-    }
-
-    void UpdateUI() {
+    private void UpdateUI() {
         dbPane.refresh();
         currentListView.updateUI();
     }
 
-    void changeView() {
+    public ListView getCurrentListView() {
+        return currentListView;
+    }
+
+    public synchronized void changeView() {
         currentListView.setProductEntryList(new ProductEntry[]{}); // force to empty
 
         if (currentListView instanceof ProductEntryList) {
             currentListView = productEntryTable;
-            productLibraryActions.updateViewButton(ProductLibraryActions.thumbnailViewButtonIcon);
             splitPaneV.setLeftComponent(tableViewPane);
         } else if (currentListView instanceof ProductEntryTable) {
             currentListView = thumbnailView;
-            productLibraryActions.updateViewButton(ProductLibraryActions.listViewButtonIcon);
             splitPaneV.setLeftComponent(thumbnailPane);
         } else if (currentListView instanceof ThumbnailView) {
             currentListView = productEntryList;
-            productLibraryActions.updateViewButton(ProductLibraryActions.tableViewButtonIcon);
             splitPaneV.setLeftComponent(listViewPane);
         }
         notifyNewEntryListAvailable();
     }
 
-    void findSlices(int dataTakeId) {
+    public void findSlices(int dataTakeId) {
         dbPane.findSlices(dataTakeId);
     }
 
@@ -658,7 +630,7 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         worldMapUI.setSelectedGeoBoundaries(null);
     }
 
-    static void handleErrorList(final java.util.List<DBScanner.ErrorFile> errorList) {
+    private static void handleErrorList(final java.util.List<DBScanner.ErrorFile> errorList) {
         final StringBuilder str = new StringBuilder();
         int cnt = 1;
         for (DBScanner.ErrorFile err : errorList) {
@@ -739,11 +711,6 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         dbPane.setSelectionRect(worldMapUI.getSelectionBox());
     }
 
-    public void notifyDirectoryChanged() {
-        rescanFolder(new DBScanner.Options(true, false, false));
-        UpdateUI();
-    }
-
     public void notifySelectionChanged() {
         updateStatusLabel();
         final ProductEntry[] selections = getSelectedProductEntries();
@@ -781,13 +748,39 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         }
     }
 
-    private class MyDatabaseWorkerListener implements DBWorker.DBWorkerListener {
+    DBWorker.DBWorkerListener createDBListener() {
+        return new DBWorkerListener();
+    }
+
+    private class DBWorkerListener implements DBWorker.DBWorkerListener {
 
         public void notifyMSG(final MSG msg) {
             if (msg.equals(DBWorker.DBWorkerListener.MSG.DONE)) {
                 setUIComponentsEnabled(doRepositoriesExist());
                 UpdateUI();
             }
+        }
+    }
+
+    ProductFileHandler.ProductFileHandlerListener createProductFileHandlerListener() {
+        return new FileHandlerListener();
+    }
+
+    private class FileHandlerListener implements ProductFileHandler.ProductFileHandlerListener {
+
+        public void notifyMSG(final ProductFileHandler fileHandler, final MSG msg) {
+            if (msg.equals(ProductFileHandler.ProductFileHandlerListener.MSG.DONE)) {
+                final java.util.List<DBScanner.ErrorFile> errorList = fileHandler.getErrorList();
+                if (!errorList.isEmpty()) {
+                    handleErrorList(errorList);
+                }
+                if (fileHandler.getOperationType().equals(ProductFileHandler.TYPE.MOVE_TO) ||
+                        fileHandler.getOperationType().equals(ProductFileHandler.TYPE.DELETE)) {
+                    rescanFolder(new DBScanner.Options(true, false, false));
+                    UpdateUI();
+                }
+            }
+            UpdateUI();
         }
     }
 

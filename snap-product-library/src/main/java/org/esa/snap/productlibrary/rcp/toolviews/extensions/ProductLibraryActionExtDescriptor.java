@@ -27,7 +27,7 @@ public class ProductLibraryActionExtDescriptor {
     private Class<? extends ProductLibraryActionExt> actionExtClass;
     private int position;
 
-    public ProductLibraryActionExtDescriptor(final String id,
+    ProductLibraryActionExtDescriptor(final String id,
                                              final Class<? extends ProductLibraryActionExt> actionExtClass,
                                              final int position) {
         this.id = id;
@@ -43,7 +43,14 @@ public class ProductLibraryActionExtDescriptor {
         return position;
     }
 
+    public boolean isSeperator() {
+        return actionExtClass == null;
+    }
+
     public ProductLibraryActionExt createActionExt(final ProductLibraryActions actionHandler) {
+        if(isSeperator()) {
+            return null;
+        }
         Object object;
         try {
             object = actionExtClass.newInstance();

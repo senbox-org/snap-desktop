@@ -43,7 +43,7 @@ public class DownloadActionExt implements ProductLibraryActionExt {
     private static final String COPERNICUS_HOST = "https://scihub.copernicus.eu";
     private static final String COPERNICUS_ODATA_ROOT = "https://scihub.copernicus.eu/dhus/odata/v1/";
 
-    private File outputFolder = new File("e:\\tmp\\");
+    private File outputFolder;
 
     public void setActionHandler(final ProductLibraryActions actionHandler) {
         this.actionHandler = actionHandler;
@@ -51,7 +51,7 @@ public class DownloadActionExt implements ProductLibraryActionExt {
 
     public JButton getButton(final JPanel panel) {
         if (button == null) {
-            button = DialogUtils.createButton("downloadButton", "Download selected products", downloadIcon, panel, DialogUtils.ButtonStyle.Icon);
+            button = DialogUtils.createButton("downloadButton", "Download", downloadIcon, panel, DialogUtils.ButtonStyle.Icon);
         }
         return button;
     }

@@ -17,21 +17,16 @@ package org.esa.snap.productlibrary.rcp.toolviews;
 
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.engine_utilities.db.ProductEntry;
-import org.esa.snap.engine_utilities.util.ResourceUtils;
-import org.esa.snap.graphbuilder.rcp.dialogs.BatchGraphDialog;
 import org.esa.snap.graphbuilder.rcp.progress.LabelBarProgressMonitor;
 import org.esa.snap.graphbuilder.rcp.utils.ClipboardUtils;
-import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
 import org.esa.snap.productlibrary.rcp.toolviews.extensions.ProductLibraryActionExt;
 import org.esa.snap.productlibrary.rcp.toolviews.extensions.ProductLibraryActionExtDescriptor;
 import org.esa.snap.productlibrary.rcp.toolviews.extensions.ProductLibraryActionExtRegistry;
 import org.esa.snap.productlibrary.rcp.toolviews.support.SortingDecorator;
 import org.esa.snap.productlibrary.rcp.utils.ProductOpener;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.quicklooks.ThumbnailPanel;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.SnapFileChooser;
-import org.esa.snap.ui.UIUtils;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
@@ -39,8 +34,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,114 +42,50 @@ import java.util.List;
  */
 public class ProductLibraryActions {
 
-    private static final ImageIcon selectAllIcon = UIUtils.loadImageIcon("/org/esa/snap/productlibrary/icons/select-all24.png", ProductLibraryToolView.class);
-    private static final ImageIcon openIcon = UIUtils.loadImageIcon("/org/esa/snap/productlibrary/icons/open24.png", ProductLibraryToolView.class);
-    private static final ImageIcon copyIcon = UIUtils.loadImageIcon("/org/esa/snap/productlibrary/icons/copy24.png", ProductLibraryToolView.class);
-    private static final ImageIcon batchIcon = UIUtils.loadImageIcon("/org/esa/snap/productlibrary/icons/batch24.png", ProductLibraryToolView.class);
-
-    public static final ImageIcon listViewButtonIcon = UIUtils.loadImageIcon("/org/esa/snap/rcp/icons/view_list24.png", ThumbnailPanel.class);
-    public static final ImageIcon tableViewButtonIcon = UIUtils.loadImageIcon("/org/esa/snap/rcp/icons/view_table24.png", ThumbnailPanel.class);
-    public static final ImageIcon thumbnailViewButtonIcon = UIUtils.loadImageIcon("/org/esa/snap/rcp/icons/view_thumbnails24.png", ThumbnailPanel.class);
-
     private final ProductLibraryToolView toolView;
-    private JButton viewButton, selectAllButton, openAllSelectedButton, copySelectedButton, batchProcessButton;
-
     private List<ProductLibraryActionExt> actionExtList = new ArrayList<>();
 
     private JMenuItem copyToItem, moveToItem, deleteItem;
 
     private File currentDirectory;
-    private final java.util.List<ProductLibraryActionListener> listenerList = new ArrayList<>(1);
 
     public ProductLibraryActions(final ProductLibraryToolView toolView) {
         this.toolView = toolView;
     }
 
-    public JPanel createCommandPanel() {
+    public ProductLibraryToolView getToolView() {
+        return this.toolView;
+    }
+
+    JPanel createCommandPanel() {
         final JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-        viewButton = DialogUtils.createButton("viewButton", "Change View", thumbnailViewButtonIcon, panel, DialogUtils.ButtonStyle.Icon);
-        viewButton.addActionListener(new ActionListener() {
-            public synchronized void actionPerformed(final ActionEvent e) {
-                toolView.changeView();
-            }
-        });
-
-        selectAllButton = DialogUtils.createButton("selectAllButton", "Select all", selectAllIcon, panel, DialogUtils.ButtonStyle.Icon);
-        selectAllButton.addActionListener(new ActionListener() {
-            public void actionPerformed(final ActionEvent e) {
-                toolView.selectAll();
-            }
-        });
-
-        openAllSelectedButton = DialogUtils.createButton("openAllSelectedButton", "Open selected", openIcon, panel, DialogUtils.ButtonStyle.Icon);
-        openAllSelectedButton.addActionListener(new ActionListener() {
-            public void actionPerformed(final ActionEvent e) {
-                performOpenAction();
-            }
-        });
-
-        copySelectedButton = DialogUtils.createButton("copySelectedButton", "Copy to clipboard", copyIcon, panel, DialogUtils.ButtonStyle.Icon);
-        copySelectedButton.addActionListener(new ActionListener() {
-            public void actionPerformed(final ActionEvent e) {
-                performCopyAction();
-            }
-        });
-
-        batchProcessButton = DialogUtils.createButton("batchProcessButton", "Batch", batchIcon, panel, DialogUtils.ButtonStyle.Icon);
-        batchProcessButton.setToolTipText("Right click to select a graph");
-        batchProcessButton.setComponentPopupMenu(createGraphPopup());
-        batchProcessButton.addActionListener(new ActionListener() {
-            public void actionPerformed(final ActionEvent e) {
-                batchProcess(toolView.getSelectedProductEntries(), null);
-            }
-        });
-
-        panel.add(viewButton);
-        panel.add(selectAllButton);
-        panel.add(openAllSelectedButton);
-        panel.add(copySelectedButton);
-        panel.add(batchProcessButton);
-        panel.add(Box.createRigidArea(new Dimension(24, 24))); // separator
-
         for (ProductLibraryActionExtDescriptor desc : ProductLibraryActionExtRegistry.getInstance().getDescriptors()) {
-            final ProductLibraryActionExt action = desc.createActionExt(this);
-            actionExtList.add(action);
+            if(desc.isSeperator()) {
+                panel.add(Box.createRigidArea(new Dimension(24, 24))); // separator
+            } else {
+                final ProductLibraryActionExt action = desc.createActionExt(this);
+                actionExtList.add(action);
 
-            final JButton button = action.getButton(panel);
-            panel.add(button);
-            button.addActionListener(new ActionListener() {
-                public void actionPerformed(final ActionEvent e) {
+                final JButton button = action.getButton(panel);
+                panel.add(button);
+                button.addActionListener(new ActionListener() {
+                    public void actionPerformed(final ActionEvent e) {
 
-                    final DBWorker worker = new DBWorker(DBWorker.TYPE.EXECUTEACTION, action,
-                                                          toolView.getLabelBarProgressMonitor());
-                    worker.addListener(new MyDBWorkerListener());
-                    worker.execute();
-                }
-            });
+                        final DBWorker worker = new DBWorker(DBWorker.TYPE.EXECUTEACTION, action,
+                                toolView.getLabelBarProgressMonitor());
+                        worker.addListener(toolView.createDBListener());
+                        worker.execute();
+                    }
+                });
+            }
         }
 
         return panel;
     }
 
-    private static void batchProcess(final ProductEntry[] productEntryList, final File graphFile) {
-        final BatchGraphDialog batchDlg = new BatchGraphDialog(SnapApp.getDefault().getAppContext(),
-                "Batch Processing", "batchProcessing", false);
-        batchDlg.setInputFiles(productEntryList);
-        if (graphFile != null) {
-            batchDlg.LoadGraph(graphFile);
-        }
-        batchDlg.show();
-    }
-
-    public void selectionChanged(final ProductEntry[] selections) {
-        final boolean enable = selections.length > 0 && allProductsExist(selections);
-
-        openAllSelectedButton.setEnabled(enable);
-        copySelectedButton.setEnabled(enable);
-        batchProcessButton.setEnabled(enable);
-
+    void selectionChanged(final ProductEntry[] selections) {
         for (ProductLibraryActionExt action : actionExtList) {
             action.selectionChanged(selections);
         }
@@ -178,8 +107,9 @@ public class ProductLibraryActions {
      */
     private void performCopyAction() {
         final File[] fileList = toolView.getSelectedFiles();
-        if (fileList.length != 0)
+        if (fileList.length != 0) {
             ClipboardUtils.copyToClipboard(fileList);
+        }
     }
 
     private void performFileAction(final ProductFileHandler.TYPE operationType) {
@@ -195,7 +125,7 @@ public class ProductLibraryActions {
         final LabelBarProgressMonitor progMon = toolView.getLabelBarProgressMonitor();
 
         final ProductFileHandler fileHandler = new ProductFileHandler(entries, operationType, targetFolder, progMon);
-        fileHandler.addListener(new MyFileHandlerListener());
+        fileHandler.addListener(toolView.createProductFileHandlerListener());
         fileHandler.execute();
     }
 
@@ -211,11 +141,7 @@ public class ProductLibraryActions {
         ProductOpener.openProducts(getSelectedFiles());
     }
 
-    public void findSlices(final int dataTakeId) {
-        toolView.findSlices(dataTakeId);
-    }
-
-    public File promptForRepositoryBaseDir() {
+    File promptForRepositoryBaseDir() {
         final JFileChooser fileChooser = createDirectoryChooser();
         fileChooser.setCurrentDirectory(currentDirectory);
         final int response = fileChooser.showOpenDialog(SnapApp.getDefault().getMainFrame());
@@ -360,69 +286,7 @@ public class ProductLibraryActions {
         return item;
     }
 
-    public JPopupMenu createGraphPopup() {
-        final Path graphPath = ResourceUtils.getGraphFolder("");
-
-        final JPopupMenu popup = new JPopupMenu();
-        if (Files.exists(graphPath)) {
-            createGraphMenu(popup, graphPath.toFile());
-        }
-        return popup;
-    }
-
-    private void createGraphMenu(final JPopupMenu menu, final File path) {
-        final File[] filesList = path.listFiles();
-        if (filesList == null || filesList.length == 0) return;
-
-        for (final File file : filesList) {
-            final String name = file.getName();
-            if (file.isDirectory() && !file.isHidden() && !name.equalsIgnoreCase("internal")) {
-                final JMenu subMenu = new JMenu(name);
-                menu.add(subMenu);
-                createGraphMenu(subMenu, file);
-            } else if (name.toLowerCase().endsWith(".xml")) {
-                final JMenuItem item = new JMenuItem(name.substring(0, name.indexOf(".xml")));
-                item.addActionListener(new ActionListener() {
-
-                    public void actionPerformed(final ActionEvent e) {
-                        //todo
-                        if (batchProcessButton.isEnabled()) {
-                            batchProcess(toolView.getSelectedProductEntries(), file);
-                        }
-                    }
-                });
-                menu.add(item);
-            }
-        }
-    }
-
-    private void createGraphMenu(final JMenu menu, final File path) {
-        final File[] filesList = path.listFiles();
-        if (filesList == null || filesList.length == 0) return;
-
-        for (final File file : filesList) {
-            final String name = file.getName();
-            if (file.isDirectory() && !file.isHidden() && !name.equalsIgnoreCase("internal")) {
-                final JMenu subMenu = new JMenu(name);
-                menu.add(subMenu);
-                createGraphMenu(subMenu, file);
-            } else if (name.toLowerCase().endsWith(".xml")) {
-                final JMenuItem item = new JMenuItem(name.substring(0, name.indexOf(".xml")));
-                item.addActionListener(new ActionListener() {
-
-                    public void actionPerformed(final ActionEvent e) {
-                        //todo
-                        if (batchProcessButton.isEnabled()) {
-                            batchProcess(toolView.getSelectedProductEntries(), file);
-                        }
-                    }
-                });
-                menu.add(item);
-            }
-        }
-    }
-
-    public void updateContextMenu(final ProductEntry[] selections) {
+    void updateContextMenu(final ProductEntry[] selections) {
         boolean allValid = true;
         for (ProductEntry entry : selections) {
             if (!ProductFileHandler.canMove(entry)) {
@@ -433,61 +297,5 @@ public class ProductLibraryActions {
         copyToItem.setEnabled(allValid);
         moveToItem.setEnabled(allValid);
         deleteItem.setEnabled(allValid);
-    }
-
-    public void updateViewButton(final ImageIcon icon) {
-        viewButton.setIcon(icon);
-        viewButton.setRolloverIcon(icon);
-    }
-
-    public void addListener(final ProductLibraryActionListener listener) {
-        if (!listenerList.contains(listener)) {
-            listenerList.add(listener);
-        }
-    }
-
-    private void notifyDirectoryChanged() {
-        for (ProductLibraryActionListener listener : listenerList) {
-            listener.notifyDirectoryChanged();
-        }
-    }
-
-    private void notifySelectionChanged() {
-        for (ProductLibraryActionListener listener : listenerList) {
-            listener.notifySelectionChanged();
-        }
-    }
-
-    public interface ProductLibraryActionListener {
-
-        void notifyDirectoryChanged();
-
-        void notifySelectionChanged();
-    }
-
-    private class MyFileHandlerListener implements ProductFileHandler.ProductFileHandlerListener {
-
-        public void notifyMSG(final ProductFileHandler fileHandler, final MSG msg) {
-            if (msg.equals(ProductFileHandler.ProductFileHandlerListener.MSG.DONE)) {
-                final java.util.List<DBScanner.ErrorFile> errorList = fileHandler.getErrorList();
-                if (!errorList.isEmpty()) {
-                    toolView.handleErrorList(errorList);
-                }
-                if (fileHandler.getOperationType().equals(ProductFileHandler.TYPE.MOVE_TO) ||
-                        fileHandler.getOperationType().equals(ProductFileHandler.TYPE.DELETE)) {
-                    notifyDirectoryChanged();
-                }
-            }
-            toolView.UpdateUI();
-        }
-    }
-
-    private class MyDBWorkerListener implements DBWorker.DBWorkerListener {
-
-        public void notifyMSG(final MSG msg) {
-            if (msg.equals(DBWorker.DBWorkerListener.MSG.DONE)) {
-                toolView.UpdateUI();
-            }
-        }
     }
 }

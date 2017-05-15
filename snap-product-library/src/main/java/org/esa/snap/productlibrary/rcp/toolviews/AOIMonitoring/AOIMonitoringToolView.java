@@ -16,10 +16,6 @@
 package org.esa.snap.productlibrary.rcp.toolviews.AOIMonitoring;
 
 
-import org.esa.snap.productlibrary.rcp.toolviews.AOIMonitoring.model.AOI;
-import org.esa.snap.productlibrary.rcp.toolviews.AOIMonitoring.model.AOIManager;
-import org.esa.snap.productlibrary.rcp.toolviews.AOIMonitoring.model.AOISortingDecorator;
-import org.esa.snap.productlibrary.rcp.toolviews.AOIMonitoring.model.AOITableModel;
 import com.jidesoft.swing.JideSplitPane;
 import org.esa.snap.core.datamodel.GeoPos;
 import org.esa.snap.core.util.io.SnapFileFilter;
@@ -28,6 +24,10 @@ import org.esa.snap.engine_utilities.db.ProductDB;
 import org.esa.snap.graphbuilder.gpf.ui.worldmap.WorldMapUI;
 import org.esa.snap.graphbuilder.rcp.dialogs.BatchGraphDialog;
 import org.esa.snap.graphbuilder.rcp.progress.LabelBarProgressMonitor;
+import org.esa.snap.productlibrary.rcp.toolviews.AOIMonitoring.model.AOI;
+import org.esa.snap.productlibrary.rcp.toolviews.AOIMonitoring.model.AOIManager;
+import org.esa.snap.productlibrary.rcp.toolviews.AOIMonitoring.model.AOISortingDecorator;
+import org.esa.snap.productlibrary.rcp.toolviews.AOIMonitoring.model.AOITableModel;
 import org.esa.snap.productlibrary.rcp.toolviews.DBScanner;
 import org.esa.snap.productlibrary.rcp.toolviews.model.ProductLibraryConfig;
 import org.esa.snap.rcp.SnapApp;
@@ -46,12 +46,7 @@ import org.openide.windows.TopComponent;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.io.File;
 
 

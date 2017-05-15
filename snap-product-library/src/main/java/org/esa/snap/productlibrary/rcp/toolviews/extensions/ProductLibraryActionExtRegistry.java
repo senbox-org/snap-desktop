@@ -34,7 +34,7 @@ public class ProductLibraryActionExtRegistry {
     private static Comparator<ProductLibraryActionExtDescriptor> descriptorComparator
             = (a, b) -> a.getPosition() - b.getPosition();
 
-    public ProductLibraryActionExtRegistry() {
+    private ProductLibraryActionExtRegistry() {
         registerActions();
     }
 
@@ -52,7 +52,7 @@ public class ProductLibraryActionExtRegistry {
     }
 
     private void registerActions() {
-        FileObject fileObj = FileUtil.getConfigFile("ProductLibraryActions");
+        final FileObject fileObj = FileUtil.getConfigFile("ProductLibraryActions");
         if (fileObj == null) {
             SystemUtils.LOG.warning("No ProductLibrary Action found.");
             return;
@@ -67,10 +67,12 @@ public class ProductLibraryActionExtRegistry {
                 SystemUtils.LOG.severe(String.format("Failed to create ProductLibrary action from layer.xml path '%s'", file.getPath()));
             }
             if (actionExtDescriptor != null) {
-                final ProductLibraryActionExtDescriptor existingDescriptor = actionExtDescriptors.get(actionExtDescriptor.getId());
-                if (existingDescriptor != null) {
-                    SystemUtils.LOG.warning(String.format("ProductLibrary action [%s] has been redeclared!\n",
-                            actionExtDescriptor.getId()));
+                if(!actionExtDescriptor.isSeperator()) {
+                    final ProductLibraryActionExtDescriptor existingDescriptor = actionExtDescriptors.get(actionExtDescriptor.getId());
+                    if (existingDescriptor != null) {
+                        SystemUtils.LOG.warning(String.format("ProductLibrary action [%s] has been redeclared!\n",
+                                actionExtDescriptor.getId()));
+                    }
                 }
 
                 actionExtDescriptors.put(actionExtDescriptor.getId(), actionExtDescriptor);
@@ -80,15 +82,20 @@ public class ProductLibraryActionExtRegistry {
         }
     }
 
-    public static ProductLibraryActionExtDescriptor createDescriptor(FileObject fileObject) {
+    private static ProductLibraryActionExtDescriptor createDescriptor(FileObject fileObject) {
         final String id = fileObject.getName();
+        final Integer position = (Integer) fileObject.getAttribute("position");
+
+        Assert.argument(position != null, "Attribute 'position' must be provided");
+
+        if(id.equals("Separator")) {
+            return new ProductLibraryActionExtDescriptor(id, null, position);
+        }
 
         final Class<? extends ProductLibraryActionExt> actionExtClass =
                 OperatorUIRegistry.getClassAttribute(fileObject, "actionExtClass", ProductLibraryActionExt.class, false);
-        final Integer position = (Integer) fileObject.getAttribute("position");
 
         Assert.argument(actionExtClass != null, "Attribute 'actionExtClass' must be provided");
-        Assert.argument(position != null, "Attribute 'position' must be provided");
 
         return new ProductLibraryActionExtDescriptor(id, actionExtClass, position);
     }

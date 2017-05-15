@@ -15,10 +15,10 @@
  */
 package org.esa.snap.productlibrary.rcp.toolviews.AOIMonitoring;
 
-import org.esa.snap.productlibrary.rcp.toolviews.AOIMonitoring.model.AOI;
-import org.esa.snap.productlibrary.rcp.toolviews.AOIMonitoring.model.DirectoryWatch;
 import org.esa.snap.graphbuilder.rcp.dialogs.BatchGraphDialog;
 import org.esa.snap.graphbuilder.rcp.progress.LabelBarProgressMonitor;
+import org.esa.snap.productlibrary.rcp.toolviews.AOIMonitoring.model.AOI;
+import org.esa.snap.productlibrary.rcp.toolviews.AOIMonitoring.model.DirectoryWatch;
 import org.esa.snap.productlibrary.rcp.toolviews.DBScanner;
 import org.esa.snap.productlibrary.rcp.toolviews.model.ProductLibraryConfig;
 import org.esa.snap.rcp.SnapApp;

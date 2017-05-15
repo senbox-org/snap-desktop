@@ -16,14 +16,14 @@
 package org.esa.snap.productlibrary.rcp.toolviews.AOIMonitoring;
 
 
-import org.esa.snap.productlibrary.rcp.toolviews.AOIMonitoring.model.AOI;
-import org.esa.snap.productlibrary.rcp.toolviews.AOIMonitoring.model.AOIManager;
 import com.jidesoft.swing.FolderChooser;
 import org.esa.snap.core.datamodel.GeoPos;
 import org.esa.snap.engine_utilities.db.DBQuery;
 import org.esa.snap.graphbuilder.gpf.ui.worldmap.WorldMapUI;
 import org.esa.snap.graphbuilder.rcp.dialogs.GraphBuilderDialog;
 import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
+import org.esa.snap.productlibrary.rcp.toolviews.AOIMonitoring.model.AOI;
+import org.esa.snap.productlibrary.rcp.toolviews.AOIMonitoring.model.AOIManager;
 import org.esa.snap.productlibrary.rcp.toolviews.DatabasePane;
 import org.esa.snap.productlibrary.rcp.toolviews.model.ProductLibraryConfig;
 import org.esa.snap.productlibrary.rcp.toolviews.model.repositories.FolderRepository;
