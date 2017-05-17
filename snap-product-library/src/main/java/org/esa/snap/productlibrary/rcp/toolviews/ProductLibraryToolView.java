@@ -216,7 +216,8 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
             SystemUtils.LOG.info("ProductLibraryTool: got notification MSG " + msg.name());
             switch (msg) {
                 case NEW_REPO:
-                    addRepository1(action.getNewRepoFolder());
+                    DBScanner.Options options = new DBScanner.Options(false, false, false);
+                    addRepository(action.getNewRepoFolder(), options);
                     break;
                 default:
                     break;
@@ -417,15 +418,14 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         return repo;
     }
 
-    private void addRepository1(final File baseDir) {
+    private void addRepository(final File baseDir, final DBScanner.Options options) {
 
-            libConfig.addBaseDir(baseDir);  // verified that it won't be added again if already there
-            final RepositoryInterface repo = addToRepositoryListCombo(baseDir);
+        libConfig.addBaseDir(baseDir);  // verified that it won't be added again if already there
+        final RepositoryInterface repo = addToRepositoryListCombo(baseDir);
 
-            setUIComponentsEnabled(doRepositoriesExist());
+        setUIComponentsEnabled(doRepositoriesExist());
 
-            DBScanner.Options options = new DBScanner.Options(false, false, false);
-            updateRepostitory(repo, options);
+        updateRepostitory(repo, options);
     }
 
     private void addRepository() {
@@ -438,15 +438,10 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         dlg.show();
 
         if (dlg.IsOK()) {
-            libConfig.addBaseDir(baseDir);
-            final RepositoryInterface repo = addToRepositoryListCombo(baseDir);
-
-            setUIComponentsEnabled(doRepositoriesExist());
-
             DBScanner.Options options = new DBScanner.Options(dlg.shouldDoRecusive(),
                     dlg.shouldValidateZips(),
                     dlg.shouldDoQuicklooks());
-            updateRepostitory(repo, options);
+            addRepository(baseDir, options);
         }
     }
 
