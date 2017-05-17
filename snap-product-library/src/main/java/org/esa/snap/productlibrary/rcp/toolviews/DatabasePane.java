@@ -68,6 +68,8 @@ public final class DatabasePane extends JPanel {
     private final JComboBox<String> orbitCorrectionCombo = new JComboBox<>(new String[]{
             DBQuery.ANY, DBQuery.ORBIT_PRELIMINARY, DBQuery.ORBIT_PRECISE, DBQuery.ORBIT_VERIFIED});
 
+    private final JTextField cloudCoverField = new JTextField();
+
     private final JComboBox<String> metadataNameCombo = new JComboBox<>();
     private final JTextField metdataValueField = new JTextField();
     private final JTextArea metadataArea = new JTextArea();
@@ -78,7 +80,7 @@ public final class DatabasePane extends JPanel {
     private ProductQueryInterface productQueryInterface;
 
     private DBQuery dbQuery = new DBQuery();
-    boolean modifyingCombos = false;
+    private boolean modifyingCombos = false;
 
     private final static double MB = 1024 * 1024, GB = 1024, TB = 1024 * 1024;
     private final DecimalFormat df = new DecimalFormat("#.00");
@@ -93,7 +95,7 @@ public final class DatabasePane extends JPanel {
             missionJList.addListSelectionListener(new ListSelectionListener() {
                 public void valueChanged(ListSelectionEvent event) {
                     if (modifyingCombos || event.getValueIsAdjusting()) return;
-                    updateProductTypeCombo();
+                    updateMissionFields();
                     partialQuery();
                 }
             });
@@ -209,6 +211,11 @@ public final class DatabasePane extends JPanel {
         gbc.gridy++;
         label = DialogUtils.addComponent(this, gbc, "Orbit Correction:", orbitCorrectionCombo);
         label.setHorizontalAlignment(JLabel.RIGHT);
+
+        gbc.gridy++;
+        label = DialogUtils.addComponent(this, gbc, "Cloud Cover %:", cloudCoverField);
+        label.setHorizontalAlignment(JLabel.RIGHT);
+
         gbc.gridy++;
         gbc.gridx = 0;
         gbc.gridwidth = 2;
@@ -274,7 +281,7 @@ public final class DatabasePane extends JPanel {
         }
     }
 
-    public void fullQuery(final ProgressMonitor pm) {
+    void fullQuery(final ProgressMonitor pm) {
 
         setData();
 
@@ -291,11 +298,11 @@ public final class DatabasePane extends JPanel {
         return productQueryInterface.getProductEntryList();
     }
 
-    public void refresh() {
+    void refresh() {
         boolean origState = lockCombos(true);
         try {
             updateMissionCombo();
-            updateProductTypeCombo();
+            updateMissionFields();
 
         } catch (Throwable t) {
             handleException(t);
@@ -315,19 +322,36 @@ public final class DatabasePane extends JPanel {
         missionJList.setListData(SQLUtils.prependString(DBQuery.ALL_MISSIONS, productQueryInterface.getAllMissions()));
     }
 
-    private void updateProductTypeCombo() {
+    private void updateMissionFields() {
         boolean origState = lockCombos(true);
         try {
-            productTypeJList.removeAll();
-            acquisitionModeCombo.removeAllItems();
-
             final String[] selectedMissions = toStringArray(missionJList.getSelectedValuesList());
             final String[] missions = StringUtils.contains(selectedMissions, DBQuery.ALL_MISSIONS) ? null : selectedMissions;
 
+            productTypeJList.removeAll();
             productTypeJList.setListData(SQLUtils.prependString(DBQuery.ALL_PRODUCT_TYPES, productQueryInterface.getAllProductTypes(missions)));
+
             final String[] modeItems = SQLUtils.prependString(DBQuery.ALL_MODES, productQueryInterface.getAllAcquisitionModes(missions));
+            acquisitionModeCombo.removeAllItems();
             for (String item : modeItems) {
                 acquisitionModeCombo.addItem(item);
+            }
+
+            if(!isFolderRepository() && missions != null) {
+                boolean isSAR = containsSARMission(missions);
+                boolean isOptical = containsOpticalMission(missions);
+                polarizationCombo.setEnabled(isSAR);
+                if(!isSAR) {
+                    polarizationCombo.setSelectedIndex(0);
+                }
+                cloudCoverField.setEnabled(isOptical);
+                if(!isOptical) {
+                    cloudCoverField.setText("");
+                }
+            } else {
+                polarizationCombo.setEnabled(true);
+                cloudCoverField.setEnabled(false);
+                cloudCoverField.setText("");
             }
 
         } catch (Throwable t) {
@@ -337,21 +361,54 @@ public final class DatabasePane extends JPanel {
         }
     }
 
+    private boolean containsOpticalMission(final String[] missions) {
+        for(String mission : missions) {
+            if(mission.equalsIgnoreCase("Sentinel-2") || mission.equalsIgnoreCase("Sentinel-3"))
+                return true;
+        }
+        return false;
+    }
+
+    private boolean containsSARMission(final String[] missions) {
+        for(String mission : missions) {
+            if(mission.equalsIgnoreCase("Sentinel-1"))
+                return true;
+        }
+        return false;
+    }
+
     private static String[] toStringArray(List<String> list) {
         return list.toArray(new String[list.size()]);
+    }
+
+    private boolean isFolderRepository() {
+        return repository == null || repository instanceof FolderRepository;
     }
 
     public void setRepository(final RepositoryInterface repo) {
         this.repository = repo;
         this.productQueryInterface = repository.getProductQueryInterface();
 
-        if (repository instanceof FolderRepository) {
+        final boolean isFolderRepo = isFolderRepository();
+        enableComponents(isFolderRepo);
+        if (isFolderRepo) {
             setBaseDir(((FolderRepository) repo).getBaseDir());
         } else {
             setBaseDir(null);
         }
         missionJList.setSelectedIndex(0);
         refresh();
+    }
+
+    private void enableComponents(final boolean isFolderRepo) {
+        calibrationCombo.setEnabled(isFolderRepo);
+        orbitCorrectionCombo.setEnabled(isFolderRepo);
+        cloudCoverField.setEnabled(!isFolderRepo);
+
+        metadataNameCombo.setEnabled(isFolderRepo);
+        metdataValueField.setEnabled(isFolderRepo);
+        metadataArea.setEnabled(isFolderRepo);
+        addMetadataButton.setEnabled(isFolderRepo);
     }
 
     private void setBaseDir(final File dir) {
@@ -390,6 +447,7 @@ public final class DatabasePane extends JPanel {
         dbQuery.setSelectedAcquisitionMode((String) acquisitionModeCombo.getSelectedItem());
         dbQuery.setSelectedPass((String) passCombo.getSelectedItem());
         dbQuery.setSelectedTrack(trackField.getText());
+        dbQuery.setSelectedCloudCover(cloudCoverField.getText());
 
         dbQuery.setStartEndDate(getDate(startDateBox), getDate(endDateBox));
 
@@ -401,7 +459,7 @@ public final class DatabasePane extends JPanel {
         dbQuery.setFreeQuery(metadataArea.getText());
     }
 
-    public void setSelectionRect(final GeoPos[] selectionBox) {
+    void setSelectionRect(final GeoPos[] selectionBox) {
         dbQuery.setSelectionRect(selectionBox);
         dbQuery.setReturnAllIfNoIntersection(true);
         partialQuery();
@@ -412,7 +470,7 @@ public final class DatabasePane extends JPanel {
         return dbQuery;
     }
 
-    public void findSlices(final int dataTakeId) {
+    void findSlices(final int dataTakeId) {
         metadataArea.setText(AbstractMetadata.data_take_id + '=' + dataTakeId);
 
         dbQuery.setSelectionRect(null);
@@ -428,7 +486,7 @@ public final class DatabasePane extends JPanel {
         boolean origState = lockCombos(true);
         try {
             missionJList.setSelectedIndices(findIndices(missionJList, dbQuery.getSelectedMissions()));
-            updateProductTypeCombo();
+            updateMissionFields();
             productTypeJList.setSelectedIndices(findIndices(productTypeJList, dbQuery.getSelectedProductTypes()));
             acquisitionModeCombo.setSelectedItem(dbQuery.getSelectedAcquisitionMode());
             passCombo.setSelectedItem(dbQuery.getSelectedPass());
@@ -464,7 +522,7 @@ public final class DatabasePane extends JPanel {
         return intIndices;
     }
 
-    public void updateProductSelectionText(final ProductEntry[] selections) {
+    void updateProductSelectionText(final ProductEntry[] selections) {
         if (selections != null && selections.length == 1) {
             final ProductEntry entry = selections[0];
             final StringBuilder text = new StringBuilder(255);

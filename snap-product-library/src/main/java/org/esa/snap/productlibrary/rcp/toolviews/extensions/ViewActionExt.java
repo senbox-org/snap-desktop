@@ -45,7 +45,7 @@ public class ViewActionExt implements ProductLibraryActionExt {
 
     public JButton getButton(final JPanel panel) {
         if (button == null) {
-            button = DialogUtils.createButton("viewButton", "Change View", thumbnailViewButtonIcon, panel, DialogUtils.ButtonStyle.Icon);
+            button = DialogUtils.createButton("viewButton", "Change View", tableViewButtonIcon, panel, DialogUtils.ButtonStyle.Icon);
         }
         return button;
     }
