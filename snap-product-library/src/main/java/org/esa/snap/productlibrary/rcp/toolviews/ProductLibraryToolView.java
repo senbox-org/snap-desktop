@@ -391,9 +391,7 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         for (File f : baseDirList) {
             repositoryListCombo.insertItemAt(new FolderRepository(f.getAbsolutePath(), f), repositoryListCombo.getItemCount());
         }
-        if (baseDirList.length > 0) {
-            repositoryListCombo.setSelectedIndex(0);
-        }
+        repositoryListCombo.setSelectedIndex(0);
     }
 
     private RepositoryInterface getRepositoryFromListCombo(final File file) {
@@ -561,6 +559,7 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         removeButton.setEnabled(enable);
         updateButton.setEnabled(enable);
         repositoryListCombo.setEnabled(enable);
+        searchButton.setEnabled(enable);
     }
 
     private void UpdateUI() {
