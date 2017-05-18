@@ -30,6 +30,8 @@ import org.esa.snap.core.datamodel.MetadataElement;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.core.datamodel.ProductNodeEvent;
+import org.esa.snap.core.gpf.annotations.Parameter;
+import org.esa.snap.core.gpf.annotations.ParameterDescriptorFactory;
 import org.esa.snap.ui.GridBagUtils;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -236,7 +238,7 @@ class MetadataPlotPanel extends ChartPagePanel {
     static class MetadataPlotSettings {
 
         static final String PROP_NAME_METADATA_ELEMENT = "metadataElement";
-        static final String PROP_NAME_RECORD_START_INDEX = "recordIndex";
+        static final String PROP_NAME_RECORD_START_INDEX = "recordStartIndex";
         static final String PROP_NAME_NUM_DISPLAY_RECORDS = "numDisplayRecords";
         static final String PROP_NAME_FIELD_X = "fieldX";
         static final String PROP_NAME_FIELD_Y1 = "fieldY1";
@@ -246,12 +248,17 @@ class MetadataPlotPanel extends ChartPagePanel {
         MetadataField fieldX;
         MetadataField fieldY1;
         MetadataField fieldY2;
-        int recordIndex;
+        @Parameter(interval = "[0,100]")
+        double recordStartIndex;
+        @Parameter(defaultValue = "0")
         int numDisplayRecords;
+
         private BindingContext context;
 
         public MetadataPlotSettings() {
-            context = new BindingContext(PropertyContainer.createObjectBacked(this));
+            context = new BindingContext(PropertyContainer.createObjectBacked(this, new ParameterDescriptorFactory()));
+            Property propertyRecordStart = context.getPropertySet().getProperty(PROP_NAME_RECORD_START_INDEX);
+            propertyRecordStart.getDescriptor().setAttribute("stepSize", 1);
             Property propertyMetaElement = context.getPropertySet().getProperty(PROP_NAME_METADATA_ELEMENT);
             propertyMetaElement.addPropertyChangeListener(new PropertyChangeListener() {
                 @Override
