@@ -220,15 +220,20 @@ public class ExportGeometryAction extends AbstractAction implements ContextAware
         return featureListMap;
     }
 
+
     private static SimpleFeatureType changeGeometryType(SimpleFeatureType original, Class<?> geometryType) {
         SimpleFeatureTypeBuilder sftb = new SimpleFeatureTypeBuilder();
         sftb.setCRS(original.getCoordinateReferenceSystem());
         sftb.setDefaultGeometry(original.getGeometryDescriptor().getLocalName());
-        sftb.add(original.getGeometryDescriptor().getLocalName(), geometryType);
+        boolean defaultGeometryAdded = false;
         for (AttributeDescriptor descriptor : original.getAttributeDescriptors()) {
-            if (!original.getGeometryDescriptor().getLocalName().equals(descriptor.getLocalName())) {
-                sftb.add(descriptor);
+            if (original.getGeometryDescriptor().getLocalName().equals(descriptor.getLocalName())) {
+                defaultGeometryAdded = true;
             }
+            sftb.add(descriptor);
+        }
+        if(!defaultGeometryAdded) {
+            sftb.add(original.getGeometryDescriptor().getLocalName(), geometryType);
         }
         sftb.setName("FT_" + geometryType.getSimpleName());
         return sftb.buildFeatureType();
