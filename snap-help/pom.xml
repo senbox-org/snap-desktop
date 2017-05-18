@@ -19,7 +19,7 @@
     <parent>
         <artifactId>snap-desktop</artifactId>
         <groupId>org.esa.snap</groupId>
-        <version>5.0.5</version>
+        <version>5.0.6-SNAPSHOT</version>
     </parent>
 
     <artifactId>snap-help</artifactId>
