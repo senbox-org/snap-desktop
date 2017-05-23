@@ -317,7 +317,7 @@ public class ToolAdapterEditorDialog extends AbstractAdapterEditor {
         JScrollPane tableScrollPane = new JScrollPane(paramsTable);
         tableScrollPane.setAlignmentX(Component.LEFT_ALIGNMENT);
         paramsPanel.add(tableScrollPane);
-        addParamBut.addActionListener(e -> paramsTable.addParameterToTable(new TemplateParameterDescriptor("parameterName", String.class)));
+        addParamBut.addActionListener(e -> paramsTable.addParameterToTable(new TemplateParameterDescriptor("parameterName", String.class), 0));
         TitledBorder title = BorderFactory.createTitledBorder(Bundle.CTL_Panel_OpParams_Border_TitleText());
         paramsPanel.setBorder(title);
         return paramsPanel;

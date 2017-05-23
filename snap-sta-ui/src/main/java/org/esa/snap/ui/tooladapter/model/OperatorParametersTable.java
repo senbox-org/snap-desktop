@@ -545,27 +545,27 @@ public class OperatorParametersTable extends JTable {
             }
         }
         TemplateParameterDescriptor newParameter = new TemplateParameterDescriptor(defaultParameterName, String.class);
-        addParameterToTable(newParameter);
+        newParameter.setParameterType(ToolAdapterConstants.REGULAR_PARAM_MASK);
+        int rowIndex = 0;
+        addParameterToTable(newParameter, rowIndex);
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                int rowIndex = operator.getToolParameterDescriptors().size() - 1;
+                //int rowIndex = operator.getToolParameterDescriptors().size() - 1;
                 showCellTextComponentEditor(1, rowIndex);
             }
         });
     }
 
-    public void addParameterToTable(ToolParameterDescriptor param) {
+    public void addParameterToTable(ToolParameterDescriptor param, int index) {
         try {
-            operator.getToolParameterDescriptors().add(param);
-
+            operator.getToolParameterDescriptors().add(index, param);
             PropertyDescriptor propertyDescriptor = ParameterDescriptorFactory.convert(param, new ParameterDescriptorFactory().getSourceProductMap());
             propertyDescriptor.setDefaultValue(param.getDefaultValue());
             DefaultPropertySetDescriptor propertySetDescriptor = new DefaultPropertySetDescriptor();
             propertySetDescriptor.addPropertyDescriptor(propertyDescriptor);
             PropertyContainer container = PropertyContainer.createMapBacked(new HashMap<>(), propertySetDescriptor);
             context.getPropertySet().addProperties(container.getProperties());
-
             createDefaultComponent(param, propertyDescriptor);
             fireTableRowsChanged();
         } catch (Exception ex){
