@@ -1,6 +1,5 @@
 package org.esa.snap.ui.product.spectrum;
 
-import com.jidesoft.utils.Lm;
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.ProductData;
 
@@ -9,7 +8,6 @@ public class SpectrumChooserMainForManualTesting {
      * Used for testing UI
      */
     public static void main(String[] args) {
-        Lm.verifyLicense("Brockmann Consult", "BEAM", "lCzfhklpZ9ryjomwWxfdupxIcuIoCxg2");
 
         final DisplayableSpectrum[] spectra = new DisplayableSpectrum[3];
 
