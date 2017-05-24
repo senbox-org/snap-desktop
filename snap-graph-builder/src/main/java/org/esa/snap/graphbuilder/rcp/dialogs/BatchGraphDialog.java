@@ -25,7 +25,6 @@ import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.engine_utilities.gpf.CommonReaders;
 import org.esa.snap.engine_utilities.db.ProductEntry;
 import org.esa.snap.engine_utilities.gpf.ProcessTimeMonitor;
-import org.esa.snap.engine_utilities.util.MemUtils;
 import org.esa.snap.engine_utilities.util.ResourceUtils;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.FileTable;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphDialog;
@@ -309,7 +308,7 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
 
         if (ValidateAllNodes()) {
 
-            MemUtils.freeAllMemory();
+            SystemUtils.freeAllMemory();
 
             progressBar.setValue(0);
 
@@ -617,7 +616,7 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
                             graphEx.executeGraph(SubProgressMonitor.create(pm, 1));
 
                             graphEx.disposeGraphContext();
-                            MemUtils.freeAllMemory();
+                            SystemUtils.freeAllMemory();
                         }
 
                     } catch (Exception e) {

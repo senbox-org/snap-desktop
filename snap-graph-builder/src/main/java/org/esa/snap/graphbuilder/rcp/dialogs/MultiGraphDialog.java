@@ -21,8 +21,8 @@ import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.OperatorException;
 import org.esa.snap.core.gpf.graph.GraphException;
+import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.engine_utilities.gpf.CommonReaders;
-import org.esa.snap.engine_utilities.util.MemUtils;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphExecuter;
 import org.esa.snap.graphbuilder.rcp.progress.LabelBarProgressMonitor;
 import org.esa.snap.rcp.SnapApp;
@@ -173,7 +173,7 @@ public abstract class MultiGraphDialog extends ModelessDialog implements LabelBa
 
         if (ValidateAllNodes()) {
 
-            MemUtils.freeAllMemory();
+            SystemUtils.freeAllMemory();
 
             progressBar.setValue(0);
 
@@ -362,7 +362,7 @@ public abstract class MultiGraphDialog extends ModelessDialog implements LabelBa
                     statusLabel.setText("Processing completed in " + diff + " seconds");
                 }
 
-                MemUtils.freeAllMemory();
+                SystemUtils.freeAllMemory();
 
                 if (ioPanel.isOpenInAppSelected()) {
                     final GraphExecuter graphEx = graphExecuterList.get(graphExecuterList.size() - 1);

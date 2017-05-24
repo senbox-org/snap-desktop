@@ -20,9 +20,9 @@ import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.common.ReadOp;
 import org.esa.snap.core.gpf.graph.GraphException;
+import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.engine_utilities.gpf.CommonReaders;
-import org.esa.snap.engine_utilities.util.MemUtils;
 import org.esa.snap.engine_utilities.util.ProductFunctions;
 import org.esa.snap.engine_utilities.util.ResourceUtils;
 import org.esa.snap.graphbuilder.gpf.ui.ProductSetReaderOpUI;
@@ -279,7 +279,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
                 return;
             }
 
-            MemUtils.freeAllMemory();
+            SystemUtils.freeAllMemory();
 
             progressBar.setValue(0);
 
@@ -653,7 +653,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
                 isProcessing = false;
                 graphEx.disposeGraphContext();
                 // free cache
-                MemUtils.freeAllMemory();
+                SystemUtils.freeAllMemory();
 
                 pm.done();
             }
