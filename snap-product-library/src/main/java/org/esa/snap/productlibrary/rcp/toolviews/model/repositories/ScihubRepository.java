@@ -58,7 +58,7 @@ public class ScihubRepository implements RepositoryInterface {
 
             final PromptDialog dlg = new PromptDialog(CopernicusProductQuery.COPERNICUS_HOST, new PromptDialog.Descriptor[] {
                     new PromptDialog.Descriptor("User name:", "", PromptDialog.TYPE.TEXTFIELD),
-                    new PromptDialog.Descriptor("Password:", "", PromptDialog.TYPE.TEXTFIELD)
+                    new PromptDialog.Descriptor("Password:", "", PromptDialog.TYPE.PASSWORD)
             });
             dlg.show();
             if (dlg.IsOK()) {

@@ -37,7 +37,7 @@ public class PromptDialog extends ModalDialog {
     private boolean ok = false;
     private final Map<String, JComponent> componentMap = new HashMap<>();
 
-    public enum TYPE { TEXTFIELD, TEXTAREA, CHECKBOX }
+    public enum TYPE { TEXTFIELD, TEXTAREA, CHECKBOX, PASSWORD }
 
     public PromptDialog(final String title, final String label, final String defaultValue, final TYPE type) {
         this(title, new Descriptor[] {new Descriptor(label, defaultValue, type)});
@@ -81,7 +81,12 @@ public class PromptDialog extends ModalDialog {
             content.add(new JLabel(label), gbc);
             gbc.weightx = 2;
             gbc.gridx = 1;
-            textComp = new JTextField(defaultValue);
+            if (type.equals(TYPE.PASSWORD)) {
+                textComp = new  JPasswordField(defaultValue);
+                ((JPasswordField)textComp).setEchoChar('*');
+            } else {
+                textComp = new JTextField(defaultValue);
+            }
             gbc.weightx = 1;
         }
         textComp.setEditable(true);
