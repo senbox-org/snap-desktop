@@ -23,6 +23,7 @@ import com.bc.ceres.binding.PropertySet;
 import com.bc.ceres.binding.ValidationException;
 import com.bc.ceres.binding.ValueRange;
 import com.bc.ceres.binding.ValueSet;
+import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.internal.SliderAdapter;
 import org.esa.snap.core.datamodel.MetadataAttribute;
@@ -32,7 +33,6 @@ import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.core.datamodel.ProductNodeEvent;
 import org.esa.snap.core.gpf.annotations.Parameter;
 import org.esa.snap.core.gpf.annotations.ParameterDescriptorFactory;
-import org.esa.snap.ui.GridBagUtils;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -50,10 +50,10 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
+import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import java.awt.Component;
-import java.awt.GridBagConstraints;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -187,14 +187,14 @@ class MetadataPlotPanel extends ChartPagePanel {
         final JComboBox<MetadataElement> datasetBox = new JComboBox<>();
         datasetBox.setRenderer(new ProductNodeListCellRenderer());
         JLabel recordLabel = new JLabel("Record: ");
-        JSlider recordSlider = new JSlider(SwingConstants.HORIZONTAL, 1, 100, 1);
+        JTextField recordValueField = new JTextField(7);
+        JSlider recordSlider = new JSlider(SwingConstants.HORIZONTAL, 0, 100, 0);
         recordSlider.setPaintTrack(true);
         recordSlider.setPaintTicks(true);
-        recordSlider.setPaintLabels(true);
         Hashtable standardLabels = recordSlider.createStandardLabels(recordSlider.getMaximum() - recordSlider.getMinimum(), recordSlider.getMinimum());
         recordSlider.setLabelTable(standardLabels);
-        JLabel numRecordsLabel = new JLabel("Records: ");
-        JSpinner numRecordsSpinner = new JSpinner(new SpinnerNumberModel(1, 1, 100, 1));
+        JLabel numRecordsLabel = new JLabel("Records / Plot: ");
+        JSpinner numRecordsSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 100, 1));
         final JLabel xFieldLabel = new JLabel("X Field: ");
         final JComboBox<MetadataAttribute> xFieldBox = new JComboBox<>();
         xFieldBox.setRenderer(new ProductNodeListCellRenderer());
@@ -206,26 +206,51 @@ class MetadataPlotPanel extends ChartPagePanel {
         y2FieldBox.setRenderer(new ProductNodeListCellRenderer());
 
         bindingContext.bind(PROP_NAME_METADATA_ELEMENT, datasetBox);
+        bindingContext.bind(PROP_NAME_RECORD_START_INDEX, recordValueField);
         bindingContext.bind(PROP_NAME_RECORD_START_INDEX, new SliderAdapter(recordSlider));
-        bindingContext.bind(PROP_NAME_NUM_DISPLAY_RECORDS, numRecordsSpinner);
+        bindingContext.bind(PROP_NAME_RECORDS_PER_PLOT, numRecordsSpinner);
         bindingContext.bind(PROP_NAME_FIELD_X, xFieldBox);
         bindingContext.bind(PROP_NAME_FIELD_Y1, y1FieldBox);
         bindingContext.bind(PROP_NAME_FIELD_Y2, y2FieldBox);
 
-        JPanel plotSettingsPanel = GridBagUtils.createPanel();
-        GridBagConstraints plotSettingsPanelConstraints = GridBagUtils.createConstraints("anchor=NORTHWEST,fill=HORIZONTAL,insets.top=4");
-        GridBagUtils.addToPanel(plotSettingsPanel, datasetLabel, plotSettingsPanelConstraints, "gridwidth=1,gridy=0,gridx=0,weightx=0,insets.left=4");
-        GridBagUtils.addToPanel(plotSettingsPanel, datasetBox, plotSettingsPanelConstraints, "gridwidth=1,gridy=0,gridx=1,weightx=1,insets.left=4");
-        GridBagUtils.addToPanel(plotSettingsPanel, recordLabel, plotSettingsPanelConstraints, "gridwidth=1,gridy=1,gridx=0,weightx=0,insets.left=4");
-        GridBagUtils.addToPanel(plotSettingsPanel, recordSlider, plotSettingsPanelConstraints, "gridwidth=1,gridy=1,gridx=1,weightx=1,insets.left=4");
-        GridBagUtils.addToPanel(plotSettingsPanel, numRecordsLabel, plotSettingsPanelConstraints, "gridwidth=1,gridy=2,gridx=0,weightx=0,insets.left=4");
-        GridBagUtils.addToPanel(plotSettingsPanel, numRecordsSpinner, plotSettingsPanelConstraints, "gridwidth=1,gridy=2,gridx=1,weightx=1,insets.left=4");
-        GridBagUtils.addToPanel(plotSettingsPanel, xFieldLabel, plotSettingsPanelConstraints, "gridwidth=1,gridy=3,gridx=0,weightx=0,insets.left=4");
-        GridBagUtils.addToPanel(plotSettingsPanel, xFieldBox, plotSettingsPanelConstraints, "gridwidth=1,gridy=3,gridx=1,weightx=1,insets.left=4");
-        GridBagUtils.addToPanel(plotSettingsPanel, y1FieldLabel, plotSettingsPanelConstraints, "gridwidth=1,gridy=4,gridx=0,weightx=0,insets.left=4");
-        GridBagUtils.addToPanel(plotSettingsPanel, y1FieldBox, plotSettingsPanelConstraints, "gridwidth=1,gridy=4,gridx=1,weightx=1,insets.left=4");
-        GridBagUtils.addToPanel(plotSettingsPanel, y2FieldLabel, plotSettingsPanelConstraints, "gridwidth=1,gridy=5,gridx=0,weightx=0,insets.left=4");
-        GridBagUtils.addToPanel(plotSettingsPanel, y2FieldBox, plotSettingsPanelConstraints, "gridwidth=1,gridy=5,gridx=1,weightx=1,insets.left=4");
+        TableLayout layout = new TableLayout(3);
+        JPanel plotSettingsPanel = new JPanel(layout);
+
+        layout.setTableWeightX(0.0);
+        layout.setTableAnchor(TableLayout.Anchor.NORTHWEST);
+        layout.setTableFill(TableLayout.Fill.HORIZONTAL);
+        layout.setTablePadding(4, 4);
+
+        layout.setCellWeightX(0, 1, 1.0);
+        layout.setCellColspan(0, 1, 2);
+        plotSettingsPanel.add(datasetLabel);
+        plotSettingsPanel.add(datasetBox);
+
+        layout.setCellWeightX(1, 1, 0.2);
+        layout.setCellWeightX(1, 2, 0.8);
+        plotSettingsPanel.add(recordLabel);
+        plotSettingsPanel.add(recordValueField);
+        plotSettingsPanel.add(recordSlider);
+
+        layout.setCellWeightX(2, 1, 1.0);
+        layout.setCellColspan(2, 1, 2);
+        plotSettingsPanel.add(numRecordsLabel);
+        plotSettingsPanel.add(numRecordsSpinner);
+
+        layout.setCellWeightX(3, 1, 1.0);
+        layout.setCellColspan(3, 1, 2);
+        plotSettingsPanel.add(xFieldLabel);
+        plotSettingsPanel.add(xFieldBox);
+
+        layout.setCellWeightX(4, 1, 1.0);
+        layout.setCellColspan(4, 1, 2);
+        plotSettingsPanel.add(y1FieldLabel);
+        plotSettingsPanel.add(y1FieldBox);
+
+        layout.setCellWeightX(5, 1, 1.0);
+        layout.setCellColspan(5, 1, 2);
+        plotSettingsPanel.add(y2FieldLabel);
+        plotSettingsPanel.add(y2FieldBox);
 
         updateSettings();
 
@@ -239,7 +264,7 @@ class MetadataPlotPanel extends ChartPagePanel {
 
         static final String PROP_NAME_METADATA_ELEMENT = "metadataElement";
         static final String PROP_NAME_RECORD_START_INDEX = "recordStartIndex";
-        static final String PROP_NAME_NUM_DISPLAY_RECORDS = "numDisplayRecords";
+        static final String PROP_NAME_RECORDS_PER_PLOT = "recordsPerPlot";
         static final String PROP_NAME_FIELD_X = "fieldX";
         static final String PROP_NAME_FIELD_Y1 = "fieldY1";
         static final String PROP_NAME_FIELD_Y2 = "fieldY2";
@@ -251,7 +276,7 @@ class MetadataPlotPanel extends ChartPagePanel {
         @Parameter(interval = "[0,100]")
         double recordStartIndex;
         @Parameter(defaultValue = "0")
-        int numDisplayRecords;
+        int recordsPerPlot;
 
         private BindingContext context;
 
@@ -271,7 +296,7 @@ class MetadataPlotPanel extends ChartPagePanel {
                         Property recordStartProperty = propertySet.getProperty(PROP_NAME_RECORD_START_INDEX);
                         recordStartProperty.getDescriptor().setValueRange(new ValueRange(1, numAvailableRecords));
                         recordStartProperty.setValue(1);
-                        Property numDispRecordProperty = propertySet.getProperty(PROP_NAME_NUM_DISPLAY_RECORDS);
+                        Property numDispRecordProperty = propertySet.getProperty(PROP_NAME_RECORDS_PER_PLOT);
                         numDispRecordProperty.getDescriptor().setValueRange(new ValueRange(1, numAvailableRecords));
                         numDispRecordProperty.setValue(1);
 
@@ -310,8 +335,8 @@ class MetadataPlotPanel extends ChartPagePanel {
 
         private MetadataField[] retrieveUsableFields(MetadataElement element) {
             List<MetadataField> list = new ArrayList<>();
-            if(getNumRecords(element) > 1) {
-                
+            if (getNumRecords(element) > 1) {
+
             }
 
             return list.toArray(new MetadataField[0]);
