@@ -39,6 +39,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -281,16 +282,33 @@ public final class DatabasePane extends JPanel {
         }
     }
 
+    boolean isClientError401(Exception e) {
+        return e.getMessage().contains("CLIENT_ERROR") && e.getMessage().contains("401");
+    }
+
     void fullQuery(final ProgressMonitor pm) {
 
         setData();
 
-        try {
-            if(productQueryInterface.fullQuery(dbQuery, pm)) {
-                notifyQuery();
+        final int numRetries = 1;
+
+        for (int i = 0; i < numRetries + 1; i++) {
+            try {
+                if (productQueryInterface.fullQuery(dbQuery, pm)) {
+                    notifyQuery();
+                }
+                break;
+            } catch (Exception e) {
+                if (i < numRetries && isClientError401(e)) {
+                    repository.resetCredentials();
+                } else if (isClientError401(e)) {
+                    handleException(new IOException(e.getMessage() + " (invalid credentials)"));
+                    break;
+                } else {
+                    handleException(e);
+                    break;
+                }
             }
-        } catch (Exception e) {
-            handleException(e);
         }
     }
 
