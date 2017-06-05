@@ -29,4 +29,8 @@ public interface RepositoryInterface {
     ImageIcon getIconImage();
 
     ProductQueryInterface getProductQueryInterface();
+
+    default void resetCredentials() {
+
+    }
 }
