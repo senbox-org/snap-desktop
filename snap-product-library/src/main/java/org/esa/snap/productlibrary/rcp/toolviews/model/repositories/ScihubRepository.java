@@ -51,26 +51,33 @@ public class ScihubRepository implements RepositoryInterface {
         return CopernicusProductQuery.instance();
     }
 
+    public void resetCredentials() {
+        promptForCredentials();
+    }
+
+    private static void promptForCredentials() {
+        final PromptDialog dlg = new PromptDialog(CopernicusProductQuery.COPERNICUS_HOST, new PromptDialog.Descriptor[] {
+                new PromptDialog.Descriptor("User name:", "", PromptDialog.TYPE.TEXTFIELD),
+                new PromptDialog.Descriptor("Password:", "", PromptDialog.TYPE.PASSWORD)
+        });
+        dlg.show();
+        if (dlg.IsOK()) {
+            try {
+                final String user = dlg.getValue("User name:");
+                final String password = dlg.getValue("Password:");
+
+                Credentials.instance().put(CopernicusProductQuery.COPERNICUS_HOST, user, password);
+            } catch (Exception ex) {
+                Dialogs.showError(ex.getMessage());
+            }
+        }
+    }
+
     private static void checkCredentials() {
         Credentials.CredentialInfo credentialInfo = Credentials.instance().get(CopernicusProductQuery.COPERNICUS_HOST);
         if (credentialInfo == null) {
             // prompt for user name and password
-
-            final PromptDialog dlg = new PromptDialog(CopernicusProductQuery.COPERNICUS_HOST, new PromptDialog.Descriptor[] {
-                    new PromptDialog.Descriptor("User name:", "", PromptDialog.TYPE.TEXTFIELD),
-                    new PromptDialog.Descriptor("Password:", "", PromptDialog.TYPE.PASSWORD)
-            });
-            dlg.show();
-            if (dlg.IsOK()) {
-                try {
-                    final String user = dlg.getValue("User name:");
-                    final String password = dlg.getValue("Password:");
-
-                    Credentials.instance().put(CopernicusProductQuery.COPERNICUS_HOST, user, password);
-                } catch (Exception ex) {
-                    Dialogs.showError(ex.getMessage());
-                }
-            }
+            promptForCredentials();
         }
     }
 }
