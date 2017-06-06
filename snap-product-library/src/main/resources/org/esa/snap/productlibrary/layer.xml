@@ -35,6 +35,10 @@
             <attr name="actionExtClass" stringvalue="org.esa.snap.productlibrary.rcp.toolviews.extensions.ExportListActionExt"/>
             <attr name="position" intvalue="2200"/>
         </file>
+        <file name="JointSearchActionExt">
+            <attr name="actionExtClass" stringvalue="org.esa.snap.productlibrary.rcp.toolviews.extensions.JointSearchActionExt"/>
+            <attr name="position" intvalue="2300"/>
+        </file>
     </folder>
 
 </filesystem>
