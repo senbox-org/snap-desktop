@@ -5,7 +5,7 @@
     <folder name="Services">
         <folder name="JavaHelp">
             <file name="org-esa-snap-smart-configurator-ui-helpset.xml" url="helpset.xml">
-                <attr name="position" intvalue="3818"/>
+                <attr name="position" intvalue="4800"/>
             </file>
         </folder>
     </folder>
