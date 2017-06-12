@@ -45,6 +45,8 @@ import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import java.awt.Component;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Hashtable;
 
 import static org.esa.snap.rcp.statistics.MetadataPlotSettings.PROP_NAME_FIELD_X;
@@ -72,6 +74,8 @@ class MetadataPlotPanel extends ChartPagePanel {
     private XYIntervalSeriesCollection dataset;
     private MetadataPlotSettings plotSettings;
     private boolean isInitialized;
+    private JSlider recordSlider;
+    private SpinnerNumberModel numRecSpinnerModel;
 
 
     MetadataPlotPanel(TopComponent parentComponent, String helpId) {
@@ -118,9 +122,13 @@ class MetadataPlotPanel extends ChartPagePanel {
 
         plotSettings = new MetadataPlotSettings();
         final BindingContext bindingContext = plotSettings.getContext();
+        bindingContext.addPropertyChangeListener(PROP_NAME_METADATA_ELEMENT, new PlotSettingsListener());
 
         JPanel settingsPanel = createSettingsPanel(bindingContext);
         createUI(profilePlotDisplay, settingsPanel, (RoiMaskSelector) null);
+
+        bindingContext.setComponentsEnabled(PROP_NAME_RECORD_START_INDEX, false);
+        bindingContext.setComponentsEnabled(PROP_NAME_RECORDS_PER_PLOT, false);
 
         isInitialized = true;
 
@@ -181,13 +189,12 @@ class MetadataPlotPanel extends ChartPagePanel {
         datasetBox.setRenderer(new ProductNodeListCellRenderer());
         JLabel recordLabel = new JLabel("Record: ");
         JTextField recordValueField = new JTextField(7);
-        JSlider recordSlider = new JSlider(SwingConstants.HORIZONTAL, 0, 1, 0);
+        recordSlider = new JSlider(SwingConstants.HORIZONTAL, 1, 1, 1);
         recordSlider.setPaintTrack(true);
         recordSlider.setPaintTicks(true);
-//        Hashtable standardLabels = recordSlider.createStandardLabels(recordSlider.getMaximum() - recordSlider.getMinimum(), recordSlider.getMinimum());
-//        recordSlider.setLabelTable(standardLabels);
         JLabel numRecordsLabel = new JLabel("Records / Plot: ");
-        JSpinner numRecordsSpinner = new JSpinner(new SpinnerNumberModel(1, 1, 1, 1));
+        numRecSpinnerModel = new SpinnerNumberModel(1, 1, 1, 1);
+        JSpinner numRecordsSpinner = new JSpinner(numRecSpinnerModel);
         final JLabel xFieldLabel = new JLabel("X Field: ");
         final JComboBox<MetadataAttribute> xFieldBox = new JComboBox<>();
         xFieldBox.setRenderer(new ProductNodeListCellRenderer());
@@ -247,9 +254,7 @@ class MetadataPlotPanel extends ChartPagePanel {
 
         updateSettings();
 
-        bindingContext.addPropertyChangeListener(evt -> {
-            updateUiState();
-        });
+        bindingContext.addPropertyChangeListener(evt -> updateUiState());
         return plotSettingsPanel;
     }
 
@@ -265,5 +270,17 @@ class MetadataPlotPanel extends ChartPagePanel {
         }
     }
 
+    private class PlotSettingsListener implements PropertyChangeListener {
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+            int numRecords = plotSettings.getNumRecords();
+            recordSlider.setMaximum(numRecords);
+            Hashtable standardLabels = recordSlider.createStandardLabels(Math.max(recordSlider.getMaximum() - recordSlider.getMinimum(), 1), recordSlider.getMinimum());
+            recordSlider.setLabelTable(standardLabels);
+
+            numRecSpinnerModel.setMaximum(numRecords);
+
+        }
+    }
 }
 

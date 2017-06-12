@@ -17,6 +17,7 @@ import org.esa.snap.core.gpf.annotations.ParameterDescriptorFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -45,46 +46,49 @@ class MetadataPlotSettings {
     private int recordsPerPlot = 1;
 
     private BindingContext context;
+    private AtomicBoolean isSynchronising = new AtomicBoolean(false);
 
     public MetadataPlotSettings() {
         context = new BindingContext(PropertyContainer.createObjectBacked(this, new ParameterDescriptorFactory()));
         Property propertyRecordStart = context.getPropertySet().getProperty(PROP_NAME_RECORD_START_INDEX);
         propertyRecordStart.getDescriptor().setAttribute("stepSize", 1);
         Property propertyMetaElement = context.getPropertySet().getProperty(PROP_NAME_METADATA_ELEMENT);
+        Enablement.Condition singleRecordCondition = new Enablement.Condition() {
+            @Override
+            public boolean evaluate(BindingContext bindingContext) {
+                return numAvailableRecords > 1;
+            }
+        };
+        Enablement recStartIndexEnablement = context.bindEnabledState(PROP_NAME_RECORD_START_INDEX, true, singleRecordCondition);
+        Enablement recPerPlotEnablement = context.bindEnabledState(PROP_NAME_RECORDS_PER_PLOT, true, singleRecordCondition);
         propertyMetaElement.addPropertyChangeListener(evt -> {
             try {
-                // todo - swingworker?
-                numAvailableRecords = getNumRecords(metadataElement);
-                Enablement.Condition singleRecordCondition = new Enablement.Condition() {
-                    @Override
-                    public boolean evaluate(BindingContext bindingContext) {
-                        return numAvailableRecords > 1;
+                if (!isSynchronising.getAndSet(true)) {
+                    // todo - swingworker?
+                    numAvailableRecords = getNumRecords(metadataElement);
+
+                    PropertySet propertySet = context.getPropertySet();
+                    Property recordStartProperty = propertySet.getProperty(PROP_NAME_RECORD_START_INDEX);
+                    recStartIndexEnablement.apply();
+                    Property numDispRecordProperty = propertySet.getProperty(PROP_NAME_RECORDS_PER_PLOT);
+                    recPerPlotEnablement.apply();
+                    if (PROP_NAME_METADATA_ELEMENT.equals(evt.getPropertyName())) {
+                        recordStartProperty.setValue(1.0);
+                        numDispRecordProperty.setValue(1);
                     }
-                };
-                context.bindEnabledState(PROP_NAME_RECORD_START_INDEX, false, singleRecordCondition);
-                context.bindEnabledState(PROP_NAME_RECORDS_PER_PLOT, false, singleRecordCondition);
-
-                PropertySet propertySet = context.getPropertySet();
-                Property recordStartProperty = propertySet.getProperty(PROP_NAME_RECORD_START_INDEX);
-                recordStartProperty.getDescriptor().setValueRange(new ValueRange(1, numAvailableRecords));
-                recordStartProperty.setValue(1.0);
-                Property numDispRecordProperty = propertySet.getProperty(PROP_NAME_RECORDS_PER_PLOT);
-                numDispRecordProperty.getDescriptor().setValueRange(new ValueRange(1, numAvailableRecords));
-                numDispRecordProperty.setValue(1);
 
 
-                List<String> usableFieldNames = retrieveUsableFieldNames(metadataElement);
-                PropertyDescriptor propertyFieldY1 = propertySet.getProperty(PROP_NAME_FIELD_Y1).getDescriptor();
-                propertyFieldY1.setValueSet(new ValueSet(usableFieldNames.toArray(new String[0])));
-                PropertyDescriptor propertyFieldY2 = propertySet.getProperty(PROP_NAME_FIELD_Y2).getDescriptor();
-                propertyFieldY2.setValueSet(new ValueSet(usableFieldNames.toArray(new String[0])));
+                    List<String> usableFieldNames = retrieveUsableFieldNames(metadataElement);
+                    PropertyDescriptor propertyFieldY1 = propertySet.getProperty(PROP_NAME_FIELD_Y1).getDescriptor();
+                    propertyFieldY1.setValueSet(new ValueSet(usableFieldNames.toArray(new String[0])));
+                    PropertyDescriptor propertyFieldY2 = propertySet.getProperty(PROP_NAME_FIELD_Y2).getDescriptor();
+                    propertyFieldY2.setValueSet(new ValueSet(usableFieldNames.toArray(new String[0])));
 
-                PropertyDescriptor propertyFieldX = propertySet.getProperty(PROP_NAME_FIELD_X).getDescriptor();
-                usableFieldNames.add(0, FIELD_NAME_RECORD_INDEX);
-                usableFieldNames.add(1, FIELD_NAME_ARRAY_FIELD_INDEX);
-                propertyFieldX.setValueSet(new ValueSet(usableFieldNames.toArray(new String[0])));
-
-
+                    PropertyDescriptor propertyFieldX = propertySet.getProperty(PROP_NAME_FIELD_X).getDescriptor();
+                    usableFieldNames.add(0, FIELD_NAME_RECORD_INDEX);
+                    usableFieldNames.add(1, FIELD_NAME_ARRAY_FIELD_INDEX);
+                    propertyFieldX.setValueSet(new ValueSet(usableFieldNames.toArray(new String[0])));
+                }
             } catch (ValidationException e) {
                 e.printStackTrace();
             }
