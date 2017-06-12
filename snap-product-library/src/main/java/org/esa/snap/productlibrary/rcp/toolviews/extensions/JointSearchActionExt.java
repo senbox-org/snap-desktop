@@ -58,15 +58,16 @@ public class JointSearchActionExt implements ProductLibraryActionExt {
 
     public void performAction(final ProgressMonitor pm) {
         // TODO
-        final JointSearchDialog dlg = new JointSearchDialog("Joint Search Criteria");
-        dlg.show();
-        if (!dlg.IsOK()) {
-            return;
-        }
 
         final ProductEntry[] selections = actionHandler.getSelectedProductEntries();
 
         //System.out.println("JointSearchActionExt.performAction: joint search selected for " + selections[0].getMission());
+
+        final JointSearchDialog dlg = new JointSearchDialog("Joint Search Criteria", selections[0].getMission());
+        dlg.show();
+        if (!dlg.IsOK()) {
+            return;
+        }
 
         final DBQuery dbQuery = new DBQuery();
 
