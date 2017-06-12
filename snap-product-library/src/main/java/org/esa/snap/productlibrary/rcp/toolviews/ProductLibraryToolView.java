@@ -516,6 +516,15 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         notifySelectionChanged();
     }
 
+    public void setSelectedRepositoryToSciHub() {
+        for (int i = 0; i < repositoryListCombo.getItemCount(); i++) {
+            RepositoryInterface repository = repositoryListCombo.getItemAt(i);
+            if (repository instanceof ScihubRepository) {
+                repositoryListCombo.setSelectedItem(repository);
+            }
+        }
+    }
+
     private synchronized void search() {
         progMon = getLabelBarProgressMonitor();
         final DBWorker dbWorker = new DBWorker(DBWorker.TYPE.QUERY, dbPane, progMon);
