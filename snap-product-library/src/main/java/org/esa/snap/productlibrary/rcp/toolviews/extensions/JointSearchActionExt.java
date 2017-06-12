@@ -16,20 +16,20 @@
 package org.esa.snap.productlibrary.rcp.toolviews.extensions;
 
 import com.bc.ceres.core.ProgressMonitor;
+import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.engine_utilities.db.DBQuery;
 import org.esa.snap.engine_utilities.db.ProductEntry;
 import org.esa.snap.engine_utilities.db.ProductQueryInterface;
 import org.esa.snap.engine_utilities.download.opensearch.CopernicusProductQuery;
 import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
+import org.esa.snap.productlibrary.rcp.dialogs.JointSearchDialog;
 import org.esa.snap.productlibrary.rcp.toolviews.ProductLibraryActions;
 import org.esa.snap.productlibrary.rcp.toolviews.ProductLibraryToolView;
-import org.esa.snap.productlibrary.rcp.utils.ProductOpener;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.UIUtils;
 
 import javax.swing.*;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 
 /**
  * Export a list of files to text file
@@ -58,27 +58,58 @@ public class JointSearchActionExt implements ProductLibraryActionExt {
 
     public void performAction(final ProgressMonitor pm) {
         // TODO
+        final JointSearchDialog dlg = new JointSearchDialog("Joint Search Criteria");
+        dlg.show();
+        if (!dlg.IsOK()) {
+            return;
+        }
 
         final ProductEntry[] selections = actionHandler.getSelectedProductEntries();
 
-        System.out.println("JointSearchActionExt.performAction: joint search selected for " + selections[0].getMission());
+        //System.out.println("JointSearchActionExt.performAction: joint search selected for " + selections[0].getMission());
 
         final DBQuery dbQuery = new DBQuery();
 
+        // Search for products close in space to the selected product
         dbQuery.setSelectionRect(selections[0].getGeoBoundary());
 
+        // Search for products from the missions the user has selected
+        dbQuery.setSelectedMissions(dlg.getMissions()); //
+
+        // Search for products within the time range that is +/- number of days from the date of the selected product
+        final int daysMinus =  dlg.getDaysMinus();
+        final int daysPlus = dlg.getDaysPlus();
+        if (daysMinus < 0 || daysPlus < 0) {
+            Dialogs.showError("Joint search: invalid number of days\n (must be 0 or +ve integer)");
+            return;
+        }
+        SystemUtils.LOG.info("Joint Search -" + daysMinus + " days and +" + daysPlus + " days");
         Calendar startDate = selections[0].getFirstLineTime().getAsCalendar();
-        startDate.add(Calendar.DAY_OF_MONTH, -7);
+        startDate.add(Calendar.DAY_OF_MONTH, -daysMinus);
         Calendar endDate = selections[0].getFirstLineTime().getAsCalendar();
-        endDate.add(Calendar.DAY_OF_MONTH, 7);
+        endDate.add(Calendar.DAY_OF_MONTH, daysPlus);
         dbQuery.setStartEndDate(startDate, endDate);
+
+        // Search for optical products based on cloud cover percentage
+        dbQuery.setSelectedCloudCover(dlg.getCloudCover());
+
+
+
+        //dbQuery.setSelectedAcquisitionMode();
+        //dbQuery.setSelectedProductTypes();
+
 
         ProductQueryInterface productQueryInterface = CopernicusProductQuery.instance();
 
         try {
             productQueryInterface.fullQuery(dbQuery, pm);
+            if (!pm.isCanceled()) {
+                actionHandler.getToolView().setSelectedRepositoryToSciHub();
+            }
         } catch (Exception e) {
-            System.out.println("JointSearchActionExt.performAction: caught error " + e.getMessage());
+            Dialogs.showError("unable to do joint search: " + e.getMessage());
+        } finally {
+            pm.done();
         }
     }
 }
