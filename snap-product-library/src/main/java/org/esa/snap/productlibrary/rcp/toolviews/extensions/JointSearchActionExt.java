@@ -97,7 +97,7 @@ public class JointSearchActionExt implements ProductLibraryActionExt {
         // Search for products with this particular acquisition mode
         dbQuery.setSelectedAcquisitionMode(dlg.getAcquisitionMode());
 
-        //dbQuery.setSelectedProductTypes();
+        dbQuery.setSelectedProductTypes(dlg.getProductTypes());
 
 
         ProductQueryInterface productQueryInterface = CopernicusProductQuery.instance();

@@ -16,6 +16,7 @@
 package org.esa.snap.productlibrary.rcp.dialogs;
 
 import org.esa.snap.engine_utilities.db.DBQuery;
+import org.esa.snap.engine_utilities.db.SQLUtils;
 import org.esa.snap.engine_utilities.download.opensearch.CopernicusProductQuery;
 import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
 import org.esa.snap.rcp.SnapApp;
@@ -36,6 +37,7 @@ public class JointSearchDialog extends ModalDialog {
     private JTextField daysPlus = new JTextField("7");
     private final JTextField cloudCoverField = new JTextField();
     private final JComboBox<String> acquisitionModeCombo = new JComboBox<>(new String[]{DBQuery.ALL_MODES});
+    private final JList<String> productTypeJList = new JList<>();
 
     private boolean ok = false;
 
@@ -68,9 +70,22 @@ public class JointSearchDialog extends ModalDialog {
                         if (selectedIndices.length > 1) {
                             acquisitionModeCombo.setSelectedIndex(0);
                             acquisitionModeCombo.setEnabled(false);
+                            productTypeJList.removeAll();
+                            productTypeJList.setListData(new String[] {DBQuery.ALL_PRODUCT_TYPES});
+                            productTypeJList.setEnabled(false);
+                            /*
+                            // If we ever want to get more than one selected mission, this is how to do it...
+                            String[] selectedMissions = new String[selectedIndices.length];
+                            for (int i = 0; i < selectedIndices.length; i++) {
+                                selectedMissions[i] = missionJList.getModel().getElementAt(selectedIndices[i]);
+                            }
+                            */
                         } else {
-                            updateAcquisitionModeCombo(missionJList.getSelectedValue());
+                            final String selectedMission = missionJList.getSelectedValue();
+                            updateAcquisitionModeCombo(selectedMission);
                             acquisitionModeCombo.setEnabled(true);
+                            updateProductTypeList(new String[] {selectedMission});
+                            productTypeJList.setEnabled(true);
                         }
                     }
                 }
@@ -97,6 +112,9 @@ public class JointSearchDialog extends ModalDialog {
 
         gbc.gridy++;
         DialogUtils.addComponent(content, gbc, "Acquisition Mode: ", acquisitionModeCombo);
+
+        gbc.gridy++;
+        DialogUtils.addComponent(content, gbc, "Product Type: ", new JScrollPane(productTypeJList));
 
         DialogUtils.fillPanel(content, gbc);
 
@@ -141,6 +159,11 @@ public class JointSearchDialog extends ModalDialog {
         return (String) acquisitionModeCombo.getSelectedItem();
     }
 
+    public String[] getProductTypes() {
+        java.util.List<String> selectedProductTypes = productTypeJList.getSelectedValuesList();
+        return selectedProductTypes.toArray(new String[selectedProductTypes.size()]);
+    }
+
     private static int getIntFromString(final String s) {
         try {
             final int intVal = Integer.parseInt(s);
@@ -164,7 +187,9 @@ public class JointSearchDialog extends ModalDialog {
             missionJList.setSelectedIndex(0); // assume the missions are Sentinel-1, Sentinel-2 and Sentinel-3, so index 0 is Sentinel-1
             cloudCoverField.setEnabled(false);
         }
-        updateAcquisitionModeCombo(missionJList.getSelectedValue());
+        final String selectedMission = missionJList.getSelectedValue();
+        updateAcquisitionModeCombo(selectedMission);
+        updateProductTypeList(new String[] {selectedMission});
     }
 
     private void updateAcquisitionModeCombo(final String mission) {
@@ -174,5 +199,18 @@ public class JointSearchDialog extends ModalDialog {
         for (String mode : acqModes) {
             acquisitionModeCombo.addItem(mode);
         }
+    }
+
+    private void updateProductTypeList(final String[] missions) {
+        /*
+        System.out.println("updateProductTypeList: #missons = " + missions.length);
+        for (String s : missions) {
+            System.out.println("updateProductTypeList: s = " + s);
+        }
+        */
+        productTypeJList.removeAll();
+        productTypeJList.setListData(SQLUtils.prependString(
+                DBQuery.ALL_PRODUCT_TYPES,
+                CopernicusProductQuery.instance().getAllProductTypes(missions)));
     }
 }
