@@ -94,9 +94,9 @@ public class JointSearchActionExt implements ProductLibraryActionExt {
         // Search for optical products based on cloud cover percentage
         dbQuery.setSelectedCloudCover(dlg.getCloudCover());
 
+        // Search for products with this particular acquisition mode
+        dbQuery.setSelectedAcquisitionMode(dlg.getAcquisitionMode());
 
-
-        //dbQuery.setSelectedAcquisitionMode();
         //dbQuery.setSelectedProductTypes();
 
 

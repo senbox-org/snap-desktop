@@ -15,6 +15,7 @@
  */
 package org.esa.snap.productlibrary.rcp.dialogs;
 
+import org.esa.snap.engine_utilities.db.DBQuery;
 import org.esa.snap.engine_utilities.download.opensearch.CopernicusProductQuery;
 import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
 import org.esa.snap.rcp.SnapApp;
@@ -34,6 +35,7 @@ public class JointSearchDialog extends ModalDialog {
     private JTextField daysMinus = new JTextField("7");
     private JTextField daysPlus = new JTextField("7");
     private final JTextField cloudCoverField = new JTextField();
+    private final JComboBox<String> acquisitionModeCombo = new JComboBox<>(new String[]{DBQuery.ALL_MODES});
 
     private boolean ok = false;
 
@@ -55,15 +57,21 @@ public class JointSearchDialog extends ModalDialog {
                         // if nothing is selected, go back to default for that mission
                         initMissionList(mission);
                     } else  {
-                        boolean enabled = true;
+                        boolean isOpticalOnly = true;
                         for (int i : selectedIndices) {
                             if (i == 0) {
-                                // as long as S1 (which is at index 0) is selected, cloud cover is not applicable
-                                enabled = false;
+                                isOpticalOnly = false;
                                 break;
                             }
                         }
-                        cloudCoverField.setEnabled(enabled);
+                        cloudCoverField.setEnabled(isOpticalOnly);
+                        if (selectedIndices.length > 1) {
+                            acquisitionModeCombo.setSelectedIndex(0);
+                            acquisitionModeCombo.setEnabled(false);
+                        } else {
+                            updateAcquisitionModeCombo(missionJList.getSelectedValue());
+                            acquisitionModeCombo.setEnabled(true);
+                        }
                     }
                 }
             }
@@ -86,6 +94,9 @@ public class JointSearchDialog extends ModalDialog {
 
         gbc.gridy++;
         DialogUtils.addComponent(content, gbc, "Cloud Cover %:", cloudCoverField).setToolTipText("Specify single integer value or a range, e.g., 10-70");
+
+        gbc.gridy++;
+        DialogUtils.addComponent(content, gbc, "Acquisition Mode: ", acquisitionModeCombo);
 
         DialogUtils.fillPanel(content, gbc);
 
@@ -126,6 +137,10 @@ public class JointSearchDialog extends ModalDialog {
         return cloudCoverField.getText();
     }
 
+    public String getAcquisitionMode() {
+        return (String) acquisitionModeCombo.getSelectedItem();
+    }
+
     private static int getIntFromString(final String s) {
         try {
             final int intVal = Integer.parseInt(s);
@@ -148,6 +163,16 @@ public class JointSearchDialog extends ModalDialog {
             // User has clicked an optical product and want to search for S1 product
             missionJList.setSelectedIndex(0); // assume the missions are Sentinel-1, Sentinel-2 and Sentinel-3, so index 0 is Sentinel-1
             cloudCoverField.setEnabled(false);
+        }
+        updateAcquisitionModeCombo(missionJList.getSelectedValue());
+    }
+
+    private void updateAcquisitionModeCombo(final String mission) {
+        acquisitionModeCombo.removeAllItems();
+        acquisitionModeCombo.addItem(DBQuery.ALL_MODES);
+        String[] acqModes = CopernicusProductQuery.instance().getAllAcquisitionModes(new String[]{mission});
+        for (String mode : acqModes) {
+            acquisitionModeCombo.addItem(mode);
         }
     }
 }
