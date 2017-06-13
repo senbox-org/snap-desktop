@@ -5,14 +5,11 @@ import com.bc.ceres.binding.PropertyContainer;
 import com.bc.ceres.binding.PropertyDescriptor;
 import com.bc.ceres.binding.PropertySet;
 import com.bc.ceres.binding.ValidationException;
-import com.bc.ceres.binding.ValueRange;
 import com.bc.ceres.binding.ValueSet;
 import com.bc.ceres.swing.binding.BindingContext;
-import com.bc.ceres.swing.binding.Enablement;
 import org.esa.snap.core.datamodel.MetadataAttribute;
 import org.esa.snap.core.datamodel.MetadataElement;
 import org.esa.snap.core.datamodel.ProductData;
-import org.esa.snap.core.gpf.annotations.Parameter;
 import org.esa.snap.core.gpf.annotations.ParameterDescriptorFactory;
 
 import java.util.ArrayList;
@@ -24,6 +21,7 @@ import java.util.regex.Pattern;
 /**
  * @author Marco Peters
  */
+@SuppressWarnings("unused")
 class MetadataPlotSettings {
 
     static final String PROP_NAME_METADATA_ELEMENT = "metadataElement";
@@ -40,9 +38,7 @@ class MetadataPlotSettings {
     private String fieldX;
     private String fieldY1;
     private String fieldY2;
-    @Parameter(defaultValue = "1.0", interval = "[1,100]")
     private double recordStartIndex = 1.0;
-    @Parameter(defaultValue = "1")
     private int recordsPerPlot = 1;
 
     private BindingContext context;
@@ -53,14 +49,6 @@ class MetadataPlotSettings {
         Property propertyRecordStart = context.getPropertySet().getProperty(PROP_NAME_RECORD_START_INDEX);
         propertyRecordStart.getDescriptor().setAttribute("stepSize", 1);
         Property propertyMetaElement = context.getPropertySet().getProperty(PROP_NAME_METADATA_ELEMENT);
-        Enablement.Condition singleRecordCondition = new Enablement.Condition() {
-            @Override
-            public boolean evaluate(BindingContext bindingContext) {
-                return numAvailableRecords > 1;
-            }
-        };
-        Enablement recStartIndexEnablement = context.bindEnabledState(PROP_NAME_RECORD_START_INDEX, true, singleRecordCondition);
-        Enablement recPerPlotEnablement = context.bindEnabledState(PROP_NAME_RECORDS_PER_PLOT, true, singleRecordCondition);
         propertyMetaElement.addPropertyChangeListener(evt -> {
             try {
                 if (!isSynchronising.getAndSet(true)) {
@@ -69,9 +57,7 @@ class MetadataPlotSettings {
 
                     PropertySet propertySet = context.getPropertySet();
                     Property recordStartProperty = propertySet.getProperty(PROP_NAME_RECORD_START_INDEX);
-                    recStartIndexEnablement.apply();
                     Property numDispRecordProperty = propertySet.getProperty(PROP_NAME_RECORDS_PER_PLOT);
-                    recPerPlotEnablement.apply();
                     if (PROP_NAME_METADATA_ELEMENT.equals(evt.getPropertyName())) {
                         recordStartProperty.setValue(1.0);
                         numDispRecordProperty.setValue(1);

@@ -122,7 +122,6 @@ class MetadataPlotPanel extends ChartPagePanel {
 
         plotSettings = new MetadataPlotSettings();
         final BindingContext bindingContext = plotSettings.getContext();
-        bindingContext.addPropertyChangeListener(PROP_NAME_METADATA_ELEMENT, new PlotSettingsListener());
 
         JPanel settingsPanel = createSettingsPanel(bindingContext);
         createUI(profilePlotDisplay, settingsPanel, (RoiMaskSelector) null);
@@ -133,6 +132,7 @@ class MetadataPlotPanel extends ChartPagePanel {
         isInitialized = true;
 
         updateComponents();
+        updateChartData();
     }
 
     @Override
@@ -159,29 +159,6 @@ class MetadataPlotPanel extends ChartPagePanel {
         return "";
     }
 
-
-    private void updateUiState() {
-        if (!isInitialized) {
-            return;
-        }
-
-        dataset.removeAllSeries();
-
-    }
-
-    private void updateSettings() {
-        Product product = getProduct();
-        if (product == null) {
-            plotSettings.setMetadataElements(null);
-            return;
-        }
-
-        MetadataElement metadataRoot = product.getMetadataRoot();
-        MetadataElement[] elements = metadataRoot.getElements();
-
-        plotSettings.setMetadataElements(elements);
-
-    }
 
     private JPanel createSettingsPanel(BindingContext bindingContext) {
         final JLabel datasetLabel = new JLabel("Dataset: ");
@@ -253,9 +230,44 @@ class MetadataPlotPanel extends ChartPagePanel {
         plotSettingsPanel.add(y2FieldBox);
 
         updateSettings();
+        updateUiState();
 
-        bindingContext.addPropertyChangeListener(evt -> updateUiState());
+        bindingContext.addPropertyChangeListener(PROP_NAME_METADATA_ELEMENT, evt -> updateUiState());
         return plotSettingsPanel;
+    }
+
+    private void updateUiState() {
+        if (!isInitialized) {
+            return;
+        }
+
+
+        int numRecords = plotSettings.getNumRecords();
+        recordSlider.setMaximum(numRecords);
+        Hashtable standardLabels = recordSlider.createStandardLabels(Math.max(recordSlider.getMaximum() - recordSlider.getMinimum(), 1), recordSlider.getMinimum());
+        recordSlider.setLabelTable(standardLabels);
+
+        numRecSpinnerModel.setMaximum(numRecords);
+
+        plotSettings.getContext().setComponentsEnabled(PROP_NAME_RECORD_START_INDEX,numRecords > 1);
+        plotSettings.getContext().setComponentsEnabled(PROP_NAME_RECORDS_PER_PLOT,numRecords > 1);
+
+    }
+
+    private void updateSettings() {
+        Product product = getProduct();
+        if (product == null) {
+            plotSettings.setMetadataElements(null);
+            return;
+        }
+
+        dataset.removeAllSeries();
+
+        MetadataElement metadataRoot = product.getMetadataRoot();
+        MetadataElement[] elements = metadataRoot.getElements();
+
+        plotSettings.setMetadataElements(elements);
+
     }
 
     private static class ProductNodeListCellRenderer extends DefaultListCellRenderer {
@@ -270,17 +282,5 @@ class MetadataPlotPanel extends ChartPagePanel {
         }
     }
 
-    private class PlotSettingsListener implements PropertyChangeListener {
-        @Override
-        public void propertyChange(PropertyChangeEvent evt) {
-            int numRecords = plotSettings.getNumRecords();
-            recordSlider.setMaximum(numRecords);
-            Hashtable standardLabels = recordSlider.createStandardLabels(Math.max(recordSlider.getMaximum() - recordSlider.getMinimum(), 1), recordSlider.getMinimum());
-            recordSlider.setLabelTable(standardLabels);
-
-            numRecSpinnerModel.setMaximum(numRecords);
-
-        }
-    }
 }
 
