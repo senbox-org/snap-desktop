@@ -36,7 +36,6 @@ import java.util.Calendar;
  */
 public class JointSearchActionExt implements ProductLibraryActionExt {
 
-    // TODO need a new icon
     private static final ImageIcon jointSearchIcon = UIUtils.loadImageIcon("/org/esa/snap/productlibrary/icons/joint_search.png", ProductLibraryToolView.class);
     private JButton button = null;
     private ProductLibraryActions actionHandler;
