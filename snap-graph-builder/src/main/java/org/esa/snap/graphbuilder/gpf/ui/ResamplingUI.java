@@ -20,8 +20,6 @@ import com.bc.ceres.binding.PropertySet;
 import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.ComponentAdapter;
-import com.bc.ceres.swing.binding.PropertyEditor;
-import com.bc.ceres.swing.binding.PropertyEditorRegistry;
 import com.bc.ceres.swing.binding.internal.ComboBoxAdapter;
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.CrsGeoCoding;
@@ -63,6 +61,7 @@ public class ResamplingUI extends BaseOperatorUI {
     private ArrayList<String> listBands = new ArrayList();
     int lastProductWidth = 0;
     int lastProductHeight = 0;
+    private String referenceBandParam=null;
 
     private JRadioButton referenceBandButton;
     private JRadioButton widthAndHeightButton;
@@ -112,29 +111,72 @@ public class ResamplingUI extends BaseOperatorUI {
     @Override
     public void initParameters() {
 
+        final Integer targetWidthParam = (Integer) paramMap.get("targetWidth");
+        final Integer targetHeightParam = (Integer) paramMap.get("targetHeight");
+        final Integer targetResolutionParam = (Integer) paramMap.get("targetResolution");
+
+        String referenceBandParamAux = (String) paramMap.get("referenceBand");
+        if(referenceBandParamAux == null) referenceBandParamAux = (String) paramMap.get("referenceBandName");
+        referenceBandParam = referenceBandParamAux;
+
+        String upsamplingParam = (String) paramMap.get("upsampling");
+        if(upsamplingParam == null) upsamplingParam = (String) paramMap.get(UPSAMPLING_METHOD_PARAMETER_NAME);
+
+        String downsamplingParam = (String) paramMap.get("downsampling");
+        if(downsamplingParam == null) downsamplingParam = (String) paramMap.get(DOWNSAMPLING_METHOD_PARAMETER_NAME);
+
+        String flagDownParam = (String) paramMap.get("flagDownsampling");
+        if(flagDownParam == null) flagDownParam = (String) paramMap.get(FLAGDOWNSAMPLING_METHOD_PARAMETER_NAME);
+
+        final Boolean pyramidParam = (Boolean) paramMap.get(PYRAMID_LEVELS_PARAMETER_NAME);
+
+        if(targetWidthParam!=null && targetHeightParam!=null) {
+            widthAndHeightButton.setSelected(true);
+            referenceBandButton.setSelected(false);
+            resolutionButton.setSelected(false);
+            targetResolutionPanel.setEnabled(false);
+            targetWidthAndHeightPanel.setEnabled(true);
+            referenceBandNameBoxPanel.setEnabled(false);
+            targetWidthAndHeightPanel.widthSpinner.setValue(targetWidthParam);
+            targetWidthAndHeightPanel.heightSpinner.setValue(targetHeightParam);
+        } else if (targetResolutionParam!=null) {
+            widthAndHeightButton.setSelected(false);
+            referenceBandButton.setSelected(false);
+            resolutionButton.setSelected(true);
+            targetResolutionPanel.setEnabled(true);
+            targetWidthAndHeightPanel.setEnabled(false);
+            referenceBandNameBoxPanel.setEnabled(false);
+            targetResolutionPanel.resolutionSpinner.setValue(targetResolutionParam);
+        } else if (referenceBandParam!=null) {
+            widthAndHeightButton.setSelected(false);
+            referenceBandButton.setSelected(true);
+            resolutionButton.setSelected(false);
+            targetResolutionPanel.setEnabled(false);
+            targetWidthAndHeightPanel.setEnabled(false);
+            referenceBandNameBoxPanel.setEnabled(true);
+            referenceBandNameBoxPanel.referenceBandNameBox.setSelectedItem(referenceBandParam);
+        } else {
+            widthAndHeightButton.setSelected(false);
+            referenceBandButton.setSelected(false);
+            resolutionButton.setSelected(true);
+            targetResolutionPanel.setEnabled(true);
+            targetWidthAndHeightPanel.setEnabled(false);
+            referenceBandNameBoxPanel.setEnabled(false);
+            targetResolutionPanel.resolutionSpinner.setValue(100);
+        }
+
+        upsamplingCombo.setSelectedItem(upsamplingParam);
+        downsamplingCombo.setSelectedItem(downsamplingParam);
+        flagDownsamplingCombo.setSelectedItem(flagDownParam);
+        pyramidLevelCheckBox.setSelected(pyramidParam);
+
+
+
         if (hasSourceProducts()) {
             reactToSourceProductChange(sourceProducts[0]);
             referenceBandButton.setEnabled(true);
-
-            if(referenceBandButton.isSelected() && sourceProducts[0].getBand((String) referenceBandNameBoxPanel.referenceBandNameBox.getSelectedItem()) == null) {
-                referenceBandButton.setSelected(false);
-                referenceBandNameBoxPanel.setEnabled(false);
-                widthAndHeightButton.setSelected(true);
-                targetWidthAndHeightPanel.setEnabled(true);
-            }
-
-        } else {
-            referenceBandNameBoxPanel.reactToSourceProductChange(null);
-            if(referenceBandButton.isSelected()) {
-                referenceBandButton.setSelected(false);
-                referenceBandButton.setEnabled(false);
-                referenceBandNameBoxPanel.setEnabled(false);
-                widthAndHeightButton.setSelected(true);
-                targetWidthAndHeightPanel.setEnabled(true);
-            }
         }
 
-        updateParameters();
     }
 
     @Override
@@ -145,43 +187,33 @@ public class ResamplingUI extends BaseOperatorUI {
     @Override
     public void updateParameters() {
 
+
+        paramMap.clear();
         //if we use always target width and height because this way, there are no errors when changing sources (for example, the name of the band could not be found)
-        if(hasSourceProducts()) {
-            if (referenceBandButton.isSelected()) {
-                //paramMap.put("targetWidth", Integer.parseInt(referenceBandNameBoxPanel.referenceBandTargetWidthLabel.getText()));
-                //paramMap.put("targetHeight", Integer.parseInt(referenceBandNameBoxPanel.referenceBandTargetHeightLabel.getText()));
-                paramMap.put("referenceBandName", referenceBandNameBoxPanel.referenceBandNameBox.getSelectedItem().toString());
-                paramMap.remove("targetResolution");
-                paramMap.remove("targetWidth");
-                paramMap.remove("targetHeight");
-            } else if (widthAndHeightButton.isSelected()) {
-                paramMap.put("targetWidth", targetWidthAndHeightPanel.widthSpinner.getValue());
-                paramMap.put("targetHeight", targetWidthAndHeightPanel.heightSpinner.getValue());
-                paramMap.remove("targetResolution");
-                paramMap.remove("referenceBand");
-                paramMap.remove("referenceBandName");
-            } else {
-                //paramMap.put("targetWidth", Integer.parseInt(targetResolutionPanel.targetResolutionTargetWidthLabel.getText()));
-                //paramMap.put("targetHeight", Integer.parseInt(targetResolutionPanel.targetResolutionTargetHeightLabel.getText()));
-                paramMap.put("targetResolution", targetResolutionPanel.resolutionSpinner.getValue());
-                paramMap.remove("referenceBand");
-                paramMap.remove("referenceBandName");
-                paramMap.remove("targetWidth");
-                paramMap.remove("targetHeight");
+        if (referenceBandButton.isSelected() /*&& referenceBandNameBoxPanel.referenceBandNameBox.getSelectedItem() != null*/) {
+            if(referenceBandNameBoxPanel.referenceBandNameBox.getSelectedItem() != null) {
+                referenceBandParam = referenceBandNameBoxPanel.referenceBandNameBox.getSelectedItem().toString();
             }
-        } else {
-            paramMap.put("targetWidth", 100);
-            paramMap.put("targetHeight", 100);
+            paramMap.put("referenceBandName", referenceBandParam);
+            paramMap.remove("targetResolution");
+            paramMap.remove("targetWidth");
+            paramMap.remove("targetHeight");
+        } else if (widthAndHeightButton.isSelected()) {
+            paramMap.put("targetWidth", targetWidthAndHeightPanel.widthSpinner.getValue());
+            paramMap.put("targetHeight", targetWidthAndHeightPanel.heightSpinner.getValue());
+            paramMap.remove("targetResolution");
+            paramMap.remove("referenceBandName");
+        } else if (resolutionButton.isSelected()) {
+            paramMap.put("targetResolution", targetResolutionPanel.resolutionSpinner.getValue());
+            paramMap.remove("referenceBandName");
+            paramMap.remove("targetWidth");
+            paramMap.remove("targetHeight");
         }
 
-        //paramMap.remove("targetResolution");
-        //paramMap.remove("referenceBand");
-        //paramMap.remove("referenceBandName");
         paramMap.put(UPSAMPLING_METHOD_PARAMETER_NAME, upsamplingCombo.getSelectedItem());
         paramMap.put(DOWNSAMPLING_METHOD_PARAMETER_NAME, downsamplingCombo.getSelectedItem());
         paramMap.put(FLAGDOWNSAMPLING_METHOD_PARAMETER_NAME,flagDownsamplingCombo.getSelectedItem());
         paramMap.put(PYRAMID_LEVELS_PARAMETER_NAME, pyramidLevelCheckBox.isSelected());
-
     }
 
 
@@ -427,9 +459,9 @@ public class ResamplingUI extends BaseOperatorUI {
         }
 
         private void reactToSourceProductChange(Product product) {
-            if (product != null) {
+            if (product != null && !paramMap.containsKey("targetResolution")) {
                 resolutionSpinner.setValue(determineResolutionFromProduct(product));
-            } else {
+            } else if(product == null) {
                 resolutionSpinner.setValue(0);
             }
         }
@@ -515,16 +547,17 @@ public class ResamplingUI extends BaseOperatorUI {
         }
 
         private void reactToSourceProductChange(Product product) {
-            if (product != null) {
+            if (product != null && !(paramMap.containsKey("targetWidth") && paramMap.containsKey("targetHeight"))) {
                 targetWidthHeightRatio = product.getSceneRasterWidth() / (double) product.getSceneRasterHeight();
                 widthSpinner.setValue(product.getSceneRasterWidth());
                 heightSpinner.setValue(product.getSceneRasterHeight());
 
-            } else {
+            } else if(product == null) {
                 targetWidthHeightRatio = 1.0;
                 widthSpinner.setValue(0);
                 heightSpinner.setValue(0);
             }
+
             widthHeightRatioLabel.setText(String.format("%.5f", targetWidthHeightRatio));
         }
 
@@ -586,7 +619,7 @@ public class ResamplingUI extends BaseOperatorUI {
         }
 
         private void updateReferenceBandName() {
-            updateParameters();
+            //updateParameters();
         }
 
         private void reactToSourceProductChange(Product product) {
