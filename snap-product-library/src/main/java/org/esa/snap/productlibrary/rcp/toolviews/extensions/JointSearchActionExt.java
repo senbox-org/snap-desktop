@@ -16,7 +16,6 @@
 package org.esa.snap.productlibrary.rcp.toolviews.extensions;
 
 import com.bc.ceres.core.ProgressMonitor;
-import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.engine_utilities.db.DBQuery;
 import org.esa.snap.engine_utilities.db.ProductEntry;
 import org.esa.snap.engine_utilities.db.ProductQueryInterface;
@@ -82,7 +81,7 @@ public class JointSearchActionExt implements ProductLibraryActionExt {
             Dialogs.showError("Joint search: invalid number of days\n (must be 0 or +ve integer)");
             return;
         }
-        SystemUtils.LOG.info("Joint Search -" + daysMinus + " days and +" + daysPlus + " days");
+        //SystemUtils.LOG.info("Joint Search -" + daysMinus + " days and +" + daysPlus + " days");
         Calendar startDate = selections[0].getFirstLineTime().getAsCalendar();
         startDate.add(Calendar.DAY_OF_MONTH, -daysMinus);
         Calendar endDate = selections[0].getFirstLineTime().getAsCalendar();
@@ -95,8 +94,8 @@ public class JointSearchActionExt implements ProductLibraryActionExt {
         // Search for products with this particular acquisition mode
         dbQuery.setSelectedAcquisitionMode(dlg.getAcquisitionMode());
 
+        // Search for products of these product types
         dbQuery.setSelectedProductTypes(dlg.getProductTypes());
-
 
         ProductQueryInterface productQueryInterface = CopernicusProductQuery.instance();
 
