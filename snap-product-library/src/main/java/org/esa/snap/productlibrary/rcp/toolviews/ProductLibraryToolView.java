@@ -217,7 +217,8 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
             switch (msg) {
                 case NEW_REPO:
                     DBScanner.Options options = new DBScanner.Options(false, false, false);
-                    addRepository(action.getNewRepoFolder(), options);
+                    RepositoryInterface repo = addRepository(action.getNewRepoFolder(), options);
+                    repositoryListCombo.setSelectedItem(repo);
                     break;
                 default:
                     break;
@@ -418,7 +419,7 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         return repo;
     }
 
-    private void addRepository(final File baseDir, final DBScanner.Options options) {
+    private RepositoryInterface addRepository(final File baseDir, final DBScanner.Options options) {
 
         libConfig.addBaseDir(baseDir);  // verified that it won't be added again if already there
         final RepositoryInterface repo = addToRepositoryListCombo(baseDir);
@@ -426,6 +427,8 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         setUIComponentsEnabled(doRepositoriesExist());
 
         updateRepostitory(repo, options);
+
+        return repo;
     }
 
     private void addRepository() {
@@ -538,7 +541,7 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
             if(folderRepo.getBaseDir() == null) {
                 return;
             }
-
+            dbPane.partialQuery(); // if this is not done, the new product will not show up in the list
             progMon = getLabelBarProgressMonitor();
             final DBScanner scanner = new DBScanner(((DBProductQuery)folderRepo.getProductQueryInterface()).getDB(),
                                                     folderRepo.getBaseDir(), options, progMon);
