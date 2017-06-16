@@ -325,7 +325,7 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
         final JFileChooser chooser = FileChooserFactory.getInstance().createFileChooser(openDir);
         chooser.setMultiSelectionEnabled(true);
         chooser.setDialogTitle(title);
-        if (chooser.showDialog(component, "ok") == JFileChooser.APPROVE_OPTION) {
+        if (chooser.showDialog(component, "OK") == JFileChooser.APPROVE_OPTION) {
             files = chooser.getSelectedFiles();
 
             SnapApp.getDefault().getPreferences().

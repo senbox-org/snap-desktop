@@ -275,7 +275,7 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
         final JFileChooser chooser = FileChooserFactory.getInstance().createFileChooser(graphPath);
         chooser.setMultiSelectionEnabled(false);
         chooser.setDialogTitle(title);
-        if (chooser.showDialog(component, "ok") == JFileChooser.APPROVE_OPTION) {
+        if (chooser.showDialog(component, "OK") == JFileChooser.APPROVE_OPTION) {
             final File file = chooser.getSelectedFile();
             SnapApp.getDefault().getPreferences().put("batch.last_graph_path", file.getAbsolutePath());
             return file;
