@@ -35,15 +35,28 @@ import org.esa.snap.ui.AbstractDialog;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.GridBagUtils;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextField;
 import javax.swing.border.Border;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.plaf.basic.BasicTabbedPaneUI;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.ItemEvent;
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.net.URL;
@@ -193,17 +206,23 @@ public class BundleForm extends JPanel {
         rbGroup.add(rbLocal);
         JRadioButton rbRemote = new JRadioButton(BundleLocation.REMOTE.toString());
         rbGroup.add(rbRemote);
-        rbRemote.setSelected(true);
+        if (BundleLocation.LOCAL.equals(bundle.getLocation())) {
+            rbLocal.setSelected(true);
+        } else if (BundleLocation.REMOTE.equals(bundle.getLocation())) {
+            rbRemote.setSelected(true);
+        }
         rbLocal.addItemListener(e -> {
             if (e.getStateChange() == ItemEvent.SELECTED) {
                 bundle.setLocation(BundleLocation.LOCAL);
                 toggleControls(osFamily);
+                firePropertyChange(new PropertyChangeEvent(bundle, "location", null, BundleLocation.LOCAL));
             }
         });
         rbRemote.addItemListener(e -> {
             if (e.getStateChange() == ItemEvent.SELECTED) {
                 bundle.setLocation(BundleLocation.REMOTE);
                 toggleControls(osFamily);
+                firePropertyChange(new PropertyChangeEvent(bundle, "location", null, BundleLocation.REMOTE));
             }
         });
         GridBagUtils.addToPanel(panel, rbLocal, c, "gridx=1, gridy=1, gridwidth=4, weightx=1");
@@ -317,9 +336,7 @@ public class BundleForm extends JPanel {
             property = propertyContainer.getProperty("source");
             property.addPropertyChangeListener(evt -> {
                 bundle.setSource((File) evt.getNewValue());
-                if (this.listener != null) {
-                    this.listener.propertyChange(evt);
-                }
+                firePropertyChange(evt);
             });
             property = propertyContainer.getProperty("downloadURL");
             property.addPropertyChangeListener(evt -> {
@@ -340,6 +357,12 @@ public class BundleForm extends JPanel {
         });
     }
 
+    private void firePropertyChange(PropertyChangeEvent event) {
+        if (this.listener != null) {
+            this.listener.propertyChange(event);
+        }
+    }
+
     private void toggleControls(OSFamily osFamily) {
         Bundle bundle = modified.get(osFamily);
         boolean canSelect = bundle.getBundleType() != BundleType.NONE;
@@ -358,6 +381,9 @@ public class BundleForm extends JPanel {
         JComponent[] components = bindingContext.getBinding("source").getComponents();
         for (JComponent component : components) {
             component.setEnabled(localCondition);
+        }
+        for (Component jcomponent : components[0].getParent().getComponents()) {
+            jcomponent.setEnabled(localCondition);
         }
         components = bindingContext.getBinding("targetLocation").getComponents();
         for (JComponent component : components) {
