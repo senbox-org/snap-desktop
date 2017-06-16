@@ -13,6 +13,7 @@ import org.esa.snap.core.datamodel.ProductData;
 import org.esa.snap.core.gpf.annotations.ParameterDescriptorFactory;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
@@ -24,6 +25,7 @@ import java.util.regex.Pattern;
 @SuppressWarnings("unused")
 class MetadataPlotSettings {
 
+    static final String FIELD_NAME_NONE = "None";
     static final String FIELD_NAME_RECORD_INDEX = "Record Index";
     static final String FIELD_NAME_ARRAY_FIELD_INDEX = "Array Field Index [n]";
 
@@ -56,28 +58,28 @@ class MetadataPlotSettings {
                     numAvailableRecords = getNumRecords(metadataElement);
 
                     PropertySet propertySet = context.getPropertySet();
-                    Property recordStartProperty = propertySet.getProperty(PROP_NAME_RECORD_START_INDEX);
-                    Property numDispRecordProperty = propertySet.getProperty(PROP_NAME_RECORDS_PER_PLOT);
-                    if (PROP_NAME_METADATA_ELEMENT.equals(evt.getPropertyName())) {
-                        recordStartProperty.setValue(1.0);
-                        numDispRecordProperty.setValue(1);
-                    }
-
+                    // clear current settings
+                    propertySet.setValue(PROP_NAME_RECORD_START_INDEX, 1.0);
+                    propertySet.setValue(PROP_NAME_RECORDS_PER_PLOT, 1);
+                    propertySet.setValue(PROP_NAME_FIELD_X, null);
+                    propertySet.setValue(PROP_NAME_FIELD_Y1, null);
+                    propertySet.setValue(PROP_NAME_FIELD_Y2, null);
 
                     List<String> usableFieldNames = retrieveUsableFieldNames(metadataElement);
+                    ArrayList<String> usableYFieldNames = new ArrayList<>(usableFieldNames);
+                    usableYFieldNames.add(0, FIELD_NAME_NONE);
                     PropertyDescriptor propertyFieldY1 = propertySet.getProperty(PROP_NAME_FIELD_Y1).getDescriptor();
-                    propertyFieldY1.setValueSet(new ValueSet(usableFieldNames.toArray(new String[0])));
+                    propertyFieldY1.setValueSet(new ValueSet(usableYFieldNames.toArray(new String[0])));
                     PropertyDescriptor propertyFieldY2 = propertySet.getProperty(PROP_NAME_FIELD_Y2).getDescriptor();
-                    propertyFieldY2.setValueSet(new ValueSet(usableFieldNames.toArray(new String[0])));
+                    propertyFieldY2.setValueSet(new ValueSet(usableYFieldNames.toArray(new String[0])));
 
                     PropertyDescriptor propertyFieldX = propertySet.getProperty(PROP_NAME_FIELD_X).getDescriptor();
-                    usableFieldNames.add(0, FIELD_NAME_RECORD_INDEX);
-                    usableFieldNames.add(1, FIELD_NAME_ARRAY_FIELD_INDEX);
-                    propertyFieldX.setValueSet(new ValueSet(usableFieldNames.toArray(new String[0])));
+                    ArrayList<String> usableXFieldNames = new ArrayList<>(usableFieldNames);
+                    usableXFieldNames.add(0, FIELD_NAME_RECORD_INDEX);
+                    usableXFieldNames.add(1, FIELD_NAME_ARRAY_FIELD_INDEX);
+                    propertyFieldX.setValueSet(new ValueSet(usableXFieldNames.toArray(new String[0])));
                 }
-            } catch (ValidationException e) {
-                e.printStackTrace();
-            }finally {
+            } finally {
                 isSynchronising.set(false);
             }
 
@@ -121,7 +123,7 @@ class MetadataPlotSettings {
     }
 
     void setMetadataElements(MetadataElement[] elements) {
-        if(elements == null) {
+        if (elements == null) {
             context.getPropertySet().setDefaultValues();
             return;
         }
@@ -136,6 +138,14 @@ class MetadataPlotSettings {
 
     int getNumRecords() {
         return getNumRecords(metadataElement);
+    }
+
+    int getRecordStartIndex() {
+        return (int) recordStartIndex;
+    }
+
+    public int getRecordsPerPlot() {
+        return recordsPerPlot;
     }
 
     static List<String> retrieveUsableFieldNames(MetadataElement element) {

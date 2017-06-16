@@ -5,7 +5,9 @@ import org.esa.snap.core.datamodel.MetadataElement;
 import org.esa.snap.core.datamodel.ProductData;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.function.IntUnaryOperator;
 
 import static org.junit.Assert.*;
 

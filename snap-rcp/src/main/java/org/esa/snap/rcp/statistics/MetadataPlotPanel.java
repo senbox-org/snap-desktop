@@ -30,8 +30,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
-import org.jfree.data.xy.XYIntervalSeries;
-import org.jfree.data.xy.XYIntervalSeriesCollection;
+import org.jfree.data.xy.DefaultXYDataset;
 import org.jfree.ui.RectangleInsets;
 import org.openide.windows.TopComponent;
 
@@ -46,6 +45,7 @@ import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import java.awt.Component;
+import java.util.Arrays;
 import java.util.Hashtable;
 
 import static org.esa.snap.rcp.statistics.MetadataPlotSettings.PROP_NAME_FIELD_X;
@@ -68,9 +68,11 @@ class MetadataPlotPanel extends ChartPagePanel {
             HELP_TIP_MESSAGE + "\n" +
             ZOOM_TIP_MESSAGE;
     private static final String CHART_TITLE = "Metadata Plot";
+    private static final String DATA_SERIES_1 = "data_series_01";
+    private static final String DATA_SERIES_2 = "data_series_02";
 
     private JFreeChart chart;
-    private XYIntervalSeriesCollection dataset;
+    private DefaultXYDataset dataset;
     private MetadataPlotSettings plotSettings;
     private boolean isInitialized;
     private JSlider recordSlider;
@@ -86,7 +88,7 @@ class MetadataPlotPanel extends ChartPagePanel {
         if (hasAlternativeView()) {
             getAlternativeView().initComponents();
         }
-        dataset = new XYIntervalSeriesCollection();
+        dataset = new DefaultXYDataset();
         chart = ChartFactory.createXYLineChart(
                 CHART_TITLE,
                 "x-values",
@@ -132,6 +134,10 @@ class MetadataPlotPanel extends ChartPagePanel {
 
         updateComponents();
         updateChartData();
+
+        bindingContext.addPropertyChangeListener(PROP_NAME_METADATA_ELEMENT, evt -> updateUiState());
+        bindingContext.addPropertyChangeListener(evt -> updateChartData());
+
     }
 
     @Override
@@ -150,23 +156,34 @@ class MetadataPlotPanel extends ChartPagePanel {
 
     @Override
     protected void updateChartData() {
-        dataset.removeAllSeries();
+        removeAllDatasetSeries();
 
         MetadataElement metadataElement = plotSettings.getMetadataElement();
         String nameX = plotSettings.getNameX();
         String nameY1 = plotSettings.getNameY1();
-        if(metadataElement == null || nameX == null || nameY1 == null) {
+        if (metadataElement == null || nameX == null || !isValidYFieldName(nameY1)) {
             return;
         }
 
-        XYIntervalSeries y1Series;
-
-        Product product = getProduct();
-
-        switch(nameX) {
+        switch (nameX) {
             case MetadataPlotSettings.FIELD_NAME_RECORD_INDEX:
                 int numRecords = plotSettings.getNumRecords();
-//                metadataElement.get
+                int recordsPerPlot = plotSettings.getRecordsPerPlot();
+                int startIndex = plotSettings.getRecordStartIndex();
+                double[] xAxisData = getRecordIndices(startIndex, recordsPerPlot, numRecords);
+                String name = metadataElement.getName();
+                String[] recordElementNames = new String[xAxisData.length];
+                Arrays.setAll(recordElementNames, i -> String.format("%s.%.0f", name, xAxisData[i]));
+                double[] y1AxisData =  new double[xAxisData.length];
+                Arrays.setAll(y1AxisData, i -> metadataElement.getElement(recordElementNames[i]).getAttribute(nameY1).getData().getElemDouble());
+
+                dataset.addSeries(DATA_SERIES_1, new double[][]{xAxisData, y1AxisData});
+                String nameY2 = plotSettings.getFieldY2();
+                if(isValidYFieldName(nameY2)) {
+                    double[] y2AxisData =  new double[xAxisData.length];
+                    Arrays.setAll(y2AxisData, i -> metadataElement.getElement(recordElementNames[i]).getAttribute(nameY2).getData().getElemDouble());
+                    dataset.addSeries(DATA_SERIES_2, new double[][]{xAxisData, y2AxisData});
+                }
                 break;
             case MetadataPlotSettings.FIELD_NAME_ARRAY_FIELD_INDEX:
                 break;
@@ -174,6 +191,23 @@ class MetadataPlotPanel extends ChartPagePanel {
                 break;
         }
 
+    }
+
+    private void removeAllDatasetSeries() {
+        dataset.removeSeries(DATA_SERIES_1);
+        dataset.removeSeries(DATA_SERIES_2);
+    }
+
+    private boolean isValidYFieldName(String yFieldName) {
+        return yFieldName != null && !MetadataPlotSettings.FIELD_NAME_NONE.equals(yFieldName);
+    }
+
+    static double[] getRecordIndices(int startIndex, int recordsPerPlot, int numRecords) {
+        int clippedStartIndex = Math.max(1, Math.min(startIndex, numRecords));
+        int clippedEndIndex = Math.min(numRecords, Math.min((startIndex - 1) + recordsPerPlot, numRecords));
+        double[] indexArray = new double[clippedEndIndex - clippedStartIndex + 1];
+        Arrays.setAll(indexArray, index -> index + clippedStartIndex);
+        return indexArray;
     }
 
     @Override
@@ -254,7 +288,6 @@ class MetadataPlotPanel extends ChartPagePanel {
         updateSettings();
         updateUiState();
 
-        bindingContext.addPropertyChangeListener(PROP_NAME_METADATA_ELEMENT, evt -> updateUiState());
         return plotSettingsPanel;
     }
 
@@ -271,8 +304,8 @@ class MetadataPlotPanel extends ChartPagePanel {
 
         numRecSpinnerModel.setMaximum(numRecords);
 
-        plotSettings.getContext().setComponentsEnabled(PROP_NAME_RECORD_START_INDEX,numRecords > 1);
-        plotSettings.getContext().setComponentsEnabled(PROP_NAME_RECORDS_PER_PLOT,numRecords > 1);
+        plotSettings.getContext().setComponentsEnabled(PROP_NAME_RECORD_START_INDEX, numRecords > 1);
+        plotSettings.getContext().setComponentsEnabled(PROP_NAME_RECORDS_PER_PLOT, numRecords > 1);
 
     }
 
@@ -283,7 +316,7 @@ class MetadataPlotPanel extends ChartPagePanel {
             return;
         }
 
-        dataset.removeAllSeries();
+        removeAllDatasetSeries();
 
         MetadataElement metadataRoot = product.getMetadataRoot();
         MetadataElement[] elements = metadataRoot.getElements();
