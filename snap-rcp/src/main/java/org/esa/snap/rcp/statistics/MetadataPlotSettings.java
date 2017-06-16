@@ -24,22 +24,23 @@ import java.util.regex.Pattern;
 @SuppressWarnings("unused")
 class MetadataPlotSettings {
 
+    static final String FIELD_NAME_RECORD_INDEX = "Record Index";
+    static final String FIELD_NAME_ARRAY_FIELD_INDEX = "Array Field Index [n]";
+
     static final String PROP_NAME_METADATA_ELEMENT = "metadataElement";
     static final String PROP_NAME_RECORD_START_INDEX = "recordStartIndex";
     static final String PROP_NAME_RECORDS_PER_PLOT = "recordsPerPlot";
     static final String PROP_NAME_FIELD_X = "fieldX";
     static final String PROP_NAME_FIELD_Y1 = "fieldY1";
     static final String PROP_NAME_FIELD_Y2 = "fieldY2";
-    private static final String FIELD_NAME_RECORD_INDEX = "Record Index";
-    private static final String FIELD_NAME_ARRAY_FIELD_INDEX = "Array Field Index [n]";
 
     private MetadataElement metadataElement;
     private int numAvailableRecords;
+    private double recordStartIndex = 1.0;
+    private int recordsPerPlot = 1;
     private String fieldX;
     private String fieldY1;
     private String fieldY2;
-    private double recordStartIndex = 1.0;
-    private int recordsPerPlot = 1;
 
     private BindingContext context;
     private AtomicBoolean isSynchronising = new AtomicBoolean(false);
@@ -52,7 +53,6 @@ class MetadataPlotSettings {
         propertyMetaElement.addPropertyChangeListener(evt -> {
             try {
                 if (!isSynchronising.getAndSet(true)) {
-                    // todo - swingworker?
                     numAvailableRecords = getNumRecords(metadataElement);
 
                     PropertySet propertySet = context.getPropertySet();
@@ -77,14 +77,47 @@ class MetadataPlotSettings {
                 }
             } catch (ValidationException e) {
                 e.printStackTrace();
+            }finally {
+                isSynchronising.set(false);
             }
 
         });
 
     }
 
-    public BindingContext getContext() {
+    /**
+     * Retrieves the binding context, to be used to bind the UI elements to.
+     */
+    BindingContext getContext() {
         return context;
+    }
+
+    /**
+     * Returns the currently selected metadata element
+     */
+    MetadataElement getMetadataElement() {
+        return metadataElement;
+    }
+
+    /**
+     * Name of the field to be used for the domain(X) axis.
+     */
+    String getNameX() {
+        return fieldX;
+    }
+
+    /**
+     * Name of the field to be used for the first range(Y) axis.
+     */
+    public String getNameY1() {
+        return fieldY1;
+    }
+
+    /**
+     * Name of the field to be used for the second range(Y) axis.
+     */
+    public String getFieldY2() {
+        return fieldY2;
     }
 
     void setMetadataElements(MetadataElement[] elements) {

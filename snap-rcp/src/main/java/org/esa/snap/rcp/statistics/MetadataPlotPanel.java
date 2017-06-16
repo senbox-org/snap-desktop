@@ -30,6 +30,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
+import org.jfree.data.xy.XYIntervalSeries;
 import org.jfree.data.xy.XYIntervalSeriesCollection;
 import org.jfree.ui.RectangleInsets;
 import org.openide.windows.TopComponent;
@@ -45,8 +46,6 @@ import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import java.awt.Component;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.Hashtable;
 
 import static org.esa.snap.rcp.statistics.MetadataPlotSettings.PROP_NAME_FIELD_X;
@@ -151,7 +150,30 @@ class MetadataPlotPanel extends ChartPagePanel {
 
     @Override
     protected void updateChartData() {
-        // probably nothing needs to be done here
+        dataset.removeAllSeries();
+
+        MetadataElement metadataElement = plotSettings.getMetadataElement();
+        String nameX = plotSettings.getNameX();
+        String nameY1 = plotSettings.getNameY1();
+        if(metadataElement == null || nameX == null || nameY1 == null) {
+            return;
+        }
+
+        XYIntervalSeries y1Series;
+
+        Product product = getProduct();
+
+        switch(nameX) {
+            case MetadataPlotSettings.FIELD_NAME_RECORD_INDEX:
+                int numRecords = plotSettings.getNumRecords();
+//                metadataElement.get
+                break;
+            case MetadataPlotSettings.FIELD_NAME_ARRAY_FIELD_INDEX:
+                break;
+            default:
+                break;
+        }
+
     }
 
     @Override
