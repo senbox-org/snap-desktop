@@ -84,6 +84,7 @@ class MetadataPlotPanel extends ChartPagePanel {
     private SpinnerNumberModel numRecSpinnerModel;
     private XYPlot xyPlot;
     private DefaultXYItemRenderer xyItemRenderer;
+    private JFreeChart chart;
 
 
     MetadataPlotPanel(TopComponent parentComponent, String helpId) {
@@ -96,7 +97,7 @@ class MetadataPlotPanel extends ChartPagePanel {
             getAlternativeView().initComponents();
         }
         dataset = new DefaultXYDataset();
-        JFreeChart chart = ChartFactory.createXYLineChart(
+        chart = ChartFactory.createXYLineChart(
                 CHART_TITLE,
                 DEFAULT_X_AXIS_LABEL,
                 DEFAULT_SAMPLE_DATASET_NAME,
@@ -190,45 +191,118 @@ class MetadataPlotPanel extends ChartPagePanel {
             return;
         }
 
+        int numRecords = plotSettings.getNumRecords();
+        int recordsPerPlot = plotSettings.getRecordsPerPlot();
+        int startIndex = plotSettings.getRecordStartIndex();
+        String nameY2 = plotSettings.getFieldY2();
+        String refRecordName = String.format("%s.1", metadataElement.getName());
+        double[] recordIndices = getRecordIndices(startIndex, recordsPerPlot, numRecords);
+        String[] recordElementNames = new String[recordIndices.length];
+        Arrays.setAll(recordElementNames, i -> String.format("%s.%.0f", metadataElement.getName(), recordIndices[i]));
+
+        xyPlot.getDomainAxis().setLabel(nameX);
+
         switch (nameX) {
             case MetadataPlotSettings.FIELD_NAME_RECORD_INDEX:
-                int numRecords = plotSettings.getNumRecords();
-                int recordsPerPlot = plotSettings.getRecordsPerPlot();
-                int startIndex = plotSettings.getRecordStartIndex();
-                double[] xAxisData = getRecordIndices(startIndex, recordsPerPlot, numRecords);
-                String name = metadataElement.getName();
-                String[] recordElementNames = new String[xAxisData.length];
-                Arrays.setAll(recordElementNames, i -> String.format("%s.%.0f", name, xAxisData[i]));
-                if (!isValidYField(metadataElement, recordElementNames[0], nameY1)) {
-                    return;
-                }
-                ValueAxis xAxis = xyPlot.getDomainAxis();
-                xAxis.setLabel("Record Index");
-
-                NumberAxis y1Axis = configureRangeIndex(0);
-                double[] y1AxisData = new double[xAxisData.length];
-                Arrays.setAll(y1AxisData, i -> metadataElement.getElement(recordElementNames[i]).getAttribute(nameY1).getData().getElemDouble());
-                String unitY1 = metadataElement.getElement(recordElementNames[0]).getAttribute(nameY1).getUnit();
-                y1Axis.setLabel(getYAxisLabel(nameY1, unitY1));
-                dataset.addSeries(nameY1, new double[][]{xAxisData, y1AxisData});
-
-                String nameY2 = plotSettings.getFieldY2();
-                if (!isValidYField(metadataElement, recordElementNames[0], nameY2)) {
-                    return;
-                }
-                double[] y2AxisData = new double[xAxisData.length];
-                Arrays.setAll(y2AxisData, i -> metadataElement.getElement(recordElementNames[i]).getAttribute(nameY2).getData().getElemDouble());
-                String unitY2 = metadataElement.getElement(recordElementNames[0]).getAttribute(nameY2).getUnit();
-                NumberAxis y2Axis = configureRangeIndex(1);
-                y2Axis.setLabel(getYAxisLabel(nameY2, unitY2));
-                dataset.addSeries(nameY2, new double[][]{xAxisData, y2AxisData});
+                configureChartForRecordIndex(metadataElement, nameY1, nameY2, recordElementNames, refRecordName, recordIndices);
                 break;
             case MetadataPlotSettings.FIELD_NAME_ARRAY_FIELD_INDEX:
+                configureChartForArrayIndex(metadataElement, nameY1, nameY2, recordElementNames, refRecordName);
                 break;
             default:
+                configureChartForDefault(metadataElement, nameX, nameY1, nameY2, recordElementNames, refRecordName);
                 break;
         }
 
+    }
+
+    private void configureChartForDefault(MetadataElement metadataElement, String nameX, String nameY1, String nameY2, String[] recordElementNames, String refRecordName) {
+        if (!isValidYField(metadataElement, refRecordName, nameY1)) {
+            return;
+        }
+        double[] xData = new double[recordElementNames.length];
+        Arrays.setAll(xData, i -> metadataElement.getElement(recordElementNames[i]).getAttribute(nameX).getData().getElemDouble());
+
+        NumberAxis y1Axis = configureRangeIndex(0);
+        String unitY1 = metadataElement.getElement(refRecordName).getAttribute(nameY1).getUnit();
+        y1Axis.setLabel(getYAxisLabel(nameY1, unitY1));
+
+        double[] y1AxisData = new double[recordElementNames.length];
+        Arrays.setAll(y1AxisData, i -> metadataElement.getElement(recordElementNames[i]).getAttribute(nameY1).getData().getElemDouble());
+        dataset.addSeries(nameY1, new double[][]{xData, y1AxisData});
+
+        if (!isValidYField(metadataElement, recordElementNames[0], nameY2)) {
+            return;
+        }
+        NumberAxis y2Axis = configureRangeIndex(1);
+        String unitY2 = metadataElement.getElement(refRecordName).getAttribute(nameY2).getUnit();
+        y2Axis.setLabel(getYAxisLabel(nameY2, unitY2));
+        
+        double[] y2AxisData = new double[recordElementNames.length];
+        Arrays.setAll(y2AxisData, i -> metadataElement.getElement(recordElementNames[i]).getAttribute(nameY2).getData().getElemDouble());
+        dataset.addSeries(nameY2, new double[][]{xData, y2AxisData});
+
+
+    }
+
+    private void configureChartForArrayIndex(MetadataElement metadataElement, String nameY1, String nameY2, String[] recordElementNames, String refRecordName) {
+        if (!isValidArrayYField(metadataElement, refRecordName, nameY1)) {
+            return;
+        }
+        xyItemRenderer.setBaseSeriesVisibleInLegend(false);
+
+        MetadataElement refElem = metadataElement.getElement(refRecordName);
+        int arrayLength = (int) refElem.getAttribute(nameY1).getNumDataElems();
+        double[] arrayIndices = new double[arrayLength];
+        Arrays.setAll(arrayIndices, i -> i);
+
+        NumberAxis y1Axis = configureRangeIndex(0);
+        String unitY1 = metadataElement.getElement(refRecordName).getAttribute(nameY1).getUnit();
+        y1Axis.setLabel(getYAxisLabel(nameY1, unitY1));
+
+        for (String recordElementName : recordElementNames) {
+            double[] y1AxisData = new double[arrayIndices.length];
+            Arrays.setAll(y1AxisData, i -> metadataElement.getElement(recordElementName).getAttribute(nameY1).getData().getElemDoubleAt(i));
+            String seriesKey = String.format("%s - %s", recordElementName, nameY1);
+            dataset.addSeries(seriesKey, new double[][]{arrayIndices, y1AxisData});
+        }
+
+        if (!isValidArrayYField(metadataElement, refRecordName, nameY2)) {
+            return;
+        }
+        NumberAxis y2Axis = configureRangeIndex(1);
+        String unitY2 = metadataElement.getElement(refRecordName).getAttribute(nameY2).getUnit();
+        y2Axis.setLabel(getYAxisLabel(nameY2, unitY2));
+
+        for (String recordElementName : recordElementNames) {
+            double[] y2AxisData = new double[arrayIndices.length];
+            Arrays.setAll(y2AxisData, i -> metadataElement.getElement(recordElementName).getAttribute(nameY2).getData().getElemDoubleAt(i));
+            String seriesKey = String.format("%s - %s", recordElementName, nameY2);
+            dataset.addSeries(seriesKey, new double[][]{arrayIndices, y2AxisData});
+        }
+    }
+
+    private void configureChartForRecordIndex(MetadataElement metadataElement, String nameY1, String nameY2, String[] recordElementNames, String refRecordName, double[] recordIndices) {
+        if (!isValidYField(metadataElement, refRecordName, nameY1)) {
+            return;
+        }
+
+        NumberAxis y1Axis = configureRangeIndex(0);
+        String unitY1 = metadataElement.getElement(refRecordName).getAttribute(nameY1).getUnit();
+        y1Axis.setLabel(getYAxisLabel(nameY1, unitY1));
+        double[] y1AxisData = new double[recordIndices.length];
+        Arrays.setAll(y1AxisData, i -> metadataElement.getElement(recordElementNames[i]).getAttribute(nameY1).getData().getElemDouble());
+        dataset.addSeries(nameY1, new double[][]{recordIndices, y1AxisData});
+
+        if (!isValidYField(metadataElement, recordElementNames[0], nameY2)) {
+            return;
+        }
+        NumberAxis y2Axis = configureRangeIndex(1);
+        String unitY2 = metadataElement.getElement(refRecordName).getAttribute(nameY2).getUnit();
+        y2Axis.setLabel(getYAxisLabel(nameY2, unitY2));
+        double[] y2AxisData = new double[recordIndices.length];
+        Arrays.setAll(y2AxisData, i -> metadataElement.getElement(recordElementNames[i]).getAttribute(nameY2).getData().getElemDouble());
+        dataset.addSeries(nameY2, new double[][]{recordIndices, y2AxisData});
     }
 
     private String getYAxisLabel(String name, String unit) {
@@ -239,13 +313,29 @@ class MetadataPlotPanel extends ChartPagePanel {
         removeAllDatasetSeries();
         xyPlot.clearRangeAxes();
         xyPlot.getDomainAxis().setLabel(DEFAULT_X_AXIS_LABEL);
+        xyItemRenderer.setBaseSeriesVisibleInLegend(true);
+//        xyItemRenderer.setSeriesVisibleInLegend(0, true);
+//        xyItemRenderer.setSeriesVisibleInLegend(1, true);
+
 
     }
 
-    private boolean isValidYField(MetadataElement metadataElement, String elementName, String nameY2) {
+    private boolean isValidYField(MetadataElement metadataElement, String elementName, String nameY) {
         MetadataElement element = metadataElement.getElement(elementName);
-        return StringUtils.isNotNullAndNotEmpty(nameY2) && !MetadataPlotSettings.FIELD_NAME_NONE.equals(nameY2) &&
-                element != null && element.getAttribute(nameY2) != null;
+        return StringUtils.isNotNullAndNotEmpty(nameY) && !MetadataPlotSettings.FIELD_NAME_NONE.equals(nameY) &&
+                element != null && element.getAttribute(nameY) != null;
+    }
+
+    private boolean isValidArrayYField(MetadataElement metadataElement, String elementName, String nameY) {
+        MetadataElement element = metadataElement.getElement(elementName);
+        if (element == null) {
+            return false;
+        }
+        MetadataAttribute attribute = element.getAttribute(nameY);
+        if (attribute == null) {
+            return false;
+        }
+        return StringUtils.isNotNullAndNotEmpty(nameY) && !MetadataPlotSettings.FIELD_NAME_NONE.equals(nameY) && attribute.getNumDataElems() > 1;
     }
 
     private void removeAllDatasetSeries() {
