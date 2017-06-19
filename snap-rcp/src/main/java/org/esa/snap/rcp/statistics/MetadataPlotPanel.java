@@ -24,12 +24,18 @@ import org.esa.snap.core.datamodel.MetadataElement;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.core.datamodel.ProductNodeEvent;
+import org.esa.snap.core.util.StringUtils;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.AxisLocation;
+import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.labels.StandardXYItemLabelGenerator;
+import org.jfree.chart.labels.StandardXYToolTipGenerator;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
 import org.jfree.data.xy.DefaultXYDataset;
 import org.jfree.ui.RectangleInsets;
 import org.openide.windows.TopComponent;
@@ -45,6 +51,7 @@ import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import java.awt.Component;
+import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.Hashtable;
 
@@ -68,15 +75,15 @@ class MetadataPlotPanel extends ChartPagePanel {
             HELP_TIP_MESSAGE + "\n" +
             ZOOM_TIP_MESSAGE;
     private static final String CHART_TITLE = "Metadata Plot";
-    private static final String DATA_SERIES_1 = "data_series_01";
-    private static final String DATA_SERIES_2 = "data_series_02";
+    private static final String DEFAULT_X_AXIS_LABEL = "x-values";
 
-    private JFreeChart chart;
     private DefaultXYDataset dataset;
     private MetadataPlotSettings plotSettings;
     private boolean isInitialized;
     private JSlider recordSlider;
     private SpinnerNumberModel numRecSpinnerModel;
+    private XYPlot xyPlot;
+    private DefaultXYItemRenderer xyItemRenderer;
 
 
     MetadataPlotPanel(TopComponent parentComponent, String helpId) {
@@ -89,9 +96,9 @@ class MetadataPlotPanel extends ChartPagePanel {
             getAlternativeView().initComponents();
         }
         dataset = new DefaultXYDataset();
-        chart = ChartFactory.createXYLineChart(
+        JFreeChart chart = ChartFactory.createXYLineChart(
                 CHART_TITLE,
-                "x-values",
+                DEFAULT_X_AXIS_LABEL,
                 DEFAULT_SAMPLE_DATASET_NAME,
                 dataset,
                 PlotOrientation.VERTICAL,
@@ -100,16 +107,23 @@ class MetadataPlotPanel extends ChartPagePanel {
                 false
         );
 
-        final XYPlot plot = chart.getXYPlot();
+        xyPlot = chart.getXYPlot();
 
-        plot.setNoDataMessage(NO_DATA_MESSAGE);
-        plot.setAxisOffset(new RectangleInsets(5, 5, 5, 5));
+        xyPlot.setNoDataMessage(NO_DATA_MESSAGE);
+        xyPlot.setAxisOffset(new RectangleInsets(5, 5, 5, 5));
 
-        final ValueAxis domainAxis = plot.getDomainAxis();
-        final ValueAxis rangeAxis = plot.getRangeAxis();
-        // allow transfer from bounds into min/max fields, if auto min/maxis enabled
+        final ValueAxis domainAxis = xyPlot.getDomainAxis();
         domainAxis.setAutoRange(true);
-        rangeAxis.setAutoRange(true);
+        domainAxis.setAutoRangeMinimumSize(2);
+
+        xyItemRenderer = new DefaultXYItemRenderer();
+        xyItemRenderer.setBaseToolTipGenerator(new StandardXYToolTipGenerator());
+        xyItemRenderer.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator("{2,number,#.#}",
+                                                                                  NumberFormat.getIntegerInstance(),
+                                                                                  NumberFormat.getIntegerInstance()));
+        xyPlot.setRenderer(0, xyItemRenderer);
+        xyPlot.setRenderer(1, xyItemRenderer);
+
 
         ChartPanel profilePlotDisplay = new ChartPanel(chart);
 
@@ -140,6 +154,17 @@ class MetadataPlotPanel extends ChartPagePanel {
 
     }
 
+    private NumberAxis configureRangeIndex(int index) {
+        NumberAxis axis = new NumberAxis();
+        axis.setAutoRange(true);
+        axis.setAutoRangeMinimumSize(2.0);
+        axis.setLabelFont(xyPlot.getDomainAxis().getLabelFont());
+        axis.setLabel(String.format("Y%d Samples", index + 1));
+        xyPlot.setRangeAxis(index, axis);
+        xyPlot.setRangeAxisLocation(index, index == 0 ? AxisLocation.BOTTOM_OR_LEFT : AxisLocation.BOTTOM_OR_RIGHT);
+        return axis;
+    }
+
     @Override
     public void nodeDataChanged(ProductNodeEvent event) {
         // probably nothing needs to be done here
@@ -156,12 +181,12 @@ class MetadataPlotPanel extends ChartPagePanel {
 
     @Override
     protected void updateChartData() {
-        removeAllDatasetSeries();
+        resetChart();
 
         MetadataElement metadataElement = plotSettings.getMetadataElement();
         String nameX = plotSettings.getNameX();
         String nameY1 = plotSettings.getNameY1();
-        if (metadataElement == null || nameX == null || !isValidYFieldName(nameY1)) {
+        if (metadataElement == null || nameX == null || StringUtils.isNullOrEmpty(nameY1) || MetadataPlotSettings.FIELD_NAME_NONE.equals(nameY1)) {
             return;
         }
 
@@ -174,16 +199,29 @@ class MetadataPlotPanel extends ChartPagePanel {
                 String name = metadataElement.getName();
                 String[] recordElementNames = new String[xAxisData.length];
                 Arrays.setAll(recordElementNames, i -> String.format("%s.%.0f", name, xAxisData[i]));
-                double[] y1AxisData =  new double[xAxisData.length];
-                Arrays.setAll(y1AxisData, i -> metadataElement.getElement(recordElementNames[i]).getAttribute(nameY1).getData().getElemDouble());
-
-                dataset.addSeries(DATA_SERIES_1, new double[][]{xAxisData, y1AxisData});
-                String nameY2 = plotSettings.getFieldY2();
-                if(isValidYFieldName(nameY2)) {
-                    double[] y2AxisData =  new double[xAxisData.length];
-                    Arrays.setAll(y2AxisData, i -> metadataElement.getElement(recordElementNames[i]).getAttribute(nameY2).getData().getElemDouble());
-                    dataset.addSeries(DATA_SERIES_2, new double[][]{xAxisData, y2AxisData});
+                if (!isValidYField(metadataElement, recordElementNames[0], nameY1)) {
+                    return;
                 }
+                ValueAxis xAxis = xyPlot.getDomainAxis();
+                xAxis.setLabel("Record Index");
+
+                NumberAxis y1Axis = configureRangeIndex(0);
+                double[] y1AxisData = new double[xAxisData.length];
+                Arrays.setAll(y1AxisData, i -> metadataElement.getElement(recordElementNames[i]).getAttribute(nameY1).getData().getElemDouble());
+                String unitY1 = metadataElement.getElement(recordElementNames[0]).getAttribute(nameY1).getUnit();
+                y1Axis.setLabel(getYAxisLabel(nameY1, unitY1));
+                dataset.addSeries(nameY1, new double[][]{xAxisData, y1AxisData});
+
+                String nameY2 = plotSettings.getFieldY2();
+                if (!isValidYField(metadataElement, recordElementNames[0], nameY2)) {
+                    return;
+                }
+                double[] y2AxisData = new double[xAxisData.length];
+                Arrays.setAll(y2AxisData, i -> metadataElement.getElement(recordElementNames[i]).getAttribute(nameY2).getData().getElemDouble());
+                String unitY2 = metadataElement.getElement(recordElementNames[0]).getAttribute(nameY2).getUnit();
+                NumberAxis y2Axis = configureRangeIndex(1);
+                y2Axis.setLabel(getYAxisLabel(nameY2, unitY2));
+                dataset.addSeries(nameY2, new double[][]{xAxisData, y2AxisData});
                 break;
             case MetadataPlotSettings.FIELD_NAME_ARRAY_FIELD_INDEX:
                 break;
@@ -193,13 +231,29 @@ class MetadataPlotPanel extends ChartPagePanel {
 
     }
 
-    private void removeAllDatasetSeries() {
-        dataset.removeSeries(DATA_SERIES_1);
-        dataset.removeSeries(DATA_SERIES_2);
+    private String getYAxisLabel(String name, String unit) {
+        return name + (StringUtils.isNullOrEmpty(unit) || unit.equals("-") ? "" : (" in " + unit));
     }
 
-    private boolean isValidYFieldName(String yFieldName) {
-        return yFieldName != null && !MetadataPlotSettings.FIELD_NAME_NONE.equals(yFieldName);
+    private void resetChart() {
+        removeAllDatasetSeries();
+        xyPlot.clearRangeAxes();
+        xyPlot.getDomainAxis().setLabel(DEFAULT_X_AXIS_LABEL);
+
+    }
+
+    private boolean isValidYField(MetadataElement metadataElement, String elementName, String nameY2) {
+        MetadataElement element = metadataElement.getElement(elementName);
+        return StringUtils.isNotNullAndNotEmpty(nameY2) && !MetadataPlotSettings.FIELD_NAME_NONE.equals(nameY2) &&
+                element != null && element.getAttribute(nameY2) != null;
+    }
+
+    private void removeAllDatasetSeries() {
+        int seriesCount = dataset.getSeriesCount();
+        for (int i = 0; i < seriesCount; i++) {
+            Comparable key = dataset.getSeriesKey(0);
+            dataset.removeSeries(key);
+        }
     }
 
     static double[] getRecordIndices(int startIndex, int recordsPerPlot, int numRecords) {
@@ -225,6 +279,9 @@ class MetadataPlotPanel extends ChartPagePanel {
         recordSlider = new JSlider(SwingConstants.HORIZONTAL, 1, 1, 1);
         recordSlider.setPaintTrack(true);
         recordSlider.setPaintTicks(true);
+        recordSlider.setPaintLabels(true);
+        configureSilderLabels(recordSlider);
+
         JLabel numRecordsLabel = new JLabel("Records / Plot: ");
         numRecSpinnerModel = new SpinnerNumberModel(1, 1, 1, 1);
         JSpinner numRecordsSpinner = new JSpinner(numRecSpinnerModel);
@@ -291,16 +348,23 @@ class MetadataPlotPanel extends ChartPagePanel {
         return plotSettingsPanel;
     }
 
+    private void configureSilderLabels(JSlider recordSlider) {
+        Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
+        JLabel minLabel = new JLabel(String.valueOf(recordSlider.getMinimum()));
+        labelTable.put(recordSlider.getMinimum(), minLabel);
+        JLabel maxLabel = new JLabel(String.valueOf(recordSlider.getMaximum()));
+        labelTable.put(recordSlider.getMaximum(), maxLabel);
+        recordSlider.setLabelTable(labelTable);
+    }
+
     private void updateUiState() {
         if (!isInitialized) {
             return;
         }
 
-
         int numRecords = plotSettings.getNumRecords();
         recordSlider.setMaximum(numRecords);
-        Hashtable standardLabels = recordSlider.createStandardLabels(Math.max(recordSlider.getMaximum() - recordSlider.getMinimum(), 1), recordSlider.getMinimum());
-        recordSlider.setLabelTable(standardLabels);
+        configureSilderLabels(recordSlider);
 
         numRecSpinnerModel.setMaximum(numRecords);
 
@@ -320,6 +384,7 @@ class MetadataPlotPanel extends ChartPagePanel {
 
         MetadataElement metadataRoot = product.getMetadataRoot();
         MetadataElement[] elements = metadataRoot.getElements();
+        recordSlider.setValue(1);
 
         plotSettings.setMetadataElements(elements);
 

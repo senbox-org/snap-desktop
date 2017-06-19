@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
 /**
  * @author Marco Peters
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "FieldCanBeLocal"})
 class MetadataPlotSettings {
 
     static final String FIELD_NAME_NONE = "None";
@@ -195,7 +195,7 @@ class MetadataPlotSettings {
 
     private static int getNumRecords(MetadataElement metadataElement) {
         if (metadataElement == null) {
-            return 0;
+            return 1;
         }
         int numSubElements = metadataElement.getNumElements();
         if (numSubElements > 0) {
