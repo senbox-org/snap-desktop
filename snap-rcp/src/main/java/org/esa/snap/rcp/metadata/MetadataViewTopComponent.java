@@ -3,14 +3,18 @@ package org.esa.snap.rcp.metadata;
 import org.esa.snap.core.datamodel.MetadataElement;
 import org.esa.snap.netbeans.docwin.DocumentTopComponent;
 import org.esa.snap.netbeans.docwin.WindowUtilities;
+import org.esa.snap.ui.DecimalTableCellRenderer;
 import org.esa.snap.ui.product.metadata.MetadataTableInnerElement;
 import org.netbeans.swing.outline.Outline;
 import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.view.OutlineView;
 import org.openide.nodes.Node;
 
+import javax.swing.SwingConstants;
 import javax.swing.table.TableColumnModel;
 import java.awt.BorderLayout;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 
 public class MetadataViewTopComponent extends DocumentTopComponent<MetadataElement, OutlineView> implements ExplorerManager.Provider {
 
@@ -53,6 +57,11 @@ public class MetadataViewTopComponent extends DocumentTopComponent<MetadataEleme
         outlineView.setPropertyColumns(COLUMN_NAMES);
         final Outline outline = outlineView.getOutline();
         outline.setRootVisible(false);
+        DecimalFormat format = new DecimalFormat();
+        format.setGroupingUsed(false);
+        DecimalTableCellRenderer decimalTableCellRenderer = new DecimalTableCellRenderer(format);
+        outline.setDefaultRenderer(Double.class, decimalTableCellRenderer);
+        outline.setDefaultRenderer(Float.class, decimalTableCellRenderer);
         outline.setDefaultRenderer(Node.Property.class, new MetadataOutlineCellRenderer());
         final TableColumnModel columnModel = outline.getColumnModel();
         columnModel.getColumn(0).setCellRenderer(new MetadataOutlineCellRenderer());
