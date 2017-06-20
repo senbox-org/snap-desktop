@@ -13,7 +13,6 @@ import org.esa.snap.core.datamodel.ProductData;
 import org.esa.snap.core.gpf.annotations.ParameterDescriptorFactory;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
@@ -37,7 +36,6 @@ class MetadataPlotSettings {
     static final String PROP_NAME_FIELD_Y2 = "fieldY2";
 
     private MetadataElement metadataElement;
-    private int numAvailableRecords;
     private double recordStartIndex = 1.0;
     private int recordsPerPlot = 1;
     private String fieldX;
@@ -55,7 +53,6 @@ class MetadataPlotSettings {
         propertyMetaElement.addPropertyChangeListener(evt -> {
             try {
                 if (!isSynchronising.getAndSet(true)) {
-                    numAvailableRecords = getNumRecords(metadataElement);
 
                     PropertySet propertySet = context.getPropertySet();
                     // clear current settings

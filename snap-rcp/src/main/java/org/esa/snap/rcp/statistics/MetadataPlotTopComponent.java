@@ -16,12 +16,19 @@
 
 package org.esa.snap.rcp.statistics;
 
+import org.esa.snap.core.datamodel.RasterDataNode;
+import org.esa.snap.ui.UIUtils;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
+
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import java.awt.BorderLayout;
+import java.awt.Image;
 
 /**
  * The tool view containing a density plot
@@ -53,7 +60,12 @@ public class MetadataPlotTopComponent extends AbstractStatisticsTopComponent {
 
     @Override
     protected PagePanel createPagePanel() {
-        return new MetadataPlotPanel(this, Bundle.CTL_MetadataPlotTopComponent_HelpId());
+        final Icon largeIcon = new ImageIcon(MetadataPlotTopComponent.class.getResource("/org/esa/snap/rcp/icons/MetadataPlot24.png"));
+        MetadataPlotPanel metadataPlotPanel = new MetadataPlotPanel(this, Bundle.CTL_MetadataPlotTopComponent_HelpId());
+        final TableViewPagePanel tableViewPanel = new MetadataTableViewPagePanel(metadataPlotPanel, largeIcon);
+        metadataPlotPanel.setAlternativeView(tableViewPanel);
+        tableViewPanel.setAlternativeView(metadataPlotPanel);
+        return metadataPlotPanel;
     }
 
     @Override
@@ -64,5 +76,27 @@ public class MetadataPlotTopComponent extends AbstractStatisticsTopComponent {
     @Override
     protected void componentOpened() {
         super.componentOpened();
+    }
+
+    private class MetadataTableViewPagePanel extends TableViewPagePanel {
+        private MetadataTableViewPagePanel(MetadataPlotPanel metadataPlotPanel, Icon largeIcon) {
+            super(MetadataPlotTopComponent.this, Bundle.CTL_ScatterPlotTopComponent_HelpId(), metadataPlotPanel.getTitle(), largeIcon);
+        }
+
+        @Override
+        protected void showAlternativeView() {
+            // this is overridden to avoid the clearance of the MetadataPlotPanel when
+            // switching back from the MetadataTableViewPagePanel
+            final TopComponent parent = (TopComponent) this.getParent();
+            parent.remove(this);
+            this.setVisible(false);
+            final PagePanel alternativeView = getAlternativeView();
+            alternativeView.handleLayerContentChanged();
+            parent.add(alternativeView, BorderLayout.CENTER);
+            alternativeView.setVisible(true);
+            parent.revalidate();
+
+        }
+
     }
 }
