@@ -3,18 +3,19 @@ package org.esa.snap.rcp.metadata;
 import org.esa.snap.core.datamodel.MetadataElement;
 import org.esa.snap.netbeans.docwin.DocumentTopComponent;
 import org.esa.snap.netbeans.docwin.WindowUtilities;
-import org.esa.snap.ui.DecimalTableCellRenderer;
 import org.esa.snap.ui.product.metadata.MetadataTableInnerElement;
 import org.netbeans.swing.outline.Outline;
 import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.view.OutlineView;
 import org.openide.nodes.Node;
 
-import javax.swing.SwingConstants;
+import javax.swing.JLabel;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.text.DecimalFormat;
-import java.text.NumberFormat;
 
 public class MetadataViewTopComponent extends DocumentTopComponent<MetadataElement, OutlineView> implements ExplorerManager.Provider {
 
@@ -59,7 +60,7 @@ public class MetadataViewTopComponent extends DocumentTopComponent<MetadataEleme
         outline.setRootVisible(false);
         DecimalFormat format = new DecimalFormat();
         format.setGroupingUsed(false);
-        DecimalTableCellRenderer decimalTableCellRenderer = new DecimalTableCellRenderer(format);
+        DefaultTableCellRenderer decimalTableCellRenderer = new StringDecimalFormatRenderer();
         outline.setDefaultRenderer(Double.class, decimalTableCellRenderer);
         outline.setDefaultRenderer(Float.class, decimalTableCellRenderer);
         outline.setDefaultRenderer(Node.Property.class, new MetadataOutlineCellRenderer());
@@ -83,4 +84,22 @@ public class MetadataViewTopComponent extends DocumentTopComponent<MetadataEleme
     }
 
 
+    public static class StringDecimalFormatRenderer extends DefaultTableCellRenderer {
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
+                                                       int row, int column) {
+            Component comp = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            if (comp instanceof JLabel) {
+                JLabel label = (JLabel) comp;
+                label.setHorizontalAlignment(JLabel.LEFT);
+                if (value instanceof Float || value instanceof Double) {
+                    label.setText(String.valueOf(value));
+                } else {
+                    label.setText("n/a");
+                }
+            }
+            return comp;
+        }
+    }
 }

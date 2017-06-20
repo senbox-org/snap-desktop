@@ -58,8 +58,6 @@ class MetadataOutlineCellRenderer extends DefaultOutlineCellRenderer {
                 ((HtmlRenderer.Renderer) cell).setIndent(5);
             } else if (cell instanceof DefaultTableCellRenderer.UIResource) {
                 ((UIResource) cell).setHorizontalAlignment(JLabel.LEFT);
-            } else if (cell instanceof DefaultTableCellRenderer) {
-                ((DefaultTableCellRenderer) cell).setHorizontalAlignment(JLabel.LEFT);
             }
             Color foregroundColor = table.getForeground();
             cell.setForeground(foregroundColor);
