@@ -35,7 +35,7 @@
 
 <h4>Creating a new adapter or modifying an existing one</h4>
 <p>The form for creating a new adapter is reused for editing an existing adapter and for duplicating an adapter.</p>
-<img src="../images/EditAdapter.png"/>
+<!-- <img src="../images/EditAdapter.png"/> -->
 <p>The form is structured into multiple areas:</p>
 <ul>
     <li>descriptor details</li>
@@ -47,6 +47,9 @@
 </ul>
 <p>For details about the operator structure and what is the use of each member, see <a href="user_interface.html">here</a>.</p>
 <h5>Descriptor details</h5>
+
+<img src="../images/OperatorDescriptor.png"/>
+
 <p>This area consists in the following fields:</p>
 <ul>
     <li>Alias: a short name for the adapter to distinguish from the rest of the adapters, this alias will be used to
@@ -65,6 +68,9 @@
     </li>
 </ul>
 <h5>System variables</h5>
+
+<img src="../images/SystemVariables.png"/>
+
 <p>System variables are values that must be set when the tools is executed. Such a variable
     may or may not be a system-wide variable (eg. one set in Environment Variables on Windows OS). If the latter case,
     the system value will always replace the user-defined value.
@@ -86,6 +92,9 @@
     <img src="../images/SystemDependentVariable.png"/>
 </p>
 <h5><b>Pre-processing</b> area contains 2 field, each one with a checkbox and a combobox:</h5>
+
+<img src="../images/Preprocessing.png"/>
+
 <ul>
     <li>Pre-processing tool: when this option is checked and an already defined tool is chosen in the combobox,
         that tool is executed with the same input parameters values as the current tool, as the first step of the
@@ -95,6 +104,9 @@
         saved is given as the value of the parameter <i>sourceProductFile</i></li>
 </ul>
 <h5>Configuration parameters includes:</h5>
+
+<img src="../images/ConfigurationParameters.png"/>
+
 <ul>
     <li>Tool location: location of the executable file corresponding to the tool. The location can be expressed in one of the following forms:
         <ul>
@@ -121,7 +133,11 @@ is marked as 'Not Null' or 'Not Empty' will be checked for pointing to existing 
     error status. When the tool outputs something, the two patterns are checked and if one of them matches the output,
     this is registered in the log (in SNAP application, when the Console is active, the log messages will appear
     in the console view)</p>
+
 <h5>Operator parameters</h5>
+
+<img src="../images/OperatorParameters.png"/>
+
 <p>This area consists in a table of parameters necessary for the processing of the velocity template. Each parameter
     can have the following properties:</p>
 <ul>
@@ -257,6 +273,24 @@ is marked as 'Not Null' or 'Not Empty' will be checked for pointing to existing 
     <li>If the parameter type is <i>Template After</i>, the template gets interpreted after the execution
         steps of the toll, as the final step. The result is also saved in the working directory.
     </li>
+</ul>
+
+<h5>Bundled Binaries</h5>
+<img src="../images/BundledBinaries.png"/>
+
+<p>In this tab the user can integrate an installer in the adapter. When the adapter is downloaded/installed, the user can install also manually the tool.
+    In case of a remote installer, installing the tool actually means downloading the installer from the given URL and copying it on a local address.
+    After the tool is installed in the target folder (as configured in the adapter), all the adapter parameters and variables should be valid.
+The tool can be configured to be install on Windows, Linux and MaxOSX</p>
+
+<p>This area consists in the following fields:</p>
+<ul>
+    <li> Type: there are two options to choose, Zip archive (must be Self-Extracting Zip file) or installer. </li>
+    <li> Location: if Local is selected, the Source File field should contain the local address of the installer or of the zip archive. Otherwise, if Remote is selected,
+        the URL field should contain the address of the installer or the zip archive that will be downloaded.</li>
+    <li> Arguments: the arguments used to install the Self-Extracting archive. </li>
+    <li> Target Location: the location where the user wants to install the tool. </li>
+    <li> Reflect in Variable: the user can choose an already existing variable, which will have as value the location where the tool was installed. </li>
 </ul>
 
 <hr>
