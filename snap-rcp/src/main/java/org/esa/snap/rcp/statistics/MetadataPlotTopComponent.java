@@ -16,8 +16,6 @@
 
 package org.esa.snap.rcp.statistics;
 
-import org.esa.snap.core.datamodel.RasterDataNode;
-import org.esa.snap.ui.UIUtils;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -28,7 +26,6 @@ import org.openide.windows.TopComponent;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import java.awt.BorderLayout;
-import java.awt.Image;
 
 /**
  * The tool view containing a density plot
