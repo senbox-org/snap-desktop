@@ -407,80 +407,107 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
         bundlePanel.add(bundleForm);
         rows++;
         org.esa.snap.core.gpf.descriptor.dependency.Bundle currentBundle = newOperatorDescriptor.getBundle();
-        if (currentBundle != null &&
-                !currentBundle.isInstalled() && BundleInstaller.isBundleFileAvailable(currentBundle)) {
-            JButton installButton = new JButton() {
-                @Override
-                public void setText(String text) {
-                    super.setText(text);
-                    adjustDimension(this);
-                }
-            };
-            installButton.setText((currentBundle.getLocation() == BundleLocation.REMOTE ?
+        JButton button = renderInstallButton(currentBundle, bundlePanel);
+        JPanel buttonPanel = new JPanel(new BorderLayout());
+        buttonPanel.setMaximumSize(new Dimension(buttonPanel.getWidth(), controlHeight));
+        buttonPanel.add(button, BorderLayout.EAST);
+        bundlePanel.add(buttonPanel);
+        bundleForm.setPropertyChangeListener(evt -> {
+            org.esa.snap.core.gpf.descriptor.dependency.Bundle bundle =
+                    (org.esa.snap.core.gpf.descriptor.dependency.Bundle) evt.getSource();
+            button.setText((bundle.getLocation() == BundleLocation.REMOTE ?
                     "Download and " :
                     "") + "Install Now");
-            installButton.setToolTipText(currentBundle.getLocation() == BundleLocation.REMOTE ?
-                                                 currentBundle.getDownloadURL() : currentBundle.getSource().toString());
-            installButton.setMaximumSize(installButton.getPreferredSize());
-            JPanel buttonPanel = new JPanel(new BorderLayout());
-            buttonPanel.setMaximumSize(new Dimension(buttonPanel.getWidth(), controlHeight));
-            buttonPanel.add(installButton, BorderLayout.EAST);
-            bundlePanel.add(buttonPanel);
-            installButton.addActionListener((ActionEvent e) -> {
-                newOperatorDescriptor.setBundles(bundleForm.applyChanges());
-                org.esa.snap.core.gpf.descriptor.dependency.Bundle modifiedBundle = newOperatorDescriptor.getBundle();
-                try (BundleInstaller installer = new BundleInstaller(newOperatorDescriptor)) {
-                    ProgressHandle progressHandle = ProgressHandleFactory.createSystemHandle("Installing bundle");
-                    installer.setProgressMonitor(new ProgressHandler(progressHandle, false));
-                    installer.setCallback(() -> {
-                        if (modifiedBundle.isInstalled()) {
-                            Path path = newOperatorDescriptor.resolveVariables(modifiedBundle.getTargetLocation())
-                                    .toPath()
-                                    .resolve(FileUtils.getFilenameWithoutExtension(modifiedBundle.getEntryPoint()));
-                            SwingUtilities.invokeLater(() -> {
-                                progressHandle.finish();
-                                Dialogs.showInformation(String.format("Bundle was installed in location:\n%s", path));
-                                installButton.setVisible(false);
-                                bundlePanel.revalidate();
-                            });
-                            String updateVariable = modifiedBundle.getUpdateVariable();
-                            if (updateVariable != null) {
-                                Optional<SystemVariable> variable = newOperatorDescriptor.getVariables()
-                                        .stream()
-                                        .filter(v -> v.getKey().equals(updateVariable))
-                                        .findFirst();
-                                variable.ifPresent(systemVariable -> {
-                                    systemVariable.setShared(true);
-                                    systemVariable.setValue(path.toString());
-                                });
-                                varTable.revalidate();
-                            }
-                        } else {
-                            SwingUtilities.invokeLater(() -> {
-                                progressHandle.finish();
-                                Dialogs.showInformation("Bundle installation failed. \n" +
-                                                                "Please see the application log for details.");
-                                bundlePanel.revalidate();
-                            });
-                        }
-                        return null;
-                    });
-                    installer.install(true);
-                } catch (Exception ex) {
-                    logger.warning(ex.getMessage());
-                }
-            });
-            this.downloadAction = () -> {
-                tabbedPane.setSelectedIndex(tabbedPane.getTabCount() - 1);
-                installButton.requestFocusInWindow();
-                installButton.doClick();
-                return null;
-            };
-            rows++;
-        }
+            button.setToolTipText(bundle.getLocation() == BundleLocation.REMOTE ?
+                                          bundle.getDownloadURL() :
+                                          bundle.getSource() != null ?
+                                                  bundle.getSource().toString() : "");
+            button.setMaximumSize(button.getPreferredSize());
+            button.setVisible(canInstall(bundle));
+        });
+        rows++;
         SpringUtilities.makeCompactGrid(bundlePanel, rows, 1,
                                         DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING, DEFAULT_PADDING);
         return bundlePanel;
+    }
+
+    private JButton renderInstallButton(org.esa.snap.core.gpf.descriptor.dependency.Bundle currentBundle,
+                                     JPanel bundlePanel) {
+        JButton installButton = new JButton() {
+            @Override
+            public void setText(String text) {
+                super.setText(text);
+                adjustDimension(this);
+            }
+        };
+        installButton.setText((currentBundle.getLocation() == BundleLocation.REMOTE ?
+                "Download and " :
+                "") + "Install Now");
+        installButton.setToolTipText(currentBundle.getLocation() == BundleLocation.REMOTE ?
+                                             currentBundle.getDownloadURL() :
+                                             currentBundle.getSource() != null ?
+                                                     currentBundle.getSource().toString() : "");
+        installButton.setMaximumSize(installButton.getPreferredSize());
+        installButton.addActionListener((ActionEvent e) -> {
+            newOperatorDescriptor.setBundles(bundleForm.applyChanges());
+            org.esa.snap.core.gpf.descriptor.dependency.Bundle modifiedBundle = newOperatorDescriptor.getBundle();
+            try (BundleInstaller installer = new BundleInstaller(newOperatorDescriptor)) {
+                ProgressHandle progressHandle = ProgressHandleFactory.createSystemHandle("Installing bundle");
+                installer.setProgressMonitor(new ProgressHandler(progressHandle, false));
+                installer.setCallback(() -> {
+                    if (modifiedBundle.isInstalled()) {
+                        Path path = newOperatorDescriptor.resolveVariables(modifiedBundle.getTargetLocation())
+                                .toPath()
+                                .resolve(FileUtils.getFilenameWithoutExtension(modifiedBundle.getEntryPoint()));
+                        SwingUtilities.invokeLater(() -> {
+                            progressHandle.finish();
+                            Dialogs.showInformation(String.format("Bundle was installed in location:\n%s", path));
+                            installButton.setVisible(false);
+                            bundlePanel.revalidate();
+                        });
+                        String updateVariable = modifiedBundle.getUpdateVariable();
+                        if (updateVariable != null) {
+                            Optional<SystemVariable> variable = newOperatorDescriptor.getVariables()
+                                    .stream()
+                                    .filter(v -> v.getKey().equals(updateVariable))
+                                    .findFirst();
+                            variable.ifPresent(systemVariable -> {
+                                systemVariable.setShared(true);
+                                systemVariable.setValue(path.toString());
+                            });
+                            varTable.revalidate();
+                        }
+                    } else {
+                        SwingUtilities.invokeLater(() -> {
+                            progressHandle.finish();
+                            Dialogs.showInformation("Bundle installation failed. \n" +
+                                                            "Please see the application log for details.");
+                            bundlePanel.revalidate();
+                        });
+                    }
+                    return null;
+                });
+                installer.install(true);
+            } catch (Exception ex) {
+                logger.warning(ex.getMessage());
+            }
+        });
+        this.downloadAction = () -> {
+            tabbedPane.setSelectedIndex(tabbedPane.getTabCount() - 1);
+            installButton.requestFocusInWindow();
+            installButton.doClick();
+            return null;
+        };
+        installButton.setVisible(canInstall(currentBundle));
+        return installButton;
+    }
+
+    private boolean canInstall(org.esa.snap.core.gpf.descriptor.dependency.Bundle bundle) {
+        return (bundle != null &&
+                !bundle.isInstalled() &&
+                BundleInstaller.isBundleFileAvailable(bundle) &&
+                    ((BundleLocation.LOCAL.equals(bundle.getLocation()) && bundle.getSource() != null) ||
+                     (BundleLocation.REMOTE.equals(bundle.getLocation()) && bundle.getDownloadURL() != null)));
     }
 
     private JPanel createPreProcessingTab() {

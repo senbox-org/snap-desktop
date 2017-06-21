@@ -120,11 +120,13 @@ public class VectorDataLayer extends Layer {
             if (featureFigure != null) {
                 figureMap.remove(simpleFeature);
                 Placemark placemark = vectorDataNode.getPlacemarkGroup().getPlacemark(simpleFeature);
-                String css = placemark.getStyleCss();
-                final FigureStyle normalStyle = DefaultFigureStyle.createFromCss(css);
-                final FigureStyle selectedStyle = getFigureFactory().deriveSelectedStyle(normalStyle);
-                featureFigure.setNormalStyle(normalStyle);
-                featureFigure.setSelectedStyle(selectedStyle);
+                if(placemark != null) {
+                    String css = placemark.getStyleCss();
+                    final FigureStyle normalStyle = DefaultFigureStyle.createFromCss(css);
+                    final FigureStyle selectedStyle = getFigureFactory().deriveSelectedStyle(normalStyle);
+                    featureFigure.setNormalStyle(normalStyle);
+                    featureFigure.setSelectedStyle(selectedStyle);
+                }
             } else {
                 featureFigure = getFigureFactory().createSimpleFeatureFigure(simpleFeature, vectorDataNode.getDefaultStyleCss());
                 figureCollection.addFigure(featureFigure);

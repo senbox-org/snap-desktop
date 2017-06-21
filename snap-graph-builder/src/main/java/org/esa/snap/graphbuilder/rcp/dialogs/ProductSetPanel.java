@@ -35,10 +35,17 @@ import org.esa.snap.ui.FileChooserFactory;
 import org.esa.snap.ui.GridLayout2;
 import org.netbeans.api.progress.ProgressUtils;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -325,7 +332,7 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
         final JFileChooser chooser = FileChooserFactory.getInstance().createFileChooser(openDir);
         chooser.setMultiSelectionEnabled(true);
         chooser.setDialogTitle(title);
-        if (chooser.showDialog(component, "ok") == JFileChooser.APPROVE_OPTION) {
+        if (chooser.showDialog(component, "OK") == JFileChooser.APPROVE_OPTION) {
             files = chooser.getSelectedFiles();
 
             SnapApp.getDefault().getPreferences().

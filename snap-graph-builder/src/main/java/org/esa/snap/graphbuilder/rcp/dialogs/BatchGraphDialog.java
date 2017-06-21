@@ -22,8 +22,8 @@ import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.graph.GraphException;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.io.FileUtils;
-import org.esa.snap.engine_utilities.gpf.CommonReaders;
 import org.esa.snap.engine_utilities.db.ProductEntry;
+import org.esa.snap.engine_utilities.gpf.CommonReaders;
 import org.esa.snap.engine_utilities.gpf.ProcessTimeMonitor;
 import org.esa.snap.engine_utilities.util.ResourceUtils;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.FileTable;
@@ -37,10 +37,20 @@ import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.FileChooserFactory;
 import org.esa.snap.ui.ModelessDialog;
 
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.JTabbedPane;
+import javax.swing.SwingWorker;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -274,7 +284,7 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
         final JFileChooser chooser = FileChooserFactory.getInstance().createFileChooser(graphPath);
         chooser.setMultiSelectionEnabled(false);
         chooser.setDialogTitle(title);
-        if (chooser.showDialog(component, "ok") == JFileChooser.APPROVE_OPTION) {
+        if (chooser.showDialog(component, "OK") == JFileChooser.APPROVE_OPTION) {
             final File file = chooser.getSelectedFile();
             SnapApp.getDefault().getPreferences().put("batch.last_graph_path", file.getAbsolutePath());
             return file;
