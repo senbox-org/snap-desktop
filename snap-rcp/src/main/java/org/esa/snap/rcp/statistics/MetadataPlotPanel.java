@@ -94,7 +94,7 @@ class MetadataPlotPanel extends ChartPagePanel {
 
 
     MetadataPlotPanel(TopComponent parentComponent, String helpId) {
-        super(parentComponent, helpId, CHART_TITLE, true);
+        super(parentComponent, helpId, CHART_TITLE, false);
     }
 
     @Override
