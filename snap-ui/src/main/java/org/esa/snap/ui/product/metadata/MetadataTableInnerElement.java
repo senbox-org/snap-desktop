@@ -8,8 +8,6 @@ import org.openide.nodes.AbstractNode;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.esa.snap.core.datamodel.ProductData.*;
-
 /**
  * @author Tonio Fincke
  */
@@ -64,46 +62,13 @@ public class MetadataTableInnerElement implements MetadataTableElement {
     }
 
     private static void addMetadataAttributes(MetadataAttribute attribute, ProductData data,
-                                                   List<MetadataTableElement> metadataTableElementList) {
+                                              List<MetadataTableElement> metadataTableElementList) {
         final String name = attribute.getName();
-        final int dataType = attribute.getDataType();
         final String unit = attribute.getUnit();
         final String description = attribute.getDescription();
         for (int j = 0; j < data.getNumElems(); j++) {
-            final MetadataAttribute partAttribute = new MetadataAttribute(name + "." + (j + 1), dataType);
-            try {
-                partAttribute.setDataElems(getDataElemArray(data, j));
-            } catch (IllegalArgumentException e) {
-                e.printStackTrace();
-            }
-            partAttribute.setUnit(unit);
-            partAttribute.setDescription(description);
-            metadataTableElementList.add(new MetadataTableLeaf(partAttribute));
-        }
-    }
-
-    private static Object getDataElemArray(ProductData data, int index) {
-        switch (data.getType()) {
-            case TYPE_INT8:
-                return new byte[]{(byte)data.getElemIntAt(index)};
-            case TYPE_INT16:
-                return new short[]{(short)data.getElemIntAt(index)};
-            case TYPE_INT32:
-                return new int[]{data.getElemIntAt(index)};
-            case TYPE_UINT8:
-                return new byte[]{(byte)data.getElemUIntAt(index)};
-            case TYPE_UINT16:
-                return new short[]{(short)data.getElemUIntAt(index)};
-            case TYPE_UINT32:
-                return new int[]{(int)data.getElemUIntAt(index)};
-            case TYPE_INT64:
-                return new long[]{data.getElemLongAt(index)};
-            case TYPE_FLOAT32:
-                return new float[]{data.getElemFloatAt(index)};
-            case TYPE_FLOAT64:
-                return new double[]{data.getElemDoubleAt(index)};
-            default:
-                return null;
+            String elemName = String.format("%s.%d", name, j + 1);
+            metadataTableElementList.add(new MetadataTableArrayElemLeaf(elemName, unit, description, data, j));
         }
     }
 }
