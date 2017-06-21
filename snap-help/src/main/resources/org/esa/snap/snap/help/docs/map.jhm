@@ -102,6 +102,7 @@
     <mapID target="densityPlotDialog" url="desktop/DensityPlotDialog.html"/>
     <mapID target="correlativePlotDialog" url="desktop/CorrelativePlotDialog.html"/>
     <mapID target="profilePlotDialog" url="desktop/ProfilePlotDialog.html"/>
+    <mapID target="metadataPlotDialog" url="desktop/MetadataPlotDialog.html"/>
     <mapID target="coordinateListView" url="desktop/CoordinateListView.html"/>
     <mapID target="computeMaskArea" url="desktop/ComputeMaskArea.html"/>
     <mapID target="createFilteredBand" url="desktop/CreateFilteredBand.html"/>
