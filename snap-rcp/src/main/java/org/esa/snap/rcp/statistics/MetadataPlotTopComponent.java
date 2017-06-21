@@ -77,7 +77,7 @@ public class MetadataPlotTopComponent extends AbstractStatisticsTopComponent {
 
     private class MetadataTableViewPagePanel extends TableViewPagePanel {
         private MetadataTableViewPagePanel(MetadataPlotPanel metadataPlotPanel, Icon largeIcon) {
-            super(MetadataPlotTopComponent.this, Bundle.CTL_ScatterPlotTopComponent_HelpId(), metadataPlotPanel.getTitle(), largeIcon);
+            super(MetadataPlotTopComponent.this, Bundle.CTL_MetadataPlotTopComponent_HelpId(), metadataPlotPanel.getTitle(), largeIcon);
         }
 
         @Override
