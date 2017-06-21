@@ -19,9 +19,9 @@ import com.bc.ceres.core.ProgressMonitor;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.dataop.downloadable.StatusProgressMonitor;
 import org.esa.snap.core.util.SystemUtils;
-import org.esa.snap.engine_utilities.db.CommonReaders;
 import org.esa.snap.engine_utilities.db.ProductDB;
 import org.esa.snap.engine_utilities.db.ProductEntry;
+import org.esa.snap.engine_utilities.gpf.CommonReaders;
 import org.esa.snap.engine_utilities.gpf.ThreadManager;
 import org.esa.snap.engine_utilities.util.ProductFunctions;
 import org.esa.snap.engine_utilities.util.ZipUtils;
@@ -85,10 +85,10 @@ public final class DBScanner extends SwingWorker {
         final List<File> fileList = new ArrayList<>(dirList.size());
         for (File file : dirList) {
             final File[] files = file.listFiles(fileFilter);
-            if(files != null) {
+            if (files != null) {
                 fileList.addAll(Arrays.asList(files));
             }
-            pm.setTaskName("Collecting "+fileList.size()+" files...");
+            pm.setTaskName("Collecting " + fileList.size() + " files...");
         }
 
         final List<Product> qlProducts = new ArrayList<>(fileList.size());
@@ -114,8 +114,8 @@ public final class DBScanner extends SwingWorker {
                 if (pm.isCanceled())
                     break;
 
-                if(options.validateZips) {
-                    if(ZipUtils.isZip(file) && !ZipUtils.isValid(file)) {
+                if (options.validateZips) {
+                    if (ZipUtils.isZip(file) && !ZipUtils.isValid(file)) {
                         errorList.add(new ErrorFile(file, ErrorFile.CORRUPT_ZIP));
                         continue;
                     }
@@ -220,7 +220,7 @@ public final class DBScanner extends SwingWorker {
         final ProductFunctions.DirectoryFileFilter dirFilter = new ProductFunctions.DirectoryFileFilter();
 
         final File[] subDirs = dir.listFiles(dirFilter);
-        if(subDirs != null) {
+        if (subDirs != null) {
             count += subDirs.length;
             pm.setTaskName("Collecting " + count + " folders...");
 

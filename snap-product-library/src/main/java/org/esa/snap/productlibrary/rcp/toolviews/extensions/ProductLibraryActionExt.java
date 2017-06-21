@@ -19,11 +19,18 @@ import org.esa.snap.engine_utilities.db.ProductEntry;
 import org.esa.snap.productlibrary.rcp.toolviews.ProductLibraryActions;
 
 import javax.swing.*;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * An <code>ProductLibraryActionExt</code> is used as an action in the <code>ProductLibrary</code>.
  */
 public interface ProductLibraryActionExt {
+
+    // Variables in java interface are always static and final; so every implementation will have the same
+    // list of listeners.
+    List<ActionExtListener> listenerList = new ArrayList<>(1);
 
     void setActionHandler(final ProductLibraryActions actionHandler);
 
@@ -31,5 +38,19 @@ public interface ProductLibraryActionExt {
 
     void selectionChanged(final ProductEntry[] selections);
 
-    void performAction();
+    void performAction(final com.bc.ceres.core.ProgressMonitor pm);
+
+    // This is for the MSG NEW_REPO; only DownloadActionExt has to implement it.
+    default File getNewRepoFolder() {
+        return null;
+    }
+
+    interface ActionExtListener {
+
+        enum MSG { NEW_REPO // from DownloadActionExt
+
+        } // add more as needed, e.g. DONE, REFRESH
+
+        void notifyMSG(ProductLibraryActionExt action, MSG msg);
+    }
 }

@@ -21,20 +21,12 @@ import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.engine_utilities.datamodel.AbstractMetadata;
 import org.esa.snap.engine_utilities.db.ProductEntry;
 
-import javax.swing.BorderFactory;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTable;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.FontMetrics;
+import java.awt.*;
 import java.io.File;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
@@ -136,22 +128,22 @@ public class PropertiesProvider implements DataProvider {
                         final String pol3 = absRoot.getAttributeString(AbstractMetadata.mds3_tx_rx_polar);
                         final String pol4 = absRoot.getAttributeString(AbstractMetadata.mds4_tx_rx_polar);
                         polStr = pol1;
-                        if(!pol2.equals(AbstractMetadata.NO_METADATA_STRING))
+                        if (!pol2.equals(AbstractMetadata.NO_METADATA_STRING))
                             polStr += ' ' + pol2;
-                        if(!pol3.equals(AbstractMetadata.NO_METADATA_STRING))
+                        if (!pol3.equals(AbstractMetadata.NO_METADATA_STRING))
                             polStr += ' ' + pol3;
-                        if(!pol4.equals(AbstractMetadata.NO_METADATA_STRING))
+                        if (!pol4.equals(AbstractMetadata.NO_METADATA_STRING))
                             polStr += ' ' + pol4;
                     }
 
-                    if(minimalView) {
+                    if (minimalView) {
                         values = new String[]{
                                 entry.getName(),
                                 entry.getMission() + "   " + entry.getProductType() + "   " + entry.getPass() + "  " + polStr
-                                +"   " + dateString + "   " + pixelSpacing,
+                                        + "   " + dateString + "   " + pixelSpacing,
                         };
                     } else {
-                        if(file != null) {
+                        if (file != null) {
                             values = new String[]{
                                     file.getName(),
                                     entry.getName(),
@@ -172,7 +164,7 @@ public class PropertiesProvider implements DataProvider {
                     for (int i = 0; i < values.length; i++) {
                         setValueAt(values[i], i, 0);
                     }
-                    if(file != null) {
+                    if (file != null) {
                         toolTip = file.getAbsolutePath();
                     }
                 } else if (value == null) {

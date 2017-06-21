@@ -96,24 +96,28 @@ public class SearchMetadataAction extends AbstractAction implements ContextAware
     @Override
     public void actionPerformed(final ActionEvent event) {
 
-        final PromptDialog dlg = new PromptDialog("Search Metadata", "Item Name", "", false);
+        final PromptDialog dlg = new PromptDialog("Search Metadata", "Item Name", "", PromptDialog.TYPE.TEXTFIELD);
         dlg.show();
         if (dlg.IsOK()) {
-            final String tag = dlg.getValue().toUpperCase();
-            final MetadataElement resultElem = new MetadataElement("Search result (" + dlg.getValue() + ')');
+            try {
+                final String tag = dlg.getValue("Item Name").toUpperCase();
+                final MetadataElement resultElem = new MetadataElement("Search result (" + tag + ')');
 
-            final boolean isModified = product.isModified();
-            final MetadataElement root = product.getMetadataRoot();
-            resultElem.setOwner(product);
+                final boolean isModified = product.isModified();
+                final MetadataElement root = product.getMetadataRoot();
+                resultElem.setOwner(product);
 
-            searchMetadata(resultElem, root, tag);
-            product.setModified(isModified);
+                searchMetadata(resultElem, root, tag);
+                product.setModified(isModified);
 
-            if (resultElem.getNumElements() > 0 || resultElem.getNumAttributes() > 0) {
-                openMetadataWindow(resultElem);
-            } else {
-                // no attributes found
-                Dialogs.showError("Search Metadata", dlg.getValue() + " not found in the Metadata");
+                if (resultElem.getNumElements() > 0 || resultElem.getNumAttributes() > 0) {
+                    openMetadataWindow(resultElem);
+                } else {
+                    // no attributes found
+                    Dialogs.showError("Search Metadata", tag + " not found in the Metadata");
+                }
+            } catch (Exception ex) {
+                Dialogs.showError(ex.getMessage());
             }
         }
     }

@@ -15,19 +15,18 @@
  */
 package org.esa.snap.productlibrary.rcp.toolviews;
 
+import com.bc.ceres.core.ProgressMonitor;
 import org.esa.snap.core.datamodel.GeoPos;
 import org.esa.snap.core.datamodel.MetadataElement;
 import org.esa.snap.core.datamodel.ProductData;
 import org.esa.snap.core.util.StringUtils;
+import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.engine_utilities.datamodel.AbstractMetadata;
-import org.esa.snap.engine_utilities.db.DBQuery;
-import org.esa.snap.engine_utilities.db.ProductDB;
-import org.esa.snap.engine_utilities.db.ProductEntry;
-import org.esa.snap.engine_utilities.db.SQLUtils;
+import org.esa.snap.engine_utilities.db.*;
 import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
-import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.productlibrary.rcp.toolviews.model.repositories.FolderRepository;
+import org.esa.snap.productlibrary.rcp.toolviews.model.repositories.RepositoryInterface;
 import org.esa.snap.rcp.util.Dialogs;
-import org.esa.snap.ui.UIUtils;
 import org.jdesktop.swingx.JXDatePicker;
 
 import javax.swing.*;
@@ -40,6 +39,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -48,38 +48,43 @@ import java.util.Date;
 import java.util.List;
 
 /**
-
+    UI for database query
  */
 public final class DatabasePane extends JPanel {
 
     private final JTextField nameField = new JTextField();
-    private final JList<String> missionJList = new JList();
-    private final JList<String> productTypeJList = new JList();
-    private final JComboBox<String> acquisitionModeCombo = new JComboBox(new String[]{DBQuery.ALL_MODES});
-    private final JComboBox<String> passCombo = new JComboBox(new String[]{
+    private final JList<String> missionJList = new JList<>();
+    private final JList<String> productTypeJList = new JList<>();
+    private final JComboBox<String> acquisitionModeCombo = new JComboBox<>(new String[]{DBQuery.ALL_MODES});
+    private final JComboBox<String> passCombo = new JComboBox<>(new String[]{
             DBQuery.ALL_PASSES, DBQuery.ASCENDING_PASS, DBQuery.DESCENDING_PASS});
     private final JTextField trackField = new JTextField();
 
     private final JXDatePicker startDateBox = new JXDatePicker();
     private final JXDatePicker endDateBox = new JXDatePicker();
-    private final JComboBox<String> polarizationCombo = new JComboBox(new String[]{
+    private final JComboBox<String> polarizationCombo = new JComboBox<>(new String[]{
             DBQuery.ANY, DBQuery.QUADPOL, DBQuery.DUALPOL, DBQuery.HHVV, DBQuery.HHHV, DBQuery.VVVH, "HH", "VV", "HV", "VH"});
-    private final JComboBox<String> calibrationCombo = new JComboBox(new String[]{
+    private final JComboBox<String> calibrationCombo = new JComboBox<>(new String[]{
             DBQuery.ANY, DBQuery.CALIBRATED, DBQuery.NOT_CALIBRATED});
-    private final JComboBox<String> orbitCorrectionCombo = new JComboBox(new String[]{
+    private final JComboBox<String> orbitCorrectionCombo = new JComboBox<>(new String[]{
             DBQuery.ANY, DBQuery.ORBIT_PRELIMINARY, DBQuery.ORBIT_PRECISE, DBQuery.ORBIT_VERIFIED});
 
-    private final JComboBox<String> metadataNameCombo = new JComboBox();
+    private final JTextField cloudCoverField = new JTextField();
+
+    private final JComboBox<String> metadataNameCombo = new JComboBox<>();
     private final JTextField metdataValueField = new JTextField();
     private final JTextArea metadataArea = new JTextArea();
     private final JButton addMetadataButton = new JButton("+");
-    private final JButton updateButton = new JButton(UIUtils.loadImageIcon("icons/ViewRefresh16.png"));
     private final JTextArea productText = new JTextArea();
 
-    private ProductDB db;
+    private RepositoryInterface repository;
+    private ProductQueryInterface productQueryInterface;
+
     private DBQuery dbQuery = new DBQuery();
-    private ProductEntry[] productEntryList = null;
-    boolean modifyingCombos = false;
+    private boolean modifyingCombos = false;
+
+    private final static double MB = 1024 * 1024, GB = 1024, TB = 1024 * 1024;
+    private final DecimalFormat df = new DecimalFormat("#.00");
 
     private final List<DatabaseQueryListener> listenerList = new ArrayList<>(1);
 
@@ -91,15 +96,15 @@ public final class DatabasePane extends JPanel {
             missionJList.addListSelectionListener(new ListSelectionListener() {
                 public void valueChanged(ListSelectionEvent event) {
                     if (modifyingCombos || event.getValueIsAdjusting()) return;
-                    updateProductTypeCombo();
-                    queryDatabase();
+                    updateMissionFields();
+                    partialQuery();
                 }
             });
             productTypeJList.setFixedCellWidth(100);
             productTypeJList.addListSelectionListener(new ListSelectionListener() {
                 public void valueChanged(ListSelectionEvent event) {
                     if (modifyingCombos || event.getValueIsAdjusting()) return;
-                    queryDatabase();
+                    partialQuery();
                 }
             });
             addComboListener(acquisitionModeCombo);
@@ -113,11 +118,7 @@ public final class DatabasePane extends JPanel {
                     addMetadataText();
                 }
             });
-            updateButton.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    queryDatabase();
-                }
-            });
+
         } catch (Throwable t) {
             handleException(t);
         }
@@ -127,7 +128,7 @@ public final class DatabasePane extends JPanel {
         combo.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent event) {
                 if (modifyingCombos || event.getStateChange() == ItemEvent.DESELECTED) return;
-                queryDatabase();
+                partialQuery();
             }
         });
     }
@@ -163,11 +164,8 @@ public final class DatabasePane extends JPanel {
     }
 
     private static void handleException(Throwable t) {
-        t.printStackTrace();
-        final SnapApp app = SnapApp.getDefault();
-        if (app != null) {
-            Dialogs.showError(t.getMessage());
-        }
+        SystemUtils.LOG.severe(t.getMessage());
+        Dialogs.showError(t.getMessage());
     }
 
     private void createPanel() {
@@ -214,6 +212,11 @@ public final class DatabasePane extends JPanel {
         gbc.gridy++;
         label = DialogUtils.addComponent(this, gbc, "Orbit Correction:", orbitCorrectionCombo);
         label.setHorizontalAlignment(JLabel.RIGHT);
+
+        gbc.gridy++;
+        label = DialogUtils.addComponent(this, gbc, "Cloud Cover %:", cloudCoverField);
+        label.setHorizontalAlignment(JLabel.RIGHT);
+
         gbc.gridy++;
         gbc.gridx = 0;
         gbc.gridwidth = 2;
@@ -238,6 +241,12 @@ public final class DatabasePane extends JPanel {
 
         freeSearchPanel.add(metadataNameCombo, gbc);
         metadataNameCombo.setPrototypeDisplayValue("123456789012");
+
+        final String[] metadataNames = MetadataTable.getAllMetadataNames();
+        for (String name : metadataNames) {
+            metadataNameCombo.insertItemAt(name, metadataNameCombo.getItemCount());
+        }
+
         gbc.gridx = 1;
         freeSearchPanel.add(metdataValueField, gbc);
         metdataValueField.setColumns(10);
@@ -255,43 +264,68 @@ public final class DatabasePane extends JPanel {
         gbc.gridx = 2;
         gbc.gridwidth = 1;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        freeSearchPanel.add(updateButton, gbc);
 
         DialogUtils.fillPanel(freeSearchPanel, gbc);
         return freeSearchPanel;
     }
 
-    private void connectToDatabase() throws Exception {
-        db = ProductDB.instance();
+    public void partialQuery() {
 
-        refresh();
-    }
+        setData();
 
-    public ProductDB getDB() {
-        if (db == null) {
-            queryDatabase();
-        }
-        return db;
-    }
-
-    public void refresh() {
         try {
-            if (!db.isReady())
-                return;
+            if(productQueryInterface.partialQuery(dbQuery)) {
+                notifyQuery();
+            }
+        } catch (Exception e) {
+            handleException(e);
+        }
+    }
 
-            boolean origState = lockCombos(true);
+    boolean isClientError401(Exception e) {
+        return e.getMessage().contains("CLIENT_ERROR") && e.getMessage().contains("401");
+    }
 
-            if (metadataNameCombo.getItemCount() == 0) {
-                final String[] metadataNames = db.getMetadataNames();
-                for (String name : metadataNames) {
-                    metadataNameCombo.insertItemAt(name, metadataNameCombo.getItemCount());
+    void fullQuery(final ProgressMonitor pm) {
+
+        setData();
+
+        final int numRetries = 1;
+
+        for (int i = 0; i < numRetries + 1; i++) {
+            try {
+                if (productQueryInterface.fullQuery(dbQuery, pm)) {
+                    notifyQuery();
+                }
+                break;
+            } catch (Exception e) {
+                if (i < numRetries && isClientError401(e)) {
+                    repository.resetCredentials();
+                } else if (isClientError401(e)) {
+                    handleException(new IOException(e.getMessage() + " (invalid credentials)"));
+                    break;
+                } else {
+                    handleException(e);
+                    break;
                 }
             }
+        }
+    }
 
+    public ProductEntry[] getProductEntryList() {
+        return productQueryInterface.getProductEntryList();
+    }
+
+    void refresh() {
+        boolean origState = lockCombos(true);
+        try {
             updateMissionCombo();
-            lockCombos(origState);
+            updateMissionFields();
+
         } catch (Throwable t) {
             handleException(t);
+        } finally {
+            lockCombos(origState);
         }
     }
 
@@ -302,35 +336,40 @@ public final class DatabasePane extends JPanel {
     }
 
     private void updateMissionCombo() throws SQLException {
-        boolean origState = lockCombos(true);
-        try {
-            missionJList.removeAll();
-            missionJList.setListData(SQLUtils.prependString(DBQuery.ALL_MISSIONS, db.getAllMissions()));
-        } finally {
-            lockCombos(origState);
-        }
+        missionJList.removeAll();
+        missionJList.setListData(SQLUtils.prependString(DBQuery.ALL_MISSIONS, productQueryInterface.getAllMissions()));
     }
 
-    private void updateProductTypeCombo() {
+    private void updateMissionFields() {
         boolean origState = lockCombos(true);
         try {
-            productTypeJList.removeAll();
-            acquisitionModeCombo.removeAllItems();
+            final String[] selectedMissions = toStringArray(missionJList.getSelectedValuesList());
+            final String[] missions = StringUtils.contains(selectedMissions, DBQuery.ALL_MISSIONS) ? null : selectedMissions;
 
-            final String selectedMissions[] = toStringArray(missionJList.getSelectedValuesList());
-            String[] productTypeList;
-            String[] acquisitionModeList;
-            if (StringUtils.contains(selectedMissions, DBQuery.ALL_MISSIONS)) {
-                productTypeList = db.getAllProductTypes();
-                acquisitionModeList = db.getAllAcquisitionModes();
-            } else {
-                productTypeList = db.getProductTypes(selectedMissions);
-                acquisitionModeList = db.getAcquisitionModes(selectedMissions);
-            }
-            productTypeJList.setListData(SQLUtils.prependString(DBQuery.ALL_PRODUCT_TYPES, productTypeList));
-            final String[] modeItems = SQLUtils.prependString(DBQuery.ALL_MODES, acquisitionModeList);
+            productTypeJList.removeAll();
+            productTypeJList.setListData(SQLUtils.prependString(DBQuery.ALL_PRODUCT_TYPES, productQueryInterface.getAllProductTypes(missions)));
+
+            final String[] modeItems = SQLUtils.prependString(DBQuery.ALL_MODES, productQueryInterface.getAllAcquisitionModes(missions));
+            acquisitionModeCombo.removeAllItems();
             for (String item : modeItems) {
                 acquisitionModeCombo.addItem(item);
+            }
+
+            if(!isFolderRepository() && missions != null) {
+                boolean isSAR = containsSARMission(missions);
+                boolean isOptical = containsOpticalMission(missions);
+                polarizationCombo.setEnabled(isSAR);
+                if(!isSAR) {
+                    polarizationCombo.setSelectedIndex(0);
+                }
+                cloudCoverField.setEnabled(isOptical);
+                if(!isOptical) {
+                    cloudCoverField.setText("");
+                }
+            } else {
+                polarizationCombo.setEnabled(true);
+                cloudCoverField.setEnabled(false);
+                cloudCoverField.setText("");
             }
 
         } catch (Throwable t) {
@@ -340,21 +379,66 @@ public final class DatabasePane extends JPanel {
         }
     }
 
+    private boolean containsOpticalMission(final String[] missions) {
+        for(String mission : missions) {
+            if(mission.equalsIgnoreCase("Sentinel-2") || mission.equalsIgnoreCase("Sentinel-3"))
+                return true;
+        }
+        return false;
+    }
+
+    private boolean containsSARMission(final String[] missions) {
+        for(String mission : missions) {
+            if(mission.equalsIgnoreCase("Sentinel-1"))
+                return true;
+        }
+        return false;
+    }
+
     private static String[] toStringArray(List<String> list) {
         return list.toArray(new String[list.size()]);
     }
 
-    public void setBaseDir(final File dir) {
+    private boolean isFolderRepository() {
+        return repository == null || repository instanceof FolderRepository;
+    }
+
+    public void setRepository(final RepositoryInterface repo) {
+        this.repository = repo;
+        this.productQueryInterface = repository.getProductQueryInterface();
+
+        final boolean isFolderRepo = isFolderRepository();
+        enableComponents(isFolderRepo);
+        if (isFolderRepo) {
+            setBaseDir(((FolderRepository) repo).getBaseDir());
+        } else {
+            setBaseDir(null);
+        }
+        missionJList.setSelectedIndex(0);
+        refresh();
+    }
+
+    private void enableComponents(final boolean isFolderRepo) {
+        calibrationCombo.setEnabled(isFolderRepo);
+        orbitCorrectionCombo.setEnabled(isFolderRepo);
+        cloudCoverField.setEnabled(!isFolderRepo);
+
+        metadataNameCombo.setEnabled(isFolderRepo);
+        metdataValueField.setEnabled(isFolderRepo);
+        metadataArea.setEnabled(isFolderRepo);
+        addMetadataButton.setEnabled(isFolderRepo);
+    }
+
+    private void setBaseDir(final File dir) {
         dbQuery.setBaseDir(dir);
-        if (db != null)
-            queryDatabase();
+        partialQuery();
     }
 
     private void addMetadataText() {
         final String name = (String) metadataNameCombo.getSelectedItem();
         final String value = metdataValueField.getText();
         if (!name.isEmpty() && !value.isEmpty()) {
-            if (metadataArea.getText().length() > 0) {
+            if (!metadataArea.getText().isEmpty()) {
                 metadataArea.append(" AND ");
             }
             if (value.matches("-?\\d+(\\.\\d+)?")) {     // isNumeric
@@ -381,6 +465,7 @@ public final class DatabasePane extends JPanel {
         dbQuery.setSelectedAcquisitionMode((String) acquisitionModeCombo.getSelectedItem());
         dbQuery.setSelectedPass((String) passCombo.getSelectedItem());
         dbQuery.setSelectedTrack(trackField.getText());
+        dbQuery.setSelectedCloudCover(cloudCoverField.getText());
 
         dbQuery.setStartEndDate(getDate(startDateBox), getDate(endDateBox));
 
@@ -392,41 +477,10 @@ public final class DatabasePane extends JPanel {
         dbQuery.setFreeQuery(metadataArea.getText());
     }
 
-    public void queryDatabase() {
-        if (db == null) {
-            try {
-                connectToDatabase();
-            } catch (Throwable t) {
-                handleException(t);
-            }
-        }
-        if (metadataNameCombo.getItemCount() == 0) {
-            refresh();
-        }
-
-        setData();
-
-        if (productEntryList != null) {
-            ProductEntry.dispose(productEntryList);
-        }
-        try {
-            if (db.isReady()) {
-                productEntryList = dbQuery.queryDatabase(db);
-                notifyQuery();
-            }
-        } catch (Throwable t) {
-            handleException(t);
-        }
-    }
-
-    public void setSelectionRect(final GeoPos[] selectionBox) {
+    void setSelectionRect(final GeoPos[] selectionBox) {
         dbQuery.setSelectionRect(selectionBox);
         dbQuery.setReturnAllIfNoIntersection(true);
-        queryDatabase();
-    }
-
-    public ProductEntry[] getProductEntryList() {
-        return productEntryList;
+        partialQuery();
     }
 
     public DBQuery getDBQuery() {
@@ -434,11 +488,11 @@ public final class DatabasePane extends JPanel {
         return dbQuery;
     }
 
-    public void findSlices(final int dataTakeId) {
+    void findSlices(final int dataTakeId) {
         metadataArea.setText(AbstractMetadata.data_take_id + '=' + dataTakeId);
 
         dbQuery.setSelectionRect(null);
-        queryDatabase();
+        partialQuery();
 
         metadataArea.setText("");
     }
@@ -446,13 +500,11 @@ public final class DatabasePane extends JPanel {
     public void setDBQuery(final DBQuery query) throws Exception {
         if (query == null) return;
         dbQuery = query;
-        if (db == null) {
-            connectToDatabase();
-        }
+
         boolean origState = lockCombos(true);
         try {
             missionJList.setSelectedIndices(findIndices(missionJList, dbQuery.getSelectedMissions()));
-            updateProductTypeCombo();
+            updateMissionFields();
             productTypeJList.setSelectedIndices(findIndices(productTypeJList, dbQuery.getSelectedProductTypes()));
             acquisitionModeCombo.setSelectedItem(dbQuery.getSelectedAcquisitionMode());
             passCombo.setSelectedItem(dbQuery.getSelectedPass());
@@ -476,7 +528,7 @@ public final class DatabasePane extends JPanel {
         final int size = list.getModel().getSize();
         final List<Integer> indices = new ArrayList<>(size);
         for (int i = 0; i < size; ++i) {
-            final String str = (String) list.getModel().getElementAt(i);
+            final String str = list.getModel().getElementAt(i);
             if (StringUtils.contains(values, str)) {
                 indices.add(i);
             }
@@ -488,53 +540,60 @@ public final class DatabasePane extends JPanel {
         return intIndices;
     }
 
-    public void updateProductSelectionText(final ProductEntry[] selections) {
+    void updateProductSelectionText(final ProductEntry[] selections) {
         if (selections != null && selections.length == 1) {
             final ProductEntry entry = selections[0];
             final StringBuilder text = new StringBuilder(255);
 
-            final MetadataElement absRoot = entry.getMetadata();
             final File file = entry.getFile();
-            final String sampleType = absRoot.getAttributeString(AbstractMetadata.SAMPLE_TYPE, AbstractMetadata.NO_METADATA_STRING);
-            final ProductData.UTC acqTime = absRoot.getAttributeUTC(AbstractMetadata.first_line_time, AbstractMetadata.NO_METADATA_UTC);
-            final String pass = absRoot.getAttributeString(AbstractMetadata.PASS, AbstractMetadata.NO_METADATA_STRING);
-            final int absOrbit = absRoot.getAttributeInt(AbstractMetadata.ABS_ORBIT, AbstractMetadata.NO_METADATA);
-            final int relOrbit = absRoot.getAttributeInt(AbstractMetadata.REL_ORBIT, AbstractMetadata.NO_METADATA);
-            final String map = absRoot.getAttributeString(AbstractMetadata.map_projection, AbstractMetadata.NO_METADATA_STRING).trim();
-            final int cal = absRoot.getAttributeInt(AbstractMetadata.abs_calibration_flag, AbstractMetadata.NO_METADATA);
-            final int tc = absRoot.getAttributeInt(AbstractMetadata.is_terrain_corrected, AbstractMetadata.NO_METADATA);
-            final int ml = absRoot.getAttributeInt(AbstractMetadata.multilook_flag, AbstractMetadata.NO_METADATA);
-            final int coreg = absRoot.getAttributeInt(AbstractMetadata.coregistered_stack, AbstractMetadata.NO_METADATA);
-
             if (file != null) {
                 text.append("File: " + file.getName() + '\n');
             }
             text.append("Product: " + entry.getName() + '\n');
-            text.append(acqTime.format() + '\n');
             text.append('\n');
 
             text.append("Mission: " + entry.getMission() + '\n');
             text.append("Mode: " + entry.getAcquisitionMode() + '\n');
-            text.append("Type: " +  entry.getProductType() + '\n');
-            text.append("Sample: " +  sampleType + '\n');
+            text.append("Type: " + entry.getProductType() + '\n');
 
-            text.append("Pass: " + pass + '\n');
-            text.append("Orbit: " + absOrbit);
-            if (relOrbit != AbstractMetadata.NO_METADATA)
-                text.append("  Track: " + relOrbit);
-            text.append('\n');
-            text.append("Size: " + getSizeString(entry.getFileSize()) + '\n');
-            if (!map.isEmpty()) {
-                text.append(map + '\n');
+            final MetadataElement absRoot = entry.getMetadata();
+            if(absRoot != null) {
+                final String sampleType = absRoot.getAttributeString(AbstractMetadata.SAMPLE_TYPE, AbstractMetadata.NO_METADATA_STRING);
+                final ProductData.UTC acqTime = absRoot.getAttributeUTC(AbstractMetadata.first_line_time, AbstractMetadata.NO_METADATA_UTC);
+                final String pass = absRoot.getAttributeString(AbstractMetadata.PASS, AbstractMetadata.NO_METADATA_STRING);
+                final int absOrbit = absRoot.getAttributeInt(AbstractMetadata.ABS_ORBIT, AbstractMetadata.NO_METADATA);
+                final int relOrbit = absRoot.getAttributeInt(AbstractMetadata.REL_ORBIT, AbstractMetadata.NO_METADATA);
+                final String map = absRoot.getAttributeString(AbstractMetadata.map_projection, AbstractMetadata.NO_METADATA_STRING).trim();
+                final int cal = absRoot.getAttributeInt(AbstractMetadata.abs_calibration_flag, AbstractMetadata.NO_METADATA);
+                final int tc = absRoot.getAttributeInt(AbstractMetadata.is_terrain_corrected, AbstractMetadata.NO_METADATA);
+                final int ml = absRoot.getAttributeInt(AbstractMetadata.multilook_flag, AbstractMetadata.NO_METADATA);
+                final int coreg = absRoot.getAttributeInt(AbstractMetadata.coregistered_stack, AbstractMetadata.NO_METADATA);
+
+                text.append(acqTime.format() + '\n');
+                text.append("Sample: " + sampleType + '\n');
+
+                text.append("Pass: " + pass + '\n');
+                text.append("Orbit: " + absOrbit);
+                if (relOrbit != AbstractMetadata.NO_METADATA)
+                    text.append("  Track: " + relOrbit);
+                text.append('\n');
+                text.append("Size: " + getSizeString(entry.getFileSize()) + '\n');
+                if (!map.isEmpty()) {
+                    text.append(map + '\n');
+                }
+                if (cal == 1) {
+                    text.append("Calibrated ");
+                }
+                if (ml == 1) {
+                    text.append("Multilooked ");
+                }
+                if (coreg == 1) {
+                    text.append("Coregistered ");
+                }
+                if (tc == 1) {
+                    text.append("Terrain Corrected ");
+                }
             }
-            if (cal == 1)
-                text.append("Calibrated ");
-            if (ml == 1)
-                text.append("Multilooked ");
-            if (coreg == 1)
-                text.append("Coregistered ");
-            if (tc == 1)
-                text.append("Terrain Corrected ");
 
             productText.setText(text.toString());
         } else if (selections != null && selections.length > 1) {
@@ -543,8 +602,7 @@ public final class DatabasePane extends JPanel {
                 totalSize += entry.getFileSize();
             }
 
-            String text = (selections.length + " products\n") +
-                    "Total: " + getSizeString(totalSize);
+            String text = (selections.length + " products\n") + "Total: " + getSizeString(totalSize);
 
             productText.setText(text);
         } else {
@@ -552,10 +610,7 @@ public final class DatabasePane extends JPanel {
         }
     }
 
-    private final static double MB = 1024 * 1024, GB = 1024, TB = 1024 * 1024;
-    private final static DecimalFormat df = new DecimalFormat("#.00");
-
-    private static String getSizeString(long bytes) {
+    private String getSizeString(long bytes) {
         double mb = bytes / MB;
         String unit;
         double value;

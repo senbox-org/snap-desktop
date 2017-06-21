@@ -23,11 +23,8 @@ import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.tango.TangoIcons;
 import org.esa.snap.ui.SnapFileChooser;
 
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JPanel;
-import java.awt.Desktop;
+import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -50,17 +47,17 @@ public class ExportListActionExt implements ProductLibraryActionExt {
     }
 
     public JButton getButton(final JPanel panel) {
-        if(button == null) {
+        if (button == null) {
             button = DialogUtils.createButton("exportListButton", "Export list of selected products", exportListIcon, panel, DialogUtils.ButtonStyle.Icon);
         }
         return button;
     }
 
     public void selectionChanged(final ProductEntry[] selections) {
-        button.setEnabled(selections.length > 0);
+        button.setEnabled(selections.length > 0 && ProductLibraryActions.allProductsExist(selections));
     }
 
-    public void performAction() {
+    public void performAction(final com.bc.ceres.core.ProgressMonitor pm) {
         final File file = getExportFile();
         if (file != null) {
             final File[] fileList = actionHandler.getSelectedFiles();
@@ -99,7 +96,7 @@ public class ExportListActionExt implements ProductLibraryActionExt {
         try (FileOutputStream out = new FileOutputStream(file.getAbsolutePath(), false)) {
             p = new PrintStream(out);
 
-            for(File f : fileList) {
+            for (File f : fileList) {
                 p.println(f.getAbsolutePath());
             }
 

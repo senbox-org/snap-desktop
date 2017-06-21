@@ -39,7 +39,7 @@ public class ProductEntryTableModel extends AbstractTableModel {
         this.productEntryList = productList;
         dataProviders.add(new IDProvider());
         dataProviders.add(new PropertiesProvider(minimalView));
-        if(!minimalView) {
+        if (!minimalView) {
             try {
                 dataProviders.add(new QuicklookProvider());
             } catch (Exception e) {

@@ -39,7 +39,7 @@ import java.awt.event.ActionEvent;
 
 @ActionID(category = "Raster", id = "org.esa.snap.raster.rcp.actions.ComplexToPhaseAction")
 @ActionRegistration(displayName = "#CTL_ComplexToPhaseAction_Text")
-@ActionReference(path = "Menu/Raster/Data Conversion", position = 400)
+@ActionReference(path = "Menu/Raster/Data Conversion", position = 410)
 @NbBundle.Messages({
         "CTL_ComplexToPhaseAction_Text=Complex i and q to Phase",
         "CTL_ComplexToPhaseAction_Description=Creates a virtual phase band from i and q complex bands."
@@ -114,7 +114,7 @@ public class ComplexToPhaseAction extends AbstractSnapAction implements ContextA
                 return;
             }
 
-            if (Dialogs.requestDecision("Convert to Intensity", "Would you like to convert i and q bands " +
+            if (Dialogs.requestDecision("Convert to Phase", "Would you like to convert i and q bands " +
                     " to Phase in a new virtual band?", true, null) == Dialogs.Answer.YES) {
                 convert(product, iBandName, qBandName, phaseBandName);
             }

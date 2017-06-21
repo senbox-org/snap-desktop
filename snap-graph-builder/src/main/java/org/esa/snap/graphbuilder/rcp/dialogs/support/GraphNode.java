@@ -298,7 +298,15 @@ public class GraphNode {
         return parameterMap;
     }
 
+    private boolean canConnect() {
+        return !node.getOperatorName().equals("Read") && !node.getOperatorName().equals("ProductSet-Reader");
+    }
+
     public void connectOperatorSource(final String id) {
+        if(!canConnect()) {
+            return;
+        }
+
         // check if already a source for this node
         disconnectOperatorSources(id);
 

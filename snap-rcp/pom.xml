@@ -241,11 +241,7 @@
             <artifactId>snap-python</artifactId>
             <version>${snap.version}</version>
         </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>snap-engine-utilities</artifactId>
-            <version>${snap.version}</version>
-        </dependency>
+
         <!-- TODO: remove this dependency as soon as snap-statistics-op has been moved to snap-core
           (prerequisite: snap-gpf needs to be moved to snap-core before) -->
         <dependency>

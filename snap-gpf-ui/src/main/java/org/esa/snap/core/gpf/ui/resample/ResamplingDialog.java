@@ -172,8 +172,11 @@ class ResamplingDialog extends SingleTargetProductDialog {
         tableLayout.setTableWeightX(1.0);
         tableLayout.setTablePadding(4, 4);
 
-        final GridLayout defineTargetResolutionPanelLayout = new GridLayout(3, 2);
-        defineTargetResolutionPanelLayout.setVgap(4);
+        final TableLayout defineTargetResolutionPanelLayout = new TableLayout(2);
+        defineTargetResolutionPanelLayout.setTableAnchor(TableLayout.Anchor.NORTHWEST);
+        defineTargetResolutionPanelLayout.setTableFill(TableLayout.Fill.HORIZONTAL);
+        defineTargetResolutionPanelLayout.setColumnWeightX(1, 1.0);
+        defineTargetResolutionPanelLayout.setTablePadding(4, 5);
         final JPanel defineTargetSizePanel = new JPanel(defineTargetResolutionPanelLayout);
         defineTargetSizePanel.setBorder(BorderFactory.createTitledBorder("Define size of resampled product"));
         final ButtonGroup targetSizeButtonGroup = new ButtonGroup();

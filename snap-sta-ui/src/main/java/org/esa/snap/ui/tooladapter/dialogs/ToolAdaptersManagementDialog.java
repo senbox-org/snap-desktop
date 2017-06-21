@@ -37,6 +37,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
@@ -45,6 +46,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -367,13 +369,17 @@ public class ToolAdaptersManagementDialog extends ModelessDialog {
                 .stream()
                 .map(e -> (ToolAdapterOperatorDescriptor) e.getOperatorDescriptor())
                 .collect(Collectors.toList()));
-        toolboxSpis.sort((o1, o2) -> o1.getAlias().compareTo(o2.getAlias()));
+        toolboxSpis.sort(Comparator.comparing(ToolAdapterOperatorDescriptor::getAlias));
         OperatorsTableModel model = new OperatorsTableModel(toolboxSpis);
         operatorsTable = new JTable(model);
-        operatorsTable.getColumnModel().getColumn(0).setPreferredWidth(LABEL_COLUMN_WIDTH);
-        operatorsTable.getColumnModel().getColumn(0).setMaxWidth(300);
-        operatorsTable.getColumnModel().getColumn(1).setResizable(true);
-        operatorsTable.getColumnModel().getColumn(1).setPreferredWidth(LABEL_COLUMN_WIDTH);
+        TableColumnModel columnModel = operatorsTable.getColumnModel();
+        columnModel.getColumn(0).setPreferredWidth(3 * CHECK_COLUMN_WIDTH);
+        columnModel.getColumn(0).setMaxWidth(3 * CHECK_COLUMN_WIDTH);
+        columnModel.getColumn(0).setResizable(false);
+        columnModel.getColumn(1).setPreferredWidth(LABEL_COLUMN_WIDTH);
+        columnModel.getColumn(1).setMaxWidth(300);
+        columnModel.getColumn(2).setResizable(true);
+        columnModel.getColumn(2).setPreferredWidth(LABEL_COLUMN_WIDTH);
         operatorsTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
         operatorsTable.addMouseListener(new MouseListener() {
             @Override
@@ -382,7 +388,9 @@ public class ToolAdaptersManagementDialog extends ModelessDialog {
                     int selectedRow = operatorsTable.getSelectedRow();
                     operatorsTable.repaint();
                     ToolAdapterOperatorDescriptor operatorDesc = ((OperatorsTableModel) operatorsTable.getModel()).getObjectAt(selectedRow);
+                    operatorsTable.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                     AbstractAdapterEditor dialog = AbstractAdapterEditor.createEditorDialog(appContext, getJDialog(), operatorDesc, OperationType.EDIT);
+                    operatorsTable.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
                     dialog.show();
                     refreshContent();
                 }

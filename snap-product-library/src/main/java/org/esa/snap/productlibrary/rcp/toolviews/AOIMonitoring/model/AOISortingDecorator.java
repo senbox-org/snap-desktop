@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 by Array Systems Computing Inc. http://www.array.ca
+ * Copyright (C) 2017 Array Systems Computing Inc. http://www.array.ca
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -13,59 +13,42 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, see http://www.gnu.org/licenses/
  */
-package org.esa.snap.productlibrary.rcp.toolviews.model;
+package org.esa.snap.productlibrary.rcp.toolviews.AOIMonitoring.model;
 
-import org.apache.commons.math3.util.FastMath;
-import org.esa.snap.core.util.Guardian;
-import org.esa.snap.engine_utilities.db.ProductEntry;
-import org.esa.snap.productlibrary.rcp.toolviews.model.dataprovider.DataProvider;
+import org.esa.snap.productlibrary.rcp.toolviews.AOIMonitoring.model.dataprovider.DataProvider;
 
-import javax.swing.Icon;
-import javax.swing.JLabel;
-import javax.swing.JTable;
+import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Graphics;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
+import java.util.*;
 import java.util.List;
 
-public class SortingDecorator extends AbstractTableModel {
+public class AOISortingDecorator extends AbstractTableModel {
 
 
     private static final int DESCENDING = -1;
     private static final int NOT_SORTED = 0;
-    private static final int ASCENDING = 1;
 
     private static final Directive EMPTY_DIRECTIVE = new Directive(-1, NOT_SORTED);
 
-    private final ProductEntryTableModel tableModel;
+    private final AOITableModel _tableModel;
     private final JTableHeader _tableHeader;
 
     private final List<Directive> sortingColumns = new ArrayList<>();
+    private final Map columnComparators = new HashMap();
     private Row[] viewToModel = null;
-    private boolean doSortBy = false;
 
-    public enum SORT_BY {NAME, DATE, MISSON, TYPE, FILESIZE}
+    public AOISortingDecorator(final AOITableModel tableModel, final JTableHeader tableHeader) {
 
-    private SORT_BY sortBy;
-    private int sortedByDirection = NOT_SORTED;
-
-    public SortingDecorator(final ProductEntryTableModel tableModel, final JTableHeader tableHeader) {
-        Guardian.assertNotNull("tableModel", tableModel);
-        Guardian.assertNotNull("tableHeader", tableHeader);
-
-        this.tableModel = tableModel;
-        this.tableModel.addTableModelListener(new TableModelListener() {
+        _tableModel = tableModel;
+        _tableModel.addTableModelListener(new TableModelListener() {
             public void tableChanged(final TableModelEvent e) {
                 initViewToModel();
                 fireTableChanged(e);
@@ -78,35 +61,35 @@ public class SortingDecorator extends AbstractTableModel {
     }
 
     public int getRowCount() {
-        return tableModel.getRowCount();
+        return _tableModel.getRowCount();
     }
 
     public int getColumnCount() {
-        return tableModel.getColumnCount();
+        return _tableModel.getColumnCount();
     }
 
     public Object getValueAt(final int rowIndex, final int columnIndex) {
-        return tableModel.getValueAt(getSortedIndex(rowIndex), columnIndex);
+        return _tableModel.getValueAt(getSortedIndex(rowIndex), columnIndex);
     }
 
     @Override
     public String getColumnName(final int column) {
-        return tableModel.getColumnName(column);
+        return _tableModel.getColumnName(column);
     }
 
     @Override
     public Class getColumnClass(final int column) {
-        return tableModel.getColumnClass(column);
+        return _tableModel.getColumnClass(column);
     }
 
     @Override
     public boolean isCellEditable(final int row, final int column) {
-        return tableModel.isCellEditable(getSortedIndex(row), column);
+        return _tableModel.isCellEditable(getSortedIndex(row), column);
     }
 
     @Override
     public void setValueAt(final Object aValue, final int row, final int column) {
-        tableModel.setValueAt(aValue, getSortedIndex(row), column);
+        _tableModel.setValueAt(aValue, getSortedIndex(row), column);
     }
 
     public int getSortedIndex(final int rowIndex) {
@@ -127,7 +110,7 @@ public class SortingDecorator extends AbstractTableModel {
     }
 
     private void initViewToModel() {
-        final int tableModelRowCount = tableModel.getRowCount();
+        final int tableModelRowCount = _tableModel.getRowCount();
         viewToModel = new Row[tableModelRowCount];
         for (int row = 0; row < tableModelRowCount; row++) {
             viewToModel[row] = new Row(row);
@@ -137,16 +120,8 @@ public class SortingDecorator extends AbstractTableModel {
         }
     }
 
-    boolean isSorting() {
-        return !sortingColumns.isEmpty() || doSortBy;
-    }
-
-    public void sortBy(final SORT_BY val) {
-        doSortBy = true;
-        sortedByDirection = sortBy == val ? DESCENDING : ASCENDING;
-        sortBy = val;
-        initViewToModel();
-        fireTableDataChanged();
+    private boolean isSorting() {
+        return !sortingColumns.isEmpty();
     }
 
     private class MouseHandler extends MouseAdapter {
@@ -161,6 +136,8 @@ public class SortingDecorator extends AbstractTableModel {
                 int direction = getSortingDirection(columnIndex);
                 if (!e.isControlDown()) {
                     clearSortingDirections();
+//                    viewToModel = null;
+//                    fireTableDataChanged();
                     _tableHeader.repaint();
                 }
                 // Cycle the sorting states through {NOT_SORTED, ASCENDING, DESCENDING} or
@@ -168,7 +145,7 @@ public class SortingDecorator extends AbstractTableModel {
                 direction += (e.isShiftDown() ? -1 : 1);
                 direction = (direction + 4) % 3 - 1; // signed mod, returning {-1, 0, 1}
                 setDirectionForColumn(columnIndex, direction);
-                doSortBy = false;
+//                viewToModel = null;
                 initViewToModel();
                 fireTableDataChanged();
             }
@@ -200,8 +177,8 @@ public class SortingDecorator extends AbstractTableModel {
                                                        final int row,
                                                        final int column) {
             final Component c = tableCellRenderer.getTableCellRendererComponent(table,
-                    value, isSelected, hasFocus, row,
-                    column);
+                                                                                value, isSelected, hasFocus, row,
+                                                                                column);
             if (c instanceof JLabel) {
                 final JLabel l = (JLabel) c;
                 l.setHorizontalTextPosition(JLabel.LEFT);
@@ -264,9 +241,9 @@ public class SortingDecorator extends AbstractTableModel {
 
         public void paintIcon(final Component c, final Graphics g, final int x, int y) {
             final Color color = c == null ? Color.GRAY : c.getBackground();
-            // In a compound sort, make each successive triangle 20%
+            // In a compound sort, make each succesive triangle 20%
             // smaller than the previous one.
-            final int dx = (int) (size / 2 * FastMath.pow(0.8, priority));
+            final int dx = (int) (size / 2 * Math.pow(0.8, priority));
             final int dy = descending ? dx : -dx;
             // Align icon (roughly) with font baseline.
             y = y + 5 * size / 6 + (descending ? -dy : 0);
@@ -316,20 +293,11 @@ public class SortingDecorator extends AbstractTableModel {
             final int idxRow1 = modelIndex;
             final int idxRow2 = ((Row) o).modelIndex;
 
-            if (doSortBy) {
-                final Object o1 = tableModel.getValueAt(idxRow1, 0);
-                final Object o2 = tableModel.getValueAt(idxRow2, 0);
-
-                final int comparison = SORTEDBY_COMPARATOR.compare(o1, o2);
-                if (comparison != 0) {
-                    return sortedByDirection == DESCENDING ? -comparison : comparison;
-                }
-            }
             for (Object sortingColumn : sortingColumns) {
                 final Directive directive = (Directive) sortingColumn;
                 final int column = directive.column;
-                final Object o1 = tableModel.getValueAt(idxRow1, column);
-                final Object o2 = tableModel.getValueAt(idxRow2, column);
+                final Object o1 = _tableModel.getValueAt(idxRow1, column);
+                final Object o2 = _tableModel.getValueAt(idxRow2, column);
 
                 final int comparison = getComparator(column).compare(o1, o2);
                 if (comparison != 0) {
@@ -368,40 +336,10 @@ public class SortingDecorator extends AbstractTableModel {
         }
     };
 
-    private final Comparator SORTEDBY_COMPARATOR = new Comparator() {
-        public int compare(final Object o1, final Object o2) {
-            if (o1 == null && o2 == null) {
-                return 0;
-            } else if (o1 == null) {
-                return -1;
-            } else if (o2 == null) {
-                return 1;
-            } else if (o1 instanceof ProductEntry && o2 instanceof ProductEntry) {
-                final ProductEntry e1 = (ProductEntry) o1;
-                final ProductEntry e2 = (ProductEntry) o2;
-
-                if (sortBy.equals(SORT_BY.NAME)) {
-                    return e1.getName().compareTo(e2.getName());
-                } else if (sortBy.equals(SORT_BY.TYPE)) {
-                    return e1.getProductType().compareTo(e2.getProductType());
-                } else if (sortBy.equals(SORT_BY.MISSON)) {
-                    return e1.getMission().compareTo(e2.getMission());
-                } else if (sortBy.equals(SORT_BY.DATE)) {
-                    return e1.getFirstLineTime().getAsDate().compareTo(e2.getFirstLineTime().getAsDate());
-                } else if (sortBy.equals(SORT_BY.FILESIZE)) {
-                    final Long size1 = e1.getFileSize();
-                    final Long size2 = e2.getFileSize();
-                    return size1.compareTo(size2);
-                }
-            }
-            return o1.toString().compareTo(o2.toString());
-        }
-    };
-
     private Comparator getComparator(final int column) {
-        final DataProvider dataProvider = tableModel.getDataProvider(column);
+        final DataProvider dataProvider = _tableModel.getDataProvider(column);
 
-        final Class columnType = tableModel.getColumnClass(column);
+        final Class columnType = _tableModel.getColumnClass(column);
         Comparator comparator = dataProvider.getComparator();
         if (comparator == null) {
             if (Comparable.class.isAssignableFrom(columnType)) {
@@ -409,6 +347,7 @@ public class SortingDecorator extends AbstractTableModel {
             } else {
                 comparator = LEXICAL_COMPARATOR;
             }
+            columnComparators.put(columnType, comparator);
         }
         return comparator;
     }

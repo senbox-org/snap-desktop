@@ -1,0 +1,200 @@
+<!--
+  ~ Copyright (C) 2010 Brockmann Consult GmbH (info@brockmann-consult.de)
+  ~
+  ~ This program is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU General Public License as published by the Free
+  ~ Software Foundation; either version 3 of the License, or (at your option)
+  ~ any later version.
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+  ~ more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License along
+  ~ with this program; if not, see http://www.gnu.org/licenses/
+  -->
+
+<html>
+<head>
+    <title>Sentinel Toolbox Help - Metadata Plot</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+
+<table class="header">
+    <tr class="header">
+        <td class="header">&nbsp;
+            Metadata Plot
+        </td>
+        <td class="header" align="right"><a href="../general/overview/SnapOverview.html"><img
+                src="../images/snap_header.jpg"
+                border=0></a></td>
+    </tr>
+</table>
+
+<h3>Metadata Plot Display</h3>
+
+<p>
+    This dialog allows the user to plot metadata values. See screen shot below for an example.
+</p>
+
+<div class="image">
+    <img src="images/MetadataPlot.png">
+</div>
+
+
+<p>
+    This plot can be used to plot fields of metadata dataset against each other. The fields must be either scalar values
+    or arrays. If there are multiple records available for a metadata dataset the field can be plotted across all records.
+    A right-click on the diagram will bring up a <a href="#context_menu">context menu</a> with some additional options. 
+</p>
+
+<h4>Options Panel</h4>
+
+<p>
+    The options panel on the right offers some configuration options. Note that the metadata plot will only show a graph
+    if x-axis and at least the first y-axis are well configured.
+</p>
+
+<h5>Header</h5>
+<ul>
+
+    <li><b>Refresh View <img src="images/icons/ViewRefresh22.png"></b><br>
+        In case of the metadata view this will always be disabled.
+    </li>
+
+    <li><b>Table View</b> &nbsp;<img src="images/icons/Table24.png"><br>
+        Shows the data of the plot in a tabular view. From there, you are able to switch back to
+        the metadata plot view.
+    </li>
+
+    <li><b>Collapse/Expand Options Panel <img src="images/icons/PanelRight12.png" border="1"> / <img
+            src="images/icons/PanelLeft12.png" border="1"></b><br>
+        Collapses or expands the options panel.
+    </li>
+</ul>
+<h5>Center</h5>
+<ul>
+    <li><b>Dataset</b><br>
+        Select the metadata element used as dataset for the plot. From this dataset the fields for
+        the X- and Y-axis can be chosen.
+    </li>
+
+    <li><b>Record</b><br>
+        Select the current record, if any. If multiple records are shown in a single plot this defines the first plot.
+    </li>
+
+    <li><b>Records/Plot</b><br>
+        Define how many records are shown in the plot. If <i>start record index</i> + <i>num records</i> is greater
+        than the maximum available records, then only the records till the last one record are shown.
+    </li>
+
+    <li><b>X Field</b><br>
+        Allows to select the field of the dataset to be set a x-axis value provider.
+        The two following fields have a special meaning.
+        <ul>
+            <li><i><b>Record Index</b></i><br/>
+                Will display the Y fields across the records depending on the settings
+            </li>
+            <li><i><b>Array Field Index [n]</b></i><br/>
+                If an array is selected for the Y field, then the array indices are used as x-values.
+            </li>
+        </ul>
+    </li>
+
+    <li><b>Y Field</b><br>
+        Selects the field to be plotted as first range axis.
+    </li>
+
+    <li><b>Y2 Field</b><br>
+        Selects the field to be plotted as second range axis.
+    </li>
+</ul>
+<h5>Footer</h5>
+<ul>
+    <li><b>Zoom all <img src="images/icons/View-Fullscreen22.png"></b><br>
+        Adjusts both axes to the full data range.
+        The 'Auto range' entry in the context menu can also be used.
+    </li>
+
+    <li><b>Edit Properties <img src="images/icons/Edit24.gif"></b><br>
+        Allows editing several properties (colors, axes, etc.) of the diagram.
+        The 'Properties...' entry in the context menu can also be used.
+    </li>
+
+    <li><b>Save chart as image <img src="images/icons/Export24.gif"></b><br>
+        Saves the diagram as image (PNG).
+        The 'Save as...' entry in the context menu can also be used.
+    </li>
+
+    <li><b>Print chart <img src="images/icons/Print24.gif"></b><br>
+        Prints the diagram.
+        The 'Print...' entry in the context menu can also be used.
+    </li>
+
+    <li><b>Help <img src="images/icons/Help22.png"></b><br>
+        Displays this page.
+    </li>
+
+</ul>
+
+<a name="context_menu"><h4>Context Menu</h4></a>
+
+<p>A click with the right mouse button on the diagram opens a context menu
+    which consists of the following menu items:</p>
+<ul>
+    <li><b>Properties...</b><br>
+        Allows editing several properties (colors, axes, etc.) of the diagram.<br>
+        The <img src="images/icons/Edit24.gif"> on the right 'Plot' panel can also be used.
+    </li>
+    <li><b>Copy</b><br>
+        Copies the diagram as image into the clipboard. <br>
+    </li>
+    <li><b>Save As...</b><br>
+        Saves the diagram as image (PNG). <br>
+        The <img src="images/icons/Export24.gif"> on the right 'Plot' panel can also be used.
+    </li>
+    <li><b>Print...</b><br>
+        Print the diagram.<br>
+        The <img src="images/icons/Print24.gif"> on the right 'Plot' panel can also be used.
+    </li>
+    <li><b>Zoom In</b><br>
+        <ul>
+            <li>Both Axes - Zoom in on both axes.<br>
+                Zooming can also be achieved by drawing a rectangle by clicking at the top left corner of the desired
+                zooming area, dragging the mouse to the bottom right corner, and releasing. Note that this won't work
+                when
+                'Select Mask 'histogram_plot_area'' is selected.
+            </li>
+            <li>Domain Axes - Zoom in only on the domain axis.</li>
+            <li>Range Axes - Zoom in only on the range axis.</li>
+        </ul>
+    </li>
+    <li><b>Zoom Out</b><br>
+        <ul>
+            <li>Both Axes - Zoom out on both axes.<br></li>
+            <li>Domain Axes - Zoom out only on the domain axis.</li>
+            <li>Range Axes - Zoom out only on the range axis.</li>
+        </ul>
+    </li>
+    <li><b>Auto Range</b><br>
+        <ul>
+            <li>Both Axes - Adjusts both axes to the full data range.<br>
+                The <img src="images/icons/View-Fullscreen22.png"> on the right 'Plot' panel can also be used.
+            </li>
+            <li>Domain Axes - Adjusts the domain axis to the full data range.</li>
+            <li>Range Axes - Adjusts the range axis to the full data range.</li>
+        </ul>
+    </li>
+    <li><b>Copy Data to Clipboard</b><br>
+        This will copy the diagram data as tabulated text to the system clipboard.
+        The copied text can then be pasted directly into a spreadsheet application
+        (e.g. Microsoft&reg; Excel).
+    </li>
+</ul>
+
+<hr>
+</body>
+</html>

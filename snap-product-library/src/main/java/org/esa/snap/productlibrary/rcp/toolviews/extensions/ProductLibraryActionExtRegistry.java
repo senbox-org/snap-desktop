@@ -21,12 +21,7 @@ import org.esa.snap.graphbuilder.gpf.ui.OperatorUIRegistry;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * A <code>ProductLibraryActionExtRegistry</code> provides access to action extensions as described by the ProductLibraryActionExtDescriptor.
@@ -39,12 +34,12 @@ public class ProductLibraryActionExtRegistry {
     private static Comparator<ProductLibraryActionExtDescriptor> descriptorComparator
             = (a, b) -> a.getPosition() - b.getPosition();
 
-    public ProductLibraryActionExtRegistry() {
+    private ProductLibraryActionExtRegistry() {
         registerActions();
     }
 
     public static ProductLibraryActionExtRegistry getInstance() {
-        if(instance == null) {
+        if (instance == null) {
             instance = new ProductLibraryActionExtRegistry();
         }
         return instance;
@@ -57,8 +52,8 @@ public class ProductLibraryActionExtRegistry {
     }
 
     private void registerActions() {
-        FileObject fileObj = FileUtil.getConfigFile("ProductLibraryActions");
-        if(fileObj == null) {
+        final FileObject fileObj = FileUtil.getConfigFile("ProductLibraryActions");
+        if (fileObj == null) {
             SystemUtils.LOG.warning("No ProductLibrary Action found.");
             return;
         }
@@ -72,28 +67,35 @@ public class ProductLibraryActionExtRegistry {
                 SystemUtils.LOG.severe(String.format("Failed to create ProductLibrary action from layer.xml path '%s'", file.getPath()));
             }
             if (actionExtDescriptor != null) {
-                final ProductLibraryActionExtDescriptor existingDescriptor = actionExtDescriptors.get(actionExtDescriptor.getId());
-                if (existingDescriptor != null) {
-                    SystemUtils.LOG.warning(String.format("ProductLibrary action [%s] has been redeclared!\n",
-                                                          actionExtDescriptor.getId()));
+                if(!actionExtDescriptor.isSeperator()) {
+                    final ProductLibraryActionExtDescriptor existingDescriptor = actionExtDescriptors.get(actionExtDescriptor.getId());
+                    if (existingDescriptor != null) {
+                        SystemUtils.LOG.warning(String.format("ProductLibrary action [%s] has been redeclared!\n",
+                                actionExtDescriptor.getId()));
+                    }
                 }
 
                 actionExtDescriptors.put(actionExtDescriptor.getId(), actionExtDescriptor);
                 SystemUtils.LOG.fine(String.format("New ProductLibrary action added from layer.xml path '%s': %s",
-                                                   file.getPath(), actionExtDescriptor.getId()));
+                        file.getPath(), actionExtDescriptor.getId()));
             }
         }
     }
 
-    public static ProductLibraryActionExtDescriptor createDescriptor(FileObject fileObject) {
+    private static ProductLibraryActionExtDescriptor createDescriptor(FileObject fileObject) {
         final String id = fileObject.getName();
+        final Integer position = (Integer) fileObject.getAttribute("position");
+
+        Assert.argument(position != null, "Attribute 'position' must be provided");
+
+        if(id.equals("Separator")) {
+            return new ProductLibraryActionExtDescriptor(id, null, position);
+        }
 
         final Class<? extends ProductLibraryActionExt> actionExtClass =
                 OperatorUIRegistry.getClassAttribute(fileObject, "actionExtClass", ProductLibraryActionExt.class, false);
-        final Integer position = (Integer) fileObject.getAttribute("position");
 
         Assert.argument(actionExtClass != null, "Attribute 'actionExtClass' must be provided");
-        Assert.argument(position != null, "Attribute 'position' must be provided");
 
         return new ProductLibraryActionExtDescriptor(id, actionExtClass, position);
     }

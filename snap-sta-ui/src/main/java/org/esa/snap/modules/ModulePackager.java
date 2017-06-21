@@ -15,18 +15,32 @@
  */
 package org.esa.snap.modules;
 
+import org.esa.snap.core.gpf.descriptor.OSFamily;
 import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
 import org.esa.snap.core.gpf.descriptor.dependency.Bundle;
-import org.esa.snap.core.gpf.descriptor.dependency.BundleType;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterIO;
 import org.openide.modules.Modules;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
-import java.util.jar.*;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.jar.Attributes;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.util.jar.JarOutputStream;
+import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -102,7 +116,7 @@ public final class ModulePackager {
 
         modulesPath = ToolAdapterIO.getAdaptersPath().toFile();
     }
-    public static void packModules(ModuleSuiteDescriptor suiteDescriptor, File suiteFile, Bundle bundle, ToolAdapterOperatorDescriptor... descriptors) throws IOException {
+    public static void packModules(ModuleSuiteDescriptor suiteDescriptor, File suiteFile, Map<OSFamily, Bundle> bundles, ToolAdapterOperatorDescriptor... descriptors) throws IOException {
         if (suiteFile != null && descriptors != null && descriptors.length > 0) {
             if (descriptors.length == 1) {
                 packModule(descriptors[0], suiteFile);
@@ -112,17 +126,17 @@ public final class ModulePackager {
                     suiteFilePath = suiteFilePath.getParent();
                 }
                 Map<String, String> dependentModules = new HashMap<>();
+                UpdateBuilder updateBuilder = new UpdateBuilder();
                 for (ToolAdapterOperatorDescriptor descriptor : descriptors) {
-                    packModule(descriptor, suiteFilePath.resolve(descriptor.getAlias() + ".nbm").toFile(), true);
-                    dependentModules.put(descriptor.getName(), descriptor.getVersion());
+                    updateBuilder.moduleManifest(
+                            packModule(descriptor, suiteFilePath.resolve(descriptor.getAlias() + ".nbm").toFile(), true));
+                    dependentModules.put(normalize(descriptor.getName()), SPECIFICATION_VERSION);// descriptor.getVersion());
                 }
-                if (bundle == null) {
-                    Optional<ToolAdapterOperatorDescriptor> descriptorWithBundle = Arrays.stream(descriptors).filter(d -> d.getBundle() != null).findFirst();
-                    if (descriptorWithBundle.isPresent()) {
-                        bundle = descriptorWithBundle.get().getBundle();
-                    }
+                if (bundles != null) {
+                    Arrays.stream(descriptors).forEach(d -> d.setBundles(bundles));
                 }
-                packSuite(suiteDescriptor, suiteFile, dependentModules, bundle);
+                packSuite(suiteDescriptor, suiteFile, dependentModules, bundles);
+                Files.write(suiteFilePath.resolve("updates.xml"), updateBuilder.build(true).getBytes());
             }
         }
     }
@@ -133,12 +147,13 @@ public final class ModulePackager {
      * @param descriptor    The tool adapter descriptor
      * @param nbmFile       The target module file
      */
-    public static void packModule(ToolAdapterOperatorDescriptor descriptor, File nbmFile) throws IOException {
-        packModule(descriptor, nbmFile, false);
+    public static String packModule(ToolAdapterOperatorDescriptor descriptor, File nbmFile) throws IOException {
+        return packModule(descriptor, nbmFile, false);
     }
 
-    private static void packModule(ToolAdapterOperatorDescriptor descriptor, File nbmFile, boolean isPartOfSuite) throws IOException {
+    private static String packModule(ToolAdapterOperatorDescriptor descriptor, File nbmFile, boolean isPartOfSuite) throws IOException {
         byte[] byteBuffer;
+        String manifestXml = null;
         try (final ZipOutputStream zipStream = new ZipOutputStream(new FileOutputStream(nbmFile))) {
             // create Info section
             ZipEntry entry = new ZipEntry("Info/info.xml");
@@ -146,7 +161,7 @@ public final class ModulePackager {
             InfoBuilder infoBuilder = new InfoBuilder();
             String javaVersion = System.getProperty("java.version");
             javaVersion = javaVersion.substring(0, javaVersion.indexOf("_"));
-            String descriptorName = descriptor.getName();
+            String descriptorName = normalize(descriptor.getName());
             String description = descriptor.getDescription();
 
             infoBuilder.moduleName(descriptorName)
@@ -154,7 +169,7 @@ public final class ModulePackager {
                                     .longDescription(description)
                                     .displayCategory("SNAP")
                                     .specificationVersion(SPECIFICATION_VERSION)
-                                    .implementationVersion(descriptor.getVersion())
+                                    .implementationVersion(SPECIFICATION_VERSION)//descriptor.getVersion())
                                     .codebase(descriptorName.toLowerCase())
                                     .distribution(nbmFile.getName())
                                     .downloadSize(0)
@@ -168,14 +183,15 @@ public final class ModulePackager {
                                     .dependency(STA_UI_MODULE, SPECIFICATION_VERSION)
                                     .dependency(SNAP_RCP_MODULE, SPECIFICATION_VERSION)
                                     .dependency(SNAP_CORE_MODULE, SPECIFICATION_VERSION);
-            byteBuffer = infoBuilder.build().getBytes();
+            byteBuffer = infoBuilder.build(true).getBytes();
+            manifestXml = infoBuilder.build(false);
             zipStream.write(byteBuffer, 0, byteBuffer.length);
             zipStream.closeEntry();
 
             // create META-INF section
             entry = new ZipEntry("META-INF/MANIFEST.MF");
             zipStream.putNextEntry(entry);
-            byteBuffer = new ManifestBuilder().build().getBytes();
+            byteBuffer = new ManifestBuilder().build(true).getBytes();
             zipStream.write(byteBuffer, 0, byteBuffer.length);
             zipStream.closeEntry();
 
@@ -191,7 +207,7 @@ public final class ModulePackager {
                             .enabled(true)
                             .jarName(jarName)
                             .reloadable(false)
-                        .build().getBytes();
+                        .build(true).getBytes();
             zipStream.write(byteBuffer, 0, byteBuffer.length);
             zipStream.closeEntry();
             // create modules section
@@ -202,22 +218,24 @@ public final class ModulePackager {
             zipStream.putNextEntry(entry);
             zipStream.write(packAdapterJar(descriptor));
             zipStream.closeEntry();
-            Bundle bundle = descriptor.getBundle();
-            if (bundle != null && bundle.getBundleType() != BundleType.NONE &&
-                    bundle.getTargetLocation() != null &&
-                    bundle.getEntryPoint() != null) {
-                // lib folder
-                entry = new ZipEntry("netbeans/modules/lib/");
-                zipStream.putNextEntry(entry);
-                zipStream.closeEntry();
-                // bundle
-                String entryPoint = bundle.getEntryPoint();
-                File entryPointPath = bundle.getSource();
-                if (entryPointPath.exists()) {
-                    entry = new ZipEntry("netbeans/modules/lib/" + entryPoint);
-                    zipStream.putNextEntry(entry);
-                    zipStream.write(Files.readAllBytes(entryPointPath.toPath()));
-                    zipStream.closeEntry();
+            Map<OSFamily, Bundle> bundles = descriptor.getBundles();
+            if (!isPartOfSuite && bundles != null) {
+                for (Bundle bundle : bundles.values()) {
+                    if (bundle.isLocal() && bundle.getTargetLocation() != null && bundle.getEntryPoint() != null) {
+                        // lib folder
+                        entry = new ZipEntry("netbeans/modules/lib/");
+                        zipStream.putNextEntry(entry);
+                        zipStream.closeEntry();
+                        // bundle
+                        String entryPoint = bundle.getEntryPoint();
+                        File entryPointPath = bundle.getSource();
+                        if (entryPointPath.exists()) {
+                            entry = new ZipEntry("netbeans/modules/lib/" + entryPoint);
+                            zipStream.putNextEntry(entry);
+                            zipStream.write(Files.readAllBytes(entryPointPath.toPath()));
+                            zipStream.closeEntry();
+                        }
+                    }
                 }
             }
             // create update_tracking section
@@ -225,6 +243,7 @@ public final class ModulePackager {
             zipStream.putNextEntry(entry);
             zipStream.closeEntry();
         }
+        return manifestXml;
     }
 
     /**
@@ -240,8 +259,7 @@ public final class ModulePackager {
             unpackFolder = new File(modulesPath, jarFile.getName().replace(".jar", ""));
         }
         if (!unpackFolder.exists()) {
-            if (!unpackFolder.mkdir())
-                throw new IOException("Cannot create jar folder: " + unpackFolder.toString());
+            Files.createDirectories(unpackFolder.toPath());
         }
         Attributes attributes = jar.getManifest().getMainAttributes();
         if (attributes.containsKey(ATTR_MODULE_IMPLEMENTATION)) {
@@ -256,14 +274,10 @@ public final class ModulePackager {
             JarEntry file = (JarEntry) enumEntries.nextElement();
             File f = new File(unpackFolder, file.getName());
             if (file.isDirectory()) {
-                if (!f.mkdir()) {
-                    throw new IOException("Cannot create folder: " + f.toString());
-                }
+                Files.createDirectories(f.toPath());
                 continue;
             } else {
-                if (!f.getParentFile().mkdirs()) {
-                    throw new IOException("Cannot create folders: " + f.getParentFile().toString());
-                }
+                Files.createDirectories(f.getParentFile().toPath());
             }
             try (InputStream is = jar.getInputStream(file)) {
                 try (FileOutputStream fos = new FileOutputStream(f)) {
@@ -299,7 +313,7 @@ public final class ModulePackager {
         return version;
     }
 
-    private static void packSuite(ModuleSuiteDescriptor descriptor, File nbmFile, Map<String, String> dependencies, Bundle bundle) throws IOException {
+    private static void packSuite(ModuleSuiteDescriptor descriptor, File nbmFile, Map<String, String> dependencies, Map<OSFamily, Bundle> bundles) throws IOException {
         byte[] byteBuffer;
         try (final ZipOutputStream zipStream = new ZipOutputStream(new FileOutputStream(nbmFile))) {
             // create Info section
@@ -335,14 +349,14 @@ public final class ModulePackager {
                     infoBuilder.dependency(mapEntry.getKey(), mapEntry.getValue());
                 }
             }
-            byteBuffer = infoBuilder.build().getBytes();
+            byteBuffer = infoBuilder.build(true).getBytes();
             zipStream.write(byteBuffer, 0, byteBuffer.length);
             zipStream.closeEntry();
 
             // create META-INF section
             entry = new ZipEntry("META-INF/MANIFEST.MF");
             zipStream.putNextEntry(entry);
-            byteBuffer = new ManifestBuilder().build().getBytes();
+            byteBuffer = new ManifestBuilder().build(true).getBytes();
             zipStream.write(byteBuffer, 0, byteBuffer.length);
             zipStream.closeEntry();
 
@@ -358,28 +372,30 @@ public final class ModulePackager {
                     .enabled(true)
                     .jarName(jarName)
                     .reloadable(false)
-                    .build().getBytes();
+                    .build(true).getBytes();
             zipStream.write(byteBuffer, 0, byteBuffer.length);
             zipStream.closeEntry();
             entry = new ZipEntry("netbeans/modules/" + jarName);
             zipStream.putNextEntry(entry);
             zipStream.write(packSuiteJar(descriptor, dependencies));
             zipStream.closeEntry();
-            if (bundle != null && bundle.getBundleType() != BundleType.NONE &&
-                    bundle.getTargetLocation() != null &&
-                    bundle.getEntryPoint() != null) {
-                // lib folder
-                entry = new ZipEntry("netbeans/modules/lib/");
-                zipStream.putNextEntry(entry);
-                zipStream.closeEntry();
-                // bundle
-                String entryPoint = bundle.getEntryPoint();
-                File entryPointPath = bundle.getSource();
-                if (entryPointPath.exists()) {
-                    entry = new ZipEntry("netbeans/modules/lib/" + entryPoint);
-                    zipStream.putNextEntry(entry);
-                    zipStream.write(Files.readAllBytes(entryPointPath.toPath()));
-                    zipStream.closeEntry();
+            if (bundles != null) {
+                for (Bundle bundle : bundles.values()) {
+                    if (bundle.isLocal() && bundle.getTargetLocation() != null && bundle.getEntryPoint() != null) {
+                        // lib folder
+                        entry = new ZipEntry("netbeans/modules/lib/");
+                        zipStream.putNextEntry(entry);
+                        zipStream.closeEntry();
+                        // bundle
+                        String entryPoint = bundle.getEntryPoint();
+                        File entryPointPath = bundle.getSource();
+                        if (entryPointPath.exists()) {
+                            entry = new ZipEntry("netbeans/modules/lib/" + entryPoint);
+                            zipStream.putNextEntry(entry);
+                            zipStream.write(Files.readAllBytes(entryPointPath.toPath()));
+                            zipStream.closeEntry();
+                        }
+                    }
                 }
             }
             // create update_tracking section
@@ -415,7 +431,7 @@ public final class ModulePackager {
     private static byte[] packAdapterJar(ToolAdapterOperatorDescriptor descriptor) throws IOException {
         _manifest.getMainAttributes().put(ATTR_DESCRIPTION_NAME, descriptor.getAlias());
         _manifest.getMainAttributes().put(ATTR_MODULE_NAME, descriptor.getName());
-        _manifest.getMainAttributes().put(ATTR_MODULE_IMPLEMENTATION, descriptor.getVersion());
+        _manifest.getMainAttributes().put(ATTR_MODULE_IMPLEMENTATION, SPECIFICATION_VERSION);//descriptor.getVersion());
         _manifest.getMainAttributes().put(ATTR_MODULE_SPECIFICATION, SPECIFICATION_VERSION);
         _manifest.getMainAttributes().put(ATTR_MODULE_ALIAS, descriptor.getAlias());
         File moduleFolder = new File(modulesPath, descriptor.getAlias());
@@ -539,6 +555,13 @@ public final class ModulePackager {
             }
             target.write(buffer, 0, count);
         }
+    }
+
+    private static String normalize(String input) {
+        if (input == null || input.isEmpty()) {
+            throw new IllegalArgumentException("Empty value");
+        }
+        return input.replace("-", ".").replace(" ", "_");
     }
 
 }

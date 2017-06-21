@@ -27,6 +27,7 @@ import org.openide.modules.Places;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,6 +64,17 @@ public enum AdapterWatcher {
             readMap();
             monitorPath(adaptersFolder);
             monitorPath(nbUserModulesPath);
+            File[] jars = nbUserModulesPath.toFile().listFiles(pathname -> pathname.getName().toLowerCase().endsWith("jar"));
+            if (jars != null) {
+                Arrays.stream(jars)
+                        .forEach(f -> {
+                            try {
+                                processJarFile(f.toPath());
+                            } catch (Exception ex) {
+                                logger.warning(ex.getMessage());
+                            }
+                        });
+            }
             handleUninstalledModules();
 
             thread = new Thread(() -> {

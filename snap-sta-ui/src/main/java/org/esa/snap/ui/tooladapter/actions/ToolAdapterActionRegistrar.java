@@ -42,6 +42,7 @@ import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.StringTokenizer;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
@@ -50,14 +51,14 @@ import java.util.jar.Manifest;
  * Helper class for creating menu entries for tool adapter operators.
  * The inner runnable class should be invoked when the IDE starts, and will
  * register the available adapters as menu actions.
- * TODO: Delegate registration of SPIs to snap-sta. Register actions only for what was already registered
+ *
  * @author Cosmin Cara
  */
 
 public class ToolAdapterActionRegistrar {
 
     private static final String DEFAULT_MENU_PATH = "Menu/Tools/External Tools";
-
+    private static FileObject defaultMenu;
     private static final Map<String, ToolAdapterOperatorDescriptor> actionMap = new HashMap<>();
 
     private static final ToolAdapterListener listener = new ToolAdapterListener() {
@@ -119,16 +120,20 @@ public class ToolAdapterActionRegistrar {
         try {
             if (menuFolder == null) {
                 menuFolder = FileUtil.getConfigFile("Menu");
-                String[] menuTokens = menuLocation.split("/");
-                for (int i = 1; i < menuTokens.length; i++) {
-                    FileObject subMenu = menuFolder.getFileObject(menuTokens[i]);
+                StringTokenizer tokenizer = new StringTokenizer(menuLocation, "/");
+                while (tokenizer.hasMoreTokens()) {
+                    String token = tokenizer.nextToken();
+                    if ("Menu".equals(token)) {
+                        continue;
+                    }
+                    FileObject subMenu = menuFolder.getFileObject(token);
                     if (subMenu == null) {
-                        menuFolder = menuFolder.createFolder(menuTokens[i]);
+                        menuFolder = menuFolder.createFolder(token);
                     } else {
                         menuFolder = subMenu;
                     }
                 }
-                menuFolder.setAttribute("position", 9999);
+                menuFolder.setAttribute("position", 2000);
             }
             String menuKey = operator.getAlias();
             FileObject newItem = menuFolder.getFileObject(menuKey, "instance");
@@ -160,6 +165,10 @@ public class ToolAdapterActionRegistrar {
                 if (actionMap.containsKey(operatorAlias)) {
                     actionMap.remove(operatorAlias);
                 }
+                FileObject[] children = menuFolder.getChildren();
+                if (children == null || children.length == 0) {
+                    menuFolder.delete();
+                }
             }
             FileObject defaultLocation = getDefaultLocation();
             FileObject[] children = defaultLocation.getChildren();
@@ -173,10 +182,12 @@ public class ToolAdapterActionRegistrar {
     }
 
     private static FileObject getDefaultLocation() throws IOException {
-        FileObject defaultMenu = FileUtil.getConfigFile(DEFAULT_MENU_PATH);
         if (defaultMenu == null) {
-            defaultMenu = FileUtil.getConfigFile("Menu").getFileObject("Tools");
-            defaultMenu = defaultMenu.createFolder(DEFAULT_MENU_PATH.replace("Menu/Tools/", ""));
+            defaultMenu = FileUtil.getConfigFile(DEFAULT_MENU_PATH);
+            if (defaultMenu == null) {
+                defaultMenu = FileUtil.getConfigFile("Menu").getFileObject("Tools");
+                defaultMenu = defaultMenu.createFolder(DEFAULT_MENU_PATH.replace("Menu/Tools/", ""));
+            }
             FileObject[] objects = defaultMenu.getParent().getChildren();
             int position = 9999;
             Object value = objects[objects.length - 1].getAttribute("position");

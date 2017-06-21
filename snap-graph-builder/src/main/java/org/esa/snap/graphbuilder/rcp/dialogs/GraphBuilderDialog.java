@@ -20,9 +20,9 @@ import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.common.ReadOp;
 import org.esa.snap.core.gpf.graph.GraphException;
+import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
-import org.esa.snap.engine_utilities.db.CommonReaders;
-import org.esa.snap.engine_utilities.util.MemUtils;
+import org.esa.snap.engine_utilities.gpf.CommonReaders;
 import org.esa.snap.engine_utilities.util.ProductFunctions;
 import org.esa.snap.engine_utilities.util.ResourceUtils;
 import org.esa.snap.graphbuilder.gpf.ui.ProductSetReaderOpUI;
@@ -45,6 +45,7 @@ import org.openide.util.HelpCtx;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.plaf.basic.BasicBorders;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -124,20 +125,6 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
 
         final JPanel mainPanel = new JPanel(new BorderLayout(4, 4));
 
-        // north panel
-        final JPanel northPanel = new JPanel(new BorderLayout(4, 4));
-
-        if (allowGraphBuilding) {
-            graphPanel = new GraphPanel(graphEx);
-            graphPanel.setBackground(Color.WHITE);
-            graphPanel.setPreferredSize(new Dimension(1500, 1000));
-            final JScrollPane scrollPane = new JScrollPane(graphPanel);
-            scrollPane.setPreferredSize(new Dimension(300, 300));
-            northPanel.add(scrollPane, BorderLayout.CENTER);
-
-            mainPanel.add(northPanel, BorderLayout.NORTH);
-        }
-
         // mid panel
         final JPanel midPanel = new JPanel(new BorderLayout(4, 4));
         tabbedPanel = new JTabbedPane();
@@ -156,7 +143,24 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         midPanel.add(tabbedPanel, BorderLayout.CENTER);
         midPanel.add(statusLabel, BorderLayout.SOUTH);
 
-        mainPanel.add(midPanel, BorderLayout.CENTER);
+        if (allowGraphBuilding) {
+            graphPanel = new GraphPanel(graphEx);
+            graphPanel.setBackground(Color.WHITE);
+            graphPanel.setPreferredSize(new Dimension(1500, 1000));
+            final JScrollPane scrollPane = new JScrollPane(graphPanel);
+            scrollPane.setPreferredSize(new Dimension(300, 300));
+
+            final JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
+                                                        scrollPane, midPanel);
+            splitPane.setOneTouchExpandable(true);
+            splitPane.setResizeWeight(0.6);
+            splitPane.setBorder(new BasicBorders.MarginBorder());
+
+            mainPanel.add(splitPane, BorderLayout.CENTER);
+
+        } else {
+            mainPanel.add(midPanel, BorderLayout.CENTER);
+        }
 
         // south panel
         final JPanel southPanel = new JPanel(new BorderLayout(4, 4));
@@ -190,7 +194,6 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         southPanel.add(progressPanel, BorderLayout.SOUTH);
 
         mainPanel.add(southPanel, BorderLayout.SOUTH);
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
 
         if (getJDialog().getJMenuBar() == null && allowGraphBuilding) {
             final GraphsMenu operatorMenu = new GraphsMenu(getJDialog(), this);
@@ -276,7 +279,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
                 return;
             }
 
-            MemUtils.freeAllMemory();
+            SystemUtils.freeAllMemory();
 
             progressBar.setValue(0);
 
@@ -401,7 +404,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         try {
             initGraphEnabled = false;
             tabbedPanel.removeAll();
-            graphEx.loadGraph(fileStream, file, true, false);
+            graphEx.loadGraph(fileStream, file, true, true);
             if (allowGraphBuilding) {
                 graphPanel.showRightClickHelp(false);
                 refreshGraph();
@@ -481,10 +484,15 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
      * Call description dialog
      */
     private void OnInfo() {
-        final PromptDialog dlg = new PromptDialog("Graph Description", "Description", graphEx.getGraphDescription(), true);
+        final PromptDialog dlg = new PromptDialog("Graph Description", "Description",
+                                                  graphEx.getGraphDescription(), PromptDialog.TYPE.TEXTAREA);
         dlg.show();
         if (dlg.IsOK()) {
-            graphEx.setGraphDescription(dlg.getValue());
+            try {
+                graphEx.setGraphDescription(dlg.getValue("Description"));
+            } catch (Exception ex) {
+                Dialogs.showError(ex.getMessage());
+            }
         }
     }
 
@@ -645,7 +653,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
                 isProcessing = false;
                 graphEx.disposeGraphContext();
                 // free cache
-                MemUtils.freeAllMemory();
+                SystemUtils.freeAllMemory();
 
                 pm.done();
             }

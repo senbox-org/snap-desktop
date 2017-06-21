@@ -19,7 +19,7 @@ import org.esa.snap.core.datamodel.quicklooks.Quicklook;
 import org.esa.snap.core.datamodel.quicklooks.Thumbnail;
 import org.esa.snap.engine_utilities.db.ProductEntry;
 import org.esa.snap.productlibrary.rcp.toolviews.ProductLibraryActions;
-import org.esa.snap.productlibrary.rcp.toolviews.model.SortingDecorator;
+import org.esa.snap.productlibrary.rcp.toolviews.support.SortingDecorator;
 import org.esa.snap.rcp.quicklooks.ThumbnailPanel;
 
 import java.io.File;
@@ -51,10 +51,10 @@ public class ThumbnailView extends ThumbnailPanel implements ListView {
 
     public File[] getSelectedFiles() {
         final List<File> list = new ArrayList<>();
-        for(ThumbnailDrawing item : getSelection()) {
-            Quicklook ql = (Quicklook)item.getThumbnail();
-            for(ProductEntry entry : productEntryList) {
-                if(entry.getQuickLook().equals(ql)) {
+        for (ThumbnailDrawing item : getSelection()) {
+            Quicklook ql = (Quicklook) item.getThumbnail();
+            for (ProductEntry entry : productEntryList) {
+                if (entry.getQuickLook().equals(ql) && entry.getFile() != null) {
                     list.add(entry.getFile());
                 }
             }
@@ -64,10 +64,10 @@ public class ThumbnailView extends ThumbnailPanel implements ListView {
 
     public ProductEntry[] getSelectedProductEntries() {
         final List<ProductEntry> list = new ArrayList<>();
-        for(ThumbnailDrawing item : getSelection()) {
-            Quicklook ql = (Quicklook)item.getThumbnail();
-            for(ProductEntry entry : productEntryList) {
-                if(entry.getQuickLook().equals(ql)) {
+        for (ThumbnailDrawing item : getSelection()) {
+            Quicklook ql = (Quicklook) item.getThumbnail();
+            for (ProductEntry entry : productEntryList) {
+                if (entry.getQuickLook().equals(ql)) {
                     list.add(entry);
                 }
             }
@@ -98,8 +98,8 @@ public class ThumbnailView extends ThumbnailPanel implements ListView {
     public void setProductEntryList(final ProductEntry[] productEntryList) {
         this.productEntryList = productEntryList;
         final List<Quicklook> thumbnails = new ArrayList<>(productEntryList.length);
-        for(ProductEntry productEntry : productEntryList) {
-            if(productEntry.getQuickLook() != null) {
+        for (ProductEntry productEntry : productEntryList) {
+            if (productEntry.getQuickLook() != null) {
                 thumbnails.add(productEntry.getQuickLook());
             }
         }

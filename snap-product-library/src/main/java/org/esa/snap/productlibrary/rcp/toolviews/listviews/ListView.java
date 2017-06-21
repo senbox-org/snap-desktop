@@ -16,7 +16,7 @@
 package org.esa.snap.productlibrary.rcp.toolviews.listviews;
 
 import org.esa.snap.engine_utilities.db.ProductEntry;
-import org.esa.snap.productlibrary.rcp.toolviews.model.SortingDecorator;
+import org.esa.snap.productlibrary.rcp.toolviews.support.SortingDecorator;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -27,7 +27,7 @@ import java.util.List;
  */
 public interface ListView {
 
-    final List<ListViewListener> listenerList = new ArrayList<>();
+    List<ListViewListener> listenerList = new ArrayList<>();
 
     File[] getSelectedFiles();
 
@@ -69,6 +69,7 @@ public interface ListView {
 
     interface ListViewListener {
         void notifySelectionChanged();
+
         void notifyOpenAction();
     }
 }

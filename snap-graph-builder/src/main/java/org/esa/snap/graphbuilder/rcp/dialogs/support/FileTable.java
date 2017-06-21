@@ -21,6 +21,8 @@ import org.esa.snap.graphbuilder.rcp.utils.ClipboardUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.nodes.PNode;
 import org.esa.snap.rcp.util.Dialogs;
+import org.openide.util.datatransfer.ExTransferable;
+import org.openide.util.datatransfer.MultiTransferObject;
 
 import javax.swing.*;
 import java.awt.*;
@@ -109,7 +111,7 @@ public class FileTable extends JTable {
         int cnt = fileModel.getRowCount();
         if (cnt == 1) {
             File file = fileModel.getFileAt(0);
-            if (file.getName().isEmpty())
+            if (file != null && file.getName().isEmpty())
                 return 0;
         }
         return cnt;
@@ -153,7 +155,7 @@ public class FileTable extends JTable {
 
         private final FileTableModel fileModel;
 
-        public ProductSetTransferHandler(FileTableModel model) {
+        ProductSetTransferHandler(FileTableModel model) {
             fileModel = model;
         }
 
@@ -162,11 +164,29 @@ public class FileTable extends JTable {
             if(info.isDataFlavorSupported(DataFlavor.stringFlavor))
                 return true;
             try {
-                return (info.getDataFlavors().length > 0 &&
-                        info.getTransferable().getTransferData(info.getDataFlavors()[0]) instanceof PNode);
+                if(info.getDataFlavors().length > 0) {
+
+                    Object transferData = info.getTransferable().getTransferData(info.getDataFlavors()[0]);
+                    if (transferData instanceof PNode) {
+                        return true;
+                    } else if(transferData instanceof MultiTransferObject) {
+                        final MultiTransferObject multi = (MultiTransferObject) transferData;
+                        boolean allPNode = true;
+                        DataFlavor dataFlavor = multi.getTransferDataFlavors(0)[0];
+                        for(int i=0; i < multi.getCount(); ++i) {
+                            Object data = multi.getTransferData(i, dataFlavor);
+                            if(!(data instanceof PNode)) {
+                                allPNode = false;
+                                break;
+                            }
+                        }
+                        return allPNode;
+                    }
+                }
             } catch (Exception e) {
                 return false;
             }
+            return false;
         }
 
         @Override
@@ -202,10 +222,27 @@ public class FileTable extends JTable {
                         }
                     }
                 } else {
-                    PNode node = (PNode)t.getTransferData(t.getTransferDataFlavors()[0]);
-                    File file = node.getProduct().getFileLocation();
-                    if (file.exists()) {
-                        fileModel.addFile(file);
+
+                    Object transferData = t.getTransferData(info.getDataFlavors()[0]);
+                    if (transferData instanceof PNode) {
+                        final PNode node = (PNode)transferData;
+                        File file = node.getProduct().getFileLocation();
+                        if (file.exists()) {
+                            fileModel.addFile(file);
+                        }
+                    } else if(transferData instanceof MultiTransferObject) {
+                        final MultiTransferObject multi = (MultiTransferObject) transferData;
+                        DataFlavor dataFlavor = multi.getTransferDataFlavors(0)[0];
+                        for(int i=0; i < multi.getCount(); ++i) {
+                            Object data = multi.getTransferData(i, dataFlavor);
+                            if(data instanceof PNode) {
+                                final PNode node = (PNode)data;
+                                File file = node.getProduct().getFileLocation();
+                                if (file.exists()) {
+                                    fileModel.addFile(file);
+                                }
+                            }
+                        }
                     }
                 }
             } catch (Exception e) {

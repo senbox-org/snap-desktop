@@ -1,0 +1,37 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>Help</title>
+
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" href="../style.css"></head>
+<body>
+<table class="header" width="100%">
+<tbody>
+<tr class="header">
+<td class="header">&nbsp; AOI Monitoring </td>
+    <td class="header" align="right"><a href="../general/Overview.html"><img src="../images/snap_header.jpg"
+                                                                             border="0"></a></td>
+</tr>
+</tbody>
+</table>
+<h3>AOI Monitoring</h3><p>The Area Of Interests (AOI)
+Monitoring&nbsp;allows users to specify, save, and load AOIs to be
+automatically batched processed using a chain of processing steps
+defined with the Graph Builder.<br></p><p>AOIs can be specified
+graphically by drawing polygons on the world map. AOIs can be saved and reloaded
+without requiring the user to re-enter any parameters.</p><p>You may
+also specify which types of products to use based on the fields in the
+metadata database. Thereby, the user can specify to only process for
+example Radarasat 2 SLC products from a specific date forward etc.</p><p>The
+user must specify the input folder where to scan recursively for new
+products, the output folder where to save the processed results, the
+processing graph and the scheduled time to begin scanning and
+processing.</p><p><img style="width: 706px; height: 430px;" alt="" src="images/aoi_monitoring.jpg"></p><p>The
+software then queries the Product Library database of product metadata
+to determine which local stored products partially or entirely fall
+within the AOI and selects the best appropriate image pairs based on
+geolocation, product type, pass, resolution, acquisition time and
+baseline.</p><p>When new products are found by the system that
+are covered in whole or partially by an AOI, the system will trigger
+the processing chain for that AOI to be queued for processing.</p><p>There is no limit to the number of AOIs that can be
+defined for monitoring. Processing for multiple AOIs will be queued.&nbsp;</p><p></p><hr>
+</body></html>

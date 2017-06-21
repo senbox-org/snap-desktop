@@ -1,17 +1,25 @@
+/*
+ * Copyright (C) 2016 by Array Systems Computing Inc. http://www.array.ca
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option)
+ * any later version.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, see http://www.gnu.org/licenses/
+ */
 package org.esa.snap.productlibrary.rcp.toolviews.model;
 
 import org.esa.snap.core.datamodel.ProductData;
 import org.esa.snap.engine_utilities.db.ProductEntry;
 import org.esa.snap.productlibrary.rcp.toolviews.DatabasePane;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * Calculates statistic on a product entry list
@@ -36,13 +44,16 @@ public class DatabaseStatistics implements DatabasePane.DatabaseQueryListener {
     }
 
     private void updateStats(final ProductEntry[] entryList) {
-        if(entryList == null)
+        if (entryList == null)
             return;
         yearDataMap.clear();
         monthData = new MonthData();
 
         for (ProductEntry entry : entryList) {
             final ProductData.UTC utc = entry.getFirstLineTime();
+            if(utc == null) {
+                continue;
+            }
             final Calendar cal = getAsCalendar(utc);
             final int year = cal.get(Calendar.YEAR);
             YearData yData = yearDataMap.get(year);
@@ -60,14 +71,14 @@ public class DatabaseStatistics implements DatabasePane.DatabaseQueryListener {
         // find highest year count
         overallMaxYearCnt = 0;
         overallMaxDayCnt = 0;
-        for(Integer year : yearDataMap.keySet()) {
+        for (Integer year : yearDataMap.keySet()) {
             final YearData yData = yearDataMap.get(year);
             int cnt = yData.yearCnt;
             int dayCnt = yData.maxDayCnt;
-            if(cnt > overallMaxYearCnt) {
+            if (cnt > overallMaxYearCnt) {
                 overallMaxYearCnt = cnt;
             }
-            if(dayCnt > overallMaxDayCnt) {
+            if (dayCnt > overallMaxDayCnt) {
                 overallMaxDayCnt = dayCnt;
             }
         }
@@ -125,10 +136,10 @@ public class DatabaseStatistics implements DatabasePane.DatabaseQueryListener {
         for (Integer y : years) {
             final Map<Integer, Integer> dayOfYear = yearDataMap.get(y).dayOfYearMap;
             final Set<Integer> days = dayOfYear.keySet();
-            System.out.print(y+ ": ");
-            for(Integer d : days) {
+            System.out.print(y + ": ");
+            for (Integer d : days) {
                 Integer dayCnt = dayOfYear.get(d);
-                if(dayCnt != 0) {
+                if (dayCnt != 0) {
                     System.out.print(d + "=" + dayCnt + " ");
                 }
             }
@@ -162,7 +173,7 @@ public class DatabaseStatistics implements DatabasePane.DatabaseQueryListener {
             dayOfYearMap.put(dayOfYear, dayOfYearCnt);
 
             // save max day cnt per year
-            if(dayOfYearCnt > maxDayCnt) {
+            if (dayOfYearCnt > maxDayCnt) {
                 maxDayCnt = dayOfYearCnt;
             }
             yearCnt += 1;
@@ -190,9 +201,9 @@ public class DatabaseStatistics implements DatabasePane.DatabaseQueryListener {
 
         public void add(final Integer month) {
             Integer monthCnt = monthMap.get(month);
-            if(monthCnt != null) {
+            if (monthCnt != null) {
                 monthCnt += 1;
-                if(monthCnt > maxMonthCnt ) {
+                if (monthCnt > maxMonthCnt) {
                     maxMonthCnt = monthCnt;
                 }
                 monthMap.put(month, monthCnt);
@@ -213,7 +224,7 @@ public class DatabaseStatistics implements DatabasePane.DatabaseQueryListener {
 
         public void setSelected(final int m, final boolean selected) {
             dbPane.getDBQuery().setMonthSelected(m, selected);
-            dbPane.queryDatabase();
+            dbPane.partialQuery();
         }
 
         public boolean isSelected(final int m) {

@@ -193,23 +193,40 @@ public class OperatorParametersTable extends JTable {
                 ToolParameterDescriptor descriptor = operator.getToolParameterDescriptors().get(cellComponentRowIndex);
                 String parameterType = descriptor.getParameterType();
                 int selectionMode = JFileChooser.FILES_ONLY;
-                if (ToolAdapterConstants.FOLDER_PARAM_MASK.equals(parameterType)) {
-                    selectionMode = JFileChooser.DIRECTORIES_ONLY;
-                }
                 FileFilter filter = null;
-                if (ToolAdapterConstants.TEMPLATE_PARAM_MASK.equals(parameterType) || ToolAdapterConstants.TEMPLATE_BEFORE_MASK.equals(parameterType)
-                        || ToolAdapterConstants.TEMPLATE_AFTER_MASK.equals(parameterType)) {
-                    filter = new FileFilter() {
-                        @Override
-                        public boolean accept(File file) {
-                            return file.isDirectory() || file.getName().toLowerCase().endsWith(".vm");
-                        }
+                switch (parameterType) {
+                    case ToolAdapterConstants.FOLDER_PARAM_MASK:
+                        selectionMode = JFileChooser.DIRECTORIES_ONLY;
+                        break;
+                    case ToolAdapterConstants.TEMPLATE_BEFORE_MASK:
+                    case ToolAdapterConstants.TEMPLATE_AFTER_MASK:
+                        filter = new FileFilter() {
+                            @Override
+                            public boolean accept(File file) {
+                                return file.isDirectory() || file.getName().toLowerCase().endsWith(".vm");
+                            }
 
-                        @Override
-                        public String getDescription() {
-                            return "*.vm files";
-                        }
-                    };
+                            @Override
+                            public String getDescription() {
+                                return "*.vm files";
+                            }
+                        };
+                        break;
+                    case ToolAdapterConstants.TEMPLATE_PARAM_MASK:
+                        filter = new FileFilter() {
+                            @Override
+                            public boolean accept(File file) {
+                                return file.isDirectory() ||
+                                        file.getName().toLowerCase().endsWith(".vm") ||
+                                        file.getName().toLowerCase().endsWith(".xml");
+                            }
+
+                            @Override
+                            public String getDescription() {
+                                return "*.vm files; *.xml files";
+                            }
+                        };
+                        break;
                 }
 
                 File selectedFile = cellDefaultValueFile.showFileChooserDialog(selectionMode, filter);
@@ -545,19 +562,21 @@ public class OperatorParametersTable extends JTable {
             }
         }
         TemplateParameterDescriptor newParameter = new TemplateParameterDescriptor(defaultParameterName, String.class);
-        addParameterToTable(newParameter);
+        newParameter.setParameterType(ToolAdapterConstants.REGULAR_PARAM_MASK);
+        int rowIndex = 0;
+        addParameterToTable(newParameter, rowIndex);
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                int rowIndex = operator.getToolParameterDescriptors().size() - 1;
+                //int rowIndex = operator.getToolParameterDescriptors().size() - 1;
                 showCellTextComponentEditor(1, rowIndex);
             }
         });
     }
 
-    public void addParameterToTable(ToolParameterDescriptor param) {
+    public void addParameterToTable(ToolParameterDescriptor param, int index) {
         try {
-            operator.getToolParameterDescriptors().add(param);
+            operator.getToolParameterDescriptors().add(index, param);
 
             PropertyDescriptor propertyDescriptor = ParameterDescriptorFactory.convert(param, new ParameterDescriptorFactory().getSourceProductMap());
             propertyDescriptor.setDefaultValue(param.getDefaultValue());
@@ -565,7 +584,6 @@ public class OperatorParametersTable extends JTable {
             propertySetDescriptor.addPropertyDescriptor(propertyDescriptor);
             PropertyContainer container = PropertyContainer.createMapBacked(new HashMap<>(), propertySetDescriptor);
             context.getPropertySet().addProperties(container.getProperties());
-
             createDefaultComponent(param, propertyDescriptor);
             fireTableRowsChanged();
         } catch (Exception ex){
@@ -837,17 +855,24 @@ public class OperatorParametersTable extends JTable {
                     return false;
                 case 4:
                     String cellValue = null;
-                    if (descriptor.getName().equals(ToolAdapterConstants.TOOL_SOURCE_PRODUCT_ID)) {
-                        cellValue = Bundle.Type_ProductList_Text();
-                    } else if (descriptor.getName().equals(ToolAdapterConstants.TOOL_SOURCE_PRODUCT_FILE)) {
-                        cellValue = Bundle.Type_FileListClass_Text();
-                    } else if (descriptor.getName().equals(ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE)) {
-                        cellValue = Bundle.Type_RegularFileClass_Text();
-                    } else if (CustomParameterClass.getObject(descriptor.getDataType(), descriptor.getParameterType()).equals(CustomParameterClass.FolderClass)) {
-                        cellValue = Bundle.Type_FolderClass_Text();
-                    } else {
-                        CustomParameterClass item = CustomParameterClass.getObject(descriptor.getDataType(), descriptor.getParameterType());
-                        cellValue = (String)typesMap.getKey(item);
+                    switch (descriptor.getName()) {
+                        case ToolAdapterConstants.TOOL_SOURCE_PRODUCT_ID:
+                            cellValue = Bundle.Type_ProductList_Text();
+                            break;
+                        case ToolAdapterConstants.TOOL_SOURCE_PRODUCT_FILE:
+                            cellValue = Bundle.Type_FileListClass_Text();
+                            break;
+                        case ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE:
+                            cellValue = Bundle.Type_RegularFileClass_Text();
+                            break;
+                        default:
+                            if (CustomParameterClass.FolderClass.equals(CustomParameterClass.getObject(descriptor.getDataType(), descriptor.getParameterType()))) {
+                                cellValue = Bundle.Type_FolderClass_Text();
+                            } else {
+                                CustomParameterClass item = CustomParameterClass.getObject(descriptor.getDataType(), descriptor.getParameterType());
+                                cellValue = (String) typesMap.getKey(item);
+                            }
+                            break;
                     }
                     return cellValue;
                 case 5:

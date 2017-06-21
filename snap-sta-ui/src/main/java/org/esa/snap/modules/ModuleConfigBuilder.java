@@ -51,14 +51,18 @@ public class ModuleConfigBuilder extends AbstractBuilder {
     }
 
     @Override
-    public String build() {
-        return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-                "<!DOCTYPE module PUBLIC \"-//NetBeans//DTD Module Status 1.0//EN\"\n\"http://www.netbeans.org/dtds/module-status-1_0.dtd\">\n" +
-                "<module name=\"" + safeValue(moduleName) + "\">\n" +
+    public String build(boolean standalone) {
+        String xml = "";
+        if (standalone) {
+            xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+                    "<!DOCTYPE module PUBLIC \"-//NetBeans//DTD Module Status 1.0//EN\"\n\"http://www.netbeans.org/dtds/module-status-1_0.dtd\">\n";
+        }
+        xml += "<module name=\"" + safeValue(moduleName) + "\">\n" +
                 "<param name=\"autoload\">" + safeValue(autoLoad) + "</param>\n" +
                 "<param name=\"eager\">" + safeValue(eager) + "</param>\n" +
                 "<param name=\"enabled\">" + safeValue(enabled) + "</param>\n" +
                 "<param name=\"jar\">modules/" + safeValue(jarName) + "</param>\n" +
                 "<param name=\"reloadable\">" + safeValue(reloadable) + "</param>\n</module>";
+        return xml;
     }
 }

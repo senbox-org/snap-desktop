@@ -26,8 +26,6 @@ import org.esa.snap.core.datamodel.quicklooks.Quicklook;
 import org.esa.snap.core.datamodel.quicklooks.Thumbnail;
 import org.esa.snap.core.dataop.downloadable.StatusProgressMonitor;
 import org.esa.snap.core.util.SystemUtils;
-import org.esa.snap.engine_utilities.gpf.ThreadManager;
-import org.esa.snap.engine_utilities.util.MemUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.window.OpenRGBImageViewAction;
 import org.esa.snap.rcp.util.SelectionSupport;
@@ -41,6 +39,7 @@ import org.openide.awt.ActionReferences;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
+import javax.media.jai.JAI;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -279,8 +278,8 @@ public class QuicklookToolView extends TopComponent implements Thumbnail.Thumbna
 
     private synchronized void loadProducts(final String qlName) {
         try {
-            final ThreadManager threadManager = new ThreadManager();
-            threadManager.setNumConsecutiveThreads(Math.min(threadManager.getNumConsecutiveThreads(), 4));
+            final List<Thread> threadList = new ArrayList<>();
+            final int numConsecutiveThreads = Runtime.getRuntime().availableProcessors();
 
             // collect quicklooks that need to load
             final List<Quicklook> quicklooksToLoad = new ArrayList<>();
@@ -325,15 +324,32 @@ public class QuicklookToolView extends TopComponent implements Thumbnail.Thumbna
                                 }
                             }
                         };
-                        threadManager.add(worker);
 
-                        MemUtils.freeAllMemory();
+                        threadList.add(worker);
+                        worker.start();
+
+                        if (threadList.size() >= numConsecutiveThreads) {
+                            for (Thread t : threadList) {
+                                t.join();
+                            }
+                            threadList.clear();
+                        }
+
+                        JAI.getDefaultInstance().getTileCache().flush();
+                        JAI.getDefaultInstance().getTileCache().memoryControl();
+                        System.gc();
+
                         pm.setTaskName("Generating quicklooks " + cnt + " of " + total);
                         ++cnt;
                         //pm.worked(1);
                     }
                     pm.done();
-                    threadManager.finish();
+
+                    if (!threadList.isEmpty()) {
+                        for (Thread t : threadList) {
+                            t.join();
+                        }
+                    }
 
                     return true;
                 }

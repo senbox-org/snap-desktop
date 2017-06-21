@@ -119,11 +119,10 @@ class MetadataElementLeafNode extends AbstractNode {
             return leaf.getData().getElemInt();
         }
     }
-
     public class UIntegerProperty extends PropertySupport.ReadOnly<Long> {
 
         public UIntegerProperty(String name) {
-            super(name, long.class, name, null);
+            super(name, Long.class, name, null);
         }
 
         @Override

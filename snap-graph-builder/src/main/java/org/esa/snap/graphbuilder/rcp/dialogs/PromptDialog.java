@@ -15,17 +15,16 @@
  */
 package org.esa.snap.graphbuilder.rcp.dialogs;
 
+import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.ui.GridBagUtils;
 import org.esa.snap.ui.ModalDialog;
 
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
+import javax.swing.*;
 import javax.swing.text.JTextComponent;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
+import java.awt.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by IntelliJ IDEA.
@@ -35,49 +34,83 @@ import java.awt.GridBagConstraints;
  */
 public class PromptDialog extends ModalDialog {
 
-    private JTextComponent prompt1;
     private boolean ok = false;
+    private final Map<String, JComponent> componentMap = new HashMap<>();
 
-    public PromptDialog(String title, String label, String defaultValue, boolean textArea) {
+    public enum TYPE { TEXTFIELD, TEXTAREA, CHECKBOX, PASSWORD }
+
+    public PromptDialog(final String title, final String label, final String defaultValue, final TYPE type) {
+        this(title, new Descriptor[] {new Descriptor(label, defaultValue, type)});
+    }
+
+    public PromptDialog(final String title, final Descriptor[] descriptorList) {
         super(SnapApp.getDefault().getMainFrame(), title, ModalDialog.ID_OK_CANCEL, null);
 
         final JPanel content = GridBagUtils.createPanel();
-        final GridBagConstraints gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.anchor = GridBagConstraints.WEST;
+        final GridBagConstraints gbc = DialogUtils.createGridBagConstraints();
         gbc.insets.right = 4;
-        gbc.gridy = 0;
-        gbc.weightx = 0;
-
         gbc.insets.top = 2;
-        prompt1 = addTextComponent(content, gbc, label, defaultValue, textArea);
+
+        for(Descriptor descriptor : descriptorList) {
+            final JComponent prompt = addComponent(content, gbc, descriptor.label, descriptor.defaultValue, descriptor.type);
+            componentMap.put(descriptor.label, prompt);
+            gbc.gridy++;
+        }
 
         getJDialog().setMinimumSize(new Dimension(400, 100));
 
         setContent(content);
     }
 
-    private static JTextComponent addTextComponent(final JPanel content, final GridBagConstraints gbc,
-                                                   final String text, final String value, boolean isTextArea) {
+    private static JComponent addComponent(final JPanel content, final GridBagConstraints gbc,
+                                           final String label, final String defaultValue, final TYPE type) {
+        if (type.equals(TYPE.CHECKBOX)) {
+            final JCheckBox checkBox = new JCheckBox(label);
+            checkBox.setSelected(!defaultValue.isEmpty());
+            content.add(checkBox, gbc);
+            return checkBox;
+        }
         JTextComponent textComp;
-        if (isTextArea) {
-            final JTextArea textArea = new JTextArea(value);
+        if (type.equals(TYPE.TEXTAREA)) {
+            final JTextArea textArea = new JTextArea(defaultValue);
             textArea.setColumns(50);
             textArea.setRows(7);
             textComp = textArea;
         } else {
-            content.add(new JLabel(text), gbc);
+            gbc.gridx = 0;
+            content.add(new JLabel(label), gbc);
+            gbc.weightx = 2;
+            gbc.gridx = 1;
+            if (type.equals(TYPE.PASSWORD)) {
+                textComp = new  JPasswordField(defaultValue);
+                ((JPasswordField)textComp).setEchoChar('*');
+            } else {
+                textComp = new JTextField(defaultValue);
+            }
             gbc.weightx = 1;
-            textComp = new JTextField(value);
         }
         textComp.setEditable(true);
         content.add(textComp, gbc);
-        gbc.gridy++;
+        gbc.gridx = 0;
         return textComp;
     }
 
-    public String getValue() {
-        return prompt1.getText();
+    public String getValue(final String label) throws Exception {
+        final JComponent component = componentMap.get(label);
+        if(component instanceof JTextComponent) {
+            final JTextComponent textComponent = (JTextComponent) component;
+            return textComponent.getText();
+        }
+        throw new Exception(label + " is not a JTextComponent");
+    }
+
+    public boolean isSelected(final String label) throws Exception {
+        final JComponent component = componentMap.get(label);
+        if(component instanceof JCheckBox) {
+            final JCheckBox checkBox = (JCheckBox) component;
+            return checkBox.isSelected();
+        }
+        throw new Exception(label + " is not a JCheckBox");
     }
 
     protected void onOK() {
@@ -89,4 +122,15 @@ public class PromptDialog extends ModalDialog {
         return ok;
     }
 
+    public static class Descriptor {
+        public final String label;
+        public final String defaultValue;
+        public final TYPE type;
+
+        public Descriptor(final String label, final String defaultValue, final TYPE type) {
+            this.label = label;
+            this.defaultValue = defaultValue;
+            this.type = type;
+        }
+    }
 }

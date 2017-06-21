@@ -18,25 +18,46 @@
 
 package org.esa.snap.ui.tooladapter.dialogs;
 
+import org.esa.snap.core.gpf.descriptor.OSFamily;
+import org.esa.snap.core.gpf.descriptor.SystemVariable;
 import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
+import org.esa.snap.core.gpf.descriptor.dependency.BundleType;
+import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterOp;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterRegistry;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.modules.ModulePackager;
 import org.esa.snap.modules.ModuleSuiteDescriptor;
+import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.ui.tooladapter.actions.EscapeAction;
+import org.esa.snap.ui.tooladapter.dialogs.components.EntityForm;
 import org.esa.snap.ui.tooladapter.model.ProgressWorker;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumn;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -49,10 +70,11 @@ public class ModuleSuiteDialog extends ModalDialog {
     private static final int YEAR;
     private JTable operatorsTable;
     private ModuleSuiteDescriptor descriptor;
-    private org.esa.snap.core.gpf.descriptor.dependency.Bundle bundle;
+    private Map<OSFamily, org.esa.snap.core.gpf.descriptor.dependency.Bundle> bundles;
     private EntityForm<ModuleSuiteDescriptor> descriptorForm;
-    private EntityForm<org.esa.snap.core.gpf.descriptor.dependency.Bundle> bundleForm;
+    private BundleForm bundleForm;
     private Set<ToolAdapterOperatorDescriptor> initialSelection;
+    private Map<String, SystemVariable> commonVariables;
 
     static {
         Calendar calendar = Calendar.getInstance();
@@ -64,12 +86,40 @@ public class ModuleSuiteDialog extends ModalDialog {
         super(appContext.getApplicationWindow(), title, ID_OK | ID_CANCEL, helpID);
         this.descriptor = new ModuleSuiteDescriptor();
         this.descriptor.setAuthors(System.getProperty("user.name"));
+        this.descriptor.setName("NewBundle");
         this.descriptor.setVersion("1");
         this.descriptor.setCopyright("(C)" + String.valueOf(YEAR) + " " + this.descriptor.getAuthors());
-        this.bundle = new org.esa.snap.core.gpf.descriptor.dependency.Bundle();
+        this.bundles = new HashMap<>();
+        this.bundles.put(OSFamily.windows,
+                new org.esa.snap.core.gpf.descriptor.dependency.Bundle(
+                    new ToolAdapterOperatorDescriptor("bundle", ToolAdapterOp.class),
+                    BundleType.ZIP,
+                    SystemUtils.getAuxDataPath().toString()) {{
+                        setOS(OSFamily.windows);
+                }});
+        this.bundles.put(OSFamily.linux,
+                new org.esa.snap.core.gpf.descriptor.dependency.Bundle(
+                        new ToolAdapterOperatorDescriptor("bundle", ToolAdapterOp.class),
+                        BundleType.ZIP,
+                        SystemUtils.getAuxDataPath().toString()) {{
+                    setOS(OSFamily.linux);
+                }});
+        this.bundles.put(OSFamily.macosx,
+                new org.esa.snap.core.gpf.descriptor.dependency.Bundle(
+                        new ToolAdapterOperatorDescriptor("bundle", ToolAdapterOp.class),
+                        BundleType.ZIP,
+                        SystemUtils.getAuxDataPath().toString()) {{
+                    setOS(OSFamily.macosx);
+                }});
         this.initialSelection = new HashSet<>();
+        this.commonVariables = new HashMap<>();
         if (selection != null) {
             this.initialSelection.addAll(selection);
+            this.initialSelection.forEach(d -> {
+                for (SystemVariable variable : d.getVariables()) {
+                    this.commonVariables.put(variable.getKey(), variable);
+                }
+            });
         }
         JPanel contentPanel = createContentPanel();
         setContent(contentPanel);
@@ -93,7 +143,7 @@ public class ModuleSuiteDialog extends ModalDialog {
         panel.add(new JLabel("Adapters to include:"), constraints);
 
         JPanel descriptorPanel = createDescriptorPanel();
-        descriptorPanel.setPreferredSize(new Dimension(300, 250));
+        descriptorPanel.setPreferredSize(new Dimension(350, 250));
         constraints.gridx = 0;
         constraints.gridy = 1;
         constraints.weightx = 1;
@@ -117,7 +167,7 @@ public class ModuleSuiteDialog extends ModalDialog {
         constraints.fill = GridBagConstraints.HORIZONTAL;
         panel.add(bundlePanel, constraints);
 
-        panel.setPreferredSize(new Dimension(550, 350));
+        panel.setPreferredSize(new Dimension(680, 350));
         return panel;
     }
 
@@ -128,13 +178,9 @@ public class ModuleSuiteDialog extends ModalDialog {
                 .map(e -> (ToolAdapterOperatorDescriptor) e.getOperatorDescriptor())
                 .collect(Collectors.toList()));
         toolboxSpis.sort(Comparator.comparing(ToolAdapterOperatorDescriptor::getAlias));
-        Object[][] records = new Object[toolboxSpis.size()][2];
-        for (int i = 0; i < toolboxSpis.size(); i++) {
-            records[i][0] = false;
-            records[i][1] = toolboxSpis.get(i);
-        }
         AdapterListModel model = new AdapterListModel(toolboxSpis);
         operatorsTable = new JTable(model);
+        operatorsTable.getSelectionModel().addListSelectionListener(e -> onSelectionChanged());
         TableColumn checkColumn = operatorsTable.getColumnModel().getColumn(0);
         int checkColumnWidth = 24;
         checkColumn.setMaxWidth(checkColumnWidth);
@@ -153,10 +199,25 @@ public class ModuleSuiteDialog extends ModalDialog {
     }
 
     private JPanel createBundlePanel() {
-        this.bundleForm = new EntityForm<>(this.bundle);
-        JPanel panel = this.bundleForm.getPanel();
-        panel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
-        return panel;
+        this.bundleForm = new BundleForm(SnapApp.getDefault().getAppContext(),
+                                         this.bundles.get(OSFamily.windows),
+                                         this.bundles.get(OSFamily.linux),
+                                         this.bundles.get(OSFamily.macosx),
+                                         new ArrayList<>(this.commonVariables.values()));
+        this.bundleForm.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+        return this.bundleForm;
+    }
+
+    private void onSelectionChanged() {
+        ToolAdapterOperatorDescriptor[] selection = ((AdapterListModel) this.operatorsTable.getModel()).getSelectedItems();
+        this.commonVariables.clear();
+        for (ToolAdapterOperatorDescriptor descriptor : selection) {
+            List<SystemVariable> variables = descriptor.getVariables();
+            for (SystemVariable variable : variables) {
+                this.commonVariables.put(variable.getKey(), variable);
+            }
+        }
+        this.bundleForm.setVariables(new ArrayList<>(this.commonVariables.values()));
     }
 
     @Override
@@ -164,7 +225,7 @@ public class ModuleSuiteDialog extends ModalDialog {
         ToolAdapterOperatorDescriptor[] selection = ((AdapterListModel) this.operatorsTable.getModel()).getSelectedItems();
         if (selection.length > 0) {
             this.descriptor = this.descriptorForm.applyChanges();
-            this.bundle = this.bundleForm.applyChanges();
+            final Map<OSFamily, org.esa.snap.core.gpf.descriptor.dependency.Bundle> bundles = this.bundleForm.applyChanges();
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             if (fileChooser.showOpenDialog(getButton(ID_OTHER)) == JFileChooser.APPROVE_OPTION) {
@@ -173,7 +234,7 @@ public class ModuleSuiteDialog extends ModalDialog {
                 ProgressWorker worker = new ProgressWorker("Export Module Suite", "Creating NetBeans module suite " + nbmName,
                         () -> {
                             try {
-                                ModulePackager.packModules(this.descriptor, new File(targetFolder, nbmName), this.bundle, selection);
+                                ModulePackager.packModules(this.descriptor, new File(targetFolder, nbmName), bundles, selection);
                                 Dialogs.showInformation(String.format(Bundle.MSG_Export_Complete_Text(), targetFolder.getAbsolutePath()), null);
                             } catch (IOException e) {
                                 SystemUtils.LOG.warning(e.getMessage());

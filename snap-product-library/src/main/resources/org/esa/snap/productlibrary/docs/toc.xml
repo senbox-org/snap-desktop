@@ -8,6 +8,11 @@
         <tocitem text="Import and Export">
             <tocitem text="Product Library" target="productLibrary"/>
         </tocitem>
+        <tocitem text="Tools">
+            <tocitem text="Graph Tools">
+                <tocitem text="AOI Monitoring" target="AOIMonitoring"/>
+            </tocitem>
+        </tocitem>
     </tocitem>
 
 </toc>
