@@ -283,7 +283,7 @@ class MetadataPlotPanel extends ChartPagePanel {
         for (String recordElementName : recordElementNames) {
             double[] y1AxisData = new double[arrayIndices.length];
             Arrays.setAll(y1AxisData, i -> metadataElement.getElement(recordElementName).getAttribute(nameY1).getData().getElemDoubleAt(i));
-            String seriesKey = String.format("%s_%s", recordElementName, nameY1);
+            String seriesKey = String.format("%s/%s", recordElementName, nameY1);
             dataset.addSeries(seriesKey, new double[][]{arrayIndices, y1AxisData});
         }
 
@@ -297,7 +297,7 @@ class MetadataPlotPanel extends ChartPagePanel {
         for (String recordElementName : recordElementNames) {
             double[] y2AxisData = new double[arrayIndices.length];
             Arrays.setAll(y2AxisData, i -> metadataElement.getElement(recordElementName).getAttribute(nameY2).getData().getElemDoubleAt(i));
-            String seriesKey = String.format("%s_%s", recordElementName, nameY2);
+            String seriesKey = String.format("%s/%s", recordElementName, nameY2);
             dataset.addSeries(seriesKey, new double[][]{arrayIndices, y2AxisData});
         }
     }
