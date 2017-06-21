@@ -39,14 +39,7 @@ public class TableViewPagePanel extends PagePanel {
         switchToChartButton.setToolTipText("Switch to Chart View");
         switchToChartButton.setName("switchToChartButton");
         switchToChartButton.setEnabled(hasAlternativeView());
-        switchToChartButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-                showAlternativeView();
-
-            }
-        });
+        switchToChartButton.addActionListener(e -> showAlternativeView());
 
         final JPanel buttonPanel = new JPanel(new BorderLayout());
         buttonPanel.add(switchToChartButton, BorderLayout.NORTH);

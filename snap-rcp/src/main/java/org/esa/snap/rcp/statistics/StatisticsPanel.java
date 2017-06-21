@@ -147,7 +147,7 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
         hideAndShowButton.setName("switchToChartButton");
         hideAndShowButton.addActionListener(new ActionListener() {
 
-            public boolean rightPanelShown;
+            private boolean rightPanelShown;
 
             @Override
             public void actionPerformed(ActionEvent e) {
