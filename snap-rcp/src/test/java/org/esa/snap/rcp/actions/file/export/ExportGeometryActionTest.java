@@ -1,12 +1,22 @@
 package org.esa.snap.rcp.actions.file.export;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
+import org.esa.snap.core.datamodel.PinDescriptor;
+import org.esa.snap.core.datamodel.PixelPos;
+import org.esa.snap.core.datamodel.Placemark;
 import org.esa.snap.core.datamodel.PlainFeatureFactory;
 import org.junit.Test;
+import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 
-import static org.junit.Assert.*;
+import java.io.File;
+import java.util.ArrayList;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * @author Marco Peters
@@ -19,6 +29,32 @@ public class ExportGeometryActionTest {
 
         SimpleFeatureType changedFeatureType = ExportGeometryAction.changeGeometryType(defaultFeatureType, Polygon.class);
         assertEquals(Polygon.class, changedFeatureType.getGeometryDescriptor().getType().getBinding());
+    }
+
+    @Test
+    public void testWritingShapeFile() throws Exception {
+        Placemark pin = Placemark.createPointPlacemark(PinDescriptor.getInstance(),
+                                                       "name1",
+                                                       "label1",
+                                                       "",
+                                                       new PixelPos(0, 0), null,
+                                                       null);
+
+        ArrayList<SimpleFeature> features = new ArrayList<>();
+        features.add(pin.getFeature());
+        File tempFile = File.createTempFile("test", "shp");
+        try {
+            ExportGeometryAction.writeEsriShapefile(Point.class, features, tempFile);
+            assertTrue(tempFile.exists());
+        } catch (Throwable t) {
+            t.printStackTrace();
+            fail(String.format("Throwable '%s: %s' not expected", t.getClass().getSimpleName(), t.getMessage()));
+        } finally {
+            boolean deleted = tempFile.delete();
+            if (!deleted) {
+                tempFile.deleteOnExit();
+            }
+        }
     }
 
 }

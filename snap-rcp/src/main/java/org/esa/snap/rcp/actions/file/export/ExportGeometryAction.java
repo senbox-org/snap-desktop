@@ -58,6 +58,7 @@ import javax.swing.SwingWorker;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -93,9 +94,12 @@ public class ExportGeometryAction extends AbstractAction implements ContextAware
 
     private static final String ESRI_SHAPEFILE = "ESRI Shapefile";
     private static final String FILE_EXTENSION_SHAPEFILE = ".shp";
+    private static final String HELP_ID = "exportShapefile";
+
+    @SuppressWarnings("FieldCanBeLocal")
+    // If converted to local the result gets garbage collected and the listener is not informed anymore
     private final Lookup.Result<VectorDataNode> result;
     private final Lookup lookup;
-    private String HELP_ID = "exportShapefile";
     private VectorDataNode vectorDataNode;
 
 
@@ -155,7 +159,7 @@ public class ExportGeometryAction extends AbstractAction implements ContextAware
         }
     }
 
-    private static void writeEsriShapefile(Class<?> geomType, List<SimpleFeature> features, File file) throws IOException {
+    static void writeEsriShapefile(Class<?> geomType, List<SimpleFeature> features, File file) throws IOException {
         String geomName = geomType.getSimpleName();
         String basename = file.getName();
         if (basename.endsWith(FILE_EXTENSION_SHAPEFILE)) {
@@ -163,16 +167,15 @@ public class ExportGeometryAction extends AbstractAction implements ContextAware
         }
         File file1 = new File(file.getParentFile(), basename + "_" + geomName + FILE_EXTENSION_SHAPEFILE);
 
-        ShapefileDataStoreFactory factory = new ShapefileDataStoreFactory();
-        Map map = Collections.singletonMap("url", file1.toURI().toURL());
-        DataStore dataStore = factory.createNewDataStore(map);
         SimpleFeature simpleFeature = features.get(0);
         SimpleFeatureType simpleFeatureType = changeGeometryType(simpleFeature.getType(), geomType);
 
-        String typeName = simpleFeatureType.getName().getLocalPart();
+        ShapefileDataStoreFactory factory = new ShapefileDataStoreFactory();
+        Map<String, Serializable> map = Collections.singletonMap("url", file1.toURI().toURL());
+        DataStore dataStore = factory.createNewDataStore(map);
         dataStore.createSchema(simpleFeatureType);
-        FeatureStore<SimpleFeatureType, SimpleFeature> featureStore = (FeatureStore<SimpleFeatureType, SimpleFeature>) dataStore.getFeatureSource(
-                typeName);
+        String featureSourceName = basename + "_" + geomName;
+        FeatureStore<SimpleFeatureType, SimpleFeature> featureStore = (FeatureStore<SimpleFeatureType, SimpleFeature>) dataStore.getFeatureSource(featureSourceName);
         DefaultTransaction transaction = new DefaultTransaction("X");
         featureStore.setTransaction(transaction);
         final FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection = DataUtilities.collection(
