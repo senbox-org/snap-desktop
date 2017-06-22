@@ -125,13 +125,25 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         }
     }
 
+    /*
+    These don't seem to be required for things to work. In fact, componentHidden() and componentDeactivated() are
+    emptying the lust which requires componentActivated() to repopulate it.
+
     protected void componentHidden() {
-        currentListView.setProductEntryList(new ProductEntry[]{});
+        //System.out.println("ProductLibraryToolView.componentHidden empties currentListView " + currentListView.getClass());
+        //currentListView.setProductEntryList(new ProductEntry[]{});
+    }
+
+    protected void componentActivated() {
+        //System.out.println("ProductLibraryToolView.componentActivated fills currentListView " + currentListView.getClass());
+        //showRepository(dbPane.getProductEntryList());
     }
 
     protected void componentDeactivated() {
-        currentListView.setProductEntryList(new ProductEntry[]{});
+        //System.out.println("ProductLibraryToolView.componentDeactivated empties currentListView " + currentListView.getClass());
+        //currentListView.setProductEntryList(new ProductEntry[]{});
     }
+    */
 
     private synchronized void initialize() {
         initDatabase();
@@ -213,7 +225,7 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
     public class ProductLibraryActionExtListener implements ProductLibraryActionExt.ActionExtListener {
 
         public void notifyMSG(ProductLibraryActionExt action, MSG msg) {
-            SystemUtils.LOG.info("ProductLibraryTool: got notification MSG " + msg.name());
+            SystemUtils.LOG.info("ProductLibraryTool: got notification MSG " + msg.name() + " " + action.getNewRepoFolder().getName());
             switch (msg) {
                 case NEW_REPO:
                     DBScanner.Options options = new DBScanner.Options(false, false, false);
@@ -425,7 +437,7 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
 
         setUIComponentsEnabled(doRepositoriesExist());
 
-        updateRepostitory(repo, options);
+        updateRepostitory(repo, options);  // This is needed
     }
 
     private void addRepository() {
@@ -538,11 +550,10 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
             if(folderRepo.getBaseDir() == null) {
                 return;
             }
-
             progMon = getLabelBarProgressMonitor();
             final DBScanner scanner = new DBScanner(((DBProductQuery)folderRepo.getProductQueryInterface()).getDB(),
                                                     folderRepo.getBaseDir(), options, progMon);
-            scanner.addListener(new MyDatabaseScannerListener());
+            scanner.addListener(new MyDatabaseScannerListener(repo));
             scanner.execute();
         }
     }
@@ -576,6 +587,7 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
     }
 
     public synchronized void changeView() {
+        //System.out.println("PublicLibraryToolView.changeView empties currentListView " + currentListView.getClass());
         currentListView.setProductEntryList(new ProductEntry[]{}); // force to empty
 
         if (currentListView instanceof ProductEntryList) {
@@ -618,6 +630,7 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
     }
 
     private void showRepository(final ProductEntry[] productEntryList) {
+        //System.out.println("ProductLibraryToolView.showRepository: productEntryList " + (productEntryList == null ? "is null" : productEntryList.length) + " " + currentListView.getClass());
         if(productEntryList == null)
             return;
 
@@ -740,12 +753,20 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
 
     private class MyDatabaseScannerListener implements DBScanner.DBScannerListener {
 
+        RepositoryInterface repo;
+
+        MyDatabaseScannerListener(final RepositoryInterface repo) {
+            this.repo = repo;
+        }
+
         public void notifyMSG(final DBScanner dbScanner, final MSG msg) {
             if (msg.equals(DBScanner.DBScannerListener.MSG.DONE)) {
                 final java.util.List<DBScanner.ErrorFile> errorList = dbScanner.getErrorList();
                 if (!errorList.isEmpty()) {
                     handleErrorList(errorList);
                 }
+                //System.out.println("ProductLibraryToolView.MyDatabaseScannerListener: DBScanner DONE");
+                repositoryListCombo.setSelectedItem(repo);
             }
             UpdateUI();
         }

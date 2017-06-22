@@ -104,7 +104,7 @@ class InformationPanel extends TablePagePanel {
             addEntry("No-data value:", String.valueOf(band.getNoDataValue()), "");
             addEntry("Geophysical no-data value:", String.valueOf(band.getGeophysicalNoDataValue()), "");
             addEntry("Valid pixel expression:", String.valueOf(band.getValidPixelExpression()), "");
-            addEntry("Spectral band index:", String.valueOf(band.getSpectralBandIndex() + 1), "");
+            addEntry("Spectral band index:", String.valueOf(band.getSpectralBandIndex()), "");
             addEntry("Wavelength:", String.valueOf(band.getSpectralWavelength()), "nm");
             addEntry("Bandwidth:", String.valueOf(band.getSpectralBandwidth()), "nm");
             addEntry("Solar flux:", String.valueOf(band.getSolarFlux()), "mW/(m^2*nm)");
