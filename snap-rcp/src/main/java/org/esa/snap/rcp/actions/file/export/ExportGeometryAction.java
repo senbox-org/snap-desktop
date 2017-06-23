@@ -155,7 +155,7 @@ public class ExportGeometryAction extends AbstractAction implements ContextAware
         }
     }
 
-    private static void writeEsriShapefile(Class<?> geomType, List<SimpleFeature> features, File file) throws IOException {
+    static void writeEsriShapefile(Class<?> geomType, List<SimpleFeature> features, File file) throws IOException {
         String geomName = geomType.getSimpleName();
         String basename = file.getName();
         if (basename.endsWith(FILE_EXTENSION_SHAPEFILE)) {
