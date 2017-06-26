@@ -336,7 +336,8 @@ public class BundleForm extends JPanel {
             property = propertyContainer.getProperty("source");
             property.addPropertyChangeListener(evt -> {
                 bundle.setSource((File) evt.getNewValue());
-                firePropertyChange(evt);
+                firePropertyChange(new PropertyChangeEvent(bundle, "source",
+                                                           evt.getOldValue(), evt.getNewValue()));
             });
             property = propertyContainer.getProperty("downloadURL");
             property.addPropertyChangeListener(evt -> {
