@@ -1,18 +1,33 @@
 package org.esa.snap.ui.tooladapter.model;
 
 import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
+import org.esa.snap.tango.TangoIcons;
 
+import javax.swing.ImageIcon;
 import javax.swing.table.AbstractTableModel;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * @author Ramona Manda
  */
 public class OperatorsTableModel extends AbstractTableModel {
 
-    private String[] columnNames = {"Bundle", "Alias", "Description"};
+    private static ImageIcon STATUS_OK;
+    private static ImageIcon STATUS_NOK;
+
+    private String[] columnNames = {"Status", "Alias", "Description"};
     //private boolean[] toolsChecked = null;
     private List<ToolAdapterOperatorDescriptor> data = null;
+
+    static {
+        try {
+            STATUS_OK = new ImageIcon(OperatorsTableModel.class.getResource("/org/esa/snap/ui/tooladapter/dialogs/check_ok.png"));
+        } catch (Exception e) {
+            Logger.getLogger(OperatorsTableModel.class.getName()).warning("Image resource not loaded");
+        }
+        STATUS_NOK = TangoIcons.emblems_emblem_important(TangoIcons.Res.R16);
+    }
 
     public OperatorsTableModel(List<ToolAdapterOperatorDescriptor> operators) {
         this.data = operators;
@@ -34,7 +49,7 @@ public class OperatorsTableModel extends AbstractTableModel {
         switch (columnIndex) {
             case 0:
                 org.esa.snap.core.gpf.descriptor.dependency.Bundle bundle = data.get(rowIndex).getBundle();
-                return bundle != null && bundle.isInstalled();
+                return (bundle != null && bundle.isInstalled()) ? STATUS_OK : STATUS_NOK;
             case 1:
                 //return toolsChecked[rowIndex];
                 return data.get(rowIndex).getAlias();
@@ -55,7 +70,7 @@ public class OperatorsTableModel extends AbstractTableModel {
     @Override
     public Class getColumnClass(int c) {
         if (c == 0) {
-            return Boolean.class;
+            return ImageIcon.class;
         } else {
             return String.class;
         }
