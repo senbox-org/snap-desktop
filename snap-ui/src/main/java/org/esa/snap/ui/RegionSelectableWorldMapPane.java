@@ -55,6 +55,7 @@ import java.beans.PropertyChangeListener;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * This class wraps a {@link WorldMapPane} and extends it by functionality to draw and resize a selection rectangle.
@@ -64,10 +65,10 @@ import java.util.Map;
  */
 public class RegionSelectableWorldMapPane {
 
-    public static final String NORTH_BOUND = "northBound";
-    public static final String SOUTH_BOUND = "southBound";
-    public static final String WEST_BOUND = "westBound";
-    public static final String EAST_BOUND = "eastBound";
+    static final String NORTH_BOUND = "northBound";
+    static final String SOUTH_BOUND = "southBound";
+    static final String WEST_BOUND = "westBound";
+    static final String EAST_BOUND = "eastBound";
 
     private static final int OFFSET = 6;
 
@@ -83,12 +84,13 @@ public class RegionSelectableWorldMapPane {
     private Rectangle2D.Double defaultRectangle;
     private Shape defaultShape;
     private final RegionSelectableWorldMapPane.RegionSelectionDecoratingPanSupport panSupport;
+    private AtomicBoolean updatingModelBounds = new AtomicBoolean(false);
 
 
     /**
      * Creates a RegionSelectableWorldMapPane.
      *
-     * @param dataModel The data model to be used
+     * @param dataModel      The data model to be used
      * @param bindingContext The binding context which has to contain at least the following properties:
      *                       {@link #NORTH_BOUND northBound} ,
      *                       {@link #SOUTH_BOUND southBound}, {@link #WEST_BOUND westBound}, and
@@ -98,7 +100,6 @@ public class RegionSelectableWorldMapPane {
      *                       allowed longitude range [-180, 180], the northBound is bigger than the southBound,
      *                       the eastBound is bigger than the westBound, and no value is null. In this case,
      *                       the world map will be initialized with these values.
-     *
      * @throws IllegalArgumentException If the bindingContext is null, it does not contain the expected properties or
      *                                  the properties do not contain valid values
      */
@@ -197,7 +198,7 @@ public class RegionSelectableWorldMapPane {
         minX = Math.min(maxX, Math.min(180, Math.max(-180, minX)));
         minY = Math.min(maxY, Math.min(90, Math.max(-90, minY)));
         if (newFigureShape.getMinX() != minX || newFigureShape.getMinY() != minY
-                || newFigureShape.getMaxX() != maxX || newFigureShape.getMaxY() != maxY) {
+            || newFigureShape.getMaxX() != maxX || newFigureShape.getMaxY() != maxY) {
 
             // there were numerical issues with the direct approach that returned rectangles with a maxX slightly larger
             // than 180 deg. To ensure data is always in the valid range, we subtract a small amount from width and height.
@@ -361,7 +362,7 @@ public class RegionSelectableWorldMapPane {
 
         private FigureEditorAwareWorldMapPane(WorldMapPaneDataModel dataModel, SelectionOverlay overlay) {
             super(dataModel, overlay);
-            addZoomListener(() -> handleZoom());
+            addZoomListener(RegionSelectableWorldMapPane.this::handleZoom);
             greyOverlay = (canvas, rendering) -> {
                 final Graphics2D graphics = rendering.getGraphics();
                 graphics.setPaint(new Color(200, 200, 200, 180));
@@ -447,7 +448,7 @@ public class RegionSelectableWorldMapPane {
     private class SelectionOverlay extends BoundaryOverlay {
 
 
-        protected SelectionOverlay(WorldMapPaneDataModel dataModel) {
+        SelectionOverlay(WorldMapPaneDataModel dataModel) {
             super(dataModel);
         }
 
@@ -521,7 +522,6 @@ public class RegionSelectableWorldMapPane {
         private Point point;
         private int rectangleLongitude;
         private int rectangleLatitude;
-        private boolean rectangleIsCurrentlyDrawn;
 
         private RegionSelectionInteractor() {
             PropertySet propertySet = bindingContext.getPropertySet();
@@ -529,7 +529,6 @@ public class RegionSelectableWorldMapPane {
             propertySet.getProperty(SOUTH_BOUND).addPropertyChangeListener(new BoundsChangeListener(SOUTH_BOUND));
             propertySet.getProperty(WEST_BOUND).addPropertyChangeListener(new BoundsChangeListener(WEST_BOUND));
             propertySet.getProperty(EAST_BOUND).addPropertyChangeListener(new BoundsChangeListener(EAST_BOUND));
-            rectangleIsCurrentlyDrawn = false;
         }
 
         @Override
@@ -571,7 +570,6 @@ public class RegionSelectableWorldMapPane {
 
         @Override
         public void mouseDragged(MouseEvent event) {
-            rectangleIsCurrentlyDrawn = true;
             double dx = event.getX() - point.getX();
             double dy = point.getY() - event.getY();
 
@@ -608,7 +606,6 @@ public class RegionSelectableWorldMapPane {
                 final Rectangle2D modelRectangle = newFigureShape.getBounds2D();
                 adaptToModelRectangle(modelRectangle);
             }
-            rectangleIsCurrentlyDrawn = false;
         }
 
         @Override
@@ -626,15 +623,19 @@ public class RegionSelectableWorldMapPane {
         }
 
         private void updateProperties(Rectangle2D modelRectangle) {
-            try {
-                PropertySet propertySet = bindingContext.getPropertySet();
-                propertySet.getProperty(NORTH_BOUND).setValue(modelRectangle.getMaxY());
-                propertySet.getProperty(SOUTH_BOUND).setValue(modelRectangle.getMinY());
-                propertySet.getProperty(WEST_BOUND).setValue(modelRectangle.getMinX());
-                propertySet.getProperty(EAST_BOUND).setValue(modelRectangle.getMaxX());
-            } catch (ValidationException e) {
-                // should never come here
-                throw new IllegalStateException(e);
+            if (!updatingModelBounds.getAndSet(true)) {
+                try {
+                    PropertySet propertySet = bindingContext.getPropertySet();
+                    propertySet.getProperty(NORTH_BOUND).setValue(modelRectangle.getMaxY());
+                    propertySet.getProperty(SOUTH_BOUND).setValue(modelRectangle.getMinY());
+                    propertySet.getProperty(WEST_BOUND).setValue(modelRectangle.getMinX());
+                    propertySet.getProperty(EAST_BOUND).setValue(modelRectangle.getMaxX());
+                } catch (ValidationException e) {
+                    // should never come here
+                    throw new IllegalStateException(e);
+                } finally {
+                    updatingModelBounds.set(false);
+                }
             }
         }
 
@@ -671,7 +672,7 @@ public class RegionSelectableWorldMapPane {
 
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
-                if (rectangleIsCurrentlyDrawn) {
+                if (updatingModelBounds.get()) {
                     return;
                 }
 
@@ -693,10 +694,10 @@ public class RegionSelectableWorldMapPane {
                             Double.parseDouble(southValue.toString()) :
                             modelRectangle.getY());
                 double width = (property.equals(EAST_BOUND) || property.equals(WEST_BOUND) ?
-                                Double.parseDouble(eastValue.toString()) - x :
+                                Math.abs(Double.parseDouble(eastValue.toString()) - x) :
                                 modelRectangle.getWidth());
                 double height = (property.equals(NORTH_BOUND) || property.equals(SOUTH_BOUND) ?
-                                 Double.parseDouble(northValue.toString()) - y :
+                                 Math.abs(Double.parseDouble(northValue.toString()) - y) :
                                  modelRectangle.getHeight());
                 modelRectangle.setRect(x, y, width, height);
                 adaptToModelRectangle(modelRectangle);
