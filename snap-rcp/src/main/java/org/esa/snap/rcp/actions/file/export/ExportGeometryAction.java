@@ -24,11 +24,13 @@ import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.UIUtils;
-import org.geotools.data.DataStore;
-import org.geotools.data.DataUtilities;
 import org.geotools.data.DefaultTransaction;
-import org.geotools.data.FeatureStore;
+import org.geotools.data.collection.ListFeatureCollection;
+import org.geotools.data.shapefile.ShapefileDataStore;
 import org.geotools.data.shapefile.ShapefileDataStoreFactory;
+import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.data.store.ReprojectingFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
@@ -103,6 +105,7 @@ public class ExportGeometryAction extends AbstractAction implements ContextAware
     private VectorDataNode vectorDataNode;
 
 
+    @SuppressWarnings("unused")
     public ExportGeometryAction() {
         this(Utilities.actionsGlobalContext());
     }
@@ -172,22 +175,30 @@ public class ExportGeometryAction extends AbstractAction implements ContextAware
 
         ShapefileDataStoreFactory factory = new ShapefileDataStoreFactory();
         Map<String, Serializable> map = Collections.singletonMap("url", file1.toURI().toURL());
-        DataStore dataStore = factory.createNewDataStore(map);
+        ShapefileDataStore dataStore = (ShapefileDataStore) factory.createNewDataStore(map);
         dataStore.createSchema(simpleFeatureType);
-        String featureSourceName = basename + "_" + geomName;
-        FeatureStore<SimpleFeatureType, SimpleFeature> featureStore = (FeatureStore<SimpleFeatureType, SimpleFeature>) dataStore.getFeatureSource(featureSourceName);
+        String typeName = dataStore.getTypeNames()[0];
+        SimpleFeatureSource featureSource = dataStore.getFeatureSource(typeName);
         DefaultTransaction transaction = new DefaultTransaction("X");
-        featureStore.setTransaction(transaction);
-        final FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection = DataUtilities.collection(
-                features);
-        featureStore.addFeatures(featureCollection);
-        try {
-            transaction.commit();
-        } catch (IOException e) {
-            transaction.rollback();
-            throw e;
-        } finally {
-            transaction.close();
+        if (featureSource instanceof SimpleFeatureStore) {
+            SimpleFeatureStore featureStore = (SimpleFeatureStore) featureSource;
+            SimpleFeatureCollection collection = new ListFeatureCollection(simpleFeatureType, features);
+            featureStore.setTransaction(transaction);
+            // I'm not sure why the next line is necessary (mp/20170627)
+            // Without it is not working, the wrong feature type is used for writing
+            // But it is not mentioned in the tutorials
+            dataStore.getEntry(featureSource.getName()).getState(transaction).setFeatureType(simpleFeatureType);
+            try {
+                featureStore.addFeatures(collection);
+                transaction.commit();
+            } catch (Exception problem) {
+                transaction.rollback();
+                throw new IOException(problem);
+            } finally {
+                transaction.close();
+            }
+        } else {
+            throw new IOException(typeName + " does not support read/write access");
         }
     }
 
@@ -319,9 +330,7 @@ public class ExportGeometryAction extends AbstractAction implements ContextAware
                 UIUtils.setRootFrameDefaultCursor(SnapApp.getDefault().getMainFrame());
                 snapApp.setStatusBarMessage("");
                 exception = get();
-            } catch (InterruptedException e) {
-                exception = e;
-            } catch (ExecutionException e) {
+            } catch (InterruptedException | ExecutionException e) {
                 exception = e;
             } finally {
                 if (exception != null) {
