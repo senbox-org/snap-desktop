@@ -19,11 +19,7 @@ package org.esa.snap.ui.tooladapter.dialogs;
 
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
-import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterConstants;
-import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterIO;
-import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterListener;
-import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterOp;
-import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterRegistry;
+import org.esa.snap.core.gpf.operators.tooladapter.*;
 import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.tango.TangoIcons;
@@ -36,37 +32,14 @@ import org.esa.snap.ui.tooladapter.model.OperatorsTableModel;
 import org.esa.snap.utils.AdapterWatcher;
 import org.openide.util.NbBundle;
 
-import javax.swing.AbstractButton;
-import javax.swing.BorderFactory;
-import javax.swing.DefaultCellEditor;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.SpringLayout;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Cursor;
-import java.awt.Dialog;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.Point;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.*;
+import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -142,6 +115,11 @@ public class ToolAdaptersManagementDialog extends ModelessDialog {
             @Override
             public void adapterRemoved(ToolAdapterOperatorDescriptor operatorDescriptor) {
                 refreshContent();
+            }
+
+            @Override
+            public void adapterUpdated(ToolAdapterOperatorDescriptor operatorDescriptor) {
+                ((OperatorsTableModel) operatorsTable.getModel()).fireTableDataChanged();
             }
         });
     }
@@ -401,17 +379,19 @@ public class ToolAdaptersManagementDialog extends ModelessDialog {
         operatorsTable = new JTable(model) {
             @Override
             public String getToolTipText(MouseEvent event) {
-                String tip = "<html><p style=\"color:";
                 final Point point = event.getPoint();
-                int row = rowAtPoint(point);
                 int col = columnAtPoint(point);
-                if (col == 0 &&
-                        TangoIcons.emblems_emblem_important(TangoIcons.Res.R16).equals(getValueAt(row, col))) {
-                    tip += "red;\">Tool executable not found!<br/>Verify that the adapter bundle is installed or the tool location is correct.";
-                } else {
-                    tip += "green;\">Tool seems properly configured.";
+                String tip = null;
+                if (col == 0) {
+                    int row = rowAtPoint(point);
+                    tip = "<html><p style=\"color:";
+                    if (TangoIcons.emblems_emblem_important(TangoIcons.Res.R16).equals(getValueAt(row, col))) {
+                        tip += "red;\">Tool executable not found!<br/>Verify that the adapter bundle is installed or the tool location is correct.";
+                    } else {
+                        tip += "green;\">Tool seems properly configured.";
+                    }
+                    tip += "</p></html>";
                 }
-                tip += "</p></html>";
                 return tip;
             }
         };
