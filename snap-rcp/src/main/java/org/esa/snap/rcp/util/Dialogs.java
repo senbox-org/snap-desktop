@@ -17,9 +17,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.filechooser.FileFilter;
 import java.awt.BorderLayout;
-import java.awt.KeyEventDispatcher;
-import java.awt.KeyboardFocusManager;
-import java.awt.event.KeyEvent;
 import java.io.File;
 import java.text.MessageFormat;
 import java.util.prefs.Preferences;
@@ -147,15 +144,6 @@ public class Dialogs {
      * @param preferencesKey If not {@code null}, a checkbox is displayed, and if checked the dialog will not be displayed again which lets users store the answer
      */
     public static void showMessage(String title, String message, int messageType, String preferencesKey) {
-        KeyEventDispatcher keyEventDispatcher = e -> {
-            if ((e.getKeyCode() == KeyEvent.VK_C) && e.isControlDown()) {
-                SystemUtils.copyToClipboard(message);
-            }
-            e.consume();
-            return false;
-        };
-        KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(keyEventDispatcher);
-
         title = getDialogTitle(title != null ? title : Bundle.LBL_Message());
         if (preferencesKey != null) {
             String decision = getPreferences().get(preferencesKey + PREF_KEY_SUFFIX_DONTSHOW, "");
@@ -178,9 +166,7 @@ public class Dialogs {
             NotifyDescriptor d = new NotifyDescriptor(message, title, JOptionPane.DEFAULT_OPTION, messageType, null, null);
             DialogDisplayer.getDefault().notify(d);
         }
-        KeyboardFocusManager.getCurrentKeyboardFocusManager().removeKeyEventDispatcher(keyEventDispatcher);
     }
-
 
     /**
      * Displays a modal dialog which requests a decision from the user.
