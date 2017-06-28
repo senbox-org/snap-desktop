@@ -15,7 +15,6 @@
  */
 package org.esa.snap.ui;
 
-import org.esa.snap.core.util.SystemUtils;
 import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle;
 
@@ -32,10 +31,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.KeyEventDispatcher;
-import java.awt.KeyboardFocusManager;
 import java.awt.Window;
-import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
@@ -45,15 +41,15 @@ import java.util.Map;
 
 
 /**
- * The <code>AbstractDialog</code> is the base class for {@link ModalDialog} and {@link ModelessDialog},
+ * The {@code AbstractDialog} is the base class for {@link ModalDialog} and {@link ModelessDialog},
  * two helper classes used to quickly construct modal and modeless dialogs. The dialogs created with this
  * class have a unique border and font and a standard button row for the typical buttons like "OK", "Cancel" etc.
  * <p>
  * <p>Instances of a modal dialog are created with a parent component, a title, the actual dialog content component, and
  * a bit-combination of the standard buttons to be used.
  * <p>
- * <p>A limited way of input validation is provided by the  <code>verifyUserInput</code> method which can be overridden
- * in order to return <code>false</code> if a user input is invalid. In this case the {@link #onOK()},
+ * <p>A limited way of input validation is provided by the  {@code verifyUserInput} method which can be overridden
+ * in order to return {@code false} if a user input is invalid. In this case the {@link #onOK()},
  * {@link #onYes()} and {@link #onNo()} methods are NOT called.
  *
  * @author Norman Fomferra
@@ -546,8 +542,7 @@ public abstract class AbstractDialog {
             button.setName(getQualifiedPropertyName("reset"));
             button.setMnemonic('R');
             button.addActionListener(e -> {
-                final int buttonID = ID_RESET;
-                setButtonID(buttonID);
+                setButtonID(ID_RESET);
                 onReset();
             });
             buttons.add(button);
@@ -605,29 +600,7 @@ public abstract class AbstractDialog {
     }
 
     private static void showMessageDialog(Component dialog, String message, String dialogTitle, int messageType) {
-        KeyEventDispatcher keyEventDispatcher = installKeyListener(message);
         JOptionPane.showMessageDialog(dialog, message, dialogTitle, messageType);
-        uninstallKeyListener(keyEventDispatcher);
-    }
-
-    private static void uninstallKeyListener(KeyEventDispatcher keyEventDispatcher) {
-        KeyboardFocusManager.getCurrentKeyboardFocusManager().removeKeyEventDispatcher(keyEventDispatcher);
-    }
-
-    private static KeyEventDispatcher installKeyListener(String message) {
-        KeyEventDispatcher keyEventDispatcher = getKeyEventDispatcher(message);
-        KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(keyEventDispatcher);
-        return keyEventDispatcher;
-    }
-
-    private static KeyEventDispatcher getKeyEventDispatcher(String message) {
-        return e -> {
-            if ((e.getKeyCode() == KeyEvent.VK_C) && e.isControlDown()) {
-                SystemUtils.copyToClipboard(message);
-            }
-            e.consume();
-            return false;
-        };
     }
 
     private void setComponentName(JDialog dialog) {
