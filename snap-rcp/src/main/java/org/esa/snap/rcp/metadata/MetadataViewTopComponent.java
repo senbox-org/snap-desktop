@@ -15,7 +15,6 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.text.DecimalFormat;
 
 public class MetadataViewTopComponent extends DocumentTopComponent<MetadataElement, OutlineView> implements ExplorerManager.Provider {
 
@@ -58,8 +57,6 @@ public class MetadataViewTopComponent extends DocumentTopComponent<MetadataEleme
         outlineView.setPropertyColumns(COLUMN_NAMES);
         final Outline outline = outlineView.getOutline();
         outline.setRootVisible(false);
-        DecimalFormat format = new DecimalFormat();
-        format.setGroupingUsed(false);
         DefaultTableCellRenderer decimalTableCellRenderer = new StringDecimalFormatRenderer();
         outline.setDefaultRenderer(Double.class, decimalTableCellRenderer);
         outline.setDefaultRenderer(Float.class, decimalTableCellRenderer);
