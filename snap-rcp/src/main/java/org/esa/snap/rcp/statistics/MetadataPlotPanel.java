@@ -43,6 +43,8 @@ import org.openide.windows.TopComponent;
 
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -61,12 +63,7 @@ import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.Hashtable;
 
-import static org.esa.snap.rcp.statistics.MetadataPlotSettings.PROP_NAME_FIELD_X;
-import static org.esa.snap.rcp.statistics.MetadataPlotSettings.PROP_NAME_FIELD_Y1;
-import static org.esa.snap.rcp.statistics.MetadataPlotSettings.PROP_NAME_FIELD_Y2;
-import static org.esa.snap.rcp.statistics.MetadataPlotSettings.PROP_NAME_METADATA_ELEMENT;
-import static org.esa.snap.rcp.statistics.MetadataPlotSettings.PROP_NAME_RECORDS_PER_PLOT;
-import static org.esa.snap.rcp.statistics.MetadataPlotSettings.PROP_NAME_RECORD_START_INDEX;
+import static org.esa.snap.rcp.statistics.MetadataPlotSettings.*;
 
 
 /**
@@ -400,6 +397,8 @@ class MetadataPlotPanel extends ChartPagePanel {
         JLabel numRecordsLabel = new JLabel("Records / Plot: ");
         numRecSpinnerModel = new SpinnerNumberModel(1, 1, 1, 1);
         JSpinner numRecordsSpinner = new JSpinner(numRecSpinnerModel);
+        numRecordsSpinner.setEditor(new JSpinner.NumberEditor(numRecordsSpinner, "#"));
+
         final JLabel xFieldLabel = new JLabel("X Field: ");
         final JComboBox<MetadataAttribute> xFieldBox = new JComboBox<>();
         xFieldBox.setRenderer(new ProductNodeListCellRenderer());
@@ -506,6 +505,17 @@ class MetadataPlotPanel extends ChartPagePanel {
 
     }
 
+    public JFormattedTextField getTextField(JSpinner spinner) {
+        JComponent editor = spinner.getEditor();
+        if (editor instanceof JSpinner.DefaultEditor) {
+            return ((JSpinner.DefaultEditor)editor).getTextField();
+        } else {
+            System.err.println("Unexpected editor type: "
+                               + spinner.getEditor().getClass()
+                               + " isn't a descendant of DefaultEditor");
+            return null;
+        }
+    }
     private static class ProductNodeListCellRenderer extends DefaultListCellRenderer {
         @Override
         public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
