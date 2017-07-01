@@ -20,6 +20,7 @@ import com.bc.ceres.swing.figure.FigureEditorInteractor;
 import org.esa.snap.core.datamodel.PixelPos;
 import org.esa.snap.core.datamodel.Placemark;
 import org.esa.snap.core.datamodel.PlacemarkDescriptor;
+import org.esa.snap.core.datamodel.PlacemarkGroup;
 import org.esa.snap.core.datamodel.PlacemarkNameFactory;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.rcp.SnapApp;
@@ -101,7 +102,12 @@ public abstract class InsertPlacemarkInteractor extends FigureEditorInteractor {
         }
         final Placemark newPlacemark = Placemark.createPointPlacemark(placemarkDescriptor, name, label, "",
                                                                       rasterPos, null, product.getSceneGeoCoding());
-        placemarkDescriptor.getPlacemarkGroup(product).add(newPlacemark);
+        PlacemarkGroup placemarkGroup = placemarkDescriptor.getPlacemarkGroup(product);
+        String defaultStyleCss = placemarkGroup.getVectorDataNode().getDefaultStyleCss();
+        if(newPlacemark.getStyleCss().isEmpty()) {
+            newPlacemark.setStyleCss(defaultStyleCss);
+        }
+        placemarkGroup.add(newPlacemark);
         UndoRedo.Manager undoManager = SnapApp.getDefault().getUndoManager(product);
         if (undoManager != null) {
             undoManager.addEdit(UndoablePlacemarkActionFactory.createUndoablePlacemarkInsertion(product, newPlacemark, placemarkDescriptor));

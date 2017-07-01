@@ -25,9 +25,8 @@ import org.esa.snap.core.util.FeatureUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.layermanager.layersrc.shapefile.SLDUtils;
-import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.styling.Style;
-import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -46,8 +45,8 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 
-@ActionID(category = "File", id = "ImportVectorDataNodeFromShapefileAction" )
-@ActionRegistration(displayName = "#CTL_ImportVectorDataNodeFromShapefileActionText", lazy = false )
+@ActionID(category = "File", id = "ImportVectorDataNodeFromShapefileAction")
+@ActionRegistration(displayName = "#CTL_ImportVectorDataNodeFromShapefileActionText", lazy = false)
 @ActionReferences({
         @ActionReference(path = "Menu/File/Import/Vector Data", position = 20),
         @ActionReference(path = "Menu/Vector/Import")
@@ -123,10 +122,10 @@ public class ImportVectorDataNodeFromShapefileAction extends AbstractImportVecto
         @Override
         public VectorDataNode readVectorDataNode(File file, Product product, ProgressMonitor pm) throws IOException {
 
-            FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection = FeatureUtils.loadShapefileForProduct(file,
-                                                                                                                         product,
-                                                                                                                         crsProvider,
-                                                                                                                         pm);
+            DefaultFeatureCollection featureCollection = FeatureUtils.loadShapefileForProduct(file,
+                                                                                              product,
+                                                                                              crsProvider,
+                                                                                              pm);
             Style[] styles = SLDUtils.loadSLD(file);
             ProductNodeGroup<VectorDataNode> vectorDataGroup = product.getVectorDataGroup();
             String name = VectorDataNodeImporter.findUniqueVectorDataNodeName(featureCollection.getSchema().getName().getLocalPart(),
@@ -136,7 +135,7 @@ public class ImportVectorDataNodeFromShapefileAction extends AbstractImportVecto
 
 
                 VectorDataNode vectorDataNode = new VectorDataNode(name, featureType);
-                FeatureCollection<SimpleFeatureType, SimpleFeature> styledCollection = vectorDataNode.getFeatureCollection();
+                DefaultFeatureCollection styledCollection = vectorDataNode.getFeatureCollection();
                 String defaultCSS = vectorDataNode.getDefaultStyleCss();
                 SLDUtils.applyStyle(styles[0], defaultCSS, featureCollection, styledCollection);
                 return vectorDataNode;

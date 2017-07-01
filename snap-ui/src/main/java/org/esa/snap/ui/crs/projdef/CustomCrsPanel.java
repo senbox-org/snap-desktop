@@ -20,6 +20,7 @@ import com.bc.ceres.binding.Property;
 import com.bc.ceres.binding.PropertyAccessor;
 import com.bc.ceres.binding.PropertyContainer;
 import com.bc.ceres.binding.PropertyDescriptor;
+import com.bc.ceres.binding.ValueRange;
 import com.bc.ceres.binding.ValueSet;
 import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
@@ -91,15 +92,7 @@ public class CustomCrsPanel extends JPanel {
     private JButton paramButton;
     private static final String SEMI_MAJOR_PARAM_NAME = "semi_major";
     private static final String SEMI_MINOR_PARAM_NAME = "semi_minor";
-
-    /**
-     *  @deprecated since BEAM 5.0, use {@link #CustomCrsPanel(java.awt.Window, java.util.Set, java.util.Set)} instead
-     */
-    @Deprecated
-    public CustomCrsPanel(Window parent) {
-        this(parent, CustomCrsPanel.createDatumSet(), CustomCrsPanel.createCrsProviderSet());
-    }
-
+    
     public CustomCrsPanel(Window parent, Set<GeodeticDatum> datumSet, Set<AbstractCrsProvider> crsProviderSet) {
         this.parent = parent;
 
@@ -171,12 +164,7 @@ public class CustomCrsPanel extends JPanel {
         add(projectionLabel);
         add(projectionComboBox);
         add(paramButton);
-        addPropertyChangeListener("enabled", new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                updateEnableState((Boolean) evt.getNewValue());
-            }
-        });
+        addPropertyChangeListener("enabled", evt -> updateEnableState((Boolean) evt.getNewValue()));
         final BindingContext context = new BindingContext(vc);
         context.bind(OPERATION_WRAPPER, projectionComboBox);
         context.bind(DATUM, datumComboBox);
@@ -283,16 +271,13 @@ public class CustomCrsPanel extends JPanel {
         frame.setContentPane(customCrsForm);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                frame.pack();
-                frame.setVisible(true);
-            }
+        SwingUtilities.invokeLater(() -> {
+            frame.pack();
+            frame.setVisible(true);
         });
     }
 
-    private static Set<AbstractCrsProvider> createCrsProviderSet() {
+    public static Set<AbstractCrsProvider> createCrsProviderSet() {
         MathTransformFactory factory = ReferencingFactoryFinder.getMathTransformFactory(null);
         Set<OperationMethod> methods = factory.getAvailableMethods(Projection.class);
 
@@ -304,7 +289,7 @@ public class CustomCrsPanel extends JPanel {
         return crsProviderSet;
     }
 
-    private static Set<GeodeticDatum> createDatumSet() {
+    public static Set<GeodeticDatum> createDatumSet() {
         DatumAuthorityFactory factory = ReferencingFactoryFinder.getDatumAuthorityFactory("EPSG", null);
         List<String> datumCodes = retrieveCodes(GeodeticDatum.class, factory);
         Set<GeodeticDatum> datumSet = new TreeSet<>(AbstractIdentifiedObject.NAME_COMPARATOR);
@@ -332,16 +317,18 @@ public class CustomCrsPanel extends JPanel {
 
     private static PropertyContainer createValueContainer(ParameterValueGroup valueGroup) {
         final PropertyContainer vc = new PropertyContainer();
-
-        final List<GeneralParameterValue> values = valueGroup.values();
-        for (GeneralParameterValue value : values) {
-            final GeneralParameterDescriptor descriptor = value.getDescriptor();
+        List<GeneralParameterDescriptor> descriptors = valueGroup.getDescriptor().descriptors();
+        for (GeneralParameterDescriptor descriptor : descriptors) {
             final Class valueType;
             Set validValues = null;
+            Comparable minValue = null;
+            Comparable maxValue = null;
             if (descriptor instanceof ParameterDescriptor) {
                 ParameterDescriptor parameterDescriptor = (ParameterDescriptor) descriptor;
                 valueType = parameterDescriptor.getValueClass();
                 validValues = parameterDescriptor.getValidValues();
+                minValue = parameterDescriptor.getMinimumValue();
+                maxValue = parameterDescriptor.getMaximumValue();
             } else {
                 valueType = Double.TYPE;
             }
@@ -354,6 +341,14 @@ public class CustomCrsPanel extends JPanel {
             }
             if (validValues != null) {
                 vd.setValueSet(new ValueSet(validValues.toArray()));
+            }
+            if ( minValue instanceof Double && maxValue instanceof Double) {
+                Double min = (Double) minValue;
+                Double max = (Double) maxValue;
+                vd.setValueRange(new ValueRange(min, max));
+                if(parameterValue.getValue() == null) {
+                    parameterValue.setValue((min + max) / 2);
+                }
             }
 
             vd.setDefaultConverter();
