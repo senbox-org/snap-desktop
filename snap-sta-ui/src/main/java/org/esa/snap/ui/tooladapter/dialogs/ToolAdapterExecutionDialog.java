@@ -344,10 +344,11 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
 
         if (operatorDescriptor.getSourceProductCount() > 0) {
             Product[] sourceProducts = form.getSourceProducts();
-            isValid &= (sourceProducts != null) && sourceProducts.length > 0 && Arrays.stream(sourceProducts).filter(sp -> sp == null).count() == 0;
-            if (!isValid) {
+            boolean isProdValid = (sourceProducts != null) && sourceProducts.length > 0 && Arrays.stream(sourceProducts).filter(sp -> sp == null).count() == 0;
+            if (!isProdValid) {
                 warnings.add("No source product was selected");
             }
+            isValid &= isProdValid;
         }
         return isValid;
     }
