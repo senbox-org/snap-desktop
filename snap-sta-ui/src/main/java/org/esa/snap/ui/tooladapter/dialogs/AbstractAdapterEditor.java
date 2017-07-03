@@ -37,6 +37,7 @@ import org.esa.snap.core.gpf.descriptor.SystemVariable;
 import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
 import org.esa.snap.core.gpf.descriptor.ToolParameterDescriptor;
 import org.esa.snap.core.gpf.descriptor.dependency.BundleInstaller;
+import org.esa.snap.core.gpf.descriptor.dependency.BundleLocation;
 import org.esa.snap.core.gpf.descriptor.template.FileTemplate;
 import org.esa.snap.core.gpf.descriptor.template.TemplateEngine;
 import org.esa.snap.core.gpf.descriptor.template.TemplateException;
@@ -161,7 +162,8 @@ import static org.esa.snap.utils.SpringUtilities.makeCompactGrid;
                 "Please correct the problem before saving the adapter.",
         "MSG_Empty_Variable_Text=The variable %s has no value set",
         "MSG_Empty_MenuLocation_Text=Value of 'Menu location' cannot be empty",
-        "MSG_Empty_Variable_Key_Text=Empty variable key/name is not allowed"
+        "MSG_Empty_Variable_Key_Text=Empty variable key/name is not allowed",
+        "MSG_Empty_Bundle_Key_Text=The Bundle local file does not exist."
 })
 public abstract class AbstractAdapterEditor extends ModalDialog {
 
@@ -431,6 +433,15 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
                     buttonPanel.remove(anchorLabel);
                     buttonPanel.revalidate();
                 }
+            }
+        }
+        /* In case of local bundle, verify the existence of the bundle file */
+        if(newOperatorDescriptor.getBundle().getLocation().equals(BundleLocation.LOCAL)) {
+            File bundleFile = newOperatorDescriptor.resolveVariables(newOperatorDescriptor.getBundle().getSource());
+
+            if (!(bundleFile != null && bundleFile.exists() && !bundleFile.isDirectory())) {
+                Dialogs.showWarning(Bundle.MSG_Empty_Bundle_Key_Text());
+                return false;
             }
         }
         return true;

@@ -213,16 +213,22 @@ public class BundleForm extends JPanel {
         }
         rbLocal.addItemListener(e -> {
             if (e.getStateChange() == ItemEvent.SELECTED) {
+                //this is first because, for some reason, otherwise is not triggering the editing event
+                propertyContainers.get(osFamily).setValue("downloadURL", "");
                 bundle.setLocation(BundleLocation.LOCAL);
+                propertyContainers.get(osFamily).setValue("bundleLocation", BundleLocation.LOCAL);
                 toggleControls(osFamily);
-                firePropertyChange(new PropertyChangeEvent(bundle, "location", null, BundleLocation.LOCAL));
+                firePropertyChange(new PropertyChangeEvent(bundle, "bundleLocation", null, BundleLocation.LOCAL));
             }
         });
         rbRemote.addItemListener(e -> {
             if (e.getStateChange() == ItemEvent.SELECTED) {
+                //this is first because, for some reason, otherwise is not triggering the editing event
+                propertyContainers.get(osFamily).setValue("source", null);
                 bundle.setLocation(BundleLocation.REMOTE);
+                propertyContainers.get(osFamily).setValue("bundleLocation", BundleLocation.REMOTE);
                 toggleControls(osFamily);
-                firePropertyChange(new PropertyChangeEvent(bundle, "location", null, BundleLocation.REMOTE));
+                firePropertyChange(new PropertyChangeEvent(bundle, "bundleLocation", null, BundleLocation.REMOTE));
             }
         });
         GridBagUtils.addToPanel(panel, rbLocal, c, "gridx=1, gridy=1, gridwidth=4, weightx=1");
@@ -343,8 +349,12 @@ public class BundleForm extends JPanel {
             property.addPropertyChangeListener(evt -> {
                 try {
                     String url = String.valueOf(evt.getNewValue());
-                    URL checkedURL = new URL(url);
-                    bundle.setDownloadURL(checkedURL.toString());
+                    if(url != null && url.length() > 0) {
+                        URL checkedURL = new URL(url);
+                        bundle.setDownloadURL(checkedURL.toString());
+                    }else {
+                        bundle.setDownloadURL(null);
+                    }
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
