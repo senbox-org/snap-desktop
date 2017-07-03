@@ -19,13 +19,9 @@ class MetadataPlotTableModel extends AbstractTableModel {
         this.plot = plot;
         columList = new ArrayList<>();
         columList.add(plot.getDomainAxis().getLabel());
-        XYDataset dataset = plot.getDataset();
-        for(int i = 0; i < dataset.getSeriesCount(); i++) {
-            columList.add(String.valueOf(dataset.getSeriesKey(i)));
+        for(int i = 0; i < plot.getDatasetCount(); i++) {
+            columList.add(String.valueOf(plot.getDataset(i).getSeriesKey(0)));
         }
-//        for( int i = 0; i < plot.getRangeAxisCount(); i++) {
-//            columList.add(plot.getRangeAxis(i).getLabel());
-//        }
     }
 
     @Override
@@ -41,9 +37,15 @@ class MetadataPlotTableModel extends AbstractTableModel {
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
         if (columnIndex == 0) {
-            return plot.getDataset().getXValue(columnIndex, rowIndex);
+            return plot.getDataset(columnIndex).getXValue(0, rowIndex);
         } else {
-            return plot.getDataset().getYValue(columnIndex-1, rowIndex);
+            XYDataset dataset = plot.getDataset(columnIndex - 1);
+            int itemCount = dataset.getItemCount(0);
+            if (rowIndex < itemCount) {
+                return dataset.getYValue(0, rowIndex);
+            }else {
+                return null;
+            }
         }
     }
 
