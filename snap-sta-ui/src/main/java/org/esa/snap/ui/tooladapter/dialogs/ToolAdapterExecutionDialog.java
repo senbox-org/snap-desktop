@@ -319,6 +319,7 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
             File productDir = null;//targetProductSelector.getModel().getProductDir();
             Object value = form.getPropertyValue(ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE);
             if (value != null && value instanceof File) {
+                value = operatorDescriptor.resolveVariables((File)value);
                 productDir = ((File) value).getParentFile();
                 appContext.getPreferences().setPropertyString(SaveProductAsAction.PREFERENCES_KEY_LAST_PRODUCT_DIR, ((File) value).getAbsolutePath());
             }
