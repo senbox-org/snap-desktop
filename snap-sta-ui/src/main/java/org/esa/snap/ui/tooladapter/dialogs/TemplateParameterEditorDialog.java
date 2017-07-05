@@ -60,6 +60,7 @@ public class TemplateParameterEditorDialog extends ModalDialog {
     private static String EMPTY_FILE_CONTENT = "[no content]";
 
     private TemplateParameterDescriptor parameter;
+    private TemplateParameterDescriptor modifiedParameter;
     private ToolAdapterOperatorDescriptor fakeOperatorDescriptor;
     private ToolAdapterOperatorDescriptor parentDescriptor;
     private AppContext appContext;
@@ -76,10 +77,16 @@ public class TemplateParameterEditorDialog extends ModalDialog {
 
         this.fileContentArea = new AutoCompleteTextArea("", 10, 10);
         this.parameter = parameter;
+        this.modifiedParameter = new TemplateParameterDescriptor(this.parameter);
+        try {
+            this.modifiedParameter.setTemplateEngine(parent.getTemplateEngine());
+        } catch (TemplateException e) {
+            logger.warning(e.getMessage());
+        }
         this.parentDescriptor = parent;
 
         try {
-            PropertyDescriptor propertyDescriptor = ParameterDescriptorFactory.convert(this.parameter, new ParameterDescriptorFactory().getSourceProductMap());
+            PropertyDescriptor propertyDescriptor = ParameterDescriptorFactory.convert(this.modifiedParameter, new ParameterDescriptorFactory().getSourceProductMap());
             DefaultPropertySetDescriptor propertySetDescriptor = new DefaultPropertySetDescriptor();
             propertySetDescriptor.addPropertyDescriptor(propertyDescriptor);
             PropertyContainer paramContainer = PropertyContainer.createMapBacked(new HashMap<>(), propertySetDescriptor);
@@ -132,7 +139,7 @@ public class TemplateParameterEditorDialog extends ModalDialog {
     private void addComponents() {
         Property property = getProperty();
         try {
-            Template template = this.parameter.getTemplate();
+            Template template = this.modifiedParameter.getTemplate();
             property.setValue(template.getPath());
         } catch (ValidationException e) {
             logger.warning(e.getMessage());
@@ -152,7 +159,7 @@ public class TemplateParameterEditorDialog extends ModalDialog {
         JPanel outFilePanel = new JPanel();
         final JLabel jLabel = new JLabel("Output File:");
         outFilePanel.add(jLabel);
-        File outputFile = this.parameter.getOutputFile();
+        File outputFile = this.modifiedParameter.getOutputFile();
         outFileName = new JTextField(outputFile != null ? outputFile.toString() : "");
         outFileName.setPreferredSize(
                 new Dimension(filePathComponent.getPreferredSize().width + label.getPreferredSize().width - jLabel.getPreferredSize().width, 25));
@@ -180,7 +187,7 @@ public class TemplateParameterEditorDialog extends ModalDialog {
         String result = null;
         try {
             File file = getProperty().getValue();
-            Template template = this.parameter.getTemplate();
+            Template template = this.modifiedParameter.getTemplate();
             if (file != null) {
                 template.setName(file.getName());
             }
@@ -210,14 +217,14 @@ public class TemplateParameterEditorDialog extends ModalDialog {
     protected void onOK() {
         super.onOK();
 
-        Template template = this.parameter.getTemplate();
-        this.parameter.setDefaultValue(template.getName());
+        Template template = this.modifiedParameter.getTemplate();
+        this.modifiedParameter.setDefaultValue(template.getName());
         if (!StringUtils.isNullOrEmpty(outFileName.getText())) {
-            this.parameter.setOutputFile(new File(outFileName.getText()));
+            this.modifiedParameter.setOutputFile(new File(outFileName.getText()));
         }
 
         //save parameters
-        parameter.getParameterDescriptors().clear();
+        this.modifiedParameter.getParameterDescriptors().clear();
         for (ToolParameterDescriptor subparameter : fakeOperatorDescriptor.getToolParameterDescriptors()) {
             if (paramsTable.getBindingContext().getBinding(subparameter.getName()) != null) {
                 Object propertyValue = paramsTable.getBindingContext().getBinding(subparameter.getName()).getPropertyValue();
@@ -225,7 +232,7 @@ public class TemplateParameterEditorDialog extends ModalDialog {
                     subparameter.setDefaultValue(propertyValue.toString());
                 }
             }
-            parameter.addParameterDescriptor(subparameter);
+            this.modifiedParameter.addParameterDescriptor(subparameter);
         }
         try {
             String content = fileContentArea.getText();
@@ -236,6 +243,7 @@ public class TemplateParameterEditorDialog extends ModalDialog {
         } catch (IOException | TemplateException e) {
             logger.warning(e.getMessage());
         }
+        this.parameter.copyFrom(this.modifiedParameter);
     }
 
     private java.util.List<String> getAutocompleteEntries() {
