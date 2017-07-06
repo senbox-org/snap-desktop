@@ -134,7 +134,7 @@ public class ExportTransectPixelsAction extends AbstractAction implements Contex
 
     private void exportTransectPixels() {
 
-        // Get current VISAT view showing a product's band
+        // Get current view showing a product's band
         final ProductSceneView view = SnapApp.getDefault().getSelectedProductSceneView();
         if (view == null) {
             return;
