@@ -25,7 +25,7 @@ import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
-import org.netbeans.api.progress.ProgressUtils;
+import org.netbeans.api.progress.BaseProgressUtils;
 import org.openide.util.ContextAwareAction;
 import org.openide.util.HelpCtx;
 import org.openide.util.Lookup;
@@ -184,12 +184,12 @@ public class ExportProductAction extends AbstractAction implements HelpCtx.Provi
         SnapApp.getDefault().setStatusBarMessage(MessageFormat.format("Exporting product ''{0}'' to {1}...", exportProduct.getDisplayName(), newFile));
 
         WriteProductOperation operation = new WriteProductOperation(exportProduct, newFile, formatName, false);
-        ProgressUtils.runOffEventThreadWithProgressDialog(operation,
-                                                          getDisplayName(),
-                                                          operation.getProgressHandle(),
-                                                          true,
-                                                          50,
-                                                          1000);
+        BaseProgressUtils.runOffEventThreadWithProgressDialog(operation,
+                                                              getDisplayName(),
+                                                              operation.getProgressHandle(),
+                                                              true,
+                                                              50,
+                                                              1000);
 
         SnapApp.getDefault().setStatusBarMessage("");
 
