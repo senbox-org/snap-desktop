@@ -11,7 +11,7 @@ import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
-import org.netbeans.api.progress.ProgressUtils;
+import org.netbeans.api.progress.BaseProgressUtils;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -63,12 +63,12 @@ public final class SaveProductAction extends AbstractAction{
 
         boolean incremental = true;
         WriteProductOperation operation = new WriteProductOperation(product, incremental);
-        ProgressUtils.runOffEventThreadWithProgressDialog(operation,
-                                                          Bundle.CTL_SaveProductActionName(),
-                                                          operation.getProgressHandle(),
-                                                          true,
-                                                          50,
-                                                          1000);
+        BaseProgressUtils.runOffEventThreadWithProgressDialog(operation,
+                                                              Bundle.CTL_SaveProductActionName(),
+                                                              operation.getProgressHandle(),
+                                                              true,
+                                                              50,
+                                                              1000);
 
         SnapApp.getDefault().setStatusBarMessage("");
 
