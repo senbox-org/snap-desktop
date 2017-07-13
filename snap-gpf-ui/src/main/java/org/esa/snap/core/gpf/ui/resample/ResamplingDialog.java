@@ -1,9 +1,11 @@
 package org.esa.snap.core.gpf.ui.resample;
 
+import com.bc.ceres.binding.ConversionException;
 import com.bc.ceres.binding.Property;
 import com.bc.ceres.binding.PropertyDescriptor;
 import com.bc.ceres.binding.PropertySet;
 import com.bc.ceres.binding.ValidationException;
+import com.bc.ceres.binding.ValueRange;
 import com.bc.ceres.binding.ValueSet;
 import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
@@ -27,6 +29,7 @@ import org.esa.snap.core.gpf.descriptor.OperatorDescriptor;
 import org.esa.snap.core.gpf.ui.DefaultIOParametersPanel;
 import org.esa.snap.core.gpf.ui.OperatorMenu;
 import org.esa.snap.core.gpf.ui.OperatorParameterSupport;
+import org.esa.snap.core.gpf.ui.ParameterUpdater;
 import org.esa.snap.core.gpf.ui.SingleTargetProductDialog;
 import org.esa.snap.core.gpf.ui.SourceProductSelector;
 import org.esa.snap.core.gpf.ui.TargetProductSelectorModel;
@@ -48,20 +51,31 @@ import javax.swing.border.EmptyBorder;
 import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Tonio Fincke
  */
 class ResamplingDialog extends SingleTargetProductDialog {
+
     private final String operatorName;
     private final OperatorDescriptor operatorDescriptor;
     private final String REFERENCE_BAND_TOOLTIP_TEXT = "<html>Set the reference band.<br/>" +
             "All other bands will be resampled to match its size and resolution.</html>";
     private final String TARGET_WIDTH_AND_HEIGHT_TOOLTIP_TEXT =
             "<html>Set explicitly the width and height of the resampled product.<br/>" +
-            "This option is only available when all bands have the same offset.</html>";
+                    "This option is only available when all bands have the same offset.</html>";
     private final String TARGET_RESOLUTION_TOOLTIP_TEXT = "<html>Define the target resolution of the resampled product.<br/>" +
             "This option is only available for products with a geocoding based on a cartographic map CRS.</html>";
+    private static final String REFERENCE_BAND_NAME_PROPERTY_NAME = "referenceBandName";
+    private static final String TARGET_WIDTH_PROPERTY_NAME = "targetWidth";
+    private static final String TARGET_HEIGHT_PROPERTY_NAME = "targetHeight";
+    private static final String TARGET_RESOLUTION_PROPERTY_NAME = "targetResolution";
+
+    private static final int REFERENCE_BAND_NAME_PANEL_INDEX = 0;
+    private static final int TARGET_WIDTH_AND_HEIGHT_PANEL_INDEX = 1;
+    private static final int TARGET_RESOLUTION_PANEL_INDEX = 2;
+
     private DefaultIOParametersPanel ioParametersPanel;
     private final OperatorParameterSupport parameterSupport;
     private final BindingContext bindingContext;
@@ -93,11 +107,11 @@ class ResamplingDialog extends SingleTargetProductDialog {
         ioParametersPanel = new DefaultIOParametersPanel(getAppContext(), operatorDescriptor, getTargetProductSelector(), true);
         targetProduct = null;
 
-        parameterSupport = new OperatorParameterSupport(operatorDescriptor);
+        parameterSupport = new OperatorParameterSupport(operatorDescriptor, null, null, new ResamplingParameterUpdater());
         final ArrayList<SourceProductSelector> sourceProductSelectorList = ioParametersPanel.getSourceProductSelectorList();
         final PropertySet propertySet = parameterSupport.getPropertySet();
         bindingContext = new BindingContext(propertySet);
-        final Property referenceBandNameProperty = bindingContext.getPropertySet().getProperty("referenceBandName");
+        final Property referenceBandNameProperty = bindingContext.getPropertySet().getProperty(REFERENCE_BAND_NAME_PROPERTY_NAME);
         referenceBandNameProperty.getDescriptor().addAttributeChangeListener(evt -> {
             if (evt.getPropertyName().equals("valueSet")) {
                 final Object[] valueSetItems = ((ValueSet) evt.getNewValue()).getItems();
@@ -110,6 +124,10 @@ class ResamplingDialog extends SingleTargetProductDialog {
                 }
             }
         });
+        final ValueRange valueRange = new ValueRange(0, Integer.MAX_VALUE);
+        bindingContext.getPropertySet().getProperty(TARGET_WIDTH_PROPERTY_NAME).getDescriptor().setValueRange(valueRange);
+        bindingContext.getPropertySet().getProperty(TARGET_HEIGHT_PROPERTY_NAME).getDescriptor().setValueRange(valueRange);
+        bindingContext.getPropertySet().getProperty(TARGET_RESOLUTION_PROPERTY_NAME).getDescriptor().setValueRange(valueRange);
         productChangedHandler = new ProductChangedHandler();
         sourceProductSelectorList.get(0).setSelectedProduct(product);
         sourceProductSelectorList.get(0).addSelectionChangeListener(productChangedHandler);
@@ -201,23 +219,17 @@ class ResamplingDialog extends SingleTargetProductDialog {
 
         referenceBandButton.addActionListener(e -> {
             if (referenceBandButton.isSelected()) {
-                referenceBandNameBoxPanel.setEnabled(true);
-                targetWidthAndHeightPanel.setEnabled(false);
-                targetResolutionPanel.setEnabled(false);
+                enablePanel(REFERENCE_BAND_NAME_PANEL_INDEX);
             }
         });
         widthAndHeightButton.addActionListener(e -> {
             if (widthAndHeightButton.isSelected()) {
-                referenceBandNameBoxPanel.setEnabled(false);
-                targetWidthAndHeightPanel.setEnabled(true);
-                targetResolutionPanel.setEnabled(false);
+                enablePanel(TARGET_WIDTH_AND_HEIGHT_PANEL_INDEX);
             }
         });
         resolutionButton.addActionListener(e -> {
             if (resolutionButton.isSelected()) {
-                referenceBandNameBoxPanel.setEnabled(false);
-                targetWidthAndHeightPanel.setEnabled(false);
-                targetResolutionPanel.setEnabled(true);
+                enablePanel(TARGET_RESOLUTION_PANEL_INDEX);
             }
         });
 
@@ -236,6 +248,12 @@ class ResamplingDialog extends SingleTargetProductDialog {
         parametersPanel.add(resampleOnPyramidLevelsPanel);
         parametersPanel.add(tableLayout.createVerticalSpacer());
         return parametersPanel;
+    }
+
+    private void enablePanel(int panelIndex) {
+        referenceBandNameBoxPanel.setEnabled(panelIndex == 0);
+        targetWidthAndHeightPanel.setEnabled(panelIndex == 1);
+        targetResolutionPanel.setEnabled(panelIndex == 2);
     }
 
     private JPanel createPropertyPanel(PropertySet propertySet, String propertyName, PropertyEditorRegistry registry) {
@@ -371,10 +389,10 @@ class ResamplingDialog extends SingleTargetProductDialog {
         }
 
         private void updateTargetResolution() {
-            bindingContext.getPropertySet().setValue("referenceBandName", null);
-            bindingContext.getPropertySet().setValue("targetWidth", null);
-            bindingContext.getPropertySet().setValue("targetHeight", null);
-            bindingContext.getPropertySet().setValue("targetResolution", Integer.parseInt(resolutionSpinner.getValue().toString()));
+            bindingContext.getPropertySet().setValue(REFERENCE_BAND_NAME_PROPERTY_NAME, null);
+            bindingContext.getPropertySet().setValue(TARGET_WIDTH_PROPERTY_NAME, null);
+            bindingContext.getPropertySet().setValue(TARGET_HEIGHT_PROPERTY_NAME, null);
+            bindingContext.getPropertySet().setValue(TARGET_RESOLUTION_PROPERTY_NAME, Integer.parseInt(resolutionSpinner.getValue().toString()));
             updateTargetResolutionTargetWidthAndHeight();
         }
 
@@ -398,6 +416,14 @@ class ResamplingDialog extends SingleTargetProductDialog {
                 resolutionSpinner.setValue(determineResolutionFromProduct(product));
             } else {
                 resolutionSpinner.setValue(0);
+            }
+        }
+
+        private void handleParameterLoadRequest(Map<String, Object> parameterMap) {
+            if (parameterMap.containsKey(TARGET_RESOLUTION_PROPERTY_NAME)) {
+                resolutionSpinner.setValue(parameterMap.get(TARGET_RESOLUTION_PROPERTY_NAME));
+                resolutionButton.setSelected(true);
+                enablePanel(TARGET_RESOLUTION_PANEL_INDEX);
             }
         }
 
@@ -488,10 +514,10 @@ class ResamplingDialog extends SingleTargetProductDialog {
         }
 
         private void updateTargetWidthAndHeight() {
-            bindingContext.getPropertySet().setValue("referenceBandName", null);
-            bindingContext.getPropertySet().setValue("targetWidth", Integer.parseInt(widthSpinner.getValue().toString()));
-            bindingContext.getPropertySet().setValue("targetHeight", Integer.parseInt(heightSpinner.getValue().toString()));
-            bindingContext.getPropertySet().setValue("targetResolution", null);
+            bindingContext.getPropertySet().setValue(REFERENCE_BAND_NAME_PROPERTY_NAME, null);
+            bindingContext.getPropertySet().setValue(TARGET_WIDTH_PROPERTY_NAME, Integer.parseInt(widthSpinner.getValue().toString()));
+            bindingContext.getPropertySet().setValue(TARGET_HEIGHT_PROPERTY_NAME, Integer.parseInt(heightSpinner.getValue().toString()));
+            bindingContext.getPropertySet().setValue(TARGET_RESOLUTION_PROPERTY_NAME, null);
         }
 
         private void reactToSourceProductChange(Product product) {
@@ -507,6 +533,15 @@ class ResamplingDialog extends SingleTargetProductDialog {
             widthHeightRatioLabel.setText(String.format("%.5f", targetWidthHeightRatio));
         }
 
+        private void handleParameterLoadRequest(Map<String, Object> parameterMap) {
+            if (parameterMap.containsKey(TARGET_WIDTH_PROPERTY_NAME) &&
+                    parameterMap.containsKey(TARGET_HEIGHT_PROPERTY_NAME)) {
+                widthSpinner.setValue(parameterMap.get(TARGET_WIDTH_PROPERTY_NAME));
+                heightSpinner.setValue(parameterMap.get(TARGET_HEIGHT_PROPERTY_NAME));
+                widthAndHeightButton.setSelected(true);
+                enablePanel(TARGET_WIDTH_AND_HEIGHT_PANEL_INDEX);
+            }
+        }
     }
 
     private class ReferenceBandNameBoxPanel extends JPanel {
@@ -566,13 +601,13 @@ class ResamplingDialog extends SingleTargetProductDialog {
 
         private void updateReferenceBandName() {
             if (referenceBandNameBox.getSelectedItem() != null) {
-                bindingContext.getPropertySet().setValue("referenceBandName", referenceBandNameBox.getSelectedItem().toString());
+                bindingContext.getPropertySet().setValue(REFERENCE_BAND_NAME_PROPERTY_NAME, referenceBandNameBox.getSelectedItem().toString());
             } else {
-                bindingContext.getPropertySet().setValue("referenceBandName", null);
+                bindingContext.getPropertySet().setValue(REFERENCE_BAND_NAME_PROPERTY_NAME, null);
             }
-            bindingContext.getPropertySet().setValue("targetWidth", null);
-            bindingContext.getPropertySet().setValue("targetHeight", null);
-            bindingContext.getPropertySet().setValue("targetResolution", null);
+            bindingContext.getPropertySet().setValue(TARGET_WIDTH_PROPERTY_NAME, null);
+            bindingContext.getPropertySet().setValue(TARGET_HEIGHT_PROPERTY_NAME, null);
+            bindingContext.getPropertySet().setValue(TARGET_RESOLUTION_PROPERTY_NAME, null);
         }
 
         private void reactToSourceProductChange(Product product) {
@@ -581,9 +616,17 @@ class ResamplingDialog extends SingleTargetProductDialog {
             if (product != null) {
                 bandNames = product.getBandNames();
             }
-            bindingContext.getPropertySet().getProperty("referenceBandName").getDescriptor().setValueSet(new ValueSet(bandNames));
+            bindingContext.getPropertySet().getProperty(REFERENCE_BAND_NAME_PROPERTY_NAME).getDescriptor().setValueSet(new ValueSet(bandNames));
             referenceBandNameBox.setModel(new DefaultComboBoxModel<>(bandNames));
             updateReferenceBandTargetWidthAndHeight();
+        }
+
+        private void handleParameterLoadRequest(Map<String, Object> parameterMap) {
+            if (parameterMap.containsKey(REFERENCE_BAND_NAME_PROPERTY_NAME)) {
+                referenceBandNameBox.setSelectedItem(parameterMap.get(REFERENCE_BAND_NAME_PROPERTY_NAME));
+                referenceBandButton.setSelected(true);
+                enablePanel(REFERENCE_BAND_NAME_PANEL_INDEX);
+            }
         }
     }
 
@@ -652,6 +695,20 @@ class ResamplingDialog extends SingleTargetProductDialog {
             reactToSourceProductChange(currentProduct);
         }
 
+    }
+
+    private class ResamplingParameterUpdater implements ParameterUpdater {
+
+        @Override
+        public void handleParameterSaveRequest(Map<String, Object> parameterMap) throws ValidationException, ConversionException {
+        }
+
+        @Override
+        public void handleParameterLoadRequest(Map<String, Object> parameterMap) throws ValidationException, ConversionException {
+            referenceBandNameBoxPanel.handleParameterLoadRequest(parameterMap);
+            targetWidthAndHeightPanel.handleParameterLoadRequest(parameterMap);
+            targetResolutionPanel.handleParameterLoadRequest(parameterMap);
+        }
     }
 
 }
