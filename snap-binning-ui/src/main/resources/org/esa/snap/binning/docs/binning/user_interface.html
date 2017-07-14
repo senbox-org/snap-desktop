@@ -111,16 +111,18 @@ The third tab allows the user to supply the general binning configuration. See t
     <img src="images/ui-configuration.png">
 </p>
 
-<h5>The bands table</h5>
+<h5>Aggregator definitions</h5>
 
 <p>
-    Using the table, the user can specify the sources that shall be aggregated for the target product. Using the <i>plus</i> and
-    <i>minus</i> buttons, sources (which can be any raster data, or expressions) can be added and removed.<br>
-    The second column allows the user to set a target name for the aggregation; in case an expression is defined as
-    source, setting a target name is mandatory.<br>
-    The third column is used to set the aggregation method; depending on which aggregation method is chosen, a number of
-    additional parameters must be set.<br>
-    Table cells are edited via double click.
+    In the upper table the user can specify which data should be aggregated.<br/> Using the <i>plus</i> button
+    aggregation definition can be added. Depending on the selected aggregation method
+    (AVG, MIN_MAX, ON_MAX_SET, PERCENTIL, ...) different
+    parameters can be specified. Multiple aggregation definition can be added.
+    The edit button on the right hand side can be used to change to configuration of an existing aggregation definition.
+</p>
+<p>
+    The <i>Intermediate Source Bands</i> table allows the user to define named expressions using band arithmetic.
+    These expression can then be used in the aggregation definition. 
 </p>
 
 <h5>Valid expression and target height</h5>
