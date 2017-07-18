@@ -19,6 +19,7 @@ package org.esa.snap.dem.gpf.ui;
 import org.esa.snap.core.dataop.dem.ElevationModelDescriptor;
 import org.esa.snap.core.dataop.dem.ElevationModelRegistry;
 import org.esa.snap.dem.dataio.DEMFactory;
+import org.esa.snap.dem.gpf.AddElevationOp;
 import org.esa.snap.graphbuilder.gpf.ui.BaseOperatorUI;
 import org.esa.snap.graphbuilder.gpf.ui.OperatorUIUtils;
 import org.esa.snap.graphbuilder.gpf.ui.UIValidation;
@@ -50,7 +51,7 @@ public class AddElevationOpUI extends BaseOperatorUI {
     private final JLabel externalDEMNoDataValueLabel = new JLabel("DEM No Data Value:");
     private Double extNoDataValue = 0.0;
     private final DialogUtils.TextAreaKeyListener textAreaKeyListener = new DialogUtils.TextAreaKeyListener();
-    private static final String externalDEMStr = "External DEM";
+    private static final String externalDEMStr = AddElevationOp.externalDEMStr;
 
     private final JTextField elevationBandName = new JTextField("");
 
