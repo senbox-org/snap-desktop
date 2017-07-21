@@ -224,7 +224,7 @@ public abstract class AbstractExportImageAction extends AbstractAction implement
             } catch (OutOfMemoryError e) {
                 Dialogs.showOutOfMemoryError("The image could not be exported.");
             } catch (Throwable e) {
-                snapApp.handleError("The image exportation is not possible\n Please check the documentation.", e); //handleUnknownException(e);
+                snapApp.handleError("The image could not be exported.", e); //handleUnknownException(e);
             } finally {
                 snapApp.getMainFrame().setCursor(Cursor.getDefaultCursor());
                 snapApp.setStatusBarMessage("");
