@@ -20,6 +20,7 @@ import com.bc.ceres.binding.Property;
 import com.bc.ceres.binding.PropertyDescriptor;
 import com.bc.ceres.binding.PropertySet;
 import com.bc.ceres.binding.ValidationException;
+import com.bc.ceres.binding.ValueSet;
 import com.bc.ceres.binding.accessors.DefaultPropertyAccessor;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.vividsolutions.jts.geom.Coordinate;
@@ -30,6 +31,7 @@ import com.vividsolutions.jts.io.WKTReader;
 import org.esa.snap.binning.AggregatorConfig;
 import org.esa.snap.binning.operator.BinningOp;
 import org.esa.snap.binning.operator.VariableConfig;
+import org.esa.snap.core.dataio.ProductIOPlugInManager;
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.FlagCoding;
 import org.esa.snap.core.datamodel.Mask;
@@ -40,8 +42,8 @@ import org.esa.snap.core.datamodel.VectorDataNode;
 import org.esa.snap.core.gpf.annotations.ParameterDescriptorFactory;
 import org.esa.snap.core.util.StringUtils;
 
-import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Arrays;
 import java.util.HashMap;
 
 /**
@@ -71,6 +73,7 @@ class BinningFormModel {
     static final String PROPERTY_KEY_SUPERSAMPLING = "superSampling";
     static final String PROPERTY_KEY_MANUAL_WKT = "manualWktKey";
     static final String PROPERTY_KEY_SOURCE_PRODUCTS = "sourceProducts";
+    static final String PROPERTY_KEY_SOURCE_PRODUCT_FORMAT = "sourceProductFormat";
     static final String PROPERTY_KEY_SOURCE_PRODUCT_PATHS = "sourceProductPaths";
     static final String PROPERTY_KEY_CONTEXT_SOURCE_PRODUCT = "contextSourceProduct";
 
@@ -88,6 +91,11 @@ class BinningFormModel {
 
         hideProperties();
 
+        // dynamically init the value set
+        String[] readerFormats = ProductIOPlugInManager.getInstance().getAllProductReaderFormatStrings();
+        Arrays.sort(readerFormats);
+        PropertyDescriptor descriptor = propertySet.getDescriptor(PROPERTY_KEY_SOURCE_PRODUCT_FORMAT);
+        descriptor.setValueSet(new ValueSet(readerFormats));
 
         // Just for GUI
         propertySet.addProperty(createTransientProperty(PROPERTY_KEY_GLOBAL, Boolean.class));                                    // temp
@@ -106,13 +114,10 @@ class BinningFormModel {
 
         propertySet.setDefaultValues();
 
-        propertySet.getProperty(PROPERTY_KEY_REGION).addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                Geometry newGeometry = (Geometry) evt.getNewValue();
-                propertySet.setValue(PROPERTY_KEY_MANUAL_WKT, true);
-                propertySet.setValue(PROPERTY_KEY_WKT, newGeometry.toText());
-            }
+        propertySet.getProperty(PROPERTY_KEY_REGION).addPropertyChangeListener(evt -> {
+            Geometry newGeometry = (Geometry) evt.getNewValue();
+            propertySet.setValue(PROPERTY_KEY_MANUAL_WKT, true);
+            propertySet.setValue(PROPERTY_KEY_WKT, newGeometry.toText());
         });
     }
 
@@ -146,11 +151,21 @@ class BinningFormModel {
         return getPropertyValue(BinningFormModel.PROPERTY_KEY_SOURCE_PRODUCT_PATHS);
     }
 
+    public String getSourceProductFormat() {
+        return getPropertyValue(BinningFormModel.PROPERTY_KEY_SOURCE_PRODUCT_FORMAT);
+    }
+
+
     public Product getContextProduct() {
         return getPropertyValue(BinningFormModel.PROPERTY_KEY_CONTEXT_SOURCE_PRODUCT);
     }
 
     public void useAsContextProduct(Product contextProduct) {
+        if (contextProduct != null && contextProduct.getProductReader() != null) {
+            String format = contextProduct.getProductReader().getReaderPlugIn().getFormatNames()[0];
+            propertySet.setValue(BinningFormModel.PROPERTY_KEY_SOURCE_PRODUCT_FORMAT, format);
+        }
+
         Product currentContextProduct = createContextProduct(contextProduct);
         propertySet.setValue(BinningFormModel.PROPERTY_KEY_CONTEXT_SOURCE_PRODUCT, currentContextProduct);
     }
@@ -252,7 +267,7 @@ class BinningFormModel {
             final GeometryFactory geometryFactory = new GeometryFactory();
             return geometryFactory.createPolygon(geometryFactory.createLinearRing(coordinates), null);
         } else if (Boolean.TRUE.equals(getPropertyValue(PROPERTY_KEY_MANUAL_WKT))) {
-            return toGeometry((String) getPropertyValue(PROPERTY_KEY_WKT));
+            return toGeometry(getPropertyValue(PROPERTY_KEY_WKT));
         }
         throw new IllegalStateException("Should never come here");
     }

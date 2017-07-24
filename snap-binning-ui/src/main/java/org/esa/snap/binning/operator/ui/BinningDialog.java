@@ -201,6 +201,7 @@ public class BinningDialog extends SingleTargetProductDialog {
         parameters.put("region", formModel.getRegion());
         parameters.put("numRows", formModel.getNumRows());
         parameters.put("superSampling", formModel.getSuperSampling());
+        parameters.put("sourceProductFormat", formModel.getSourceProductFormat());
         parameters.put("sourceProductPaths", formModel.getSourceProductPaths());
 
         BinningOp.TimeFilterMethod method = formModel.getTimeFilterMethod();

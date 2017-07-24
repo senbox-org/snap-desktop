@@ -20,6 +20,7 @@ import com.bc.ceres.binding.ValidationException;
 import org.esa.snap.core.dataio.ProductIOPlugInManager;
 import org.esa.snap.core.dataio.ProductReaderPlugIn;
 import org.esa.snap.core.util.PropertyMap;
+import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.ui.AppContext;
@@ -42,13 +43,16 @@ class AddFileAction extends AbstractAction {
     private final InputListModel listModel;
     private final String propertyNameLastOpenInputDir;
     private final String propertyNameLastOpenedFormat;
+    private final String propertyNameFormatNames;
 
-    AddFileAction(AppContext appContext, InputListModel listModel, String propertyNameLastOpenInputDir, String propertyNameLastOpenedFormat) {
+    AddFileAction(AppContext appContext, InputListModel listModel, String propertyNameLastOpenInputDir,
+                  String propertyNameLastOpenedFormat, String propertyNameFormatNames) {
         super("Add product file(s)...");
         this.appContext = appContext;
         this.listModel = listModel;
         this.propertyNameLastOpenInputDir = propertyNameLastOpenInputDir;
         this.propertyNameLastOpenedFormat = propertyNameLastOpenedFormat;
+        this.propertyNameFormatNames = propertyNameFormatNames;
     }
 
     @Override
@@ -56,6 +60,7 @@ class AddFileAction extends AbstractAction {
         final PropertyMap preferences = appContext.getPreferences();
         String lastDir = preferences.getPropertyString(propertyNameLastOpenInputDir, SystemUtils.getUserHomeDir().getPath());
         String lastFormat = preferences.getPropertyString(propertyNameLastOpenedFormat, ALL_FILES_FORMAT);
+        String formatNames = preferences.getPropertyString(propertyNameFormatNames, null);
 
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setCurrentDirectory(new File(lastDir));
@@ -63,14 +68,30 @@ class AddFileAction extends AbstractAction {
         fileChooser.setMultiSelectionEnabled(true);
 
         FileFilter actualFileFilter = fileChooser.getAcceptAllFileFilter();
-        if (!ALL_FILES_FORMAT.equals(lastFormat)) {
-            Iterator<ProductReaderPlugIn> allReaderPlugIns = ProductIOPlugInManager.getInstance().getAllReaderPlugIns();
+        ProductIOPlugInManager ioManager = ProductIOPlugInManager.getInstance();
+        if (StringUtils.isNullOrEmpty(formatNames)) {
+            Iterator<ProductReaderPlugIn> allReaderPlugIns = ioManager.getAllReaderPlugIns();
             List<SnapFileFilter> sortedFileFilters = SnapFileFilter.getSortedFileFilters(allReaderPlugIns);
             for (SnapFileFilter productFileFilter : sortedFileFilters) {
                 fileChooser.addChoosableFileFilter(productFileFilter);
-                if (productFileFilter.getFormatName().equals(lastFormat)) {
+                String formatName = productFileFilter.getFormatName();
+                if (!ALL_FILES_FORMAT.equals(lastFormat) &&
+                    formatName != null && formatName.equals(lastFormat)) {
                     actualFileFilter = productFileFilter;
-                    break;
+                }
+            }
+        } else {
+            String[] formats = StringUtils.csvToArray(formatNames);
+            for (String format : formats) {
+                Iterator<ProductReaderPlugIn> readerPlugIns = ioManager.getReaderPlugIns(format);
+                while (readerPlugIns.hasNext()) {
+                    ProductReaderPlugIn next = readerPlugIns.next();
+                    SnapFileFilter productFileFilter = next.getProductFileFilter();
+                    fileChooser.addChoosableFileFilter(productFileFilter);
+                    String formatName = productFileFilter.getFormatName();
+                    if(formatName != null && formatName.equals(lastFormat)) {
+                        actualFileFilter = productFileFilter;
+                    }
                 }
             }
         }

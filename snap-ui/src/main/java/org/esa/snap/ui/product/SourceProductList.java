@@ -76,6 +76,7 @@ public class SourceProductList extends ComponentAdapter {
 
     private String propertyNameLastOpenInputDir;
     private String propertyNameLastOpenedFormat;
+    private String propertyNameFormatNames;
     private boolean xAxis;
     private JComponent[] components;
     private ProductFilter productFilter;
@@ -93,6 +94,7 @@ public class SourceProductList extends ComponentAdapter {
         this.inputPathsList = createInputPathsList(listModel);
         this.propertyNameLastOpenInputDir = "org.esa.snap.core.ui.product.lastOpenInputDir";
         this.propertyNameLastOpenedFormat = "org.esa.snap.core.ui.product.lastOpenedFormat";
+        this.propertyNameFormatNames = "org.esa.snap.core.ui.product.formatNames";
         this.xAxis = true;
         this.defaultPattern = null;
         productFilter = product -> true;
@@ -198,7 +200,7 @@ public class SourceProductList extends ComponentAdapter {
             final AddProductAction addProductAction = new AddProductAction(appContext, listModel);
             addProductAction.setProductFilter(productFilter);
             popup.add(addProductAction);
-            popup.add(new AddFileAction(appContext, listModel, propertyNameLastOpenInputDir, propertyNameLastOpenedFormat));
+            popup.add(new AddFileAction(appContext, listModel, propertyNameLastOpenInputDir, propertyNameLastOpenedFormat, propertyNameFormatNames));
             popup.add(new AddDirectoryAction(appContext, listModel, false, propertyNameLastOpenInputDir, defaultPattern));
             popup.add(new AddDirectoryAction(appContext, listModel, true, propertyNameLastOpenInputDir, defaultPattern));
             popup.show(addButton, 1, buttonBounds.height + 1);
@@ -298,6 +300,17 @@ public class SourceProductList extends ComponentAdapter {
      */
     public void setPropertyNameLastOpenInputDir(String propertyNameLastOpenInputDir) {
         this.propertyNameLastOpenInputDir = propertyNameLastOpenInputDir;
+    }
+
+    /**
+     * Setter for property name which defines the formats offered to the user.
+     * The value of the list should be a comma separated list of formats.
+     * If the property is not set, all formats will be offered.
+     *
+     * @param formatNamesKey property name
+     */
+    public void setPropertyNameFormatNames(String formatNamesKey) {
+        this.propertyNameFormatNames = formatNamesKey;
     }
 
     /**

@@ -27,12 +27,15 @@ import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.product.SourceProductList;
 
 import javax.swing.BorderFactory;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingWorker;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import java.awt.BorderLayout;
+import java.awt.Insets;
 import java.io.File;
 import java.io.IOException;
 import java.util.TreeSet;
@@ -47,6 +50,7 @@ class BinningIOPanel extends JPanel {
     private final BinningFormModel binningFormModel;
     private final TargetProductSelector targetProductSelector;
     private SourceProductList sourceProductList;
+
 
     BinningIOPanel(AppContext appContext, BinningFormModel binningFormModel, TargetProductSelector targetProductSelector) {
         this.appContext = appContext;
@@ -75,7 +79,6 @@ class BinningIOPanel extends JPanel {
 
     private JPanel createSourceProductsPanel() {
         BorderLayout layout = new BorderLayout();
-
         final JPanel sourceProductPanel = new JPanel(layout);
         sourceProductPanel.setBorder(BorderFactory.createTitledBorder("Source Products"));
         ListDataListener changeListener = new ListDataListener() {
@@ -117,8 +120,26 @@ class BinningIOPanel extends JPanel {
         sourceProductList.addChangeListener(changeListener);
         sourceProductList.setXAxis(false);
         binningFormModel.getBindingContext().bind(BinningFormModel.PROPERTY_KEY_SOURCE_PRODUCT_PATHS, sourceProductList);
+
+        JComboBox<String> sourceFormatComboBox = new JComboBox<>();
+        binningFormModel.getBindingContext().bind(BinningFormModel.PROPERTY_KEY_SOURCE_PRODUCT_FORMAT, sourceFormatComboBox);
+        JLabel formatLabel = new JLabel("Source format:");
+        TableLayout formatLayout = new TableLayout(2);
+        formatLayout.setTableAnchor(TableLayout.Anchor.NORTHWEST);
+        formatLayout.setTablePadding(new Insets(4, 10, 0, 0));
+        formatLayout.setTableFill(TableLayout.Fill.BOTH);
+        formatLayout.setColumnWeightX(1, 2.0);
+
+        JPanel formatPanel = new JPanel(formatLayout);
+        formatPanel.add(formatLabel);
+        formatPanel.add(sourceFormatComboBox);
+
         JComponent[] panels = sourceProductList.getComponents();
-        sourceProductPanel.add(panels[0], BorderLayout.CENTER);
+        JPanel listPanel = new JPanel(new BorderLayout());
+        listPanel.add(panels[0], BorderLayout.CENTER);
+        listPanel.add(formatPanel, BorderLayout.SOUTH);
+
+        sourceProductPanel.add(listPanel, BorderLayout.CENTER);
         sourceProductPanel.add(panels[1], BorderLayout.EAST);
 
         return sourceProductPanel;

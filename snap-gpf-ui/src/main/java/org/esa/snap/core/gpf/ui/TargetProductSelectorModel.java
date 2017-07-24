@@ -29,8 +29,6 @@ import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.core.util.io.FileUtils;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.text.MessageFormat;
 import java.util.Arrays;
@@ -87,33 +85,30 @@ public class TargetProductSelectorModel {
             setFormatName(formatNames[0]);
         }
 
-        propertyContainer.addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                String propertyName = evt.getPropertyName();
-                switch (propertyName) {
-                    case "saveToFileSelected": {
-                        boolean changesToDeselected = !(Boolean) evt.getNewValue();
-                        if (changesToDeselected) {
-                            setOpenInAppSelected(true);
-                        } else if (!canReadOutputFormat()) {
-                            setOpenInAppSelected(false);
-                        }
-                        break;
+        propertyContainer.addPropertyChangeListener(evt -> {
+            String propertyName = evt.getPropertyName();
+            switch (propertyName) {
+                case "saveToFileSelected": {
+                    boolean changesToDeselected = !(Boolean) evt.getNewValue();
+                    if (changesToDeselected) {
+                        setOpenInAppSelected(true);
+                    } else if (!canReadOutputFormat()) {
+                        setOpenInAppSelected(false);
                     }
-                    case "openInAppSelected": {
-                        boolean changesToDeselected = !(Boolean) evt.getNewValue();
-                        if (changesToDeselected) {
-                            setSaveToFileSelected(true);
-                        }
-                        break;
-                    }
-                    case "formatName":
-                        if (!canReadOutputFormat()) {
-                            setOpenInAppSelected(false);
-                        }
-                        break;
+                    break;
                 }
+                case "openInAppSelected": {
+                    boolean changesToDeselected = !(Boolean) evt.getNewValue();
+                    if (changesToDeselected) {
+                        setSaveToFileSelected(true);
+                    }
+                    break;
+                }
+                case "formatName":
+                    if (!canReadOutputFormat()) {
+                        setOpenInAppSelected(false);
+                    }
+                    break;
             }
         });
 
