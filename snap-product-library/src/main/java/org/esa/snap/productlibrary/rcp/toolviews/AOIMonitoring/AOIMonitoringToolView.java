@@ -43,10 +43,27 @@ import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.Cursor;
+import java.awt.GridBagConstraints;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 
 
@@ -127,7 +144,7 @@ public class AOIMonitoringToolView extends ToolTopComponent {
     }
 
     private static void loadIcons() {
-        processIcon = UIUtils.loadImageIcon("icons/play24.png");
+        processIcon = UIUtils.loadImageIcon("icons/Play24.png");
         processRolloverIcon = ToolButtonFactory.createRolloverIcon(processIcon);
         stopIcon = UIUtils.loadImageIcon("icons/Stop24.gif");
         stopRolloverIcon = ToolButtonFactory.createRolloverIcon(stopIcon);
