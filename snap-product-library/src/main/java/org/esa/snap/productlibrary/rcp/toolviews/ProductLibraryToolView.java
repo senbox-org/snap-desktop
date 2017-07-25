@@ -127,7 +127,7 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
 
     /*
     These don't seem to be required for things to work. In fact, componentHidden() and componentDeactivated() are
-    emptying the lust which requires componentActivated() to repopulate it.
+    emptying the list which requires componentActivated() to repopulate it.
 
     protected void componentHidden() {
         //System.out.println("ProductLibraryToolView.componentHidden empties currentListView " + currentListView.getClass());
