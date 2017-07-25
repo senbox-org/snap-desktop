@@ -569,7 +569,7 @@ public final class DatabasePane extends JPanel {
                 final int ml = absRoot.getAttributeInt(AbstractMetadata.multilook_flag, AbstractMetadata.NO_METADATA);
                 final int coreg = absRoot.getAttributeInt(AbstractMetadata.coregistered_stack, AbstractMetadata.NO_METADATA);
 
-                text.append(acqTime.format() + '\n');
+                text.append("Date: " + acqTime.format() + '\n');
                 text.append("Sample: " + sampleType + '\n');
 
                 text.append("Pass: " + pass + '\n');
@@ -593,6 +593,9 @@ public final class DatabasePane extends JPanel {
                 if (tc == 1) {
                     text.append("Terrain Corrected ");
                 }
+            } else {
+                text.append("Date: " + entry.getFirstLineTime() + '\n');
+                text.append("Size: " + entry.getFileSizeString() + '\n');
             }
 
             productText.setText(text.toString());
