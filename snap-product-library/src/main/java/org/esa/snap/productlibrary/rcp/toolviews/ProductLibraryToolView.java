@@ -281,6 +281,7 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
                     final RepositoryInterface repo = (RepositoryInterface)repositoryListCombo.getSelectedItem();
                     dbPane.setRepository(repo);
                     SystemUtils.LOG.info("ProductLibraryToolView: selected " + repo.getName());
+                    searchButton.setEnabled(repo.getName().toLowerCase().contains("scihub"));
                 }
             }
         });
@@ -572,9 +573,11 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
 
     private void setUIComponentsEnabled(final boolean enable) {
         removeButton.setEnabled(enable);
-        updateButton.setEnabled(enable);
-        repositoryListCombo.setEnabled(enable);
-        searchButton.setEnabled(enable);
+        updateButton.setEnabled(enable); // This is the rescan folder button
+        // Since we always have at least "All Folders" and "SciHub", this should never be disabled.
+        //repositoryListCombo.setEnabled(enable);
+        // This should not be disabled based on whether repository exists or not
+        //searchButton.setEnabled(enable);
     }
 
     private void UpdateUI() {
