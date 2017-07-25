@@ -6,6 +6,6 @@
 <map version="2.0">
 
     <mapID target="productLibrary" url="desktop/ProductLibrary.html"/>
-    <mapID target="AOIMonitoring" url="operators/AOIMonitoring.html"/>
+    <mapID target="AOIMonitoring" url="desktop/AOIMonitoring.html"/>
 
 </map>
