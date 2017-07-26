@@ -41,6 +41,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.border.EmptyBorder;
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -155,7 +156,14 @@ public class DefaultSingleTargetProductDialog extends SingleTargetProductDialog 
 
     private void initForm() {
         form = new JTabbedPane();
-        form.add("I/O Parameters", ioParametersPanel);
+
+        //only add ioParametersPanel if there are input or target products
+        if(ioParametersPanel.getTargetProductSelectorDisplay() || ioParametersPanel.getSourceProductSelectorList().size() > 0) {
+            form.add("I/O Parameters", ioParametersPanel);
+        } else {
+            //if there is no ioParametersPanel, the size of the form could be too small
+            form.setPreferredSize(new Dimension(400, 300));
+        }
 
         if (bindingContext.getPropertySet().getProperties().length > 0) {
             final PropertyPane parametersPane = new PropertyPane(bindingContext);
