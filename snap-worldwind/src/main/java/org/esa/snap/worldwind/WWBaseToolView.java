@@ -20,33 +20,27 @@ import gov.nasa.worldwind.awt.WorldWindowGLCanvas;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.layers.LayerList;
-import gov.nasa.worldwind.util.Logging;
 import org.esa.snap.core.datamodel.GeoCoding;
 import org.esa.snap.core.datamodel.GeoPos;
 import org.esa.snap.core.datamodel.PixelPos;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.windows.ToolTopComponent;
-import org.esa.snap.runtime.Config;
 import org.esa.snap.worldwind.layers.WWLayer;
 import org.openide.windows.WindowManager;
 
 import java.awt.Dimension;
-import java.util.logging.Level;
 
 /**
  * Base WorldWind ToolView
  */
 public abstract class WWBaseToolView extends ToolTopComponent {
 
-    private static final String WORLDWIND_LOGLEVEL_KEY = "snap.worldwind.logLevel";
-
     private final Dimension canvasSize = new Dimension(800, 600);
     protected AppPanel wwjPanel = null;
     private Position eyePosition = null;
 
     public WWBaseToolView() {
-        initWWLogging();
     }
 
     AppPanel createWWPanel(final WorldWindowGLCanvas shareWith,
@@ -141,11 +135,6 @@ public abstract class WWBaseToolView extends ToolTopComponent {
         if (isVisible()) {
             getWwd().redrawNow();
         }
-    }
-
-    private void initWWLogging() {
-        String level = Config.instance().preferences().get(WORLDWIND_LOGLEVEL_KEY, "OFF");
-        Logging.logger().setLevel(Level.parse(level));
     }
 
 }
