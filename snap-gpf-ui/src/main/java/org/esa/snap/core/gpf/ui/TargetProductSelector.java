@@ -52,6 +52,7 @@ public class TargetProductSelector {
     private JLabel productNameLabel;
     private JTextField productNameTextField;
     private JCheckBox saveToFileCheckBox;
+    private JLabel saveToFileLabel;
     private JLabel productDirLabel;
     private JTextField productDirTextField;
     private JButton productDirChooserButton;
@@ -94,6 +95,9 @@ public class TargetProductSelector {
             saveToFileCheckBox = new JCheckBox("Save as:");
             formatNameComboBox = new JComboBox<>(model.getFormatNames());
             openInAppCheckBox = new JCheckBox("Open in application");
+        } else {
+            saveToFileLabel = new JLabel("Save as: ");
+            formatNameComboBox = new JComboBox<>(model.getFormatNames());
         }
     }
 
@@ -106,6 +110,8 @@ public class TargetProductSelector {
         if (!alwaysWriteOutput) {
             bc.bind("saveToFileSelected", saveToFileCheckBox);
             bc.bind("openInAppSelected", openInAppCheckBox);
+            bc.bind("formatName", formatNameComboBox);
+        } else {
             bc.bind("formatName", formatNameComboBox);
         }
 
@@ -138,6 +144,10 @@ public class TargetProductSelector {
         return saveToFileCheckBox;
     }
 
+    public JLabel getSaveToFileLabel() {
+        return saveToFileLabel;
+    }
+
     public JLabel getProductDirLabel() {
         return productDirLabel;
     }
@@ -168,6 +178,10 @@ public class TargetProductSelector {
             subPanel2 = new JPanel(new FlowLayout(FlowLayout.LEADING, 0, 0));
             subPanel2.add(getSaveToFileCheckBox());
             subPanel2.add(getFormatNameComboBox());
+        } else {
+            subPanel2 = new JPanel(new FlowLayout(FlowLayout.LEADING, 0, 0));
+            subPanel2.add(getSaveToFileLabel());
+            subPanel2.add(getFormatNameComboBox());
         }
 
         final JPanel subPanel3 = new JPanel(new BorderLayout(3, 3));
@@ -189,9 +203,8 @@ public class TargetProductSelector {
         panel.setBorder(BorderFactory.createTitledBorder("Target Product"));
         panel.add(subPanel1);
 
-        if (!alwaysWriteOutput) {
-            panel.add(subPanel2);
-        }
+        panel.add(subPanel2);
+
         panel.add(subPanel3);
 
         if (!alwaysWriteOutput) {
@@ -206,6 +219,8 @@ public class TargetProductSelector {
             if (!alwaysWriteOutput) {
                 openInAppCheckBox.setEnabled(model.canReadOutputFormat());
                 formatNameComboBox.setEnabled(true);
+            } else {
+                formatNameComboBox.setEnabled(true);
             }
             productDirLabel.setEnabled(true);
             productDirTextField.setEnabled(true);
@@ -213,6 +228,8 @@ public class TargetProductSelector {
         } else {
             if (!alwaysWriteOutput) {
                 openInAppCheckBox.setEnabled(true);
+                formatNameComboBox.setEnabled(false);
+            } else {
                 formatNameComboBox.setEnabled(false);
             }
             productDirLabel.setEnabled(false);
@@ -223,10 +240,12 @@ public class TargetProductSelector {
 
     public void setEnabled(boolean enabled) {
         productNameLabel.setEnabled(enabled);
-        if (alwaysWriteOutput) {
+        if (!alwaysWriteOutput) {
             saveToFileCheckBox.setEnabled(enabled);
             formatNameComboBox.setEnabled(enabled);
             openInAppCheckBox.setEnabled(enabled);
+        } else {
+            formatNameComboBox.setEnabled(enabled);
         }
         productNameTextField.setEnabled(enabled);
         productDirLabel.setEnabled(enabled);
