@@ -41,7 +41,6 @@ public abstract class WWBaseToolView extends ToolTopComponent {
     private Position eyePosition = null;
 
     public WWBaseToolView() {
-
     }
 
     AppPanel createWWPanel(final WorldWindowGLCanvas shareWith,
@@ -137,4 +136,5 @@ public abstract class WWBaseToolView extends ToolTopComponent {
             getWwd().redrawNow();
         }
     }
+
 }

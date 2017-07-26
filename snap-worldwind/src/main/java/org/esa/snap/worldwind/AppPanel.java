@@ -46,11 +46,11 @@ import gov.nasa.worldwindx.examples.ClickAndGoSelectListener;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import javax.swing.*;
+import javax.swing.JPanel;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
