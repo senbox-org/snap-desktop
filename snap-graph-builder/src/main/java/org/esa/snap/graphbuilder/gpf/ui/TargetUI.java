@@ -16,6 +16,7 @@
 package org.esa.snap.graphbuilder.gpf.ui;
 
 import org.esa.snap.core.gpf.ui.TargetProductSelector;
+import org.esa.snap.core.gpf.ui.TargetProductSelectorModel;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.rcp.SnapApp;
@@ -42,7 +43,7 @@ public class TargetUI extends BaseOperatorUI {
     public JComponent CreateOpTab(String operatorName, Map<String, Object> parameterMap, AppContext appContext) {
 
         paramMap = parameterMap;
-        targetProductSelector = new TargetProductSelector();
+        targetProductSelector = new TargetProductSelector(new TargetProductSelectorModel(), true);
         this.appContext = appContext;
 
         File saveDir = null;
@@ -58,7 +59,6 @@ public class TargetUI extends BaseOperatorUI {
             saveDir = new File(savePath);
         }
         targetProductSelector.getModel().setProductDir(saveDir);
-        targetProductSelector.getOpenInAppCheckBox().setText("Open in " + appContext.getApplicationName());
 
         initParameters();
 
