@@ -1,9 +1,11 @@
 package org.esa.snap.rcp.placemark;
 
+import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.glayer.Layer;
 import com.bc.ceres.swing.selection.SelectionChangeEvent;
 import com.bc.ceres.swing.selection.SelectionChangeListener;
 import com.vividsolutions.jts.geom.Coordinate;
+import org.esa.snap.core.dataio.placemark.PlacemarkData;
 import org.esa.snap.core.dataio.placemark.PlacemarkIO;
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.GeoCoding;
@@ -77,9 +79,11 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.text.DecimalFormat;
@@ -88,7 +92,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.prefs.Preferences;
 
 import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
@@ -664,6 +670,7 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
         fileChooser.setDialogTitle(MessageFormat.format("Export {0}(s)", StringUtils.firstLetterUp(placemarkDescriptor.getRoleLabel())));
         setComponentName(fileChooser, "Export_Selected");
         fileChooser.addChoosableFileFilter(PlacemarkIO.createTextFileFilter());
+        fileChooser.addChoosableFileFilter(PlacemarkIO.createKmzFileFilter());
         fileChooser.setFileFilter(PlacemarkIO.createPlacemarkFileFilter());
         final File ioDir = getIODir();
         fileChooser.setCurrentDirectory(ioDir);
@@ -680,15 +687,24 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
                         file = FileUtils.ensureExtension(file, snapFileFilter.getDefaultExtension());
                     }
                     try {
-                        if (snapFileFilter.getFormatName().equals(
-                                PlacemarkIO.createPlacemarkFileFilter().getFormatName())) {
-
-                            final List<Placemark> placemarkList = getPlacemarksForExport();
-                            PlacemarkIO.writePlacemarksFile(new FileWriter(file), placemarkList);
-                        } else {
+                        String formatName = snapFileFilter.getFormatName();
+                        if (formatName.equals(PlacemarkIO.createPlacemarkFileFilter().getFormatName())) {
+                            try (FileWriter writer = new FileWriter(file)) {
+                                final List<Placemark> placemarkList = getPlacemarksForExport();
+                                PlacemarkIO.writePlacemarksFile(writer, placemarkList);
+                            }
+                        } else if(formatName.equals(PlacemarkIO.createTextFileFilter().getFormatName())) {
                             try (Writer writer = new FileWriter(file)) {
                                 writePlacemarkDataTableText(writer);
                             }
+                        } else if(formatName.equals(PlacemarkIO.createKmzFileFilter().getFormatName())) {
+                            try (OutputStream outStream = new FileOutputStream(file)) {
+                                final List<Placemark> placemarkList = getPlacemarksForExport();
+                                List<PlacemarkData> placemarkData = getExtraDataFromTable(placemarkList);
+                                PlacemarkIO.writePlacemarkKmzFile(outStream, placemarkData, ProgressMonitor.NULL);
+                            }
+                        }else {
+                            Dialogs.showError(String.format("Unknown export format '%s'. Nothing has been exported.", formatName));
                         }
                     } catch (IOException ioe) {
                         Dialogs.showError(String.format("I/O Error.\n   Failed to export %ss.\n%s",
@@ -698,6 +714,26 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
                 }
             }
         }
+    }
+
+    private List<PlacemarkData> getExtraDataFromTable(List<Placemark> placemarkList) {
+        List<PlacemarkData> list = new ArrayList<>();
+        String[] additionalColumnNames = placemarkTableModel.getAdditionalColumnNames();
+        for (int rowIndex= 0; rowIndex < placemarkTableModel.getRowCount(); rowIndex++) {
+            Placemark placemark = placemarkTableModel.getPlacemarkAt(rowIndex);
+            if (placemarkList.contains(placemark)) {
+                Map<String, Object> extraData = new LinkedHashMap<>();
+                for (String additionalColumnName : additionalColumnNames) {
+                    int columnIndex = placemarkTableModel.getColumnIndex(additionalColumnName);
+                    if (columnIndex >= 0) {
+                        Object valueAt = placemarkTableModel.getValueAt(rowIndex, columnIndex);
+                        extraData.put(additionalColumnName, valueAt);
+                    }
+                }
+                list.add(new PlacemarkData(placemark, extraData.isEmpty() ? null : extraData));
+            }
+        }
+        return list;
     }
 
     private List<Placemark> getPlacemarksForExport() {
@@ -720,8 +756,7 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
         }
         Product[] allOtherProducts = new Product[allProducts.length - 1];
         int allOtherProductsIndex = 0;
-        for (int i = 0; i < allProducts.length; i++) {
-            Product product = allProducts[i];
+        for (Product product : allProducts) {
             if (product != thisProduct) {
                 allOtherProducts[allOtherProductsIndex++] = product;
             }
@@ -885,14 +920,10 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
 
     private void writePlacemarkDataTableText(final Writer writer) {
 
-        final String[] standardColumnNames = placemarkTableModel.getStandardColumnNames();
-        final int columnCountMin = standardColumnNames.length;
-        final int columnCount = placemarkTableModel.getColumnCount();
-        String[] additionalColumnNames = new String[columnCount - columnCountMin];
-        for (int i = 0; i < additionalColumnNames.length; i++) {
-            additionalColumnNames[i] = placemarkTableModel.getColumnName(columnCountMin + i);
-        }
+        String[] additionalColumnNames = placemarkTableModel.getAdditionalColumnNames();
 
+        String[] standardColumnNames = placemarkTableModel.getStandardColumnNames();
+        int columnCount = placemarkTableModel.getColumnCount();
         List<Placemark> placemarkList = new ArrayList<>();
         List<Object[]> valueList = new ArrayList<>();
         for (int sortedRow = 0; sortedRow < placemarkTable.getRowCount(); ++sortedRow) {
