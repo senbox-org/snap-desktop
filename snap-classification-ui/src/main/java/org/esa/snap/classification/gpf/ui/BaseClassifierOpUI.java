@@ -416,6 +416,7 @@ public abstract class BaseClassifierOpUI extends BaseOperatorUI {
             }
         }
 
+        paramMap.put("doLoadClassifier", loadBtn.isSelected());
         paramMap.put("doClassValQuantization", doClassValQuantization.isSelected());
         paramMap.put("minClassValue", Double.parseDouble(minClassValue.getText()));
         paramMap.put("classValStepSize", Double.parseDouble(classValStepSize.getText()));
