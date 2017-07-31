@@ -378,7 +378,8 @@ public abstract class BaseClassifierOpUI extends BaseOperatorUI {
             labelSourceVectorName.setSelected(true);
         }
 
-        boolean doTraining = true;
+        Boolean doLoadClassifierVal = (Boolean) paramMap.get("doLoadClassifier");
+        boolean doTraining = doLoadClassifierVal != null && !doLoadClassifierVal;
         enableTraining(doTraining);
         enableTrainOnRaster(doTraining, trainOnRasters);
         enablePowerSet();
