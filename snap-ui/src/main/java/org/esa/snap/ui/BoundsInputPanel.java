@@ -48,6 +48,8 @@ public class BoundsInputPanel {
     public static final String PROPERTY_PIXEL_SIZE_X = "pixelSizeX";
     public static final String PROPERTY_PIXEL_SIZE_Y = "pixelSizeY";
 
+    static final DecimalFormatter DECIMAL_FORMATTER = new DecimalFormatter("0.0#######");
+
     private final BindingContext bindingContext;
     private final String enablePropertyKey;
 
@@ -61,23 +63,23 @@ public class BoundsInputPanel {
      * Default constructor.
      *
      * @param bindingContext    The binding context, in which the properties given by the constants
-     *                          <code>PROPERTY_WEST_BOUND</code>, <code>PROPERTY_NORTH_BOUND</code>,
-     *                          <code>PROPERTY_EAST_BOUND</code>, and <code>PROPERTY_SOUTH_BOUND</code> are bound
+     *                          {@code PROPERTY_WEST_BOUND}, {@code PROPERTY_NORTH_BOUND},
+     *                          {@code PROPERTY_EAST_BOUND}, and {@code PROPERTY_SOUTH_BOUND} are bound
      *                          accordingly.
-     * @param enablePropertyKey The key for the property which specifies whether the subcomponents of this component
+     * @param enablePropertyKey The key for the property which specifies whether the sub-components of this component
      *                          are enabled.
      */
     public BoundsInputPanel(BindingContext bindingContext, String enablePropertyKey) {
         this.bindingContext = bindingContext;
         this.enablePropertyKey = enablePropertyKey;
-        unitMap = new HashMap<String, Double>();
+        unitMap = new HashMap<>();
         unitMap.put("°", 0.05);
         unitMap.put("m", 1000.0);
         unitMap.put("km", 1.0);
     }
 
     /**
-     * Creates the UI component. The enable state of the UI is controlled via the parameter <code>disableUIProperty</code>.
+     * Creates the UI component. The enable state of the UI is controlled via the parameter {@code disableUIProperty}.
      * If it matches the value of the property provided in the constructor, the UI will be disabled.
      *
      * @param disableUIProperty Controls the enable state of the UI.
@@ -102,26 +104,25 @@ public class BoundsInputPanel {
         layout.setColumnPadding(2, new Insets(3, 0, 3, 12));
         layout.setColumnPadding(5, new Insets(3, 0, 3, 12));
         final JPanel panel = new JPanel(layout);
-        final DecimalFormatter decimalFormatter = new DecimalFormatter("###0.0##");
         pixelXUnit = new JLabel(NonSI.DEGREE_ANGLE.toString());
         pixelYUnit = new JLabel(NonSI.DEGREE_ANGLE.toString());
 
         panel.add(new JLabel("West:"));
-        final JFormattedTextField westLonField = new JFormattedTextField(decimalFormatter);
+        final JFormattedTextField westLonField = new JFormattedTextField(DECIMAL_FORMATTER);
         westLonField.setHorizontalAlignment(JTextField.RIGHT);
         bindingContext.bind(PROPERTY_WEST_BOUND, westLonField);
         bindingContext.bindEnabledState(PROPERTY_WEST_BOUND, false, enablePropertyKey, disableUIProperty);
         panel.add(westLonField);
         panel.add(new JLabel(NonSI.DEGREE_ANGLE.toString()));
         panel.add(new JLabel("East:"));
-        final JFormattedTextField eastLonField = new JFormattedTextField(decimalFormatter);
+        final JFormattedTextField eastLonField = new JFormattedTextField(DECIMAL_FORMATTER);
         eastLonField.setHorizontalAlignment(JTextField.RIGHT);
         bindingContext.bind(PROPERTY_EAST_BOUND, eastLonField);
         bindingContext.bindEnabledState(PROPERTY_EAST_BOUND, false, enablePropertyKey, disableUIProperty);
         panel.add(eastLonField);
         panel.add(new JLabel(NonSI.DEGREE_ANGLE.toString()));
         panel.add(new JLabel("Pixel size X:"));
-        pixelSizeXField = new JFormattedTextField(decimalFormatter);
+        pixelSizeXField = new JFormattedTextField(DECIMAL_FORMATTER);
         pixelSizeXField.setHorizontalAlignment(JTextField.RIGHT);
         bindingContext.bind(PROPERTY_PIXEL_SIZE_X, pixelSizeXField);
         bindingContext.bindEnabledState(PROPERTY_PIXEL_SIZE_X, false, enablePropertyKey, disableUIProperty);
@@ -129,21 +130,21 @@ public class BoundsInputPanel {
         panel.add(pixelXUnit);
 
         panel.add(new JLabel("North:"));
-        final JFormattedTextField northLatField = new JFormattedTextField(decimalFormatter);
+        final JFormattedTextField northLatField = new JFormattedTextField(DECIMAL_FORMATTER);
         northLatField.setHorizontalAlignment(JTextField.RIGHT);
         bindingContext.bind(PROPERTY_NORTH_BOUND, northLatField);
         bindingContext.bindEnabledState(PROPERTY_NORTH_BOUND, false, enablePropertyKey, disableUIProperty);
         panel.add(northLatField);
         panel.add(new JLabel(NonSI.DEGREE_ANGLE.toString()));
         panel.add(new JLabel("South:"));
-        final JFormattedTextField southLatField = new JFormattedTextField(decimalFormatter);
+        final JFormattedTextField southLatField = new JFormattedTextField(DECIMAL_FORMATTER);
         southLatField.setHorizontalAlignment(JTextField.RIGHT);
         bindingContext.bind(PROPERTY_SOUTH_BOUND, southLatField);
         bindingContext.bindEnabledState(PROPERTY_SOUTH_BOUND, false, enablePropertyKey, disableUIProperty);
         panel.add(southLatField);
         panel.add(new JLabel(NonSI.DEGREE_ANGLE.toString()));
         panel.add(new JLabel("Pixel size Y:"));
-        pixelSizeYField = new JFormattedTextField(decimalFormatter);
+        pixelSizeYField = new JFormattedTextField(DECIMAL_FORMATTER);
         pixelSizeYField.setHorizontalAlignment(JTextField.RIGHT);
         bindingContext.bind(PROPERTY_PIXEL_SIZE_Y, pixelSizeYField);
         bindingContext.bindEnabledState(PROPERTY_PIXEL_SIZE_Y, false, enablePropertyKey, disableUIProperty);
