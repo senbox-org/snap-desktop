@@ -36,7 +36,7 @@ public class SubGraphHandler {
     private final Graph graph;
     private final GraphNodeList graphNodeList;
     private final GraphNode[] savedSubGraphList;
-    private GraphNode[] nodesToRemove;
+    private Map<GraphNode, GraphNode[]> subGraphNodesToRemoveMap = new HashMap<>();
 
     public SubGraphHandler(final Graph graph, final GraphNodeList graphNodeList) throws GraphException {
         this.graph = graph;
@@ -90,8 +90,15 @@ public class SubGraphHandler {
     public void restore() {
         for (GraphNode savedNode : savedSubGraphList) {
 
+            final GraphNode[] nodesToRemove = subGraphNodesToRemoveMap.get(savedNode);
             for (GraphNode n : nodesToRemove) {
-                graphNodeList.switchConnections(n, savedNode.getID());
+                final GraphNode[] connectedNodes = graphNodeList.findConnectedNodes(n);
+                for (GraphNode node : connectedNodes) {
+                    node.connectOperatorSource(savedNode.getID());
+                    final String name = node.getSourceName(n.getID());
+                    node.setSourceName(name, savedNode.getNode().getId());
+                }
+
                 removeNode(n);
             }
 
@@ -135,11 +142,13 @@ public class SubGraphHandler {
                     // switch connections
                     for (GraphNode node : connectedNodes) {
                         node.connectOperatorSource(newNode.getId());
+                        final String name = node.getSourceName(subGraphOpNode.getID());
+                        node.setSourceName(name, newNode.getId());
                     }
                 }
             }
         }
-        nodesToRemove = toRemove.toArray(new GraphNode[toRemove.size()]);
+        subGraphNodesToRemoveMap.put(subGraphOpNode, toRemove.toArray(new GraphNode[toRemove.size()]));
     }
 
     private void removeNode(final GraphNode node) {

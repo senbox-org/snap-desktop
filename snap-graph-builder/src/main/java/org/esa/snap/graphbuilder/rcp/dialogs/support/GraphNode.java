@@ -277,7 +277,7 @@ public class GraphNode {
     }
 
     /**
-     * Gets the uniqe node identifier.
+     * Gets the unique node identifier.
      *
      * @return the identifier
      */
@@ -300,6 +300,26 @@ public class GraphNode {
 
     private boolean canConnect() {
         return !node.getOperatorName().equals("Read") && !node.getOperatorName().equals("ProductSet-Reader");
+    }
+
+    public String getSourceName(final String sourceID) {
+
+        for (int i = 0; i < node.getSources().length; ++i) {
+            final NodeSource ns = node.getSource(i);
+            if (ns.getSourceNodeId().equals(sourceID)) {
+                return ns.getName();
+            }
+        }
+        return null;
+    }
+
+    public void setSourceName(final String sourceName, final String sourceID) {
+        for (int i = 0; i < node.getSources().length; ++i) {
+            final NodeSource ns = node.getSource(i);
+            if (ns.getSourceNodeId().equals(sourceID)) {
+                ns.setName(sourceName);
+            }
+        }
     }
 
     public void connectOperatorSource(final String id) {
