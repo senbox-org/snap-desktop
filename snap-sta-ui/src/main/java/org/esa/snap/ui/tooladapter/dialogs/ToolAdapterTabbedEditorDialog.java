@@ -487,6 +487,7 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
                     }
                     return null;
                 });
+                installButton.setVisible(false);
                 installer.install(true);
             } catch (Exception ex) {
                 logger.warning(ex.getMessage());

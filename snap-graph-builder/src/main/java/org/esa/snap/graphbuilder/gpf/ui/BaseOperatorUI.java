@@ -154,7 +154,7 @@ public abstract class BaseOperatorUI implements OperatorUI {
                     final Object childValue = p.getValue();
                     final Converter converter = descriptor.getConverter();
                     if(converter == null) {
-                        throw new GraphException(operatorName+" BaseOperatorUI: no coverter found for parameter "+descriptor.getName());
+                        throw new GraphException(operatorName+" BaseOperatorUI: no converter found for parameter "+descriptor.getName());
                     }
 
                     String text = converter.format(childValue);
