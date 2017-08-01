@@ -27,6 +27,7 @@ import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductNodeEvent;
 import org.esa.snap.core.datamodel.ProductNodeListenerAdapter;
 import org.esa.snap.core.datamodel.TiePointGrid;
+import org.esa.snap.core.util.ArrayUtils;
 import org.esa.snap.core.util.math.MathUtils;
 import org.opengis.referencing.operation.TransformException;
 
@@ -144,6 +145,18 @@ public abstract class AbstractPlacemarkTableModel extends DefaultTableModel {
 
     public abstract String[] getStandardColumnNames();
 
+    public String[] getAdditionalColumnNames() {
+        String[] standardColumnNames = getStandardColumnNames();
+        int columnCount = getColumnCount();
+        final int columnCountMin = standardColumnNames.length;
+        String[] additionalColumnNames = new String[columnCount - columnCountMin];
+        for (int i = 0; i < additionalColumnNames.length; i++) {
+            additionalColumnNames[i] = getColumnName(columnCountMin + i);
+        }
+        return additionalColumnNames;
+    }
+
+
     @Override
     public abstract boolean isCellEditable(int rowIndex, int columnIndex);
 
@@ -185,6 +198,18 @@ public abstract class AbstractPlacemarkTableModel extends DefaultTableModel {
         return "?";
     }
 
+    public int getColumnIndex(String columnName) {
+        String[] standardColumnNames = getStandardColumnNames();
+        int index = Arrays.binarySearch(standardColumnNames, columnName);
+        if(index < 0) {
+            int elementIndex = ArrayUtils.getElementIndex(columnName, getAdditionalColumnNames());
+            if (elementIndex >= 0) {
+                index = standardColumnNames.length + elementIndex;
+            }
+        }
+        return index;
+    }
+
     @Override
     public Class getColumnClass(int columnIndex) {
         if (columnIndex >= 0 && columnIndex < getStandardColumnNames().length - 1) {
@@ -198,7 +223,10 @@ public abstract class AbstractPlacemarkTableModel extends DefaultTableModel {
         if (columnIndex < getStandardColumnNames().length) {
             return getStandardColumnValueAt(rowIndex, columnIndex);
         }
+        return getAdditionalValue(rowIndex, columnIndex);
+    }
 
+    private Object getAdditionalValue(int rowIndex, int columnIndex) {
         final Placemark placemark = placemarkList.get(rowIndex);
         int index = columnIndex - getStandardColumnNames().length;
         final Object defaultGeometry = placemark.getFeature().getDefaultGeometry();

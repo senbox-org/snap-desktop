@@ -378,7 +378,8 @@ public abstract class BaseClassifierOpUI extends BaseOperatorUI {
             labelSourceVectorName.setSelected(true);
         }
 
-        boolean doTraining = true;
+        Boolean doLoadClassifierVal = (Boolean) paramMap.get("doLoadClassifier");
+        boolean doTraining = doLoadClassifierVal != null && !doLoadClassifierVal;
         enableTraining(doTraining);
         enableTrainOnRaster(doTraining, trainOnRasters);
         enablePowerSet();
@@ -416,6 +417,7 @@ public abstract class BaseClassifierOpUI extends BaseOperatorUI {
             }
         }
 
+        paramMap.put("doLoadClassifier", loadBtn.isSelected());
         paramMap.put("doClassValQuantization", doClassValQuantization.isSelected());
         paramMap.put("minClassValue", Double.parseDouble(minClassValue.getText()));
         paramMap.put("classValStepSize", Double.parseDouble(classValStepSize.getText()));

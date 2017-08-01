@@ -18,8 +18,8 @@
 <table>
   <tr><td><b>Name:</b></td><td><code>Merge</code></td></tr>
   <tr><td><b>Full name:</b></td><td><code>org.esa.snap.core.gpf.common.MergeOp</code></td></tr>
-  <tr><td><b>Purpose:</b></td><td>Allows copying raster data from any number of source products to a specified 'master' product.</td></tr>
-  <tr><td><b>Version:</b></td><td>1.1</td></tr>
+  <tr><td><b>Purpose:</b></td><td>Allows merging of several source products by using specified 'master' as reference product.</td></tr>
+  <tr><td><b>Version:</b></td><td>1.2</td></tr>
 </table>
 <h2>Description</h2>
 The merge operator allows copying raster data from other products to a specified product. The first product provided
@@ -36,7 +36,7 @@ The merge operator allows copying raster data from other products to a specified
 </tr>
 <tr>
   <td><code>masterProduct</code></td>
-  <td>The master product, which receives nodes from subsequently provided products.</td>
+  <td>The master, which serves as the reference, e.g. providing the geo-information.</td>
 </tr>
 <tr>
   <td><code>sourceProducts</code></td>
@@ -63,7 +63,7 @@ The merge operator allows copying raster data from other products to a specified
   <td><code>excludes</code></td>
   <td><code>NodeDescriptor[]</code></td>
   <td><code></code></td>
-  <td>Defines nodes to be excluded from the target product (not supported yet).</td>
+  <td>Defines nodes to be excluded from the target product. Excludes have precedence above includes.</td>
   <td></td>
 </tr>
 <tr>

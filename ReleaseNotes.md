@@ -1,6 +1,26 @@
 SNAP Release Notes
 ==================
 
+#New in SNAP 6.0
+More than 100 bugs and improvements have been solved or implemented for SNAP 6.0.
+Beside these general improvements also each Toolbox has got it's own improvements.
+  
+#####Some of the noteworthy improvements are:
+    [SNAP-227] - GPT memory configuration
+    [SNAP-371] - Smart installer does not allow execution of user-defined graphs
+    [SNAP-650] - Provide progress on the command line
+    [SNAP-671] - My keyboard stops working with SNAP 5.0
+    [SNAP-683] - Add AAFC 2014-2016 land cover
+    [SNAP-695] - Implement exclude for Merge operator
+    [SNAP-736] - Unchecked 'Save As' functionality not working in graph builder
+    [SNAP-743] - Support plotting of metadata values
+    |SNAP-783] - Module updates are not correctly considered by snappy
+    [SNAP-807] - Export of pins to Google Earth KMZ format
+
+A comprehensive list of all issues resolved in this version of SNAP can be found in our 
+[issue tracking system](https://senbox.atlassian.net/secure/ReleaseNote.jspa?projectId=10100&version=12200)
+
+
 #New in SNAP v5.0
 The SNAP release concentrates on bug fixes and improvements. New features are mainly implemented in the Toolboxes. 
  

@@ -113,10 +113,14 @@ public class PropertiesProvider implements DataProvider {
                 if (value instanceof ProductEntry) {
                     final ProductEntry entry = (ProductEntry) value;
 
-                    final String pixelSpacing = df.format(entry.getRangeSpacing()) + " x " +
-                            df.format(entry.getAzimuthSpacing()) + " m";
+                    String pixelSpacing = "";
+                    if (entry.getRangeSpacing() > 0 && entry.getAzimuthSpacing() > 0) {
+                        pixelSpacing = df.format(entry.getRangeSpacing()) + " x " +
+                                df.format(entry.getAzimuthSpacing()) + " m";
+                    }
                     final File file = entry.getFile();
-                    final String fileSize = "(" + (entry.getFileSize() / (1024 * 1024)) + " MB)";
+                    final String fileSize = (entry.getFileSizeString() == null) ? "(" + (entry.getFileSize() / (1024 * 1024)) + " MB)"
+                            : "(" + entry.getFileSizeString() + ")";
 
                     final String dateString = dateFormat.format(entry.getFirstLineTime().getAsDate());
 
@@ -134,6 +138,8 @@ public class PropertiesProvider implements DataProvider {
                             polStr += ' ' + pol3;
                         if (!pol4.equals(AbstractMetadata.NO_METADATA_STRING))
                             polStr += ' ' + pol4;
+                    } else {
+                        polStr = entry.getAcquisitionMode(); // SciHub search result contains polarization mode here
                     }
 
                     if (minimalView) {
