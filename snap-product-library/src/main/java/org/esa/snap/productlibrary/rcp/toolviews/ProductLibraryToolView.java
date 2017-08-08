@@ -21,6 +21,7 @@ import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.engine_utilities.db.DBProductQuery;
 import org.esa.snap.engine_utilities.db.DBQuery;
 import org.esa.snap.engine_utilities.db.ProductEntry;
+import org.esa.snap.engine_utilities.download.opensearch.CopernicusProductQuery;
 import org.esa.snap.graphbuilder.gpf.ui.worldmap.WorldMapUI;
 import org.esa.snap.graphbuilder.rcp.progress.LabelBarProgressMonitor;
 import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
@@ -216,7 +217,8 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
                 libConfig.setWindowBounds(e.getComponent().getBounds());
             }
         });
-        setUIComponentsEnabled(doRepositoriesExist());
+
+        setUIComponentsEnabled();
 
         setLayout(new BorderLayout());
         add(mainPanel, BorderLayout.CENTER);
@@ -280,8 +282,10 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
                 if (event.getStateChange() == ItemEvent.SELECTED) {
                     final RepositoryInterface repo = (RepositoryInterface)repositoryListCombo.getSelectedItem();
                     dbPane.setRepository(repo);
+
                     SystemUtils.LOG.info("ProductLibraryToolView: selected " + repo.getName());
-                    searchButton.setEnabled(repo.getName().toLowerCase().contains("scihub"));
+
+                    setUIComponentsEnabled();
                 }
             }
         });
@@ -436,7 +440,7 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         libConfig.addBaseDir(baseDir);  // verified that it won't be added again if already there
         final RepositoryInterface repo = addToRepositoryListCombo(baseDir);
 
-        setUIComponentsEnabled(doRepositoriesExist());
+        setUIComponentsEnabled();
 
         updateRepostitory(repo, options);  // This is needed
     }
@@ -560,9 +564,16 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
     }
 
     private synchronized void removeProducts(final RepositoryInterface repo) {
-        if(repo instanceof FolderRepository) {
+        progMon = getLabelBarProgressMonitor();
+        if (repo == null) {
+            // Remove all
+            final DBWorker remover = new DBWorker(DBWorker.TYPE.REMOVE,
+                    ((DBProductQuery) repositoryListCombo.getItemAt(0).getProductQueryInterface()).getDB(),
+                    null, progMon);
+            remover.addListener(new DBWorkerListener());
+            remover.execute();
+        } else if(repo instanceof FolderRepository) {
             final FolderRepository folderRepo = (FolderRepository) repo;
-            progMon = getLabelBarProgressMonitor();
             final DBWorker remover = new DBWorker(DBWorker.TYPE.REMOVE,
                                                   ((DBProductQuery)folderRepo.getProductQueryInterface()).getDB(),
                                                   folderRepo.getBaseDir(), progMon);
@@ -571,17 +582,39 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         }
     }
 
-    private void setUIComponentsEnabled(final boolean enable) {
+    private void setUIComponentsEnabled() {
+
+        final RepositoryInterface repo = (RepositoryInterface)repositoryListCombo.getSelectedItem();
+
+        // "Rescan folder" and "Remove folder" are not applicable for "ESA SciHub" or when there are no
+        // other folders.
+        final boolean isSciHub = repo.getProductQueryInterface() instanceof CopernicusProductQuery;
+
+        final boolean enable = !isSciHub && doRepositoriesExist();
+        updateButton.setEnabled(enable);
         removeButton.setEnabled(enable);
-        updateButton.setEnabled(enable); // This is the rescan folder button
-        // Since we always have at least "All Folders" and "SciHub", this should never be disabled.
-        //repositoryListCombo.setEnabled(enable);
-        // This should not be disabled based on whether repository exists or not
-        //searchButton.setEnabled(enable);
+
+        // "Apply Search Query" should always be sensitive for "ESA SciHub". For other folders, it should
+        // be sensitive only if there are folders.
+        searchButton.setEnabled(isSciHub || doRepositoriesExist());
     }
 
     private void UpdateUI() {
         dbPane.refresh();
+
+        final RepositoryInterface repo = (RepositoryInterface)repositoryListCombo.getSelectedItem();
+        final boolean isSciHub = repo.getProductQueryInterface() instanceof CopernicusProductQuery;
+
+        // After remove all folders, we stay at All_Folders, so need to clear list and world map
+        if (!doRepositoriesExist() && !isSciHub) {
+
+            // clear the list
+            currentListView.setProductEntryList(new ProductEntry[]{}); // force to empty
+
+            // clear the world map
+            dbPane.setSelectionRect(null);
+        }
+
         currentListView.updateUI();
     }
 
@@ -783,7 +816,7 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
 
         public void notifyMSG(final MSG msg) {
             if (msg.equals(DBWorker.DBWorkerListener.MSG.DONE)) {
-                setUIComponentsEnabled(doRepositoriesExist());
+                setUIComponentsEnabled();
                 UpdateUI();
             }
         }
