@@ -282,7 +282,7 @@ public final class DatabasePane extends JPanel {
         }
     }
 
-    boolean isClientError401(Exception e) {
+    private boolean isClientError401(Exception e) {
         return e.getMessage().contains("CLIENT_ERROR") && e.getMessage().contains("401");
     }
 
