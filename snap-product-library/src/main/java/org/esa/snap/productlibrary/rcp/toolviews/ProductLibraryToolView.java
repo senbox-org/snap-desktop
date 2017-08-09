@@ -645,6 +645,7 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
 
     private void rescanFolder(final DBScanner.Options options) {
         if (repositoryListCombo.getSelectedIndex() == 0) {
+            // Switch to each folder and rescan it
             for (int i = repositoryFolderStartIndex; i < repositoryListCombo.getItemCount(); ++i) {
                 updateRepostitory(repositoryListCombo.getItemAt(i), options);
             }
@@ -805,6 +806,9 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
                 repositoryListCombo.setSelectedItem(repo);
             }
             UpdateUI();
+
+            // This will update the product list after rescan
+            notifyNewMapSelectionAvailable();
         }
     }
 
