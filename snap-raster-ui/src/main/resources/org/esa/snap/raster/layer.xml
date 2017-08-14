@@ -45,6 +45,16 @@
                 <attr name="helpId" stringvalue="GLCM"/>
                 <attr name="icon" stringvalue="esaIcon"/>
             </file>
+            <file name="org-esa-snap-raster-gpf-LinearTodBOp-Action.instance">
+                <attr name="instanceCreate" methodvalue="org.openide.awt.Actions.alwaysEnabled"/>
+                <attr name="delegate" methodvalue="org.esa.snap.graphbuilder.rcp.actions.OperatorAction.create"/>
+                <attr name="displayName" stringvalue="Converts bands to/from dB"/>
+                <attr name="operatorName" stringvalue="LinearToFromdB"/>
+                <attr name="dialogTitle" stringvalue="Converts bands to/from dB"/>
+                <attr name="targetProductNameSuffix" stringvalue="_dB"/>
+                <attr name="ShortDescription" stringvalue="Converts bands to/from dB"/>
+                <attr name="helpId" stringvalue="LinearTodBOp"/>
+            </file>
         </folder>
     </folder>
 
@@ -74,6 +84,11 @@
                           stringvalue="Actions/Operators/org-esa-snap-raster-gpf-ConvertDatatypeOp-Action.instance"/>
                     <attr name="position" intvalue="100"/>
                 </file>
+                <file name="org-esa-snap-raster-gpf-LinearTodBOp-Action.shadow">
+                    <attr name="originalFile"
+                          stringvalue="Actions/Operators/org-esa-snap-raster-gpf-LinearTodBOp-Action.instance"/>
+                    <attr name="position" intvalue="200"/>
+                </file>
             </folder>
             <folder name="Image Analysis">
                 <folder name="Texture Analysis">
@@ -101,6 +116,10 @@
         <file name="org.esa.snap.raster.gpf.ui.CreateLandMaskOpUI">
             <attr name="operatorUIClass" stringvalue="org.esa.snap.raster.gpf.ui.CreateLandMaskOpUI"/>
             <attr name="operatorName" stringvalue="Land-Sea-Mask"/>
+        </file>
+        <file name="org.esa.snap.raster.gpf.ui.LinearTodBOpUI">
+            <attr name="operatorUIClass" stringvalue="org.esa.snap.raster.gpf.ui.LinearTodBOpUI"/>
+            <attr name="operatorName" stringvalue="LinearToFromdB"/>
         </file>
     </folder>
 
