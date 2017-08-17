@@ -1063,22 +1063,52 @@ public class ProductSceneView extends BasicView
         if (thisGeoCoding != null && thatGeoCoding != null && thisGeoCoding.canGetGeoPos() && thatGeoCoding.canGetPixelPos()) {
             final Viewport thisViewport = layerCanvas.getViewport();
             final Viewport thatViewport = thatView.layerCanvas.getViewport();
-            final double viewCenterX = thisViewport.getViewBounds().getCenterX();
-            final double viewCenterY = thisViewport.getViewBounds().getCenterY();
-            final Point2D viewCenter = new Point2D.Double(viewCenterX, viewCenterY);
-            final Point2D modelCenter = thisViewport.getViewToModelTransform().transform(viewCenter, null);
-            final PixelPos imageCenter = new PixelPos();
-            getBaseImageLayer().getModelToImageTransform().transform(modelCenter, imageCenter);
-            final GeoPos geoCenter = new GeoPos();
-            thisGeoCoding.getGeoPos(imageCenter, geoCenter);
-            thatGeoCoding.getPixelPos(geoCenter, imageCenter);
-            if (imageCenter.isValid()) {
-                thatView.getBaseImageLayer().getImageToModelTransform().transform(imageCenter, modelCenter);
-                thatViewport.setZoomFactor(thisViewport.getZoomFactor(), modelCenter.getX(), modelCenter.getY());
-                return true;
-            }
+            final Rectangle thisViewBounds = thisViewport.getViewBounds();
+            final Point2D thisViewUpperLeft = new Point2D.Double(thisViewBounds.getMinX(), thisViewBounds.getMinY());
+            final Point2D thisViewUpperRight = new Point2D.Double(thisViewBounds.getMaxX(), thisViewBounds.getMinY());
+            final Point2D thisViewLowerLeft = new Point2D.Double(thisViewBounds.getMinX(), thisViewBounds.getMaxY());
+            final Point2D thisViewLowerRight = new Point2D.Double(thisViewBounds.getMaxX(), thisViewBounds.getMaxY());
+            final AffineTransform thatImageToModelTransform = thatView.getBaseImageLayer().getImageToModelTransform();
+            final Point2D thatModelUpperLeft = getThatModelFromThisView(thisViewUpperLeft, thisGeoCoding, thatGeoCoding,
+                                                                        thatImageToModelTransform);
+            final Point2D thatModelUpperRight = getThatModelFromThisView(thisViewUpperRight, thisGeoCoding, thatGeoCoding,
+                                                                         thatImageToModelTransform);
+            final Point2D thatModelLowerLeft = getThatModelFromThisView(thisViewLowerLeft, thisGeoCoding, thatGeoCoding,
+                                                                        thatImageToModelTransform);
+            final Point2D thatModelLowerRight = getThatModelFromThisView(thisViewLowerRight, thisGeoCoding, thatGeoCoding,
+                                                                         thatImageToModelTransform);
+            double modelMinX = Math.min(thatModelUpperLeft.getX(), Math.min(thatModelUpperRight.getX(),
+                                                                            Math.min(thatModelLowerLeft.getX(),
+                                                                                     thatModelLowerRight.getX())));
+            double modelMinY = Math.min(thatModelUpperLeft.getY(), Math.min(thatModelUpperRight.getY(),
+                                                                            Math.min(thatModelLowerLeft.getY(),
+                                                                                     thatModelLowerRight.getY())));
+            double modelMaxX = Math.max(thatModelUpperLeft.getX(), Math.max(thatModelUpperRight.getX(),
+                                                                            Math.max(thatModelLowerLeft.getX(),
+                                                                                     thatModelLowerRight.getX())));
+            double modelMaxY = Math.max(thatModelUpperLeft.getY(), Math.max(thatModelUpperRight.getY(),
+                                                                            Math.max(thatModelLowerLeft.getY(),
+                                                                                     thatModelLowerRight.getY())));
+            final Rectangle2D.Double thatModelBounds = new Rectangle2D.Double(modelMinX, modelMinY,
+                                                                              modelMaxX - modelMinX,
+                                                                              modelMaxY - modelMinY);
+            thatViewport.zoom(thatModelBounds);
+            return true;
         }
         return false;
+    }
+
+    private Point2D getThatModelFromThisView(Point2D thisView, GeoCoding thisGeoCoding, GeoCoding thatGeoCoding,
+                                              AffineTransform thatImageToModelTransform) {
+        final Viewport thisViewport = layerCanvas.getViewport();
+        final Point2D thisModel = thisViewport.getViewToModelTransform().transform(thisView, null);
+        final PixelPos thisImage = new PixelPos();
+        final PixelPos thatImage = new PixelPos();
+        getBaseImageLayer().getModelToImageTransform().transform(thisModel, thisImage);
+        final GeoPos geoPos = new GeoPos();
+        thisGeoCoding.getGeoPos(thisImage, geoPos);
+        thatGeoCoding.getPixelPos(geoPos, thatImage);
+        return thatImageToModelTransform.transform(thatImage, null);
     }
 
     protected void disposeImageDisplayComponent() {
