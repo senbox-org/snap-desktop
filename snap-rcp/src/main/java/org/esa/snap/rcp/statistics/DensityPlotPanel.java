@@ -228,8 +228,8 @@ class DensityPlotPanel extends ChartPagePanel {
         xProductList = new JComboBox<>();
         xProductList.addItemListener(event -> {
             if (event.getStateChange() == ItemEvent.SELECTED) {
-                final Product selectedProduct = (Product) event.getItem();
-                updateBandList(selectedProduct, xBandProperty, false);
+                final Product selectedXProduct = (Product) event.getItem();
+                updateBandList(selectedXProduct, xBandProperty, false);
             }
         });
         xProductList.setRenderer(new ProductListCellRenderer());
@@ -239,8 +239,8 @@ class DensityPlotPanel extends ChartPagePanel {
         yProductList = new JComboBox<>();
         yProductList.addItemListener(event -> {
             if (event.getStateChange() == ItemEvent.SELECTED) {
-                final Product selectedProduct = (Product) event.getItem();
-                updateBandList(selectedProduct, yBandProperty, true);
+                final Product selectedYProduct = (Product) event.getItem();
+                updateBandList(selectedYProduct, yBandProperty, true);
             }
         });
         yProductList.setRenderer(new ProductListCellRenderer());
