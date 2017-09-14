@@ -950,12 +950,20 @@ public class ProductSubsetDialog extends ModalDialog {
             final GeoPos geoPos1 = geoCoding.getGeoPos(pixelPos1, null);
             final GeoPos geoPos2 = geoCoding.getGeoPos(pixelPos2, null);
             if(geoPos1.isValid()) {
-                paramNorthLat1.setValue(geoPos1.getLat(), null);
-                paramWestLon1.setValue(geoPos1.getLon(), null);
+                double lat = geoPos1.getLat();
+                lat = MathUtils.crop(lat, -90.0, 90.0);
+                paramNorthLat1.setValue(lat, null);
+                double lon = geoPos1.getLon();
+                lon = MathUtils.crop(lon, -180.0, 180.0);
+                paramWestLon1.setValue(lon, null);
             }
             if (geoPos2.isValid()) {
-                paramSouthLat2.setValue(geoPos2.getLat(), null);
-                paramEastLon2.setValue(geoPos2.getLon(), null);
+                double lat = geoPos2.getLat();
+                lat = MathUtils.crop(lat, -90.0, 90.0);
+                paramSouthLat2.setValue(lat, null);
+                double lon = geoPos2.getLon();
+                lon = MathUtils.crop(lon, -180.0, 180.0);
+                paramEastLon2.setValue(lon, null);
             }
         }
 
