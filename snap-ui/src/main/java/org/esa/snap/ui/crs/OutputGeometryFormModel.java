@@ -49,19 +49,9 @@ public class OutputGeometryFormModel {
     public OutputGeometryFormModel(PropertySet sourcePropertySet) {
         init(null,
              null,
-             FIT_PRODUCT_SIZE_DEFAULT,
+             getFitProductSize(sourcePropertySet),
              getReferencePixelLocation(sourcePropertySet),
              sourcePropertySet);
-    }
-
-    private static int getReferencePixelLocation(PropertySet sourcePropertySet) {
-        double referencePixelX = sourcePropertySet.getValue("referencePixelX");
-        double referencePixelY = sourcePropertySet.getValue("referencePixelY");
-        if (referencePixelX == 0.5 && referencePixelY == 0.5) {
-            return REFERENCE_PIXEL_UPPER_LEFT;
-        } else {
-            return REFERENCE_PIXEL_USER;
-        }
     }
 
     public OutputGeometryFormModel(Product sourceProduct, Product collocationProduct) {
@@ -177,6 +167,21 @@ public class OutputGeometryFormModel {
         }
         propertyContainer.setValue("referencePixelX", referencePixelX);
         propertyContainer.setValue("referencePixelY", referencePixelY);
+    }
+
+    private static boolean getFitProductSize(PropertySet sourcePropertySet) {
+        // if either width or height is set then don't set fit product size
+        return !(sourcePropertySet.getProperty("width") != null || sourcePropertySet.getProperty("height") != null);
+    }
+
+    private static int getReferencePixelLocation(PropertySet sourcePropertySet) {
+        double referencePixelX = sourcePropertySet.getValue("referencePixelX");
+        double referencePixelY = sourcePropertySet.getValue("referencePixelY");
+        if (referencePixelX == 0.5 && referencePixelY == 0.5) {
+            return REFERENCE_PIXEL_UPPER_LEFT;
+        } else {
+            return REFERENCE_PIXEL_USER;
+        }
     }
 
     private class ChangeListener implements PropertyChangeListener {
