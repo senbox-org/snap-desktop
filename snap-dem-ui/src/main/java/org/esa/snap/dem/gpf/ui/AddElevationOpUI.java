@@ -49,7 +49,7 @@ public class AddElevationOpUI extends BaseOperatorUI {
     private final JButton externalDEMBrowseButton = new JButton("...");
     private final JLabel externalDEMFileLabel = new JLabel("External DEM:");
     private final JLabel externalDEMNoDataValueLabel = new JLabel("DEM No Data Value:");
-    private final JCheckBox fillNoDataGeoidCheckbox = new JCheckBox("Fill No Data Geod:");
+    private final JCheckBox fillNoDataGeoidCheckbox = new JCheckBox("Fill No Data Geoid:");
     private Double extNoDataValue = 0.0;
     private Boolean fillNoDataGeoid = false;
     private final DialogUtils.TextAreaKeyListener textAreaKeyListener = new DialogUtils.TextAreaKeyListener();
