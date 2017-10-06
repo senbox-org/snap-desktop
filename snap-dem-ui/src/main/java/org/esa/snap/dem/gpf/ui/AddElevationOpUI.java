@@ -49,9 +49,7 @@ public class AddElevationOpUI extends BaseOperatorUI {
     private final JButton externalDEMBrowseButton = new JButton("...");
     private final JLabel externalDEMFileLabel = new JLabel("External DEM:");
     private final JLabel externalDEMNoDataValueLabel = new JLabel("DEM No Data Value:");
-    private final JCheckBox fillNoDataGeoidCheckbox = new JCheckBox("Fill No Data Geoid:");
     private Double extNoDataValue = 0.0;
-    private Boolean fillNoDataGeoid = false;
     private final DialogUtils.TextAreaKeyListener textAreaKeyListener = new DialogUtils.TextAreaKeyListener();
     private static final String externalDEMStr = AddElevationOp.externalDEMStr;
 
@@ -88,12 +86,6 @@ public class AddElevationOpUI extends BaseOperatorUI {
         });
 
         externalDEMNoDataValue.addKeyListener(textAreaKeyListener);
-//
-        fillNoDataGeoidCheckbox.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent e) {
-                fillNoDataGeoid = (e.getStateChange() == ItemEvent.SELECTED);
-            }
-        });
 
         return new JScrollPane(panel);
     }
@@ -122,8 +114,6 @@ public class AddElevationOpUI extends BaseOperatorUI {
         }
 
         elevationBandName.setText(String.valueOf(paramMap.get("elevationBandName")));
-
-        fillNoDataGeoidCheckbox.setSelected((Boolean) paramMap.get("fillWithGeod"));
     }
 
     @Override
@@ -144,7 +134,6 @@ public class AddElevationOpUI extends BaseOperatorUI {
         }
 
         paramMap.put("elevationBandName", elevationBandName.getText());
-        paramMap.put("fillWithGeod", fillNoDataGeoid);
     }
 
     private JComponent createPanel() {
@@ -165,8 +154,6 @@ public class AddElevationOpUI extends BaseOperatorUI {
         DialogUtils.addComponent(contentPane, gbc, "DEM Resampling Method:", demResamplingMethod);
         gbc.gridy++;
         DialogUtils.addComponent(contentPane, gbc, "Elevation Band Name:", elevationBandName);
-        gbc.gridy++;
-        DialogUtils.addComponent(contentPane, gbc, "Fill NaN with Geod:", fillNoDataGeoidCheckbox);
         gbc.gridy++;
 
         DialogUtils.fillPanel(contentPane, gbc);
