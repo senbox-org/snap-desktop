@@ -47,6 +47,7 @@ import org.esa.snap.ui.crs.CustomCrsForm;
 import org.esa.snap.ui.crs.OutputGeometryForm;
 import org.esa.snap.ui.crs.OutputGeometryFormModel;
 import org.esa.snap.ui.crs.PredefinedCrsForm;
+import org.geotools.referencing.AbstractReferenceSystem;
 import org.geotools.referencing.CRS;
 import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.FactoryException;
@@ -130,7 +131,12 @@ class ReprojectionForm extends JTabbedPane {
         if (!collocationCrsUI.getRadioButton().isSelected()) {
             CoordinateReferenceSystem selectedCrs = getSelectedCrs();
             if (selectedCrs != null) {
-                parameterMap.put("crs", selectedCrs.toWKT());
+                if(selectedCrs instanceof AbstractReferenceSystem) {
+                    // Sometimes it can happen that strict mode fails. But the WKT is still valid and usable. Strict mode is anabled by default.
+                    parameterMap.put("crs", ((AbstractReferenceSystem)selectedCrs).toWKT(2, false));
+                }else {
+                    parameterMap.put("crs", selectedCrs.toWKT());
+                }
             }
         }
         if (orthoMode) {
