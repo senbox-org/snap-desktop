@@ -178,11 +178,11 @@
     </tr>
     <tr>
         <td>radiance_1</td>
-        <td>Exemplarily: the first of the bands considered for value extracting.</td>
+        <td>Exemplary: the first of the bands considered for value extracting.</td>
     </tr>
     <tr>
         <td>radiance_2</td>
-        <td>Exemplarily: the second of the bands considered for value extracting.</td>
+        <td>Exemplary: the second of the bands considered for value extracting.</td>
     </tr>
     </tbody>
 </table>
@@ -251,7 +251,8 @@ next.
     <li>month, given as <i><b>MM</b></i></li>
     <li>days in month, given as <i><b>dd</b></i></li>
     <li>day in year, given as <i><b>DDD</b></i></li>
-    <li>hour of day, given as <i><b>hh</b></i></li>
+    <li>hour of day, in 12 hour format, given as <i><b>hh</b></i></li>
+    <li>hour of day, in 24 hour format, given as <i><b>HH</b></i></li>
     <li>minute of hour, given as <i><b>mm</b></i></li>
     <li>second of minute, given as <i><b>ss</b></i></li>
 </ul>
@@ -262,6 +263,8 @@ next.
         and leads to a date <code>2011-11-03 00:00:00 UTC</code></li>
     <li><code>yyyyMMdd_hh_mm_ss</code> would parse a string like <code>20061126_08_56_12</code>
         and leads to a date <code>2006-11-26 08:56:12 UTC</code></li>
+    <li><code>yyyyMMdd-HH:mm:ss</code> would parse a string like <code>20170610-12:36:46</code>
+        and leads to a date <code>2017-06-10 12:36:46 UTC</code></li>
     <li><code>yyyyDDD</code> would parse a string like <code>2010159</code>
         and leads to a date <code>2010-06-08 00:00:00 UTC</code></li>
 </ul>
