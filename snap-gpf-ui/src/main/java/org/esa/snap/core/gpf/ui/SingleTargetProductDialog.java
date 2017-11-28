@@ -183,7 +183,7 @@ public abstract class SingleTargetProductDialog extends ModelessDialog {
             msg = MessageFormat.format("An internal error occurred during the target product processing.\n{0}",
                                        formatThrowable(t));
         } else {
-            msg = MessageFormat.format("A problem occurred during processing the target product processing.\n{0}",
+            msg = MessageFormat.format("A problem occurred during the target product processing.\n{0}",
                                        formatThrowable(t));
         }
         appContext.handleError(msg, t);
