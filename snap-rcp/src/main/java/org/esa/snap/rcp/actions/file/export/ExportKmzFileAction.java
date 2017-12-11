@@ -357,7 +357,7 @@ public class ExportKmzFileAction extends AbstractAction implements HelpCtx.Provi
             } catch (OutOfMemoryError ignored) {
                 Dialogs.showOutOfMemoryError("The image could not be exported."); /*I18N*/
             } catch (Throwable e) {
-                snapApp.handleError("The Image could not be exported", e);
+                snapApp.handleError("The image could not be exported", e);
             } finally {
                 snapApp.getMainFrame().setCursor(Cursor.getDefaultCursor());
                 snapApp.setStatusBarMessage("");
