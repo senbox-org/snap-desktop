@@ -66,8 +66,18 @@ Each path may contain the wildcards '**' (matches recursively any directory),
   <td><code></code></td>
   <td>The common product format of all source products.
 This parameter is optional and may be used in conjunction with
-parameter 'sourceProductPaths' and only to speed up source product opening.
-Try "NetCDF-CF", "GeoTIFF", "BEAM-DIMAP", or "ENVISAT", etc.</td>
+parameter 'sourceProductPaths'. Can be set if multiple reader are 
+available for the source files and a specific one shall be used.Try "NetCDF-CF", "GeoTIFF", "BEAM-DIMAP", or "ENVISAT", etc.</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>sourceGraphPaths</code></td>
+  <td><code>String[]</code></td>
+  <td><code></code></td>
+  <td>A comma-separated list of file paths specifying the source graphs.
+Each path may contain the wildcards '**' (matches recursively any directory),
+'*' (matches any character sequence in path names) and
+'?' (matches any single character).</td>
   <td></td>
 </tr>
 <tr>
@@ -128,6 +138,13 @@ Only used if parameter 'dataDayMode' is set to 'SPATIOTEMPORAL_DATADAY'.</td>
   <td><code>Integer</code></td>
   <td><code>1</code></td>
   <td>The square of the number of pixels used for super-sampling an input pixel into multiple sub-pixels</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>maxDistanceOnEarth</code></td>
+  <td><code>Integer</code></td>
+  <td><code>-1</code></td>
+  <td>Skips binning of sub-pixel if distance on earth to the center of the main-pixel is larger as this value. A value <=0 disables this check</td>
   <td></td>
 </tr>
 <tr>
