@@ -73,7 +73,7 @@ public abstract class BaseClassifierOpUI extends BaseOperatorUI {
     private final JLabel maxClassValue = new JLabel("");
 
     private final JRadioButton labelSourceVectorName = new JRadioButton("Vector node name", true);
-    private final JRadioButton labelSourceAttribute = new JRadioButton("Attribute value", false);
+    private final JRadioButton labelSourceAttribute = new JRadioButton("Attribute value", false); // not used
 
     private final JList<String> trainingBands = new JList();
     private final JList<String> trainingVectors = new JList();
@@ -253,7 +253,7 @@ public abstract class BaseClassifierOpUI extends BaseOperatorUI {
     protected abstract void setEnabled(final boolean enabled);
 
     private void enablePowerSet() {
-        final boolean evalEnabled = evaluateClassifier.isSelected();
+        final boolean evalEnabled = evaluateClassifier.isEnabled() && evaluateClassifier.isSelected();
         evaluateFeaturePowerSet.setEnabled(evalEnabled);
         final boolean psEnabled = evaluateFeaturePowerSet.isSelected();
         minPowerSetSize.setEnabled(evalEnabled && psEnabled);
@@ -261,6 +261,7 @@ public abstract class BaseClassifierOpUI extends BaseOperatorUI {
     }
 
     private void enableTrainOnRaster(final boolean doTraining, final boolean trainOnRaster) {
+        //System.out.println("BaseClassifierOpUI.enableTrainOnRaster: doTraining = " + doTraining + " trainOnRaster = " + trainOnRaster);
         if (doTraining) {
             if (trainOnRaster) {
                 OperatorUIUtils.initParamList(trainingBands, getTrainingBands());
@@ -313,6 +314,9 @@ public abstract class BaseClassifierOpUI extends BaseOperatorUI {
 
         featureBandNames.setEnabled(doTraining);
 
+        evaluateClassifier.setEnabled(doTraining);
+        evaluateFeaturePowerSet.setEnabled(doTraining);
+
         setEnabled(doTraining);
     }
 
@@ -326,7 +330,6 @@ public abstract class BaseClassifierOpUI extends BaseOperatorUI {
 
     @Override
     public void initParameters() {
-
         String newClassifierName = (String) paramMap.get("savedClassifierName");
         if (DialogUtils.contains(classifierNameComboBox, newClassifierName)) {
             classifierNameComboBox.setSelectedItem(newClassifierName);
@@ -378,7 +381,7 @@ public abstract class BaseClassifierOpUI extends BaseOperatorUI {
             labelSourceVectorName.setSelected(true);
         }
 
-        boolean doTraining = true;
+        boolean doTraining = trainBtn.isSelected();
         enableTraining(doTraining);
         enableTrainOnRaster(doTraining, trainOnRasters);
         enablePowerSet();
@@ -402,7 +405,7 @@ public abstract class BaseClassifierOpUI extends BaseOperatorUI {
 
     @Override
     public void updateParameters() {
-
+        //System.out.println("BaseClassifierOpUI.updateParameters: called");
         paramMap.put("numTrainSamples", Integer.parseInt(numTrainSamples.getText()));
         paramMap.put("evaluateClassifier", evaluateClassifier.isSelected());
         paramMap.put("evaluateFeaturePowerSet", evaluateFeaturePowerSet.isSelected());
@@ -434,13 +437,13 @@ public abstract class BaseClassifierOpUI extends BaseOperatorUI {
             paramMap.put("labelSource", BaseClassifier.VectorNodeNameLabelSource);
         }
 
-        OperatorUIUtils.updateParamList(trainingBands, paramMap, "trainingBands");
+        updateParamList(trainingBands, paramMap, "trainingBands");
         //dumpSelectedValues("trainingBands", trainingBands);
 
-        OperatorUIUtils.updateParamList(trainingVectors, paramMap, "trainingVectors");
+        updateParamList(trainingVectors, paramMap, "trainingVectors");
         //dumpSelectedValues("trainingVectors", trainingVectors);
 
-        OperatorUIUtils.updateParamList(featureBandNames, paramMap, "featureBands");
+        updateParamList(featureBandNames, paramMap, "featureBands");
         //dumpSelectedValues("features", featureBandNames);
     }
 
@@ -450,6 +453,22 @@ public abstract class BaseClassifierOpUI extends BaseOperatorUI {
         final List<String> selectedValues = paramList.getSelectedValuesList();
         for (Object selectedValue : selectedValues) {
             SystemUtils.LOG.info(' ' + (String) selectedValue);
+        }
+    }
+
+    private static void updateParamList(final JList paramList, final Map<String, Object> paramMap, final String paramName) {
+        final List selectedValues = paramList.getSelectedValuesList();
+        final String names[] = new String[selectedValues.size()];
+        int i = 0;
+        for (Object selectedValue : selectedValues) {
+            names[i++] = (String) selectedValue;
+        }
+        if (names.length == 0 && paramMap.get(paramName) != null) {
+            // Remove previously selected values, so that nothing is selected
+            paramMap.remove(paramName);
+        } else {
+            // Replace previously selected values
+            paramMap.put(paramName, names);
         }
     }
 
@@ -583,18 +602,18 @@ public abstract class BaseClassifierOpUI extends BaseOperatorUI {
         DialogUtils.addComponent(vectorPanel, gbc, "Training vectors:     ", new JScrollPane(trainingVectors));
         gbc.gridy++;
         gbc.gridx = 0;
-        vectorPanel.add(new JLabel("Labels:"), gbc);
+        //vectorPanel.add(new JLabel("Labels:"), gbc);
 
-        final ButtonGroup group3 = new ButtonGroup();
-        group3.add(labelSourceVectorName);
-        group3.add(labelSourceAttribute);
+        //final ButtonGroup group3 = new ButtonGroup();
+        //group3.add(labelSourceVectorName);
+        //group3.add(labelSourceAttribute);
 
-        JPanel radioPanel = new JPanel(new FlowLayout());
-        radioPanel.add(labelSourceVectorName);
-        radioPanel.add(labelSourceAttribute);
+        //JPanel radioPanel = new JPanel(new FlowLayout());
+        //radioPanel.add(labelSourceVectorName);
+        //radioPanel.add(labelSourceAttribute);
 
         gbc.gridx = 1;
-        vectorPanel.add(radioPanel, gbc);
+        //vectorPanel.add(radioPanel, gbc);
 
         DialogUtils.fillPanel(vectorPanel, gbc);
 
