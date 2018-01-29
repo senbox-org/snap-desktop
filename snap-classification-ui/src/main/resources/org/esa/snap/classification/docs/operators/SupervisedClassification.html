@@ -21,36 +21,40 @@ training samples are used to train a classifier. Each training sample
 vector is made up of the class the pixel belongs to and feature values
 of the pixel. In the classification stage, the trained classifier is
 used to classify pixels with known feature values but unknown class.<br><br>User has a choice of <br><ul><li>train (and save) a
-classifier; or </li><li>load a previously saved classifier </li></ul>to perform classification.<br><br>To do the former, type in a new filename. <br><br>To do the latter, select a filename from the list. <br><br><br><span style="font-weight: bold;">Train and save a classifier</span><br><br>User is required to provide the number of training samples to use. <br><br>Note that in
+classifier; or </li><li>load a previously saved classifier </li></ul>to perform classification.<br><br>To do the former, type in a new filename. <br><br>To do the latter, select a filename from the list. <br><br><br><big><span style="font-weight: bold;">Train and save a classifier</span></big><br><br>User is required to provide the number of training samples to use. <br><br>Note that in
 addition to training,&nbsp;evaluation of the classifier is also performed.
 E.g., if the number of training samples to use is 5000, then 5000 x 2 =
 10,000 samples will be extracted. The first 5000 will be used as
 training samples and the remaining 5000 will be used as test samples
-for evaluation.<br><br>All bands in the "feature" products are used.<br><br>User has a choice of <br><ol><li>using
-the data in the "class" band as classes (the first band in the "class"
-product without "lat_band" or "lon_band" in its name is used as the
-"class" band); or </li><li>pick the classes from the list of "regions" in the "class" product. </li></ol><br>To choose (1), deselect all in the "Classes" list. <br><br><div style="margin-left: 40px;">In
-this case, if the data in the training samples&nbsp;only assume the
-values 0 (representing, say, water) or 1 (representing, say, land),
-then there will only be two classes. <br><br>If the data is biomass,
-there will be as many classes as there are biomass values in the
-training set. For data values that are continuous like biomass, it is
-recommended to quantize the&nbsp;values. <br><br>Remember to uncheck the "Quantize class value" box if the data is discrete labels such as landcover classes. <br><br>It is up to the user to ensure that the training or test samples set contains roughly equal number of samples for each class.<br></div><br>To
-choose (2), select the "regions" in the "Classes" list that correspond
-to&nbsp;classes (e.g., a "region" called "water" will become the class
-with label "water"). <br><br><div style="margin-left: 40px;">"Regions"
-are represented as "vectors" and can be&nbsp;created using the "New
-Vector Data Container" tool and other drawing tools such as "Rectangle
-drawing tool". <br><br>A pixel inside that "region" will have the name of the region as its class instead of its data value.<br><br>The
+for evaluation.<br><br>Two
+separate files are created: one with&nbsp;extension .class and one with
+extension .xml. &nbsp;The evaluation results are in a file with
+extension .txt.<br><br>User can choose to train on raster or vectors.<br><br><span style="font-weight: bold;">Train on Raster</span><br><br>The
+user can choose one band (from the first product listed in the
+ProductSet-Reader) as the training band. If none is chosen, the first
+band will be used as the training band.<br><br>The user can choose
+bands from all the source products as feature bands. If none is chosen,
+&nbsp;all bands (except for the training band) will be used as feature
+bands.<br><br>There is an option to quantize class values if the values of the chosen training band are not already discrete. <br><br>If the training band consists of data that is discrete labels such as landcover classes, then there is no need to quantize. <br><br>However,
+if the training band data is continuous like biomass, then there will
+be as many classes as there are biomass values in the training set. It
+is recommended to quantize the values in such cases.<br><br>E.g., if
+the range of values in the training band is [0.0, 1.0], the user can
+set min class value to 0.0, class value step size to 0.1 and class
+levels to 10 to quantize the values to 10 levels: 0.0, 0.1, 0.2, 0.3,
+0.4, 0.5, 0.6, 0.7, 0.8, 0.9.<br><br><span style="font-weight: bold;">Train on Vectors</span><br><br>The
+user can choose a number of training vectors (from the first product
+listed in the ProductSet-Reader) as classes. E.g., the training vectors
+could be regions (polygons) each representing a separate class such as
+water, urban or forest. A training vector called "water" will become a
+class label called "water".<br><br>Regions can be created using the "New Vector Data Container" tool and other drawing tools such as "Rectangle drawing tool". <br><br>A pixel inside a training vector region will have the name of the region as its class instead of its data value.<br><br>Feature bands are chosen in the same manner as train on raster. <br><br>The
 operator will endeavour to extract the same number samples for each
-class when constructing the training or test samples set.<br></div><br>Two separate files are created: one with no extension and one with extension .xml. <br><br><br><span style="font-weight: bold;">Load a previously saved classifier</span><br><br>The minimum information the user needs to know to use a saved
+class when constructing the training or test samples set.<br><br><br><big><span style="font-weight: bold;">Load a previously saved classifier</span></big><br><br>The minimum information the user needs to know to use a saved
 classifier is the list of features which is contained in the XML
-file among other useful information.<br><br>At &nbsp;least one "feature" product is required. &nbsp;However, user can specify more than one.<br><br>For
+file among other useful information.<br><br>The user can specify more than one source feature product.<br><br>For
 each name in "featureNames" in the XML file, the operator will search
-for a band in the "feature" products&nbsp;whose name contains it.<br><br>If evaluation of the classifier is desired, then the user must provide<br><ul><li>a "class" product as the first product in the list ahead of all the "feature" products; and</li><li>the number of test samples to use for evaluation.</li></ul>If
-there is more than one product in the list, the operator will determine
-if the first one is a "class" product by looking for a "feature" band
-in the product. If it does not contain any "feature" band, then it is
-taken as the "class" product. &nbsp;<br><br>If "regions" were not used, then the operator will use the first band in the "class"
-product as the
-"class" band.</body></html>
+for a band in the&nbsp;feature products&nbsp;whose name contains it. It
+loops through the products in the order they are listed in ProductSet-Reader and uses the first band it can find
+that contains the feature name. E.g., if the name is "g0" and there are
+two feature products and both contain a band named "g0", then the band
+from the first feature product will be used.<br><br><br></body></html>
