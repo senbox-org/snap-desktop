@@ -76,6 +76,8 @@ public final class DatabasePane extends JPanel {
     private final JTextArea metadataArea = new JTextArea();
     private final JButton addMetadataButton = new JButton("+");
     private final JTextArea productText = new JTextArea();
+    private final JRadioButton bboxInsideButton = new JRadioButton("Inside", true);
+    private final JRadioButton bboxIntersectButton = new JRadioButton("Intersect", false);
 
     private RepositoryInterface repository;
     private ProductQueryInterface productQueryInterface;
@@ -116,6 +118,20 @@ public final class DatabasePane extends JPanel {
             addMetadataButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     addMetadataText();
+                }
+            });
+
+            bboxInsideButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    dbQuery.insideSelectionRectangle(bboxInsideButton.isSelected());
+                    partialQuery();
+                }
+            });
+
+            bboxIntersectButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    dbQuery.insideSelectionRectangle(bboxInsideButton.isSelected());
+                    partialQuery();
                 }
             });
 
@@ -221,6 +237,17 @@ public final class DatabasePane extends JPanel {
         gbc.gridx = 0;
         gbc.gridwidth = 2;
         this.add(createFreeSearchPanel(), gbc);
+
+        gbc.gridy++;
+        final ButtonGroup group = new ButtonGroup();
+        group.add(bboxInsideButton);
+        group.add(bboxIntersectButton);
+        final JPanel radioPanel = new JPanel(new FlowLayout());
+        //radioPanel.add(new JLabel("Bounding Rectangle: "));
+        radioPanel.add(bboxInsideButton);
+        radioPanel.add(bboxIntersectButton);
+        radioPanel.add(new JLabel(" selection rectangle"));
+        this.add(radioPanel, gbc);
 
         gbc.gridy++;
         final JPanel productDetailsPanel = new JPanel(new BorderLayout());
@@ -480,6 +507,7 @@ public final class DatabasePane extends JPanel {
     void setSelectionRect(final GeoPos[] selectionBox) {
         dbQuery.setSelectionRect(selectionBox);
         dbQuery.setReturnAllIfNoIntersection(true);
+        dbQuery.insideSelectionRectangle(bboxInsideButton.isSelected());
         partialQuery();
     }
 
