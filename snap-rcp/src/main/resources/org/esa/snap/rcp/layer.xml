@@ -407,6 +407,7 @@
             <file name="Statistics.wsmode" url="modes/Statistics.wsmode"/>
             <file name="Spectrum.wsmode" url="modes/Spectrum.wsmode"/>
             <file name="CorrelativePlot.wsmode" url="modes/CorrelativePlot.wsmode"/>
+            <file name="3DScatterPlot.wsmode" url="modes/3DScatterPlot.wsmode"/>
         </folder>
     </folder>
 
