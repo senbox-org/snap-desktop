@@ -508,7 +508,6 @@ class DensityPlotPanel extends ChartPagePanel {
                     plot.getRangeAxis().setLabel(StatisticChartStyling.getAxisLabel(getRaster(Y_VAR), "Y", false));
                     toggleColorCheckBox.setEnabled(true);
                 } catch (InterruptedException | CancellationException e) {
-                    e.printStackTrace();
                     Dialogs.showMessage(CHART_TITLE,
                                             "Failed to compute scatter plot.\n" +
                                                     "Calculation canceled.",
@@ -516,7 +515,6 @@ class DensityPlotPanel extends ChartPagePanel {
                                         null
                     );
                 } catch (ExecutionException | IllegalArgumentException e) {
-                    e.printStackTrace();
                     Dialogs.showMessage(CHART_TITLE,
                                             "Failed to compute scatter plot.\n" +
                                                     "An error occurred:\n" +
