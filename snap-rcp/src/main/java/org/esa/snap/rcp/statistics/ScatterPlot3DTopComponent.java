@@ -16,15 +16,12 @@
 
 package org.esa.snap.rcp.statistics;
 
-import org.esa.snap.ui.UIUtils;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
-
-import javax.swing.Icon;
 
 @TopComponent.Description(
         preferredID = "ScatterPlot3DTopComponent",
@@ -57,21 +54,22 @@ import javax.swing.Icon;
 public class ScatterPlot3DTopComponent extends AbstractStatisticsTopComponent {
 
 
+    private ScatterPlot3DPlotPanel scatterPlot3DPlotPanel;
+
     @Override
     protected PagePanel createPagePanel() {
-        final Icon largeIcon = UIUtils.loadImageIcon("icons/ScatterPlot24.gif");
-        final String chartTitle = ScatterPlotPanel.CHART_TITLE;
-        final ScatterPlot3DPlotPanel scatterPlot3DPanel =
-                new ScatterPlot3DPlotPanel(this, Bundle.CTL_3DScatterPlotTopComponent_HelpId());
-        final TableViewPagePanel tableViewPanel = new TableViewPagePanel(this,
-                Bundle.CTL_3DScatterPlotTopComponent_HelpId(), chartTitle, largeIcon);
-        scatterPlot3DPanel.setAlternativeView(tableViewPanel);
-        tableViewPanel.setAlternativeView(scatterPlot3DPanel);
-        return scatterPlot3DPanel;
+        scatterPlot3DPlotPanel = new ScatterPlot3DPlotPanel(this, Bundle.CTL_3DScatterPlotTopComponent_HelpId());
+        return scatterPlot3DPlotPanel;
     }
 
     @Override
     public HelpCtx getHelpCtx() {
         return new HelpCtx(Bundle.CTL_3DScatterPlotTopComponent_HelpId());
+    }
+
+    @Override
+    public void componentShowing() {
+        super.componentShowing();
+        scatterPlot3DPlotPanel.renderChart();
     }
 }

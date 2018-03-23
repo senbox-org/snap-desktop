@@ -249,6 +249,11 @@
             <artifactId>snap-statistics</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.jzy3d</groupId>
+            <artifactId>jzy3d-api</artifactId>
+        </dependency>
+
         <!-- Testing-->
 
         <dependency>
