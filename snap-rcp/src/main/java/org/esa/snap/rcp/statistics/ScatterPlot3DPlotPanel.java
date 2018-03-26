@@ -73,7 +73,6 @@ class ScatterPlot3DPlotPanel extends PagePanel {
     private JPanel backgroundPanel;
     private RoiMaskSelector roiMaskSelector;
     protected AbstractButton refreshButton;
-    private final boolean refreshButtonEnabled;
 
     private AxisRangeControl xAxisRangeControl;
     private AxisRangeControl yAxisRangeControl;
@@ -115,7 +114,6 @@ class ScatterPlot3DPlotPanel extends PagePanel {
 
     ScatterPlot3DPlotPanel(TopComponent parentDialog, String helpId) {
         super(parentDialog, helpId, CHART_TITLE);
-        refreshButtonEnabled = false;
 //        scatterPlotModel = new ScatterPlotModel();
 //        bindingContext = new BindingContext(PropertyContainer.createObjectBacked(scatterPlotModel));
 //        final PropertyChangeListener userSettingsUpdateListener = evt -> {
@@ -163,7 +161,7 @@ class ScatterPlot3DPlotPanel extends PagePanel {
         zBandProperty = bindingContext.getPropertySet().getProperty(PROPERTY_NAME_Z_BAND);
 
         xProductList = new JComboBox<>();
-        xProductList.addItemListener(new ProductListListener(xBandProperty, true));
+        xProductList.addItemListener(new ProductListListener(xBandProperty, false));
         xProductList.setRenderer(new ProductListCellRenderer());
         bindingContext.bind(PROPERTY_NAME_X_PRODUCT, xProductList);
         xProductProperty = bindingContext.getPropertySet().getProperty(PROPERTY_NAME_X_PRODUCT);
@@ -322,8 +320,6 @@ class ScatterPlot3DPlotPanel extends PagePanel {
         if (roiMaskSelector != null) {
             roiMaskSelector.updateMaskSource(getProduct(), getRaster());
         }
-        refreshButton.setEnabled(xBandProperty.getValue() != null && yBandProperty.getValue() != null &&
-                                         zBandProperty.getValue() != null);
         updateUIState();
     }
 
@@ -378,6 +374,8 @@ class ScatterPlot3DPlotPanel extends PagePanel {
     }
 
     private void updateUIState() {
+        refreshButton.setEnabled(xBandProperty.getValue() != null && yBandProperty.getValue() != null &&
+                                         zBandProperty.getValue() != null);
         xAxisRangeControl.setComponentsEnabled(getRaster() != null);
         yAxisRangeControl.setComponentsEnabled(getRaster() != null);
         zAxisRangeControl.setComponentsEnabled(getRaster() != null);
