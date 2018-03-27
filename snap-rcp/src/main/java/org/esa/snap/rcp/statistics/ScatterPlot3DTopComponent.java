@@ -25,7 +25,7 @@ import org.openide.windows.TopComponent;
 
 @TopComponent.Description(
         preferredID = "ScatterPlot3DTopComponent",
-        iconBase = "org/esa/snap/rcp/icons/ScatterPlot.gif",
+        iconBase = "org/esa/snap/rcp/icons/3dScatterPlot.png",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(
