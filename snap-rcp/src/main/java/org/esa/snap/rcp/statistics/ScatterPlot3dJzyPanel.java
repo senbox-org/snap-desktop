@@ -89,29 +89,31 @@ class ScatterPlot3dJzyPanel extends JPanel {
         chart.getAxeLayout().setZAxeLabel(zLabelName);
     }
 
-    void updateChart(float[] xData, float[] yData, float[] zData, double xScale, double yScale, double zScale,
-                     float xMin, float xMax, float yMin, float yMax, float zMin, float zMax) {
-//        chart.clear();
-//        scatter.clear();
-//        pickingSupport.unRegisterAllPickableObjects();
+    void setChartData(float[] xData, float[] yData, float[] zData, double xScale, double yScale, double zScale) {
         final int size = xData.length;
         Coord3d[] points = new Coord3d[size];
-        Color[] colors = new Color[size];
         for (int i = 0; i < size; i++) {
             points[i] = new Coord3d(xData[i] * xScale, yData[i] * yScale, zData[i] * zScale);
             PickablePoint pickablePoint = new PickablePoint(points[i]);
             pickingSupport.registerPickableObject(pickablePoint, points[i]);
-            colors[i] = new Color(0.0f, 1.0f, 1.0f, 0.25f);
         }
         scatter.setData(points);
+    }
+
+    void setColors(int[] colorData) {
+        Color[] colors = new Color[colorData.length / 4];
+        for (int i = 0; i < colorData.length / 4; i++) {
+            colors[i] = new Color(colorData[4 * i], colorData[ 4 * i + 1], colorData[4 * i + 2], 63);
+        }
         scatter.setColors(colors);
+    }
+
+    void setChartBounds(float xMin, float xMax, float yMin, float yMax, float zMin, float zMax) {
         xRange = new Range(xMin, xMax);
         yRange = new Range(yMin, yMax);
         zRange = new Range(zMin, zMax);
         final BoundingBox3d box = new BoundingBox3d(xRange, yRange, zRange);
         chart.getView().setBoundManual(box);
-        System.out.println("Attempting to render ...");
-        renderChart();
     }
 
     void toggleAnimate() {

@@ -25,13 +25,17 @@ import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.jidesoft.swing.SimpleScrollPane;
 import org.esa.snap.core.datamodel.Band;
+import org.esa.snap.core.datamodel.ImageInfo;
 import org.esa.snap.core.datamodel.Mask;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.datamodel.Stx;
 import org.esa.snap.core.datamodel.StxFactory;
+import org.esa.snap.core.image.ImageManager;
 import org.esa.snap.core.util.Debug;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.rcp.colormanip.ScatterPlot3DColorManipulationPanel;
+import org.esa.snap.rcp.colormanip.ScatterPlot3DFormModel;
 import org.esa.snap.ui.GridBagUtils;
 import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.tool.ToolButtonFactory;
@@ -86,24 +90,30 @@ class ScatterPlot3DPlotPanel extends PagePanel {
     private final static String PROPERTY_NAME_X_PRODUCT = "xProduct";
     private final static String PROPERTY_NAME_Y_PRODUCT = "yProduct";
     private final static String PROPERTY_NAME_Z_PRODUCT = "zProduct";
+    private final static String PROPERTY_NAME_COLOR_PRODUCT = "colorProduct";
     private final static String PROPERTY_NAME_X_BAND = "xBand";
     private final static String PROPERTY_NAME_Y_BAND = "yBand";
     private final static String PROPERTY_NAME_Z_BAND = "zBand";
+    private final static String PROPERTY_NAME_COLOR_BAND = "colorBand";
 
     private BindingContext bindingContext;
     private DataSourceConfig dataSourceConfig;
     private Property xProductProperty;
     private Property yProductProperty;
     private Property zProductProperty;
+    private Property colorProductProperty;
     private Property xBandProperty;
     private Property yBandProperty;
     private Property zBandProperty;
+    private Property colorBandProperty;
     private JComboBox<ListCellRenderer> xProductList;
     private JComboBox<ListCellRenderer> yProductList;
     private JComboBox<ListCellRenderer> zProductList;
+    private JComboBox<ListCellRenderer> colorProductList;
     private JComboBox<ListCellRenderer> xBandList;
     private JComboBox<ListCellRenderer> yBandList;
     private JComboBox<ListCellRenderer> zBandList;
+    private JComboBox<ListCellRenderer> colorBandList;
     //todo instead using referenceSize, use referenceSceneRasterTransform
     private Dimension referenceSize;
 
@@ -111,22 +121,11 @@ class ScatterPlot3DPlotPanel extends PagePanel {
     private static final String NO_DATA_MESSAGE = "No 3D scatter plot computed yet.";
     private static final int NUM_DECIMALS = 2;
     private ScatterPlot3dJzyPanel scatterPlot3dJzyPanel;
+    private ScatterPlot3DColorManipulationPanel colorManipulationPanel;
+    private ScatterPlot3DFormModel formModel;
 
     ScatterPlot3DPlotPanel(TopComponent parentDialog, String helpId) {
         super(parentDialog, helpId, CHART_TITLE);
-//        scatterPlotModel = new ScatterPlotModel();
-//        bindingContext = new BindingContext(PropertyContainer.createObjectBacked(scatterPlotModel));
-//        final PropertyChangeListener userSettingsUpdateListener = evt -> {
-//            if (getRaster() != null) {
-//                final VectorDataNode pointDataSourceValue = scatterPlotModel.pointDataSource;
-//                final AttributeDescriptor dataFieldValue = scatterPlotModel.dataField;
-//                final UserSettings userSettings = getUserSettings(getRaster().getProduct());
-//                userSettings.set(getRaster().getName(), pointDataSourceValue, dataFieldValue);
-//            }
-//        };
-
-//        bindingContext.addPropertyChangeListener(PROPERTY_NAME_DATA_FIELD, userSettingsUpdateListener);
-//        bindingContext.addPropertyChangeListener(PROPERTY_NAME_POINT_DATA_SOURCE, userSettingsUpdateListener);
     }
 
     @Override
@@ -145,6 +144,7 @@ class ScatterPlot3DPlotPanel extends PagePanel {
                     referenceSize = rasterSize;
                     updateBandList(getProduct(), yBandProperty, true);
                     updateBandList(getProduct(), zBandProperty, true);
+                    updateBandList(getProduct(), colorBandProperty, true);
                 }
             }
         });
@@ -159,6 +159,20 @@ class ScatterPlot3DPlotPanel extends PagePanel {
         zBandList.setRenderer(new BandListCellRenderer());
         bindingContext.bind(PROPERTY_NAME_Z_BAND, zBandList);
         zBandProperty = bindingContext.getPropertySet().getProperty(PROPERTY_NAME_Z_BAND);
+
+        formModel = new ScatterPlot3DFormModel();
+        colorManipulationPanel = new ScatterPlot3DColorManipulationPanel(this, formModel);
+        colorBandList = new JComboBox<>();
+        colorBandList.setRenderer(new BandListCellRenderer());
+        colorBandList.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                final Object value = colorBandList.getSelectedItem();
+                colorManipulationPanel.setRasterDataNode((RasterDataNode) value);
+            }
+        });
+        bindingContext.bind(PROPERTY_NAME_COLOR_BAND, colorBandList);
+        colorBandProperty = bindingContext.getPropertySet().getProperty(PROPERTY_NAME_COLOR_BAND);
 
         xProductList = new JComboBox<>();
         xProductList.addItemListener(new ProductListListener(xBandProperty, false));
@@ -178,26 +192,17 @@ class ScatterPlot3DPlotPanel extends PagePanel {
         bindingContext.bind(PROPERTY_NAME_Z_PRODUCT, zProductList);
         zProductProperty = bindingContext.getPropertySet().getProperty(PROPERTY_NAME_Z_PRODUCT);
 
+        colorProductList = new JComboBox<>();
+        colorProductList.addItemListener(new ProductListListener(colorBandProperty, false));
+        colorProductList.setRenderer(new ProductListCellRenderer());
+        bindingContext.bind(PROPERTY_NAME_COLOR_PRODUCT, colorProductList);
+        colorProductProperty = bindingContext.getPropertySet().getProperty(PROPERTY_NAME_COLOR_PRODUCT);
+
         xAxisRangeControl = new AxisRangeControl("X-Axis");
         yAxisRangeControl = new AxisRangeControl("Y-Axis");
         zAxisRangeControl = new AxisRangeControl("Z-Axis");
-
-
-
-//        final ScatterPlot3DFXPanel scatterPlot3DFXPanel = new ScatterPlot3DFXPanel();
-//        scatterPlot3DFXPanel.init();
         scatterPlot3dJzyPanel = new ScatterPlot3dJzyPanel();
-//        Runnable worker = new Runnable() {
-//
-//            @Override
-//            public void run() {
-                scatterPlot3dJzyPanel.init();
-//            }
-//        };
-//        RequestProcessor.getDefault().post(worker);
-//        add(scatterPlot3DFXPanel);
-//        add(scatterPlot3dJzyPanel);
-//        createUI(scatterPlot3DFXPanel, createOptionsPanel(), new RoiMaskSelector(bindingContext));
+        scatterPlot3dJzyPanel.init();
         createUI(scatterPlot3dJzyPanel, createOptionsPanel(), new RoiMaskSelector(bindingContext));
         initActionEnablers();
         updateUIState();
@@ -215,34 +220,37 @@ class ScatterPlot3DPlotPanel extends PagePanel {
         xAxisRangeControl.getBindingContext().addPropertyChangeListener(rangeControlActionEnabler);
         yAxisRangeControl.getBindingContext().addPropertyChangeListener(rangeControlActionEnabler);
         zAxisRangeControl.getBindingContext().addPropertyChangeListener(rangeControlActionEnabler);
+        formModel.addPropertyChangeListener(evt -> refreshButton.setEnabled(true));
     }
 
     private void updateChartData() {
         final RasterDataNode xNode = dataSourceConfig.xBand;
         final RasterDataNode yNode = dataSourceConfig.yBand;
         final RasterDataNode zNode = dataSourceConfig.zBand;
+        final RasterDataNode colorNode = dataSourceConfig.colorBand;
         final RenderedImage xImage = xNode.getSourceImage().getImage(0);
-//        final RenderedImage xImage = xNode.getSourceImage().getImage(xNode.getSourceImage().getModel().getLevelCount() - 1);
-
         final RenderedImage yImage = yNode.getSourceImage().getImage(0);
-//        final RenderedImage yImage = yNode.getSourceImage().getImage(yNode.getSourceImage().getModel().getLevelCount() - 1);
         final RenderedImage zImage = zNode.getSourceImage().getImage(0);
-//        final RenderedImage zImage = zNode.getSourceImage().getImage(zNode.getSourceImage().getModel().getLevelCount() - 1);
         final int xSize = xImage.getWidth() * xImage.getHeight();
         final float[] xData = new float[xSize];
         xImage.getData().getPixels(0, 0, xImage.getWidth(), xImage.getHeight(), xData);
-        System.out.println("Read out x pixels");
         final double xScale = xNode.getScalingFactor();
         final int ySize = yImage.getWidth() * yImage.getHeight();
         final float[] yData = new float[ySize];
         yImage.getData().getPixels(0, 0, yImage.getWidth(), yImage.getHeight(), yData);
-        System.out.println("Read out y pixels");
         final double yScale = yNode.getScalingFactor();
         final int zSize = zImage.getWidth() * zImage.getHeight();
         final float[] zData = new float[zSize];
         zImage.getData().getPixels(0, 0, zImage.getWidth(), zImage.getHeight(), zData);
-        System.out.println("Read out z pixels");
         final double zScale = zNode.getScalingFactor();
+        scatterPlot3dJzyPanel.setChartData(xData, yData, zData, xScale, yScale, zScale);
+        final ImageInfo imageInfo = formModel.getModifiedImageInfo();
+        final RenderedImage colorImage =
+                ImageManager.getInstance().createColoredBandImage(new RasterDataNode[]{colorNode}, imageInfo, 0);
+        final int colorSize = colorImage.getWidth() * colorImage.getHeight() * 4;
+        final int[] colorData = new int[colorSize];
+        colorImage.getData().getPixels(0, 0, colorImage.getWidth(), colorImage.getHeight(), colorData);
+        scatterPlot3dJzyPanel.setColors(colorData);
         try {
             setRange(xAxisRangeControl, xNode, null, ProgressMonitor.NULL);
             setRange(yAxisRangeControl, yNode, null, ProgressMonitor.NULL);
@@ -252,11 +260,11 @@ class ScatterPlot3DPlotPanel extends PagePanel {
         }
         scatterPlot3dJzyPanel.setChartTitle("3D Scatter Plot");
         scatterPlot3dJzyPanel.setLabelNames(xNode.getName(), yNode.getName(), zNode.getName());
-        scatterPlot3dJzyPanel.updateChart(xData, yData, zData, xScale, yScale, zScale,
-                                          xAxisRangeControl.getMin().floatValue(), xAxisRangeControl.getMax().floatValue(),
-                                          yAxisRangeControl.getMin().floatValue(), yAxisRangeControl.getMax().floatValue(),
-                                          zAxisRangeControl.getMin().floatValue(), zAxisRangeControl.getMax().floatValue());
-//        xImage.getData().getPixels()
+        scatterPlot3dJzyPanel.setChartBounds(
+                xAxisRangeControl.getMin().floatValue(), xAxisRangeControl.getMax().floatValue(),
+                yAxisRangeControl.getMin().floatValue(), yAxisRangeControl.getMax().floatValue(),
+                zAxisRangeControl.getMin().floatValue(), zAxisRangeControl.getMax().floatValue());
+        scatterPlot3dJzyPanel.renderChart();
     }
 
     private JPanel createOptionsPanel() {
@@ -271,6 +279,11 @@ class ScatterPlot3DPlotPanel extends PagePanel {
         GridBagUtils.addToPanel(optionsPanel, zAxisRangeControl.getPanel(), gbc, "gridy=6,insets.left=0,insets.right=0");
         GridBagUtils.addToPanel(optionsPanel, zProductList, gbc, "gridy=7,insets.left=4,insets.right=2");
         GridBagUtils.addToPanel(optionsPanel, zBandList, gbc, "gridy=8,insets.left=4,insets.right=2");
+        GridBagUtils.addToPanel(optionsPanel, new TitledSeparator("Coloring"), gbc, "gridy=9,insets.left=4,insets.right=0");
+        GridBagUtils.addToPanel(optionsPanel, colorProductList, gbc, "gridy=10,insets.left=4,insets.right=2");
+        GridBagUtils.addToPanel(optionsPanel, colorBandList, gbc, "gridy=11,insets.left=4,insets.right=2");
+        final JPanel colorPanel = colorManipulationPanel.getContentPanel();
+        GridBagUtils.addToPanel(optionsPanel, colorPanel, gbc, "gridy=12,insets.left=4,insets.right=2");
         return optionsPanel;
     }
 
@@ -293,16 +306,11 @@ class ScatterPlot3DPlotPanel extends PagePanel {
 
     @Override
     protected void updateComponents() {
-//        plot.setImage(null);
-//        plot.setDataset(null);
-//        if (isProductChanged()) {
-//            plot.getDomainAxis().setLabel("X");
-//            plot.getRangeAxis().setLabel("Y");
-//        }
         final ValueSet productValueSet = new ValueSet(createAvailableProductList());
         xProductProperty.getDescriptor().setValueSet(productValueSet);
         yProductProperty.getDescriptor().setValueSet(productValueSet);
         zProductProperty.getDescriptor().setValueSet(productValueSet);
+        colorProductProperty.getDescriptor().setValueSet(productValueSet);
 
         if (productValueSet.getItems().length > 0) {
             Product currentProduct = getProduct();
@@ -310,6 +318,7 @@ class ScatterPlot3DPlotPanel extends PagePanel {
                 xProductProperty.setValue(currentProduct);
                 yProductProperty.setValue(currentProduct);
                 zProductProperty.setValue(currentProduct);
+                colorProductProperty.setValue(currentProduct);
             } catch (ValidationException ignored) {
                 Debug.trace(ignored);
             }
@@ -317,6 +326,7 @@ class ScatterPlot3DPlotPanel extends PagePanel {
         updateBandList(getProduct(), xBandProperty, false);
         updateBandList(getProduct(), yBandProperty, true);
         updateBandList(getProduct(), zBandProperty, true);
+        updateBandList(getProduct(), colorBandProperty, true);
         if (roiMaskSelector != null) {
             roiMaskSelector.updateMaskSource(getProduct(), getRaster());
         }
@@ -471,8 +481,8 @@ class ScatterPlot3DPlotPanel extends PagePanel {
     /**
      * Responsible for creating the UI layout.
      *
-     * @param chartPanel the panel of the chart
-     * @param optionsPanel the options panel for changing settings
+     * @param chartPanel      the panel of the chart
+     * @param optionsPanel    the options panel for changing settings
      * @param roiMaskSelector optional ROI mask selector, can be {@code null} if not wanted.
      */
     protected void createUI(ScatterPlot3dJzyPanel chartPanel, JPanel optionsPanel, RoiMaskSelector roiMaskSelector) {
@@ -564,15 +574,19 @@ class ScatterPlot3DPlotPanel extends PagePanel {
         private Product xProduct;
         private Product yProduct;
         private Product zProduct;
+        private Product colorProduct;
         private RasterDataNode xBand;
         private RasterDataNode yBand;
         private RasterDataNode zBand;
+        private RasterDataNode colorBand;
         private Product xProductProperty;
         private Product yProductProperty;
         private Product zProductProperty;
+        private Product colorProductProperty;
         private Property xBandProperty;
         private Property yBandProperty;
         private Property zBandProperty;
+        private Property colorBandProperty;
     }
 
     private static class BandListCellRenderer extends DefaultListCellRenderer {

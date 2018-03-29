@@ -65,7 +65,7 @@ public class UncertaintyVisualisationTopComponent extends TopComponent {
 
     public UncertaintyVisualisationTopComponent() {
         setName(Bundle.CTL_UncertaintyVisualisationTopComponent_ComponentName());
-        ColorManipulationForm cmf = new ColorManipulationForm(this, new MyFormModel());
+        ColorManipulationForm cmf = new ColorManipulationFormImpl(this, new MyFormModel());
         setLayout(new BorderLayout());
         add(cmf.getContentPanel(), BorderLayout.CENTER);
     }
