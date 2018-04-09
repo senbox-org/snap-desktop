@@ -211,13 +211,15 @@ public class VectorDataLayer extends Layer {
                 SimpleFeatureFigure featureFigure = (SimpleFeatureFigure) sourceFigure;
                 try {
                     final VectorDataNode vectorDataNode = getVectorDataNode();
-                    final SimpleFeature simpleFeature = featureFigure.getSimpleFeature();
-                    Debug.trace("VectorDataLayer$FigureChangeHandler: vectorDataNode=" + vectorDataNode.getName() +
-                                        ", featureType=" + simpleFeature.getFeatureType().getTypeName());
-                    reactingAgainstFigureChange = true;
-                    vectorDataNode.fireFeaturesChanged(simpleFeature);
-                    // checkme - we could do better by computing changed modelRegion instead of passing null (nf)
-                    fireLayerDataChanged(null);
+                    if (vectorDataNode != null ) {
+                        final SimpleFeature simpleFeature = featureFigure.getSimpleFeature();
+                        Debug.trace("VectorDataLayer$FigureChangeHandler: vectorDataNode=" + vectorDataNode.getName() +
+                                            ", featureType=" + simpleFeature.getFeatureType().getTypeName());
+                        reactingAgainstFigureChange = true;
+                        vectorDataNode.fireFeaturesChanged(simpleFeature);
+                        // checkme - we could do better by computing changed modelRegion instead of passing null (nf)
+                        fireLayerDataChanged(null);
+                    }
                 } finally {
                     reactingAgainstFigureChange = false;
                 }
