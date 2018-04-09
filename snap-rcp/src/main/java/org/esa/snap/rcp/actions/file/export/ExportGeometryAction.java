@@ -18,6 +18,7 @@ package org.esa.snap.rcp.actions.file.export;
 
 import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
+import com.vividsolutions.jts.geom.Geometry;
 import org.esa.snap.core.datamodel.CrsGeoCoding;
 import org.esa.snap.core.datamodel.VectorDataNode;
 import org.esa.snap.core.util.io.SnapFileFilter;
@@ -31,16 +32,22 @@ import org.geotools.data.shapefile.ShapefileDataStoreFactory;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.data.simple.SimpleFeatureStore;
-import org.geotools.data.store.ReprojectingFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
+import org.geotools.feature.FeatureTypes;
+import org.geotools.feature.SchemaException;
+import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.geotools.geometry.jts.GeometryCoordinateSequenceTransformer;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
+import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.MathTransform;
+import org.opengis.referencing.operation.TransformException;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -138,8 +145,7 @@ public class ExportGeometryAction extends AbstractAction implements ContextAware
     // Private implementations for the "export Mask Pixels" command
     /////////////////////////////////////////////////////////////////////////
 
-    private static void exportVectorDataNode(VectorDataNode vectorNode, File file, ProgressMonitor pm) throws
-            IOException {
+    private static void exportVectorDataNode(VectorDataNode vectorNode, File file, ProgressMonitor pm) throws Exception {
 
 
         Map<Class<?>, List<SimpleFeature>> featureListMap = createGeometryToFeaturesListMap(vectorNode);
@@ -202,11 +208,12 @@ public class ExportGeometryAction extends AbstractAction implements ContextAware
         }
     }
 
-    private static Map<Class<?>, List<SimpleFeature>> createGeometryToFeaturesListMap(VectorDataNode vectorNode) {
+    private static Map<Class<?>, List<SimpleFeature>> createGeometryToFeaturesListMap(VectorDataNode vectorNode) throws TransformException,
+                                                                                                                        SchemaException {
         FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection = vectorNode.getFeatureCollection();
         CoordinateReferenceSystem crs = vectorNode.getFeatureType().getCoordinateReferenceSystem();
-        if (crs == null) {   // for pins and GCPs crs is null --> assume image crs
-            crs = vectorNode.getProduct().getSceneGeoCoding().getImageCRS();
+        if (crs == null) {   // for pins and GCPs crs is null
+            crs = vectorNode.getProduct().getSceneCRS();
         }
         final CoordinateReferenceSystem modelCrs;
         if (vectorNode.getProduct().getSceneGeoCoding() instanceof CrsGeoCoding) {
@@ -214,20 +221,39 @@ public class ExportGeometryAction extends AbstractAction implements ContextAware
         } else {
             modelCrs = DefaultGeographicCRS.WGS84;
         }
-        if (!CRS.equalsIgnoreMetadata(crs, modelCrs)) { // we have to reproject the features
-            featureCollection = new ReprojectingFeatureCollection(featureCollection, crs, modelCrs);
-        }
+
+        // Not using ReprojectingFeatureCollection - it is reprojecting all geometries of a feature
+        // but we want to reproject the default geometry only
+        GeometryCoordinateSequenceTransformer transformer = createTransformer(crs, modelCrs);
+
         Map<Class<?>, List<SimpleFeature>> featureListMap = new HashMap<>();
         final FeatureIterator<SimpleFeature> featureIterator = featureCollection.features();
+        // The schema needs to be reprojected. We need to build a new feature be cause we can't change the schema.
+        // It is necessary to have this reprojected schema, because otherwise the shapefile is not correctly georeferenced.
+        SimpleFeatureType schema = featureCollection.getSchema();
+        SimpleFeatureType transformedSchema = FeatureTypes.transform(schema, modelCrs);
         while (featureIterator.hasNext()) {
             SimpleFeature feature = featureIterator.next();
             Object defaultGeometry = feature.getDefaultGeometry();
-            Class<?> geometryType = defaultGeometry.getClass();
+            feature.setDefaultGeometry(transformer.transform((Geometry) defaultGeometry));
 
+            Class<?> geometryType = defaultGeometry.getClass();
             List<SimpleFeature> featureList = featureListMap.computeIfAbsent(geometryType, k -> new ArrayList<>());
-            featureList.add(feature);
+            SimpleFeature exportFeature = SimpleFeatureBuilder.build(transformedSchema, feature.getAttributes(), feature.getID());
+            featureList.add(exportFeature);
         }
         return featureListMap;
+    }
+
+    private static GeometryCoordinateSequenceTransformer createTransformer(CoordinateReferenceSystem crs, CoordinateReferenceSystem modelCrs) {
+        GeometryCoordinateSequenceTransformer transformer = new GeometryCoordinateSequenceTransformer();
+        try {
+            MathTransform reprojTransform = CRS.findMathTransform(crs, modelCrs, true);
+            transformer.setMathTransform(reprojTransform);
+            return transformer;
+        } catch (FactoryException e) {
+            throw new IllegalStateException("Could not create math transform", e);
+        }
     }
 
 
@@ -313,7 +339,7 @@ public class ExportGeometryAction extends AbstractAction implements ContextAware
         protected Exception doInBackground(ProgressMonitor pm) throws Exception {
             try {
                 exportVectorDataNode(vectorDataNode, file, pm);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 return e;
             }
             return null;
