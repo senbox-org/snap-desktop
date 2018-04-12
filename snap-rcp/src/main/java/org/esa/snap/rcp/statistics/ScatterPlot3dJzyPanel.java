@@ -100,10 +100,11 @@ class ScatterPlot3dJzyPanel extends JPanel {
         scatter.setData(points);
     }
 
-    void setColors(int[] colorData) {
-        Color[] colors = new Color[colorData.length / 4];
-        for (int i = 0; i < colorData.length / 4; i++) {
-            colors[i] = new Color(colorData[4 * i], colorData[ 4 * i + 1], colorData[4 * i + 2], 63);
+    void setColors(int[] colorData, int numColorBands) {
+        Color[] colors = new Color[colorData.length / numColorBands];
+        for (int i = 0; i < colorData.length / numColorBands; i++) {
+            colors[i] = new Color(colorData[numColorBands * i], colorData[ numColorBands * i + 1],
+                    colorData[numColorBands * i + 2], 63);
         }
         scatter.setColors(colors);
     }

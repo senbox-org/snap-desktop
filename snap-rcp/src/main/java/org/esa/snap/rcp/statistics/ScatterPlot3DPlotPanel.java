@@ -209,14 +209,14 @@ class ScatterPlot3DPlotPanel extends PagePanel {
     }
 
     private void initActionEnablers() {
-        RefreshActionEnabler roiMaskActionEnabler =
+        RefreshActionEnabler refreshActionEnabler =
                 new RefreshActionEnabler(refreshButton, PROPERTY_NAME_USE_ROI_MASK, PROPERTY_NAME_ROI_MASK,
-                                         PROPERTY_NAME_X_PRODUCT, PROPERTY_NAME_Y_PRODUCT, PROPERTY_NAME_Z_PRODUCT,
-                                         PROPERTY_NAME_X_BAND, PROPERTY_NAME_Y_BAND, PROPERTY_NAME_Z_BAND);
-        bindingContext.addPropertyChangeListener(roiMaskActionEnabler);
+                        PROPERTY_NAME_X_PRODUCT, PROPERTY_NAME_Y_PRODUCT, PROPERTY_NAME_Z_PRODUCT,
+                        PROPERTY_NAME_X_BAND, PROPERTY_NAME_Y_BAND, PROPERTY_NAME_Z_BAND);
+        bindingContext.addPropertyChangeListener(refreshActionEnabler);
         RefreshActionEnabler rangeControlActionEnabler = new RefreshActionEnabler(refreshButton, PROPERTY_NAME_MIN,
-                                                                                  PROPERTY_NAME_AUTO_MIN_MAX,
-                                                                                  PROPERTY_NAME_MAX);
+                PROPERTY_NAME_AUTO_MIN_MAX,
+                PROPERTY_NAME_MAX);
         xAxisRangeControl.getBindingContext().addPropertyChangeListener(rangeControlActionEnabler);
         yAxisRangeControl.getBindingContext().addPropertyChangeListener(rangeControlActionEnabler);
         zAxisRangeControl.getBindingContext().addPropertyChangeListener(rangeControlActionEnabler);
@@ -228,36 +228,100 @@ class ScatterPlot3DPlotPanel extends PagePanel {
         final RasterDataNode yNode = dataSourceConfig.yBand;
         final RasterDataNode zNode = dataSourceConfig.zBand;
         final RasterDataNode colorNode = dataSourceConfig.colorBand;
-        final RenderedImage xImage = xNode.getSourceImage().getImage(0);
-        final RenderedImage yImage = yNode.getSourceImage().getImage(0);
-        final RenderedImage zImage = zNode.getSourceImage().getImage(0);
+        final RenderedImage xImage = xNode.getSourceImage().getImage(xNode.getMultiLevelModel().getLevelCount() - 1);
+        final RenderedImage yImage = yNode.getSourceImage().getImage(yNode.getMultiLevelModel().getLevelCount() - 1);
+        final RenderedImage zImage = zNode.getSourceImage().getImage(zNode.getMultiLevelModel().getLevelCount() - 1);
         final int xSize = xImage.getWidth() * xImage.getHeight();
-        final float[] xData = new float[xSize];
+        float[] xData = new float[xSize];
         xImage.getData().getPixels(0, 0, xImage.getWidth(), xImage.getHeight(), xData);
         final double xScale = xNode.getScalingFactor();
         final int ySize = yImage.getWidth() * yImage.getHeight();
-        final float[] yData = new float[ySize];
+        float[] yData = new float[ySize];
         yImage.getData().getPixels(0, 0, yImage.getWidth(), yImage.getHeight(), yData);
         final double yScale = yNode.getScalingFactor();
         final int zSize = zImage.getWidth() * zImage.getHeight();
-        final float[] zData = new float[zSize];
+        float[] zData = new float[zSize];
         zImage.getData().getPixels(0, 0, zImage.getWidth(), zImage.getHeight(), zData);
         final double zScale = zNode.getScalingFactor();
-        scatterPlot3dJzyPanel.setChartData(xData, yData, zData, xScale, yScale, zScale);
         final ImageInfo imageInfo = formModel.getModifiedImageInfo();
         final RenderedImage colorImage =
-                ImageManager.getInstance().createColoredBandImage(new RasterDataNode[]{colorNode}, imageInfo, 0);
-        final int colorSize = colorImage.getWidth() * colorImage.getHeight() * 4;
-        final int[] colorData = new int[colorSize];
+                ImageManager.getInstance().createColoredBandImage(new RasterDataNode[]{colorNode}, imageInfo,
+                        colorNode.getMultiLevelModel().getLevelCount() - 1);
+        int numColorBands = colorImage.getSampleModel().getNumBands();
+        final int colorSize = colorImage.getWidth() * colorImage.getHeight() * numColorBands;
+        int[] colorData = new int[colorSize];
         colorImage.getData().getPixels(0, 0, colorImage.getWidth(), colorImage.getHeight(), colorData);
-        scatterPlot3dJzyPanel.setColors(colorData);
-        try {
-            setRange(xAxisRangeControl, xNode, null, ProgressMonitor.NULL);
-            setRange(yAxisRangeControl, yNode, null, ProgressMonitor.NULL);
-            setRange(zAxisRangeControl, zNode, null, ProgressMonitor.NULL);
-        } catch (IOException e) {
-            //todo retrieve min max from arrays
+
+        Mask mask = dataSourceConfig.useRoiMask ? dataSourceConfig.roiMask : null;
+        if (mask != null) {
+            RenderedImage maskImage = mask.getSourceImage().getImage(mask.getMultiLevelModel().getLevelCount() - 1);
+            final int maskSize = maskImage.getWidth() * maskImage.getHeight();
+            final int[] maskData = new int[maskSize];
+            maskImage.getData().getPixels(0, 0, maskImage.getWidth(), maskImage.getHeight(), maskData);
+            ArrayList<Float> xDataList = new ArrayList<>();
+            ArrayList<Float> yDataList = new ArrayList<>();
+            ArrayList<Float> zDataList = new ArrayList<>();
+            ArrayList<Integer> colorDataList = new ArrayList<>();
+            for (int i = 0; i < maskSize; i++) {
+                if (maskData[i] == 0) {
+                    xDataList.add(xData[i]);
+                    yDataList.add(yData[i]);
+                    zDataList.add(zData[i]);
+                    for (int j = 0; j < numColorBands; j++) {
+                        colorDataList.add(colorData[numColorBands * i + j]);
+                    }
+                }
+            }
+            xData = new float[xDataList.size()];
+            yData = new float[yDataList.size()];
+            zData = new float[zDataList.size()];
+            colorData = new int[colorDataList.size()];
+            float minX = Float.POSITIVE_INFINITY;
+            float maxX = Float.NEGATIVE_INFINITY;
+            float minY = Float.POSITIVE_INFINITY;
+            float maxY = Float.NEGATIVE_INFINITY;
+            float minZ = Float.POSITIVE_INFINITY;
+            float maxZ = Float.NEGATIVE_INFINITY;
+            for (int i = 0; i < xDataList.size(); i++) {
+                xData[i] = xDataList.get(i);
+                if (xData[i] < minX) {
+                    minX = xData[i];
+                }
+                if (xData[i] > maxX) {
+                    maxX = xData[i];
+                }
+                yData[i] = yDataList.get(i);
+                if (yData[i] < minY) {
+                    minY = yData[i];
+                }
+                if (yData[i] > maxY) {
+                    maxY = yData[i];
+                }
+                zData[i] = zDataList.get(i);
+                if (zData[i] < minZ) {
+                    minZ = zData[i];
+                }
+                if (zData[i] > maxZ) {
+                    maxZ = zData[i];
+                }
+                for (int j = 0; j < numColorBands; j++) {
+                    colorData[numColorBands * i + j] = colorDataList.get(numColorBands * i + j);
+                }
+            }
+            xAxisRangeControl.adjustComponents(minX, maxX, NUM_DECIMALS);
+            yAxisRangeControl.adjustComponents(minX, maxX, NUM_DECIMALS);
+            zAxisRangeControl.adjustComponents(minX, maxX, NUM_DECIMALS);
+        } else {
+            try {
+                setRange(xAxisRangeControl, xNode, mask, ProgressMonitor.NULL);
+                setRange(yAxisRangeControl, yNode, mask, ProgressMonitor.NULL);
+                setRange(zAxisRangeControl, zNode, mask, ProgressMonitor.NULL);
+            } catch (IOException e) {
+                //todo retrieve min max from arrays
+            }
         }
+        scatterPlot3dJzyPanel.setChartData(xData, yData, zData, xScale, yScale, zScale);
+        scatterPlot3dJzyPanel.setColors(colorData, numColorBands);
         scatterPlot3dJzyPanel.setChartTitle("3D Scatter Plot");
         scatterPlot3dJzyPanel.setLabelNames(xNode.getName(), yNode.getName(), zNode.getName());
         scatterPlot3dJzyPanel.setChartBounds(
@@ -327,9 +391,7 @@ class ScatterPlot3DPlotPanel extends PagePanel {
         updateBandList(getProduct(), yBandProperty, true);
         updateBandList(getProduct(), zBandProperty, true);
         updateBandList(getProduct(), colorBandProperty, true);
-        if (roiMaskSelector != null) {
-            roiMaskSelector.updateMaskSource(getProduct(), getRaster());
-        }
+        roiMaskSelector.updateMaskSource(getProduct(), getRaster());
         updateUIState();
     }
 
@@ -385,7 +447,7 @@ class ScatterPlot3DPlotPanel extends PagePanel {
 
     private void updateUIState() {
         refreshButton.setEnabled(xBandProperty.getValue() != null && yBandProperty.getValue() != null &&
-                                         zBandProperty.getValue() != null);
+                zBandProperty.getValue() != null);
         xAxisRangeControl.setComponentsEnabled(getRaster() != null);
         yAxisRangeControl.setComponentsEnabled(getRaster() != null);
         zAxisRangeControl.setComponentsEnabled(getRaster() != null);
@@ -490,16 +552,14 @@ class ScatterPlot3DPlotPanel extends PagePanel {
         final JPanel extendedOptionsPanel = GridBagUtils.createPanel();
         GridBagConstraints extendedOptionsPanelConstraints = GridBagUtils.createConstraints("insets.left=4,insets.right=2,anchor=NORTHWEST,fill=HORIZONTAL,insets.top=2,weightx=1");
         GridBagUtils.addToPanel(extendedOptionsPanel, new JSeparator(), extendedOptionsPanelConstraints, "gridy=0");
-        if (this.roiMaskSelector != null) {
-            GridBagUtils.addToPanel(extendedOptionsPanel, this.roiMaskSelector.createPanel(), extendedOptionsPanelConstraints, "gridy=1,insets.left=-4");
-            GridBagUtils.addToPanel(extendedOptionsPanel, new JPanel(), extendedOptionsPanelConstraints, "gridy=1,insets.left=-4");
-        }
+        GridBagUtils.addToPanel(extendedOptionsPanel, this.roiMaskSelector.createPanel(), extendedOptionsPanelConstraints, "gridy=1,insets.left=-4");
+        GridBagUtils.addToPanel(extendedOptionsPanel, new JPanel(), extendedOptionsPanelConstraints, "gridy=1,insets.left=-4");
         GridBagUtils.addToPanel(extendedOptionsPanel, optionsPanel, extendedOptionsPanelConstraints, "insets.left=0,insets.right=0,gridy=2,fill=VERTICAL,fill=HORIZONTAL,weighty=1");
         GridBagUtils.addToPanel(extendedOptionsPanel, new JSeparator(), extendedOptionsPanelConstraints, "insets.left=4,insets.right=2,gridy=5,anchor=SOUTHWEST");
 
         final SimpleScrollPane optionsScrollPane = new SimpleScrollPane(extendedOptionsPanel,
-                                                                        ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
-                                                                        ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+                ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         optionsScrollPane.setBorder(null);
         optionsScrollPane.getVerticalScrollBar().setUnitIncrement(20);
 
