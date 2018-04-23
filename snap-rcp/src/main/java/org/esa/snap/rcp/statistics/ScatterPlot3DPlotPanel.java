@@ -41,16 +41,7 @@ import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.tool.ToolButtonFactory;
 import org.openide.windows.TopComponent;
 
-import javax.swing.AbstractButton;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.ImageIcon;
-import javax.swing.JComboBox;
-import javax.swing.JLayeredPane;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JSeparator;
-import javax.swing.ListCellRenderer;
-import javax.swing.ScrollPaneConstants;
+import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -123,6 +114,9 @@ class ScatterPlot3DPlotPanel extends PagePanel {
     private ScatterPlot3dJzyPanel scatterPlot3dJzyPanel;
     private ScatterPlot3DColorManipulationPanel colorManipulationPanel;
     private ScatterPlot3DFormModel formModel;
+    private JCheckBox projectToXCheckBox;
+    private JCheckBox projectToYCheckBox;
+    private JCheckBox projectToZCheckBox;
 
     ScatterPlot3DPlotPanel(TopComponent parentDialog, String helpId) {
         super(parentDialog, helpId, CHART_TITLE);
@@ -197,6 +191,19 @@ class ScatterPlot3DPlotPanel extends PagePanel {
         colorProductList.setRenderer(new ProductListCellRenderer());
         bindingContext.bind(PROPERTY_NAME_COLOR_PRODUCT, colorProductList);
         colorProductProperty = bindingContext.getPropertySet().getProperty(PROPERTY_NAME_COLOR_PRODUCT);
+
+        projectToXCheckBox = new JCheckBox("Project Shadow to X-Plane");
+        projectToXCheckBox.addActionListener(e -> {
+           scatterPlot3dJzyPanel.projectToX(projectToXCheckBox.isSelected());
+        });
+        projectToYCheckBox = new JCheckBox("Project Shadow to Y-Plane");
+        projectToYCheckBox.addActionListener(e -> {
+            scatterPlot3dJzyPanel.projectToY(projectToYCheckBox.isSelected());
+        });
+        projectToZCheckBox = new JCheckBox("Project Shadow to Z-Plane");
+        projectToZCheckBox.addActionListener(e -> {
+            scatterPlot3dJzyPanel.projectToZ(projectToZCheckBox.isSelected());
+        });
 
         xAxisRangeControl = new AxisRangeControl("X-Axis");
         yAxisRangeControl = new AxisRangeControl("Y-Axis");
@@ -320,14 +327,14 @@ class ScatterPlot3DPlotPanel extends PagePanel {
                 //todo retrieve min max from arrays
             }
         }
-        scatterPlot3dJzyPanel.setChartData(xData, yData, zData, xScale, yScale, zScale);
-        scatterPlot3dJzyPanel.setColors(colorData, numColorBands);
         scatterPlot3dJzyPanel.setChartTitle("3D Scatter Plot");
         scatterPlot3dJzyPanel.setLabelNames(xNode.getName(), yNode.getName(), zNode.getName());
         scatterPlot3dJzyPanel.setChartBounds(
                 xAxisRangeControl.getMin().floatValue(), xAxisRangeControl.getMax().floatValue(),
                 yAxisRangeControl.getMin().floatValue(), yAxisRangeControl.getMax().floatValue(),
                 zAxisRangeControl.getMin().floatValue(), zAxisRangeControl.getMax().floatValue());
+        scatterPlot3dJzyPanel.setChartData(xData, yData, zData, xScale, yScale, zScale);
+        scatterPlot3dJzyPanel.setColors(colorData, numColorBands);
         scatterPlot3dJzyPanel.renderChart();
     }
 
@@ -348,6 +355,9 @@ class ScatterPlot3DPlotPanel extends PagePanel {
         GridBagUtils.addToPanel(optionsPanel, colorBandList, gbc, "gridy=11,insets.left=4,insets.right=2");
         final JPanel colorPanel = colorManipulationPanel.getContentPanel();
         GridBagUtils.addToPanel(optionsPanel, colorPanel, gbc, "gridy=12,insets.left=4,insets.right=2");
+        GridBagUtils.addToPanel(optionsPanel, projectToXCheckBox, gbc, "gridy=13,insets.left=4,insets.right=2");
+        GridBagUtils.addToPanel(optionsPanel, projectToYCheckBox, gbc, "gridy=14,insets.left=4,insets.right=2");
+        GridBagUtils.addToPanel(optionsPanel, projectToZCheckBox, gbc, "gridy=15,insets.left=4,insets.right=2");
         return optionsPanel;
     }
 
@@ -552,7 +562,7 @@ class ScatterPlot3DPlotPanel extends PagePanel {
         final JPanel extendedOptionsPanel = GridBagUtils.createPanel();
         GridBagConstraints extendedOptionsPanelConstraints = GridBagUtils.createConstraints("insets.left=4,insets.right=2,anchor=NORTHWEST,fill=HORIZONTAL,insets.top=2,weightx=1");
         GridBagUtils.addToPanel(extendedOptionsPanel, new JSeparator(), extendedOptionsPanelConstraints, "gridy=0");
-        GridBagUtils.addToPanel(extendedOptionsPanel, this.roiMaskSelector.createPanel(), extendedOptionsPanelConstraints, "gridy=1,insets.left=-4");
+        GridBagUtils.addToPanel(extendedOptionsPanel, roiMaskSelector.createPanel(), extendedOptionsPanelConstraints, "gridy=1,insets.left=-4");
         GridBagUtils.addToPanel(extendedOptionsPanel, new JPanel(), extendedOptionsPanelConstraints, "gridy=1,insets.left=-4");
         GridBagUtils.addToPanel(extendedOptionsPanel, optionsPanel, extendedOptionsPanelConstraints, "insets.left=0,insets.right=0,gridy=2,fill=VERTICAL,fill=HORIZONTAL,weighty=1");
         GridBagUtils.addToPanel(extendedOptionsPanel, new JSeparator(), extendedOptionsPanelConstraints, "insets.left=4,insets.right=2,gridy=5,anchor=SOUTHWEST");
@@ -629,8 +639,8 @@ class ScatterPlot3DPlotPanel extends PagePanel {
 
     private static class DataSourceConfig {
 
-        public boolean useRoiMask;
-        public Mask roiMask;
+        private boolean useRoiMask;
+        private Mask roiMask;
         private Product xProduct;
         private Product yProduct;
         private Product zProduct;

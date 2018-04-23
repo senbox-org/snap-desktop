@@ -32,8 +32,7 @@ import org.jzy3d.plot3d.text.DrawableTextWrapper;
 import org.jzy3d.plot3d.text.renderers.TextBitmapRenderer;
 import org.jzy3d.plot3d.transform.Transform;
 
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.nio.IntBuffer;
@@ -173,15 +172,38 @@ class ScatterPlot3dJzyPanel extends JPanel {
     }
 
     void projectToX(boolean projectToX) {
-        projectionScatter.projectToX(projectToX);
+        SwingWorker<Void, Void> projectSwingWorker = new SwingWorker<Void, Void>() {
+            @Override
+            protected Void doInBackground() throws Exception {
+                projectionScatter.projectToX(projectToX);
+                return null;
+            }
+        };
+        projectSwingWorker.execute();
     }
 
     void projectToY(boolean projectToY) {
-        projectionScatter.projectToY(projectToY);
+        SwingWorker<Void, Void> projectSwingWorker = new SwingWorker<Void, Void>() {
+            @Override
+            protected Void doInBackground() throws Exception {
+                projectionScatter.projectToY(projectToY);
+                return null;
+            }
+        };
+        projectSwingWorker.execute();
+//        projectionScatter.projectToY(projectToY);
     }
 
     void projectToZ(boolean projectToZ) {
-        projectionScatter.projectToZ(projectToZ);
+        SwingWorker<Void, Void> projectSwingWorker = new SwingWorker<Void, Void>() {
+            @Override
+            protected Void doInBackground() throws Exception {
+                projectionScatter.projectToZ(projectToZ);
+                return null;
+            }
+        };
+        projectSwingWorker.execute();
+//        projectionScatter.projectToZ(projectToZ);
     }
 
     private void adjustProjectionScatterToBounds() {

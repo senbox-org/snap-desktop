@@ -17,7 +17,7 @@ class ScatterPlot3DProjectionScatter extends Scatter {
     private static final int NUM_SEGMENTS = 12;
     private static float[] SINES;
     private static float[] COSINES;
-    private static List<Projector> ACTIVE_PROJECTORS;
+    private List<Projector> ACTIVE_PROJECTORS;
 
     private float scaleFactor;
     private Projector xProjector;
