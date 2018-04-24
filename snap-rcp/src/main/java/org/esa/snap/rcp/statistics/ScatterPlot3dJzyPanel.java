@@ -89,19 +89,19 @@ class ScatterPlot3dJzyPanel extends JPanel {
         xLine.setWidth(2.f);
         xLine.add(new Point(currentVertex));
         xLine.add(new Point(currentVertex));
-        chart.addDrawable(xLine);
+        chart.getScene().add(xLine);
         yLine = new LineStrip();
         yLine.setWireframeColor(new Color(0.8f, 0.0f, 0.0f));
         yLine.setWidth(2.f);
         yLine.add(new Point(currentVertex));
         yLine.add(new Point(currentVertex));
-        chart.addDrawable(yLine);
+        chart.getScene().add(yLine);
         zLine = new LineStrip();
         zLine.setWireframeColor(new Color(0.8f, 0.0f, 0.0f));
         zLine.setWidth(2.f);
         zLine.add(new Point(currentVertex));
         zLine.add(new Point(currentVertex));
-        chart.addDrawable(zLine);
+        chart.getScene().add(zLine);
         scatter = new Scatter();
         scatter.setWidth(10.0f);
         chart.getScene().add(scatter);
@@ -157,17 +157,25 @@ class ScatterPlot3dJzyPanel extends JPanel {
         chart.getAxeLayout().setFaceDisplayed(true);
     }
 
-    void setChartData(float[] xData, float[] yData, float[] zData, double xScale, double yScale, double zScale) {
-        final int size = xData.length;
+    void setChartData(List<Float> xData, List<Float> yData, List<Float> zData) {
+        final int size = xData.size();
         Coord3d[] points = new Coord3d[size];
         for (int i = 0; i < size; i++) {
-            points[i] = new Coord3d(xData[i] * xScale, yData[i] * yScale, zData[i] * zScale);
+            points[i] = new Coord3d(xData.get(i), yData.get(i), zData.get(i));
             PickablePoint pickablePoint = new PickablePoint(points[i]);
             pickingSupport.registerPickableObject(pickablePoint, points[i]);
         }
         scatter.setData(points);
         projectionScatter.setData(points);
         adjustProjectionScatterToBounds();
+    }
+
+    void setColors(List<Integer> colorData) {
+        Color[] colors = new Color[colorData.size() / 3];
+        for (int i = 0; i < colorData.size() / 3; i++) {
+            colors[i] = new Color(colorData.get(3 * i), colorData.get(3 * i + 1), colorData.get(3 * i + 2), 63);
+        }
+        scatter.setColors(colors);
     }
 
     void projectToX(boolean projectToX) {
@@ -186,21 +194,15 @@ class ScatterPlot3dJzyPanel extends JPanel {
         projectionScatter.setEdgeCoords(getXAxisCoord(), getYAxisCoord(), getZAxisCoord());
     }
 
-    void setColors(int[] colorData, int numColorBands) {
-        Color[] colors = new Color[colorData.length / numColorBands];
-        for (int i = 0; i < colorData.length / numColorBands; i++) {
-            colors[i] = new Color(colorData[numColorBands * i], colorData[numColorBands * i + 1],
-                    colorData[numColorBands * i + 2], 63);
-        }
-        scatter.setColors(colors);
-    }
-
     void setChartBounds(float xMin, float xMax, float yMin, float yMax, float zMin, float zMax) {
         xRange = new Range(xMin, xMax);
         yRange = new Range(yMin, yMax);
         zRange = new Range(zMin, zMax);
         final BoundingBox3d box = new BoundingBox3d(xRange, yRange, zRange);
         chart.getView().setBoundManual(box);
+        updateLine();
+        projectionScatter.resetScale();
+        projectionScatter.setEdgeCoords(getXAxisCoord(), getYAxisCoord(), getZAxisCoord());
     }
 
     void renderChart() {

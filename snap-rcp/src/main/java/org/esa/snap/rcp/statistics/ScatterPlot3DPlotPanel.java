@@ -21,9 +21,14 @@ import com.bc.ceres.binding.PropertyContainer;
 import com.bc.ceres.binding.ValidationException;
 import com.bc.ceres.binding.ValueSet;
 import com.bc.ceres.core.ProgressMonitor;
+import com.bc.ceres.glevel.MultiLevelImage;
+import com.bc.ceres.glevel.MultiLevelModel;
+import com.bc.ceres.glevel.support.AbstractMultiLevelSource;
+import com.bc.ceres.glevel.support.DefaultMultiLevelImage;
 import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.jidesoft.swing.SimpleScrollPane;
+import org.apache.commons.lang.ArrayUtils;
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.ImageInfo;
 import org.esa.snap.core.datamodel.Mask;
@@ -31,6 +36,7 @@ import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.datamodel.Stx;
 import org.esa.snap.core.datamodel.StxFactory;
+import org.esa.snap.core.image.FillConstantOpImage;
 import org.esa.snap.core.image.ImageManager;
 import org.esa.snap.core.util.Debug;
 import org.esa.snap.rcp.SnapApp;
@@ -53,8 +59,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.image.RenderedImage;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * The scatter plot pane within the statistics window.
@@ -108,7 +113,7 @@ class ScatterPlot3DPlotPanel extends PagePanel {
     //todo instead using referenceSize, use referenceSceneRasterTransform
     private Dimension referenceSize;
 
-    public static final String CHART_TITLE = "3D Scatter Plot";
+    private static final String CHART_TITLE = "3D Scatter Plot";
     private static final String NO_DATA_MESSAGE = "No 3D scatter plot computed yet.";
     private static final int NUM_DECIMALS = 2;
     private ScatterPlot3dJzyPanel scatterPlot3dJzyPanel;
@@ -117,6 +122,12 @@ class ScatterPlot3DPlotPanel extends PagePanel {
     private JCheckBox projectToXCheckBox;
     private JCheckBox projectToYCheckBox;
     private JCheckBox projectToZCheckBox;
+    private float minX;
+    private float maxX;
+    private float minY;
+    private float maxY;
+    private float minZ;
+    private float maxZ;
 
     ScatterPlot3DPlotPanel(TopComponent parentDialog, String helpId) {
         super(parentDialog, helpId, CHART_TITLE);
@@ -192,15 +203,15 @@ class ScatterPlot3DPlotPanel extends PagePanel {
         bindingContext.bind(PROPERTY_NAME_COLOR_PRODUCT, colorProductList);
         colorProductProperty = bindingContext.getPropertySet().getProperty(PROPERTY_NAME_COLOR_PRODUCT);
 
-        projectToXCheckBox = new JCheckBox("Project Shadow to X-Plane");
+        projectToXCheckBox = new JCheckBox("Project Data to X-Plane");
         projectToXCheckBox.addActionListener(e -> {
-           scatterPlot3dJzyPanel.projectToX(projectToXCheckBox.isSelected());
+            scatterPlot3dJzyPanel.projectToX(projectToXCheckBox.isSelected());
         });
-        projectToYCheckBox = new JCheckBox("Project Shadow to Y-Plane");
+        projectToYCheckBox = new JCheckBox("Project Data to Y-Plane");
         projectToYCheckBox.addActionListener(e -> {
             scatterPlot3dJzyPanel.projectToY(projectToYCheckBox.isSelected());
         });
-        projectToZCheckBox = new JCheckBox("Project Shadow to Z-Plane");
+        projectToZCheckBox = new JCheckBox("Project Data to Z-Plane");
         projectToZCheckBox.addActionListener(e -> {
             scatterPlot3dJzyPanel.projectToZ(projectToZCheckBox.isSelected());
         });
@@ -230,101 +241,100 @@ class ScatterPlot3DPlotPanel extends PagePanel {
         formModel.addPropertyChangeListener(evt -> refreshButton.setEnabled(true));
     }
 
+    private int getMaxAllowedLevel() {
+        int maxAllowedLevel = Integer.MAX_VALUE;
+        RasterDataNode[] nodes = new RasterDataNode[]{dataSourceConfig.xBand, dataSourceConfig.yBand,
+                dataSourceConfig.zBand, dataSourceConfig.colorBand};
+        for (RasterDataNode node : nodes) {
+            if (node != null) {
+                maxAllowedLevel = Math.min(node.getMultiLevelModel().getLevelCount() - 1, maxAllowedLevel);
+            }
+        }
+        return maxAllowedLevel;
+    }
+
+    private float[] getData(RasterDataNode node, int level) {
+        Mask mask = dataSourceConfig.useRoiMask ? dataSourceConfig.roiMask : null;
+        RenderedImage image;
+        if (mask != null) {
+            image = createMaskedGeophysicalImage(node, mask, level);
+        } else {
+            image = node.getGeophysicalImage().getImage(level);
+        }
+        final int size = image.getWidth() * image.getHeight();
+        float[] data = new float[size];
+        image.getData().getPixels(0, 0, image.getWidth(), image.getHeight(), data);
+        return data;
+    }
+
+    private List[] getDataLists(float[] xData, float xNoDataValue, float[] yData, float yNoDataValue,
+                                float[] zData, float zNoDataValue, int[] colorData, int numColorBands) {
+        List[] dataLists = new List[4];
+        dataLists[0] = new ArrayList<Float>();
+        dataLists[1] = new ArrayList<Float>();
+        dataLists[2] = new ArrayList<Float>();
+        dataLists[3] = new ArrayList<Integer>();
+        for (int i = 0; i < xData.length; i++) {
+            if (isValid(xData[i], xNoDataValue) && isValid(yData[i], yNoDataValue) && isValid(zData[i], zNoDataValue)) {
+                dataLists[0].add(xData[i]);
+                dataLists[1].add(yData[i]);
+                dataLists[2].add(zData[i]);
+                dataLists[3].add(colorData[i * numColorBands]);
+                dataLists[3].add(colorData[i * numColorBands + 1]);
+                dataLists[3].add(colorData[i * numColorBands + 2]);
+            }
+        }
+        return dataLists;
+    }
+
+    private boolean isValid(float value, float noDataValue) {
+        if (Float.isNaN(value)) {
+            return false;
+        }
+        if (Float.isNaN(noDataValue)) {
+            return true;
+        }
+        return Math.abs(value - noDataValue) > 1e-8;
+    }
+
     private void updateChartData() {
+        int level = getMaxAllowedLevel();
+        float[] xData = getData(dataSourceConfig.xBand, level);
+        float[] yData = getData(dataSourceConfig.yBand, level);
+        float[] zData = getData(dataSourceConfig.zBand, level);
+
         final RasterDataNode xNode = dataSourceConfig.xBand;
         final RasterDataNode yNode = dataSourceConfig.yBand;
         final RasterDataNode zNode = dataSourceConfig.zBand;
         final RasterDataNode colorNode = dataSourceConfig.colorBand;
-        final RenderedImage xImage = xNode.getSourceImage().getImage(xNode.getMultiLevelModel().getLevelCount() - 1);
-        final RenderedImage yImage = yNode.getSourceImage().getImage(yNode.getMultiLevelModel().getLevelCount() - 1);
-        final RenderedImage zImage = zNode.getSourceImage().getImage(zNode.getMultiLevelModel().getLevelCount() - 1);
-        final int xSize = xImage.getWidth() * xImage.getHeight();
-        float[] xData = new float[xSize];
-        xImage.getData().getPixels(0, 0, xImage.getWidth(), xImage.getHeight(), xData);
-        final double xScale = xNode.getScalingFactor();
-        final int ySize = yImage.getWidth() * yImage.getHeight();
-        float[] yData = new float[ySize];
-        yImage.getData().getPixels(0, 0, yImage.getWidth(), yImage.getHeight(), yData);
-        final double yScale = yNode.getScalingFactor();
-        final int zSize = zImage.getWidth() * zImage.getHeight();
-        float[] zData = new float[zSize];
-        zImage.getData().getPixels(0, 0, zImage.getWidth(), zImage.getHeight(), zData);
-        final double zScale = zNode.getScalingFactor();
+
         final ImageInfo imageInfo = formModel.getModifiedImageInfo();
         final RenderedImage colorImage =
-                ImageManager.getInstance().createColoredBandImage(new RasterDataNode[]{colorNode}, imageInfo,
-                        colorNode.getMultiLevelModel().getLevelCount() - 1);
+                ImageManager.getInstance().createColoredBandImage(new RasterDataNode[]{colorNode}, imageInfo, level);
         int numColorBands = colorImage.getSampleModel().getNumBands();
         final int colorSize = colorImage.getWidth() * colorImage.getHeight() * numColorBands;
         int[] colorData = new int[colorSize];
         colorImage.getData().getPixels(0, 0, colorImage.getWidth(), colorImage.getHeight(), colorData);
 
+        List[] dataLists = getDataLists(xData, (float) xNode.getGeophysicalNoDataValue(),
+                yData, (float) yNode.getGeophysicalNoDataValue(), zData, (float) zNode.getGeophysicalNoDataValue(),
+                colorData, numColorBands);
+
         Mask mask = dataSourceConfig.useRoiMask ? dataSourceConfig.roiMask : null;
+        setMinAndMaxValuesFromArray(dataLists[0], dataLists[1], dataLists[2]);
         if (mask != null) {
-            RenderedImage maskImage = mask.getSourceImage().getImage(mask.getMultiLevelModel().getLevelCount() - 1);
-            final int maskSize = maskImage.getWidth() * maskImage.getHeight();
-            final int[] maskData = new int[maskSize];
-            maskImage.getData().getPixels(0, 0, maskImage.getWidth(), maskImage.getHeight(), maskData);
-            ArrayList<Float> xDataList = new ArrayList<>();
-            ArrayList<Float> yDataList = new ArrayList<>();
-            ArrayList<Float> zDataList = new ArrayList<>();
-            ArrayList<Integer> colorDataList = new ArrayList<>();
-            for (int i = 0; i < maskSize; i++) {
-                if (maskData[i] == 0) {
-                    xDataList.add(xData[i]);
-                    yDataList.add(yData[i]);
-                    zDataList.add(zData[i]);
-                    for (int j = 0; j < numColorBands; j++) {
-                        colorDataList.add(colorData[numColorBands * i + j]);
-                    }
-                }
-            }
-            xData = new float[xDataList.size()];
-            yData = new float[yDataList.size()];
-            zData = new float[zDataList.size()];
-            colorData = new int[colorDataList.size()];
-            float minX = Float.POSITIVE_INFINITY;
-            float maxX = Float.NEGATIVE_INFINITY;
-            float minY = Float.POSITIVE_INFINITY;
-            float maxY = Float.NEGATIVE_INFINITY;
-            float minZ = Float.POSITIVE_INFINITY;
-            float maxZ = Float.NEGATIVE_INFINITY;
-            for (int i = 0; i < xDataList.size(); i++) {
-                xData[i] = xDataList.get(i);
-                if (xData[i] < minX) {
-                    minX = xData[i];
-                }
-                if (xData[i] > maxX) {
-                    maxX = xData[i];
-                }
-                yData[i] = yDataList.get(i);
-                if (yData[i] < minY) {
-                    minY = yData[i];
-                }
-                if (yData[i] > maxY) {
-                    maxY = yData[i];
-                }
-                zData[i] = zDataList.get(i);
-                if (zData[i] < minZ) {
-                    minZ = zData[i];
-                }
-                if (zData[i] > maxZ) {
-                    maxZ = zData[i];
-                }
-                for (int j = 0; j < numColorBands; j++) {
-                    colorData[numColorBands * i + j] = colorDataList.get(numColorBands * i + j);
-                }
-            }
             xAxisRangeControl.adjustComponents(minX, maxX, NUM_DECIMALS);
-            yAxisRangeControl.adjustComponents(minX, maxX, NUM_DECIMALS);
-            zAxisRangeControl.adjustComponents(minX, maxX, NUM_DECIMALS);
+            yAxisRangeControl.adjustComponents(minY, maxY, NUM_DECIMALS);
+            zAxisRangeControl.adjustComponents(minZ, maxZ, NUM_DECIMALS);
         } else {
             try {
-                setRange(xAxisRangeControl, xNode, mask, ProgressMonitor.NULL);
-                setRange(yAxisRangeControl, yNode, mask, ProgressMonitor.NULL);
-                setRange(zAxisRangeControl, zNode, mask, ProgressMonitor.NULL);
+                setRange(xAxisRangeControl, xNode, null, ProgressMonitor.NULL);
+                setRange(yAxisRangeControl, yNode, null, ProgressMonitor.NULL);
+                setRange(zAxisRangeControl, zNode, null, ProgressMonitor.NULL);
             } catch (IOException e) {
-                //todo retrieve min max from arrays
+                xAxisRangeControl.adjustComponents(minX, maxX, NUM_DECIMALS);
+                yAxisRangeControl.adjustComponents(minY, maxY, NUM_DECIMALS);
+                zAxisRangeControl.adjustComponents(minZ, maxZ, NUM_DECIMALS);
             }
         }
         scatterPlot3dJzyPanel.setChartTitle("3D Scatter Plot");
@@ -333,31 +343,47 @@ class ScatterPlot3DPlotPanel extends PagePanel {
                 xAxisRangeControl.getMin().floatValue(), xAxisRangeControl.getMax().floatValue(),
                 yAxisRangeControl.getMin().floatValue(), yAxisRangeControl.getMax().floatValue(),
                 zAxisRangeControl.getMin().floatValue(), zAxisRangeControl.getMax().floatValue());
-        scatterPlot3dJzyPanel.setChartData(xData, yData, zData, xScale, yScale, zScale);
-        scatterPlot3dJzyPanel.setColors(colorData, numColorBands);
+        scatterPlot3dJzyPanel.setChartData(dataLists[0], dataLists[1], dataLists[2]);
+        scatterPlot3dJzyPanel.setColors(dataLists[3]);
         scatterPlot3dJzyPanel.renderChart();
+    }
+
+    private void setMinAndMaxValuesFromArray(List<Float> xData, List<Float> yData, List<Float> zData) {
+        minX = Collections.min(xData);
+        maxX = Collections.max(xData);
+        minY = Collections.min(yData);
+        maxY = Collections.max(yData);
+        minZ = Collections.min(zData);
+        maxZ = Collections.max(zData);
     }
 
     private JPanel createOptionsPanel() {
         final JPanel optionsPanel = GridBagUtils.createPanel();
         final GridBagConstraints gbc = GridBagUtils.createConstraints("anchor=NORTHWEST,fill=HORIZONTAL,insets.top=0,weightx=1,gridx=0");
+//        CollapsiblePane xAxisCollapsiblePane = new CollapsiblePane("X-Axis", xAxisRangeControl.getPanel(), false, false);
+//        GridBagUtils.addToPanel(optionsPanel, xAxisCollapsiblePane, gbc, "gridy=0, insets.top=2");
         GridBagUtils.addToPanel(optionsPanel, xAxisRangeControl.getPanel(), gbc, "gridy=0, insets.top=2");
         GridBagUtils.addToPanel(optionsPanel, xProductList, gbc, "gridy=1,insets.left=4,insets.right=2");
         GridBagUtils.addToPanel(optionsPanel, xBandList, gbc, "gridy=2,insets.left=4,insets.right=2");
+//        CollapsiblePane yAxisCollapsiblePane = new CollapsiblePane("Y-Axis", yAxisRangeControl.getPanel(), false, false);
+//        GridBagUtils.addToPanel(optionsPanel, yAxisCollapsiblePane, gbc, "gridy=3,insets.left=0,insets.right=0");
         GridBagUtils.addToPanel(optionsPanel, yAxisRangeControl.getPanel(), gbc, "gridy=3,insets.left=0,insets.right=0");
         GridBagUtils.addToPanel(optionsPanel, yProductList, gbc, "gridy=4,insets.left=4,insets.right=2");
         GridBagUtils.addToPanel(optionsPanel, yBandList, gbc, "gridy=5,insets.left=4,insets.right=2");
+//        CollapsiblePane zAxisCollapsiblePane = new CollapsiblePane("Z-Axis", zAxisRangeControl.getPanel(), false, false);
+//        GridBagUtils.addToPanel(optionsPanel, zAxisCollapsiblePane, gbc, "gridy=6,insets.left=0,insets.right=0");
         GridBagUtils.addToPanel(optionsPanel, zAxisRangeControl.getPanel(), gbc, "gridy=6,insets.left=0,insets.right=0");
         GridBagUtils.addToPanel(optionsPanel, zProductList, gbc, "gridy=7,insets.left=4,insets.right=2");
         GridBagUtils.addToPanel(optionsPanel, zBandList, gbc, "gridy=8,insets.left=4,insets.right=2");
-        GridBagUtils.addToPanel(optionsPanel, new TitledSeparator("Coloring"), gbc, "gridy=9,insets.left=4,insets.right=0");
+        GridBagUtils.addToPanel(optionsPanel, new TitledSeparator("Colour Axis"), gbc, "gridy=9,insets.left=4,insets.right=0");
         GridBagUtils.addToPanel(optionsPanel, colorProductList, gbc, "gridy=10,insets.left=4,insets.right=2");
         GridBagUtils.addToPanel(optionsPanel, colorBandList, gbc, "gridy=11,insets.left=4,insets.right=2");
         final JPanel colorPanel = colorManipulationPanel.getContentPanel();
         GridBagUtils.addToPanel(optionsPanel, colorPanel, gbc, "gridy=12,insets.left=4,insets.right=2");
-        GridBagUtils.addToPanel(optionsPanel, projectToXCheckBox, gbc, "gridy=13,insets.left=4,insets.right=2");
-        GridBagUtils.addToPanel(optionsPanel, projectToYCheckBox, gbc, "gridy=14,insets.left=4,insets.right=2");
-        GridBagUtils.addToPanel(optionsPanel, projectToZCheckBox, gbc, "gridy=15,insets.left=4,insets.right=2");
+        GridBagUtils.addToPanel(optionsPanel, new JSeparator(), gbc, "gridy=13,insets.left=4,insets.right=0");
+        GridBagUtils.addToPanel(optionsPanel, projectToXCheckBox, gbc, "gridy=14,insets.left=4,insets.right=2");
+        GridBagUtils.addToPanel(optionsPanel, projectToYCheckBox, gbc, "gridy=15,insets.left=4,insets.right=2");
+        GridBagUtils.addToPanel(optionsPanel, projectToZCheckBox, gbc, "gridy=16,insets.left=4,insets.right=2");
         return optionsPanel;
     }
 
@@ -503,7 +529,7 @@ class ScatterPlot3DPlotPanel extends PagePanel {
         zoomAllButton.setToolTipText("Zoom all.");
         zoomAllButton.setName("zoomAllButton.");
         zoomAllButton.addActionListener(e -> {
-//            chartPanel.restoreAutoBounds();
+            chartPanel.setChartBounds(minX, maxX, minY, maxY, minZ, maxZ);
             chartPanel.repaint();
         });
 
@@ -635,6 +661,20 @@ class ScatterPlot3DPlotPanel extends PagePanel {
         if (scatterPlot3dJzyPanel != null) {
             scatterPlot3dJzyPanel.renderChart();
         }
+    }
+
+    private static MultiLevelImage createMaskedGeophysicalImage(final RasterDataNode node, final Mask mask, int level) {
+        MultiLevelImage varImage = node.getGeophysicalImage();
+        MultiLevelImage maskImage = mask.getSourceImage();
+        final MultiLevelModel multiLevelModel = node.getMultiLevelModel();
+        return new DefaultMultiLevelImage(new AbstractMultiLevelSource(multiLevelModel) {
+
+            @Override
+            public RenderedImage createImage(int sourceLevel) {
+                return new FillConstantOpImage(varImage.getImage(level), maskImage.getImage(level),
+                        node.getGeophysicalNoDataValue());
+            }
+        });
     }
 
     private static class DataSourceConfig {
