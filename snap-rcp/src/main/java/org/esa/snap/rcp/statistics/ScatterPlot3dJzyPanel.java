@@ -72,14 +72,13 @@ class ScatterPlot3dJzyPanel extends JPanel {
                 textWrapper.setText("x = " + vertexCoords.x + ", y = " + vertexCoords.y + ", z = " + vertexCoords.z);
                 textWrapper.setPosition(vertexCoords);
             }
-            renderChart();
         });
         currentVertex = new Coord3d(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
         pickingSupport.addObjectPickedListener((vertices, picking) -> {
             for (Object vertex : vertices) {
                 currentVertex = (Coord3d) vertex;
             }
-            renderChart();
+            updateLine();
         });
         projectionScatter = new ScatterPlot3DProjectionScatter();
         projectionScatter.setColor(PROJECTION_COLOR);
