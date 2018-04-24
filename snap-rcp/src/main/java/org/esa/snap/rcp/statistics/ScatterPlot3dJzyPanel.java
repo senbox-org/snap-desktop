@@ -9,6 +9,7 @@ import com.jogamp.opengl.glu.GLU;
 import org.jzy3d.chart.Chart;
 import org.jzy3d.chart.controllers.mouse.NewtMouseUtilities;
 import org.jzy3d.chart.controllers.mouse.camera.NewtCameraMouseController;
+import org.jzy3d.chart.controllers.thread.camera.CameraThreadController;
 import org.jzy3d.chart.factories.NewtChartComponentFactory;
 import org.jzy3d.colors.Color;
 import org.jzy3d.maths.BoundingBox3d;
@@ -73,18 +74,7 @@ class ScatterPlot3dJzyPanel extends JPanel {
             }
             renderChart();
         });
-        xLine = new LineStrip();
-        xLine.setWireframeColor(new Color(0.8f, 0.0f, 0.0f));
-        xLine.setWidth(2.f);
-        chart.addDrawable(xLine);
-        yLine = new LineStrip();
-        yLine.setWireframeColor(new Color(0.8f, 0.0f, 0.0f));
-        yLine.setWidth(2.f);
-        chart.addDrawable(yLine);
-        zLine = new LineStrip();
-        zLine.setWireframeColor(new Color(0.8f, 0.0f, 0.0f));
-        zLine.setWidth(2.f);
-        chart.addDrawable(zLine);
+        currentVertex = new Coord3d(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
         pickingSupport.addObjectPickedListener((vertices, picking) -> {
             for (Object vertex : vertices) {
                 currentVertex = (Coord3d) vertex;
@@ -94,6 +84,24 @@ class ScatterPlot3dJzyPanel extends JPanel {
         projectionScatter = new ScatterPlot3DProjectionScatter();
         projectionScatter.setColor(PROJECTION_COLOR);
         chart.getScene().add(projectionScatter);
+        xLine = new LineStrip();
+        xLine.setWireframeColor(new Color(0.8f, 0.0f, 0.0f));
+        xLine.setWidth(2.f);
+        xLine.add(new Point(currentVertex));
+        xLine.add(new Point(currentVertex));
+        chart.addDrawable(xLine);
+        yLine = new LineStrip();
+        yLine.setWireframeColor(new Color(0.8f, 0.0f, 0.0f));
+        yLine.setWidth(2.f);
+        yLine.add(new Point(currentVertex));
+        yLine.add(new Point(currentVertex));
+        chart.addDrawable(yLine);
+        zLine = new LineStrip();
+        zLine.setWireframeColor(new Color(0.8f, 0.0f, 0.0f));
+        zLine.setWidth(2.f);
+        zLine.add(new Point(currentVertex));
+        zLine.add(new Point(currentVertex));
+        chart.addDrawable(zLine);
         scatter = new Scatter();
         scatter.setWidth(10.0f);
         chart.getScene().add(scatter);
@@ -106,21 +114,12 @@ class ScatterPlot3dJzyPanel extends JPanel {
     }
 
     private void updateLine() {
-        xLine.clear();
-        yLine.clear();
-        zLine.clear();
-        if (currentVertex != null) {
-            Coord3d xVertex = new Coord3d(getXAxisCoord(), currentVertex.y, currentVertex.z);
-            Coord3d yVertex = new Coord3d(currentVertex.x, getYAxisCoord(), currentVertex.z);
-            Coord3d zVertex = new Coord3d(currentVertex.x, currentVertex.y, getZAxisCoord());
-            Point currentPoint = new Point(currentVertex);
-            xLine.add(currentPoint);
-            xLine.add(new Point(xVertex));
-            yLine.add(currentPoint);
-            yLine.add(new Point(yVertex));
-            zLine.add(currentPoint);
-            zLine.add(new Point(zVertex));
-        }
+        xLine.get(0).setCoord(currentVertex);
+        xLine.get(1).setCoord(new Coord3d(getXAxisCoord(), currentVertex.y, currentVertex.z));
+        yLine.get(0).setCoord(currentVertex);
+        yLine.get(1).setCoord(new Coord3d(currentVertex.x, getYAxisCoord(), currentVertex.z));
+        zLine.get(0).setCoord(currentVertex);
+        zLine.get(1).setCoord(new Coord3d(currentVertex.x, currentVertex.y, getZAxisCoord()));
     }
 
     private float getXAxisCoord() {
@@ -216,6 +215,8 @@ class ScatterPlot3dJzyPanel extends JPanel {
 
         ScatterPlot3dCameraMouseController(Chart chart, PickingSupport pickingSupport) {
             super(chart);
+            removeSlaveThreadController();
+            addSlaveThreadController(new ScatterPlot3DCameraThreadController(chart));
             this.pickingSupport = pickingSupport;
             glu = new GLU();
             isAnimating = false;
@@ -371,6 +372,21 @@ class ScatterPlot3dJzyPanel extends JPanel {
             perf.toc();
 
             fireObjectPicked(clickedObjects);
+        }
+
+    }
+
+    public class ScatterPlot3DCameraThreadController extends CameraThreadController {
+
+        public ScatterPlot3DCameraThreadController(Chart chart) {
+            super(chart);
+        }
+
+        @Override
+        protected void rotate(Coord2d move) {
+            super.rotate(move);
+            updateLine();
+            adjustProjectionScatterToBounds();
         }
 
     }
