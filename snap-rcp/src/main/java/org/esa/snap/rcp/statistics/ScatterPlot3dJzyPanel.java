@@ -6,6 +6,9 @@ import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.fixedfunc.GLMatrixFunc;
 import com.jogamp.opengl.glu.GLU;
+import com.jogamp.opengl.util.texture.TextureIO;
+import org.esa.snap.core.util.io.SnapFileFilter;
+import org.esa.snap.ui.SnapFileChooser;
 import org.jzy3d.chart.Chart;
 import org.jzy3d.chart.controllers.mouse.NewtMouseUtilities;
 import org.jzy3d.chart.controllers.mouse.camera.NewtCameraMouseController;
@@ -36,6 +39,8 @@ import org.jzy3d.plot3d.transform.Transform;
 import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.io.File;
+import java.io.IOException;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +59,6 @@ class ScatterPlot3dJzyPanel extends JPanel {
     private Range yRange;
     private Range zRange;
     private DrawableTextWrapper textWrapper;
-    private ScatterPlot3dCameraMouseController cameraController;
     private LineStrip xLine;
     private LineStrip yLine;
     private LineStrip zLine;
@@ -106,7 +110,8 @@ class ScatterPlot3dJzyPanel extends JPanel {
         chart.getScene().add(scatter);
         chart.add(textWrapper);
         setLayout(new BorderLayout());
-        cameraController = new ScatterPlot3dCameraMouseController(this.chart, pickingSupport);
+        ScatterPlot3dCameraMouseController cameraController =
+                new ScatterPlot3dCameraMouseController(this.chart, pickingSupport);
         titleLabel = new JLabel();
         add(titleLabel, BorderLayout.NORTH);
         add((Component) this.chart.getCanvas(), BorderLayout.CENTER);
@@ -206,6 +211,19 @@ class ScatterPlot3dJzyPanel extends JPanel {
 
     void renderChart() {
         chart.render();
+    }
+
+    void doSaveAs() throws IOException {
+        SnapFileChooser snapFileChooser = new SnapFileChooser();
+        snapFileChooser.addChoosableFileFilter(new SnapFileFilter("PNG", "png",
+                "PNG Image Files"));
+        int result = snapFileChooser.showSaveDialog(this);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File file = snapFileChooser.getSelectedFile();
+            if (!file.getParentFile().exists())
+                file.mkdirs();
+            TextureIO.write(chart.screenshot(), file);
+        }
     }
 
     private class ScatterPlot3dCameraMouseController extends NewtCameraMouseController {

@@ -42,6 +42,7 @@ import org.esa.snap.core.util.Debug;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.colormanip.ScatterPlot3DColorManipulationPanel;
 import org.esa.snap.rcp.colormanip.ScatterPlot3DFormModel;
+import org.esa.snap.ui.AbstractDialog;
 import org.esa.snap.ui.GridBagUtils;
 import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.tool.ToolButtonFactory;
@@ -345,7 +346,7 @@ class ScatterPlot3DPlotPanel extends PagePanel {
                 zAxisRangeControl.getMin().floatValue(), zAxisRangeControl.getMax().floatValue());
         scatterPlot3dJzyPanel.setChartData(dataLists[0], dataLists[1], dataLists[2]);
         scatterPlot3dJzyPanel.setColors(dataLists[3]);
-        scatterPlot3dJzyPanel.renderChart();
+        renderChart();
     }
 
     private void setMinAndMaxValuesFromArray(List<Float> xData, List<Float> yData, List<Float> zData) {
@@ -538,27 +539,27 @@ class ScatterPlot3DPlotPanel extends PagePanel {
                 false);
         propertiesButton.setToolTipText("Edit properties.");
         propertiesButton.setName("propertiesButton.");
-//        propertiesButton.addActionListener(e -> chartPanel.doEditChartProperties());
+        propertiesButton.setEnabled(false);
 
         final AbstractButton saveButton = ToolButtonFactory.createButton(
                 UIUtils.loadImageIcon("icons/Export24.gif"),
                 false);
         saveButton.setToolTipText("Save chart as image.");
         saveButton.setName("saveButton.");
-//        saveButton.addActionListener(e -> {
-//            try {
-//                chartPanel.doSaveAs();
-//            } catch (IOException e1) {
-//                AbstractDialog.showErrorDialog(chartPanel, "Could not save chart:\n" + e1.getMessage(), "Error");
-//            }
-//        });
+        saveButton.addActionListener(e -> {
+            try {
+                chartPanel.doSaveAs();
+            } catch (IOException e1) {
+                AbstractDialog.showErrorDialog(chartPanel, "Could not save chart:\n" + e1.getMessage(), "Error");
+            }
+        });
 
         final AbstractButton printButton = ToolButtonFactory.createButton(
                 UIUtils.loadImageIcon("icons/Print24.gif"),
                 false);
         printButton.setToolTipText("Print chart.");
         printButton.setName("printButton.");
-//        printButton.addActionListener(e -> chartPanel.createChartPrintJob());
+        printButton.setEnabled(false);
 
         final TableLayout tableLayout = new TableLayout(6);
         tableLayout.setColumnFill(4, TableLayout.Fill.HORIZONTAL);
