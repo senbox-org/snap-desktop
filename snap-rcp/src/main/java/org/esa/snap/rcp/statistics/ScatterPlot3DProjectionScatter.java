@@ -107,6 +107,10 @@ class ScatterPlot3DProjectionScatter extends Scatter {
         this.scaleFactor *= scaleFactor;
     }
 
+    public void resetScale() {
+        this.scaleFactor = 1f;
+    }
+
     void setEdgeCoords(float xEdgeCoord, float yEdgeCoord, float zEdgeCoord) {
         this.xEdgeCoord = xEdgeCoord;
         this.yEdgeCoord = yEdgeCoord;
