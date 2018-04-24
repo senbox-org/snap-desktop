@@ -91,12 +91,12 @@ class ScatterPlot3dJzyPanel extends JPanel {
             }
             renderChart();
         });
-        scatter = new Scatter();
-        scatter.setWidth(10.0f);
-        chart.getScene().add(scatter);
         projectionScatter = new ScatterPlot3DProjectionScatter();
         projectionScatter.setColor(PROJECTION_COLOR);
         chart.getScene().add(projectionScatter);
+        scatter = new Scatter();
+        scatter.setWidth(10.0f);
+        chart.getScene().add(scatter);
         chart.add(textWrapper);
         setLayout(new BorderLayout());
         cameraController = new ScatterPlot3dCameraMouseController(this.chart, pickingSupport);
@@ -172,38 +172,15 @@ class ScatterPlot3dJzyPanel extends JPanel {
     }
 
     void projectToX(boolean projectToX) {
-        SwingWorker<Void, Void> projectSwingWorker = new SwingWorker<Void, Void>() {
-            @Override
-            protected Void doInBackground() throws Exception {
-                projectionScatter.projectToX(projectToX);
-                return null;
-            }
-        };
-        projectSwingWorker.execute();
+        projectionScatter.projectToX(projectToX);
     }
 
     void projectToY(boolean projectToY) {
-        SwingWorker<Void, Void> projectSwingWorker = new SwingWorker<Void, Void>() {
-            @Override
-            protected Void doInBackground() throws Exception {
-                projectionScatter.projectToY(projectToY);
-                return null;
-            }
-        };
-        projectSwingWorker.execute();
-//        projectionScatter.projectToY(projectToY);
+        projectionScatter.projectToY(projectToY);
     }
 
     void projectToZ(boolean projectToZ) {
-        SwingWorker<Void, Void> projectSwingWorker = new SwingWorker<Void, Void>() {
-            @Override
-            protected Void doInBackground() throws Exception {
-                projectionScatter.projectToZ(projectToZ);
-                return null;
-            }
-        };
-        projectSwingWorker.execute();
-//        projectionScatter.projectToZ(projectToZ);
+        projectionScatter.projectToZ(projectToZ);
     }
 
     private void adjustProjectionScatterToBounds() {
