@@ -17,20 +17,17 @@ class ScatterPlot3DProjectionScatter extends Scatter {
     private static final int NUM_SEGMENTS = 12;
     private static float[] SINES;
     private static float[] COSINES;
-    private List<Projector> ACTIVE_PROJECTORS;
-
     private float scaleFactor;
-    private Projector xProjector;
-    private Projector yProjector;
-    private Projector zProjector;
+    private boolean projectToX;
+    private boolean projectToY;
+    private boolean projectToZ;
+    private float xEdgeCoord;
+    private float yEdgeCoord;
+    private float zEdgeCoord;
 
     ScatterPlot3DProjectionScatter() {
         super();
         scaleFactor = 1f;
-        xProjector = new XProjector();
-        yProjector = new YProjector();
-        zProjector = new ZProjector();
-        ACTIVE_PROJECTORS = new ArrayList<>();
         initSinesAndCosines();
     }
 
@@ -60,10 +57,11 @@ class ScatterPlot3DProjectionScatter extends Scatter {
 
     @Override
     public void drawGLES2() {
-        if (coordinates != null && !ACTIVE_PROJECTORS.isEmpty()) {
+        List<Projector> projectors = getProjectors();
+        if (coordinates != null && !projectors.isEmpty()) {
             if (colors == null)
                 GLES2CompatUtils.glColor4f(rgb.r, rgb.g, rgb.b, rgb.a);
-            for (Projector projector : ACTIVE_PROJECTORS) {
+            for (Projector projector : projectors) {
                 projector.prepareDrawing();
             }
             int k = 0;
@@ -74,7 +72,7 @@ class ScatterPlot3DProjectionScatter extends Scatter {
                     GLES2CompatUtils.glColor4f(colors[k].r, colors[k].g, colors[k].b, colors[k].a);
                     k++;
                 }
-                for (Projector projector : ACTIVE_PROJECTORS) {
+                for (Projector projector : projectors) {
                     projector.drawGLES2(c);
                 }
             }
@@ -83,10 +81,11 @@ class ScatterPlot3DProjectionScatter extends Scatter {
 
     @Override
     public void drawGL2(GL gl) {
-        if (coordinates != null && !ACTIVE_PROJECTORS.isEmpty()) {
+        List<Projector> projectors = getProjectors();
+        if (coordinates != null && !projectors.isEmpty()) {
             if (colors == null)
                 gl.getGL2().glColor4f(rgb.r, rgb.g, rgb.b, rgb.a);
-            for (Projector projector : ACTIVE_PROJECTORS) {
+            for (Projector projector : projectors) {
                 projector.prepareDrawing();
             }
             int k = 0;
@@ -97,7 +96,7 @@ class ScatterPlot3DProjectionScatter extends Scatter {
                     gl.getGL2().glColor4f(colors[k].r, colors[k].g, colors[k].b, colors[k].a);
                     k++;
                 }
-                for (Projector projector : ACTIVE_PROJECTORS) {
+                for (Projector projector : projectors) {
                     projector.drawGL2(c, gl);
                 }
             }
@@ -109,44 +108,42 @@ class ScatterPlot3DProjectionScatter extends Scatter {
     }
 
     void setEdgeCoords(float xEdgeCoord, float yEdgeCoord, float zEdgeCoord) {
-        xProjector.setEdgeCoord(xEdgeCoord);
-        yProjector.setEdgeCoord(yEdgeCoord);
-        zProjector.setEdgeCoord(zEdgeCoord);
+        this.xEdgeCoord = xEdgeCoord;
+        this.yEdgeCoord = yEdgeCoord;
+        this.zEdgeCoord = zEdgeCoord;
     }
 
     void projectToX(boolean projectToX) {
-        if (projectToX && !ACTIVE_PROJECTORS.contains(xProjector)) {
-            ACTIVE_PROJECTORS.add(xProjector);
-        } else if (!projectToX) {
-            ACTIVE_PROJECTORS.remove(xProjector);
-        }
+        this.projectToX = projectToX;
     }
 
     void projectToY(boolean projectToY) {
-        if (projectToY && !ACTIVE_PROJECTORS.contains(yProjector)) {
-            ACTIVE_PROJECTORS.add(yProjector);
-        } else if (!projectToY) {
-            ACTIVE_PROJECTORS.remove(yProjector);
-        }
+        this.projectToY = projectToY;
     }
 
     void projectToZ(boolean projectToZ) {
-        if (projectToZ && !ACTIVE_PROJECTORS.contains(zProjector)) {
-            ACTIVE_PROJECTORS.add(zProjector);
-        } else if (!projectToZ) {
-            ACTIVE_PROJECTORS.remove(zProjector);
+        this.projectToZ = projectToZ;
+    }
+
+    private List<Projector> getProjectors() {
+        List<Projector> projectors = new ArrayList<>();
+        if (projectToX) {
+            projectors.add(new XProjector(xEdgeCoord));
         }
+        if (projectToY) {
+            projectors.add(new YProjector(yEdgeCoord));
+        }
+        if (projectToZ) {
+            projectors.add(new ZProjector(zEdgeCoord));
+        }
+        return projectors;
     }
 
     private abstract class Projector {
 
         float edgeCoord;
 
-        Projector() {
-            edgeCoord = Float.POSITIVE_INFINITY;
-        }
-
-        void setEdgeCoord(float edgeCoord) {
+        Projector(float edgeCoord) {
             this.edgeCoord = edgeCoord;
         }
 
@@ -161,6 +158,10 @@ class ScatterPlot3DProjectionScatter extends Scatter {
     private class XProjector extends Projector {
 
         private float[][] circleEdges;
+
+        XProjector(float xEdgeCoord) {
+            super(xEdgeCoord);
+        }
 
         public void prepareDrawing() {
             float yWidth = (bbox.getYmax() - bbox.getYmin()) / 100 * scaleFactor;
@@ -197,6 +198,10 @@ class ScatterPlot3DProjectionScatter extends Scatter {
 
         private float[][] circleEdges;
 
+        YProjector(float yEdgeCoord) {
+            super(yEdgeCoord);
+        }
+
         public void prepareDrawing() {
             float xWidth = (bbox.getXmax() - bbox.getXmin()) / 100 * scaleFactor;
             float zWidth = (bbox.getZmax() - bbox.getZmin()) / 100 * scaleFactor;
@@ -231,6 +236,10 @@ class ScatterPlot3DProjectionScatter extends Scatter {
     private class ZProjector extends Projector {
 
         private float[][] circleEdges;
+
+        ZProjector(float zEdgeCoord) {
+            super(zEdgeCoord);
+        }
 
         public void prepareDrawing() {
             float xWidth = (bbox.getXmax() - bbox.getXmin()) / 100 * scaleFactor;
