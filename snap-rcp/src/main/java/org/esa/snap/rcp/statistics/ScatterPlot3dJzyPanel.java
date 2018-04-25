@@ -175,6 +175,10 @@ class ScatterPlot3dJzyPanel extends JPanel {
     }
 
     void setColors(List<Integer> colorData) {
+        if (colorData.isEmpty()) {
+            scatter.setColor(new Color(10, 10, 10, 63));
+            return;
+        }
         Color[] colors = new Color[colorData.size() / 3];
         for (int i = 0; i < colorData.size() / 3; i++) {
             colors[i] = new Color(colorData.get(3 * i), colorData.get(3 * i + 1), colorData.get(3 * i + 2), 63);

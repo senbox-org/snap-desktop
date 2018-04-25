@@ -316,9 +316,11 @@ class ScatterPlot3DPlotPanel extends PagePanel {
                 dataLists[0].add(xData[i]);
                 dataLists[1].add(yData[i]);
                 dataLists[2].add(zData[i]);
-                dataLists[3].add(colorData[i * numColorBands]);
-                dataLists[3].add(colorData[i * numColorBands + 1]);
-                dataLists[3].add(colorData[i * numColorBands + 2]);
+                if (numColorBands >= 0) {
+                    dataLists[3].add(colorData[i * numColorBands]);
+                    dataLists[3].add(colorData[i * numColorBands + 1]);
+                    dataLists[3].add(colorData[i * numColorBands + 2]);
+                }
             }
         }
         return dataLists;
@@ -345,13 +347,17 @@ class ScatterPlot3DPlotPanel extends PagePanel {
         final RasterDataNode zNode = dataSourceConfig.zBand;
         final RasterDataNode colorNode = dataSourceConfig.colorBand;
 
-        final ImageInfo imageInfo = formModel.getModifiedImageInfo();
-        final RenderedImage colorImage =
-                ImageManager.getInstance().createColoredBandImage(new RasterDataNode[]{colorNode}, imageInfo, level);
-        int numColorBands = colorImage.getSampleModel().getNumBands();
-        final int colorSize = colorImage.getWidth() * colorImage.getHeight() * numColorBands;
-        int[] colorData = new int[colorSize];
-        colorImage.getData().getPixels(0, 0, colorImage.getWidth(), colorImage.getHeight(), colorData);
+        int numColorBands = -1;
+        int[] colorData = null;
+        if (colorNode != null) {
+            final ImageInfo imageInfo = formModel.getModifiedImageInfo();
+            final RenderedImage colorImage =
+                    ImageManager.getInstance().createColoredBandImage(new RasterDataNode[]{colorNode}, imageInfo, level);
+            numColorBands = colorImage.getSampleModel().getNumBands();
+            final int colorSize = colorImage.getWidth() * colorImage.getHeight() * numColorBands;
+            colorData = new int[colorSize];
+            colorImage.getData().getPixels(0, 0, colorImage.getWidth(), colorImage.getHeight(), colorData);
+        }
 
         List[] dataLists = getDataLists(xData, (float) xNode.getGeophysicalNoDataValue(),
                 yData, (float) yNode.getGeophysicalNoDataValue(), zData, (float) zNode.getGeophysicalNoDataValue(),
