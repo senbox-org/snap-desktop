@@ -19,6 +19,7 @@ package org.esa.snap.rcp.statistics;
 import com.bc.ceres.binding.Property;
 import com.bc.ceres.binding.PropertyContainer;
 import com.bc.ceres.binding.ValidationException;
+import com.bc.ceres.binding.ValueRange;
 import com.bc.ceres.binding.ValueSet;
 import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.glevel.MultiLevelImage;
@@ -28,7 +29,21 @@ import com.bc.ceres.glevel.support.DefaultMultiLevelImage;
 import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.jidesoft.swing.SimpleScrollPane;
-import org.apache.commons.lang.ArrayUtils;
+import java.util.ArrayList;
+import java.util.Collections;
+import javax.swing.AbstractButton;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.ImageIcon;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JSeparator;
+import javax.swing.JSpinner;
+import javax.swing.ListCellRenderer;
+import javax.swing.ScrollPaneConstants;
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.ImageInfo;
 import org.esa.snap.core.datamodel.Mask;
@@ -48,7 +63,6 @@ import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.tool.ToolButtonFactory;
 import org.openide.windows.TopComponent;
 
-import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -60,20 +74,19 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.image.RenderedImage;
 import java.io.IOException;
-import java.util.*;
+import java.util.List;
 
 /**
- * The scatter plot pane within the statistics window.
+ * The 3D scatter plot pane within the statistics window.
  *
- * @author Olaf Danne
- * @author Sabine Embacher
+ * @author Tonio Fincke
  */
 class ScatterPlot3DPlotPanel extends PagePanel {
 
     private AbstractButton hideAndShowButton;
     private JPanel backgroundPanel;
     private RoiMaskSelector roiMaskSelector;
-    protected AbstractButton refreshButton;
+    private AbstractButton refreshButton;
 
     private AxisRangeControl xAxisRangeControl;
     private AxisRangeControl yAxisRangeControl;
@@ -84,6 +97,7 @@ class ScatterPlot3DPlotPanel extends PagePanel {
     private final static String PROPERTY_NAME_MAX = "max";
     private final static String PROPERTY_NAME_USE_ROI_MASK = "useRoiMask";
     private final static String PROPERTY_NAME_ROI_MASK = "roiMask";
+    private final static String PROPERTY_NAME_DISPLAY_LEVEL = "displayLevel";
     private final static String PROPERTY_NAME_X_PRODUCT = "xProduct";
     private final static String PROPERTY_NAME_Y_PRODUCT = "yProduct";
     private final static String PROPERTY_NAME_Z_PRODUCT = "zProduct";
@@ -103,6 +117,7 @@ class ScatterPlot3DPlotPanel extends PagePanel {
     private Property yBandProperty;
     private Property zBandProperty;
     private Property colorBandProperty;
+    private Property displayLevelProperty;
     private JComboBox<ListCellRenderer> xProductList;
     private JComboBox<ListCellRenderer> yProductList;
     private JComboBox<ListCellRenderer> zProductList;
@@ -129,6 +144,7 @@ class ScatterPlot3DPlotPanel extends PagePanel {
     private float maxY;
     private float minZ;
     private float maxZ;
+    private JSpinner levelSpinner;
 
     ScatterPlot3DPlotPanel(TopComponent parentDialog, String helpId) {
         super(parentDialog, helpId, CHART_TITLE);
@@ -138,6 +154,16 @@ class ScatterPlot3DPlotPanel extends PagePanel {
     protected void initComponents() {
         dataSourceConfig = new DataSourceConfig();
         bindingContext = new BindingContext(PropertyContainer.createObjectBacked(dataSourceConfig));
+
+        levelSpinner = new JSpinner();
+        displayLevelProperty = bindingContext.getPropertySet().getProperty(PROPERTY_NAME_DISPLAY_LEVEL);
+        try {
+            displayLevelProperty.setValue(new Integer(0));
+        } catch (ValidationException e) {
+            // do nothing
+        }
+        displayLevelProperty.getDescriptor().setValueRange(new ValueRange(0, 1));
+        bindingContext.bind(PROPERTY_NAME_DISPLAY_LEVEL, levelSpinner);
 
         xBandList = new JComboBox<>();
         xBandList.setRenderer(new BandListCellRenderer());
@@ -154,15 +180,18 @@ class ScatterPlot3DPlotPanel extends PagePanel {
                 }
             }
         });
+        xBandList.addActionListener(new LevelActionListener());
         xBandProperty = bindingContext.getPropertySet().getProperty(PROPERTY_NAME_X_BAND);
 
         yBandList = new JComboBox<>();
         yBandList.setRenderer(new BandListCellRenderer());
+        yBandList.addActionListener(new LevelActionListener());
         bindingContext.bind(PROPERTY_NAME_Y_BAND, yBandList);
         yBandProperty = bindingContext.getPropertySet().getProperty(PROPERTY_NAME_Y_BAND);
 
         zBandList = new JComboBox<>();
         zBandList.setRenderer(new BandListCellRenderer());
+        zBandList.addActionListener(new LevelActionListener());
         bindingContext.bind(PROPERTY_NAME_Z_BAND, zBandList);
         zBandProperty = bindingContext.getPropertySet().getProperty(PROPERTY_NAME_Z_BAND);
 
@@ -242,8 +271,8 @@ class ScatterPlot3DPlotPanel extends PagePanel {
         formModel.addPropertyChangeListener(evt -> refreshButton.setEnabled(true));
     }
 
-    private int getMaxAllowedLevel() {
-        int maxAllowedLevel = Integer.MAX_VALUE;
+    private void setMaxAllowedLevel() {
+        int maxAllowedLevel = 10000;
         RasterDataNode[] nodes = new RasterDataNode[]{dataSourceConfig.xBand, dataSourceConfig.yBand,
                 dataSourceConfig.zBand, dataSourceConfig.colorBand};
         for (RasterDataNode node : nodes) {
@@ -251,7 +280,13 @@ class ScatterPlot3DPlotPanel extends PagePanel {
                 maxAllowedLevel = Math.min(node.getMultiLevelModel().getLevelCount() - 1, maxAllowedLevel);
             }
         }
-        return maxAllowedLevel;
+        if (maxAllowedLevel == 10000) {
+            maxAllowedLevel = 0;
+        }
+
+        displayLevelProperty.getDescriptor().setValueRange(new ValueRange(0, maxAllowedLevel));
+        bindingContext.unbind(bindingContext.getBinding(PROPERTY_NAME_DISPLAY_LEVEL));
+        bindingContext.bind(PROPERTY_NAME_DISPLAY_LEVEL, levelSpinner);
     }
 
     private float[] getData(RasterDataNode node, int level) {
@@ -299,7 +334,7 @@ class ScatterPlot3DPlotPanel extends PagePanel {
     }
 
     private void updateChartData() {
-        int level = getMaxAllowedLevel();
+        int level = dataSourceConfig.displayLevel;
         float[] xData = getData(dataSourceConfig.xBand, level);
         float[] yData = getData(dataSourceConfig.yBand, level);
         float[] zData = getData(dataSourceConfig.zBand, level);
@@ -382,9 +417,19 @@ class ScatterPlot3DPlotPanel extends PagePanel {
         final JPanel colorPanel = colorManipulationPanel.getContentPanel();
         GridBagUtils.addToPanel(optionsPanel, colorPanel, gbc, "gridy=12,insets.left=4,insets.right=2");
         GridBagUtils.addToPanel(optionsPanel, new JSeparator(), gbc, "gridy=13,insets.left=4,insets.right=0");
-        GridBagUtils.addToPanel(optionsPanel, projectToXCheckBox, gbc, "gridy=14,insets.left=4,insets.right=2");
-        GridBagUtils.addToPanel(optionsPanel, projectToYCheckBox, gbc, "gridy=15,insets.left=4,insets.right=2");
-        GridBagUtils.addToPanel(optionsPanel, projectToZCheckBox, gbc, "gridy=16,insets.left=4,insets.right=2");
+        TableLayout levelPanelLayout = new TableLayout(2);
+        levelPanelLayout.setColumnWeightX(0, 1.0);
+        levelPanelLayout.setColumnFill(0, TableLayout.Fill.HORIZONTAL);
+        levelPanelLayout.setColumnFill(1, TableLayout.Fill.NONE);
+        levelPanelLayout.setTablePadding(0, 2);
+        levelPanelLayout.setColumnWeightX(1, 0.0);
+        JPanel levelPanel = new JPanel(levelPanelLayout);
+        levelPanel.add(new JLabel("Level of Detail: "));
+        levelPanel.add(levelSpinner);
+        GridBagUtils.addToPanel(optionsPanel, levelPanel, gbc, "gridy=14,insets.left=4,insets.right=2");
+        GridBagUtils.addToPanel(optionsPanel, projectToXCheckBox, gbc, "gridy=15,insets.left=4,insets.right=2");
+        GridBagUtils.addToPanel(optionsPanel, projectToYCheckBox, gbc, "gridy=16,insets.left=4,insets.right=2");
+        GridBagUtils.addToPanel(optionsPanel, projectToZCheckBox, gbc, "gridy=17,insets.left=4,insets.right=2");
         return optionsPanel;
     }
 
@@ -694,10 +739,19 @@ class ScatterPlot3DPlotPanel extends PagePanel {
         private Product yProductProperty;
         private Product zProductProperty;
         private Product colorProductProperty;
+        private Integer displayLevel;
         private Property xBandProperty;
         private Property yBandProperty;
         private Property zBandProperty;
         private Property colorBandProperty;
+    }
+
+    private class LevelActionListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            setMaxAllowedLevel();
+        }
     }
 
     private static class BandListCellRenderer extends DefaultListCellRenderer {
