@@ -135,9 +135,9 @@ class DensityPlotPanel extends ChartPagePanel {
 
     private void initActionEnablers() {
         RefreshActionEnabler roiMaskActionEnabler = new RefreshActionEnabler(refreshButton, PROPERTY_NAME_USE_ROI_MASK,
-                                                                             PROPERTY_NAME_ROI_MASK,
-                                                                             PROPERTY_NAME_X_PRODUCT, PROPERTY_NAME_Y_PRODUCT,
-                                                                             PROPERTY_NAME_X_BAND, PROPERTY_NAME_Y_BAND);
+                                                                             PROPERTY_NAME_ROI_MASK);
+        roiMaskActionEnabler.addProductBandEnablement(PROPERTY_NAME_X_PRODUCT, PROPERTY_NAME_X_BAND);
+        roiMaskActionEnabler.addProductBandEnablement(PROPERTY_NAME_Y_PRODUCT, PROPERTY_NAME_Y_BAND);
         bindingContext.addPropertyChangeListener(roiMaskActionEnabler);
         RefreshActionEnabler rangeControlActionEnabler = new RefreshActionEnabler(refreshButton, PROPERTY_NAME_MIN, PROPERTY_NAME_AUTO_MIN_MAX,
                                                                                   PROPERTY_NAME_MAX);

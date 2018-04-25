@@ -257,14 +257,15 @@ class ScatterPlot3DPlotPanel extends PagePanel {
     }
 
     private void initActionEnablers() {
-        RefreshActionEnabler refreshActionEnabler =
-                new RefreshActionEnabler(refreshButton, PROPERTY_NAME_USE_ROI_MASK, PROPERTY_NAME_ROI_MASK,
-                        PROPERTY_NAME_X_PRODUCT, PROPERTY_NAME_Y_PRODUCT, PROPERTY_NAME_Z_PRODUCT,
-                        PROPERTY_NAME_X_BAND, PROPERTY_NAME_Y_BAND, PROPERTY_NAME_Z_BAND);
+        RefreshActionEnabler refreshActionEnabler = new RefreshActionEnabler(refreshButton, PROPERTY_NAME_USE_ROI_MASK,
+                PROPERTY_NAME_ROI_MASK, PROPERTY_NAME_DISPLAY_LEVEL);
+        refreshActionEnabler.addProductBandEnablement(PROPERTY_NAME_X_PRODUCT, PROPERTY_NAME_X_BAND);
+        refreshActionEnabler.addProductBandEnablement(PROPERTY_NAME_Y_PRODUCT, PROPERTY_NAME_Y_BAND);
+        refreshActionEnabler.addProductBandEnablement(PROPERTY_NAME_Z_PRODUCT, PROPERTY_NAME_Z_BAND);
+        refreshActionEnabler.addProductBandEnablement(PROPERTY_NAME_COLOR_PRODUCT, PROPERTY_NAME_COLOR_BAND, true);
         bindingContext.addPropertyChangeListener(refreshActionEnabler);
         RefreshActionEnabler rangeControlActionEnabler = new RefreshActionEnabler(refreshButton, PROPERTY_NAME_MIN,
-                PROPERTY_NAME_AUTO_MIN_MAX,
-                PROPERTY_NAME_MAX);
+                PROPERTY_NAME_AUTO_MIN_MAX, PROPERTY_NAME_MAX);
         xAxisRangeControl.getBindingContext().addPropertyChangeListener(rangeControlActionEnabler);
         yAxisRangeControl.getBindingContext().addPropertyChangeListener(rangeControlActionEnabler);
         zAxisRangeControl.getBindingContext().addPropertyChangeListener(rangeControlActionEnabler);
