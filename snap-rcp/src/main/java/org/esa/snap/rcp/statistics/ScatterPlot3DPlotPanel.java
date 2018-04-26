@@ -162,7 +162,7 @@ class ScatterPlot3DPlotPanel extends PagePanel {
         } catch (ValidationException e) {
             // do nothing
         }
-        displayLevelProperty.getDescriptor().setValueRange(new ValueRange(0, 1));
+        displayLevelProperty.getDescriptor().setValueRange(new ValueRange(0, 0));
         bindingContext.bind(PROPERTY_NAME_DISPLAY_LEVEL, levelSpinner);
 
         xBandList = new JComboBox<>();
@@ -272,6 +272,10 @@ class ScatterPlot3DPlotPanel extends PagePanel {
         formModel.addPropertyChangeListener(evt -> refreshButton.setEnabled(true));
     }
 
+    private int getMaxAllowedLevel() {
+        return (int) displayLevelProperty.getDescriptor().getValueRange().getMax();
+    }
+
     private void setMaxAllowedLevel() {
         int maxAllowedLevel = 10000;
         RasterDataNode[] nodes = new RasterDataNode[]{dataSourceConfig.xBand, dataSourceConfig.yBand,
@@ -337,7 +341,7 @@ class ScatterPlot3DPlotPanel extends PagePanel {
     }
 
     private void updateChartData() {
-        int level = dataSourceConfig.displayLevel;
+        int level = getMaxAllowedLevel() - dataSourceConfig.displayLevel;
         float[] xData = getData(dataSourceConfig.xBand, level);
         float[] yData = getData(dataSourceConfig.yBand, level);
         float[] zData = getData(dataSourceConfig.zBand, level);
