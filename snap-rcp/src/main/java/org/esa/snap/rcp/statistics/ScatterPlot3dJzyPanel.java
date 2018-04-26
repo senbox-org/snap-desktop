@@ -54,7 +54,7 @@ class ScatterPlot3dJzyPanel extends JPanel {
     private Scatter scatter;
     private ScatterPlot3DProjectionScatter projectionScatter;
     private JLabel titleLabel;
-    private PickingSupport pickingSupport;
+    private ScatterPlot3DPickingSupport pickingSupport;
     private Range xRange;
     private Range yRange;
     private Range zRange;
@@ -162,13 +162,16 @@ class ScatterPlot3dJzyPanel extends JPanel {
     }
 
     void setChartData(List<Float> xData, List<Float> yData, List<Float> zData) {
+        scatter.clear();
+        projectionScatter.clear();
         final int size = xData.size();
         Coord3d[] points = new Coord3d[size];
+        PickablePointWithTarget[] pickablePointWithTargets = new PickablePointWithTarget[size];
         for (int i = 0; i < size; i++) {
             points[i] = new Coord3d(xData.get(i), yData.get(i), zData.get(i));
-            PickablePoint pickablePoint = new PickablePoint(points[i]);
-            pickingSupport.registerPickableObject(pickablePoint, points[i]);
+            pickablePointWithTargets[i] = new PickablePointWithTarget(points[i], points[i], i);
         }
+        pickingSupport.registerPickableObjects(pickablePointWithTargets);
         scatter.setData(points);
         projectionScatter.setData(points);
         adjustProjectionScatterToBounds();
@@ -320,6 +323,17 @@ class ScatterPlot3dJzyPanel extends JPanel {
 
     private class ScatterPlot3DPickingSupport extends PickingSupport {
 
+        private PickablePointWithTarget[] pickablePoints;
+
+        ScatterPlot3DPickingSupport() {
+            super();
+            pickablePoints = new PickablePointWithTarget[0];
+        }
+
+        void registerPickableObjects(PickablePointWithTarget[] pickablePoints) {
+            this.pickablePoints = pickablePoints;
+        }
+
         @Override
         public void pickObjects(GL gl, GLU glu, View view, Graph graph, IntegerCoord2d pickPoint) {
             perf.tic();
@@ -359,7 +373,7 @@ class ScatterPlot3dJzyPanel extends JPanel {
                 gl.getGL2().glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
 
                 synchronized (this) {
-                    for (Pickable pickable : pickables.values()) {
+                    for (Pickable pickable : pickablePoints) {
                         setCurrentName(gl, pickable);
                         pickable.setTransform(viewTransform);
                         pickable.draw(gl, glu, camera);
@@ -386,17 +400,32 @@ class ScatterPlot3dJzyPanel extends JPanel {
                     pickableIndex = selectBuf[4 * j + 3];
                 }
             }
-            final Pickable pickable = pickables.get(pickableIndex);
+            final PickablePointWithTarget pickable = pickablePoints[pickableIndex];
 
             // Trigger an event
-            List<Object> clickedObjects = new ArrayList<>(hits);
-            Object vertex = pickableTargets.get(pickable);
+            List<Object> clickedObjects = new ArrayList<>(1);
+            Object vertex = pickable.getTarget();
             clickedObjects.add(vertex);
             perf.toc();
 
             fireObjectPicked(clickedObjects);
         }
 
+    }
+
+    private class PickablePointWithTarget extends PickablePoint {
+
+        private final Object target;
+
+        PickablePointWithTarget(Coord3d xyz, Object target, int id) {
+            super(xyz);
+            this.target = target;
+            setPickingId(id);
+        }
+
+        Object getTarget() {
+            return target;
+        }
     }
 
     public class ScatterPlot3DCameraThreadController extends CameraThreadController {
