@@ -136,6 +136,7 @@ class ScatterPlot3DPlotPanel extends PagePanel {
     private ScatterPlot3dJzyPanel scatterPlot3dJzyPanel;
     private ScatterPlot3DColorManipulationPanel colorManipulationPanel;
     private ScatterPlot3DFormModel formModel;
+    private JCheckBox displayOnlyDataInAxisBoundsCheckBox;
     private JCheckBox projectToXCheckBox;
     private JCheckBox projectToYCheckBox;
     private JCheckBox projectToZCheckBox;
@@ -233,6 +234,11 @@ class ScatterPlot3DPlotPanel extends PagePanel {
         colorProductList.setRenderer(new ProductListCellRenderer());
         bindingContext.bind(PROPERTY_NAME_COLOR_PRODUCT, colorProductList);
         colorProductProperty = bindingContext.getPropertySet().getProperty(PROPERTY_NAME_COLOR_PRODUCT);
+
+        displayOnlyDataInAxisBoundsCheckBox = new JCheckBox("Display only data in Axis Bounds");
+        displayOnlyDataInAxisBoundsCheckBox.addActionListener(e -> {
+            scatterPlot3dJzyPanel.displayOnlyDataInAxisBounds(displayOnlyDataInAxisBoundsCheckBox.isSelected());
+        });
 
         projectToXCheckBox = new JCheckBox("Project Data to X-Plane");
         projectToXCheckBox.addActionListener(e -> {
@@ -450,9 +456,10 @@ class ScatterPlot3DPlotPanel extends PagePanel {
         levelPanel.add(new JLabel("Level of Detail: "));
         levelPanel.add(levelSpinner);
         GridBagUtils.addToPanel(optionsPanel, levelPanel, gbc, "gridy=14,insets.left=4,insets.right=2");
-        GridBagUtils.addToPanel(optionsPanel, projectToXCheckBox, gbc, "gridy=15,insets.left=4,insets.right=2");
-        GridBagUtils.addToPanel(optionsPanel, projectToYCheckBox, gbc, "gridy=16,insets.left=4,insets.right=2");
-        GridBagUtils.addToPanel(optionsPanel, projectToZCheckBox, gbc, "gridy=17,insets.left=4,insets.right=2");
+        GridBagUtils.addToPanel(optionsPanel, displayOnlyDataInAxisBoundsCheckBox, gbc, "gridy=15,insets.left=4,insets.right=2");
+        GridBagUtils.addToPanel(optionsPanel, projectToXCheckBox, gbc, "gridy=16,insets.left=4,insets.right=2");
+        GridBagUtils.addToPanel(optionsPanel, projectToYCheckBox, gbc, "gridy=17,insets.left=4,insets.right=2");
+        GridBagUtils.addToPanel(optionsPanel, projectToZCheckBox, gbc, "gridy=18,insets.left=4,insets.right=2");
         return optionsPanel;
     }
 

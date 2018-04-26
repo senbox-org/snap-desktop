@@ -7,6 +7,9 @@ import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.fixedfunc.GLMatrixFunc;
 import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.util.texture.TextureIO;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.ui.SnapFileChooser;
 import org.jzy3d.chart.Chart;
@@ -24,7 +27,6 @@ import org.jzy3d.maths.Scale;
 import org.jzy3d.picking.PickingSupport;
 import org.jzy3d.plot3d.primitives.LineStrip;
 import org.jzy3d.plot3d.primitives.Point;
-import org.jzy3d.plot3d.primitives.Scatter;
 import org.jzy3d.plot3d.primitives.pickable.Pickable;
 import org.jzy3d.plot3d.primitives.pickable.PickablePoint;
 import org.jzy3d.plot3d.rendering.canvas.Quality;
@@ -36,7 +38,6 @@ import org.jzy3d.plot3d.text.DrawableTextWrapper;
 import org.jzy3d.plot3d.text.renderers.TextBitmapRenderer;
 import org.jzy3d.plot3d.transform.Transform;
 
-import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.io.File;
@@ -51,7 +52,7 @@ import java.util.List;
 class ScatterPlot3dJzyPanel extends JPanel {
 
     private Chart chart;
-    private Scatter scatter;
+    private ScatterPlot3DScatter scatter;
     private ScatterPlot3DProjectionScatter projectionScatter;
     private JLabel titleLabel;
     private ScatterPlot3DPickingSupport pickingSupport;
@@ -64,8 +65,10 @@ class ScatterPlot3dJzyPanel extends JPanel {
     private LineStrip zLine;
     private Coord3d currentVertex;
     private static final Color PROJECTION_COLOR = new Color(0.8f, 0.8f, 0.8f, 0.25f);
+    private boolean displayOnlyDataInAxisBounds;
 
     void init() {
+        displayOnlyDataInAxisBounds = false;
         chart = NewtChartComponentFactory.chart(Quality.Nicest, "newt");
         pickingSupport = new ScatterPlot3DPickingSupport();
         textWrapper = new DrawableTextWrapper("", new Coord3d(0, 0, 0),
@@ -105,7 +108,7 @@ class ScatterPlot3dJzyPanel extends JPanel {
         zLine.add(new Point(currentVertex));
         zLine.add(new Point(currentVertex));
         chart.getScene().add(zLine);
-        scatter = new Scatter();
+        scatter = new ScatterPlot3DScatter();
         scatter.setWidth(10.0f);
         chart.getScene().add(scatter);
         chart.add(textWrapper);
@@ -123,19 +126,19 @@ class ScatterPlot3dJzyPanel extends JPanel {
         boolean inYRange = currentVertex.y > viewBounds.getYmin() && currentVertex.y < viewBounds.getYmax();
         boolean inZRange = currentVertex.z > viewBounds.getZmin() && currentVertex.z < viewBounds.getZmax();
         xLine.get(0).setCoord(currentVertex);
-        if (inYRange && inZRange) {
+        if (inYRange && inZRange && (!displayOnlyDataInAxisBounds || inXRange)) {
             xLine.get(1).setCoord(new Coord3d(getXAxisCoord(), currentVertex.y, currentVertex.z));
         } else {
             xLine.get(1).setCoord(currentVertex);
         }
         yLine.get(0).setCoord(currentVertex);
-        if (inXRange && inZRange) {
+        if (inXRange && inZRange && (!displayOnlyDataInAxisBounds || inYRange)) {
             yLine.get(1).setCoord(new Coord3d(currentVertex.x, getYAxisCoord(), currentVertex.z));
         } else {
             yLine.get(1).setCoord(currentVertex);
         }
         zLine.get(0).setCoord(currentVertex);
-        if (inXRange && inYRange) {
+        if (inXRange && inYRange && (!displayOnlyDataInAxisBounds || inZRange)) {
             zLine.get(1).setCoord(new Coord3d(currentVertex.x, currentVertex.y, getZAxisCoord()));
         } else {
             zLine.get(1).setCoord(currentVertex);
@@ -217,8 +220,13 @@ class ScatterPlot3dJzyPanel extends JPanel {
         projectionScatter.projectToZ(projectToZ);
     }
 
+    private void adjustAxisBounds() {
+        BoundingBox3d bounds = chart.getView().getBounds();
+        scatter.setAxisBounds(bounds);
+        projectionScatter.setAxisBounds(bounds);
+    }
+
     private void adjustProjectionScatterToBounds() {
-        projectionScatter.setAxisBounds(chart.getView().getBounds());
         projectionScatter.setEdgeCoords(getXAxisCoord(), getYAxisCoord(), getZAxisCoord());
     }
 
@@ -231,6 +239,7 @@ class ScatterPlot3dJzyPanel extends JPanel {
         updateLine();
         projectionScatter.resetScale();
         projectionScatter.setEdgeCoords(getXAxisCoord(), getYAxisCoord(), getZAxisCoord());
+        adjustAxisBounds();
     }
 
     void renderChart() {
@@ -248,6 +257,11 @@ class ScatterPlot3dJzyPanel extends JPanel {
                 file.mkdirs();
             TextureIO.write(chart.screenshot(), file);
         }
+    }
+
+    void displayOnlyDataInAxisBounds(boolean displayOnlyDataInAxisBounds) {
+        scatter.displayOnlyDataInAxisBounds(displayOnlyDataInAxisBounds);
+        this.displayOnlyDataInAxisBounds = displayOnlyDataInAxisBounds;
     }
 
     private class ScatterPlot3dCameraMouseController extends NewtCameraMouseController {
@@ -294,6 +308,7 @@ class ScatterPlot3dJzyPanel extends JPanel {
                 view.setScaleY(newYScale);
                 view.setScaleZ(newZScale);
                 updateLine();
+                adjustAxisBounds();
                 adjustProjectionScatterToBounds();
             }
 
@@ -310,6 +325,7 @@ class ScatterPlot3dJzyPanel extends JPanel {
             zoomY(factor);
             zoomZ(factor);
             updateLine();
+            adjustAxisBounds();
             adjustProjectionScatterToBounds();
         }
 
