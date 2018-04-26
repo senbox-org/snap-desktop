@@ -202,6 +202,7 @@ class ScatterPlot3dJzyPanel extends JPanel {
     }
 
     private void adjustProjectionScatterToBounds() {
+        projectionScatter.setAxisBounds(chart.getView().getBounds());
         projectionScatter.setEdgeCoords(getXAxisCoord(), getYAxisCoord(), getZAxisCoord());
     }
 

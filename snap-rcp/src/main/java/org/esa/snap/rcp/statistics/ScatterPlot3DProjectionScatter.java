@@ -2,6 +2,7 @@ package org.esa.snap.rcp.statistics;
 
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.glu.GLU;
+import org.jzy3d.maths.BoundingBox3d;
 import org.jzy3d.maths.Coord3d;
 import org.jzy3d.plot3d.primitives.Scatter;
 import org.jzy3d.plot3d.rendering.compat.GLES2CompatUtils;
@@ -24,11 +25,17 @@ class ScatterPlot3DProjectionScatter extends Scatter {
     private float xEdgeCoord;
     private float yEdgeCoord;
     private float zEdgeCoord;
+    private BoundingBox3d axisBounds;
 
     ScatterPlot3DProjectionScatter() {
         super();
         scaleFactor = 1f;
+        this.axisBounds = new BoundingBox3d();
         initSinesAndCosines();
+    }
+
+    void setAxisBounds(BoundingBox3d axisBounds) {
+        this.axisBounds = axisBounds;
     }
 
     private void initSinesAndCosines() {
@@ -66,14 +73,16 @@ class ScatterPlot3DProjectionScatter extends Scatter {
             }
             int k = 0;
             for (Coord3d c : coordinates) {
-                GLES2CompatUtils.glDisable(GL.GL_CULL_FACE);
-                GLES2CompatUtils.glPolygonMode(GL.GL_FRONT_AND_BACK, GL_FILL);
-                if (colors != null) {
-                    GLES2CompatUtils.glColor4f(colors[k].r, colors[k].g, colors[k].b, colors[k].a);
-                    k++;
-                }
-                for (Projector projector : projectors) {
-                    projector.drawGLES2(c);
+                if (axisBounds.contains(c)) {
+                    GLES2CompatUtils.glDisable(GL.GL_CULL_FACE);
+                    GLES2CompatUtils.glPolygonMode(GL.GL_FRONT_AND_BACK, GL_FILL);
+                    if (colors != null) {
+                        GLES2CompatUtils.glColor4f(colors[k].r, colors[k].g, colors[k].b, colors[k].a);
+                        k++;
+                    }
+                    for (Projector projector : projectors) {
+                        projector.drawGLES2(c);
+                    }
                 }
             }
         }
@@ -90,14 +99,16 @@ class ScatterPlot3DProjectionScatter extends Scatter {
             }
             int k = 0;
             for (Coord3d c : coordinates) {
-                gl.getGL2().glDisable(GL.GL_CULL_FACE);
-                gl.getGL2().glPolygonMode(GL.GL_FRONT_AND_BACK, GL_FILL);
-                if (colors != null) {
-                    gl.getGL2().glColor4f(colors[k].r, colors[k].g, colors[k].b, colors[k].a);
-                    k++;
-                }
-                for (Projector projector : projectors) {
-                    projector.drawGL2(c, gl);
+                if (axisBounds.contains(c)) {
+                    gl.getGL2().glDisable(GL.GL_CULL_FACE);
+                    gl.getGL2().glPolygonMode(GL.GL_FRONT_AND_BACK, GL_FILL);
+                    if (colors != null) {
+                        gl.getGL2().glColor4f(colors[k].r, colors[k].g, colors[k].b, colors[k].a);
+                        k++;
+                    }
+                    for (Projector projector : projectors) {
+                        projector.drawGL2(c, gl);
+                    }
                 }
             }
         }
