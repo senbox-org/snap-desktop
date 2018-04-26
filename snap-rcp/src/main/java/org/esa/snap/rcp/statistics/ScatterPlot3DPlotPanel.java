@@ -44,6 +44,7 @@ import javax.swing.JSeparator;
 import javax.swing.JSpinner;
 import javax.swing.ListCellRenderer;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingWorker;
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.ImageInfo;
 import org.esa.snap.core.datamodel.Mask;
@@ -341,6 +342,18 @@ class ScatterPlot3DPlotPanel extends PagePanel {
     }
 
     private void updateChartData() {
+        SwingWorker chartUpdater = new SwingWorker<Void, Void>() {
+            @Override
+            protected Void doInBackground() throws Exception {
+                updateChart();
+                return null;
+            }
+        };
+        chartUpdater.execute();
+    }
+
+
+    private void updateChart() {
         int level = getMaxAllowedLevel() - dataSourceConfig.displayLevel;
         float[] xData = getData(dataSourceConfig.xBand, level);
         float[] yData = getData(dataSourceConfig.yBand, level);
@@ -392,7 +405,6 @@ class ScatterPlot3DPlotPanel extends PagePanel {
                 zAxisRangeControl.getMin().floatValue(), zAxisRangeControl.getMax().floatValue());
         scatterPlot3dJzyPanel.setChartData(dataLists[0], dataLists[1], dataLists[2]);
         scatterPlot3dJzyPanel.setColors(dataLists[3]);
-        renderChart();
     }
 
     private void setMinAndMaxValuesFromArray(List<Float> xData, List<Float> yData, List<Float> zData) {
