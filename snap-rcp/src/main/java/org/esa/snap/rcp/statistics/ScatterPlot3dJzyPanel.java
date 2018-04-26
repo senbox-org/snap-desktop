@@ -118,12 +118,28 @@ class ScatterPlot3dJzyPanel extends JPanel {
     }
 
     private void updateLine() {
+        BoundingBox3d viewBounds = chart.getView().getBounds();
+        boolean inXRange = currentVertex.x > viewBounds.getXmin() && currentVertex.x < viewBounds.getXmax();
+        boolean inYRange = currentVertex.y > viewBounds.getYmin() && currentVertex.y < viewBounds.getYmax();
+        boolean inZRange = currentVertex.z > viewBounds.getZmin() && currentVertex.z < viewBounds.getZmax();
         xLine.get(0).setCoord(currentVertex);
-        xLine.get(1).setCoord(new Coord3d(getXAxisCoord(), currentVertex.y, currentVertex.z));
+        if (!inYRange || !inZRange) {
+            xLine.get(1).setCoord(currentVertex);
+        } else {
+            xLine.get(1).setCoord(new Coord3d(getXAxisCoord(), currentVertex.y, currentVertex.z));
+        }
         yLine.get(0).setCoord(currentVertex);
-        yLine.get(1).setCoord(new Coord3d(currentVertex.x, getYAxisCoord(), currentVertex.z));
+        if (!inXRange || !inZRange) {
+            yLine.get(1).setCoord(currentVertex);
+        } else {
+            yLine.get(1).setCoord(new Coord3d(currentVertex.x, getYAxisCoord(), currentVertex.z));
+        }
         zLine.get(0).setCoord(currentVertex);
-        zLine.get(1).setCoord(new Coord3d(currentVertex.x, currentVertex.y, getZAxisCoord()));
+        if (!inXRange || !inYRange) {
+            zLine.get(1).setCoord(currentVertex);
+        } else {
+            zLine.get(1).setCoord(new Coord3d(currentVertex.x, currentVertex.y, getZAxisCoord()));
+        }
     }
 
     private float getXAxisCoord() {
