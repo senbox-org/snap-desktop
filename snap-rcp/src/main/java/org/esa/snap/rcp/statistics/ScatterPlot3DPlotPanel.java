@@ -29,9 +29,17 @@ import com.bc.ceres.glevel.support.DefaultMultiLevelImage;
 import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.jidesoft.swing.SimpleScrollPane;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
 import java.util.ArrayList;
 import java.util.Collections;
 import javax.swing.AbstractButton;
+import javax.swing.ButtonGroup;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
@@ -40,11 +48,13 @@ import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JSeparator;
 import javax.swing.JSpinner;
 import javax.swing.ListCellRenderer;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingWorker;
+
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.ImageInfo;
 import org.esa.snap.core.datamodel.Mask;
@@ -61,14 +71,11 @@ import org.esa.snap.rcp.colormanip.ScatterPlot3DFormModel;
 import org.esa.snap.ui.AbstractDialog;
 import org.esa.snap.ui.GridBagUtils;
 import org.esa.snap.ui.UIUtils;
+import org.esa.snap.ui.color.ColorComboBox;
+import org.esa.snap.ui.color.ColorComboBoxAdapter;
 import org.esa.snap.ui.tool.ToolButtonFactory;
 import org.openide.windows.TopComponent;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -107,6 +114,11 @@ class ScatterPlot3DPlotPanel extends PagePanel {
     private final static String PROPERTY_NAME_Y_BAND = "yBand";
     private final static String PROPERTY_NAME_Z_BAND = "zBand";
     private final static String PROPERTY_NAME_COLOR_BAND = "colorBand";
+    private final static String PROPERTY_NAME_DISPLAY_COLOR = "displayColor";
+    private final static String PROPERTY_NAME_TOGGLE_COLOR_DISPLAY_MODE = "toggleColorDisplayMode";
+
+    private final static int SINGLE_COLOR_DISPLAY_MODE = 0;
+    private final static int ENCODE_BAND_AS_COLOR_MODE = 1;
 
     private BindingContext bindingContext;
     private DataSourceConfig dataSourceConfig;
@@ -131,7 +143,6 @@ class ScatterPlot3DPlotPanel extends PagePanel {
     private Dimension referenceSize;
 
     private static final String CHART_TITLE = "3D Scatter Plot";
-    private static final String NO_DATA_MESSAGE = "No 3D scatter plot computed yet.";
     private static final int NUM_DECIMALS = 2;
     private ScatterPlot3dJzyPanel scatterPlot3dJzyPanel;
     private ScatterPlot3DColorManipulationPanel colorManipulationPanel;
@@ -147,6 +158,10 @@ class ScatterPlot3DPlotPanel extends PagePanel {
     private float minZ;
     private float maxZ;
     private JSpinner levelSpinner;
+    private JRadioButton displaySingleColorButton;
+    private JRadioButton encodeBandAsColorButton;
+    private JPanel colorCodingPanel;
+    private ColorComboBox displaySingleColorComboBox;
 
     ScatterPlot3DPlotPanel(TopComponent parentDialog, String helpId) {
         super(parentDialog, helpId, CHART_TITLE);
@@ -235,6 +250,57 @@ class ScatterPlot3DPlotPanel extends PagePanel {
         bindingContext.bind(PROPERTY_NAME_COLOR_PRODUCT, colorProductList);
         colorProductProperty = bindingContext.getPropertySet().getProperty(PROPERTY_NAME_COLOR_PRODUCT);
 
+        TableLayout colorCodingPanelLayout = new TableLayout(1);
+        colorCodingPanelLayout.setTableFill(TableLayout.Fill.HORIZONTAL);
+        colorCodingPanelLayout.setTableWeightX(1.0);
+        colorCodingPanel = new JPanel(colorCodingPanelLayout);
+
+        TableLayout displaySingleColorLayout = new TableLayout(2);
+        displaySingleColorLayout.setTableFill(TableLayout.Fill.HORIZONTAL);
+        displaySingleColorLayout.setTableWeightX(1.0);
+        final JPanel displaySingleColorPanel = new JPanel(displaySingleColorLayout);
+        JLabel displaySingleColorLabel = new JLabel("Display Colour:");
+        displaySingleColorComboBox = new ColorComboBox();
+        bindingContext.bind(PROPERTY_NAME_DISPLAY_COLOR, new ColorComboBoxAdapter(displaySingleColorComboBox));
+        bindingContext.getPropertySet().setValue(PROPERTY_NAME_DISPLAY_COLOR, Color.BLACK);
+        displaySingleColorPanel.add(displaySingleColorLabel);
+        displaySingleColorPanel.add(displaySingleColorComboBox);
+
+        TableLayout colorAxisPanelLayout = new TableLayout(1);
+        colorAxisPanelLayout.setTableFill(TableLayout.Fill.HORIZONTAL);
+        colorAxisPanelLayout.setTableWeightX(1.0);
+        final JPanel colorAxisPanel = new JPanel(colorAxisPanelLayout);
+        colorAxisPanel.add(colorProductList);
+        colorAxisPanel.add(colorBandList);
+        colorAxisPanel.add(colorManipulationPanel.getContentPanel());
+        displaySingleColorButton = new JRadioButton("Display Single Colour");
+        encodeBandAsColorButton = new JRadioButton("Encode Band as Colour");
+        ButtonGroup colorCodingButtonGroup = new ButtonGroup();
+        colorCodingButtonGroup.add(displaySingleColorButton);
+        colorCodingButtonGroup.add(encodeBandAsColorButton);
+        Property toggleColorDisplayModeProperty = bindingContext.getPropertySet().
+                getProperty(PROPERTY_NAME_TOGGLE_COLOR_DISPLAY_MODE);
+        toggleColorDisplayModeProperty.getDescriptor().setValueSet(new ValueSet(new Integer[]{SINGLE_COLOR_DISPLAY_MODE, ENCODE_BAND_AS_COLOR_MODE}));
+        bindingContext.bind(PROPERTY_NAME_TOGGLE_COLOR_DISPLAY_MODE, colorCodingButtonGroup);
+        bindingContext.addPropertyChangeListener(PROPERTY_NAME_TOGGLE_COLOR_DISPLAY_MODE, evt -> {
+            if (dataSourceConfig.toggleColorDisplayMode == SINGLE_COLOR_DISPLAY_MODE) {
+                colorCodingPanel.remove(colorAxisPanel);
+                colorCodingPanel.add(displaySingleColorPanel);
+                updateUI();
+            } else {
+                colorCodingPanel.remove(displaySingleColorPanel);
+                colorCodingPanel.add(colorAxisPanel);
+                updateUI();
+            }
+        });
+        try {
+            toggleColorDisplayModeProperty.setValue(new Integer(SINGLE_COLOR_DISPLAY_MODE));
+        } catch (ValidationException e) {
+            //do nothing
+        }
+        colorCodingPanel.add(displaySingleColorPanel);
+
+
         displayOnlyDataInAxisBoundsCheckBox = new JCheckBox("Display only data in Axis Bounds");
         displayOnlyDataInAxisBoundsCheckBox.addActionListener(e -> {
             scatterPlot3dJzyPanel.displayOnlyDataInAxisBounds(displayOnlyDataInAxisBoundsCheckBox.isSelected());
@@ -265,7 +331,8 @@ class ScatterPlot3DPlotPanel extends PagePanel {
 
     private void initActionEnablers() {
         RefreshActionEnabler refreshActionEnabler = new RefreshActionEnabler(refreshButton, PROPERTY_NAME_USE_ROI_MASK,
-                PROPERTY_NAME_ROI_MASK, PROPERTY_NAME_DISPLAY_LEVEL);
+                PROPERTY_NAME_ROI_MASK, PROPERTY_NAME_DISPLAY_LEVEL, PROPERTY_NAME_DISPLAY_COLOR,
+                PROPERTY_NAME_TOGGLE_COLOR_DISPLAY_MODE);
         refreshActionEnabler.addProductBandEnablement(PROPERTY_NAME_X_PRODUCT, PROPERTY_NAME_X_BAND);
         refreshActionEnabler.addProductBandEnablement(PROPERTY_NAME_Y_PRODUCT, PROPERTY_NAME_Y_BAND);
         refreshActionEnabler.addProductBandEnablement(PROPERTY_NAME_Z_PRODUCT, PROPERTY_NAME_Z_BAND);
@@ -372,7 +439,7 @@ class ScatterPlot3DPlotPanel extends PagePanel {
 
         int numColorBands = -1;
         int[] colorData = null;
-        if (colorNode != null) {
+        if (dataSourceConfig.toggleColorDisplayMode == ENCODE_BAND_AS_COLOR_MODE && colorNode != null) {
             final ImageInfo imageInfo = formModel.getModifiedImageInfo();
             final RenderedImage colorImage =
                     ImageManager.getInstance().createColoredBandImage(new RasterDataNode[]{colorNode}, imageInfo, level);
@@ -410,7 +477,11 @@ class ScatterPlot3DPlotPanel extends PagePanel {
                 yAxisRangeControl.getMin().floatValue(), yAxisRangeControl.getMax().floatValue(),
                 zAxisRangeControl.getMin().floatValue(), zAxisRangeControl.getMax().floatValue());
         scatterPlot3dJzyPanel.setChartData(dataLists[0], dataLists[1], dataLists[2]);
-        scatterPlot3dJzyPanel.setColors(dataLists[3]);
+        if (numColorBands != -1) {
+            scatterPlot3dJzyPanel.setColors(dataLists[3]);
+        } else {
+            scatterPlot3dJzyPanel.setColor(dataSourceConfig.displayColor);
+        }
     }
 
     private void setMinAndMaxValuesFromArray(List<Float> xData, List<Float> yData, List<Float> zData) {
@@ -441,10 +512,9 @@ class ScatterPlot3DPlotPanel extends PagePanel {
         GridBagUtils.addToPanel(optionsPanel, zProductList, gbc, "gridy=7,insets.left=4,insets.right=2");
         GridBagUtils.addToPanel(optionsPanel, zBandList, gbc, "gridy=8,insets.left=4,insets.right=2");
         GridBagUtils.addToPanel(optionsPanel, new TitledSeparator("Colour Axis"), gbc, "gridy=9,insets.left=4,insets.right=0");
-        GridBagUtils.addToPanel(optionsPanel, colorProductList, gbc, "gridy=10,insets.left=4,insets.right=2");
-        GridBagUtils.addToPanel(optionsPanel, colorBandList, gbc, "gridy=11,insets.left=4,insets.right=2");
-        final JPanel colorPanel = colorManipulationPanel.getContentPanel();
-        GridBagUtils.addToPanel(optionsPanel, colorPanel, gbc, "gridy=12,insets.left=4,insets.right=2");
+        GridBagUtils.addToPanel(optionsPanel, displaySingleColorButton, gbc, "gridy=10,insets.left=4,insets.right=2");
+        GridBagUtils.addToPanel(optionsPanel, encodeBandAsColorButton, gbc, "gridy=11,insets.left=4,insets.right=2");
+        GridBagUtils.addToPanel(optionsPanel, colorCodingPanel, gbc, "gridy=12,insets.left=4,insets.right=2");
         GridBagUtils.addToPanel(optionsPanel, new JSeparator(), gbc, "gridy=13,insets.left=4,insets.right=0");
         TableLayout levelPanelLayout = new TableLayout(2);
         levelPanelLayout.setColumnWeightX(0, 1.0);
@@ -774,6 +844,8 @@ class ScatterPlot3DPlotPanel extends PagePanel {
         private Property yBandProperty;
         private Property zBandProperty;
         private Property colorBandProperty;
+        private Color displayColor;
+        private int toggleColorDisplayMode;
     }
 
     private class LevelActionListener implements ActionListener {
