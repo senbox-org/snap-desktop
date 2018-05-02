@@ -52,6 +52,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSeparator;
@@ -65,7 +66,6 @@ import org.esa.snap.core.datamodel.Mask;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.datamodel.Stx;
-import org.esa.snap.core.datamodel.StxFactory;
 import org.esa.snap.core.image.FillConstantOpImage;
 import org.esa.snap.core.image.ImageManager;
 import org.esa.snap.core.util.Debug;
@@ -165,6 +165,7 @@ class ScatterPlot3DPlotPanel extends PagePanel {
     private JRadioButton displaySingleColorButton;
     private JRadioButton encodeBandAsColorButton;
     private JPanel colorCodingPanel;
+    private ScatterPlot3DPropertiesPanel chartPropertiesPanel;
 
     ScatterPlot3DPlotPanel(TopComponent parentDialog, String helpId) {
         super(parentDialog, helpId, CHART_TITLE);
@@ -174,6 +175,8 @@ class ScatterPlot3DPlotPanel extends PagePanel {
     protected void initComponents() {
         dataSourceConfig = new DataSourceConfig();
         bindingContext = new BindingContext(PropertyContainer.createObjectBacked(dataSourceConfig));
+
+        chartPropertiesPanel = new ScatterPlot3DPropertiesPanel();
 
         levelSpinner = new JSpinner();
         displayLevelProperty = bindingContext.getPropertySet().getProperty(PROPERTY_NAME_DISPLAY_LEVEL);
@@ -298,7 +301,7 @@ class ScatterPlot3DPlotPanel extends PagePanel {
             }
         });
         try {
-            toggleColorDisplayModeProperty.setValue(new Integer(SINGLE_COLOR_DISPLAY_MODE));
+            toggleColorDisplayModeProperty.setValue(SINGLE_COLOR_DISPLAY_MODE);
         } catch (ValidationException e) {
             //do nothing
         }
@@ -422,7 +425,7 @@ class ScatterPlot3DPlotPanel extends PagePanel {
     private void updateChartData() {
         SwingWorker chartUpdater = new SwingWorker<Void, Void>() {
             @Override
-            protected Void doInBackground() throws Exception {
+            protected Void doInBackground() {
                 updateChart();
                 return null;
             }
@@ -461,7 +464,8 @@ class ScatterPlot3DPlotPanel extends PagePanel {
 
         List<Float>[] floatDataLists = new List[]{dataLists[0], dataLists[1], dataLists[2]};
         adjustMinAndMaxValues(floatDataLists);
-        scatterPlot3dJzyPanel.setChartTitle("3D Scatter Plot");
+        scatterPlot3dJzyPanel.setChartTitle(chartPropertiesPanel.showTitle(), chartPropertiesPanel.getTitle(),
+                chartPropertiesPanel.getTitleFont(), chartPropertiesPanel.getTitleColor());
         scatterPlot3dJzyPanel.setLabelNames(xNode.getName(), yNode.getName(), zNode.getName());
         setMinMaxBounds();
         scatterPlot3dJzyPanel.setChartData(dataLists[0], dataLists[1], dataLists[2]);
@@ -672,7 +676,14 @@ class ScatterPlot3DPlotPanel extends PagePanel {
                 false);
         propertiesButton.setToolTipText("Edit properties.");
         propertiesButton.setName("propertiesButton.");
-        propertiesButton.setEnabled(false);
+        propertiesButton.addActionListener(e -> {
+                int result = JOptionPane.showConfirmDialog(this, chartPropertiesPanel,
+                        "Chart Properties", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+                if (result == 0) {
+                    chartPanel.setChartTitle(chartPropertiesPanel.showTitle(), chartPropertiesPanel.getTitle(),
+                            chartPropertiesPanel.getTitleFont(), chartPropertiesPanel.getTitleColor());
+                }
+        });
 
         final AbstractButton saveButton = ToolButtonFactory.createButton(
                 UIUtils.loadImageIcon("icons/Export24.gif"),

@@ -7,9 +7,13 @@ import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.fixedfunc.GLMatrixFunc;
 import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.util.texture.TextureIO;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Font;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.ui.SnapFileChooser;
 import org.jzy3d.chart.Chart;
@@ -38,8 +42,6 @@ import org.jzy3d.plot3d.text.DrawableTextWrapper;
 import org.jzy3d.plot3d.text.renderers.TextBitmapRenderer;
 import org.jzy3d.plot3d.transform.Transform;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
 import java.io.File;
 import java.io.IOException;
 import java.nio.IntBuffer;
@@ -115,7 +117,12 @@ class ScatterPlot3dJzyPanel extends JPanel {
         setLayout(new BorderLayout());
         ScatterPlot3dCameraMouseController cameraController =
                 new ScatterPlot3dCameraMouseController(this.chart, pickingSupport);
-        titleLabel = new JLabel();
+        titleLabel = new JLabel("3D Scatter Plot");
+        titleLabel.setOpaque(true);
+        titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        titleLabel.setHorizontalTextPosition(SwingConstants.CENTER);
+        titleLabel.setBackground(java.awt.Color.WHITE);
+        titleLabel.setFont(new Font("SansSerif", Font.BOLD, 18));
         add(titleLabel, BorderLayout.NORTH);
         add((Component) this.chart.getCanvas(), BorderLayout.CENTER);
     }
@@ -169,8 +176,15 @@ class ScatterPlot3dJzyPanel extends JPanel {
         return view.getBounds().getZmax();
     }
 
-    void setChartTitle(String chartTitle) {
-        titleLabel.setText(chartTitle);
+    void setChartTitle(boolean showTitle, String chartTitle, Font titleFont, java.awt.Color titleColor) {
+        if (showTitle) {
+            add(titleLabel, BorderLayout.NORTH);
+            titleLabel.setText(chartTitle);
+            titleLabel.setFont(titleFont);
+            titleLabel.setForeground(titleColor);
+        } else {
+            remove(titleLabel);
+        }
     }
 
     void setLabelNames(String xLabelName, String yLabelName, String zLabelName) {
