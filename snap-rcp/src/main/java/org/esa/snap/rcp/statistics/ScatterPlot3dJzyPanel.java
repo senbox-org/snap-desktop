@@ -1,5 +1,6 @@
 package org.esa.snap.rcp.statistics;
 
+import com.bc.ceres.swing.TableLayout;
 import com.jogamp.common.nio.Buffers;
 import com.jogamp.newt.event.MouseEvent;
 import com.jogamp.opengl.GL;
@@ -38,8 +39,6 @@ import org.jzy3d.plot3d.rendering.scene.Graph;
 import org.jzy3d.plot3d.rendering.view.Camera;
 import org.jzy3d.plot3d.rendering.view.View;
 import org.jzy3d.plot3d.rendering.view.modes.CameraMode;
-import org.jzy3d.plot3d.text.DrawableTextWrapper;
-import org.jzy3d.plot3d.text.renderers.TextBitmapRenderer;
 import org.jzy3d.plot3d.transform.Transform;
 
 import java.io.File;
@@ -61,25 +60,73 @@ class ScatterPlot3dJzyPanel extends JPanel {
     private Range xRange;
     private Range yRange;
     private Range zRange;
-    private DrawableTextWrapper textWrapper;
     private LineStrip xLine;
     private LineStrip yLine;
     private LineStrip zLine;
     private Coord3d currentVertex;
     private static final Color PROJECTION_COLOR = new Color(0.8f, 0.8f, 0.8f, 0.25f);
     private boolean displayOnlyDataInAxisBounds;
+    private JPanel pickingInfoPanel;
+    private JLabel xDimLabel;
+    private JLabel yDimLabel;
+    private JLabel zDimLabel;
+    private JLabel xValueLabel;
+    private JLabel yValueLabel;
+    private JLabel zValueLabel;
 
     void init() {
         displayOnlyDataInAxisBounds = false;
         chart = NewtChartComponentFactory.chart(Quality.Nicest, "newt");
         pickingSupport = new ScatterPlot3DPickingSupport();
-        textWrapper = new DrawableTextWrapper("", new Coord3d(0, 0, 0),
-                Color.BLACK, new TextBitmapRenderer());
+        setLayout(new BorderLayout());
+        TableLayout pickingInfoPanelLayout = new TableLayout(3);
+        pickingInfoPanelLayout.setTableAnchor(TableLayout.Anchor.SOUTHEAST);
+        pickingInfoPanelLayout.setTableFill(TableLayout.Fill.HORIZONTAL);
+        pickingInfoPanelLayout.setColumnWeightX(0, 1.0);
+        pickingInfoPanelLayout.setColumnWeightX(1, 0.0);
+        pickingInfoPanelLayout.setColumnWeightX(2, 0.0);
+        pickingInfoPanelLayout.setTablePadding(2, 2);
+        pickingInfoPanel = new JPanel(pickingInfoPanelLayout);
+        pickingInfoPanel.setOpaque(true);
+        pickingInfoPanel.setBackground(java.awt.Color.WHITE);
+        xDimLabel = new JLabel();
+        xDimLabel.setHorizontalTextPosition(SwingConstants.LEFT);
+        xDimLabel.setHorizontalAlignment(SwingConstants.LEFT);
+        yDimLabel = new JLabel();
+        yDimLabel.setHorizontalTextPosition(SwingConstants.LEFT);
+        yDimLabel.setHorizontalAlignment(SwingConstants.LEFT);
+        zDimLabel = new JLabel();
+        zDimLabel.setHorizontalTextPosition(SwingConstants.LEFT);
+        zDimLabel.setHorizontalAlignment(SwingConstants.LEFT);
+        xValueLabel = new JLabel();
+        xValueLabel.setHorizontalTextPosition(SwingConstants.LEFT);
+        yValueLabel = new JLabel();
+        yValueLabel.setHorizontalTextPosition(SwingConstants.LEFT);
+        zValueLabel = new JLabel();
+        zValueLabel.setHorizontalTextPosition(SwingConstants.LEFT);
+        pickingInfoPanel.add(new JLabel());
+        pickingInfoPanel.add(xDimLabel);
+        pickingInfoPanel.add(xValueLabel);
+        pickingInfoPanel.add(new JLabel());
+        pickingInfoPanel.add(yDimLabel);
+        pickingInfoPanel.add(yValueLabel);
+        pickingInfoPanel.add(new JLabel());
+        pickingInfoPanel.add(zDimLabel);
+        pickingInfoPanel.add(zValueLabel);
         pickingSupport.addObjectPickedListener((vertices, picking) -> {
+            if (vertices.isEmpty()) {
+                remove(pickingInfoPanel);
+                return;
+            }
+            add(pickingInfoPanel, BorderLayout.SOUTH);
             for (Object vertex : vertices) {
                 final Coord3d vertexCoords = (Coord3d) vertex;
-                textWrapper.setText("x = " + vertexCoords.x + ", y = " + vertexCoords.y + ", z = " + vertexCoords.z);
-                textWrapper.setPosition(vertexCoords);
+                xDimLabel.setText(chart.getAxeLayout().getXAxeLabel().split("=")[1].trim() + ":");
+                yDimLabel.setText(chart.getAxeLayout().getYAxeLabel().split("=")[1].trim() + ":");
+                zDimLabel.setText(chart.getAxeLayout().getZAxeLabel().split("=")[1].trim() + ":");
+                xValueLabel.setText("" + vertexCoords.x);
+                yValueLabel.setText("" + vertexCoords.y);
+                zValueLabel.setText("" + vertexCoords.z);
             }
         });
         currentVertex = new Coord3d(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
@@ -113,8 +160,6 @@ class ScatterPlot3dJzyPanel extends JPanel {
         scatter = new ScatterPlot3DScatter();
         scatter.setWidth(10.0f);
         chart.getScene().add(scatter);
-        chart.add(textWrapper);
-        setLayout(new BorderLayout());
         ScatterPlot3dCameraMouseController cameraController =
                 new ScatterPlot3dCameraMouseController(this.chart, pickingSupport);
         titleLabel = new JLabel("3D Scatter Plot");
