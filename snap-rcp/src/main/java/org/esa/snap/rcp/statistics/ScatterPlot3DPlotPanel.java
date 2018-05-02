@@ -35,15 +35,20 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
+import java.awt.GridLayout;
 import java.awt.Insets;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collections;
+
 import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JList;
@@ -54,7 +59,6 @@ import javax.swing.JSpinner;
 import javax.swing.ListCellRenderer;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingWorker;
-
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.ImageInfo;
 import org.esa.snap.core.datamodel.Mask;
@@ -71,8 +75,11 @@ import org.esa.snap.rcp.colormanip.ScatterPlot3DFormModel;
 import org.esa.snap.ui.AbstractDialog;
 import org.esa.snap.ui.GridBagUtils;
 import org.esa.snap.ui.UIUtils;
+import org.esa.snap.ui.color.ColorChooserPanel;
+import org.esa.snap.ui.color.ColorCodes;
 import org.esa.snap.ui.color.ColorComboBox;
 import org.esa.snap.ui.color.ColorComboBoxAdapter;
+import org.esa.snap.ui.color.ColorLabel;
 import org.esa.snap.ui.tool.ToolButtonFactory;
 import org.openide.windows.TopComponent;
 
@@ -161,7 +168,6 @@ class ScatterPlot3DPlotPanel extends PagePanel {
     private JRadioButton displaySingleColorButton;
     private JRadioButton encodeBandAsColorButton;
     private JPanel colorCodingPanel;
-    private ColorComboBox displaySingleColorComboBox;
 
     ScatterPlot3DPlotPanel(TopComponent parentDialog, String helpId) {
         super(parentDialog, helpId, CHART_TITLE);
@@ -260,9 +266,10 @@ class ScatterPlot3DPlotPanel extends PagePanel {
         displaySingleColorLayout.setTableWeightX(1.0);
         final JPanel displaySingleColorPanel = new JPanel(displaySingleColorLayout);
         JLabel displaySingleColorLabel = new JLabel("Display Colour:");
-        displaySingleColorComboBox = new ColorComboBox();
+        ColorComboBox displaySingleColorComboBox = new ColorComboBox();
+        displaySingleColorComboBox.setColorChooserPanelFactory(ScatterPlot3DColorChooserPanel::new);
         bindingContext.bind(PROPERTY_NAME_DISPLAY_COLOR, new ColorComboBoxAdapter(displaySingleColorComboBox));
-        bindingContext.getPropertySet().setValue(PROPERTY_NAME_DISPLAY_COLOR, Color.BLACK);
+        bindingContext.getPropertySet().setValue(PROPERTY_NAME_DISPLAY_COLOR, new Color(0, 0, 0, 64));
         displaySingleColorPanel.add(displaySingleColorLabel);
         displaySingleColorPanel.add(displaySingleColorComboBox);
 
@@ -898,6 +905,48 @@ class ScatterPlot3DPlotPanel extends PagePanel {
             }
         }
 
+    }
+
+    private class ScatterPlot3DColorChooserPanel extends ColorChooserPanel {
+
+        ScatterPlot3DColorChooserPanel(Color selectedColor) {
+            super(selectedColor);
+        }
+
+        @Override
+        protected JComponent createColorPicker() {
+            Color[] colors = {new Color(0, 0, 0, 64),
+                    new Color(64, 64, 64, 64),
+                    new Color(128, 128, 128, 64),
+                    new Color(192, 192, 192, 64),
+                    new Color(255, 255, 255, 64),
+                    new Color(0, 255, 255, 64),
+                    new Color(0, 0, 255, 64),
+                    new Color(255, 0, 255, 64),
+                    new Color(255, 255, 0, 64),
+                    new Color(255, 200, 0, 64),
+                    new Color(255, 0, 0, 64),
+                    new Color(255, 175, 175, 64),
+                    new Color(0, 255, 0, 64)};
+
+            JPanel colorsPanel = new JPanel(new GridLayout(-1, 6, 4, 4));
+            colorsPanel.setOpaque(false);
+            for (Color color : colors) {
+                ColorLabel colorLabel = new ColorLabel(color);
+                colorLabel.setDisplayName(ColorCodes.getName(color));
+                colorLabel.setHoverEnabled(true);
+                colorLabel.setMaximumSize(colorLabel.getPreferredSize());
+                colorLabel.setMinimumSize(colorLabel.getPreferredSize());
+                colorLabel.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseReleased(MouseEvent e) {
+                        setSelectedColor(colorLabel.getColor());
+                    }
+                });
+                colorsPanel.add(colorLabel);
+            }
+            return colorsPanel;
+        }
     }
 
 }
