@@ -103,9 +103,7 @@ class ScatterPlot3DPlotPanel extends PagePanel {
     private RoiMaskSelector roiMaskSelector;
     private AbstractButton refreshButton;
 
-    private AxisRangeControl xAxisRangeControl;
-    private AxisRangeControl yAxisRangeControl;
-    private AxisRangeControl zAxisRangeControl;
+    private AxisRangeControl[] axisRangeControls;
 
     private final static String PROPERTY_NAME_AUTO_MIN_MAX = "autoMinMax";
     private final static String PROPERTY_NAME_MIN = "min";
@@ -126,6 +124,11 @@ class ScatterPlot3DPlotPanel extends PagePanel {
 
     private final static int SINGLE_COLOR_DISPLAY_MODE = 0;
     private final static int ENCODE_BAND_AS_COLOR_MODE = 1;
+
+    private final static int NUM_AXIS_DIMENSIONS = 3;
+    private final static int X_DIM_INDEX = 0;
+    private final static int Y_DIM_INDEX = 1;
+    private final static int Z_DIM_INDEX = 2;
 
     private BindingContext bindingContext;
     private DataSourceConfig dataSourceConfig;
@@ -158,12 +161,6 @@ class ScatterPlot3DPlotPanel extends PagePanel {
     private JCheckBox projectToXCheckBox;
     private JCheckBox projectToYCheckBox;
     private JCheckBox projectToZCheckBox;
-    private float minX;
-    private float maxX;
-    private float minY;
-    private float maxY;
-    private float minZ;
-    private float maxZ;
     private JSpinner levelSpinner;
     private JRadioButton displaySingleColorButton;
     private JRadioButton encodeBandAsColorButton;
@@ -326,9 +323,10 @@ class ScatterPlot3DPlotPanel extends PagePanel {
             scatterPlot3dJzyPanel.projectToZ(projectToZCheckBox.isSelected());
         });
 
-        xAxisRangeControl = new AxisRangeControl("X-Axis");
-        yAxisRangeControl = new AxisRangeControl("Y-Axis");
-        zAxisRangeControl = new AxisRangeControl("Z-Axis");
+        axisRangeControls = new AxisRangeControl[NUM_AXIS_DIMENSIONS];
+        axisRangeControls[X_DIM_INDEX] = new AxisRangeControl("X-Axis");
+        axisRangeControls[Y_DIM_INDEX] = new AxisRangeControl("Y-Axis");
+        axisRangeControls[Z_DIM_INDEX] = new AxisRangeControl("Z-Axis");
         scatterPlot3dJzyPanel = new ScatterPlot3dJzyPanel();
         scatterPlot3dJzyPanel.init();
         createUI(scatterPlot3dJzyPanel, createOptionsPanel(), new RoiMaskSelector(bindingContext));
@@ -347,9 +345,9 @@ class ScatterPlot3DPlotPanel extends PagePanel {
         bindingContext.addPropertyChangeListener(refreshActionEnabler);
         RefreshActionEnabler rangeControlActionEnabler = new RefreshActionEnabler(refreshButton, PROPERTY_NAME_MIN,
                 PROPERTY_NAME_AUTO_MIN_MAX, PROPERTY_NAME_MAX);
-        xAxisRangeControl.getBindingContext().addPropertyChangeListener(rangeControlActionEnabler);
-        yAxisRangeControl.getBindingContext().addPropertyChangeListener(rangeControlActionEnabler);
-        zAxisRangeControl.getBindingContext().addPropertyChangeListener(rangeControlActionEnabler);
+        axisRangeControls[X_DIM_INDEX].getBindingContext().addPropertyChangeListener(rangeControlActionEnabler);
+        axisRangeControls[Y_DIM_INDEX].getBindingContext().addPropertyChangeListener(rangeControlActionEnabler);
+        axisRangeControls[Z_DIM_INDEX].getBindingContext().addPropertyChangeListener(rangeControlActionEnabler);
         formModel.addPropertyChangeListener(evt -> refreshButton.setEnabled(true));
     }
 
@@ -460,29 +458,12 @@ class ScatterPlot3DPlotPanel extends PagePanel {
                 yData, (float) yNode.getGeophysicalNoDataValue(), zData, (float) zNode.getGeophysicalNoDataValue(),
                 colorData, numColorBands);
 
-        Mask mask = dataSourceConfig.useRoiMask ? dataSourceConfig.roiMask : null;
-        setMinAndMaxValuesFromArray(dataLists[0], dataLists[1], dataLists[2]);
-        if (mask != null) {
-            xAxisRangeControl.adjustComponents(minX, maxX, NUM_DECIMALS);
-            yAxisRangeControl.adjustComponents(minY, maxY, NUM_DECIMALS);
-            zAxisRangeControl.adjustComponents(minZ, maxZ, NUM_DECIMALS);
-        } else {
-            try {
-                setRange(xAxisRangeControl, xNode, null, ProgressMonitor.NULL);
-                setRange(yAxisRangeControl, yNode, null, ProgressMonitor.NULL);
-                setRange(zAxisRangeControl, zNode, null, ProgressMonitor.NULL);
-            } catch (IOException e) {
-                xAxisRangeControl.adjustComponents(minX, maxX, NUM_DECIMALS);
-                yAxisRangeControl.adjustComponents(minY, maxY, NUM_DECIMALS);
-                zAxisRangeControl.adjustComponents(minZ, maxZ, NUM_DECIMALS);
-            }
-        }
+
+        List<Float>[] floatDataLists = new List[]{dataLists[0], dataLists[1], dataLists[2]};
+        adjustMinAndMaxValues(floatDataLists);
         scatterPlot3dJzyPanel.setChartTitle("3D Scatter Plot");
         scatterPlot3dJzyPanel.setLabelNames(xNode.getName(), yNode.getName(), zNode.getName());
-        scatterPlot3dJzyPanel.setChartBounds(
-                xAxisRangeControl.getMin().floatValue(), xAxisRangeControl.getMax().floatValue(),
-                yAxisRangeControl.getMin().floatValue(), yAxisRangeControl.getMax().floatValue(),
-                zAxisRangeControl.getMin().floatValue(), zAxisRangeControl.getMax().floatValue());
+        setMinMaxBounds();
         scatterPlot3dJzyPanel.setChartData(dataLists[0], dataLists[1], dataLists[2]);
         if (numColorBands != -1) {
             scatterPlot3dJzyPanel.setColors(dataLists[3]);
@@ -491,13 +472,21 @@ class ScatterPlot3DPlotPanel extends PagePanel {
         }
     }
 
-    private void setMinAndMaxValuesFromArray(List<Float> xData, List<Float> yData, List<Float> zData) {
-        minX = Collections.min(xData);
-        maxX = Collections.max(xData);
-        minY = Collections.min(yData);
-        maxY = Collections.max(yData);
-        minZ = Collections.min(zData);
-        maxZ = Collections.max(zData);
+    private void adjustMinAndMaxValues(List<Float>[] dataLists) {
+        for (int i = 0; i < NUM_AXIS_DIMENSIONS; i++) {
+            if (axisRangeControls[i].isAutoMinMax()) {
+                float min = Collections.min(dataLists[i]);
+                float max = Collections.max(dataLists[i]);
+                axisRangeControls[i].adjustComponents(min, max, NUM_DECIMALS);
+            }
+        }
+    }
+
+    private void setMinMaxBounds(){
+        scatterPlot3dJzyPanel.setChartBounds(
+                axisRangeControls[X_DIM_INDEX].getMin().floatValue(), axisRangeControls[X_DIM_INDEX].getMax().floatValue(),
+                axisRangeControls[Y_DIM_INDEX].getMin().floatValue(), axisRangeControls[Y_DIM_INDEX].getMax().floatValue(),
+                axisRangeControls[Z_DIM_INDEX].getMin().floatValue(), axisRangeControls[Z_DIM_INDEX].getMax().floatValue());
     }
 
     private JPanel createOptionsPanel() {
@@ -505,17 +494,17 @@ class ScatterPlot3DPlotPanel extends PagePanel {
         final GridBagConstraints gbc = GridBagUtils.createConstraints("anchor=NORTHWEST,fill=HORIZONTAL,insets.top=0,weightx=1,gridx=0");
 //        CollapsiblePane xAxisCollapsiblePane = new CollapsiblePane("X-Axis", xAxisRangeControl.getPanel(), false, false);
 //        GridBagUtils.addToPanel(optionsPanel, xAxisCollapsiblePane, gbc, "gridy=0, insets.top=2");
-        GridBagUtils.addToPanel(optionsPanel, xAxisRangeControl.getPanel(), gbc, "gridy=0, insets.top=2");
+        GridBagUtils.addToPanel(optionsPanel, axisRangeControls[X_DIM_INDEX].getPanel(), gbc, "gridy=0, insets.top=2");
         GridBagUtils.addToPanel(optionsPanel, xProductList, gbc, "gridy=1,insets.left=4,insets.right=2");
         GridBagUtils.addToPanel(optionsPanel, xBandList, gbc, "gridy=2,insets.left=4,insets.right=2");
 //        CollapsiblePane yAxisCollapsiblePane = new CollapsiblePane("Y-Axis", yAxisRangeControl.getPanel(), false, false);
 //        GridBagUtils.addToPanel(optionsPanel, yAxisCollapsiblePane, gbc, "gridy=3,insets.left=0,insets.right=0");
-        GridBagUtils.addToPanel(optionsPanel, yAxisRangeControl.getPanel(), gbc, "gridy=3,insets.left=0,insets.right=0");
+        GridBagUtils.addToPanel(optionsPanel, axisRangeControls[Y_DIM_INDEX].getPanel(), gbc, "gridy=3,insets.left=0,insets.right=0");
         GridBagUtils.addToPanel(optionsPanel, yProductList, gbc, "gridy=4,insets.left=4,insets.right=2");
         GridBagUtils.addToPanel(optionsPanel, yBandList, gbc, "gridy=5,insets.left=4,insets.right=2");
 //        CollapsiblePane zAxisCollapsiblePane = new CollapsiblePane("Z-Axis", zAxisRangeControl.getPanel(), false, false);
 //        GridBagUtils.addToPanel(optionsPanel, zAxisCollapsiblePane, gbc, "gridy=6,insets.left=0,insets.right=0");
-        GridBagUtils.addToPanel(optionsPanel, zAxisRangeControl.getPanel(), gbc, "gridy=6,insets.left=0,insets.right=0");
+        GridBagUtils.addToPanel(optionsPanel, axisRangeControls[Z_DIM_INDEX].getPanel(), gbc, "gridy=6,insets.left=0,insets.right=0");
         GridBagUtils.addToPanel(optionsPanel, zProductList, gbc, "gridy=7,insets.left=4,insets.right=2");
         GridBagUtils.addToPanel(optionsPanel, zBandList, gbc, "gridy=8,insets.left=4,insets.right=2");
         GridBagUtils.addToPanel(optionsPanel, new TitledSeparator("Colour Axis"), gbc, "gridy=9,insets.left=4,insets.right=0");
@@ -540,14 +529,9 @@ class ScatterPlot3DPlotPanel extends PagePanel {
         return optionsPanel;
     }
 
-    private static void setRange(AxisRangeControl axisRangeControl, RasterDataNode raster, Mask mask, ProgressMonitor pm) throws IOException {
+    private static void setRange(AxisRangeControl axisRangeControl, RasterDataNode raster) {
         if (axisRangeControl.isAutoMinMax()) {
-            Stx stx;
-            if (mask == null) {
-                stx = raster.getStx(false, pm);
-            } else {
-                stx = new StxFactory().withRoiMask(mask).create(raster, pm);
-            }
+            Stx stx = raster.getStx(false, ProgressMonitor.NULL);
             axisRangeControl.adjustComponents(stx.getMinimum(), stx.getMaximum(), NUM_DECIMALS);
         }
     }
@@ -637,9 +621,6 @@ class ScatterPlot3DPlotPanel extends PagePanel {
     private void updateUIState() {
         refreshButton.setEnabled(xBandProperty.getValue() != null && yBandProperty.getValue() != null &&
                 zBandProperty.getValue() != null);
-        xAxisRangeControl.setComponentsEnabled(getRaster() != null);
-        yAxisRangeControl.setComponentsEnabled(getRaster() != null);
-        zAxisRangeControl.setComponentsEnabled(getRaster() != null);
     }
 
     private JPanel createTopPanel() {
@@ -682,7 +663,7 @@ class ScatterPlot3DPlotPanel extends PagePanel {
         zoomAllButton.setToolTipText("Zoom all.");
         zoomAllButton.setName("zoomAllButton.");
         zoomAllButton.addActionListener(e -> {
-            chartPanel.setChartBounds(minX, maxX, minY, maxY, minZ, maxZ);
+            setMinMaxBounds();
             chartPanel.repaint();
         });
 
