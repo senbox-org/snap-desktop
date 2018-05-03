@@ -73,6 +73,8 @@ class ScatterPlot3dJzyPanel extends JPanel {
     private JLabel xValueLabel;
     private JLabel yValueLabel;
     private JLabel zValueLabel;
+    private JLabel validPixelsLabel;
+    private String VALID_PIXELS_LABEL_BASE_TEXT = "Number of displayed pixels: ";
 
     void init() {
         displayOnlyDataInAxisBounds = false;
@@ -110,15 +112,21 @@ class ScatterPlot3dJzyPanel extends JPanel {
         pickingInfoPanel.add(new JLabel());
         pickingInfoPanel.add(yDimLabel);
         pickingInfoPanel.add(yValueLabel);
-        pickingInfoPanel.add(new JLabel());
+        validPixelsLabel = new JLabel(VALID_PIXELS_LABEL_BASE_TEXT);
+        pickingInfoPanel.add(validPixelsLabel);
         pickingInfoPanel.add(zDimLabel);
         pickingInfoPanel.add(zValueLabel);
+        add(pickingInfoPanel, BorderLayout.SOUTH);
         pickingSupport.addObjectPickedListener((vertices, picking) -> {
             if (vertices.isEmpty()) {
-                remove(pickingInfoPanel);
+                xDimLabel.setText("");
+                yDimLabel.setText("");
+                zDimLabel.setText("");
+                xValueLabel.setText("");
+                yValueLabel.setText("");
+                zValueLabel.setText("");
                 return;
             }
-            add(pickingInfoPanel, BorderLayout.SOUTH);
             for (Object vertex : vertices) {
                 final Coord3d vertexCoords = (Coord3d) vertex;
                 xDimLabel.setText(chart.getAxeLayout().getXAxeLabel().split("=")[1].trim() + ":");
@@ -254,6 +262,7 @@ class ScatterPlot3dJzyPanel extends JPanel {
         scatter.clear();
         projectionScatter.clear();
         final int size = xData.size();
+        validPixelsLabel.setText(VALID_PIXELS_LABEL_BASE_TEXT + size);
         Coord3d[] points = new Coord3d[size];
         PickablePointWithTarget[] pickablePointWithTargets = new PickablePointWithTarget[size];
         boolean currentVertexStillIncluded = false;
@@ -271,7 +280,12 @@ class ScatterPlot3dJzyPanel extends JPanel {
         if (dimsHaveChanged || !currentVertexStillIncluded) {
             currentVertex.set(Float.NaN, Float.NaN, Float.NaN);
             updateLine();
-            remove(pickingInfoPanel);
+            xDimLabel.setText("");
+            yDimLabel.setText("");
+            zDimLabel.setText("");
+            xValueLabel.setText("");
+            yValueLabel.setText("");
+            zValueLabel.setText("");
             updateUI();
         }
     }
