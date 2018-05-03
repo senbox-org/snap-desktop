@@ -144,7 +144,6 @@ class ScatterPlot3DPlotPanel extends PagePanel {
     private JComboBox<ListCellRenderer> xProductList;
     private JComboBox<ListCellRenderer> yProductList;
     private JComboBox<ListCellRenderer> zProductList;
-    private JComboBox<ListCellRenderer> colorProductList;
     private JComboBox<ListCellRenderer> xBandList;
     private JComboBox<ListCellRenderer> yBandList;
     private JComboBox<ListCellRenderer> zBandList;
@@ -181,7 +180,7 @@ class ScatterPlot3DPlotPanel extends PagePanel {
         levelSpinner = new JSpinner();
         displayLevelProperty = bindingContext.getPropertySet().getProperty(PROPERTY_NAME_DISPLAY_LEVEL);
         try {
-            displayLevelProperty.setValue(new Integer(0));
+            displayLevelProperty.setValue(0);
         } catch (ValidationException e) {
             // do nothing
         }
@@ -250,7 +249,7 @@ class ScatterPlot3DPlotPanel extends PagePanel {
         bindingContext.bind(PROPERTY_NAME_Z_PRODUCT, zProductList);
         zProductProperty = bindingContext.getPropertySet().getProperty(PROPERTY_NAME_Z_PRODUCT);
 
-        colorProductList = new JComboBox<>();
+        JComboBox<ListCellRenderer> colorProductList = new JComboBox<>();
         colorProductList.addItemListener(new ProductListListener(colorBandProperty, false));
         colorProductList.setRenderer(new ProductListCellRenderer());
         bindingContext.bind(PROPERTY_NAME_COLOR_PRODUCT, colorProductList);
@@ -498,18 +497,12 @@ class ScatterPlot3DPlotPanel extends PagePanel {
     private JPanel createOptionsPanel() {
         final JPanel optionsPanel = GridBagUtils.createPanel();
         final GridBagConstraints gbc = GridBagUtils.createConstraints("anchor=NORTHWEST,fill=HORIZONTAL,insets.top=0,weightx=1,gridx=0");
-//        CollapsiblePane xAxisCollapsiblePane = new CollapsiblePane("X-Axis", xAxisRangeControl.getPanel(), false, false);
-//        GridBagUtils.addToPanel(optionsPanel, xAxisCollapsiblePane, gbc, "gridy=0, insets.top=2");
         GridBagUtils.addToPanel(optionsPanel, axisRangeControls[X_DIM_INDEX].getPanel(), gbc, "gridy=0, insets.top=2");
         GridBagUtils.addToPanel(optionsPanel, xProductList, gbc, "gridy=1,insets.left=4,insets.right=2");
         GridBagUtils.addToPanel(optionsPanel, xBandList, gbc, "gridy=2,insets.left=4,insets.right=2");
-//        CollapsiblePane yAxisCollapsiblePane = new CollapsiblePane("Y-Axis", yAxisRangeControl.getPanel(), false, false);
-//        GridBagUtils.addToPanel(optionsPanel, yAxisCollapsiblePane, gbc, "gridy=3,insets.left=0,insets.right=0");
         GridBagUtils.addToPanel(optionsPanel, axisRangeControls[Y_DIM_INDEX].getPanel(), gbc, "gridy=3,insets.left=0,insets.right=0");
         GridBagUtils.addToPanel(optionsPanel, yProductList, gbc, "gridy=4,insets.left=4,insets.right=2");
         GridBagUtils.addToPanel(optionsPanel, yBandList, gbc, "gridy=5,insets.left=4,insets.right=2");
-//        CollapsiblePane zAxisCollapsiblePane = new CollapsiblePane("Z-Axis", zAxisRangeControl.getPanel(), false, false);
-//        GridBagUtils.addToPanel(optionsPanel, zAxisCollapsiblePane, gbc, "gridy=6,insets.left=0,insets.right=0");
         GridBagUtils.addToPanel(optionsPanel, axisRangeControls[Z_DIM_INDEX].getPanel(), gbc, "gridy=6,insets.left=0,insets.right=0");
         GridBagUtils.addToPanel(optionsPanel, zProductList, gbc, "gridy=7,insets.left=4,insets.right=2");
         GridBagUtils.addToPanel(optionsPanel, zBandList, gbc, "gridy=8,insets.left=4,insets.right=2");
@@ -533,13 +526,6 @@ class ScatterPlot3DPlotPanel extends PagePanel {
         GridBagUtils.addToPanel(optionsPanel, projectToYCheckBox, gbc, "gridy=17,insets.left=4,insets.right=2");
         GridBagUtils.addToPanel(optionsPanel, projectToZCheckBox, gbc, "gridy=18,insets.left=4,insets.right=2");
         return optionsPanel;
-    }
-
-    private static void setRange(AxisRangeControl axisRangeControl, RasterDataNode raster) {
-        if (axisRangeControl.isAutoMinMax()) {
-            Stx stx = raster.getStx(false, ProgressMonitor.NULL);
-            axisRangeControl.adjustComponents(stx.getMinimum(), stx.getMaximum(), NUM_DECIMALS);
-        }
     }
 
     @Override
@@ -621,7 +607,7 @@ class ScatterPlot3DPlotPanel extends PagePanel {
                 availableBandList.add(raster);
             }
         }
-        return availableBandList.toArray(new RasterDataNode[availableBandList.size()]);
+        return availableBandList.toArray(new RasterDataNode[0]);
     }
 
     private void updateUIState() {
@@ -836,15 +822,7 @@ class ScatterPlot3DPlotPanel extends PagePanel {
         private RasterDataNode yBand;
         private RasterDataNode zBand;
         private RasterDataNode colorBand;
-        private Product xProductProperty;
-        private Product yProductProperty;
-        private Product zProductProperty;
-        private Product colorProductProperty;
         private Integer displayLevel;
-        private Property xBandProperty;
-        private Property yBandProperty;
-        private Property zBandProperty;
-        private Property colorBandProperty;
         private Color displayColor;
         private int toggleColorDisplayMode;
     }
