@@ -232,27 +232,48 @@ class ScatterPlot3dJzyPanel extends JPanel {
         }
     }
 
-    void setLabelNames(String xLabelName, String yLabelName, String zLabelName) {
-        chart.getAxeLayout().setXAxeLabel("x =" + xLabelName);
-        chart.getAxeLayout().setYAxeLabel("y = " + yLabelName);
-        chart.getAxeLayout().setZAxeLabel("z = " + zLabelName);
+    void updateChart(String xLabelName, String yLabelName, String zLabelName, List<Float> xData, List<Float> yData,
+                     List<Float> zData) {
+        String newXLabelName = "x = " + xLabelName;
+        String newYLabelName = "y = " + yLabelName;
+        String newZLabelName = "z = " + zLabelName;
+        boolean dimsHaveChanged = false;
+        if (!chart.getAxeLayout().getXAxeLabel().equals(newXLabelName)) {
+            chart.getAxeLayout().setXAxeLabel(newXLabelName);
+            dimsHaveChanged = true;
+        }
+        if (!chart.getAxeLayout().getYAxeLabel().equals(newYLabelName)) {
+            chart.getAxeLayout().setYAxeLabel(newYLabelName);
+            dimsHaveChanged = true;
+        }
+        if (!chart.getAxeLayout().getZAxeLabel().equals(newZLabelName)) {
+            chart.getAxeLayout().setZAxeLabel(newZLabelName);
+            dimsHaveChanged = true;
+        }
         chart.getAxeLayout().setFaceDisplayed(true);
-    }
-
-    void setChartData(List<Float> xData, List<Float> yData, List<Float> zData) {
         scatter.clear();
         projectionScatter.clear();
         final int size = xData.size();
         Coord3d[] points = new Coord3d[size];
         PickablePointWithTarget[] pickablePointWithTargets = new PickablePointWithTarget[size];
+        boolean currentVertexStillIncluded = false;
         for (int i = 0; i < size; i++) {
             points[i] = new Coord3d(xData.get(i), yData.get(i), zData.get(i));
+            if (!currentVertexStillIncluded && currentVertex.equals(points[i])) {
+                currentVertexStillIncluded = true;
+            }
             pickablePointWithTargets[i] = new PickablePointWithTarget(points[i], points[i], i);
         }
         pickingSupport.registerPickableObjects(pickablePointWithTargets);
         scatter.setData(points);
         projectionScatter.setData(points);
         adjustProjectionScatterToBounds();
+        if (dimsHaveChanged || !currentVertexStillIncluded) {
+            currentVertex.set(Float.NaN, Float.NaN, Float.NaN);
+            updateLine();
+            remove(pickingInfoPanel);
+            updateUI();
+        }
     }
 
     void setColors(List<Integer> colorData) {

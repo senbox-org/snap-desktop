@@ -466,9 +466,9 @@ class ScatterPlot3DPlotPanel extends PagePanel {
         adjustMinAndMaxValues(floatDataLists);
         scatterPlot3dJzyPanel.setChartTitle(chartPropertiesPanel.showTitle(), chartPropertiesPanel.getTitle(),
                 chartPropertiesPanel.getTitleFont(), chartPropertiesPanel.getTitleColor());
-        scatterPlot3dJzyPanel.setLabelNames(xNode.getName(), yNode.getName(), zNode.getName());
         setMinMaxBounds();
-        scatterPlot3dJzyPanel.setChartData(dataLists[0], dataLists[1], dataLists[2]);
+        scatterPlot3dJzyPanel.updateChart(xNode.getName(), yNode.getName(), zNode.getName(),
+                dataLists[0], dataLists[1], dataLists[2]);
         if (numColorBands != -1) {
             scatterPlot3dJzyPanel.setColors(dataLists[3]);
         } else {
