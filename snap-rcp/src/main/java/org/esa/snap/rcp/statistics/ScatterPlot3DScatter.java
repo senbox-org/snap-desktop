@@ -33,7 +33,7 @@ class ScatterPlot3DScatter extends Scatter {
         if (coordinates != null) {
             int k = 0;
             for (Coord3d c : coordinates) {
-                if (colors != null) {
+                if (colors != null && k < colors.length) {
                     GLES2CompatUtils.glColor4f(colors[k].r, colors[k].g, colors[k].b, colors[k].a);
                     k++;
                 }
@@ -54,7 +54,7 @@ class ScatterPlot3DScatter extends Scatter {
         if (coordinates != null) {
             int k = 0;
             for (Coord3d c : coordinates) {
-                if (colors != null) {
+                if (colors != null && k < colors.length) {
                     gl.getGL2().glColor4f(colors[k].r, colors[k].g, colors[k].b, colors[k].a);
                     k++;
                 }
