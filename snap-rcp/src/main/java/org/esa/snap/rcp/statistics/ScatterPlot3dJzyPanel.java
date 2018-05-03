@@ -419,16 +419,14 @@ class ScatterPlot3dJzyPanel extends JPanel {
                     this.threadController.stop();
                 }
                 isAnimating = !isAnimating;
-            } else {
+            } else if(e.isShiftDown()){
                 int x = e.getX();
                 int y = e.getY();
                 int yflip = -y + targets.get(0).getCanvas().getRendererHeight();
                 prevMouse.x = x;
-                prevMouse.y = y;// yflip;
+                prevMouse.y = y;
                 View view = targets.get(0).getView();
                 GL gl = chart().getView().getCurrentGL();
-
-//                will trigger vertex selection event to those subscribing to
                 pickingSupport.pickObjects(gl, glu, view, null, new IntegerCoord2d(x, yflip));
                 chart().getView().getCurrentContext().release();
             }
