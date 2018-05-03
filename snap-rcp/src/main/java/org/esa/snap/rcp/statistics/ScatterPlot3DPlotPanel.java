@@ -463,10 +463,12 @@ class ScatterPlot3DPlotPanel extends PagePanel {
 
 
         List<Float>[] floatDataLists = new List[]{dataLists[0], dataLists[1], dataLists[2]};
-        adjustMinAndMaxValues(floatDataLists);
+        if (!dataLists[0].isEmpty()) {
+            adjustMinAndMaxValues(floatDataLists);
+            setMinMaxBounds();
+        }
         scatterPlot3dJzyPanel.setChartTitle(chartPropertiesPanel.showTitle(), chartPropertiesPanel.getTitle(),
                 chartPropertiesPanel.getTitleFont(), chartPropertiesPanel.getTitleColor());
-        setMinMaxBounds();
         scatterPlot3dJzyPanel.updateChart(xNode.getName(), yNode.getName(), zNode.getName(),
                 dataLists[0], dataLists[1], dataLists[2]);
         if (numColorBands != -1) {
