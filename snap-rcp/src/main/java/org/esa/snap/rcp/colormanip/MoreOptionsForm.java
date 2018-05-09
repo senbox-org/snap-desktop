@@ -38,7 +38,7 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
-class MoreOptionsForm {
+public class MoreOptionsForm {
 
     static final String NO_DATA_COLOR_PROPERTY = "noDataColor";
     static final String HISTOGRAM_MATCHING_PROPERTY = "histogramMatching";

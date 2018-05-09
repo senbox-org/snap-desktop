@@ -46,7 +46,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-class Continuous3BandGraphicalForm implements ColorManipulationChildForm {
+public class Continuous3BandGraphicalForm implements ColorManipulationChildForm {
 
     private final ColorManipulationForm parentForm;
     private final ImageInfoEditor2 imageInfoEditor;

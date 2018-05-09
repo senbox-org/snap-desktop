@@ -23,7 +23,7 @@ import javax.swing.AbstractButton;
 import java.awt.Component;
 
 
-interface ColorManipulationChildForm {
+public interface ColorManipulationChildForm {
     ColorManipulationForm getParentForm();
 
     void handleFormShown(ColorFormModel formModel);

@@ -37,7 +37,7 @@ import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 
-class Continuous1BandBasicForm implements ColorManipulationChildForm {
+public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
     private final ColorManipulationForm parentForm;
     private final JPanel contentPanel;

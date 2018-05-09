@@ -31,7 +31,7 @@ import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.Component;
 
-class Continuous1BandGraphicalForm implements ColorManipulationChildForm {
+public class Continuous1BandGraphicalForm implements ColorManipulationChildForm {
 
     public static final Scaling POW10_SCALING = new Pow10Scaling();
 

@@ -10,7 +10,7 @@ import java.nio.file.Path;
 /**
  * @author Tonio Fincke
  */
-interface ColorManipulationForm {
+public interface ColorManipulationForm {
 
     ColorFormModel getFormModel();
 
