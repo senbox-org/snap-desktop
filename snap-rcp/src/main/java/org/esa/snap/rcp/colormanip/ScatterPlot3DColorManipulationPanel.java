@@ -49,7 +49,7 @@ public class ScatterPlot3DColorManipulationPanel implements ColorManipulationFor
     }
 
     @Override
-    public FormModel getFormModel() {
+    public ColorFormModel getFormModel() {
         return formModel;
     }
 

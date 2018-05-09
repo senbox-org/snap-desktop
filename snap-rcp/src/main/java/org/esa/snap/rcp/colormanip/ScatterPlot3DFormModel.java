@@ -18,7 +18,7 @@ import java.util.List;
  * @author Tonio Fincke
  */
 //public class ScatterPlot3DFormModel implements FormModelInterface {
-public class ScatterPlot3DFormModel extends FormModel {
+public class ScatterPlot3DFormModel extends ColorFormModel {
 
     private RasterDataNode raster;
     private ImageInfo modifiedInfo;

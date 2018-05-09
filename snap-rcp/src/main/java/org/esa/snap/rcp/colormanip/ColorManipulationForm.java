@@ -12,7 +12,7 @@ import java.nio.file.Path;
  */
 interface ColorManipulationForm {
 
-    FormModel getFormModel();
+    ColorFormModel getFormModel();
 
     void installToolButtons();
 

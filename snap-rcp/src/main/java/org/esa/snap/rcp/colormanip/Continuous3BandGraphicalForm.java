@@ -146,7 +146,7 @@ class Continuous3BandGraphicalForm implements ColorManipulationChildForm {
     }
 
     @Override
-    public void handleFormShown(FormModel formModel) {
+    public void handleFormShown(ColorFormModel formModel) {
         RasterDataNode[] rasters = formModel.getRasters();
         initialChannelSources[0] = rasters[0];
         initialChannelSources[1] = rasters[1];
@@ -156,7 +156,7 @@ class Continuous3BandGraphicalForm implements ColorManipulationChildForm {
     }
 
     @Override
-    public void handleFormHidden(FormModel formModel) {
+    public void handleFormHidden(ColorFormModel formModel) {
         imageInfoEditor.setModel(null);
         channelSourcesList.clear();
         Arrays.fill(models, null);
@@ -165,7 +165,7 @@ class Continuous3BandGraphicalForm implements ColorManipulationChildForm {
     }
 
     @Override
-    public void updateFormModel(FormModel formModel) {
+    public void updateFormModel(ColorFormModel formModel) {
         RasterDataNode[] rasters = formModel.getRasters();
         currentChannelSources[0] = rasters[0];
         currentChannelSources[1] = rasters[1];
@@ -206,7 +206,7 @@ class Continuous3BandGraphicalForm implements ColorManipulationChildForm {
     }
 
     @Override
-    public void resetFormModel(FormModel formModel) {
+    public void resetFormModel(ColorFormModel formModel) {
         updateFormModel(formModel);
         imageInfoEditor.computeZoomOutToFullHistogramm();
     }

@@ -77,22 +77,22 @@ class Continuous1BandSwitcherForm implements ColorManipulationChildForm {
     }
 
     @Override
-    public void handleFormShown(FormModel formModel) {
+    public void handleFormShown(ColorFormModel formModel) {
         switchForm();
     }
 
     @Override
-    public void handleFormHidden(FormModel formModel) {
+    public void handleFormHidden(ColorFormModel formModel) {
         childForm.handleFormHidden(formModel);
     }
 
     @Override
-    public void updateFormModel(FormModel formModel) {
+    public void updateFormModel(ColorFormModel formModel) {
         childForm.updateFormModel(formModel);
     }
 
     @Override
-    public void resetFormModel(FormModel formModel) {
+    public void resetFormModel(ColorFormModel formModel) {
         childForm.resetFormModel(formModel);
     }
 

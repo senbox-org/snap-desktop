@@ -13,7 +13,7 @@ import java.awt.Component;
 /**
  * @author Norman Fomferra
  */
-class FormModel {
+class ColorFormModel {
     private ProductSceneView productSceneView;
     private ImageInfo modifiedImageInfo;
 

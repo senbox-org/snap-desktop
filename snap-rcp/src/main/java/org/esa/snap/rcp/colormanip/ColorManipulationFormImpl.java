@@ -17,6 +17,14 @@ package org.esa.snap.rcp.colormanip;
 
 import com.bc.ceres.core.Assert;
 import com.bc.ceres.core.ProgressMonitor;
+import javax.swing.AbstractButton;
+import javax.swing.BorderFactory;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
+import javax.swing.SwingUtilities;
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.ColorPaletteDef;
 import org.esa.snap.core.datamodel.ImageInfo;
@@ -47,7 +55,6 @@ import org.esa.snap.ui.product.ProductSceneView;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
-import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Cursor;
@@ -84,7 +91,7 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
     private AbstractButton exportButton;
 
     private final TopComponent toolView;
-    private final FormModel formModel;
+    private final ColorFormModel formModel;
     private Band[] bandsToBeModified;
     private SnapFileFilter snapFileFilter;
     private final ProductNodeListener productNodeListener;
@@ -105,7 +112,7 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
     private BrightnessContrastPanel brightnessContrastPanel;
     private JTabbedPane tabbedPane;
 
-    public ColorManipulationFormImpl(TopComponent colorManipulationToolView, FormModel formModel) {
+    ColorManipulationFormImpl(TopComponent colorManipulationToolView, ColorFormModel formModel) {
         Assert.notNull(colorManipulationToolView);
         Assert.notNull(formModel);
         this.toolView = colorManipulationToolView;
@@ -117,7 +124,7 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
     }
 
     @Override
-    public FormModel getFormModel() {
+    public ColorFormModel getFormModel() {
         return formModel;
     }
 

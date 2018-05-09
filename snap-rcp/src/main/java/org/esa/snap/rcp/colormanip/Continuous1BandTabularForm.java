@@ -75,24 +75,24 @@ class Continuous1BandTabularForm implements ColorManipulationChildForm {
     }
 
     @Override
-    public void handleFormShown(FormModel formModel) {
+    public void handleFormShown(ColorFormModel formModel) {
         updateFormModel(formModel);
         tableModel.addTableModelListener(tableModelListener);
     }
 
     @Override
-    public void handleFormHidden(FormModel formModel) {
+    public void handleFormHidden(ColorFormModel formModel) {
         tableModel.removeTableModelListener(tableModelListener);
     }
 
     @Override
-    public void updateFormModel(FormModel formModel) {
+    public void updateFormModel(ColorFormModel formModel) {
         tableModel.fireTableDataChanged();
         discreteCheckBox.setDiscreteColorsMode(parentForm.getFormModel().getModifiedImageInfo().getColorPaletteDef().isDiscrete());
     }
 
     @Override
-    public void resetFormModel(FormModel formModel) {
+    public void resetFormModel(ColorFormModel formModel) {
         tableModel.fireTableDataChanged();
     }
 
