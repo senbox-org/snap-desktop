@@ -249,12 +249,6 @@
             <artifactId>snap-statistics</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>org.jzy3d</groupId>
-            <artifactId>jzy3d-api</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-
         <!-- Testing-->
 
         <dependency>
@@ -267,13 +261,5 @@
         </dependency>
 
     </dependencies>
-
-    <repositories>
-        <repository>
-            <id>jzy3d-releases</id>
-            <name>Jzy3d Snapshots</name>
-            <url>http://maven.jzy3d.org/releases/</url>
-        </repository>
-    </repositories>
 
 </project>
