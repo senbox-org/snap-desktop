@@ -13,7 +13,7 @@ import java.util.HashSet;
 /**
  * @author Tonio Fincke
  */
-class RefreshActionEnabler implements PropertyChangeListener {
+public class RefreshActionEnabler implements PropertyChangeListener {
 
     private final static String PROPERTY_NAME_AUTO_MIN_MAX = "autoMinMax";
     private final static String PROPERTY_NAME_MIN = "min";
@@ -25,16 +25,16 @@ class RefreshActionEnabler implements PropertyChangeListener {
     private List<ProductBandEnablement> productBandEnablements = new ArrayList<>();
     private AbstractButton refreshButton;
 
-    RefreshActionEnabler(AbstractButton rb, String... componentNames) {
+    public RefreshActionEnabler(AbstractButton rb, String... componentNames) {
         names.addAll(Arrays.asList(componentNames));
         refreshButton = rb;
     }
 
-    void addProductBandEnablement(String productPropertyName, String bandPropertyName) {
+    public void addProductBandEnablement(String productPropertyName, String bandPropertyName) {
         addProductBandEnablement(productPropertyName, bandPropertyName, false);
     }
 
-    void addProductBandEnablement(String productPropertyName, String bandPropertyName, boolean isOptional) {
+    public void addProductBandEnablement(String productPropertyName, String bandPropertyName, boolean isOptional) {
         productBandEnablements.add(new ProductBandEnablement(productPropertyName, bandPropertyName, isOptional));
         names.add(productPropertyName);
         names.add(bandPropertyName);
@@ -80,8 +80,6 @@ class RefreshActionEnabler implements PropertyChangeListener {
             refreshButton.setEnabled(enableRefreshButton);
         }
     }
-
-
 
     private boolean notAllMandatoryBandsAreValid(PropertyContainer container) {
         for (ProductBandEnablement enablement : productBandEnablements) {
