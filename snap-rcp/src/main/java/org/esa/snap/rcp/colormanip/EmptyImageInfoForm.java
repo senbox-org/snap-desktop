@@ -26,7 +26,7 @@ public class EmptyImageInfoForm implements ColorManipulationChildForm {
 
     private final ColorManipulationForm parentForm;
 
-    EmptyImageInfoForm(ColorManipulationForm parentForm) {
+    public EmptyImageInfoForm(ColorManipulationForm parentForm) {
         this.parentForm = parentForm;
     }
 

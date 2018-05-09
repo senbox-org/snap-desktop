@@ -42,7 +42,7 @@ public class Continuous1BandSwitcherForm implements ColorManipulationChildForm {
     private JRadioButton basicButton;
     private Continuous1BandBasicForm basicPaletteEditorForm;
 
-    protected Continuous1BandSwitcherForm(final ColorManipulationForm parentForm) {
+    public Continuous1BandSwitcherForm(final ColorManipulationForm parentForm) {
         this.parentForm = parentForm;
         childForm = new EmptyImageInfoForm(parentForm);
         basicButton = new JRadioButton("Basic");
