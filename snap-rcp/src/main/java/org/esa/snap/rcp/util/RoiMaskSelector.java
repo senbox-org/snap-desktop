@@ -14,7 +14,7 @@
  * with this program; if not, see http://www.gnu.org/licenses/
  */
 
-package org.esa.snap.rcp.statistics;
+package org.esa.snap.rcp.util;
 
 import com.bc.ceres.binding.Property;
 import com.bc.ceres.binding.ValueSet;
@@ -48,7 +48,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-class RoiMaskSelector {
+public class RoiMaskSelector {
     public final static String PROPERTY_NAME_USE_ROI_MASK = "useRoiMask";
     public final static String PROPERTY_NAME_ROI_MASK = "roiMask";
 
