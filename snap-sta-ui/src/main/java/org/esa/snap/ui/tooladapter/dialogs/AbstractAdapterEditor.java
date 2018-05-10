@@ -82,6 +82,8 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 import javax.swing.SwingUtilities;
+import javax.swing.event.CellEditorListener;
+import javax.swing.event.ChangeEvent;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
@@ -263,6 +265,18 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
         paramsTable = new OperatorParametersTable(newOperatorDescriptor, appContext);
 
         varTable = new VariablesTable(newOperatorDescriptor.getVariables(), appContext);
+
+        //in case the name of the variable is edited (or even new variable is added),
+        //the combobox of the bundle must be updated
+        varTable.getCellEditor(0,2).addCellEditorListener(new CellEditorListener() {
+            @Override
+            public void editingStopped(ChangeEvent e) {
+                bundleForm.setVariables(newOperatorDescriptor.getVariables());
+            }
+
+            @Override
+            public void editingCanceled(ChangeEvent e) {}
+        });
     }
 
     /**
@@ -449,6 +463,8 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
 
     @Override
     protected void onOK() {
+        //the bundle must be set before validating the adapter
+        newOperatorDescriptor.setBundles(bundleForm.applyChanges());
         if (!verifyUserInput()) {
             Dialogs.showWarning(Bundle.MSG_Wrong_Value_Text());
             this.getJDialog().requestFocus();
@@ -506,7 +522,8 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
                     if (menuLocation != null && !menuLocation.startsWith("Menu/")) {
                         newOperatorDescriptor.setMenuLocation("Menu/" + menuLocation);
                     }
-                    newOperatorDescriptor.setBundles(bundleForm.applyChanges());
+                    //the bundle must be set before validating the adapter
+                    //newOperatorDescriptor.setBundles(bundleForm.applyChanges());
                     AdapterWatcher.INSTANCE.suspend();
                     if (currentOperation != OperationType.NEW) {
                         ToolAdapterActionRegistrar.removeOperatorMenu(oldOperatorDescriptor);
