@@ -31,7 +31,7 @@ import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.Component;
 
-class Continuous1BandGraphicalForm implements ColorManipulationChildForm {
+public class Continuous1BandGraphicalForm implements ColorManipulationChildForm {
 
     public static final Scaling POW10_SCALING = new Pow10Scaling();
 
@@ -93,19 +93,19 @@ class Continuous1BandGraphicalForm implements ColorManipulationChildForm {
     }
 
     @Override
-    public void handleFormShown(FormModel formModel) {
+    public void handleFormShown(ColorFormModel formModel) {
         updateFormModel(formModel);
     }
 
     @Override
-    public void handleFormHidden(FormModel formModel) {
+    public void handleFormHidden(ColorFormModel formModel) {
         if (imageInfoEditor.getModel() != null) {
             imageInfoEditor.setModel(null);
         }
     }
 
     @Override
-    public void updateFormModel(FormModel formModel) {
+    public void updateFormModel(ColorFormModel formModel) {
         final ImageInfoEditorModel oldModel = imageInfoEditor.getModel();
         final ImageInfo imageInfo = parentForm.getFormModel().getModifiedImageInfo();
         final ImageInfoEditorModel newModel = new ImageInfoEditorModel1B(imageInfo);
@@ -129,7 +129,7 @@ class Continuous1BandGraphicalForm implements ColorManipulationChildForm {
     }
 
     @Override
-    public void resetFormModel(FormModel formModel) {
+    public void resetFormModel(ColorFormModel formModel) {
         updateFormModel(formModel);
         imageInfoEditor.computeZoomOutToFullHistogramm();
         parentForm.revalidateToolViewPaneControl();

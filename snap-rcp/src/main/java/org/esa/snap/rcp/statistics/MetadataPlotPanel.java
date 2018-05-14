@@ -26,6 +26,7 @@ import org.esa.snap.core.datamodel.ProductData;
 import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.core.datamodel.ProductNodeEvent;
 import org.esa.snap.core.util.StringUtils;
+import org.esa.snap.rcp.util.RoiMaskSelector;
 import org.esa.snap.ui.io.TableModelCsvEncoder;
 import org.jfree.chart.ChartColor;
 import org.jfree.chart.ChartFactory;

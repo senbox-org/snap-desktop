@@ -22,11 +22,11 @@ import org.esa.snap.core.datamodel.RasterDataNode;
 import javax.swing.AbstractButton;
 import java.awt.Component;
 
-class EmptyImageInfoForm implements ColorManipulationChildForm {
+public class EmptyImageInfoForm implements ColorManipulationChildForm {
 
     private final ColorManipulationForm parentForm;
 
-    EmptyImageInfoForm(ColorManipulationForm parentForm) {
+    public EmptyImageInfoForm(ColorManipulationForm parentForm) {
         this.parentForm = parentForm;
     }
 
@@ -36,19 +36,19 @@ class EmptyImageInfoForm implements ColorManipulationChildForm {
     }
 
     @Override
-    public void handleFormShown(FormModel formModel) {
+    public void handleFormShown(ColorFormModel formModel) {
     }
 
     @Override
-    public void handleFormHidden(FormModel formModel) {
+    public void handleFormHidden(ColorFormModel formModel) {
     }
 
     @Override
-    public void updateFormModel(FormModel formModel) {
+    public void updateFormModel(ColorFormModel formModel) {
     }
 
     @Override
-    public void resetFormModel(FormModel formModel) {
+    public void resetFormModel(ColorFormModel formModel) {
     }
 
     @Override

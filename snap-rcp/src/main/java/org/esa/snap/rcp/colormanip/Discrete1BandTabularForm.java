@@ -39,7 +39,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.text.NumberFormat;
 
-class Discrete1BandTabularForm implements ColorManipulationChildForm {
+public class Discrete1BandTabularForm implements ColorManipulationChildForm {
     private static final String[] COLUMN_NAMES = new String[]{"Label", "Colour", "Value", "Frequency", "Description"};
     private static final Class<?>[] COLUMN_TYPES = new Class<?>[]{String.class, Color.class, String.class, Double.class, String.class};
 
@@ -73,22 +73,22 @@ class Discrete1BandTabularForm implements ColorManipulationChildForm {
     }
 
     @Override
-    public void handleFormShown(FormModel formModel) {
+    public void handleFormShown(ColorFormModel formModel) {
         updateFormModel(formModel);
     }
 
     @Override
-    public void handleFormHidden(FormModel formModel) {
+    public void handleFormHidden(ColorFormModel formModel) {
     }
 
     @Override
-    public void updateFormModel(FormModel formModel) {
+    public void updateFormModel(ColorFormModel formModel) {
         parentForm.getStx(formModel.getRaster());
         tableModel.fireTableDataChanged();
     }
 
     @Override
-    public void resetFormModel(FormModel formModel) {
+    public void resetFormModel(ColorFormModel formModel) {
         updateFormModel(formModel);
     }
 

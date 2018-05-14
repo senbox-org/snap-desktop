@@ -30,7 +30,7 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-class Continuous1BandSwitcherForm implements ColorManipulationChildForm {
+public class Continuous1BandSwitcherForm implements ColorManipulationChildForm {
 
     private final ColorManipulationForm parentForm;
     private JPanel contentPanel;
@@ -42,7 +42,7 @@ class Continuous1BandSwitcherForm implements ColorManipulationChildForm {
     private JRadioButton basicButton;
     private Continuous1BandBasicForm basicPaletteEditorForm;
 
-    protected Continuous1BandSwitcherForm(final ColorManipulationForm parentForm) {
+    public Continuous1BandSwitcherForm(final ColorManipulationForm parentForm) {
         this.parentForm = parentForm;
         childForm = new EmptyImageInfoForm(parentForm);
         basicButton = new JRadioButton("Basic");
@@ -77,22 +77,22 @@ class Continuous1BandSwitcherForm implements ColorManipulationChildForm {
     }
 
     @Override
-    public void handleFormShown(FormModel formModel) {
+    public void handleFormShown(ColorFormModel formModel) {
         switchForm();
     }
 
     @Override
-    public void handleFormHidden(FormModel formModel) {
+    public void handleFormHidden(ColorFormModel formModel) {
         childForm.handleFormHidden(formModel);
     }
 
     @Override
-    public void updateFormModel(FormModel formModel) {
+    public void updateFormModel(ColorFormModel formModel) {
         childForm.updateFormModel(formModel);
     }
 
     @Override
-    public void resetFormModel(FormModel formModel) {
+    public void resetFormModel(ColorFormModel formModel) {
         childForm.resetFormModel(formModel);
     }
 
