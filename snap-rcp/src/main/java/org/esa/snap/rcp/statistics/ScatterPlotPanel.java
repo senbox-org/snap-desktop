@@ -37,6 +37,7 @@ import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.math.MathUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
+import org.esa.snap.rcp.util.RoiMaskSelector;
 import org.esa.snap.ui.GridBagUtils;
 import org.geotools.feature.FeatureCollection;
 import org.jfree.chart.ChartFactory;

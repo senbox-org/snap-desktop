@@ -65,7 +65,7 @@ public class UncertaintyVisualisationTopComponent extends TopComponent {
 
     public UncertaintyVisualisationTopComponent() {
         setName(Bundle.CTL_UncertaintyVisualisationTopComponent_ComponentName());
-        ColorManipulationForm cmf = new ColorManipulationForm(this, new MyFormModel());
+        ColorManipulationForm cmf = new ColorManipulationFormImpl(this, new UncertaintyFormModel());
         setLayout(new BorderLayout());
         add(cmf.getContentPanel(), BorderLayout.CENTER);
     }
@@ -75,7 +75,7 @@ public class UncertaintyVisualisationTopComponent extends TopComponent {
         return new HelpCtx("showUncertaintyManipulationWnd");
     }
 
-    private static class MyFormModel extends FormModel {
+    private static class UncertaintyFormModel extends ColorFormModel {
         @Override
         public String getTitlePrefix() {
             return Bundle.CTL_UncertaintyVisualisationTopComponent_Name();

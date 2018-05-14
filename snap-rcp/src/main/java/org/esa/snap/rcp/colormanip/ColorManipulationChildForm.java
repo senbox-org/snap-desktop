@@ -23,16 +23,16 @@ import javax.swing.AbstractButton;
 import java.awt.Component;
 
 
-interface ColorManipulationChildForm {
+public interface ColorManipulationChildForm {
     ColorManipulationForm getParentForm();
 
-    void handleFormShown(FormModel formModel);
+    void handleFormShown(ColorFormModel formModel);
 
-    void handleFormHidden(FormModel formModel);
+    void handleFormHidden(ColorFormModel formModel);
 
-    void updateFormModel(FormModel formModel);
+    void updateFormModel(ColorFormModel formModel);
 
-    void resetFormModel(FormModel formModel);
+    void resetFormModel(ColorFormModel formModel);
 
     void handleRasterPropertyChange(ProductNodeEvent event, RasterDataNode raster);
 

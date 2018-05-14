@@ -37,7 +37,7 @@ import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 
-class Continuous1BandBasicForm implements ColorManipulationChildForm {
+public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
     private final ColorManipulationForm parentForm;
     private final JPanel contentPanel;
@@ -145,18 +145,18 @@ class Continuous1BandBasicForm implements ColorManipulationChildForm {
     }
 
     @Override
-    public void handleFormShown(FormModel formModel) {
+    public void handleFormShown(ColorFormModel formModel) {
         hidden = false;
         updateFormModel(formModel);
     }
 
     @Override
-    public void handleFormHidden(FormModel formModel) {
+    public void handleFormHidden(ColorFormModel formModel) {
         hidden = true;
     }
 
     @Override
-    public void updateFormModel(FormModel formModel) {
+    public void updateFormModel(ColorFormModel formModel) {
         if (!hidden) {
             ColorPaletteManager.getDefault().loadAvailableColorPalettes(parentForm.getIODir().toFile());
             colorPaletteChooser.reloadPalettes();
@@ -182,7 +182,7 @@ class Continuous1BandBasicForm implements ColorManipulationChildForm {
     }
 
     @Override
-    public void resetFormModel(FormModel formModel) {
+    public void resetFormModel(ColorFormModel formModel) {
         updateFormModel(formModel);
         parentForm.revalidateToolViewPaneControl();
     }

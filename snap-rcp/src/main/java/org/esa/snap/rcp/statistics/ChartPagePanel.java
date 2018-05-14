@@ -19,6 +19,7 @@ package org.esa.snap.rcp.statistics;
 import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.jidesoft.swing.SimpleScrollPane;
+import org.esa.snap.rcp.util.RoiMaskSelector;
 import org.esa.snap.ui.AbstractDialog;
 import org.esa.snap.ui.GridBagUtils;
 import org.esa.snap.ui.UIUtils;

@@ -13,7 +13,7 @@ import java.awt.Component;
 /**
  * @author Norman Fomferra
  */
-class FormModel {
+public class ColorFormModel {
     private ProductSceneView productSceneView;
     private ImageInfo modifiedImageInfo;
 
@@ -97,13 +97,13 @@ class FormModel {
         return true;
     }
 
-    public void modifyMoreOptionsForm(MoreOptionsForm moreOptionsForm) {
+    void modifyMoreOptionsForm(MoreOptionsForm moreOptionsForm) {
     }
 
-    public void updateMoreOptionsFromImageInfo(MoreOptionsForm moreOptionsForm) {
+    void updateMoreOptionsFromImageInfo(MoreOptionsForm moreOptionsForm) {
     }
 
-    public void updateImageInfoFromMoreOptions(MoreOptionsForm moreOptionsForm) {
+    void updateImageInfoFromMoreOptions(MoreOptionsForm moreOptionsForm) {
     }
 
     public Component createEmptyContentPanel() {

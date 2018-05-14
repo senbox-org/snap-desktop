@@ -33,6 +33,7 @@ import org.esa.snap.core.datamodel.TransectProfileDataBuilder;
 import org.esa.snap.core.datamodel.VectorDataNode;
 import org.esa.snap.core.dataop.barithm.BandArithmetic;
 import org.esa.snap.rcp.sync.DefaultCursorSynchronizer;
+import org.esa.snap.rcp.util.RoiMaskSelector;
 import org.esa.snap.ui.AbstractDialog;
 import org.esa.snap.ui.GridBagUtils;
 import org.jfree.chart.ChartFactory;
