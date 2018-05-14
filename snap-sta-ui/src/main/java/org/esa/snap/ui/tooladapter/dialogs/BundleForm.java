@@ -355,13 +355,19 @@ public class BundleForm extends JPanel {
                     }else {
                         bundle.setDownloadURL(null);
                     }
+                    firePropertyChange(new PropertyChangeEvent(bundle, "source",
+                            evt.getOldValue(), evt.getNewValue()));
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
             });
 
             property = propertyContainer.getProperty("targetLocation");
-            property.addPropertyChangeListener(evt -> bundle.setTargetLocation(String.valueOf(evt.getNewValue())));
+            property.addPropertyChangeListener(evt -> {
+                bundle.setTargetLocation(String.valueOf(evt.getNewValue()));
+                firePropertyChange(new PropertyChangeEvent(bundle, "source",
+                        evt.getOldValue(), evt.getNewValue()));
+            });
 
             property = propertyContainer.getProperty("templateparameter");
             property.addPropertyChangeListener(evt -> bundle.setArgumentsParameter((TemplateParameterDescriptor) evt.getNewValue()));
