@@ -116,7 +116,8 @@ class WmsAssistantPage1 extends AbstractLayerSourceAssistantPage {
         history = new UserInputHistory(8, PROPERTY_WMS_HISTORY);
         history.initBy(SnapApp.getDefault().getPreferences());
         if (history.getNumEntries() == 0) {
-            history.push("http://demo.cubewerx.com/demo/cubeserv/cubeserv.cgi");
+            history.push("http://geoservice.dlr.de/basemap/wms");
+            history.push("https://www.geoseaportal.de/wss/service/StaticInformation_Background/guest");
         }
         wmsUrlBox = new JComboBox(new HistoryComboBoxModel(history));
         wmsUrlBox.setEditable(true);
