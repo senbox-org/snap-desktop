@@ -116,7 +116,7 @@ class PutStatisticsIntoVectorDataAction extends AbstractAction {
                                     "total"
                             }));
             for (final Mask mask : getMasks(featureType)) {
-                HashMap<String, Number> statistics = new HashMap<>();
+                HashMap<String, Object> statistics = new HashMap<>();
                 Histogram histogram = getHistogram(mask);
                 statistics.put("minimum", histogram.getLowValue(0));
                 statistics.put("maximum", histogram.getHighValue(0));

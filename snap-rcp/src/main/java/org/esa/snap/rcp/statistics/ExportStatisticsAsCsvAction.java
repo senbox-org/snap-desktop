@@ -110,7 +110,7 @@ class ExportStatisticsAsCsvAction extends AbstractAction {
             metadataWriter.initialiseOutput(outputContext);
             csvStatisticsWriter.initialiseOutput(outputContext);
 
-            final Map<String, Number> statistics = new HashMap<>();
+            final Map<String, Object> statistics = new HashMap<>();
             final Histogram[] histograms = dataProvider.getHistograms();
             for (int i = 0; i < histograms.length; i++) {
                 final Histogram histogram = histograms[i];
