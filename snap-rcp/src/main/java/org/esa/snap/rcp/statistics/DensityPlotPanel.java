@@ -35,6 +35,7 @@ import org.esa.snap.core.datamodel.StxFactory;
 import org.esa.snap.core.dataop.barithm.BandArithmetic;
 import org.esa.snap.core.util.Debug;
 import org.esa.snap.core.util.ProductUtils;
+import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.math.MathUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
@@ -70,6 +71,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
 
 
 /**
@@ -482,10 +484,10 @@ class DensityPlotPanel extends ChartPagePanel {
                     double maxY = axisRangeControls[Y_VAR].getMax();
                     if (minX > maxX || minY > maxY) {
                         Dialogs.showMessage(/*I18N*/ CHART_TITLE, /*I18N*/
-                                                "Failed to compute scatter plot.\n" +
-                                                        "No Pixels considered..",
-                                            JOptionPane.ERROR_MESSAGE,
-                                            null
+                                                     "Failed to compute scatter plot.\n" +
+                                                             "No Pixels considered..",
+                                                     JOptionPane.ERROR_MESSAGE,
+                                                     null
                         );
                         plot.setDataset(null);
                         return;
@@ -508,27 +510,19 @@ class DensityPlotPanel extends ChartPagePanel {
                     plot.getRangeAxis().setLabel(StatisticChartStyling.getAxisLabel(getRaster(Y_VAR), "Y", false));
                     toggleColorCheckBox.setEnabled(true);
                 } catch (InterruptedException | CancellationException e) {
-                    Dialogs.showMessage(CHART_TITLE,
-                                            "Failed to compute scatter plot.\n" +
-                                                    "Calculation canceled.",
-                                        JOptionPane.ERROR_MESSAGE,
-                                        null
-                    );
+                    String message = "Failed to compute scatter plot:\n" + "Calculation canceled.";
+                    Dialogs.showMessage(CHART_TITLE, message, JOptionPane.ERROR_MESSAGE, null);
                 } catch (ExecutionException | IllegalArgumentException e) {
-                    Dialogs.showMessage(CHART_TITLE,
-                                            "Failed to compute scatter plot.\n" +
-                                                    "An error occurred:\n" +
-                                                    e.getCause().getMessage(),
-                                        JOptionPane.ERROR_MESSAGE,
-                                        null
-                    );
+                    String message = "Failed to compute scatter plot:\n" + e.getCause().getMessage();
+                    SystemUtils.LOG.log(Level.SEVERE, message, e);
+                    Dialogs.showMessage(CHART_TITLE, message, JOptionPane.ERROR_MESSAGE,null);
                 }
             }
         };
         swingWorker.execute();
     }
 
-    private static void setRange(int varIndex, RasterDataNode raster, Mask mask, ProgressMonitor pm) throws IOException {
+    private static void setRange(int varIndex, RasterDataNode raster, Mask mask, ProgressMonitor pm) {
         final AxisRangeControl axisRangeControl = axisRangeControls[varIndex];
         if (axisRangeControl.isAutoMinMax()) {
             Stx stx;
