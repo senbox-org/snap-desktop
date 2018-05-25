@@ -513,8 +513,10 @@ class DensityPlotPanel extends ChartPagePanel {
                     String msg = "Failed to compute scatter plot";
                     String reason;
                     int messageType = JOptionPane.ERROR_MESSAGE;
+                    Level logLevel = Level.SEVERE;
                     if (e instanceof CancellationException) {
                         messageType = JOptionPane.INFORMATION_MESSAGE;
+                        logLevel = Level.INFO;
                         reason = "Calculation canceled by user";
                     } else if (e instanceof InterruptedException) {
                         reason = "Calculation unexpectedly interrupted";
@@ -522,7 +524,7 @@ class DensityPlotPanel extends ChartPagePanel {
                         reason = "An unexpected error occurred: " + e.getCause().getMessage();
                     }
 
-                    SystemUtils.LOG.log(Level.SEVERE, msg, e);
+                    SystemUtils.LOG.log(logLevel, String.format("%s: %s", msg, reason), e);
                     Dialogs.showMessage(CHART_TITLE, String.format("%s:\n%s", msg, reason), messageType, null);
                 }
             }
