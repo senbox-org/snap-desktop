@@ -35,6 +35,7 @@ import org.esa.snap.core.datamodel.StxFactory;
 import org.esa.snap.core.dataop.barithm.BandArithmetic;
 import org.esa.snap.core.util.Debug;
 import org.esa.snap.core.util.ProductUtils;
+import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.math.MathUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
@@ -70,6 +71,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
 
 
 /**
@@ -507,21 +509,21 @@ class DensityPlotPanel extends ChartPagePanel {
                     plot.getDomainAxis().setLabel(StatisticChartStyling.getAxisLabel(getRaster(X_VAR), "X", false));
                     plot.getRangeAxis().setLabel(StatisticChartStyling.getAxisLabel(getRaster(Y_VAR), "Y", false));
                     toggleColorCheckBox.setEnabled(true);
-                } catch (InterruptedException | CancellationException e) {
-                    Dialogs.showMessage(CHART_TITLE,
-                                            "Failed to compute scatter plot.\n" +
-                                                    "Calculation canceled.",
-                                        JOptionPane.ERROR_MESSAGE,
-                                        null
-                    );
-                } catch (ExecutionException | IllegalArgumentException e) {
-                    Dialogs.showMessage(CHART_TITLE,
-                                            "Failed to compute scatter plot.\n" +
-                                                    "An error occurred:\n" +
-                                                    e.getCause().getMessage(),
-                                        JOptionPane.ERROR_MESSAGE,
-                                        null
-                    );
+                } catch (InterruptedException | CancellationException | ExecutionException | IllegalArgumentException e) {
+                    String msg = "Failed to compute scatter plot";
+                    String reason;
+                    int messageType = JOptionPane.ERROR_MESSAGE;
+                    if (e instanceof CancellationException) {
+                        messageType = JOptionPane.INFORMATION_MESSAGE;
+                        reason = "Calculation canceled by user";
+                    } else if (e instanceof InterruptedException) {
+                        reason = "Calculation unexpectedly interrupted";
+                    } else {
+                        reason = "An unexpected error occurred: " + e.getCause().getMessage();
+                    }
+
+                    SystemUtils.LOG.log(Level.SEVERE, msg, e);
+                    Dialogs.showMessage(CHART_TITLE, String.format("%s:\n%s", msg, reason), messageType, null);
                 }
             }
         };
