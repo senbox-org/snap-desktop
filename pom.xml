@@ -40,7 +40,7 @@
         <module>snap-help</module>
         <module>snap-land-cover-ui</module>
         <module>snap-pixel-extraction-ui</module>
-        <module>snap-product-library</module>
+        <module>snap-product-library-ui</module>
         <module>snap-raster-ui</module>
         <module>snap-ui</module>
         <module>snap-unmix-ui</module>
