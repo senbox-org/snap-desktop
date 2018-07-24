@@ -15,7 +15,7 @@
  */
 package org.esa.snap.graphbuilder.rcp.dialogs.support;
 
-import org.esa.snap.engine_utilities.db.ProductEntry;
+import org.esa.snap.productlibrary.db.ProductEntry;
 
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;

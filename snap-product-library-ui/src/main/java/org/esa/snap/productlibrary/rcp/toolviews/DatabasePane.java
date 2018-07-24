@@ -22,7 +22,7 @@ import org.esa.snap.core.datamodel.ProductData;
 import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.engine_utilities.datamodel.AbstractMetadata;
-import org.esa.snap.engine_utilities.db.*;
+import org.esa.snap.productlibrary.db.*;
 import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
 import org.esa.snap.productlibrary.rcp.toolviews.model.repositories.FolderRepository;
 import org.esa.snap.productlibrary.rcp.toolviews.model.repositories.RepositoryInterface;

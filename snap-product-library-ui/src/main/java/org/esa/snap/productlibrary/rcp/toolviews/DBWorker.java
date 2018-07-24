@@ -17,7 +17,7 @@ package org.esa.snap.productlibrary.rcp.toolviews;
 
 import com.bc.ceres.core.ProgressMonitor;
 import org.esa.snap.core.util.SystemUtils;
-import org.esa.snap.engine_utilities.db.ProductDB;
+import org.esa.snap.productlibrary.db.ProductDB;
 import org.esa.snap.productlibrary.rcp.toolviews.extensions.ProductLibraryActionExt;
 
 import javax.swing.*;

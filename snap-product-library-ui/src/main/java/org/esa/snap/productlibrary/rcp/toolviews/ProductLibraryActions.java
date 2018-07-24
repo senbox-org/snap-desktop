@@ -16,7 +16,7 @@
 package org.esa.snap.productlibrary.rcp.toolviews;
 
 import org.esa.snap.core.util.SystemUtils;
-import org.esa.snap.engine_utilities.db.ProductEntry;
+import org.esa.snap.productlibrary.db.ProductEntry;
 import org.esa.snap.graphbuilder.rcp.progress.LabelBarProgressMonitor;
 import org.esa.snap.graphbuilder.rcp.utils.ClipboardUtils;
 import org.esa.snap.productlibrary.rcp.toolviews.extensions.ProductLibraryActionExt;

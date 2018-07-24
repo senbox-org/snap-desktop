@@ -15,7 +15,7 @@
  */
 package org.esa.snap.productlibrary.rcp.toolviews.model.repositories;
 
-import org.esa.snap.engine_utilities.db.ProductQueryInterface;
+import org.esa.snap.productlibrary.db.ProductQueryInterface;
 
 import javax.swing.*;
 

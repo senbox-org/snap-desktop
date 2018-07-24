@@ -17,7 +17,7 @@ package org.esa.snap.productlibrary.rcp.toolviews.support;
 
 import org.apache.commons.math3.util.FastMath;
 import org.esa.snap.core.util.Guardian;
-import org.esa.snap.engine_utilities.db.ProductEntry;
+import org.esa.snap.productlibrary.db.ProductEntry;
 import org.esa.snap.productlibrary.rcp.toolviews.model.ProductEntryTableModel;
 import org.esa.snap.productlibrary.rcp.toolviews.model.dataprovider.DataProvider;
 

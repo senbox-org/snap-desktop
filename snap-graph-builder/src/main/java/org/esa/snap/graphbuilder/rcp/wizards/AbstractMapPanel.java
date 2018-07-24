@@ -16,7 +16,7 @@
 package org.esa.snap.graphbuilder.rcp.wizards;
 
 import org.esa.snap.core.datamodel.GeoPos;
-import org.esa.snap.engine_utilities.db.ProductEntry;
+import org.esa.snap.productlibrary.db.ProductEntry;
 import org.esa.snap.graphbuilder.gpf.ui.worldmap.WorldMapUI;
 
 import javax.swing.*;

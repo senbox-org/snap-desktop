@@ -15,7 +15,7 @@
  */
 package org.esa.snap.graphbuilder.rcp.dialogs;
 
-import org.esa.snap.engine_utilities.db.ProductEntry;
+import org.esa.snap.productlibrary.db.ProductEntry;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.FileTable;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.FileTableModel;
 

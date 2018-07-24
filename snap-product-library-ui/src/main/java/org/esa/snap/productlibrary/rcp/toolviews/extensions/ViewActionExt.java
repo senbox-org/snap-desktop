@@ -16,7 +16,7 @@
 package org.esa.snap.productlibrary.rcp.toolviews.extensions;
 
 import com.bc.ceres.core.ProgressMonitor;
-import org.esa.snap.engine_utilities.db.ProductEntry;
+import org.esa.snap.productlibrary.db.ProductEntry;
 import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
 import org.esa.snap.productlibrary.rcp.toolviews.ProductLibraryActions;
 import org.esa.snap.productlibrary.rcp.toolviews.listviews.ListView;

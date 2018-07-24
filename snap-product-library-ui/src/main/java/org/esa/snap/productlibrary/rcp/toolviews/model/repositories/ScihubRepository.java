@@ -15,9 +15,9 @@
  */
 package org.esa.snap.productlibrary.rcp.toolviews.model.repositories;
 
-import org.esa.snap.engine_utilities.datamodel.Credentials;
-import org.esa.snap.engine_utilities.db.ProductQueryInterface;
-import org.esa.snap.engine_utilities.download.opensearch.CopernicusProductQuery;
+import org.esa.snap.productlibrary.db.Credentials;
+import org.esa.snap.productlibrary.db.ProductQueryInterface;
+import org.esa.snap.productlibrary.opensearch.CopernicusProductQuery;
 import org.esa.snap.graphbuilder.rcp.dialogs.PromptDialog;
 import org.esa.snap.productlibrary.rcp.toolviews.ProductLibraryToolView;
 import org.esa.snap.rcp.util.Dialogs;

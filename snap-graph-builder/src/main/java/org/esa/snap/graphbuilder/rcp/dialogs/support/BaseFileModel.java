@@ -17,8 +17,8 @@ package org.esa.snap.graphbuilder.rcp.dialogs.support;
 
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.engine_utilities.gpf.CommonReaders;
-import org.esa.snap.engine_utilities.db.ProductDB;
-import org.esa.snap.engine_utilities.db.ProductEntry;
+import org.esa.snap.productlibrary.db.ProductDB;
+import org.esa.snap.productlibrary.db.ProductEntry;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
 

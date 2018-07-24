@@ -15,13 +15,12 @@
  */
 package org.esa.snap.graphbuilder.rcp.dialogs.support;
 
-import org.esa.snap.engine_utilities.db.ProductEntry;
+import org.esa.snap.productlibrary.db.ProductEntry;
 import org.esa.snap.engine_utilities.util.ProductFunctions;
 import org.esa.snap.graphbuilder.rcp.utils.ClipboardUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.nodes.PNode;
 import org.esa.snap.rcp.util.Dialogs;
-import org.openide.util.datatransfer.ExTransferable;
 import org.openide.util.datatransfer.MultiTransferObject;
 
 import javax.swing.*;

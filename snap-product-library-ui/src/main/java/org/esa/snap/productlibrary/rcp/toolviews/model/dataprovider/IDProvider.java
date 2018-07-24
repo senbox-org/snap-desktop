@@ -16,7 +16,7 @@
 package org.esa.snap.productlibrary.rcp.toolviews.model.dataprovider;
 
 import org.esa.snap.core.util.SystemUtils;
-import org.esa.snap.engine_utilities.db.ProductEntry;
+import org.esa.snap.productlibrary.db.ProductEntry;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;

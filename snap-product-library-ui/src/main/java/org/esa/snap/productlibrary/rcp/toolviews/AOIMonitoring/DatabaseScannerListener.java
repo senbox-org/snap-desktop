@@ -18,9 +18,9 @@ package org.esa.snap.productlibrary.rcp.toolviews.AOIMonitoring;
 
 import org.esa.snap.core.datamodel.ProductData;
 import org.esa.snap.engine_utilities.datamodel.AbstractMetadata;
-import org.esa.snap.engine_utilities.db.DBQuery;
-import org.esa.snap.engine_utilities.db.ProductDB;
-import org.esa.snap.engine_utilities.db.ProductEntry;
+import org.esa.snap.productlibrary.db.DBQuery;
+import org.esa.snap.productlibrary.db.ProductDB;
+import org.esa.snap.productlibrary.db.ProductEntry;
 import org.esa.snap.graphbuilder.rcp.dialogs.BatchGraphDialog;
 import org.esa.snap.productlibrary.rcp.toolviews.AOIMonitoring.model.AOI;
 import org.esa.snap.productlibrary.rcp.toolviews.AOIMonitoring.model.AOIManager;

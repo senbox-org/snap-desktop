@@ -16,7 +16,7 @@
 package org.esa.snap.productlibrary.rcp.toolviews.model;
 
 import org.esa.snap.core.datamodel.ProductData;
-import org.esa.snap.engine_utilities.db.ProductEntry;
+import org.esa.snap.productlibrary.db.ProductEntry;
 import org.esa.snap.productlibrary.rcp.toolviews.DatabasePane;
 
 import java.util.*;

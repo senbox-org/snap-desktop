@@ -15,9 +15,9 @@
  */
 package org.esa.snap.productlibrary.rcp.dialogs;
 
-import org.esa.snap.engine_utilities.db.DBQuery;
-import org.esa.snap.engine_utilities.db.SQLUtils;
-import org.esa.snap.engine_utilities.download.opensearch.CopernicusProductQuery;
+import org.esa.snap.productlibrary.db.DBQuery;
+import org.esa.snap.productlibrary.db.SQLUtils;
+import org.esa.snap.productlibrary.opensearch.CopernicusProductQuery;
 import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.ui.ModalDialog;

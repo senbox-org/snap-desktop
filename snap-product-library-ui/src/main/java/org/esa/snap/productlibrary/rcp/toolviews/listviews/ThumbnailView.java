@@ -17,7 +17,7 @@ package org.esa.snap.productlibrary.rcp.toolviews.listviews;
 
 import org.esa.snap.core.datamodel.quicklooks.Quicklook;
 import org.esa.snap.core.datamodel.quicklooks.Thumbnail;
-import org.esa.snap.engine_utilities.db.ProductEntry;
+import org.esa.snap.productlibrary.db.ProductEntry;
 import org.esa.snap.productlibrary.rcp.toolviews.ProductLibraryActions;
 import org.esa.snap.productlibrary.rcp.toolviews.support.SortingDecorator;
 import org.esa.snap.rcp.quicklooks.ThumbnailPanel;

@@ -15,7 +15,7 @@
  */
 package org.esa.snap.productlibrary.rcp.toolviews.model;
 
-import org.esa.snap.engine_utilities.db.ProductEntry;
+import org.esa.snap.productlibrary.db.ProductEntry;
 import org.esa.snap.productlibrary.rcp.toolviews.model.dataprovider.DataProvider;
 import org.esa.snap.productlibrary.rcp.toolviews.model.dataprovider.IDProvider;
 import org.esa.snap.productlibrary.rcp.toolviews.model.dataprovider.PropertiesProvider;

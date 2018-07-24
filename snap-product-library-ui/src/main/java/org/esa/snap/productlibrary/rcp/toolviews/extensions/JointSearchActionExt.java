@@ -16,10 +16,10 @@
 package org.esa.snap.productlibrary.rcp.toolviews.extensions;
 
 import com.bc.ceres.core.ProgressMonitor;
-import org.esa.snap.engine_utilities.db.DBQuery;
-import org.esa.snap.engine_utilities.db.ProductEntry;
-import org.esa.snap.engine_utilities.db.ProductQueryInterface;
-import org.esa.snap.engine_utilities.download.opensearch.CopernicusProductQuery;
+import org.esa.snap.productlibrary.db.DBQuery;
+import org.esa.snap.productlibrary.db.ProductEntry;
+import org.esa.snap.productlibrary.db.ProductQueryInterface;
+import org.esa.snap.productlibrary.opensearch.CopernicusProductQuery;
 import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
 import org.esa.snap.productlibrary.rcp.dialogs.JointSearchDialog;
 import org.esa.snap.productlibrary.rcp.toolviews.ProductLibraryActions;

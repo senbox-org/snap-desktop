@@ -16,7 +16,7 @@
 package org.esa.snap.productlibrary.rcp.toolviews.AOIMonitoring.model.dataprovider;
 
 
-import org.esa.snap.engine_utilities.db.ProductEntry;
+import org.esa.snap.productlibrary.db.ProductEntry;
 import org.esa.snap.productlibrary.rcp.toolviews.AOIMonitoring.model.AOI;
 
 import javax.swing.*;

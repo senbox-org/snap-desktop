@@ -15,7 +15,7 @@
  */
 package org.esa.snap.productlibrary.rcp.toolviews.extensions;
 
-import org.esa.snap.engine_utilities.db.ProductEntry;
+import org.esa.snap.productlibrary.db.ProductEntry;
 import org.esa.snap.productlibrary.rcp.toolviews.ProductLibraryActions;
 
 import javax.swing.*;
