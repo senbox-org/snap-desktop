@@ -42,10 +42,6 @@
     to the tool, for example the size of the area around the geographic coordinate which is to be considered.
 </p>
 
-<p>
-    Note that the Pixel Extraction Tool replaces the "Export Pin Pixels"-tool.
-</p>
-
 <h3>The Output Format</h3>
 
 <p>
@@ -311,7 +307,14 @@ next.
     <li>creating new coordinates</li>
     <li>reading them from a pin file.
         In addition to the standard format of a pin file, the coordinates file can have a 'DateTime' column.
-        The format of the time value follows the ISO8601 pattern: yyyy-MM-dd'T'HH:mm:ss.
+        The format of the time value follows the ISO8601 pattern: yyyy-MM-dd'T'HH:mm:ss. UTF-8 encoding is preferred.<br>
+        <b>Example:</b>
+        <pre>
+Name	Lon	Lat	DateTime
+P1	29.8410	31.1748	2009-06-07T08:27:11
+P2	31.2213	31.5987	2009-06-07T08:27:04
+P3	32.3835	31.1532	2009-06-07T08:27:03
+        </pre>
     </li>
     <li>reading them from a file in the output CSV-format described above.
         This allows to compare the results from multiple runs of the Pixel Extraction Tool.
