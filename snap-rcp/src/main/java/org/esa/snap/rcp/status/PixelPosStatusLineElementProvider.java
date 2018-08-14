@@ -28,7 +28,6 @@ import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
 import java.util.prefs.Preferences;
 
-
 import static org.esa.snap.rcp.pixelinfo.PixelInfoView.*;
 
 /**
@@ -39,9 +38,9 @@ import static org.esa.snap.rcp.pixelinfo.PixelInfoView.*;
 @ServiceProvider(service = StatusLineElementProvider.class, position = 10)
 public class PixelPosStatusLineElementProvider
         implements StatusLineElementProvider,
-        DocumentWindowManager.Listener<Object, ProductSceneView>,
-        PixelPositionListener,
-        PreferenceChangeListener {
+                   DocumentWindowManager.Listener<Object, ProductSceneView>,
+                   PixelPositionListener,
+                   PreferenceChangeListener {
 
     private static final String GEO_POS_FORMAT = "Lat %8s  Lon %8s";
     private static final String PIXEL_POS_FORMAT = "X %6s  Y %6s";
@@ -118,14 +117,14 @@ public class PixelPosStatusLineElementProvider
             }
             GeoCoding geoCoding = rasterDataNode.getGeoCoding();
             if (geoCoding == null) {
-                setDefault();
-                return;
-            }
-            GeoPos geoPos = geoCoding.getGeoPos(pixelPos, null);
-            if (showGeoPosOffsetDecimals) {
-                geoPosLabel.setText(String.format("Lat %.5f  Lon %.5f", geoPos.getLat(), geoPos.getLon()));
+                geoPosLabel.setText(String.format(GEO_POS_FORMAT, "--", "--"));
             } else {
-                geoPosLabel.setText(String.format(GEO_POS_FORMAT, geoPos.getLatString(), geoPos.getLonString()));
+                GeoPos geoPos = geoCoding.getGeoPos(pixelPos, null);
+                if (showGeoPosOffsetDecimals) {
+                    geoPosLabel.setText(String.format("Lat %.5f  Lon %.5f", geoPos.getLat(), geoPos.getLon()));
+                } else {
+                    geoPosLabel.setText(String.format(GEO_POS_FORMAT, geoPos.getLatString(), geoPos.getLonString()));
+                }
             }
 
             if (showPixelOffsetDecimals) {
@@ -170,7 +169,7 @@ public class PixelPosStatusLineElementProvider
         // Called if SNAP preferences change, adjust any status bar setting here.
         final String propertyName = evt.getKey();
         if (PREFERENCE_KEY_SHOW_PIXEL_POS_DECIMALS.equals(propertyName)
-                || PREFERENCE_KEY_SHOW_GEO_POS_DECIMALS.equals(propertyName)) {
+            || PREFERENCE_KEY_SHOW_GEO_POS_DECIMALS.equals(propertyName)) {
             updateSettings();
         }
     }
