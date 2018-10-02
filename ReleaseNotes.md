@@ -1,6 +1,14 @@
 SNAP Release Notes
 ==================
 
+#New in SNAP 7.0
+The naming of attribute features of ESRI shapefiles has changed: 
+Threshold variable names are shortened by getting rid of the threshold name part 
+altogether (e.g., p_90_threshold now becomes simply p_90) and indexes are not 
+incremented per measure, but correspond to a band name or a time interval
+(e.g., vrg_4_2 will correspond to the average of band 4 during time interval 2).
+  
+
 #New in SNAP 6.0
 More than 100 bugs and improvements have been solved or implemented for SNAP 6.0.
 Beside these general improvements also each Toolbox has got it's own improvements.
