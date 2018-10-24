@@ -975,7 +975,8 @@ class MaskFormActions {
             int dataType = mask.getDataType();
             Band band = targetProduct.addBand(bandName, dataType);
             String description = mask.getDescription() + " (from " + mask.getProduct().getDisplayName() + ")";
-            targetProduct.addMask(maskName, bandName, description, mask.getImageColor(), mask.getImageTransparency());
+            String expression = (String) mask.getImageConfig().getValue("expression");
+            targetProduct.addMask(maskName, expression, description, mask.getImageColor(), mask.getImageTransparency());
             return band;
         }
 
