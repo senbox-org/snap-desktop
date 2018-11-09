@@ -40,6 +40,7 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.logging.Level;
 
 /**
  * The product explorer tool window.
@@ -186,7 +187,8 @@ public class ProductExplorerTopComponent extends TopComponent implements Explore
                 } else {
                     dtde.rejectDrop();
                 }
-            } catch (UnsupportedFlavorException | IOException ignored) {
+            } catch (UnsupportedFlavorException | IOException e) {
+                SystemUtils.LOG.log(Level.SEVERE, "Exception during drag-and-drop operation", e);
                 dtde.rejectDrop();
             }
         }
