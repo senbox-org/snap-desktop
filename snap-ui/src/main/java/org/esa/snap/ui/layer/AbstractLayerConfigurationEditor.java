@@ -36,6 +36,9 @@ import java.beans.PropertyChangeListener;
  * @version $Revision$ $Date$
  * @since BEAM 4.6
  */
+// SEP2018 - Daniel Knowles - Modified to call a new method propertyPane.createJScrollPanel(), which returns
+// a JScrollPane instead of a JPanel in order to ensure all property components can be accessed by the user
+
 public abstract class AbstractLayerConfigurationEditor extends AbstractLayerEditor {
 
     private BindingContext bindingContext;
@@ -53,8 +56,18 @@ public abstract class AbstractLayerConfigurationEditor extends AbstractLayerEdit
         PropertySet propertySet = bindingContext.getPropertySet();
         propertySet.addPropertyChangeListener(new PropertyChangeHandler());
         addEditablePropertyDescriptors();
+
+
+
         PropertyPane propertyPane = new PropertyPane(bindingContext);
-        return propertyPane.createPanel();
+
+        //
+        // Modification note: Daniel Knowles 2018
+        // Modified to return JScrollPane instead of JPanel due to the large number of properties being added to the Graticule layer
+        // If for some reason this option is only desired for a certain layer then the following type of if clause might be used
+        // if ("Graticule".equals(getCurrentLayer().getName())) {}
+        //
+        return propertyPane.createJScrollPanel();
     }
 
     @Override
