@@ -36,7 +36,7 @@ public abstract class BaseFileModel extends AbstractTableModel implements FileTa
     protected int widths[] = null;
 
     protected final List<File> fileList = new ArrayList<>(10);
-    protected final List<TableData> dataList = new ArrayList<>(10);
+    private final List<TableData> dataList = new ArrayList<>(10);
 
     public BaseFileModel() {
         setColumnData();
@@ -128,7 +128,7 @@ public abstract class BaseFileModel extends AbstractTableModel implements FileTa
         addFile(new File(""));
     }
 
-    protected void clearBlankFile() {
+    private void clearBlankFile() {
         if (fileList.size() > 1 && fileList.get(0).getName().isEmpty()) {
             removeFile(0);
         }
@@ -210,7 +210,7 @@ public abstract class BaseFileModel extends AbstractTableModel implements FileTa
             updateData();
         }
 
-        public TableData(final String[] values) {
+        TableData(final String[] values) {
             System.arraycopy(values, 0, data, 0, data.length);
             this.entry = null;
             this.file = null;
@@ -255,7 +255,7 @@ public abstract class BaseFileModel extends AbstractTableModel implements FileTa
             worker.execute();
         }
 
-        protected Product getProductFromProductManager(final File file) {
+        Product getProductFromProductManager(final File file) {
             final SnapApp app = SnapApp.getDefault();
             if(app != null) {
                 final Product[] products = app.getProductManager().getProducts();

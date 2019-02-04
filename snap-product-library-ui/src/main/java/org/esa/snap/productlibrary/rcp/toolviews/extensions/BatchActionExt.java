@@ -127,7 +127,7 @@ public class BatchActionExt implements ProductLibraryActionExt {
                 "Batch Processing", "batchProcessing", false);
         batchDlg.setInputFiles(productEntryList);
         if (graphFile != null) {
-            batchDlg.LoadGraph(graphFile);
+            batchDlg.loadGraph(graphFile);
         }
         batchDlg.show();
     }

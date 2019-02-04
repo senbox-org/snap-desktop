@@ -38,7 +38,6 @@ import java.util.Set;
 public class OperatorAction extends DefaultOperatorAction {
     public static ImageIcon esaIcon = UIUtils.loadImageIcon("/org/esa/snap/graphbuilder/icons/esa.png", OperatorAction.class);
     public static ImageIcon rstbIcon = UIUtils.loadImageIcon("/org/esa/snap/graphbuilder/icons/csa.png", OperatorAction.class);
-    public static ImageIcon arrayIcon = UIUtils.loadImageIcon("/org/esa/snap/graphbuilder/icons/array_logo.png", OperatorAction.class);
     public static ImageIcon esaPlanetIcon = UIUtils.loadImageIcon("/org/esa/snap/graphbuilder/icons/esa-planet.png", OperatorAction.class);
     public static ImageIcon geoAusIcon = UIUtils.loadImageIcon("/org/esa/snap/graphbuilder/icons/geo_aus.png", OperatorAction.class);
 

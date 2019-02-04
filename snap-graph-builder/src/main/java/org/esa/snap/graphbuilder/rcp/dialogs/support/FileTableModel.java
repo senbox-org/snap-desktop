@@ -26,25 +26,25 @@ import java.io.File;
  */
 public interface FileTableModel extends TableModel {
 
-    public void addFile(final File file);
+    void addFile(final File file);
 
-    public void addFile(final ProductEntry entry);
+    void addFile(final ProductEntry entry);
 
-    public void removeFile(final int index);
+    void removeFile(final int index);
 
-    public File[] getFileList();
+    File[] getFileList();
 
-    public void refresh();
+    void refresh();
 
-    public void clear();
+    void clear();
 
-    public void setColumnWidths(final TableColumnModel columnModel);
+    void setColumnWidths(final TableColumnModel columnModel);
 
-    public File getFileAt(final int index);
+    File getFileAt(final int index);
 
-    public File[] getFilesAt(final int[] indices);
+    File[] getFilesAt(final int[] indices);
 
-    public int getIndexOf(final File file);
+    int getIndexOf(final File file);
 
-    public void move(final int oldIndex, final int newIndex);
+    void move(final int oldIndex, final int newIndex);
 }

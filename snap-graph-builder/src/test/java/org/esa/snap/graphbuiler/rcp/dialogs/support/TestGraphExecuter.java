@@ -58,7 +58,7 @@ public class TestGraphExecuter implements Observer {
         updateValue = "";
         graphEx.addOperator("testOp");
 
-        GraphNode[] nodeList = graphEx.GetGraphNodes();
+        GraphNode[] nodeList = graphEx.getGraphNodes();
         assertEquals(1, nodeList.length);
         assertEquals(updateValue, "Add");
     }
@@ -67,23 +67,23 @@ public class TestGraphExecuter implements Observer {
     public void testClear() {
         graphEx.addOperator("testOp");
 
-        GraphNode[] nodeList = graphEx.GetGraphNodes();
+        GraphNode[] nodeList = graphEx.getGraphNodes();
         assertEquals(1, nodeList.length);
 
-        graphEx.ClearGraph();
-        assertEquals(0, graphEx.GetGraphNodes().length);
+        graphEx.clearGraph();
+        assertEquals(0, graphEx.getGraphNodes().length);
     }
 
     @Test
     public void testRemoveOperator() {
         GraphNode node = graphEx.addOperator("testOp");
 
-        GraphNode[] nodeList = graphEx.GetGraphNodes();
+        GraphNode[] nodeList = graphEx.getGraphNodes();
         assertEquals(1, nodeList.length);
 
         updateValue = "";
         graphEx.removeOperator(node);
-        assertEquals(0, graphEx.GetGraphNodes().length);
+        assertEquals(0, graphEx.getGraphNodes().length);
         assertEquals(updateValue, "Remove");
     }
 
@@ -94,7 +94,7 @@ public class TestGraphExecuter implements Observer {
         GraphNode foundNode = graphEx.getGraphNodeList().findGraphNode(lostNode.getID());
         assertTrue(foundNode.equals(lostNode));
 
-        graphEx.ClearGraph();
+        graphEx.clearGraph();
     }
 
     @Test
@@ -106,7 +106,7 @@ public class TestGraphExecuter implements Observer {
 
         assertEquals(updateValue, "Selected");
 
-        graphEx.ClearGraph();
+        graphEx.clearGraph();
     }
 
     @Test

@@ -70,7 +70,7 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
 
         graphEx = graphExec;
 
-        CreateAddOpMenu();
+        createAddOpMenu();
 
         addMouseListener(this);
         addMouseMotionListener(this);
@@ -79,7 +79,7 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
     /**
      * Creates a menu containing the list of operators to the addMenu
      */
-    private void CreateAddOpMenu() {
+    private void createAddOpMenu() {
         addMenu = new JMenu("Add");
         final SwingWorker<Boolean, Object> menuThread = new MenuThread(addMenu, addListener, graphEx);
         menuThread.execute();
@@ -90,7 +90,7 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
         private final AddMenuListener addListener;
         private final GraphExecuter graphEx;
 
-        public MenuThread(final JMenu addMenu, final AddMenuListener addListener, final GraphExecuter graphEx) {
+        MenuThread(final JMenu addMenu, final AddMenuListener addListener, final GraphExecuter graphEx) {
             this.addMenu = addMenu;
             this.addListener = addListener;
             this.graphEx = graphEx;
@@ -146,13 +146,13 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
         return newMenu;
     }
 
-    void AddOperatorAction(String name) {
+    private void addOperatorAction(String name) {
         final GraphNode newGraphNode = graphEx.addOperator(name);
         newGraphNode.setPos(lastMousePos);
         repaint();
     }
 
-    void RemoveSourceAction(String id) {
+    private void removeSourceAction(String id) {
         if (selectedNode != null) {
             final GraphNode source = graphEx.getGraphNodeList().findGraphNode(id);
             selectedNode.disconnectOperatorSources(source.getID());
@@ -160,7 +160,7 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
         }
     }
 
-    void AutoConnectGraph() {
+    private void autoConnectGraph() {
         if (!graphEx.getGraphNodeList().isGraphComplete()) {
             graphEx.autoConnectGraph();
             repaint();
@@ -245,7 +245,7 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 
-        DrawGraph(g2, graphEx.GetGraphNodes());
+        drawGraph(g2, graphEx.getGraphNodes());
     }
 
     /**
@@ -254,7 +254,7 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
      * @param g        the Graphics
      * @param nodeList the list of graphNodes
      */
-    private void DrawGraph(Graphics2D g, GraphNode[] nodeList) {
+    private void drawGraph(Graphics2D g, GraphNode[] nodeList) {
 
         if(nodeList.length == 0)
             return;
@@ -451,7 +451,7 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
 
     private GraphNode findNode(Point p) {
 
-        for (GraphNode n : graphEx.GetGraphNodes()) {
+        for (GraphNode n : graphEx.getGraphNodes()) {
             if (isWithinRect(n.getPos(), n.getWidth(), n.getHeight(), p))
                 return n;
         }
@@ -471,7 +471,7 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
         }
 
         public void actionPerformed(java.awt.event.ActionEvent event) {
-            graphPanel.AddOperatorAction(event.getActionCommand());
+            graphPanel.addOperatorAction(event.getActionCommand());
         }
     }
 
@@ -484,7 +484,7 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
         }
 
         public void actionPerformed(java.awt.event.ActionEvent event) {
-            graphPanel.AutoConnectGraph();
+            graphPanel.autoConnectGraph();
         }
     }
 
@@ -497,7 +497,7 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
         }
 
         public void actionPerformed(java.awt.event.ActionEvent event) {
-            graphPanel.RemoveSourceAction(event.getActionCommand());
+            graphPanel.removeSourceAction(event.getActionCommand());
         }
     }
 }

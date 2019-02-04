@@ -74,7 +74,7 @@ public class GraphExecuter extends Observable {
         graph = new Graph("Graph");
     }
 
-    public GraphNode[] GetGraphNodes() {
+    public GraphNode[] getGraphNodes() {
         return graphNodeList.getGraphNodes();
     }
 
@@ -82,7 +82,7 @@ public class GraphExecuter extends Observable {
         return graphNodeList;
     }
 
-    public void ClearGraph() {
+    public void clearGraph() {
         graph = null;
         graph = new Graph("Graph");
         lastLoadedGraphFile = null;
@@ -104,14 +104,14 @@ public class GraphExecuter extends Observable {
         return gpf.getOperatorSpiRegistry().getAliases();
     }
 
-    public boolean isOperatorInternal(String alias) {
+    boolean isOperatorInternal(String alias) {
         final OperatorSpiRegistry registry = gpf.getOperatorSpiRegistry();
         final OperatorSpi operatorSpi = registry.getOperatorSpi(alias);
         final OperatorMetadata operatorMetadata = operatorSpi.getOperatorClass().getAnnotation(OperatorMetadata.class);
         return !(operatorMetadata != null && !operatorMetadata.internal());
     }
 
-    public String getOperatorCategory(String alias) {
+    String getOperatorCategory(String alias) {
         final OperatorSpiRegistry registry = gpf.getOperatorSpiRegistry();
         final OperatorSpi operatorSpi = registry.getOperatorSpi(alias);
         final OperatorMetadata operatorMetadata = operatorSpi.getOperatorClass().getAnnotation(OperatorMetadata.class);
@@ -193,20 +193,20 @@ public class GraphExecuter extends Observable {
         graph.removeNode(node.getID());
     }
 
-    public void autoConnectGraph() {
-        final List<GraphNode> nodeList = Arrays.asList(GetGraphNodes());
+    void autoConnectGraph() {
+        final List<GraphNode> nodeList = Arrays.asList(getGraphNodes());
         Collections.sort(nodeList, new GraphNodePosComparator());
         final GraphNode[] nodes = nodeList.toArray(new GraphNode[nodeList.size()]);
 
         for (int i = 0; i < nodes.length - 1; ++i) {
-            if (!nodes[i].HasSources()) {
+            if (!nodes[i].hasSources()) {
                 nodes[i].connectOperatorSource(nodes[i + 1].getID());
             }
         }
         notifyConnection();
     }
 
-    public void notifyConnection() {
+    void notifyConnection() {
         if(graphNodeList.getGraphNodes().length > 0) {
             notifyGraphEvent(new GraphEvent(events.CONNECT_EVENT, graphNodeList.getGraphNodes()[0]));
         }
@@ -228,7 +228,7 @@ public class GraphExecuter extends Observable {
         xml.setValue(value);
     }
 
-    private void AssignAllParameters() throws GraphException {
+    private void assignAllParameters() throws GraphException {
 
         final XppDom presentationXML = new XppDom("Presentation");
 
@@ -241,9 +241,9 @@ public class GraphExecuter extends Observable {
         graph.setAppData("Presentation", presentationXML);
     }
 
-    public boolean InitGraph() throws GraphException {
+    public boolean initGraph() throws GraphException {
         if (graphNodeList.isGraphComplete()) {
-            AssignAllParameters();
+            assignAllParameters();
 
             ProductSetUIHandler productSetHandler = new ProductSetUIHandler(graph, graphNodeList);
             SubGraphHandler subGraphHandler = new SubGraphHandler(graph, graphNodeList);
@@ -320,7 +320,7 @@ public class GraphExecuter extends Observable {
     private void writeGraph(final String filePath) throws GraphException {
 
         try (FileWriter fileWriter = new FileWriter(filePath)) {
-            AssignAllParameters();
+            assignAllParameters();
             GraphIO.write(graph, fileWriter);
         } catch (Exception e) {
             throw new GraphException("Unable to write graph to " + filePath + '\n' + e.getMessage());
@@ -330,7 +330,7 @@ public class GraphExecuter extends Observable {
     public String getGraphAsString() throws GraphException, IOException {
         final StringWriter stringWriter = new StringWriter();
         try {
-            AssignAllParameters();
+            assignAllParameters();
             GraphIO.write(graph, stringWriter);
         } catch (Exception e) {
             throw new GraphException("Unable to write graph to string" + '\n' + e.getMessage());
@@ -362,7 +362,7 @@ public class GraphExecuter extends Observable {
         private final InputStream fileStream;
         private final boolean addUI;
 
-        public LoadGraphThread(final InputStream fileStream, final boolean addUI) {
+        LoadGraphThread(final InputStream fileStream, final boolean addUI) {
             this.fileStream = fileStream;
             this.addUI = addUI;
         }
@@ -377,7 +377,7 @@ public class GraphExecuter extends Observable {
         }
     }
 
-    public void setGraph(final Graph graphFromFile, final boolean addUI) throws GraphException {
+    private void setGraph(final Graph graphFromFile, final boolean addUI) throws GraphException {
         if (graphFromFile != null) {
             graph = graphFromFile;
             graphNodeList.clear();
@@ -506,12 +506,7 @@ public class GraphExecuter extends Observable {
             double h1 = FastMath.hypot(x1, y1);
             double h2 = FastMath.hypot(x2, y2);
 
-            if (h1 > h2)
-                return -1;
-            else if (h1 < h2)
-                return +1;
-            else
-                return 0;
+            return Double.compare(h2, h1);
         }
     }
 }

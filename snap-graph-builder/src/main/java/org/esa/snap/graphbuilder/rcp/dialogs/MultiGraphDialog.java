@@ -81,7 +81,7 @@ public abstract class MultiGraphDialog extends ModelessDialog implements LabelBa
         tabbedPane.addChangeListener(new ChangeListener() {
 
             public void stateChanged(final ChangeEvent e) {
-                ValidateAllNodes();
+                validateAllNodes();
             }
         });
         mainPanel.add(tabbedPane, BorderLayout.CENTER);
@@ -108,7 +108,7 @@ public abstract class MultiGraphDialog extends ModelessDialog implements LabelBa
         progressCancelBtn.addActionListener(new ActionListener() {
 
             public void actionPerformed(final ActionEvent e) {
-                CancelProcessing();
+                cancelProcessing();
             }
         });
         progressPanel.add(progressCancelBtn, BorderLayout.EAST);
@@ -142,7 +142,7 @@ public abstract class MultiGraphDialog extends ModelessDialog implements LabelBa
         ioPanel.onApply();
 
         try {
-            DoProcessing();
+            doProcessing();
         } catch (Exception e) {
             statusLabel.setText(e.getMessage());
         }
@@ -150,12 +150,12 @@ public abstract class MultiGraphDialog extends ModelessDialog implements LabelBa
 
     @Override
     protected void onClose() {
-        CancelProcessing();
+        cancelProcessing();
 
         super.onClose();
     }
 
-    void initGraphs() {
+    private void initGraphs() {
         try {
             deleteGraphs();
             createGraphs();
@@ -167,11 +167,10 @@ public abstract class MultiGraphDialog extends ModelessDialog implements LabelBa
     /**
      * Validates the input and then call the GPF to execute the graph
      *
-     * @throws GraphException on assignParameters
      */
-    private void DoProcessing() {
+    private void doProcessing() {
 
-        if (ValidateAllNodes()) {
+        if (validateAllNodes()) {
 
             SystemUtils.freeAllMemory();
 
@@ -193,14 +192,14 @@ public abstract class MultiGraphDialog extends ModelessDialog implements LabelBa
         progressPanel.setVisible(false);
     }
 
-    private void CancelProcessing() {
+    private void cancelProcessing() {
         if (progBarMonitor != null)
             progBarMonitor.setCanceled(true);
     }
 
     private void deleteGraphs() {
         for (GraphExecuter gex : graphExecuterList) {
-            gex.ClearGraph();
+            gex.clearGraph();
         }
         graphExecuterList.clear();
     }
@@ -211,7 +210,7 @@ public abstract class MultiGraphDialog extends ModelessDialog implements LabelBa
      * @param executer the GraphExcecuter
      * @param file     the graph file to load
      */
-    public void LoadGraph(final GraphExecuter executer, final File file) {
+    public void loadGraph(final GraphExecuter executer, final File file) {
         try {
             executer.loadGraph(new FileInputStream(file), file, true, true);
 
@@ -220,13 +219,13 @@ public abstract class MultiGraphDialog extends ModelessDialog implements LabelBa
         }
     }
 
-    protected abstract void createGraphs() throws GraphException;
+    abstract void createGraphs() throws GraphException;
 
-    protected abstract void assignParameters() throws GraphException;
+    abstract void assignParameters() throws GraphException;
 
-    protected abstract void cleanUpTempFiles();
+    abstract void cleanUpTempFiles();
 
-    private boolean ValidateAllNodes() {
+    private boolean validateAllNodes() {
         if (isProcessing) return false;
         if (ioPanel == null || graphExecuterList.isEmpty())
             return false;
@@ -241,7 +240,7 @@ public abstract class MultiGraphDialog extends ModelessDialog implements LabelBa
             }
             assignParameters();
             // first graph must pass
-            result = graphExecuterList.get(0).InitGraph();
+            result = graphExecuterList.get(0).initGraph();
 
         } catch (Exception e) {
             statusLabel.setText(e.getMessage());
@@ -283,14 +282,14 @@ public abstract class MultiGraphDialog extends ModelessDialog implements LabelBa
         ioPanel.initProducts();
         initGraphs();
 
-        if (ValidateAllNodes()) {
+        if (validateAllNodes()) {
 
             for (GraphExecuter graphEx : graphExecuterList) {
                 final String desc = graphEx.getGraphDescription();
                 if (desc != null && !desc.isEmpty())
                     System.out.println("Processing " + graphEx.getGraphDescription());
 
-                graphEx.InitGraph();
+                graphEx.initGraph();
 
                 graphEx.executeGraph(ProgressMonitor.NULL);
                 graphEx.disposeGraphContext();
@@ -327,7 +326,7 @@ public abstract class MultiGraphDialog extends ModelessDialog implements LabelBa
                     if (desc != null && !desc.isEmpty())
                         statusLabel.setText("Processing " + graphEx.getGraphDescription());
 
-                    graphEx.InitGraph();
+                    graphEx.initGraph();
 
                     graphEx.executeGraph(SubProgressMonitor.create(pm, 100));
                     graphEx.disposeGraphContext();
@@ -371,7 +370,6 @@ public abstract class MultiGraphDialog extends ModelessDialog implements LabelBa
             }
             cleanUpTempFiles();
         }
-
     }
 
 }
