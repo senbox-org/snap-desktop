@@ -126,7 +126,7 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
             setBorder(BorderFactory.createTitledBorder(title));
     }
 
-    public JPanel getButtonPanel() {
+    protected JPanel getButtonPanel() {
         return buttonPanel;
     }
 
@@ -184,7 +184,7 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
         addButton.addActionListener(new ActionListener() {
 
             public void actionPerformed(final ActionEvent e) {
-                final File[] files = GetFilePath(addButton, "Add Product");
+                final File[] files = getFilePath(addButton, "Add Product");
                 if (files != null) {
                     addProducts(tableModel, files);
                 }
@@ -324,7 +324,7 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
         updateComponents();
     }
 
-    private static File[] GetFilePath(Component component, String title) {
+    private static File[] getFilePath(Component component, String title) {
 
         File[] files = null;
         final File openDir = new File(SnapApp.getDefault().getPreferences().

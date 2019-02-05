@@ -66,7 +66,7 @@ public class GraphAction extends OperatorAction {
         final File graphFile = new File(graphPath, getGraphFileName());
 
         addIcon(dialog);
-        dialog.LoadGraph(graphFile);
+        dialog.loadGraph(graphFile);
         return dialog;
     }
 }

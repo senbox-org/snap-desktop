@@ -31,14 +31,14 @@ import java.util.Map;
 /**
  * Replaces SubGraphOp with operators from the sub-graph
  */
-public class SubGraphHandler {
+class SubGraphHandler {
 
     private final Graph graph;
     private final GraphNodeList graphNodeList;
     private final GraphNode[] savedSubGraphList;
     private Map<GraphNode, GraphNode[]> subGraphNodesToRemoveMap = new HashMap<>();
 
-    public SubGraphHandler(final Graph graph, final GraphNodeList graphNodeList) throws GraphException {
+    SubGraphHandler(final Graph graph, final GraphNodeList graphNodeList) throws GraphException {
         this.graph = graph;
         this.graphNodeList = graphNodeList;
 
@@ -87,7 +87,7 @@ public class SubGraphHandler {
         }
     }
 
-    public void restore() {
+    void restore() {
         for (GraphNode savedNode : savedSubGraphList) {
 
             final GraphNode[] nodesToRemove = subGraphNodesToRemoveMap.get(savedNode);

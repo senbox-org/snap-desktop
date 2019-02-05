@@ -94,7 +94,7 @@ public class IOPanel {
         targetProductSelectorModel.setProductName(name + getTargetProductNameSuffix());
     }
 
-    public void initProducts() {
+    void initProducts() {
         if (useSourceSelector) {
             for (SourceProductSelector sourceProductSelector : sourceProductSelectorList) {
                 sourceProductSelector.initProducts();
@@ -102,7 +102,7 @@ public class IOPanel {
         }
     }
 
-    public void releaseProducts() {
+    void releaseProducts() {
         if (!useSourceSelector) {
             for (SourceProductSelector sourceProductSelector : sourceProductSelectorList) {
                 sourceProductSelector.releaseProducts();
@@ -115,7 +115,7 @@ public class IOPanel {
         SnapApp.getDefault().getPreferences().put(SaveProductAsAction.PREFERENCES_KEY_LAST_PRODUCT_DIR, productDir);
     }
 
-    public Product getSelectedSourceProduct() {
+    Product getSelectedSourceProduct() {
         if (useSourceSelector)
             return sourceProductSelectorList.get(0).getSelectedProduct();
         return null;
@@ -137,7 +137,7 @@ public class IOPanel {
         targetProductNameSuffix = suffix;
     }
 
-    public boolean isOpenInAppSelected() {
+    boolean isOpenInAppSelected() {
         return targetProductSelector.getModel().isOpenInAppSelected();
     }
 }

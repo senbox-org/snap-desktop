@@ -58,7 +58,7 @@ public class OpenGraphBuilderAction extends AbstractAction {
 
         InputStream graphFileStream = getClass().getClassLoader().getResourceAsStream("graphs/ReadWriteGraph.xml");
 
-        dialog.LoadGraph(graphFileStream, null);
-        dialog.EnableInitialInstructions(true);
+        dialog.loadGraph(graphFileStream, null);
+        dialog.enableInitialInstructions(true);
     }
 }

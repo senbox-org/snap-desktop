@@ -7,13 +7,13 @@ import java.io.File;
  */
 public interface GraphDialog {
 
-    void LoadGraph();
+    void loadGraph();
 
-    void LoadGraph(final File file);
+    void loadGraph(final File file);
 
     boolean canSaveGraphs();
 
-    void SaveGraph();
+    void saveGraph();
 
     String getGraphAsString() throws Exception;
 }
