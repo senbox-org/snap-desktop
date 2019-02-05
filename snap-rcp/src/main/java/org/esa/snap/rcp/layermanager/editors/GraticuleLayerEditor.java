@@ -17,120 +17,413 @@ package org.esa.snap.rcp.layermanager.editors;
 
 import com.bc.ceres.binding.PropertyDescriptor;
 import com.bc.ceres.binding.ValueRange;
+import com.bc.ceres.binding.ValueSet;
 import com.bc.ceres.swing.binding.BindingContext;
-import com.bc.ceres.swing.binding.PropertyEditorRegistry;
-import com.bc.ceres.swing.binding.internal.RangeEditor;
 import org.esa.snap.core.layer.GraticuleLayerType;
 import org.esa.snap.ui.layer.AbstractLayerConfigurationEditor;
 
-import java.awt.Color;
+import java.awt.*;
 
 /**
  * Editor for graticule layer.
  *
  * @author Marco Zuehlke
+ * @author Daniel Knowles
  * @version $Revision$ $Date$
  * @since BEAM 4.6
  */
+//SEP2018 - Daniel Knowles - adds numerous new properties and related binding contexts.
+
 public class GraticuleLayerEditor extends AbstractLayerConfigurationEditor {
+
 
     @Override
     protected void addEditablePropertyDescriptors() {
 
-        PropertyDescriptor vd0 = new PropertyDescriptor(GraticuleLayerType.PROPERTY_NAME_RES_AUTO, Boolean.class);
-        vd0.setDefaultValue(GraticuleLayerType.DEFAULT_RES_AUTO);
-        vd0.setDisplayName("Compute latitude and longitude steps");
-        vd0.setDefaultConverter();
-        addPropertyDescriptor(vd0);
 
-        PropertyDescriptor vd1 = new PropertyDescriptor(GraticuleLayerType.PROPERTY_NAME_RES_PIXELS, Integer.class);
-        vd1.setDefaultValue(GraticuleLayerType.DEFAULT_RES_PIXELS);
-        vd1.setValueRange(new ValueRange(16, 512));
-        vd1.setDisplayName("Average grid size in pixels");
-        vd1.setDefaultConverter();
-        addPropertyDescriptor(vd1);
+        // Grid Spacing Section
 
-        PropertyDescriptor vd2 = new PropertyDescriptor(GraticuleLayerType.PROPERTY_NAME_RES_LAT, Double.class);
-        vd2.setDefaultValue(GraticuleLayerType.DEFAULT_RES_LAT);
-        vd2.setValueRange(new ValueRange(0.01, 90.00));
-        vd2.setDisplayName("Latitude step (dec. degree)");
-        vd2.setDefaultConverter();
-        addPropertyDescriptor(vd2);
+        addSectionBreak(GraticuleLayerType.PROPERTY_GRID_SPACING_SECTION_NAME,
+                GraticuleLayerType.PROPERTY_GRID_SPACING_SECTION_LABEL,
+                GraticuleLayerType.PROPERTY_GRID_SPACING_SECTION_TOOLTIP);
 
-        PropertyDescriptor vd3 = new PropertyDescriptor(GraticuleLayerType.PROPERTY_NAME_RES_LON, Double.class);
-        vd3.setDefaultValue(GraticuleLayerType.DEFAULT_RES_LON);
-        vd3.setValueRange(new ValueRange(0.01, 180.00));
-        vd3.setDisplayName("Longitude step (dec. degree)");
-        vd3.setDefaultConverter();
-        addPropertyDescriptor(vd3);
+        PropertyDescriptor gridSpacingLatPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_GRID_SPACING_LAT_NAME, Double.class);
+        gridSpacingLatPD.setDefaultValue(GraticuleLayerType.PROPERTY_GRID_SPACING_LAT_DEFAULT);
+        gridSpacingLatPD.setValueRange(new ValueRange(0.0, 90.00));
+        gridSpacingLatPD.setDisplayName(GraticuleLayerType.PROPERTY_GRID_SPACING_LAT_LABEL);
+        gridSpacingLatPD.setDescription(GraticuleLayerType.PROPERTY_GRID_SPACING_LAT_TOOLTIP);
+        gridSpacingLatPD.setDefaultConverter();
+        addPropertyDescriptor(gridSpacingLatPD);
 
-        PropertyDescriptor vd4 = new PropertyDescriptor(GraticuleLayerType.PROPERTY_NAME_LINE_COLOR, Color.class);
-        vd4.setDefaultValue(GraticuleLayerType.DEFAULT_LINE_COLOR);
-        vd4.setDisplayName("Line colour");
-        vd4.setDefaultConverter();
-        addPropertyDescriptor(vd4);
+        PropertyDescriptor gridSpacingLonPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_GRID_SPACING_LON_NAME, Double.class);
+        gridSpacingLonPD.setDefaultValue(GraticuleLayerType.PROPERTY_GRID_SPACING_LON_DEFAULT);
+        gridSpacingLonPD.setValueRange(new ValueRange(0.0, 180.00));
+        gridSpacingLonPD.setDisplayName(GraticuleLayerType.PROPERTY_GRID_SPACING_LON_LABEL);
+        gridSpacingLonPD.setDescription(GraticuleLayerType.PROPERTY_GRID_SPACING_LON_TOOLTIP);
+        gridSpacingLonPD.setDefaultConverter();
+        addPropertyDescriptor(gridSpacingLonPD);
 
-        PropertyDescriptor vd5 = new PropertyDescriptor(GraticuleLayerType.PROPERTY_NAME_LINE_WIDTH, Double.class);
-        vd5.setDefaultValue(GraticuleLayerType.DEFAULT_LINE_WIDTH);
-        vd5.setDisplayName("Line width");
-        vd5.setDefaultConverter();
-        addPropertyDescriptor(vd5);
 
-        final PropertyEditorRegistry propertyEditorRegistry = PropertyEditorRegistry.getInstance();
+        // Labels Section
 
-        PropertyDescriptor vd6 = new PropertyDescriptor(GraticuleLayerType.PROPERTY_NAME_LINE_TRANSPARENCY, Double.class);
-        vd6.setDefaultValue(GraticuleLayerType.DEFAULT_LINE_TRANSPARENCY);
-        vd6.setValueRange(new ValueRange(0, 1));
-        vd6.setDisplayName("Line transparency");
-        vd6.setDefaultConverter();
-        vd6.setAttribute("propertyEditor", propertyEditorRegistry.getPropertyEditor(RangeEditor.class.getName()));
-        addPropertyDescriptor(vd6);
+        addSectionBreak(GraticuleLayerType.PROPERTY_LABELS_SECTION_NAME,
+                GraticuleLayerType.PROPERTY_LABELS_SECTION_LABEL,
+                GraticuleLayerType.PROPERTY_LABELS_SECTION_TOOLTIP);
 
-        PropertyDescriptor vd7 = new PropertyDescriptor(GraticuleLayerType.PROPERTY_NAME_TEXT_ENABLED, Boolean.class);
-        vd7.setDefaultValue(GraticuleLayerType.DEFAULT_TEXT_ENABLED);
-        vd7.setDisplayName("Show text labels");
-        vd7.setDefaultConverter();
-        addPropertyDescriptor(vd7);
+        PropertyDescriptor labelsNorthPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_LABELS_NORTH_NAME, Boolean.class);
+        labelsNorthPD.setDefaultValue(GraticuleLayerType.PROPERTY_LABELS_NORTH_DEFAULT);
+        labelsNorthPD.setDisplayName(GraticuleLayerType.PROPERTY_LABELS_NORTH_LABEL);
+        labelsNorthPD.setDescription(GraticuleLayerType.PROPERTY_LABELS_NORTH_TOOLTIP);
+        labelsNorthPD.setDefaultConverter();
+        addPropertyDescriptor(labelsNorthPD);
 
-        PropertyDescriptor vd8 = new PropertyDescriptor(GraticuleLayerType.PROPERTY_NAME_TEXT_FG_COLOR, Color.class);
-        vd8.setDefaultValue(GraticuleLayerType.DEFAULT_TEXT_FG_COLOR);
-        vd8.setDisplayName("Text foreground colour");
-        vd8.setDefaultConverter();
-        addPropertyDescriptor(vd8);
+        PropertyDescriptor labelsSouthPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_LABELS_SOUTH_NAME, Boolean.class);
+        labelsSouthPD.setDefaultValue(GraticuleLayerType.PROPERTY_LABELS_SOUTH_DEFAULT);
+        labelsSouthPD.setDisplayName(GraticuleLayerType.PROPERTY_LABELS_SOUTH_LABEL);
+        labelsSouthPD.setDescription(GraticuleLayerType.PROPERTY_LABELS_SOUTH_TOOLTIP);
+        labelsSouthPD.setDefaultConverter();
+        addPropertyDescriptor(labelsSouthPD);
 
-        PropertyDescriptor vd9 = new PropertyDescriptor(GraticuleLayerType.PROPERTY_NAME_TEXT_BG_COLOR, Color.class);
-        vd9.setDefaultValue(GraticuleLayerType.DEFAULT_TEXT_BG_COLOR);
-        vd9.setDisplayName("Text background colour");
-        vd9.setDefaultConverter();
-        addPropertyDescriptor(vd9);
+        PropertyDescriptor labelsWestPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_LABELS_WEST_NAME, Boolean.class);
+        labelsWestPD.setDefaultValue(GraticuleLayerType.PROPERTY_LABELS_WEST_DEFAULT);
+        labelsWestPD.setDisplayName(GraticuleLayerType.PROPERTY_LABELS_WEST_LABEL);
+        labelsWestPD.setDescription(GraticuleLayerType.PROPERTY_LABELS_WEST_TOOLTIP);
+        labelsWestPD.setDefaultConverter();
+        addPropertyDescriptor(labelsWestPD);
 
-        PropertyDescriptor vd10 = new PropertyDescriptor(GraticuleLayerType.PROPERTY_NAME_TEXT_BG_TRANSPARENCY, Double.class);
-        vd10.setDefaultValue(GraticuleLayerType.DEFAULT_TEXT_BG_TRANSPARENCY);
-        vd10.setValueRange(new ValueRange(0, 1));
-        vd10.setDisplayName("Text background transparency");
-        vd10.setDefaultConverter();
-        vd10.setAttribute("propertyEditor", propertyEditorRegistry.getPropertyEditor(RangeEditor.class.getName()));
-        addPropertyDescriptor(vd10);
+        PropertyDescriptor labelsEastPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_LABELS_EAST_NAME, Boolean.class);
+        labelsEastPD.setDefaultValue(GraticuleLayerType.PROPERTY_LABELS_EAST_DEFAULT);
+        labelsEastPD.setDisplayName(GraticuleLayerType.PROPERTY_LABELS_EAST_LABEL);
+        labelsEastPD.setDescription(GraticuleLayerType.PROPERTY_LABELS_EAST_TOOLTIP);
+        labelsEastPD.setDefaultConverter();
+        addPropertyDescriptor(labelsEastPD);
+
+        PropertyDescriptor labelsSuffixPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_LABELS_SUFFIX_NSWE_NAME, Boolean.class);
+        labelsSuffixPD.setDefaultValue(GraticuleLayerType.PROPERTY_LABELS_SUFFIX_NSWE_DEFAULT);
+        labelsSuffixPD.setDisplayName(GraticuleLayerType.PROPERTY_LABELS_SUFFIX_NSWE_LABEL);
+        labelsSuffixPD.setDescription(GraticuleLayerType.PROPERTY_LABELS_SUFFIX_NSWE_TOOLTIP);
+        labelsSuffixPD.setDefaultConverter();
+        addPropertyDescriptor(labelsSuffixPD);
+
+        PropertyDescriptor labelsDecimalPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_LABELS_DECIMAL_VALUE_NAME, Boolean.class);
+        labelsDecimalPD.setDefaultValue(GraticuleLayerType.PROPERTY_LABELS_DECIMAL_VALUE_DEFAULT);
+        labelsDecimalPD.setDisplayName(GraticuleLayerType.PROPERTY_LABELS_DECIMAL_VALUE_LABEL);
+        labelsDecimalPD.setDescription(GraticuleLayerType.PROPERTY_LABELS_DECIMAL_VALUE_TOOLTIP);
+        labelsDecimalPD.setDefaultConverter();
+        addPropertyDescriptor(labelsDecimalPD);
+
+        PropertyDescriptor labelsInsidePD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_LABELS_INSIDE_NAME, Boolean.class);
+        labelsInsidePD.setDefaultValue(GraticuleLayerType.PROPERTY_LABELS_INSIDE_DEFAULT);
+        labelsInsidePD.setDisplayName(GraticuleLayerType.PROPERTY_LABELS_INSIDE_LABEL);
+        labelsInsidePD.setDescription(GraticuleLayerType.PROPERTY_LABELS_INSIDE_TOOLTIP);
+        labelsInsidePD.setDefaultConverter();
+        addPropertyDescriptor(labelsInsidePD);
+
+        PropertyDescriptor labelsItalicsPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_LABELS_ITALIC_NAME, Boolean.class);
+        labelsItalicsPD.setDefaultValue(GraticuleLayerType.PROPERTY_LABELS_ITALIC_DEFAULT);
+        labelsItalicsPD.setDisplayName(GraticuleLayerType.PROPERTY_LABELS_ITALIC_LABEL);
+        labelsItalicsPD.setDescription(GraticuleLayerType.PROPERTY_LABELS_ITALIC_TOOLTIP);
+        labelsItalicsPD.setDefaultConverter();
+        addPropertyDescriptor(labelsItalicsPD);
+
+        PropertyDescriptor labelsBoldPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_LABELS_BOLD_NAME, Boolean.class);
+        labelsBoldPD.setDefaultValue(GraticuleLayerType.PROPERTY_LABELS_BOLD_DEFAULT);
+        labelsBoldPD.setDisplayName(GraticuleLayerType.PROPERTY_LABELS_BOLD_LABEL);
+        labelsBoldPD.setDescription(GraticuleLayerType.PROPERTY_LABELS_BOLD_TOOLTIP);
+        labelsBoldPD.setDefaultConverter();
+        addPropertyDescriptor(labelsBoldPD);
+
+        PropertyDescriptor labelsRotationLatPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_LABELS_ROTATION_LAT_NAME, Double.class);
+        labelsRotationLatPD.setDefaultValue(GraticuleLayerType.PROPERTY_LABELS_ROTATION_LAT_DEFAULT);
+        labelsRotationLatPD.setDisplayName(GraticuleLayerType.PROPERTY_LABELS_ROTATION_LAT_LABEL);
+        labelsRotationLatPD.setDescription(GraticuleLayerType.PROPERTY_LABELS_ROTATION_LAT_TOOLTIP);
+        labelsRotationLatPD.setDefaultConverter();
+        labelsRotationLatPD.setValueRange(new ValueRange(0, 90));
+        addPropertyDescriptor(labelsRotationLatPD);
+
+        PropertyDescriptor labelsRotationLonPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_LABELS_ROTATION_LON_NAME, Double.class);
+        labelsRotationLonPD.setDefaultValue(GraticuleLayerType.PROPERTY_LABELS_ROTATION_LON_DEFAULT);
+        labelsRotationLonPD.setDisplayName(GraticuleLayerType.PROPERTY_LABELS_ROTATION_LON_LABEL);
+        labelsRotationLonPD.setDescription(GraticuleLayerType.PROPERTY_LABELS_ROTATION_LON_TOOLTIP);
+        labelsRotationLonPD.setDefaultConverter();
+        labelsRotationLonPD.setValueRange(new ValueRange(0, 90));
+        addPropertyDescriptor(labelsRotationLonPD);
+
+        PropertyDescriptor labelsFontPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_LABELS_FONT_NAME, String.class);
+        labelsFontPD.setDefaultValue(GraticuleLayerType.PROPERTY_LABELS_FONT_DEFAULT);
+        labelsFontPD.setDisplayName(GraticuleLayerType.PROPERTY_LABELS_FONT_LABEL);
+        labelsFontPD.setDescription(GraticuleLayerType.PROPERTY_LABELS_FONT_TOOLTIP);
+        labelsFontPD.setValueSet(new ValueSet(GraticuleLayerType.PROPERTY_LABELS_FONT_VALUE_SET));
+        labelsFontPD.setDefaultConverter();
+        addPropertyDescriptor(labelsFontPD);
+
+        PropertyDescriptor labelSizePD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_LABELS_SIZE_NAME, Integer.class);
+        labelSizePD.setDefaultValue(GraticuleLayerType.PROPERTY_LABELS_SIZE_DEFAULT);
+        labelSizePD.setDisplayName(GraticuleLayerType.PROPERTY_LABELS_SIZE_LABEL);
+        labelSizePD.setDescription(GraticuleLayerType.PROPERTY_LABELS_SIZE_TOOLTIP);
+        labelSizePD.setValueRange(new ValueRange(GraticuleLayerType.PROPERTY_LABELS_SIZE_VALUE_MIN, GraticuleLayerType.PROPERTY_LABELS_SIZE_VALUE_MAX));
+        labelSizePD.setDefaultConverter();
+        addPropertyDescriptor(labelSizePD);
+
+        PropertyDescriptor labelColorPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_LABELS_COLOR_NAME, Color.class);
+        labelColorPD.setDefaultValue(GraticuleLayerType.PROPERTY_LABELS_COLOR_DEFAULT);
+        labelColorPD.setDisplayName(GraticuleLayerType.PROPERTY_LABELS_COLOR_LABEL);
+        labelColorPD.setDescription(GraticuleLayerType.PROPERTY_LABELS_COLOR_TOOLTIP);
+        labelColorPD.setDefaultConverter();
+        addPropertyDescriptor(labelColorPD);
+
+
+        // Gridlines Section
+
+        addSectionBreak(GraticuleLayerType.PROPERTY_GRIDLINES_SECTION_NAME,
+                GraticuleLayerType.PROPERTY_GRIDLINES_SECTION_LABEL,
+                GraticuleLayerType.PROPERTY_GRIDLINES_SECTION_TOOLTIP);
+
+
+        PropertyDescriptor gridlinesShowPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_GRIDLINES_SHOW_NAME, Boolean.class);
+        gridlinesShowPD.setDefaultValue(GraticuleLayerType.PROPERTY_GRIDLINES_SHOW_DEFAULT);
+        gridlinesShowPD.setDisplayName(GraticuleLayerType.PROPERTY_GRIDLINES_SHOW_LABEL);
+        gridlinesShowPD.setDescription(GraticuleLayerType.PROPERTY_GRIDLINES_SHOW_TOOLTIP);
+        gridlinesShowPD.setDefaultConverter();
+        addPropertyDescriptor(gridlinesShowPD);
+
+        PropertyDescriptor girdlinesWidthPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_GRIDLINES_WIDTH_NAME, Double.class);
+        girdlinesWidthPD.setDefaultValue(GraticuleLayerType.PROPERTY_GRIDLINES_WIDTH_DEFAULT);
+        girdlinesWidthPD.setDisplayName(GraticuleLayerType.PROPERTY_GRIDLINES_WIDTH_LABEL);
+        girdlinesWidthPD.setDescription(GraticuleLayerType.PROPERTY_GRIDLINES_WIDTH_TOOLTIP);
+        girdlinesWidthPD.setDefaultConverter();
+        addPropertyDescriptor(girdlinesWidthPD);
+
+        PropertyDescriptor gridlinesDashedPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_GRIDLINES_DASHED_PHASE_NAME, Double.class);
+        gridlinesDashedPD.setDefaultValue(GraticuleLayerType.PROPERTY_GRIDLINES_DASHED_PHASE_DEFAULT);
+        gridlinesDashedPD.setDisplayName(GraticuleLayerType.PROPERTY_GRIDLINES_DASHED_PHASE_LABEL);
+        gridlinesDashedPD.setDescription(GraticuleLayerType.PROPERTY_GRIDLINES_DASHED_PHASE_TOOLTIP);
+        gridlinesDashedPD.setDefaultConverter();
+        addPropertyDescriptor(gridlinesDashedPD);
+
+        PropertyDescriptor gridlinesTransparencyPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_GRIDLINES_TRANSPARENCY_NAME, Double.class);
+        gridlinesTransparencyPD.setDefaultValue(GraticuleLayerType.PROPERTY_GRIDLINES_TRANSPARENCY_DEFAULT);
+        gridlinesTransparencyPD.setValueRange(new ValueRange(0, 1));
+        gridlinesTransparencyPD.setDisplayName(GraticuleLayerType.PROPERTY_GRIDLINES_TRANSPARENCY_LABEL);
+        gridlinesTransparencyPD.setDescription(GraticuleLayerType.PROPERTY_GRIDLINES_TRANSPARENCY_TOOLTIP);
+        gridlinesTransparencyPD.setDefaultConverter();
+        addPropertyDescriptor(gridlinesTransparencyPD);
+
+        PropertyDescriptor gridlinesColorPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_GRIDLINES_COLOR_NAME, Color.class);
+        gridlinesColorPD.setDefaultValue(GraticuleLayerType.PROPERTY_GRIDLINES_COLOR_DEFAULT);
+        gridlinesColorPD.setDisplayName(GraticuleLayerType.PROPERTY_GRIDLINES_COLOR_LABEL);
+        gridlinesColorPD.setDescription(GraticuleLayerType.PROPERTY_GRIDLINES_COLOR_TOOLTIP);
+        gridlinesColorPD.setDefaultConverter();
+        addPropertyDescriptor(gridlinesColorPD);
+
+
+        // Border Section
+
+        addSectionBreak(GraticuleLayerType.PROPERTY_BORDER_SECTION_NAME,
+                GraticuleLayerType.PROPERTY_BORDER_SECTION_LABEL,
+                GraticuleLayerType.PROPERTY_BORDER_SECTION_TOOLTIP);
+
+        PropertyDescriptor borderShowPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_BORDER_SHOW_NAME, Boolean.class);
+        borderShowPD.setDefaultValue(GraticuleLayerType.PROPERTY_BORDER_SHOW_DEFAULT);
+        borderShowPD.setDisplayName(GraticuleLayerType.PROPERTY_BORDER_SHOW_LABEL);
+        borderShowPD.setDescription(GraticuleLayerType.PROPERTY_BORDER_SHOW_TOOLTIP);
+        borderShowPD.setDefaultConverter();
+        addPropertyDescriptor(borderShowPD);
+
+        PropertyDescriptor borderWidthPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_BORDER_WIDTH_NAME, Double.class);
+        borderWidthPD.setDefaultValue(GraticuleLayerType.PROPERTY_BORDER_WIDTH_DEFAULT);
+        borderWidthPD.setDisplayName(GraticuleLayerType.PROPERTY_BORDER_WIDTH_LABEL);
+        borderWidthPD.setDescription(GraticuleLayerType.PROPERTY_BORDER_WIDTH_TOOLTIP);
+        borderWidthPD.setDefaultConverter();
+        addPropertyDescriptor(borderWidthPD);
+
+        PropertyDescriptor borderColorPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_BORDER_COLOR_NAME, Color.class);
+        borderColorPD.setDefaultValue(GraticuleLayerType.PROPERTY_BORDER_COLOR_DEFAULT);
+        borderColorPD.setDisplayName(GraticuleLayerType.PROPERTY_BORDER_COLOR_LABEL);
+        borderColorPD.setDescription(GraticuleLayerType.PROPERTY_BORDER_COLOR_TOOLTIP);
+        borderColorPD.setDefaultConverter();
+        addPropertyDescriptor(borderColorPD);
+
+
+        // Tickmark Section
+
+        addSectionBreak(GraticuleLayerType.PROPERTY_TICKMARKS_SECTION_NAME,
+                GraticuleLayerType.PROPERTY_TICKMARKS_SECTION_LABEL,
+                GraticuleLayerType.PROPERTY_TICKMARKS_SECTION_TOOLTIP);
+
+        PropertyDescriptor tickmarksShowPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_TICKMARKS_SHOW_NAME, Boolean.class);
+        tickmarksShowPD.setDefaultValue(GraticuleLayerType.PROPERTY_TICKMARKS_SHOW_DEFAULT);
+        tickmarksShowPD.setDisplayName(GraticuleLayerType.PROPERTY_TICKMARKS_SHOW_LABEL);
+        tickmarksShowPD.setDescription(GraticuleLayerType.PROPERTY_TICKMARKS_SHOW_TOOLTIP);
+        tickmarksShowPD.setDefaultConverter();
+        addPropertyDescriptor(tickmarksShowPD);
+
+        PropertyDescriptor tickmarksInsidePD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_TICKMARKS_INSIDE_NAME, Boolean.class);
+        tickmarksInsidePD.setDefaultValue(GraticuleLayerType.PROPERTY_TICKMARKS_INSIDE_DEFAULT);
+        tickmarksInsidePD.setDisplayName(GraticuleLayerType.PROPERTY_TICKMARKS_INSIDE_LABEL);
+        tickmarksInsidePD.setDescription(GraticuleLayerType.PROPERTY_TICKMARKS_INSIDE_TOOLTIP);
+        tickmarksInsidePD.setDefaultConverter();
+        addPropertyDescriptor(tickmarksInsidePD);
+
+        PropertyDescriptor tickmarksLengthPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_TICKMARKS_LENGTH_NAME, Double.class);
+        tickmarksLengthPD.setDefaultValue(GraticuleLayerType.PROPERTY_TICKMARKS_LENGTH_DEFAULT);
+        tickmarksLengthPD.setDisplayName(GraticuleLayerType.PROPERTY_TICKMARKS_LENGTH_LABEL);
+        tickmarksLengthPD.setDescription(GraticuleLayerType.PROPERTY_TICKMARKS_LENGTH_TOOLTIP);
+        tickmarksLengthPD.setDefaultConverter();
+        addPropertyDescriptor(tickmarksLengthPD);
+
+        PropertyDescriptor tickmarksColorPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_TICKMARKS_COLOR_NAME, Color.class);
+        tickmarksColorPD.setDefaultValue(GraticuleLayerType.PROPERTY_TICKMARKS_COLOR_DEFAULT);
+        tickmarksColorPD.setDisplayName(GraticuleLayerType.PROPERTY_TICKMARKS_COLOR_LABEL);
+        tickmarksColorPD.setDescription(GraticuleLayerType.PROPERTY_TICKMARKS_COLOR_TOOLTIP);
+        tickmarksColorPD.setDefaultConverter();
+        addPropertyDescriptor(tickmarksColorPD);
+
+
+        // Corner Label Section
+
+        addSectionBreak(GraticuleLayerType.PROPERTY_CORNER_LABELS_SECTION_NAME,
+                GraticuleLayerType.PROPERTY_CORNER_LABELS_SECTION_LABEL,
+                GraticuleLayerType.PROPERTY_CORNER_LABELS_SECTION_TOOLTIP);
+
+        PropertyDescriptor cornerLabelsNorthPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_CORNER_LABELS_NORTH_NAME, Boolean.class);
+        cornerLabelsNorthPD.setDefaultValue(GraticuleLayerType.PROPERTY_CORNER_LABELS_NORTH_DEFAULT);
+        cornerLabelsNorthPD.setDisplayName(GraticuleLayerType.PROPERTY_CORNER_LABELS_NORTH_LABEL);
+        cornerLabelsNorthPD.setDescription(GraticuleLayerType.PROPERTY_CORNER_LABELS_NORTH_TOOLTIP);
+        cornerLabelsNorthPD.setDefaultConverter();
+        addPropertyDescriptor(cornerLabelsNorthPD);
+
+        PropertyDescriptor cornerLabelsSouthPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_CORNER_LABELS_SOUTH_NAME, Boolean.class);
+        cornerLabelsSouthPD.setDefaultValue(GraticuleLayerType.PROPERTY_CORNER_LABELS_SOUTH_DEFAULT);
+        cornerLabelsSouthPD.setDisplayName(GraticuleLayerType.PROPERTY_CORNER_LABELS_SOUTH_LABEL);
+        cornerLabelsSouthPD.setDescription(GraticuleLayerType.PROPERTY_CORNER_LABELS_SOUTH_TOOLTIP);
+        cornerLabelsSouthPD.setDefaultConverter();
+        addPropertyDescriptor(cornerLabelsSouthPD);
+
+        PropertyDescriptor cornerLabelsWestPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_CORNER_LABELS_WEST_NAME, Boolean.class);
+        cornerLabelsWestPD.setDefaultValue(GraticuleLayerType.PROPERTY_CORNER_LABELS_WEST_DEFAULT);
+        cornerLabelsWestPD.setDisplayName(GraticuleLayerType.PROPERTY_CORNER_LABELS_WEST_LABEL);
+        cornerLabelsWestPD.setDescription(GraticuleLayerType.PROPERTY_CORNER_LABELS_WEST_TOOLTIP);
+        cornerLabelsWestPD.setDefaultConverter();
+        addPropertyDescriptor(cornerLabelsWestPD);
+
+        PropertyDescriptor cornerLabelsEastPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_CORNER_LABELS_EAST_NAME, Boolean.class);
+        cornerLabelsEastPD.setDefaultValue(GraticuleLayerType.PROPERTY_CORNER_LABELS_EAST_DEFAULT);
+        cornerLabelsEastPD.setDisplayName(GraticuleLayerType.PROPERTY_CORNER_LABELS_EAST_LABEL);
+        cornerLabelsEastPD.setDescription(GraticuleLayerType.PROPERTY_CORNER_LABELS_EAST_TOOLTIP);
+        cornerLabelsEastPD.setDefaultConverter();
+        addPropertyDescriptor(cornerLabelsEastPD);
+
+
+        // Inner Labels Section
+
+        addSectionBreak(GraticuleLayerType.PROPERTY_INSIDE_LABELS_SECTION_NAME,
+                GraticuleLayerType.PROPERTY_INSIDE_LABELS_SECTION_LABEL,
+                GraticuleLayerType.PROPERTY_INSIDE_LABELS_SECTION_TOOLTIP);
+
+        PropertyDescriptor innerLabelsBgTransparencyPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_INSIDE_LABELS_BG_TRANSPARENCY_NAME, Double.class);
+        innerLabelsBgTransparencyPD.setDefaultValue(GraticuleLayerType.PROPERTY_INSIDE_LABELS_BG_TRANSPARENCY_DEFAULT);
+        innerLabelsBgTransparencyPD.setValueRange(new ValueRange(0, 1));
+        innerLabelsBgTransparencyPD.setDisplayName(GraticuleLayerType.PROPERTY_INSIDE_LABELS_BG_TRANSPARENCY_LABEL);
+        innerLabelsBgTransparencyPD.setDescription(GraticuleLayerType.PROPERTY_INSIDE_LABELS_BG_TRANSPARENCY_TOOLTIP);
+        innerLabelsBgTransparencyPD.setDefaultConverter();
+        addPropertyDescriptor(innerLabelsBgTransparencyPD);
+
+
+        PropertyDescriptor innerLabelsBgColorPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_INSIDE_LABELS_BG_COLOR_NAME, Color.class);
+        innerLabelsBgColorPD.setDefaultValue(GraticuleLayerType.PROPERTY_INSIDE_LABELS_BG_COLOR_DEFAULT);
+        innerLabelsBgColorPD.setDisplayName(GraticuleLayerType.PROPERTY_INSIDE_LABELS_BG_COLOR_LABEL);
+        innerLabelsBgColorPD.setDescription(GraticuleLayerType.PROPERTY_INSIDE_LABELS_BG_COLOR_TOOLTIP);
+        innerLabelsBgColorPD.setDefaultConverter();
+        addPropertyDescriptor(innerLabelsBgColorPD);
+
 
         BindingContext bindingContext = getBindingContext();
-        boolean resAuto = (Boolean) bindingContext.getPropertySet().getValue(
-                GraticuleLayerType.PROPERTY_NAME_RES_AUTO);
-        bindingContext.bindEnabledState(GraticuleLayerType.PROPERTY_NAME_RES_PIXELS, resAuto,
-                                        GraticuleLayerType.PROPERTY_NAME_RES_AUTO, resAuto);
-        bindingContext.bindEnabledState(GraticuleLayerType.PROPERTY_NAME_RES_LAT, !resAuto,
-                                        GraticuleLayerType.PROPERTY_NAME_RES_AUTO, resAuto);
-        bindingContext.bindEnabledState(GraticuleLayerType.PROPERTY_NAME_RES_LON, !resAuto,
-                                        GraticuleLayerType.PROPERTY_NAME_RES_AUTO, resAuto);
 
-        boolean textEnabled = (Boolean) bindingContext.getPropertySet().getValue(
-                GraticuleLayerType.PROPERTY_NAME_TEXT_ENABLED);
-        bindingContext.bindEnabledState(GraticuleLayerType.PROPERTY_NAME_TEXT_FG_COLOR, textEnabled,
-                                        GraticuleLayerType.PROPERTY_NAME_TEXT_ENABLED, textEnabled);
-        bindingContext.bindEnabledState(GraticuleLayerType.PROPERTY_NAME_TEXT_BG_COLOR, textEnabled,
-                                        GraticuleLayerType.PROPERTY_NAME_TEXT_ENABLED, textEnabled);
-        bindingContext.bindEnabledState(GraticuleLayerType.PROPERTY_NAME_TEXT_BG_TRANSPARENCY, textEnabled,
-                                        GraticuleLayerType.PROPERTY_NAME_TEXT_ENABLED, textEnabled);
+
+        boolean lineEnabled = (Boolean) bindingContext.getPropertySet().getValue(
+                GraticuleLayerType.PROPERTY_GRIDLINES_SHOW_NAME);
+
+
+        bindingContext.bindEnabledState(GraticuleLayerType.PROPERTY_GRIDLINES_WIDTH_NAME, lineEnabled,
+                GraticuleLayerType.PROPERTY_GRIDLINES_SHOW_NAME, lineEnabled);
+
+        bindingContext.bindEnabledState(GraticuleLayerType.PROPERTY_GRIDLINES_COLOR_NAME, lineEnabled,
+                GraticuleLayerType.PROPERTY_GRIDLINES_SHOW_NAME, lineEnabled);
+
+        bindingContext.bindEnabledState(GraticuleLayerType.PROPERTY_GRIDLINES_TRANSPARENCY_NAME, lineEnabled,
+                GraticuleLayerType.PROPERTY_GRIDLINES_SHOW_NAME, lineEnabled);
+
+        bindingContext.bindEnabledState(GraticuleLayerType.PROPERTY_GRIDLINES_DASHED_PHASE_NAME, lineEnabled,
+                GraticuleLayerType.PROPERTY_GRIDLINES_SHOW_NAME, lineEnabled);
+
+        bindingContext.bindEnabledState(GraticuleLayerType.PROPERTY_GRIDLINES_WIDTH_NAME, lineEnabled,
+                GraticuleLayerType.PROPERTY_GRIDLINES_SHOW_NAME, lineEnabled);
+
+
+        boolean borderEnabled = (Boolean) bindingContext.getPropertySet().getValue(
+                GraticuleLayerType.PROPERTY_BORDER_SHOW_NAME);
+
+        bindingContext.bindEnabledState(GraticuleLayerType.PROPERTY_BORDER_COLOR_NAME, borderEnabled,
+                GraticuleLayerType.PROPERTY_BORDER_SHOW_NAME, borderEnabled);
+
+
+        bindingContext.bindEnabledState(GraticuleLayerType.PROPERTY_BORDER_WIDTH_NAME, borderEnabled,
+                GraticuleLayerType.PROPERTY_BORDER_SHOW_NAME, borderEnabled);
+
+
+        // Set enablement associated with "Labels Inside" checkbox
+
+        boolean textInsideEnabled = (Boolean) bindingContext.getPropertySet().getValue(
+                GraticuleLayerType.PROPERTY_LABELS_INSIDE_NAME);
+
+        bindingContext.bindEnabledState(GraticuleLayerType.PROPERTY_INSIDE_LABELS_BG_TRANSPARENCY_NAME, textInsideEnabled,
+                GraticuleLayerType.PROPERTY_LABELS_INSIDE_NAME, textInsideEnabled);
+
+        bindingContext.bindEnabledState(GraticuleLayerType.PROPERTY_INSIDE_LABELS_BG_COLOR_NAME, textInsideEnabled,
+                GraticuleLayerType.PROPERTY_LABELS_INSIDE_NAME, textInsideEnabled);
+
+        bindingContext.bindEnabledState(GraticuleLayerType.PROPERTY_LABELS_ROTATION_LAT_NAME, !textInsideEnabled,
+                GraticuleLayerType.PROPERTY_LABELS_INSIDE_NAME, textInsideEnabled);
+
+        bindingContext.bindEnabledState(GraticuleLayerType.PROPERTY_LABELS_ROTATION_LON_NAME, !textInsideEnabled,
+                GraticuleLayerType.PROPERTY_LABELS_INSIDE_NAME, textInsideEnabled);
+
+        bindingContext.bindEnabledState(GraticuleLayerType.PROPERTY_CORNER_LABELS_NORTH_NAME, !textInsideEnabled,
+                GraticuleLayerType.PROPERTY_LABELS_INSIDE_NAME, textInsideEnabled);
+
+        bindingContext.bindEnabledState(GraticuleLayerType.PROPERTY_CORNER_LABELS_SOUTH_NAME, !textInsideEnabled,
+                GraticuleLayerType.PROPERTY_LABELS_INSIDE_NAME, textInsideEnabled);
+
+        bindingContext.bindEnabledState(GraticuleLayerType.PROPERTY_CORNER_LABELS_WEST_NAME, !textInsideEnabled,
+                GraticuleLayerType.PROPERTY_LABELS_INSIDE_NAME, textInsideEnabled);
+
+        bindingContext.bindEnabledState(GraticuleLayerType.PROPERTY_CORNER_LABELS_EAST_NAME, !textInsideEnabled,
+                GraticuleLayerType.PROPERTY_LABELS_INSIDE_NAME, textInsideEnabled);
+
+
+        boolean tickMarkEnabled = (Boolean) bindingContext.getPropertySet().getValue(
+                GraticuleLayerType.PROPERTY_TICKMARKS_SHOW_NAME);
+
+        bindingContext.bindEnabledState(GraticuleLayerType.PROPERTY_TICKMARKS_INSIDE_NAME, tickMarkEnabled,
+                GraticuleLayerType.PROPERTY_TICKMARKS_SHOW_NAME, tickMarkEnabled);
+
+        bindingContext.bindEnabledState(GraticuleLayerType.PROPERTY_TICKMARKS_LENGTH_NAME, tickMarkEnabled,
+                GraticuleLayerType.PROPERTY_TICKMARKS_SHOW_NAME, tickMarkEnabled);
+
+        bindingContext.bindEnabledState(GraticuleLayerType.PROPERTY_TICKMARKS_COLOR_NAME, tickMarkEnabled,
+                GraticuleLayerType.PROPERTY_TICKMARKS_SHOW_NAME, tickMarkEnabled);
+
 
     }
+
+
+    private void addSectionBreak(String name, String label, String toolTip) {
+        PropertyDescriptor descriptor = new PropertyDescriptor(name, Boolean.class);
+        descriptor.setDisplayName(label);
+        descriptor.setDescription(toolTip);
+        addPropertyDescriptor(descriptor);
+    }
+
 
 }
