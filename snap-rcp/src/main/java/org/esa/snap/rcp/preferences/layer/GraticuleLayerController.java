@@ -41,6 +41,9 @@ import java.awt.*;
  * @author thomas
  * @author Daniel Knowles
  */
+//JAN2018 - Daniel Knowles - updated with SeaDAS gridline revisions
+
+
 @OptionsPanelController.SubRegistration(location = "LayerPreferences",
         displayName = "#Options_DisplayName_LayerGraticule",
         keywords = "#Options_Keywords_LayerGraticule",
