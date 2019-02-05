@@ -66,10 +66,7 @@ import org.esa.snap.core.datamodel.VirtualBand;
 import org.esa.snap.core.dataop.barithm.BandArithmetic;
 import org.esa.snap.core.image.ColoredMaskImageMultiLevelSource;
 import org.esa.snap.core.jexp.ParseException;
-import org.esa.snap.core.layer.GraticuleLayer;
-import org.esa.snap.core.layer.MaskCollectionLayer;
-import org.esa.snap.core.layer.NoDataLayerType;
-import org.esa.snap.core.layer.ProductLayerContext;
+import org.esa.snap.core.layer.*;
 import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.ui.BasicView;
@@ -132,6 +129,7 @@ public class ProductSceneView extends BasicView
     public static final String VECTOR_DATA_LAYER_ID = VectorDataCollectionLayer.ID;
     public static final String MASKS_LAYER_ID = MaskCollectionLayer.ID;
     public static final String GRATICULE_LAYER_ID = "org.esa.snap.layers.graticule";
+    public static final String COLORBAR_LAYER_ID = "org.esa.snap.layers.colorbar";
 
     /**
      * Property name for the pixel border
@@ -583,6 +581,19 @@ public class ProductSceneView extends BasicView
         }
     }
 
+
+    public boolean isColorBarOverlayEnabled() {
+        final ColorBarLayer colorBarLayer = getColorBarLayer(false);
+        return colorBarLayer != null && colorBarLayer.isVisible();
+    }
+
+    public void setColorBarOverlayEnabled(boolean enabled) {
+        if (isColorBarOverlayEnabled() != enabled) {
+            getColorBarLayer(true).setVisible(enabled);
+        }
+    }
+
+
     public boolean isPinOverlayEnabled() {
         Layer pinLayer = getPinLayer(false);
         return pinLayer != null && pinLayer.isVisible();
@@ -721,6 +732,11 @@ public class ProductSceneView extends BasicView
         GraticuleLayer graticuleLayer = getGraticuleLayer(false);
         if (graticuleLayer != null) {
             ProductSceneImage.applyGraticuleLayerStyle(configuration, graticuleLayer);
+        }
+
+        ColorBarLayer colorBarLayer = getColorBarLayer(false);
+        if (colorBarLayer != null) {
+            ProductSceneImage.applyColorBarLayerStyle(configuration, colorBarLayer);
         }
     }
 
@@ -1213,6 +1229,10 @@ public class ProductSceneView extends BasicView
 
     private GraticuleLayer getGraticuleLayer(boolean create) {
         return getSceneImage().getGraticuleLayer(create);
+    }
+
+    private ColorBarLayer getColorBarLayer(boolean create) {
+        return getSceneImage().getColorBarLayer(create);
     }
 
     private Layer getPinLayer(boolean create) {

@@ -33,21 +33,11 @@ import org.esa.snap.core.datamodel.ProductNodeGroup;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.datamodel.VectorDataNode;
 import org.esa.snap.core.image.ColoredBandImageMultiLevelSource;
-import org.esa.snap.core.layer.GraticuleLayer;
-import org.esa.snap.core.layer.GraticuleLayerType;
-import org.esa.snap.core.layer.MaskCollectionLayerType;
-import org.esa.snap.core.layer.MaskLayerType;
-import org.esa.snap.core.layer.NoDataLayerType;
-import org.esa.snap.core.layer.ProductLayerContext;
-import org.esa.snap.core.layer.RasterImageLayerType;
-import org.esa.snap.core.layer.RgbImageLayerType;
+import org.esa.snap.core.layer.*;
 import org.esa.snap.core.util.PropertyMap;
 
 import java.awt.Color;
 import java.awt.geom.AffineTransform;
-
-
-// SEP2018 - Daniel Knowles - added multiple new properties to the Graticule layer configuration
 
 public class ProductSceneImage implements ProductLayerContext {
 
@@ -67,8 +57,8 @@ public class ProductSceneImage implements ProductLayerContext {
      */
     public ProductSceneImage(RasterDataNode raster, PropertyMap configuration, ProgressMonitor pm) {
         this(raster.getDisplayName(),
-                new RasterDataNode[]{raster},
-                configuration);
+             new RasterDataNode[]{raster},
+             configuration);
         coloredBandImageMultiLevelSource = ColoredBandImageMultiLevelSource.create(raster, pm);
         initRootLayer();
     }
@@ -81,8 +71,8 @@ public class ProductSceneImage implements ProductLayerContext {
      */
     public ProductSceneImage(RasterDataNode raster, ProductSceneView view) {
         this(raster.getDisplayName(),
-                new RasterDataNode[]{raster},
-                view.getSceneImage().getConfiguration());
+             new RasterDataNode[]{raster},
+             view.getSceneImage().getConfiguration());
         coloredBandImageMultiLevelSource = view.getSceneImage().getColoredBandImageMultiLevelSource();
         initRootLayer();
     }
@@ -199,6 +189,18 @@ public class ProductSceneImage implements ProductLayerContext {
         return layer;
     }
 
+
+    ColorBarLayer getColorBarLayer(boolean create) {
+        ColorBarLayer layer = (ColorBarLayer) getLayer(ProductSceneView.COLORBAR_LAYER_ID);
+        if (layer == null && create) {
+            layer = createColorBarLayer(getImageToModelTransform());
+            addLayer(0, layer);
+        }
+        return layer;
+    }
+
+
+
     Layer getGcpLayer(boolean create) {
         final Product product = getProduct();
         if (product != null) {
@@ -206,8 +208,8 @@ public class ProductSceneImage implements ProductLayerContext {
             final Layer vectorDataCollectionLayer = getVectorDataCollectionLayer(create);
             if (vectorDataCollectionLayer != null) {
                 return LayerUtils.getChildLayer(getRootLayer(),
-                        LayerUtils.SEARCH_DEEP,
-                        VectorDataLayerFilterFactory.createNodeFilter(vectorDataNode));
+                                                LayerUtils.SEARCH_DEEP,
+                                                VectorDataLayerFilterFactory.createNodeFilter(vectorDataNode));
             }
         }
         return null;
@@ -220,8 +222,8 @@ public class ProductSceneImage implements ProductLayerContext {
             final Layer vectorDataCollectionLayer = getVectorDataCollectionLayer(create);
             if (vectorDataCollectionLayer != null) {
                 return LayerUtils.getChildLayer(getRootLayer(),
-                        LayerUtils.SEARCH_DEEP,
-                        VectorDataLayerFilterFactory.createNodeFilter(vectorDataNode));
+                                                LayerUtils.SEARCH_DEEP,
+                                                VectorDataLayerFilterFactory.createNodeFilter(vectorDataNode));
             }
         }
         return null;
@@ -279,17 +281,17 @@ public class ProductSceneImage implements ProductLayerContext {
 
     static void applyBaseImageLayerStyle(PropertyMap configuration, Layer layer) {
         final boolean borderShown = configuration.getPropertyBool("image.border.shown",
-                ImageLayer.DEFAULT_BORDER_SHOWN);
+                                                                  ImageLayer.DEFAULT_BORDER_SHOWN);
         final double borderWidth = configuration.getPropertyDouble("image.border.size",
-                ImageLayer.DEFAULT_BORDER_WIDTH);
+                                                                   ImageLayer.DEFAULT_BORDER_WIDTH);
         final Color borderColor = configuration.getPropertyColor("image.border.color",
-                ImageLayer.DEFAULT_BORDER_COLOR);
+                                                                 ImageLayer.DEFAULT_BORDER_COLOR);
         final boolean pixelBorderShown = configuration.getPropertyBool("pixel.border.shown",
-                ImageLayer.DEFAULT_PIXEL_BORDER_SHOWN);
+                                                                       ImageLayer.DEFAULT_PIXEL_BORDER_SHOWN);
         final double pixelBorderWidth = configuration.getPropertyDouble("pixel.border.size",
-                ImageLayer.DEFAULT_PIXEL_BORDER_WIDTH);
+                                                                        ImageLayer.DEFAULT_PIXEL_BORDER_WIDTH);
         final Color pixelBorderColor = configuration.getPropertyColor("pixel.border.color",
-                ImageLayer.DEFAULT_PIXEL_BORDER_COLOR);
+                                                                      ImageLayer.DEFAULT_PIXEL_BORDER_COLOR);
 
         final PropertySet layerConfiguration = layer.getConfiguration();
         layerConfiguration.setValue(ImageLayer.PROPERTY_NAME_BORDER_SHOWN, borderShown);
@@ -382,6 +384,31 @@ public class ProductSceneImage implements ProductLayerContext {
                                             VectorDataLayer.DEFAULT_SHAPE_FILL_TRANSPARENCY));
 */
     }
+
+
+        private static void addPropertyToLayerConfiguration(PropertyMap configuration, Layer layer, String propertyName, Object propertyDefault, Class type) {
+        final PropertySet layerConfiguration = layer.getConfiguration();
+
+        if (type == Boolean.class) {
+            layerConfiguration.setValue(propertyName,
+                    configuration.getPropertyBool(propertyName, (Boolean) propertyDefault));
+        } else if (type == Double.class) {
+            layerConfiguration.setValue(propertyName,
+                    configuration.getPropertyDouble(propertyName, (Double) propertyDefault));
+        } else if (type == Color.class) {
+            layerConfiguration.setValue(propertyName,
+                    configuration.getPropertyColor(propertyName, (Color) propertyDefault));
+        } else if (type == Integer.class) {
+            layerConfiguration.setValue(propertyName,
+                    configuration.getPropertyInt(propertyName, (Integer) propertyDefault));
+        } else if (type == String.class) {
+            layerConfiguration.setValue(propertyName,
+                    configuration.getPropertyString(propertyName, (String) propertyDefault));
+        }
+
+    }
+
+
 
     private GraticuleLayer createGraticuleLayer(AffineTransform i2mTransform) {
         final LayerType layerType = LayerTypeRegistry.getLayerType(GraticuleLayerType.class);
@@ -629,26 +656,60 @@ public class ProductSceneImage implements ProductLayerContext {
     }
 
 
-    private static void addPropertyToLayerConfiguration(PropertyMap configuration, Layer layer, String propertyName, Object propertyDefault, Class type) {
+
+
+
+    private ColorBarLayer createColorBarLayer(AffineTransform i2mTransform) {
+        final LayerType layerType = LayerTypeRegistry.getLayerType(ColorBarLayerType.class);
+        final PropertySet template = layerType.createLayerConfig(null);
+        template.setValue(ColorBarLayerType.PROPERTY_NAME_RASTER, getRaster());
+        final ColorBarLayer colorBarLayer = (ColorBarLayer) layerType.createLayer(null, template);
+        colorBarLayer.setId(ProductSceneView.COLORBAR_LAYER_ID);
+        colorBarLayer.setVisible(false);
+        colorBarLayer.setName("ColorBar");
+        applyColorBarLayerStyle(configuration, colorBarLayer);
+        return colorBarLayer;
+    }
+
+    static void applyColorBarLayerStyle(PropertyMap configuration, Layer layer) {
         final PropertySet layerConfiguration = layer.getConfiguration();
 
-        if (type == Boolean.class) {
-            layerConfiguration.setValue(propertyName,
-                    configuration.getPropertyBool(propertyName, (Boolean) propertyDefault));
-        } else if (type == Double.class) {
-            layerConfiguration.setValue(propertyName,
-                    configuration.getPropertyDouble(propertyName, (Double) propertyDefault));
-        } else if (type == Color.class) {
-            layerConfiguration.setValue(propertyName,
-                    configuration.getPropertyColor(propertyName, (Color) propertyDefault));
-        } else if (type == Integer.class) {
-            layerConfiguration.setValue(propertyName,
-                    configuration.getPropertyInt(propertyName, (Integer) propertyDefault));
-        } else if (type == String.class) {
-            layerConfiguration.setValue(propertyName,
-                    configuration.getPropertyString(propertyName, (String) propertyDefault));
-        }
+        layerConfiguration.setValue(ColorBarLayerType.PROPERTY_NAME_RES_AUTO,
+                configuration.getPropertyBool(ColorBarLayerType.PROPERTY_NAME_RES_AUTO,
+                        ColorBarLayerType.DEFAULT_RES_AUTO));
+        layerConfiguration.setValue(ColorBarLayerType.PROPERTY_NAME_RES_PIXELS,
+                configuration.getPropertyInt(ColorBarLayerType.PROPERTY_NAME_RES_PIXELS,
+                        ColorBarLayerType.DEFAULT_RES_PIXELS));
+        layerConfiguration.setValue(ColorBarLayerType.PROPERTY_NAME_RES_LAT,
+                configuration.getPropertyDouble(ColorBarLayerType.PROPERTY_NAME_RES_LAT,
+                        ColorBarLayerType.DEFAULT_RES_LAT));
+        layerConfiguration.setValue(ColorBarLayerType.PROPERTY_NAME_RES_LON,
+                configuration.getPropertyDouble(ColorBarLayerType.PROPERTY_NAME_RES_LON,
+                        ColorBarLayerType.DEFAULT_RES_LON));
 
+        layerConfiguration.setValue(ColorBarLayerType.PROPERTY_NAME_LINE_COLOR,
+                configuration.getPropertyColor(ColorBarLayerType.PROPERTY_NAME_LINE_COLOR,
+                        ColorBarLayerType.DEFAULT_LINE_COLOR));
+        layerConfiguration.setValue(ColorBarLayerType.PROPERTY_NAME_LINE_WIDTH,
+                configuration.getPropertyDouble(ColorBarLayerType.PROPERTY_NAME_LINE_WIDTH,
+                        ColorBarLayerType.DEFAULT_LINE_WIDTH));
+        layerConfiguration.setValue(ColorBarLayerType.PROPERTY_NAME_LINE_TRANSPARENCY,
+                configuration.getPropertyDouble(
+                        ColorBarLayerType.PROPERTY_NAME_LINE_TRANSPARENCY,
+                        ColorBarLayerType.DEFAULT_LINE_TRANSPARENCY));
+        layerConfiguration.setValue(ColorBarLayerType.PROPERTY_NAME_TEXT_ENABLED,
+                configuration.getPropertyBool(ColorBarLayerType.PROPERTY_NAME_TEXT_ENABLED,
+                        ColorBarLayerType.DEFAULT_TEXT_ENABLED));
+        layerConfiguration.setValue(ColorBarLayerType.PROPERTY_NAME_TEXT_FG_COLOR,
+                configuration.getPropertyColor(ColorBarLayerType.PROPERTY_NAME_TEXT_FG_COLOR,
+                        ColorBarLayerType.DEFAULT_TEXT_FG_COLOR));
+        layerConfiguration.setValue(ColorBarLayerType.PROPERTY_NAME_TEXT_BG_COLOR,
+                configuration.getPropertyColor(ColorBarLayerType.PROPERTY_NAME_TEXT_BG_COLOR,
+                        ColorBarLayerType.DEFAULT_TEXT_BG_COLOR));
+        layerConfiguration.setValue(ColorBarLayerType.PROPERTY_NAME_TEXT_BG_TRANSPARENCY,
+                configuration.getPropertyDouble(
+                        ColorBarLayerType.PROPERTY_NAME_TEXT_BG_TRANSPARENCY,
+                        ColorBarLayerType.DEFAULT_TEXT_BG_TRANSPARENCY));
     }
 
 
