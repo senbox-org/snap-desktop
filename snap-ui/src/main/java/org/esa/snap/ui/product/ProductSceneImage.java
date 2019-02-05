@@ -674,42 +674,233 @@ public class ProductSceneImage implements ProductLayerContext {
     static void applyColorBarLayerStyle(PropertyMap configuration, Layer layer) {
         final PropertySet layerConfiguration = layer.getConfiguration();
 
-        layerConfiguration.setValue(ColorBarLayerType.PROPERTY_NAME_RES_AUTO,
-                configuration.getPropertyBool(ColorBarLayerType.PROPERTY_NAME_RES_AUTO,
-                        ColorBarLayerType.DEFAULT_RES_AUTO));
-        layerConfiguration.setValue(ColorBarLayerType.PROPERTY_NAME_RES_PIXELS,
-                configuration.getPropertyInt(ColorBarLayerType.PROPERTY_NAME_RES_PIXELS,
-                        ColorBarLayerType.DEFAULT_RES_PIXELS));
-        layerConfiguration.setValue(ColorBarLayerType.PROPERTY_NAME_RES_LAT,
-                configuration.getPropertyDouble(ColorBarLayerType.PROPERTY_NAME_RES_LAT,
-                        ColorBarLayerType.DEFAULT_RES_LAT));
-        layerConfiguration.setValue(ColorBarLayerType.PROPERTY_NAME_RES_LON,
-                configuration.getPropertyDouble(ColorBarLayerType.PROPERTY_NAME_RES_LON,
-                        ColorBarLayerType.DEFAULT_RES_LON));
+        // Added multiple new properties here
+        // Daniel Knowles - Sept 2018
 
-        layerConfiguration.setValue(ColorBarLayerType.PROPERTY_NAME_LINE_COLOR,
-                configuration.getPropertyColor(ColorBarLayerType.PROPERTY_NAME_LINE_COLOR,
-                        ColorBarLayerType.DEFAULT_LINE_COLOR));
-        layerConfiguration.setValue(ColorBarLayerType.PROPERTY_NAME_LINE_WIDTH,
-                configuration.getPropertyDouble(ColorBarLayerType.PROPERTY_NAME_LINE_WIDTH,
-                        ColorBarLayerType.DEFAULT_LINE_WIDTH));
-        layerConfiguration.setValue(ColorBarLayerType.PROPERTY_NAME_LINE_TRANSPARENCY,
-                configuration.getPropertyDouble(
-                        ColorBarLayerType.PROPERTY_NAME_LINE_TRANSPARENCY,
-                        ColorBarLayerType.DEFAULT_LINE_TRANSPARENCY));
-        layerConfiguration.setValue(ColorBarLayerType.PROPERTY_NAME_TEXT_ENABLED,
-                configuration.getPropertyBool(ColorBarLayerType.PROPERTY_NAME_TEXT_ENABLED,
-                        ColorBarLayerType.DEFAULT_TEXT_ENABLED));
-        layerConfiguration.setValue(ColorBarLayerType.PROPERTY_NAME_TEXT_FG_COLOR,
-                configuration.getPropertyColor(ColorBarLayerType.PROPERTY_NAME_TEXT_FG_COLOR,
-                        ColorBarLayerType.DEFAULT_TEXT_FG_COLOR));
-        layerConfiguration.setValue(ColorBarLayerType.PROPERTY_NAME_TEXT_BG_COLOR,
-                configuration.getPropertyColor(ColorBarLayerType.PROPERTY_NAME_TEXT_BG_COLOR,
-                        ColorBarLayerType.DEFAULT_TEXT_BG_COLOR));
-        layerConfiguration.setValue(ColorBarLayerType.PROPERTY_NAME_TEXT_BG_TRANSPARENCY,
-                configuration.getPropertyDouble(
-                        ColorBarLayerType.PROPERTY_NAME_TEXT_BG_TRANSPARENCY,
-                        ColorBarLayerType.DEFAULT_TEXT_BG_TRANSPARENCY));
+        // Added section break properties
+
+//        layerConfiguration.setValue(ColorBarLayerType.PROPERTY_NUM_GRID_LINES_NAME,
+//                configuration.getPropertyInt(ColorBarLayerType.PROPERTY_NUM_GRID_LINES_NAME,
+//                        ColorBarLayerType.PROPERTY_NUM_GRID_LINES_DEFAULT));
+
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_NUM_GRID_LINES_NAME,
+                ColorBarLayerType.PROPERTY_NUM_GRID_LINES_DEFAULT,
+                ColorBarLayerType.PROPERTY_NUM_GRID_LINES_TYPE);
+
+
+        // Grid Spacing Section
+
+        addSectionPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_GRID_SPACING_SECTION_NAME);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_GRID_SPACING_LAT_NAME,
+                ColorBarLayerType.PROPERTY_GRID_SPACING_LAT_DEFAULT,
+                ColorBarLayerType.PROPERTY_GRID_SPACING_LAT_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_GRID_SPACING_LON_NAME,
+                ColorBarLayerType.PROPERTY_GRID_SPACING_LON_DEFAULT,
+                ColorBarLayerType.PROPERTY_GRID_SPACING_LON_TYPE);
+
+
+        // Labels Section
+
+        addSectionPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LABELS_SECTION_NAME);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LABELS_NORTH_NAME,
+                ColorBarLayerType.PROPERTY_LABELS_NORTH_DEFAULT,
+                ColorBarLayerType.PROPERTY_LABELS_NORTH_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LABELS_SOUTH_NAME,
+                ColorBarLayerType.PROPERTY_LABELS_SOUTH_DEFAULT,
+                ColorBarLayerType.PROPERTY_LABELS_SOUTH_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LABELS_WEST_NAME,
+                ColorBarLayerType.PROPERTY_LABELS_WEST_DEFAULT,
+                ColorBarLayerType.PROPERTY_LABELS_WEST_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LABELS_EAST_NAME,
+                ColorBarLayerType.PROPERTY_LABELS_EAST_DEFAULT,
+                ColorBarLayerType.PROPERTY_LABELS_EAST_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LABELS_SUFFIX_NSWE_NAME,
+                ColorBarLayerType.PROPERTY_LABELS_SUFFIX_NSWE_DEFAULT,
+                ColorBarLayerType.PROPERTY_LABELS_SUFFIX_NSWE_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LABELS_DECIMAL_VALUE_NAME,
+                ColorBarLayerType.PROPERTY_LABELS_DECIMAL_VALUE_DEFAULT,
+                ColorBarLayerType.PROPERTY_LABELS_DECIMAL_VALUE_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LABELS_INSIDE_NAME,
+                ColorBarLayerType.PROPERTY_LABELS_INSIDE_DEFAULT,
+                ColorBarLayerType.PROPERTY_LABELS_INSIDE_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LABELS_ITALIC_NAME,
+                ColorBarLayerType.PROPERTY_LABELS_ITALIC_DEFAULT,
+                ColorBarLayerType.PROPERTY_LABELS_ITALIC_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LABELS_BOLD_NAME,
+                ColorBarLayerType.PROPERTY_LABELS_BOLD_DEFAULT,
+                ColorBarLayerType.PROPERTY_LABELS_BOLD_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LABELS_FONT_NAME,
+                ColorBarLayerType.PROPERTY_LABELS_FONT_DEFAULT,
+                ColorBarLayerType.PROPERTY_LABELS_FONT_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LABELS_ROTATION_LON_NAME,
+                ColorBarLayerType.PROPERTY_LABELS_ROTATION_LON_DEFAULT,
+                ColorBarLayerType.PROPERTY_LABELS_ROTATION_LON_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LABELS_ROTATION_LAT_NAME,
+                ColorBarLayerType.PROPERTY_LABELS_ROTATION_LAT_DEFAULT,
+                ColorBarLayerType.PROPERTY_LABELS_ROTATION_LAT_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LABELS_SIZE_NAME,
+                ColorBarLayerType.PROPERTY_LABELS_SIZE_DEFAULT,
+                ColorBarLayerType.PROPERTY_LABELS_SIZE_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LABELS_COLOR_NAME,
+                ColorBarLayerType.PROPERTY_LABELS_COLOR_DEFAULT,
+                ColorBarLayerType.PROPERTY_LABELS_COLOR_TYPE);
+
+
+        // Gridlines Section
+
+        addSectionPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_GRIDLINES_SECTION_NAME);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_GRIDLINES_SHOW_NAME,
+                ColorBarLayerType.PROPERTY_GRIDLINES_SHOW_DEFAULT,
+                ColorBarLayerType.PROPERTY_GRIDLINES_SHOW_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_GRIDLINES_WIDTH_NAME,
+                ColorBarLayerType.PROPERTY_GRIDLINES_WIDTH_DEFAULT,
+                ColorBarLayerType.PROPERTY_GRIDLINES_WIDTH_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_GRIDLINES_DASHED_PHASE_NAME,
+                ColorBarLayerType.PROPERTY_GRIDLINES_DASHED_PHASE_DEFAULT,
+                ColorBarLayerType.PROPERTY_GRIDLINES_DASHED_PHASE_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_GRIDLINES_TRANSPARENCY_NAME,
+                ColorBarLayerType.PROPERTY_GRIDLINES_TRANSPARENCY_DEFAULT,
+                ColorBarLayerType.PROPERTY_GRIDLINES_TRANSPARENCY_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_GRIDLINES_COLOR_NAME,
+                ColorBarLayerType.PROPERTY_GRIDLINES_COLOR_DEFAULT,
+                ColorBarLayerType.PROPERTY_GRIDLINES_COLOR_TYPE);
+
+
+        // Border Section
+
+        addSectionPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_BORDER_SECTION_NAME);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_BORDER_SHOW_NAME,
+                ColorBarLayerType.PROPERTY_BORDER_SHOW_DEFAULT,
+                ColorBarLayerType.PROPERTY_BORDER_SHOW_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_BORDER_WIDTH_NAME,
+                ColorBarLayerType.PROPERTY_BORDER_WIDTH_DEFAULT,
+                ColorBarLayerType.PROPERTY_BORDER_WIDTH_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_BORDER_COLOR_NAME,
+                ColorBarLayerType.PROPERTY_BORDER_COLOR_DEFAULT,
+                ColorBarLayerType.PROPERTY_BORDER_COLOR_TYPE);
+
+
+        // Tickmarks Section
+
+        addSectionPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_NAME);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_NAME,
+                ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_DEFAULT,
+                ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_TICKMARKS_INSIDE_NAME,
+                ColorBarLayerType.PROPERTY_TICKMARKS_INSIDE_DEFAULT,
+                ColorBarLayerType.PROPERTY_TICKMARKS_INSIDE_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_NAME,
+                ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_DEFAULT,
+                ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_NAME,
+                ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_DEFAULT,
+                ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_TYPE);
+
+
+        // Corner Labels Section
+
+        addSectionPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_CORNER_LABELS_SECTION_NAME);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_CORNER_LABELS_NORTH_NAME,
+                ColorBarLayerType.PROPERTY_CORNER_LABELS_NORTH_DEFAULT,
+                ColorBarLayerType.PROPERTY_CORNER_LABELS_NORTH_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_CORNER_LABELS_WEST_NAME,
+                ColorBarLayerType.PROPERTY_CORNER_LABELS_WEST_DEFAULT,
+                ColorBarLayerType.PROPERTY_CORNER_LABELS_WEST_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_CORNER_LABELS_EAST_NAME,
+                ColorBarLayerType.PROPERTY_CORNER_LABELS_EAST_DEFAULT,
+                ColorBarLayerType.PROPERTY_CORNER_LABELS_EAST_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_CORNER_LABELS_SOUTH_NAME,
+                ColorBarLayerType.PROPERTY_CORNER_LABELS_SOUTH_DEFAULT,
+                ColorBarLayerType.PROPERTY_CORNER_LABELS_SOUTH_TYPE);
+
+
+        // Inside Labels Section
+
+        addSectionPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_INSIDE_LABELS_SECTION_NAME);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_INSIDE_LABELS_BG_TRANSPARENCY_NAME,
+                ColorBarLayerType.PROPERTY_INSIDE_LABELS_BG_TRANSPARENCY_DEFAULT,
+                ColorBarLayerType.PROPERTY_INSIDE_LABELS_BG_TRANSPARENCY_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_INSIDE_LABELS_BG_COLOR_NAME,
+                ColorBarLayerType.PROPERTY_INSIDE_LABELS_BG_COLOR_DEFAULT,
+                ColorBarLayerType.PROPERTY_INSIDE_LABELS_BG_COLOR_TYPE);
+
     }
 
 
