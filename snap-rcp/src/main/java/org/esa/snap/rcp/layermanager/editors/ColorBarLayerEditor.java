@@ -42,6 +42,32 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
     protected void addEditablePropertyDescriptors() {
 
 
+
+        // Color Bar Location Section
+
+        addSectionBreak(ColorBarLayerType.PROPERTY_COLORBAR_LOCATION_SECTION_NAME,
+                ColorBarLayerType.PROPERTY_COLORBAR_LOCATION_SECTION_LABEL,
+                ColorBarLayerType.PROPERTY_COLORBAR_LOCATION_SECTION_TOOLTIP);
+
+        PropertyDescriptor locationInsidePD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_COLORBAR_LOCATION_INSIDE_NAME, Boolean.class);
+        locationInsidePD.setDefaultValue(ColorBarLayerType.PROPERTY_COLORBAR_LOCATION_INSIDE_DEFAULT);
+        locationInsidePD.setDisplayName(ColorBarLayerType.PROPERTY_COLORBAR_LOCATION_INSIDE_LABEL);
+        locationInsidePD.setDescription(ColorBarLayerType.PROPERTY_COLORBAR_LOCATION_INSIDE_TOOLTIP);
+        locationInsidePD.setDefaultConverter();
+        addPropertyDescriptor(locationInsidePD);
+
+        PropertyDescriptor locationPlacementPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_COLORBAR_LOCATION_PLACEMENT_NAME, String.class);
+        locationPlacementPD.setDefaultValue(ColorBarLayerType.PROPERTY_COLORBAR_LOCATION_PLACEMENT_DEFAULT);
+        locationPlacementPD.setValueSet(new ValueSet(ColorBarLayerType.getColorBarLocationArray()));
+        locationPlacementPD.setDisplayName(ColorBarLayerType.PROPERTY_COLORBAR_LOCATION_PLACEMENT_LABEL);
+        locationPlacementPD.setDescription(ColorBarLayerType.PROPERTY_COLORBAR_LOCATION_PLACEMENT_TOOLTIP);
+        locationPlacementPD.setDefaultConverter();
+        addPropertyDescriptor(locationPlacementPD);
+
+
+
+
+
         // Grid Spacing Section
 
         addSectionBreak(ColorBarLayerType.PROPERTY_GRID_SPACING_SECTION_NAME,

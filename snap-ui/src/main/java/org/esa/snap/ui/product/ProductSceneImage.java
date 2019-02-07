@@ -674,6 +674,26 @@ public class ProductSceneImage implements ProductLayerContext {
     static void applyColorBarLayerStyle(PropertyMap configuration, Layer layer) {
         final PropertySet layerConfiguration = layer.getConfiguration();
 
+
+        // Color Bar Location Section
+
+        addSectionPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_COLORBAR_LOCATION_SECTION_NAME);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_COLORBAR_LOCATION_INSIDE_NAME,
+                ColorBarLayerType.PROPERTY_COLORBAR_LOCATION_INSIDE_DEFAULT,
+                ColorBarLayerType.PROPERTY_COLORBAR_LOCATION_INSIDE_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_COLORBAR_LOCATION_PLACEMENT_NAME,
+                ColorBarLayerType.PROPERTY_COLORBAR_LOCATION_PLACEMENT_DEFAULT,
+                ColorBarLayerType.PROPERTY_COLORBAR_LOCATION_PLACEMENT_TYPE);
+
+
+
+
+
         // Added multiple new properties here
         // Daniel Knowles - Sept 2018
 
