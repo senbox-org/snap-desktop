@@ -85,6 +85,36 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             TIFF_FORMAT_DESCRIPTION,
     };
 
+    public static final String ORIENTATION_PARAM_STR = "legend.orientation";
+    private static final String DISTRIBUTION_TYPE_PARAM_STR = "legend.label.distribution.type";
+
+    private static final String NUM_TICKS_PARAM_STR = "legend.numberOfTicks";
+    private static final int NUM_TICKS_PARAM_DEFAULT = 5;
+
+    public static final String SHOW_TITLE_PARAM_STR = "legend.usingHeader";
+    private static final String TITLE_PARAM_STR = "legend.headerText";
+    private static final String TITLE_UNITS_PARAM_STR = "legend.header.units.text";
+    private static final String MANUAL_POINTS_PARAM_STR = "legend.fullCustomAddThesePoints";
+    private static final String DECIMAL_PLACES_PARAM_STR = "legend.decimalPlaces";
+    private static final String DECIMAL_PLACES_FORCE_PARAM_STR = "legend.decimalPlacesForce";
+    public static final String FOREGROUND_COLOR_PARAM_STR = "legend.foregroundColor";
+    public static final String BACKGROUND_COLOR_PARAM_STR = "legend.backgroundColor";
+    public static final String TRANSPARENCY_PARAM_STR = "legend.transparent";
+
+    public static final String SCALING_FACTOR_PARAM_STR = "legend.scalingFactor";
+    private static final String TITLE_FONT_SIZE_PARAM_STR = "legend.titleFontSize";
+    private static final String TITLE_UNITS_FONT_SIZE_PARAM_STR = "legend.titleUnitsFontSize";
+    private static final String LABELS_FONT_SIZE_PARAM_STR = "legend.labelsFontSize";
+
+    private static final String COLOR_BAR_LENGTH_PARAM_STR = "legend.colorBarLength";
+    private static final String COLOR_BAR_THICKNESS_PARAM_STR = "legend.colorBarThickness";
+    public static final String LAYER_SCALING_PARAM_STR = "legend.layerScalingThickness";
+    private static final String LAYER_OFFSET_PARAM_STR = "legend.layerOffset";
+    private static final String LAYER_SHIFT_PARAM_STR = "legend.layerShift";
+    private static final String CENTER_ON_LAYER_PARAM_STR = "legend.centerOnLayer";
+
+
+
     private static final String HELP_ID = "exportLegendImageFile";
     private static final String HORIZONTAL_STR = "Horizontal";
     private static final String VERTICAL_STR = "Vertical";
@@ -120,8 +150,29 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         return new ExportLegendImageAction(lookup);
     }
 
+
+
+
+
+
     @Override
     public void actionPerformed(ActionEvent e) {
+
+//        ProductSceneView view = SnapApp.getDefault().getSelectedProductSceneView();
+//        final RasterDataNode raster = view.getRaster();
+//        imageLegend = new ImageLegend(raster.getImageInfo(), raster);
+//
+//        legendParamGroup = createLegendParamGroup();
+//        legendParamGroup.setParameterValues(SnapApp.getDefault().getPreferencesPropertyMap(), null);
+//
+//        final ImageLegendDialog dialog = new ImageLegendDialog(legendParamGroup,
+//                imageLegend,
+//                true,
+//                getHelpCtx().getHelpID());
+//        dialog.show();
+
+
+        // todo Danny
         exportImage(imageFileFilters);
     }
 
@@ -166,9 +217,22 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
     private static ParamGroup createLegendParamGroup() {
         ParamGroup paramGroup = new ParamGroup();
 
+
+
+
         Parameter param = new Parameter("legend.usingHeader", Boolean.TRUE);
         param.getProperties().setLabel("Show header text");
         paramGroup.addParameter(param);
+
+
+        param = new Parameter(NUM_TICKS_PARAM_STR, NUM_TICKS_PARAM_DEFAULT);
+        param.getProperties().setLabel("Tick Mark Count");
+        param.getProperties().setMinValue(0);
+        param.getProperties().setMaxValue(40);
+        paramGroup.addParameter(param);
+
+
+
 
         param = new Parameter("legend.headerText", "");
         param.getProperties().setLabel("Header text");
@@ -239,8 +303,8 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
     private static void transferParamsToImageLegend(ParamGroup legendParamGroup, ImageLegend imageLegend) {
         Object value;
 
-        value = legendParamGroup.getParameter("legend.usingHeader").getValue();
-        imageLegend.setUsingHeader((Boolean) value);
+//        value = legendParamGroup.getParameter("legend.usingHeader").getValue();
+//        imageLegend.setUsingHeader((Boolean) value);
 
         value = legendParamGroup.getParameter("legend.headerText").getValue();
         imageLegend.setHeaderText((String) value);
@@ -248,8 +312,8 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         value = legendParamGroup.getParameter("legend.orientation").getValue();
         imageLegend.setOrientation(HORIZONTAL_STR.equals(value) ? ImageLegend.HORIZONTAL : ImageLegend.VERTICAL);
 
-        value = legendParamGroup.getParameter("legend.fontSize").getValue();
-        imageLegend.setFont(imageLegend.getFont().deriveFont(((Number) value).floatValue()));
+//        value = legendParamGroup.getParameter("legend.fontSize").getValue();
+//        imageLegend.setFont(imageLegend.getFont().deriveFont(((Number) value).floatValue()));
 
         value = legendParamGroup.getParameter("legend.backgroundColor").getValue();
         imageLegend.setBackgroundColor((Color) value);
@@ -262,6 +326,25 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
         value = legendParamGroup.getParameter("legend.antialiasing").getValue();
         imageLegend.setAntialiasing((Boolean) value);
+
+
+
+        value = legendParamGroup.getParameter(NUM_TICKS_PARAM_STR).getValue();
+        imageLegend.setNumberOfTicks((Integer) value);
+
+
+        // todo Danny just to get it working
+        imageLegend.setColorBarLength((Integer) 1200);
+        imageLegend.setColorBarThickness((Integer) 60);
+        imageLegend.setTitleFontSize((Integer) 12);
+        imageLegend.setTitleUnitsFontSize((Integer) 12);
+        imageLegend.setLabelsFontSize((Integer) 12);
+        imageLegend.setShowTitle((Boolean) true);
+        imageLegend.setDistributionType((String) ImageLegend.DISTRIB_EVEN_STR);
+//        imageLegend.setNumberOfTicks((Integer) 5);
+        imageLegend.setScalingFactor((Double) 1.0);
+
+
     }
 
 
@@ -273,6 +356,10 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
         private ParamGroup paramGroup;
 
+
+        private Parameter numberOfTicksParam;
+
+
         private Parameter usingHeaderParam;
         private Parameter headerTextParam;
         private Parameter orientationParam;
@@ -281,6 +368,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         private Parameter foregroundColorParam;
         private Parameter antialiasingParam;
         private Parameter backgroundTransparencyParam;
+
 
         public ImageLegendDialog(ParamGroup paramGroup, ImageLegend imageLegend,
                                  boolean transparencyEnabled, String helpId) {
@@ -366,6 +454,13 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             p.add(backgroundTransparencyParam.getEditor().getEditorComponent(), gbc);
 
             gbc.gridy++;
+            gbc.insets.top = 10;
+            p.add(numberOfTicksParam.getEditor().getLabelComponent(), gbc);
+            p.add(numberOfTicksParam.getEditor().getEditorComponent(), gbc);
+
+
+            gbc.gridy++;
+
 
             gbc.insets.top = 10;
             gbc.gridx = 0;
@@ -384,6 +479,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
         private void initParams() {
             usingHeaderParam = paramGroup.getParameter("legend.usingHeader");
+            numberOfTicksParam = paramGroup.getParameter(NUM_TICKS_PARAM_STR);
             headerTextParam = paramGroup.getParameter("legend.headerText");
             orientationParam = paramGroup.getParameter("legend.orientation");
             fontSizeParam = paramGroup.getParameter("legend.fontSize");

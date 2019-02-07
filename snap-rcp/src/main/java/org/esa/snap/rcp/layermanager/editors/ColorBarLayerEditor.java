@@ -139,7 +139,7 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         labelsRotationLatPD.setDisplayName(ColorBarLayerType.PROPERTY_LABELS_ROTATION_LAT_LABEL);
         labelsRotationLatPD.setDescription(ColorBarLayerType.PROPERTY_LABELS_ROTATION_LAT_TOOLTIP);
         labelsRotationLatPD.setDefaultConverter();
-        labelsRotationLatPD.setValueRange(new ValueRange(0, 90));
+        labelsRotationLatPD.setValueRange(new ValueRange(0, 900));
         addPropertyDescriptor(labelsRotationLatPD);
 
         PropertyDescriptor labelsRotationLonPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LABELS_ROTATION_LON_NAME, Double.class);
@@ -147,7 +147,7 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         labelsRotationLonPD.setDisplayName(ColorBarLayerType.PROPERTY_LABELS_ROTATION_LON_LABEL);
         labelsRotationLonPD.setDescription(ColorBarLayerType.PROPERTY_LABELS_ROTATION_LON_TOOLTIP);
         labelsRotationLonPD.setDefaultConverter();
-        labelsRotationLonPD.setValueRange(new ValueRange(0, 90));
+        labelsRotationLonPD.setValueRange(new ValueRange(0, 900));
         addPropertyDescriptor(labelsRotationLonPD);
 
         PropertyDescriptor labelsFontPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LABELS_FONT_NAME, String.class);
