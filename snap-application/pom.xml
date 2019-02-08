@@ -173,6 +173,17 @@
             <version>${project.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>snap-cloud-exploitation-platform-ui</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>snap-cloud-exploitation-platform</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+		
         <!-- disabled: these modules don't have the required maturity right now. -->
         <!--<dependency>-->
         <!--<groupId>${project.groupId}</groupId>-->
