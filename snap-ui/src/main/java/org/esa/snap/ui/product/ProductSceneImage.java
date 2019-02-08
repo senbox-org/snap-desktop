@@ -690,6 +690,58 @@ public class ProductSceneImage implements ProductLayerContext {
                 ColorBarLayerType.PROPERTY_COLORBAR_LOCATION_PLACEMENT_DEFAULT,
                 ColorBarLayerType.PROPERTY_COLORBAR_LOCATION_PLACEMENT_TYPE);
 
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_COLORBAR_LOCATION_OFFSET_NAME,
+                ColorBarLayerType.PROPERTY_COLORBAR_LOCATION_OFFSET_DEFAULT,
+                ColorBarLayerType.PROPERTY_COLORBAR_LOCATION_OFFSET_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_COLORBAR_LOCATION_SHIFT_NAME,
+                ColorBarLayerType.PROPERTY_COLORBAR_LOCATION_SHIFT_DEFAULT,
+                ColorBarLayerType.PROPERTY_COLORBAR_LOCATION_SHIFT_TYPE);
+
+
+
+
+
+
+        addSectionPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_COLORBAR_SCALING_SECTION_NAME);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_COLORBAR_SCALING_APPLY_SIZE_SCALING_NAME,
+                ColorBarLayerType.PROPERTY_COLORBAR_SCALING_APPLY_SIZE_SCALING_DEFAULT,
+                ColorBarLayerType.PROPERTY_COLORBAR_SCALING_APPLY_SIZE_SCALING_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_COLORBAR_SCALING_SIZE_SCALING_NAME,
+                ColorBarLayerType.PROPERTY_COLORBAR_SCALING_SIZE_SCALING_DEFAULT,
+                ColorBarLayerType.PROPERTY_COLORBAR_SCALING_SIZE_SCALING_TYPE);
+
+
+
+        addSectionPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_COLORBAR_TITLE_SECTION_NAME);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_COLORBAR_TITLE_SHOW_TITLE_NAME,
+                ColorBarLayerType.PROPERTY_COLORBAR_TITLE_SHOW_TITLE_DEFAULT,
+                ColorBarLayerType.PROPERTY_COLORBAR_TITLE_SHOW_TITLE_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_COLORBAR_TITLE_TITLE_NAME,
+                ColorBarLayerType.PROPERTY_COLORBAR_TITLE_TITLE_DEFAULT,
+                ColorBarLayerType.PROPERTY_COLORBAR_TITLE_TITLE_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_COLORBAR_TITLE_UNITS_NAME,
+                ColorBarLayerType.PROPERTY_COLORBAR_TITLE_UNITS_DEFAULT,
+                ColorBarLayerType.PROPERTY_COLORBAR_TITLE_UNITS_TYPE);
+
+
+
+
+
 
 
 

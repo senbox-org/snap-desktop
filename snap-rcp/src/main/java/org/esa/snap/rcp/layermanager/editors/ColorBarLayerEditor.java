@@ -49,20 +49,107 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
                 ColorBarLayerType.PROPERTY_COLORBAR_LOCATION_SECTION_LABEL,
                 ColorBarLayerType.PROPERTY_COLORBAR_LOCATION_SECTION_TOOLTIP);
 
-        PropertyDescriptor locationInsidePD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_COLORBAR_LOCATION_INSIDE_NAME, Boolean.class);
+        PropertyDescriptor locationInsidePD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_COLORBAR_LOCATION_INSIDE_NAME,
+                ColorBarLayerType.PROPERTY_COLORBAR_LOCATION_INSIDE_TYPE);
         locationInsidePD.setDefaultValue(ColorBarLayerType.PROPERTY_COLORBAR_LOCATION_INSIDE_DEFAULT);
         locationInsidePD.setDisplayName(ColorBarLayerType.PROPERTY_COLORBAR_LOCATION_INSIDE_LABEL);
         locationInsidePD.setDescription(ColorBarLayerType.PROPERTY_COLORBAR_LOCATION_INSIDE_TOOLTIP);
         locationInsidePD.setDefaultConverter();
         addPropertyDescriptor(locationInsidePD);
 
-        PropertyDescriptor locationPlacementPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_COLORBAR_LOCATION_PLACEMENT_NAME, String.class);
+        PropertyDescriptor locationPlacementPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_COLORBAR_LOCATION_PLACEMENT_NAME,
+                ColorBarLayerType.PROPERTY_COLORBAR_LOCATION_PLACEMENT_TYPE);
         locationPlacementPD.setDefaultValue(ColorBarLayerType.PROPERTY_COLORBAR_LOCATION_PLACEMENT_DEFAULT);
         locationPlacementPD.setValueSet(new ValueSet(ColorBarLayerType.getColorBarLocationArray()));
         locationPlacementPD.setDisplayName(ColorBarLayerType.PROPERTY_COLORBAR_LOCATION_PLACEMENT_LABEL);
         locationPlacementPD.setDescription(ColorBarLayerType.PROPERTY_COLORBAR_LOCATION_PLACEMENT_TOOLTIP);
         locationPlacementPD.setDefaultConverter();
         addPropertyDescriptor(locationPlacementPD);
+
+
+        PropertyDescriptor locationOffsetPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_COLORBAR_LOCATION_OFFSET_NAME,
+                ColorBarLayerType.PROPERTY_COLORBAR_LOCATION_OFFSET_TYPE);
+        locationOffsetPD.setDefaultValue(ColorBarLayerType.PROPERTY_COLORBAR_LOCATION_OFFSET_DEFAULT);
+        locationOffsetPD.setDisplayName(ColorBarLayerType.PROPERTY_COLORBAR_LOCATION_OFFSET_LABEL);
+        locationOffsetPD.setDescription(ColorBarLayerType.PROPERTY_COLORBAR_LOCATION_OFFSET_TOOLTIP);
+        locationOffsetPD.setDefaultConverter();
+        addPropertyDescriptor(locationOffsetPD);
+
+        PropertyDescriptor locationShiftPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_COLORBAR_LOCATION_SHIFT_NAME,
+                ColorBarLayerType.PROPERTY_COLORBAR_LOCATION_SHIFT_TYPE);
+        locationShiftPD.setDefaultValue(ColorBarLayerType.PROPERTY_COLORBAR_LOCATION_SHIFT_DEFAULT);
+        locationShiftPD.setDisplayName(ColorBarLayerType.PROPERTY_COLORBAR_LOCATION_SHIFT_LABEL);
+        locationShiftPD.setDescription(ColorBarLayerType.PROPERTY_COLORBAR_LOCATION_SHIFT_TOOLTIP);
+        locationShiftPD.setDefaultConverter();
+        addPropertyDescriptor(locationShiftPD);
+
+
+
+
+
+
+
+        // Color Bar Scaling Section
+
+        addSectionBreak(ColorBarLayerType.PROPERTY_COLORBAR_SCALING_SECTION_NAME,
+                ColorBarLayerType.PROPERTY_COLORBAR_SCALING_SECTION_LABEL,
+                ColorBarLayerType.PROPERTY_COLORBAR_SCALING_SECTION_TOOLTIP);
+
+        PropertyDescriptor locationApplySizeScalingPlacementPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_COLORBAR_SCALING_APPLY_SIZE_SCALING_NAME,
+                ColorBarLayerType.PROPERTY_COLORBAR_SCALING_APPLY_SIZE_SCALING_TYPE);
+        locationApplySizeScalingPlacementPD.setDefaultValue(ColorBarLayerType.PROPERTY_COLORBAR_SCALING_APPLY_SIZE_SCALING_DEFAULT);
+        locationApplySizeScalingPlacementPD.setDisplayName(ColorBarLayerType.PROPERTY_COLORBAR_SCALING_APPLY_SIZE_SCALING_LABEL);
+        locationApplySizeScalingPlacementPD.setDescription(ColorBarLayerType.PROPERTY_COLORBAR_SCALING_APPLY_SIZE_SCALING_TOOLTIP);
+        locationApplySizeScalingPlacementPD.setDefaultConverter();
+        addPropertyDescriptor(locationApplySizeScalingPlacementPD);
+
+        PropertyDescriptor locationSizeScalingPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_COLORBAR_SCALING_SIZE_SCALING_NAME,
+                ColorBarLayerType.PROPERTY_COLORBAR_SCALING_SIZE_SCALING_TYPE);
+        locationSizeScalingPD.setDefaultValue(ColorBarLayerType.PROPERTY_COLORBAR_SCALING_SIZE_SCALING_DEFAULT);
+        locationSizeScalingPD.setValueRange(new ValueRange(0.0, 100.00));
+        locationSizeScalingPD.setDisplayName(ColorBarLayerType.PROPERTY_COLORBAR_SCALING_SIZE_SCALING_LABEL);
+        locationSizeScalingPD.setDescription(ColorBarLayerType.PROPERTY_COLORBAR_SCALING_SIZE_SCALING_TOOLTIP);
+        locationSizeScalingPD.setDefaultConverter();
+        addPropertyDescriptor(locationSizeScalingPD);
+
+
+
+
+        // Color Bar Title Section
+
+        addSectionBreak(ColorBarLayerType.PROPERTY_COLORBAR_TITLE_SECTION_NAME,
+                ColorBarLayerType.PROPERTY_COLORBAR_TITLE_SECTION_LABEL,
+                ColorBarLayerType.PROPERTY_COLORBAR_TITLE_SECTION_TOOLTIP);
+
+        PropertyDescriptor titleShowPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_COLORBAR_TITLE_SHOW_TITLE_NAME,
+                ColorBarLayerType.PROPERTY_COLORBAR_TITLE_SHOW_TITLE_TYPE);
+        titleShowPD.setDefaultValue(ColorBarLayerType.PROPERTY_COLORBAR_TITLE_SHOW_TITLE_DEFAULT);
+        titleShowPD.setDisplayName(ColorBarLayerType.PROPERTY_COLORBAR_TITLE_SHOW_TITLE_LABEL);
+        titleShowPD.setDescription(ColorBarLayerType.PROPERTY_COLORBAR_TITLE_SHOW_TITLE_TOOLTIP);
+        titleShowPD.setDefaultConverter();
+        addPropertyDescriptor(titleShowPD);
+
+        PropertyDescriptor titleValuePD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_COLORBAR_TITLE_TITLE_NAME,
+                ColorBarLayerType.PROPERTY_COLORBAR_TITLE_TITLE_TYPE);
+        titleValuePD.setDefaultValue(ColorBarLayerType.PROPERTY_COLORBAR_TITLE_TITLE_DEFAULT);
+        titleValuePD.setDisplayName(ColorBarLayerType.PROPERTY_COLORBAR_TITLE_TITLE_LABEL);
+        titleValuePD.setDescription(ColorBarLayerType.PROPERTY_COLORBAR_TITLE_TITLE_TOOLTIP);
+        titleValuePD.setDefaultConverter();
+        addPropertyDescriptor(titleValuePD);
+
+        PropertyDescriptor titleUnitsPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_COLORBAR_TITLE_UNITS_NAME,
+                ColorBarLayerType.PROPERTY_COLORBAR_TITLE_UNITS_TYPE);
+        titleUnitsPD.setDefaultValue(ColorBarLayerType.PROPERTY_COLORBAR_TITLE_UNITS_DEFAULT);
+        titleUnitsPD.setDisplayName(ColorBarLayerType.PROPERTY_COLORBAR_TITLE_UNITS_LABEL);
+        titleUnitsPD.setDescription(ColorBarLayerType.PROPERTY_COLORBAR_TITLE_UNITS_TOOLTIP);
+        titleUnitsPD.setDefaultConverter();
+        addPropertyDescriptor(titleUnitsPD);
+
+
+
+
+
+
 
 
 
@@ -366,6 +453,36 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
 
         BindingContext bindingContext = getBindingContext();
+
+
+        boolean applySizeScaling = (Boolean) bindingContext.getPropertySet().getValue(
+                ColorBarLayerType.PROPERTY_COLORBAR_SCALING_APPLY_SIZE_SCALING_NAME);
+
+
+        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_COLORBAR_SCALING_SIZE_SCALING_NAME, applySizeScaling,
+                ColorBarLayerType.PROPERTY_COLORBAR_SCALING_APPLY_SIZE_SCALING_NAME, applySizeScaling);
+
+
+
+
+        boolean showTitle = (Boolean) bindingContext.getPropertySet().getValue(
+                ColorBarLayerType.PROPERTY_COLORBAR_TITLE_SHOW_TITLE_NAME);
+
+
+        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_COLORBAR_TITLE_TITLE_NAME, showTitle,
+                ColorBarLayerType.PROPERTY_COLORBAR_TITLE_SHOW_TITLE_NAME, showTitle);
+
+
+        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_COLORBAR_TITLE_UNITS_NAME, showTitle,
+                ColorBarLayerType.PROPERTY_COLORBAR_TITLE_SHOW_TITLE_NAME, showTitle);
+
+
+
+
+
+
+
+
 
 
         boolean lineEnabled = (Boolean) bindingContext.getPropertySet().getValue(
