@@ -21,6 +21,7 @@ import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.converters.RectangleConverter;
 import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
+import org.esa.snap.core.vfs_spi.VFSProvider;
 import org.esa.snap.runtime.Config;
 import sun.swing.FilePane;
 
@@ -80,6 +81,10 @@ public class SnapFileChooser extends JFileChooser {
 
     public SnapFileChooser(File currentDirectory, FileSystemView fsv) {
         super(currentDirectory, fsv);
+        try {
+            VFSProvider.getVFSProviderInstance("org.esa.snap.ui.vfs.providers.VFSJFileChooserProvider").runVFSService("getJFileChooser", JFileChooser.class, this);
+        } catch (Exception ignored) {
+        }
         snapPreferences = Config.instance("snap").preferences();
         resizeHandler = new ResizeHandler();
         windowCloseHandler = new CloseHandler();
@@ -108,7 +113,6 @@ public class SnapFileChooser extends JFileChooser {
      *
      * @param parent the parent
      * @return the dialog
-     *
      * @throws HeadlessException if GraphicsEnvironment.isHeadless() returns true.
      */
     @Override
@@ -231,7 +235,6 @@ public class SnapFileChooser extends JFileChooser {
      *
      * @param filename the filename to be checked
      * @return {@code true}, if the given file has a "known" extension
-     *
      * @see SnapFileFilter
      */
     public boolean checkExtension(String filename) {
@@ -328,8 +331,8 @@ public class SnapFileChooser extends JFileChooser {
         if (selectedFile != null) {
             SnapFileFilter mff = getSnapFileFilter();
             if (mff != null
-                && mff.getDefaultExtension() != null
-                && !mff.checkExtension(selectedFile)) {
+                    && mff.getDefaultExtension() != null
+                    && !mff.checkExtension(selectedFile)) {
                 selectedFile = FileUtils.exchangeExtension(selectedFile, mff.getDefaultExtension());
                 Debug.trace("mod. selected file: " + selectedFile.getPath());
                 setSelectedFile(selectedFile);
@@ -389,7 +392,7 @@ public class SnapFileChooser extends JFileChooser {
 
     private void initViewType() {
         FilePane filePane = findFilePane(this);
-        if(filePane != null) {
+        if (filePane != null) {
             int viewType = snapPreferences.getInt(PREFERENCES_VIEW_TYPE, FilePane.VIEWTYPE_LIST);
             filePane.setViewType(viewType);
         }
@@ -401,7 +404,7 @@ public class SnapFileChooser extends JFileChooser {
             if (component instanceof FilePane) {
                 return (FilePane) component;
             }
-            if(component instanceof Container) {
+            if (component instanceof Container) {
                 FilePane filePane = findFilePane((Container) component);
                 if (filePane != null) {
                     return filePane;
