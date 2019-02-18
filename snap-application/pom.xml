@@ -159,6 +159,11 @@
         <!--</dependency>-->
         <dependency>
             <groupId>org.esa.snap</groupId>
+            <artifactId>snap-virtual-file-system-ui</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.esa.snap</groupId>
             <artifactId>snap-worldwind</artifactId>
             <version>${project.version}</version>
         </dependency>
