@@ -1,5 +1,7 @@
 package org.esa.snap.rcp.actions.file;
 
+import org.esa.snap.core.vfs_spi.VFSProvider;
+
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -47,8 +49,25 @@ class RecentPaths {
         flush();
     }
 
+    private String removeVFSPaths(String paths) {
+        String nonVFSPaths = "";
+        if (paths != null) {
+            for (String path : paths.split(File.pathSeparator)) {
+                try {
+                    if (!VFSProvider.getVFSProviderInstance("org.esa.snap.core.dataio.vfs.providers.NioPathsProvider").runVFSService("isVirtualFileSystemPath", Boolean.class, path)) {
+                        nonVFSPaths = nonVFSPaths.isEmpty() ? nonVFSPaths : nonVFSPaths.concat(";");
+                        nonVFSPaths = nonVFSPaths.concat(path);
+                    }
+                } catch (Exception ignored) {
+                }
+
+            }
+        }
+        return nonVFSPaths;
+    }
+
     private Stream<String> getAsStream() {
-        String value = preferences.get(key, null);
+        String value = removeVFSPaths(preferences.get(key, null));
         if (value == null) {
             return Stream.empty();
         }
