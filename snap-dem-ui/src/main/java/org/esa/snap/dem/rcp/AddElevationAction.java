@@ -38,9 +38,11 @@ import org.esa.snap.core.dataop.dem.ElevationModelDescriptor;
 import org.esa.snap.core.dataop.dem.ElevationModelRegistry;
 import org.esa.snap.core.dataop.resamp.Resampling;
 import org.esa.snap.core.dataop.resamp.ResamplingFactory;
+import org.esa.snap.core.gpf.OperatorSpi;
 import org.esa.snap.core.image.RasterDataNodeSampleOpImage;
 import org.esa.snap.core.image.ResolutionLevel;
 import org.esa.snap.dem.dataio.DEMFactory;
+import org.esa.snap.dem.gpf.AddElevationOp;
 import org.esa.snap.engine_utilities.datamodel.Unit;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
@@ -115,6 +117,9 @@ public class AddElevationAction extends AbstractAction implements ContextAwareAc
     private final Lookup lkp;
     private Product product;
 
+
+    private final static OperatorSpi spi = new AddElevationOp.Spi();
+
     public static final String DIALOG_TITLE = "Add Elevation Band";
     public static final String DEFAULT_ELEVATION_BAND_NAME = "elevation";
     public static final String DEFAULT_LATITUDE_BAND_NAME = "corr_latitude";
@@ -162,22 +167,35 @@ public class AddElevationAction extends AbstractAction implements ContextAwareAc
         }
 
         final String demName = DEMFactory.getProperDEMName(dialogData.demName);
-        final ElevationModelRegistry elevationModelRegistry = ElevationModelRegistry.getInstance();
-        final ElevationModelDescriptor demDescriptor = elevationModelRegistry.getDescriptor(demName);
-        if (demDescriptor == null) {
-            Dialogs.showError(DIALOG_TITLE, "The DEM '" + demName + "' is not supported.");
-            return;
+        String resamplingName = dialogData.resamplingMethod;
+        if (resamplingName == null) {
+            resamplingName = Resampling.BILINEAR_INTERPOLATION.getName();
         }
+        AddElevationOp op = (AddElevationOp) spi.createOperator();
+        op.setSourceProduct(product);
+        op.setParameter("elevationBandName", demName);
+        op.setParameter("demResamplingMethod", resamplingName);
 
-        Resampling resampling = Resampling.BILINEAR_INTERPOLATION;
-        if (dialogData.resamplingMethod != null) {
-            resampling = ResamplingFactory.createResampling(dialogData.resamplingMethod);
-        }
+        // get targetProduct => gets initialize to be executed
+        Product targetProduct = op.getTargetProduct();
 
-        computeBands(product,
-                demDescriptor,
-                dialogData.outputElevationBand ? dialogData.elevationBandName : null,
-                resampling);
+//        final String demName = DEMFactory.getProperDEMName(dialogData.demName);
+//        final ElevationModelRegistry elevationModelRegistry = ElevationModelRegistry.getInstance();
+//        final ElevationModelDescriptor demDescriptor = elevationModelRegistry.getDescriptor(demName);
+//        if (demDescriptor == null) {
+//            Dialogs.showError(DIALOG_TITLE, "The DEM '" + demName + "' is not supported.");
+//            return;
+//        }
+//
+//        Resampling resampling = Resampling.BILINEAR_INTERPOLATION;
+//        if (dialogData.resamplingMethod != null) {
+//            resampling = ResamplingFactory.createResampling(dialogData.resamplingMethod);
+//        }
+//
+//        computeBands(product,
+//                demDescriptor,
+//                dialogData.outputElevationBand ? dialogData.elevationBandName : null,
+//                resampling);
     }
 
     @Override
@@ -197,15 +215,16 @@ public class AddElevationAction extends AbstractAction implements ContextAwareAc
     }
 
     private static void addElevationBand(Product product, ElevationModel dem, String elevationBandName) {
-        final GeoCoding geoCoding = product.getSceneGeoCoding();
-        ElevationModelDescriptor demDescriptor = dem.getDescriptor();
-        final float noDataValue = dem.getDescriptor().getNoDataValue();
-        final Band elevationBand = product.addBand(elevationBandName, ProductData.TYPE_FLOAT32);
-        elevationBand.setNoDataValueUsed(true);
-        elevationBand.setNoDataValue(noDataValue);
-        elevationBand.setUnit(Unit.METERS);
-        elevationBand.setDescription(demDescriptor.getName());
-        elevationBand.setSourceImage(createElevationSourceImage(dem, geoCoding, elevationBand));
+
+//        final GeoCoding geoCoding = product.getSceneGeoCoding();
+//        ElevationModelDescriptor demDescriptor = dem.getDescriptor();
+//        final float noDataValue = dem.getDescriptor().getNoDataValue();
+//        final Band elevationBand = product.addBand(elevationBandName, ProductData.TYPE_FLOAT32);
+//        elevationBand.setNoDataValueUsed(true);
+//        elevationBand.setNoDataValue(noDataValue);
+//        elevationBand.setUnit(Unit.METERS);
+//        elevationBand.setDescription(demDescriptor.getName());
+//        elevationBand.setSourceImage(createElevationSourceImage(dem, geoCoding, elevationBand));;
     }
 
     private static RenderedImage createElevationSourceImage(final ElevationModel dem, final GeoCoding geoCoding, final Band band) {

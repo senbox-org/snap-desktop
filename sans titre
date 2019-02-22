@@ -1,0 +1,16 @@
+# Create directory to copy nbm files
+
+export DIR_NAME=$1
+export NBM_DIR=$2
+export DOCKER_NAME=$3
+
+mkdir -p /local-update-center/${DIR_NAME}"
+cp *-kit/target/netbeans_site/* /local-update-center/${deployDirName}"
+# Create updated snap image to be used to launch tests
+echo FROM snap-build-server.tilaa.cloud/snap:${snapMajorVersion}.0 > /local-update-center/${deployDirName}/Dockerfile"
+echo 'ADD ./*.nbm /local-update-center/' >> /local-update-center/${deployDirName}/Dockerfile"
+echo ADD ./updates.xml /local-update-center/ >> /local-update-center/${deployDirName}/Dockerfile"
+echo 'RUN /home/snap/snap/bin/snap --nosplash --nogui --modules --refresh --update-all' >> /local-update-center/${deployDirName}/Dockerfile"
+more /local-update-center/${deployDirName}/Dockerfile"
+cd /local-update-center/${deployDirName}/ && docker build . -t snap-build-server.tilaa.cloud/${dockerName}"
+docker push snap-build-server.tilaa.cloud/${dockerName}"
