@@ -212,6 +212,7 @@
                 <version>2.12.2</version>
                 <configuration>
                     <!-- currently the application test fails during initialisation of JAI-->
+                    <useSystemClassLoader>false</useSystemClassLoader>
                     <skipTests>true</skipTests>
                 </configuration>
             </plugin>
