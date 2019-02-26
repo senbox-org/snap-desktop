@@ -2,7 +2,7 @@ package org.esa.snap.ui.vfs.providers;
 
 
 import org.esa.snap.ui.vfs.niojfilechooser.VFSJFileChooser;
-import org.esa.snap.core.vfs_spi.VFSProvider;
+import org.esa.snap.core.vfsspi.VFSProvider;
 
 import javax.swing.*;
 

@@ -1,6 +1,6 @@
 package org.esa.snap.rcp.actions.file;
 
-import org.esa.snap.core.vfs_spi.VFSProvider;
+import org.esa.snap.core.vfsspi.VFSProvider;
 
 import java.io.File;
 import java.nio.file.Files;

@@ -21,7 +21,7 @@ import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.converters.RectangleConverter;
 import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
-import org.esa.snap.core.vfs_spi.VFSProvider;
+import org.esa.snap.core.vfsspi.VFSProvider;
 import org.esa.snap.runtime.Config;
 import sun.swing.FilePane;
 
