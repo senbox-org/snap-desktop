@@ -1,11 +1,11 @@
 SNAP Release Notes
 ==================
 
-#New in SNAP 6.0
+# New in SNAP 6.0
 More than 100 bugs and improvements have been solved or implemented for SNAP 6.0.
 Beside these general improvements also each Toolbox has got it's own improvements.
   
-#####Some of the noteworthy improvements are:
+##### Some of the noteworthy improvements are:
     [SNAP-227] - GPT memory configuration
     [SNAP-371] - Smart installer does not allow execution of user-defined graphs
     [SNAP-650] - Provide progress on the command line
@@ -21,10 +21,10 @@ A comprehensive list of all issues resolved in this version of SNAP can be found
 [issue tracking system](https://senbox.atlassian.net/secure/ReleaseNote.jspa?projectId=10100&version=12200)
 
 
-#New in SNAP v5.0
+# New in SNAP v5.0
 The SNAP release concentrates on bug fixes and improvements. New features are mainly implemented in the Toolboxes. 
  
-#####Some of the noteworthy improvements are:
+##### Some of the noteworthy improvements are:
     [SNAP-373] - Export Sentinel-1 data to HDF5 is not working
     [SNAP-396] - Cannot open multiple products if progress dialog is shown
     [SNAP-398] - Names of operators shall be handeled case insensitive by gpt
@@ -38,15 +38,15 @@ The SNAP release concentrates on bug fixes and improvements. New features are ma
 A comprehensive list of all issues resolved in this version of SNAP can be found in our 
 [issue tracking system](https://senbox.atlassian.net/secure/ReleaseNote.jspa?projectId=10100&version=11503)
 
-#New in SNAP v4.0
+# New in SNAP v4.0
 
-###New Features and Important Changes
+### New Features and Important Changes
 * Supervised Classification - Random Forest, KNN, Maximum Likelihood, Minimum Distance
 * Fractional Land/Water Mask operator has been integrated into SNAP
 * It is now possible to import multiple shape files at once
 
 ### Solved issues
-####Bugs
+#### Bugs
     [SNAP-186] - Metadata Table View incorrectly renders UTC attributes
     [SNAP-357] - Message needed: source product not found and operator finished
     [SNAP-358] - Sen2Cor operator is disapearing when restarting SNAP
@@ -82,9 +82,9 @@ A comprehensive list of all issues resolved in this version of SNAP can be found
     [SNAP-517] - NullPointerException occurs when when using PixelGeoCoding with OLCI data
     [SNAP-519] - Graph builder does not remember the name of the current graph when saving a graph.
     [SNAP-524] - Pixel Extraction writes only the lower 16 bit of a flag band
-####Task
+#### Task
     [SNAP-489] - Integrate Fractional Land/Water Mask operator into SNAP
-####Improvement
+#### Improvement
     [SNAP-404] - There is no easy way to have optional parameters on an adapter
     [SNAP-450] - NodeId should be included in exception message
     [SNAP-452] - STA: external tools menu appears even if there are no tools
@@ -103,9 +103,9 @@ A comprehensive list of all issues resolved in this version of SNAP can be found
 [issue tracking system](https://senbox.atlassian.net/issues/?filter=11700)
 
 
-#New in SNAP v3.0
+# New in SNAP v3.0
 
-###New Features and Important Changes
+### New Features and Important Changes
 * A new Resampling Operator has been introduced. Its main purpose is to make the bands of a multi-size 
 product equal in size. It is possible to choose for the resampling different aggregation and 
 interpolation methods. If a user invokes an action which can not handle multi-size products the user is 
