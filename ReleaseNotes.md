@@ -8,22 +8,75 @@ altogether (e.g., p_90_threshold now becomes simply p_90) and indexes are not
 incremented per measure, but correspond to a band name or a time interval
 (e.g., vrg_4_2 will correspond to the average of band 4 during time interval 2).
   
+    [SNAP-1063] Numerical overflow cause empty binning result
+    [SNAP-1056] ceres-ui module is needed by some operations in snappy
+    [SNAP-948]  GLCM does not work properly when working with scaled values
+    [SNAP-866]  NetCdf files with extension '.nc.gz' are not read
 
+# New in SNAP 6.0.7    
+    [SNAP-1008] ResamplingOp fails if downsampling method is different from default value 'First'
+    [SNAP-1060] Downsampling fails with ArrayIndexOutOfBoundsException
+    [SNAP-1065] Consider alignment of grids when resampling
+    [SNAP-1064] Handling of no-data-values during aggregation is not correct
+    
+
+# New in SNAP 6.0.6
+Error in version of snap-engine and snap-desktop. Unfortunately only snap-engine has been set to version 6.0.6. 
+The version of snap-desktop is still 6.0.5. But this version glitch does not affect the functionality of SNAP.
+
+    [SNAP-1067] Fix SRTM 3sec remote url
+
+ 
+# New in SNAP 6.0.5
+    [SNAP-934] No products considered when they don't have time informatin
+    [SNAP-931] NPE when using products without time information in StatisticsOp
+    [SNAP-929] Modules not loaded when snappy is not started from the system drive
+    [SNAP-925] GLCM performance goes down if scene contains NaN values
+    [SNAP-924] GLCM operator does not check for cancelation request
+    [SNAP-900] NPE in GLCM
+
+# New in SNAP 6.0.4
+    [SNAP-921] Setting snap.jai.tileCacheSize to higher value than 2000 leads to 0 sized cache
+    [SNAP-919] To many approximations created for some products
+    [SNAP-918] When writing out statistics to a csv file, entries will be written multiple times
+    [SNAP-868] Using LAT and LON in BandMaths operator leads to wrong results
+
+# New in SNAP 6.0.3
+    [SNAP-911] Scatterplot can not be computed
+    [SNAP-910] Merge operator shows internal parameter in help
+    [SNAP-908] It shall be possible to turn off temporal aggregation in the StatisticsOp  
+    [SNAP-907] Statistics Op shall be able to retrieve categoric statistics for integer bands
+    [SNAP-905] Property for controlling the creation of MERIS pixel-based Geo-Coding not correctly read
+    [SNAP-880] Update WMS URLs in Layer Manager
+    
+# New in SNAP 6.0.2
+    [SNAP-901] XMLSupport leaves stream open
+    [SNAP-897] Resampling yields different results in desktop and gpt
+    [SNAP-893] Land/Sea Mask operator is not working when using a vector with some space in the name
+    [SNAP-892] Number of approximation tiles should not depend on degrees spanned on globe
+    [SNAP-891] Export of pins to shapefile does not work with certain CRS
+            
+# New in SNAP 6.0.1
+    [SNAP-878] Operator Import-Vector fails with products which have a pixel-based GeoCoding
+    [SNAP-874] Allow to switch between INCLUDE and INTERSECT with bbox when searching for products
+    [SNAP-867] Classify by raster issues
+
+    
 # New in SNAP 6.0
 More than 100 bugs and improvements have been solved or implemented for SNAP 6.0.
 Beside these general improvements also each Toolbox has got it's own improvements.
   
 ##### Some of the noteworthy improvements are:
-* [SNAP-227] - GPT memory configuration
-* [SNAP-371] - Smart installer does not allow execution of user-defined graphs
-* [SNAP-650] - Provide progress on the command line
-* [SNAP-671] - My keyboard stops working with SNAP 5.0
-* [SNAP-683] - Add AAFC 2014-2016 land cover
-* [SNAP-695] - Implement exclude for Merge operator
-* [SNAP-736] - Unchecked 'Save As' functionality not working in graph builder
-* [SNAP-743] - Support plotting of metadata values
-* |SNAP-783] - Module updates are not correctly considered by snappy
-* [SNAP-807] - Export of pins to Google Earth KMZ format
+    [SNAP-227] - GPT memory configuration
+    [SNAP-371] - Smart installer does not allow execution of user-defined graphs
+    [SNAP-650] - Provide progress on the command line
+    [SNAP-671] - My keyboard stops working with SNAP 5.0
+    [SNAP-683] - Add AAFC 2014-2016 land cover
+    [SNAP-695] - Implement exclude for Merge operator
+    [SNAP-736] - Unchecked 'Save As' functionality not working in graph builder
+    [SNAP-743] - Support plotting of metadata values
+    |SNAP-783] - Module updates are not correctly considered by snappy
+    [SNAP-807] - Export of pins to Google Earth KMZ format
 
 A comprehensive list of all issues resolved in this version of SNAP can be found in our 
 [issue tracking system](https://senbox.atlassian.net/secure/ReleaseNote.jspa?projectId=10100&version=12200)
