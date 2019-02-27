@@ -8,6 +8,7 @@ import com.bc.ceres.swing.binding.BindingContext;
 import org.esa.snap.rcp.preferences.DefaultConfigController;
 import org.esa.snap.rcp.preferences.Preference;
 import org.esa.snap.rcp.util.Dialogs;
+import org.esa.snap.ui.vfs.validators.RepositoryAddressValidator;
 import org.esa.snap.ui.vfs.validators.RepositoryNameValidator;
 import org.esa.snap.ui.vfs.validators.RepositorySchemaValidator;
 import org.netbeans.spi.options.OptionsPanelController;
@@ -56,6 +57,7 @@ public class VFSOptionsController extends DefaultConfigController {
     private static final String PREFERENCE_KEY_VFS_REPOSITORY = PREFERENCE_KEY_VFS_REPOSITORIES + ".repository_" + REPO_ID_KEY;
     private static final String PREFERENCE_KEY_VFS_REPOSITORY_NAME = PREFERENCE_KEY_VFS_REPOSITORY + ".name";
     private static final String PREFERENCE_KEY_VFS_REPOSITORY_SCHEMA = PREFERENCE_KEY_VFS_REPOSITORY + ".schema";
+    private static final String PREFERENCE_KEY_VFS_REPOSITORY_ADDRESS = PREFERENCE_KEY_VFS_REPOSITORY + ".address";
 
     private static final String PREFERENCE_KEY_VFS_REPOSITORY_PROPERTIES = PREFERENCE_KEY_VFS_REPOSITORY + ".properties";
     private static final String PREFERENCE_KEY_VFS_REPOSITORY_PROPERTY = PREFERENCE_KEY_VFS_REPOSITORY_PROPERTIES + ".property_" + PROP_ID_KEY;
@@ -73,6 +75,7 @@ public class VFSOptionsController extends DefaultConfigController {
 
     private final JTextField remoteRepositoryNameField = new JTextField(30);
     private final JTextField remoteRepositorySchemaField = new JTextField(30);
+    private final JTextField remoteRepositoryAddressField = new JTextField(30);
 
     private JPanel remoteRepositoriesConfigsPanel;
 
@@ -80,8 +83,6 @@ public class VFSOptionsController extends DefaultConfigController {
 
     private String[] remoteRepositoriesIdsList;
     private String[] remoteRepositoriesPropertiesIdsList;
-
-    private String lastRepositoryName = "";
 
     private VFSOptionsBean vfsOptionsBean = new VFSOptionsBean();
 
@@ -226,6 +227,15 @@ public class VFSOptionsController extends DefaultConfigController {
         writeProperty(remoteRepositorySchemaProperty);
     }
 
+    private Property getRemoteRepositoryAddress(String remoteRepositoryId) {
+        return getProperty(PREFERENCE_KEY_VFS_REPOSITORY_ADDRESS.replace(REPO_ID_KEY, remoteRepositoryId));
+    }
+
+    private void setRemoteRepositoryAddress(String remoteRepositoryId, String remoteRepositoryAddress) {
+        Property remoteRepositorySchemaProperty = Property.create(PREFERENCE_KEY_VFS_REPOSITORY_ADDRESS.replace(REPO_ID_KEY, remoteRepositoryId), remoteRepositoryAddress);
+        writeProperty(remoteRepositorySchemaProperty);
+    }
+
     private Property getRemoteRepositoryPropertyName(String remoteRepositoryId, String remoteRepositoryPropertyId) {
         return getProperty(PREFERENCE_KEY_VFS_REPOSITORY_PROPERTY_NAME.replace(REPO_ID_KEY, remoteRepositoryId).replace(PROP_ID_KEY, remoteRepositoryPropertyId));
     }
@@ -253,6 +263,7 @@ public class VFSOptionsController extends DefaultConfigController {
     private void removeRemoteRepository(String remoteRepositoryId) throws ValidationException {
         removeProperty(getRemoteRepositoryName(remoteRepositoryId));
         removeProperty(getRemoteRepositorySchema(remoteRepositoryId));
+        removeProperty(getRemoteRepositoryAddress(remoteRepositoryId));
         Property remoteRepositoryPropertiesIdsProperty = getRemoteRepositoryPropertiesIds(remoteRepositoryId);
         String remoteRepositoriesPropertiesIds = remoteRepositoryPropertiesIdsProperty.getValue();
         String[] remoteRepositoriesPropertiesIdsList0 = remoteRepositoriesPropertiesIds.split(LIST_ITEM_SEPARATOR);
@@ -264,29 +275,31 @@ public class VFSOptionsController extends DefaultConfigController {
     }
 
     private boolean isUniqueOnTable(Object target, JTable targetTable, int... targetColumns) {
+        return getOccurrencesOnTable(target, targetTable, targetColumns) == 0;
+    }
+
+    private int getOccurrencesOnTable(Object target, JTable targetTable, int... targetColumns) {
+        int nrOccurrences = 0;
         if (targetColumns != null && targetColumns.length > 0) {
             for (int targetColumn : targetColumns) {
-                if (isDuplicateOnColumn(target, targetTable, targetColumn)) {
-                    return false;
-                }
+                nrOccurrences += getOccurrencesOnColumn(target, targetTable, targetColumn);
             }
         } else {
             for (int targetColumn = 0; targetColumn < targetTable.getColumnCount(); targetColumn++) {
-                if (isDuplicateOnColumn(target, targetTable, targetColumn)) {
-                    return false;
-                }
+                nrOccurrences += getOccurrencesOnColumn(target, targetTable, targetColumn);
             }
         }
-        return true;
+        return nrOccurrences;
     }
 
-    private boolean isDuplicateOnColumn(Object target, JTable targetTable, int targetColumn) {
+    private int getOccurrencesOnColumn(Object target, JTable targetTable, int targetColumn) {
+        int nrOccurrences = 0;
         for (int rowIndex = 1; rowIndex < targetTable.getRowCount(); rowIndex++) {
             if (targetTable.getModel().getValueAt(rowIndex, targetColumn).equals(target)) {
-                return true;
+                nrOccurrences++;
             }
         }
-        return false;
+        return nrOccurrences;
     }
 
     private JButton getAddRemoteRepositoryButton() {
@@ -357,8 +370,10 @@ public class VFSOptionsController extends DefaultConfigController {
                 String remoteRepositoryId = remoteRepositoriesIdsList[remoteRepositoriesListTable.getSelectedRow() - 1];
                 String remoteRepositoryName = getRemoteRepositoryName(remoteRepositoryId).getValue();
                 String remoteRepositorySchema = getRemoteRepositorySchema(remoteRepositoryId).getValue();
+                String remoteRepositoryAddress = getRemoteRepositoryAddress(remoteRepositoryId).getValue();
                 remoteRepositoryNameField.setText(remoteRepositoryName.contentEquals(DEFAULT_PROPERTY_VALUE) ? "" : remoteRepositoryName);
                 remoteRepositorySchemaField.setText(remoteRepositorySchema.contentEquals(DEFAULT_PROPERTY_VALUE) ? "" : remoteRepositorySchema);
+                remoteRepositoryAddressField.setText(remoteRepositoryAddress.contentEquals(DEFAULT_PROPERTY_VALUE) ? "" : remoteRepositoryAddress);
                 loadRemoteRepositoryPropertiesOnTable(remoteRepositoryId);
                 remoteRepositoriesConfigsPanel.setVisible(true);
             } else {
@@ -404,8 +419,9 @@ public class VFSOptionsController extends DefaultConfigController {
             @Override
             public void focusLost(FocusEvent evt) {
                 String newRepositoryName = remoteRepositoryNameField.getText();
-                if (!newRepositoryName.contentEquals(lastRepositoryName)) {
-                    if (new RepositoryNameValidator().isValid(newRepositoryName) && isUniqueOnTable(newRepositoryName, remoteRepositoriesListTable, REPO_NAME_COLUMN)) {
+                int nrOccurrences = getOccurrencesOnTable(newRepositoryName, remoteRepositoriesListTable, REPO_NAME_COLUMN);
+                if (nrOccurrences != 1) {
+                    if (new RepositoryNameValidator().isValid(newRepositoryName) && nrOccurrences < 1) {
                         String remoteRepositoryId = remoteRepositoriesIdsList[remoteRepositoriesListTable.getSelectedRow() - 1];
                         setRemoteRepositoryName(remoteRepositoryId, newRepositoryName);
                         remoteRepositoriesListTable.getModel().setValueAt(remoteRepositoryNameField.getText(), remoteRepositoriesListTable.getSelectedRow(), REPO_NAME_COLUMN);
@@ -413,11 +429,6 @@ public class VFSOptionsController extends DefaultConfigController {
                         JOptionPane.showMessageDialog(remoteRepositoriesListTable, "Invalid VFS repository name! Please check if it meets following requirements:\n- It must be unique\n- It must be alphanumeric.\n- Underscores are allowed.\n- Length is between 3 and 25 characters.", "Update name for remote file repository", JOptionPane.WARNING_MESSAGE);
                     }
                 }
-            }
-
-            @Override
-            public void focusGained(FocusEvent evt) {
-                lastRepositoryName = remoteRepositoryNameField.getText();
             }
         });
 
@@ -431,7 +442,22 @@ public class VFSOptionsController extends DefaultConfigController {
                     String remoteRepositoryId = remoteRepositoriesIdsList[remoteRepositoriesListTable.getSelectedRow() - 1];
                     setRemoteRepositorySchema(remoteRepositoryId, newRepositorySchema);
                 } else {
-                    JOptionPane.showMessageDialog(remoteRepositoriesListTable, "Invalid VFS repository schema! Please check if it meets following requirements:\n- It must be one from the following list: (\"s3://\";\"http://\";\"oss://\")", "Update schema for remote file repository", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(remoteRepositoriesListTable, "Invalid VFS repository schema! Please check if it meets following requirements:\n- It must be alpha-numeric and end with \":\" character (colon)", "Update schema for remote file repository", JOptionPane.WARNING_MESSAGE);
+                }
+            }
+        });
+
+        JLabel remoteRepositoryAddressLabel = new JLabel("Address:", SwingConstants.LEFT);
+
+        remoteRepositoryAddressField.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent evt) {
+                String newRepositoryAddress = remoteRepositoryAddressField.getText();
+                if (new RepositoryAddressValidator().isValid(newRepositoryAddress)) {
+                    String remoteRepositoryId = remoteRepositoriesIdsList[remoteRepositoriesListTable.getSelectedRow() - 1];
+                    setRemoteRepositoryAddress(remoteRepositoryId, newRepositoryAddress);
+                } else {
+                    JOptionPane.showMessageDialog(remoteRepositoriesListTable, "Invalid VFS repository address! Please check if it meets following requirements:\n- It must contains URL specific characters", "Update schema for remote file repository", JOptionPane.WARNING_MESSAGE);
                 }
             }
         });
@@ -444,6 +470,8 @@ public class VFSOptionsController extends DefaultConfigController {
         remoteRepositoriesSettingsPanel.add(remoteRepositoryNameField);
         remoteRepositoriesSettingsPanel.add(remoteRepositorySchemaLabel);
         remoteRepositoriesSettingsPanel.add(remoteRepositorySchemaField);
+        remoteRepositoriesSettingsPanel.add(remoteRepositoryAddressLabel);
+        remoteRepositoriesSettingsPanel.add(remoteRepositoryAddressField);
         return remoteRepositoriesSettingsPanel;
     }
 
@@ -522,9 +550,17 @@ public class VFSOptionsController extends DefaultConfigController {
                 String remoteRepositoryPropertyId = remoteRepositoriesPropertiesIdsList[selectedRow - 1];
                 String newValue = (String) remoteRepositoriesPropertiesListTable.getValueAt(selectedRow, selectedColumn);
                 if (selectedColumn == REPO_PROP_NAME_COLUMN) {
-                    setRemoteRepositoryPropertyName(remoteRepositoryId, remoteRepositoryPropertyId, newValue);
+                    if (new RepositoryNameValidator().isValid(newValue) && getOccurrencesOnTable(newValue, remoteRepositoriesPropertiesListTable, REPO_PROP_NAME_COLUMN) < 2) {
+                        setRemoteRepositoryPropertyName(remoteRepositoryId, remoteRepositoryPropertyId, newValue);
+                    } else {
+                        JOptionPane.showMessageDialog(remoteRepositoriesPropertiesListTable, "Invalid VFS repository property name! Please check if it meets following requirements:\n- Property name must be unique\n- Property name must be alphanumeric.\n- Underscores are allowed in property name.\n- Length of property name is between 3 and 25 characters.", "Update remote file repository property name", JOptionPane.WARNING_MESSAGE);
+                    }
                 } else if (selectedColumn == REPO_PROP_VALUE_COLUMN) {
-                    setRemoteRepositoryPropertyValue(remoteRepositoryId, remoteRepositoryPropertyId, newValue);
+                    if (!newValue.isEmpty()) {
+                        setRemoteRepositoryPropertyValue(remoteRepositoryId, remoteRepositoryPropertyId, newValue);
+                    } else {
+                        JOptionPane.showMessageDialog(remoteRepositoriesPropertiesListTable, "Invalid VFS repository property value! Please check if it meets following requirements:\n- Property value must be not null", "Update remote file repository property value", JOptionPane.WARNING_MESSAGE);
+                    }
                 }
                 loadRemoteRepositoryPropertiesOnTable(remoteRepositoryId);
             }
