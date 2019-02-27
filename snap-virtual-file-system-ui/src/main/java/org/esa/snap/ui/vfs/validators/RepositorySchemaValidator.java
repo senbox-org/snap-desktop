@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 
 public class RepositorySchemaValidator implements Validator {
 
-    private static final String REPOSITORY_SCHEMA_VALIDATOR_PATTERN = "^(((s3)|(http)|(oss))://)$";
+    private static final String REPOSITORY_SCHEMA_VALIDATOR_PATTERN = "^([a-z0-9]+:)$";
 
     @Override
     public void validateValue(Property property, Object value) throws ValidationException {
