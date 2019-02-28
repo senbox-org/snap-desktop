@@ -25,6 +25,7 @@ import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.datamodel.TiePointGrid;
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.OperatorSpi;
+import org.esa.snap.core.gpf.common.resample.ResampleUtils;
 import org.esa.snap.core.gpf.descriptor.OperatorDescriptor;
 import org.esa.snap.core.gpf.ui.DefaultIOParametersPanel;
 import org.esa.snap.core.gpf.ui.OperatorMenu;
@@ -303,8 +304,8 @@ class ResamplingDialog extends SingleTargetProductDialog {
             }
             widthAndHeightButton.setEnabled(allowToSetWidthAndHeight);
             final GeoCoding sceneGeoCoding = product.getSceneGeoCoding();
-            resolutionButton.setEnabled(sceneGeoCoding != null && sceneGeoCoding instanceof CrsGeoCoding);
-
+            resolutionButton.setEnabled(sceneGeoCoding instanceof CrsGeoCoding &&
+                    ResampleUtils.allGridsAlignAtUpperLeftPixel(product));
         }
         if (referenceBandButton.isEnabled()) {
             referenceBandButton.setSelected(true);
