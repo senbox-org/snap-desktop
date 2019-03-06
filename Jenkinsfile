@@ -23,7 +23,7 @@ pipeline {
         deployDirName = ''
         snapMajorVersion = ''
     }
-    agent any
+    agent { label 'snap-test' }
     stages {
         stage('Package') {
             agent {
@@ -42,7 +42,7 @@ pipeline {
                 }
                 echo "Build Job ${env.JOB_NAME} from ${env.GIT_BRANCH} with commit ${env.GIT_COMMIT}"
                 sh 'mvn -Duser.home=/var/maven -Dsnap.userdir=/home/snap clean package install -U -Dsnap.reader.tests.data.dir=/data/ssd/s2tbx/ -Dsnap.reader.tests.execute=false -DskipTests=false'
-                sh "/opt/scripts/saveToLocalUpdateCenter.sh . ${deployDirName}"
+                sh "/opt/scripts/saveToLocalUpdateCenter.sh . ${deployDirName} ${branchVersion} ${toolName}"
             }
         }
         stage('Deploy') {
