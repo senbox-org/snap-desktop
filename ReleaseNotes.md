@@ -18,6 +18,7 @@ incremented per measure, but correspond to a band name or a time interval
     [SNAP-1060] Downsampling fails with ArrayIndexOutOfBoundsException
     [SNAP-1065] Consider alignment of grids when resampling
     [SNAP-1064] Handling of no-data-values during aggregation is not correct
+	[SNAP-1077] Performance improvements to geo2xyzWGS84 for improved terrain flattening
     
 
 # New in SNAP 6.0.6
