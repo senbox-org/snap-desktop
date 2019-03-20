@@ -1,0 +1,347 @@
+<!--
+ ~ Copyright (C) 2015 CS SI
+ ~
+ ~ This program is free software; you can redistribute it and/or modify it
+ ~ under the terms of the GNU General Public License as published by the Free
+ ~ Software Foundation; either version 3 of the License, or (at your option)
+ ~ any later version.
+ ~ This program is distributed in the hope that it will be useful, but WITHOUT
+ ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ ~ more details.
+ ~
+ ~ You should have received a copy of the GNU General Public License along
+ ~ with this program; if not, see http://www.gnu.org/licenses/
+ ~
+-->
+<html>
+<head>
+    <title>SNAP Virtual File System (VFS)</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<table class="header">
+    <tr class="header">
+        <td class="header">&nbsp;
+            SNAP Virtual File System (VFS)
+        </td>
+        <td class="header" align="right">
+            <a
+                    href="nbdocs://org.esa.snap.snap.help/org/esa/snap/snap/help/docs/general/overview/SnapOverview.html">
+                <img
+                        src="images/snap_header.jpg"
+                        border=0>
+            </a>
+        </td>
+    </tr>
+</table>
+<h1>SNAP Virtual File System (VFS)</h1>
+
+<h2>Introduction</h2>
+
+<p>
+    VFS (acronym for Virtual File System) is an IO component that offers a simple mechanism to access files from remote
+    site or a particular file structure in a same way as native file system from OS.
+</p>
+<p>
+    <br/>
+</p>
+<h3>VFS components</h3>
+<ol>
+    <li>
+        <b>Schema</b>
+        <p>
+            The component that uniquely identifies VFS from others.
+            <br/>
+            <i>Example: <code>s3:</code> for Amazon Web Services S3 VFS.</i>
+        </p>
+    </li>
+    <li>
+        <b>Address</b>
+        <p>
+            The component that indicates the location of VFS.
+            <br/>
+            <i>Example: <code>https://s3.amazonaws.com</code> for Amazon Web Services S3 VFS.</i>
+        </p>
+    </li>
+    <li>
+        <b>Particular properties</b>
+        <p>
+            The specific components that indicate required data necessary for access VFS. Each of them is a pair of
+            <code>Name</code> and <code>Value</code>, where <code>Name</code> is the unique identifier for the property
+            and <code>Value</code> is the data.
+            <br/>
+            <i>Example: <code>AccessKeyId</code>,<code>SecretAccessKey</code> for Amazon Web Services S3 VFS.</i>
+        </p>
+    </li>
+</ol>
+
+<h3>Supported Virtual File Systems</h3>
+
+<p>
+    <br/>
+</p>
+
+<ol>
+    <li>
+        <b>S3</b>
+        <ul>
+            <li>
+                <b>Schema</b>: <code>s3:</code>
+            </li>
+            <li>
+                <b>Particular properties</b>:
+                <ul>
+                    <li>
+                        <code>accessKeyId</code>: The username used for connecting to S3 service
+                    </li>
+                    <li>
+                        <code>secretAccessKey</code>: The password used for connecting to S3 service
+                    </li>
+                </ul>
+            </li>
+
+        </ul>
+    </li>
+    <li>
+        <b>HTTP</b>
+        <ul>
+            <li>
+                <b>Schema</b>: <code>http:</code>
+            </li>
+            <li>
+                <b>Particular properties</b>:
+                <ul>
+                    <li>
+                        <code>username</code>: The username used for connecting to HTTP service
+                    </li>
+                    <li>
+                        <code>password</code>: The password used for connecting to HTTP service
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </li>
+    <li>
+        <b>Open Stack Swift S3</b>
+        <ul>
+            <li>
+                <b>Schema</b>: <code>oss:</code>
+            </li>
+            <li>
+                <b>Particular properties</b>:
+                <ul>
+                    <li>
+                        <code>authAddress</code>: The address of authentication service used for connecting to Open Stack
+                        Swift S3 service
+                    </li>
+                    <li>
+                        <code>container</code>: The Open Stack Swift S3 container name used for connecting to Open Stack
+                        Swift S3 service
+                    </li>
+                    <li>
+                        <code>domain</code>: The Open Stack Swift S3 domain name used for connecting to Open Stack Swift S3
+                        service
+                    </li>
+                    <li>
+                        <code>projectId</code>: The Open Stack Swift S3 project Id used for connecting to Open Stack Swift
+                        S3 service
+                    </li>
+                    <li>
+                        <code>user</code>: The username used for connecting to Open Stack Swift S3 service
+                    </li>
+                    <li>
+                        <code>password</code>: The password used for connecting to Open Stack Swift S3 service
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </li>
+</ol>
+
+<h2>The VFS Remote File Repositories</h2>
+
+<p>
+    The VFS Remote File Repositories represents a set of configurations which designate a VFS.
+</p>
+<p class="inote">
+    <b>Note</b>: The current VFS implementations allow only one instance for each VFS, meaning each VFS can have only one Remote File Repository. In conclusion the "schema" must be unique for each Remote File Repository.
+</p>
+<p align="center">
+    <img src="images/repos.png" alt="VFS Remote File Repositories"/>
+</p>
+
+<h3>
+    <b>Add a new VFS Remote File Repository</b>
+</h3>
+<ul>
+    <li>
+        From SNAP "Tools" menu select "Options".
+        <p align="center">
+            <img src="images/c1.png" alt="Options windows"/>
+        </p>
+    </li>
+    <li>
+        From "Options" window select "General", then select "Remote File Repositories".
+        <p align="center">
+            <img src="images/c3.png" alt="Remote File Repositories tab"/>
+        </p>
+    </li>
+    <li>
+        In the first row of "Remote File Repositories List" table, column "Name", enter the name of new VFS Remote File Repository (only alpha-numeric characters and "_" (underline) are allowed, the name must be unique) and press "Enter".
+        <p align="center">
+            <img src="images/c4.png" alt="Remote File Repository Name"/>
+        </p>
+    </li>
+    <li>
+        Click on button "Create New Remote File Repository" &nbsp; <img style="width: 31px; height: 25px;" alt="Create New Remote File Repository button" src="images/list-add.png"> &nbsp; from the left of "Remote File Repositories List" table.
+        <br/>If name is correct the new VFS Remote File Repository is created and appear in the next row, otherwise a warning message will notify what was wrong.
+        <p align="center">
+            <img src="images/c5.png" alt="Remote File Repository Created"/>
+        </p>
+    </li>
+    <li>
+        Select VFS Remote File Repository from "Remote File Repositories List" table, and "Remote File Repository Configurations" area will appear.
+        <br/>The name of VFS Remote File Repository can be changed anytime by entering new one in the corresponding field.
+        <p align="center">
+            <img src="images/c6.png" alt="Remote File Repository Selection"/>
+        </p>
+    </li>
+    <li>
+        Enter the "VFS Remote File Repository Scheme" in the corresponding field (only lowercase alpha-numeric characters are allowed and must end with ":" (colon)).
+        <br/>The scheme of VFS Remote File Repository can be changed anytime by entering new one in the corresponding field.
+        <br/>If schema is correct it will be saved, otherwise a warning message will notify what was wrong.
+        <p align="center">
+            <img src="images/c7.png" alt="Remote File Repository Scheme"/>
+        </p>
+    </li>
+    <li>
+        Enter the "VFS Remote File Repository Address" in the corresponding field (only URL specific characters are allowed).
+        <br/>The address of VFS Remote File Repository can be changed anytime by entering new one in the corresponding field.
+        <br/>If address is correct it will be saved, otherwise a warning message will notify what was wrong.
+        <p align="center">
+            <img src="images/c8.png" alt="Remote File Repository Address"/>
+        </p>
+    </li>
+    <li>
+        If VFS Remote File Repository requires specific properties such as "username" and "password", these can be created using next guideline.
+    </li>
+</ul>
+<p></p>
+<h3>
+    <b>Add a new VFS Remote File Repository Property</b>
+</h3>
+<ul>
+    <li>
+        From SNAP "Tools" menu select "Options".
+        <p align="center">
+            <img src="images/c1.png" alt="Selecting Options"/>
+        </p>
+    </li>
+    <li>
+        From "Options" window select "General", then select "Remote File Repositories".
+        <p align="center">
+            <img src="images/c3.png" alt="Remote File Repositories tab"/>
+        </p>
+    </li>
+    <li>
+        Select VFS Remote File Repository from "Remote File Repositories List" table, and Remote "File Repository Configurations" area will appear.
+        <p align="center">
+            <img src="images/c9.png" alt="Remote File Repository Selection"/>
+        </p>
+    </li>
+    <li>
+        In the first row of "Properties" table, column "Name", enter the name of new VFS Remote File Repository Property (only alpha-numeric characters and "_" (underline) are allowed, the name must be unique).
+        <br/>The name of VFS Remote File Repository Property can be changed anytime by double-clicking on the corresponding cell.
+        <p align="center">
+            <img src="images/c10.png" alt="Remote File Repository Property Name"/>
+        </p>
+    </li>
+    <li>
+        In the first row of "Properties" table, column "Value", enter the value of new VFS Remote File Repository Property (must not be empty). The value of VFS Remote File Repository Property can be changed anytime by double-clicking on the corresponding cell.
+        <p align="center">
+            <img src="images/c11.png" alt="Remote File Repository Property Value"/>
+        </p>
+    </li>
+    <li>
+        Click on button "Create New Remote File Repository Property" &nbsp; <img style="width: 31px; height: 25px;" alt="Create New Remote File Repository Property button" src="images/list-add.png"> &nbsp; from the left of "Properties" table.
+        <br/>If name and value are correct the new VFS Remote File Repository Property is created and appear in the next row, otherwise a warning message will notify what was wrong.
+        <p align="center">
+            <img src="images/c12.png" alt="Remote File Repository Property Created"/>
+        </p>
+    </li>
+</ul>
+<p></p>
+<h3>
+    <b>Remove VFS Remote File Repository</b>
+</h3>
+<ul>
+    <li>
+        From SNAP "Tools" menu select "Options".
+        <p align="center">
+            <img src="images/c1.png" alt="Selecting Options"/>
+        </p>
+    </li>
+    <li>
+        From "Options" window select "General", then select "Remote File Repositories".
+        <p align="center">
+            <img src="images/c3.png" alt="Remote File Repositories tab"/>
+        </p>
+    </li>
+    <li>
+        Select VFS Remote File Repository from "Remote File Repositories List" table, and Remote "File Repository Configurations" area will appear.
+        <p align="center">
+            <img src="images/c13.png" alt="Remote File Repository Selection"/>
+        </p>
+    </li>
+    <li>
+        Click on button "Remove Remote File Repository" &nbsp; <img style="width: 31px; height: 25px;" alt="Remove Remote File Repository button" src="images/list-remove.png"> &nbsp; from the left of "Remote File Repositories List" table.
+        <br/>A confirmation prompt will be shown. Answer with YES to confirm the deletion of Remote File Repository with all Properties.
+        <p align="center">
+            <img src="images/c14.png" alt="Remote File Repository Deletion"/>
+        </p>
+    </li>
+</ul>
+<p></p>
+<h3>
+    <b>Remove VFS Remote File Repository Property</b>
+</h3>
+<ul>
+    <li>
+        From SNAP "Tools" menu select "Options".
+        <p align="center">
+            <img src="images/c1.png" alt="Selecting Options"/>
+        </p>
+    </li>
+    <li>
+        From "Options" window select "General", then select "Remote File Repositories".
+        <p align="center">
+            <img src="images/c3.png" alt="Remote File Repositories tab"/>
+        </p>
+    </li>
+    <li>
+        Select VFS Remote File Repository from "Remote File Repositories List" table, and Remote "File Repository Configurations" area will appear.
+        <p align="center">
+            <img src="images/c13.png" alt="Remote File Repository Selection"/>
+        </p>
+    </li>
+    <li>
+        Select VFS Remote File Repository Property from "Properties" table.
+        <p align="center">
+            <img src="images/c15.png" alt="Remote File Repository Property Selection"/>
+        </p>
+    </li>
+    <li>
+        Click on button "Remove Remote File Repository Property" &nbsp; <img style="width: 31px; height: 25px;" alt="Remove Remote File Repository Property button" src="images/list-remove.png"> &nbsp; from the left of "Properties" table.
+        <br/>A confirmation prompt will be shown. Answer with YES to confirm the deletion of Remote File Repository Property.
+        <p align="center">
+            <img src="images/c16.png" alt="Remote File Repository Property Deletion"/>
+        </p>
+    </li>
+</ul>
+
+<hr/>
+</body>
+</html>
