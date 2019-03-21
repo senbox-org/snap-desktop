@@ -59,6 +59,7 @@ class RecentPaths {
                         nonVFSPaths = nonVFSPaths.concat(path);
                     }
                 } catch (Exception ignored) {
+                    //ignored
                 }
 
             }
