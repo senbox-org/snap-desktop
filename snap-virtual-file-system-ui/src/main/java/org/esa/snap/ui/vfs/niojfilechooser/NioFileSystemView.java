@@ -1,8 +1,8 @@
 package org.esa.snap.ui.vfs.niojfilechooser;
 
 import com.sun.javafx.PlatformUtil;
-import org.esa.snap.core.dataio.NioFile;
-import org.esa.snap.core.dataio.NioPaths;
+import org.esa.snap.vfs.NioFile;
+import org.esa.snap.vfs.NioPaths;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static org.esa.snap.core.dataio.NioPaths.isVirtualFileSystemRoot;
+import static org.esa.snap.vfs.NioPaths.isVirtualFileSystemRoot;
 
 /**
  * FileSystemView component for VFS.

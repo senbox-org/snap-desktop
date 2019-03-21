@@ -3,12 +3,12 @@ package org.esa.snap.ui.vfs.preferences;
 import com.bc.ceres.binding.PropertySet;
 import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
-import org.esa.snap.core.dataio.vfs.remote.object_storage.VFSRemoteFileRepositoriesController;
+import org.esa.snap.vfs.preferences.model.VFSRemoteFileRepositoriesController;
 import org.esa.snap.rcp.preferences.DefaultConfigController;
 import org.esa.snap.rcp.preferences.Preference;
-import org.esa.snap.core.dataio.vfs.remote.validators.RepositoryAddressValidator;
-import org.esa.snap.core.dataio.vfs.remote.validators.RepositoryNameValidator;
-import org.esa.snap.core.dataio.vfs.remote.validators.RepositorySchemaValidator;
+import org.esa.snap.vfs.preferences.validators.RepositoryAddressValidator;
+import org.esa.snap.vfs.preferences.validators.RepositoryNameValidator;
+import org.esa.snap.vfs.preferences.validators.RepositorySchemaValidator;
 import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.HelpCtx;
 

@@ -1,6 +1,6 @@
 package org.esa.snap.ui.vfs.niojfilechooser;
 
-import org.esa.snap.core.dataio.NioPaths;
+import org.esa.snap.vfs.NioPaths;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileSystemView;

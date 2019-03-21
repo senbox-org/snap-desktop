@@ -1,16 +1,18 @@
 package org.esa.snap.ui.vfs.niojfilechooser;
 
-import org.esa.snap.core.dataio.NioFile;
-import org.esa.snap.core.dataio.vfs.remote.model.VFSRemoteFileRepository;
-import org.esa.snap.core.dataio.vfs.remote.object_storage.VFSPlugInActivator;
-import org.esa.snap.core.dataio.vfs.remote.object_storage.VFSRemoteFileRepositoriesController;
+import org.esa.snap.vfs.NioFile;
+import org.esa.snap.vfs.preferences.model.VFSRemoteFileRepository;
+import org.esa.snap.vfs.preferences.model.VFSRemoteFileRepositoriesController;
+import org.esa.snap.vfs.VFS;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
+import java.nio.file.spi.FileSystemProvider;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -56,8 +58,12 @@ public class NioVFSFileSystemView extends NioFileSystemView {
      * @throws IOException If an I/O error occurs
      */
     private NioVFSFileSystemView(VFSRemoteFileRepository vfsRemoteFileRepository) throws IOException {
+        FileSystemProvider fileSystemProvider = VFS.getInstance().getFileSystemProviderByScheme(vfsRemoteFileRepository.getScheme());
         try {
-            fs = VFSPlugInActivator.initAndGetVFS(vfsRemoteFileRepository);
+            URI uri = new URI(vfsRemoteFileRepository.getScheme() + ":"+ vfsRemoteFileRepository.getAddress());
+            fs = fileSystemProvider.newFileSystem(uri, null);
+            //fs = fileSystemProvider.getFileSystem(uri);
+            //fs = VFSPlugInActivator.initAndGetVFS(vfsRemoteFileRepository);
         } catch (Exception ex) {
             logger.log(Level.SEVERE, "Unable to initialize VFS. Details: " + ex.getMessage());
             throw new IOException(ex);
