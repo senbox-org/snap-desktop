@@ -3,7 +3,6 @@ package org.esa.snap.ui.vfs.niojfilechooser;
 import com.sun.javafx.PlatformUtil;
 import org.esa.snap.core.dataio.NioFile;
 import org.esa.snap.core.dataio.NioPaths;
-import org.esa.snap.ui.vfs.preferences.VFSOptionsController;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -74,9 +73,9 @@ class NioFileSystemView extends FileSystemView {
 
     static {
         try {
-            vfsRootIcon = new ImageIcon(VFSOptionsController.class.getResource("/org/esa/snap/ui/vfs/preferences/icons/vfs_root.png"));
-            vfsDirectoryIcon = new ImageIcon(VFSOptionsController.class.getResource("/org/esa/snap/ui/vfs/preferences/icons/vfs_folder.png"));
-            vfsFileIcon = new ImageIcon(VFSOptionsController.class.getResource("/org/esa/snap/ui/vfs/preferences/icons/vfs_file.png"));
+            vfsRootIcon = new ImageIcon(NioFileSystemView.class.getResource("/org/esa/snap/ui/vfs/niojfilechooser/icons/vfs_root.png"));
+            vfsDirectoryIcon = new ImageIcon(NioFileSystemView.class.getResource("/org/esa/snap/ui/vfs/niojfilechooser/icons/vfs_folder.png"));
+            vfsFileIcon = new ImageIcon(NioFileSystemView.class.getResource("/org/esa/snap/ui/vfs/niojfilechooser/icons/vfs_file.png"));
         } catch (Exception ex) {
             logger.log(Level.WARNING, "Unable to load image resource. Details: " + ex.getMessage());
         }

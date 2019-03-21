@@ -23,6 +23,7 @@ import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.core.vfsspi.VFSProvider;
 import org.esa.snap.runtime.Config;
+import org.esa.snap.ui.vfs.niojfilechooser.VFSJFileChooser;
 import sun.swing.FilePane;
 
 import javax.swing.Icon;
@@ -82,7 +83,7 @@ public class SnapFileChooser extends JFileChooser {
     public SnapFileChooser(File currentDirectory, FileSystemView fsv) {
         super(currentDirectory, fsv);
         try {
-            VFSProvider.getVFSProviderInstance("org.esa.snap.ui.vfs.providers.VFSJFileChooserProvider").runVFSService("getJFileChooser", JFileChooser.class, this);
+            VFSJFileChooser.getJFileChooser(this);
         } catch (Exception ignored) {
         }
         snapPreferences = Config.instance("snap").preferences();
