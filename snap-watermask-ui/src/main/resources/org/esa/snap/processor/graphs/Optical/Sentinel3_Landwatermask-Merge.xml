@@ -1,0 +1,58 @@
+<graph id="Graph">
+  <version>1.0</version>
+  <node id="Read">
+    <operator>Read</operator>
+    <sources/>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <file/>
+      <formatName>Sen3</formatName>
+    </parameters>
+  </node>
+  <node id="LandWaterMask">
+    <operator>LandWaterMask</operator>
+    <sources>
+      <sourceProduct refid="Read"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <resolution>50</resolution>
+      <subSamplingFactorX>1</subSamplingFactorX>
+      <subSamplingFactorY>1</subSamplingFactorY>
+    </parameters>
+  </node>
+  <node id="BandMerge">
+    <operator>BandMerge</operator>
+    <sources>
+      <sourceProduct refid="LandWaterMask"/>
+      <sourceProduct.1 refid="Read"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <sourceBands/>
+      <geographicError>1.0E-5</geographicError>
+    </parameters>
+  </node>
+  <node id="Write">
+    <operator>Write</operator>
+    <sources>
+      <sourceProduct refid="BandMerge"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <file/>
+      <formatName>BEAM-DIMAP</formatName>
+    </parameters>
+  </node>
+  <applicationData id="Presentation">
+    <Description/>
+    <node id="Read">
+      <displayPosition x="6.0" y="166.0"/>
+    </node>
+    <node id="LandWaterMask">
+      <displayPosition x="126.0" y="111.0"/>
+    </node>
+    <node id="BandMerge">
+      <displayPosition x="301.0" y="166.0"/>
+    </node>
+    <node id="Write">
+      <displayPosition x="444.0" y="166.0"/>
+    </node>
+  </applicationData>
+</graph>
