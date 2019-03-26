@@ -1,6 +1,7 @@
 package org.esa.snap.ui.vfs.niojfilechooser;
 
 import org.esa.snap.vfs.NioPaths;
+import org.esa.snap.vfs.preferences.model.VFSRemoteFileRepository;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileSystemView;
@@ -38,12 +39,14 @@ class NioWindowsFileSystemView extends NioFileSystemView {
 
     static {
         try {
-            nativeOsFileClasses = new Class<?>[]{
-                    Class.forName("sun.awt.shell.ShellFolder")
-            };
+            nativeOsFileClasses = new Class<?>[] { Class.forName("sun.awt.shell.ShellFolder") };
         } catch (ClassNotFoundException ex) {
             logger.log(Level.FINE, "Unable to load native os class for Files. Details: " + ex.getMessage());
         }
+    }
+
+    NioWindowsFileSystemView(List<VFSRemoteFileRepository> vfsRepositories) {
+        super(vfsRepositories);
     }
 
     /**
@@ -321,7 +324,8 @@ class NioWindowsFileSystemView extends NioFileSystemView {
         } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException ex) {
             logger.log(Level.SEVERE,"Unable to get roots for FSW. Details: " + ex.getMessage());
         }
-        roots.addAll(Arrays.asList(super.getRoots()));
+        File[] localRoots = getVirtualRoots();
+        roots.addAll(Arrays.asList(localRoots));
         return roots.toArray(new File[0]);
     }
 

@@ -81,10 +81,9 @@ public class SnapFileChooser extends JFileChooser {
 
     public SnapFileChooser(File currentDirectory, FileSystemView fsv) {
         super(currentDirectory, fsv);
-        try {
-            VFSJFileChooser.getJFileChooser(this);
-        } catch (Exception ignored) {
-        }
+
+        VFSJFileChooser.getJFileChooser(this);
+
         snapPreferences = Config.instance("snap").preferences();
         resizeHandler = new ResizeHandler();
         windowCloseHandler = new CloseHandler();

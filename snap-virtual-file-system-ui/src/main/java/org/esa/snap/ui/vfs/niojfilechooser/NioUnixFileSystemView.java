@@ -1,5 +1,7 @@
 package org.esa.snap.ui.vfs.niojfilechooser;
 
+import org.esa.snap.vfs.preferences.model.VFSRemoteFileRepository;
+
 import javax.swing.filechooser.FileSystemView;
 import java.io.File;
 import java.util.ArrayList;
@@ -18,6 +20,10 @@ class NioUnixFileSystemView extends NioFileSystemView {
      * The FileSystemView component for operating system FS
      */
     private static final FileSystemView osFileSystemView = FileSystemView.getFileSystemView();
+
+    NioUnixFileSystemView(List<VFSRemoteFileRepository> vfsRepositories) {
+        super(vfsRepositories);
+    }
 
     /**
      * Used by UI classes to decide whether to display a special icon
@@ -73,7 +79,7 @@ class NioUnixFileSystemView extends NioFileSystemView {
     public File[] getRoots() {
         List<File> roots = new ArrayList<>();
         roots.addAll(Arrays.asList(osFileSystemView.getRoots()));
-        roots.addAll(Arrays.asList(super.getRoots()));
+        roots.addAll(Arrays.asList(getVirtualRoots()));
         return roots.toArray(new File[0]);
     }
 
