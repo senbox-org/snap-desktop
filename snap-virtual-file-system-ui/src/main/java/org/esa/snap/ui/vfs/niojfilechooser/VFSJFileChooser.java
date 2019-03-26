@@ -1,6 +1,11 @@
 package org.esa.snap.ui.vfs.niojfilechooser;
 
+import org.esa.snap.vfs.preferences.model.VFSRemoteFileRepositoriesController;
+import org.esa.snap.vfs.preferences.model.VFSRemoteFileRepository;
+
 import javax.swing.JFileChooser;
+import javax.swing.UIManager;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,11 +33,10 @@ public final class VFSJFileChooser {
      */
     public static JFileChooser getJFileChooser(JFileChooser target) {
         try {
-            if (target == null) {
-                target = new JFileChooser();
-            }
-            target.setFileSystemView(NioFileSystemView.getFileSystemView());
+            List<VFSRemoteFileRepository> vfsRepositories = VFSRemoteFileRepositoriesController.getVFSRemoteFileRepositories();
+            target.setFileSystemView(NioFileSystemView.getFileSystemView(vfsRepositories));
             target.updateUI();
+            UIManager.put("FileChooser.readOnly", true);
         } catch (Exception ex) {
             logger.log(Level.SEVERE, "Unable to update the JFileChooser with custom FileSystemView compatible with VFS. Details: " + ex.getMessage());
         }

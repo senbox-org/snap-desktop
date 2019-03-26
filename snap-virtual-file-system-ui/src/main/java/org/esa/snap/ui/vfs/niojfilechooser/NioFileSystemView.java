@@ -1,58 +1,44 @@
 package org.esa.snap.ui.vfs.niojfilechooser;
 
-import com.sun.javafx.PlatformUtil;
+import org.apache.commons.lang.SystemUtils;
 import org.esa.snap.vfs.NioFile;
 import org.esa.snap.vfs.NioPaths;
+import org.esa.snap.vfs.preferences.model.VFSRemoteFileRepository;
+import org.esa.snap.vfs.remote.AbstractRemoteFileSystem;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.*;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import javax.swing.UIManager;
 import javax.swing.filechooser.FileSystemView;
 import javax.swing.filechooser.FileView;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
+import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import static org.esa.snap.vfs.NioPaths.isVirtualFileSystemRoot;
 
 /**
  * FileSystemView component for VFS.
  *
  * @author Adrian Drăghici
  */
-class NioFileSystemView extends FileSystemView {
-
-    /**
-     * The pattern for name.
-     */
-    private static final String ROOT_NAME = "%root_name%";
-
-    /**
-     * The path name of root for showing on file chooser.
-     */
-    private static final String FSW_ROOT = ROOT_NAME + ":/";
-
-    /**
-     * The FileSystemView component for Windows operating system FS
-     */
-    private static NioFileSystemView nioWindowsFileSystemView = null;
-
-    /**
-     * The FileSystemView component for Unix operating system FS
-     */
-    private static NioFileSystemView nioLinuxFileSystemView = null;
+abstract class NioFileSystemView extends FileSystemView {
 
     /**
      * The list of FileSystemView components for VFSs
      */
-    private static Map<String, NioVFSFileSystemView> vfsFileSystemViews = null;
+    private Map<String, NioVFSFileSystemView> vfsFileSystemViews;
 
     /**
      * The icon for VFS root
@@ -94,7 +80,17 @@ class NioFileSystemView extends FileSystemView {
     /**
      * Creates the new FileSystemView component for VFS
      */
-    NioFileSystemView() {
+    protected NioFileSystemView(List<VFSRemoteFileRepository> vfsRepositories) {
+        this.vfsFileSystemViews = new HashMap<>();
+        for (VFSRemoteFileRepository vfsRemoteFileRepository : vfsRepositories) {
+            try {
+                NioVFSFileSystemView vfsFileSystemView = new NioVFSFileSystemView(vfsRemoteFileRepository);
+                String key = vfsFileSystemView.getRoot().toString();
+                this.vfsFileSystemViews.put(key, vfsFileSystemView);
+            } catch (Exception ex) {
+                logger.log(Level.SEVERE, "Unable to initialize " + vfsRemoteFileRepository.getName() + " VFS. Details: " + ex.getMessage(), ex);
+            }
+        }
     }
 
     /**
@@ -103,21 +99,14 @@ class NioFileSystemView extends FileSystemView {
      *
      * @return The FileSystemView component for operating system
      */
-    public static NioFileSystemView getFileSystemView() {
-        vfsFileSystemViews = NioVFSFileSystemView.getNioVFSFileSystemView();
-        if (PlatformUtil.isWindows()) {
-            if (nioWindowsFileSystemView == null) {
-                nioWindowsFileSystemView = new NioWindowsFileSystemView();
-            }
-            return nioWindowsFileSystemView;
+    public static NioFileSystemView getFileSystemView(List<VFSRemoteFileRepository> vfsRepositories) {
+        if (SystemUtils.IS_OS_WINDOWS) {
+            return new NioWindowsFileSystemView(vfsRepositories);
+        } else if (SystemUtils.IS_OS_LINUX || SystemUtils.IS_OS_MAC) {
+            return new NioUnixFileSystemView(vfsRepositories);
+        } else {
+            throw new UnsupportedOperationException("Unsupported operating system detected.");
         }
-        if (PlatformUtil.isLinux() || PlatformUtil.isMac()) {
-            if (nioLinuxFileSystemView == null) {
-                nioLinuxFileSystemView = new NioUnixFileSystemView();
-            }
-            return nioLinuxFileSystemView;
-        }
-        throw new UnsupportedOperationException("Unsupported operating system detected");
     }
 
     /**
@@ -215,7 +204,7 @@ class NioFileSystemView extends FileSystemView {
             return null;
         }
         if (NioPaths.isVirtualFileSystemPath(f.getPath())) {
-            if (NioPaths.isVirtualFileSystemRoot(f)) {
+            if (isVirtualFileSystemRoot(f)) {
                 return vfsRootIcon;
             } else {
                 if (f.isDirectory()) {
@@ -373,12 +362,12 @@ class NioFileSystemView extends FileSystemView {
         return false;
     }
 
-    private static File[] getVirtualRoots(File dir) {
+    private File[] getVirtualRoots(File dir) {
         NioVFSFileSystemView vfsFileSystemView = vfsFileSystemViews.get(dir.getPath());
-        if (vfsFileSystemView != null) {
-            return vfsFileSystemView.getRoots();
+        if (vfsFileSystemView == null) {
+            return new File[0];
         }
-        return new File[0];
+        return vfsFileSystemView.getRoots();
     }
 
     /**
@@ -387,11 +376,17 @@ class NioFileSystemView extends FileSystemView {
      */
     @Override
     public File[] getRoots() {
+        throw new UnsupportedOperationException();
+    }
+
+    protected final File[] getVirtualRoots() {
         List<NioFile> roots = new ArrayList<>();
-        for (Map.Entry<String, NioVFSFileSystemView> vfsFSWRoot : vfsFileSystemViews.entrySet()) {
-            roots.add(new NioFile(vfsFSWRoot.getValue().getRoot()));
+        for (Map.Entry<String, NioVFSFileSystemView> entry : this.vfsFileSystemViews.entrySet()) {
+            NioVFSFileSystemView value = entry.getValue();
+            Path rootPath = value.getRoot();
+            roots.add(new NioFile(rootPath));
         }
-        return roots.toArray(new NioFile[0]);
+        return roots.toArray(new NioFile[roots.size()]);
     }
 
     /**
@@ -462,7 +457,7 @@ class NioFileSystemView extends FileSystemView {
                 return files.toArray(new File[0]);
             }
         } catch (Exception ex) {
-            logger.log(Level.SEVERE, "Unable to get files. Details: " + ex.getMessage());
+            logger.log(Level.SEVERE, "Unable to get files. Details: " + ex.getMessage(), ex);
             if (ex.getMessage().contains("UnsupportedOperationException")) {
                 JOptionPane.showMessageDialog(null, "HTTP Server not supported.", "Http - Access failed", JOptionPane.WARNING_MESSAGE);
             }
@@ -471,7 +466,7 @@ class NioFileSystemView extends FileSystemView {
                 try {
                     stream.close();
                 } catch (Exception ex) {
-                    logger.log(Level.SEVERE, "Unable to close the stream. Details: " + ex.getMessage());
+                    logger.log(Level.SEVERE, "Unable to close the stream. Details: " + ex.getMessage(), ex);
                 }
             }
         }
@@ -495,16 +490,16 @@ class NioFileSystemView extends FileSystemView {
             return null;
         }
         if (isFileSystem(psf.toFile())) {
-            Path f = psf;
-            if (!Files.exists(f)) {
+            Path p = psf;
+            if (!Files.exists(p)) {
                 // This could be a node under "Network Neighborhood".
                 File ppsf = psf.getParent().toFile();
                 if (ppsf == null || !isFileSystem(ppsf)) {
                     // We're mostly after the exists() override for windows below.
-                    f = createFileSystemRoot(f.toFile()).toPath();
+                    p = createFileSystemRoot(p.toFile()).toPath();
                 }
             }
-            return f.toFile();
+            return p.toFile();
         } else {
             return psf.toFile();
         }
@@ -523,13 +518,24 @@ class NioFileSystemView extends FileSystemView {
     }
 
     /**
-     * Gets the path name of root for showing on file chooser, using given name of root.
+     * Tells whether if <code>dir</code> is the root of a tree in the VFS, such as a HTTP Object Storage VFS.
      *
-     * @param root The name of root
-     * @return The path name of root
+     * @param dir a <code>File</code> object representing a directory
+     * @return {@code true} if <code>dir</code> is a root of a VFS
      */
-    static String getFSWRoot(String root) {
-        return FSW_ROOT.replace(ROOT_NAME, root);
+    private static boolean isVirtualFileSystemRoot(java.io.File dir) {
+        if (dir instanceof NioFile) {
+            Path path = dir.toPath();
+            FileSystem fileSystem = path.getFileSystem();
+            if (fileSystem instanceof AbstractRemoteFileSystem) {
+                AbstractRemoteFileSystem remoteFileSystem = (AbstractRemoteFileSystem) fileSystem;
+                if (remoteFileSystem.getRoot().equals(path)) {
+                    return true;
+                }
+            }
+
+        }
+        return false;
     }
 
     /**
@@ -575,6 +581,5 @@ class NioFileSystemView extends FileSystemView {
             return name;
         }
     }
-
 }
 
