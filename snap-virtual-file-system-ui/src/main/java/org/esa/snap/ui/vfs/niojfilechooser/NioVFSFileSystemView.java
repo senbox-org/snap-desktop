@@ -31,13 +31,12 @@ public class NioVFSFileSystemView {
      * Creates the FileSystemView component for VFS.
      *
      * @param vfsRemoteFileRepository The VFS Remote File Repository
-     * @throws IOException If an I/O error occurs
      */
-    public NioVFSFileSystemView(VFSRemoteFileRepository vfsRemoteFileRepository) throws IOException, URISyntaxException {
+    public NioVFSFileSystemView(VFSRemoteFileRepository vfsRemoteFileRepository) throws URISyntaxException {
         AbstractRemoteFileSystemProvider fileSystemProvider = (AbstractRemoteFileSystemProvider)VFS.getInstance().getFileSystemProviderByScheme(vfsRemoteFileRepository.getScheme());
         URI uri = new URI(vfsRemoteFileRepository.getScheme(), vfsRemoteFileRepository.getName() + ":", null);
         Map<String, ?> env = Collections.emptyMap();
-        this.fileSystem = fileSystemProvider.newFileSystem(uri, env);
+        this.fileSystem = fileSystemProvider.getFileSystemOrCreate(uri, env);
     }
 
     /**
@@ -61,14 +60,14 @@ public class NioVFSFileSystemView {
      * FileSystemRoot for FSW VFS roots.
      * Used for creating custom {@code File} objects which represent the root of a VFS in FSW.
      */
-    static class VFSFileSystemRoot extends NioFile {
+    private static class VFSFileSystemRoot extends NioFile {
 
         /**
          * Creates the FileSystemRoot for FSW VFS roots.
          *
          * @param p The target file
          */
-        VFSFileSystemRoot(Path p) {
+        private VFSFileSystemRoot(Path p) {
             super(p);
         }
 

@@ -1,6 +1,7 @@
 package org.esa.snap.rcp.actions.file;
 
 import org.esa.snap.vfs.NioPaths;
+import org.esa.snap.vfs.VFS;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -54,7 +55,7 @@ class RecentPaths {
         if (paths != null) {
             for (String path : paths.split(File.pathSeparator)) {
                 try {
-                    if (!NioPaths.isVirtualFileSystemPath(path)) {
+                    if (!VFS.getInstance().isVirtualFileSystemPath(path)) {
                         nonVFSPaths = nonVFSPaths.isEmpty() ? nonVFSPaths : nonVFSPaths.concat(";");
                         nonVFSPaths = nonVFSPaths.concat(path);
                     }
