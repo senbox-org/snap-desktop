@@ -3,6 +3,7 @@ package org.esa.snap.ui.vfs.niojfilechooser;
 import org.apache.commons.lang.SystemUtils;
 import org.esa.snap.vfs.NioFile;
 import org.esa.snap.vfs.NioPaths;
+import org.esa.snap.vfs.VFS;
 import org.esa.snap.vfs.preferences.model.VFSRemoteFileRepository;
 import org.esa.snap.vfs.remote.AbstractRemoteFileSystem;
 import org.jetbrains.annotations.NotNull;
@@ -203,7 +204,7 @@ abstract class NioFileSystemView extends FileSystemView {
         if (f == null) {
             return null;
         }
-        if (NioPaths.isVirtualFileSystemPath(f.getPath())) {
+        if (VFS.getInstance().isVirtualFileSystemPath(f.getPath())) {
             if (isVirtualFileSystemRoot(f)) {
                 return vfsRootIcon;
             } else {
@@ -426,7 +427,7 @@ abstract class NioFileSystemView extends FileSystemView {
     @Override
     public File createFileObject(String path) {
         File f;
-        if (NioPaths.isVirtualFileSystemPath(path)) {
+        if (VFS.getInstance().isVirtualFileSystemPath(path)) {
             f = new NioFile(path);
         } else {
             f = new File(path);
