@@ -44,16 +44,16 @@ public class NioVFSFileSystemView {
      *
      * @return The VFS path of root
      */
-    Path getRoot() {
+    public Path getRoot() {
         return this.fileSystem.getRoot();
     }
 
-    public File[] getRoots() {
+    public File[] getRootDirectories() {
         List<File> roots = new ArrayList<>();
         for (Path p : this.fileSystem.getRootDirectories()) {
             roots.add(new VFSFileSystemRoot(p));
         }
-        return roots.toArray(new File[0]);
+        return roots.toArray(new File[roots.size()]);
     }
 
     /**

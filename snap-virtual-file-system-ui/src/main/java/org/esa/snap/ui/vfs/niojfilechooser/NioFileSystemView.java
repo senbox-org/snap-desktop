@@ -34,7 +34,7 @@ import java.util.logging.Logger;
  *
  * @author Adrian Drăghici
  */
-abstract class NioFileSystemView extends FileSystemView {
+public abstract class NioFileSystemView extends FileSystemView {
 
     /**
      * The list of FileSystemView components for VFSs
@@ -368,7 +368,7 @@ abstract class NioFileSystemView extends FileSystemView {
         if (vfsFileSystemView == null) {
             return new File[0];
         }
-        return vfsFileSystemView.getRoots();
+        return vfsFileSystemView.getRootDirectories();
     }
 
     /**
@@ -543,7 +543,7 @@ abstract class NioFileSystemView extends FileSystemView {
      * FileSystemRoot for FSW roots.
      * Used for creating custom {@code File} objects which represent the root of a FS in FSW.
      */
-    static class FileSystemRoot extends File {
+    public static class FileSystemRoot extends File {
 
 
         /**
@@ -551,7 +551,7 @@ abstract class NioFileSystemView extends FileSystemView {
          *
          * @param f The target file
          */
-        FileSystemRoot(File f) {
+        public FileSystemRoot(File f) {
             super(f, "");
         }
 
