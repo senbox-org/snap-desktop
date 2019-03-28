@@ -1,6 +1,15 @@
 SNAP Release Notes
 ==================
 
+# New in SNAP 6.0.8
+    
+    [SNAP-1084] DateTimeUtils does not consider UTC
+    [SNAP-1083] Error while adjusting mosaic bounds to input products
+    [SNAP-1082] Angle too high when opening DIMAP product (multi-size)
+    [SNAP-1079] Saved NetCDF files can not be read by ncdump
+    [SNAP-1061] Update performance parameters help
+    
+
 # New in SNAP 6.0.7
     
     [SNAP-1008] ResamplingOp fails if downsampling method is different from default value 'First'
