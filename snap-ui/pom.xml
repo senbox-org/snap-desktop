@@ -100,11 +100,14 @@
         </dependency>
         <dependency>
             <groupId>org.esa.snap</groupId>
-            <artifactId>snap-virtual-file-system-ui</artifactId>
-            <version>7.0.0-SNAPSHOT</version>
-            <scope>compile</scope>
+            <artifactId>snap-virtual-file-system</artifactId>
+            <version>${project.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.esa.snap</groupId>
+            <artifactId>snap-virtual-file-system-ui</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

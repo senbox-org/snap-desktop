@@ -2,9 +2,11 @@ package org.esa.snap.ui.vfs.niojfilechooser;
 
 import org.esa.snap.vfs.preferences.model.VFSRemoteFileRepositoriesController;
 import org.esa.snap.vfs.preferences.model.VFSRemoteFileRepository;
+import org.esa.snap.vfs.ui.file.chooser.CopyOfVFSNioFileSystemView;
 
 import javax.swing.JFileChooser;
 import javax.swing.UIManager;
+import javax.swing.filechooser.FileSystemView;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
