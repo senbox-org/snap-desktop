@@ -44,7 +44,13 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Marco Peters
@@ -179,10 +185,10 @@ class MosaicFormModel {
     double computeLatitude(Product product, String level){
 
         Double[] latitudePoints = {
-                            product.getSceneGeoCoding().getGeoPos(new PixelPos(0, 0), null).getLat(),
-                            product.getSceneGeoCoding().getGeoPos(new PixelPos(0, product.getSceneRasterHeight()), null).getLat(),
-                            product.getSceneGeoCoding().getGeoPos(new PixelPos(product.getSceneRasterWidth(), 0), null).getLat(),
-                            product.getSceneGeoCoding().getGeoPos(new PixelPos(product.getSceneRasterWidth(), product.getSceneRasterHeight()), null).getLat()
+                product.getSceneGeoCoding().getGeoPos(new PixelPos(0.5, 0.5), null).getLat(),
+                product.getSceneGeoCoding().getGeoPos(new PixelPos(0.5, product.getSceneRasterHeight() - 0.5), null).getLat(),
+                product.getSceneGeoCoding().getGeoPos(new PixelPos(product.getSceneRasterWidth() - 0.5, 0.5), null).getLat(),
+                product.getSceneGeoCoding().getGeoPos(new PixelPos(product.getSceneRasterWidth() - 0.5, product.getSceneRasterHeight() - 0.5), null).getLat()
         };
 
         switch(level) {
@@ -199,10 +205,10 @@ class MosaicFormModel {
     double computeLongitude(Product product, String level){
 
         Double[] longitudePoints = {
-                product.getSceneGeoCoding().getGeoPos(new PixelPos(0, 0), null).getLon(),
-                product.getSceneGeoCoding().getGeoPos(new PixelPos(0, product.getSceneRasterHeight()), null).getLon(),
-                product.getSceneGeoCoding().getGeoPos(new PixelPos(product.getSceneRasterWidth(), 0), null).getLon(),
-                product.getSceneGeoCoding().getGeoPos(new PixelPos(product.getSceneRasterWidth(), product.getSceneRasterHeight()), null).getLon()
+                product.getSceneGeoCoding().getGeoPos(new PixelPos(0.5, 0.5), null).getLon(),
+                product.getSceneGeoCoding().getGeoPos(new PixelPos(0.5, product.getSceneRasterHeight() - 0.5), null).getLon(),
+                product.getSceneGeoCoding().getGeoPos(new PixelPos(product.getSceneRasterWidth() - 0.5, 0.5), null).getLon(),
+                product.getSceneGeoCoding().getGeoPos(new PixelPos(product.getSceneRasterWidth() - 0.5, product.getSceneRasterHeight() - 0.5), null).getLon()
         };
 
         switch(level) {
