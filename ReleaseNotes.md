@@ -1,6 +1,6 @@
 SNAP Release Notes
 ==================
-
+    
 # New in SNAP 7.0
 The naming of attribute features of ESRI shapefiles has changed: 
 Threshold variable names are shortened by getting rid of the threshold name part 
@@ -13,7 +13,15 @@ incremented per measure, but correspond to a band name or a time interval
     [SNAP-948]  GLCM does not work properly when working with scaled values
     [SNAP-866]  NetCdf files with extension '.nc.gz' are not read
 
-# New in SNAP 6.0.7    
+# New in SNAP 6.0.8    
+    [SNAP-1084] DateTimeUtils does not consider UTC
+    [SNAP-1083] Error while adjusting mosaic bounds to input products
+    [SNAP-1082] Angle too high when opening DIMAP product (multi-size)
+    [SNAP-1079] Saved NetCDF files can not be read by ncdump
+    [SNAP-1061] Update performance parameters help
+    
+
+# New in SNAP 6.0.7
     [SNAP-1008] ResamplingOp fails if downsampling method is different from default value 'First'
     [SNAP-1060] Downsampling fails with ArrayIndexOutOfBoundsException
     [SNAP-1065] Consider alignment of grids when resampling
