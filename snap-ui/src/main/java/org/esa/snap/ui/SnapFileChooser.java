@@ -22,8 +22,6 @@ import org.esa.snap.core.util.converters.RectangleConverter;
 import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.runtime.Config;
-import org.esa.snap.ui.vfs.niojfilechooser.NioFileSystemView;
-import org.esa.snap.ui.vfs.niojfilechooser.VFSJFileChooser;
 import org.esa.snap.vfs.preferences.model.VFSRemoteFileRepositoriesController;
 import org.esa.snap.vfs.preferences.model.VFSRemoteFileRepository;
 import org.esa.snap.vfs.ui.file.chooser.CopyOfVFSNioFileSystemView;
@@ -39,6 +37,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.prefs.BackingStoreException;
@@ -76,9 +75,6 @@ public class SnapFileChooser extends JFileChooser {
 
     public SnapFileChooser(File currentDirectory, FileSystemView fsv) {
         super(currentDirectory, fsv);
-
-        //VFSJFileChooser.getJFileChooser(this);
-
         snapPreferences = Config.instance("snap").preferences();
         resizeHandler = new ResizeHandler();
         windowCloseHandler = new CloseHandler();
@@ -90,8 +86,9 @@ public class SnapFileChooser extends JFileChooser {
         if (fileSystemView == null) {
             throw new NullPointerException("fileSystemView is null");
         }
-        List<VFSRemoteFileRepository> vfsRepositories = VFSRemoteFileRepositoriesController.getVFSRemoteFileRepositories();
-        if (vfsRepositories.size() > 0) {
+        Path configFile = VFSRemoteFileRepositoriesController.getDefaultConfigFilePath();
+        List<VFSRemoteFileRepository> vfsRepositories = VFSRemoteFileRepositoriesController.getVFSRemoteFileRepositories(configFile);
+        if (!vfsRepositories.isEmpty()) {
             CopyOfVFSNioFileSystemView fileSystemViewWrapper = new CopyOfVFSNioFileSystemView(fileSystemView, vfsRepositories);
             super.setFileSystemView(fileSystemViewWrapper);
         } else {
@@ -422,23 +419,10 @@ public class SnapFileChooser extends JFileChooser {
         return null;
     }
 
-    private class ResizeHandler extends ComponentAdapter {
-
-        @Override
-        public void componentMoved(ComponentEvent e) {
-            setDialogBounds(e.getComponent().getBounds());
-        }
-
-        @Override
-        public void componentResized(ComponentEvent e) {
-            setDialogBounds(e.getComponent().getBounds());
-        }
-    }
-
     private static class CompoundDocumentIcon implements Icon {
 
-        private final Icon baseIcon;
         private static final Icon compoundDocumentIcon = new ImageIcon(CompoundDocumentIcon.class.getResource("CompoundDocument12.png"));
+        private final Icon baseIcon;
 
         public CompoundDocumentIcon(Icon baseIcon) {
             this.baseIcon = baseIcon;
@@ -460,6 +444,19 @@ public class SnapFileChooser extends JFileChooser {
         @Override
         public int getIconHeight() {
             return baseIcon.getIconHeight();
+        }
+    }
+
+    private class ResizeHandler extends ComponentAdapter {
+
+        @Override
+        public void componentMoved(ComponentEvent e) {
+            setDialogBounds(e.getComponent().getBounds());
+        }
+
+        @Override
+        public void componentResized(ComponentEvent e) {
+            setDialogBounds(e.getComponent().getBounds());
         }
     }
 
