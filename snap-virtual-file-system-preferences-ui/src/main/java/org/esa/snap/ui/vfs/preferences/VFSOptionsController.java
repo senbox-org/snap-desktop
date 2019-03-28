@@ -14,6 +14,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.nio.file.Path;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -51,30 +52,8 @@ public class VFSOptionsController extends DefaultConfigController {
     private static final int REPO_PROP_VALUE_COLUMN = 1;
 
     private static Logger logger = Logger.getLogger(VFSOptionsController.class.getName());
-
-    private VFSRemoteFileRepositoriesController vfsRemoteFileRepositoriesController;
-
     private static ImageIcon addButtonIcon;
     private static ImageIcon removeButtonIcon;
-
-    private final JTable remoteRepositoriesListTable = getRemoteRepositoriesListTable();
-    private final JTable remoteRepositoriesPropertiesListTable = getRemoteRepositoriesPropertiesListTable();
-
-    private final JTextField remoteRepositoryNameField = new JTextField(30);
-    private final JTextField remoteRepositorySchemaField = new JTextField(30);
-    private final JTextField remoteRepositoryAddressField = new JTextField(30);
-
-    private JPanel remoteRepositoriesConfigsPanel;
-
-    private String currentRemoteRepositoryName = "";
-    private String currentRemoteRepositorySchema = "";
-
-    private String[] remoteRepositoriesIdsList;
-    private String[] remoteRepositoriesPropertiesIdsList;
-
-    private VFSOptionsBean vfsOptionsBean = new VFSOptionsBean();
-
-    private boolean isInitialized = false;
 
     static {
         try {
@@ -84,6 +63,20 @@ public class VFSOptionsController extends DefaultConfigController {
             logger.log(Level.WARNING, "Unable to load image resource. Details: " + ex.getMessage());
         }
     }
+
+    private final JTextField remoteRepositoryNameField = new JTextField(30);
+    private final JTextField remoteRepositorySchemaField = new JTextField(30);
+    private final JTextField remoteRepositoryAddressField = new JTextField(30);
+    private VFSRemoteFileRepositoriesController vfsRemoteFileRepositoriesController;
+    private JPanel remoteRepositoriesConfigsPanel;
+    private String currentRemoteRepositoryName = "";
+    private String currentRemoteRepositorySchema = "";
+    private String[] remoteRepositoriesIdsList;
+    private String[] remoteRepositoriesPropertiesIdsList;
+    private final JTable remoteRepositoriesPropertiesListTable = getRemoteRepositoriesPropertiesListTable();
+    private final JTable remoteRepositoriesListTable = getRemoteRepositoriesListTable();
+    private VFSOptionsBean vfsOptionsBean = new VFSOptionsBean();
+    private boolean isInitialized = false;
 
     /**
      * Create a {@link PropertySet} object instance that holds all parameters.
@@ -105,7 +98,8 @@ public class VFSOptionsController extends DefaultConfigController {
      */
     @Override
     protected JPanel createPanel(BindingContext context) {
-        vfsRemoteFileRepositoriesController = new VFSRemoteFileRepositoriesController();
+        Path configFile = VFSRemoteFileRepositoriesController.getDefaultConfigFilePath();
+        vfsRemoteFileRepositoriesController = new VFSRemoteFileRepositoriesController(configFile);
         JPanel remoteFileRepositoriesTabUI = getRemoteFileRepositoriesTabUI();
         loadRemoteRepositoriesOnTable();
         isInitialized = true;
@@ -118,7 +112,8 @@ public class VFSOptionsController extends DefaultConfigController {
     @Override
     public void update() {
         if (isInitialized) {
-            vfsRemoteFileRepositoriesController = new VFSRemoteFileRepositoriesController();
+            Path configFile = VFSRemoteFileRepositoriesController.getDefaultConfigFilePath();
+            vfsRemoteFileRepositoriesController = new VFSRemoteFileRepositoriesController(configFile);
             loadRemoteRepositoriesOnTable();
         }
     }

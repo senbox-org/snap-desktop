@@ -47,6 +47,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.prefs.BackingStoreException;
@@ -428,23 +429,10 @@ public class SnapFileChooser extends JFileChooser {
         return null;
     }
 
-    private class ResizeHandler extends ComponentAdapter {
-
-        @Override
-        public void componentMoved(ComponentEvent e) {
-            setDialogBounds(e.getComponent().getBounds());
-        }
-
-        @Override
-        public void componentResized(ComponentEvent e) {
-            setDialogBounds(e.getComponent().getBounds());
-        }
-    }
-
     private static class CompoundDocumentIcon implements Icon {
 
-        private final Icon baseIcon;
         private static final Icon compoundDocumentIcon = new ImageIcon(CompoundDocumentIcon.class.getResource("CompoundDocument12.png"));
+        private final Icon baseIcon;
 
         public CompoundDocumentIcon(Icon baseIcon) {
             this.baseIcon = baseIcon;
@@ -466,6 +454,19 @@ public class SnapFileChooser extends JFileChooser {
         @Override
         public int getIconHeight() {
             return baseIcon.getIconHeight();
+        }
+    }
+
+    private class ResizeHandler extends ComponentAdapter {
+
+        @Override
+        public void componentMoved(ComponentEvent e) {
+            setDialogBounds(e.getComponent().getBounds());
+        }
+
+        @Override
+        public void componentResized(ComponentEvent e) {
+            setDialogBounds(e.getComponent().getBounds());
         }
     }
 

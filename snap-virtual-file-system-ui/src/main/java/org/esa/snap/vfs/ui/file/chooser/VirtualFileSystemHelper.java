@@ -34,7 +34,7 @@ public class VirtualFileSystemHelper {
      */
     public VirtualFileSystemHelper(VFSRemoteFileRepository vfsRemoteFileRepository) throws URISyntaxException {
         AbstractRemoteFileSystemProvider fileSystemProvider = (AbstractRemoteFileSystemProvider)VFS.getInstance().getFileSystemProviderByScheme(vfsRemoteFileRepository.getScheme());
-        URI uri = new URI(vfsRemoteFileRepository.getScheme(), vfsRemoteFileRepository.getName() + ":", null);
+        URI uri = new URI(vfsRemoteFileRepository.getScheme(), vfsRemoteFileRepository.getRoot(), null);
         Map<String, ?> env = Collections.emptyMap();
         this.fileSystem = fileSystemProvider.getFileSystemOrCreate(uri, env);
     }
