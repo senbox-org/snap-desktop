@@ -1,7 +1,7 @@
 package org.esa.snap.vfs.ui.file.chooser;
 
-import org.esa.snap.ui.vfs.niojfilechooser.NioVFSFileSystemView;
 import org.esa.snap.vfs.NioFile;
+import org.esa.snap.vfs.NioPaths;
 import org.esa.snap.vfs.preferences.model.VFSRemoteFileRepository;
 import org.esa.snap.vfs.remote.AbstractRemoteFileSystem;
 
@@ -26,9 +26,9 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class CopyOfVFSNioFileSystemView extends FileSystemView {
+public class VirtualFileSystemView extends FileSystemView {
 
-    private static Logger logger = Logger.getLogger(CopyOfVFSNioFileSystemView.class.getName());
+    private static Logger logger = Logger.getLogger(VirtualFileSystemView.class.getName());
 
     /**
      * The default name for a new directory.
@@ -41,12 +41,12 @@ public class CopyOfVFSNioFileSystemView extends FileSystemView {
     private static final String NEW_FOLDER_NEXT_STRING = "New_Folder_({0})";
 
     private final FileSystemView defaultFileSystemView;
-    private final Map<String, NioVFSFileSystemView> vfsFileSystemViews;
+    private final Map<String, VirtualFileSystemHelper> vfsFileSystemViews;
     private final ImageIcon vfsRootIcon;
     private final ImageIcon vfsDirectoryIcon;
     private final ImageIcon vfsFileIcon;
 
-    public CopyOfVFSNioFileSystemView(FileSystemView defaultFileSystemView, List<VFSRemoteFileRepository> vfsRepositories) {
+    public VirtualFileSystemView(FileSystemView defaultFileSystemView, List<VFSRemoteFileRepository> vfsRepositories) {
         super();
 
         this.defaultFileSystemView = defaultFileSystemView;
@@ -54,7 +54,7 @@ public class CopyOfVFSNioFileSystemView extends FileSystemView {
         this.vfsFileSystemViews = new HashMap<>();
         for (VFSRemoteFileRepository vfsRemoteFileRepository : vfsRepositories) {
             try {
-                NioVFSFileSystemView vfsFileSystemView = new NioVFSFileSystemView(vfsRemoteFileRepository);
+                VirtualFileSystemHelper vfsFileSystemView = new VirtualFileSystemHelper(vfsRemoteFileRepository);
                 String key = vfsFileSystemView.getRoot().toString();
                 this.vfsFileSystemViews.put(key, vfsFileSystemView);
             } catch (Exception ex) {
@@ -116,13 +116,13 @@ public class CopyOfVFSNioFileSystemView extends FileSystemView {
     public File[] getRoots() {
         File[] defaultRoots = this.defaultFileSystemView.getRoots();
 
-        Collection<NioVFSFileSystemView> virtualFileSystemViews = this.vfsFileSystemViews.values();
+        Collection<VirtualFileSystemHelper> virtualFileSystemViews = this.vfsFileSystemViews.values();
         File[] roots = new File[defaultRoots.length + virtualFileSystemViews.size()];
         System.arraycopy(defaultRoots, 0, roots, 0, defaultRoots.length);
-        Iterator<NioVFSFileSystemView> it = virtualFileSystemViews.iterator();
+        Iterator<VirtualFileSystemHelper> it = virtualFileSystemViews.iterator();
         int index = defaultRoots.length;
         while (it.hasNext()) {
-            NioVFSFileSystemView value = it.next();
+            VirtualFileSystemHelper value = it.next();
             Path rootPath = value.getRoot();
             roots[index++] = new NioFile(rootPath);
         }
@@ -134,7 +134,8 @@ public class CopyOfVFSNioFileSystemView extends FileSystemView {
         if (isVirtualFileItem(dir)) {
             return getVirtualFiles(dir.toPath(), useFileHiding);
         }
-        return this.defaultFileSystemView.getFiles(dir, useFileHiding);
+        File[] localFiles = this.defaultFileSystemView.getFiles(dir, useFileHiding);
+        return fixPaths(localFiles, useFileHiding);
     }
 
     @Override
@@ -253,11 +254,38 @@ public class CopyOfVFSNioFileSystemView extends FileSystemView {
         return this.defaultFileSystemView.isTraversable(file);
     }
 
+    /**
+     * Converts given file paths from native class for OS used by FSW (which is considered to not use NIO API) to base {@code File}.
+     * Fix the issue with large paths (>256 characters) on Windows OS. (the goal)
+     */
+    private File[] fixPaths(File[] filesPaths, boolean useFileHiding) {
+        List<File> files = new ArrayList<>();
+        for (File filePath : filesPaths) {
+            if (!useFileHiding || !isHiddenFile(filePath)) {
+                String windowsShareStartPath = "\\\\";
+                if (filePath.getPath().startsWith(windowsShareStartPath)) { // is a Windows network path
+                    String[] fParts = filePath.getPath().split(windowsShareStartPath);
+                    if (fParts.length == 4) {
+                        String host = fParts[2];
+                        String share = fParts[3];
+                        filePath = NioPaths.get(windowsShareStartPath + host + '\\' + share).toFile();
+                    }
+                } else {
+                    filePath = new File(filePath.getPath());
+                }
+                if (filePath.exists()) {
+                    files.add(filePath);
+                }
+            }
+        }
+        return files.toArray(new File[0]);
+    }
+
     private boolean isVirtualFileItem(File file) {
         String scheme = file.toURI().getScheme();
-        Iterator<NioVFSFileSystemView> it = this.vfsFileSystemViews.values().iterator();
+        Iterator<VirtualFileSystemHelper> it = this.vfsFileSystemViews.values().iterator();
         while (it.hasNext()) {
-            NioVFSFileSystemView vfsfileSystemView = it.next();
+            VirtualFileSystemHelper vfsfileSystemView = it.next();
             URI uriRoot = vfsfileSystemView.getRoot().toUri();
             if (uriRoot.getScheme().equals(scheme)) {
                 return true;
@@ -272,7 +300,7 @@ public class CopyOfVFSNioFileSystemView extends FileSystemView {
 
     private File[] getVirtualFiles(Path dirPath, boolean useFileHiding) {
         String pathName = dirPath.toString();
-        NioVFSFileSystemView vfsFileSystemView = this.vfsFileSystemViews.get(pathName);
+        VirtualFileSystemHelper vfsFileSystemView = this.vfsFileSystemViews.get(pathName);
         if (vfsFileSystemView != null) {
             return vfsFileSystemView.getRootDirectories();
         }
@@ -314,7 +342,7 @@ public class CopyOfVFSNioFileSystemView extends FileSystemView {
     }
 
     private static ImageIcon loadImageIcon(String imagePath) {
-        URL imageURL = CopyOfVFSNioFileSystemView.class.getClassLoader().getResource(imagePath);
+        URL imageURL = VirtualFileSystemView.class.getClassLoader().getResource(imagePath);
         return (imageURL == null) ? null : new ImageIcon(imageURL);
     }
 }

@@ -1,4 +1,4 @@
-package org.esa.snap.ui.vfs.niojfilechooser;
+package org.esa.snap.vfs.ui.file.chooser;
 
 import org.esa.snap.vfs.NioFile;
 import org.esa.snap.vfs.VFS;
@@ -23,7 +23,7 @@ import java.util.Map;
  *
  * @author Adrian Drăghici
  */
-public class NioVFSFileSystemView {
+public class VirtualFileSystemHelper {
 
     private final AbstractRemoteFileSystem fileSystem;
 
@@ -32,7 +32,7 @@ public class NioVFSFileSystemView {
      *
      * @param vfsRemoteFileRepository The VFS Remote File Repository
      */
-    public NioVFSFileSystemView(VFSRemoteFileRepository vfsRemoteFileRepository) throws URISyntaxException {
+    public VirtualFileSystemHelper(VFSRemoteFileRepository vfsRemoteFileRepository) throws URISyntaxException {
         AbstractRemoteFileSystemProvider fileSystemProvider = (AbstractRemoteFileSystemProvider)VFS.getInstance().getFileSystemProviderByScheme(vfsRemoteFileRepository.getScheme());
         URI uri = new URI(vfsRemoteFileRepository.getScheme(), vfsRemoteFileRepository.getName() + ":", null);
         Map<String, ?> env = Collections.emptyMap();

@@ -22,18 +22,26 @@ import org.esa.snap.core.util.converters.RectangleConverter;
 import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.runtime.Config;
-import org.esa.snap.ui.vfs.niojfilechooser.NioFileSystemView;
-import org.esa.snap.ui.vfs.niojfilechooser.VFSJFileChooser;
 import org.esa.snap.vfs.preferences.model.VFSRemoteFileRepositoriesController;
 import org.esa.snap.vfs.preferences.model.VFSRemoteFileRepository;
-import org.esa.snap.vfs.ui.file.chooser.CopyOfVFSNioFileSystemView;
+import org.esa.snap.vfs.ui.file.chooser.VirtualFileSystemView;
 import sun.swing.FilePane;
 
-import javax.swing.*;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Graphics;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.HeadlessException;
+import java.awt.Rectangle;
+import java.awt.Window;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
@@ -77,8 +85,6 @@ public class SnapFileChooser extends JFileChooser {
     public SnapFileChooser(File currentDirectory, FileSystemView fsv) {
         super(currentDirectory, fsv);
 
-        //VFSJFileChooser.getJFileChooser(this);
-
         snapPreferences = Config.instance("snap").preferences();
         resizeHandler = new ResizeHandler();
         windowCloseHandler = new CloseHandler();
@@ -92,7 +98,7 @@ public class SnapFileChooser extends JFileChooser {
         }
         List<VFSRemoteFileRepository> vfsRepositories = VFSRemoteFileRepositoriesController.getVFSRemoteFileRepositories();
         if (vfsRepositories.size() > 0) {
-            CopyOfVFSNioFileSystemView fileSystemViewWrapper = new CopyOfVFSNioFileSystemView(fileSystemView, vfsRepositories);
+            VirtualFileSystemView fileSystemViewWrapper = new VirtualFileSystemView(fileSystemView, vfsRepositories);
             super.setFileSystemView(fileSystemViewWrapper);
         } else {
             super.setFileSystemView(fileSystemView);
