@@ -16,12 +16,7 @@ import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -202,22 +197,36 @@ public class VirtualFileSystemView extends FileSystemView {
 
     @Override
     public boolean isDrive(File dir) {
+        if (isVirtualFileItem(dir)) {
+            return false;
+        }
         return this.defaultFileSystemView.isDrive(dir);
     }
 
     @Override
     public boolean isFloppyDrive(File dir) {
+        if (isVirtualFileItem(dir)) {
+            return false;
+        }
         return this.defaultFileSystemView.isFloppyDrive(dir);
     }
 
     @Override
     public boolean isComputerNode(File dir) {
+        if (isVirtualFileItem(dir)) {
+            return false;
+        }
         return this.defaultFileSystemView.isComputerNode(dir);
     }
 
     @Override
     public File createFileObject(String path) {
-        throw new UnsupportedOperationException();
+        return this.defaultFileSystemView.createFileObject(path);
+    }
+
+    @Override
+    public File createFileObject(File dir, String filename) {
+        return this.defaultFileSystemView.createFileObject(dir, filename);
     }
 
     @Override
