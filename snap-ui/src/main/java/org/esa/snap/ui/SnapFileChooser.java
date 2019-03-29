@@ -22,6 +22,8 @@ import org.esa.snap.core.util.converters.RectangleConverter;
 import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.runtime.Config;
+import org.esa.snap.runtime.EngineConfig;
+import org.esa.snap.vfs.NioPaths;
 import org.esa.snap.vfs.preferences.model.VFSRemoteFileRepositoriesController;
 import org.esa.snap.vfs.preferences.model.VFSRemoteFileRepository;
 import org.esa.snap.vfs.ui.file.chooser.VirtualFileSystemView;
@@ -97,7 +99,8 @@ public class SnapFileChooser extends JFileChooser {
         if (fileSystemView == null) {
             throw new NullPointerException("fileSystemView is null");
         }
-        List<VFSRemoteFileRepository> vfsRepositories = VFSRemoteFileRepositoriesController.getVFSRemoteFileRepositories();
+        Path vfsConfigFile = NioPaths.get(EngineConfig.instance().userDir().toString() + "/config/Preferences/vfs.properties");
+        List<VFSRemoteFileRepository> vfsRepositories = VFSRemoteFileRepositoriesController.getVFSRemoteFileRepositories(vfsConfigFile);
         if (vfsRepositories.size() > 0) {
             VirtualFileSystemView fileSystemViewWrapper = new VirtualFileSystemView(fileSystemView, vfsRepositories);
             super.setFileSystemView(fileSystemViewWrapper);
