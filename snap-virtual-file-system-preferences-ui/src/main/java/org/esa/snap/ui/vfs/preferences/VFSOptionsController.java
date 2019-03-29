@@ -14,6 +14,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.net.URL;
 import java.nio.file.Path;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -57,8 +58,8 @@ public class VFSOptionsController extends DefaultConfigController {
 
     static {
         try {
-            addButtonIcon = new ImageIcon(VFSOptionsController.class.getResource("/org/esa/snap/ui/vfs/preferences/icons/list-add.png"));
-            removeButtonIcon = new ImageIcon(VFSOptionsController.class.getResource("/org/esa/snap/ui/vfs/preferences/icons/list-remove.png"));
+            addButtonIcon = loadImageIcon("icons/list-add.png");
+            removeButtonIcon = loadImageIcon("icons/list-remove.png");
         } catch (Exception ex) {
             logger.log(Level.WARNING, "Unable to load image resource. Details: " + ex.getMessage());
         }
@@ -77,6 +78,11 @@ public class VFSOptionsController extends DefaultConfigController {
     private final JTable remoteRepositoriesListTable = getRemoteRepositoriesListTable();
     private VFSOptionsBean vfsOptionsBean = new VFSOptionsBean();
     private boolean isInitialized = false;
+
+    private static ImageIcon loadImageIcon(String imagePath) {
+        URL imageURL = VFSOptionsController.class.getResource(imagePath);
+        return (imageURL == null) ? null : new ImageIcon(imageURL);
+    }
 
     /**
      * Create a {@link PropertySet} object instance that holds all parameters.

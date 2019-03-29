@@ -6,9 +6,7 @@ import org.esa.snap.vfs.preferences.model.VFSRemoteFileRepository;
 import org.esa.snap.vfs.remote.AbstractRemoteFileSystem;
 import org.esa.snap.vfs.remote.AbstractRemoteFileSystemProvider;
 
-import javax.swing.UIManager;
 import java.io.File;
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
@@ -33,7 +31,7 @@ public class VirtualFileSystemHelper {
      * @param vfsRemoteFileRepository The VFS Remote File Repository
      */
     public VirtualFileSystemHelper(VFSRemoteFileRepository vfsRemoteFileRepository) throws URISyntaxException {
-        AbstractRemoteFileSystemProvider fileSystemProvider = (AbstractRemoteFileSystemProvider)VFS.getInstance().getFileSystemProviderByScheme(vfsRemoteFileRepository.getScheme());
+        AbstractRemoteFileSystemProvider fileSystemProvider = (AbstractRemoteFileSystemProvider) VFS.getInstance().getFileSystemProviderByScheme(vfsRemoteFileRepository.getScheme());
         URI uri = new URI(vfsRemoteFileRepository.getScheme(), vfsRemoteFileRepository.getRoot(), null);
         Map<String, ?> env = Collections.emptyMap();
         this.fileSystem = fileSystemProvider.getFileSystemOrCreate(uri, env);
@@ -53,7 +51,7 @@ public class VirtualFileSystemHelper {
         for (Path p : this.fileSystem.getRootDirectories()) {
             roots.add(new VFSFileSystemRoot(p));
         }
-        return roots.toArray(new File[roots.size()]);
+        return roots.toArray(new File[0]);
     }
 
     /**

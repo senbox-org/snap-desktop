@@ -5,8 +5,7 @@ import org.esa.snap.vfs.NioPaths;
 import org.esa.snap.vfs.preferences.model.VFSRemoteFileRepository;
 import org.esa.snap.vfs.remote.AbstractRemoteFileSystem;
 
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
+import javax.swing.*;
 import javax.swing.filechooser.FileSystemView;
 import java.io.File;
 import java.io.IOException;
@@ -28,18 +27,15 @@ import java.util.logging.Logger;
 
 public class VirtualFileSystemView extends FileSystemView {
 
-    private static Logger logger = Logger.getLogger(VirtualFileSystemView.class.getName());
-
     /**
      * The default name for a new directory.
      */
     private static final String NEW_FOLDER_STRING = "New_Folder";
-
     /**
      * The default name for a next new directory.
      */
     private static final String NEW_FOLDER_NEXT_STRING = "New_Folder_({0})";
-
+    private static Logger logger = Logger.getLogger(VirtualFileSystemView.class.getName());
     private final FileSystemView defaultFileSystemView;
     private final Map<String, VirtualFileSystemHelper> vfsFileSystemViews;
     private final ImageIcon vfsRootIcon;
@@ -62,9 +58,23 @@ public class VirtualFileSystemView extends FileSystemView {
             }
         }
 
-        this.vfsRootIcon = loadImageIcon("org/esa/snap/ui/vfs/niojfilechooser/icons/vfs_root-23x16.png");
-        this.vfsDirectoryIcon = loadImageIcon("org/esa/snap/ui/vfs/niojfilechooser/icons/vfs_folder-23x16.png");
-        this.vfsFileIcon = loadImageIcon("org/esa/snap/ui/vfs/niojfilechooser/icons/vfs_file-23x16.png");
+        this.vfsRootIcon = loadImageIcon("icons/vfs_root-23x16.png");
+        this.vfsDirectoryIcon = loadImageIcon("icons/vfs_folder-23x16.png");
+        this.vfsFileIcon = loadImageIcon("icons/vfs_file-23x16.png");
+    }
+
+    private static boolean isVirtualRoot(Path path) {
+        FileSystem fileSystem = path.getFileSystem();
+        if (fileSystem instanceof AbstractRemoteFileSystem) {
+            AbstractRemoteFileSystem remoteFileSystem = (AbstractRemoteFileSystem) fileSystem;
+            return remoteFileSystem.getRoot().equals(path);
+        }
+        return false;
+    }
+
+    private static ImageIcon loadImageIcon(String imagePath) {
+        URL imageURL = VirtualFileSystemView.class.getResource(imagePath);
+        return (imageURL == null) ? null : new ImageIcon(imageURL);
     }
 
     @Override
@@ -283,10 +293,8 @@ public class VirtualFileSystemView extends FileSystemView {
 
     private boolean isVirtualFileItem(File file) {
         String scheme = file.toURI().getScheme();
-        Iterator<VirtualFileSystemHelper> it = this.vfsFileSystemViews.values().iterator();
-        while (it.hasNext()) {
-            VirtualFileSystemHelper vfsfileSystemView = it.next();
-            URI uriRoot = vfsfileSystemView.getRoot().toUri();
+        for (VirtualFileSystemHelper vfsFileSystemView : this.vfsFileSystemViews.values()) {
+            URI uriRoot = vfsFileSystemView.getRoot().toUri();
             if (uriRoot.getScheme().equals(scheme)) {
                 return true;
             }
@@ -328,21 +336,5 @@ public class VirtualFileSystemView extends FileSystemView {
             }
         }
         return new File[0];
-    }
-
-    private static boolean isVirtualRoot(Path path) {
-        FileSystem fileSystem = path.getFileSystem();
-        if (fileSystem instanceof AbstractRemoteFileSystem) {
-            AbstractRemoteFileSystem remoteFileSystem = (AbstractRemoteFileSystem) fileSystem;
-            if (remoteFileSystem.getRoot().equals(path)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private static ImageIcon loadImageIcon(String imagePath) {
-        URL imageURL = VirtualFileSystemView.class.getClassLoader().getResource(imagePath);
-        return (imageURL == null) ? null : new ImageIcon(imageURL);
     }
 }

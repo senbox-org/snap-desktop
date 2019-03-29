@@ -27,21 +27,11 @@ import org.esa.snap.vfs.preferences.model.VFSRemoteFileRepository;
 import org.esa.snap.vfs.ui.file.chooser.VirtualFileSystemView;
 import sun.swing.FilePane;
 
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
+import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Graphics;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
-import java.awt.HeadlessException;
-import java.awt.Rectangle;
-import java.awt.Window;
+import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
@@ -97,8 +87,9 @@ public class SnapFileChooser extends JFileChooser {
         if (fileSystemView == null) {
             throw new NullPointerException("fileSystemView is null");
         }
-        List<VFSRemoteFileRepository> vfsRepositories = VFSRemoteFileRepositoriesController.getVFSRemoteFileRepositories();
-        if (vfsRepositories.size() > 0) {
+        Path configFile = VFSRemoteFileRepositoriesController.getDefaultConfigFilePath();
+        List<VFSRemoteFileRepository> vfsRepositories = VFSRemoteFileRepositoriesController.getVFSRemoteFileRepositories(configFile);
+        if (!vfsRepositories.isEmpty()) {
             VirtualFileSystemView fileSystemViewWrapper = new VirtualFileSystemView(fileSystemView, vfsRepositories);
             super.setFileSystemView(fileSystemViewWrapper);
         } else {
