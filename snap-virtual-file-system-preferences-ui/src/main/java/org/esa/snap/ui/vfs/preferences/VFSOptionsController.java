@@ -14,6 +14,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.logging.Level;
@@ -51,6 +52,9 @@ public class VFSOptionsController extends DefaultConfigController {
      * The column index for remote file repository property value in remote file repository properties table.
      */
     private static final int REPO_PROP_VALUE_COLUMN = 1;
+
+    private static final String LOAD_ERROR_MESSAGE = "Unable to load VFS Remote File Repositories Properties from SNAP configuration file.";
+    private static final String SAVE_ERROR_MESSAGE = "";
 
     private static Logger logger = Logger.getLogger(VFSOptionsController.class.getName());
     private static ImageIcon addButtonIcon;
@@ -105,10 +109,15 @@ public class VFSOptionsController extends DefaultConfigController {
     @Override
     protected JPanel createPanel(BindingContext context) {
         Path configFile = VFSRemoteFileRepositoriesController.getDefaultConfigFilePath();
-        vfsRemoteFileRepositoriesController = new VFSRemoteFileRepositoriesController(configFile);
         JPanel remoteFileRepositoriesTabUI = getRemoteFileRepositoriesTabUI();
-        loadRemoteRepositoriesOnTable();
-        isInitialized = true;
+        try {
+            vfsRemoteFileRepositoriesController = new VFSRemoteFileRepositoriesController(configFile);
+            loadRemoteRepositoriesOnTable();
+            isInitialized = true;
+        } catch (IOException ex) {
+            logger.log(Level.SEVERE, LOAD_ERROR_MESSAGE + " Details: " + ex.getMessage());
+            JOptionPane.showMessageDialog(remoteRepositoriesConfigsPanel, LOAD_ERROR_MESSAGE, "Error loading VFS Remote file repositories configurations", JOptionPane.ERROR_MESSAGE);
+        }
         return remoteFileRepositoriesTabUI;
     }
 
@@ -119,8 +128,13 @@ public class VFSOptionsController extends DefaultConfigController {
     public void update() {
         if (isInitialized) {
             Path configFile = VFSRemoteFileRepositoriesController.getDefaultConfigFilePath();
-            vfsRemoteFileRepositoriesController = new VFSRemoteFileRepositoriesController(configFile);
-            loadRemoteRepositoriesOnTable();
+            try {
+                vfsRemoteFileRepositoriesController = new VFSRemoteFileRepositoriesController(configFile);
+                loadRemoteRepositoriesOnTable();
+            } catch (IOException ex) {
+                logger.log(Level.SEVERE, LOAD_ERROR_MESSAGE + " Details: " + ex.getMessage());
+                JOptionPane.showMessageDialog(remoteRepositoriesConfigsPanel, LOAD_ERROR_MESSAGE, "Error loading VFS Remote file repositories configurations", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 
@@ -129,7 +143,12 @@ public class VFSOptionsController extends DefaultConfigController {
      */
     @Override
     public void applyChanges() {
-        vfsRemoteFileRepositoriesController.saveProperties();
+        try {
+            vfsRemoteFileRepositoriesController.saveProperties();
+        } catch (Exception ex) {
+            logger.log(Level.SEVERE, SAVE_ERROR_MESSAGE + " Details: " + ex.getMessage(), ex);
+            JOptionPane.showMessageDialog(remoteRepositoriesConfigsPanel, SAVE_ERROR_MESSAGE, "Error saving VFS Remote file repositories configurations", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     /**
@@ -137,7 +156,12 @@ public class VFSOptionsController extends DefaultConfigController {
      */
     @Override
     public void cancel() {
-        vfsRemoteFileRepositoriesController.loadProperties();
+        try {
+            vfsRemoteFileRepositoriesController.loadProperties();
+        } catch (IOException ex) {
+            logger.log(Level.SEVERE, LOAD_ERROR_MESSAGE + " Details: " + ex.getMessage());
+            JOptionPane.showMessageDialog(remoteRepositoriesConfigsPanel, LOAD_ERROR_MESSAGE, "Error loading VFS Remote file repositories configurations", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     /**
