@@ -5,5 +5,8 @@ AutoUpdate-Show-In-Client: true
 OpenIDE-Module-Display-Category: SNAP Desktop
 OpenIDE-Module-Localizing-Bundle: org/esa/snap/rcp/Bundle.properties
 OpenIDE-Module-Layer: org/esa/snap/rcp/layer.xml
-OpenIDE-Module-Long-Description: NB-Module providing core GUI compone
- nts for SNAP Desktop
+OpenIDE-Module-Long-Description: Modules providing API and GUI components for SNAP Desktop
+ <p>The changes for this version can be viewed in our
+  <a href="https://senbox.atlassian.net/issues/?filter=-4&jql=project%20%3D%20SNAP%20AND%20fixVersion%20%3D%20${snap.majorVersion}.${snap.minorVersion}.${snap.incrementalVersion}">issue tracker</a></p>
+ <p><b>Publication date:</b> ${snap.buildDate}<br/>
+ <b>License:</b> http://www.gnu.org/licenses/gpl.html</p>
