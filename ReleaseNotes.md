@@ -1,6 +1,10 @@
 SNAP Release Notes
 ==================
 
+# New in SNAP 6.0.9
+
+    SNAP-1086 Link to changelog not correct in plugin description for SNAP
+    
 # New in SNAP 6.0.8
     
     [SNAP-1084] DateTimeUtils does not consider UTC
