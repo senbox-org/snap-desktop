@@ -6,6 +6,7 @@ SNAP Release Notes
     [SNAP-1084] DateTimeUtils does not consider UTC
     [SNAP-1083] Error while adjusting mosaic bounds to input products
     [SNAP-1082] Angle too high when opening DIMAP product (multi-size)
+    [SNAP-1078] Module updates shall come with release notes / changelog
     [SNAP-1079] Saved NetCDF files can not be read by ncdump
     [SNAP-1061] Update performance parameters help
     
