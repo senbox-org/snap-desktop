@@ -175,9 +175,9 @@ public class AddElevationAction extends AbstractAction implements ContextAwareAc
         }
 
         computeBands(product,
-                demDescriptor,
-                dialogData.outputElevationBand ? dialogData.elevationBandName : null,
-                resampling);
+                     demDescriptor,
+                     dialogData.outputElevationBand ? dialogData.elevationBandName : null,
+                     resampling);
     }
 
     @Override
@@ -236,7 +236,7 @@ public class AddElevationAction extends AbstractAction implements ContextAwareAc
         PropertySet propertySet = PropertyContainer.createObjectBacked(dialogData);
         configureDemNameProperty(propertySet, "demName", demNames, "SRTM 3sec (Auto Download)");
         configureDemNameProperty(propertySet, "resamplingMethod", ResamplingFactory.resamplingNames,
-                ResamplingFactory.BILINEAR_INTERPOLATION_NAME);
+                                 ResamplingFactory.BILINEAR_INTERPOLATION_NAME);
         configureBandNameProperty(propertySet, "elevationBandName", product);
         configureBandNameProperty(propertySet, "latitudeBandName", product);
         configureBandNameProperty(propertySet, "longitudeBandName", product);
@@ -433,13 +433,13 @@ public class AddElevationAction extends AbstractAction implements ContextAwareAc
             final String bandName = value.toString().trim();
             if (!ProductNode.isValidNodeName(bandName)) {
                 throw new ValidationException(MessageFormat.format("The band name ''{0}'' appears not to be valid.\n" +
-                                "Please choose another one.",
-                        bandName
+                                                                           "Please choose another one.",
+                                                                   bandName
                 ));
             } else if (product.containsBand(bandName)) {
                 throw new ValidationException(MessageFormat.format("The selected product already contains a band named ''{0}''.\n" +
-                                "Please choose another one.",
-                        bandName
+                                                                           "Please choose another one.",
+                                                                   bandName
                 ));
             }
 
