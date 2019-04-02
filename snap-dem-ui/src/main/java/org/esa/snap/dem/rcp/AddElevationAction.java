@@ -38,11 +38,9 @@ import org.esa.snap.core.dataop.dem.ElevationModelDescriptor;
 import org.esa.snap.core.dataop.dem.ElevationModelRegistry;
 import org.esa.snap.core.dataop.resamp.Resampling;
 import org.esa.snap.core.dataop.resamp.ResamplingFactory;
-import org.esa.snap.core.gpf.OperatorSpi;
 import org.esa.snap.core.image.RasterDataNodeSampleOpImage;
 import org.esa.snap.core.image.ResolutionLevel;
 import org.esa.snap.dem.dataio.DEMFactory;
-import org.esa.snap.dem.gpf.AddElevationOp;
 import org.esa.snap.engine_utilities.datamodel.Unit;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
@@ -117,9 +115,6 @@ public class AddElevationAction extends AbstractAction implements ContextAwareAc
     private final Lookup lkp;
     private Product product;
 
-
-    private final static OperatorSpi spi = new AddElevationOp.Spi();
-
     public static final String DIALOG_TITLE = "Add Elevation Band";
     public static final String DEFAULT_ELEVATION_BAND_NAME = "elevation";
     public static final String DEFAULT_LATITUDE_BAND_NAME = "corr_latitude";
@@ -167,35 +162,22 @@ public class AddElevationAction extends AbstractAction implements ContextAwareAc
         }
 
         final String demName = DEMFactory.getProperDEMName(dialogData.demName);
-        String resamplingName = dialogData.resamplingMethod;
-        if (resamplingName == null) {
-            resamplingName = Resampling.BILINEAR_INTERPOLATION.getName();
+        final ElevationModelRegistry elevationModelRegistry = ElevationModelRegistry.getInstance();
+        final ElevationModelDescriptor demDescriptor = elevationModelRegistry.getDescriptor(demName);
+        if (demDescriptor == null) {
+            Dialogs.showError(DIALOG_TITLE, "The DEM '" + demName + "' is not supported.");
+            return;
         }
-        AddElevationOp op = (AddElevationOp) spi.createOperator();
-        op.setSourceProduct(product);
-        op.setParameter("elevationBandName", demName);
-        op.setParameter("demResamplingMethod", resamplingName);
 
-        // get targetProduct => gets initialize to be executed
-        Product targetProduct = op.getTargetProduct();
+        Resampling resampling = Resampling.BILINEAR_INTERPOLATION;
+        if (dialogData.resamplingMethod != null) {
+            resampling = ResamplingFactory.createResampling(dialogData.resamplingMethod);
+        }
 
-//        final String demName = DEMFactory.getProperDEMName(dialogData.demName);
-//        final ElevationModelRegistry elevationModelRegistry = ElevationModelRegistry.getInstance();
-//        final ElevationModelDescriptor demDescriptor = elevationModelRegistry.getDescriptor(demName);
-//        if (demDescriptor == null) {
-//            Dialogs.showError(DIALOG_TITLE, "The DEM '" + demName + "' is not supported.");
-//            return;
-//        }
-//
-//        Resampling resampling = Resampling.BILINEAR_INTERPOLATION;
-//        if (dialogData.resamplingMethod != null) {
-//            resampling = ResamplingFactory.createResampling(dialogData.resamplingMethod);
-//        }
-//
-//        computeBands(product,
-//                demDescriptor,
-//                dialogData.outputElevationBand ? dialogData.elevationBandName : null,
-//                resampling);
+        computeBands(product,
+                     demDescriptor,
+                     dialogData.outputElevationBand ? dialogData.elevationBandName : null,
+                     resampling);
     }
 
     @Override
@@ -215,16 +197,15 @@ public class AddElevationAction extends AbstractAction implements ContextAwareAc
     }
 
     private static void addElevationBand(Product product, ElevationModel dem, String elevationBandName) {
-
-//        final GeoCoding geoCoding = product.getSceneGeoCoding();
-//        ElevationModelDescriptor demDescriptor = dem.getDescriptor();
-//        final float noDataValue = dem.getDescriptor().getNoDataValue();
-//        final Band elevationBand = product.addBand(elevationBandName, ProductData.TYPE_FLOAT32);
-//        elevationBand.setNoDataValueUsed(true);
-//        elevationBand.setNoDataValue(noDataValue);
-//        elevationBand.setUnit(Unit.METERS);
-//        elevationBand.setDescription(demDescriptor.getName());
-//        elevationBand.setSourceImage(createElevationSourceImage(dem, geoCoding, elevationBand));;
+        final GeoCoding geoCoding = product.getSceneGeoCoding();
+        ElevationModelDescriptor demDescriptor = dem.getDescriptor();
+        final float noDataValue = dem.getDescriptor().getNoDataValue();
+        final Band elevationBand = product.addBand(elevationBandName, ProductData.TYPE_FLOAT32);
+        elevationBand.setNoDataValueUsed(true);
+        elevationBand.setNoDataValue(noDataValue);
+        elevationBand.setUnit(Unit.METERS);
+        elevationBand.setDescription(demDescriptor.getName());
+        elevationBand.setSourceImage(createElevationSourceImage(dem, geoCoding, elevationBand));
     }
 
     private static RenderedImage createElevationSourceImage(final ElevationModel dem, final GeoCoding geoCoding, final Band band) {
@@ -255,7 +236,7 @@ public class AddElevationAction extends AbstractAction implements ContextAwareAc
         PropertySet propertySet = PropertyContainer.createObjectBacked(dialogData);
         configureDemNameProperty(propertySet, "demName", demNames, "SRTM 3sec (Auto Download)");
         configureDemNameProperty(propertySet, "resamplingMethod", ResamplingFactory.resamplingNames,
-                ResamplingFactory.BILINEAR_INTERPOLATION_NAME);
+                                 ResamplingFactory.BILINEAR_INTERPOLATION_NAME);
         configureBandNameProperty(propertySet, "elevationBandName", product);
         configureBandNameProperty(propertySet, "latitudeBandName", product);
         configureBandNameProperty(propertySet, "longitudeBandName", product);
@@ -452,13 +433,13 @@ public class AddElevationAction extends AbstractAction implements ContextAwareAc
             final String bandName = value.toString().trim();
             if (!ProductNode.isValidNodeName(bandName)) {
                 throw new ValidationException(MessageFormat.format("The band name ''{0}'' appears not to be valid.\n" +
-                                "Please choose another one.",
-                        bandName
+                                                                           "Please choose another one.",
+                                                                   bandName
                 ));
             } else if (product.containsBand(bandName)) {
                 throw new ValidationException(MessageFormat.format("The selected product already contains a band named ''{0}''.\n" +
-                                "Please choose another one.",
-                        bandName
+                                                                           "Please choose another one.",
+                                                                   bandName
                 ));
             }
 
