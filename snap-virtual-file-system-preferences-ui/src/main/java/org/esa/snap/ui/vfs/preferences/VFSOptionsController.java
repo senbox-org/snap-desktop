@@ -78,8 +78,8 @@ public class VFSOptionsController extends DefaultConfigController {
     private String currentRemoteRepositorySchema = "";
     private String[] remoteRepositoriesIdsList;
     private String[] remoteRepositoriesPropertiesIdsList;
-    private final JTable remoteRepositoriesListTable = getRemoteRepositoriesListTable();
     private final JTable remoteRepositoriesPropertiesListTable = getRemoteRepositoriesPropertiesListTable();
+    private final JTable remoteRepositoriesListTable = getRemoteRepositoriesListTable();
     private VFSOptionsBean vfsOptionsBean = new VFSOptionsBean();
     private boolean isInitialized = false;
 
