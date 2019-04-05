@@ -1,12 +1,10 @@
 package org.esa.snap.rcp.actions.file;
 
 import org.esa.snap.vfs.NioPaths;
-import org.esa.snap.vfs.VFS;
 
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.prefs.BackingStoreException;
@@ -50,32 +48,14 @@ class RecentPaths {
         flush();
     }
 
-    private String removeVFSPaths(String paths) {
-        String nonVFSPaths = "";
-        if (paths != null) {
-            for (String path : paths.split(File.pathSeparator)) {
-                try {
-                    if (!VFS.getInstance().isVirtualFileSystemPath(path)) {
-                        nonVFSPaths = nonVFSPaths.isEmpty() ? nonVFSPaths : nonVFSPaths.concat(";");
-                        nonVFSPaths = nonVFSPaths.concat(path);
-                    }
-                } catch (Exception ignored) {
-                    //ignored
-                }
-
-            }
-        }
-        return nonVFSPaths;
-    }
-
     private Stream<String> getAsStream() {
-        String value = removeVFSPaths(preferences.get(key, null));
+        String value = preferences.get(key, null);
         if (value == null) {
             return Stream.empty();
         }
         return Arrays
                 .stream(value.split(File.pathSeparator))
-                .map(Paths::get)
+                .map(NioPaths::get)
                 .filter(path -> !filterExisting || Files.exists(path))
                 .map(Path::toString);
     }
