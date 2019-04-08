@@ -1,5 +1,6 @@
 package org.esa.snap.vfs.ui.file.chooser;
 
+import org.apache.commons.lang.SystemUtils;
 import org.esa.snap.vfs.NioFile;
 import org.esa.snap.vfs.NioPaths;
 import org.esa.snap.vfs.preferences.model.VFSRemoteFileRepository;
@@ -177,12 +178,25 @@ public class VirtualFileSystemView extends FileSystemView {
         return this.defaultFileSystemView.isRoot(file);
     }
 
+    private File[] getOSRoots() {
+        File[] osRoots = this.defaultFileSystemView.getRoots();
+        if (SystemUtils.IS_OS_WINDOWS) {
+            try {
+                Class<?> nativeOsFileClass = Class.forName("sun.awt.shell.ShellFolder");
+                osRoots = (File[]) nativeOsFileClass.getMethod("get", String.class).invoke(null, "fileChooserComboBoxFolders");
+            } catch (Exception ignored) {
+                //leave default
+            }
+        }
+        return osRoots;
+    }
+
     /**
      * Gets all root directories on this system. For example, on OpenStack Swift, this would be the container directories.
      */
     @Override
     public File[] getRoots() {
-        File[] defaultRoots = this.defaultFileSystemView.getRoots();
+        File[] defaultRoots = getOSRoots();
 
         Collection<VirtualFileSystemHelper> virtualFileSystemViews = this.vfsFileSystemViews.values();
         File[] roots = new File[defaultRoots.length + virtualFileSystemViews.size()];
