@@ -47,6 +47,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.logging.Level;
@@ -98,7 +99,12 @@ public class SnapFileChooser extends JFileChooser {
             throw new NullPointerException("fileSystemView is null");
         }
         Path configFile = VFSRemoteFileRepositoriesController.getDefaultConfigFilePath();
-        List<VFSRemoteFileRepository> vfsRepositories = VFSRemoteFileRepositoriesController.getVFSRemoteFileRepositories(configFile);
+        List<VFSRemoteFileRepository> vfsRepositories;
+        try {
+            vfsRepositories = VFSRemoteFileRepositoriesController.getVFSRemoteFileRepositories(configFile);
+        } catch (IOException ex) {
+            throw new IllegalStateException(ex);
+        }
         if (!vfsRepositories.isEmpty()) {
             VirtualFileSystemView fileSystemViewWrapper = new VirtualFileSystemView(fileSystemView, vfsRepositories);
             super.setFileSystemView(fileSystemViewWrapper);
