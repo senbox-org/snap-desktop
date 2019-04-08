@@ -54,7 +54,7 @@ public class VFSOptionsController extends DefaultConfigController {
     private static final int REPO_PROP_VALUE_COLUMN = 1;
 
     private static final String LOAD_ERROR_MESSAGE = "Unable to load VFS Remote File Repositories Properties from SNAP configuration file.";
-    private static final String SAVE_ERROR_MESSAGE = "";
+    private static final String SAVE_ERROR_MESSAGE = "Unable to save VFS Remote File Repositories Properties to SNAP configuration file.";
 
     private static Logger logger = Logger.getLogger(VFSOptionsController.class.getName());
     private static ImageIcon addButtonIcon;
@@ -145,6 +145,7 @@ public class VFSOptionsController extends DefaultConfigController {
     public void applyChanges() {
         try {
             vfsRemoteFileRepositoriesController.saveProperties();
+            new Thread(() -> JOptionPane.showMessageDialog(remoteRepositoriesConfigsPanel, "VFS Remote File Repositories Properties saved successfully. Please restart SNAP to take effect.", "Save VFS Remote file repositories configurations", JOptionPane.INFORMATION_MESSAGE)).start();
         } catch (Exception ex) {
             logger.log(Level.SEVERE, SAVE_ERROR_MESSAGE + " Details: " + ex.getMessage(), ex);
             JOptionPane.showMessageDialog(remoteRepositoriesConfigsPanel, SAVE_ERROR_MESSAGE, "Error saving VFS Remote file repositories configurations", JOptionPane.ERROR_MESSAGE);

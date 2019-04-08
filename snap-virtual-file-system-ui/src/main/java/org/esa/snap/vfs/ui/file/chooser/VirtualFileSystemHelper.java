@@ -16,9 +16,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * FileSystemView component for VFS.
- * FileSystemView that handles some specific VFS specific concepts.
+ * VirtualFileSystemHelper component for JFileChooser.
  *
+ * @author Jean Coravu
  * @author Adrian Drăghici
  */
 public class VirtualFileSystemHelper {
