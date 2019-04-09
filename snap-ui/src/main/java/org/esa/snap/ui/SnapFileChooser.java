@@ -47,6 +47,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.logging.Level;
@@ -102,7 +103,7 @@ public class SnapFileChooser extends JFileChooser {
         try {
             vfsRepositories = VFSRemoteFileRepositoriesController.getVFSRemoteFileRepositories(configFile);
         } catch (IOException e) {
-            throw new IllegalStateException(ex);
+            throw new IllegalStateException(e);
         }
         if (vfsRepositories != null && !vfsRepositories.isEmpty()) {
             VirtualFileSystemView fileSystemViewWrapper = new VirtualFileSystemView(fileSystemView, vfsRepositories);
