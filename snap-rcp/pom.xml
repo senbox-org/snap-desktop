@@ -55,6 +55,11 @@
                     <useDefaultManifestFile>true</useDefaultManifestFile>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>1.16</version>
+            </plugin>
         </plugins>
     </build>
 
