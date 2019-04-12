@@ -15,14 +15,16 @@ public class ThirdPartyLicensesTableModel extends DefaultTableModel {
 
     private static final String NAME_COL_NAME = "Name";
     private static final String DESCRIPTION_USE_COL_NAME = "Description/Use";
-    private static final String COMPATIBLE_WITH_SNAP_GPL_COL_NAME = "Compatible with \n SNAP/GPLv3";
+//    private static final String COMPATIBLE_WITH_SNAP_GPL_COL_NAME = "Compatible with \n SNAP/GPLv3";
+//    private static final String COMPATIBLE_WITH_SNAP_GPL_COL_NAME = "<html><b>Compatible with <br> SNAP/GPLv3</b></html>";
+    private static final String COMPATIBLE_WITH_SNAP_GPL_COL_NAME = "<html><b>SNAP/GPLv3 <br> compatible</b></html>";
 
-    private static final int NAME_COL_INDEX = 0;
-    private static final int DESCRIPTION_USE_COL_INDEX = 1;
-    private static final int IPR_OWNER_COL_INDEX = 2;
-    private static final int LICENSE_COL_INDEX = 3;
-    private static final int COMPATIBLE_WITH_SNAP_GPL_COL_INDEX = 4;
-    private static final int COMMENTS_COL_INDEX = 5;
+    static final int NAME_COL_INDEX = 0;
+    static final int DESCRIPTION_USE_COL_INDEX = 1;
+    static final int IPR_OWNER_COL_INDEX = 2;
+    static final int LICENSE_COL_INDEX = 3;
+    static final int COMPATIBLE_WITH_SNAP_GPL_COL_INDEX = 4;
+    static final int COMMENTS_COL_INDEX = 5;
 
     private static final int NUMBER_OF_COLUMNS = 6;
 
