@@ -252,6 +252,7 @@
                                     <directory>../../snap-engine</directory>
                                     <includes>
                                         <include>VERSION.txt</include>
+                                        <include>THIRDPARTY_LICENSES.txt</include>
                                     </includes>
                                     <filtering>true</filtering>
                                 </resource>

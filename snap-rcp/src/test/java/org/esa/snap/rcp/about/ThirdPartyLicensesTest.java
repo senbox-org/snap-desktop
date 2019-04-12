@@ -8,47 +8,88 @@ import static org.junit.Assert.assertNotNull;
 public class ThirdPartyLicensesTest {
 
     @Test
-    public void testLoadSolarSpectrumData() {
-        // solar_spectrum_2:
+    public void testLoadThirdPartyLicensesFromCsv_fromResource() {
         final ThirdPartyLicensesCsvTable licensesCsvTable = new ThirdPartyLicensesCsvTable();
         assertNotNull(licensesCsvTable);
-        assertEquals(130, licensesCsvTable.getLength());
 
         assertEquals("Java SE JRE", licensesCsvTable.getName(0));
-        assertEquals("olingo", licensesCsvTable.getName(67));
-        assertEquals("iText", licensesCsvTable.getName(129));
+        assertEquals("olingo", licensesCsvTable.getName(62));
+        assertEquals("iText", licensesCsvTable.getName(112));
 
         assertEquals("Java Runtime", licensesCsvTable.getDescrUse(0));
-        assertEquals("Open Data Protocol", licensesCsvTable.getDescrUse(67));
-        assertEquals("PDF Library", licensesCsvTable.getDescrUse(129));
+        assertEquals("Open Data Protocol", licensesCsvTable.getDescrUse(62));
+        assertEquals("PDF Library", licensesCsvTable.getDescrUse(112));
 
         assertEquals("Oracle", licensesCsvTable.getIprOwner(0));
-        assertEquals("olingo", licensesCsvTable.getIprOwner(67));
-        assertEquals("lowagie", licensesCsvTable.getIprOwner(129));
+        assertEquals("olingo", licensesCsvTable.getIprOwner(62));
+        assertEquals("lowagie", licensesCsvTable.getIprOwner(112));
 
         assertEquals("Oracle Binary Code License", licensesCsvTable.getLicense(0));
-        assertEquals("Apache License", licensesCsvTable.getLicense(67));
-        assertEquals("MPL", licensesCsvTable.getLicense(129));
+        assertEquals("Apache License", licensesCsvTable.getLicense(62));
+        assertEquals("MPL", licensesCsvTable.getLicense(112));
 
         assertEquals("YES", licensesCsvTable.getCompatibleWithSnapGpl(0));
-        assertEquals("YES", licensesCsvTable.getCompatibleWithSnapGpl(67));
-        assertEquals("YES", licensesCsvTable.getCompatibleWithSnapGpl(129));
+        assertEquals("YES", licensesCsvTable.getCompatibleWithSnapGpl(62));
+        assertEquals("YES", licensesCsvTable.getCompatibleWithSnapGpl(112));
 
         assertEquals("Distribution FAQs", licensesCsvTable.getComment(0));
-        assertEquals("NONE", licensesCsvTable.getComment(67));
-        assertEquals("NONE", licensesCsvTable.getComment(129));
+        assertEquals("NONE", licensesCsvTable.getComment(62));
+        assertEquals("NONE", licensesCsvTable.getComment(112));
 
         assertEquals("http://www.oracle.com/technetwork/java/javase/overview/index.html", licensesCsvTable.getIprOwnerUrl(0));
-        assertEquals("http://olingo.apache.org/", licensesCsvTable.getIprOwnerUrl(67));
-        assertEquals("http://www.lowagie.com/iText/", licensesCsvTable.getIprOwnerUrl(129));
+        assertEquals("http://olingo.apache.org/", licensesCsvTable.getIprOwnerUrl(62));
+        assertEquals("http://www.lowagie.com/iText/", licensesCsvTable.getIprOwnerUrl(112));
 
         assertEquals("http://www.oracle.com/technetwork/java/javase/terms/license/index.html", licensesCsvTable.getLicenseUrl(0));
-        assertEquals("https://www.apache.org/licenses/", licensesCsvTable.getLicenseUrl(67));
-        assertEquals("https://www.mozilla.org/en-US/MPL/", licensesCsvTable.getLicenseUrl(129));
+        assertEquals("https://www.apache.org/licenses/", licensesCsvTable.getLicenseUrl(62));
+        assertEquals("https://www.mozilla.org/en-US/MPL/", licensesCsvTable.getLicenseUrl(112));
 
         assertEquals("https://java.com/en/download/faq/", licensesCsvTable.getCommentUrl(0));
-        assertEquals("NONE", licensesCsvTable.getCommentUrl(67));
-        assertEquals("http://www.eclipse.org/legal/epl-2.0/", licensesCsvTable.getCommentUrl(117));
-        assertEquals("NONE", licensesCsvTable.getCommentUrl(129));
+        assertEquals("NONE", licensesCsvTable.getCommentUrl(62));
+        assertEquals("NONE", licensesCsvTable.getCommentUrl(112));
+    }
+
+    @Test
+    public void testLoadThirdPartyLicensesFromCsv_fromFile() {
+        final String licensesFileString = ThirdPartyLicensesCsvTable.class.getResource("THIRDPARTY_LICENSES.txt").getPath();
+
+        final ThirdPartyLicensesCsvTable licensesCsvTable = new ThirdPartyLicensesCsvTable(licensesFileString);
+        assertNotNull(licensesCsvTable);
+
+        assertEquals("Java SE JRE", licensesCsvTable.getName(0));
+        assertEquals("olingo", licensesCsvTable.getName(62));
+        assertEquals("iText", licensesCsvTable.getName(112));
+
+        assertEquals("Java Runtime", licensesCsvTable.getDescrUse(0));
+        assertEquals("Open Data Protocol", licensesCsvTable.getDescrUse(62));
+        assertEquals("PDF Library", licensesCsvTable.getDescrUse(112));
+
+        assertEquals("Oracle", licensesCsvTable.getIprOwner(0));
+        assertEquals("olingo", licensesCsvTable.getIprOwner(62));
+        assertEquals("lowagie", licensesCsvTable.getIprOwner(112));
+
+        assertEquals("Oracle Binary Code License", licensesCsvTable.getLicense(0));
+        assertEquals("Apache License", licensesCsvTable.getLicense(62));
+        assertEquals("MPL", licensesCsvTable.getLicense(112));
+
+        assertEquals("YES", licensesCsvTable.getCompatibleWithSnapGpl(0));
+        assertEquals("YES", licensesCsvTable.getCompatibleWithSnapGpl(62));
+        assertEquals("YES", licensesCsvTable.getCompatibleWithSnapGpl(112));
+
+        assertEquals("Distribution FAQs", licensesCsvTable.getComment(0));
+        assertEquals("NONE", licensesCsvTable.getComment(62));
+        assertEquals("NONE", licensesCsvTable.getComment(112));
+
+        assertEquals("http://www.oracle.com/technetwork/java/javase/overview/index.html", licensesCsvTable.getIprOwnerUrl(0));
+        assertEquals("http://olingo.apache.org/", licensesCsvTable.getIprOwnerUrl(62));
+        assertEquals("http://www.lowagie.com/iText/", licensesCsvTable.getIprOwnerUrl(112));
+
+        assertEquals("http://www.oracle.com/technetwork/java/javase/terms/license/index.html", licensesCsvTable.getLicenseUrl(0));
+        assertEquals("https://www.apache.org/licenses/", licensesCsvTable.getLicenseUrl(62));
+        assertEquals("https://www.mozilla.org/en-US/MPL/", licensesCsvTable.getLicenseUrl(112));
+
+        assertEquals("https://java.com/en/download/faq/", licensesCsvTable.getCommentUrl(0));
+        assertEquals("NONE", licensesCsvTable.getCommentUrl(62));
+        assertEquals("NONE", licensesCsvTable.getCommentUrl(112));
     }
 }

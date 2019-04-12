@@ -6,34 +6,26 @@ package org.esa.snap.rcp.about;
  * @author olafd
  */
 public class ThirdPartyLicense {
+    // currently we use just 5 columns from the 9 columns in the csv file:
     private String name;
     private String descriptionUse;
     private String iprOwner;
     private String license;
-    private String isSnapCompatible;
-    private String comments;
     private String iprOwnerUrl;
     private String licenseUrl;
-    private String commentsUrl;
 
     ThirdPartyLicense(String name,
                              String descriptionUse,
                              String iprOwner,
                              String license,
-                             String isSnapCompatible,
-                             String comments,
                              String iprOwnerUrl,
-                             String licenseUrl,
-                             String commentsUrl) {
+                             String licenseUrl) {
         this.name = name;
         this.descriptionUse = descriptionUse;
         this.iprOwner = iprOwner;
         this.license = license;
-        this.isSnapCompatible = isSnapCompatible;
-        this.comments = comments;
         this.iprOwnerUrl = iprOwnerUrl;
         this.licenseUrl = licenseUrl;
-        this.commentsUrl = commentsUrl;
     }
 
     public String getName() {
@@ -52,14 +44,6 @@ public class ThirdPartyLicense {
         return license;
     }
 
-    String getIsSnapCompatible() {
-        return isSnapCompatible;
-    }
-
-    public String getComments() {
-        return comments;
-    }
-
     private String getIprOwnerUrl() {
         return iprOwnerUrl;
     }
@@ -68,9 +52,6 @@ public class ThirdPartyLicense {
         return licenseUrl;
     }
 
-    private String getCommentsUrl() {
-        return commentsUrl;
-    }
 
     /**
      * Provides the correct URL related to the colunm of the corresponding {@link ThirdPartyLicensesTableModel}
@@ -85,8 +66,6 @@ public class ThirdPartyLicense {
                 return getIprOwnerUrl();
             case ThirdPartyLicensesTableModel.LICENSE_COL_NAME:
                 return getLicenseUrl();
-            case ThirdPartyLicensesTableModel.COMMENTS_COL_NAME:
-                return getCommentsUrl();
             default:
                 break;
         }
