@@ -43,13 +43,19 @@ public class VirtualFileSystemView extends FileSystemView {
      * The default name for a next new directory.
      */
     private static final String NEW_FOLDER_NEXT_STRING = "New_Folder_({0})";
-
+    private static final ImageIcon vfsRootIcon;
+    private static final ImageIcon vfsDirectoryIcon;
+    private static final ImageIcon vfsFileIcon;
     private static Logger logger = Logger.getLogger(VirtualFileSystemView.class.getName());
+
+    static {
+        vfsRootIcon = loadImageIcon("icons/vfs_root-23x16.png");
+        vfsDirectoryIcon = loadImageIcon("icons/vfs_folder-23x16.png");
+        vfsFileIcon = loadImageIcon("icons/vfs_file-23x16.png");
+    }
+
     private final FileSystemView defaultFileSystemView;
     private final Map<String, VirtualFileSystemHelper> vfsFileSystemViews;
-    private final ImageIcon vfsRootIcon;
-    private final ImageIcon vfsDirectoryIcon;
-    private final ImageIcon vfsFileIcon;
 
     /**
      * Creates the FileSystemView component for VFS.
@@ -72,10 +78,6 @@ public class VirtualFileSystemView extends FileSystemView {
                 logger.log(Level.SEVERE, "Unable to initialize " + vfsRemoteFileRepository.getName() + " VFS. Details: " + ex.getMessage(), ex);
             }
         }
-
-        this.vfsRootIcon = loadImageIcon("icons/vfs_root-23x16.png");
-        this.vfsDirectoryIcon = loadImageIcon("icons/vfs_folder-23x16.png");
-        this.vfsFileIcon = loadImageIcon("icons/vfs_file-23x16.png");
     }
 
     /**
@@ -402,12 +404,12 @@ public class VirtualFileSystemView extends FileSystemView {
         if (isVirtualFileItem(file)) {
             AbstractRemoteFileSystem remoteFileSystem = (AbstractRemoteFileSystem) file.toPath().getFileSystem();
             if (remoteFileSystem.getRoot().equals(file.toPath())) {
-                return this.vfsRootIcon;
+                return vfsRootIcon;
             }
             if (Files.isDirectory(file.toPath())) {
-                return this.vfsDirectoryIcon;
+                return vfsDirectoryIcon;
             }
-            return this.vfsFileIcon;
+            return vfsFileIcon;
         }
         return this.defaultFileSystemView.getSystemIcon(file);
     }
