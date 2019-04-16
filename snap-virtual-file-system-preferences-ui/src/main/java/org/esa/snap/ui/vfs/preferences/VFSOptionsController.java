@@ -76,6 +76,7 @@ public class VFSOptionsController extends DefaultConfigController {
     private JPanel remoteRepositoriesConfigsPanel;
     private String currentRemoteRepositoryName = "";
     private String currentRemoteRepositorySchema = "";
+    private String currentRemoteRepositoryPropertyName = "";
     private String[] remoteRepositoriesIdsList;
     private String[] remoteRepositoriesPropertiesIdsList;
     private final JTable remoteRepositoriesPropertiesListTable = getRemoteRepositoriesPropertiesListTable();
@@ -357,7 +358,7 @@ public class VFSOptionsController extends DefaultConfigController {
                 vfsRemoteFileRepositoriesController.setRemoteRepositorySchema(remoteRepositoryId, newRepositorySchema);
                 currentRemoteRepositorySchema = newRepositorySchema;
             } catch (IllegalArgumentException ex) {
-                JOptionPane.showMessageDialog(remoteRepositoriesListTable, "Invalid VFS repository schema! Please check if it meets following requirements:\n- It must be unique\n- It must be alpha-numeric and end with \":\" character (colon)", "Update schema for remote file repository", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(remoteRepositoriesListTable, "Invalid VFS repository schema! Please check if it meets following requirements:\n- It must be unique\n- It must be alpha-numeric", "Update schema for remote file repository", JOptionPane.WARNING_MESSAGE);
             }
         }
     }
@@ -440,6 +441,7 @@ public class VFSOptionsController extends DefaultConfigController {
             String remoteRepositoryPropertyId = vfsRemoteFileRepositoriesController.registerNewRemoteRepositoryProperty(remoteRepositoryId);
             vfsRemoteFileRepositoriesController.setRemoteRepositoryPropertyName(remoteRepositoryId, remoteRepositoryPropertyId, newRepositoryPropertyName);
             vfsRemoteFileRepositoriesController.setRemoteRepositoryPropertyValue(remoteRepositoryId, remoteRepositoryPropertyId, newRepositoryPropertyValue);
+            currentRemoteRepositoryPropertyName = newRepositoryPropertyName;
             loadRemoteRepositoryPropertiesOnTable(remoteRepositoryId);
         } catch (IllegalArgumentException ex) {
             logger.log(Level.FINE, "Unable to add remote file repository property. Details: " + ex.getMessage());
@@ -509,15 +511,20 @@ public class VFSOptionsController extends DefaultConfigController {
             String newValue = (String) remoteRepositoriesPropertiesListTable.getValueAt(selectedRow, selectedColumn);
             switch (selectedColumn) {
                 case REPO_PROP_NAME_COLUMN:
-                    try {
-                        vfsRemoteFileRepositoriesController.setRemoteRepositoryPropertyName(remoteRepositoryId, remoteRepositoryPropertyId, newValue);
-                    } catch (IllegalArgumentException ex) {
-                        JOptionPane.showMessageDialog(remoteRepositoriesPropertiesListTable, "Invalid VFS repository property name! Please check if it meets following requirements:\n- Property name must be unique\n- Property name must be alphanumeric.\n- Underscores are allowed in property name.\n- Length of property name is between 3 and 25 characters.", "Update remote file repository property name", JOptionPane.WARNING_MESSAGE);
+                    if (!newValue.contentEquals(currentRemoteRepositoryPropertyName)) {
+                        try {
+                            vfsRemoteFileRepositoriesController.setRemoteRepositoryPropertyName(remoteRepositoryId, remoteRepositoryPropertyId, newValue);
+                            currentRemoteRepositoryPropertyName = newValue;
+                            loadRemoteRepositoryPropertiesOnTable(remoteRepositoryId);
+                        } catch (IllegalArgumentException ex) {
+                            JOptionPane.showMessageDialog(remoteRepositoriesPropertiesListTable, "Invalid VFS repository property name! Please check if it meets following requirements:\n- Property name must be unique\n- Property name must be alphanumeric.\n- Underscores are allowed in property name.\n- Length of property name is between 3 and 25 characters.", "Update remote file repository property name", JOptionPane.WARNING_MESSAGE);
+                        }
                     }
                     break;
                 case REPO_PROP_VALUE_COLUMN:
                     try {
                         vfsRemoteFileRepositoriesController.setRemoteRepositoryPropertyValue(remoteRepositoryId, remoteRepositoryPropertyId, newValue);
+                        loadRemoteRepositoryPropertiesOnTable(remoteRepositoryId);
                     } catch (IllegalArgumentException ex) {
                         JOptionPane.showMessageDialog(remoteRepositoriesPropertiesListTable, "Invalid VFS repository property value! Please check if it meets following requirements:\n- Property value must be not null", "Update remote file repository property value", JOptionPane.WARNING_MESSAGE);
                     }
@@ -525,7 +532,6 @@ public class VFSOptionsController extends DefaultConfigController {
                 default:
                     break;
             }
-            loadRemoteRepositoryPropertiesOnTable(remoteRepositoryId);
         }
     }
 
