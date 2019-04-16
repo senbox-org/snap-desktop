@@ -1,4 +1,4 @@
-package org.esa.snap.cloud.exploitation.platform.loading;
+package org.esa.snap.ui.loading;
 
 import javax.swing.*;
 import java.awt.*;

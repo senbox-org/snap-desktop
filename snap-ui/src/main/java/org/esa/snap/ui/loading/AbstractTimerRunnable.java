@@ -1,4 +1,4 @@
-package org.esa.snap.cloud.exploitation.platform.loading;
+package org.esa.snap.ui.loading;
 
 import javax.swing.SwingUtilities;
 import java.util.Timer;
@@ -34,7 +34,7 @@ public abstract class AbstractTimerRunnable<OutputType> implements Runnable {
         try {
             OutputType result = execute();
 
-            OneInputRunnable<OutputType> runnable = new OneInputRunnable<OutputType>(result) {
+            GenericRunnable<OutputType> runnable = new GenericRunnable<OutputType>(result) {
                 @Override
                 protected void execute(OutputType item) {
                     if (loadingIndicator.onHide(threadId)) {
@@ -46,7 +46,7 @@ public abstract class AbstractTimerRunnable<OutputType> implements Runnable {
         } catch (Exception exception) {
             logger.log(Level.SEVERE, getExceptionLoggingMessage(), exception);
 
-            OneInputRunnable<Exception> runnable = new OneInputRunnable<Exception>(exception) {
+            GenericRunnable<Exception> runnable = new GenericRunnable<Exception>(exception) {
                 @Override
                 protected void execute(Exception threadException) {
                     if (loadingIndicator.onHide(threadId)) {

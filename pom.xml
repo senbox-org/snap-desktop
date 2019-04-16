@@ -48,7 +48,6 @@
         <module>snap-worldwind</module>
         <module>snap-sta-ui</module>
         <module>snap-smart-configurator-ui</module>
-        <module>snap-cloud-exploitation-platform</module>
         <module>snap-cloud-exploitation-platform-ui</module>
 
         <!-- disabled: these modules don't have the required maturity right now. -->

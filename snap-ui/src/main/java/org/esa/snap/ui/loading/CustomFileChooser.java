@@ -1,4 +1,4 @@
-package org.esa.snap.cloud.exploitation.platform.loading;
+package org.esa.snap.ui.loading;
 
 import org.apache.commons.lang.StringUtils;
 

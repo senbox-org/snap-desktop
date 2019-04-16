@@ -1,13 +1,13 @@
-package org.esa.snap.cloud.exploitation.platform.loading;
+package org.esa.snap.ui.loading;
 
 /**
  * Created by jcoravu on 29/3/2019.
  */
-public abstract class OneInputRunnable<ItemType> implements Runnable {
+public abstract class GenericRunnable<ItemType> implements Runnable {
 
     private final ItemType item;
 
-    public OneInputRunnable(ItemType item) {
+    public GenericRunnable(ItemType item) {
         this.item = item;
     }
 

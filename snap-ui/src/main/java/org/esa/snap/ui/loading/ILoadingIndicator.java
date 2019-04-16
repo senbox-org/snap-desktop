@@ -1,4 +1,4 @@
-package org.esa.snap.cloud.exploitation.platform.loading;
+package org.esa.snap.ui.loading;
 
 /**
  * Created by jcoravu on 31/12/2018.
