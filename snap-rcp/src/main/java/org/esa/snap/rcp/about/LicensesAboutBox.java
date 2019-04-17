@@ -67,7 +67,7 @@ class LicensesAboutBox extends JPanel {
         JLabel infoText = new JLabel("<html>"
                                      + "<b>The table below gives an overview of all 3rd-party licenses used by SNAP "
                                      + "and the ESA Toolboxes.<br>"
-                                     + "The dependencies of other plugins are not considered in this list.</b"
+                                     + "The dependencies of other plugins are not considered in this list.</b>"
         );
 
         JComponent licensesComponent;
