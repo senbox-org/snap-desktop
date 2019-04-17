@@ -263,7 +263,7 @@
                         </configuration>
                     </execution>
                     <execution> <!-- actuallly not nice to copy the resources from the engine here -->
-                        <id>copy-version-file</id>
+                        <id>copy-files</id>
                         <phase>generate-resources</phase>
                         <goals>
                             <goal>copy-resources</goal>
