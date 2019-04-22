@@ -30,13 +30,24 @@ import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.datamodel.TiePointGrid;
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.OperatorSpi;
+import org.esa.snap.core.gpf.common.resample.BandResamplingPreset;
+import org.esa.snap.core.gpf.common.resample.ResamplingPreset;
 import org.esa.snap.core.gpf.descriptor.OperatorDescriptor;
 import org.esa.snap.core.gpf.ui.OperatorParameterSupport;
+
+import org.esa.snap.core.gpf.ui.resample.BandsTreeModel;
+import org.esa.snap.core.gpf.ui.resample.ResamplingRowModel;
+import org.esa.snap.core.gpf.ui.resample.ResamplingUtils;
 import org.esa.snap.ui.AppContext;
+import org.netbeans.swing.outline.DefaultOutlineModel;
+import org.netbeans.swing.outline.Outline;
+import org.netbeans.swing.outline.OutlineModel;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -57,6 +68,7 @@ public class ResamplingUI extends BaseOperatorUI {
     private final String DOWNSAMPLING_METHOD_PARAMETER_NAME = "downsamplingMethod";
     private final String FLAGDOWNSAMPLING_METHOD_PARAMETER_NAME = "flagDownsamplingMethod";
     private final String PYRAMID_LEVELS_PARAMETER_NAME = "resampleOnPyramidLevels";
+    private final String BAND_RESAMPLINGS_PARAMETER_NAME = "bandResamplings";
 
     private ArrayList<String> listBands = new ArrayList();
     int lastProductWidth = 0;
@@ -78,6 +90,11 @@ public class ResamplingUI extends BaseOperatorUI {
     private OperatorParameterSupport parameterSupport;
 
     private boolean updatingTargetWidthAndHeight = false;
+
+    private BandResamplingPreset[] bandResamplingPresets;
+    private OutlineModel mdl = null;
+    private JCheckBox advancedMethodCheckBox;
+    private JPanel advancedMethodDefinitionPanel;
 
     @Override
     public JComponent CreateOpTab(String operatorName, Map<String, Object> parameterMap, AppContext appContext) {
@@ -171,7 +188,6 @@ public class ResamplingUI extends BaseOperatorUI {
         pyramidLevelCheckBox.setSelected(pyramidParam);
 
 
-
         if (hasSourceProducts()) {
             reactToSourceProductChange(sourceProducts[0]);
             referenceBandButton.setEnabled(true);
@@ -210,12 +226,32 @@ public class ResamplingUI extends BaseOperatorUI {
             paramMap.remove("targetHeight");
         }
 
+        if(advancedMethodCheckBox.isSelected() && hasSourceProducts()) {
+            paramMap.put(BAND_RESAMPLINGS_PARAMETER_NAME, generateBandResamplings (sourceProducts[0]));
+        } else {
+            paramMap.remove(BAND_RESAMPLINGS_PARAMETER_NAME);
+        }
         paramMap.put(UPSAMPLING_METHOD_PARAMETER_NAME, upsamplingCombo.getSelectedItem());
         paramMap.put(DOWNSAMPLING_METHOD_PARAMETER_NAME, downsamplingCombo.getSelectedItem());
         paramMap.put(FLAGDOWNSAMPLING_METHOD_PARAMETER_NAME,flagDownsamplingCombo.getSelectedItem());
         paramMap.put(PYRAMID_LEVELS_PARAMETER_NAME, pyramidLevelCheckBox.isSelected());
     }
 
+    private String generateBandResamplings(Product sourceProduct) {
+        String bandResamplingsString = "";
+        for(String bandName : sourceProduct.getBandNames()) {
+            for(BandResamplingPreset bandResamplingPreset : bandResamplingPresets) {
+                if(bandResamplingPreset.getBandName().equals(bandName)){
+                    if(!bandResamplingsString.isEmpty()) {
+                        bandResamplingsString = bandResamplingsString + ResamplingPreset.STRING_SEPARATOR;
+                    }
+                    bandResamplingsString = bandResamplingsString + bandResamplingPreset.getBandName() + BandResamplingPreset.SEPARATOR
+                            + bandResamplingPreset.getDownsamplingAlias() + BandResamplingPreset.SEPARATOR + bandResamplingPreset.getUpsamplingAlias();
+                }
+            }
+        }
+        return bandResamplingsString;
+    }
 
     private JComponent createPanel() {
         final PropertySet propertySet = bindingContext.getPropertySet();
@@ -277,6 +313,15 @@ public class ResamplingUI extends BaseOperatorUI {
 
         referenceBandButton.setSelected(true);
 
+
+        final TableLayout tableLayoutMethodDefinition = new TableLayout(1);
+        tableLayout.setTableAnchor(TableLayout.Anchor.NORTHWEST);
+        tableLayout.setTableFill(TableLayout.Fill.HORIZONTAL);
+        tableLayout.setTableWeightX(1.0);
+        tableLayout.setTablePadding(4, 4);
+        JPanel methodDefinitionPanel = new JPanel(tableLayoutMethodDefinition);
+        methodDefinitionPanel.setBorder(BorderFactory.createTitledBorder("Define resampling algorithm"));
+
         JPanel upsamplingMethodPanel = new JPanel(new GridLayout(1, 2));
         PropertyDescriptor descriptorUp = propertySet.getProperty(UPSAMPLING_METHOD_PARAMETER_NAME).getDescriptor();
         JLabel upsamplingMethodLabel = new JLabel(descriptorUp.getAttribute("displayName").toString());
@@ -304,6 +349,43 @@ public class ResamplingUI extends BaseOperatorUI {
         bindingContext.bind(descriptorFlag.getName(), adapterFlag);
         flagDownsamplingMethodPanel.add(flagDownsamplingCombo);
 
+        advancedMethodDefinitionPanel = new JPanel(tableLayoutMethodDefinition);
+        if(hasSourceProducts()) {
+            BandsTreeModel myModel = new BandsTreeModel(sourceProducts[0]);
+
+            bandResamplingPresets = new BandResamplingPreset[myModel.getTotalRows()];
+            for(int i = 0 ; i < myModel.getTotalRows() ; i++) {
+                bandResamplingPresets[i] = new BandResamplingPreset(myModel.getRows()[i], (String) paramMap.get(DOWNSAMPLING_METHOD_PARAMETER_NAME), (String) paramMap.get(UPSAMPLING_METHOD_PARAMETER_NAME));
+            }
+
+            //Create the Outline's model, consisting of the TreeModel and the RowModel,
+            mdl = DefaultOutlineModel.createOutlineModel(
+                    myModel, new ResamplingRowModel(bandResamplingPresets, myModel), true, "Bands");
+            //Initialize the Outline object:
+            Outline outline1 = new Outline();
+            //By default, the root is shown, while here that isn't necessary:
+            outline1.setRootVisible(false);
+
+            //Assign the model to the Outline object:
+            outline1.setModel(mdl);
+
+            ResamplingUtils.setUpUpsamplingColumn(outline1,outline1.getColumnModel().getColumn(1));
+            ResamplingUtils.setUpDownsamplingColumn(outline1,outline1.getColumnModel().getColumn(2));
+            JScrollPane tableContainer = new JScrollPane(outline1);
+            advancedMethodDefinitionPanel.add(tableContainer);
+            advancedMethodDefinitionPanel.setVisible(false);
+        }
+
+        methodDefinitionPanel.add(upsamplingMethodPanel);
+        methodDefinitionPanel.add(tableLayout.createVerticalSpacer());
+        methodDefinitionPanel.add(downsamplingMethodPanel);
+        methodDefinitionPanel.add(tableLayout.createVerticalSpacer());
+        methodDefinitionPanel.add(flagDownsamplingMethodPanel);
+        methodDefinitionPanel.add(tableLayout.createVerticalSpacer());
+        methodDefinitionPanel.add(createAdvancedCheckBoxPanel());
+        methodDefinitionPanel.add(advancedMethodDefinitionPanel);
+
+
         JPanel resampleOnPyramidLevelsPanel = new JPanel(new GridLayout(1, 2));
         PropertyDescriptor descriptorResampleOnPyramidLevels = propertySet.getProperty(PYRAMID_LEVELS_PARAMETER_NAME).getDescriptor();
         pyramidLevelCheckBox.setSelected((boolean) descriptorResampleOnPyramidLevels.getAttribute("defaultValue"));
@@ -314,9 +396,10 @@ public class ResamplingUI extends BaseOperatorUI {
         final JPanel parametersPanel = new JPanel(tableLayout);
         parametersPanel.setBorder(new EmptyBorder(4, 4, 4, 4));
         parametersPanel.add(defineTargetSizePanel);
-        parametersPanel.add(upsamplingMethodPanel);
-        parametersPanel.add(downsamplingMethodPanel);
-        parametersPanel.add(flagDownsamplingMethodPanel);
+        //parametersPanel.add(upsamplingMethodPanel);
+        //parametersPanel.add(downsamplingMethodPanel);
+        //parametersPanel.add(flagDownsamplingMethodPanel);
+        parametersPanel.add(methodDefinitionPanel);
         parametersPanel.add(resampleOnPyramidLevelsPanel);
         parametersPanel.add(tableLayout.createVerticalSpacer());
         return parametersPanel;
@@ -363,6 +446,55 @@ public class ResamplingUI extends BaseOperatorUI {
                 widthAndHeightButton.setSelected(true);
             }
 
+        }
+        if(product != null) {
+            BandsTreeModel myModel = new BandsTreeModel(product);
+            boolean changebandResamplingPresets = false;
+            if (bandResamplingPresets == null ){
+                changebandResamplingPresets = true;
+            } else {
+                if(bandResamplingPresets.length != myModel.getTotalRows()) {
+                    changebandResamplingPresets = true;
+                }
+                for(String row : myModel.getRows()) {
+                    boolean found = false;
+                    for(BandResamplingPreset bandResamplingPreset : bandResamplingPresets) {
+                        if (bandResamplingPreset.getBandName().equals(row)) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if(!found) {
+                        changebandResamplingPresets = true;
+                    }
+                }
+            }
+
+            advancedMethodDefinitionPanel.removeAll();
+
+
+            if (changebandResamplingPresets) {
+                bandResamplingPresets = new BandResamplingPreset[myModel.getTotalRows()];
+                for (int i = 0; i < myModel.getTotalRows(); i++) {
+                    bandResamplingPresets[i] = new BandResamplingPreset(myModel.getRows()[i], (String) paramMap.get(DOWNSAMPLING_METHOD_PARAMETER_NAME), (String) paramMap.get(UPSAMPLING_METHOD_PARAMETER_NAME));
+                }
+            }
+
+            //Create the Outline's model, consisting of the TreeModel and the RowModel,
+            mdl = DefaultOutlineModel.createOutlineModel(myModel, new ResamplingRowModel(bandResamplingPresets, myModel),
+                                                         true, "Products");
+            //Initialize the Outline object:
+            Outline outline1 = new Outline();
+            outline1.setRootVisible(false);
+            outline1.setModel(mdl);
+
+            ResamplingUtils.setUpUpsamplingColumn(outline1, outline1.getColumnModel().getColumn(1));
+            ResamplingUtils.setUpDownsamplingColumn(outline1, outline1.getColumnModel().getColumn(2));
+
+            JScrollPane tableContainer = new JScrollPane(outline1);
+            advancedMethodDefinitionPanel.add(tableContainer);
+            advancedMethodDefinitionPanel.revalidate();
+            advancedMethodDefinitionPanel.setVisible(advancedMethodCheckBox.isSelected());
         }
     }
 
@@ -474,7 +606,6 @@ public class ResamplingUI extends BaseOperatorUI {
             return 1;
         }
     }
-
 
 
     private class TargetWidthAndHeightPanel extends JPanel {
@@ -677,4 +808,33 @@ public class ResamplingUI extends BaseOperatorUI {
         lastProductHeight = product.getSceneRasterHeight();
     }
 
+
+
+
+
+
+
+    private JPanel createAdvancedCheckBoxPanel() {
+        advancedMethodCheckBox = new JCheckBox("Advanced Method Definition", false);
+
+        advancedMethodCheckBox.addItemListener(new ItemListener() {
+
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                if(e.getStateChange() == ItemEvent.SELECTED) {
+                    advancedMethodDefinitionPanel.setVisible(true);
+                    advancedMethodDefinitionPanel.validate();
+                } else {
+                    advancedMethodDefinitionPanel.setVisible(false);
+                    advancedMethodDefinitionPanel.validate();
+                }
+
+            }
+        });
+
+        final JPanel propertyPanel = new JPanel(new GridLayout(1, 1));
+        propertyPanel.add(advancedMethodCheckBox);
+
+        return propertyPanel;
+    }
 }
