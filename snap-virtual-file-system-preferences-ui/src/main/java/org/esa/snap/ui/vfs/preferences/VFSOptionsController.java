@@ -79,8 +79,8 @@ public class VFSOptionsController extends DefaultConfigController {
     private String currentRemoteRepositoryPropertyName = "";
     private String[] remoteRepositoriesIdsList;
     private String[] remoteRepositoriesPropertiesIdsList;
-    private final JTable remoteRepositoriesPropertiesListTable = getRemoteRepositoriesPropertiesListTable();
     private final JTable remoteRepositoriesListTable = getRemoteRepositoriesListTable();
+    private final JTable remoteRepositoriesPropertiesListTable = getRemoteRepositoriesPropertiesListTable();
     private VFSOptionsBean vfsOptionsBean = new VFSOptionsBean();
     private boolean isInitialized = false;
 
@@ -195,6 +195,7 @@ public class VFSOptionsController extends DefaultConfigController {
             try {
                 vfsRemoteFileRepositoriesController.registerNewRemoteRepository();
                 loadRemoteRepositoriesOnTable();
+                remoteRepositoriesListTable.changeSelection(remoteRepositoriesListTable.getRowCount() - 1, 0, false, false);
             } catch (IllegalArgumentException ex) {
                 logger.log(Level.FINE, "Unable to add remote file repository. Details: " + ex.getMessage());
                 if (ex.getMessage().startsWith("Invalid")) {
