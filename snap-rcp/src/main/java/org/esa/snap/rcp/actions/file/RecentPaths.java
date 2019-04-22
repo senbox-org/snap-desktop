@@ -55,9 +55,17 @@ class RecentPaths {
         }
         return Arrays
                 .stream(value.split(File.pathSeparator))
-                .map(NioPaths::get)
-                .filter(path -> !filterExisting || Files.exists(path))
+                .map(p -> convertToPath(p))
+                .filter(path -> (path != null && (!filterExisting || Files.exists(path))))
                 .map(Path::toString);
+    }
+
+    private Path convertToPath(String pasAsString) {
+        try {
+            return NioPaths.get(pasAsString);
+        } catch (java.nio.file.InvalidPathException e) {
+            return null;
+        }
     }
 
     void flush() {
