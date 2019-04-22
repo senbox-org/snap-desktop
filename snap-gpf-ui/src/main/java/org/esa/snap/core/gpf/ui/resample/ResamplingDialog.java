@@ -25,7 +25,9 @@ import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.datamodel.TiePointGrid;
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.OperatorSpi;
+import org.esa.snap.core.gpf.common.resample.BandResamplingPreset;
 import org.esa.snap.core.gpf.common.resample.ResampleUtils;
+import org.esa.snap.core.gpf.common.resample.ResamplingPreset;
 import org.esa.snap.core.gpf.descriptor.OperatorDescriptor;
 import org.esa.snap.core.gpf.ui.DefaultIOParametersPanel;
 import org.esa.snap.core.gpf.ui.OperatorMenu;
@@ -35,24 +37,21 @@ import org.esa.snap.core.gpf.ui.SingleTargetProductDialog;
 import org.esa.snap.core.gpf.ui.SourceProductSelector;
 import org.esa.snap.core.gpf.ui.TargetProductSelectorModel;
 import org.esa.snap.ui.AppContext;
+import org.netbeans.swing.outline.DefaultOutlineModel;
+import org.netbeans.swing.outline.Outline;
+import org.netbeans.swing.outline.OutlineModel;
 
-import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JSpinner;
-import javax.swing.JTabbedPane;
-import javax.swing.SpinnerNumberModel;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumn;
 import java.awt.GridLayout;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Tonio Fincke
@@ -92,6 +91,11 @@ class ResamplingDialog extends SingleTargetProductDialog {
     private ReferenceBandNameBoxPanel referenceBandNameBoxPanel;
     private TargetWidthAndHeightPanel targetWidthAndHeightPanel;
     private TargetResolutionPanel targetResolutionPanel;
+    private JPanel advancedMethodDefinitionPanel;
+    JCheckBox advancedMethodCheckBox;
+
+    private BandResamplingPreset[] bandResamplingPresets;
+    OutlineModel mdl = null;
 
     ResamplingDialog(AppContext appContext, Product product, boolean modal) {
         super(appContext, "Resampling", ID_APPLY_CLOSE, "resampleAction");
@@ -166,8 +170,44 @@ class ResamplingDialog extends SingleTargetProductDialog {
     @Override
     protected Product createTargetProduct() throws Exception {
         final HashMap<String, Product> sourceProducts = ioParametersPanel.createSourceProductsMap();
-        targetProduct = GPF.createProduct(operatorName, parameterSupport.getParameterMap(), sourceProducts);
+        final HashMap<String, Object> resampParams = new HashMap<>();
+        if(referenceBandButton.isSelected()) {
+            resampParams.put("referenceBandName", referenceBandNameBoxPanel.getSelectedReferenceBand());
+        } else if (widthAndHeightButton.isSelected()) {
+            resampParams.put("targetWidth", targetWidthAndHeightPanel.getWidthSelected());
+            resampParams.put("targetHeight", targetWidthAndHeightPanel.getHeightSelected());
+        } else if (resolutionButton.isSelected()) {
+            resampParams.put("targetResolution", targetResolutionPanel.getResolutionSelected());
+        }
+        resampParams.put("upsamplingMethod", parameterSupport.getParameterMap().get("upsamplingMethod"));
+        resampParams.put("downsamplingMethod", parameterSupport.getParameterMap().get("downsamplingMethod"));
+        resampParams.put("flagDownsamplingMethod", parameterSupport.getParameterMap().get("flagDownsamplingMethod"));
+
+        if(advancedMethodCheckBox.isSelected()) {
+            resampParams.put("bandResamplings", generateBandResamplings(sourceProducts.get("sourceProduct")));
+        }
+
+        resampParams.put("resampleOnPyramidLevels", parameterSupport.getParameterMap().get("resampleOnPyramidLevels"));
+
+        targetProduct = GPF.createProduct(operatorName, resampParams, sourceProducts);
         return targetProduct;
+    }
+
+    private String generateBandResamplings(Product sourceProduct) {
+        String bandResamplingsString = "";
+        for(String bandName : sourceProduct.getBandNames()) {
+            for(BandResamplingPreset bandResamplingPreset : bandResamplingPresets) {
+                if(bandResamplingPreset.getBandName().equals(bandName)){
+                    if(!bandResamplingsString.isEmpty()) {
+                        bandResamplingsString = bandResamplingsString + ResamplingPreset.STRING_SEPARATOR;
+                    }
+                    bandResamplingsString = bandResamplingsString + bandResamplingPreset.getBandName() + BandResamplingPreset.SEPARATOR
+                            + bandResamplingPreset.getDownsamplingAlias() + BandResamplingPreset.SEPARATOR + bandResamplingPreset.getUpsamplingAlias();
+
+                }
+            }
+        }
+        return bandResamplingsString;
     }
 
     Product getTargetProduct() {
@@ -239,20 +279,64 @@ class ResamplingDialog extends SingleTargetProductDialog {
 
         referenceBandButton.setSelected(true);
 
+
+        final TableLayout tableLayoutMethodDefinition = new TableLayout(1);
+        tableLayout.setTableAnchor(TableLayout.Anchor.NORTHWEST);
+        tableLayout.setTableFill(TableLayout.Fill.HORIZONTAL);
+        tableLayout.setTableWeightX(1.0);
+        tableLayout.setTablePadding(4, 4);
+        JPanel methodDefinitionPanel = new JPanel(tableLayoutMethodDefinition);
+        methodDefinitionPanel.setBorder(BorderFactory.createTitledBorder("Define resampling algorithm"));
+
         final JPanel upsamplingMethodPanel = createPropertyPanel(propertySet, "upsamplingMethod", registry);
         final JPanel downsamplingMethodPanel = createPropertyPanel(propertySet, "downsamplingMethod", registry);
         final JPanel flagDownsamplingMethodPanel = createPropertyPanel(propertySet, "flagDownsamplingMethod", registry);
+
+        advancedMethodDefinitionPanel = new JPanel(tableLayoutMethodDefinition);
+        if(appContext.getSelectedProduct() != null) {
+            BandsTreeModel myModel = new BandsTreeModel(appContext.getSelectedProduct());
+
+            bandResamplingPresets = new BandResamplingPreset[myModel.getTotalRows()];
+            for(int i = 0 ; i < myModel.getTotalRows() ; i++) {
+                bandResamplingPresets[i] = new BandResamplingPreset(myModel.getRows()[i], (String) (parameterSupport.getParameterMap().get("downsamplingMethod")) , (String) (parameterSupport.getParameterMap().get("upsamplingMethod")));
+            }
+
+            //Create the Outline's model, consisting of the TreeModel and the RowModel
+            mdl = DefaultOutlineModel.createOutlineModel(
+                    myModel, new ResamplingRowModel(bandResamplingPresets, myModel), true, "Bands");
+
+            Outline outline1 = new Outline();
+            outline1.setRootVisible(false);
+            outline1.setModel(mdl);
+
+            ResamplingUtils.setUpUpsamplingColumn(outline1,outline1.getColumnModel().getColumn(1));
+            ResamplingUtils.setUpDownsamplingColumn(outline1,outline1.getColumnModel().getColumn(2));
+            JScrollPane tableContainer = new JScrollPane(outline1);
+            advancedMethodDefinitionPanel.add(tableContainer);
+            advancedMethodDefinitionPanel.setVisible(false);
+        }
+
+        methodDefinitionPanel.add(upsamplingMethodPanel);
+        methodDefinitionPanel.add(tableLayout.createVerticalSpacer());
+        methodDefinitionPanel.add(downsamplingMethodPanel);
+        methodDefinitionPanel.add(tableLayout.createVerticalSpacer());
+        methodDefinitionPanel.add(flagDownsamplingMethodPanel);
+        methodDefinitionPanel.add(tableLayout.createVerticalSpacer());
+        methodDefinitionPanel.add(createAdvancedCheckBoxPanel());
+        methodDefinitionPanel.add(advancedMethodDefinitionPanel);
+
         final JPanel resampleOnPyramidLevelsPanel = createPropertyPanel(propertySet, "resampleOnPyramidLevels", registry);
+
+        //Add all panels
         final JPanel parametersPanel = new JPanel(tableLayout);
         parametersPanel.setBorder(new EmptyBorder(4, 4, 4, 4));
         parametersPanel.add(defineTargetSizePanel);
-        parametersPanel.add(upsamplingMethodPanel);
-        parametersPanel.add(downsamplingMethodPanel);
-        parametersPanel.add(flagDownsamplingMethodPanel);
+        parametersPanel.add(methodDefinitionPanel);
         parametersPanel.add(resampleOnPyramidLevelsPanel);
         parametersPanel.add(tableLayout.createVerticalSpacer());
         return parametersPanel;
     }
+
 
     private void enablePanel(int panelIndex) {
         referenceBandNameBoxPanel.setEnabled(panelIndex == 0);
@@ -268,6 +352,28 @@ class ResamplingDialog extends SingleTargetProductDialog {
         for (int i = components.length - 1; i >= 0; i--) {
             propertyPanel.add(components[i]);
         }
+        return propertyPanel;
+    }
+
+    private JPanel createAdvancedCheckBoxPanel() {
+        advancedMethodCheckBox = new JCheckBox("Advanced Method Definition", false);
+
+        advancedMethodCheckBox.addItemListener(new ItemListener() {
+
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                if(e.getStateChange() == ItemEvent.SELECTED) {
+                    advancedMethodDefinitionPanel.setVisible(true);
+                } else {
+                    advancedMethodDefinitionPanel.setVisible(false);
+                }
+
+            }
+        });
+
+        final JPanel propertyPanel = new JPanel(new GridLayout(1, 1));
+        propertyPanel.add(advancedMethodCheckBox);
+
         return propertyPanel;
     }
 
@@ -314,6 +420,32 @@ class ResamplingDialog extends SingleTargetProductDialog {
             widthAndHeightButton.setSelected(true);
         } else if (resolutionButton.isEnabled()) {
             resolutionButton.setSelected(true);
+        }
+
+        if(product != null) {
+            advancedMethodDefinitionPanel.removeAll();
+            BandsTreeModel myModel = new BandsTreeModel(product);
+
+            bandResamplingPresets = new BandResamplingPreset[myModel.getTotalRows()];
+            for(int i = 0 ; i < myModel.getTotalRows() ; i++) {
+                bandResamplingPresets[i] = new BandResamplingPreset(myModel.getRows()[i], (String) (parameterSupport.getParameterMap().get("downsamplingMethod")),(String) (parameterSupport.getParameterMap().get("upsamplingMethod")));
+            }
+
+            //Create the Outline's model, consisting of the TreeModel and the RowModel
+            mdl = DefaultOutlineModel.createOutlineModel(
+                    myModel, new ResamplingRowModel(bandResamplingPresets, myModel), true, "Products");
+
+            Outline outline1 = new Outline();
+            outline1.setRootVisible(false);
+            outline1.setModel(mdl);
+
+            ResamplingUtils.setUpUpsamplingColumn(outline1,outline1.getColumnModel().getColumn(1));
+            ResamplingUtils.setUpDownsamplingColumn(outline1,outline1.getColumnModel().getColumn(2));
+
+            JScrollPane tableContainer = new JScrollPane(outline1);
+            advancedMethodDefinitionPanel.add(tableContainer);
+            advancedMethodDefinitionPanel.revalidate();
+            advancedMethodDefinitionPanel.setVisible(advancedMethodCheckBox.isSelected());
         }
     }
 
@@ -439,6 +571,9 @@ class ResamplingDialog extends SingleTargetProductDialog {
             return 1;
         }
 
+        public Object getResolutionSelected() {
+            return resolutionSpinner.getValue();
+        }
     }
 
     private class TargetWidthAndHeightPanel extends JPanel {
@@ -546,6 +681,15 @@ class ResamplingDialog extends SingleTargetProductDialog {
                 enablePanel(TARGET_WIDTH_AND_HEIGHT_PANEL_INDEX);
             }
         }
+
+        public Object getWidthSelected(){
+            return widthSpinner.getValue();
+        }
+
+        public Object getHeightSelected(){
+            return heightSpinner.getValue();
+        }
+
     }
 
     private class ReferenceBandNameBoxPanel extends JPanel {
@@ -631,6 +775,10 @@ class ResamplingDialog extends SingleTargetProductDialog {
                 referenceBandButton.setSelected(true);
                 enablePanel(REFERENCE_BAND_NAME_PANEL_INDEX);
             }
+        }
+
+        public String getSelectedReferenceBand() {
+            return referenceBandNameBox.getSelectedItem().toString();
         }
     }
 
