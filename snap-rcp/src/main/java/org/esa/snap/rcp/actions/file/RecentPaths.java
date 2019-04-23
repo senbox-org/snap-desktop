@@ -56,7 +56,7 @@ class RecentPaths {
         return Arrays
                 .stream(value.split(File.pathSeparator))
                 .map(p -> convertToPath(p))
-                .filter(path -> (path != null && (!filterExisting || Files.exists(path))))
+                .filter(path -> (path != null))
                 .map(Path::toString);
     }
 
