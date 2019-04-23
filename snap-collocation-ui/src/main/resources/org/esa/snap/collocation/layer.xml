@@ -1,0 +1,11 @@
+
+<filesystem>
+
+    <folder name="OperatorUIs">
+        <file name="org.esa.snap.collocation.gpf.ui.CollocationUI">
+            <attr name="operatorUIClass" stringvalue="org.esa.snap.collocation.gpf.ui.CollocationUI"/>
+            <attr name="operatorName" stringvalue="Collocate"/>
+        </file>
+    </folder>
+
+</filesystem>
