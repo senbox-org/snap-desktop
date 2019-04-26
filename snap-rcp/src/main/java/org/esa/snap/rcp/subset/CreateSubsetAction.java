@@ -19,9 +19,10 @@ package org.esa.snap.rcp.subset;
 import org.esa.snap.core.dataio.ProductSubsetDef;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductNode;
+import org.esa.snap.core.datamodel.RasterDataNode;
+import org.esa.snap.core.gpf.common.SubsetOp;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
-import org.esa.snap.rcp.util.MultiSizeIssue;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.esa.snap.ui.product.ProductSubsetDialog;
 import org.openide.awt.ActionID;
@@ -60,26 +61,29 @@ public class CreateSubsetAction extends AbstractAction {
     @Override
     public void actionPerformed(ActionEvent ignored) {
         Product product = sourceNode.getProduct();
+
+        RasterDataNode rasterDataNode = null;
+        ProductSceneView view = SnapApp.getDefault().getSelectedProductSceneView();
+        if (view != null && view.getProduct() == product && view.getRaster() != null) {
+            rasterDataNode = view.getRaster();
+        }
+
         if (product != null) {
-            createSubset(product, getInitialBounds(product));
+            createSubset(product, getInitialBounds(product), rasterDataNode);
         }
     }
 
-    public static void createSubset(Product sourceProduct, Rectangle bounds) {
-        if (MultiSizeIssue.isMultiSize(sourceProduct)) {
-            final Product resampledProduct = MultiSizeIssue.maybeResample(sourceProduct);
-            //todo use resampled product to call subsetDialog from here using the code below - tf 20160314
-//            if (resampledProduct != null) {
-//                sourceProduct = resampledProduct;
-//            } else {
-//                return;
-//            }
-            return;
-        }
+    public static void createSubset(Product sourceProduct, Rectangle bounds, RasterDataNode rdn) {
 
         final String subsetName = "subset_" + CreateSubsetAction.subsetNumber + "_of_" + sourceProduct.getName();
         final ProductSubsetDef initSubset = new ProductSubsetDef();
+
         initSubset.setRegion(bounds);
+        if(sourceProduct.isMultiSize() && rdn != null) {
+            initSubset.setRegionMap(SubsetOp.computeRegionMap(initSubset.getRegion(),rdn.getName(),sourceProduct,null));
+        } else if(sourceProduct.isMultiSize()) {
+            initSubset.setRegionMap(SubsetOp.computeRegionMap(initSubset.getRegion(),sourceProduct,null));
+        }
         initSubset.setNodeNames(sourceProduct.getBandNames());
         initSubset.addNodeNames(sourceProduct.getTiePointGridNames());
         initSubset.setIgnoreMetadata(false);
@@ -102,9 +106,13 @@ public class CreateSubsetAction extends AbstractAction {
             CreateSubsetAction.subsetNumber++;
         } catch (Exception e) {
             final String msg = "An error occurred while creating the product subset:\n" +
-                               e.getMessage();
+                    e.getMessage();
             SnapApp.getDefault().handleError(msg, e);
         }
+    }
+
+    public static void createSubset(Product sourceProduct, Rectangle bounds) {
+        createSubset(sourceProduct, bounds, null);
     }
 
     private Rectangle getInitialBounds(Product product) {
