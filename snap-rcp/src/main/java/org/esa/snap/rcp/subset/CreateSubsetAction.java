@@ -120,6 +120,8 @@ public class CreateSubsetAction extends AbstractAction {
         ProductSceneView view = SnapApp.getDefault().getSelectedProductSceneView();
         if (view != null && view.getProduct() == product) {
             bounds = view.getVisibleImageBounds();
+        } else {
+            bounds = new Rectangle(0,0,product.getSceneRasterWidth(),product.getSceneRasterHeight());
         }
         return bounds;
     }
