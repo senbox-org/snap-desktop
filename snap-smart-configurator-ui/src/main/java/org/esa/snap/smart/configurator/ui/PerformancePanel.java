@@ -165,6 +165,7 @@ final class PerformancePanel extends javax.swing.JPanel {
         jLabel1 = new javax.swing.JLabel();
 
         procGraphJComboBox = new javax.swing.JComboBox(getBenchmarkOperators());
+        procGraphJComboBox.setSelectedItem("StoredGraph");
         jPanel3 = new javax.swing.JPanel();
         processingParamsComputeButton = new javax.swing.JButton();
         processingParamsResetButton = new javax.swing.JButton();
