@@ -17,17 +17,24 @@
 package org.esa.snap.rcp.magicwand;
 
 import com.bc.ceres.core.Assert;
+import com.bc.ceres.glevel.MultiLevelImage;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.SingleValueConverter;
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.Mask;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.dataop.barithm.BandArithmetic;
+import org.esa.snap.core.dataop.barithm.RasterDataSymbol;
+import org.esa.snap.core.gpf.common.resample.Resample;
 import org.esa.snap.core.jexp.ParseException;
+import org.esa.snap.core.jexp.Term;
 import org.esa.snap.core.util.ObjectUtils;
+import org.esa.snap.core.util.ProductUtils;
 import org.esa.snap.core.util.StringUtils;
+import org.esa.snap.rcp.util.MultiSizeIssue;
 
-import java.awt.Color;
+import javax.media.jai.Interpolation;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -295,13 +302,97 @@ public class MagicWandModel implements Cloneable {
             expression = "(" + validMaskExpression + ") && (" + expression + ")";
         }
 
+        // Current mask
         final Mask magicWandMask = product.getMaskGroup().get(MAGIC_WAND_MASK_NAME);
-        if (magicWandMask != null) {
-            magicWandMask.getImageConfig().setValue("expression", expression);
+        if (magicWandMask != null) { // The magic wand mask exists.
+
+            // One must check the rasters size defined in the expression vs the current magic wand mask (in case of multi-size product).
+            try {
+                // Decipher the expression to get the rasters. At this stage we know the rasters have the same size.
+                Term term = BandArithmetic.parseExpression(expression, product);
+                RasterDataSymbol[] rasterDS = BandArithmetic.getRefRasterDataSymbols(term);
+                if (rasterDS.length > 0) {
+                    int rastersWidth = rasterDS[0].getRaster().getRasterWidth();
+                    int rastersHeight = rasterDS[0].getRaster().getRasterHeight();
+
+                    // Current mask = same resolution as bands in expression
+                    if (magicWandMask.getRasterWidth() == rastersWidth &&
+                        magicWandMask.getRasterHeight() == rastersHeight){
+
+                        // set the new expression to the magicwand mask
+                        magicWandMask.getImageConfig().setValue("expression", expression);
+
+                        // TODO compute mask with other resolutions than magicWandMask by resampling
+
+                        //test
+                        String mask20Name = MAGIC_WAND_MASK_NAME + "_20";
+                        Mask mask20 = product.getMaskGroup().get(mask20Name);
+                        if (mask20 != null) product.getMaskGroup().remove(mask20);
+
+                        MultiLevelImage multiLevel20m = Resample.createInterpolatedMultiLevelImage(magicWandMask.getSourceImage(),
+                                magicWandMask.getNoDataValue(), magicWandMask.getImageToModelTransform(),
+                                5490,5490, new Dimension(512,512),
+                                product.getBand("B5").getMultiLevelModel(), Interpolation.getInstance(Interpolation.INTERP_NEAREST));
+
+                        mask20 = new Mask(mask20Name,5490,5490, magicWandMask.getImageType());
+                        ProductUtils.copyGeoCoding(product.getBand("B5"), mask20);
+                        mask20.setSourceImage(multiLevel20m);
+                        product.addMask(mask20);
+
+
+                    } else { // Resolution of bands in expression different from current mask
+
+//                        // To avoid false alarm, as at creation mask has product resolution
+//                        if (!magicWandMask.getImageConfig().getProperty("expression").getValue().equals("0")) {
+//                            MultiSizeIssue.warningMaskForBandsWithDifferentSize();
+//                        }
+
+                        // Delete the current magicWandMask (not the same resolution as bands defined in the expression)
+                        product.getMaskGroup().remove(magicWandMask);
+
+                        // Create the mask with the current expression
+                        Mask mask = product.addMask(MAGIC_WAND_MASK_NAME,
+                                        expression, "Magic wand mask",
+                                        Color.RED, 0.5);
+
+
+                        // TODO must compute masks with other resolutions than the new magicWandMask by resampling
+//                        //test
+//                        MultiLevelImage multiLevel10m = Resample.createInterpolatedMultiLevelImage(mask.getSourceImage(),mask.getNoDataValue(),mask.getImageToModelTransform(),
+//                                10980,10980,new Dimension(512,512),product.getBand("B2").getMultiLevelModel(), Interpolation.getInstance(Interpolation.INTERP_NEAREST));
+//                        Mask mask10 = new Mask("test10",10980,10980,mask.getImageType());
+//                        mask10.setSourceImage(multiLevel10m);
+//                        ProductUtils.copyGeoCoding(product.getBand("B2"),mask10);
+
+//                        scaleMultiLevelImage(MultiLevelImage masterImage, MultiLevelImage sourceImage,
+//                        float[] scalings, GeneralFilterFunction filterFunction, RenderingHints renderingHints,
+//                        double noDataValue, Interpolation interpolation)
+
+                        // Set the expression to the new magic wand mask
+                        Mask newMagicWandMask = product.getMaskGroup().get(MAGIC_WAND_MASK_NAME);
+                        newMagicWandMask.getImageConfig().setValue("expression", expression);
+
+                    }
+                } // if the expression defines no valid raster: do nothing
+
+            } catch (ParseException pe) {
+                final String msg = String.format("Expression '%s' is invalid.\n", expression);
+                throw new IllegalArgumentException(msg, pe);
+            }
+
         } else {
-            product.addMask(MAGIC_WAND_MASK_NAME,
+
+            // First time : create magic_wand mask with product resolution by default
+            Mask mask = product.addMask(MAGIC_WAND_MASK_NAME,
                             expression, "Magic wand mask",
                             Color.RED, 0.5);
+//            //test
+//            MultiLevelImage multiLevel10m = Resample.createInterpolatedMultiLevelImage(mask.getSourceImage(),mask.getNoDataValue(),mask.getImageToModelTransform(),
+//                    10980,10980,new Dimension(512,512),product.getBand("B2").getMultiLevelModel(), Interpolation.getInstance(Interpolation.INTERP_NEAREST));
+//            Mask mask10 = new Mask(MAGIC_WAND_MASK_NAME + "_10",10980,10980,mask.getImageType());
+//            ProductUtils.copyGeoCoding(product.getBand("B2"),mask10);
+//            mask10.setSourceImage(multiLevel10m);
+//            product.addMask(mask10);
         }
     }
 

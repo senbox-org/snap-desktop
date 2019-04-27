@@ -22,10 +22,12 @@ import com.bc.ceres.glayer.support.AbstractLayerListener;
 import com.bc.ceres.swing.figure.ViewportInteractor;
 import com.bc.ceres.swing.undo.UndoContext;
 import org.esa.snap.core.datamodel.Band;
+import org.esa.snap.core.datamodel.GeoCoding;
 import org.esa.snap.core.datamodel.Mask;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductNodeGroup;
 import org.esa.snap.core.layer.MaskLayerType;
+import org.esa.snap.core.util.ProductUtils;
 import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
@@ -164,11 +166,13 @@ public class MagicWandInteractor extends ViewportInteractor implements MagicWand
         }
 
         final Product product = view.getProduct();
-        if (MultiSizeIssue.isMultiSize(product)) {
-            MultiSizeIssue.maybeResample(product);
-            //as the following code requires an exact pixel location, nothing is done after resampling
-            return;
-        }
+//        if (MultiSizeIssue.isMultiSize(product)) {
+//            System.out.println("####### LA ###########");
+//
+//            MultiSizeIssue.maybeResample(product);
+//            //as the following code requires an exact pixel location, nothing is done after resampling
+//            return;
+//        }
         if (!ensureBandNamesSet(view, product)) {
             return;
         }
@@ -185,7 +189,23 @@ public class MagicWandInteractor extends ViewportInteractor implements MagicWand
             }
         }
 
-        Point pixelPos = getPixelPos(product, event);
+        // Check if all the bands have the same size (if only one band the check is skipped)
+        int band0Width = bands.get(0).getRasterWidth();
+        int band0Height = bands.get(0).getRasterHeight();
+        for (int i = 1; i < bands.size(); i++) { // don't need to check the band "0"
+            final Band band = bands.get(i);
+            // Check if the band has the same size as the band "0"
+            if (!ProductUtils.areRastersEqualInSize(band0Width, band0Height, band)){
+                // the current band has a different width or height as the band "0": cannot continue
+                MultiSizeIssue.chooseBandsWithSameSize();
+                return;
+            };
+        }
+
+        // Compute the pixel position according to the (common) geocoding of the bands
+        GeoCoding band0Geocoding = bands.get(0).getGeoCoding();
+        Point pixelPos = getPixelPos(band0Geocoding, band0Width, band0Height, event);
+// TODO GP before:  getPixelPos(product, event); ==> deprecate the method ?
         if (pixelPos == null) {
             return;
         }
@@ -262,6 +282,30 @@ public class MagicWandInteractor extends ViewportInteractor implements MagicWand
                 || pixelY < 0
                 || pixelX >= product.getSceneRasterWidth()
                 || pixelY >= product.getSceneRasterHeight()) {
+            return null;
+        }
+
+        return new Point(pixelX, pixelY);
+    }
+
+    Point getPixelPos(GeoCoding geocoding, int width, int height, MouseEvent event) {
+        final Point2D mp = toModelPoint(event);
+        final Point2D ip;
+        if (geocoding != null) {
+            AffineTransform transform = Product.findImageToModelTransform(geocoding);
+            try {
+                ip = transform.inverseTransform(mp, null);
+            } catch (NoninvertibleTransformException e) {
+                Dialogs.showError(DIALOG_TITLE, "A geographic transformation problem occurred:\n" + e.getMessage());
+                return null;
+            }
+        } else {
+            ip = mp;
+        }
+
+        final int pixelX = (int) ip.getX();
+        final int pixelY = (int) ip.getY();
+        if (pixelX < 0 || pixelY < 0 || pixelX >= width || pixelY >= height) {
             return null;
         }
 
