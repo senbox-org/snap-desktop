@@ -246,7 +246,6 @@
             </plugin>
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>3.0.2</version>
                 <executions>
                     <execution>
                         <id>copy-conf-files</id>
@@ -268,32 +267,11 @@
                             </resources>
                         </configuration>
                     </execution>
-                    <execution> <!-- actuallly not nice to copy the resources from the engine here -->
-                        <id>copy-files</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${application.dir}</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>../../snap-engine</directory>
-                                    <includes>
-                                        <include>VERSION.txt</include>
-                                        <include>THIRDPARTY_LICENSES.txt</include>
-                                    </includes>
-                                    <filtering>true</filtering>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
                 </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
-                <version>2.10</version>
                 <executions>
                     <execution>
                         <id>copy</id>
@@ -311,6 +289,26 @@
                                     <overWrite>true</overWrite>
                                     <outputDirectory>${project.build.directory}/snap/snap/core</outputDirectory>
                                     <destFileName>snap-main.jar</destFileName>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-files-from-engine</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.esa.snap</groupId>
+                                    <artifactId>snap-core</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>jar</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${application.dir}</outputDirectory>
+                                    <includes>VERSION.txt,THIRDPARTY_LICENSES.txt</includes>
                                 </artifactItem>
                             </artifactItems>
                         </configuration>
