@@ -36,22 +36,30 @@ import org.esa.snap.core.gpf.ui.ParameterUpdater;
 import org.esa.snap.core.gpf.ui.SingleTargetProductDialog;
 import org.esa.snap.core.gpf.ui.SourceProductSelector;
 import org.esa.snap.core.gpf.ui.TargetProductSelectorModel;
+import org.esa.snap.core.util.SystemUtils;
+import org.esa.snap.core.util.io.SnapFileFilter;
+import org.esa.snap.tango.TangoIcons;
+import org.esa.snap.ui.AbstractDialog;
 import org.esa.snap.ui.AppContext;
+import org.esa.snap.ui.SnapFileChooser;
 import org.netbeans.swing.outline.DefaultOutlineModel;
 import org.netbeans.swing.outline.Outline;
 import org.netbeans.swing.outline.OutlineModel;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableColumn;
-import java.awt.GridLayout;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * @author Tonio Fincke
@@ -92,10 +100,17 @@ class ResamplingDialog extends SingleTargetProductDialog {
     private TargetWidthAndHeightPanel targetWidthAndHeightPanel;
     private TargetResolutionPanel targetResolutionPanel;
     private JPanel advancedMethodDefinitionPanel;
+    private JPanel loadPresetPanel;
     JCheckBox advancedMethodCheckBox;
+
+    JPanel upsamplingMethodPanel;
+    JPanel downsamplingMethodPanel;
+    JPanel flagDownsamplingMethodPanel;
 
     private BandResamplingPreset[] bandResamplingPresets;
     OutlineModel mdl = null;
+    Outline outline1 = null;
+    ResamplingRowModel resamplingRowModel;
 
     ResamplingDialog(AppContext appContext, Product product, boolean modal) {
         super(appContext, "Resampling", ID_APPLY_CLOSE, "resampleAction");
@@ -281,40 +296,28 @@ class ResamplingDialog extends SingleTargetProductDialog {
 
 
         final TableLayout tableLayoutMethodDefinition = new TableLayout(1);
-        tableLayout.setTableAnchor(TableLayout.Anchor.NORTHWEST);
+        /*tableLayout.setTableAnchor(TableLayout.Anchor.NORTHWEST);
         tableLayout.setTableFill(TableLayout.Fill.HORIZONTAL);
         tableLayout.setTableWeightX(1.0);
-        tableLayout.setTablePadding(4, 4);
+        tableLayout.setTablePadding(4, 4);*/
+        tableLayoutMethodDefinition.setTableAnchor(TableLayout.Anchor.NORTHWEST);
+        tableLayoutMethodDefinition.setTableFill(TableLayout.Fill.HORIZONTAL);
+        tableLayoutMethodDefinition.setTableWeightX(1.0);
+        tableLayoutMethodDefinition.setTablePadding(4, 4);
         JPanel methodDefinitionPanel = new JPanel(tableLayoutMethodDefinition);
         methodDefinitionPanel.setBorder(BorderFactory.createTitledBorder("Define resampling algorithm"));
 
-        final JPanel upsamplingMethodPanel = createPropertyPanel(propertySet, "upsamplingMethod", registry);
-        final JPanel downsamplingMethodPanel = createPropertyPanel(propertySet, "downsamplingMethod", registry);
-        final JPanel flagDownsamplingMethodPanel = createPropertyPanel(propertySet, "flagDownsamplingMethod", registry);
 
-        advancedMethodDefinitionPanel = new JPanel(tableLayoutMethodDefinition);
-        if(appContext.getSelectedProduct() != null) {
-            BandsTreeModel myModel = new BandsTreeModel(appContext.getSelectedProduct());
+        upsamplingMethodPanel = createPropertyPanel(propertySet, "upsamplingMethod", registry);
+        downsamplingMethodPanel = createPropertyPanel(propertySet, "downsamplingMethod", registry);
+        flagDownsamplingMethodPanel = createPropertyPanel(propertySet, "flagDownsamplingMethod", registry);
 
-            bandResamplingPresets = new BandResamplingPreset[myModel.getTotalRows()];
-            for(int i = 0 ; i < myModel.getTotalRows() ; i++) {
-                bandResamplingPresets[i] = new BandResamplingPreset(myModel.getRows()[i], (String) (parameterSupport.getParameterMap().get("downsamplingMethod")) , (String) (parameterSupport.getParameterMap().get("upsamplingMethod")));
-            }
 
-            //Create the Outline's model, consisting of the TreeModel and the RowModel
-            mdl = DefaultOutlineModel.createOutlineModel(
-                    myModel, new ResamplingRowModel(bandResamplingPresets, myModel), true, "Bands");
+        //Create advancedMethodDefinitionPanel
+        advancedMethodDefinitionPanel = createAdvancedMethodDefinitionPanel();
 
-            Outline outline1 = new Outline();
-            outline1.setRootVisible(false);
-            outline1.setModel(mdl);
-
-            ResamplingUtils.setUpUpsamplingColumn(outline1,outline1.getColumnModel().getColumn(1));
-            ResamplingUtils.setUpDownsamplingColumn(outline1,outline1.getColumnModel().getColumn(2));
-            JScrollPane tableContainer = new JScrollPane(outline1);
-            advancedMethodDefinitionPanel.add(tableContainer);
-            advancedMethodDefinitionPanel.setVisible(false);
-        }
+        //Create load preset panel
+        loadPresetPanel = createLoadSavePresetPanel();
 
         methodDefinitionPanel.add(upsamplingMethodPanel);
         methodDefinitionPanel.add(tableLayout.createVerticalSpacer());
@@ -324,6 +327,7 @@ class ResamplingDialog extends SingleTargetProductDialog {
         methodDefinitionPanel.add(tableLayout.createVerticalSpacer());
         methodDefinitionPanel.add(createAdvancedCheckBoxPanel());
         methodDefinitionPanel.add(advancedMethodDefinitionPanel);
+        methodDefinitionPanel.add(loadPresetPanel);
 
         final JPanel resampleOnPyramidLevelsPanel = createPropertyPanel(propertySet, "resampleOnPyramidLevels", registry);
 
@@ -355,6 +359,20 @@ class ResamplingDialog extends SingleTargetProductDialog {
         return propertyPanel;
     }
 
+    private void setEnableRec(Component container, boolean enable){
+        container.setEnabled(enable);
+
+        try {
+            Component[] components= ((Container) container).getComponents();
+            for (int i = 0; i < components.length; i++) {
+                setEnableRec(components[i], enable);
+            }
+        } catch (ClassCastException e) {
+
+        }
+    }
+
+
     private JPanel createAdvancedCheckBoxPanel() {
         advancedMethodCheckBox = new JCheckBox("Advanced Method Definition", false);
 
@@ -364,8 +382,17 @@ class ResamplingDialog extends SingleTargetProductDialog {
             public void itemStateChanged(ItemEvent e) {
                 if(e.getStateChange() == ItemEvent.SELECTED) {
                     advancedMethodDefinitionPanel.setVisible(true);
+                    loadPresetPanel.setVisible(true);
+                    setEnableRec(upsamplingMethodPanel,false);
+                    setEnableRec(downsamplingMethodPanel,false);
+                    setEnableRec(flagDownsamplingMethodPanel,false);
+
                 } else {
                     advancedMethodDefinitionPanel.setVisible(false);
+                    loadPresetPanel.setVisible(false);
+                    setEnableRec(upsamplingMethodPanel,true);
+                    setEnableRec(downsamplingMethodPanel,true);
+                    setEnableRec(flagDownsamplingMethodPanel,true);
                 }
 
             }
@@ -376,6 +403,184 @@ class ResamplingDialog extends SingleTargetProductDialog {
 
         return propertyPanel;
     }
+
+    private JPanel createAdvancedMethodDefinitionPanel() {
+        final TableLayout tableLayoutMethodDefinition = new TableLayout(1);
+        tableLayoutMethodDefinition.setTableAnchor(TableLayout.Anchor.NORTHWEST);
+        tableLayoutMethodDefinition.setTableFill(TableLayout.Fill.HORIZONTAL);
+        tableLayoutMethodDefinition.setTableWeightX(1.0);
+        tableLayoutMethodDefinition.setTablePadding(4, 4);
+        JPanel panel = new JPanel(tableLayoutMethodDefinition);
+        if(appContext.getSelectedProduct() != null) {
+            BandsTreeModel myModel = new BandsTreeModel(appContext.getSelectedProduct());
+
+            bandResamplingPresets = new BandResamplingPreset[myModel.getTotalRows()];
+            for(int i = 0 ; i < myModel.getTotalRows() ; i++) {
+                bandResamplingPresets[i] = new BandResamplingPreset(myModel.getRows()[i], (String) (parameterSupport.getParameterMap().get("downsamplingMethod")) , (String) (parameterSupport.getParameterMap().get("upsamplingMethod")));
+            }
+
+            resamplingRowModel = new ResamplingRowModel(bandResamplingPresets, myModel);
+            //Create the Outline's model, consisting of the TreeModel and the RowModel
+            mdl = DefaultOutlineModel.createOutlineModel(
+                    myModel, resamplingRowModel, true, "Bands");
+
+            outline1 = new Outline();
+            outline1.setRootVisible(false);
+            outline1.setModel(mdl);
+
+            ResamplingUtils.setUpUpsamplingColumn(outline1,outline1.getColumnModel().getColumn(1), (String) parameterSupport.getParameterMap().get("upsamplingMethod"));
+            ResamplingUtils.setUpDownsamplingColumn(outline1,outline1.getColumnModel().getColumn(2), (String) parameterSupport.getParameterMap().get("downsamplingMethod"));
+            JScrollPane tableContainer = new JScrollPane(outline1);
+            panel.add(tableContainer);
+
+            panel.setVisible(false);
+        }
+        return panel;
+    }
+
+
+    private JPanel createLoadSavePresetPanel() {
+        final TableLayout tableLayoutMethodDefinition = new TableLayout(2);
+        tableLayoutMethodDefinition.setTableAnchor(TableLayout.Anchor.NORTHWEST);
+        tableLayoutMethodDefinition.setTableFill(TableLayout.Fill.HORIZONTAL);
+        tableLayoutMethodDefinition.setTableWeightX(1.0);
+        tableLayoutMethodDefinition.setTablePadding(4, 4);
+        JPanel panel = new JPanel(tableLayoutMethodDefinition);
+
+        //Add Load preset button
+        JButton loadButton = new JButton("Load Preset...");
+        loadButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                SnapFileChooser fileChooser = new SnapFileChooser(SystemUtils.getAuxDataPath().resolve(ResamplingUtils.RESAMPLING_PRESET_FOLDER).toFile());
+                fileChooser.setAcceptAllFileFilterUsed(true);
+                fileChooser.setDialogTitle("Select resampling preset");
+                SnapFileFilter fileFilter = new SnapFileFilter("ResPreset", ".res", "Resampling preset files");
+
+                fileChooser.addChoosableFileFilter(fileFilter);
+
+                fileChooser.setFileFilter(fileFilter);
+
+                fileChooser.setDialogType(SnapFileChooser.OPEN_DIALOG);
+
+                File selectedFile;
+                while (true) {
+                    int i = fileChooser.showDialog(panel, null);
+                    if (i == SnapFileChooser.APPROVE_OPTION) {
+                        selectedFile = fileChooser.getSelectedFile();
+                        try {
+                            ResamplingPreset resamplingPreset = ResamplingPreset.loadResamplingPreset(selectedFile);
+
+                            //check that bands corresponds with opened product
+                            if(!resamplingPreset.isCompatibleWithProduct(ioParametersPanel.getSourceProductSelectorList().get(0).getSelectedProduct())) {
+                                AbstractDialog.showWarningDialog(panel,
+                                                                 "Resampling preset incompatible with selected input product.",
+                                                                 "Resampling preset incompatibility");
+                                break;
+                            }
+                            //todo check upsampling and resampling method exist
+
+                            bandResamplingPresets = resamplingPreset.getBandResamplingPresets().toArray(new BandResamplingPreset[resamplingPreset.getBandResamplingPresets().size()]);
+
+                            for(BandResamplingPreset bandResamplingPreset : resamplingPreset.getBandResamplingPresets()) {
+                                resamplingRowModel.setValueFor(bandResamplingPreset.getBandName(),0,bandResamplingPreset.getUpsamplingAlias());
+                                resamplingRowModel.setValueFor(bandResamplingPreset.getBandName(),1,bandResamplingPreset.getDownsamplingAlias());
+                                advancedMethodDefinitionPanel.repaint();
+                            }
+                        } catch (IOException e1) {
+                            //TODO
+                        }
+                        break;
+                    } else {
+                        // Canceled
+                        selectedFile = null;
+                        break;
+                    }
+                }
+
+            }
+        });
+        panel.add(loadButton);
+
+
+        //Add Save preset button
+        //final ImageIcon saveIcon = TangoIcons.actions_document_save_as(TangoIcons.Res.R22);
+        JButton saveButton = new JButton("Save Preset"/*, saveIcon*/);
+        saveButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                SnapFileChooser fileChooser = new SnapFileChooser(SystemUtils.getAuxDataPath().resolve(ResamplingUtils.RESAMPLING_PRESET_FOLDER).toFile());
+                fileChooser.setAcceptAllFileFilterUsed(true);
+                fileChooser.setDialogTitle("Select resampling preset");
+                SnapFileFilter fileFilter = new SnapFileFilter("ResPreset", ".res", "Resampling preset files");
+
+                fileChooser.addChoosableFileFilter(fileFilter);
+
+                fileChooser.setFileFilter(fileFilter);
+
+                fileChooser.setDialogType(SnapFileChooser.SAVE_DIALOG);
+
+                File selectedFile;
+                while (true) {
+                    int i = fileChooser.showDialog(panel, null);
+                    if (i == SnapFileChooser.APPROVE_OPTION) {
+                        selectedFile = fileChooser.getSelectedFile();
+                        if (!selectedFile.exists()) {
+                            break;
+                        }
+                        i = JOptionPane.showConfirmDialog(panel,
+                                                          "The file\n" + selectedFile + "\nalready exists.\nOverwrite?",
+                                                          "File exists", JOptionPane.YES_NO_CANCEL_OPTION);
+                        if (i == JOptionPane.CANCEL_OPTION) {
+                            // Canceled
+                            selectedFile = null;
+                            break;
+                        } else if (i == JOptionPane.YES_OPTION) {
+                            // Overwrite existing file
+                            break;
+                        }
+                    } else {
+                        // Canceled
+                        selectedFile = null;
+                        break;
+                    }
+                }
+                if(selectedFile != null) {
+                    ResamplingPreset auxPreset = new ResamplingPreset(selectedFile.getName(),bandResamplingPresets);
+                    auxPreset.saveToFile(selectedFile, ioParametersPanel.getSourceProductSelectorList().get(0).getSelectedProduct());
+                    /*BufferedWriter writer = nul
+                    boolean success = true;
+                    try {
+                        writer = new BufferedWriter(new FileWriter(selectedFile, false));
+                        for(BandResamplingPreset bandResamplingPreset : bandResamplingPresets) {
+                            if(bandResamplingPreset.getBandName()!= "Bands") {
+                                writer.write(bandResamplingPreset.toString());
+                                writer.write("\n");
+                            }
+                        }
+                    } catch (IOException ioException) {
+                        //do nothing
+                        success = false;
+                    } finally {
+                        if(writer != null) {
+                            try {
+                                writer.close();
+                            } catch (IOException ioException) {
+                                //ignore
+                            }
+                        }
+                    }*/
+                }
+            }
+        });
+        panel.add(saveButton);
+
+        panel.setVisible(false);
+        return panel;
+    }
+
 
     private OperatorMenu createDefaultMenuBar() {
         return new OperatorMenu(getJDialog(),
@@ -431,16 +636,19 @@ class ResamplingDialog extends SingleTargetProductDialog {
                 bandResamplingPresets[i] = new BandResamplingPreset(myModel.getRows()[i], (String) (parameterSupport.getParameterMap().get("downsamplingMethod")),(String) (parameterSupport.getParameterMap().get("upsamplingMethod")));
             }
 
+            resamplingRowModel = new ResamplingRowModel(bandResamplingPresets, myModel);
             //Create the Outline's model, consisting of the TreeModel and the RowModel
             mdl = DefaultOutlineModel.createOutlineModel(
-                    myModel, new ResamplingRowModel(bandResamplingPresets, myModel), true, "Products");
+                    myModel, resamplingRowModel, true, "Products");
 
             Outline outline1 = new Outline();
             outline1.setRootVisible(false);
             outline1.setModel(mdl);
 
-            ResamplingUtils.setUpUpsamplingColumn(outline1,outline1.getColumnModel().getColumn(1));
-            ResamplingUtils.setUpDownsamplingColumn(outline1,outline1.getColumnModel().getColumn(2));
+
+
+            ResamplingUtils.setUpUpsamplingColumn(outline1,outline1.getColumnModel().getColumn(1), (String)  parameterSupport.getParameterMap().get("upsamplingMethod"));
+            ResamplingUtils.setUpDownsamplingColumn(outline1,outline1.getColumnModel().getColumn(2), (String) parameterSupport.getParameterMap().get("downsamplingMethod"));
 
             JScrollPane tableContainer = new JScrollPane(outline1);
             advancedMethodDefinitionPanel.add(tableContainer);

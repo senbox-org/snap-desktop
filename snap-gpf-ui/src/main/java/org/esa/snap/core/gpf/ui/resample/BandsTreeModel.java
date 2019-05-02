@@ -28,6 +28,7 @@ public class BandsTreeModel implements TreeModel {
                     }
                 }
             }
+
             for(String bandName : product.getBandNames()) {
                 boolean inGroup = false;
                 for (int i = 0 ; i < listGroups.size() ; i++) {
@@ -41,6 +42,10 @@ public class BandsTreeModel implements TreeModel {
                 }
             }
 
+        } else {
+            for(String bandName : product.getBandNames()) {
+                bandsWithoutGroup.add(bandName);
+            }
         }
 
         totalRows = 1 + listGroups.size() + product.getNumBands();
@@ -62,10 +67,12 @@ public class BandsTreeModel implements TreeModel {
         return rows;
     }
 
+
     @Override
     public void addTreeModelListener(javax.swing.event.TreeModelListener l) {
         //do nothing
     }
+
     @Override
     public Object getChild(Object parent, int index) {
         String parentString = (String) parent;
@@ -91,8 +98,8 @@ public class BandsTreeModel implements TreeModel {
             }
         }
         return null;
-
     }
+
     @Override
     public int getChildCount(Object parent) {
         String parentString = (String) parent;
