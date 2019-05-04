@@ -102,6 +102,21 @@
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-util-ui</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-explorer</artifactId>
+            <version>${netbeans.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-nodes</artifactId>
+            <version>${netbeans.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-netbeans-swing-outline</artifactId>
+            <version>${netbeans.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>junit</groupId>
