@@ -890,7 +890,7 @@ public class ResamplingUI extends BaseOperatorUI {
 
         //Add Load preset button
         final ImageIcon loadIcon = TangoIcons.actions_document_open(TangoIcons.Res.R22);
-        JButton loadButton = new JButton("Import Preset...");
+        JButton loadButton = new JButton("Import Preset...", loadIcon);
         loadButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
