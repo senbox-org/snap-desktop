@@ -149,6 +149,7 @@ class ResamplingDialog extends SingleTargetProductDialog {
         bindingContext.getPropertySet().getProperty(TARGET_HEIGHT_PROPERTY_NAME).getDescriptor().setValueRange(valueRange);
         bindingContext.getPropertySet().getProperty(TARGET_RESOLUTION_PROPERTY_NAME).getDescriptor().setValueRange(valueRange);
         productChangedHandler = new ProductChangedHandler();
+        sourceProductSelectorList.get(0).initProducts();
         sourceProductSelectorList.get(0).setSelectedProduct(product);
         sourceProductSelectorList.get(0).addSelectionChangeListener(productChangedHandler);
     }
@@ -209,6 +210,7 @@ class ResamplingDialog extends SingleTargetProductDialog {
     }
 
     private String generateBandResamplings(Product sourceProduct) {
+        updateResamplingPreset();
         String bandResamplingsString = "";
         for(String bandName : sourceProduct.getBandNames()) {
             for(BandResamplingPreset bandResamplingPreset : bandResamplingPresets) {
@@ -296,10 +298,6 @@ class ResamplingDialog extends SingleTargetProductDialog {
 
 
         final TableLayout tableLayoutMethodDefinition = new TableLayout(1);
-        /*tableLayout.setTableAnchor(TableLayout.Anchor.NORTHWEST);
-        tableLayout.setTableFill(TableLayout.Fill.HORIZONTAL);
-        tableLayout.setTableWeightX(1.0);
-        tableLayout.setTablePadding(4, 4);*/
         tableLayoutMethodDefinition.setTableAnchor(TableLayout.Anchor.NORTHWEST);
         tableLayoutMethodDefinition.setTableFill(TableLayout.Fill.HORIZONTAL);
         tableLayoutMethodDefinition.setTableWeightX(1.0);
@@ -411,8 +409,8 @@ class ResamplingDialog extends SingleTargetProductDialog {
         tableLayoutMethodDefinition.setTableWeightX(1.0);
         tableLayoutMethodDefinition.setTablePadding(4, 4);
         JPanel panel = new JPanel(tableLayoutMethodDefinition);
-        if(appContext.getSelectedProduct() != null) {
-            BandsTreeModel myModel = new BandsTreeModel(appContext.getSelectedProduct());
+        if(ioParametersPanel.getSourceProductSelectorList().get(0).getSelectedProduct() != null) {
+            BandsTreeModel myModel = new BandsTreeModel(ioParametersPanel.getSourceProductSelectorList().get(0).getSelectedProduct());
 
             bandResamplingPresets = new BandResamplingPreset[myModel.getTotalRows()];
             for(int i = 0 ; i < myModel.getTotalRows() ; i++) {
@@ -420,7 +418,7 @@ class ResamplingDialog extends SingleTargetProductDialog {
             }
 
             resamplingRowModel = new ResamplingRowModel(bandResamplingPresets, myModel);
-            //Create the Outline's model, consisting of the TreeModel and the RowModel
+
             mdl = DefaultOutlineModel.createOutlineModel(
                     myModel, resamplingRowModel, true, "Bands");
 
@@ -448,7 +446,8 @@ class ResamplingDialog extends SingleTargetProductDialog {
         JPanel panel = new JPanel(tableLayoutMethodDefinition);
 
         //Add Load preset button
-        JButton loadButton = new JButton("Load Preset...");
+        final ImageIcon loadIcon = TangoIcons.actions_document_open(TangoIcons.Res.R22);
+        JButton loadButton = new JButton("Import Preset...", loadIcon);
         loadButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -479,7 +478,7 @@ class ResamplingDialog extends SingleTargetProductDialog {
                                                                  "Resampling preset incompatibility");
                                 break;
                             }
-                            //todo check upsampling and resampling method exist
+                            //TODO that check upsampling and resampling method exist
 
                             bandResamplingPresets = resamplingPreset.getBandResamplingPresets().toArray(new BandResamplingPreset[resamplingPreset.getBandResamplingPresets().size()]);
 
@@ -489,7 +488,9 @@ class ResamplingDialog extends SingleTargetProductDialog {
                                 advancedMethodDefinitionPanel.repaint();
                             }
                         } catch (IOException e1) {
-                            //TODO
+                            AbstractDialog.showWarningDialog(panel,
+                                                             "Cannot load resampling preset.",
+                                                             "Cannot load resampling preset.");
                         }
                         break;
                     } else {
@@ -505,8 +506,8 @@ class ResamplingDialog extends SingleTargetProductDialog {
 
 
         //Add Save preset button
-        //final ImageIcon saveIcon = TangoIcons.actions_document_save_as(TangoIcons.Res.R22);
-        JButton saveButton = new JButton("Save Preset"/*, saveIcon*/);
+        final ImageIcon saveIcon = TangoIcons.actions_document_save_as(TangoIcons.Res.R22);
+        JButton saveButton = new JButton("Save Preset", saveIcon);
         saveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -548,30 +549,10 @@ class ResamplingDialog extends SingleTargetProductDialog {
                     }
                 }
                 if(selectedFile != null) {
+                    //update BandResamplingPresets with values of table
+                    updateResamplingPreset();
                     ResamplingPreset auxPreset = new ResamplingPreset(selectedFile.getName(),bandResamplingPresets);
                     auxPreset.saveToFile(selectedFile, ioParametersPanel.getSourceProductSelectorList().get(0).getSelectedProduct());
-                    /*BufferedWriter writer = nul
-                    boolean success = true;
-                    try {
-                        writer = new BufferedWriter(new FileWriter(selectedFile, false));
-                        for(BandResamplingPreset bandResamplingPreset : bandResamplingPresets) {
-                            if(bandResamplingPreset.getBandName()!= "Bands") {
-                                writer.write(bandResamplingPreset.toString());
-                                writer.write("\n");
-                            }
-                        }
-                    } catch (IOException ioException) {
-                        //do nothing
-                        success = false;
-                    } finally {
-                        if(writer != null) {
-                            try {
-                                writer.close();
-                            } catch (IOException ioException) {
-                                //ignore
-                            }
-                        }
-                    }*/
                 }
             }
         });
@@ -645,8 +626,6 @@ class ResamplingDialog extends SingleTargetProductDialog {
             outline1.setRootVisible(false);
             outline1.setModel(mdl);
 
-
-
             ResamplingUtils.setUpUpsamplingColumn(outline1,outline1.getColumnModel().getColumn(1), (String)  parameterSupport.getParameterMap().get("upsamplingMethod"));
             ResamplingUtils.setUpDownsamplingColumn(outline1,outline1.getColumnModel().getColumn(2), (String) parameterSupport.getParameterMap().get("downsamplingMethod"));
 
@@ -654,6 +633,16 @@ class ResamplingDialog extends SingleTargetProductDialog {
             advancedMethodDefinitionPanel.add(tableContainer);
             advancedMethodDefinitionPanel.revalidate();
             advancedMethodDefinitionPanel.setVisible(advancedMethodCheckBox.isSelected());
+        }
+    }
+
+    private void updateResamplingPreset() {
+        if(bandResamplingPresets == null) {
+            return;
+        }
+        for (BandResamplingPreset bandResamplingPreset : bandResamplingPresets) {
+            bandResamplingPreset.setUpsamplingAlias((String) resamplingRowModel.getValueFor(bandResamplingPreset.getBandName(),0));
+            bandResamplingPreset.setDownsamplingAlias((String) resamplingRowModel.getValueFor(bandResamplingPreset.getBandName(),1));
         }
     }
 
