@@ -9,7 +9,7 @@ import java.util.ArrayList;
  * Created by obarrile on 22/04/2019.
  */
 public class BandsTreeModel implements TreeModel {
-    private Product product;
+    private String[] productBandNames;
     ArrayList<String> listGroups = new ArrayList<>();
     ArrayList<String> bandsWithoutGroup = new ArrayList<>();
     private int totalRows;
@@ -17,7 +17,7 @@ public class BandsTreeModel implements TreeModel {
 
 
     public BandsTreeModel(Product product) {
-        this.product = product;
+        this.productBandNames = product.getBandNames().clone();
         if(product.getAutoGrouping()!= null) {
             for (int i = 0 ; i < product.getAutoGrouping().size() ; i++) {
                 for(String bandName : product.getBandNames()) {
@@ -87,7 +87,7 @@ public class BandsTreeModel implements TreeModel {
 
         for (int i = 0 ; i < listGroups.size() ; i++) {
             if(listGroups.get(i).equals(parentString)) {
-                String[] bandNames = product.getBandNames();
+                String[] bandNames = productBandNames;
                 ArrayList<String> autoGroupingBands = new ArrayList<>();
                 for(String bandName : bandNames) {
                     if(bandName.startsWith(parentString)) {
@@ -105,7 +105,7 @@ public class BandsTreeModel implements TreeModel {
         String parentString = (String) parent;
         if(parentString.equals("Bands")) {
             if(listGroups.size() == 0) {
-                return product.getNumBands();
+                return productBandNames.length;
             } else {
                 return (bandsWithoutGroup.size() + listGroups.size());
             }
@@ -113,7 +113,7 @@ public class BandsTreeModel implements TreeModel {
 
         for (int i = 0 ; i < listGroups.size() ; i++) {
             if(listGroups.get(i).equals(parentString)) {
-                String[] bandNames = product.getBandNames();
+                String[] bandNames = productBandNames;
                 ArrayList<String> autoGroupingBands = new ArrayList<>();
                 for(String bandName : bandNames) {
                     if(bandName.startsWith(parentString)) {
@@ -132,7 +132,7 @@ public class BandsTreeModel implements TreeModel {
         String childString = (String) child;
         if(parentString.equals("Bands")) {
             if(listGroups.size() == 0) {
-                String[] bands = product.getBandNames();
+                String[] bands = productBandNames;
                 for(int i = 0 ; i < bands.length ; i++) {
                     if(bands[i].equals(childString)) {
                         return i;
@@ -144,7 +144,7 @@ public class BandsTreeModel implements TreeModel {
                         return i;
                     }
                 }
-                String[] bands = product.getBandNames();
+                String[] bands = productBandNames;
                 for(int i = 0 ; i < bands.length ; i++) {
                     if(bands[i].equals(childString)) {
                         return (i+listGroups.size());
@@ -155,7 +155,7 @@ public class BandsTreeModel implements TreeModel {
 
         for (int i = 0 ; i < listGroups.size() ; i++) {
             if(listGroups.get(i).equals(parentString)) {
-                String[] bandNames = product.getBandNames();
+                String[] bandNames = productBandNames;
                 ArrayList<String> autoGroupingBands = new ArrayList<>();
                 for(String bandName : bandNames) {
                     if(bandName.startsWith(parentString)) {
@@ -175,7 +175,7 @@ public class BandsTreeModel implements TreeModel {
     @Override
     public boolean isLeaf(Object node) {
         String stringNode = (String) node;
-        String[] bandNames = product.getBandNames();
+        String[] bandNames = productBandNames;
         for(String bandName : bandNames) {
             if(bandName.equals(stringNode)) {
                 return true;
