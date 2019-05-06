@@ -24,6 +24,7 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import java.lang.reflect.Field;
+import java.util.Vector;
 
 abstract class AbstractTableAdapter extends ComponentAdapter implements TableModelListener {
 
