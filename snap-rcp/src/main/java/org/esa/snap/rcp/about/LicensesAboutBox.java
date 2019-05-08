@@ -5,17 +5,45 @@
  */
 package org.esa.snap.rcp.about;
 
-import javax.swing.*;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.RowSorter;
+import javax.swing.SortOrder;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
-import javax.swing.table.*;
-import java.awt.*;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Desktop;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+
+import static org.esa.snap.core.util.SystemUtils.*;
 
 /**
  * Provides a 'Licenses' tab in AboutBox which contains a table displaying all third party licenses
@@ -23,55 +51,59 @@ import java.util.List;
  *
  * @author olafd
  */
-@AboutBox(displayName = "Licenses", position = 30)
 class LicensesAboutBox extends JPanel {
+
+    private static final String THIRD_PARTY_LICENSE_DEFAULT_FILE_NAME = "THIRDPARTY_LICENSES.txt";
 
     private ThirdPartyLicense[] licenses;
 
     LicensesAboutBox() {
         super(new BorderLayout(4, 4));
         setBorder(new EmptyBorder(4, 4, 4, 4));
-        add(createLicensesPanel(), BorderLayout.SOUTH);
+        createLicensesPanel();
     }
 
-    private JPanel createLicensesPanel() {
-        final JPanel panel = new JPanel();
-        panel.setLayout(new BorderLayout());
-
-
+    private void createLicensesPanel() {
         JLabel infoText = new JLabel("<html>"
-                                     + "The table below gives an overview of all 3rd-party licenses used by SNAP "
-                                     + "and the Toolboxes.<br>"
+                                     + "<b>The table below gives an overview of all 3rd-party licenses used by SNAP "
+                                     + "and the ESA Toolboxes.<br>"
+                                     + "The dependencies of other plugins are not considered in this list.</b>"
         );
 
-        Font boldFont = new Font(null, Font.BOLD, 12);
-        infoText.setFont(boldFont);
+        JComponent licensesComponent;
+        Path licensesFile = getApplicationHomeDir().toPath().resolve(THIRD_PARTY_LICENSE_DEFAULT_FILE_NAME);
+        try {
+            JTable table = createLicensesTable(licensesFile);
+            licensesComponent = createScrollPane(table);
+        } catch (IOException e) {
+            String msg = "Error: Cloud not read licenses from " + licensesFile.toAbsolutePath().toString();
+            LOG.log(Level.WARNING, msg, e);
+            JLabel msgLabel = new JLabel(msg);
+            msgLabel.setVerticalAlignment(SwingConstants.TOP);
+            licensesComponent = msgLabel;
+        }
 
-        JScrollPane licensesScrollPane = createScrollPane(createLicensesTable());
 
-        JPanel innerPanel = new JPanel(new BorderLayout(4, 4));
-        innerPanel.add(infoText, BorderLayout.NORTH);
-        innerPanel.add(licensesScrollPane, BorderLayout.SOUTH);
+        add(infoText, BorderLayout.NORTH);
+        add(licensesComponent, BorderLayout.CENTER);
 
-        panel.add(innerPanel, BorderLayout.CENTER);
         setVisible(true);
-
-        return panel;
     }
 
     private JScrollPane createScrollPane(JTable table) {
         JScrollPane scrollPane = new JScrollPane(table,
                                                  JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                                                  JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        table.setAutoResizeMode(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
+        Dimension d = table.getPreferredSize();
+        scrollPane.setPreferredSize(new Dimension(d.width, table.getRowHeight() * 10));
+
         return scrollPane;
     }
 
-    private JTable createLicensesTable() {
-        licenses = new ThirdPartyLicense[0];
-        licenses = getThirdPartyLicensesFromCsvTable();
+    private JTable createLicensesTable(Path licensesFile) throws IOException {
+        licenses = getThirdPartyLicensesFromCsvTable(licensesFile);
 
-        ThirdPartyLicensesTableModel licensesTableModel = new ThirdPartyLicensesTableModel(licenses, licenses.length);
+        ThirdPartyLicensesTableModel licensesTableModel = new ThirdPartyLicensesTableModel(licenses);
         JTable licensesTable = new JTable(licensesTableModel);
 
         // add specific properties to table
@@ -84,7 +116,7 @@ class LicensesAboutBox extends JPanel {
             licensesTable.getColumnModel().getColumn(i).setCellRenderer(new LineWrapCellRenderer());
         }
 
-        // set proper default colunm sizes
+        // set proper default column sizes
         final TableColumnModel tableColumnModel = licensesTable.getColumnModel();
         final TableColumn nameColumn =
                 tableColumnModel.getColumn(ThirdPartyLicensesTableModel.NAME_COL_INDEX);
@@ -167,7 +199,7 @@ class LicensesAboutBox extends JPanel {
                         } catch (URISyntaxException e1) {
                             JOptionPane.showMessageDialog(licensesTable.getParent(),
                                                           "Cannot create URL from given String:\n" + urlString + ":\n" +
-                                                                  e1.getMessage(),
+                                                          e1.getMessage(),
                                                           "Error",
                                                           JOptionPane.ERROR_MESSAGE);
                         }
@@ -176,38 +208,40 @@ class LicensesAboutBox extends JPanel {
             }
         };
         licensesTable.addMouseListener(mouseAdapter);
+        licensesTable.setAutoResizeMode(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
 
         return licensesTable;
     }
 
-    private ThirdPartyLicense[] getThirdPartyLicensesFromCsvTable() {
-        final ThirdPartyLicensesCsvTable licensesCsvTable = new ThirdPartyLicensesCsvTable();
-        final int numLicenses = licensesCsvTable.getName().size();
-        ThirdPartyLicense[] thirdPartyLicenses = new ThirdPartyLicense[numLicenses];
-        for (int i = 0; i < numLicenses; i++) {
-            if (licensesCsvTable.getName(i) != null) {
-                String name = licensesCsvTable.getName(i);
-                String descriptionUse = licensesCsvTable.getDescrUse(i);
-                String iprOwner = licensesCsvTable.getIprOwner(i);
-                String license =
-                        licensesCsvTable.getLicense(i).toUpperCase().equals("NONE") ? null :
-                                licensesCsvTable.getLicense(i);
-                String iprOwnerUrl = licensesCsvTable.getIprOwnerUrl(i).toUpperCase().equals("NONE") ? null :
-                        licensesCsvTable.getIprOwnerUrl(i);
-                String licenseUrl = licensesCsvTable.getLicenseUrl(i).toUpperCase().equals("NONE") ? null :
-                        licensesCsvTable.getLicenseUrl(i);
+    private ThirdPartyLicense[] getThirdPartyLicensesFromCsvTable(Path licensesFile) throws IOException {
+        try (BufferedReader licensesReader = Files.newBufferedReader(licensesFile)) {
+            final ThirdPartyLicensesCsvTable licensesCsvTable = new ThirdPartyLicensesCsvTable(licensesReader);
+            final int numLicenses = licensesCsvTable.getName().size();
+            ThirdPartyLicense[] thirdPartyLicenses = new ThirdPartyLicense[numLicenses];
+            for (int i = 0; i < numLicenses; i++) {
+                if (licensesCsvTable.getName(i) != null) {
+                    String name = licensesCsvTable.getName(i);
+                    String descriptionUse = licensesCsvTable.getDescrUse(i);
+                    String iprOwner = licensesCsvTable.getIprOwner(i);
+                    String license =
+                            licensesCsvTable.getLicense(i).toUpperCase().equals("NONE") ? null :
+                            licensesCsvTable.getLicense(i);
+                    String iprOwnerUrl = licensesCsvTable.getIprOwnerUrl(i).toUpperCase().equals("NONE") ? null :
+                                         licensesCsvTable.getIprOwnerUrl(i);
+                    String licenseUrl = licensesCsvTable.getLicenseUrl(i).toUpperCase().equals("NONE") ? null :
+                                        licensesCsvTable.getLicenseUrl(i);
 
-                thirdPartyLicenses[i] = new ThirdPartyLicense(name, descriptionUse, iprOwner, license,
-                                                              iprOwnerUrl, licenseUrl);
+                    thirdPartyLicenses[i] = new ThirdPartyLicense(name, descriptionUse, iprOwner, license,
+                                                                  iprOwnerUrl, licenseUrl);
+                }
             }
+            return thirdPartyLicenses;
         }
 
-        return thirdPartyLicenses;
     }
 
     /**
      * Class providing a proper line wrapping in table cells.
-     *
      */
     private class LineWrapCellRenderer extends JTextArea implements TableCellRenderer {
 

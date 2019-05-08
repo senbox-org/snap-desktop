@@ -26,6 +26,7 @@ import org.esa.snap.core.gpf.ui.SingleTargetProductDialog;
 import org.esa.snap.ui.AppContext;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -57,9 +58,14 @@ class CollocationDialog extends SingleTargetProductDialog {
 
     @Override
     protected Product createTargetProduct() throws Exception {
-        final Map<String, Product> productMap = new HashMap<String, Product>(5);
+        final Map<String, Product> productMap = new LinkedHashMap<String, Product>(5);
         productMap.put("master", form.getMasterProduct());
-        productMap.put("slave", form.getSlaveProduct());
+        for (int i = 0 ; i < form.getSlaveProducts().length ; i++) {
+            productMap.put(String.format("slave%d",i), form.getSlaveProducts()[i]);
+        }
+
+        parameterSupport.getParameterMap().put("masterProductName",form.getMasterProduct().getName());
+        parameterSupport.getParameterMap().put("sourceProductPaths",form.getSourceProductPaths());
 
         return GPF.createProduct(OperatorSpi.getOperatorAlias(CollocateOp.class), parameterSupport.getParameterMap(),
                                  productMap);

@@ -22,7 +22,7 @@ public class ThirdPartyLicensesTableModel extends DefaultTableModel {
 
     private static final int NUMBER_OF_COLUMNS = 4;
 
-    ThirdPartyLicensesTableModel(ThirdPartyLicense[] thirdPartyLicenses, int rowCount) {
+    ThirdPartyLicensesTableModel(ThirdPartyLicense[] thirdPartyLicenses) {
         super(toArray(thirdPartyLicenses), new Object[]{NAME_COL_NAME,
                 DESCRIPTION_USE_COL_NAME,
                 IPR_OWNER_COL_NAME,

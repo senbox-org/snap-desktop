@@ -183,7 +183,7 @@ public class BenchmarkDialog extends DefaultSingleTargetProductDialog {
             //add current performance parameters to benchmark
             PerformanceParameters currentPerformanceParameters = ConfigurationOptimizer.getInstance().getActualPerformanceParameters();
             currentBenchmarkSingleCalcul = new BenchmarkSingleCalculus(
-                    /*currentPerformanceParameters.getDefaultTileSize(), */currentPerformanceParameters.getTileHeight(),currentPerformanceParameters.getTileWidth(),
+                    currentPerformanceParameters.getDefaultTileSize(), currentPerformanceParameters.getTileHeight(),currentPerformanceParameters.getTileWidth(),
                     currentPerformanceParameters.getCacheSize(),
                     currentPerformanceParameters.getNbThreads());
 
@@ -289,8 +289,8 @@ public class BenchmarkDialog extends DefaultSingleTargetProductDialog {
                 //final String[] columnNames = benchmarkModel.getColumnsNames();
                 //final int[][] data = benchmarkModel.getRowsToShow();
 
-                final String[] columnNames = benchmarkModel.getColumnsNamesWithoutTileSize();
-                final int[][] data = benchmarkModel.getRowsToShowWhitoutTileSize();
+                final String[] columnNames = benchmarkModel.getColumnsNamesWithoutTileDimension();
+                final int[][] data = benchmarkModel.getRowsToShowWhitoutTileDimension();
 
 
                 @Override

@@ -24,6 +24,7 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import java.lang.reflect.Field;
+import java.util.Vector;
 
 abstract class AbstractTableAdapter extends ComponentAdapter implements TableModelListener {
 
@@ -89,6 +90,17 @@ abstract class AbstractTableAdapter extends ComponentAdapter implements TableMod
                         field.setAccessible(true);
                     }
                     try {
+                        Vector dataVector = tableModel.getDataVector();
+                        Vector row = (Vector)dataVector.elementAt(i);
+                        // 1. add missing columns to row
+                        for (int l = row.size(); l < fields.length; l++) {
+                            row.add(null);
+                        }
+                        // 2. remove redundant columns from row
+                        for (int l = fields.length; l < row.size(); l++) {
+                            row.remove(l);
+                        }
+
                         tableModel.setValueAt(field.get(item), i, k);
                     } catch (IllegalAccessException e) {
                         // ignore

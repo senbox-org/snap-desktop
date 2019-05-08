@@ -20,23 +20,16 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.io.WKTReader;
+import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.GeoPos;
+import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.graphbuilder.gpf.ui.worldmap.NestWorldMapPane;
 import org.esa.snap.graphbuilder.gpf.ui.worldmap.WorldMapUI;
 import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.ui.AppContext;
 
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
+import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -53,6 +46,7 @@ public class SubsetUI extends BaseOperatorUI {
 
     private final JList bandList = new JList();
 
+    private final JComboBox referenceCombo = new JComboBox();
     private final JTextField regionX = new JTextField("");
     private final JTextField regionY = new JTextField("");
     private final JTextField width = new JTextField("");
@@ -99,6 +93,15 @@ public class SubsetUI extends BaseOperatorUI {
     public void initParameters() {
 
         OperatorUIUtils.initParamList(bandList, getBandNames(), (Object[])paramMap.get("sourceBands"));
+        String _oldSelected = (String) referenceCombo.getSelectedItem();
+        referenceCombo.removeAllItems();
+        for( int i = 0 ; i < bandList.getModel().getSize() ; i++) {
+            String string = (String) bandList.getModel().getElementAt(i);
+            referenceCombo.addItem(string);
+            if(string.equals(_oldSelected)) {
+                referenceCombo.setSelectedItem(string);
+            }
+        }
 
         final Rectangle region = (Rectangle)paramMap.get("region");
         if(region != null) {
@@ -153,6 +156,8 @@ public class SubsetUI extends BaseOperatorUI {
 
         OperatorUIUtils.updateParamList(bandList, paramMap, "bandNames");
 
+        paramMap.put("referenceBand",(String) referenceCombo.getSelectedItem());
+
         int x=0, y=0, w=0, h=0;
         final String regionXStr = regionX.getText();
         if (regionXStr != null && !regionXStr.isEmpty())
@@ -203,6 +208,14 @@ public class SubsetUI extends BaseOperatorUI {
         contentPane.add(pixelCoordRadio, gbc);
         gbc.gridx = 1;
         contentPane.add(geoCoordRadio, gbc);
+
+
+
+        gbc.gridy++;
+        gbc.gridx = 0;
+        contentPane.add(new JLabel("Reference band:"), gbc);
+        gbc.gridx = 1;
+        contentPane.add(referenceCombo, gbc);
 
         pixelCoordRadio.setSelected(true);
         pixelCoordRadio.setActionCommand("pixelCoordRadio");
@@ -314,4 +327,5 @@ public class SubsetUI extends BaseOperatorUI {
             SnapApp.getDefault().handleError("UpdateGeoRegion error reading wkt", e);
         }
     }
+
 }

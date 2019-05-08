@@ -1,5 +1,6 @@
 Manifest-Version: 1.0
 OpenIDE-Module-Specification-Version: ${snap.nbmSpecVersion}
+OpenIDE-Module-Implementation-Version: ${snap.nbmImplVersion}
 OpenIDE-Module-Localizing-Bundle: org/esa/snap/rcp/branding/Bundle.properties
 AutoUpdate-Show-In-Client: false
 AutoUpdate-Essential-Module: true

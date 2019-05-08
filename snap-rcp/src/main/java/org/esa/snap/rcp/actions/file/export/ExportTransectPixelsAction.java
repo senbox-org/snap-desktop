@@ -35,9 +35,10 @@ import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
+import org.esa.snap.core.util.math.MathUtils;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.rcp.pixelinfo.PixelInfoViewUtils;
 import org.esa.snap.rcp.util.Dialogs;
-import org.esa.snap.rcp.util.MultiSizeIssue;
 import org.esa.snap.ui.SelectExportMethodDialog;
 import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.product.ProductSceneView;
@@ -113,13 +114,7 @@ public class ExportTransectPixelsAction extends AbstractAction implements Contex
      */
     @Override
     public void actionPerformed(ActionEvent event) {
-        final ProductSceneView sceneView = SnapApp.getDefault().getSelectedProductSceneView();
-        if(sceneView != null && sceneView.getProduct().isMultiSize()) {
-            MultiSizeIssue.maybeResample(sceneView.getProduct());
-            //as the following code relies on current selections, nothing is done after resampling
-        } else {
-            exportTransectPixels();
-        }
+        exportTransectPixels();
     }
 
     @Override
@@ -154,7 +149,7 @@ public class ExportTransectPixelsAction extends AbstractAction implements Contex
 
         if (transect == null) {
             Dialogs.showError(Bundle.CTL_ExportTransectPixelsAction_DialogTitle(),
-                                  ERR_MSG_BASE + "There is no transect defined in the selected band.");
+                    ERR_MSG_BASE + "There is no transect defined in the selected band.");
             return;
         }
 
@@ -166,7 +161,7 @@ public class ExportTransectPixelsAction extends AbstractAction implements Contex
                     .build();
         } catch (IOException e) {
             Dialogs.showError(Bundle.CTL_ExportTransectPixelsAction_DialogTitle(),
-                                  ERR_MSG_BASE + "An I/O error occurred:\n" + e.getMessage());
+                    ERR_MSG_BASE + "An I/O error occurred:\n" + e.getMessage());
             return;
         }
 
@@ -185,7 +180,7 @@ public class ExportTransectPixelsAction extends AbstractAction implements Contex
         final JCheckBox exportTiePointsBox = new JCheckBox("Export tie-points");
         final JCheckBox exportWavelengthsAndSFBox = new JCheckBox("Export wavelengths + solar fluxes");
         final int method = SelectExportMethodDialog.run(SnapApp.getDefault().getMainFrame(), getWindowTitle(),
-                                                        questionText + numPixelsText, new JCheckBox[]{
+                questionText + numPixelsText, new JCheckBox[]{
                         createHeaderBox,
                         exportTiePointsBox,
                         exportWavelengthsAndSFBox
@@ -210,7 +205,7 @@ public class ExportTransectPixelsAction extends AbstractAction implements Contex
                 fileWriter = new FileWriter(file);
             } catch (IOException e) {
                 Dialogs.showError(Bundle.CTL_ExportTransectPixelsAction_DialogTitle(),
-                                      ERR_MSG_BASE + "Failed to create file '" + file + "':\n" + e.getMessage());
+                        ERR_MSG_BASE + "Failed to create file '" + file + "':\n" + e.getMessage());
                 return; // Error
             }
             out = new PrintWriter(new BufferedWriter(fileWriter, initialBufferSize));
@@ -225,16 +220,16 @@ public class ExportTransectPixelsAction extends AbstractAction implements Contex
             protected Exception doInBackground() throws Exception {
                 Exception returnValue = null;
                 ProgressMonitor pm = new DialogProgressMonitor(SnapApp.getDefault().getMainFrame(), Bundle.CTL_ExportTransectPixelsAction_DialogTitle(),
-                                                               Dialog.ModalityType.APPLICATION_MODAL);
+                        Dialog.ModalityType.APPLICATION_MODAL);
                 try {
                     final boolean mustCreateHeader = createHeaderBox.isSelected();
                     final boolean mustExportWavelengthsAndSF = exportWavelengthsAndSFBox.isSelected();
                     final boolean mustExportTiePoints = exportTiePointsBox.isSelected();
                     TransectExporter exporter = new TransectExporter(mustCreateHeader, mustExportWavelengthsAndSF, mustExportTiePoints);
-                    boolean success = exporter.exportTransectPixels(out, raster.getProduct(),
-                                                                    transectProfileData,
-                                                                    numTransectPixels,
-                                                                    pm);
+                    boolean success = exporter.exportTransectPixels(out, view,
+                            transectProfileData,
+                            numTransectPixels,
+                            pm);
                     if (success && clipboardText != null) {
                         SystemUtils.copyToClipboard(clipboardText.toString());
                         clipboardText.setLength(0);
@@ -262,7 +257,7 @@ public class ExportTransectPixelsAction extends AbstractAction implements Contex
                 }
                 if (exception != null) {
                     Dialogs.showError(Bundle.CTL_ExportTransectPixelsAction_DialogTitle(),
-                                          ERR_MSG_BASE + exception.getMessage());
+                            ERR_MSG_BASE + exception.getMessage());
                 }
             }
         };
@@ -300,12 +295,12 @@ public class ExportTransectPixelsAction extends AbstractAction implements Contex
     private static File promptForFile(String defaultFileName) {
         final SnapFileFilter fileFilter = new SnapFileFilter("TXT", "txt", "Text");
         return Dialogs.requestFileForSave(Bundle.CTL_ExportTransectPixelsAction_DialogTitle(),
-                                          false,
-                                          fileFilter,
-                                          ".txt",
-                                          defaultFileName,
-                                          null,
-                                          "exportTransectPixels.lastDir");
+                false,
+                fileFilter,
+                ".txt",
+                defaultFileName,
+                null,
+                "exportTransectPixels.lastDir");
     }
 
     private static int getNumTransectPixels(final Product product,
@@ -341,32 +336,38 @@ public class ExportTransectPixelsAction extends AbstractAction implements Contex
          * Writes all pixel values of the given product within the given ROI to the specified out.
          *
          * @param out     the data output writer
-         * @param product the product providing the pixel values
+         * @param view    the product scene view providing the pixel values
          * @return {@code true} for success, {@code false} if export has been terminated (by user)
          */
         private boolean exportTransectPixels(final PrintWriter out,
-                                             final Product product,
+                                             final ProductSceneView view,
                                              final TransectProfileData transectProfileData,
                                              final int numTransectPixels,
                                              ProgressMonitor pm) {
 
+            final Product product = view.getProduct();
+            final boolean isMultiSize = product.isMultiSize();
             final Band[] bands = product.getBands();
             final TiePointGrid[] tiePointGrids = product.getTiePointGrids();
-            final GeoCoding geoCoding = product.getSceneGeoCoding();
             if (mustCreateHeader) {
                 writeFileHeader(out, bands);
             }
-            writeTableHeader(out, geoCoding, bands, mustExportTiePoints, tiePointGrids, mustExportWavelengthsAndSF);
+            writeTableHeader(out, view.getRaster(), isMultiSize, bands, mustExportTiePoints, tiePointGrids, mustExportWavelengthsAndSF);
             final Point2D[] pixelPositions = transectProfileData.getPixelPositions();
 
             pm.beginTask("Writing pixel data...", numTransectPixels);
             try {
                 for (Point2D pixelPosition : pixelPositions) {
-                    int x = (int) Math.floor(pixelPosition.getX());
-                    int y = (int) Math.floor(pixelPosition.getY());
-                    if (x >= 0 && x < product.getSceneRasterWidth()
-                            && y >= 0 && y < product.getSceneRasterHeight()) {
-                        writeDataLine(out, geoCoding, bands, mustExportTiePoints, tiePointGrids, x, y);
+                    int x = MathUtils.floorInt(pixelPosition.getX());
+                    int y = MathUtils.floorInt(pixelPosition.getY());
+                    final PixelPos pixelPos = new PixelPos(x, y);
+                    if (!view.getRaster().getGeoCoding().equals(product.getSceneGeoCoding())) {
+                        final GeoPos geoPos = view.getRaster().getGeoCoding().getGeoPos(pixelPos, null);
+                        // Update the pixel position to the product resolution
+                        product.getSceneGeoCoding().getPixelPos(geoPos, pixelPos);
+                    }
+                    if (product.containsPixel(pixelPos)) { // Check if the pixel belongs to the product bounds
+                        writeDataLine(out, isMultiSize, view, mustExportTiePoints, x, y);
                         pm.worked(1);
                         if (pm.isCanceled()) {
                             return false;
@@ -396,11 +397,12 @@ public class ExportTransectPixelsAction extends AbstractAction implements Contex
         }
 
         private void writeTableHeader(final PrintWriter out,
-                                      final GeoCoding geoCoding,
+                                      final RasterDataNode raster,
+                                      final boolean isMultiSize,
                                       final Band[] bands,
-                                      boolean mustExportTiePoints,
-                                      TiePointGrid[] tiePointGrids,
-                                      boolean mustExportWavelengthsAndSF) {
+                                      final boolean mustExportTiePoints,
+                                      final TiePointGrid[] tiePointGrids,
+                                      final boolean mustExportWavelengthsAndSF) {
             if (mustExportWavelengthsAndSF) {
                 float[] wavelengthArray = new float[bands.length];
                 for (int i = 0; i < bands.length; i++) {
@@ -415,10 +417,17 @@ public class ExportTransectPixelsAction extends AbstractAction implements Contex
                 out.printf("# Solar flux:\t \t \t \t%s%n", StringUtils.arrayToString(solarFluxArray, "\t"));
             }
 
-            out.print("Pixel-X");
-            out.print("\t");
-            out.print("Pixel-Y");
-            if (geoCoding != null) {
+            if (!isMultiSize){
+                out.print("Pixel-X");
+                out.print("\t");
+                out.print("Pixel-Y");
+            } else {
+                // Add the band name to the identification of the pixel
+                out.print("Pixel-X." + raster.getName());
+                out.print("\t");
+                out.print("Pixel-Y." + raster.getName());
+            }
+            if (raster.getGeoCoding() != null) {
                 out.print("\t");
                 out.print("Longitude");
                 out.print("\t");
@@ -440,46 +449,80 @@ public class ExportTransectPixelsAction extends AbstractAction implements Contex
         /**
          * Writes a data line of the dataset to be exported for the given pixel position.
          *
-         * @param out                 the data output writer
-         * @param geoCoding           the product's geo-coding
-         * @param bands               the array of bands that provide pixel values
-         * @param mustExportTiePoints if tie-points shall be exported
-         * @param tiePointGrids       the array of tie-points that provide pixel values
-         * @param x                   the current pixel's X coordinate
-         * @param y                   the current pixel's Y coordinate
+         * @param out                    the data output writer
+         * @param isMultiSize            if product is multi-size
+         * @param view                   the current view
+         * @param mustExportTiePoints    if tie-points shall be exported
+         * @param x                      the current pixel's X coordinate
+         * @param y                      the current pixel's Y coordinate
          */
         private void writeDataLine(final PrintWriter out,
-                                   final GeoCoding geoCoding,
-                                   final Band[] bands,
-                                   boolean mustExportTiePoints,
-                                   TiePointGrid[] tiePointGrids,
-                                   int x, int y) {
-            final PixelPos pixelPos = new PixelPos(x + 0.5f, y + 0.5f);
+                                   final boolean isMultiSize,
+                                   final ProductSceneView view,
+                                   final boolean mustExportTiePoints,
+                                   final int x, final int y) {
 
-            out.print(String.valueOf(pixelPos.x));
+            // Compute the geo position according to the raster resolution
+            final PixelPos pixelPosForGeo = new PixelPos(x + 0.5f, y + 0.5f);
+            out.print(String.valueOf(pixelPosForGeo.x));
             out.print("\t");
-            out.print(String.valueOf(pixelPos.y));
-            if (geoCoding != null) {
+            out.print(String.valueOf(pixelPosForGeo.y));
+
+            final RasterDataNode viewRaster = view.getRaster();
+            final GeoCoding rasterGeocoding = viewRaster.getGeoCoding();
+            if (rasterGeocoding != null) {
                 out.print("\t");
-                final GeoPos geoPos = geoCoding.getGeoPos(pixelPos, null);
-                out.print(String.valueOf(geoPos.lon));
+                final GeoPos geoPosForPrint = rasterGeocoding.getGeoPos(pixelPosForGeo, null);
+                out.print(String.valueOf(geoPosForPrint.lon));
                 out.print("\t");
-                out.print(String.valueOf(geoPos.lat));
+                out.print(String.valueOf(geoPosForPrint.lat));
             }
-            for (final Band band : bands) {
+
+            // Compute the scene position (only for multi-size product)
+            Point2D.Double scenePos= null;
+            if (isMultiSize) {
+                scenePos = PixelInfoViewUtils.computeScenePos(view, x, y);
+            }
+
+            for (final Band band : view.getProduct().getBands()) {
+                String pixelString;
+
+                // Same resolution for band and the view raster: no conversion to be done
+                if (band.getImageToModelTransform().equals(viewRaster.getImageToModelTransform()) &&
+                        band.getSceneToModelTransform().equals(viewRaster.getSceneToModelTransform())) {
+                    if (view.isCurrentPixelPosValid()) {
+                        pixelString = band.getPixelString(x, y);
+                    } else {
+                        pixelString = RasterDataNode.INVALID_POS_TEXT;
+                    }
+                } else { // Not the same resolution
+                    pixelString = PixelInfoViewUtils.getPixelValue(scenePos, band);
+                }
                 out.print("\t");
-                final String pixelString = band.getPixelString(x, y);
                 out.print(pixelString);
             }
+
             if (mustExportTiePoints) {
-                for (final TiePointGrid grid : tiePointGrids) {
+                for (final TiePointGrid grid : view.getProduct().getTiePointGrids()) {
+                    String pixelString;
+
+                    // Same resolution for tie point grid and the view raster: no conversion to be done
+                    if (grid.getImageToModelTransform().equals(viewRaster.getImageToModelTransform()) &&
+                            grid.getSceneToModelTransform().equals(viewRaster.getSceneToModelTransform())) {
+                        if (view.isCurrentPixelPosValid()) {
+                            pixelString = grid.getPixelString(x, y);
+                        } else {
+                            pixelString = RasterDataNode.INVALID_POS_TEXT;
+                        }
+                    } else { // Not the same resolution
+                        pixelString = PixelInfoViewUtils.getPixelValue(scenePos, grid);
+                    }
                     out.print("\t");
                     out.print(grid.getPixelString(x, y));
                 }
-            }
+            } // must export Tie Points
 
             out.print("\n");
         }
     }
-
 }
