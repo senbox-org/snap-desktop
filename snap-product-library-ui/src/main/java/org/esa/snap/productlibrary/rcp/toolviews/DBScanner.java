@@ -115,7 +115,7 @@ public final class DBScanner extends SwingWorker {
                     break;
 
                 if (options.validateZips) {
-                    if (ZipUtils.isZip(file) && !ZipUtils.isValid(file)) {
+                    if (ZipUtils.isZip(file.toPath()) && !ZipUtils.isValid(file)) {
                         errorList.add(new ErrorFile(file, ErrorFile.CORRUPT_ZIP));
                         continue;
                     }
