@@ -39,7 +39,7 @@
 </table>
 <h1>SNAP Virtual File System (VFS)</h1>
 
-<h2>Introduction</h2>
+<h2>I. Introduction</h2>
 
 <p>
     VFS (acronym for Virtual File System) is an IO component that offers a simple mechanism to access files from remote
@@ -48,7 +48,7 @@
 <p>
     <br/>
 </p>
-<h3>VFS components</h3>
+<h3>1. VFS components</h3>
 <ol>
     <li>
         <b>Schema</b>
@@ -78,7 +78,7 @@
     </li>
 </ol>
 
-<h3>Supported Virtual File Systems</h3>
+<h3>2. Supported Virtual File Systems</h3>
 
 <p>
     <br/>
@@ -161,7 +161,7 @@
     </li>
 </ol>
 
-<h2>The VFS Remote File Repositories</h2>
+<h2>II. The VFS Remote File Repositories</h2>
 
 <p>
     The VFS Remote File Repositories represents a set of configurations which designate a VFS.
@@ -174,7 +174,7 @@
 </p>
 
 <h3>
-    <b>Add a new VFS Remote File Repository</b>
+    <b>1. Add a new VFS Remote File Repository</b>
 </h3>
 <ul>
     <li>
@@ -235,7 +235,7 @@
 </ul>
 <p></p>
 <h3>
-    <b>Add a new VFS Remote File Repository Property</b>
+    <b>2. Add a new VFS Remote File Repository Property</b>
 </h3>
 <ul>
     <li>
@@ -288,7 +288,7 @@
 </ul>
 <p></p>
 <h3>
-    <b>Remove VFS Remote File Repository</b>
+    <b>3. Remove VFS Remote File Repository</b>
 </h3>
 <ul>
     <li>
@@ -328,7 +328,7 @@
 </ul>
 <p></p>
 <h3>
-    <b>Remove VFS Remote File Repository Property</b>
+    <b>4. Remove VFS Remote File Repository Property</b>
 </h3>
 <ul>
     <li>
@@ -371,6 +371,60 @@
             <img src="images/apply_changes_add.png" alt="Apply changes"/>
         </p>
 	</li>
+</ul>
+
+<h2>III. Using the VFS</h2>
+<p>
+    The VFS provides the possibility to open products from remote locations (e.g. CREODIAS, AWS).
+</p>
+
+<h3>
+    <b>1. Opening a product from VFS</b>
+</h3>
+<p class="inote">
+    <b>Note</b>: In order to use the VFS for opening a product, the Remote File Repositories must be correctly configured and SNAP Application restarted after saving the VFS configuration.
+</p>
+<p class="inote">
+    <b>Note</b>: The following example explains the opening of a Sentinel-2 (S2) product from Swift VFS (CREODIAS).
+</p>
+<ul>
+    <li>
+        From SNAP "File" menu select "Open Product" or simple click on button "Open Product" &nbsp; <img style="width: 31px; height: 25px;" alt="Open Product button" src="images/open-product.gif"> &nbsp; from the File Toolbar.
+        <p align="center">
+            <img src="images/open-product.png" alt="Open Product"/>
+        </p>
+    </li>
+    <li>
+        From SNAP File Chooser select the VFS (e.g. Swift) on "Look in" combo box. The VFS roots have the icon: &nbsp; <img style="width: 46px; height: 32px;" alt="VFS icon" src="images/vfs_root.png"> &nbsp;
+        <p align="center">
+            <img src="images/select_vfs.png" alt="Select VFS"/>
+        </p>
+    </li>
+    <li>
+        Browse through VFS by double-clicking on VFS directories. The VFS directories have the icon: &nbsp; <img style="width: 46px; height: 32px;" alt="VFS icon" src="images/vfs_folder.png"> &nbsp;
+        <p align="center">
+            <img src="images/browse_vfs.png" alt="Browse through VFS"/>
+        </p>
+    </li>
+    <li>
+        Select the product file by double-clicking on VFS file or single-click on it and click on "Open" button . The VFS files have the icon: &nbsp; <img style="width: 46px; height: 32px;" alt="VFS icon" src="images/vfs_file.png"> &nbsp;
+        <p align="center">
+        <p align="center">
+            <img src="images/select_product_file.png" alt="Select product file"/>
+        </p>
+    </li>
+    <li>
+        Wait until product is opened in SNAP.
+        <p align="center">
+            <img src="images/opening_product.png" alt="Select product file"/>
+        </p>
+    </li>
+    <li>
+        See the product in SNAP.
+        <p align="center">
+            <img src="images/product_opened.png" alt="Select product file"/>
+        </p>
+    </li>
 </ul>
 
 <hr/>
