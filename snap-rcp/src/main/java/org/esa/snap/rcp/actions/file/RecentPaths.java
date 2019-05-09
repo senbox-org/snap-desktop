@@ -1,9 +1,10 @@
 package org.esa.snap.rcp.actions.file;
 
+import org.esa.snap.vfs.NioPaths;
+
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.prefs.BackingStoreException;
@@ -54,9 +55,17 @@ class RecentPaths {
         }
         return Arrays
                 .stream(value.split(File.pathSeparator))
-                .map(Paths::get)
-                .filter(path -> !filterExisting || Files.exists(path))
+                .map(p -> convertToPath(p))
+                .filter(path -> (path != null))
                 .map(Path::toString);
+    }
+
+    private Path convertToPath(String pasAsString) {
+        try {
+            return NioPaths.get(pasAsString);
+        } catch (java.nio.file.InvalidPathException e) {
+            return null;
+        }
     }
 
     void flush() {

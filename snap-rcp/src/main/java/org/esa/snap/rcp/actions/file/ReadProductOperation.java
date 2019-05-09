@@ -12,8 +12,12 @@ import org.openide.util.RequestProcessor;
 import javax.swing.SwingUtilities;
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 class ReadProductOperation implements Runnable {
+
+    private static final Logger logger = Logger.getLogger(ReadProductOperation.class.getName());
 
     private final File file;
     private final String formatName;
@@ -60,6 +64,7 @@ class ReadProductOperation implements Runnable {
                 }
             }
         } catch (IOException problem) {
+            logger.log(Level.SEVERE, "Failed to read the product.", problem);
             SwingUtilities.invokeLater(() -> Dialogs.showError(Bundle.CTL_OpenProductActionName(), problem.getMessage()));
         } finally {
             ph.finish();
