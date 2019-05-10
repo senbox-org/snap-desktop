@@ -366,7 +366,8 @@ public class VirtualFileSystemView extends FileSystemView {
      */
     @Override
     public File createFileObject(String path) {
-        return this.defaultFileSystemView.createFileObject(path);
+        Path filePath = NioPaths.get(path);
+        return filePath.toFile();
     }
 
     /**
@@ -374,7 +375,8 @@ public class VirtualFileSystemView extends FileSystemView {
      */
     @Override
     public File createFileObject(File dir, String filename) {
-        return this.defaultFileSystemView.createFileObject(dir, filename);
+        Path filePath = dir.toPath().resolve(filename);
+        return filePath.toFile();
     }
 
     /**
