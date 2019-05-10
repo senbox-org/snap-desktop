@@ -8,6 +8,7 @@ import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
+import org.esa.snap.vfs.NioPaths;
 import org.netbeans.api.progress.ProgressHandle;
 import org.netbeans.api.progress.ProgressHandleFactory;
 import org.openide.DialogDisplayer;
@@ -24,6 +25,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import java.awt.Component;
 import java.io.File;
+import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -128,7 +130,8 @@ public class ProductOpener {
 
         Preferences preferences = SnapApp.getDefault().getPreferences();
         String userHomePath = SystemUtils.getUserHomeDir().getAbsolutePath();
-        ProductFileChooser fc = new ProductFileChooser(new File(preferences.get(PREFERENCES_KEY_LAST_PRODUCT_DIR, userHomePath)));
+        Path recentPath = NioPaths.get(preferences.get(PREFERENCES_KEY_LAST_PRODUCT_DIR, userHomePath));
+        ProductFileChooser fc = new ProductFileChooser(recentPath.toFile());
 
         fc.setSubsetEnabled(isSubsetImportEnabled());
         fc.setDialogTitle(SnapApp.getDefault().getInstanceName() + " - " + Bundle.CTL_OpenProductActionName());
