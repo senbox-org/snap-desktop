@@ -52,7 +52,7 @@ public class TargetUITest {
         targetUI = new TargetUI();
         appContext = new MockAppContext();
 
-        final File path = GlobalTestConfig.getBeamTestDataOutputDirectory();
+        final File path = GlobalTestConfig.getSnapTestDataOutputDirectory();
         defaultProducts = new Product[2];
         for (int i = 0; i < defaultProducts.length; i++) {
 

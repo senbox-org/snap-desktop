@@ -17,6 +17,7 @@
 package org.esa.snap.rcp.actions.tools;
 
 import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.rcp.util.MultiSizeIssue;
 import org.esa.snap.ui.product.ProductSceneView;
@@ -96,12 +97,9 @@ public class CopyPixelInfoToClipboardAction extends AbstractAction implements Co
         if (view != null) {
             Product product = view.getProduct();
             if (product != null) {
-                if (product.isMultiSize()) {
-                    MultiSizeIssue.maybeResample(product);
-                    //as the following code requires an exact pixel location, nothing is done after resampling
-                    return;
-                }
-                SystemUtils.copyToClipboard(product.createPixelInfoString(view.getCurrentPixelX(), view.getCurrentPixelY()));
+                final RasterDataNode viewRaster = view.getRaster();
+                SystemUtils.copyToClipboard(product.createPixelInfoString(view.getCurrentPixelX(), view.getCurrentPixelY(),
+                                                                          viewRaster));
             }
         }
     }

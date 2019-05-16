@@ -60,7 +60,7 @@ public class CreateSubsetFromViewAction extends AbstractAction {
             Dialogs.showWarning(Bundle.CTL_CreateSubsetFromViewAction_Title(),
                                 "The selected area is entirely outside the product's spatial boundaries.", null);
         }
-        CreateSubsetAction.createSubset(view.getProduct(), bounds);
+        CreateSubsetAction.createSubset(view.getProduct(), bounds, view.getRaster());
     }
 
 }

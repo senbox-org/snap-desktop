@@ -1,19 +1,87 @@
 SNAP Release Notes
 ==================
-
-#New in SNAP 7.0
+    
+# New in SNAP 7.0
 The naming of attribute features of ESRI shapefiles has changed: 
 Threshold variable names are shortened by getting rid of the threshold name part 
 altogether (e.g., p_90_threshold now becomes simply p_90) and indexes are not 
 incremented per measure, but correspond to a band name or a time interval
 (e.g., vrg_4_2 will correspond to the average of band 4 during time interval 2).
   
+    [SNAP-1063] Numerical overflow cause empty binning result
+    [SNAP-1056] ceres-ui module is needed by some operations in snappy
+    [SNAP-948]  GLCM does not work properly when working with scaled values
+    [SNAP-866]  NetCdf files with extension '.nc.gz' are not read
 
-#New in SNAP 6.0
+# New in SNAP 6.0.9
+
+    SNAP-1086 Link to changelog not correct in plugin description for SNAP
+    
+# New in SNAP 6.0.8
+    
+    [SNAP-1084] DateTimeUtils does not consider UTC
+    [SNAP-1083] Error while adjusting mosaic bounds to input products
+    [SNAP-1082] Angle too high when opening DIMAP product (multi-size)
+    [SNAP-1078] Module updates shall come with release notes / changelog
+    [SNAP-1079] Saved NetCDF files can not be read by ncdump
+    [SNAP-1061] Update performance parameters help
+    
+
+# New in SNAP 6.0.7
+    [SNAP-1008] ResamplingOp fails if downsampling method is different from default value 'First'
+    [SNAP-1060] Downsampling fails with ArrayIndexOutOfBoundsException
+    [SNAP-1065] Consider alignment of grids when resampling
+    [SNAP-1064] Handling of no-data-values during aggregation is not correct
+	[SNAP-1077] Performance improvements to geo2xyzWGS84 for improved terrain flattening
+    
+
+# New in SNAP 6.0.6
+Error in version of snap-engine and snap-desktop. Unfortunately only snap-engine has been set to version 6.0.6. 
+The version of snap-desktop is still 6.0.5. But this version glitch does not affect the functionality of SNAP.
+
+    [SNAP-1067] Fix SRTM 3sec remote url
+
+ 
+# New in SNAP 6.0.5
+    [SNAP-934] No products considered when they don't have time informatin
+    [SNAP-931] NPE when using products without time information in StatisticsOp
+    [SNAP-929] Modules not loaded when snappy is not started from the system drive
+    [SNAP-925] GLCM performance goes down if scene contains NaN values
+    [SNAP-924] GLCM operator does not check for cancelation request
+    [SNAP-900] NPE in GLCM
+
+# New in SNAP 6.0.4
+    [SNAP-921] Setting snap.jai.tileCacheSize to higher value than 2000 leads to 0 sized cache
+    [SNAP-919] To many approximations created for some products
+    [SNAP-918] When writing out statistics to a csv file, entries will be written multiple times
+    [SNAP-868] Using LAT and LON in BandMaths operator leads to wrong results
+
+# New in SNAP 6.0.3
+    [SNAP-911] Scatterplot can not be computed
+    [SNAP-910] Merge operator shows internal parameter in help
+    [SNAP-908] It shall be possible to turn off temporal aggregation in the StatisticsOp  
+    [SNAP-907] Statistics Op shall be able to retrieve categoric statistics for integer bands
+    [SNAP-905] Property for controlling the creation of MERIS pixel-based Geo-Coding not correctly read
+    [SNAP-880] Update WMS URLs in Layer Manager
+    
+# New in SNAP 6.0.2
+    [SNAP-901] XMLSupport leaves stream open
+    [SNAP-897] Resampling yields different results in desktop and gpt
+    [SNAP-893] Land/Sea Mask operator is not working when using a vector with some space in the name
+    [SNAP-892] Number of approximation tiles should not depend on degrees spanned on globe
+    [SNAP-891] Export of pins to shapefile does not work with certain CRS
+            
+# New in SNAP 6.0.1
+    [SNAP-878] Operator Import-Vector fails with products which have a pixel-based GeoCoding
+    [SNAP-874] Allow to switch between INCLUDE and INTERSECT with bbox when searching for products
+    [SNAP-867] Classify by raster issues
+
+    
+# New in SNAP 6.0
 More than 100 bugs and improvements have been solved or implemented for SNAP 6.0.
 Beside these general improvements also each Toolbox has got it's own improvements.
   
-#####Some of the noteworthy improvements are:
+##### Some of the noteworthy improvements are:
     [SNAP-227] - GPT memory configuration
     [SNAP-371] - Smart installer does not allow execution of user-defined graphs
     [SNAP-650] - Provide progress on the command line
@@ -29,10 +97,10 @@ A comprehensive list of all issues resolved in this version of SNAP can be found
 [issue tracking system](https://senbox.atlassian.net/secure/ReleaseNote.jspa?projectId=10100&version=12200)
 
 
-#New in SNAP v5.0
+# New in SNAP v5.0
 The SNAP release concentrates on bug fixes and improvements. New features are mainly implemented in the Toolboxes. 
  
-#####Some of the noteworthy improvements are:
+##### Some of the noteworthy improvements are:
     [SNAP-373] - Export Sentinel-1 data to HDF5 is not working
     [SNAP-396] - Cannot open multiple products if progress dialog is shown
     [SNAP-398] - Names of operators shall be handeled case insensitive by gpt
@@ -46,15 +114,15 @@ The SNAP release concentrates on bug fixes and improvements. New features are ma
 A comprehensive list of all issues resolved in this version of SNAP can be found in our 
 [issue tracking system](https://senbox.atlassian.net/secure/ReleaseNote.jspa?projectId=10100&version=11503)
 
-#New in SNAP v4.0
+# New in SNAP v4.0
 
-###New Features and Important Changes
+### New Features and Important Changes
 * Supervised Classification - Random Forest, KNN, Maximum Likelihood, Minimum Distance
 * Fractional Land/Water Mask operator has been integrated into SNAP
 * It is now possible to import multiple shape files at once
 
 ### Solved issues
-####Bugs
+#### Bugs
     [SNAP-186] - Metadata Table View incorrectly renders UTC attributes
     [SNAP-357] - Message needed: source product not found and operator finished
     [SNAP-358] - Sen2Cor operator is disapearing when restarting SNAP
@@ -90,9 +158,9 @@ A comprehensive list of all issues resolved in this version of SNAP can be found
     [SNAP-517] - NullPointerException occurs when when using PixelGeoCoding with OLCI data
     [SNAP-519] - Graph builder does not remember the name of the current graph when saving a graph.
     [SNAP-524] - Pixel Extraction writes only the lower 16 bit of a flag band
-####Task
+#### Task
     [SNAP-489] - Integrate Fractional Land/Water Mask operator into SNAP
-####Improvement
+#### Improvement
     [SNAP-404] - There is no easy way to have optional parameters on an adapter
     [SNAP-450] - NodeId should be included in exception message
     [SNAP-452] - STA: external tools menu appears even if there are no tools
@@ -111,9 +179,9 @@ A comprehensive list of all issues resolved in this version of SNAP can be found
 [issue tracking system](https://senbox.atlassian.net/issues/?filter=11700)
 
 
-#New in SNAP v3.0
+# New in SNAP v3.0
 
-###New Features and Important Changes
+### New Features and Important Changes
 * A new Resampling Operator has been introduced. Its main purpose is to make the bands of a multi-size 
 product equal in size. It is possible to choose for the resampling different aggregation and 
 interpolation methods. If a user invokes an action which can not handle multi-size products the user is 
@@ -139,5 +207,3 @@ A comprehensive list of all issues resolved in this version of SNAP can be found
 * [Resolved issues in version 2.0](https://senbox.atlassian.net/issues/?filter=11502)
 * [Resolved issues in version 2.0 beta](https://senbox.atlassian.net/issues/?filter=11503)
 * [Resolved issues in version 1.0.1](https://senbox.atlassian.net/issues/?filter=11504)
-
-

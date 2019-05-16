@@ -46,11 +46,11 @@ public class FileHistoryTest extends TestCase {
     @Override
     public void setUp() {
         GlobalTestTools.deleteTestDataOutputDirectory();
-        _a = new File(GlobalTestConfig.getBeamTestDataOutputDirectory(), "A.dim");
-        _b = new File(GlobalTestConfig.getBeamTestDataOutputDirectory(), "B.dim");
-        _c = new File(GlobalTestConfig.getBeamTestDataOutputDirectory(), "C.dim");
-        _d = new File(GlobalTestConfig.getBeamTestDataOutputDirectory(), "D.dim");
-        _e = new File(GlobalTestConfig.getBeamTestDataOutputDirectory(), "E.dim");
+        _a = new File(GlobalTestConfig.getSnapTestDataOutputDirectory(), "A.dim");
+        _b = new File(GlobalTestConfig.getSnapTestDataOutputDirectory(), "B.dim");
+        _c = new File(GlobalTestConfig.getSnapTestDataOutputDirectory(), "C.dim");
+        _d = new File(GlobalTestConfig.getSnapTestDataOutputDirectory(), "D.dim");
+        _e = new File(GlobalTestConfig.getSnapTestDataOutputDirectory(), "E.dim");
         try {
             _a.getParentFile().mkdirs();
             _a.createNewFile();
