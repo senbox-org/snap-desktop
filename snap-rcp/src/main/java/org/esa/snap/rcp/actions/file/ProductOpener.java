@@ -140,7 +140,11 @@ public class ProductOpener {
             }
         });
         fc.setMultiSelectionEnabled(isMultiSelectionEnabled());
-        fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        if (filters.size() == 1) {
+            fc.setFileSelectionMode(filters.get(0).getFileSelectionMode().getValue());
+        } else {
+            fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        }
 
         int returnVal = fc.showOpenDialog(SnapApp.getDefault().getMainFrame());
         if (returnVal != JFileChooser.APPROVE_OPTION) {
