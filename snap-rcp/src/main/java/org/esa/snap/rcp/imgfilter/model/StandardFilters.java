@@ -3,6 +3,9 @@ package org.esa.snap.rcp.imgfilter.model;
 /**
  * Created by Norman on 20.03.2014.
  */
+// JAN2019 - Daniel Knowles - Added some new filters
+//                          - Removed the "Arithmetic Mean 4x4" filter because it is misleading as it is not centered about the target pixel.
+
 public class StandardFilters {
     public static Filter[] LINE_DETECTION_FILTERS = {
             new Filter("Horizontal Edges", "he", 3, 3, new double[]{
@@ -82,12 +85,10 @@ public class StandardFilters {
                     +1, +1, +1,
             }, 9.0),
 
-            new Filter("Arithmetic Mean 4x4", "am4", 4, 4, new double[]{
-                    +1, +1, +1, +1,
-                    +1, +1, +1, +1,
-                    +1, +1, +1, +1,
-                    +1, +1, +1, +1,
-            }, 16.0),
+
+            // NOTE: Removed the "Arithmetic Mean 4x4" filter because it is misleading as it is not centered about the target pixel
+
+            
 
             new Filter("Arithmetic Mean 5x5", "am5", 5, 5, new double[]{
                     +1, +1, +1, +1, +1,
@@ -96,6 +97,55 @@ public class StandardFilters {
                     +1, +1, +1, +1, +1,
                     +1, +1, +1, +1, +1,
             }, 25.0),
+
+            new Filter("Arithmetic Mean 7x7", "am7", 7, 7, new double[]{
+                    +1, +1, +1, +1, +1, 1, 1,
+                    +1, +1, +1, +1, +1, 1, 1,
+                    +1, +1, +1, +1, +1, 1, 1,
+                    +1, +1, +1, +1, +1, 1, 1,
+                    +1, +1, +1, +1, +1, 1, 1,
+                    +1, +1, +1, +1, +1, 1, 1,
+                    +1, +1, +1, +1, +1, 1, 1,
+            }, 49.0),
+
+
+
+            // Linear filter applied to a 3x3 grid with pixels weighted to emulate 2x2 square grid centered about the target pixel
+            new Filter("Weighted Mean 2x2", "am2", 3, 3, new double[]{
+                    0.25, 0.50, 0.25,
+                    0.50, 1.00, 0.50,
+                    0.25, 0.50, 0.25
+            }, 4.0),
+
+
+            // Linear filter applied to a 5x5 grid with pixels weighted to emulate 4x4 square grid centered about the target pixel
+            new Filter("Weighted Mean 4x4", "am4", 5, 5, new double[]{
+                    0.25, 0.50, 0.50, 0.50, 0.25,
+                    0.50, 1.00, 1.00, 1.00, 0.50,
+                    0.50, 1.00, 1.00, 1.00, 0.50,
+                    0.50, 1.00, 1.00, 1.00, 0.50,
+                    0.25, 0.50, 0.50, 0.50, 0.25
+            }, 16.0),
+
+            // Linear filter applied to a 3x3 grid with pixels weighted to emulate a circle of 3 pixel diameter centered about the target pixel
+            new Filter("Weighted Circular Mean 3x3", "cm3", 3, 3, new double[]{
+                    0.5454, 0.9717, 0.5454,
+                    0.9717, 1.0000, 0.9717,
+                    0.5454, 0.9717, 0.5454
+
+            }, 7.0684),
+
+
+            // Linear filter applied to a 5x5 grid with pixels weighted to emulate a circle of 5 pixel diameter centered about the target pixel
+            new Filter("Weighted Circular Mean 5x5", "cm5", 5, 5, new double[]{
+                    0.1369, 0.7693, 0.9832, 0.7693, 0.1369,
+                    0.7693, 1.0000, 1.0000, 1.0000, 0.7693,
+                    0.9832, 1.0000, 1.0000, 1.0000, 0.9832,
+                    0.7693, 1.0000, 1.0000, 1.0000, 0.7693,
+                    0.1369, 0.7693, 0.9832, 0.7693, 0.1369
+            }, 19.6348),
+
+
 
             new Filter("Low-Pass 3x3", "lp3", 3, 3, new double[]{
                     +1, +2, +1,
@@ -110,6 +160,61 @@ public class StandardFilters {
                     +1, +1, +1, +1, +1,
             }, 60.0),
     };
+
+
+
+    public static Filter[] STRAYLIGHT_FILTERS = {
+
+            // Same as the "Arithmetic Mean 3x3" filter but with the center pixel having zero weight such that all contribution comes from straylight
+            new Filter("Straylight 3x3", "str_am3", 3, 3, new double[]{
+                    +1, +1, +1,
+                    +1, +0, +1,
+                    +1, +1, +1,
+            }, 8.0),
+
+
+            // Same as the "Arithmetic Mean 5x5" filter but with the center pixel having zero weight such that all contribution comes from straylight
+            new Filter("Straylight 5x5", "str_am5", 5, 5, new double[]{
+                    +1, +1, +1, +1, +1,
+                    +1, +1, +1, +1, +1,
+                    +1, +1, +0, +1, +1,
+                    +1, +1, +1, +1, +1,
+                    +1, +1, +1, +1, +1,
+            }, 24.0),
+
+
+            // Similar to the "Straylight 5x5" filter but with proximity weighting
+            new Filter("Straylight 5x5 #2", "str_am52", 5, 5, new double[]{
+                    +1, +1, +1, +1, +1,
+                    +1, +2, +2, +2, +1,
+                    +1, +2,  0, +2, +1,
+                    +1, +2, +2, +2, +1,
+                    +1, +1, +1, +1, +1,
+            }, 32.0),
+
+
+            // Same as the "Weighted Circular Mean 3x3" filter but with the center pixel having zero weight such that all contribution comes from straylight
+            new Filter("Straylight Circular (3x3)", "cm3", 3, 3, new double[]{
+                    0.5454, 0.9717, 0.5454,
+                    0.9717, 0.0000, 0.9717,
+                    0.5454, 0.9717, 0.5454
+
+            }, 6.0684),
+
+
+            // Same as the "Weighted Circular Mean 5x5" filter but with the center pixel having zero weight such that all contribution comes from straylight
+            new Filter("Straylight Circular (5x5)", "cm5", 5, 5, new double[]{
+                    0.1369, 0.7693, 0.9832, 0.7693, 0.1369,
+                    0.7693, 1.0000, 1.0000, 1.0000, 0.7693,
+                    0.9832, 1.0000, 0.0000, 1.0000, 0.9832,
+                    0.7693, 1.0000, 1.0000, 1.0000, 0.7693,
+                    0.1369, 0.7693, 0.9832, 0.7693, 0.1369
+            }, 18.6348),
+    };
+
+
+
+
     public static Filter[] SHARPENING_FILTERS = {
             new Filter("High-Pass 3x3 #1", "hp31", 3, 3, new double[]{
                     -1, -1, -1,
