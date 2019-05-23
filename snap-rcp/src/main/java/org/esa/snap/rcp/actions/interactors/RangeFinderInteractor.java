@@ -292,9 +292,9 @@ class RangeFinderInteractor extends ViewportInteractor {
             }
             Graphics2D g2d = rendering.getGraphics();
             final Stroke strokeOld = g2d.getStroke();
-            g2d.setStroke(new BasicStroke(0.1f));
+            g2d.setStroke(new BasicStroke(1.0f));
             final Color colorOld = g2d.getColor();
-            g2d.setColor(Color.red);
+            g2d.setColor(Color.white);
             g2d.translate(0.5, 0.5);
 
             final int r = 3;
