@@ -120,6 +120,10 @@ public abstract class AbstractModalDialog extends AbstractDialog implements IMes
         return new Insets(3, 2, 3, 2);
     }
 
+    protected final void addComponentToAllwaysEnabledList(JComponent component) {
+        this.componentsAllwaysEnabled.add(component);
+    }
+
     protected final JPanel buildButtonsPanel(String finishButtonText, ActionListener finishActionListener, String cancelButtonText, ActionListener cancelActionListener) {
         JButton finishButton = buildDialogButton(finishButtonText);
         finishButton.addActionListener(finishActionListener);
