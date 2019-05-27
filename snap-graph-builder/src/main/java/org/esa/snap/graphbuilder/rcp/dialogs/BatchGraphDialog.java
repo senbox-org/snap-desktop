@@ -17,6 +17,7 @@ package org.esa.snap.graphbuilder.rcp.dialogs;
 
 import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.core.SubProgressMonitor;
+import org.esa.snap.cloud.exploitation.platform.operator.CloudExploitationPlatformDialog;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.graph.GraphException;
@@ -51,6 +52,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -93,7 +95,7 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
 
     public BatchGraphDialog(final AppContext theAppContext, final String title, final String helpID,
                             final boolean closeOnDone) {
-        super(theAppContext.getApplicationWindow(), title, ID_YES | ID_APPLY_CLOSE_HELP, helpID);
+        super(theAppContext.getApplicationWindow(), title, ID_YES | ID_APPLY_CLOSE_HELP, new String[] {"Run remote"}, helpID);
         this.appContext = theAppContext;
         this.baseTitle = title;
         this.closeOnDone = closeOnDone;
@@ -107,6 +109,41 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
         }
 
         super.getJDialog().setMinimumSize(new Dimension(400, 300));
+    }
+
+    @Override
+    protected void onOther() {
+        final List<File> sourceProductFiles = getSourceProductsFilePath();
+        if (sourceProductFiles.size() == 0) {
+            showErrorDialog("Please add at least one source product.");
+        } else if (this.graphFile == null) {
+            showErrorDialog("Please add the graph file.");
+        } else {
+            Window parentWindow = getJDialog().getOwner();
+            close();
+            CloudExploitationPlatformDialog dialog = new CloudExploitationPlatformDialog(this.appContext, parentWindow) {
+                @Override
+                protected void onAboutToShow() {
+                    super.onAboutToShow();
+
+                    setData(sourceProductFiles, graphFile);
+                }
+            };
+            dialog.show();
+        }
+    }
+
+    private List<File> getSourceProductsFilePath() {
+        File[] sourceFiles = this.productSetPanel.getFileList();
+        List<File> sourceProductFiles = new ArrayList<File>();
+        if (sourceFiles != null && sourceFiles.length > 0) {
+            for (int i=0; i<sourceFiles.length; i++) {
+                if (!sourceFiles[i].getPath().equals("")) {
+                    sourceProductFiles.add(sourceFiles[i]);
+                }
+            }
+        }
+        return sourceProductFiles;
     }
 
     private JPanel createUI() {
