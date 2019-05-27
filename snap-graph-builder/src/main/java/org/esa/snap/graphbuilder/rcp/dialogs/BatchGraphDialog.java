@@ -80,7 +80,6 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
     private JLabel statusLabel, bottomStatusLabel;
     private JPanel progressPanel;
     private JProgressBar progressBar;
-    private JLabel progressMsgLabel;
     private LabelBarProgressMonitor progBarMonitor;
 
     private Map<File, File[]> slaveFileMap;
@@ -116,7 +115,7 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
         tabbedPane = new JTabbedPane();
         tabbedPane.addChangeListener(new ChangeListener() {
             public void stateChanged(final ChangeEvent e) {
-                ValidateAllNodes();
+                validateAllNodes();
             }
         });
         mainPanel.add(tabbedPane, BorderLayout.CENTER);
@@ -136,7 +135,7 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
         progressPanel = new JPanel();
         progressPanel.setLayout(new BorderLayout(2, 2));
         progressPanel.add(progressBar, BorderLayout.CENTER);
-        progressMsgLabel = new JLabel();
+        final JLabel progressMsgLabel = new JLabel();
         progressPanel.add(progressMsgLabel, BorderLayout.NORTH);
 
         progBarMonitor = new LabelBarProgressMonitor(progressBar, progressMsgLabel);
@@ -145,7 +144,7 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
         final JButton progressCancelBtn = new JButton("Cancel");
         progressCancelBtn.addActionListener(new ActionListener() {
             public void actionPerformed(final ActionEvent e) {
-                CancelProcessing();
+                cancelProcessing();
             }
         });
         progressPanel.add(progressCancelBtn, BorderLayout.EAST);
@@ -184,7 +183,7 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
         skipExistingTargetFiles = productSetPanel.isSkippingExistingTargetFiles();
 
         try {
-            DoProcessing();
+            doProcessing();
         } catch (Exception e) {
             statusLabel.setText(e.getMessage());
             bottomStatusLabel.setText("");
@@ -222,7 +221,7 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
      */
     @Override
     protected void onYes() {
-        LoadGraph();
+        loadGraph();
     }
 
     public void setInputFiles(final File[] productFileList) {
@@ -237,16 +236,16 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
         productSetPanel.setTargetFolder(path);
     }
 
-    public void LoadGraph() {
+    public void loadGraph() {
         if (isProcessing) return;
 
         final File file = getFilePath(this.getContent(), "Graph File");
         if (file != null) {
-            LoadGraph(file);
+            loadGraph(file);
         }
     }
 
-    public void LoadGraph(final File file) {
+    public void loadGraph(final File file) {
         try {
             graphFile = file;
 
@@ -268,7 +267,7 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
         return false;
     }
 
-    public void SaveGraph() {
+    public void saveGraph() {
     }
 
     public String getGraphAsString() throws GraphException, IOException {
@@ -294,12 +293,12 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
 
     @Override
     protected void onClose() {
-        CancelProcessing();
+        cancelProcessing();
 
         super.onClose();
     }
 
-    void initGraphs() {
+    private void initGraphs() {
         try {
             replaceWritersWithUniqueTargetProduct = productSetPanel.isReplacingWritersWithUniqueTargetProduct();
 
@@ -314,9 +313,9 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
     /**
      * Validates the input and then call the GPF to execute the graph
      */
-    private void DoProcessing() {
+    private void doProcessing() {
 
-        if (ValidateAllNodes()) {
+        if (validateAllNodes()) {
 
             SystemUtils.freeAllMemory();
 
@@ -339,14 +338,14 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
         progressPanel.setVisible(false);
     }
 
-    private void CancelProcessing() {
+    private void cancelProcessing() {
         if (progBarMonitor != null)
             progBarMonitor.setCanceled(true);
     }
 
     private void deleteGraphs() {
         for (GraphExecuter gex : graphExecutorList) {
-            gex.ClearGraph();
+            gex.clearGraph();
         }
         graphExecutorList.clear();
     }
@@ -355,10 +354,10 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
      * Loads a new graph from a file
      *
      * @param executer  the GraphExcecuter
-     * @param graphFile the graph file to load
+     * @param file the graph file to load
      * @param addUI     add a user interface
      */
-    protected void LoadGraph(final GraphExecuter executer, final File file, final boolean addUI) {
+    protected void loadGraph(final GraphExecuter executer, final File file, final boolean addUI) {
         try {
             executer.loadGraph(new FileInputStream(file), file, addUI, true);
 
@@ -367,7 +366,7 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
         }
     }
 
-    private boolean ValidateAllNodes() {
+    private boolean validateAllNodes() {
         if (isProcessing) return false;
         if (productSetPanel == null)
             return false;
@@ -382,7 +381,7 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
             assignParameters();
 
             // first graph must pass
-            result = graphExecutorList.get(0).InitGraph();
+            result = graphExecutorList.get(0).initGraph();
 
         } catch (Exception e) {
             statusLabel.setText(e.getMessage());
@@ -417,10 +416,10 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
         productSetPanel.setTargetProductNameSuffix(suffix);
     }
 
-    void createGraphs() throws GraphException {
+    private void createGraphs() throws GraphException {
         try {
             final GraphExecuter graphEx = new GraphExecuter();
-            LoadGraph(graphEx, graphFile, true);
+            loadGraph(graphEx, graphFile, true);
             graphExecutorList.add(graphEx);
         } catch (Exception e) {
             throw new GraphException(e.getMessage());
@@ -439,8 +438,8 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
         }
 
         final GraphExecuter graphEx = graphExecutorList.get(0);
-        for (GraphNode n : graphEx.GetGraphNodes()) {
-            if (n.GetOperatorUI() == null)
+        for (GraphNode n : graphEx.getGraphNodes()) {
+            if (n.getOperatorUI() == null)
                 continue;
             if (n.getNode().getOperatorName().equals("Read")
                     || (replaceWritersWithUniqueTargetProduct && n.getNode().getOperatorName().equals("Write"))
@@ -454,7 +453,7 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
                 if (tabTitle.isEmpty())
                     tabTitle = n.getOperatorName();
                 tabbedPane.addTab(tabTitle, null,
-                                  n.GetOperatorUI().CreateOpTab(n.getOperatorName(), n.getParameterMap(), appContext),
+                                  n.getOperatorUI().CreateOpTab(n.getOperatorName(), n.getParameterMap(), appContext),
                                   n.getID() + " Operator");
             }
         }
@@ -537,7 +536,7 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
         final GraphExecuter graphEx = graphExecutorList.get(0);
         for (int graphIndex = 1; graphIndex < graphExecutorList.size(); ++graphIndex) {
             final GraphExecuter cloneGraphEx = graphExecutorList.get(graphIndex);
-            cloneGraphEx.ClearGraph();
+            cloneGraphEx.clearGraph();
         }
         graphExecutorList.clear();
         graphExecutorList.add(graphEx);
@@ -546,29 +545,25 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
         for (int graphIndex = 1; graphIndex < fileList.length; ++graphIndex) {
 
             final GraphExecuter cloneGraphEx = new GraphExecuter();
-            LoadGraph(cloneGraphEx, graphFile, false);
+            loadGraph(cloneGraphEx, graphFile, false);
             graphExecutorList.add(cloneGraphEx);
 
             // copy UI parameter to clone
-            final GraphNode[] cloneGraphNodes = cloneGraphEx.GetGraphNodes();
+            final GraphNode[] cloneGraphNodes = cloneGraphEx.getGraphNodes();
             for (GraphNode cloneNode : cloneGraphNodes) {
                 final GraphNode node = graphEx.getGraphNodeList().findGraphNode(cloneNode.getID());
                 if (node != null)
-                    cloneNode.setOperatorUI(node.GetOperatorUI());
+                    cloneNode.setOperatorUI(node.getOperatorUI());
             }
         }
     }
 
-    public File[] getAllBatchProcessedTargetProducts() {
+    private File[] getAllBatchProcessedTargetProducts() {
         final List<File> targetFileList = new ArrayList<>();
         for (GraphExecuter graphEx : graphExecutorList) {
             targetFileList.addAll(graphEx.getProductsToOpenInDAT());
         }
         return targetFileList.toArray(new File[targetFileList.size()]);
-    }
-
-    void cleanUpTempFiles() {
-
     }
 
     /////
@@ -585,7 +580,7 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
         }
 
         @Override
-        protected Boolean doInBackground() throws Exception {
+        protected Boolean doInBackground() {
 
             pm.beginTask("Processing Graph...", graphExecutorList.size());
             try {
@@ -608,8 +603,8 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
                     final String statusText = nOfm + fileList[graphIndex].getName();
 
                     try {
-                        graphEx.InitGraph();
-                        graphEx.InitGraph();
+                        graphEx.initGraph();
+                        graphEx.initGraph();
 
                         if (shouldSkip(graphEx, existingFiles)) {
                             statusLabel.setText("Skipping " +statusText);
@@ -686,7 +681,7 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
                 }
                 showErrorDialog(msg.toString());
             }
-            cleanUpTempFiles();
+
             notifyMSG(BatchProcessListener.BatchMSG.DONE);
             if (closeOnDone) {
                 close();
@@ -726,11 +721,11 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
 
     public interface BatchProcessListener {
 
-        public enum BatchMSG {DONE, UPDATE, CLOSE}
+        enum BatchMSG {DONE, UPDATE, CLOSE}
 
-        public void notifyMSG(final BatchMSG msg, final File[] inputFileList, final File[] targetFileList);
+        void notifyMSG(final BatchMSG msg, final File[] inputFileList, final File[] targetFileList);
 
-        public void notifyMSG(final BatchMSG msg, final String text);
+        void notifyMSG(final BatchMSG msg, final String text);
     }
 
 }

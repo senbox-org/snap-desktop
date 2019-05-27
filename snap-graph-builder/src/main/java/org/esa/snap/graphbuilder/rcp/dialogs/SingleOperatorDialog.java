@@ -165,7 +165,7 @@ public class SingleOperatorDialog extends SingleTargetProductDialog {
     }
 
     @Override
-    protected Product createTargetProduct() throws Exception {
+    protected Product createTargetProduct() {
         if (validateUI()) {
             SystemUtils.freeAllMemory();
 
@@ -183,10 +183,6 @@ public class SingleOperatorDialog extends SingleTargetProductDialog {
 
     public void setTargetProductNameSuffix(String suffix) {
         targetProductNameSuffix = suffix;
-    }
-
-    public BindingContext getBindingContext() {
-        return bindingContext;
     }
 
     private void initForm() {
@@ -409,7 +405,7 @@ public class SingleOperatorDialog extends SingleTargetProductDialog {
 
         private Product currentProduct;
 
-        public void releaseProduct() {
+        void releaseProduct() {
             if (currentProduct != null) {
                 currentProduct.removeProductNodeListener(this);
                 currentProduct = null;

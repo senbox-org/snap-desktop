@@ -39,6 +39,7 @@ import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.datamodel.TiePointGrid;
 import org.esa.snap.core.datamodel.VirtualBand;
 import org.esa.snap.core.dataop.barithm.BandArithmetic;
+import org.esa.snap.core.gpf.common.SubsetOp;
 import org.esa.snap.core.image.ColoredBandImageMultiLevelSource;
 import org.esa.snap.core.jexp.ParseException;
 import org.esa.snap.core.jexp.Term;
@@ -57,15 +58,7 @@ import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.ui.SliderBoxImageDisplay;
 import org.esa.snap.ui.UIUtils;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
+import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
@@ -448,6 +441,7 @@ public class ProductSubsetDialog extends ModalDialog {
 
     private void updateSubsetDefRegion(int x1, int y1, int x2, int y2, int sx, int sy) {
         productSubsetDef.setRegion(x1, y1, x2 - x1 + 1, y2 - y1 + 1);
+        productSubsetDef.setRegionMap(SubsetOp.computeRegionMap(productSubsetDef.getRegion(),product,productSubsetDef.getNodeNames()));
         productSubsetDef.setSubSampling(sx, sy);
         updateMemDisplay();
     }
@@ -508,12 +502,47 @@ public class ProductSubsetDialog extends ModalDialog {
         private JScrollPane imageScrollPane;
         private ProgressMonitorSwingWorker<BufferedImage, Object> thumbnailLoader;
 
+        private JComboBox referenceCombo;
+        String _oldReference;
+
         private SpatialSubsetPane() {
+            if(product.isMultiSize()) {
+                referenceCombo = new JComboBox();
+                for (String bandName : product.getBandNames()) {
+                    referenceCombo.addItem(bandName);
+                }
+                referenceCombo.setSelectedItem(product.getBandAt(0));
+                _oldReference = (String) referenceCombo.getSelectedItem();
+                referenceCombo.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        int w ;
+                        int h ;
+                        if(product.isMultiSize()) {
+                            w = product.getBand((String) referenceCombo.getSelectedItem()).getRasterWidth();
+                            h = product.getBand((String) referenceCombo.getSelectedItem()).getRasterHeight();
+                        } else {
+                            w = product.getSceneRasterWidth();
+                            h = product.getSceneRasterHeight();
+                        }
+                        final int wMin = MIN_SUBSET_SIZE;
+                        final int hMin = MIN_SUBSET_SIZE;
+                        paramX1.getProperties().setMaxValue((w - wMin - 1) > 0 ? w - wMin - 1 : 0);
+                        paramY1.getProperties().setMaxValue((h - hMin - 1) > 0 ? h - hMin - 1 : 0);
+                        paramX2.getProperties().setMaxValue(w - 1);
+                        paramY2.getProperties().setMaxValue(h - 1);
+
+                        updateUIState(new ParamChangeEvent(this,new Parameter("geo_"),null ));
+                        _oldReference = (String) referenceCombo.getSelectedItem();
+                    }
+                });
+            }
             initParameters();
             createUI();
         }
 
         private void createUI() {
+
 
             setThumbnailSubsampling();
             final Dimension imageSize = getScaledImageSize();
@@ -575,6 +604,7 @@ public class ProductSubsetDialog extends ModalDialog {
             fixSceneHeightCheck.addActionListener(this);
             setComponentName(fixSceneHeightCheck, "FixHeightCheck");
 
+
             JPanel textInputPane = GridBagUtils.createPanel();
             setComponentName(textInputPane, "TextInputPane");
             final JTabbedPane tabbedPane = new JTabbedPane();
@@ -603,14 +633,24 @@ public class ProductSubsetDialog extends ModalDialog {
             GridBagUtils.addToPanel(textInputPane, new JLabel("Subset scene height:"), gbc, "gridx=0,gridy=4");
             GridBagUtils.addToPanel(textInputPane, subsetHeightLabel, gbc, "gridx=1,gridy=4");
 
+            int sceneWidth;
+            int sceneHeight;
+            if(product.isMultiSize()) {
+                sceneWidth = product.getBand((String) referenceCombo.getSelectedItem()).getRasterWidth();
+                sceneHeight = product.getBand((String) referenceCombo.getSelectedItem()).getRasterHeight();
+            } else {
+                sceneWidth = product.getSceneRasterWidth();
+                sceneHeight = product.getSceneRasterHeight();
+            }
+
             GridBagUtils.setAttributes(gbc, "insets.top=4,gridwidth=1");
             GridBagUtils.addToPanel(textInputPane, new JLabel("Source scene width:"), gbc, "gridx=0,gridy=5");
-            GridBagUtils.addToPanel(textInputPane, new JLabel(String.valueOf(product.getSceneRasterWidth()),
+            GridBagUtils.addToPanel(textInputPane, new JLabel(String.valueOf(sceneWidth),
                                                               JLabel.RIGHT), gbc, "gridx=1,gridy=5");
 
             GridBagUtils.setAttributes(gbc, "insets.top=1");
             GridBagUtils.addToPanel(textInputPane, new JLabel("Source scene height:"), gbc, "gridx=0,gridy=6");
-            GridBagUtils.addToPanel(textInputPane, new JLabel(String.valueOf(product.getSceneRasterHeight()),
+            GridBagUtils.addToPanel(textInputPane, new JLabel(String.valueOf(sceneHeight),
                                                               JLabel.RIGHT), gbc, "gridx=1,gridy=6");
 
             GridBagUtils.setAttributes(gbc, "insets.top=7,gridwidth=1, gridheight=2");
@@ -622,9 +662,25 @@ public class ProductSubsetDialog extends ModalDialog {
             GridBagUtils.setAttributes(gbc, "insets.top=1,gridwidth=1");
             GridBagUtils.addToPanel(textInputPane, fixSceneHeightCheck, gbc, "gridx=1,gridy=8");
 
+            JPanel referencePanel = new JPanel();
+            if(product.isMultiSize()) {
+                BoxLayout boxlayoutRef = new BoxLayout(referencePanel, BoxLayout.X_AXIS);
+                referencePanel.setLayout(boxlayoutRef);
+                referencePanel.add(new JLabel("Reference Band:"));
+                referencePanel.add(referenceCombo);
+            }
+
+            JPanel centerPanel = new JPanel();
+            BoxLayout boxlayout = new BoxLayout(centerPanel, BoxLayout.Y_AXIS);
+            centerPanel.setLayout(boxlayout);
+            centerPanel.add(referencePanel);
+            centerPanel.add(textInputPane);
+
+
+
             setLayout(new BorderLayout(4, 4));
             add(imageScrollPane, BorderLayout.WEST);
-            add(textInputPane, BorderLayout.CENTER);
+            add(centerPanel, BorderLayout.CENTER);
             setBorder(BorderFactory.createEmptyBorder(7, 7, 7, 7));
 
             updateUIState(null);
@@ -633,6 +689,11 @@ public class ProductSubsetDialog extends ModalDialog {
 
         private boolean canUseGeoCoordinates(Product product) {
             final GeoCoding geoCoding = product.getSceneGeoCoding();
+            return geoCoding != null && geoCoding.canGetPixelPos() && geoCoding.canGetGeoPos();
+        }
+
+        private boolean canUseGeoCoordinates(RasterDataNode rasterDataNode) {
+            final GeoCoding geoCoding = rasterDataNode.getGeoCoding();
             return geoCoding != null && geoCoding.canGetPixelPos() && geoCoding.canGetGeoPos();
         }
 
@@ -689,7 +750,12 @@ public class ProductSubsetDialog extends ModalDialog {
         }
 
         private void setThumbnailSubsampling() {
-            int w = product.getSceneRasterWidth();
+            int w ;
+            if(product.isMultiSize()) {
+                w = product.getBand((String) referenceCombo.getSelectedItem()).getRasterWidth();
+            } else {
+                w = product.getSceneRasterWidth();
+            }
 
             thumbNailSubSampling = w / MAX_THUMBNAIL_WIDTH;
             if (thumbNailSubSampling <= 1) {
@@ -715,6 +781,10 @@ public class ProductSubsetDialog extends ModalDialog {
             int y2 = y1 + sliderBoxBounds.height * thumbNailSubSampling;
             int w = product.getSceneRasterWidth();
             int h = product.getSceneRasterHeight();
+            if(product.isMultiSize()) {
+                w = product.getBand((String) referenceCombo.getSelectedItem()).getRasterWidth();
+                h = product.getBand((String) referenceCombo.getSelectedItem()).getRasterHeight();
+            }
             if (x1 < 0) {
                 x1 = 0;
             }
@@ -820,14 +890,27 @@ public class ProductSubsetDialog extends ModalDialog {
             paramEastLon2.getProperties().setMaxValue(180.0);
             pg.addParameter(paramEastLon2);
 
-            if (canUseGeoCoordinates(product)) {
+            boolean canUseGeocoding;
+            if(product.isMultiSize()) {
+                canUseGeocoding = canUseGeoCoordinates(product.getBand((String) referenceCombo.getSelectedItem()));
+            } else {
+                canUseGeocoding = canUseGeoCoordinates(product);
+            }
+            if (canUseGeocoding) {
                 syncLatLonWithXYParams();
             }
         }
 
         private void addPixelParameter(ParamGroup pg) {
-            int w = product.getSceneRasterWidth();
-            int h = product.getSceneRasterHeight();
+            int w ;
+            int h ;
+            if(product.isMultiSize()) {
+                w = product.getBand((String) referenceCombo.getSelectedItem()).getRasterWidth();
+                h = product.getBand((String) referenceCombo.getSelectedItem()).getRasterHeight();
+            } else {
+                w = product.getSceneRasterWidth();
+                h = product.getSceneRasterHeight();
+            }
 
             int x1 = 0;
             int y1 = 0;
@@ -837,7 +920,13 @@ public class ProductSubsetDialog extends ModalDialog {
             int sy = 1;
 
             if (givenProductSubsetDef != null) {
-                Rectangle region = givenProductSubsetDef.getRegion();
+                Rectangle region;
+                if(product.isMultiSize() && givenProductSubsetDef.getRegionMap() != null) {
+                    region = givenProductSubsetDef.getRegionMap().get((String) referenceCombo.getSelectedItem());
+                } else {
+                    region = givenProductSubsetDef.getRegion();
+                }
+
                 if (region != null) {
                     x1 = region.x;
                     y1 = region.y;
@@ -899,13 +988,20 @@ public class ProductSubsetDialog extends ModalDialog {
         private void updateUIState(ParamChangeEvent event) {
             if (updatingUI.compareAndSet(false, true)) {
                 try {
-                    if (event != null && canUseGeoCoordinates(product)) {
+                    boolean canUseGeocoding;
+                    if(product.isMultiSize()) {
+                        canUseGeocoding = canUseGeoCoordinates(product.getBand((String) referenceCombo.getSelectedItem()));
+                    } else {
+                        canUseGeocoding = canUseGeoCoordinates(product);
+                    }
+                    if (event != null && canUseGeocoding) {
                         final String parmName = event.getParameter().getName();
                         if (parmName.startsWith("geo_")) {
                             final GeoPos geoPos1 = new GeoPos((Double) paramNorthLat1.getValue(),
                                                               (Double) paramWestLon1.getValue());
                             final GeoPos geoPos2 = new GeoPos((Double) paramSouthLat2.getValue(),
                                                               (Double) paramEastLon2.getValue());
+
                             updateXYParams(geoPos1, geoPos2);
                         } else if (parmName.startsWith("source_x") || parmName.startsWith("source_y")) {
                             syncLatLonWithXYParams();
@@ -920,13 +1016,33 @@ public class ProductSubsetDialog extends ModalDialog {
                     int sx = ((Number) paramSX.getValue()).intValue();
                     int sy = ((Number) paramSY.getValue()).intValue();
 
-                    updateSubsetDefRegion(x1, y1, x2, y2, sx, sy);
+                    if(product.isMultiSize()) {
+                        productSubsetDef.setRegionMap(SubsetOp.computeRegionMap (new Rectangle(x1, y1, x2 - x1 + 1, y2 - y1 + 1),
+                                                                                 (String) referenceCombo.getSelectedItem(),
+                                                                                 product, null));
+                        productSubsetDef.setSubSampling(sx, sy);
+                        updateMemDisplay();
+                    } else {
+                        productSubsetDef.setRegion(x1, y1, x2 - x1 + 1, y2 - y1 + 1);
+                        productSubsetDef.setSubSampling(sx, sy);
+                        updateMemDisplay();
+                    }
 
-                    Dimension s = productSubsetDef.getSceneRasterSize(product.getSceneRasterWidth(),
-                                                                      product.getSceneRasterHeight());
+                    Dimension s;
+                    if(product.isMultiSize()) {
+                        s = productSubsetDef.getSceneRasterSize(product.getSceneRasterWidth(),
+                                                                product.getSceneRasterHeight(),
+                                                                (String) referenceCombo.getSelectedItem());
+                    } else {
+                        s = productSubsetDef.getSceneRasterSize(product.getSceneRasterWidth(),
+                                                                product.getSceneRasterHeight());
+                    }
+
                     subsetWidthLabel.setText(String.valueOf(s.getWidth()));
                     subsetHeightLabel.setText(String.valueOf(s.getHeight()));
 
+
+                    setThumbnailSubsampling();
                     int sliderBoxX1 = x1 / thumbNailSubSampling;
                     int sliderBoxY1 = y1 / thumbNailSubSampling;
                     int sliderBoxX2 = x2 / thumbNailSubSampling;
@@ -946,7 +1062,12 @@ public class ProductSubsetDialog extends ModalDialog {
                                                     ((Number) paramY1.getValue()).intValue());
             final PixelPos pixelPos2 = new PixelPos(((Number) paramX2.getValue()).intValue(),
                                                     ((Number) paramY2.getValue()).intValue());
-            final GeoCoding geoCoding = product.getSceneGeoCoding();
+            GeoCoding geoCoding;
+            if(product.isMultiSize()) {
+                geoCoding = product.getBand((String) referenceCombo.getSelectedItem()).getGeoCoding();
+            } else {
+                geoCoding = product.getSceneGeoCoding();
+            }
             final GeoPos geoPos1 = geoCoding.getGeoPos(pixelPos1, null);
             final GeoPos geoPos2 = geoCoding.getGeoPos(pixelPos2, null);
             if(geoPos1.isValid()) {
@@ -968,21 +1089,40 @@ public class ProductSubsetDialog extends ModalDialog {
         }
 
         private void updateXYParams(GeoPos geoPos1, GeoPos geoPos2) {
-            final GeoCoding geoCoding = product.getSceneGeoCoding();
+            GeoCoding geoCoding;
+            if(product.isMultiSize()) {
+                geoCoding = product.getBand((String) referenceCombo.getSelectedItem()).getGeoCoding();
+            } else {
+                geoCoding = product.getSceneGeoCoding();
+            }
             final PixelPos pixelPos1 = geoCoding.getPixelPos(geoPos1, null);
             if (!pixelPos1.isValid()) {
                 pixelPos1.setLocation(0, 0);
             }
             final PixelPos pixelPos2 = geoCoding.getPixelPos(geoPos2, null);
             if (!pixelPos2.isValid()) {
-                pixelPos2.setLocation(product.getSceneRasterWidth(),
-                                      product.getSceneRasterHeight());
+                if(product.isMultiSize()) {
+                    pixelPos2.setLocation(product.getBand((String) referenceCombo.getSelectedItem()).getRasterWidth(),
+                                          product.getBand((String) referenceCombo.getSelectedItem()).getRasterHeight());
+                } else {
+                    pixelPos2.setLocation(product.getSceneRasterWidth(),
+                                          product.getSceneRasterHeight());
+                }
+
             }
             final Rectangle.Float region = new Rectangle.Float();
             region.setFrameFromDiagonal(pixelPos1.x, pixelPos1.y, pixelPos2.x, pixelPos2.y);
-            final Rectangle.Float productBounds = new Rectangle.Float(0, 0,
-                                                                      product.getSceneRasterWidth(),
-                                                                      product.getSceneRasterHeight());
+            final Rectangle.Float productBounds;
+            if(product.isMultiSize()) {
+                productBounds = new Rectangle.Float(0, 0,
+                                                    product.getBand((String) referenceCombo.getSelectedItem()).getRasterWidth(),
+                                                    product.getBand((String) referenceCombo.getSelectedItem()).getRasterHeight());
+            } else {
+                productBounds = new Rectangle.Float(0, 0,
+                                                    product.getSceneRasterWidth(),
+                                                    product.getSceneRasterHeight());
+            }
+
             Rectangle2D finalRegion = productBounds.createIntersection(region);
 
             paramX1.setValue((int) finalRegion.getMinX(), null);
@@ -992,14 +1132,28 @@ public class ProductSubsetDialog extends ModalDialog {
         }
 
         private Dimension getScaledImageSize() {
-            final int w = (product.getSceneRasterWidth() - 1) / thumbNailSubSampling + 1;
-            final int h = (product.getSceneRasterHeight() - 1) / thumbNailSubSampling + 1;
+
+            final int w;
+            final int h;
+            if(product.isMultiSize()) {
+                w = (product.getBand((String) referenceCombo.getSelectedItem()).getRasterWidth() - 1) / thumbNailSubSampling + 1;
+                h = (product.getBand((String) referenceCombo.getSelectedItem()).getRasterHeight() - 1) / thumbNailSubSampling + 1;
+            } else {
+                w = (product.getSceneRasterWidth() - 1) / thumbNailSubSampling + 1;
+                h = (product.getSceneRasterHeight() - 1) / thumbNailSubSampling + 1;
+            }
             final Rectangle rectangle = new Rectangle(w, h);
             return getScaledRectangle(rectangle).getSize();
         }
 
         private Rectangle getScaledRectangle(Rectangle rectangle) {
-            final AffineTransform i2mTransform = Product.findImageToModelTransform(product.getSceneGeoCoding());
+
+            final AffineTransform i2mTransform ;
+            if(product.isMultiSize()) {
+                i2mTransform = Product.findImageToModelTransform(product.getBand((String) referenceCombo.getSelectedItem()).getGeoCoding());
+            } else {
+                i2mTransform = Product.findImageToModelTransform(product.getSceneGeoCoding());
+            }
             final double scaleX = i2mTransform.getScaleX();
             final double scaleY = i2mTransform.getScaleY();
             double scaleFactorY = Math.abs(scaleY / scaleX);

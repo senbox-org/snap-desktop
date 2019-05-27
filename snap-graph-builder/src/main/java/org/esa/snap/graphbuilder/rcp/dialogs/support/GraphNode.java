@@ -78,7 +78,7 @@ public class GraphNode {
         operatorUI = ui;
     }
 
-    public OperatorUI GetOperatorUI() {
+    public OperatorUI getOperatorUI() {
         return operatorUI;
     }
 
@@ -193,13 +193,13 @@ public class GraphNode {
         }
     }
 
-    void AssignParameters(final XppDom presentationXML) throws GraphException {
+    void assignParameters(final XppDom presentationXML) throws GraphException {
 
         updateParameters();
-        AssignDisplayParameters(presentationXML);
+        assignDisplayParameters(presentationXML);
     }
 
-    void AssignDisplayParameters(final XppDom presentationXML) {
+    private void assignDisplayParameters(final XppDom presentationXML) {
         XppDom nodeElem = null;
         for (XppDom elem : presentationXML.getChildren()) {
             final String id = elem.getAttribute("id");
@@ -252,15 +252,15 @@ public class GraphNode {
         return nodeHeight;
     }
 
-    public static int getHotSpotSize() {
+    static int getHotSpotSize() {
         return hotSpotSize;
     }
 
-    int getHalfNodeWidth() {
+    private int getHalfNodeWidth() {
         return halfNodeWidth;
     }
 
-    public int getHalfNodeHeight() {
+    int getHalfNodeHeight() {
         return halfNodeHeight;
     }
 
@@ -272,7 +272,7 @@ public class GraphNode {
         hotSpotOffset = halfNodeHeight - halfHotSpotSize;
     }
 
-    public int getHotSpotOffset() {
+    int getHotSpotOffset() {
         return hotSpotOffset;
     }
 
@@ -302,7 +302,7 @@ public class GraphNode {
         return !node.getOperatorName().equals("Read") && !node.getOperatorName().equals("ProductSet-Reader");
     }
 
-    public String getSourceName(final String sourceID) {
+    String getSourceName(final String sourceID) {
 
         for (int i = 0; i < node.getSources().length; ++i) {
             final NodeSource ns = node.getSource(i);
@@ -313,7 +313,7 @@ public class GraphNode {
         return null;
     }
 
-    public void setSourceName(final String sourceName, final String sourceID) {
+    void setSourceName(final String sourceName, final String sourceID) {
         for (int i = 0; i < node.getSources().length; ++i) {
             final NodeSource ns = node.getSource(i);
             if (ns.getSourceNodeId().equals(sourceID)) {
@@ -356,7 +356,7 @@ public class GraphNode {
         }
     }
 
-    public boolean isNodeSource(final GraphNode source) {
+    boolean isNodeSource(final GraphNode source) {
 
         final NodeSource[] sources = node.getSources();
         for (NodeSource ns : sources) {
@@ -367,7 +367,7 @@ public class GraphNode {
         return false;
     }
 
-    boolean HasSources() {
+    boolean hasSources() {
         return node.getSources().length > 0;
     }
 
@@ -383,7 +383,7 @@ public class GraphNode {
         }
     }
 
-    void updateParameterMap(final XppDomElement parentElement) throws GraphException {
+    private void updateParameterMap(final XppDomElement parentElement) throws GraphException {
         //if(operatorUI.hasSourceProducts())
         operatorUI.updateParameters();
         operatorUI.convertToDOM(parentElement);
@@ -395,7 +395,7 @@ public class GraphNode {
      * @param g   The Java2D Graphics
      * @param col The color to draw
      */
-    public void drawNode(final Graphics2D g, final Color col) {
+    void drawNode(final Graphics2D g, final Color col) {
         final int x = displayPosition.x;
         final int y = displayPosition.y;
 
@@ -433,7 +433,7 @@ public class GraphNode {
      * @param g   The Java2D Graphics
      * @param col The color to draw
      */
-    public void drawHeadHotspot(final Graphics g, final Color col) {
+    void drawHeadHotspot(final Graphics g, final Color col) {
         final Point p = displayPosition;
         g.setColor(col);
         g.drawOval(p.x - halfHotSpotSize, p.y + hotSpotOffset, hotSpotSize, hotSpotSize);
@@ -445,7 +445,7 @@ public class GraphNode {
      * @param g   The Java2D Graphics
      * @param col The color to draw
      */
-    public void drawTailHotspot(final Graphics g, final Color col) {
+    void drawTailHotspot(final Graphics g, final Color col) {
         final Point p = displayPosition;
         g.setColor(col);
 
@@ -462,7 +462,7 @@ public class GraphNode {
      * @param g   The Java2D Graphics
      * @param src the source GraphNode
      */
-    public void drawConnectionLine(final Graphics2D g, final GraphNode src) {
+    void drawConnectionLine(final Graphics2D g, final GraphNode src) {
 
         final Point nodePos = displayPosition;
         final Point srcPos = src.displayPosition;

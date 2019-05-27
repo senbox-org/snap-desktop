@@ -124,7 +124,7 @@ public class PromptDialog extends ModalDialog {
 
     public static class Descriptor {
         public final String label;
-        public final String defaultValue;
+        final String defaultValue;
         public final TYPE type;
 
         public Descriptor(final String label, final String defaultValue, final TYPE type) {

@@ -38,6 +38,7 @@ class AboutPanel extends JPanel {
             JTabbedPane tabbedPane = new JTabbedPane();
             tabbedPane.add("SNAP", new SnapAboutBox());
             addAboutBoxPlugins(tabbedPane, configFile);
+            tabbedPane.add("Licenses", new LicensesAboutBox());
             add(tabbedPane, BorderLayout.CENTER);
         } else {
             add(new SnapAboutBox(), BorderLayout.CENTER);

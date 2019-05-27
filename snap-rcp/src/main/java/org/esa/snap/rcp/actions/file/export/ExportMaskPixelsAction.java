@@ -18,16 +18,11 @@ package org.esa.snap.rcp.actions.file.export;
 
 import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
-import org.esa.snap.core.datamodel.Band;
-import org.esa.snap.core.datamodel.GeoCoding;
-import org.esa.snap.core.datamodel.GeoPos;
-import org.esa.snap.core.datamodel.Mask;
-import org.esa.snap.core.datamodel.PixelPos;
-import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.datamodel.TiePointGrid;
+import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
+import org.esa.snap.core.util.math.MathUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.rcp.util.MultiSizeIssue;
@@ -120,14 +115,14 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
         ProductSceneView sceneView = SnapApp.getDefault().getSelectedProductSceneView();
         if (sceneView != null) {
             Product product = sceneView.getProduct();
-            if (product.isMultiSize()) {
-                final Product resampledProduct = MultiSizeIssue.maybeResample(product);
-                if (resampledProduct != null) {
-                    product = resampledProduct;
-                } else {
-                    return;
-                }
-            }
+//            if (product.isMultiSize()) {
+//                final Product resampledProduct = MultiSizeIssue.maybeResample(product);
+//                if (resampledProduct != null) {
+//                    product = resampledProduct;
+//                } else {
+//                    return;
+//                }
+//            }
             exportMaskPixels(product);
         }
     }
@@ -177,9 +172,8 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
                 return;
             }
         }
-        Mask mask = product.getMaskGroup().get(maskName);
 
-        final RenderedImage maskImage = mask.getSourceImage();
+        final RenderedImage maskImage = product.getMaskGroup().get(maskName).getSourceImage();
         if (maskImage == null) {
             Dialogs.showError(Bundle.CTL_ExportMaskPixelsAction_DialogTitle(),
                               ERR_MSG_BASE + "No Mask image available.");
@@ -245,8 +239,9 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
             protected Exception doInBackground(ProgressMonitor pm) throws Exception {
                 Exception returnValue = null;
                 try {
-                    boolean success = exportMaskPixels(out, product, maskImage, maskName,
-                                                       mustCreateHeader, mustExportTiePoints, mustExportWavelengthsAndSF, pm);
+                    boolean success = exportMaskPixels(out, product, maskName,
+                                                       mustCreateHeader, mustExportTiePoints, mustExportWavelengthsAndSF,
+                                                       pm);
                     if (success && clipboardText != null) {
                         SystemUtils.copyToClipboard(clipboardText.toString());
                         clipboardText.setLength(0);
@@ -315,26 +310,27 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
                                           "exportMaskPixels.lastDir");
     }
 
-    /*
+    /**
      * Writes all pixel values of the given product within the given Mask to the specified out.
      *
      * @param out      the data output writer
      * @param product  the product providing the pixel values
-     * @param maskImage the mask image for the Mask
+     * @param maskName the mask name
+     * @param mustCreateHeader
+     * @param mustExportTiePoints
+     * @param mustExportWavelengthsAndSF
+     * @param pm       progress monitor
      * @return <code>true</code> for success, <code>false</code> if export has been terminated (by user)
      */
     private static boolean exportMaskPixels(final PrintWriter out,
                                             final Product product,
-                                            final RenderedImage maskImage,
                                             String maskName,
                                             boolean mustCreateHeader,
                                             boolean mustExportTiePoints,
                                             boolean mustExportWavelengthsAndSF,
                                             ProgressMonitor pm) throws IOException {
 
-        final Band[] bands = product.getBands();
-        final TiePointGrid[] tiePointGrids = product.getTiePointGrids();
-        final GeoCoding geoCoding = product.getSceneGeoCoding();
+        final RenderedImage maskImage = product.getMaskGroup().get(maskName).getSourceImage();
 
         final int minTileX = maskImage.getMinTileX();
         final int minTileY = maskImage.getMinTileY();
@@ -344,6 +340,7 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
 
         final int w = product.getSceneRasterWidth();
         final int h = product.getSceneRasterHeight();
+
         final Rectangle imageRect = new Rectangle(0, 0, w, h);
 
         pm.beginTask("Writing pixel data...", numXTiles * numYTiles + 2);
@@ -352,7 +349,7 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
                 createHeader(out, product, maskName, mustExportWavelengthsAndSF);
             }
             pm.worked(1);
-            writeColumnNames(out, geoCoding, bands, mustExportTiePoints, tiePointGrids);
+            writeColumnNames(out, product, maskName, mustExportTiePoints);
             pm.worked(1);
 
             for (int tileX = minTileX; tileX < minTileX + numXTiles; ++tileX) {
@@ -370,7 +367,7 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
                         for (int y = r.y; y < r.y + r.height; y++) {
                             for (int x = r.x; x < r.x + r.width; x++) {
                                 if (maskTile.getSample(x, y, 0) != 0) {
-                                    writeDataLine(out, geoCoding, bands, mustExportTiePoints, tiePointGrids, x, y);
+                                    writeDataLine(out, product, maskName, x, y, mustExportTiePoints);
                                 }
                             }
                         }
@@ -421,25 +418,33 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
      * @param tiePointGrids           the array of tie-point grids to be considered
      */
     private static void writeColumnNames(final PrintWriter out,
-                                         final GeoCoding geoCoding,
-                                         final Band[] bands,
-                                         boolean mustExportTiePointGrids,
-                                         TiePointGrid[] tiePointGrids) {
-        out.print("Pixel-X");
-        out.print("\t");
-        out.print("Pixel-Y");
-        if (geoCoding != null) {
+                                         final Product product,
+                                         final String maskName,
+                                         final boolean mustExportTiePointGrids) {
+
+        if (!product.isMultiSize()) {
+            out.print("Pixel-X");
+            out.print("\t");
+            out.print("Pixel-Y");
+        } else {
+            // Add the mask name to the identification of the pixel
+            out.print("Pixel-X." + maskName);
+            out.print("\t");
+            out.print("Pixel-Y." + maskName);
+        }
+
+        if (product.getSceneGeoCoding() != null) {
             out.print("\t");
             out.print("Longitude");
             out.print("\t");
             out.print("Latitude");
         }
-        for (final Band band : bands) {
+        for (final Band band : product.getBands()) {
             out.print("\t");
             out.print(band.getName());
         }
         if (mustExportTiePointGrids) {
-            for (final TiePointGrid grid : tiePointGrids) {
+            for (final TiePointGrid grid : product.getTiePointGrids()) {
                 out.print("\t");
                 out.print(grid.getName());
             }
@@ -447,58 +452,74 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
         out.print("\n");
     }
 
-    /*
+    /**
      * Writes a data line of the dataset to be exported for the given pixel position.
      *
-     * @param out                     the data output writer
-     * @param geoCoding               the product's geo-coding
-     * @param bands                   the array of bands that provide pixel values
-     * @param mustExportTiePointGrids if tie-point grids shall be exported
-     * @param tiePointGrids           the array of tie-point grids that provide pixel values
-     * @param x                       the current pixel's X coordinate
-     * @param y                       the current pixel's Y coordinate
+     * @param out                 the data output writer
+     * @param product             the product
+     * @param maskName            the mask name (where the pixel X and Y where read)
+     * @param x                   the current pixel's X coordinate
+     * @param y                   the current pixel's Y coordinate
+     * @param mustExportTiePoints if tie-point grids shall be exported
+     * @throws IOException
      */
     private static void writeDataLine(final PrintWriter out,
-                                      final GeoCoding geoCoding,
-                                      final Band[] bands,
-                                      boolean mustExportTiePoints,
-                                      TiePointGrid[] tiePointGrids, int x,
-                                      int y) throws IOException {
-        final PixelPos pixelPos = new PixelPos(x + 0.5f, y + 0.5f);
+                                      final Product product,
+                                      final String maskName,
+                                      final int x, final int y,
+                                      final boolean mustExportTiePoints) throws IOException {
 
-        out.print(String.valueOf(pixelPos.x));
+        // All the positions computations will be done at the centre of pixel cell
+        final PixelPos pixelPosRef = new PixelPos(x + 0.5f, y + 0.5f);
+
+        out.print(String.valueOf(pixelPosRef.x));
         out.print("\t");
-        out.print(String.valueOf(pixelPos.y));
-        if (geoCoding != null) {
-            final GeoPos geoPos = geoCoding.getGeoPos(pixelPos, null);
+        out.print(String.valueOf(pixelPosRef.y));
+
+        final Mask mask = product.getMaskGroup().get(maskName);
+        final GeoCoding maskGeocoding = mask.getGeoCoding();
+        if (maskGeocoding != null) {
+            final GeoPos geoPos = maskGeocoding.getGeoPos(pixelPosRef, null);
             out.print("\t");
             out.print(String.valueOf(geoPos.lon));
             out.print("\t");
             out.print(String.valueOf(geoPos.lat));
         }
+
         final int[] intPixel = new int[1];
         final float[] floatPixel = new float[1];
-        for (final Band band : bands) {
+
+        for (final Band band : product.getBands()) {
             out.print("\t");
-            if (band.isPixelValid(x, y)) {
+            PixelPos pixelForBand = product.getPixelForBand(pixelPosRef, mask, band);
+            int xForBand = MathUtils.floorInt(pixelForBand.x);
+            int yForBand = MathUtils.floorInt(pixelForBand.y);
+
+            if (band.isPixelValid(xForBand, yForBand)) {
                 if (band.isFloatingPointType()) {
-                    band.readPixels(x, y, 1, 1, floatPixel, ProgressMonitor.NULL);
+                    band.readPixels(xForBand, yForBand, 1, 1, floatPixel, ProgressMonitor.NULL);
                     out.print(floatPixel[0]);
                 } else {
-                    band.readPixels(x, y, 1, 1, intPixel, ProgressMonitor.NULL);
+                    band.readPixels(xForBand, yForBand, 1, 1, intPixel, ProgressMonitor.NULL);
                     out.print(intPixel[0]);
                 }
             } else {
-                out.print("NaN");
+                out.print(RasterDataNode.NO_DATA_TEXT);
             }
-        }
+        } // end loop on bands
+
         if (mustExportTiePoints) {
-            for (final TiePointGrid grid : tiePointGrids) {
-                grid.readPixels(x, y, 1, 1, floatPixel, ProgressMonitor.NULL);
+            for (final TiePointGrid grid : product.getTiePointGrids()) {
+                PixelPos pixelForGrid = product.getPixelForBand(pixelPosRef, mask, grid);
+                grid.readPixels(MathUtils.floorInt(pixelForGrid.x),  MathUtils.floorInt(pixelForGrid.y),
+                            1, 1, floatPixel, ProgressMonitor.NULL);
                 out.print("\t");
                 out.print(floatPixel[0]);
+                if (Float.isNaN(floatPixel[0])) {
+                    System.out.println("NaN for " + grid.getName());
+                }
             }
-        }
+        } // end loop on Tie Point grids
         out.print("\n");
     }
 

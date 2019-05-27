@@ -5,6 +5,7 @@
  */
 package org.esa.snap.rcp.about;
 
+import com.bc.ceres.core.runtime.Version;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.rcp.util.BrowserUtils;
@@ -26,13 +27,14 @@ import java.net.URISyntaxException;
  */
 public class SnapAboutBox extends JPanel {
 
-    private final static String releaseNotesHTTP = "https://github.com/senbox-org/snap-desktop/blob/master/ReleaseNotes.md";
+    private final static String releaseNotesUrlString = "https://senbox.atlassian.net/issues/?filter=-4&jql=project%20%3D%20SNAP%20AND%20fixVersion%20%3D%20";
     private JLabel versionText;
+    private final ModuleInfo engineModuleInfo;
 
     public SnapAboutBox() {
         super(new BorderLayout(4, 4));
         ModuleInfo desktopModuleInfo = Modules.getDefault().ownerOf(SnapAboutBox.class);
-        ModuleInfo engineModuleInfo = Modules.getDefault().ownerOf(Product.class);
+        engineModuleInfo = Modules.getDefault().ownerOf(Product.class);
         ImageIcon image = new ImageIcon(SnapAboutBox.class.getResource("SNAP_Banner.png"));
         JLabel banner = new JLabel(image);
         versionText = new JLabel("<html><b>SNAP " + SystemUtils.getReleaseVersion() + "</b>");
@@ -78,19 +80,21 @@ public class SnapAboutBox extends JPanel {
         final JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
         panel.add(versionText);
-        final URI releaseNotesURI = getReleaseNotesURI();
-        if (releaseNotesURI != null) {
-            final JLabel releaseNoteLabel = new JLabel("<html><a href=\"" + releaseNotesURI.toString() + "\">Release Notes</a>");
-            releaseNoteLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
-            releaseNoteLabel.addMouseListener(new BrowserUtils.URLClickAdaptor(releaseNotesHTTP));
-            panel.add(releaseNoteLabel);
-        }
+
+        Version specVersion = Version.parseVersion(engineModuleInfo.getSpecificationVersion().toString());
+        String versionString = String.format("%s.%s.%s", specVersion.getMajor(), specVersion.getMinor(), specVersion.getMicro());
+        String changelogUrl = releaseNotesUrlString + versionString;
+
+        final JLabel releaseNoteLabel = new JLabel("<html><a href=\"" + changelogUrl + "\">Release Notes</a>");
+        releaseNoteLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        releaseNoteLabel.addMouseListener(new BrowserUtils.URLClickAdaptor(changelogUrl));
+        panel.add(releaseNoteLabel);
         return panel;
     }
 
     private URI getReleaseNotesURI() {
         try {
-            return new URI(releaseNotesHTTP);
+            return new URI(releaseNotesUrlString);
         } catch (URISyntaxException e) {
             return null;
         }

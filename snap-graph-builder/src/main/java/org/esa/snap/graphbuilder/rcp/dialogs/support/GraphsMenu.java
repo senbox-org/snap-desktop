@@ -91,7 +91,7 @@ public class GraphsMenu {
                 item.addActionListener(new ActionListener() {
 
                     public void actionPerformed(final ActionEvent e) {
-                        graphDialog.LoadGraph(file);
+                        graphDialog.loadGraph(file);
                     }
                 });
                 menu.add(item);
@@ -107,7 +107,7 @@ public class GraphsMenu {
 
         @Override
         public void actionPerformed(ActionEvent event) {
-            graphDialog.LoadGraph();
+            graphDialog.loadGraph();
         }
 
         @Override
@@ -124,7 +124,7 @@ public class GraphsMenu {
 
         @Override
         public void actionPerformed(ActionEvent event) {
-            graphDialog.SaveGraph();
+            graphDialog.saveGraph();
         }
 
         @Override

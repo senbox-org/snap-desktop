@@ -41,6 +41,21 @@
         </dependency>
         <dependency>
             <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-explorer</artifactId>
+            <version>${netbeans.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-nodes</artifactId>
+            <version>${netbeans.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-netbeans-swing-outline</artifactId>
+            <version>${netbeans.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-util</artifactId>
         </dependency>
         <dependency>
@@ -71,6 +86,10 @@
         <dependency>
             <groupId>org.esa.snap</groupId>
             <artifactId>snap-ui</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.esa.snap</groupId>
+            <artifactId>snap-tango</artifactId>
         </dependency>
         <dependency>
             <groupId>org.esa.snap</groupId>
@@ -144,6 +163,7 @@
                 <configuration>
                     <publicPackages>
                         <publicPackage>org.esa.snap.core.gpf.ui</publicPackage>
+                        <publicPackage>org.esa.snap.core.gpf.ui.resample</publicPackage>
                         <publicPackage>org.esa.snap.rcp.actions</publicPackage>
                     </publicPackages>
                 </configuration>

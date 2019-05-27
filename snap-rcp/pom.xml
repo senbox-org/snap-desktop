@@ -12,7 +12,7 @@
     <packaging>nbm</packaging>
 
     <name>SNAP Desktop Rich Client Platform</name>
-    <description>NB-Module providing API and GUI components for SNAP Desktop</description>
+    <description>Modules providing API and GUI components for SNAP Desktop</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -54,6 +54,11 @@
                     <!-- to have the jar plugin pickup the nbm generated manifest -->
                     <useDefaultManifestFile>true</useDefaultManifestFile>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>1.16</version>
             </plugin>
         </plugins>
     </build>

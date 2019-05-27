@@ -7,7 +7,7 @@
     <tocitem text="Sentinel Toolbox Application">
         <tocitem text="Raster">
             <tocitem text="Classification">
-                <tocitem text="Supervised Classifiers" target="SupervisedClassifiers">
+                <tocitem text="Supervised Classification" target="SupervisedClassifiers">
                     <tocitem text="SVM" target="SVMClassifierOp"/>
                     <tocitem text="Random Forest" target="RandomForestClassifierOp"/>
 					<tocitem text="Maximum Likelihood" target="MaximumLikelihoodClassifierOp"/>

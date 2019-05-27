@@ -37,18 +37,22 @@
 
 </p>
 
-<img src="images/snap-smart-configurator-ui-preferences.jpg" border=0/>
+<img src="images/snap-smart-configurator-ui-preferences-without-tilesize.jpg" border=0/>
 
 <h4><a name="systemParameters">System</a></h4>
 
 <ul>
     <li><b>VM Parameters</b><br>
         Parameters for the java virtual machine. These parameters are for advanced users and can be
-        modified only by users having write access on the snap.conf file.
+        modified only by users having write access on the snap.conf file
+        (in [SNAP_installation_folder]/etc/).
         They are taken into account after the application restarts. Most effective parameters
         for performance are -Xmx (maximum memory) and -Xms (initial memory), they are optimised
         when pressing the Compute button.<br>
-        To manually edit  VM Parameters press the <img src="images/ThreeDotsButton.jpg" border=0/> button.
+        To manually edit  VM Parameters press the <img src="images/ThreeDotsButton.jpg" border=0/> button. <br>
+        Please, note that these VM parameters are used when working with SNAP Desktop but not when executing GPT or PConvert tools.
+        To modify the VM characteristics for this two tools, it is needed to edit manually the files gpt.vmoptions
+        and pconvert.vmoptions (in [SNAP_installation_folder]/bin/) respectively.
     </li>
     <li><b>Data cache path</b><br>
         SNAP application data cache path path. This path is used by SNAP processors and readers to
@@ -91,11 +95,8 @@
 </p>
 <ul>
     <li><b>SNAP Values</b><br>
-        There are three processing parameters that may affect processing performance:
+        There are two processing parameters that may affect processing performance:
         <ul>
-            <li><b>Tile size</b><br>
-                Defines the default tile size in pixels.
-            </li>
             <li><b>Cache size</b><br>
                 Defines the default cache size in MB.
             </li>
@@ -110,22 +111,21 @@
         </p>
         <ul>
             <li><b>Select potential values</b><br>
-                <p>You need to define a list of potential processing parameters for each values (tile size, cache size and nb threads).<br>
+                <p>You need to define a list of potential processing parameters for each values (cache size and nb threads).<br>
                 Each list must have at least one value, otherwise each values must be separated by a semi-colon (;).</p>
-                <img src="images/snap-smart-configurator-ui-preferences-benchmark-param.jpg" border=0/>
+                <img src="images/snap-smart-configurator-ui-preferences-benchmark-param-without-tilesize.jpg" border=0/>
             </li>
             <li><b>Select a processing</b><br>
-                Select in the <b>Proc. graph</b> combobox the processing that will be used by the benchmark.
+                Select in the combobox the processing that will be used by the benchmark.
             </li>
             <li><b>Set processing parameters</b><br>
-                <p>Press the button <b>Compute</b> to launch the processing dialog, sets processing parameters and click <b>Run</b>.</p>
-                <img src="images/snap-smart-configurator-ui-preferences-benchmark-procparam.jpg" border=0/>
+                <p>Press the button <b>Compute</b> to launch the processing dialog, sets I/O and processing parameters and click <b>Run</b>.</p>
+                <img src="images/snap-smart-configurator-ui-preferences-benchmark-procparam2.jpg" border=0/>
             </li>
             <li><b>Results</b><br>
-                <p>The benchmark will compute the processing with all given parameters.</p>
-                <img src="images/snap-smart-configurator-ui-preferences-benchmark-run.jpg" border=0/>
-                <p>It will display all results in a dialog windows and save the faster parameters in <b>SNAP Values</b>.</p>
-                <img src="images/snap-smart-configurator-ui-preferences-benchmark-result.jpg" border=0/>
+                <p>The benchmark will compute the processing with all given parameters.<br>
+                    It will display all results in a dialog window and save the faster parameters in <b>SNAP Values</b>.</p>
+                <img src="images/snap-smart-configurator-ui-preferences-benchmark-result2.jpg" border=0/>
             </li>
         </ul>
     </li>
@@ -135,6 +135,30 @@
         </p>
     </li>
 </ul>
+
+<h3>Performance FAQs</h3>
+<h4>I'm getting the Error "Cannot construct DataBuffer". What can I do?</h4>
+<p>This error indicates that you don't have enough memory. Either your system does not have enough
+    memory (RAM) or the configuration for SNAP is not sufficient.<br>
+    For the SNAP Desktop application, you can increase the amount of memory available to SNAP as explained above or:<br>
+    In the 'etc' folder of the SNAP installation directory you'll find a file named snap.conf. Open it in a text editor.<br>
+    There is the line which starts with 'default_options='<br>
+    In this line you'll find an option like -J-Xmx5G. Increase the value.
+    You could use something like -J-Xmx13G, if you have enough memory in your computer.
+    By default, it is set to ~75% of the maximum value. This is usually a good choice.<br>
+
+    If you experience the error on the command line with gpt or pconvert you need to change different files.<br>
+    You need to change the corresponding vmoptions files, either gpt.vmoptions or pconvert.vmoptions.<br>
+    Change the Value after -Xmx in the last line.
+</p>
+
+<h4>I'm getting the Error "Java heap space". What can I do?</h4>
+<p>The most common reason for this error is that SNAP just requires more Java heap space than available for the selected operator.<br>
+    You can increase the amount of memory available to SNAP as explained above.<br>
+    It is also possible that there are some not detected bugs that cause that some processes are not freeing up memory properly.
+    In that case, perhaps restarting SNAP (if you have been executing other processes before) and trying again could work.
+    But please, do not hesitate to report the error in the SNAP forum in order to help developers identify the bugs and fix them.
+</p>
 
 </body>
 </html>

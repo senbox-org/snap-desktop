@@ -106,7 +106,7 @@ public class DatabaseScannerListener implements DBScanner.DBScannerListener {
         batchDlg.setTargetFolder(outputFolder);
         batchDlg.setSlaveFileMap(slaveFileMap);
         if (graphFile != null) {
-            batchDlg.LoadGraph(graphFile);
+            batchDlg.loadGraph(graphFile);
         }
         batchDlg.show();
         if (autoApply)

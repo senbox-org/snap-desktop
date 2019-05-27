@@ -34,9 +34,47 @@
 
 <p>The Landsat reader enables the Sentinel Toolbox to import Landsat TM data products in either the Fast format
     (Landsat5) or in GeoTIFF (Landsat4,5) format.
-    The instruments ETM+ (Landsat7), OLI, TIRS (Landsat8) are only support in GeoTIFF format.
-    MSS data from Landsat 1 to 5 is also only supported in GeoTIFF format.</p>
+    The instruments ETM+ (Landsat7), OLI, TIRS (Landsat8) are only supported in GeoTIFF format. GeotTIFF format of Landsat8 processed by ESA is also supported.
+    MSS data from Landsat 1 to 5 is also only supported in GeoTIFF format.
+</p>
 
+<p>In 2016, the USGS started reorganizing the Landsat archive into a formal tiered data Collection structure.
+    This data collection structure ensures that Landsat Level-1 products provide a consistent archive of known
+    data quality to support time series analyses and data "stacking", while controlling continuous improvement
+    of the archive and access to all data as they are acquired.
+    See <object classid="java:org.netbeans.modules.javahelp.BrowserDisplayer">
+        <param name="content" value="https://landsat.usgs.gov/what-are-landsat-collections">
+        <param name="text" value="<html><u>https://landsat.usgs.gov/what-are-landsat-collections</u></html>">
+    </object>.
+</p>
+
+<p>Pre-collection and Collection 1 products are supported by SNAP.
+    The interpretation of quality bands are different for both
+    (please, note also that the quality interpretation has been corrected from previous versions of SNAP).
+    See <object classid="java:org.netbeans.modules.javahelp.BrowserDisplayer">
+        <param name="content" value="https://landsat.usgs.gov/qualityband">
+        <param name="text" value="<html><u>https://landsat.usgs.gov/qualityband</u></html>">
+    </object> and <object classid="java:org.netbeans.modules.javahelp.BrowserDisplayer">
+        <param name="content" value="https://landsat.usgs.gov/collectionqualityband">
+        <param name="text" value="<html><u>https://landsat.usgs.gov/collectionqualityband</u></html>">
+    </object>.
+</p>
+
+<center>
+    <img src="images/QualityLandsatPreCollection.png">
+</center>
+<center>
+    <img src="images/QualityLandsatCollection.png">
+</center>
+
+<p>Surface Reflectance products for Landsat 4-7 (LEDAPS <object classid="java:org.netbeans.modules.javahelp.BrowserDisplayer">
+    <param name="content" value="https://www.usgs.gov/media/files/landsat-4-7-surface-reflectance-code-ledaps-product-guide">
+    <param name="text" value="<html><u>https://www.usgs.gov/media/files/landsat-4-7-surface-reflectance-code-ledaps-product-guide</u></html>">
+</object>) and Landsat 8 (LASRC <object classid="java:org.netbeans.modules.javahelp.BrowserDisplayer">
+    <param name="content" value="https://www.usgs.gov/media/files/landsat-8-surface-reflectance-code-lasrc-product-guide">
+    <param name="text" value="<html><u>https://www.usgs.gov/media/files/landsat-8-surface-reflectance-code-lasrc-product-guide</u></html>">
+</object>) are also supported.
+</p>
 <p>
     More about Landsat characteristics can be found at
     <object classid="java:org.netbeans.modules.javahelp.BrowserDisplayer">     

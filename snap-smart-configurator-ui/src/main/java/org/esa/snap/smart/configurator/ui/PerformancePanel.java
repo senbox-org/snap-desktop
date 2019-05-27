@@ -125,7 +125,7 @@ final class PerformancePanel extends javax.swing.JPanel {
         vmParametersTextField.getDocument().addDocumentListener(textFieldListener);
         cachePathTextField.getDocument().addDocumentListener(textFieldListener);
         nbThreadsTextField.getDocument().addDocumentListener(textFieldListener);
-        tileDimensionTextField.getDocument().addDocumentListener(textFieldListener);
+        tileSizeTextField.getDocument().addDocumentListener(textFieldListener);
         cacheSizeTextField.getDocument().addDocumentListener(textFieldListener);
     }
 
@@ -133,6 +133,9 @@ final class PerformancePanel extends javax.swing.JPanel {
      * This method is called from within the constructor to initialize the form.
      */
     private void initComponents() {
+
+        PerformanceParameters actualParameters = confOptimizer.getActualPerformanceParameters();
+
         java.awt.GridBagConstraints gridBagConstraints;
 
         systemParametersPanel = new javax.swing.JPanel();
@@ -148,20 +151,21 @@ final class PerformancePanel extends javax.swing.JPanel {
         vmParametersInfoLabel = new javax.swing.JLabel();
         processingParametersPanel = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
-        tileDimensionLabel = new javax.swing.JLabel();
+        tileSizeLabel = new javax.swing.JLabel();
         cacheSizeLabel = new javax.swing.JLabel();
         nbThreadsLabel = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
-        tileDimensionTextField = new javax.swing.JTextField();
+        tileSizeTextField = new javax.swing.JTextField();
         cacheSizeTextField = new javax.swing.JTextField();
         nbThreadsTextField = new javax.swing.JTextField();
         jPanel4 = new javax.swing.JPanel();
-        benchmarkTileDimensionTextField = new javax.swing.JTextField();
-        benchmarkCacheSizeTextField = new javax.swing.JTextField();
+        benchmarkTileSizeTextField = new javax.swing.JTextField();
+        cacheSizeTextField = new javax.swing.JTextField();
         benchmarkNbThreadsTextField = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
 
         procGraphJComboBox = new javax.swing.JComboBox(getBenchmarkOperators());
+        procGraphJComboBox.setSelectedItem("StoredGraph");
         jPanel3 = new javax.swing.JPanel();
         processingParamsComputeButton = new javax.swing.JButton();
         processingParamsResetButton = new javax.swing.JButton();
@@ -180,7 +184,7 @@ final class PerformancePanel extends javax.swing.JPanel {
         cachePathLabel.setPreferredSize(new java.awt.Dimension(80, 14));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 0);
         systemParametersPanel.add(cachePathLabel, gridBagConstraints);
@@ -236,18 +240,47 @@ final class PerformancePanel extends javax.swing.JPanel {
         cachePathTextField.setToolTipText(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.userDirTextField.toolTipText"));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridy = 1;
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.RELATIVE;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 2.0;
         gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
         systemParametersPanel.add(cachePathTextField, gridBagConstraints);
 
+
+
+        org.openide.awt.Mnemonics.setLocalizedText(cacheSizeLabel, org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.cacheSizeLabel.text"));
+        cacheSizeLabel.setMaximumSize(new java.awt.Dimension(200, 14));
+        cacheSizeLabel.setMinimumSize(new java.awt.Dimension(100, 14));
+        cacheSizeLabel.setPreferredSize(new java.awt.Dimension(80, 14));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 0);
+        systemParametersPanel.add(cacheSizeLabel, gridBagConstraints);
+
+        cacheSizeTextField.setText(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.cacheSizeTextField.text"));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.RELATIVE;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 2.0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
+        systemParametersPanel.add(cacheSizeTextField, gridBagConstraints);
+
+
+
+
+
+
+
         org.openide.awt.Mnemonics.setLocalizedText(browseUserDirButton, org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.browseUserDirButton.text")); 
         browseUserDirButton.addActionListener(evt -> browseCachePathButtonActionPerformed());
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 2, 0, 10);
         systemParametersPanel.add(browseUserDirButton, gridBagConstraints);
@@ -293,16 +326,16 @@ final class PerformancePanel extends javax.swing.JPanel {
 
         jPanel2.setLayout(new java.awt.GridLayout(/*3*/2, 0, 0, 15));
 
-        org.openide.awt.Mnemonics.setLocalizedText(tileDimensionLabel, org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.tileDimensionLabel.text"));
-        tileDimensionLabel.setMaximumSize(new java.awt.Dimension(120, 14));
-        tileDimensionLabel.setPreferredSize(new java.awt.Dimension(100, 14));
-        tileDimensionLabel.setToolTipText(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.tileDimensionLabel.toolTipText"));
-        //jPanel2.add(tileDimensionLabel);
+        org.openide.awt.Mnemonics.setLocalizedText(tileSizeLabel, org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.tileSizeLabel.text"));
+        tileSizeLabel.setMaximumSize(new java.awt.Dimension(120, 14));
+        tileSizeLabel.setPreferredSize(new java.awt.Dimension(100, 14));
+        tileSizeLabel.setToolTipText(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.tileSizeLabel.toolTipText"));
+        jPanel2.add(tileSizeLabel);
 
-        org.openide.awt.Mnemonics.setLocalizedText(cacheSizeLabel, org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.cacheSizeLabel.text")); 
-        cacheSizeLabel.setMaximumSize(new java.awt.Dimension(100, 14));
-        cacheSizeLabel.setPreferredSize(new java.awt.Dimension(80, 14));
-        jPanel2.add(cacheSizeLabel);
+        //org.openide.awt.Mnemonics.setLocalizedText(cacheSizeLabel, org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.cacheSizeLabel.text"));
+        //cacheSizeLabel.setMaximumSize(new java.awt.Dimension(100, 14));
+        //cacheSizeLabel.setPreferredSize(new java.awt.Dimension(80, 14));
+        //jPanel2.add(cacheSizeLabel);
 
         org.openide.awt.Mnemonics.setLocalizedText(nbThreadsLabel, org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.nbThreadsLabel.text")); 
         nbThreadsLabel.setMaximumSize(new java.awt.Dimension(100, 14));
@@ -318,16 +351,16 @@ final class PerformancePanel extends javax.swing.JPanel {
         jPanel1.setMinimumSize(new java.awt.Dimension(100, 100));
         jPanel1.setLayout(new java.awt.GridLayout(/*3*/2, 1, 0, 10));
 
-        tileDimensionTextField.setText(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.tileDimensionTextField.text"));
-        tileDimensionTextField.setMinimumSize(new java.awt.Dimension(100, 20));
-        tileDimensionTextField.setPreferredSize(new java.awt.Dimension(100, 20));
-        //jPanel1.add(tileDimensionTextField);
+        tileSizeTextField.setText(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.defaultTileSizeTextField.text"));
+        tileSizeTextField.setMinimumSize(new java.awt.Dimension(100, 20));
+        tileSizeTextField.setPreferredSize(new java.awt.Dimension(100, 20));
+        jPanel1.add(tileSizeTextField);
 
-        cacheSizeTextField.setText(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.cacheSizeTextField.text")); 
-        cacheSizeTextField.setMinimumSize(new java.awt.Dimension(100, 20));
-        cacheSizeTextField.setName(""); 
-        cacheSizeTextField.setPreferredSize(new java.awt.Dimension(100, 20));
-        jPanel1.add(cacheSizeTextField);
+        //cacheSizeTextField.setText(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.cacheSizeTextField.text"));
+        //cacheSizeTextField.setMinimumSize(new java.awt.Dimension(100, 20));
+        //cacheSizeTextField.setName("");
+        //cacheSizeTextField.setPreferredSize(new java.awt.Dimension(100, 20));
+        //jPanel1.add(cacheSizeTextField);
 
         nbThreadsTextField.setText(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.nbThreadsTextField.text")); 
         nbThreadsTextField.setPreferredSize(new java.awt.Dimension(100, 20));
@@ -342,21 +375,22 @@ final class PerformancePanel extends javax.swing.JPanel {
         jPanel4.setMinimumSize(new java.awt.Dimension(190, 107));
         jPanel4.setLayout(new java.awt.GridLayout(/*3*/2, 1, 0, 10));
 
-        PerformanceParameters actualParameters = confOptimizer.getActualPerformanceParameters();
-
-        String tileDimensionBenchmarkValues = getTileDimensionValuesForBenchmark(actualParameters.getTileDimension());
-        benchmarkTileDimensionTextField.setText(tileDimensionBenchmarkValues);
-        benchmarkTileDimensionTextField.setPreferredSize(new java.awt.Dimension(150, 20));
-        benchmarkTileDimensionTextField.setToolTipText(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.tileDimensionTextField.toolTipText"));
-        //jPanel4.add(benchmarkTileDimensionTextField);
 
 
-        String cacheSizeBenchmarkValues = getDefaultCacheSizeValuesForBenchmark(actualParameters);
-        benchmarkCacheSizeTextField.setText(cacheSizeBenchmarkValues);
-        benchmarkCacheSizeTextField.setMinimumSize(new java.awt.Dimension(100, 20));
-        benchmarkCacheSizeTextField.setName(""); 
-        benchmarkCacheSizeTextField.setPreferredSize(new java.awt.Dimension(150, 20));
-        jPanel4.add(benchmarkCacheSizeTextField);
+        String tileSizeBenchmarkValues = getTileSizeValuesForBenchmark(Integer.toString(actualParameters.getDefaultTileSize()));
+        benchmarkTileSizeTextField.setText(tileSizeBenchmarkValues);
+        benchmarkTileSizeTextField.setPreferredSize(new java.awt.Dimension(150, 20));
+        benchmarkTileSizeTextField.setToolTipText(org.openide.util.NbBundle.getMessage(PerformancePanel.class, "PerformancePanel.tileDimensionTextField.toolTipText"));
+        jPanel4.add(benchmarkTileSizeTextField);
+
+
+        //Move to SystemPanel
+        //String cacheSizeBenchmarkValues = getDefaultCacheSizeValuesForBenchmark(actualParameters);
+        //benchmarkCacheSizeTextField.setText(cacheSizeBenchmarkValues);
+        //benchmarkCacheSizeTextField.setMinimumSize(new java.awt.Dimension(100, 20));
+        //benchmarkCacheSizeTextField.setName("");
+        //benchmarkCacheSizeTextField.setPreferredSize(new java.awt.Dimension(150, 20));
+        //jPanel4.add(benchmarkCacheSizeTextField);
 
         benchmarkNbThreadsTextField.setText(Integer.toString(actualParameters.getNbThreads()) + BENCHMARK_SEPARATOR);
         benchmarkNbThreadsTextField.setPreferredSize(new java.awt.Dimension(150, 20));
@@ -421,6 +455,22 @@ final class PerformancePanel extends javax.swing.JPanel {
 
         //return defaultTileSizeValues.toString();
         return JAI.getDefaultTileSize().width + "," + JAI.getDefaultTileSize().height;
+    }
+
+    private String getTileSizeValuesForBenchmark(String tileDimension) {
+        StringBuilder defaultTileSizeValues = new StringBuilder();
+
+        defaultTileSizeValues.append("128");
+        defaultTileSizeValues.append(BENCHMARK_SEPARATOR);
+        defaultTileSizeValues.append("256");
+        defaultTileSizeValues.append(BENCHMARK_SEPARATOR);
+        defaultTileSizeValues.append("512");
+        defaultTileSizeValues.append(BENCHMARK_SEPARATOR);
+        defaultTileSizeValues.append("*");
+        defaultTileSizeValues.append(BENCHMARK_SEPARATOR);
+
+        return defaultTileSizeValues.toString();
+        //return JAI.getDefaultTileSize().width + "," + JAI.getDefaultTileSize().height;
     }
 
     private String getDefaultCacheSizeValuesForBenchmark(PerformanceParameters actualParameters) {
@@ -505,6 +555,12 @@ final class PerformancePanel extends javax.swing.JPanel {
             vmParametersTextField.setCaretPosition(0);
         }
 
+        if(VMParameters.canSave() && !cacheSizeTextField.getText().equals(String.valueOf(optimizedParameters.getCacheSize()))) {
+            cacheSizeTextField.setText(String.valueOf(optimizedParameters.getCacheSize()));
+            cacheSizeTextField.setForeground(CURRENT_VALUES_COLOR);
+            cacheSizeTextField.setCaretPosition(0);
+        }
+
         if(!cachePathTextField.getText().equals(optimizedParameters.getCachePath().toString())) {
             cachePathTextField.setText(optimizedParameters.getCachePath().toString());
             cachePathTextField.setForeground(CURRENT_VALUES_COLOR);
@@ -530,22 +586,27 @@ final class PerformancePanel extends javax.swing.JPanel {
     private void processingParamsComputeButtonActionPerformed(java.awt.event.ActionEvent evt) {
         if(validCompute()){
             //Create performance parameters benchmark lists
+            java.util.List<Integer> tileSizeList = new ArrayList<>();
             java.util.List<String> tileDimensionList = new ArrayList<>();
             java.util.List<Integer> cacheSizesList = new ArrayList<>();
             java.util.List<Integer> nbThreadsList = new ArrayList<>();
 
-            //for(String dimension : StringUtils.split(benchmarkTileDimensionTextField.getText(), ';')){
+            for(String tileSize : StringUtils.split(benchmarkTileSizeTextField.getText(), ';')){
+                tileSizeList.add(Integer.parseInt(tileSize));
+            }
+
+            //for(String dimension : StringUtils.split(benchmarkTileSizeTextField.getText(), ';')){
             //    tileDimensionList.add(dimension);
             //}
             tileDimensionList.add(JAI.getDefaultTileSize().width + "," + JAI.getDefaultTileSize().height);
 
-            for(String cacheSize : StringUtils.split(benchmarkCacheSizeTextField.getText(), ';')){
+            for(String cacheSize : StringUtils.split(cacheSizeTextField.getText(), ';')){
                 cacheSizesList.add(Integer.parseInt(cacheSize));
             }
             for(String nbThread : StringUtils.split(benchmarkNbThreadsTextField.getText(), ';')){
                 nbThreadsList.add(Integer.parseInt(nbThread));
             }
-            Benchmark benchmarkModel = new Benchmark(tileDimensionList, cacheSizesList, nbThreadsList);
+            Benchmark benchmarkModel = new Benchmark(tileSizeList, tileDimensionList, cacheSizesList, nbThreadsList);
             String opName = procGraphJComboBox.getSelectedItem().toString();
             AppContext appContext = SnapApp.getDefault().getAppContext();
             //launch Benchmark dialog
@@ -567,8 +628,8 @@ final class PerformancePanel extends javax.swing.JPanel {
 
     void updatePerformanceParameters(BenchmarkSingleCalculus benchmarkSingleCalcul){
 
-        tileDimensionTextField.setText(benchmarkSingleCalcul.getDimensionString());
-        tileDimensionTextField.setForeground(CURRENT_VALUES_COLOR);
+        tileSizeTextField.setText(benchmarkSingleCalcul.getDimensionString());
+        tileSizeTextField.setForeground(CURRENT_VALUES_COLOR);
 
         cacheSizeTextField.setText(Integer.toString(benchmarkSingleCalcul.getCacheSize()));
         cacheSizeTextField.setForeground(CURRENT_VALUES_COLOR);
@@ -598,7 +659,8 @@ final class PerformancePanel extends javax.swing.JPanel {
         parameters.setVMParameters(vmParametersTextField.getText());
         Path userDirPath = getUserDirPathFromString(cachePathTextField.getText());
         parameters.setCachePath(userDirPath);
-        parameters.setTileDimension(tileDimensionTextField.getText());
+        parameters.setDefaultTileSize(Integer.parseInt(tileSizeTextField.getText()));
+        parameters.setTileDimension(tileSizeTextField.getText() + "," + tileSizeTextField.getText());
         parameters.setCacheSize(Integer.parseInt(cacheSizeTextField.getText()));
         parameters.setNbThreads(Integer.parseInt(nbThreadsTextField.getText()));
         return parameters;
@@ -616,12 +678,12 @@ final class PerformancePanel extends javax.swing.JPanel {
         }
 
         //Commented because tiledimension has been removed temporary from the panel
-        //if(PerformanceParameters.isValidDimension(this.tileDimensionTextField.getText())) {
-        //    this.tileDimensionTextField.setForeground(CURRENT_VALUES_COLOR);
-        //} else {
-        //    this.tileDimensionTextField.setForeground(ERROR_VALUES_COLOR);
-        //    isValid = false;
-        //}
+        if(PerformanceParameters.isValidDimension(this.tileSizeTextField.getText())) {
+            this.tileSizeTextField.setForeground(CURRENT_VALUES_COLOR);
+        } else {
+            this.tileSizeTextField.setForeground(ERROR_VALUES_COLOR);
+            isValid = false;
+        }
         
         String readerCacheSize = this.cacheSizeTextField.getText();
         try{
@@ -655,7 +717,7 @@ final class PerformancePanel extends javax.swing.JPanel {
         boolean isValid = true;
         Pattern patternBenchmarkValues = Pattern.compile("([0-9]+[\\;]*)+");
 
-        String[] dimensions = StringUtils.split(benchmarkTileDimensionTextField.getText(), ';');
+        /*String[] dimensions = StringUtils.split(benchmarkTileDimensionTextField.getText(), ';');
         boolean isValidDimensions = true;
         for (String dimension : dimensions) {
             if (!PerformanceParameters.isValidDimension(dimension)) {
@@ -667,15 +729,20 @@ final class PerformancePanel extends javax.swing.JPanel {
         } else {
             isValid = false;
             benchmarkTileDimensionTextField.setForeground(ERROR_VALUES_COLOR);
-        }
+        }*/
 
-
-        if (!patternBenchmarkValues.matcher(benchmarkCacheSizeTextField.getText()).matches()) {
-            benchmarkCacheSizeTextField.setForeground(ERROR_VALUES_COLOR);
+        if (!patternBenchmarkValues.matcher(benchmarkTileSizeTextField.getText()).matches()) {
+            benchmarkTileSizeTextField.setForeground(ERROR_VALUES_COLOR);
             isValid = false;
         } else {
-            benchmarkCacheSizeTextField.setForeground(CURRENT_VALUES_COLOR);
+            benchmarkTileSizeTextField.setForeground(CURRENT_VALUES_COLOR);
         }
+        //if (!patternBenchmarkValues.matcher(benchmarkCacheSizeTextField.getText()).matches()) {
+        //    benchmarkCacheSizeTextField.setForeground(ERROR_VALUES_COLOR);
+        //    isValid = false;
+        //} else {
+        //    benchmarkCacheSizeTextField.setForeground(CURRENT_VALUES_COLOR);
+        //}
         if (!patternBenchmarkValues.matcher(benchmarkNbThreadsTextField.getText()).matches() || !validBenchmarkNbThreads()) {
             benchmarkNbThreadsTextField.setForeground(ERROR_VALUES_COLOR);
             isValid = false;
@@ -710,29 +777,35 @@ final class PerformancePanel extends javax.swing.JPanel {
 
         cachePathTextField.setText(actualPerformanceParameters.getCachePath().toString());
         cachePathTextField.setForeground(CURRENT_VALUES_COLOR);
+
+        cacheSizeTextField.setText(String.valueOf(actualPerformanceParameters.getCacheSize()));
+        cacheSizeTextField.setForeground(CURRENT_VALUES_COLOR);
+
+        tileSizeTextField.setText(String.valueOf(actualPerformanceParameters.getDefaultTileSize()));
+        tileSizeTextField.setForeground(CURRENT_VALUES_COLOR);
     }
 
     private void setProcessingPerformanceParametersToActualValues() {
         PerformanceParameters actualPerformanceParameters = confOptimizer.getActualPerformanceParameters();
 
-        tileDimensionTextField.setText(actualPerformanceParameters.getTileDimension());
-        tileDimensionTextField.setForeground(CURRENT_VALUES_COLOR);
+        tileSizeTextField.setText(Integer.toString(actualPerformanceParameters.getDefaultTileSize()));
+        tileSizeTextField.setForeground(CURRENT_VALUES_COLOR);
 
-        cacheSizeTextField.setText(Integer.toString(actualPerformanceParameters.getCacheSize()));
-        cacheSizeTextField.setForeground(CURRENT_VALUES_COLOR);
+        //cacheSizeTextField.setText(Integer.toString(actualPerformanceParameters.getCacheSize()));
+        //cacheSizeTextField.setForeground(CURRENT_VALUES_COLOR);
 
         nbThreadsTextField.setText(Integer.toString(actualPerformanceParameters.getNbThreads()));
         nbThreadsTextField.setForeground(CURRENT_VALUES_COLOR);
     }
 
-    private javax.swing.JTextField benchmarkCacheSizeTextField;
+    private javax.swing.JTextField cacheSizeTextField;
     private javax.swing.JTextField benchmarkNbThreadsTextField;
-    private javax.swing.JTextField benchmarkTileDimensionTextField;
+    private javax.swing.JTextField benchmarkTileSizeTextField;
     private javax.swing.JButton editVMParametersButton;
     private javax.swing.JButton browseUserDirButton;
     private javax.swing.JLabel cacheSizeLabel;
-    private javax.swing.JTextField cacheSizeTextField;
-    private javax.swing.JTextField tileDimensionTextField;
+    //private javax.swing.JTextField cacheSizeTextField;
+    private javax.swing.JTextField tileSizeTextField;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel cachePathLabel;
     private javax.swing.JLabel vmParametersLabel;
@@ -750,7 +823,7 @@ final class PerformancePanel extends javax.swing.JPanel {
     private javax.swing.JButton sysComputeButton;
     private javax.swing.JButton sysResetButton;
     private javax.swing.JPanel systemParametersPanel;
-    private javax.swing.JLabel tileDimensionLabel;
+    private javax.swing.JLabel tileSizeLabel;
     private javax.swing.JTextField cachePathTextField;
     private javax.swing.JLabel vmParametersInfoLabel;
     private javax.swing.JTextField vmParametersTextField;

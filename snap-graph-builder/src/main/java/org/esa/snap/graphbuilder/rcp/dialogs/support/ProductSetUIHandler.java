@@ -92,7 +92,7 @@ public class ProductSetUIHandler {
         return productSetDataList.toArray(new ProductSetData[productSetDataList.size()]);
     }
 
-    public void restore() {
+    void restore() {
         for (GraphNode multiSrcNode : savedProductSetList) {
 
             final List<GraphNode> nodesToRemove = new ArrayList<>();

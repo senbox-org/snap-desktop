@@ -133,7 +133,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         tabbedPanel.addChangeListener(new ChangeListener() {
 
             public void stateChanged(final ChangeEvent e) {
-                ValidateAllNodes();
+                validateAllNodes();
             }
         });
 
@@ -185,7 +185,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         progressCancelBtn.addActionListener(new ActionListener() {
 
             public void actionPerformed(final ActionEvent e) {
-                CancelProcessing();
+                cancelProcessing();
             }
         });
         progressPanel.add(progressCancelBtn, BorderLayout.EAST);
@@ -214,7 +214,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         processButton.addActionListener(new ActionListener() {
 
             public void actionPerformed(final ActionEvent e) {
-                DoProcessing();
+                doProcessing();
             }
         });
 
@@ -222,7 +222,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         saveButton.addActionListener(new ActionListener() {
 
             public void actionPerformed(final ActionEvent e) {
-                SaveGraph();
+                saveGraph();
             }
         });
 
@@ -230,7 +230,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         loadButton.addActionListener(new ActionListener() {
 
             public void actionPerformed(final ActionEvent e) {
-                LoadGraph();
+                loadGraph();
             }
         });
 
@@ -238,7 +238,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         clearButton.addActionListener(new ActionListener() {
 
             public void actionPerformed(final ActionEvent e) {
-                ClearGraph();
+                clearGraph();
             }
         });
 
@@ -272,9 +272,9 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
     /**
      * Validates the input and then call the GPF to execute the graph
      */
-    public void DoProcessing() {
+    public void doProcessing() {
 
-        if (ValidateAllNodes()) {
+        if (validateAllNodes()) {
             if (!checkIfOutputExists()) {
                 return;
             }
@@ -315,16 +315,16 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         return true;
     }
 
-    private void CancelProcessing() {
+    private void cancelProcessing() {
         if (progBarMonitor != null)
             progBarMonitor.setCanceled(true);
     }
 
-    private boolean InitGraph() {
+    private boolean initGraph() {
         boolean result = true;
         try {
             if (initGraphEnabled) {
-                result = graphEx.InitGraph();
+                result = graphEx.initGraph();
             }
             if (!result && allowGraphBuilding) {
                 statusLabel.setText("Graph is incomplete");
@@ -347,9 +347,9 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
     /**
      * Validates the input and then saves the current graph to a file
      */
-    public void SaveGraph() {
+    public void saveGraph() {
 
-        //if(ValidateAllNodes()) {
+        //if(validateAllNodes()) {
         try {
             final File file = graphEx.saveGraph();
             if (file != null) {
@@ -371,12 +371,12 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
     /**
      * Loads a new graph from a file
      */
-    public void LoadGraph() {
+    public void loadGraph() {
         final SnapFileFilter fileFilter = new SnapFileFilter("XML", "xml", "Graph");
         final File graphFile = Dialogs.requestFileForOpen("Load Graph", false, fileFilter, LAST_GRAPH_PATH);
         if (graphFile == null) return;
 
-        LoadGraph(graphFile);
+        loadGraph(graphFile);
     }
 
     /**
@@ -384,9 +384,9 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
      *
      * @param file the graph file to load
      */
-    public void LoadGraph(final File file) {
+    public void loadGraph(final File file) {
         try {
-            LoadGraph(new FileInputStream(file), file);
+            loadGraph(new FileInputStream(file), file);
             if (allowGraphBuilding) {
                 setTitle(file.getName());
             }
@@ -400,7 +400,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
      *
      * @param fileStream the graph file to load
      */
-    public void LoadGraph(final InputStream fileStream, final File file) {
+    public void loadGraph(final InputStream fileStream, final File file) {
         try {
             initGraphEnabled = false;
             tabbedPanel.removeAll();
@@ -425,7 +425,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         return graphEx.getGraphAsString();
     }
 
-    public void EnableInitialInstructions(final boolean flag) {
+    public void enableInitialInstructions(final boolean flag) {
         if (this.allowGraphBuilding) {
             graphPanel.showRightClickHelp(flag);
         }
@@ -434,11 +434,11 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
     /**
      * Removes all tabs and clears the graph
      */
-    private void ClearGraph() {
+    private void clearGraph() {
 
         initGraphEnabled = false;
         tabbedPanel.removeAll();
-        graphEx.ClearGraph();
+        graphEx.clearGraph();
         refreshGraph();
         initGraphEnabled = true;
         statusLabel.setText("");
@@ -452,7 +452,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
     public void setInputFiles(final File[] productFileList) {
         final GraphNode productSetNode = graphEx.getGraphNodeList().findGraphNodeByOperator("ProductSet-Reader");
         if (productSetNode != null) {
-            ProductSetReaderOpUI ui = (ProductSetReaderOpUI) productSetNode.GetOperatorUI();
+            ProductSetReaderOpUI ui = (ProductSetReaderOpUI) productSetNode.getOperatorUI();
             ui.setProductFileList(productFileList);
         }
     }
@@ -466,10 +466,10 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         final GraphNode readerNode = graphEx.getGraphNodeList().findGraphNodeByOperator(
                 ReadOp.Spi.getOperatorAlias(ReadOp.class));
         if (readerNode != null) {
-            SourceUI ui = (SourceUI) readerNode.GetOperatorUI();
+            SourceUI ui = (SourceUI) readerNode.getOperatorUI();
             ui.setSourceProduct(product);
 
-            ValidateAllNodes();
+            validateAllNodes();
         }
     }
 
@@ -506,14 +506,14 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
      *
      * @return true if validation passes
      */
-    private boolean ValidateAllNodes() {
+    private boolean validateAllNodes() {
 
         if (isProcessing) return false;
 
         boolean isValid = true;
         final StringBuilder errorMsg = new StringBuilder(100);
         final StringBuilder warningMsg = new StringBuilder(100);
-        for (GraphNode n : graphEx.GetGraphNodes()) {
+        for (GraphNode n : graphEx.getGraphNodes()) {
             try {
                 final UIValidation validation = n.validateParameterMap();
                 if (validation.getState() == UIValidation.State.ERROR) {
@@ -544,7 +544,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
             }
         }
 
-        return InitGraph();
+        return initGraph();
     }
 
     public void addListener(final ProcessingListener listener) {
@@ -587,7 +587,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
             final GraphExecuter.events eventType = event.getEventType();
             switch(eventType) {
                 case ADD_EVENT:
-                    tabbedPanel.addTab(node.getID(), null, CreateOperatorTab(node), node.getID() + " Operator");
+                    tabbedPanel.addTab(node.getID(), null, createOperatorTab(node), node.getID() + " Operator");
                     refreshGraph();
                     break;
                 case REMOVE_EVENT:
@@ -601,7 +601,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
                     }
                     break;
                 case CONNECT_EVENT:
-                    ValidateAllNodes();
+                    validateAllNodes();
                     break;
                 case REFRESH_EVENT:
                     refreshGraph();
@@ -618,9 +618,9 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         }
     }
 
-    private JComponent CreateOperatorTab(final GraphNode node) {
+    private JComponent createOperatorTab(final GraphNode node) {
 
-        return node.GetOperatorUI().CreateOpTab(node.getOperatorName(), node.getParameterMap(), appContext);
+        return node.getOperatorUI().CreateOpTab(node.getOperatorName(), node.getParameterMap(), appContext);
     }
 
     private class ProcessThread extends SwingWorker<GraphExecuter, Object> {
@@ -629,7 +629,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         private Date executeStartTime = null;
         private boolean errorOccured = false;
 
-        public ProcessThread(final ProgressMonitor pm) {
+        ProcessThread(final ProgressMonitor pm) {
             this.pm = pm;
         }
 

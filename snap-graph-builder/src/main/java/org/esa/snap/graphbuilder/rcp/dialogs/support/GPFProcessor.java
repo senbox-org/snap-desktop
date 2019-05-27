@@ -40,10 +40,6 @@ public class GPFProcessor {
     private final Graph graph;
     private final GraphProcessor processor = new GraphProcessor();
 
-    public GPFProcessor(final File graphFile) throws GraphException, IOException {
-        this(graphFile, null);
-    }
-
     public GPFProcessor(final File graphFile, final Map<String, String> parameterMap) throws GraphException, IOException {
         graph = readGraph(new FileReader(graphFile), parameterMap);
     }

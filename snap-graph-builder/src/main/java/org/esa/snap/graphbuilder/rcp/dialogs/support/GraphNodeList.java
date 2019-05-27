@@ -72,7 +72,7 @@ public class GraphNodeList {
     boolean isGraphComplete() {
         int nodesWithoutSources = 0;
         for (GraphNode n : nodeList) {
-            if (!n.HasSources()) {
+            if (!n.hasSources()) {
                 ++nodesWithoutSources;
                 if (!IsNodeASource(n))
                     return false;
@@ -81,10 +81,10 @@ public class GraphNodeList {
         return nodesWithoutSources != nodeList.size();
     }
 
-    public void assignParameters(final XppDom presentationXML) throws GraphException {
+    void assignParameters(final XppDom presentationXML) throws GraphException {
         for (GraphNode n : nodeList) {
-            if (n.GetOperatorUI() != null) {
-                n.AssignParameters(presentationXML);
+            if (n.getOperatorUI() != null) {
+                n.assignParameters(presentationXML);
             }
         }
     }
@@ -101,7 +101,7 @@ public class GraphNodeList {
         }
     }
 
-    public boolean IsNodeASource(final GraphNode sourceNode) {
+    private boolean IsNodeASource(final GraphNode sourceNode) {
         for (GraphNode n : nodeList) {
             if (n.isNodeSource(sourceNode))
                 return true;
@@ -109,7 +109,7 @@ public class GraphNodeList {
         return false;
     }
 
-    public GraphNode[] findConnectedNodes(final GraphNode sourceNode) {
+    GraphNode[] findConnectedNodes(final GraphNode sourceNode) {
         final List<GraphNode> connectedNodes = new ArrayList<>();
         for (GraphNode n : nodeList) {
             if (n.isNodeSource(sourceNode))
@@ -118,7 +118,7 @@ public class GraphNodeList {
         return connectedNodes.toArray(new GraphNode[connectedNodes.size()]);
     }
 
-    public void switchConnections(final GraphNode oldNode, final String newNodeID) {
+    void switchConnections(final GraphNode oldNode, final String newNodeID) {
         final GraphNode[] connectedNodes = findConnectedNodes(oldNode);
         for (GraphNode node : connectedNodes) {
             node.connectOperatorSource(newNodeID);
