@@ -18,23 +18,25 @@ package org.esa.snap.core.gpf.ui;
 
 import com.bc.ceres.binding.dom.DefaultDomElement;
 import com.thoughtworks.xstream.io.xml.xppdom.XppDom;
-import org.esa.snap.HeadlessTestRunner;
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.ui.DefaultAppContext;
 import org.junit.AfterClass;
+import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
-import static org.junit.Assert.*;
+import java.awt.GraphicsEnvironment;
 
-@RunWith(HeadlessTestRunner.class)
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 public class OperatorMenuTest {
 
     private static OperatorParameterSupportTest.TestOpSpi testOpSpi;
 
     @BeforeClass
     public static void beforeClass() {
+        Assume.assumeFalse("Cannot run in headless", GraphicsEnvironment.isHeadless());
         testOpSpi = new OperatorParameterSupportTest.TestOpSpi();
         GPF.getDefaultInstance().getOperatorSpiRegistry().addOperatorSpi(testOpSpi);
     }

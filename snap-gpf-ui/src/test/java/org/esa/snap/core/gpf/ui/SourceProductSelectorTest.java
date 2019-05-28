@@ -16,31 +16,32 @@
 
 package org.esa.snap.core.gpf.ui;
 
-import org.esa.snap.HeadlessTestRunner;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.ui.DefaultAppContext;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import javax.swing.JComboBox;
+import java.awt.GraphicsEnvironment;
 import java.io.File;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 
 /**
  * @author Ralf Quast
  * @version $Revision$ $Date$
  */
-@RunWith(HeadlessTestRunner.class)
 public class SourceProductSelectorTest {
 
     private Product[] defaultProducts;
     private DefaultAppContext appContext;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
+        Assume.assumeFalse("Cannot run in headless", GraphicsEnvironment.isHeadless());
         appContext = new DefaultAppContext("Fart, fart!");
         defaultProducts = new Product[4];
         for (int i = 0; i < defaultProducts.length; i++) {

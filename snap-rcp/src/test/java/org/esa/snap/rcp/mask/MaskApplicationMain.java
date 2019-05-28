@@ -21,8 +21,6 @@ import org.esa.snap.core.datamodel.ProductNodeEvent;
 import org.esa.snap.core.datamodel.ProductNodeListenerAdapter;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.ui.GridLayout2;
-import org.junit.Ignore;
-import org.junit.Test;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
@@ -34,7 +32,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.event.ActionEvent;
 import java.util.Locale;
 
-public class MaskApplicationTest {
+public class MaskApplicationMain {
     private final Product product;
     private final MaskManagerForm maskManagerForm;
     private final MaskViewerForm maskViewerForm;
@@ -42,13 +40,8 @@ public class MaskApplicationTest {
     private Product selectedProduct;
     private RasterDataNode selectedBand;
 
-    @Ignore
-    @Test
-    public void testNothing() {
-        // Dummy test to make JUnit 4 runner happy
-    }
 
-    public MaskApplicationTest() {
+    public MaskApplicationMain() {
         product = MaskFormTest.createTestProduct();
         product.addProductNodeListener(new ProductNodeListenerAdapter() {
             @Override
@@ -90,7 +83,7 @@ public class MaskApplicationTest {
             // ignore
         }
 
-        final MaskApplicationTest app = new MaskApplicationTest();
+        final MaskApplicationMain app = new MaskApplicationMain();
         final JFrame maskManagerFrame = createFrame("ROI/Mask Manager", app.maskManagerForm.createContentPanel());
         final JFrame maskViewerFrame = createFrame("Bitmask Overlay", app.maskViewerForm.createContentPanel());
         final JFrame productManagerFrame = createFrame("Product Manager", createProductManagerPanel(app));
@@ -117,7 +110,7 @@ public class MaskApplicationTest {
         return frame;
     }
 
-    private static JPanel createProductManagerPanel(final MaskApplicationTest app) {
+    private static JPanel createProductManagerPanel(final MaskApplicationMain app) {
         JPanel panel = new JPanel(new GridLayout2(-1, 1, 2, 2));
         panel.setBorder(new EmptyBorder(4, 4, 4, 4));
 
