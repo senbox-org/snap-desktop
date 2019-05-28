@@ -66,10 +66,7 @@ import org.esa.snap.core.datamodel.VirtualBand;
 import org.esa.snap.core.dataop.barithm.BandArithmetic;
 import org.esa.snap.core.image.ColoredMaskImageMultiLevelSource;
 import org.esa.snap.core.jexp.ParseException;
-import org.esa.snap.core.layer.GraticuleLayer;
-import org.esa.snap.core.layer.MaskCollectionLayer;
-import org.esa.snap.core.layer.NoDataLayerType;
-import org.esa.snap.core.layer.ProductLayerContext;
+import org.esa.snap.core.layer.*;
 import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.ui.BasicView;
@@ -565,6 +562,12 @@ public class ProductSceneView extends BasicView
     public void setNoDataOverlayEnabled(boolean enabled) {
         if (isNoDataOverlayEnabled() != enabled) {
             getNoDataLayer(true).setVisible(enabled);
+            Layer layer = getNoDataLayer(true);
+            layer.setVisible(enabled);
+
+            if (enabled) {
+                updateCurrentLayer(layer, enabled);
+            }
         }
     }
 
@@ -579,9 +582,16 @@ public class ProductSceneView extends BasicView
 
     public void setGraticuleOverlayEnabled(boolean enabled) {
         if (isGraticuleOverlayEnabled() != enabled) {
-            getGraticuleLayer(true).setVisible(enabled);
+            Layer layer = getGraticuleLayer(true);
+            layer.setVisible(enabled);
+
+            if (enabled) {
+                updateCurrentLayer(layer, enabled);
+            }
         }
     }
+
+
 
     public boolean isPinOverlayEnabled() {
         Layer pinLayer = getPinLayer(false);
@@ -592,7 +602,10 @@ public class ProductSceneView extends BasicView
         if (isPinOverlayEnabled() != enabled) {
             Layer layer = getPinLayer(true);
             layer.setVisible(enabled);
-            setSelectedLayer(layer);
+
+            if (enabled) {
+                updateCurrentLayer(layer, enabled);
+            }
         }
     }
 
@@ -605,7 +618,10 @@ public class ProductSceneView extends BasicView
         if (isGcpOverlayEnabled() != enabled) {
             Layer layer = getGcpLayer(true);
             layer.setVisible(enabled);
-            setSelectedLayer(layer);
+
+            if (enabled) {
+                updateCurrentLayer(layer, enabled);
+            }
         }
     }
 
@@ -616,9 +632,38 @@ public class ProductSceneView extends BasicView
 
     public void setMaskOverlayEnabled(boolean enabled) {
         if (isMaskOverlayEnabled() != enabled) {
-            getMaskCollectionLayer(true).setVisible(enabled);
+//            getMaskCollectionLayer(true).setVisible(enabled);
+
+            Layer layer = getMaskCollectionLayer(true);
+            layer.setVisible(enabled);
+
+            if (enabled) {
+                updateCurrentLayer(layer, enabled);
+            }
         }
     }
+
+
+    public void updateCurrentLayer(Layer currentLayer, boolean enabled) {
+        if (enabled) {
+            setSelectedLayer(currentLayer);
+        } else {
+            List<Layer> layers = getRootLayer().getChildren();
+            layers.remove(currentLayer);
+            if (!layers.isEmpty()) {
+                for (Layer layer : layers) {
+                    String layerName = layer.getName();
+                    if (!(layer.getName().contains("Masks") || layer.getName().contains("Vector data")) && !(layer.getLayerType() instanceof RasterImageLayerType)) {
+                        setSelectedLayer(layer);
+                        return;
+                    }
+                }
+            }
+        }
+
+    }
+
+
 
     /**
      * @param vectorDataNodes The vector data nodes whose layer shall be made visible.
@@ -762,6 +807,7 @@ public class ProductSceneView extends BasicView
         if (oldLayer != layer) {
             selectedLayer = layer;
             firePropertyChange(PROPERTY_NAME_SELECTED_LAYER, oldLayer, selectedLayer);
+
             maybeUpdateFigureEditor();
         }
     }
@@ -1212,7 +1258,8 @@ public class ProductSceneView extends BasicView
     }
 
     private GraticuleLayer getGraticuleLayer(boolean create) {
-        return getSceneImage().getGraticuleLayer(create);
+        GraticuleLayer graticuleLayer = getSceneImage().getGraticuleLayer(create);
+        return graticuleLayer;
     }
 
     private Layer getPinLayer(boolean create) {
