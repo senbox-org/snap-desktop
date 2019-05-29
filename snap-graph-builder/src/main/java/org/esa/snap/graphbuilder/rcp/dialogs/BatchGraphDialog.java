@@ -95,7 +95,7 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
 
     public BatchGraphDialog(final AppContext theAppContext, final String title, final String helpID,
                             final boolean closeOnDone) {
-        super(theAppContext.getApplicationWindow(), title, ID_YES | ID_APPLY_CLOSE_HELP, new String[] {"Run remote"}, helpID);
+        super(theAppContext.getApplicationWindow(), title, ID_YES | ID_APPLY_CLOSE_HELP, getRunRemoteIfWindows(), helpID);
         this.appContext = theAppContext;
         this.baseTitle = title;
         this.closeOnDone = closeOnDone;
@@ -567,6 +567,13 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
             }
             graphEx.setOperatorParam(productSetNode.getID(), "fileList", str.toString());
         }
+    }
+
+    private static String[] getRunRemoteIfWindows() {
+        if (org.apache.commons.lang.SystemUtils.IS_OS_WINDOWS) {
+            return new String[] {"Run remote"};
+        }
+        return null;
     }
 
     protected void cloneGraphs() throws Exception {
