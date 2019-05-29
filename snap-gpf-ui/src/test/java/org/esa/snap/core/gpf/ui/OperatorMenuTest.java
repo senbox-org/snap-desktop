@@ -43,7 +43,9 @@ public class OperatorMenuTest {
 
     @AfterClass
     public static void afterClass() {
-        GPF.getDefaultInstance().getOperatorSpiRegistry().removeOperatorSpi(testOpSpi);
+        if(testOpSpi != null) {
+            GPF.getDefaultInstance().getOperatorSpiRegistry().removeOperatorSpi(testOpSpi);
+        }
     }
 
 
