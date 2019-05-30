@@ -126,7 +126,7 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
                 protected void onAboutToShow() {
                     super.onAboutToShow();
 
-                    setData(sourceProductFiles, graphFile);
+                    setData(sourceProductFiles, graphFile, productSetPanel.getTargetFormat());
                 }
             };
             dialog.show();
