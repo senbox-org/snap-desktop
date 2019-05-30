@@ -570,7 +570,7 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
     }
 
     private static String[] getRunRemoteIfWindows() {
-        if (org.apache.commons.lang.SystemUtils.IS_OS_WINDOWS) {
+        if (org.apache.commons.lang.SystemUtils.IS_OS_WINDOWS || org.apache.commons.lang.SystemUtils.IS_OS_LINUX) {
             return new String[] {"Run remote"};
         }
         return null;
