@@ -17,7 +17,7 @@ package org.esa.snap.graphbuilder.rcp.dialogs;
 
 import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.core.SubProgressMonitor;
-import org.esa.snap.cloud.exploitation.platform.operator.CloudExploitationPlatformDialog;
+import org.esa.snap.cloud.exploitation.platform.operator.RemoteExecutionDialog;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.graph.GraphException;
@@ -121,7 +121,7 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
         } else {
             Window parentWindow = getJDialog().getOwner();
             close();
-            CloudExploitationPlatformDialog dialog = new CloudExploitationPlatformDialog(this.appContext, parentWindow) {
+            RemoteExecutionDialog dialog = new RemoteExecutionDialog(this.appContext, parentWindow) {
                 @Override
                 protected void onAboutToShow() {
                     super.onAboutToShow();
