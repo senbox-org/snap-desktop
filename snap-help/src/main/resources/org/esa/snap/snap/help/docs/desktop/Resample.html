@@ -84,6 +84,10 @@
     <tr>
         <td style="border-width:0;" valign="top">
 
+            <p align="center">
+                <img src="images/ResamplingDialog.png" alt="Resampling Dialog"/>
+            </p>
+
             <h5>Reference band</h5>
 
             <p class="i1">
@@ -92,7 +96,19 @@
                 The user can select any of the bands available in the product.
             </p>
 
-            <h5>Interpolation Method</h5>
+            <h5>Target width and height</h5>
+
+            <p class="i1">
+                All nodes will be resampled to match this size.
+            </p>
+
+            <h5>Pixel resolution</h5>
+
+            <p class="i1">
+                All nodes will be resampled to the selected resolution.
+            </p>
+
+            <h5>Upsampling Method</h5>
 
             <p class="i1">
                 Defines how bands shall be resampled from a coarser grid onto a finer grid.
@@ -115,7 +131,7 @@
                 Calculation of the new pixel value is performed by weighting the 16 surrounding pixels.
             </p>
 
-            <h5>Aggregation Method</h5>
+            <h5>Downsampling Method</h5>
 
             <p class="i1">
                 Defines how bands shall be resampled from a finer grid onto a coarser grid.
@@ -183,6 +199,18 @@
                 <b>MaxMedian:</b>
                 A flag is set if it is set for at least half of the pixels that need to be combined.
                 If it is set for exactly half the pixels, it is set for the output pixel.
+            </p>
+
+            <h5>Advanced method definition</h5>
+
+            <p class="i1">
+                A table allow to select the resampling methods individually for each band.
+                It is also possible save the preset or to load a saved one.
+                The preset is a csv file containing a line for each band with the following structure:
+            </p>
+
+            <p class="i1">
+                [bandName]:[DownsamplingMethod]:[UpsamplingMethod]
             </p>
 
         </td>
