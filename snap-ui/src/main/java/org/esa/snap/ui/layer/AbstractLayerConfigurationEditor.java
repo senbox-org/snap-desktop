@@ -33,7 +33,6 @@ import java.beans.PropertyChangeListener;
  * Base class for editors allowing to modify a layer's configuration.
  *
  * @author Marco Zühlke
- * @version $Revision$ $Date$
  * @since BEAM 4.6
  */
 // SEP2018 - Daniel Knowles - Modified to call a new method propertyPane.createJScrollPanel(), which returns
@@ -58,16 +57,6 @@ public abstract class AbstractLayerConfigurationEditor extends AbstractLayerEdit
         addEditablePropertyDescriptors();
         PropertyPane propertyPane = new PropertyPane(bindingContext);
 
-        //
-        // Modification note: Daniel Knowles 2018
-        // Modified to return JScrollPane instead of JPanel due to the large number of properties being added to the Graticule layer
-        // If for some reason this option is only desired for a certain layer then the following type of if clause might be used
-        // if ("Graticule".equals(getCurrentLayer().getName())) {
-        //     return propertyPane.createJScrollPanel();
-        // } else {
-        //     return propertyPane.createPanel();
-        // }
-        //
         return propertyPane.createJScrollPanel();
     }
 
